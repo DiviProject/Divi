@@ -4,8 +4,8 @@ PIVX Core integration/staging repository
 [![Build Status](https://travis-ci.org/PIVX-Project/PIVX.svg?branch=master)](https://travis-ci.org/PIVX-Project/PIVX) [![GitHub version](https://badge.fury.io/gh/PIVX-Project%2FPIVX.svg)](https://badge.fury.io/gh/PIVX-Project%2FPIVX)
 
 PIVX is a cutting edge cryptocurrency, with many features not available in most other cryptocurrencies.
-- Anonymized transactions using the _Zerocoin Protocol_.
-- Fast transactions featuring guaranteed zero confirmation transactions, we call it _SwiftX_.
+- Anonymized transactions using coin mixing technology, we call it _Obfuscation_.
+- Fast transactions featuring guaranteed zero confirmation transactions, we call it _SwiftTX_.
 - Decentralized blockchain voting providing for consensus based advancement of the current Masternode
   technology used to secure the network and provide the above features, each Masternode is secured
   with a collateral of 10K PIV.
@@ -34,7 +34,7 @@ More information at [pivx.org](http://www.pivx.org) Visit our ANN thread at [Bit
 <tr><td>151201-259200</td><td>50 PIV</td></tr>
 <tr><th colspan=4>PoS Phase</th></tr>
 <tr><th>Block Height</th><th colspan=3>Reward Amount</th></tr>
-<tr><td>259201-Infinite</td><td colspan=3>Variable based on <a href="https://pivx.org/knowledge-base/see-saw-rewards-mechanism/">SeeSaw Reward Mechanism</a></td></tr>
+<tr><td>259201-Infinite</td><td colspan=3>Variable based on SeeSaw Reward Mechanism</td></tr>
 </table>
 
 ### PoW Rewards Breakdown

@@ -1128,6 +1128,21 @@ Proszę sprawdzić adres i spróbować ponownie</translation>
     </message>
 </context>
 <context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Status:</source>
+        <translation>Status:</translation>
+    </message>
+    <message>
+        <source>0</source>
+        <translation>0</translation>
+    </message>
+    <message>
+        <source>Amount:</source>
+        <translation>Liczba:</translation>
+    </message>
+    </context>
+<context>
     <name>ObfuscationConfig</name>
     <message>
         <source>Basic Privacy</source>
@@ -1364,7 +1379,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations </translation>
         <source>out of sync</source>
         <translation>Brak synchronizacji</translation>
     </message>
-</context>
+    </context>
 <context>
     <name>PaymentServer</name>
     <message>

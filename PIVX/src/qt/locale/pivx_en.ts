@@ -3471,7 +3471,20 @@ Please be patient...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+168"/>
+        <source>Spending Zerocoin.
+Computationally expensive, might need several minutes depending on the selected Security Level and your hardware. 
+Please be patient...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>) needed. 
+Maximum allowed: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-189"/>
         <location line="+16"/>
         <location line="+216"/>
         <source>Duration: </source>
@@ -3536,21 +3549,8 @@ Please be patient...</source>
         <translation type="unfinished">Confirm send coins</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>Spending Zerocoin.
-Computationally expensive, might need several minutes depending on the selected Security Level and your hardware. 
-Please be patient...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+27"/>
+        <location line="+38"/>
         <source>Too much inputs (</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>) needed. 
-Maximum allowed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>

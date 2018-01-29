@@ -710,10 +710,6 @@
         <translation>%1 og %2</translation>
     </message>
     <message>
-        <source>%1 behind</source>
-        <translation>%1 bagud</translation>
-    </message>
-    <message>
         <source>Catching up...</source>
         <translation>Samler op</translation>
     </message>
@@ -820,10 +816,6 @@ Adresse: %4
 <context>
     <name>ClientModel</name>
     <message>
-        <source>Total: %1 (OBF compatible: %2 / Enabled: %3)</source>
-        <translation>I alt: %1 (OBF kompatible: %2 / Aktiverede: %3)</translation>
-    </message>
-    <message>
         <source>Network Alert</source>
         <translation>Netværksalarm!</translation>
     </message>
@@ -897,6 +889,10 @@ Adresse: %4
     <message>
         <source>Received with address</source>
         <translation>Modtaget med adresse</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Type</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1486,6 +1482,21 @@ Kontroller adressen og prøv igen.</translation>
     </message>
 </context>
 <context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Status:</source>
+        <translation>Status</translation>
+    </message>
+    <message>
+        <source>0</source>
+        <translation>0</translation>
+    </message>
+    <message>
+        <source>Amount:</source>
+        <translation>Beløb</translation>
+    </message>
+    </context>
+<context>
     <name>ObfuscationConfig</name>
     <message>
         <source>Configure Obfuscation</source>
@@ -1870,7 +1881,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <source>out of sync</source>
         <translation>Ude af synk</translation>
     </message>
-</context>
+    </context>
 <context>
     <name>PaymentServer</name>
     <message>
@@ -2801,10 +2812,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Tilføj &amp;Modtager</translation>
     </message>
     <message>
-        <source>SwiftTX</source>
-        <translation>SwiftTX</translation>
-    </message>
-    <message>
         <source>Balance:</source>
         <translation>Saldo</translation>
     </message>
@@ -2863,10 +2870,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>any available funds (not recommended)</source>
         <translation>Alle tilgængelige saldi (anbefales ikke)</translation>
-    </message>
-    <message>
-        <source>and SwiftTX</source>
-        <translation>og SwiftTX</translation>
     </message>
     <message>
         <source>%1 to %2</source>
@@ -3215,18 +3218,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Konflikt!</translation>
     </message>
     <message>
-        <source>%1/offline (verified via swifttx)</source>
-        <translation>%1/offline (verified via svifttx)</translation>
-    </message>
-    <message>
-        <source>%1/confirmed (verified via swifttx)</source>
-        <translation>%1/bekræftet (verified via svifttx)</translation>
-    </message>
-    <message>
-        <source>%1 confirmations (verified via swifttx)</source>
-        <translation>%1/bekræftelser (verified via svifttx)</translation>
-    </message>
-    <message>
         <source>%1/offline</source>
         <translation>%1/ofline</translation>
     </message>
@@ -3237,26 +3228,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>%1 confirmations</source>
         <translation>%1/bekræftelser</translation>
-    </message>
-    <message>
-        <source>%1/offline (SwiftTX verification in progress - %2 of %3 signatures)</source>
-        <translation>%1/offline (SwifTX verificering i gang - %2 af %3 signaturer)</translation>
-    </message>
-    <message>
-        <source>%1/confirmed (SwiftTX verification in progress - %2 of %3 signatures )</source>
-        <translation>%1/bekræftet(SwifTX verificering i gang - %2 af %3 signaturer)</translation>
-    </message>
-    <message>
-        <source>%1 confirmations (SwiftTX verification in progress - %2 of %3 signatures)</source>
-        <translation>%1/bekræftelser (SwifTX verificering i gang - %2 af %3 signaturer)</translation>
-    </message>
-    <message>
-        <source>%1/offline (SwiftTX verification failed)</source>
-        <translation>%1/offline (SwifTX verificering mislykkedes)</translation>
-    </message>
-    <message>
-        <source>%1/confirmed (SwiftTX verification failed)</source>
-        <translation>%1/bekræftet (SwifTX verificering mislykkedes)</translation>
     </message>
     <message>
         <source>Status</source>
@@ -3720,11 +3691,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <source>Send Coins</source>
         <translation>Send mønter</translation>
     </message>
-    <message>
-        <source>SwiftTX doesn't support sending values that high yet. Transactions are currently limited to %1 PIV.</source>
-        <translation>SwiftTx understøtter ikke afsendelse af så store beløb endnu. Transaktioner er for tiden begrænsede til %1PIV.</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>WalletView</name>
     <message>
@@ -3818,10 +3785,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Slet alle tegnebogens transaktioner og genskab kun fra blokkæden ved at tilføje -rescan i forbindes med opstart.</translation>
     </message>
     <message>
-        <source>Disable all PIVX specific functionality (Masternodes, Obfuscation, SwiftTX, Budgeting) (0-1, default: %u)</source>
-        <translation>Slå alle PIVX funktioner fra (Masternoder, Tilsløring, SwiftTX, Budgetting)(0-1,default:%u)</translation>
-    </message>
-    <message>
         <source>Distributed under the MIT software license, see the accompanying file COPYING or &lt;http://www.opensource.org/licenses/mit-license.php&gt;.</source>
         <translation>Distribueret under MIT software licensen. Se den vedlaget fil COPYING eller 
 &lt;http://www.opensource.org/licenses/mit-license.php&gt;. </translation>
@@ -3829,10 +3792,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Enable spork administration functionality with the appropriate private key.</source>
         <translation>Slå spork administrationsfunktionen til med den rette private nøgle</translation>
-    </message>
-    <message>
-        <source>Enable swifttx, show confirmations for locked transactions (bool, default: %s)</source>
-        <translation>Aktiver swifttx, vis bekræftelser for låste transaktioner (bool, default: %s)</translation>
     </message>
     <message>
         <source>Enter regression test mode, which uses a special chain in which blocks can be solved instantly.</source>
@@ -3873,10 +3832,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Found unconfirmed denominated outputs, will wait till they confirm to continue.</source>
         <translation>Der er fundet ubekræftede designerede outputs. Vent indtil de bekræftes for at fortsætte.</translation>
-    </message>
-    <message>
-        <source>How thorough the block verification of -checkblocks is (0-4, default: %u)</source>
-        <translation>Hvor grundig er blokkens verificeringer af -checkblocks er (0-4, default %u)</translation>
     </message>
     <message>
         <source>If paytxfee is not set, include enough fee so transactions begin confirmation on average within n blocks (default: %u)</source>
@@ -3953,10 +3908,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Support filtering of blocks and transaction with bloom filters (default: %u)</source>
         <translation>Understøt filtrering af blokke og transaktioner med bloom filters (default: %u)</translation>
-    </message>
-    <message>
-        <source>SwiftTX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.</source>
-        <translation>SwiftTX kræver mindst 6 bekræftelser. Vent nogle minutter og prøv igen.</translation>
     </message>
     <message>
         <source>This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit &lt;https://www.openssl.org/&gt; and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.</source>
@@ -4359,14 +4310,6 @@ For eksempel: alertnotify=Echo %% | mail - s "PIVX ALARM!" e-mail@administrator.
         <translation>Utilstrækkelige midler</translation>
     </message>
     <message>
-        <source>Invalid -onion address: '%s'</source>
-        <translation>Ugyldig -onion adresse: '%s'</translation>
-    </message>
-    <message>
-        <source>Invalid -proxy address: '%s'</source>
-        <translation>Ugyldig -proxy adresse: '%s'</translation>
-    </message>
-    <message>
         <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s'</source>
         <translation>Ugyldigt beløb til -maxtxfee=&lt;beløb&gt;: '%s'</translation>
     </message>
@@ -4765,10 +4708,6 @@ For eksempel: alertnotify=Echo %% | mail - s "PIVX ALARM!" e-mail@administrator.
     <message>
         <source>Submitted to masternode, waiting in queue %s</source>
         <translation>Afsendt til masternode, venter i kø %s</translation>
-    </message>
-    <message>
-        <source>SwiftTX options:</source>
-        <translation>SwiftTX optioner:</translation>
     </message>
     <message>
         <source>Synchronization failed</source>

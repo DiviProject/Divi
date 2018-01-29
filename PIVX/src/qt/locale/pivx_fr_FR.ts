@@ -586,10 +586,6 @@
         <translation>%1 et %2</translation>
     </message>
     <message>
-        <source>%1 behind</source>
-        <translation>%1 derrière</translation>
-    </message>
-    <message>
         <source>Last received block was generated %1 ago.</source>
         <translation>Le dernier bloque reçu a été généré il y a %1</translation>
     </message>
@@ -1019,6 +1015,17 @@ Veuillez vérifier l'adresse et réessayer.</translation>
 </translation>
     </message>
 </context>
+<context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>0</source>
+        <translation>0</translation>
+    </message>
+    <message>
+        <source>Amount:</source>
+        <translation>Montant :</translation>
+    </message>
+    </context>
 <context>
     <name>ObfuscationConfig</name>
     <message>

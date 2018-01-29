@@ -950,6 +950,13 @@ MultiSend: %1</translation>
     </message>
     </context>
 <context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Amount:</source>
+        <translation>Totale:</translation>
+    </message>
+    </context>
+<context>
     <name>ObfuscationConfig</name>
     </context>
 <context>

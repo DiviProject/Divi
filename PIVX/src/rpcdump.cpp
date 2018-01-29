@@ -25,8 +25,9 @@
 #include <openssl/aes.h>
 #include <openssl/sha.h>
 
-#include <univalue.h>
+#include "json/json_spirit_value.h"
 
+using namespace json_spirit;
 using namespace std;
 
 void EnsureWalletIsUnlocked();
@@ -78,7 +79,7 @@ std::string DecodeDumpString(const std::string& str)
     return ret.str();
 }
 
-UniValue importprivkey(const UniValue& params, bool fHelp)
+Value importprivkey(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 3)
         throw runtime_error(
@@ -125,7 +126,7 @@ UniValue importprivkey(const UniValue& params, bool fHelp)
 
         // Don't throw error in case a key is already there
         if (pwalletMain->HaveKey(vchAddress))
-            return NullUniValue;
+            return Value::null;
 
         pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = 1;
 
@@ -140,10 +141,10 @@ UniValue importprivkey(const UniValue& params, bool fHelp)
         }
     }
 
-    return NullUniValue;
+    return Value::null;
 }
 
-UniValue importaddress(const UniValue& params, bool fHelp)
+Value importaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 3)
         throw runtime_error(
@@ -191,7 +192,7 @@ UniValue importaddress(const UniValue& params, bool fHelp)
 
         // Don't throw error in case an address is already there
         if (pwalletMain->HaveWatchOnly(script))
-            return NullUniValue;
+            return Value::null;
 
         pwalletMain->MarkDirty();
 
@@ -204,10 +205,10 @@ UniValue importaddress(const UniValue& params, bool fHelp)
         }
     }
 
-    return NullUniValue;
+    return Value::null;
 }
 
-UniValue importwallet(const UniValue& params, bool fHelp)
+Value importwallet(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -300,10 +301,10 @@ UniValue importwallet(const UniValue& params, bool fHelp)
     if (!fGood)
         throw JSONRPCError(RPC_WALLET_ERROR, "Error adding some keys to wallet");
 
-    return NullUniValue;
+    return Value::null;
 }
 
-UniValue dumpprivkey(const UniValue& params, bool fHelp)
+Value dumpprivkey(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -333,7 +334,7 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp)
 }
 
 
-UniValue dumpwallet(const UniValue& params, bool fHelp)
+Value dumpwallet(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
@@ -388,10 +389,10 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
     file << "\n";
     file << "# End of dump\n";
     file.close();
-    return NullUniValue;
+    return Value::null;
 }
 
-UniValue bip38encrypt(const UniValue& params, bool fHelp)
+Value bip38encrypt(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)
         throw runtime_error(
@@ -422,14 +423,14 @@ UniValue bip38encrypt(const UniValue& params, bool fHelp)
     uint256 privKey = vchSecret.GetPrivKey_256();
     string encryptedOut = BIP38_Encrypt(strAddress, strPassphrase, privKey, vchSecret.IsCompressed());
 
-    UniValue result(UniValue::VOBJ);
+    Object result;
     result.push_back(Pair("Addess", strAddress));
     result.push_back(Pair("Encrypted Key", encryptedOut));
 
     return result;
 }
 
-UniValue bip38decrypt(const UniValue& params, bool fHelp)
+Value bip38decrypt(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)
         throw runtime_error(
@@ -454,7 +455,7 @@ UniValue bip38decrypt(const UniValue& params, bool fHelp)
     if (!BIP38_Decrypt(strPassphrase, strKey, privKey, fCompressed))
         throw JSONRPCError(RPC_WALLET_ERROR, "Failed To Decrypt");
 
-    UniValue result(UniValue::VOBJ);
+    Object result;
     result.push_back(Pair("privatekey", HexStr(privKey)));
 
     CKey key;

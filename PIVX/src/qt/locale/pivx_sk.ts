@@ -710,10 +710,6 @@
         <translation>%1 a %2</translation>
     </message>
     <message>
-        <source>%1 behind</source>
-        <translation>%1 pozadu</translation>
-    </message>
-    <message>
         <source>Catching up...</source>
         <translation>Dobieham...</translation>
     </message>
@@ -819,10 +815,6 @@ MultiSend: %1</translation>
 </context>
 <context>
     <name>ClientModel</name>
-    <message>
-        <source>Total: %1 (OBF compatible: %2 / Enabled: %3)</source>
-        <translation>Sumár: %1 (OBF kompatibilné: %2 / Zapnuté: %3)</translation>
-    </message>
     <message>
         <source>Network Alert</source>
         <translation>Upozornenie siete </translation>
@@ -943,6 +935,13 @@ MultiSend: %1</translation>
     <message>
         <source>Address:</source>
         <translation>Adresa:</translation>
+    </message>
+    </context>
+<context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Amount:</source>
+        <translation>Suma:</translation>
     </message>
     </context>
 <context>

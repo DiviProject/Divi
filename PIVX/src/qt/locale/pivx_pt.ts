@@ -434,6 +434,13 @@
     </message>
     </context>
 <context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Amount:</source>
+        <translation>Quantidade:</translation>
+    </message>
+    </context>
+<context>
     <name>ObfuscationConfig</name>
     </context>
 <context>
@@ -912,10 +919,6 @@
         <translation>Deletar todas as transações da carteira e somente recuperar aquelas partes do blockchain através de -rescan na inicialização</translation>
     </message>
     <message>
-        <source>Disable all PIVX specific functionality (Masternodes, Obfuscation, SwiftTX, Budgeting) (0-1, default: %u)</source>
-        <translation>Desabilitar todas as funcionacilidades específicas da PIVX (Masternodes, Ofuscação, SwiftTX, Budgeting) (0-1, default %u)</translation>
-    </message>
-    <message>
         <source>Connect through SOCKS5 proxy</source>
         <translation>Conectar usando proxy SOCKS5</translation>
     </message>
@@ -1126,10 +1129,6 @@
     <message>
         <source>Submitted to masternode, waiting in queue %s</source>
         <translation>Enviado para masternode, esperando na fila %s</translation>
-    </message>
-    <message>
-        <source>SwiftTX options:</source>
-        <translation>Opções SwiftTX:</translation>
     </message>
     <message>
         <source>Synchronization failed</source>

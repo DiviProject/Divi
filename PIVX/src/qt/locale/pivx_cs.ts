@@ -15,7 +15,7 @@
     </message>
     <message>
         <source>Copy the currently selected address to the system clipboard</source>
-        <translation>Kopírovat vybranou adresu do mezipaměti</translation>
+        <translation>Kopírovat vybranou adresu do schránky</translation>
     </message>
     <message>
         <source>&amp;Copy</source>
@@ -426,6 +426,10 @@
         <translation>Procházet historii transakcí</translation>
     </message>
     <message>
+        <source>Privacy Actions for zPIV</source>
+        <translation>Řešení soukromí pro zPIV</translation>
+    </message>
+    <message>
         <source>E&amp;xit</source>
         <translation>E&amp;xit</translation>
     </message>
@@ -566,6 +570,30 @@
         <translation>Zobrazit seznam použitých adres  a popisků pro přijetí plateb</translation>
     </message>
     <message>
+        <source>&amp;Multisignature creation...</source>
+        <translation>&amp;Vytvoření multisignatury</translation>
+    </message>
+    <message>
+        <source>Create a new multisignature address and add it to this wallet</source>
+        <translation>Vytvořit novou multisignaturní adresu a přidat ji do této peněženky</translation>
+    </message>
+    <message>
+        <source>&amp;Multisignature spending...</source>
+        <translation>&amp;Multisignaturní výdaje...</translation>
+    </message>
+    <message>
+        <source>Spend from a multisignature address</source>
+        <translation>Uhradit z multisignaturní adresy</translation>
+    </message>
+    <message>
+        <source>&amp;Multisignature signing...</source>
+        <translation>&amp;Multisignaturní podepisování...</translation>
+    </message>
+    <message>
+        <source>Sign with a multisignature address</source>
+        <translation>Podepsat multisignaturní adresou</translation>
+    </message>
+    <message>
         <source>Open &amp;URI...</source>
         <translation>Otevřít &amp;URI...</translation>
     </message>
@@ -573,9 +601,17 @@
         <source>&amp;Command-line options</source>
         <translation>Možnosti příkazové řádky</translation>
     </message>
+    <message numerus="yes">
+        <source>Processed %n blocks of transaction history.</source>
+        <translation><numerusform>Zpracován %n blok z transakční historie.</numerusform><numerusform>Zpracováno %n bloků z transakční historie.</numerusform><numerusform>Zpracováno %n bloků z transakční historie.</numerusform></translation>
+    </message>
     <message>
         <source>Synchronizing additional data: %p%</source>
         <translation>Synchronizuji přídavná data: %p%</translation>
+    </message>
+    <message>
+        <source>%1 behind. Scanning block %2</source>
+        <translation>Zbývá %1 bloků. Skenuji blok %2</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -608,6 +644,10 @@
     <message>
         <source>Request payments (generates QR codes and pivx: URIs)</source>
         <translation>Vyžádat platbu (generování QK kódu a pivx: URIs)</translation>
+    </message>
+    <message>
+        <source>&amp;Privacy</source>
+        <translation>&amp;Soukromí</translation>
     </message>
     <message>
         <source>&amp;Masternodes</source>
@@ -685,6 +725,10 @@
         <source>PIVX Core client</source>
         <translation>PIVX Core klient</translation>
     </message>
+    <message numerus="yes">
+        <source>%n active connection(s) to PIVX network</source>
+        <translation><numerusform>Aktivních připojení do sítě PIVX: %n</numerusform><numerusform>Aktivních připojení do sítě PIVX: %n</numerusform><numerusform>Aktivních připojení do sítě PIVX: %n</numerusform></translation>
+    </message>
     <message>
         <source>Synchronizing with network...</source>
         <translation>Synchronizace se sítí...</translation>
@@ -705,13 +749,29 @@
         <source>Up to date</source>
         <translation>Aktualizováno</translation>
     </message>
+    <message numerus="yes">
+        <source>%n hour(s)</source>
+        <translation><numerusform>%n hodina</numerusform><numerusform>%n hodin</numerusform><numerusform>%n hodin</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n day(s)</source>
+        <translation><numerusform>%n den</numerusform><numerusform>%n dvů</numerusform><numerusform>%n dnů</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n week(s)</source>
+        <translation><numerusform>%n týden</numerusform><numerusform>%n týdnů</numerusform><numerusform>%n týdnů</numerusform></translation>
+    </message>
     <message>
         <source>%1 and %2</source>
         <translation>%1 a %2</translation>
     </message>
+    <message numerus="yes">
+        <source>%n year(s)</source>
+        <translation><numerusform>%n rok</numerusform><numerusform>%n roků</numerusform><numerusform>%n roků</numerusform></translation>
+    </message>
     <message>
-        <source>%1 behind</source>
-        <translation>%1 za</translation>
+        <source>Catching up...</source>
+        <translation>Doháníme co se dá...</translation>
     </message>
     <message>
         <source>Last received block was generated %1 ago.</source>
@@ -797,6 +857,14 @@ MultiSend: %1</translation>
         <translation>Blockchainový průzkumník</translation>
     </message>
     <message>
+        <source>Back</source>
+        <translation>Zpět</translation>
+    </message>
+    <message>
+        <source>Forward</source>
+        <translation>Dále</translation>
+    </message>
+    <message>
         <source>Address / Block / Transaction</source>
         <translation>Adresa / Blok / Transakce</translation>
     </message>
@@ -815,6 +883,10 @@ MultiSend: %1</translation>
 </context>
 <context>
     <name>ClientModel</name>
+    <message>
+        <source>Total: %1 (IPv4: %2 / IPv6: %3 / Tor: %4 / Unknown: %5)</source>
+        <translation>Celkem: %1 (IPv4: %2 / IPv6: %3 / Tor: %4 / neznámé: %5)</translation>
+    </message>
     <message>
         <source>Network Alert</source>
         <translation>Upozornění sítě</translation>
@@ -1415,6 +1487,21 @@ Prosím zkontrolujte adresu a zkuste to znovu.</translation>
 </translation>
     </message>
 </context>
+<context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Status:</source>
+        <translation>Stav:</translation>
+    </message>
+    <message>
+        <source>0</source>
+        <translation>0</translation>
+    </message>
+    <message>
+        <source>Amount:</source>
+        <translation>Hodnota:</translation>
+    </message>
+    </context>
 <context>
     <name>ObfuscationConfig</name>
     <message>
@@ -2101,10 +2188,6 @@ Prosím zkontrolujte adresu a zkuste to znovu.</translation>
         <translation>Přidat &amp;Příjemce</translation>
     </message>
     <message>
-        <source>SwiftTX</source>
-        <translation>SwiftTX</translation>
-    </message>
-    <message>
         <source>Balance:</source>
         <translation>Balance:</translation>
     </message>
@@ -2384,10 +2467,6 @@ Prosím zkontrolujte adresu a zkuste to znovu.</translation>
     <message>
         <source>Information</source>
         <translation>Informace</translation>
-    </message>
-    <message>
-        <source>SwiftTX options:</source>
-        <translation>SwiftTx možnosti:</translation>
     </message>
     <message>
         <source>Synchronization failed</source>

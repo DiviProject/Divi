@@ -703,10 +703,6 @@ Syötä salausavain laatikon keskelle. Paina salaa tuottaaksesi salatun yksityis
         <translation>%1 ja %2</translation>
     </message>
     <message>
-        <source>%1 behind</source>
-        <translation>%1 takana</translation>
-    </message>
-    <message>
         <source>Catching up...</source>
         <translation>Otetaan kiinni...</translation>
     </message>
@@ -811,6 +807,10 @@ Syötä salausavain laatikon keskelle. Paina salaa tuottaaksesi salatun yksityis
     <message>
         <source>Amount</source>
         <translation>Määrä</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Tyyppi</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1112,6 +1112,21 @@ Please check the address and try again.</source>
         <translation>Osoitetta ei löytynyt</translation>
     </message>
 </context>
+<context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Status:</source>
+        <translation>Tila:</translation>
+    </message>
+    <message>
+        <source>0</source>
+        <translation>0</translation>
+    </message>
+    <message>
+        <source>Amount:</source>
+        <translation>Määrä:</translation>
+    </message>
+    </context>
 <context>
     <name>ObfuscationConfig</name>
     <message>
@@ -1956,10 +1971,6 @@ Please check the address and try again.</source>
     <message>
         <source>Add &amp;Recipient</source>
         <translation>Lisää &amp;Vastaanottaja</translation>
-    </message>
-    <message>
-        <source>SwiftTX</source>
-        <translation>SwiftTX</translation>
     </message>
     <message>
         <source>Balance:</source>

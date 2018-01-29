@@ -606,6 +606,10 @@
         <translation>Запросить платежи (генерирует QR-код и PIVX: URI)</translation>
     </message>
     <message>
+        <source>&amp;Privacy</source>
+        <translation>&amp;Конфиденциальность</translation>
+    </message>
+    <message>
         <source>&amp;Masternodes</source>
         <translation>&amp;Мастерноды</translation>
     </message>
@@ -706,10 +710,6 @@
         <translation>%1 и %2</translation>
     </message>
     <message>
-        <source>%1 behind</source>
-        <translation>%1 позади</translation>
-    </message>
-    <message>
         <source>Catching up...</source>
         <translation>ловлю...</translation>
     </message>
@@ -797,6 +797,14 @@ MultiSend: %1</translation>
         <translation>Обзор блокчейна</translation>
     </message>
     <message>
+        <source>Back</source>
+        <translation>Назад</translation>
+    </message>
+    <message>
+        <source>Forward</source>
+        <translation>вперед</translation>
+    </message>
+    <message>
         <source>Address / Block / Transaction</source>
         <translation>Адрес / Блок / Транзакция</translation>
     </message>
@@ -815,10 +823,6 @@ MultiSend: %1</translation>
 </context>
 <context>
     <name>ClientModel</name>
-    <message>
-        <source>Total: %1 (OBF compatible: %2 / Enabled: %3)</source>
-        <translation>Всего: %1 (OBF совместимые: %2 / Включеные: %3)</translation>
-    </message>
     <message>
         <source>Network Alert</source>
         <translation>Сетевое предупреждение</translation>
@@ -893,6 +897,10 @@ MultiSend: %1</translation>
     <message>
         <source>Received with address</source>
         <translation>Полученно на адрес</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Тип</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1482,6 +1490,21 @@ Please check the address and try again.</source>
     </message>
 </context>
 <context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Status:</source>
+        <translation>Статус:</translation>
+    </message>
+    <message>
+        <source>0</source>
+        <translation>0</translation>
+    </message>
+    <message>
+        <source>Amount:</source>
+        <translation>Сумма:</translation>
+    </message>
+    </context>
+<context>
     <name>ObfuscationConfig</name>
     <message>
         <source>Configure Obfuscation</source>
@@ -1672,6 +1695,18 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Карта порта, использующего &amp;UPnP</translation>
     </message>
     <message>
+        <source>Percentage of incoming PIV which get automatically converted to zPIV via Zerocoin Protocol (min: 10%)</source>
+        <translation>Процент приходящих PIV, которые автоматически конвертируются в zPIV благодаря Zerocoin протоколу (min: 10%)</translation>
+    </message>
+    <message>
+        <source>Percentage of autominted zPIV</source>
+        <translation>Процент  авточеканненых zPIV</translation>
+    </message>
+    <message>
+        <source>Preferred Automint zPIV Denomination</source>
+        <translation>Предпочитаемый номинал авточеканной  монеты  zPIV</translation>
+    </message>
+    <message>
         <source>Connect to the PIVX network through a SOCKS5 proxy.</source>
         <translation>Подключиться к сети PIVX через SOCKS5 прокси.</translation>
     </message>
@@ -1764,6 +1799,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
+        <source>I don't care</source>
+        <translation>Мне не важно</translation>
+    </message>
+    <message>
         <source>default</source>
         <translation>по-умолчанию</translation>
     </message>
@@ -1797,6 +1836,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Form</source>
         <translation>Вид</translation>
+    </message>
+    <message>
+        <source>PIV Balances</source>
+        <translation>Баланс PIV</translation>
     </message>
     <message>
         <source>Available:</source>
@@ -1859,6 +1902,22 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Расходуемый:</translation>
     </message>
     <message>
+        <source>PIV:</source>
+        <translation>PIV:</translation>
+    </message>
+    <message>
+        <source>zPIV:</source>
+        <translation>zPIV:</translation>
+    </message>
+    <message>
+        <source>0 %</source>
+        <translation>0 %</translation>
+    </message>
+    <message>
+        <source>Zerocoin Balance</source>
+        <translation>Баланс Zerocoin </translation>
+    </message>
+    <message>
         <source>Recent transactions</source>
         <translation>Последние транзакции</translation>
     </message>
@@ -1866,7 +1925,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <source>out of sync</source>
         <translation>несинронизировано</translation>
     </message>
-</context>
+    </context>
 <context>
     <name>PaymentServer</name>
     <message>
@@ -1972,12 +2031,32 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
 <context>
     <name>PrivacyDialog</name>
     <message>
+        <source>PIV which were anonymized via Zerocin Protocol</source>
+        <translation>PIV, который был анонимно использован через Zerocoin протокол</translation>
+    </message>
+    <message>
+        <source>Zerocoin Actions:</source>
+        <translation>Действия Zerocoin </translation>
+    </message>
+    <message>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the PIVX network after a connection is established, but this process has not completed yet.</source>
         <translation>Возможно отображаемая информация устарела. Ваш кошелек автоматически синхронизируется с сетью PIVX после установки соединения, но этот процесс еще не завершен. </translation>
     </message>
     <message>
+        <source>Enter an amount of Piv to convert to zPiv</source>
+        <translation>Введите сумму в Piv для  конвертации в zPiv</translation>
+    </message>
+    <message>
+        <source>Mint Zerocoin</source>
+        <translation>Создать Zerocoin</translation>
+    </message>
+    <message>
         <source>0</source>
         <translation>0</translation>
+    </message>
+    <message>
+        <source>Available for Minting:</source>
+        <translation>Доступный для чеканки</translation>
     </message>
     <message>
         <source>Reset</source>
@@ -2006,6 +2085,70 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Alt+P</source>
         <translation>Alt+P</translation>
+    </message>
+    <message>
+        <source>Denominations with value 1:</source>
+        <translation>Номинал со значением 1:</translation>
+    </message>
+    <message>
+        <source>Denom. with value 1:</source>
+        <translation>Номинал со значением 1:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 5:</source>
+        <translation>Номинал со значением 5:</translation>
+    </message>
+    <message>
+        <source>Denom. with value 5:</source>
+        <translation>Номинал со значением 5:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 10:</source>
+        <translation>Номинал со значением 10:</translation>
+    </message>
+    <message>
+        <source>Denom. with value 10:</source>
+        <translation>Номинал со значением 10:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 50:</source>
+        <translation>Номинал со значением 50:</translation>
+    </message>
+    <message>
+        <source>Denom. with value 50:</source>
+        <translation>Номинал со значением 50:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 100:</source>
+        <translation>Номинал со значением 100:</translation>
+    </message>
+    <message>
+        <source>Denom. with value 100:</source>
+        <translation>Номинал со значением 100:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 500:</source>
+        <translation>Номинал со значением 500:</translation>
+    </message>
+    <message>
+        <source>Denom. with value 500:</source>
+        <translation>Номинал со значением 500:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 1000:</source>
+        <translation>Номинал со значением 1000:</translation>
+    </message>
+    <message>
+        <source>Denom. with value 1000:</source>
+        <translation>Номинал со значением 1000:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 5000:</source>
+        <translation>Номинал со значением 5000:</translation>
+    </message>
+    <message>
+        <source>Denom. with value 5000:</source>
+        <translation>Номинал со значением 5000:</translation>
     </message>
     <message>
         <source>Priority:</source>
@@ -2610,10 +2753,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Очистить &amp;Все</translation>
     </message>
     <message>
-        <source>SwiftTX</source>
-        <translation>SwiftTX</translation>
-    </message>
-    <message>
         <source>Balance:</source>
         <translation>Баланс:</translation>
     </message>
@@ -2652,10 +2791,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Warning: Invalid PIVX address</source>
         <translation>Предупреждение: неправильный PIVX адрес</translation>
-    </message>
-    <message>
-        <source>and SwiftTX</source>
-        <translation>и SwiftTX</translation>
     </message>
     <message>
         <source>%1 to %2</source>
@@ -3070,10 +3205,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     </context>
 <context>
     <name>pivx-core</name>
-    <message>
-        <source>SwiftTX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.</source>
-        <translation>Для SwiftTX требуется как минимум 6 подтверждений, Вам нужно подождать несколько минут и попытаться снова.</translation>
-    </message>
     <message>
         <source>Block creation options:</source>
         <translation>Варианты создания блока:</translation>

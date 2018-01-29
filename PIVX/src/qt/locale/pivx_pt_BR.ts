@@ -291,6 +291,10 @@
         <translation>Limpar &amp;Tudo</translation>
     </message>
     <message>
+        <source>&amp;BIP 38 Decrypt</source>
+        <translation>&amp;Descriptografar BIP 38</translation>
+    </message>
+    <message>
         <source>The PIVX address the message was signed with</source>
         <translation>O endereço PIVX que assinou a mensagem</translation>
     </message>
@@ -412,6 +416,10 @@
     <message>
         <source>Browse transaction history</source>
         <translation>Olhar histórico de transação</translation>
+    </message>
+    <message>
+        <source>Privacy Actions for zPIV</source>
+        <translation>Ações privadas para zPIV</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
@@ -554,12 +562,36 @@
         <translation>Mostrar a lista de endereços de recebimento e rótulos utilizados</translation>
     </message>
     <message>
+        <source>&amp;Multisignature creation...</source>
+        <translation>&amp;Criação de multiassinaturas</translation>
+    </message>
+    <message>
+        <source>Create a new multisignature address and add it to this wallet</source>
+        <translation>Crie um novo endereço multiassinatura e adicione à esta carteira</translation>
+    </message>
+    <message>
+        <source>&amp;Multisignature spending...</source>
+        <translation>&amp;Gasto multiassinatura...</translation>
+    </message>
+    <message>
+        <source>Spend from a multisignature address</source>
+        <translation>Gastar de um endereço multiassinatura</translation>
+    </message>
+    <message>
+        <source>&amp;Multisignature signing...</source>
+        <translation>&amp;Assinando multiassinatura...</translation>
+    </message>
+    <message>
         <source>Open &amp;URI...</source>
         <translation>Abrir &amp;URI...</translation>
     </message>
     <message>
         <source>&amp;Command-line options</source>
         <translation>&amp;Opções de linha de comando</translation>
+    </message>
+    <message numerus="yes">
+        <source>Processed %n blocks of transaction history.</source>
+        <translation><numerusform>Processado %n bloco do histórico de transação</numerusform><numerusform>Processado %n blocos do histórico de transação</numerusform></translation>
     </message>
     <message>
         <source>Synchronizing additional data: %p%</source>
@@ -596,6 +628,10 @@
     <message>
         <source>Request payments (generates QR codes and pivx: URIs)</source>
         <translation>Requisitar pagamentos (gera códigos QR e pivx: URIs)</translation>
+    </message>
+    <message>
+        <source>&amp;Privacy</source>
+        <translation>&amp;Privacidade</translation>
     </message>
     <message>
         <source>&amp;Masternodes</source>
@@ -693,13 +729,25 @@
         <source>Up to date</source>
         <translation>Atualizado</translation>
     </message>
+    <message numerus="yes">
+        <source>%n hour(s)</source>
+        <translation><numerusform>%n hora</numerusform><numerusform>%n horas</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n day(s)</source>
+        <translation><numerusform>%n dia</numerusform><numerusform>%n dias</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <source>%n week(s)</source>
+        <translation><numerusform>%n semana</numerusform><numerusform>%n semanas</numerusform></translation>
+    </message>
     <message>
         <source>%1 and %2</source>
         <translation>%1 e %2</translation>
     </message>
-    <message>
-        <source>%1 behind</source>
-        <translation>%1 atrás</translation>
+    <message numerus="yes">
+        <source>%n year(s)</source>
+        <translation><numerusform>%n ano</numerusform><numerusform>%n anos</numerusform></translation>
     </message>
     <message>
         <source>Catching up...</source>
@@ -794,6 +842,14 @@ MultiSend: %1</translation>
         <translation>Explorador Blockchain</translation>
     </message>
     <message>
+        <source>Back</source>
+        <translation>Voltar</translation>
+    </message>
+    <message>
+        <source>Forward</source>
+        <translation>Avançar</translation>
+    </message>
+    <message>
         <source>Address / Block / Transaction</source>
         <translation>Endereço / Bloco / Transação</translation>
     </message>
@@ -813,8 +869,8 @@ MultiSend: %1</translation>
 <context>
     <name>ClientModel</name>
     <message>
-        <source>Total: %1 (OBF compatible: %2 / Enabled: %3)</source>
-        <translation>Total: %1 (OBF compatível: %2 / Ativado: %3)</translation>
+        <source>Total: %1 (IPv4: %2 / IPv6: %3 / Tor: %4 / Unknown: %5)</source>
+        <translation>Total: %1 (IPv4: %2 / IPv6: %3 / Tor: %4 / Desconhecido: %5)</translation>
     </message>
     <message>
         <source>Network Alert</source>
@@ -886,6 +942,10 @@ MultiSend: %1</translation>
     <message>
         <source>Received with address</source>
         <translation>Recebido no endereço</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Tipo</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1155,6 +1215,14 @@ MultiSend: %1</translation>
     <message>
         <source>command-line options</source>
         <translation>opções de linha de comando</translation>
+    </message>
+    <message>
+        <source>UI Options:</source>
+        <translation>Opções de UI:</translation>
+    </message>
+    <message>
+        <source>Choose data directory on startup (default: %u)</source>
+        <translation>Escolher diretório de informações ao inicializar (padrão: %u)</translation>
     </message>
     <message>
         <source>Set language, for example "de_DE" (default: system locale)</source>
@@ -1430,6 +1498,45 @@ Favor verificar o endereço e tente novamente.</translation>
     </message>
 </context>
 <context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Status:</source>
+        <translation>Situação:</translation>
+    </message>
+    <message>
+        <source>0</source>
+        <translation>0</translation>
+    </message>
+    <message>
+        <source>Amount:</source>
+        <translation>Quantia:</translation>
+    </message>
+    <message>
+        <source>Add Private &amp;Key</source>
+        <translation>Adicionar &amp;Chave Privada</translation>
+    </message>
+    <message>
+        <source>Sign with only private keys (Not Recommened)</source>
+        <translation>Assinar somente com chaves privadas (Não Recomendado)</translation>
+    </message>
+    <message>
+        <source>Invalid Tx Hash.</source>
+        <translation>Tx Hash inválido.</translation>
+    </message>
+    <message>
+        <source>Maximum possible addresses reached. (16)</source>
+        <translation>Máximo possível de endereços alcançados. (16)</translation>
+    </message>
+    <message>
+        <source>Amount: </source>
+        <translation>Quantidade:</translation>
+    </message>
+    <message>
+        <source>Maximum (15)</source>
+        <translation>Máximo (15)</translation>
+    </message>
+</context>
+<context>
     <name>ObfuscationConfig</name>
     <message>
         <source>Configure Obfuscation</source>
@@ -1676,6 +1783,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>&amp;Cancel</translation>
     </message>
     <message>
+        <source>I don't care</source>
+        <translation>Eu não me importo</translation>
+    </message>
+    <message>
         <source>default</source>
         <translation>padrão</translation>
     </message>
@@ -1709,6 +1820,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Form</source>
         <translation>Formulário</translation>
+    </message>
+    <message>
+        <source>PIV Balances</source>
+        <translation>Balanços PIV</translation>
     </message>
     <message>
         <source>Available:</source>
@@ -1759,6 +1874,38 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Disponível:</translation>
     </message>
     <message>
+        <source>PIV:</source>
+        <translation>PIV:</translation>
+    </message>
+    <message>
+        <source>zPIV:</source>
+        <translation>zPIV:</translation>
+    </message>
+    <message>
+        <source>0 %</source>
+        <translation>0 %</translation>
+    </message>
+    <message>
+        <source>0.000 000 00 PIV</source>
+        <translation>0.000 000 00 PIV</translation>
+    </message>
+    <message>
+        <source>Locked:</source>
+        <translation>Travado:</translation>
+    </message>
+    <message>
+        <source>Unlocked:</source>
+        <translation>Destravado:</translation>
+    </message>
+    <message>
+        <source>Zerocoin Balance</source>
+        <translation>Saldo Zerocoin</translation>
+    </message>
+    <message>
+        <source>Unconfirmed:</source>
+        <translation>Não confirmado:</translation>
+    </message>
+    <message>
         <source>Recent transactions</source>
         <translation>Transações recentes</translation>
     </message>
@@ -1766,7 +1913,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <source>out of sync</source>
         <translation>fora de sincronia</translation>
     </message>
-</context>
+    </context>
 <context>
     <name>PaymentServer</name>
     <message>
@@ -1820,12 +1967,36 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
 <context>
     <name>PrivacyDialog</name>
     <message>
+        <source>PIV which were anonymized via Zerocin Protocol</source>
+        <translation>PIV que foram anonimizadas via protocolo Zerocoin</translation>
+    </message>
+    <message>
+        <source>Zerocoin PIV (zPIV)</source>
+        <translation>Zerocoin PIV (zPIV)</translation>
+    </message>
+    <message>
+        <source>Zerocoin Actions:</source>
+        <translation>Ações Zerocoin:</translation>
+    </message>
+    <message>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the PIVX network after a connection is established, but this process has not completed yet.</source>
         <translation>A informação mostrada pode estar desatualizada. A sua carteira se sincroniza automaticamente com a rede PIVX após estabelecer uma conexão, mas esse processo ainda não foi concluído.</translation>
     </message>
     <message>
+        <source>Enter an amount of Piv to convert to zPiv</source>
+        <translation>Insira uma quantia de Piv para converter para zPiv</translation>
+    </message>
+    <message>
         <source>0</source>
         <translation>0</translation>
+    </message>
+    <message>
+        <source>zPIV</source>
+        <translation>zPIV</translation>
+    </message>
+    <message>
+        <source>0.000 000 00 PIV</source>
+        <translation>0.000 000 00 PIV</translation>
     </message>
     <message>
         <source>Reset</source>
@@ -1840,8 +2011,16 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Quantia:</translation>
     </message>
     <message>
+        <source>Security Level 1 - 100 (default: 42)</source>
+        <translation>Nível de segurança 1 - 100 (padrão: 42)</translation>
+    </message>
+    <message>
         <source>Pay &amp;To:</source>
         <translation>Pagar &amp;Para:</translation>
+    </message>
+    <message>
+        <source>The PIVX address to send the payment to. Creates local payment to yourself when empty.</source>
+        <translation>O endereço PIVX para enviar o pagamento. Cria um pagamento local para si mesmo quando vazio.</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -1872,6 +2051,50 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Quantia:</translation>
     </message>
     <message>
+        <source>Information about the available Zerocoin funds.</source>
+        <translation>Informação sobre os fundos disponíveis em Zerocoin.</translation>
+    </message>
+    <message>
+        <source>Zerocoin Stats:</source>
+        <translation>Estatísticas zerocoin:</translation>
+    </message>
+    <message>
+        <source>Total Balance including unconfirmed and immature zPIV</source>
+        <translation>Balanço Total incluindo não confirmadas e imaturas zPIV</translation>
+    </message>
+    <message>
+        <source>Total Zerocoin  Balance:</source>
+        <translation>Balanço Total Zerocoin:</translation>
+    </message>
+    <message>
+        <source>0 x</source>
+        <translation>0 x</translation>
+    </message>
+    <message>
+        <source>Denominations with value 10:</source>
+        <translation>Denominações com valor 10:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 50:</source>
+        <translation>Denominações com valor 50:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 100:</source>
+        <translation>Denominações com valor 100:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 500:</source>
+        <translation>Denominações com valor 500:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 1000:</source>
+        <translation>Denominações com valor 1000:</translation>
+    </message>
+    <message>
+        <source>Denominations with value 5000:</source>
+        <translation>Denominações com valor 5000:</translation>
+    </message>
+    <message>
         <source>Priority:</source>
         <translation>Prioridade:</translation>
     </message>
@@ -1900,6 +2123,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Funções do Controle de Moedas</translation>
     </message>
     <message>
+        <source>Amount After Fee:</source>
+        <translation>Quantia depois da taxa:</translation>
+    </message>
+    <message>
         <source>Change:</source>
         <translation>Troco:</translation>
     </message>
@@ -1916,10 +2143,30 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Copiar quantia</translation>
     </message>
     <message>
+        <source>Error: Your wallet is locked. Please enter the wallet passphrase first.</source>
+        <translation>Erro: Sua carteira está travada. Favor inserir a palavra-chave da carteira primeiro.</translation>
+    </message>
+    <message>
+        <source>Message: Enter an amount &gt; 0.</source>
+        <translation>Mensagem: Insira uma quantia &gt; 0.</translation>
+    </message>
+    <message>
         <source>Confirm send coins</source>
         <translation>Confirmar envio de moedas</translation>
     </message>
-    </context>
+    <message>
+        <source>Sending successful, return code: </source>
+        <translation>Enviado com sucesso, código de retorno:</translation>
+    </message>
+    <message>
+        <source>txid: </source>
+        <translation>txid:</translation>
+    </message>
+    <message>
+        <source>fee: </source>
+        <translation>taxa:</translation>
+    </message>
+</context>
 <context>
     <name>QObject</name>
     <message>
@@ -2141,6 +2388,18 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>&amp;Reparo da Carteira</translation>
     </message>
     <message>
+        <source>Delete local Blockchain Folders</source>
+        <translation>Excluir pastas locais Blockchain</translation>
+    </message>
+    <message>
+        <source>Wallet In Use:</source>
+        <translation>Carteiro em uso:</translation>
+    </message>
+    <message>
+        <source>Attempt to recover private keys from a corrupt wallet.dat.</source>
+        <translation>Tentar recuperar chaves privadas de um wallet.dat corrompido.</translation>
+    </message>
+    <message>
         <source>Rescan blockchain files</source>
         <translation>Reescanear os arquivos da blockchain</translation>
     </message>
@@ -2179,6 +2438,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Welcome to the PIVX RPC console.</source>
         <translation>Bem-vindo ao console da PIVX RPC</translation>
+    </message>
+    <message>
+        <source>Do you want to continue?.&lt;br /&gt;</source>
+        <translation>Você deseja continuar?.&lt;br /&gt;</translation>
     </message>
     <message>
         <source>Use up and down arrows to navigate history, and &lt;b&gt;Ctrl-L&lt;/b&gt; to clear screen.</source>
@@ -2293,6 +2556,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Copy &amp;URI</source>
         <translation>Copiar &amp;URI</translation>
+    </message>
+    <message>
+        <source>Copy &amp;Address</source>
+        <translation>Copiar &amp;Endereço</translation>
     </message>
     <message>
         <source>&amp;Save Image...</source>
@@ -2465,6 +2732,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>(Smart fee não inicializada ainda. Isso geralmente leva alguns blocos...)</translation>
     </message>
     <message>
+        <source>SwiftX</source>
+        <translation>SwiftX</translation>
+    </message>
+    <message>
         <source>Confirmation time:</source>
         <translation>Tempo de confirmação:</translation>
     </message>
@@ -2517,8 +2788,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Adicionar &amp;Recipiente</translation>
     </message>
     <message>
-        <source>SwiftTX</source>
-        <translation>SwiftTX</translation>
+        <source>Anonymized PIV</source>
+        <translation>PIV anonimizadas</translation>
     </message>
     <message>
         <source>Balance:</source>
@@ -2569,10 +2840,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>quaisquer fundos disponíveis (não recomendado)</translation>
     </message>
     <message>
-        <source>and SwiftTX</source>
-        <translation>e SwiftTX</translation>
-    </message>
-    <message>
         <source>%1 to %2</source>
         <translation>%1 a %2</translation>
     </message>
@@ -2596,9 +2863,17 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <source>A fee %1 times higher than %2 per kB is considered an insanely high fee.</source>
         <translation>Uma taxa %1 vezes maior que %2 por kB é considerada extremamente alta.</translation>
     </message>
+    <message numerus="yes">
+        <source>Estimated to begin confirmation within %n block(s).</source>
+        <translation><numerusform>Estimado para iniciar confirmação em %n bloco.</numerusform><numerusform>Estimado para iniciar confirmação em %n blocos.</numerusform></translation>
+    </message>
     <message>
         <source>The recipient address is not valid, please recheck.</source>
         <translation>O endereço de recebimento não é válido, favor conferir novamente.</translation>
+    </message>
+    <message>
+        <source>and SwiftX</source>
+        <translation>e SwiftX</translation>
     </message>
     <message>
         <source> split into %1 outputs using the UTXO splitter.</source>
@@ -2894,6 +3169,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
 </context>
 <context>
     <name>TransactionDesc</name>
+    <message numerus="yes">
+        <source>Open for %n more block(s)</source>
+        <translation><numerusform>Aberto para mais %n bloco</numerusform><numerusform>Aberto para mais %n blocos</numerusform></translation>
+    </message>
     <message>
         <source>Open until %1</source>
         <translation>Aberto até %1</translation>
@@ -2901,18 +3180,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>conflicted</source>
         <translation>conflitou</translation>
-    </message>
-    <message>
-        <source>%1/offline (verified via swifttx)</source>
-        <translation>%1/offline (verificado via swifttx)</translation>
-    </message>
-    <message>
-        <source>%1/confirmed (verified via swifttx)</source>
-        <translation>%1/confirmado (verificado via swifttx)</translation>
-    </message>
-    <message>
-        <source>%1 confirmations (verified via swifttx)</source>
-        <translation>%1 confirmações (verificado via swifttx)</translation>
     </message>
     <message>
         <source>%1/offline</source>
@@ -2927,24 +3194,36 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>%1 confirmações</translation>
     </message>
     <message>
-        <source>%1/offline (SwiftTX verification in progress - %2 of %3 signatures)</source>
-        <translation>%1/offline (verificação SwiftTX em progresso - %2 de %3 assinaturas)</translation>
+        <source>%1/offline (verified via SwiftX)</source>
+        <translation>%1/offline (verificado via SwiftX)</translation>
     </message>
     <message>
-        <source>%1/confirmed (SwiftTX verification in progress - %2 of %3 signatures )</source>
-        <translation>%1/confirmado (verificação SwiftTX em progresso - %2 de %3 assinaturas)</translation>
+        <source>%1/confirmed (verified via SwiftX)</source>
+        <translation>%1/confirmado (verificado via SwiftX)</translation>
     </message>
     <message>
-        <source>%1 confirmations (SwiftTX verification in progress - %2 of %3 signatures)</source>
-        <translation>%1 confirmações (verificação SwiftTX em progresso - %2 de %3 assinaturas)</translation>
+        <source>%1 confirmations (verified via SwiftX)</source>
+        <translation>%1 confirmações (verificado via SwiftX)</translation>
     </message>
     <message>
-        <source>%1/offline (SwiftTX verification failed)</source>
-        <translation>%1/offline (verificação SwiftTX falhou)</translation>
+        <source>%1/offline (SwiftX verification in progress - %2 of %3 signatures)</source>
+        <translation>%1/offline (verificação SwiftX  em progresso - %2 de %3 assinaturas)</translation>
     </message>
     <message>
-        <source>%1/confirmed (SwiftTX verification failed)</source>
-        <translation>%1/confirmado (verificação SwiftTX falhou)</translation>
+        <source>%1/confirmed (SwiftX verification in progress - %2 of %3 signatures )</source>
+        <translation>%1/confirmado (verificação SwiftX  em progresso - %2 de %3 assinaturas )</translation>
+    </message>
+    <message>
+        <source>%1 confirmations (SwiftX verification in progress - %2 of %3 signatures)</source>
+        <translation>%1 confirmações ( verificação SwiftX  em progresso - %2 de %3 assinaturas)</translation>
+    </message>
+    <message>
+        <source>%1/offline (SwiftX verification failed)</source>
+        <translation>%1/offline ( verificação SwiftX falhou)</translation>
+    </message>
+    <message>
+        <source>%1/confirmed (SwiftX verification failed)</source>
+        <translation>%1/confirmado (verificação SwiftX falhou)</translation>
     </message>
     <message>
         <source>Status</source>
@@ -2953,6 +3232,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>, has not been successfully broadcast yet</source>
         <translation>, não foi propagada com sucesso ainda</translation>
+    </message>
+    <message numerus="yes">
+        <source>, broadcast through %n node(s)</source>
+        <translation><numerusform>, propagado através de %n node</numerusform><numerusform>, propagado através de %n nodes</numerusform></translation>
     </message>
     <message>
         <source>Date</source>
@@ -3039,6 +3322,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Vendedor</translation>
     </message>
     <message>
+        <source>Debug information</source>
+        <translation>Informação de depuração</translation>
+    </message>
+    <message>
         <source>Transaction</source>
         <translation>Transação</translation>
     </message>
@@ -3079,6 +3366,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Address</source>
         <translation>Endereço</translation>
+    </message>
+    <message numerus="yes">
+        <source>Open for %n more block(s)</source>
+        <translation><numerusform>Aberto para mais %n bloco</numerusform><numerusform>Aberto para mais %n blocos</numerusform></translation>
     </message>
     <message>
         <source>Open until %1</source>
@@ -3133,6 +3424,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Enviado para</translation>
     </message>
     <message>
+        <source>Orphan Block - Generated but not accepted. This does not impact your holdings.</source>
+        <translation>Bloco órfão - Gerado, porém não aceito. Isto não impacta seus fundos.</translation>
+    </message>
+    <message>
         <source>Payment to yourself</source>
         <translation>Pagamento para si mesmo</translation>
     </message>
@@ -3149,8 +3444,24 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Ofuscado</translation>
     </message>
     <message>
+        <source>Spent zPiv</source>
+        <translation>zPiv gasto</translation>
+    </message>
+    <message>
+        <source>Received Piv from zPiv</source>
+        <translation>Recebido Piv de zPiv</translation>
+    </message>
+    <message>
+        <source>Converted zPiv to Piv</source>
+        <translation>Convertido zPiv para Piv</translation>
+    </message>
+    <message>
         <source>watch-only</source>
         <translation>somente visualização</translation>
+    </message>
+    <message>
+        <source>zPiv Accumulator</source>
+        <translation>zPiv Acumulador</translation>
     </message>
     <message>
         <source>(n/a)</source>
@@ -3242,6 +3553,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Masternode Reward</source>
         <translation>Recompensa de Masternode</translation>
+    </message>
+    <message>
+        <source>Received Piv from zPiv</source>
+        <translation>Recebido Piv de zPiv</translation>
     </message>
     <message>
         <source>Other</source>
@@ -3360,11 +3675,7 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <source>Send Coins</source>
         <translation>Enviar Moedas</translation>
     </message>
-    <message>
-        <source>SwiftTX doesn't support sending values that high yet. Transactions are currently limited to %1 PIV.</source>
-        <translation>SwiftTX ainda não suporta o envio de valores altos assim. As transações atualmente são limitadas a %1 PIV.</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>WalletView</name>
     <message>
@@ -3407,8 +3718,16 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
 <context>
     <name>ZPivControlDialog</name>
     <message>
+        <source>Quantity</source>
+        <translation>Quantia</translation>
+    </message>
+    <message>
         <source>0</source>
         <translation>0</translation>
+    </message>
+    <message>
+        <source>Select/Deselect All</source>
+        <translation>Selecionar/Deselecionar todos</translation>
     </message>
     </context>
 <context>
@@ -3416,10 +3735,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup</source>
         <translation>Deletar todas as transações da carteira e somente recuperar aquelas partes da blockchain através de -rescan na inicialização</translation>
-    </message>
-    <message>
-        <source>Disable all PIVX specific functionality (Masternodes, Obfuscation, SwiftTX, Budgeting) (0-1, default: %u)</source>
-        <translation>Desabilitar todas as funcionalidades específicas PIVX (Masternodes, Ofuscação, SwiftTX, Budgeting) (0-1, padrão: %u)</translation>
     </message>
     <message>
         <source>Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported.</source>
@@ -3456,10 +3771,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Set maximum size of high-priority/low-fee transactions in bytes (default: %d)</source>
         <translation>Define o tamanho máximo de transações de alta prioridade/taxa baixa em bytes (padrão: %d)</translation>
-    </message>
-    <message>
-        <source>SwiftTX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.</source>
-        <translation>SwiftTX requer inputs com pelo menos 6 confirmações, você precisar aguardar alguns minutos e tentar novamente.</translation>
     </message>
     <message>
         <source>Unable to locate enough funds for this transaction that are not equal 10000 PIV.</source>
@@ -3564,6 +3875,14 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Corrupted block database detected</source>
         <translation>database de blocos corrompida</translation>
+    </message>
+    <message>
+        <source>Debugging/Testing options:</source>
+        <translation>Opções de depuração/teste:</translation>
+    </message>
+    <message>
+        <source>Disable OS notifications for incoming transactions (default: %u)</source>
+        <translation>Desabilitar notificações OS para transações chegando (padrão: %u)</translation>
     </message>
     <message>
         <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
@@ -3702,16 +4021,12 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>O input não é válido.</translation>
     </message>
     <message>
+        <source>Insufficient funds</source>
+        <translation>Fundos insuficientes</translation>
+    </message>
+    <message>
         <source>Insufficient funds.</source>
         <translation>Fundos insuficientes.</translation>
-    </message>
-    <message>
-        <source>Invalid -onion address: '%s'</source>
-        <translation>Inválido -onion endereço: '%s'</translation>
-    </message>
-    <message>
-        <source>Invalid -proxy address: '%s'</source>
-        <translation>Inválido -proxy endereço: '%s'</translation>
     </message>
     <message>
         <source>Invalid amount for -maxtxfee=&lt;amount&gt;: '%s'</source>
@@ -3738,6 +4053,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Quantia inválida para -reservebalance=&lt;quantidade&gt;</translation>
     </message>
     <message>
+        <source>Invalid amount</source>
+        <translation>quantia inválida</translation>
+    </message>
+    <message>
         <source>Invalid masternodeprivkey. Please see documenation.</source>
         <translation>masternodeprivkey inválido. Favor conferir o manual.</translation>
     </message>
@@ -3756,6 +4075,16 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Invalid script detected.</source>
         <translation>Script inválido detectado.</translation>
+    </message>
+    <message>
+        <source> unconfirmed transactions removed
+</source>
+        <translation>transações não confirmadas removidas
+</translation>
+    </message>
+    <message>
+        <source>&lt;category&gt; can be:</source>
+        <translation>&lt;category&gt; pode ser:</translation>
     </message>
     <message>
         <source>Last Obfuscation was too recent.</source>
@@ -3878,6 +4207,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Senha para conexões JSON-RPC</translation>
     </message>
     <message>
+        <source>Preparing for resync...</source>
+        <translation>Preparando para ressincronizar... </translation>
+    </message>
+    <message>
         <source>RPC SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
         <translation>Opções de SSL RPC (veja a Bitcoin Wiki para instruções na configuração do SSL)</translation>
     </message>
@@ -3970,6 +4303,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Especifique seu próprio endereço público</translation>
     </message>
     <message>
+        <source>Staking options:</source>
+        <translation>Opções de staking:</translation>
+    </message>
+    <message>
         <source>Stop running after importing blocks from disk (default: %u)</source>
         <translation>Parar de rodar depois de importar blocos do disco (padrão: %u)</translation>
     </message>
@@ -3984,10 +4321,6 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Submitted to masternode, waiting in queue %s</source>
         <translation>Enviado ao masternode, aguardando na fila %s</translation>
-    </message>
-    <message>
-        <source>SwiftTX options:</source>
-        <translation>opções SwiftTX:</translation>
     </message>
     <message>
         <source>Synchronization failed</source>
@@ -4136,6 +4469,10 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
     <message>
         <source>Zapping all transactions from wallet...</source>
         <translation>Eliminando todas as transações da carteira...</translation>
+    </message>
+    <message>
+        <source>failed to validate zerocoin</source>
+        <translation>falhou em validar zerocoin</translation>
     </message>
     <message>
         <source>on startup</source>

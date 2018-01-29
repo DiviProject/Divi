@@ -639,10 +639,6 @@ Ange en lösenfras i den mellersta boxen. Tryck kryptera för att beräkna den k
         <translation>%1 och %2</translation>
     </message>
     <message>
-        <source>%1 behind</source>
-        <translation>%1 bakom</translation>
-    </message>
-    <message>
         <source>Error</source>
         <translation>Fel</translation>
     </message>
@@ -734,6 +730,10 @@ Ange en lösenfras i den mellersta boxen. Tryck kryptera för att beräkna den k
     <message>
         <source>Received with address</source>
         <translation>Mottag med adress</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Typ</translation>
     </message>
     <message>
         <source>Date</source>
@@ -876,6 +876,13 @@ Ange en lösenfras i den mellersta boxen. Tryck kryptera för att beräkna den k
     <message>
         <source>Address:</source>
         <translation>Adress:</translation>
+    </message>
+    </context>
+<context>
+    <name>MultisigDialog</name>
+    <message>
+        <source>Amount:</source>
+        <translation>Antal:</translation>
     </message>
     </context>
 <context>

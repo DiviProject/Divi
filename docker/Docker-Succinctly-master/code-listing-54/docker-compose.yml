@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+
+    web:
+        image: nginx:alpine
+
+    util:
+        image: sixeyed/ubuntu-with-utils
+        container_name: util
+        command: ping web

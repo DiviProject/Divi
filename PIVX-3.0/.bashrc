@@ -1,1 +1,0 @@
-alias la='ls -la'

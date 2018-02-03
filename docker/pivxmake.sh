@@ -3,6 +3,12 @@
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Starting Build Process -------------------------------------------------"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+apt-get -y install libdb4.8-dev libdb4.8++-dev
+apt-get -y install bsdmainutils
+apt-get update
+
+cd /var/divi
+tar xzvf PIVX-3.0.tgz
 
 echo "MiniUPnPc Build ......"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

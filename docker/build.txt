@@ -1,0 +1,9 @@
+# run these commands, you;ll need to change the docker image tagname for you're Docker repository:
+
+docker image build --tag dcaldwellsw/pivx-docker .
+
+docker image push dcaldwellsw/pivx-docker
+
+docker run -it dcaldwellsw/pivx-docker
+
+docker image rm -f $(docker image ls -a -q) 

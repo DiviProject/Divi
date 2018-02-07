@@ -169,5 +169,3 @@ docker stack ps getstartedlab
 
 ## PART 6 Deploy to Cloud service AWS, Azure, etc..
 skipped
-
-

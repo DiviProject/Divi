@@ -1,0 +1,44 @@
+\hypertarget{class_c_masternode_block_payees}{}\section{C\+Masternode\+Block\+Payees Class Reference}
+\label{class_c_masternode_block_payees}\index{C\+Masternode\+Block\+Payees@{C\+Masternode\+Block\+Payees}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_a0b181e78ae9b160c146bc9e8d12d44b5}\label{class_c_masternode_block_payees_a0b181e78ae9b160c146bc9e8d12d44b5}} 
+{\bfseries C\+Masternode\+Block\+Payees} (int n\+Block\+Height\+In)
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_a8bd8569ccbd580a73efcabb713b89424}\label{class_c_masternode_block_payees_a8bd8569ccbd580a73efcabb713b89424}} 
+void {\bfseries Add\+Payee} (\mbox{\hyperlink{class_c_script}{C\+Script}} payee\+In, int n\+Increment)
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_a07324946c249f7a16488e2b0a7495971}\label{class_c_masternode_block_payees_a07324946c249f7a16488e2b0a7495971}} 
+bool {\bfseries Get\+Payee} (\mbox{\hyperlink{class_c_script}{C\+Script}} \&payee)
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_a06a48f4df1a48481dbec3cb8d3e21ba9}\label{class_c_masternode_block_payees_a06a48f4df1a48481dbec3cb8d3e21ba9}} 
+bool {\bfseries Has\+Payee\+With\+Votes} (\mbox{\hyperlink{class_c_script}{C\+Script}} payee, int n\+Votes\+Req)
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_a6721f357d17e653ceb93c28ffd3ae528}\label{class_c_masternode_block_payees_a6721f357d17e653ceb93c28ffd3ae528}} 
+bool {\bfseries Is\+Transaction\+Valid} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx\+New)
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_a1026e555a9484567ea6cbfe8f90b428e}\label{class_c_masternode_block_payees_a1026e555a9484567ea6cbfe8f90b428e}} 
+std\+::string {\bfseries Get\+Required\+Payments\+String} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_a482b77d8b758b21b4e6b0c8a0ef7a09f}\label{class_c_masternode_block_payees_a482b77d8b758b21b4e6b0c8a0ef7a09f}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_ae7eae4dd466c444d7c41debcbcc402f1}\label{class_c_masternode_block_payees_ae7eae4dd466c444d7c41debcbcc402f1}} 
+int {\bfseries n\+Block\+Height}
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_a8b68374c052c9f4508732943ccd4c17c}\label{class_c_masternode_block_payees_a8b68374c052c9f4508732943ccd4c17c}} 
+std\+::vector$<$ \mbox{\hyperlink{class_c_masternode_payee}{C\+Masternode\+Payee}} $>$ {\bfseries vec\+Payments}
+\item 
+\mbox{\Hypertarget{class_c_masternode_block_payees_ab596470ea981333cb3a905422c64eec1}\label{class_c_masternode_block_payees_ab596470ea981333cb3a905422c64eec1}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/masternode-\/payments.\+h\item 
+P\+I\+V\+X/src/masternode-\/payments.\+cpp\end{DoxyCompactItemize}

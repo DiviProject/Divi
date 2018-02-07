@@ -1,0 +1,39 @@
+\hypertarget{class_c_tx_out_compressor}{}\section{C\+Tx\+Out\+Compressor Class Reference}
+\label{class_c_tx_out_compressor}\index{C\+Tx\+Out\+Compressor@{C\+Tx\+Out\+Compressor}}
+
+
+{\ttfamily \#include $<$compressor.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_out_compressor_a38ef1033989cd003de65598620d15cea}\label{class_c_tx_out_compressor_a38ef1033989cd003de65598620d15cea}} 
+{\bfseries C\+Tx\+Out\+Compressor} (\mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} \&txout\+In)
+\item 
+\mbox{\Hypertarget{class_c_tx_out_compressor_aad933ec09f7d6a764bd49da399f9083b}\label{class_c_tx_out_compressor_aad933ec09f7d6a764bd49da399f9083b}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_out_compressor_a4141cec8885a2da956abb79130c963a8}\label{class_c_tx_out_compressor_a4141cec8885a2da956abb79130c963a8}} 
+static uint64\+\_\+t {\bfseries Compress\+Amount} (uint64\+\_\+t n\+Amount)
+\item 
+\mbox{\Hypertarget{class_c_tx_out_compressor_a97751249d6a23b2a2b7bbc1165973371}\label{class_c_tx_out_compressor_a97751249d6a23b2a2b7bbc1165973371}} 
+static uint64\+\_\+t {\bfseries Decompress\+Amount} (uint64\+\_\+t n\+Amount)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_out_compressor_a520b323886560ededcfe303c4672481e}\label{class_c_tx_out_compressor_a520b323886560ededcfe303c4672481e}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+wrapper for \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} that provides a more compact serialization 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/compressor.\+h\item 
+P\+I\+V\+X/src/compressor.\+cpp\end{DoxyCompactItemize}

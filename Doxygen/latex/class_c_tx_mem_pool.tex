@@ -1,0 +1,140 @@
+\hypertarget{class_c_tx_mem_pool}{}\section{C\+Tx\+Mem\+Pool Class Reference}
+\label{class_c_tx_mem_pool}\index{C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}}
+
+
+{\ttfamily \#include $<$txmempool.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a82147548cfa962975690d1926b717c1c}\label{class_c_tx_mem_pool_a82147548cfa962975690d1926b717c1c}} 
+{\bfseries C\+Tx\+Mem\+Pool} (const \mbox{\hyperlink{class_c_fee_rate}{C\+Fee\+Rate}} \&\+\_\+min\+Relay\+Fee)
+\item 
+void \mbox{\hyperlink{class_c_tx_mem_pool_ab30fadfa811829e79accca41da6a8328}{check}} (const \mbox{\hyperlink{class_c_coins_view_cache}{C\+Coins\+View\+Cache}} $\ast$pcoins) const
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a1c0edb1fd5f0b02ddac46a6a97dcfd53}\label{class_c_tx_mem_pool_a1c0edb1fd5f0b02ddac46a6a97dcfd53}} 
+void {\bfseries set\+Sanity\+Check} (bool \+\_\+f\+Sanity\+Check)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a9e336997572ff8058d65afeb88ddde3b}\label{class_c_tx_mem_pool_a9e336997572ff8058d65afeb88ddde3b}} 
+bool {\bfseries add\+Unchecked} (const \mbox{\hyperlink{classuint256}{uint256}} \&hash, const \mbox{\hyperlink{class_c_tx_mem_pool_entry}{C\+Tx\+Mem\+Pool\+Entry}} \&entry)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a3a497097d9d5f325a2922a3970ac9da2}\label{class_c_tx_mem_pool_a3a497097d9d5f325a2922a3970ac9da2}} 
+void {\bfseries remove} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx, std\+::list$<$ \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} $>$ \&removed, bool f\+Recursive=false)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a6d1292640d0b6028bd5c602a6a50a983}\label{class_c_tx_mem_pool_a6d1292640d0b6028bd5c602a6a50a983}} 
+void {\bfseries remove\+Coinbase\+Spends} (const \mbox{\hyperlink{class_c_coins_view_cache}{C\+Coins\+View\+Cache}} $\ast$pcoins, unsigned int n\+Mem\+Pool\+Height)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a11f1bddfbae7c03c6244db322876c0a7}\label{class_c_tx_mem_pool_a11f1bddfbae7c03c6244db322876c0a7}} 
+void {\bfseries remove\+Conflicts} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx, std\+::list$<$ \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} $>$ \&removed)
+\item 
+void \mbox{\hyperlink{class_c_tx_mem_pool_ac97207311007676bd7ef056a625e0e0a}{remove\+For\+Block}} (const std\+::vector$<$ \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} $>$ \&vtx, unsigned int n\+Block\+Height, std\+::list$<$ \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} $>$ \&conflicts)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a6dba6bce4139392751321438a29b6b09}\label{class_c_tx_mem_pool_a6dba6bce4139392751321438a29b6b09}} 
+void {\bfseries clear} ()
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a42fa7d41a45562d02e356f2e7708bb02}\label{class_c_tx_mem_pool_a42fa7d41a45562d02e356f2e7708bb02}} 
+void {\bfseries query\+Hashes} (std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&vtxid)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_ad6142b7cd3a58dae6cdaf03551c2f989}\label{class_c_tx_mem_pool_ad6142b7cd3a58dae6cdaf03551c2f989}} 
+void {\bfseries prune\+Spent} (const \mbox{\hyperlink{classuint256}{uint256}} \&hash, \mbox{\hyperlink{class_c_coins}{C\+Coins}} \&coins)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_afd2a709a0e6cb34a57ff2f9fd0774e6c}\label{class_c_tx_mem_pool_afd2a709a0e6cb34a57ff2f9fd0774e6c}} 
+unsigned int {\bfseries Get\+Transactions\+Updated} () const
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a3039b67e5eebaa3ff830261c192816f2}\label{class_c_tx_mem_pool_a3039b67e5eebaa3ff830261c192816f2}} 
+void {\bfseries Add\+Transactions\+Updated} (unsigned int n)
+\item 
+void \mbox{\hyperlink{class_c_tx_mem_pool_a1a0a00279c941051af1b74c5ebeac40d}{Prioritise\+Transaction}} (const \mbox{\hyperlink{classuint256}{uint256}} hash, const std\+::string str\+Hash, double d\+Priority\+Delta, const C\+Amount \&n\+Fee\+Delta)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_aa73d1d5a211150fe169d73dc25ba3cdd}\label{class_c_tx_mem_pool_aa73d1d5a211150fe169d73dc25ba3cdd}} 
+void {\bfseries Apply\+Deltas} (const \mbox{\hyperlink{classuint256}{uint256}} hash, double \&d\+Priority\+Delta, C\+Amount \&n\+Fee\+Delta)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a11dea05121ab8321e1d1f1a21ec5c9ac}\label{class_c_tx_mem_pool_a11dea05121ab8321e1d1f1a21ec5c9ac}} 
+void {\bfseries Clear\+Prioritisation} (const \mbox{\hyperlink{classuint256}{uint256}} hash)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a867f7b452141770f3b2e8697fb3513d8}\label{class_c_tx_mem_pool_a867f7b452141770f3b2e8697fb3513d8}} 
+unsigned long {\bfseries size} ()
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_ad388f6544c2ca90f1550b06d9d86d54f}\label{class_c_tx_mem_pool_ad388f6544c2ca90f1550b06d9d86d54f}} 
+uint64\+\_\+t {\bfseries Get\+Total\+Tx\+Size} ()
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_adba06e79be4a1a092dd2db8290733be7}\label{class_c_tx_mem_pool_adba06e79be4a1a092dd2db8290733be7}} 
+bool {\bfseries exists} (\mbox{\hyperlink{classuint256}{uint256}} hash)
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_ad6d9966cdeb4b6586f7186e709b4e77e}\label{class_c_tx_mem_pool_ad6d9966cdeb4b6586f7186e709b4e77e}} 
+bool {\bfseries lookup} (\mbox{\hyperlink{classuint256}{uint256}} hash, \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&result) const
+\item 
+\mbox{\hyperlink{class_c_fee_rate}{C\+Fee\+Rate}} \mbox{\hyperlink{class_c_tx_mem_pool_a32dd66c128330aed86865c8a61857c6c}{estimate\+Fee}} (int n\+Blocks) const
+\item 
+double \mbox{\hyperlink{class_c_tx_mem_pool_a225378304025c093d2dc5fcb754ade3b}{estimate\+Priority}} (int n\+Blocks) const
+\item 
+bool \mbox{\hyperlink{class_c_tx_mem_pool_a251f595b6527be005634574ce5d01f70}{Write\+Fee\+Estimates}} (\mbox{\hyperlink{class_c_auto_file}{C\+Auto\+File}} \&fileout) const
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a0dbbcb6a3b7e1a6c564410668c12cd4f}\label{class_c_tx_mem_pool_a0dbbcb6a3b7e1a6c564410668c12cd4f}} 
+bool {\bfseries Read\+Fee\+Estimates} (\mbox{\hyperlink{class_c_auto_file}{C\+Auto\+File}} \&filein)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_ac7ee8c06837c7d2688e2d7e3d071bdbb}\label{class_c_tx_mem_pool_ac7ee8c06837c7d2688e2d7e3d071bdbb}} 
+\mbox{\hyperlink{class_annotated_mixin}{C\+Critical\+Section}} \mbox{\hyperlink{class_c_tx_mem_pool_ac7ee8c06837c7d2688e2d7e3d071bdbb}{cs}}
+\begin{DoxyCompactList}\small\item\em sum of all mempool tx\textquotesingle{} byte sizes \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a5cd374a559b02a6485ca8cef769f9930}\label{class_c_tx_mem_pool_a5cd374a559b02a6485ca8cef769f9930}} 
+std\+::map$<$ \mbox{\hyperlink{classuint256}{uint256}}, \mbox{\hyperlink{class_c_tx_mem_pool_entry}{C\+Tx\+Mem\+Pool\+Entry}} $>$ {\bfseries map\+Tx}
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_aae6f1162f0b2e42b369971f32a9f71e8}\label{class_c_tx_mem_pool_aae6f1162f0b2e42b369971f32a9f71e8}} 
+std\+::map$<$ \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}}, \mbox{\hyperlink{class_c_in_point}{C\+In\+Point}} $>$ {\bfseries map\+Next\+Tx}
+\item 
+\mbox{\Hypertarget{class_c_tx_mem_pool_a341709e31a39ce7a7a951a85c775c589}\label{class_c_tx_mem_pool_a341709e31a39ce7a7a951a85c775c589}} 
+std\+::map$<$ \mbox{\hyperlink{classuint256}{uint256}}, std\+::pair$<$ double, C\+Amount $>$ $>$ {\bfseries map\+Deltas}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\mbox{\hyperlink{class_c_tx_mem_pool}{C\+Tx\+Mem\+Pool}} stores valid-\/according-\/to-\/the-\/current-\/best-\/chain transactions that may be included in the next block.
+
+Transactions are added when they are seen on the network (or created by the local node), but not all transactions seen are added to the pool\+: if a new transaction double-\/spends an input of a transaction in the pool, it is dropped, as are non-\/standard transactions. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_tx_mem_pool_ab30fadfa811829e79accca41da6a8328}\label{class_c_tx_mem_pool_ab30fadfa811829e79accca41da6a8328}} 
+\index{C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}!check@{check}}
+\index{check@{check}!C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}}
+\subsubsection{\texorpdfstring{check()}{check()}}
+{\footnotesize\ttfamily void C\+Tx\+Mem\+Pool\+::check (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_coins_view_cache}{C\+Coins\+View\+Cache}} $\ast$}]{pcoins }\end{DoxyParamCaption}) const}
+
+If sanity-\/checking is turned on, check makes sure the pool is consistent (does not contain two transactions that spend the same inputs, all inputs are in the map\+Next\+Tx array). If sanity-\/checking is turned off, check does nothing. \mbox{\Hypertarget{class_c_tx_mem_pool_a32dd66c128330aed86865c8a61857c6c}\label{class_c_tx_mem_pool_a32dd66c128330aed86865c8a61857c6c}} 
+\index{C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}!estimate\+Fee@{estimate\+Fee}}
+\index{estimate\+Fee@{estimate\+Fee}!C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}}
+\subsubsection{\texorpdfstring{estimate\+Fee()}{estimateFee()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_c_fee_rate}{C\+Fee\+Rate}} C\+Tx\+Mem\+Pool\+::estimate\+Fee (\begin{DoxyParamCaption}\item[{int}]{n\+Blocks }\end{DoxyParamCaption}) const}
+
+Estimate fee rate needed to get into the next n\+Blocks \mbox{\Hypertarget{class_c_tx_mem_pool_a225378304025c093d2dc5fcb754ade3b}\label{class_c_tx_mem_pool_a225378304025c093d2dc5fcb754ade3b}} 
+\index{C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}!estimate\+Priority@{estimate\+Priority}}
+\index{estimate\+Priority@{estimate\+Priority}!C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}}
+\subsubsection{\texorpdfstring{estimate\+Priority()}{estimatePriority()}}
+{\footnotesize\ttfamily double C\+Tx\+Mem\+Pool\+::estimate\+Priority (\begin{DoxyParamCaption}\item[{int}]{n\+Blocks }\end{DoxyParamCaption}) const}
+
+Estimate priority needed to get into the next n\+Blocks \mbox{\Hypertarget{class_c_tx_mem_pool_a1a0a00279c941051af1b74c5ebeac40d}\label{class_c_tx_mem_pool_a1a0a00279c941051af1b74c5ebeac40d}} 
+\index{C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}!Prioritise\+Transaction@{Prioritise\+Transaction}}
+\index{Prioritise\+Transaction@{Prioritise\+Transaction}!C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}}
+\subsubsection{\texorpdfstring{Prioritise\+Transaction()}{PrioritiseTransaction()}}
+{\footnotesize\ttfamily void C\+Tx\+Mem\+Pool\+::\+Prioritise\+Transaction (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classuint256}{uint256}}}]{hash,  }\item[{const std\+::string}]{str\+Hash,  }\item[{double}]{d\+Priority\+Delta,  }\item[{const C\+Amount \&}]{n\+Fee\+Delta }\end{DoxyParamCaption})}
+
+Affect Create\+New\+Block prioritisation of transactions \mbox{\Hypertarget{class_c_tx_mem_pool_ac97207311007676bd7ef056a625e0e0a}\label{class_c_tx_mem_pool_ac97207311007676bd7ef056a625e0e0a}} 
+\index{C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}!remove\+For\+Block@{remove\+For\+Block}}
+\index{remove\+For\+Block@{remove\+For\+Block}!C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}}
+\subsubsection{\texorpdfstring{remove\+For\+Block()}{removeForBlock()}}
+{\footnotesize\ttfamily void C\+Tx\+Mem\+Pool\+::remove\+For\+Block (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} $>$ \&}]{vtx,  }\item[{unsigned int}]{n\+Block\+Height,  }\item[{std\+::list$<$ \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} $>$ \&}]{conflicts }\end{DoxyParamCaption})}
+
+Called when a block is connected. Removes from mempool and updates the miner fee estimator. \mbox{\Hypertarget{class_c_tx_mem_pool_a251f595b6527be005634574ce5d01f70}\label{class_c_tx_mem_pool_a251f595b6527be005634574ce5d01f70}} 
+\index{C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}!Write\+Fee\+Estimates@{Write\+Fee\+Estimates}}
+\index{Write\+Fee\+Estimates@{Write\+Fee\+Estimates}!C\+Tx\+Mem\+Pool@{C\+Tx\+Mem\+Pool}}
+\subsubsection{\texorpdfstring{Write\+Fee\+Estimates()}{WriteFeeEstimates()}}
+{\footnotesize\ttfamily bool C\+Tx\+Mem\+Pool\+::\+Write\+Fee\+Estimates (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_c_auto_file}{C\+Auto\+File}} \&}]{fileout }\end{DoxyParamCaption}) const}
+
+Write/\+Read estimates to disk 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/txmempool.\+h\item 
+P\+I\+V\+X/src/txmempool.\+cpp\end{DoxyCompactItemize}

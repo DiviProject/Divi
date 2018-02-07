@@ -1,0 +1,231 @@
+\hypertarget{class_uni_value}{}\section{Uni\+Value Class Reference}
+\label{class_uni_value}\index{Uni\+Value@{Uni\+Value}}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_uni_value_a2f9803e567ede73e88302b01e394cc63}\label{class_uni_value_a2f9803e567ede73e88302b01e394cc63}} 
+enum {\bfseries V\+Type} \{ \newline
+{\bfseries V\+N\+U\+LL}, 
+{\bfseries V\+O\+BJ}, 
+{\bfseries V\+A\+RR}, 
+{\bfseries V\+S\+TR}, 
+\newline
+{\bfseries V\+N\+UM}, 
+{\bfseries V\+B\+O\+OL}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_uni_value_a4745d05274d297cc29a60db6dbb9e327}\label{class_uni_value_a4745d05274d297cc29a60db6dbb9e327}} 
+{\bfseries Uni\+Value} (Uni\+Value\+::\+V\+Type initial\+Type, const std\+::string \&initial\+Str=\char`\"{}\char`\"{})
+\item 
+\mbox{\Hypertarget{class_uni_value_a0f9dfcd7460d60d6411b60c64049d37d}\label{class_uni_value_a0f9dfcd7460d60d6411b60c64049d37d}} 
+{\bfseries Uni\+Value} (uint64\+\_\+t val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_a8694292e69ccf3dfce68623c0c272f3d}\label{class_uni_value_a8694292e69ccf3dfce68623c0c272f3d}} 
+{\bfseries Uni\+Value} (int64\+\_\+t val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_a14826f302ac6adf91e95d280ec013d63}\label{class_uni_value_a14826f302ac6adf91e95d280ec013d63}} 
+{\bfseries Uni\+Value} (bool val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_ae5a206a921a99b69e53260097b4a6130}\label{class_uni_value_ae5a206a921a99b69e53260097b4a6130}} 
+{\bfseries Uni\+Value} (int val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_a725504a9df25d6e4b76486a60edf0f3b}\label{class_uni_value_a725504a9df25d6e4b76486a60edf0f3b}} 
+{\bfseries Uni\+Value} (double val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_aee7fb67988278b142b7d3fa5816035ea}\label{class_uni_value_aee7fb67988278b142b7d3fa5816035ea}} 
+{\bfseries Uni\+Value} (const std\+::string \&val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_a29044aa7b41758774f15fbaa12e587af}\label{class_uni_value_a29044aa7b41758774f15fbaa12e587af}} 
+{\bfseries Uni\+Value} (const char $\ast$val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_a3d941ccb4afeb53cb104939e91c6f599}\label{class_uni_value_a3d941ccb4afeb53cb104939e91c6f599}} 
+void {\bfseries clear} ()
+\item 
+\mbox{\Hypertarget{class_uni_value_a9532075643c9c9876fd0f1b62fcc3f92}\label{class_uni_value_a9532075643c9c9876fd0f1b62fcc3f92}} 
+bool {\bfseries set\+Null} ()
+\item 
+\mbox{\Hypertarget{class_uni_value_afd5b112dc63426ca6b0a6137041e0809}\label{class_uni_value_afd5b112dc63426ca6b0a6137041e0809}} 
+bool {\bfseries set\+Bool} (bool val)
+\item 
+\mbox{\Hypertarget{class_uni_value_a073f2837ea47118d3be94360e3e93061}\label{class_uni_value_a073f2837ea47118d3be94360e3e93061}} 
+bool {\bfseries set\+Num\+Str} (const std\+::string \&val)
+\item 
+\mbox{\Hypertarget{class_uni_value_a9b2df9e0db0d6370fd59783a7942af91}\label{class_uni_value_a9b2df9e0db0d6370fd59783a7942af91}} 
+bool {\bfseries set\+Int} (uint64\+\_\+t val)
+\item 
+\mbox{\Hypertarget{class_uni_value_a9b075d0074d27b123cc5b5373865f06d}\label{class_uni_value_a9b075d0074d27b123cc5b5373865f06d}} 
+bool {\bfseries set\+Int} (int64\+\_\+t val)
+\item 
+\mbox{\Hypertarget{class_uni_value_a399dec41fb611a7ee763140977df047a}\label{class_uni_value_a399dec41fb611a7ee763140977df047a}} 
+bool {\bfseries set\+Int} (int val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_af887f08e539e589accea7beebd51eaae}\label{class_uni_value_af887f08e539e589accea7beebd51eaae}} 
+bool {\bfseries set\+Float} (double val)
+\item 
+\mbox{\Hypertarget{class_uni_value_ac20022e977498c332838daf4bf4f0948}\label{class_uni_value_ac20022e977498c332838daf4bf4f0948}} 
+bool {\bfseries set\+Str} (const std\+::string \&val)
+\item 
+\mbox{\Hypertarget{class_uni_value_a00c402e60dbabcf3b4ea4246552bcacb}\label{class_uni_value_a00c402e60dbabcf3b4ea4246552bcacb}} 
+bool {\bfseries set\+Array} ()
+\item 
+\mbox{\Hypertarget{class_uni_value_a0894e98fb8db031d2477c70147e0fd18}\label{class_uni_value_a0894e98fb8db031d2477c70147e0fd18}} 
+bool {\bfseries set\+Object} ()
+\item 
+\mbox{\Hypertarget{class_uni_value_a2dbc9c5aa9d209338b0bef650f3d1987}\label{class_uni_value_a2dbc9c5aa9d209338b0bef650f3d1987}} 
+enum V\+Type {\bfseries get\+Type} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a4c9a5fa9114affbf31f6e346c032be12}\label{class_uni_value_a4c9a5fa9114affbf31f6e346c032be12}} 
+const std\+::string \& {\bfseries get\+Val\+Str} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a6cf106f8b73c526b50d0c77a36a2d8ec}\label{class_uni_value_a6cf106f8b73c526b50d0c77a36a2d8ec}} 
+bool {\bfseries empty} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a5a7394aeb8d5584db7a90c2c041726b1}\label{class_uni_value_a5a7394aeb8d5584db7a90c2c041726b1}} 
+size\+\_\+t {\bfseries size} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_acb5c848d20cb741dbe65e28bc513baa8}\label{class_uni_value_acb5c848d20cb741dbe65e28bc513baa8}} 
+bool {\bfseries get\+Bool} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a2ec95a1ab26c60f471e2baef3ffa11ef}\label{class_uni_value_a2ec95a1ab26c60f471e2baef3ffa11ef}} 
+bool {\bfseries check\+Object} (const std\+::map$<$ std\+::string, Uni\+Value\+::\+V\+Type $>$ \&member\+Types)
+\item 
+\mbox{\Hypertarget{class_uni_value_a998b72bd7f758e01416e1b53eaa6d94c}\label{class_uni_value_a998b72bd7f758e01416e1b53eaa6d94c}} 
+const \mbox{\hyperlink{class_uni_value}{Uni\+Value}} \& {\bfseries operator\mbox{[}$\,$\mbox{]}} (const std\+::string \&key) const
+\item 
+\mbox{\Hypertarget{class_uni_value_ad3cf3ae4df01e178b856f830f619e52e}\label{class_uni_value_ad3cf3ae4df01e178b856f830f619e52e}} 
+const \mbox{\hyperlink{class_uni_value}{Uni\+Value}} \& {\bfseries operator\mbox{[}$\,$\mbox{]}} (size\+\_\+t index) const
+\item 
+\mbox{\Hypertarget{class_uni_value_aad13d343dbda293251205e37d8b83c27}\label{class_uni_value_aad13d343dbda293251205e37d8b83c27}} 
+bool {\bfseries exists} (const std\+::string \&key) const
+\item 
+\mbox{\Hypertarget{class_uni_value_a3661be0f5580daceb23e5338e3a0df22}\label{class_uni_value_a3661be0f5580daceb23e5338e3a0df22}} 
+bool {\bfseries is\+Null} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a1491167609f899d0c7773749b5047969}\label{class_uni_value_a1491167609f899d0c7773749b5047969}} 
+bool {\bfseries is\+True} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_ae79ab57378176379dd206c5e2d6f5feb}\label{class_uni_value_ae79ab57378176379dd206c5e2d6f5feb}} 
+bool {\bfseries is\+False} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a97cbb7890d4a8c4b924ad5ffd7bc34c1}\label{class_uni_value_a97cbb7890d4a8c4b924ad5ffd7bc34c1}} 
+bool {\bfseries is\+Bool} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a8abe13a4663ccfda54ae2440ed445c5a}\label{class_uni_value_a8abe13a4663ccfda54ae2440ed445c5a}} 
+bool {\bfseries is\+Str} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_ac5271a9bb4ece86f00052bb5603eaa78}\label{class_uni_value_ac5271a9bb4ece86f00052bb5603eaa78}} 
+bool {\bfseries is\+Num} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a1d2e9479d4fb330a73e0fd41197aec35}\label{class_uni_value_a1d2e9479d4fb330a73e0fd41197aec35}} 
+bool {\bfseries is\+Array} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_af1a6df88c2bee59a863dd6f8d12e9be5}\label{class_uni_value_af1a6df88c2bee59a863dd6f8d12e9be5}} 
+bool {\bfseries is\+Object} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a944cd1b59b040cd24c9f46b55a68d49a}\label{class_uni_value_a944cd1b59b040cd24c9f46b55a68d49a}} 
+bool {\bfseries push\+\_\+back} (const \mbox{\hyperlink{class_uni_value}{Uni\+Value}} \&val)
+\item 
+\mbox{\Hypertarget{class_uni_value_aac788eaa2c8b8b7849ecfc2f111e3cf2}\label{class_uni_value_aac788eaa2c8b8b7849ecfc2f111e3cf2}} 
+bool {\bfseries push\+\_\+back} (const std\+::string \&val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_af2a559718c1c8e092db707a19667f9ea}\label{class_uni_value_af2a559718c1c8e092db707a19667f9ea}} 
+bool {\bfseries push\+\_\+back} (const char $\ast$val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_af4abadace527f43bd35d25b7360a8b29}\label{class_uni_value_af4abadace527f43bd35d25b7360a8b29}} 
+bool {\bfseries push\+\_\+back} (uint64\+\_\+t val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_a6a7da3246734ad6ff3ef1aa397c43d9f}\label{class_uni_value_a6a7da3246734ad6ff3ef1aa397c43d9f}} 
+bool {\bfseries push\+\_\+back} (int64\+\_\+t val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_a09f6fa88d30b4cee379c8391a070b932}\label{class_uni_value_a09f6fa88d30b4cee379c8391a070b932}} 
+bool {\bfseries push\+\_\+back} (int val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_ad3e16e8076509d1c8683f22df04e14d1}\label{class_uni_value_ad3e16e8076509d1c8683f22df04e14d1}} 
+bool {\bfseries push\+\_\+backV} (const std\+::vector$<$ \mbox{\hyperlink{class_uni_value}{Uni\+Value}} $>$ \&vec)
+\item 
+\mbox{\Hypertarget{class_uni_value_abab649c2dbd593233de6364254456026}\label{class_uni_value_abab649c2dbd593233de6364254456026}} 
+bool {\bfseries push\+KV} (const std\+::string \&key, const \mbox{\hyperlink{class_uni_value}{Uni\+Value}} \&val)
+\item 
+\mbox{\Hypertarget{class_uni_value_abe869f1ec6d244f7bb4f5e3e42648315}\label{class_uni_value_abe869f1ec6d244f7bb4f5e3e42648315}} 
+bool {\bfseries push\+KV} (const std\+::string \&key, const std\+::string \&val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_aec762a3e614c9016ad0b56b5bb2a8a9f}\label{class_uni_value_aec762a3e614c9016ad0b56b5bb2a8a9f}} 
+bool {\bfseries push\+KV} (const std\+::string \&key, const char $\ast$val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_ae12c09d0c1bb9c711f1658902948e573}\label{class_uni_value_ae12c09d0c1bb9c711f1658902948e573}} 
+bool {\bfseries push\+KV} (const std\+::string \&key, int64\+\_\+t val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_afc8d1bcbcd661dba6b3b28486b0a71d7}\label{class_uni_value_afc8d1bcbcd661dba6b3b28486b0a71d7}} 
+bool {\bfseries push\+KV} (const std\+::string \&key, uint64\+\_\+t val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_a3936ebd20222b7e8ac0dc1ba4945114b}\label{class_uni_value_a3936ebd20222b7e8ac0dc1ba4945114b}} 
+bool {\bfseries push\+KV} (const std\+::string \&key, int val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_aa3a8cff070423090606906fade4bc7f4}\label{class_uni_value_aa3a8cff070423090606906fade4bc7f4}} 
+bool {\bfseries push\+KV} (const std\+::string \&key, double val\+\_\+)
+\item 
+\mbox{\Hypertarget{class_uni_value_a89821b3f48732c1539e674378cdf7a87}\label{class_uni_value_a89821b3f48732c1539e674378cdf7a87}} 
+bool {\bfseries push\+K\+Vs} (const \mbox{\hyperlink{class_uni_value}{Uni\+Value}} \&obj)
+\item 
+\mbox{\Hypertarget{class_uni_value_a8055f724aa8d0d33fa0467128922a75d}\label{class_uni_value_a8055f724aa8d0d33fa0467128922a75d}} 
+std\+::string {\bfseries write} (unsigned int pretty\+Indent=0, unsigned int indent\+Level=0) const
+\item 
+\mbox{\Hypertarget{class_uni_value_aefa2e6ba985096b7693f274a4fad92dd}\label{class_uni_value_aefa2e6ba985096b7693f274a4fad92dd}} 
+bool {\bfseries read} (const char $\ast$raw, size\+\_\+t len)
+\item 
+\mbox{\Hypertarget{class_uni_value_a7a2b0e2861c456dc4966e5793453736d}\label{class_uni_value_a7a2b0e2861c456dc4966e5793453736d}} 
+bool {\bfseries read} (const char $\ast$raw)
+\item 
+\mbox{\Hypertarget{class_uni_value_aedc51fc46ef1c5c3e60bf1a9219bbdc8}\label{class_uni_value_aedc51fc46ef1c5c3e60bf1a9219bbdc8}} 
+bool {\bfseries read} (const std\+::string \&raw\+Str)
+\item 
+\mbox{\Hypertarget{class_uni_value_a67e4178f582aa9f7bc39e71066ad786e}\label{class_uni_value_a67e4178f582aa9f7bc39e71066ad786e}} 
+const std\+::vector$<$ std\+::string $>$ \& {\bfseries get\+Keys} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a60de76689de98b6c97ca723e280becf8}\label{class_uni_value_a60de76689de98b6c97ca723e280becf8}} 
+const std\+::vector$<$ \mbox{\hyperlink{class_uni_value}{Uni\+Value}} $>$ \& {\bfseries get\+Values} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_ae8a27d40aa1b1322ea95ff4fb2dec2b1}\label{class_uni_value_ae8a27d40aa1b1322ea95ff4fb2dec2b1}} 
+bool {\bfseries get\+\_\+bool} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a087ea6ccec615333371fa1aaf83ab7df}\label{class_uni_value_a087ea6ccec615333371fa1aaf83ab7df}} 
+const std\+::string \& {\bfseries get\+\_\+str} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_af45edc6e67eaa6d1f271ce18e435a376}\label{class_uni_value_af45edc6e67eaa6d1f271ce18e435a376}} 
+int {\bfseries get\+\_\+int} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a34bd3bc2de335486d2060ff907b317d0}\label{class_uni_value_a34bd3bc2de335486d2060ff907b317d0}} 
+int64\+\_\+t {\bfseries get\+\_\+int64} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_ae767e3e162b24c182aab4706f63a45f1}\label{class_uni_value_ae767e3e162b24c182aab4706f63a45f1}} 
+double {\bfseries get\+\_\+real} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a49a6ac464f3c2d918e7379d3203c7337}\label{class_uni_value_a49a6ac464f3c2d918e7379d3203c7337}} 
+const \mbox{\hyperlink{class_uni_value}{Uni\+Value}} \& {\bfseries get\+\_\+obj} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_aa9751b5797cb84d15b9fe4ca217f0b63}\label{class_uni_value_aa9751b5797cb84d15b9fe4ca217f0b63}} 
+const \mbox{\hyperlink{class_uni_value}{Uni\+Value}} \& {\bfseries get\+\_\+array} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a5b33bfd4be1574e610eee5a7cdae77d1}\label{class_uni_value_a5b33bfd4be1574e610eee5a7cdae77d1}} 
+enum V\+Type {\bfseries type} () const
+\item 
+\mbox{\Hypertarget{class_uni_value_a2f13b56d2d214c71bb737728c432dccb}\label{class_uni_value_a2f13b56d2d214c71bb737728c432dccb}} 
+bool {\bfseries push\+\_\+back} (std\+::pair$<$ std\+::string, \mbox{\hyperlink{class_uni_value}{Uni\+Value}} $>$ pear)
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_uni_value_a33625d562f1ef5f44ceb171d5c8f2a85}\label{class_uni_value_a33625d562f1ef5f44ceb171d5c8f2a85}} 
+const \mbox{\hyperlink{class_uni_value}{Uni\+Value}} \& {\bfseries find\+\_\+value} (const \mbox{\hyperlink{class_uni_value}{Uni\+Value}} \&obj, const std\+::string \&name)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/univalue/include/univalue.\+h\item 
+P\+I\+V\+X/src/univalue/lib/univalue.\+cpp\item 
+P\+I\+V\+X/src/univalue/lib/univalue\+\_\+read.\+cpp\item 
+P\+I\+V\+X/src/univalue/lib/univalue\+\_\+write.\+cpp\end{DoxyCompactItemize}

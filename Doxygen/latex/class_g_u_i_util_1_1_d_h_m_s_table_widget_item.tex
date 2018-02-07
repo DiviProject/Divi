@@ -1,0 +1,56 @@
+\hypertarget{class_g_u_i_util_1_1_d_h_m_s_table_widget_item}{}\section{G\+U\+I\+Util\+:\+:D\+H\+M\+S\+Table\+Widget\+Item Class Reference}
+\label{class_g_u_i_util_1_1_d_h_m_s_table_widget_item}\index{G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item@{G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item}}
+
+
+{\ttfamily \#include $<$guiutil.\+h$>$}
+
+Inheritance diagram for G\+U\+I\+Util\+:\+:D\+H\+M\+S\+Table\+Widget\+Item\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_g_u_i_util_1_1_d_h_m_s_table_widget_item}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_g_u_i_util_1_1_d_h_m_s_table_widget_item_a048ab36b7b4d8ec6af77bca7fd547f95}{D\+H\+M\+S\+Table\+Widget\+Item}} (const int64\+\_\+t seconds)
+\item 
+virtual bool \mbox{\hyperlink{class_g_u_i_util_1_1_d_h_m_s_table_widget_item_ab386d4d66b8eb16a216ddaf73d1799fa}{operator$<$}} (Q\+Table\+Widget\+Item const \&item) const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Extension to Q\+Table\+Widget\+Item that facilitates proper ordering for \char`\"{}\+D\+H\+M\+S\char`\"{} strings (primarily used in the masternode\textquotesingle{}s \char`\"{}active\char`\"{} listing). 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_g_u_i_util_1_1_d_h_m_s_table_widget_item_a048ab36b7b4d8ec6af77bca7fd547f95}\label{class_g_u_i_util_1_1_d_h_m_s_table_widget_item_a048ab36b7b4d8ec6af77bca7fd547f95}} 
+\index{G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item@{G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item}!D\+H\+M\+S\+Table\+Widget\+Item@{D\+H\+M\+S\+Table\+Widget\+Item}}
+\index{D\+H\+M\+S\+Table\+Widget\+Item@{D\+H\+M\+S\+Table\+Widget\+Item}!G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item@{G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item}}
+\subsubsection{\texorpdfstring{D\+H\+M\+S\+Table\+Widget\+Item()}{DHMSTableWidgetItem()}}
+{\footnotesize\ttfamily G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item\+::\+D\+H\+M\+S\+Table\+Widget\+Item (\begin{DoxyParamCaption}\item[{const int64\+\_\+t}]{seconds }\end{DoxyParamCaption})}
+
+Class constructor. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em seconds} & Number of seconds to convert to a D\+H\+MS string \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_g_u_i_util_1_1_d_h_m_s_table_widget_item_ab386d4d66b8eb16a216ddaf73d1799fa}\label{class_g_u_i_util_1_1_d_h_m_s_table_widget_item_ab386d4d66b8eb16a216ddaf73d1799fa}} 
+\index{G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item@{G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item}!operator$<$@{operator$<$}}
+\index{operator$<$@{operator$<$}!G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item@{G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item}}
+\subsubsection{\texorpdfstring{operator$<$()}{operator<()}}
+{\footnotesize\ttfamily bool G\+U\+I\+Util\+::\+D\+H\+M\+S\+Table\+Widget\+Item\+::operator$<$ (\begin{DoxyParamCaption}\item[{Q\+Table\+Widget\+Item const \&}]{item }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Comparator overload to ensure that the \char`\"{}\+D\+H\+M\+S\char`\"{}-\/type durations as used in the \char`\"{}active-\/since\char`\"{} list in the masternode tab are sorted by the elapsed duration (versus the string value being sorted). 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em item} & Right hand side of the less than operator \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/guiutil.\+h\item 
+P\+I\+V\+X/src/qt/guiutil.\+cpp\end{DoxyCompactItemize}

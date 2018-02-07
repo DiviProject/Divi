@@ -1,0 +1,39 @@
+\hypertarget{structsph__groestl__big__context}{}\section{sph\+\_\+groestl\+\_\+big\+\_\+context Struct Reference}
+\label{structsph__groestl__big__context}\index{sph\+\_\+groestl\+\_\+big\+\_\+context@{sph\+\_\+groestl\+\_\+big\+\_\+context}}
+
+
+{\ttfamily \#include $<$sph\+\_\+groestl.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsph__groestl__big__context_af01cbebd23f3939991a330ab266ef32a}\label{structsph__groestl__big__context_af01cbebd23f3939991a330ab266ef32a}} 
+unsigned char {\bfseries buf} \mbox{[}128\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__groestl__big__context_a350d7b879c0cd13453089c2f9286b81e}\label{structsph__groestl__big__context_a350d7b879c0cd13453089c2f9286b81e}} 
+size\+\_\+t {\bfseries ptr}
+\item 
+\mbox{\Hypertarget{structsph__groestl__big__context_a132f287c3646fc20fa4b3e39812319af}\label{structsph__groestl__big__context_a132f287c3646fc20fa4b3e39812319af}} 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+union \{\\
+\>sph\_u32 {\bfseries narrow} \mbox{[}32\mbox{]}\\
+\} {\bfseries state}\\
+
+\end{tabbing}\item 
+\mbox{\Hypertarget{structsph__groestl__big__context_a257c12985fd59be228db3df1c681c8b8}\label{structsph__groestl__big__context_a257c12985fd59be228db3df1c681c8b8}} 
+sph\+\_\+u32 {\bfseries count\+\_\+high}
+\item 
+\mbox{\Hypertarget{structsph__groestl__big__context_afbb1b7f2c1ccf37607aefe70af412155}\label{structsph__groestl__big__context_afbb1b7f2c1ccf37607aefe70af412155}} 
+sph\+\_\+u32 {\bfseries count\+\_\+low}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This structure is a context for Groestl-\/384 and Groestl-\/512 computations\+: it contains the intermediate values and some data from the last entered block. Once a Groestl computation has been performed, the context can be reused for another computation.
+
+The contents of this structure are private. A running Groestl computation can be cloned by copying the context (e.\+g. with a simple {\ttfamily memcpy()}). 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/crypto/\mbox{\hyperlink{sph__groestl_8h}{sph\+\_\+groestl.\+h}}\end{DoxyCompactItemize}

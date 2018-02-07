@@ -1,0 +1,62 @@
+\hypertarget{class_c_accounting_entry}{}\section{C\+Accounting\+Entry Class Reference}
+\label{class_c_accounting_entry}\index{C\+Accounting\+Entry@{C\+Accounting\+Entry}}
+
+
+{\ttfamily \#include $<$wallet.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a439b044226a1e465032ce4c4580d3389}\label{class_c_accounting_entry_a439b044226a1e465032ce4c4580d3389}} 
+void {\bfseries Set\+Null} ()
+\item 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void \mbox{\hyperlink{class_c_accounting_entry_ab30195f9f97f8f7ceb17360c24a39676}{Serialization\+Op}} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a01434c1b0edad576bc1584c9b667ce1d}\label{class_c_accounting_entry_a01434c1b0edad576bc1584c9b667ce1d}} 
+std\+::string {\bfseries str\+Account}
+\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a3a0377685a688c97af2e40581e919b0f}\label{class_c_accounting_entry_a3a0377685a688c97af2e40581e919b0f}} 
+C\+Amount {\bfseries n\+Credit\+Debit}
+\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a416a4eb8d47e4c4cfdfc366d9d777ae6}\label{class_c_accounting_entry_a416a4eb8d47e4c4cfdfc366d9d777ae6}} 
+int64\+\_\+t {\bfseries n\+Time}
+\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a6856c75221e9df5b6a99dda88f45d911}\label{class_c_accounting_entry_a6856c75221e9df5b6a99dda88f45d911}} 
+std\+::string {\bfseries str\+Other\+Account}
+\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a80c42068f19b13e3201926d340fd10e9}\label{class_c_accounting_entry_a80c42068f19b13e3201926d340fd10e9}} 
+std\+::string {\bfseries str\+Comment}
+\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a5e3f28cdc5d1fb25472c49c482613fcb}\label{class_c_accounting_entry_a5e3f28cdc5d1fb25472c49c482613fcb}} 
+map\+Value\+\_\+t {\bfseries map\+Value}
+\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a9c5f78f13a657c1f1fc860a70ef072d5}\label{class_c_accounting_entry_a9c5f78f13a657c1f1fc860a70ef072d5}} 
+int64\+\_\+t {\bfseries n\+Order\+Pos}
+\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a0c35da8adbbc529238af70964e0d2b29}\label{class_c_accounting_entry_a0c35da8adbbc529238af70964e0d2b29}} 
+uint64\+\_\+t \mbox{\hyperlink{class_c_accounting_entry_a0c35da8adbbc529238af70964e0d2b29}{n\+Entry\+No}}
+\begin{DoxyCompactList}\small\item\em position in ordered transaction list \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_accounting_entry_a0251a0be8a3e420b4566b84317ea5fef}\label{class_c_accounting_entry_a0251a0be8a3e420b4566b84317ea5fef}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Internal transfers. Database key is acentry$<$account$>$$<$counter$>$. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_accounting_entry_ab30195f9f97f8f7ceb17360c24a39676}\label{class_c_accounting_entry_ab30195f9f97f8f7ceb17360c24a39676}} 
+\index{C\+Accounting\+Entry@{C\+Accounting\+Entry}!Serialization\+Op@{Serialization\+Op}}
+\index{Serialization\+Op@{Serialization\+Op}!C\+Accounting\+Entry@{C\+Accounting\+Entry}}
+\subsubsection{\texorpdfstring{Serialization\+Op()}{SerializationOp()}}
+{\footnotesize\ttfamily template$<$typename Stream , typename Operation $>$ \\
+void C\+Accounting\+Entry\+::\+Serialization\+Op (\begin{DoxyParamCaption}\item[{Stream \&}]{s,  }\item[{Operation}]{ser\+\_\+action,  }\item[{int}]{n\+Type,  }\item[{int}]{n\+Version }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Note\+: str\+Account is serialized as part of the key, not here. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/wallet.\+h\end{DoxyCompactItemize}

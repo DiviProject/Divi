@@ -1,0 +1,37 @@
+\hypertarget{classleveldb_1_1_constructor}{}\section{leveldb\+:\+:Constructor Class Reference}
+\label{classleveldb_1_1_constructor}\index{leveldb\+::\+Constructor@{leveldb\+::\+Constructor}}
+Inheritance diagram for leveldb\+:\+:Constructor\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.465969cm]{classleveldb_1_1_constructor}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_constructor_a5f4d21512e279769e881b2ae85129f08}\label{classleveldb_1_1_constructor_a5f4d21512e279769e881b2ae85129f08}} 
+{\bfseries Constructor} (const \mbox{\hyperlink{structleveldb_1_1_comparator}{Comparator}} $\ast$cmp)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_constructor_a5bb35f87d196065b8357200922aae69f}\label{classleveldb_1_1_constructor_a5bb35f87d196065b8357200922aae69f}} 
+void {\bfseries Add} (const std\+::string \&key, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&value)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_constructor_a5c7f63378f8834cac3be93040e0e49fc}\label{classleveldb_1_1_constructor_a5c7f63378f8834cac3be93040e0e49fc}} 
+void {\bfseries Finish} (const \mbox{\hyperlink{structleveldb_1_1_options}{Options}} \&options, std\+::vector$<$ std\+::string $>$ $\ast$keys, K\+V\+Map $\ast$kvmap)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_constructor_a0f11e251cfbe990b5b0a4e7040923189}\label{classleveldb_1_1_constructor_a0f11e251cfbe990b5b0a4e7040923189}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Finish\+Impl} (const \mbox{\hyperlink{structleveldb_1_1_options}{Options}} \&options, const K\+V\+Map \&data)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_constructor_a362b24b7194f605b655f5a136e0ae43c}\label{classleveldb_1_1_constructor_a362b24b7194f605b655f5a136e0ae43c}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_iterator}{Iterator}} $\ast$ {\bfseries New\+Iterator} () const =0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_constructor_a55a0363200d6e86d8beb3b15b75e3824}\label{classleveldb_1_1_constructor_a55a0363200d6e86d8beb3b15b75e3824}} 
+virtual const K\+V\+Map \& {\bfseries data} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_constructor_a19a344a74a682d74633c99352997fa10}\label{classleveldb_1_1_constructor_a19a344a74a682d74633c99352997fa10}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_d_b}{DB}} $\ast$ {\bfseries db} () const
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/table/table\+\_\+test.\+cc\end{DoxyCompactItemize}

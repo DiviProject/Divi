@@ -1,0 +1,47 @@
+\hypertarget{classleveldb_1_1_block_1_1_iter}{}\section{leveldb\+:\+:Block\+:\+:Iter Class Reference}
+\label{classleveldb_1_1_block_1_1_iter}\index{leveldb\+::\+Block\+::\+Iter@{leveldb\+::\+Block\+::\+Iter}}
+Inheritance diagram for leveldb\+:\+:Block\+:\+:Iter\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classleveldb_1_1_block_1_1_iter}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_a31b124ec1fc5750b31b182dc44282588}\label{classleveldb_1_1_block_1_1_iter_a31b124ec1fc5750b31b182dc44282588}} 
+{\bfseries Iter} (const \mbox{\hyperlink{structleveldb_1_1_comparator}{Comparator}} $\ast$comparator, const char $\ast$data, uint32\+\_\+t restarts, uint32\+\_\+t num\+\_\+restarts)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_a8fa2be549a032cd010ee722ffd4af28f}\label{classleveldb_1_1_block_1_1_iter_a8fa2be549a032cd010ee722ffd4af28f}} 
+virtual bool {\bfseries Valid} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_a767cbcc1a9baa95b8eed089a5997897c}\label{classleveldb_1_1_block_1_1_iter_a767cbcc1a9baa95b8eed089a5997897c}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries status} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_ab762e46fcf9e06ef85c876ed4c92b1e3}\label{classleveldb_1_1_block_1_1_iter_ab762e46fcf9e06ef85c876ed4c92b1e3}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} {\bfseries key} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_a1cf66d3bb0fb70a706c95aaba9f03011}\label{classleveldb_1_1_block_1_1_iter_a1cf66d3bb0fb70a706c95aaba9f03011}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} {\bfseries value} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_a27dacbefa903333a5ad003ccd3e424b6}\label{classleveldb_1_1_block_1_1_iter_a27dacbefa903333a5ad003ccd3e424b6}} 
+virtual void {\bfseries Next} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_a096747ff77d5090579fe4cd4e464a3c9}\label{classleveldb_1_1_block_1_1_iter_a096747ff77d5090579fe4cd4e464a3c9}} 
+virtual void {\bfseries Prev} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_a3dcefc0609937b33c046ac7fafb52ad7}\label{classleveldb_1_1_block_1_1_iter_a3dcefc0609937b33c046ac7fafb52ad7}} 
+virtual void {\bfseries Seek} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&target)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_aecc19bb6d8a219e7fb8e695fb5b57bd3}\label{classleveldb_1_1_block_1_1_iter_aecc19bb6d8a219e7fb8e695fb5b57bd3}} 
+virtual void {\bfseries Seek\+To\+First} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_1_1_iter_a3007d98d17a03138c629fc2b2eb56204}\label{classleveldb_1_1_block_1_1_iter_a3007d98d17a03138c629fc2b2eb56204}} 
+virtual void {\bfseries Seek\+To\+Last} ()
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/table/block.\+cc\end{DoxyCompactItemize}

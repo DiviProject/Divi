@@ -1,0 +1,218 @@
+\hypertarget{class_c_data_stream}{}\section{C\+Data\+Stream Class Reference}
+\label{class_c_data_stream}\index{C\+Data\+Stream@{C\+Data\+Stream}}
+
+
+{\ttfamily \#include $<$streams.\+h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a297dff00e40bb161aab89fde868ee7b1}\label{class_c_data_stream_a297dff00e40bb161aab89fde868ee7b1}} 
+typedef vector\+\_\+type\+::allocator\+\_\+type {\bfseries allocator\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a79e10daad6db0f94aea1e811eb167378}\label{class_c_data_stream_a79e10daad6db0f94aea1e811eb167378}} 
+typedef vector\+\_\+type\+::size\+\_\+type {\bfseries size\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a9da973fb6e53a5335db78b6f8b90bdbf}\label{class_c_data_stream_a9da973fb6e53a5335db78b6f8b90bdbf}} 
+typedef vector\+\_\+type\+::difference\+\_\+type {\bfseries difference\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a33723921305add93b45973243faf1541}\label{class_c_data_stream_a33723921305add93b45973243faf1541}} 
+typedef vector\+\_\+type\+::reference {\bfseries reference}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ada2ac4b4c962dd5a5dcccbc3f71e83ab}\label{class_c_data_stream_ada2ac4b4c962dd5a5dcccbc3f71e83ab}} 
+typedef vector\+\_\+type\+::const\+\_\+reference {\bfseries const\+\_\+reference}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a5572ddd57b7355f87781b89087dd18e0}\label{class_c_data_stream_a5572ddd57b7355f87781b89087dd18e0}} 
+typedef vector\+\_\+type\+::value\+\_\+type {\bfseries value\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_abed2013224bdf424e51c78bf483886d3}\label{class_c_data_stream_abed2013224bdf424e51c78bf483886d3}} 
+typedef vector\+\_\+type\+::iterator {\bfseries iterator}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_abcfd79b72607505b22f18424e313b4c5}\label{class_c_data_stream_abcfd79b72607505b22f18424e313b4c5}} 
+typedef vector\+\_\+type\+::const\+\_\+iterator {\bfseries const\+\_\+iterator}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a93ca1c317b7080997a20b0cf1920b39c}\label{class_c_data_stream_a93ca1c317b7080997a20b0cf1920b39c}} 
+typedef vector\+\_\+type\+::reverse\+\_\+iterator {\bfseries reverse\+\_\+iterator}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a38f4d7d2ae59566a0500523a1b1a49d4}\label{class_c_data_stream_a38f4d7d2ae59566a0500523a1b1a49d4}} 
+{\bfseries C\+Data\+Stream} (int n\+Type\+In, int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a00d23d0ef651cb4ea54cb37009bdf8f2}\label{class_c_data_stream_a00d23d0ef651cb4ea54cb37009bdf8f2}} 
+{\bfseries C\+Data\+Stream} (const\+\_\+iterator pbegin, const\+\_\+iterator pend, int n\+Type\+In, int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ab345d2edd7bef6c6c140a46621e49eee}\label{class_c_data_stream_ab345d2edd7bef6c6c140a46621e49eee}} 
+{\bfseries C\+Data\+Stream} (const char $\ast$pbegin, const char $\ast$pend, int n\+Type\+In, int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a38a51fefce23374963516b3af03638fc}\label{class_c_data_stream_a38a51fefce23374963516b3af03638fc}} 
+{\bfseries C\+Data\+Stream} (const vector\+\_\+type \&vch\+In, int n\+Type\+In, int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a46219676397ae7b3cbc0c676f74ba1e7}\label{class_c_data_stream_a46219676397ae7b3cbc0c676f74ba1e7}} 
+{\bfseries C\+Data\+Stream} (const std\+::vector$<$ char $>$ \&vch\+In, int n\+Type\+In, int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ac63bd3d0ecce0edc2aa66cc80b633b6f}\label{class_c_data_stream_ac63bd3d0ecce0edc2aa66cc80b633b6f}} 
+{\bfseries C\+Data\+Stream} (const std\+::vector$<$ unsigned char $>$ \&vch\+In, int n\+Type\+In, int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a95267358054cbfbf37e239f3e6c78471}\label{class_c_data_stream_a95267358054cbfbf37e239f3e6c78471}} 
+void {\bfseries Init} (int n\+Type\+In, int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a59c13d9215c13b3bb4d56a818d280dda}\label{class_c_data_stream_a59c13d9215c13b3bb4d56a818d280dda}} 
+\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \& {\bfseries operator+=} (const \mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \&b)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_aac770a2b809917189c4476ee899b2d8b}\label{class_c_data_stream_aac770a2b809917189c4476ee899b2d8b}} 
+std\+::string {\bfseries str} () const
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a2355d11752d8622badfbc03e9ed192fd}\label{class_c_data_stream_a2355d11752d8622badfbc03e9ed192fd}} 
+const\+\_\+iterator {\bfseries begin} () const
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a4b8ed86db3a4563fc327c903b0ccf4ee}\label{class_c_data_stream_a4b8ed86db3a4563fc327c903b0ccf4ee}} 
+iterator {\bfseries begin} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a66409dbd4403682fe674e2e71173cab4}\label{class_c_data_stream_a66409dbd4403682fe674e2e71173cab4}} 
+const\+\_\+iterator {\bfseries end} () const
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a6a486e8e0da9e769520de62b15bd9315}\label{class_c_data_stream_a6a486e8e0da9e769520de62b15bd9315}} 
+iterator {\bfseries end} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_add30f866dd928fc28c47fe79a0a6723a}\label{class_c_data_stream_add30f866dd928fc28c47fe79a0a6723a}} 
+size\+\_\+type {\bfseries size} () const
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ab2633ac67f098dad30d03291741c2e42}\label{class_c_data_stream_ab2633ac67f098dad30d03291741c2e42}} 
+bool {\bfseries empty} () const
+\item 
+\mbox{\Hypertarget{class_c_data_stream_aa91abddde56127bd3d6ac2a0fb005874}\label{class_c_data_stream_aa91abddde56127bd3d6ac2a0fb005874}} 
+void {\bfseries resize} (size\+\_\+type n, value\+\_\+type c=0)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a5542e71bd7af2ab7cd7be0f381d39cb5}\label{class_c_data_stream_a5542e71bd7af2ab7cd7be0f381d39cb5}} 
+void {\bfseries reserve} (size\+\_\+type n)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a7f242ea28a90db31d8f1b391cc6e3927}\label{class_c_data_stream_a7f242ea28a90db31d8f1b391cc6e3927}} 
+const\+\_\+reference {\bfseries operator\mbox{[}$\,$\mbox{]}} (size\+\_\+type pos) const
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a91a057dd6e866137a7d526bd253fa8e9}\label{class_c_data_stream_a91a057dd6e866137a7d526bd253fa8e9}} 
+reference {\bfseries operator\mbox{[}$\,$\mbox{]}} (size\+\_\+type pos)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ade6ed9a3a481e333900e6496707b9692}\label{class_c_data_stream_ade6ed9a3a481e333900e6496707b9692}} 
+void {\bfseries clear} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a191a18802fbc0861ae118d79d33088dc}\label{class_c_data_stream_a191a18802fbc0861ae118d79d33088dc}} 
+iterator {\bfseries insert} (iterator it, const char \&x=char())
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ac8fa6a4a4cd08da5a0c87180834611e5}\label{class_c_data_stream_ac8fa6a4a4cd08da5a0c87180834611e5}} 
+void {\bfseries insert} (iterator it, size\+\_\+type n, const char \&x)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_aa15a60d7ee6d987de444426f2825f284}\label{class_c_data_stream_aa15a60d7ee6d987de444426f2825f284}} 
+void {\bfseries insert} (iterator it, std\+::vector$<$ char $>$\+::const\+\_\+iterator first, std\+::vector$<$ char $>$\+::const\+\_\+iterator last)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a9635fda38bc0b7836b4364820a67a18d}\label{class_c_data_stream_a9635fda38bc0b7836b4364820a67a18d}} 
+void {\bfseries insert} (iterator it, const char $\ast$first, const char $\ast$last)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_acb2a195db823f11161ea07c4855e0333}\label{class_c_data_stream_acb2a195db823f11161ea07c4855e0333}} 
+iterator {\bfseries erase} (iterator it)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a7446b23bcfa37cbfa79ccc66f8aff48a}\label{class_c_data_stream_a7446b23bcfa37cbfa79ccc66f8aff48a}} 
+iterator {\bfseries erase} (iterator first, iterator last)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a84c3fd4cf194f3402dc8adce6ab3ccf9}\label{class_c_data_stream_a84c3fd4cf194f3402dc8adce6ab3ccf9}} 
+void {\bfseries Compact} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a7054311b2fe016b21fb853a1e27812d9}\label{class_c_data_stream_a7054311b2fe016b21fb853a1e27812d9}} 
+bool {\bfseries Rewind} (size\+\_\+type n)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ac6b34149b7eea928c925100dfe10c087}\label{class_c_data_stream_ac6b34149b7eea928c925100dfe10c087}} 
+bool {\bfseries eof} () const
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a45a08b8355d47a95e9dae87ed6487483}\label{class_c_data_stream_a45a08b8355d47a95e9dae87ed6487483}} 
+\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} $\ast$ {\bfseries rdbuf} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a0483fe7bccf16aa88bf7272f18a0a7b0}\label{class_c_data_stream_a0483fe7bccf16aa88bf7272f18a0a7b0}} 
+int {\bfseries in\+\_\+avail} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a92467b36f5b2edff8becb5eadec633ce}\label{class_c_data_stream_a92467b36f5b2edff8becb5eadec633ce}} 
+void {\bfseries Set\+Type} (int n)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a14bc0652cfd49850a032f0a1651456a7}\label{class_c_data_stream_a14bc0652cfd49850a032f0a1651456a7}} 
+int {\bfseries Get\+Type} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a267d1315f3f9e9bcf9e7168beaa240c4}\label{class_c_data_stream_a267d1315f3f9e9bcf9e7168beaa240c4}} 
+void {\bfseries Set\+Version} (int n)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_acb7af65ccac8273fc694a25796814ddc}\label{class_c_data_stream_acb7af65ccac8273fc694a25796814ddc}} 
+int {\bfseries Get\+Version} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ad8f97bbd83ef3d2eebfd3f9c82f55260}\label{class_c_data_stream_ad8f97bbd83ef3d2eebfd3f9c82f55260}} 
+void {\bfseries Read\+Version} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a35d49028155fb47d2bb5c2dbaf31bc8e}\label{class_c_data_stream_a35d49028155fb47d2bb5c2dbaf31bc8e}} 
+void {\bfseries Write\+Version} ()
+\item 
+\mbox{\Hypertarget{class_c_data_stream_af3743932a68e3ee3f1dbd357993a51ae}\label{class_c_data_stream_af3743932a68e3ee3f1dbd357993a51ae}} 
+\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \& {\bfseries read} (char $\ast$pch, size\+\_\+t n\+Size)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_aebfcaa009d328a208dbbcd13db846dd6}\label{class_c_data_stream_aebfcaa009d328a208dbbcd13db846dd6}} 
+\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \& {\bfseries ignore} (int n\+Size)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_abcab3fa1be7676ffdb34908ec7c84b78}\label{class_c_data_stream_abcab3fa1be7676ffdb34908ec7c84b78}} 
+\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \& {\bfseries write} (const char $\ast$pch, size\+\_\+t n\+Size)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_aea93472150507d03dff6dedda4a8208c}\label{class_c_data_stream_aea93472150507d03dff6dedda4a8208c}} 
+{\footnotesize template$<$typename Stream $>$ }\\void {\bfseries Serialize} (Stream \&s, int n\+Type, int n\+Version) const
+\item 
+\mbox{\Hypertarget{class_c_data_stream_aaf2b9e953793ce5a4fc438a7ecb00dc2}\label{class_c_data_stream_aaf2b9e953793ce5a4fc438a7ecb00dc2}} 
+{\footnotesize template$<$typename T $>$ }\\unsigned int {\bfseries Get\+Serialize\+Size} (const T \&obj)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_af47c6d4051064a226f529ee4d7c13ad7}\label{class_c_data_stream_af47c6d4051064a226f529ee4d7c13ad7}} 
+{\footnotesize template$<$typename T $>$ }\\\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \& {\bfseries operator$<$$<$} (const T \&obj)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ac80cfc65569416f8c23e328edb4cadae}\label{class_c_data_stream_ac80cfc65569416f8c23e328edb4cadae}} 
+{\footnotesize template$<$typename T $>$ }\\\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \& {\bfseries operator$>$$>$} (T \&obj)
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a4be60514b69c71a722e16bf1fbbc3c6c}\label{class_c_data_stream_a4be60514b69c71a722e16bf1fbbc3c6c}} 
+void {\bfseries Get\+And\+Clear} (C\+Serialize\+Data \&data)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a2b646679e24cf6f382fe8ab2d4f50f35}\label{class_c_data_stream_a2b646679e24cf6f382fe8ab2d4f50f35}} 
+int {\bfseries n\+Type}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a074998c6b7c8aa17a1a90dbc414b605d}\label{class_c_data_stream_a074998c6b7c8aa17a1a90dbc414b605d}} 
+int {\bfseries n\+Version}
+\end{DoxyCompactItemize}
+\subsection*{Protected Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_a5e86187632a0d6cea39f3ea525427e27}\label{class_c_data_stream_a5e86187632a0d6cea39f3ea525427e27}} 
+typedef C\+Serialize\+Data {\bfseries vector\+\_\+type}
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ac875adb8c720c48abd1a7c82f3452dda}\label{class_c_data_stream_ac875adb8c720c48abd1a7c82f3452dda}} 
+vector\+\_\+type {\bfseries vch}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_af1c6a23b6725406d8f3464036a595556}\label{class_c_data_stream_af1c6a23b6725406d8f3464036a595556}} 
+unsigned int {\bfseries n\+Read\+Pos}
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_data_stream_ae9d127e586618900bc753dfda97e9401}\label{class_c_data_stream_ae9d127e586618900bc753dfda97e9401}} 
+\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} {\bfseries operator+} (const \mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \&a, const \mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \&b)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Double ended buffer combining vector and stream-\/like interfaces.
+
+\begin{quote}
+\begin{quote}
+and $<$$<$ read and write unformatted data using the above serialization templates. \end{quote}
+\end{quote}
+Fills with data in linear time; some stringstream implementations take N$^\wedge$2 time. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/streams.\+h\end{DoxyCompactItemize}

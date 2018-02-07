@@ -1,0 +1,37 @@
+\hypertarget{class_accepted_connection_impl}{}\section{Accepted\+Connection\+Impl$<$ Protocol $>$ Class Template Reference}
+\label{class_accepted_connection_impl}\index{Accepted\+Connection\+Impl$<$ Protocol $>$@{Accepted\+Connection\+Impl$<$ Protocol $>$}}
+Inheritance diagram for Accepted\+Connection\+Impl$<$ Protocol $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_accepted_connection_impl}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_accepted_connection_impl_adaf674801c89a76de0bbb4154f2cf3b8}\label{class_accepted_connection_impl_adaf674801c89a76de0bbb4154f2cf3b8}} 
+{\bfseries Accepted\+Connection\+Impl} (asio\+::io\+\_\+service \&io\+\_\+service, ssl\+::context \&context, bool f\+Use\+S\+SL)
+\item 
+\mbox{\Hypertarget{class_accepted_connection_impl_ab15396a413e40f947b7d527a2afe37fa}\label{class_accepted_connection_impl_ab15396a413e40f947b7d527a2afe37fa}} 
+virtual std\+::iostream \& {\bfseries stream} ()
+\item 
+\mbox{\Hypertarget{class_accepted_connection_impl_ac9842ed342c2cbabb9c0dc4f7e1e9d0a}\label{class_accepted_connection_impl_ac9842ed342c2cbabb9c0dc4f7e1e9d0a}} 
+virtual std\+::string {\bfseries peer\+\_\+address\+\_\+to\+\_\+string} () const
+\item 
+\mbox{\Hypertarget{class_accepted_connection_impl_a1b114863c047cae57ce42564f9a29be1}\label{class_accepted_connection_impl_a1b114863c047cae57ce42564f9a29be1}} 
+virtual void {\bfseries close} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_accepted_connection_impl_ade939b7d2778690cf78a9f6719f47c76}\label{class_accepted_connection_impl_ade939b7d2778690cf78a9f6719f47c76}} 
+Protocol\+::endpoint {\bfseries peer}
+\item 
+\mbox{\Hypertarget{class_accepted_connection_impl_afcfc99c020d301985bc19b4075fc7e78}\label{class_accepted_connection_impl_afcfc99c020d301985bc19b4075fc7e78}} 
+asio\+::ssl\+::stream$<$ typename Protocol\+::socket $>$ {\bfseries ssl\+Stream}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/rpcserver.\+cpp\end{DoxyCompactItemize}

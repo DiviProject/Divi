@@ -1,0 +1,78 @@
+\hypertarget{classleveldb_1_1_env}{}\section{leveldb\+:\+:Env Class Reference}
+\label{classleveldb_1_1_env}\index{leveldb\+::\+Env@{leveldb\+::\+Env}}
+Inheritance diagram for leveldb\+:\+:Env\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classleveldb_1_1_env}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_ad73810059f48c1d7b91125d357e7d351}\label{classleveldb_1_1_env_ad73810059f48c1d7b91125d357e7d351}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries New\+Sequential\+File} (const std\+::string \&fname, \mbox{\hyperlink{classleveldb_1_1_sequential_file}{Sequential\+File}} $\ast$$\ast$result)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a1df3e0bb2d47ee914448df9bb9ca0734}\label{classleveldb_1_1_env_a1df3e0bb2d47ee914448df9bb9ca0734}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries New\+Random\+Access\+File} (const std\+::string \&fname, \mbox{\hyperlink{classleveldb_1_1_random_access_file}{Random\+Access\+File}} $\ast$$\ast$result)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a4566194f3e82fede425fdb5bb355f7de}\label{classleveldb_1_1_env_a4566194f3e82fede425fdb5bb355f7de}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries New\+Writable\+File} (const std\+::string \&fname, \mbox{\hyperlink{classleveldb_1_1_writable_file}{Writable\+File}} $\ast$$\ast$result)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_acbb85047fdf7bf441bd365cfb09f9ecb}\label{classleveldb_1_1_env_acbb85047fdf7bf441bd365cfb09f9ecb}} 
+virtual bool {\bfseries File\+Exists} (const std\+::string \&fname)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a53028e3112d7bb3bf6574ddaab18d6f6}\label{classleveldb_1_1_env_a53028e3112d7bb3bf6574ddaab18d6f6}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Get\+Children} (const std\+::string \&dir, std\+::vector$<$ std\+::string $>$ $\ast$result)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_ac956b984466d5f09309664177687f9af}\label{classleveldb_1_1_env_ac956b984466d5f09309664177687f9af}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Delete\+File} (const std\+::string \&fname)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_ae6b7c8122df5a8020b2a3439ac39646e}\label{classleveldb_1_1_env_ae6b7c8122df5a8020b2a3439ac39646e}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Create\+Dir} (const std\+::string \&dirname)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a4e1a1c4495541e426b146cba56c59627}\label{classleveldb_1_1_env_a4e1a1c4495541e426b146cba56c59627}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Delete\+Dir} (const std\+::string \&dirname)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_aacb66541dcb3bd586e6cc5a87489690c}\label{classleveldb_1_1_env_aacb66541dcb3bd586e6cc5a87489690c}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Get\+File\+Size} (const std\+::string \&fname, uint64\+\_\+t $\ast$file\+\_\+size)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_abd743b3d4751ada1ab307427827ed5b0}\label{classleveldb_1_1_env_abd743b3d4751ada1ab307427827ed5b0}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Rename\+File} (const std\+::string \&src, const std\+::string \&target)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a9b7266f0444f832e428328ff19b7b54c}\label{classleveldb_1_1_env_a9b7266f0444f832e428328ff19b7b54c}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Lock\+File} (const std\+::string \&fname, \mbox{\hyperlink{classleveldb_1_1_file_lock}{File\+Lock}} $\ast$$\ast$lock)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a194a2ee3c21bc0b204ad0e5bc3b81d4b}\label{classleveldb_1_1_env_a194a2ee3c21bc0b204ad0e5bc3b81d4b}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Unlock\+File} (\mbox{\hyperlink{classleveldb_1_1_file_lock}{File\+Lock}} $\ast$lock)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a6b5fc50322d8404f5b13fad0e03d8724}\label{classleveldb_1_1_env_a6b5fc50322d8404f5b13fad0e03d8724}} 
+virtual void {\bfseries Schedule} (void($\ast$function)(void $\ast$arg), void $\ast$arg)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a25eafd1622a2cf2a415ee8b2325bc808}\label{classleveldb_1_1_env_a25eafd1622a2cf2a415ee8b2325bc808}} 
+virtual void {\bfseries Start\+Thread} (void($\ast$function)(void $\ast$arg), void $\ast$arg)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_ab57a55be37d4d57bf3c0ff83ee689f95}\label{classleveldb_1_1_env_ab57a55be37d4d57bf3c0ff83ee689f95}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Get\+Test\+Directory} (std\+::string $\ast$path)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a53a4c41d294fe619f13ec5b697ffc933}\label{classleveldb_1_1_env_a53a4c41d294fe619f13ec5b697ffc933}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries New\+Logger} (const std\+::string \&fname, \mbox{\hyperlink{classleveldb_1_1_logger}{Logger}} $\ast$$\ast$result)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a988062bcd558ac02c62522ac2c8aa39f}\label{classleveldb_1_1_env_a988062bcd558ac02c62522ac2c8aa39f}} 
+virtual uint64\+\_\+t {\bfseries Now\+Micros} ()=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_a43ad838cfb08db3d9e2197800cd33312}\label{classleveldb_1_1_env_a43ad838cfb08db3d9e2197800cd33312}} 
+virtual void {\bfseries Sleep\+For\+Microseconds} (int micros)=0
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_env_ae15b67e650ff6790059745fd1b3bf3e7}\label{classleveldb_1_1_env_ae15b67e650ff6790059745fd1b3bf3e7}} 
+static \mbox{\hyperlink{classleveldb_1_1_env}{Env}} $\ast$ {\bfseries Default} ()
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/include/leveldb/env.\+h\item 
+P\+I\+V\+X/src/leveldb/util/env.\+cc\item 
+P\+I\+V\+X/src/leveldb/util/env\+\_\+posix.\+cc\end{DoxyCompactItemize}

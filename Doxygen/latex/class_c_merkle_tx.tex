@@ -1,0 +1,84 @@
+\hypertarget{class_c_merkle_tx}{}\section{C\+Merkle\+Tx Class Reference}
+\label{class_c_merkle_tx}\index{C\+Merkle\+Tx@{C\+Merkle\+Tx}}
+
+
+{\ttfamily \#include $<$wallet.\+h$>$}
+
+Inheritance diagram for C\+Merkle\+Tx\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_c_merkle_tx}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_aaf4aeddb032c6bb34559fa443bfc3476}\label{class_c_merkle_tx_aaf4aeddb032c6bb34559fa443bfc3476}} 
+{\bfseries C\+Merkle\+Tx} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx\+In)
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_ac57628e321f98642976d06b6cc231162}\label{class_c_merkle_tx_ac57628e321f98642976d06b6cc231162}} 
+void {\bfseries Init} ()
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_afefd3a26c9505f1fa81587c19c22f09c}\label{class_c_merkle_tx_afefd3a26c9505f1fa81587c19c22f09c}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a538ba1b6faedbb447cb45ac7019b6f47}\label{class_c_merkle_tx_a538ba1b6faedbb447cb45ac7019b6f47}} 
+int {\bfseries Set\+Merkle\+Branch} (const \mbox{\hyperlink{class_c_block}{C\+Block}} \&block)
+\item 
+int \mbox{\hyperlink{class_c_merkle_tx_a5bf3a355593ecce5799de92d013149b1}{Get\+Depth\+In\+Main\+Chain}} (const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$\&pindex\+Ret, bool enable\+IX=true) const
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a62f6cd33580ca300867f63ce8f49a072}\label{class_c_merkle_tx_a62f6cd33580ca300867f63ce8f49a072}} 
+int {\bfseries Get\+Depth\+In\+Main\+Chain} (bool enable\+IX=true) const
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_ad4b3623fabf1924dba2a7694e3418e1e}\label{class_c_merkle_tx_ad4b3623fabf1924dba2a7694e3418e1e}} 
+bool {\bfseries Is\+In\+Main\+Chain} () const
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a69ebd437f7b44169659c3527fe73b6ab}\label{class_c_merkle_tx_a69ebd437f7b44169659c3527fe73b6ab}} 
+int {\bfseries Get\+Blocks\+To\+Maturity} () const
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a61126e811a53b941b3efdf5a4e83db90}\label{class_c_merkle_tx_a61126e811a53b941b3efdf5a4e83db90}} 
+bool {\bfseries Accept\+To\+Memory\+Pool} (bool f\+Limit\+Free=true, bool f\+Reject\+Insane\+Fee=true, bool ignore\+Fees=false)
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a29ab20d0785095dba254ca1050ba6989}\label{class_c_merkle_tx_a29ab20d0785095dba254ca1050ba6989}} 
+int {\bfseries Get\+Transaction\+Lock\+Signatures} () const
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a72a7897d620c425280a4af4db87e3601}\label{class_c_merkle_tx_a72a7897d620c425280a4af4db87e3601}} 
+bool {\bfseries Is\+Transaction\+Lock\+Timed\+Out} () const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a788ee54c14b6d9706eb3737404663238}\label{class_c_merkle_tx_a788ee54c14b6d9706eb3737404663238}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries hash\+Block}
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a9ae6a408be914f486ebbb4161879ee69}\label{class_c_merkle_tx_a9ae6a408be914f486ebbb4161879ee69}} 
+std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ {\bfseries v\+Merkle\+Branch}
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a829655e70702fdf97b6e534dd3227b0b}\label{class_c_merkle_tx_a829655e70702fdf97b6e534dd3227b0b}} 
+int {\bfseries n\+Index}
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a3626572f7dbb86eb1c36a6570d740c7f}\label{class_c_merkle_tx_a3626572f7dbb86eb1c36a6570d740c7f}} 
+bool {\bfseries f\+Merkle\+Verified}
+\item 
+\mbox{\Hypertarget{class_c_merkle_tx_a86d607a3e47700ed5ebcdd4d4fcda4d7}\label{class_c_merkle_tx_a86d607a3e47700ed5ebcdd4d4fcda4d7}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+A transaction with a merkle branch linking it to the block chain. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_merkle_tx_a5bf3a355593ecce5799de92d013149b1}\label{class_c_merkle_tx_a5bf3a355593ecce5799de92d013149b1}} 
+\index{C\+Merkle\+Tx@{C\+Merkle\+Tx}!Get\+Depth\+In\+Main\+Chain@{Get\+Depth\+In\+Main\+Chain}}
+\index{Get\+Depth\+In\+Main\+Chain@{Get\+Depth\+In\+Main\+Chain}!C\+Merkle\+Tx@{C\+Merkle\+Tx}}
+\subsubsection{\texorpdfstring{Get\+Depth\+In\+Main\+Chain()}{GetDepthInMainChain()}}
+{\footnotesize\ttfamily int C\+Merkle\+Tx\+::\+Get\+Depth\+In\+Main\+Chain (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$\&}]{pindex\+Ret,  }\item[{bool}]{enable\+IX = {\ttfamily true} }\end{DoxyParamCaption}) const}
+
+Return depth of transaction in blockchain\+: -\/1 \+: not in blockchain, and not in memory pool (conflicted transaction) 0 \+: in memory pool, waiting to be included in a block $>$=1 \+: this many blocks deep in the main chain 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/wallet.\+h\item 
+P\+I\+V\+X/src/wallet.\+cpp\end{DoxyCompactItemize}

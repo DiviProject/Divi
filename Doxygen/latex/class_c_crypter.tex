@@ -1,0 +1,33 @@
+\hypertarget{class_c_crypter}{}\section{C\+Crypter Class Reference}
+\label{class_c_crypter}\index{C\+Crypter@{C\+Crypter}}
+
+
+{\ttfamily \#include $<$crypter.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_crypter_a5368279e4a1549d3c1d15d8aa2179708}\label{class_c_crypter_a5368279e4a1549d3c1d15d8aa2179708}} 
+bool {\bfseries Set\+Key\+From\+Passphrase} (const Secure\+String \&str\+Key\+Data, const std\+::vector$<$ unsigned char $>$ \&ch\+Salt, const unsigned int n\+Rounds, const unsigned int n\+Derivation\+Method)
+\item 
+\mbox{\Hypertarget{class_c_crypter_a124fcd3021569a660ce2daa3391c8ea4}\label{class_c_crypter_a124fcd3021569a660ce2daa3391c8ea4}} 
+bool {\bfseries Encrypt} (const C\+Keying\+Material \&vch\+Plaintext, std\+::vector$<$ unsigned char $>$ \&vch\+Ciphertext)
+\item 
+\mbox{\Hypertarget{class_c_crypter_a4dbabed4975d4435d22c76deac43df7f}\label{class_c_crypter_a4dbabed4975d4435d22c76deac43df7f}} 
+bool {\bfseries Decrypt} (const std\+::vector$<$ unsigned char $>$ \&vch\+Ciphertext, C\+Keying\+Material \&vch\+Plaintext)
+\item 
+\mbox{\Hypertarget{class_c_crypter_a0d948dd4796e2420e1dd9c1ddbf7974e}\label{class_c_crypter_a0d948dd4796e2420e1dd9c1ddbf7974e}} 
+bool {\bfseries Set\+Key} (const C\+Keying\+Material \&ch\+New\+Key, const std\+::vector$<$ unsigned char $>$ \&ch\+New\+IV)
+\item 
+\mbox{\Hypertarget{class_c_crypter_a6910b4cff4ee40e33fbb3789dc12c139}\label{class_c_crypter_a6910b4cff4ee40e33fbb3789dc12c139}} 
+void {\bfseries Clean\+Key} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Encryption/decryption context with key information 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/crypter.\+h\item 
+P\+I\+V\+X/src/crypter.\+cpp\end{DoxyCompactItemize}

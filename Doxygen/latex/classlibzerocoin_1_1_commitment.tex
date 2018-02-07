@@ -1,0 +1,47 @@
+\hypertarget{classlibzerocoin_1_1_commitment}{}\section{libzerocoin\+:\+:Commitment Class Reference}
+\label{classlibzerocoin_1_1_commitment}\index{libzerocoin\+::\+Commitment@{libzerocoin\+::\+Commitment}}
+
+
+{\ttfamily \#include $<$Commitment.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_commitment_a009eaae23946cf89430297c9f676ec3e}{Commitment}} (const \mbox{\hyperlink{classlibzerocoin_1_1_integer_group_params}{Integer\+Group\+Params}} $\ast$p, const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&value)
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_commitment_a512ade1b225b10f92f71b3c05869c23a}\label{classlibzerocoin_1_1_commitment_a512ade1b225b10f92f71b3c05869c23a}} 
+const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \& {\bfseries get\+Commitment\+Value} () const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_commitment_ac84eccbba59e5c0cb76ee8fd827d80de}\label{classlibzerocoin_1_1_commitment_ac84eccbba59e5c0cb76ee8fd827d80de}} 
+const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \& {\bfseries get\+Randomness} () const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_commitment_acde85382375c1ded6b51612903cd1ac7}\label{classlibzerocoin_1_1_commitment_acde85382375c1ded6b51612903cd1ac7}} 
+const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \& {\bfseries get\+Contents} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A commitment, complete with contents and opening randomness. These should remain secret. Publish only the commitment value. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_commitment_a009eaae23946cf89430297c9f676ec3e}\label{classlibzerocoin_1_1_commitment_a009eaae23946cf89430297c9f676ec3e}} 
+\index{libzerocoin\+::\+Commitment@{libzerocoin\+::\+Commitment}!Commitment@{Commitment}}
+\index{Commitment@{Commitment}!libzerocoin\+::\+Commitment@{libzerocoin\+::\+Commitment}}
+\subsubsection{\texorpdfstring{Commitment()}{Commitment()}}
+{\footnotesize\ttfamily libzerocoin\+::\+Commitment\+::\+Commitment (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_integer_group_params}{Integer\+Group\+Params}} $\ast$}]{p,  }\item[{const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&}]{value }\end{DoxyParamCaption})}
+
+Generates a Pedersen commitment to the given value.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & the group parameters for the coin \\
+\hline
+{\em value} & the value to commit to \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_commitment_8h}{Commitment.\+h}}\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_commitment_8cpp}{Commitment.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,50 @@
+\hypertarget{class_c_net_message}{}\section{C\+Net\+Message Class Reference}
+\label{class_c_net_message}\index{C\+Net\+Message@{C\+Net\+Message}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_net_message_aa70db259a11e329ece8e9db4b895982c}\label{class_c_net_message_aa70db259a11e329ece8e9db4b895982c}} 
+{\bfseries C\+Net\+Message} (int n\+Type\+In, int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_net_message_ae3b5f6110ae9a3c06397894cd46ab224}\label{class_c_net_message_ae3b5f6110ae9a3c06397894cd46ab224}} 
+bool {\bfseries complete} () const
+\item 
+\mbox{\Hypertarget{class_c_net_message_a63b9f2351d5e92126cacacd51d9e16b6}\label{class_c_net_message_a63b9f2351d5e92126cacacd51d9e16b6}} 
+void {\bfseries Set\+Version} (int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_net_message_a3e58f5f29b23d1377f8fd15fc75c78ac}\label{class_c_net_message_a3e58f5f29b23d1377f8fd15fc75c78ac}} 
+int {\bfseries read\+Header} (const char $\ast$pch, unsigned int n\+Bytes)
+\item 
+\mbox{\Hypertarget{class_c_net_message_adbc1669a56462daea5f37e5e99117f8c}\label{class_c_net_message_adbc1669a56462daea5f37e5e99117f8c}} 
+int {\bfseries read\+Data} (const char $\ast$pch, unsigned int n\+Bytes)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_net_message_a8f399ad7225f980bdab3ede17b1b23af}\label{class_c_net_message_a8f399ad7225f980bdab3ede17b1b23af}} 
+bool {\bfseries in\+\_\+data}
+\item 
+\mbox{\Hypertarget{class_c_net_message_a80a6f95f0c187aa97788118248cbf452}\label{class_c_net_message_a80a6f95f0c187aa97788118248cbf452}} 
+\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} {\bfseries hdrbuf}
+\item 
+\mbox{\Hypertarget{class_c_net_message_ae7215dca62862a3688f7eeb94646c377}\label{class_c_net_message_ae7215dca62862a3688f7eeb94646c377}} 
+\mbox{\hyperlink{class_c_message_header}{C\+Message\+Header}} {\bfseries hdr}
+\item 
+\mbox{\Hypertarget{class_c_net_message_a1a500121037490eec4b238906f3a23ad}\label{class_c_net_message_a1a500121037490eec4b238906f3a23ad}} 
+unsigned int {\bfseries n\+Hdr\+Pos}
+\item 
+\mbox{\Hypertarget{class_c_net_message_a1a25c16099d01362e1663390a2e06d1a}\label{class_c_net_message_a1a25c16099d01362e1663390a2e06d1a}} 
+\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} {\bfseries v\+Recv}
+\item 
+\mbox{\Hypertarget{class_c_net_message_a418f59287d1805dda6959f27a170c855}\label{class_c_net_message_a418f59287d1805dda6959f27a170c855}} 
+unsigned int {\bfseries n\+Data\+Pos}
+\item 
+\mbox{\Hypertarget{class_c_net_message_a99d5bbca862ac4b7a88b71a7b679decc}\label{class_c_net_message_a99d5bbca862ac4b7a88b71a7b679decc}} 
+int64\+\_\+t {\bfseries n\+Time}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/net.\+h\item 
+P\+I\+V\+X/src/net.\+cpp\end{DoxyCompactItemize}

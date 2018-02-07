@@ -1,0 +1,61 @@
+\hypertarget{class_amount_spin_box}{}\section{Amount\+Spin\+Box Class Reference}
+\label{class_amount_spin_box}\index{Amount\+Spin\+Box@{Amount\+Spin\+Box}}
+Inheritance diagram for Amount\+Spin\+Box\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_amount_spin_box}
+\end{center}
+\end{figure}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_a702534ebb29afb3898ed262404659b7b}\label{class_amount_spin_box_a702534ebb29afb3898ed262404659b7b}} 
+void {\bfseries value\+Changed} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_a1ce7eabf484c59b31f1032ce00d092c0}\label{class_amount_spin_box_a1ce7eabf484c59b31f1032ce00d092c0}} 
+{\bfseries Amount\+Spin\+Box} (Q\+Widget $\ast$parent)
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_afebc9df8aca245c93d460a48675586e1}\label{class_amount_spin_box_afebc9df8aca245c93d460a48675586e1}} 
+Q\+Validator\+::\+State {\bfseries validate} (Q\+String \&text, int \&pos) const
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_a082bac9de36ad4bb0c0f2d5d42f0acc6}\label{class_amount_spin_box_a082bac9de36ad4bb0c0f2d5d42f0acc6}} 
+void {\bfseries fixup} (Q\+String \&input) const
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_ab7e522a441231ceaeeb0682ec62a06a9}\label{class_amount_spin_box_ab7e522a441231ceaeeb0682ec62a06a9}} 
+C\+Amount {\bfseries value} (bool $\ast$valid\+\_\+out=0) const
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_aca3825a8e5735dd99d3fa9665afb614c}\label{class_amount_spin_box_aca3825a8e5735dd99d3fa9665afb614c}} 
+void {\bfseries set\+Value} (const C\+Amount \&value)
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_a055616d98771e6fcef3ee225d7b09ee9}\label{class_amount_spin_box_a055616d98771e6fcef3ee225d7b09ee9}} 
+void {\bfseries step\+By} (int steps)
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_aef946e84b685f35c02782b50f4cce842}\label{class_amount_spin_box_aef946e84b685f35c02782b50f4cce842}} 
+void {\bfseries set\+Display\+Unit} (int unit)
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_a13c92cf7def6a03bf21c0279d5aaf857}\label{class_amount_spin_box_a13c92cf7def6a03bf21c0279d5aaf857}} 
+void {\bfseries set\+Single\+Step} (const C\+Amount \&step)
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_a40ee094061b19892825e7b30d3825ded}\label{class_amount_spin_box_a40ee094061b19892825e7b30d3825ded}} 
+Q\+Size {\bfseries minimum\+Size\+Hint} () const
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_af6b14fef4e19f107983cc68f269306c8}\label{class_amount_spin_box_af6b14fef4e19f107983cc68f269306c8}} 
+bool {\bfseries event} (Q\+Event $\ast$event)
+\item 
+\mbox{\Hypertarget{class_amount_spin_box_aab6a98db725aa53d43f7863c831d6d7f}\label{class_amount_spin_box_aab6a98db725aa53d43f7863c831d6d7f}} 
+Step\+Enabled {\bfseries step\+Enabled} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Q\+Spin\+Box that uses fixed-\/point numbers internally and uses our own formatting/parsing functions. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/bitcoinamountfield.\+cpp\end{DoxyCompactItemize}

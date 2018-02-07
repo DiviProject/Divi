@@ -1,0 +1,46 @@
+\hypertarget{classleveldb_1_1_cache_test}{}\section{leveldb\+:\+:Cache\+Test Class Reference}
+\label{classleveldb_1_1_cache_test}\index{leveldb\+::\+Cache\+Test@{leveldb\+::\+Cache\+Test}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_test_a90d19cd6098f10f809f0c3b94e8b3fc6}\label{classleveldb_1_1_cache_test_a90d19cd6098f10f809f0c3b94e8b3fc6}} 
+int {\bfseries Lookup} (int key)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_test_ad7fc76253a92137e62aede17322c7286}\label{classleveldb_1_1_cache_test_ad7fc76253a92137e62aede17322c7286}} 
+void {\bfseries Insert} (int key, int value, int charge=1)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_test_aeaa81bbd9d0fba1fb31b0a8f7aa94397}\label{classleveldb_1_1_cache_test_aeaa81bbd9d0fba1fb31b0a8f7aa94397}} 
+void {\bfseries Erase} (int key)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_test_aa8d3ce31a1995da33810f2b5320089ab}\label{classleveldb_1_1_cache_test_aa8d3ce31a1995da33810f2b5320089ab}} 
+static void {\bfseries Deleter} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, void $\ast$v)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_test_aad6b825748f29b973a8934682eb50ed2}\label{classleveldb_1_1_cache_test_aad6b825748f29b973a8934682eb50ed2}} 
+std\+::vector$<$ int $>$ {\bfseries deleted\+\_\+keys\+\_\+}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_test_add979edecc72f9740b1d6d4951c13c02}\label{classleveldb_1_1_cache_test_add979edecc72f9740b1d6d4951c13c02}} 
+std\+::vector$<$ int $>$ {\bfseries deleted\+\_\+values\+\_\+}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_test_af2edcc8a47148050ba791f6a2b7a6165}\label{classleveldb_1_1_cache_test_af2edcc8a47148050ba791f6a2b7a6165}} 
+\mbox{\hyperlink{classleveldb_1_1_cache}{Cache}} $\ast$ {\bfseries cache\+\_\+}
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_test_a91ef57f644d0531b882caed9547759f6}\label{classleveldb_1_1_cache_test_a91ef57f644d0531b882caed9547759f6}} 
+static \mbox{\hyperlink{classleveldb_1_1_cache_test}{Cache\+Test}} $\ast$ {\bfseries current\+\_\+}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_test_a101eeca736aed0fde7048d0bf21b7e0a}\label{classleveldb_1_1_cache_test_a101eeca736aed0fde7048d0bf21b7e0a}} 
+static const int {\bfseries k\+Cache\+Size} = 1000
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/util/cache\+\_\+test.\+cc\end{DoxyCompactItemize}

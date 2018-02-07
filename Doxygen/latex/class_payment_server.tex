@@ -1,0 +1,71 @@
+\hypertarget{class_payment_server}{}\section{Payment\+Server Class Reference}
+\label{class_payment_server}\index{Payment\+Server@{Payment\+Server}}
+Inheritance diagram for Payment\+Server\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_payment_server}
+\end{center}
+\end{figure}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_payment_server_abb6c65fabbf97ba95381997ca9cd6993}\label{class_payment_server_abb6c65fabbf97ba95381997ca9cd6993}} 
+void {\bfseries ui\+Ready} ()
+\item 
+\mbox{\Hypertarget{class_payment_server_ab846f9e8778e5cc878b644133e8628f1}\label{class_payment_server_ab846f9e8778e5cc878b644133e8628f1}} 
+void {\bfseries fetch\+Payment\+A\+CK} (\mbox{\hyperlink{class_c_wallet}{C\+Wallet}} $\ast$wallet, \mbox{\hyperlink{class_send_coins_recipient}{Send\+Coins\+Recipient}} recipient, Q\+Byte\+Array transaction)
+\item 
+\mbox{\Hypertarget{class_payment_server_adf4f844b3ce7f053690fd9260210640d}\label{class_payment_server_adf4f844b3ce7f053690fd9260210640d}} 
+void {\bfseries handle\+U\+R\+I\+Or\+File} (const Q\+String \&s)
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_payment_server_aa8b9cb16623d307e0cdc47de2dfe7e56}\label{class_payment_server_aa8b9cb16623d307e0cdc47de2dfe7e56}} 
+void {\bfseries received\+Payment\+Request} (\mbox{\hyperlink{class_send_coins_recipient}{Send\+Coins\+Recipient}})
+\item 
+\mbox{\Hypertarget{class_payment_server_a3566aabe525fb1b4a25975d7564abec6}\label{class_payment_server_a3566aabe525fb1b4a25975d7564abec6}} 
+void {\bfseries received\+Payment\+A\+CK} (const Q\+String \&payment\+A\+C\+K\+Msg)
+\item 
+\mbox{\Hypertarget{class_payment_server_a5f6427a6b665cbce3cd42f04feb9b183}\label{class_payment_server_a5f6427a6b665cbce3cd42f04feb9b183}} 
+void {\bfseries message} (const Q\+String \&title, const Q\+String \&message, unsigned int style)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_payment_server_a4a66f55c11f4757b121179d5d6988ab2}\label{class_payment_server_a4a66f55c11f4757b121179d5d6988ab2}} 
+{\bfseries Payment\+Server} (Q\+Object $\ast$parent, bool start\+Local\+Server=true)
+\item 
+\mbox{\Hypertarget{class_payment_server_a468fb163f5172c8428c434631aeb4132}\label{class_payment_server_a468fb163f5172c8428c434631aeb4132}} 
+void {\bfseries set\+Options\+Model} (\mbox{\hyperlink{class_options_model}{Options\+Model}} $\ast$options\+Model)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_payment_server_a6fa5530162603b2b07d0398ead7ce0b3}\label{class_payment_server_a6fa5530162603b2b07d0398ead7ce0b3}} 
+static void {\bfseries ipc\+Parse\+Command\+Line} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
+\item 
+\mbox{\Hypertarget{class_payment_server_a1cc71c8771bce09eac09f342a4d48220}\label{class_payment_server_a1cc71c8771bce09eac09f342a4d48220}} 
+static bool {\bfseries ipc\+Send\+Command\+Line} ()
+\item 
+\mbox{\Hypertarget{class_payment_server_a7371f1dd4896d83274f8784b42f288eb}\label{class_payment_server_a7371f1dd4896d83274f8784b42f288eb}} 
+static void {\bfseries Load\+Root\+C\+As} (X509\+\_\+\+S\+T\+O\+RE $\ast$store=N\+U\+LL)
+\item 
+\mbox{\Hypertarget{class_payment_server_ac3b7495238d833e76beb2fe11c0f6055}\label{class_payment_server_ac3b7495238d833e76beb2fe11c0f6055}} 
+static X509\+\_\+\+S\+T\+O\+RE $\ast$ {\bfseries get\+Cert\+Store} ()
+\item 
+\mbox{\Hypertarget{class_payment_server_a5fbb46e6092e961e743363be7b398da7}\label{class_payment_server_a5fbb46e6092e961e743363be7b398da7}} 
+static bool {\bfseries read\+Payment\+Request\+From\+File} (const Q\+String \&filename, \mbox{\hyperlink{class_payment_request_plus}{Payment\+Request\+Plus}} \&request)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_payment_server_af795e3c318556c833792e530b279efc9}\label{class_payment_server_af795e3c318556c833792e530b279efc9}} 
+bool {\bfseries event\+Filter} (Q\+Object $\ast$object, Q\+Event $\ast$event)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/paymentserver.\+h\item 
+P\+I\+V\+X/src/qt/paymentserver.\+cpp\end{DoxyCompactItemize}

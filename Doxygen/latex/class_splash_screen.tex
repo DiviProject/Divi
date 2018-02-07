@@ -1,0 +1,63 @@
+\hypertarget{class_splash_screen}{}\section{Splash\+Screen Class Reference}
+\label{class_splash_screen}\index{Splash\+Screen@{Splash\+Screen}}
+
+
+{\ttfamily \#include $<$splashscreen.\+h$>$}
+
+Inheritance diagram for Splash\+Screen\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_splash_screen}
+\end{center}
+\end{figure}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_splash_screen_ace6374d1889d704d4a41316540d9b47d}{slot\+Finish}} (Q\+Widget $\ast$main\+Win)
+\item 
+void \mbox{\hyperlink{class_splash_screen_a16635123e7906390e0aedb7d58ba9923}{show\+Message}} (const Q\+String \&message, int alignment, const Q\+Color \&color)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_splash_screen_aa6f816612e26f1fec23e428b0f290c2d}\label{class_splash_screen_aa6f816612e26f1fec23e428b0f290c2d}} 
+{\bfseries Splash\+Screen} (Qt\+::\+Window\+Flags f, const \mbox{\hyperlink{class_network_style}{Network\+Style}} $\ast$network\+Style)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_splash_screen_a1115e128bccb82b9a5391540aa87f3c5}\label{class_splash_screen_a1115e128bccb82b9a5391540aa87f3c5}} 
+void {\bfseries paint\+Event} (Q\+Paint\+Event $\ast$event)
+\item 
+\mbox{\Hypertarget{class_splash_screen_af2b8ee5e860e5584621eb6224ce7c959}\label{class_splash_screen_af2b8ee5e860e5584621eb6224ce7c959}} 
+void {\bfseries close\+Event} (Q\+Close\+Event $\ast$event)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for the splashscreen with information of the running client.
+
+\begin{DoxyNote}{Note}
+this is intentionally not a Q\+Splash\+Screen. Bitcoin Core initialization can take a long time, and in that case a progress window that cannot be moved around and minimized has turned out to be frustrating to the user. 
+\end{DoxyNote}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_splash_screen_a16635123e7906390e0aedb7d58ba9923}\label{class_splash_screen_a16635123e7906390e0aedb7d58ba9923}} 
+\index{Splash\+Screen@{Splash\+Screen}!show\+Message@{show\+Message}}
+\index{show\+Message@{show\+Message}!Splash\+Screen@{Splash\+Screen}}
+\subsubsection{\texorpdfstring{show\+Message}{showMessage}}
+{\footnotesize\ttfamily void Splash\+Screen\+::show\+Message (\begin{DoxyParamCaption}\item[{const Q\+String \&}]{message,  }\item[{int}]{alignment,  }\item[{const Q\+Color \&}]{color }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [slot]}}
+
+Show message and progress \mbox{\Hypertarget{class_splash_screen_ace6374d1889d704d4a41316540d9b47d}\label{class_splash_screen_ace6374d1889d704d4a41316540d9b47d}} 
+\index{Splash\+Screen@{Splash\+Screen}!slot\+Finish@{slot\+Finish}}
+\index{slot\+Finish@{slot\+Finish}!Splash\+Screen@{Splash\+Screen}}
+\subsubsection{\texorpdfstring{slot\+Finish}{slotFinish}}
+{\footnotesize\ttfamily void Splash\+Screen\+::slot\+Finish (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{main\+Win }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [slot]}}
+
+Slot to call finish() method as it\textquotesingle{}s not defined as slot 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/splashscreen.\+h\item 
+P\+I\+V\+X/src/qt/splashscreen.\+cpp\end{DoxyCompactItemize}

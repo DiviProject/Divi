@@ -1,0 +1,260 @@
+\hypertarget{class_c_obfuscation_pool}{}\section{C\+Obfuscation\+Pool Class Reference}
+\label{class_c_obfuscation_pool}\index{C\+Obfuscation\+Pool@{C\+Obfuscation\+Pool}}
+
+
+{\ttfamily \#include $<$obfuscation.\+h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a9ae4a793e3b26ba61096fd27e962293a}\label{class_c_obfuscation_pool_a9ae4a793e3b26ba61096fd27e962293a}} 
+enum {\bfseries messages} \{ \newline
+{\bfseries E\+R\+R\+\_\+\+A\+L\+R\+E\+A\+D\+Y\+\_\+\+H\+A\+VE}, 
+{\bfseries E\+R\+R\+\_\+\+D\+E\+N\+OM}, 
+{\bfseries E\+R\+R\+\_\+\+E\+N\+T\+R\+I\+E\+S\+\_\+\+F\+U\+LL}, 
+{\bfseries E\+R\+R\+\_\+\+E\+X\+I\+S\+T\+I\+N\+G\+\_\+\+TX}, 
+\newline
+{\bfseries E\+R\+R\+\_\+\+F\+E\+ES}, 
+{\bfseries E\+R\+R\+\_\+\+I\+N\+V\+A\+L\+I\+D\+\_\+\+C\+O\+L\+L\+A\+T\+E\+R\+AL}, 
+{\bfseries E\+R\+R\+\_\+\+I\+N\+V\+A\+L\+I\+D\+\_\+\+I\+N\+P\+UT}, 
+{\bfseries E\+R\+R\+\_\+\+I\+N\+V\+A\+L\+I\+D\+\_\+\+S\+C\+R\+I\+PT}, 
+\newline
+{\bfseries E\+R\+R\+\_\+\+I\+N\+V\+A\+L\+I\+D\+\_\+\+TX}, 
+{\bfseries E\+R\+R\+\_\+\+M\+A\+X\+I\+M\+UM}, 
+{\bfseries E\+R\+R\+\_\+\+M\+N\+\_\+\+L\+I\+ST}, 
+{\bfseries E\+R\+R\+\_\+\+M\+O\+DE}, 
+\newline
+{\bfseries E\+R\+R\+\_\+\+N\+O\+N\+\_\+\+S\+T\+A\+N\+D\+A\+R\+D\+\_\+\+P\+U\+B\+K\+EY}, 
+{\bfseries E\+R\+R\+\_\+\+N\+O\+T\+\_\+\+A\+\_\+\+MN}, 
+{\bfseries E\+R\+R\+\_\+\+Q\+U\+E\+U\+E\+\_\+\+F\+U\+LL}, 
+{\bfseries E\+R\+R\+\_\+\+R\+E\+C\+E\+NT}, 
+\newline
+{\bfseries E\+R\+R\+\_\+\+S\+E\+S\+S\+I\+ON}, 
+{\bfseries E\+R\+R\+\_\+\+M\+I\+S\+S\+I\+N\+G\+\_\+\+TX}, 
+{\bfseries E\+R\+R\+\_\+\+V\+E\+R\+S\+I\+ON}, 
+{\bfseries M\+S\+G\+\_\+\+N\+O\+E\+RR}, 
+\newline
+{\bfseries M\+S\+G\+\_\+\+S\+U\+C\+C\+E\+SS}, 
+{\bfseries M\+S\+G\+\_\+\+E\+N\+T\+R\+I\+E\+S\+\_\+\+A\+D\+D\+ED}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_c_obfuscation_pool_a9018f786df376b190c391bbf774be9d6}{Process\+Message\+Obfuscation}} (\mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$pfrom, std\+::string \&str\+Command, \mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \&v\+Recv)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_aa040695f32a21d3abc6ceaa9d8805779}\label{class_c_obfuscation_pool_aa040695f32a21d3abc6ceaa9d8805779}} 
+void {\bfseries Init\+Collateral\+Address} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a91df9629be1da05a574bafa3012d8d4f}\label{class_c_obfuscation_pool_a91df9629be1da05a574bafa3012d8d4f}} 
+void {\bfseries Set\+Min\+Block\+Spacing} (int min\+Block\+Spacing\+In)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_aa799d03fe720586f1410035e3e2dba94}\label{class_c_obfuscation_pool_aa799d03fe720586f1410035e3e2dba94}} 
+bool {\bfseries Set\+Collateral\+Address} (std\+::string str\+Address)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a36e70e529e712c05b04d19dd07b7044d}\label{class_c_obfuscation_pool_a36e70e529e712c05b04d19dd07b7044d}} 
+void {\bfseries Reset} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a4c0977ba94ace56440b595c7f2ac2e42}\label{class_c_obfuscation_pool_a4c0977ba94ace56440b595c7f2ac2e42}} 
+void {\bfseries Set\+Null} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_aa8020a6f75404ddbde8dfee08c6a5322}\label{class_c_obfuscation_pool_aa8020a6f75404ddbde8dfee08c6a5322}} 
+void {\bfseries Unlock\+Coins} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a417d2e31b1a8bf70f353267534972aef}\label{class_c_obfuscation_pool_a417d2e31b1a8bf70f353267534972aef}} 
+bool {\bfseries Is\+Null} () const
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a38bb07f27e294022673ac6a83d18649d}\label{class_c_obfuscation_pool_a38bb07f27e294022673ac6a83d18649d}} 
+int {\bfseries Get\+State} () const
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a16c2ad30d227d09e15ba4277b0a22fab}\label{class_c_obfuscation_pool_a16c2ad30d227d09e15ba4277b0a22fab}} 
+std\+::string {\bfseries Get\+Status} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_aedc697c39350c594b54161ff79aec21f}\label{class_c_obfuscation_pool_aedc697c39350c594b54161ff79aec21f}} 
+int {\bfseries Get\+Entries\+Count} () const
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a27cc4addb641435a015ea7cd06af05d8}\label{class_c_obfuscation_pool_a27cc4addb641435a015ea7cd06af05d8}} 
+int \mbox{\hyperlink{class_c_obfuscation_pool_a27cc4addb641435a015ea7cd06af05d8}{Get\+Last\+Entry\+Accepted}} () const
+\begin{DoxyCompactList}\small\item\em Get the time the last entry was accepted (time in U\+TC milliseconds) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_aadd23259de92eca6317dd2c91cf043d8}\label{class_c_obfuscation_pool_aadd23259de92eca6317dd2c91cf043d8}} 
+int \mbox{\hyperlink{class_c_obfuscation_pool_aadd23259de92eca6317dd2c91cf043d8}{Get\+Count\+Entries\+Accepted}} () const
+\begin{DoxyCompactList}\small\item\em Get the count of the accepted entries. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a4b32548a55c50b6b637c642234902870}\label{class_c_obfuscation_pool_a4b32548a55c50b6b637c642234902870}} 
+void {\bfseries Update\+State} (unsigned int new\+State)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_adc64754346e8f5c546458b054c618238}\label{class_c_obfuscation_pool_adc64754346e8f5c546458b054c618238}} 
+int \mbox{\hyperlink{class_c_obfuscation_pool_adc64754346e8f5c546458b054c618238}{Get\+Max\+Pool\+Transactions}} ()
+\begin{DoxyCompactList}\small\item\em Get the maximum number of transactions for the pool. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_abb8ce0f1c6e52ecb23434c09f64ea273}\label{class_c_obfuscation_pool_abb8ce0f1c6e52ecb23434c09f64ea273}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_abb8ce0f1c6e52ecb23434c09f64ea273}{Is\+Session\+Ready}} ()
+\begin{DoxyCompactList}\small\item\em Do we have enough users to take entries? \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a84a807c95de8ed1960ea8d58862d0312}\label{class_c_obfuscation_pool_a84a807c95de8ed1960ea8d58862d0312}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a84a807c95de8ed1960ea8d58862d0312}{Is\+Compatible\+With\+Entries}} (std\+::vector$<$ \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} $>$ \&vout)
+\begin{DoxyCompactList}\small\item\em Are these outputs compatible with other client in the pool? \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a820877f910e3f13086f3996acff68677}\label{class_c_obfuscation_pool_a820877f910e3f13086f3996acff68677}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a820877f910e3f13086f3996acff68677}{Is\+Compatible\+With\+Session}} (C\+Amount n\+Amount, \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} tx\+Collateral, int \&error\+ID)
+\begin{DoxyCompactList}\small\item\em Is this amount compatible with other client in the pool? \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a5b8c42ae53f4f04ab4a93da2aab47a4b}\label{class_c_obfuscation_pool_a5b8c42ae53f4f04ab4a93da2aab47a4b}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a5b8c42ae53f4f04ab4a93da2aab47a4b}{Do\+Automatic\+Denominating}} (bool f\+Dry\+Run=false)
+\begin{DoxyCompactList}\small\item\em Passively run Obfuscation in the background according to the configuration in settings (only for QT) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a136c9f54ae6e785e24a0f365cb889a77}\label{class_c_obfuscation_pool_a136c9f54ae6e785e24a0f365cb889a77}} 
+bool {\bfseries Prepare\+Obfuscation\+Denominate} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a28bedf6211bbda7456b68aa3e4d2a3e2}\label{class_c_obfuscation_pool_a28bedf6211bbda7456b68aa3e4d2a3e2}} 
+void \mbox{\hyperlink{class_c_obfuscation_pool_a28bedf6211bbda7456b68aa3e4d2a3e2}{Check}} ()
+\begin{DoxyCompactList}\small\item\em Check for process in Obfuscation. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_aa3303de165d9d72a5d67931b27d33487}\label{class_c_obfuscation_pool_aa3303de165d9d72a5d67931b27d33487}} 
+void {\bfseries Check\+Final\+Transaction} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a683c9cff6eb710592b4cf81f3076fe25}\label{class_c_obfuscation_pool_a683c9cff6eb710592b4cf81f3076fe25}} 
+void \mbox{\hyperlink{class_c_obfuscation_pool_a683c9cff6eb710592b4cf81f3076fe25}{Charge\+Fees}} ()
+\begin{DoxyCompactList}\small\item\em Charge fees to bad actors (Charge clients a fee if they\textquotesingle{}re abusive) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a5853e64dcd6b6125ba9e52688eee29a3}\label{class_c_obfuscation_pool_a5853e64dcd6b6125ba9e52688eee29a3}} 
+void \mbox{\hyperlink{class_c_obfuscation_pool_a5853e64dcd6b6125ba9e52688eee29a3}{Charge\+Random\+Fees}} ()
+\begin{DoxyCompactList}\small\item\em Rarely charge fees to pay miners. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a3fddcb7094b8a2635b53fed207a78246}\label{class_c_obfuscation_pool_a3fddcb7094b8a2635b53fed207a78246}} 
+void {\bfseries Check\+Timeout} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_ad8fc2b9e329de37d3a78bcf51d475696}\label{class_c_obfuscation_pool_ad8fc2b9e329de37d3a78bcf51d475696}} 
+void {\bfseries Check\+For\+Complete\+Queue} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_adcf5ed04bd7b28b8f8d95c839e175711}\label{class_c_obfuscation_pool_adcf5ed04bd7b28b8f8d95c839e175711}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_adcf5ed04bd7b28b8f8d95c839e175711}{Signature\+Valid}} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&new\+Sig, const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&new\+Vin)
+\begin{DoxyCompactList}\small\item\em Check to make sure a signature matches an input in the pool. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a821ebbd4ae62c5ad7e80e24a3038bdec}\label{class_c_obfuscation_pool_a821ebbd4ae62c5ad7e80e24a3038bdec}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a821ebbd4ae62c5ad7e80e24a3038bdec}{Is\+Collateral\+Valid}} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx\+Collateral)
+\begin{DoxyCompactList}\small\item\em If the collateral is valid given by a client. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a659e75eaf53a3b01d34a685bd9445628}\label{class_c_obfuscation_pool_a659e75eaf53a3b01d34a685bd9445628}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a659e75eaf53a3b01d34a685bd9445628}{Add\+Entry}} (const std\+::vector$<$ \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} $>$ \&new\+Input, const C\+Amount \&n\+Amount, const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx\+Collateral, const std\+::vector$<$ \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} $>$ \&new\+Output, int \&error\+ID)
+\begin{DoxyCompactList}\small\item\em Add a clients entry to the pool. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a16f7236ff87ac90d963a31631fa861d6}\label{class_c_obfuscation_pool_a16f7236ff87ac90d963a31631fa861d6}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a16f7236ff87ac90d963a31631fa861d6}{Add\+Script\+Sig}} (const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&new\+Vin)
+\begin{DoxyCompactList}\small\item\em Add signature to a vin. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_aa7b9edff72efc61033a7801eddfaeb7b}\label{class_c_obfuscation_pool_aa7b9edff72efc61033a7801eddfaeb7b}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_aa7b9edff72efc61033a7801eddfaeb7b}{Signatures\+Complete}} ()
+\begin{DoxyCompactList}\small\item\em Check that all inputs are signed. (Are all inputs signed?) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a447a060009578d9cb4eed0a095baa1d6}\label{class_c_obfuscation_pool_a447a060009578d9cb4eed0a095baa1d6}} 
+void \mbox{\hyperlink{class_c_obfuscation_pool_a447a060009578d9cb4eed0a095baa1d6}{Send\+Obfuscation\+Denominate}} (std\+::vector$<$ \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} $>$ \&vin, std\+::vector$<$ \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} $>$ \&vout, C\+Amount amount)
+\begin{DoxyCompactList}\small\item\em As a client, send a transaction to a Masternode to start the denomination process. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a4bd560d250f87f8d4b36e4d61688c296}\label{class_c_obfuscation_pool_a4bd560d250f87f8d4b36e4d61688c296}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a4bd560d250f87f8d4b36e4d61688c296}{Status\+Update}} (int new\+State, int new\+Entries\+Count, int new\+Accepted, int \&error\+ID, int new\+Session\+ID=0)
+\begin{DoxyCompactList}\small\item\em Get Masternode updates about the progress of Obfuscation. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a0e8f20024a46f01a7e4ea1b22c7ed37e}\label{class_c_obfuscation_pool_a0e8f20024a46f01a7e4ea1b22c7ed37e}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a0e8f20024a46f01a7e4ea1b22c7ed37e}{Sign\+Final\+Transaction}} (\mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&final\+Transaction\+New, \mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$node)
+\begin{DoxyCompactList}\small\item\em As a client, check and sign the final transaction. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a88bd604c6770fed196317124579ebdc2}\label{class_c_obfuscation_pool_a88bd604c6770fed196317124579ebdc2}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a88bd604c6770fed196317124579ebdc2}{Get\+Last\+Valid\+Block\+Hash}} (\mbox{\hyperlink{classuint256}{uint256}} \&hash, int mod=1, int n\+Block\+Height=0)
+\begin{DoxyCompactList}\small\item\em Get the last valid block hash for a given modulus. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_ac453b40e14687ea0608ad75a8fc7b747}\label{class_c_obfuscation_pool_ac453b40e14687ea0608ad75a8fc7b747}} 
+void \mbox{\hyperlink{class_c_obfuscation_pool_ac453b40e14687ea0608ad75a8fc7b747}{New\+Block}} ()
+\begin{DoxyCompactList}\small\item\em Process a new block. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_aedb6e9803d8ce41826df9c5d9bdee95f}\label{class_c_obfuscation_pool_aedb6e9803d8ce41826df9c5d9bdee95f}} 
+void {\bfseries Completed\+Transaction} (bool error, int error\+ID)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a05c668a577b298f0ac266d81f4a2930c}\label{class_c_obfuscation_pool_a05c668a577b298f0ac266d81f4a2930c}} 
+void {\bfseries Clear\+Last\+Message} ()
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_affb5b52b4711d26bbe8b0278d7bb95e1}\label{class_c_obfuscation_pool_affb5b52b4711d26bbe8b0278d7bb95e1}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_affb5b52b4711d26bbe8b0278d7bb95e1}{Send\+Random\+Payment\+To\+Self}} ()
+\begin{DoxyCompactList}\small\item\em Used for liquidity providers. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a7496f4e868d633d45b9c92af0cc56ac5}\label{class_c_obfuscation_pool_a7496f4e868d633d45b9c92af0cc56ac5}} 
+bool \mbox{\hyperlink{class_c_obfuscation_pool_a7496f4e868d633d45b9c92af0cc56ac5}{Make\+Collateral\+Amounts}} ()
+\begin{DoxyCompactList}\small\item\em Split up large inputs or make fee sized inputs. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a95e6023ca617da294132311b30179c55}\label{class_c_obfuscation_pool_a95e6023ca617da294132311b30179c55}} 
+bool {\bfseries Create\+Denominated} (C\+Amount n\+Total\+Value)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a01a9df16bbb4278f63aa441a0cc59e2f}\label{class_c_obfuscation_pool_a01a9df16bbb4278f63aa441a0cc59e2f}} 
+int \mbox{\hyperlink{class_c_obfuscation_pool_a01a9df16bbb4278f63aa441a0cc59e2f}{Get\+Denominations}} (const std\+::vector$<$ \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} $>$ \&vout, bool f\+Single\+Random\+Denom=false)
+\begin{DoxyCompactList}\small\item\em Get the denominations for a list of outputs (returns a bitshifted integer) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a4954bcc549403903f406fb387b79f274}\label{class_c_obfuscation_pool_a4954bcc549403903f406fb387b79f274}} 
+int {\bfseries Get\+Denominations} (const std\+::vector$<$ \mbox{\hyperlink{class_c_tx_d_s_out}{C\+Tx\+D\+S\+Out}} $>$ \&vout)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a09e08db03e7171cbf7d6058243540760}\label{class_c_obfuscation_pool_a09e08db03e7171cbf7d6058243540760}} 
+void {\bfseries Get\+Denominations\+To\+String} (int n\+Denom, std\+::string \&str\+Denom)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a1497a31a5b0ed7378282e23db3481da9}\label{class_c_obfuscation_pool_a1497a31a5b0ed7378282e23db3481da9}} 
+int \mbox{\hyperlink{class_c_obfuscation_pool_a1497a31a5b0ed7378282e23db3481da9}{Get\+Denominations\+By\+Amount}} (C\+Amount n\+Amount, int n\+Denom\+Target=0)
+\begin{DoxyCompactList}\small\item\em Get the denominations for a specific amount of pivx. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a25107ff0bd9a447723d165aa5b53a036}\label{class_c_obfuscation_pool_a25107ff0bd9a447723d165aa5b53a036}} 
+int {\bfseries Get\+Denominations\+By\+Amounts} (std\+::vector$<$ C\+Amount $>$ \&vec\+Amount)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a4f9ec32ab5edd5e3718cd30e71712668}\label{class_c_obfuscation_pool_a4f9ec32ab5edd5e3718cd30e71712668}} 
+std\+::string {\bfseries Get\+Message\+By\+ID} (int message\+ID)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_ad4e4c2c2ee843c824b3534a47e26cead}\label{class_c_obfuscation_pool_ad4e4c2c2ee843c824b3534a47e26cead}} 
+void {\bfseries Relay\+Final\+Transaction} (const int session\+ID, const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx\+New)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a3da993b552c5bcdeebde27fa12ad9f4c}\label{class_c_obfuscation_pool_a3da993b552c5bcdeebde27fa12ad9f4c}} 
+void {\bfseries Relay\+Signatures\+Anon} (std\+::vector$<$ \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} $>$ \&vin)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a126aeec2c18f115b69479878833175e9}\label{class_c_obfuscation_pool_a126aeec2c18f115b69479878833175e9}} 
+void {\bfseries Relay\+In\+Anon} (std\+::vector$<$ \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} $>$ \&vin, std\+::vector$<$ \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} $>$ \&vout)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_ab49e7abe067bbc0b610a12750d4f5bf2}\label{class_c_obfuscation_pool_ab49e7abe067bbc0b610a12750d4f5bf2}} 
+void {\bfseries Relay\+In} (const std\+::vector$<$ \mbox{\hyperlink{class_c_tx_d_s_in}{C\+Tx\+D\+S\+In}} $>$ \&vin, const C\+Amount \&n\+Amount, const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx\+Collateral, const std\+::vector$<$ \mbox{\hyperlink{class_c_tx_d_s_out}{C\+Tx\+D\+S\+Out}} $>$ \&vout)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a7e152493086856e4a0d7614886ced692}\label{class_c_obfuscation_pool_a7e152493086856e4a0d7614886ced692}} 
+void {\bfseries Relay\+Status} (const int session\+ID, const int new\+State, const int new\+Entries\+Count, const int new\+Accepted, const int error\+ID=M\+S\+G\+\_\+\+N\+O\+E\+RR)
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a434dee83d7e11f6cbba9df9690e3d221}\label{class_c_obfuscation_pool_a434dee83d7e11f6cbba9df9690e3d221}} 
+void {\bfseries Relay\+Completed\+Transaction} (const int session\+ID, const bool error, const int error\+ID)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_af2e3d642ff62fd2727ee48e1dc1f4f01}\label{class_c_obfuscation_pool_af2e3d642ff62fd2727ee48e1dc1f4f01}} 
+\mbox{\hyperlink{class_c_script}{C\+Script}} {\bfseries collateral\+Pub\+Key}
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a196edb7963b31253739401526f7cef1a}\label{class_c_obfuscation_pool_a196edb7963b31253739401526f7cef1a}} 
+\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $\ast$ {\bfseries p\+Submitted\+To\+Masternode}
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_ad71ee1feefa2d00f95e54a0eabf0eadf}\label{class_c_obfuscation_pool_ad71ee1feefa2d00f95e54a0eabf0eadf}} 
+int {\bfseries session\+Denom}
+\item 
+\mbox{\Hypertarget{class_c_obfuscation_pool_a4aa00e589dd958aad086796b9aeb4677}\label{class_c_obfuscation_pool_a4aa00e589dd958aad086796b9aeb4677}} 
+int {\bfseries cached\+Num\+Blocks}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Used to keep track of current status of Obfuscation pool 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_obfuscation_pool_a9018f786df376b190c391bbf774be9d6}\label{class_c_obfuscation_pool_a9018f786df376b190c391bbf774be9d6}} 
+\index{C\+Obfuscation\+Pool@{C\+Obfuscation\+Pool}!Process\+Message\+Obfuscation@{Process\+Message\+Obfuscation}}
+\index{Process\+Message\+Obfuscation@{Process\+Message\+Obfuscation}!C\+Obfuscation\+Pool@{C\+Obfuscation\+Pool}}
+\subsubsection{\texorpdfstring{Process\+Message\+Obfuscation()}{ProcessMessageObfuscation()}}
+{\footnotesize\ttfamily void C\+Obfuscation\+Pool\+::\+Process\+Message\+Obfuscation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$}]{pfrom,  }\item[{std\+::string \&}]{str\+Command,  }\item[{\mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \&}]{v\+Recv }\end{DoxyParamCaption})}
+
+Process a Obfuscation message using the Obfuscation protocol 
+\begin{DoxyParams}{Parameters}
+{\em pfrom} & \\
+\hline
+{\em str\+Command} & lower case command string; valid values are\+: \begin{tabularx}{\linewidth}{|*{2}{>{\raggedright\arraybackslash}X|}}\hline
+\rowcolor{\tableheadbgcolor}\textbf{ Command  }&\textbf{ Description   }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ Command  }&\textbf{ Description   }\\\cline{1-2}
+\endhead
+dsa  &Obfuscation Acceptable   \\\cline{1-2}
+dsc  &Obfuscation Complete   \\\cline{1-2}
+dsf  &Obfuscation Final tx   \\\cline{1-2}
+dsi  &Obfuscation v\+In   \\\cline{1-2}
+dsq  &Obfuscation Queue   \\\cline{1-2}
+dss  &Obfuscation Signal Final Tx   \\\cline{1-2}
+dssu  &Obfuscation status update   \\\cline{1-2}
+dssub  &Obfuscation Subscribe To   \\\cline{1-2}
+\end{tabularx}
+\\
+\hline
+{\em v\+Recv} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/obfuscation.\+h\item 
+P\+I\+V\+X/src/obfuscation.\+cpp\end{DoxyCompactItemize}

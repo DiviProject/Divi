@@ -1,0 +1,81 @@
+\hypertarget{class_c_block}{}\section{C\+Block Class Reference}
+\label{class_c_block}\index{C\+Block@{C\+Block}}
+Inheritance diagram for C\+Block\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_block}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_aaeb7e05f86d36f481bbc2802768256bc}\label{class_c_block_aaeb7e05f86d36f481bbc2802768256bc}} 
+{\bfseries C\+Block} (const \mbox{\hyperlink{class_c_block_header}{C\+Block\+Header}} \&header)
+\item 
+\mbox{\Hypertarget{class_c_block_aa83bbf64300154e8919249f7778f4c17}\label{class_c_block_aa83bbf64300154e8919249f7778f4c17}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_block_a0410d7ba8d60679c4cf364b82ffffea5}\label{class_c_block_a0410d7ba8d60679c4cf364b82ffffea5}} 
+void {\bfseries Set\+Null} ()
+\item 
+\mbox{\Hypertarget{class_c_block_a7c8d280db581c02f49a66a5cdef2eded}\label{class_c_block_a7c8d280db581c02f49a66a5cdef2eded}} 
+\mbox{\hyperlink{class_c_block_header}{C\+Block\+Header}} {\bfseries Get\+Block\+Header} () const
+\item 
+\mbox{\Hypertarget{class_c_block_ab70bdac61ff8eca54fd29c835cb4f025}\label{class_c_block_ab70bdac61ff8eca54fd29c835cb4f025}} 
+bool {\bfseries Is\+Proof\+Of\+Stake} () const
+\item 
+\mbox{\Hypertarget{class_c_block_ad3936367b1b6d5289bb60b42967156ea}\label{class_c_block_ad3936367b1b6d5289bb60b42967156ea}} 
+bool {\bfseries Is\+Proof\+Of\+Work} () const
+\item 
+\mbox{\Hypertarget{class_c_block_a9bb6e84becb89ae53a2251d28732420c}\label{class_c_block_a9bb6e84becb89ae53a2251d28732420c}} 
+bool {\bfseries Sign\+Block} (const \mbox{\hyperlink{class_c_key_store}{C\+Key\+Store}} \&keystore)
+\item 
+\mbox{\Hypertarget{class_c_block_a2ff0deeda85c23cde1a78365d6fc6c2c}\label{class_c_block_a2ff0deeda85c23cde1a78365d6fc6c2c}} 
+bool {\bfseries Check\+Block\+Signature} () const
+\item 
+\mbox{\Hypertarget{class_c_block_ab3e641daba5dd1a50fafc450ea8b2230}\label{class_c_block_ab3e641daba5dd1a50fafc450ea8b2230}} 
+std\+::pair$<$ \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}}, unsigned int $>$ {\bfseries Get\+Proof\+Of\+Stake} () const
+\item 
+\mbox{\Hypertarget{class_c_block_aa65a6589dd8d0ce85d966eeb50a0723a}\label{class_c_block_aa65a6589dd8d0ce85d966eeb50a0723a}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Build\+Merkle\+Tree} (bool $\ast$mutated=N\+U\+LL) const
+\item 
+\mbox{\Hypertarget{class_c_block_a336b7154a9ab29c326941fa2491b2daa}\label{class_c_block_a336b7154a9ab29c326941fa2491b2daa}} 
+std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ {\bfseries Get\+Merkle\+Branch} (int n\+Index) const
+\item 
+\mbox{\Hypertarget{class_c_block_a0e8a98f10831c00ae76b3a831c4804e5}\label{class_c_block_a0e8a98f10831c00ae76b3a831c4804e5}} 
+std\+::string {\bfseries To\+String} () const
+\item 
+\mbox{\Hypertarget{class_c_block_a0507a658d82d5e4ec55d550460e06ff9}\label{class_c_block_a0507a658d82d5e4ec55d550460e06ff9}} 
+void {\bfseries print} () const
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_a81684cf96f6fb6731c869865b80d1ccd}\label{class_c_block_a81684cf96f6fb6731c869865b80d1ccd}} 
+static \mbox{\hyperlink{classuint256}{uint256}} {\bfseries Check\+Merkle\+Branch} (\mbox{\hyperlink{classuint256}{uint256}} hash, const std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&v\+Merkle\+Branch, int n\+Index)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_a9b6508d662722775f3029b980b382b66}\label{class_c_block_a9b6508d662722775f3029b980b382b66}} 
+std\+::vector$<$ \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} $>$ {\bfseries vtx}
+\item 
+\mbox{\Hypertarget{class_c_block_a78f882e24c4416f42039cbc6a67faf6e}\label{class_c_block_a78f882e24c4416f42039cbc6a67faf6e}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries vch\+Block\+Sig}
+\item 
+\mbox{\Hypertarget{class_c_block_a1604a6d25f313ab1bf4e3777a6cba948}\label{class_c_block_a1604a6d25f313ab1bf4e3777a6cba948}} 
+\mbox{\hyperlink{class_c_script}{C\+Script}} {\bfseries payee}
+\item 
+\mbox{\Hypertarget{class_c_block_a019ae6579acd08974653d3f443dd398a}\label{class_c_block_a019ae6579acd08974653d3f443dd398a}} 
+std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ {\bfseries v\+Merkle\+Tree}
+\item 
+\mbox{\Hypertarget{class_c_block_a53ba28b86cf6c5b1de640941786fa3b8}\label{class_c_block_a53ba28b86cf6c5b1de640941786fa3b8}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/primitives/block.\+h\item 
+P\+I\+V\+X/src/primitives/block.\+cpp\end{DoxyCompactItemize}

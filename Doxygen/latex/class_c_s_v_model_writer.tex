@@ -1,0 +1,47 @@
+\hypertarget{class_c_s_v_model_writer}{}\section{C\+S\+V\+Model\+Writer Class Reference}
+\label{class_c_s_v_model_writer}\index{C\+S\+V\+Model\+Writer@{C\+S\+V\+Model\+Writer}}
+
+
+{\ttfamily \#include $<$csvmodelwriter.\+h$>$}
+
+Inheritance diagram for C\+S\+V\+Model\+Writer\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_s_v_model_writer}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_s_v_model_writer_a343d5ebba512dea41a62e11e45a6d175}\label{class_c_s_v_model_writer_a343d5ebba512dea41a62e11e45a6d175}} 
+{\bfseries C\+S\+V\+Model\+Writer} (const Q\+String \&filename, Q\+Object $\ast$parent=0)
+\item 
+\mbox{\Hypertarget{class_c_s_v_model_writer_a7b8be6f49a66b965a94a89c78fb96e40}\label{class_c_s_v_model_writer_a7b8be6f49a66b965a94a89c78fb96e40}} 
+void {\bfseries set\+Model} (const Q\+Abstract\+Item\+Model $\ast$model)
+\item 
+\mbox{\Hypertarget{class_c_s_v_model_writer_a9e5f0d60f2c873747582ce21ddeb53b5}\label{class_c_s_v_model_writer_a9e5f0d60f2c873747582ce21ddeb53b5}} 
+void {\bfseries add\+Column} (const Q\+String \&title, int column, int role=Qt\+::\+Edit\+Role)
+\item 
+bool \mbox{\hyperlink{class_c_s_v_model_writer_a71fe52fdd6f41c506f9631175cb04615}{write}} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Export a Qt table model to a C\+SV file. This is useful for analyzing or post-\/processing the data in a spreadsheet. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_s_v_model_writer_a71fe52fdd6f41c506f9631175cb04615}\label{class_c_s_v_model_writer_a71fe52fdd6f41c506f9631175cb04615}} 
+\index{C\+S\+V\+Model\+Writer@{C\+S\+V\+Model\+Writer}!write@{write}}
+\index{write@{write}!C\+S\+V\+Model\+Writer@{C\+S\+V\+Model\+Writer}}
+\subsubsection{\texorpdfstring{write()}{write()}}
+{\footnotesize\ttfamily bool C\+S\+V\+Model\+Writer\+::write (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Perform export of the model to C\+SV. \begin{DoxyReturn}{Returns}
+true on success, false otherwise 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/csvmodelwriter.\+h\item 
+P\+I\+V\+X/src/qt/csvmodelwriter.\+cpp\end{DoxyCompactItemize}

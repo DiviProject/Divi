@@ -1,0 +1,37 @@
+\hypertarget{structsph__blake__small__context}{}\section{sph\+\_\+blake\+\_\+small\+\_\+context Struct Reference}
+\label{structsph__blake__small__context}\index{sph\+\_\+blake\+\_\+small\+\_\+context@{sph\+\_\+blake\+\_\+small\+\_\+context}}
+
+
+{\ttfamily \#include $<$sph\+\_\+blake.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsph__blake__small__context_af9d5fc7974274fb2947c3b3f4b37963d}\label{structsph__blake__small__context_af9d5fc7974274fb2947c3b3f4b37963d}} 
+unsigned char {\bfseries buf} \mbox{[}64\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__blake__small__context_aa1c49e1bd07dd9e346d4dafe22552d72}\label{structsph__blake__small__context_aa1c49e1bd07dd9e346d4dafe22552d72}} 
+size\+\_\+t {\bfseries ptr}
+\item 
+\mbox{\Hypertarget{structsph__blake__small__context_a0a860270f4fdff75da67e257f358b4f8}\label{structsph__blake__small__context_a0a860270f4fdff75da67e257f358b4f8}} 
+sph\+\_\+u32 {\bfseries H} \mbox{[}8\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__blake__small__context_ab61df4e8f58da409a243f225237aa6c2}\label{structsph__blake__small__context_ab61df4e8f58da409a243f225237aa6c2}} 
+sph\+\_\+u32 {\bfseries S} \mbox{[}4\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__blake__small__context_a17be56c2d6b9110e390720851b33429e}\label{structsph__blake__small__context_a17be56c2d6b9110e390720851b33429e}} 
+sph\+\_\+u32 {\bfseries T0}
+\item 
+\mbox{\Hypertarget{structsph__blake__small__context_a494dd406d70bcd90e976cf915cf87f02}\label{structsph__blake__small__context_a494dd406d70bcd90e976cf915cf87f02}} 
+sph\+\_\+u32 {\bfseries T1}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This structure is a context for B\+L\+A\+K\+E-\/224 and B\+L\+A\+K\+E-\/256 computations\+: it contains the intermediate values and some data from the last entered block. Once a B\+L\+A\+KE computation has been performed, the context can be reused for another computation.
+
+The contents of this structure are private. A running B\+L\+A\+KE computation can be cloned by copying the context (e.\+g. with a simple {\ttfamily memcpy()}). 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/crypto/\mbox{\hyperlink{sph__blake_8h}{sph\+\_\+blake.\+h}}\end{DoxyCompactItemize}

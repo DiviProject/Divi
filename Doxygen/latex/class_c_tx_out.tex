@@ -1,0 +1,78 @@
+\hypertarget{class_c_tx_out}{}\section{C\+Tx\+Out Class Reference}
+\label{class_c_tx_out}\index{C\+Tx\+Out@{C\+Tx\+Out}}
+
+
+{\ttfamily \#include $<$transaction.\+h$>$}
+
+Inheritance diagram for C\+Tx\+Out\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_tx_out}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_out_adc5daeba4e26f1807cee8ec3cc138ef8}\label{class_c_tx_out_adc5daeba4e26f1807cee8ec3cc138ef8}} 
+{\bfseries C\+Tx\+Out} (const C\+Amount \&n\+Value\+In, \mbox{\hyperlink{class_c_script}{C\+Script}} script\+Pub\+Key\+In)
+\item 
+\mbox{\Hypertarget{class_c_tx_out_a88e5e2f069325d6bb1936ee75935f121}\label{class_c_tx_out_a88e5e2f069325d6bb1936ee75935f121}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_tx_out_a9fe5e6a1be651f130d3dc84a64e78a24}\label{class_c_tx_out_a9fe5e6a1be651f130d3dc84a64e78a24}} 
+void {\bfseries Set\+Null} ()
+\item 
+\mbox{\Hypertarget{class_c_tx_out_ab92a3c4c95c643f7b3ffd3ffa7cd7055}\label{class_c_tx_out_ab92a3c4c95c643f7b3ffd3ffa7cd7055}} 
+bool {\bfseries Is\+Null} () const
+\item 
+\mbox{\Hypertarget{class_c_tx_out_aef15a8068187af08b25a7ddfbf8d7744}\label{class_c_tx_out_aef15a8068187af08b25a7ddfbf8d7744}} 
+void {\bfseries Set\+Empty} ()
+\item 
+\mbox{\Hypertarget{class_c_tx_out_ae5eab8e2d01f678135b8891645db6b78}\label{class_c_tx_out_ae5eab8e2d01f678135b8891645db6b78}} 
+bool {\bfseries Is\+Empty} () const
+\item 
+\mbox{\Hypertarget{class_c_tx_out_af97a27e75b8698951bacc4c5a6ca70af}\label{class_c_tx_out_af97a27e75b8698951bacc4c5a6ca70af}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Hash} () const
+\item 
+\mbox{\Hypertarget{class_c_tx_out_ad4440670c7b3a59b46fa44f2f032ded8}\label{class_c_tx_out_ad4440670c7b3a59b46fa44f2f032ded8}} 
+bool {\bfseries Is\+Dust} (\mbox{\hyperlink{class_c_fee_rate}{C\+Fee\+Rate}} min\+Relay\+Tx\+Fee) const
+\item 
+\mbox{\Hypertarget{class_c_tx_out_a94d2d89e02ab1e8a7d0c2326aaa35725}\label{class_c_tx_out_a94d2d89e02ab1e8a7d0c2326aaa35725}} 
+bool {\bfseries Is\+Zerocoin\+Mint} () const
+\item 
+\mbox{\Hypertarget{class_c_tx_out_affdc44390970a14812fe9179768495ef}\label{class_c_tx_out_affdc44390970a14812fe9179768495ef}} 
+std\+::string {\bfseries To\+String} () const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_out_ab278ecef3817a972cb6bc5360d13f197}\label{class_c_tx_out_ab278ecef3817a972cb6bc5360d13f197}} 
+C\+Amount {\bfseries n\+Value}
+\item 
+\mbox{\Hypertarget{class_c_tx_out_a25bf3f2f4befb22a6a0be45784fe57e2}\label{class_c_tx_out_a25bf3f2f4befb22a6a0be45784fe57e2}} 
+\mbox{\hyperlink{class_c_script}{C\+Script}} {\bfseries script\+Pub\+Key}
+\item 
+\mbox{\Hypertarget{class_c_tx_out_aeac97244e392de9dad0c0d0dd0184d1e}\label{class_c_tx_out_aeac97244e392de9dad0c0d0dd0184d1e}} 
+int {\bfseries n\+Rounds}
+\item 
+\mbox{\Hypertarget{class_c_tx_out_add758078b21ec1004fe8144fcee44890}\label{class_c_tx_out_add758078b21ec1004fe8144fcee44890}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_out_a7ae3396bfd80108be89eaa97573eb1bb}\label{class_c_tx_out_a7ae3396bfd80108be89eaa97573eb1bb}} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} \&a, const \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} \&b)
+\item 
+\mbox{\Hypertarget{class_c_tx_out_a9657dc95dd3ba8b612baf7a5dd9b2e02}\label{class_c_tx_out_a9657dc95dd3ba8b612baf7a5dd9b2e02}} 
+bool {\bfseries operator!=} (const \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} \&a, const \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} \&b)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An output of a transaction. It contains the public key that the next input must be able to sign with to claim it. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/primitives/transaction.\+h\item 
+P\+I\+V\+X/src/primitives/transaction.\+cpp\end{DoxyCompactItemize}

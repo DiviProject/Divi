@@ -1,0 +1,210 @@
+\hypertarget{group__map_wallet}{}\section{Map\+Wallet}
+\label{group__map_wallet}\index{Map\+Wallet@{Map\+Wallet}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_compare_value_only}{Compare\+Value\+Only}}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__map_wallet_gad80664c1a4a4cc36e8bd52077b1bd4db}\label{group__map_wallet_gad80664c1a4a4cc36e8bd52077b1bd4db}} 
+std\+::string {\bfseries C\+Output\+::\+To\+String} () const
+\item 
+\mbox{\Hypertarget{group__map_wallet_gac496716bb889a5934fa27398aeb2330a}\label{group__map_wallet_gac496716bb889a5934fa27398aeb2330a}} 
+const \mbox{\hyperlink{class_c_wallet_tx}{C\+Wallet\+Tx}} $\ast$ {\bfseries C\+Wallet\+::\+Get\+Wallet\+Tx} (const \mbox{\hyperlink{classuint256}{uint256}} \&hash) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga061fe7f54f80ec40f856b3e6365c2f4a}\label{group__map_wallet_ga061fe7f54f80ec40f856b3e6365c2f4a}} 
+\mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} {\bfseries C\+Wallet\+::\+Generate\+New\+Key} ()
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga3240da36cd717146296969227a3e0bd5}\label{group__map_wallet_ga3240da36cd717146296969227a3e0bd5}} 
+bool \mbox{\hyperlink{group__map_wallet_ga3240da36cd717146296969227a3e0bd5}{C\+Wallet\+::\+Add\+Key\+Pub\+Key}} (const \mbox{\hyperlink{class_c_key}{C\+Key}} \&key, const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pubkey)
+\begin{DoxyCompactList}\small\item\em Adds a key to the store, and saves it to disk. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_ga3e90096a903d49cd751f05fcdb7692ce}\label{group__map_wallet_ga3e90096a903d49cd751f05fcdb7692ce}} 
+bool \mbox{\hyperlink{group__map_wallet_ga3e90096a903d49cd751f05fcdb7692ce}{C\+Wallet\+::\+Add\+Crypted\+Key}} (const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&vch\+Pub\+Key, const std\+::vector$<$ unsigned char $>$ \&vch\+Crypted\+Secret)
+\begin{DoxyCompactList}\small\item\em Adds an encrypted key to the store, and saves it to disk. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_ga21e6580474514f838dfe1446890085a4}\label{group__map_wallet_ga21e6580474514f838dfe1446890085a4}} 
+bool \mbox{\hyperlink{group__map_wallet_ga21e6580474514f838dfe1446890085a4}{C\+Wallet\+::\+Load\+Key\+Metadata}} (const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pubkey, const \mbox{\hyperlink{class_c_key_metadata}{C\+Key\+Metadata}} \&metadata)
+\begin{DoxyCompactList}\small\item\em Load metadata (used by Load\+Wallet) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_ga01fbd78238d4ef833d059f12a7e8ac9f}\label{group__map_wallet_ga01fbd78238d4ef833d059f12a7e8ac9f}} 
+bool \mbox{\hyperlink{group__map_wallet_ga01fbd78238d4ef833d059f12a7e8ac9f}{C\+Wallet\+::\+Load\+Crypted\+Key}} (const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&vch\+Pub\+Key, const std\+::vector$<$ unsigned char $>$ \&vch\+Crypted\+Secret)
+\begin{DoxyCompactList}\small\item\em Adds an encrypted key to the store, without saving it to disk (used by Load\+Wallet) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_gad7edacad1c926bc4b7fe0dc1be95ce31}\label{group__map_wallet_gad7edacad1c926bc4b7fe0dc1be95ce31}} 
+bool \mbox{\hyperlink{group__map_wallet_gad7edacad1c926bc4b7fe0dc1be95ce31}{C\+Wallet\+::\+Add\+C\+Script}} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&redeem\+Script)
+\begin{DoxyCompactList}\small\item\em Support for B\+IP 0013 \+: see \href{https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki}{\tt https\+://github.\+com/bitcoin/bips/blob/master/bip-\/0013.\+mediawiki}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_gadbf0abef9da8102f000d4afd5cec5bbc}\label{group__map_wallet_gadbf0abef9da8102f000d4afd5cec5bbc}} 
+bool {\bfseries C\+Wallet\+::\+Load\+C\+Script} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&redeem\+Script)
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga022f12d5f56bbe831136388e2ac19969}\label{group__map_wallet_ga022f12d5f56bbe831136388e2ac19969}} 
+bool \mbox{\hyperlink{group__map_wallet_ga022f12d5f56bbe831136388e2ac19969}{C\+Wallet\+::\+Add\+Watch\+Only}} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&dest)
+\begin{DoxyCompactList}\small\item\em Adds a watch-\/only address to the store, and saves it to disk. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_ga5be12b9afcf63079b8c009038843b5a2}\label{group__map_wallet_ga5be12b9afcf63079b8c009038843b5a2}} 
+bool {\bfseries C\+Wallet\+::\+Remove\+Watch\+Only} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&dest)
+\item 
+\mbox{\Hypertarget{group__map_wallet_gad6580f1844fc639389e1c6a1e2787ee6}\label{group__map_wallet_gad6580f1844fc639389e1c6a1e2787ee6}} 
+bool \mbox{\hyperlink{group__map_wallet_gad6580f1844fc639389e1c6a1e2787ee6}{C\+Wallet\+::\+Load\+Watch\+Only}} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&dest)
+\begin{DoxyCompactList}\small\item\em Adds a watch-\/only address to the store, without saving it to disk (used by Load\+Wallet) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_gab19582b017922e4c502491cc55a67621}\label{group__map_wallet_gab19582b017922e4c502491cc55a67621}} 
+bool \mbox{\hyperlink{group__map_wallet_gab19582b017922e4c502491cc55a67621}{C\+Wallet\+::\+Add\+Multi\+Sig}} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&dest)
+\begin{DoxyCompactList}\small\item\em Adds a Multi\+Sig address to the store, and saves it to disk. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_ga55e45c945a8c80d52742bd536afc8e78}\label{group__map_wallet_ga55e45c945a8c80d52742bd536afc8e78}} 
+bool {\bfseries C\+Wallet\+::\+Remove\+Multi\+Sig} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&dest)
+\item 
+\mbox{\Hypertarget{group__map_wallet_gab07b5d46c02a9997a653a9063af9d4ca}\label{group__map_wallet_gab07b5d46c02a9997a653a9063af9d4ca}} 
+bool \mbox{\hyperlink{group__map_wallet_gab07b5d46c02a9997a653a9063af9d4ca}{C\+Wallet\+::\+Load\+Multi\+Sig}} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&dest)
+\begin{DoxyCompactList}\small\item\em Adds a Multi\+Sig address to the store, without saving it to disk (used by Load\+Wallet) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_ga654ae5a3a7c4c7c7bfd271f108781b40}\label{group__map_wallet_ga654ae5a3a7c4c7c7bfd271f108781b40}} 
+bool {\bfseries C\+Wallet\+::\+Unlock} (const Secure\+String \&str\+Wallet\+Passphrase, bool anonimize\+Only=false)
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga4abcec3066e7c462f4564c159fc15031}\label{group__map_wallet_ga4abcec3066e7c462f4564c159fc15031}} 
+bool {\bfseries C\+Wallet\+::\+Change\+Wallet\+Passphrase} (const Secure\+String \&str\+Old\+Wallet\+Passphrase, const Secure\+String \&str\+New\+Wallet\+Passphrase)
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga1697a92171b4359f49b38aed643cf92b}\label{group__map_wallet_ga1697a92171b4359f49b38aed643cf92b}} 
+void {\bfseries C\+Wallet\+::\+Set\+Best\+Chain} (const \mbox{\hyperlink{struct_c_block_locator}{C\+Block\+Locator}} \&loc)
+\item 
+\mbox{\Hypertarget{group__map_wallet_gafa48a3ee3096681650c8b9589579e9cb}\label{group__map_wallet_gafa48a3ee3096681650c8b9589579e9cb}} 
+bool \mbox{\hyperlink{group__map_wallet_gafa48a3ee3096681650c8b9589579e9cb}{C\+Wallet\+::\+Set\+Min\+Version}} (enum Wallet\+Feature, \mbox{\hyperlink{class_c_wallet_d_b}{C\+Wallet\+DB}} $\ast$pwalletdb\+In=N\+U\+LL, bool f\+Explicit=false)
+\begin{DoxyCompactList}\small\item\em signify that a particular wallet feature is now used. this may change n\+Wallet\+Version and n\+Wallet\+Max\+Version if those are lower \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_ga1bb7c19e7dd483f231f8077fb7fb942b}\label{group__map_wallet_ga1bb7c19e7dd483f231f8077fb7fb942b}} 
+bool \mbox{\hyperlink{group__map_wallet_ga1bb7c19e7dd483f231f8077fb7fb942b}{C\+Wallet\+::\+Set\+Max\+Version}} (int n\+Version)
+\begin{DoxyCompactList}\small\item\em change which version we\textquotesingle{}re allowed to upgrade to (note that this does not immediately imply upgrading to that format) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_ga63ace949094f4f52d7ef1f9f321a24e7}\label{group__map_wallet_ga63ace949094f4f52d7ef1f9f321a24e7}} 
+std\+::set$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \mbox{\hyperlink{group__map_wallet_ga63ace949094f4f52d7ef1f9f321a24e7}{C\+Wallet\+::\+Get\+Conflicts}} (const \mbox{\hyperlink{classuint256}{uint256}} \&txid) const
+\begin{DoxyCompactList}\small\item\em Get wallet transactions that conflict with given transaction (spend same outputs) \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{group__map_wallet_ga6adcf1c224ed3c3fe4b0b19f6fca75d8}{C\+Wallet\+::\+Is\+Spent}} (const \mbox{\hyperlink{classuint256}{uint256}} \&hash, unsigned int n) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga4deb7baa65e036149f7d19b3aefe7323}\label{group__map_wallet_ga4deb7baa65e036149f7d19b3aefe7323}} 
+bool \mbox{\hyperlink{group__map_wallet_ga4deb7baa65e036149f7d19b3aefe7323}{C\+Wallet\+::\+Get\+Masternode\+Vin\+And\+Keys}} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&txin\+Ret, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pub\+Key\+Ret, \mbox{\hyperlink{class_c_key}{C\+Key}} \&key\+Ret, std\+::string str\+Tx\+Hash=\char`\"{}\char`\"{}, std\+::string str\+Output\+Index=\char`\"{}\char`\"{})
+\begin{DoxyCompactList}\small\item\em Get 1000\+D\+A\+SH output and keys which can be used for the Masternode. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_ga7621515b3195b8c8fb130c509725c9f2}\label{group__map_wallet_ga7621515b3195b8c8fb130c509725c9f2}} 
+bool \mbox{\hyperlink{group__map_wallet_ga7621515b3195b8c8fb130c509725c9f2}{C\+Wallet\+::\+Get\+Vin\+And\+Keys\+From\+Output}} (\mbox{\hyperlink{class_c_output}{C\+Output}} out, \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&txin\+Ret, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pub\+Key\+Ret, \mbox{\hyperlink{class_c_key}{C\+Key}} \&key\+Ret)
+\begin{DoxyCompactList}\small\item\em Extract txin information and keys from output. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__map_wallet_gab34fe5bf771619dcbe22a65f013e5469}\label{group__map_wallet_gab34fe5bf771619dcbe22a65f013e5469}} 
+bool {\bfseries C\+Wallet\+::\+Encrypt\+Wallet} (const Secure\+String \&str\+Wallet\+Passphrase)
+\item 
+int64\+\_\+t \mbox{\hyperlink{group__map_wallet_ga7a76d68661e6879651ac0b11f2893e58}{C\+Wallet\+::\+Inc\+Order\+Pos\+Next}} (\mbox{\hyperlink{class_c_wallet_d_b}{C\+Wallet\+DB}} $\ast$pwalletdb=N\+U\+LL)
+\item 
+Tx\+Items \mbox{\hyperlink{group__map_wallet_ga740572131004d77fbdb4617ec1aafb4a}{C\+Wallet\+::\+Ordered\+Tx\+Items}} (std\+::list$<$ \mbox{\hyperlink{class_c_accounting_entry}{C\+Accounting\+Entry}} $>$ \&acentries, std\+::string str\+Account=\char`\"{}\char`\"{})
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga26fd9a9f48230daf346500d2afb6115e}\label{group__map_wallet_ga26fd9a9f48230daf346500d2afb6115e}} 
+void {\bfseries C\+Wallet\+::\+Mark\+Dirty} ()
+\item 
+\mbox{\Hypertarget{group__map_wallet_gadf34c789fd6eab1eeed22ef16837f558}\label{group__map_wallet_gadf34c789fd6eab1eeed22ef16837f558}} 
+bool {\bfseries C\+Wallet\+::\+Add\+To\+Wallet} (const \mbox{\hyperlink{class_c_wallet_tx}{C\+Wallet\+Tx}} \&wtx\+In, bool f\+From\+Load\+Wallet=false)
+\item 
+bool \mbox{\hyperlink{group__map_wallet_ga487f7cba517d37d24e5fa422711574d9}{C\+Wallet\+::\+Add\+To\+Wallet\+If\+Involving\+Me}} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx, const \mbox{\hyperlink{class_c_block}{C\+Block}} $\ast$pblock, bool f\+Update)
+\item 
+\mbox{\Hypertarget{group__map_wallet_gaac999a0c557887b371bd8d9efaa6ea93}\label{group__map_wallet_gaac999a0c557887b371bd8d9efaa6ea93}} 
+void {\bfseries C\+Wallet\+::\+Sync\+Transaction} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx, const \mbox{\hyperlink{class_c_block}{C\+Block}} $\ast$pblock)
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga43dc1cf73c622cca29e530130e648470}\label{group__map_wallet_ga43dc1cf73c622cca29e530130e648470}} 
+void {\bfseries C\+Wallet\+::\+Erase\+From\+Wallet} (const \mbox{\hyperlink{classuint256}{uint256}} \&hash)
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga4eada57edc1c443564b8cc9b853d955c}\label{group__map_wallet_ga4eada57edc1c443564b8cc9b853d955c}} 
+isminetype {\bfseries C\+Wallet\+::\+Is\+Mine} (const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&txin) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga0eab42ce08ccd8ed0cea28c67ec20d89}\label{group__map_wallet_ga0eab42ce08ccd8ed0cea28c67ec20d89}} 
+bool {\bfseries C\+Wallet\+::\+Is\+My\+Zerocoin\+Spend} (const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&bn\+Serial) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga5ab4855aac6f4b335421944403e44d6d}\label{group__map_wallet_ga5ab4855aac6f4b335421944403e44d6d}} 
+C\+Amount {\bfseries C\+Wallet\+::\+Get\+Debit} (const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&txin, const isminefilter \&filter) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga3807ce5af5bd5f9f01dc08aba7fe3e85}\label{group__map_wallet_ga3807ce5af5bd5f9f01dc08aba7fe3e85}} 
+int {\bfseries C\+Wallet\+::\+Get\+Real\+Input\+Obfuscation\+Rounds} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} in, int rounds) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga2499e2b6e6a5bcdd4da4c30c5705329f}\label{group__map_wallet_ga2499e2b6e6a5bcdd4da4c30c5705329f}} 
+int {\bfseries C\+Wallet\+::\+Get\+Input\+Obfuscation\+Rounds} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} in) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_gaadbae9ed508f11c3c2cd4c5a3ecc3477}\label{group__map_wallet_gaadbae9ed508f11c3c2cd4c5a3ecc3477}} 
+bool {\bfseries C\+Wallet\+::\+Is\+Denominated} (const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&txin) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga4c1d5a34a9ae641a3a68c406e3bede25}\label{group__map_wallet_ga4c1d5a34a9ae641a3a68c406e3bede25}} 
+bool {\bfseries C\+Wallet\+::\+Is\+Denominated} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga070aa9135ca31d630fa798a868c0b59c}\label{group__map_wallet_ga070aa9135ca31d630fa798a868c0b59c}} 
+bool {\bfseries C\+Wallet\+::\+Is\+Denominated\+Amount} (C\+Amount n\+Input\+Amount) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_gaba1c6108b7d2d3800dd487bab4c4c82e}\label{group__map_wallet_gaba1c6108b7d2d3800dd487bab4c4c82e}} 
+bool {\bfseries C\+Wallet\+::\+Is\+Change} (const \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} \&txout) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_gab94368cf0553687d8f1fec5d2aaa1457}\label{group__map_wallet_gab94368cf0553687d8f1fec5d2aaa1457}} 
+int64\+\_\+t {\bfseries C\+Wallet\+Tx\+::\+Get\+Tx\+Time} () const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga64b7c70c7da6241f3d9dffac31503921}\label{group__map_wallet_ga64b7c70c7da6241f3d9dffac31503921}} 
+int64\+\_\+t {\bfseries C\+Wallet\+Tx\+::\+Get\+Computed\+Tx\+Time} () const
+\item 
+\mbox{\Hypertarget{group__map_wallet_gafd3ca5b54d33038a06189f3f27a97910}\label{group__map_wallet_gafd3ca5b54d33038a06189f3f27a97910}} 
+int {\bfseries C\+Wallet\+Tx\+::\+Get\+Request\+Count} () const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga75c673700a9d5fa2b0ab63bfd094b045}\label{group__map_wallet_ga75c673700a9d5fa2b0ab63bfd094b045}} 
+void {\bfseries C\+Wallet\+Tx\+::\+Get\+Amounts} (std\+::list$<$ \mbox{\hyperlink{struct_c_output_entry}{C\+Output\+Entry}} $>$ \&list\+Received, std\+::list$<$ \mbox{\hyperlink{struct_c_output_entry}{C\+Output\+Entry}} $>$ \&list\+Sent, C\+Amount \&n\+Fee, std\+::string \&str\+Sent\+Account, const isminefilter \&filter) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_gad74c232cc8983a1c032f2163751695ed}\label{group__map_wallet_gad74c232cc8983a1c032f2163751695ed}} 
+void {\bfseries C\+Wallet\+Tx\+::\+Get\+Account\+Amounts} (const std\+::string \&str\+Account, C\+Amount \&n\+Received, C\+Amount \&n\+Sent, C\+Amount \&n\+Fee, const isminefilter \&filter) const
+\item 
+\mbox{\Hypertarget{group__map_wallet_gada0e71d717dd360faf047de54eef4942}\label{group__map_wallet_gada0e71d717dd360faf047de54eef4942}} 
+bool {\bfseries C\+Wallet\+Tx\+::\+Write\+To\+Disk} ()
+\item 
+int \mbox{\hyperlink{group__map_wallet_ga979a17e80e4897ed1f4ae9a4be7c493c}{C\+Wallet\+::\+Scan\+For\+Wallet\+Transactions}} (\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$pindex\+Start, bool f\+Update=false)
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga796c23450c8482e10e0c75ae5c1fa8ed}\label{group__map_wallet_ga796c23450c8482e10e0c75ae5c1fa8ed}} 
+void {\bfseries C\+Wallet\+::\+Reaccept\+Wallet\+Transactions} ()
+\item 
+\mbox{\Hypertarget{group__map_wallet_gae4af382e1eeba62ee7e84100c7234f23}\label{group__map_wallet_gae4af382e1eeba62ee7e84100c7234f23}} 
+bool {\bfseries C\+Wallet\+Tx\+::\+In\+Mempool} () const
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga1eac2a5eea87ed88b73777bea5c733b6}\label{group__map_wallet_ga1eac2a5eea87ed88b73777bea5c733b6}} 
+void {\bfseries C\+Wallet\+Tx\+::\+Relay\+Wallet\+Transaction} (std\+::string str\+Command=\char`\"{}tx\char`\"{})
+\item 
+\mbox{\Hypertarget{group__map_wallet_ga127b064ab044a96158117ec8162188a7}\label{group__map_wallet_ga127b064ab044a96158117ec8162188a7}} 
+std\+::set$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ {\bfseries C\+Wallet\+Tx\+::\+Get\+Conflicts} () const
+\item 
+\mbox{\Hypertarget{group__map_wallet_gaef8d6e5b4701ca3a64486c4232acc3fa}\label{group__map_wallet_gaef8d6e5b4701ca3a64486c4232acc3fa}} 
+void {\bfseries C\+Wallet\+::\+Resend\+Wallet\+Transactions} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{group__map_wallet_ga487f7cba517d37d24e5fa422711574d9}\label{group__map_wallet_ga487f7cba517d37d24e5fa422711574d9}} 
+\index{Map\+Wallet@{Map\+Wallet}!Add\+To\+Wallet\+If\+Involving\+Me@{Add\+To\+Wallet\+If\+Involving\+Me}}
+\index{Add\+To\+Wallet\+If\+Involving\+Me@{Add\+To\+Wallet\+If\+Involving\+Me}!Map\+Wallet@{Map\+Wallet}}
+\subsubsection{\texorpdfstring{Add\+To\+Wallet\+If\+Involving\+Me()}{AddToWalletIfInvolvingMe()}}
+{\footnotesize\ttfamily bool C\+Wallet\+::\+Add\+To\+Wallet\+If\+Involving\+Me (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&}]{tx,  }\item[{const \mbox{\hyperlink{class_c_block}{C\+Block}} $\ast$}]{pblock,  }\item[{bool}]{f\+Update }\end{DoxyParamCaption})}
+
+Add a transaction to the wallet, or update it. pblock is optional, but should be provided if the transaction is known to be in a block. If f\+Update is true, existing transactions will be updated. \mbox{\Hypertarget{group__map_wallet_ga7a76d68661e6879651ac0b11f2893e58}\label{group__map_wallet_ga7a76d68661e6879651ac0b11f2893e58}} 
+\index{Map\+Wallet@{Map\+Wallet}!Inc\+Order\+Pos\+Next@{Inc\+Order\+Pos\+Next}}
+\index{Inc\+Order\+Pos\+Next@{Inc\+Order\+Pos\+Next}!Map\+Wallet@{Map\+Wallet}}
+\subsubsection{\texorpdfstring{Inc\+Order\+Pos\+Next()}{IncOrderPosNext()}}
+{\footnotesize\ttfamily int64\+\_\+t C\+Wallet\+::\+Inc\+Order\+Pos\+Next (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_c_wallet_d_b}{C\+Wallet\+DB}} $\ast$}]{pwalletdb = {\ttfamily NULL} }\end{DoxyParamCaption})}
+
+Increment the next transaction order id \begin{DoxyReturn}{Returns}
+next transaction order id 
+\end{DoxyReturn}
+\mbox{\Hypertarget{group__map_wallet_ga6adcf1c224ed3c3fe4b0b19f6fca75d8}\label{group__map_wallet_ga6adcf1c224ed3c3fe4b0b19f6fca75d8}} 
+\index{Map\+Wallet@{Map\+Wallet}!Is\+Spent@{Is\+Spent}}
+\index{Is\+Spent@{Is\+Spent}!Map\+Wallet@{Map\+Wallet}}
+\subsubsection{\texorpdfstring{Is\+Spent()}{IsSpent()}}
+{\footnotesize\ttfamily bool C\+Wallet\+::\+Is\+Spent (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classuint256}{uint256}} \&}]{hash,  }\item[{unsigned int}]{n }\end{DoxyParamCaption}) const}
+
+Outpoint is spent if any non-\/conflicted transaction spends it\+: \mbox{\Hypertarget{group__map_wallet_ga740572131004d77fbdb4617ec1aafb4a}\label{group__map_wallet_ga740572131004d77fbdb4617ec1aafb4a}} 
+\index{Map\+Wallet@{Map\+Wallet}!Ordered\+Tx\+Items@{Ordered\+Tx\+Items}}
+\index{Ordered\+Tx\+Items@{Ordered\+Tx\+Items}!Map\+Wallet@{Map\+Wallet}}
+\subsubsection{\texorpdfstring{Ordered\+Tx\+Items()}{OrderedTxItems()}}
+{\footnotesize\ttfamily C\+Wallet\+::\+Tx\+Items C\+Wallet\+::\+Ordered\+Tx\+Items (\begin{DoxyParamCaption}\item[{std\+::list$<$ \mbox{\hyperlink{class_c_accounting_entry}{C\+Accounting\+Entry}} $>$ \&}]{acentries,  }\item[{std\+::string}]{str\+Account = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})}
+
+Get the wallet\textquotesingle{}s activity log \begin{DoxyReturn}{Returns}
+multimap of ordered transactions and accounting entries 
+\end{DoxyReturn}
+\begin{DoxyWarning}{Warning}
+Returned pointers are {\itshape only} valid within the scope of passed acentries 
+\end{DoxyWarning}
+\mbox{\Hypertarget{group__map_wallet_ga979a17e80e4897ed1f4ae9a4be7c493c}\label{group__map_wallet_ga979a17e80e4897ed1f4ae9a4be7c493c}} 
+\index{Map\+Wallet@{Map\+Wallet}!Scan\+For\+Wallet\+Transactions@{Scan\+For\+Wallet\+Transactions}}
+\index{Scan\+For\+Wallet\+Transactions@{Scan\+For\+Wallet\+Transactions}!Map\+Wallet@{Map\+Wallet}}
+\subsubsection{\texorpdfstring{Scan\+For\+Wallet\+Transactions()}{ScanForWalletTransactions()}}
+{\footnotesize\ttfamily int C\+Wallet\+::\+Scan\+For\+Wallet\+Transactions (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$}]{pindex\+Start,  }\item[{bool}]{f\+Update = {\ttfamily false} }\end{DoxyParamCaption})}
+
+Scan the block chain (starting in pindex\+Start) for transactions from or to us. If f\+Update is true, found transactions that already exist in the wallet will be updated. 

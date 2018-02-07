@@ -1,0 +1,22 @@
+\hypertarget{class_c_coins_key_hasher}{}\section{C\+Coins\+Key\+Hasher Class Reference}
+\label{class_c_coins_key_hasher}\index{C\+Coins\+Key\+Hasher@{C\+Coins\+Key\+Hasher}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{class_c_coins_key_hasher_abf805e5472a1a3c9c29f8f3f1dd013b3}{operator()}} (const \mbox{\hyperlink{classuint256}{uint256}} \&key) const
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_coins_key_hasher_abf805e5472a1a3c9c29f8f3f1dd013b3}\label{class_c_coins_key_hasher_abf805e5472a1a3c9c29f8f3f1dd013b3}} 
+\index{C\+Coins\+Key\+Hasher@{C\+Coins\+Key\+Hasher}!operator()@{operator()}}
+\index{operator()@{operator()}!C\+Coins\+Key\+Hasher@{C\+Coins\+Key\+Hasher}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily size\+\_\+t C\+Coins\+Key\+Hasher\+::operator() (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classuint256}{uint256}} \&}]{key }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+This {\itshape must} return size\+\_\+t. With Boost 1.\+46 on 32-\/bit systems the unordered\+\_\+map will behave unpredictably if the custom hasher returns a uint64\+\_\+t, resulting in failures when syncing the chain (\#4634). 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/coins.\+h\item 
+P\+I\+V\+X/src/coins.\+cpp\end{DoxyCompactItemize}

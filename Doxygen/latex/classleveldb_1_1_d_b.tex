@@ -1,0 +1,53 @@
+\hypertarget{classleveldb_1_1_d_b}{}\section{leveldb\+:\+:DB Class Reference}
+\label{classleveldb_1_1_d_b}\index{leveldb\+::\+DB@{leveldb\+::\+DB}}
+Inheritance diagram for leveldb\+:\+:DB\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classleveldb_1_1_d_b}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_ac2e472812630ed74298df7b03b08c1ae}\label{classleveldb_1_1_d_b_ac2e472812630ed74298df7b03b08c1ae}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Put} (const \mbox{\hyperlink{structleveldb_1_1_write_options}{Write\+Options}} \&options, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&value)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_aff7577239799cd059464701c548090b9}\label{classleveldb_1_1_d_b_aff7577239799cd059464701c548090b9}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Delete} (const \mbox{\hyperlink{structleveldb_1_1_write_options}{Write\+Options}} \&options, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_ae0b6ded8c8e0b88ff70190bf7a0c086c}\label{classleveldb_1_1_d_b_ae0b6ded8c8e0b88ff70190bf7a0c086c}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Write} (const \mbox{\hyperlink{structleveldb_1_1_write_options}{Write\+Options}} \&options, \mbox{\hyperlink{classleveldb_1_1_write_batch}{Write\+Batch}} $\ast$updates)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_ad43bd7937b9af88ff856eb8158890911}\label{classleveldb_1_1_d_b_ad43bd7937b9af88ff856eb8158890911}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Get} (const \mbox{\hyperlink{structleveldb_1_1_read_options}{Read\+Options}} \&options, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, std\+::string $\ast$value)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_a5629308235de24c05c286c353d4e7d32}\label{classleveldb_1_1_d_b_a5629308235de24c05c286c353d4e7d32}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_iterator}{Iterator}} $\ast$ {\bfseries New\+Iterator} (const \mbox{\hyperlink{structleveldb_1_1_read_options}{Read\+Options}} \&options)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_a7d13f6336c7c5f0bf79578d57c45568c}\label{classleveldb_1_1_d_b_a7d13f6336c7c5f0bf79578d57c45568c}} 
+virtual const \mbox{\hyperlink{classleveldb_1_1_snapshot}{Snapshot}} $\ast$ {\bfseries Get\+Snapshot} ()=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_aa46de65e990bd179db0aee770af89144}\label{classleveldb_1_1_d_b_aa46de65e990bd179db0aee770af89144}} 
+virtual void {\bfseries Release\+Snapshot} (const \mbox{\hyperlink{classleveldb_1_1_snapshot}{Snapshot}} $\ast$snapshot)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_afcd557d80bac6668f20372c9e737d807}\label{classleveldb_1_1_d_b_afcd557d80bac6668f20372c9e737d807}} 
+virtual bool {\bfseries Get\+Property} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&property, std\+::string $\ast$value)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_ad4d54aa1dbcecc8583b013ab2d67aeff}\label{classleveldb_1_1_d_b_ad4d54aa1dbcecc8583b013ab2d67aeff}} 
+virtual void {\bfseries Get\+Approximate\+Sizes} (const \mbox{\hyperlink{structleveldb_1_1_range}{Range}} $\ast$range, int n, uint64\+\_\+t $\ast$sizes)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_aeea500cbc6704454b3be6908d5da8b3a}\label{classleveldb_1_1_d_b_aeea500cbc6704454b3be6908d5da8b3a}} 
+virtual void {\bfseries Compact\+Range} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$begin, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$end)=0
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_ac1da2b48e911287d86f3a3bfa0f851fe}\label{classleveldb_1_1_d_b_ac1da2b48e911287d86f3a3bfa0f851fe}} 
+static \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Open} (const \mbox{\hyperlink{structleveldb_1_1_options}{Options}} \&options, const std\+::string \&name, \mbox{\hyperlink{classleveldb_1_1_d_b}{DB}} $\ast$$\ast$dbptr)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/include/leveldb/db.\+h\item 
+P\+I\+V\+X/src/leveldb/db/db\+\_\+impl.\+cc\end{DoxyCompactItemize}

@@ -1,0 +1,39 @@
+\hypertarget{structsph__jh__context}{}\section{sph\+\_\+jh\+\_\+context Struct Reference}
+\label{structsph__jh__context}\index{sph\+\_\+jh\+\_\+context@{sph\+\_\+jh\+\_\+context}}
+
+
+{\ttfamily \#include $<$sph\+\_\+jh.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsph__jh__context_a3dc7aa585cff408e168f5d0c5cc61400}\label{structsph__jh__context_a3dc7aa585cff408e168f5d0c5cc61400}} 
+unsigned char {\bfseries buf} \mbox{[}64\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__jh__context_aa6880d19dbdea6b710eb36447c4fc835}\label{structsph__jh__context_aa6880d19dbdea6b710eb36447c4fc835}} 
+size\+\_\+t {\bfseries ptr}
+\item 
+\mbox{\Hypertarget{structsph__jh__context_aa994b5fb7ec509c80b5306bd4f12f311}\label{structsph__jh__context_aa994b5fb7ec509c80b5306bd4f12f311}} 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+union \{\\
+\>sph\_u32 {\bfseries narrow} \mbox{[}32\mbox{]}\\
+\} {\bfseries H}\\
+
+\end{tabbing}\item 
+\mbox{\Hypertarget{structsph__jh__context_a7ae4f4f5695c9d96ced8beeefe9e5114}\label{structsph__jh__context_a7ae4f4f5695c9d96ced8beeefe9e5114}} 
+sph\+\_\+u32 {\bfseries block\+\_\+count\+\_\+high}
+\item 
+\mbox{\Hypertarget{structsph__jh__context_a0aefbe622c0463e587bcd8fc257f8ecf}\label{structsph__jh__context_a0aefbe622c0463e587bcd8fc257f8ecf}} 
+sph\+\_\+u32 {\bfseries block\+\_\+count\+\_\+low}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This structure is a context for JH computations\+: it contains the intermediate values and some data from the last entered block. Once a JH computation has been performed, the context can be reused for another computation.
+
+The contents of this structure are private. A running JH computation can be cloned by copying the context (e.\+g. with a simple {\ttfamily memcpy()}). 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/crypto/\mbox{\hyperlink{sph__jh_8h}{sph\+\_\+jh.\+h}}\end{DoxyCompactItemize}

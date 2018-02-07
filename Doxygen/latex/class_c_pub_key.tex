@@ -1,0 +1,104 @@
+\hypertarget{class_c_pub_key}{}\section{C\+Pub\+Key Class Reference}
+\label{class_c_pub_key}\index{C\+Pub\+Key@{C\+Pub\+Key}}
+
+
+{\ttfamily \#include $<$pubkey.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_pub_key_a468f3aef3555d12ede19c0d8dc88c13a}\label{class_c_pub_key_a468f3aef3555d12ede19c0d8dc88c13a}} 
+\mbox{\hyperlink{class_c_pub_key_a468f3aef3555d12ede19c0d8dc88c13a}{C\+Pub\+Key}} ()
+\begin{DoxyCompactList}\small\item\em Construct an invalid public key. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_af59bc1d3be119c1f8b49d3c1e2c0797b}\label{class_c_pub_key_af59bc1d3be119c1f8b49d3c1e2c0797b}} 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{class_c_pub_key_af59bc1d3be119c1f8b49d3c1e2c0797b}{Set}} (const T pbegin, const T pend)
+\begin{DoxyCompactList}\small\item\em Initialize a public key using begin/end iterators to byte data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a8c7527b40c96bfb8f48b669764301df8}\label{class_c_pub_key_a8c7527b40c96bfb8f48b669764301df8}} 
+{\footnotesize template$<$typename T $>$ }\\\mbox{\hyperlink{class_c_pub_key_a8c7527b40c96bfb8f48b669764301df8}{C\+Pub\+Key}} (const T pbegin, const T pend)
+\begin{DoxyCompactList}\small\item\em Construct a public key using begin/end iterators to byte data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a31307d0318ebda95c7e34ef1554fe2d2}\label{class_c_pub_key_a31307d0318ebda95c7e34ef1554fe2d2}} 
+\mbox{\hyperlink{class_c_pub_key_a31307d0318ebda95c7e34ef1554fe2d2}{C\+Pub\+Key}} (const std\+::vector$<$ unsigned char $>$ \&vch)
+\begin{DoxyCompactList}\small\item\em Construct a public key from a byte vector. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a6bb28fcf0a5f799c69f5b7269363b309}\label{class_c_pub_key_a6bb28fcf0a5f799c69f5b7269363b309}} 
+unsigned int \mbox{\hyperlink{class_c_pub_key_a6bb28fcf0a5f799c69f5b7269363b309}{size}} () const
+\begin{DoxyCompactList}\small\item\em Simple read-\/only vector-\/like interface to the pubkey data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a859ab9909d68092d6d4fc739237ab358}\label{class_c_pub_key_a859ab9909d68092d6d4fc739237ab358}} 
+const unsigned char $\ast$ {\bfseries begin} () const
+\item 
+\mbox{\Hypertarget{class_c_pub_key_a1d6fb1ec2b45fb229f549215d6a23dbc}\label{class_c_pub_key_a1d6fb1ec2b45fb229f549215d6a23dbc}} 
+const unsigned char $\ast$ {\bfseries end} () const
+\item 
+\mbox{\Hypertarget{class_c_pub_key_ab94321a511874f4a3cdf21f889d30144}\label{class_c_pub_key_ab94321a511874f4a3cdf21f889d30144}} 
+const unsigned char \& {\bfseries operator\mbox{[}$\,$\mbox{]}} (unsigned int pos) const
+\item 
+\mbox{\Hypertarget{class_c_pub_key_aeb5fed8b8e3dea754e485147c1a1a8ed}\label{class_c_pub_key_aeb5fed8b8e3dea754e485147c1a1a8ed}} 
+unsigned int \mbox{\hyperlink{class_c_pub_key_aeb5fed8b8e3dea754e485147c1a1a8ed}{Get\+Serialize\+Size}} (int n\+Type, int n\+Version) const
+\begin{DoxyCompactList}\small\item\em Implement serialization, as if this was a byte vector. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a6003c13fc0a48bae69c2a7ddb1fecc21}\label{class_c_pub_key_a6003c13fc0a48bae69c2a7ddb1fecc21}} 
+{\footnotesize template$<$typename Stream $>$ }\\void {\bfseries Serialize} (Stream \&s, int n\+Type, int n\+Version) const
+\item 
+\mbox{\Hypertarget{class_c_pub_key_a1cfd8e3c711f5298eecdacd5979f6e6c}\label{class_c_pub_key_a1cfd8e3c711f5298eecdacd5979f6e6c}} 
+{\footnotesize template$<$typename Stream $>$ }\\void {\bfseries Unserialize} (Stream \&s, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_pub_key_a2675f7e6f72eff68e7a5227289feb021}\label{class_c_pub_key_a2675f7e6f72eff68e7a5227289feb021}} 
+\mbox{\hyperlink{class_c_key_i_d}{C\+Key\+ID}} \mbox{\hyperlink{class_c_pub_key_a2675f7e6f72eff68e7a5227289feb021}{Get\+ID}} () const
+\begin{DoxyCompactList}\small\item\em Get the Key\+ID of this public key (hash of its serialization) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_ab1aaa3f6085a3e9bc034d3e1269d870d}\label{class_c_pub_key_ab1aaa3f6085a3e9bc034d3e1269d870d}} 
+\mbox{\hyperlink{classuint256}{uint256}} \mbox{\hyperlink{class_c_pub_key_ab1aaa3f6085a3e9bc034d3e1269d870d}{Get\+Hash}} () const
+\begin{DoxyCompactList}\small\item\em Get the 256-\/bit hash of this public key. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a4fa94293cf8577fd039b9a133f6c7f30}\label{class_c_pub_key_a4fa94293cf8577fd039b9a133f6c7f30}} 
+bool {\bfseries Is\+Valid} () const
+\item 
+\mbox{\Hypertarget{class_c_pub_key_a69d8d49962240a5696410229dd83c93e}\label{class_c_pub_key_a69d8d49962240a5696410229dd83c93e}} 
+bool \mbox{\hyperlink{class_c_pub_key_a69d8d49962240a5696410229dd83c93e}{Is\+Fully\+Valid}} () const
+\begin{DoxyCompactList}\small\item\em fully validate whether this is a valid public key (more expensive than Is\+Valid()) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a25f8b70340ad20ddab0f80ec4cee9396}\label{class_c_pub_key_a25f8b70340ad20ddab0f80ec4cee9396}} 
+bool \mbox{\hyperlink{class_c_pub_key_a25f8b70340ad20ddab0f80ec4cee9396}{Is\+Compressed}} () const
+\begin{DoxyCompactList}\small\item\em Check whether this is a compressed public key. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_c_pub_key_a5b3fef213b227394ca9d0a1e3baa957e}{Verify}} (const \mbox{\hyperlink{classuint256}{uint256}} \&hash, const std\+::vector$<$ unsigned char $>$ \&vch\+Sig) const
+\item 
+\mbox{\Hypertarget{class_c_pub_key_a169505e735a02db385486b0affeb565c}\label{class_c_pub_key_a169505e735a02db385486b0affeb565c}} 
+bool \mbox{\hyperlink{class_c_pub_key_a169505e735a02db385486b0affeb565c}{Recover\+Compact}} (const \mbox{\hyperlink{classuint256}{uint256}} \&hash, const std\+::vector$<$ unsigned char $>$ \&vch\+Sig)
+\begin{DoxyCompactList}\small\item\em Recover a public key from a compact signature. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a572689418fecf47b300a11519bc3da36}\label{class_c_pub_key_a572689418fecf47b300a11519bc3da36}} 
+bool \mbox{\hyperlink{class_c_pub_key_a572689418fecf47b300a11519bc3da36}{Decompress}} ()
+\begin{DoxyCompactList}\small\item\em Turn this public key into an uncompressed public key. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a6e70269c1be731ace2fce8bfba9a0c36}\label{class_c_pub_key_a6e70269c1be731ace2fce8bfba9a0c36}} 
+bool \mbox{\hyperlink{class_c_pub_key_a6e70269c1be731ace2fce8bfba9a0c36}{Derive}} (\mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pubkey\+Child, unsigned char cc\+Child\mbox{[}32\mbox{]}, unsigned int n\+Child, const unsigned char cc\mbox{[}32\mbox{]}) const
+\begin{DoxyCompactList}\small\item\em Derive B\+I\+P32 child pubkey. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_a0901f7361c4e539dd6d35c79d0db3f89}\label{class_c_pub_key_a0901f7361c4e539dd6d35c79d0db3f89}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries Raw} () const
+\item 
+\mbox{\Hypertarget{class_c_pub_key_a4d4192bf789f76e36dc15ddc75d8244c}\label{class_c_pub_key_a4d4192bf789f76e36dc15ddc75d8244c}} 
+std\+::string {\bfseries Get\+Hex} ()
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_pub_key_a864b3cdcb46fb85c1fc07e0686cc3a31}\label{class_c_pub_key_a864b3cdcb46fb85c1fc07e0686cc3a31}} 
+bool \mbox{\hyperlink{class_c_pub_key_a864b3cdcb46fb85c1fc07e0686cc3a31}{operator==}} (const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&a, const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&b)
+\begin{DoxyCompactList}\small\item\em Comparator implementation. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_pub_key_af660fd5a8d213211dfff37a2296d09e1}\label{class_c_pub_key_af660fd5a8d213211dfff37a2296d09e1}} 
+bool {\bfseries operator!=} (const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&a, const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&b)
+\item 
+\mbox{\Hypertarget{class_c_pub_key_af814095b2c92bedd96a83a0811d52da9}\label{class_c_pub_key_af814095b2c92bedd96a83a0811d52da9}} 
+bool {\bfseries operator$<$} (const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&a, const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&b)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An encapsulated public key. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_pub_key_a5b3fef213b227394ca9d0a1e3baa957e}\label{class_c_pub_key_a5b3fef213b227394ca9d0a1e3baa957e}} 
+\index{C\+Pub\+Key@{C\+Pub\+Key}!Verify@{Verify}}
+\index{Verify@{Verify}!C\+Pub\+Key@{C\+Pub\+Key}}
+\subsubsection{\texorpdfstring{Verify()}{Verify()}}
+{\footnotesize\ttfamily bool C\+Pub\+Key\+::\+Verify (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classuint256}{uint256}} \&}]{hash,  }\item[{const std\+::vector$<$ unsigned char $>$ \&}]{vch\+Sig }\end{DoxyParamCaption}) const}
+
+Verify a D\+ER signature ($\sim$72 bytes). If this public key is not fully valid, the return value will be false. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/pubkey.\+h\item 
+P\+I\+V\+X/src/pubkey.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,146 @@
+\hypertarget{class_options_model}{}\section{Options\+Model Class Reference}
+\label{class_options_model}\index{Options\+Model@{Options\+Model}}
+
+
+{\ttfamily \#include $<$optionsmodel.\+h$>$}
+
+Inheritance diagram for Options\+Model\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_options_model}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_options_model_a5c6c9ca8a01aca9f53e91f118e4878d2}\label{class_options_model_a5c6c9ca8a01aca9f53e91f118e4878d2}} 
+enum {\bfseries Option\+ID} \{ \newline
+{\bfseries Start\+At\+Startup}, 
+{\bfseries Minimize\+To\+Tray}, 
+{\bfseries Map\+Port\+U\+PnP}, 
+{\bfseries Minimize\+On\+Close}, 
+\newline
+{\bfseries Proxy\+Use}, 
+{\bfseries Proxy\+IP}, 
+{\bfseries Proxy\+Port}, 
+{\bfseries Display\+Unit}, 
+\newline
+{\bfseries Third\+Party\+Tx\+Urls}, 
+{\bfseries Digits}, 
+{\bfseries Theme}, 
+{\bfseries Language}, 
+\newline
+{\bfseries Coin\+Control\+Features}, 
+{\bfseries Threads\+Script\+Verif}, 
+{\bfseries Database\+Cache}, 
+{\bfseries Spend\+Zero\+Conf\+Change}, 
+\newline
+{\bfseries Zeromint\+Enable}, 
+{\bfseries Zeromint\+Percentage}, 
+{\bfseries Zeromint\+Pref\+Denom}, 
+{\bfseries Anonymize\+Pivx\+Amount}, 
+\newline
+{\bfseries Show\+Masternodes\+Tab}, 
+{\bfseries Listen}, 
+{\bfseries Stake\+Split\+Threshold}, 
+{\bfseries Option\+I\+D\+Row\+Count}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_options_model_a7827a9cf0ceea0a429522974b620f11e}\label{class_options_model_a7827a9cf0ceea0a429522974b620f11e}} 
+void {\bfseries display\+Unit\+Changed} (int unit)
+\item 
+\mbox{\Hypertarget{class_options_model_a46029511a8b1b75f808032fb75087d12}\label{class_options_model_a46029511a8b1b75f808032fb75087d12}} 
+void {\bfseries zeromint\+Enable\+Changed} (bool)
+\item 
+\mbox{\Hypertarget{class_options_model_a19d8be171794c6d0628f627567250d2c}\label{class_options_model_a19d8be171794c6d0628f627567250d2c}} 
+void {\bfseries zeromint\+Percentage\+Changed} (int)
+\item 
+\mbox{\Hypertarget{class_options_model_aecaf3c519b7860fe4a69c55575156f1a}\label{class_options_model_aecaf3c519b7860fe4a69c55575156f1a}} 
+void {\bfseries preferred\+Denom\+Changed} (int)
+\item 
+\mbox{\Hypertarget{class_options_model_a94b179a8c90de56c4f36f9d36a983615}\label{class_options_model_a94b179a8c90de56c4f36f9d36a983615}} 
+void {\bfseries anonymize\+Pivx\+Amount\+Changed} (int)
+\item 
+\mbox{\Hypertarget{class_options_model_a469ef5e28f59f5b633a2f17943527389}\label{class_options_model_a469ef5e28f59f5b633a2f17943527389}} 
+void {\bfseries coin\+Control\+Features\+Changed} (bool)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_options_model_a17c6b3de70c415b0fdf5c27f5f871054}\label{class_options_model_a17c6b3de70c415b0fdf5c27f5f871054}} 
+{\bfseries Options\+Model} (Q\+Object $\ast$parent=0)
+\item 
+\mbox{\Hypertarget{class_options_model_a0e02c341067bff7be262fede017fbea0}\label{class_options_model_a0e02c341067bff7be262fede017fbea0}} 
+void {\bfseries Init} ()
+\item 
+\mbox{\Hypertarget{class_options_model_ab952b1946cf3a4c76706ec796a3e629b}\label{class_options_model_ab952b1946cf3a4c76706ec796a3e629b}} 
+void {\bfseries Reset} ()
+\item 
+\mbox{\Hypertarget{class_options_model_ac9901d7d28c3362678539fc3b88d0aba}\label{class_options_model_ac9901d7d28c3362678539fc3b88d0aba}} 
+int {\bfseries row\+Count} (const Q\+Model\+Index \&parent=Q\+Model\+Index()) const
+\item 
+\mbox{\Hypertarget{class_options_model_abcd96450560150ec71b13958e7d11d47}\label{class_options_model_abcd96450560150ec71b13958e7d11d47}} 
+Q\+Variant {\bfseries data} (const Q\+Model\+Index \&index, int role=Qt\+::\+Display\+Role) const
+\item 
+\mbox{\Hypertarget{class_options_model_a3102b457f4d46efac8ecb03b3d536b62}\label{class_options_model_a3102b457f4d46efac8ecb03b3d536b62}} 
+bool {\bfseries set\+Data} (const Q\+Model\+Index \&index, const Q\+Variant \&value, int role=Qt\+::\+Edit\+Role)
+\item 
+void \mbox{\hyperlink{class_options_model_a42efacc748130848acc20247a7ed4617}{set\+Display\+Unit}} (const Q\+Variant \&value)
+\item 
+\mbox{\Hypertarget{class_options_model_aebde6a561a47cdc14410f35076a86b28}\label{class_options_model_aebde6a561a47cdc14410f35076a86b28}} 
+void {\bfseries set\+Stake\+Split\+Threshold} (int value)
+\item 
+\mbox{\Hypertarget{class_options_model_af026ad3b0705de76c1f57d9a6132aec0}\label{class_options_model_af026ad3b0705de76c1f57d9a6132aec0}} 
+bool {\bfseries get\+Minimize\+To\+Tray} ()
+\item 
+\mbox{\Hypertarget{class_options_model_a82cd711817f3c9c87efbfa71b5ae0629}\label{class_options_model_a82cd711817f3c9c87efbfa71b5ae0629}} 
+bool {\bfseries get\+Minimize\+On\+Close} ()
+\item 
+\mbox{\Hypertarget{class_options_model_a3b6e4d4ef42be3aaba315b8cd14f468e}\label{class_options_model_a3b6e4d4ef42be3aaba315b8cd14f468e}} 
+int {\bfseries get\+Display\+Unit} ()
+\item 
+\mbox{\Hypertarget{class_options_model_a6cb6057025ce07b7dbc24761ffb6b493}\label{class_options_model_a6cb6057025ce07b7dbc24761ffb6b493}} 
+Q\+String {\bfseries get\+Third\+Party\+Tx\+Urls} ()
+\item 
+\mbox{\Hypertarget{class_options_model_a0fa582a801df3753c2c50840c40bb350}\label{class_options_model_a0fa582a801df3753c2c50840c40bb350}} 
+bool {\bfseries get\+Proxy\+Settings} (Q\+Network\+Proxy \&proxy) const
+\item 
+\mbox{\Hypertarget{class_options_model_ace6c871068f613aee277e37bfdc988c0}\label{class_options_model_ace6c871068f613aee277e37bfdc988c0}} 
+bool {\bfseries get\+Coin\+Control\+Features} ()
+\item 
+\mbox{\Hypertarget{class_options_model_ac5d555492fa4d6bba68d00e798efca50}\label{class_options_model_ac5d555492fa4d6bba68d00e798efca50}} 
+const Q\+String \& {\bfseries get\+Overridden\+By\+Command\+Line} ()
+\item 
+\mbox{\Hypertarget{class_options_model_af25171526a18c4746132ff199e0b1d71}\label{class_options_model_af25171526a18c4746132ff199e0b1d71}} 
+void {\bfseries set\+Restart\+Required} (bool f\+Required)
+\item 
+\mbox{\Hypertarget{class_options_model_a75c15f2cb96ee8efe7b9e756e5c8e69c}\label{class_options_model_a75c15f2cb96ee8efe7b9e756e5c8e69c}} 
+bool {\bfseries is\+Restart\+Required} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_options_model_a5c6b1f952c5635b2c735923948179517}\label{class_options_model_a5c6b1f952c5635b2c735923948179517}} 
+bool {\bfseries reset\+Settings}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interface from Qt to configuration data structure for Bitcoin client. To Qt, the options are presented as a list with the different options laid out vertically. This can be changed to a tree once the settings become sufficiently complex. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_options_model_a42efacc748130848acc20247a7ed4617}\label{class_options_model_a42efacc748130848acc20247a7ed4617}} 
+\index{Options\+Model@{Options\+Model}!set\+Display\+Unit@{set\+Display\+Unit}}
+\index{set\+Display\+Unit@{set\+Display\+Unit}!Options\+Model@{Options\+Model}}
+\subsubsection{\texorpdfstring{set\+Display\+Unit()}{setDisplayUnit()}}
+{\footnotesize\ttfamily void Options\+Model\+::set\+Display\+Unit (\begin{DoxyParamCaption}\item[{const Q\+Variant \&}]{value }\end{DoxyParamCaption})}
+
+Updates current unit in memory, settings and emits display\+Unit\+Changed(new\+Unit) signal 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/optionsmodel.\+h\item 
+P\+I\+V\+X/src/qt/optionsmodel.\+cpp\end{DoxyCompactItemize}

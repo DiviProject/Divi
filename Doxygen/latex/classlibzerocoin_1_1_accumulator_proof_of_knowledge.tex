@@ -1,0 +1,65 @@
+\hypertarget{classlibzerocoin_1_1_accumulator_proof_of_knowledge}{}\section{libzerocoin\+:\+:Accumulator\+Proof\+Of\+Knowledge Class Reference}
+\label{classlibzerocoin_1_1_accumulator_proof_of_knowledge}\index{libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge@{libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge}}
+
+
+{\ttfamily \#include $<$Accumulator\+Proof\+Of\+Knowledge.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_proof_of_knowledge_a4eb3b653681682cce8a9bc42b231efeb}\label{classlibzerocoin_1_1_accumulator_proof_of_knowledge_a4eb3b653681682cce8a9bc42b231efeb}} 
+{\bfseries Accumulator\+Proof\+Of\+Knowledge} (const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_and_proof_params}{Accumulator\+And\+Proof\+Params}} $\ast$p)
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_accumulator_proof_of_knowledge_acce987e79e2498918495c3a7e8873810}{Accumulator\+Proof\+Of\+Knowledge}} (const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_and_proof_params}{Accumulator\+And\+Proof\+Params}} $\ast$p, const \mbox{\hyperlink{classlibzerocoin_1_1_commitment}{Commitment}} \&commitment\+To\+Coin, const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness}{Accumulator\+Witness}} \&witness, \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&a)
+\item 
+bool \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_proof_of_knowledge_afa37fa003c2e3ce95e00525fe84d1e52}{Verify}} (const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&a, const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&value\+Of\+Commitment\+To\+Coin) const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_proof_of_knowledge_af89207ab552bd8a0474334ff37f8efee}\label{classlibzerocoin_1_1_accumulator_proof_of_knowledge_af89207ab552bd8a0474334ff37f8efee}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_proof_of_knowledge_aeebe0feccb9cc047063f279a369f0161}\label{classlibzerocoin_1_1_accumulator_proof_of_knowledge_aeebe0feccb9cc047063f279a369f0161}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A prove that a value insde the commitment commitment\+To\+Coin is in an accumulator a. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_proof_of_knowledge_acce987e79e2498918495c3a7e8873810}\label{classlibzerocoin_1_1_accumulator_proof_of_knowledge_acce987e79e2498918495c3a7e8873810}} 
+\index{libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge@{libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge}!Accumulator\+Proof\+Of\+Knowledge@{Accumulator\+Proof\+Of\+Knowledge}}
+\index{Accumulator\+Proof\+Of\+Knowledge@{Accumulator\+Proof\+Of\+Knowledge}!libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge@{libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge}}
+\subsubsection{\texorpdfstring{Accumulator\+Proof\+Of\+Knowledge()}{AccumulatorProofOfKnowledge()}}
+{\footnotesize\ttfamily libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge\+::\+Accumulator\+Proof\+Of\+Knowledge (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_and_proof_params}{Accumulator\+And\+Proof\+Params}} $\ast$}]{p,  }\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_commitment}{Commitment}} \&}]{commitment\+To\+Coin,  }\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness}{Accumulator\+Witness}} \&}]{witness,  }\item[{\mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&}]{a }\end{DoxyParamCaption})}
+
+Generates a proof that a commitment to a coin c was accumulated 
+\begin{DoxyParams}{Parameters}
+{\em p} & Cryptographic parameters \\
+\hline
+{\em commitment\+To\+Coin} & commitment containing the coin we want to prove is accumulated \\
+\hline
+{\em witness} & The witness to the accumulation of the coin \\
+\hline
+{\em a} & \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_proof_of_knowledge_afa37fa003c2e3ce95e00525fe84d1e52}\label{classlibzerocoin_1_1_accumulator_proof_of_knowledge_afa37fa003c2e3ce95e00525fe84d1e52}} 
+\index{libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge@{libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge}!Verify@{Verify}}
+\index{Verify@{Verify}!libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge@{libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge}}
+\subsubsection{\texorpdfstring{Verify()}{Verify()}}
+{\footnotesize\ttfamily bool libzerocoin\+::\+Accumulator\+Proof\+Of\+Knowledge\+::\+Verify (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&}]{a,  }\item[{const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&}]{value\+Of\+Commitment\+To\+Coin }\end{DoxyParamCaption}) const}
+
+Verifies that a commitment c is accumulated in accumulated a
+
+Verifies that a commitment c is accumulated in accumulator a 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_accumulator_proof_of_knowledge_8h}{Accumulator\+Proof\+Of\+Knowledge.\+h}}\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_accumulator_proof_of_knowledge_8cpp}{Accumulator\+Proof\+Of\+Knowledge.\+cpp}}\end{DoxyCompactItemize}

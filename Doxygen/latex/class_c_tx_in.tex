@@ -1,0 +1,66 @@
+\hypertarget{class_c_tx_in}{}\section{C\+Tx\+In Class Reference}
+\label{class_c_tx_in}\index{C\+Tx\+In@{C\+Tx\+In}}
+
+
+{\ttfamily \#include $<$transaction.\+h$>$}
+
+Inheritance diagram for C\+Tx\+In\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_tx_in}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_a200599abad3a0f0b92edbf74c4b2ab5d}\label{class_c_tx_in_a200599abad3a0f0b92edbf74c4b2ab5d}} 
+{\bfseries C\+Tx\+In} (\mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} prevout\+In, \mbox{\hyperlink{class_c_script}{C\+Script}} script\+Sig\+In=\mbox{\hyperlink{class_c_script}{C\+Script}}(), uint32\+\_\+t n\+Sequence\+In=std\+::numeric\+\_\+limits$<$ unsigned int $>$\+::max())
+\item 
+\mbox{\Hypertarget{class_c_tx_in_a09a783aad555111a108f09ac79361c4a}\label{class_c_tx_in_a09a783aad555111a108f09ac79361c4a}} 
+{\bfseries C\+Tx\+In} (\mbox{\hyperlink{classuint256}{uint256}} hash\+Prev\+Tx, uint32\+\_\+t n\+Out, \mbox{\hyperlink{class_c_script}{C\+Script}} script\+Sig\+In=\mbox{\hyperlink{class_c_script}{C\+Script}}(), uint32\+\_\+t n\+Sequence\+In=std\+::numeric\+\_\+limits$<$ uint32\+\_\+t $>$\+::max())
+\item 
+\mbox{\Hypertarget{class_c_tx_in_a3d23c5264c6d93ecf3cf65dd13c55db3}\label{class_c_tx_in_a3d23c5264c6d93ecf3cf65dd13c55db3}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_tx_in_ae6629ccc2720f2b772b0cc2d7f3fe42b}\label{class_c_tx_in_ae6629ccc2720f2b772b0cc2d7f3fe42b}} 
+bool {\bfseries Is\+Final} () const
+\item 
+\mbox{\Hypertarget{class_c_tx_in_a9f3dcba8a979ca7007448f8ad1d3c4c1}\label{class_c_tx_in_a9f3dcba8a979ca7007448f8ad1d3c4c1}} 
+std\+::string {\bfseries To\+String} () const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_aed9312051a25380cbd7f123408ab7c20}\label{class_c_tx_in_aed9312051a25380cbd7f123408ab7c20}} 
+\mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} {\bfseries prevout}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_aba540fd902366210a6ad6cd9a18fe763}\label{class_c_tx_in_aba540fd902366210a6ad6cd9a18fe763}} 
+\mbox{\hyperlink{class_c_script}{C\+Script}} {\bfseries script\+Sig}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_a635deeaf3ca4e8b3e1a97054607211b9}\label{class_c_tx_in_a635deeaf3ca4e8b3e1a97054607211b9}} 
+uint32\+\_\+t {\bfseries n\+Sequence}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_a91732c5ffb13520a6989b162ff6683fc}\label{class_c_tx_in_a91732c5ffb13520a6989b162ff6683fc}} 
+\mbox{\hyperlink{class_c_script}{C\+Script}} {\bfseries prev\+Pub\+Key}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_aad2fd3fef5ad4ebe7e54c0db0cc34be4}\label{class_c_tx_in_aad2fd3fef5ad4ebe7e54c0db0cc34be4}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_a1bb37c4cd8573c3014a194e8ce4d8daa}\label{class_c_tx_in_a1bb37c4cd8573c3014a194e8ce4d8daa}} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&a, const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&b)
+\item 
+\mbox{\Hypertarget{class_c_tx_in_a4188c5f0807185c03e80598a7a3ace72}\label{class_c_tx_in_a4188c5f0807185c03e80598a7a3ace72}} 
+bool {\bfseries operator!=} (const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&a, const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&b)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An input of a transaction. It contains the location of the previous transaction\textquotesingle{}s output that it claims and a signature that matches the output\textquotesingle{}s public key. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/primitives/transaction.\+h\item 
+P\+I\+V\+X/src/primitives/transaction.\+cpp\end{DoxyCompactItemize}

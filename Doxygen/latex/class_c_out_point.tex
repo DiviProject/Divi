@@ -1,0 +1,66 @@
+\hypertarget{class_c_out_point}{}\section{C\+Out\+Point Class Reference}
+\label{class_c_out_point}\index{C\+Out\+Point@{C\+Out\+Point}}
+
+
+{\ttfamily \#include $<$transaction.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_out_point_a1dca427b8cabc8eefe9dc13757b6b475}\label{class_c_out_point_a1dca427b8cabc8eefe9dc13757b6b475}} 
+{\bfseries C\+Out\+Point} (\mbox{\hyperlink{classuint256}{uint256}} hash\+In, uint32\+\_\+t n\+In)
+\item 
+\mbox{\Hypertarget{class_c_out_point_a171ccb3afa9bf9443a91e5ba3fdb911b}\label{class_c_out_point_a171ccb3afa9bf9443a91e5ba3fdb911b}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_out_point_aa98ceceb3fc5f4d2c52033451ee8e251}\label{class_c_out_point_aa98ceceb3fc5f4d2c52033451ee8e251}} 
+void {\bfseries Set\+Null} ()
+\item 
+\mbox{\Hypertarget{class_c_out_point_ae1516581fa2234556761f04af3a207a6}\label{class_c_out_point_ae1516581fa2234556761f04af3a207a6}} 
+bool {\bfseries Is\+Null} () const
+\item 
+\mbox{\Hypertarget{class_c_out_point_a9d3a8d27d7bec8290c14aa46e5179de4}\label{class_c_out_point_a9d3a8d27d7bec8290c14aa46e5179de4}} 
+bool {\bfseries Is\+Masternode\+Reward} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} $\ast$tx) const
+\item 
+\mbox{\Hypertarget{class_c_out_point_ab0026adab6a1098cf00de05c872fbb5d}\label{class_c_out_point_ab0026adab6a1098cf00de05c872fbb5d}} 
+std\+::string {\bfseries To\+String} () const
+\item 
+\mbox{\Hypertarget{class_c_out_point_a85f13609edc1f66afe82fb68f28fb8b7}\label{class_c_out_point_a85f13609edc1f66afe82fb68f28fb8b7}} 
+std\+::string {\bfseries To\+String\+Short} () const
+\item 
+\mbox{\Hypertarget{class_c_out_point_ad27bc2d181d21a921e6811d24203c6bb}\label{class_c_out_point_ad27bc2d181d21a921e6811d24203c6bb}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Hash} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_out_point_af131c7194a660558b0ff158f4efa7a28}\label{class_c_out_point_af131c7194a660558b0ff158f4efa7a28}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries hash}
+\item 
+\mbox{\Hypertarget{class_c_out_point_a1b857e3a0412ff741da2c9f8defe315c}\label{class_c_out_point_a1b857e3a0412ff741da2c9f8defe315c}} 
+uint32\+\_\+t {\bfseries n}
+\item 
+\mbox{\Hypertarget{class_c_out_point_ac025da4b121ed1bca9a4d88bcb9d3a90}\label{class_c_out_point_ac025da4b121ed1bca9a4d88bcb9d3a90}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_out_point_a83395b7e70479c621c95e1a0d7f2497c}\label{class_c_out_point_a83395b7e70479c621c95e1a0d7f2497c}} 
+bool {\bfseries operator$<$} (const \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} \&a, const \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} \&b)
+\item 
+\mbox{\Hypertarget{class_c_out_point_a30d4f5afdf664bb4ea5a3496bbc2bd12}\label{class_c_out_point_a30d4f5afdf664bb4ea5a3496bbc2bd12}} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} \&a, const \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} \&b)
+\item 
+\mbox{\Hypertarget{class_c_out_point_a212e1733899b0444f0e4e1e3deae33b1}\label{class_c_out_point_a212e1733899b0444f0e4e1e3deae33b1}} 
+bool {\bfseries operator!=} (const \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} \&a, const \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} \&b)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An outpoint -\/ a combination of a transaction hash and an index n into its vout 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/primitives/transaction.\+h\item 
+P\+I\+V\+X/src/primitives/transaction.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,56 @@
+\hypertarget{class_c_masternode_payment_winner}{}\section{C\+Masternode\+Payment\+Winner Class Reference}
+\label{class_c_masternode_payment_winner}\index{C\+Masternode\+Payment\+Winner@{C\+Masternode\+Payment\+Winner}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_ab3a98fee3450cd4b36efdd676a536e75}\label{class_c_masternode_payment_winner_ab3a98fee3450cd4b36efdd676a536e75}} 
+{\bfseries C\+Masternode\+Payment\+Winner} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} vin\+In)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_a0580947e55d3bee159825472ca95ff67}\label{class_c_masternode_payment_winner_a0580947e55d3bee159825472ca95ff67}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Hash} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_abeb1dae2c5d21c30ae476e37f3453fd9}\label{class_c_masternode_payment_winner_abeb1dae2c5d21c30ae476e37f3453fd9}} 
+bool {\bfseries Sign} (\mbox{\hyperlink{class_c_key}{C\+Key}} \&key\+Masternode, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pub\+Key\+Masternode)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_aea2d96fdfccdb2b79595c68cb1ba82e7}\label{class_c_masternode_payment_winner_aea2d96fdfccdb2b79595c68cb1ba82e7}} 
+bool {\bfseries Is\+Valid} (\mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$pnode, std\+::string \&str\+Error)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_a7fa9251195562a7f0ef2d9c30748ba6c}\label{class_c_masternode_payment_winner_a7fa9251195562a7f0ef2d9c30748ba6c}} 
+bool {\bfseries Signature\+Valid} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_af35c61d7bafc3f7bada5974948d76004}\label{class_c_masternode_payment_winner_af35c61d7bafc3f7bada5974948d76004}} 
+void {\bfseries Relay} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_a287da67a9568d8d8a30251b7b02a13c3}\label{class_c_masternode_payment_winner_a287da67a9568d8d8a30251b7b02a13c3}} 
+void {\bfseries Add\+Payee} (\mbox{\hyperlink{class_c_script}{C\+Script}} payee\+In)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_aa533f72a1a4fcee2b3d061d4e8b03bf6}\label{class_c_masternode_payment_winner_aa533f72a1a4fcee2b3d061d4e8b03bf6}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_a188f4b487f9481bdcc6d5b052793512e}\label{class_c_masternode_payment_winner_a188f4b487f9481bdcc6d5b052793512e}} 
+std\+::string {\bfseries To\+String} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_ab3242857185f9dbd6d38faeb31fdbe58}\label{class_c_masternode_payment_winner_ab3242857185f9dbd6d38faeb31fdbe58}} 
+\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} {\bfseries vin\+Masternode}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_ae220dc7e74441f319751c24760ea670e}\label{class_c_masternode_payment_winner_ae220dc7e74441f319751c24760ea670e}} 
+int {\bfseries n\+Block\+Height}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_a06110371aa9d82a6dbde904335cbfc5a}\label{class_c_masternode_payment_winner_a06110371aa9d82a6dbde904335cbfc5a}} 
+\mbox{\hyperlink{class_c_script}{C\+Script}} {\bfseries payee}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_a35844d9486f2c41ebf949e13d595247d}\label{class_c_masternode_payment_winner_a35844d9486f2c41ebf949e13d595247d}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries vch\+Sig}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payment_winner_a9617f0ec9ed362ef9035235574fb1d4d}\label{class_c_masternode_payment_winner_a9617f0ec9ed362ef9035235574fb1d4d}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/masternode-\/payments.\+h\item 
+P\+I\+V\+X/src/masternode-\/payments.\+cpp\end{DoxyCompactItemize}

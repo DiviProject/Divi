@@ -1,0 +1,50 @@
+\hypertarget{classleveldb_1_1_compaction}{}\section{leveldb\+:\+:Compaction Class Reference}
+\label{classleveldb_1_1_compaction}\index{leveldb\+::\+Compaction@{leveldb\+::\+Compaction}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_a716f0b644cf403944db14e7622519bd3}\label{classleveldb_1_1_compaction_a716f0b644cf403944db14e7622519bd3}} 
+int {\bfseries level} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_a122e4f7b4fdb6c0d1862624742b34b3d}\label{classleveldb_1_1_compaction_a122e4f7b4fdb6c0d1862624742b34b3d}} 
+\mbox{\hyperlink{classleveldb_1_1_version_edit}{Version\+Edit}} $\ast$ {\bfseries edit} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_a701f2fa2d3fb00af0847aa570506e743}\label{classleveldb_1_1_compaction_a701f2fa2d3fb00af0847aa570506e743}} 
+int {\bfseries num\+\_\+input\+\_\+files} (int which) const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_aa0999bbaeb6993759b3e76e3516589d3}\label{classleveldb_1_1_compaction_aa0999bbaeb6993759b3e76e3516589d3}} 
+\mbox{\hyperlink{structleveldb_1_1_file_meta_data}{File\+Meta\+Data}} $\ast$ {\bfseries input} (int which, int i) const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_ad4487eda793d622dbcf0483663fef2ed}\label{classleveldb_1_1_compaction_ad4487eda793d622dbcf0483663fef2ed}} 
+uint64\+\_\+t {\bfseries Max\+Output\+File\+Size} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_a85ab53d400d49d1dfb7e8f63017fef99}\label{classleveldb_1_1_compaction_a85ab53d400d49d1dfb7e8f63017fef99}} 
+bool {\bfseries Is\+Trivial\+Move} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_abb1acdc9b882a7497603b13386e7e1a7}\label{classleveldb_1_1_compaction_abb1acdc9b882a7497603b13386e7e1a7}} 
+void {\bfseries Add\+Input\+Deletions} (\mbox{\hyperlink{classleveldb_1_1_version_edit}{Version\+Edit}} $\ast$edit)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_ae982beb6ee52d92de76a363ef0eefc29}\label{classleveldb_1_1_compaction_ae982beb6ee52d92de76a363ef0eefc29}} 
+bool {\bfseries Is\+Base\+Level\+For\+Key} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&user\+\_\+key)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_a07624423bb512fedb358a008a38fa0b9}\label{classleveldb_1_1_compaction_a07624423bb512fedb358a008a38fa0b9}} 
+bool {\bfseries Should\+Stop\+Before} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&internal\+\_\+key)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_a87ec90747d22dce0d103149db1ecf709}\label{classleveldb_1_1_compaction_a87ec90747d22dce0d103149db1ecf709}} 
+void {\bfseries Release\+Inputs} ()
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_ace162f32d4abb584945d3a55a389b0a3}\label{classleveldb_1_1_compaction_ace162f32d4abb584945d3a55a389b0a3}} 
+class {\bfseries Version}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_compaction_a1827cd1b4d6e9e3c378ce37ca3cce635}\label{classleveldb_1_1_compaction_a1827cd1b4d6e9e3c378ce37ca3cce635}} 
+class {\bfseries Version\+Set}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/db/version\+\_\+set.\+h\item 
+P\+I\+V\+X/src/leveldb/db/version\+\_\+set.\+cc\end{DoxyCompactItemize}

@@ -1,0 +1,36 @@
+\hypertarget{class_c_miner_policy_estimator}{}\section{C\+Miner\+Policy\+Estimator Class Reference}
+\label{class_c_miner_policy_estimator}\index{C\+Miner\+Policy\+Estimator@{C\+Miner\+Policy\+Estimator}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_miner_policy_estimator_a13e8fe709d07a3e6b1bf31fbc128a998}\label{class_c_miner_policy_estimator_a13e8fe709d07a3e6b1bf31fbc128a998}} 
+{\bfseries C\+Miner\+Policy\+Estimator} (int n\+Entries)
+\item 
+\mbox{\Hypertarget{class_c_miner_policy_estimator_a2b30e1eaa7eec2744c576fba5bd1a168}\label{class_c_miner_policy_estimator_a2b30e1eaa7eec2744c576fba5bd1a168}} 
+void {\bfseries seen\+Block} (const std\+::vector$<$ \mbox{\hyperlink{class_c_tx_mem_pool_entry}{C\+Tx\+Mem\+Pool\+Entry}} $>$ \&entries, int n\+Block\+Height, const \mbox{\hyperlink{class_c_fee_rate}{C\+Fee\+Rate}} min\+Relay\+Fee)
+\item 
+\mbox{\hyperlink{class_c_fee_rate}{C\+Fee\+Rate}} \mbox{\hyperlink{class_c_miner_policy_estimator_a00b6f58a508ee87999910972f37b3281}{estimate\+Fee}} (int n\+Blocks\+To\+Confirm)
+\item 
+\mbox{\Hypertarget{class_c_miner_policy_estimator_ae9bb4813622680e6e3b48ea8c0ce41b6}\label{class_c_miner_policy_estimator_ae9bb4813622680e6e3b48ea8c0ce41b6}} 
+double {\bfseries estimate\+Priority} (int n\+Blocks\+To\+Confirm)
+\item 
+\mbox{\Hypertarget{class_c_miner_policy_estimator_a431733d4c161afb6cef2c7a3f4fec99f}\label{class_c_miner_policy_estimator_a431733d4c161afb6cef2c7a3f4fec99f}} 
+void {\bfseries Write} (\mbox{\hyperlink{class_c_auto_file}{C\+Auto\+File}} \&fileout) const
+\item 
+\mbox{\Hypertarget{class_c_miner_policy_estimator_a86e709bc44e9f6f597519173f15595ff}\label{class_c_miner_policy_estimator_a86e709bc44e9f6f597519173f15595ff}} 
+void {\bfseries Read} (\mbox{\hyperlink{class_c_auto_file}{C\+Auto\+File}} \&filein, const \mbox{\hyperlink{class_c_fee_rate}{C\+Fee\+Rate}} \&min\+Relay\+Fee)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_miner_policy_estimator_a00b6f58a508ee87999910972f37b3281}\label{class_c_miner_policy_estimator_a00b6f58a508ee87999910972f37b3281}} 
+\index{C\+Miner\+Policy\+Estimator@{C\+Miner\+Policy\+Estimator}!estimate\+Fee@{estimate\+Fee}}
+\index{estimate\+Fee@{estimate\+Fee}!C\+Miner\+Policy\+Estimator@{C\+Miner\+Policy\+Estimator}}
+\subsubsection{\texorpdfstring{estimate\+Fee()}{estimateFee()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_c_fee_rate}{C\+Fee\+Rate}} C\+Miner\+Policy\+Estimator\+::estimate\+Fee (\begin{DoxyParamCaption}\item[{int}]{n\+Blocks\+To\+Confirm }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Can return \mbox{\hyperlink{class_c_fee_rate}{C\+Fee\+Rate(0)}} if we don\textquotesingle{}t have any data for that many blocks back. n\+Blocks\+To\+Confirm is 1 based. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/txmempool.\+cpp\end{DoxyCompactItemize}

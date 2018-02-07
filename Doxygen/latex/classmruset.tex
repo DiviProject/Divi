@@ -1,0 +1,92 @@
+\hypertarget{classmruset}{}\section{mruset$<$ T $>$ Class Template Reference}
+\label{classmruset}\index{mruset$<$ T $>$@{mruset$<$ T $>$}}
+
+
+{\ttfamily \#include $<$mruset.\+h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmruset_a282941ee7f0438b0c09274b10c78cda0}\label{classmruset_a282941ee7f0438b0c09274b10c78cda0}} 
+typedef T {\bfseries key\+\_\+type}
+\item 
+\mbox{\Hypertarget{classmruset_a834c3e7f8e9cf615ebe27752443f9a3a}\label{classmruset_a834c3e7f8e9cf615ebe27752443f9a3a}} 
+typedef T {\bfseries value\+\_\+type}
+\item 
+\mbox{\Hypertarget{classmruset_a246172eda1afff45be47a013c14b1ad6}\label{classmruset_a246172eda1afff45be47a013c14b1ad6}} 
+typedef std\+::set$<$ T $>$\+::iterator {\bfseries iterator}
+\item 
+\mbox{\Hypertarget{classmruset_a74c77f7642e8e4db7cc79991c4345692}\label{classmruset_a74c77f7642e8e4db7cc79991c4345692}} 
+typedef std\+::set$<$ T $>$\+::const\+\_\+iterator {\bfseries const\+\_\+iterator}
+\item 
+\mbox{\Hypertarget{classmruset_aaee46af18d8a5bdc503e9570e499a335}\label{classmruset_aaee46af18d8a5bdc503e9570e499a335}} 
+typedef std\+::set$<$ T $>$\+::size\+\_\+type {\bfseries size\+\_\+type}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmruset_a708b11a33448c283f6f4c8e18fd3098f}\label{classmruset_a708b11a33448c283f6f4c8e18fd3098f}} 
+{\bfseries mruset} (size\+\_\+type n\+Max\+Size\+In=0)
+\item 
+\mbox{\Hypertarget{classmruset_a778f8d3dc53ce8e76abb2f88ab42b3ad}\label{classmruset_a778f8d3dc53ce8e76abb2f88ab42b3ad}} 
+iterator {\bfseries begin} () const
+\item 
+\mbox{\Hypertarget{classmruset_ac93f008bbc701f8c9512f6f1d8ae1d24}\label{classmruset_ac93f008bbc701f8c9512f6f1d8ae1d24}} 
+iterator {\bfseries end} () const
+\item 
+\mbox{\Hypertarget{classmruset_a9b1cd4454d0399085c4ec9ddb8611011}\label{classmruset_a9b1cd4454d0399085c4ec9ddb8611011}} 
+size\+\_\+type {\bfseries size} () const
+\item 
+\mbox{\Hypertarget{classmruset_a94f290b3990c91c3606ab11935cee849}\label{classmruset_a94f290b3990c91c3606ab11935cee849}} 
+bool {\bfseries empty} () const
+\item 
+\mbox{\Hypertarget{classmruset_abe8cc5d73bc6efad0bdaf4fa51bcc362}\label{classmruset_abe8cc5d73bc6efad0bdaf4fa51bcc362}} 
+iterator {\bfseries find} (const key\+\_\+type \&k) const
+\item 
+\mbox{\Hypertarget{classmruset_aff65b732aed809fb84542e1136321a24}\label{classmruset_aff65b732aed809fb84542e1136321a24}} 
+size\+\_\+type {\bfseries count} (const key\+\_\+type \&k) const
+\item 
+\mbox{\Hypertarget{classmruset_ac7a85b54646e9d9d1962ce7f30b2a1fc}\label{classmruset_ac7a85b54646e9d9d1962ce7f30b2a1fc}} 
+void {\bfseries clear} ()
+\item 
+\mbox{\Hypertarget{classmruset_aced009504f86176bd82426aa24a38e37}\label{classmruset_aced009504f86176bd82426aa24a38e37}} 
+bool friend {\bfseries operator==} (const \mbox{\hyperlink{classmruset}{mruset}}$<$ T $>$ \&a, const \mbox{\hyperlink{classmruset}{mruset}}$<$ T $>$ \&b)
+\item 
+\mbox{\Hypertarget{classmruset_a4d7231441276ef8a6c0fa3edf9712f5c}\label{classmruset_a4d7231441276ef8a6c0fa3edf9712f5c}} 
+bool friend {\bfseries operator==} (const \mbox{\hyperlink{classmruset}{mruset}}$<$ T $>$ \&a, const std\+::set$<$ T $>$ \&b)
+\item 
+\mbox{\Hypertarget{classmruset_a5a95239f76da8ba675ba748baf1f07c8}\label{classmruset_a5a95239f76da8ba675ba748baf1f07c8}} 
+bool friend {\bfseries operator$<$} (const \mbox{\hyperlink{classmruset}{mruset}}$<$ T $>$ \&a, const \mbox{\hyperlink{classmruset}{mruset}}$<$ T $>$ \&b)
+\item 
+\mbox{\Hypertarget{classmruset_af2e0dfe9d8b029bde78457797cdc42a9}\label{classmruset_af2e0dfe9d8b029bde78457797cdc42a9}} 
+std\+::pair$<$ iterator, bool $>$ {\bfseries insert} (const key\+\_\+type \&x)
+\item 
+\mbox{\Hypertarget{classmruset_af33f9531e47639e4dc6a42c123797292}\label{classmruset_af33f9531e47639e4dc6a42c123797292}} 
+size\+\_\+type {\bfseries max\+\_\+size} () const
+\item 
+\mbox{\Hypertarget{classmruset_a030aa4599dfb54074183e2cdfbe2373f}\label{classmruset_a030aa4599dfb54074183e2cdfbe2373f}} 
+size\+\_\+type {\bfseries max\+\_\+size} (size\+\_\+type s)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmruset_a4981fc3556b61600418b2ddad98cc685}\label{classmruset_a4981fc3556b61600418b2ddad98cc685}} 
+std\+::set$<$ T $>$ {\bfseries set}
+\item 
+\mbox{\Hypertarget{classmruset_a6be1fe81dc472e25e160911288373663}\label{classmruset_a6be1fe81dc472e25e160911288373663}} 
+std\+::deque$<$ T $>$ {\bfseries queue}
+\item 
+\mbox{\Hypertarget{classmruset_a6d3d6963e3ca5689e846b12a29dd09ab}\label{classmruset_a6d3d6963e3ca5689e846b12a29dd09ab}} 
+size\+\_\+type {\bfseries n\+Max\+Size}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename T$>$\newline
+class mruset$<$ T $>$}
+
+S\+T\+L-\/like set container that only keeps the most recent N elements. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/mruset.\+h\end{DoxyCompactItemize}

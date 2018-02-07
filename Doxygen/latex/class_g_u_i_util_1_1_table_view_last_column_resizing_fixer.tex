@@ -1,0 +1,40 @@
+\hypertarget{class_g_u_i_util_1_1_table_view_last_column_resizing_fixer}{}\section{G\+U\+I\+Util\+:\+:Table\+View\+Last\+Column\+Resizing\+Fixer Class Reference}
+\label{class_g_u_i_util_1_1_table_view_last_column_resizing_fixer}\index{G\+U\+I\+Util\+::\+Table\+View\+Last\+Column\+Resizing\+Fixer@{G\+U\+I\+Util\+::\+Table\+View\+Last\+Column\+Resizing\+Fixer}}
+
+
+{\ttfamily \#include $<$guiutil.\+h$>$}
+
+Inheritance diagram for G\+U\+I\+Util\+:\+:Table\+View\+Last\+Column\+Resizing\+Fixer\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_g_u_i_util_1_1_table_view_last_column_resizing_fixer}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_g_u_i_util_1_1_table_view_last_column_resizing_fixer_a25687ab7a88da518b48d7355dc9aa22d}{Table\+View\+Last\+Column\+Resizing\+Fixer}} (Q\+Table\+View $\ast$table, int last\+Col\+Minimum\+Width, int all\+Cols\+Minimum\+Width)
+\item 
+\mbox{\Hypertarget{class_g_u_i_util_1_1_table_view_last_column_resizing_fixer_a89971ed347cf9d25e02cfb7d9c7e3ca6}\label{class_g_u_i_util_1_1_table_view_last_column_resizing_fixer_a89971ed347cf9d25e02cfb7d9c7e3ca6}} 
+void {\bfseries stretch\+Column\+Width} (int column)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Makes a Q\+Table\+View last column feel as if it was being resized from its left border. Also makes sure the column widths are never larger than the table\textquotesingle{}s viewport. In Qt, all columns are resizable from the right, but it\textquotesingle{}s not intuitive resizing the last column from the right. Usually our second to last columns behave as if stretched, and when on strech mode, columns aren\textquotesingle{}t resizable interactively or programatically.
+
+This helper object takes care of this issue. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_g_u_i_util_1_1_table_view_last_column_resizing_fixer_a25687ab7a88da518b48d7355dc9aa22d}\label{class_g_u_i_util_1_1_table_view_last_column_resizing_fixer_a25687ab7a88da518b48d7355dc9aa22d}} 
+\index{G\+U\+I\+Util\+::\+Table\+View\+Last\+Column\+Resizing\+Fixer@{G\+U\+I\+Util\+::\+Table\+View\+Last\+Column\+Resizing\+Fixer}!Table\+View\+Last\+Column\+Resizing\+Fixer@{Table\+View\+Last\+Column\+Resizing\+Fixer}}
+\index{Table\+View\+Last\+Column\+Resizing\+Fixer@{Table\+View\+Last\+Column\+Resizing\+Fixer}!G\+U\+I\+Util\+::\+Table\+View\+Last\+Column\+Resizing\+Fixer@{G\+U\+I\+Util\+::\+Table\+View\+Last\+Column\+Resizing\+Fixer}}
+\subsubsection{\texorpdfstring{Table\+View\+Last\+Column\+Resizing\+Fixer()}{TableViewLastColumnResizingFixer()}}
+{\footnotesize\ttfamily G\+U\+I\+Util\+::\+Table\+View\+Last\+Column\+Resizing\+Fixer\+::\+Table\+View\+Last\+Column\+Resizing\+Fixer (\begin{DoxyParamCaption}\item[{Q\+Table\+View $\ast$}]{table,  }\item[{int}]{last\+Col\+Minimum\+Width,  }\item[{int}]{all\+Cols\+Minimum\+Width }\end{DoxyParamCaption})}
+
+Initializes all internal variables and prepares the the resize modes of the last 2 columns of the table and 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/guiutil.\+h\item 
+P\+I\+V\+X/src/qt/guiutil.\+cpp\end{DoxyCompactItemize}

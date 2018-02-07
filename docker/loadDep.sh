@@ -15,7 +15,7 @@ echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 cd /var/divi/PIVX-3.0/miniupnpc-2.0
 make
 make install
-sleep 1
+#sleep 1
 
 echo "Berkeley DB Build ......"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

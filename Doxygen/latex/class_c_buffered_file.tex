@@ -1,0 +1,55 @@
+\hypertarget{class_c_buffered_file}{}\section{C\+Buffered\+File Class Reference}
+\label{class_c_buffered_file}\index{C\+Buffered\+File@{C\+Buffered\+File}}
+
+
+{\ttfamily \#include $<$streams.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_a30ad96a8d09bed60355d1fadda7dabdc}\label{class_c_buffered_file_a30ad96a8d09bed60355d1fadda7dabdc}} 
+{\bfseries C\+Buffered\+File} (F\+I\+LE $\ast$file\+In, uint64\+\_\+t n\+Buf\+Size, uint64\+\_\+t n\+Rewind\+In, int n\+Type\+In, int n\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_aef8c993fe3eb0fa423d09d095f40dcf6}\label{class_c_buffered_file_aef8c993fe3eb0fa423d09d095f40dcf6}} 
+void {\bfseries fclose} ()
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_af0ff112a5fd46ba3e8f2f1f4f36d5566}\label{class_c_buffered_file_af0ff112a5fd46ba3e8f2f1f4f36d5566}} 
+bool {\bfseries eof} () const
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_a20c6d2a4dbc69a8e5c7ba766d04b3d85}\label{class_c_buffered_file_a20c6d2a4dbc69a8e5c7ba766d04b3d85}} 
+\mbox{\hyperlink{class_c_buffered_file}{C\+Buffered\+File}} \& {\bfseries read} (char $\ast$pch, size\+\_\+t n\+Size)
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_af9e7226e682ede9c1c141fb2972afd7b}\label{class_c_buffered_file_af9e7226e682ede9c1c141fb2972afd7b}} 
+uint64\+\_\+t {\bfseries Get\+Pos} ()
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_aac4029a9aade127cc8a1fbbcc1549599}\label{class_c_buffered_file_aac4029a9aade127cc8a1fbbcc1549599}} 
+bool {\bfseries Set\+Pos} (uint64\+\_\+t n\+Pos)
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_afbf9abcc70f24824661aec96a4310a63}\label{class_c_buffered_file_afbf9abcc70f24824661aec96a4310a63}} 
+bool {\bfseries Seek} (uint64\+\_\+t n\+Pos)
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_adfcf370a41be0454e0f6b3dc358e415c}\label{class_c_buffered_file_adfcf370a41be0454e0f6b3dc358e415c}} 
+bool {\bfseries Set\+Limit} (uint64\+\_\+t n\+Pos=(uint64\+\_\+t)(-\/1))
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_ab570d5f1a173a41100e7b42b4aacbbc5}\label{class_c_buffered_file_ab570d5f1a173a41100e7b42b4aacbbc5}} 
+{\footnotesize template$<$typename T $>$ }\\\mbox{\hyperlink{class_c_buffered_file}{C\+Buffered\+File}} \& {\bfseries operator$>$$>$} (T \&obj)
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_a15ce0683ba5925939d33f098a948236b}\label{class_c_buffered_file_a15ce0683ba5925939d33f098a948236b}} 
+void {\bfseries Find\+Byte} (char ch)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_buffered_file_a2c93fc60c4460bd1ccf90922646b19b8}\label{class_c_buffered_file_a2c93fc60c4460bd1ccf90922646b19b8}} 
+bool {\bfseries Fill} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Non-\/refcounted R\+A\+II wrapper around a F\+I\+L\+E$\ast$ that implements a ring buffer to deserialize from. It guarantees the ability to rewind a given number of bytes.
+
+Will automatically close the file when it goes out of scope if not null. If you need to close the file early, use file.\+fclose() instead of fclose(file). 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/streams.\+h\end{DoxyCompactItemize}

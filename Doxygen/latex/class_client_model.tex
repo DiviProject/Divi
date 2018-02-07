@@ -1,0 +1,120 @@
+\hypertarget{class_client_model}{}\section{Client\+Model Class Reference}
+\label{class_client_model}\index{Client\+Model@{Client\+Model}}
+
+
+{\ttfamily \#include $<$clientmodel.\+h$>$}
+
+Inheritance diagram for Client\+Model\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_client_model}
+\end{center}
+\end{figure}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_client_model_a82d434ebd032c00736e043ce2d36ac5e}\label{class_client_model_a82d434ebd032c00736e043ce2d36ac5e}} 
+void {\bfseries update\+Timer} ()
+\item 
+\mbox{\Hypertarget{class_client_model_a2c343f22834086eb6e6172dbcaf6426c}\label{class_client_model_a2c343f22834086eb6e6172dbcaf6426c}} 
+void {\bfseries update\+Mn\+Timer} ()
+\item 
+\mbox{\Hypertarget{class_client_model_a75f5a1a83e65aeb8fa01140584904967}\label{class_client_model_a75f5a1a83e65aeb8fa01140584904967}} 
+void {\bfseries update\+Num\+Connections} (int num\+Connections)
+\item 
+\mbox{\Hypertarget{class_client_model_a16758b18ded91ceba202d6023cad4b51}\label{class_client_model_a16758b18ded91ceba202d6023cad4b51}} 
+void {\bfseries update\+Alert} (const Q\+String \&hash, int status)
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_client_model_a8eea0203366271384b0bf62f1f39a56c}\label{class_client_model_a8eea0203366271384b0bf62f1f39a56c}} 
+void {\bfseries num\+Connections\+Changed} (int count)
+\item 
+\mbox{\Hypertarget{class_client_model_a649c53bba0c617d026cdcd22c243fa26}\label{class_client_model_a649c53bba0c617d026cdcd22c243fa26}} 
+void {\bfseries num\+Blocks\+Changed} (int count)
+\item 
+\mbox{\Hypertarget{class_client_model_a88af296dda48dda54141100dc7f6e3bf}\label{class_client_model_a88af296dda48dda54141100dc7f6e3bf}} 
+void {\bfseries str\+Masternodes\+Changed} (const Q\+String \&str\+Masternodes)
+\item 
+\mbox{\Hypertarget{class_client_model_ae40a55475e8a39d928ce861e67f5497f}\label{class_client_model_ae40a55475e8a39d928ce861e67f5497f}} 
+void {\bfseries alerts\+Changed} (const Q\+String \&warnings)
+\item 
+\mbox{\Hypertarget{class_client_model_a06dd7e0e518b70e73684ca679bdf93b5}\label{class_client_model_a06dd7e0e518b70e73684ca679bdf93b5}} 
+void {\bfseries bytes\+Changed} (quint64 total\+Bytes\+In, quint64 total\+Bytes\+Out)
+\item 
+\mbox{\Hypertarget{class_client_model_a84d325a879455b518492e4541dd45dac}\label{class_client_model_a84d325a879455b518492e4541dd45dac}} 
+void \mbox{\hyperlink{class_client_model_a84d325a879455b518492e4541dd45dac}{message}} (const Q\+String \&title, const Q\+String \&message, unsigned int style)
+\begin{DoxyCompactList}\small\item\em Fired when a message should be reported to the user. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_client_model_a0b0ff10589ec0fd323251be7aa0fa6a2}\label{class_client_model_a0b0ff10589ec0fd323251be7aa0fa6a2}} 
+void {\bfseries show\+Progress} (const Q\+String \&title, int n\+Progress)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_client_model_aec1d32d5dc8c094eba66036a19a22854}\label{class_client_model_aec1d32d5dc8c094eba66036a19a22854}} 
+{\bfseries Client\+Model} (\mbox{\hyperlink{class_options_model}{Options\+Model}} $\ast$options\+Model, Q\+Object $\ast$parent=0)
+\item 
+\mbox{\Hypertarget{class_client_model_ae8da1e2eabfbbcc49a7eed821908bdb6}\label{class_client_model_ae8da1e2eabfbbcc49a7eed821908bdb6}} 
+\mbox{\hyperlink{class_options_model}{Options\+Model}} $\ast$ {\bfseries get\+Options\+Model} ()
+\item 
+\mbox{\Hypertarget{class_client_model_a643fc112ce94f50ac7187ecdf3c75360}\label{class_client_model_a643fc112ce94f50ac7187ecdf3c75360}} 
+\mbox{\hyperlink{class_peer_table_model}{Peer\+Table\+Model}} $\ast$ {\bfseries get\+Peer\+Table\+Model} ()
+\item 
+\mbox{\Hypertarget{class_client_model_ab1a71928e2ff3902e854d301f4cfe6ef}\label{class_client_model_ab1a71928e2ff3902e854d301f4cfe6ef}} 
+int \mbox{\hyperlink{class_client_model_ab1a71928e2ff3902e854d301f4cfe6ef}{get\+Num\+Connections}} (unsigned int flags=C\+O\+N\+N\+E\+C\+T\+I\+O\+N\+S\+\_\+\+A\+LL) const
+\begin{DoxyCompactList}\small\item\em Return number of connections, default is in-\/ and outbound (total) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_client_model_ab8dae86e417c050723fee66420a333ed}\label{class_client_model_ab8dae86e417c050723fee66420a333ed}} 
+Q\+String {\bfseries get\+Masternode\+Count\+String} () const
+\item 
+\mbox{\Hypertarget{class_client_model_a9af729ddd1220f928d8cb3ef29f06f26}\label{class_client_model_a9af729ddd1220f928d8cb3ef29f06f26}} 
+int {\bfseries get\+Num\+Blocks} () const
+\item 
+\mbox{\Hypertarget{class_client_model_a6bc7b2b076e7d4f999f189b6db74d909}\label{class_client_model_a6bc7b2b076e7d4f999f189b6db74d909}} 
+int {\bfseries get\+Num\+Blocks\+At\+Startup} ()
+\item 
+\mbox{\Hypertarget{class_client_model_a3ecd021e48073debd6dfeb90fdb3e7bd}\label{class_client_model_a3ecd021e48073debd6dfeb90fdb3e7bd}} 
+quint64 {\bfseries get\+Total\+Bytes\+Recv} () const
+\item 
+\mbox{\Hypertarget{class_client_model_a53cd536b119e49b0fab9c95d13a247ed}\label{class_client_model_a53cd536b119e49b0fab9c95d13a247ed}} 
+quint64 {\bfseries get\+Total\+Bytes\+Sent} () const
+\item 
+\mbox{\Hypertarget{class_client_model_a6eebc4f6b096e037cb49ca395a42789a}\label{class_client_model_a6eebc4f6b096e037cb49ca395a42789a}} 
+double {\bfseries get\+Verification\+Progress} () const
+\item 
+\mbox{\Hypertarget{class_client_model_a8683d6269976a006032075bc01be4925}\label{class_client_model_a8683d6269976a006032075bc01be4925}} 
+Q\+Date\+Time {\bfseries get\+Last\+Block\+Date} () const
+\item 
+\mbox{\Hypertarget{class_client_model_af9798c364463ada09be477b15daf0fbe}\label{class_client_model_af9798c364463ada09be477b15daf0fbe}} 
+bool \mbox{\hyperlink{class_client_model_af9798c364463ada09be477b15daf0fbe}{in\+Initial\+Block\+Download}} () const
+\begin{DoxyCompactList}\small\item\em Return true if core is doing initial block download. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_client_model_ab57c3a8365dd3f455f84521353facee7}\label{class_client_model_ab57c3a8365dd3f455f84521353facee7}} 
+enum Block\+Source \mbox{\hyperlink{class_client_model_ab57c3a8365dd3f455f84521353facee7}{get\+Block\+Source}} () const
+\begin{DoxyCompactList}\small\item\em Return true if core is importing blocks. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_client_model_a16718fa6c90ac5bce0ce1dcbfb3ec95c}\label{class_client_model_a16718fa6c90ac5bce0ce1dcbfb3ec95c}} 
+Q\+String \mbox{\hyperlink{class_client_model_a16718fa6c90ac5bce0ce1dcbfb3ec95c}{get\+Status\+Bar\+Warnings}} () const
+\begin{DoxyCompactList}\small\item\em Return warnings to be displayed in status bar. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_client_model_ae9448d6f2a7f99467152b17f7044eb12}\label{class_client_model_ae9448d6f2a7f99467152b17f7044eb12}} 
+Q\+String {\bfseries format\+Full\+Version} () const
+\item 
+\mbox{\Hypertarget{class_client_model_a48d34d4832a0980e03cbc13e60338c37}\label{class_client_model_a48d34d4832a0980e03cbc13e60338c37}} 
+Q\+String {\bfseries format\+Build\+Date} () const
+\item 
+\mbox{\Hypertarget{class_client_model_af8fdca28795abcf885ac4e78342ecccd}\label{class_client_model_af8fdca28795abcf885ac4e78342ecccd}} 
+bool {\bfseries is\+Release\+Version} () const
+\item 
+\mbox{\Hypertarget{class_client_model_a3344257e3eccd1d123df143dd9f04a4c}\label{class_client_model_a3344257e3eccd1d123df143dd9f04a4c}} 
+Q\+String {\bfseries client\+Name} () const
+\item 
+\mbox{\Hypertarget{class_client_model_aae1793d38356a2e8040d9e7dc813b0c1}\label{class_client_model_aae1793d38356a2e8040d9e7dc813b0c1}} 
+Q\+String {\bfseries format\+Client\+Startup\+Time} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Model for P\+I\+VX network client. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/clientmodel.\+h\item 
+P\+I\+V\+X/src/qt/clientmodel.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,37 @@
+\hypertarget{class_c_check_queue}{}\section{C\+Check\+Queue$<$ T $>$ Class Template Reference}
+\label{class_c_check_queue}\index{C\+Check\+Queue$<$ T $>$@{C\+Check\+Queue$<$ T $>$}}
+
+
+{\ttfamily \#include $<$checkqueue.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_check_queue_ad0e6a979f8433c05770350bc6b90a849}\label{class_c_check_queue_ad0e6a979f8433c05770350bc6b90a849}} 
+\mbox{\hyperlink{class_c_check_queue_ad0e6a979f8433c05770350bc6b90a849}{C\+Check\+Queue}} (unsigned int n\+Batch\+Size\+In)
+\begin{DoxyCompactList}\small\item\em Create a new check queue. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_check_queue_ad3602cd305b07612e634363b31c1d46c}\label{class_c_check_queue_ad3602cd305b07612e634363b31c1d46c}} 
+void \mbox{\hyperlink{class_c_check_queue_ad3602cd305b07612e634363b31c1d46c}{Thread}} ()
+\begin{DoxyCompactList}\small\item\em Worker thread. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_check_queue_a4ff3e0e8241491efa1803eeb3a53e7fa}\label{class_c_check_queue_a4ff3e0e8241491efa1803eeb3a53e7fa}} 
+bool \mbox{\hyperlink{class_c_check_queue_a4ff3e0e8241491efa1803eeb3a53e7fa}{Wait}} ()
+\begin{DoxyCompactList}\small\item\em Wait until execution finishes, and return whether all evaluations where successful. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_check_queue_aee8e83bcdeef17740937e6c1dc84c478}\label{class_c_check_queue_aee8e83bcdeef17740937e6c1dc84c478}} 
+void \mbox{\hyperlink{class_c_check_queue_aee8e83bcdeef17740937e6c1dc84c478}{Add}} (std\+::vector$<$ T $>$ \&v\+Checks)
+\begin{DoxyCompactList}\small\item\em Add a batch of checks to the queue. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_check_queue_a3c091928859b0936331341edeb977325}\label{class_c_check_queue_a3c091928859b0936331341edeb977325}} 
+bool {\bfseries Is\+Idle} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename T$>$\newline
+class C\+Check\+Queue$<$ T $>$}
+
+Queue for verifications that have to be performed. The verifications are represented by a type T, which must provide an operator(), returning a bool.
+
+One thread (the master) is assumed to push batches of verifications onto the queue, where they are processed by N-\/1 worker threads. When the master is done adding work, it temporarily joins the worker pool as an N\textquotesingle{}th worker, until all jobs are done. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/checkqueue.\+h\end{DoxyCompactItemize}

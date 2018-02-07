@@ -1,0 +1,63 @@
+\hypertarget{class_c_coins_view}{}\section{C\+Coins\+View Class Reference}
+\label{class_c_coins_view}\index{C\+Coins\+View@{C\+Coins\+View}}
+
+
+{\ttfamily \#include $<$coins.\+h$>$}
+
+Inheritance diagram for C\+Coins\+View\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_c_coins_view}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_coins_view_a67d865358127bef1f0011a23d5158a9f}\label{class_c_coins_view_a67d865358127bef1f0011a23d5158a9f}} 
+virtual bool \mbox{\hyperlink{class_c_coins_view_a67d865358127bef1f0011a23d5158a9f}{Get\+Coins}} (const \mbox{\hyperlink{classuint256}{uint256}} \&txid, \mbox{\hyperlink{class_c_coins}{C\+Coins}} \&coins) const
+\begin{DoxyCompactList}\small\item\em Retrieve the \mbox{\hyperlink{class_c_coins}{C\+Coins}} (unspent transaction outputs) for a given txid. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{class_c_coins_view_ade3a65fc3f1b02baf7bebce630e4eba3}{Have\+Coins}} (const \mbox{\hyperlink{classuint256}{uint256}} \&txid) const
+\item 
+\mbox{\Hypertarget{class_c_coins_view_af81f2907d360a2548d59a61388e5e5cb}\label{class_c_coins_view_af81f2907d360a2548d59a61388e5e5cb}} 
+virtual \mbox{\hyperlink{classuint256}{uint256}} \mbox{\hyperlink{class_c_coins_view_af81f2907d360a2548d59a61388e5e5cb}{Get\+Best\+Block}} () const
+\begin{DoxyCompactList}\small\item\em Retrieve the block hash whose state this \mbox{\hyperlink{class_c_coins_view}{C\+Coins\+View}} currently represents. \end{DoxyCompactList}\item 
+virtual bool \mbox{\hyperlink{class_c_coins_view_ad7dc37396ca4fac7014cea06fec7178e}{Batch\+Write}} (C\+Coins\+Map \&map\+Coins, const \mbox{\hyperlink{classuint256}{uint256}} \&hash\+Block)
+\item 
+\mbox{\Hypertarget{class_c_coins_view_adbd7f73ba071c6e441dd88d95b8f2c0d}\label{class_c_coins_view_adbd7f73ba071c6e441dd88d95b8f2c0d}} 
+virtual bool \mbox{\hyperlink{class_c_coins_view_adbd7f73ba071c6e441dd88d95b8f2c0d}{Get\+Stats}} (\mbox{\hyperlink{struct_c_coins_stats}{C\+Coins\+Stats}} \&stats) const
+\begin{DoxyCompactList}\small\item\em Calculate statistics about the unspent transaction output set. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_coins_view_a7ffb4218bf991ddff47339e44c8710da}\label{class_c_coins_view_a7ffb4218bf991ddff47339e44c8710da}} 
+virtual \mbox{\hyperlink{class_c_coins_view_a7ffb4218bf991ddff47339e44c8710da}{$\sim$\+C\+Coins\+View}} ()
+\begin{DoxyCompactList}\small\item\em As we use C\+Coins\+Views polymorphically, have a virtual destructor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Abstract view on the open txout dataset. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_coins_view_ad7dc37396ca4fac7014cea06fec7178e}\label{class_c_coins_view_ad7dc37396ca4fac7014cea06fec7178e}} 
+\index{C\+Coins\+View@{C\+Coins\+View}!Batch\+Write@{Batch\+Write}}
+\index{Batch\+Write@{Batch\+Write}!C\+Coins\+View@{C\+Coins\+View}}
+\subsubsection{\texorpdfstring{Batch\+Write()}{BatchWrite()}}
+{\footnotesize\ttfamily bool C\+Coins\+View\+::\+Batch\+Write (\begin{DoxyParamCaption}\item[{C\+Coins\+Map \&}]{map\+Coins,  }\item[{const \mbox{\hyperlink{classuint256}{uint256}} \&}]{hash\+Block }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Do a bulk modification (multiple \mbox{\hyperlink{class_c_coins}{C\+Coins}} changes + Best\+Block change). The passed map\+Coins can be modified. 
+
+Reimplemented in \mbox{\hyperlink{class_c_coins_view_cache_a561bb7c6c97701b12c48fbbb563d0a91}{C\+Coins\+View\+Cache}}, \mbox{\hyperlink{class_c_coins_view_backed_ace15da3934c9d7a9cb9c7a787f92f764}{C\+Coins\+View\+Backed}}, and \mbox{\hyperlink{class_c_coins_view_d_b_a33f98ec9323ce48e1704327bc8a2a002}{C\+Coins\+View\+DB}}.
+
+\mbox{\Hypertarget{class_c_coins_view_ade3a65fc3f1b02baf7bebce630e4eba3}\label{class_c_coins_view_ade3a65fc3f1b02baf7bebce630e4eba3}} 
+\index{C\+Coins\+View@{C\+Coins\+View}!Have\+Coins@{Have\+Coins}}
+\index{Have\+Coins@{Have\+Coins}!C\+Coins\+View@{C\+Coins\+View}}
+\subsubsection{\texorpdfstring{Have\+Coins()}{HaveCoins()}}
+{\footnotesize\ttfamily bool C\+Coins\+View\+::\+Have\+Coins (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classuint256}{uint256}} \&}]{txid }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Just check whether we have data for a given txid. This may (but cannot always) return true for fully spent transactions 
+
+Reimplemented in \mbox{\hyperlink{class_c_coins_view_cache_aa8f0c55b6fc207d2188948a565125ab7}{C\+Coins\+View\+Cache}}, \mbox{\hyperlink{class_c_coins_view_backed_ad49041658bdec807d556e080476e6543}{C\+Coins\+View\+Backed}}, \mbox{\hyperlink{class_c_coins_view_mem_pool_a2c5900448dc5570053060686ad1f014b}{C\+Coins\+View\+Mem\+Pool}}, and \mbox{\hyperlink{class_c_coins_view_d_b_af55f35faadeb74b5406559fe3ed20114}{C\+Coins\+View\+DB}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/coins.\+h\item 
+P\+I\+V\+X/src/coins.\+cpp\end{DoxyCompactItemize}

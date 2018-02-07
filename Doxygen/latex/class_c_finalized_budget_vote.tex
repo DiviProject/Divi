@@ -1,0 +1,53 @@
+\hypertarget{class_c_finalized_budget_vote}{}\section{C\+Finalized\+Budget\+Vote Class Reference}
+\label{class_c_finalized_budget_vote}\index{C\+Finalized\+Budget\+Vote@{C\+Finalized\+Budget\+Vote}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_adc08bd33a9dde17ab5617d99d1f94f89}\label{class_c_finalized_budget_vote_adc08bd33a9dde17ab5617d99d1f94f89}} 
+{\bfseries C\+Finalized\+Budget\+Vote} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} vin\+In, \mbox{\hyperlink{classuint256}{uint256}} n\+Budget\+Hash\+In)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_a4970328f02fd2ac5346edfa3c30a74e0}\label{class_c_finalized_budget_vote_a4970328f02fd2ac5346edfa3c30a74e0}} 
+bool {\bfseries Sign} (\mbox{\hyperlink{class_c_key}{C\+Key}} \&key\+Masternode, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pub\+Key\+Masternode)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_aadcc860c6efe5122388a372641297014}\label{class_c_finalized_budget_vote_aadcc860c6efe5122388a372641297014}} 
+bool {\bfseries Signature\+Valid} (bool f\+Signature\+Check)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_a7c95f6ac01efc3975369bc7bdb8b83d0}\label{class_c_finalized_budget_vote_a7c95f6ac01efc3975369bc7bdb8b83d0}} 
+void {\bfseries Relay} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_a517d29944e7c56809034f47ff2b91633}\label{class_c_finalized_budget_vote_a517d29944e7c56809034f47ff2b91633}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Hash} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_a751d723816089e73debb2cdafea5699a}\label{class_c_finalized_budget_vote_a751d723816089e73debb2cdafea5699a}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_aef317580b2f8a41d739e825acbdbb04a}\label{class_c_finalized_budget_vote_aef317580b2f8a41d739e825acbdbb04a}} 
+bool {\bfseries f\+Valid}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_acf10705c636a83d7b1a45404a0195902}\label{class_c_finalized_budget_vote_acf10705c636a83d7b1a45404a0195902}} 
+bool {\bfseries f\+Synced}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_adcfb3d5520f8374deac4f3b4f6eb24cc}\label{class_c_finalized_budget_vote_adcfb3d5520f8374deac4f3b4f6eb24cc}} 
+\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} {\bfseries vin}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_a2aec1fb12151d1c028e755e20f452272}\label{class_c_finalized_budget_vote_a2aec1fb12151d1c028e755e20f452272}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries n\+Budget\+Hash}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_abe49a15e472fdaaab521ae83bb9f6e42}\label{class_c_finalized_budget_vote_abe49a15e472fdaaab521ae83bb9f6e42}} 
+int64\+\_\+t {\bfseries n\+Time}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_a8068f2ad5defbc62be4221ecacef011f}\label{class_c_finalized_budget_vote_a8068f2ad5defbc62be4221ecacef011f}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries vch\+Sig}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_vote_a3f53b91508d16154326dc743775cf5e9}\label{class_c_finalized_budget_vote_a3f53b91508d16154326dc743775cf5e9}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/masternode-\/budget.\+h\item 
+P\+I\+V\+X/src/masternode-\/budget.\+cpp\end{DoxyCompactItemize}

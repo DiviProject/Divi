@@ -1,0 +1,104 @@
+\hypertarget{class_c_finalized_budget}{}\section{C\+Finalized\+Budget Class Reference}
+\label{class_c_finalized_budget}\index{C\+Finalized\+Budget@{C\+Finalized\+Budget}}
+Inheritance diagram for C\+Finalized\+Budget\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_finalized_budget}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a701687a3f6f5dadaa8cf20b188306005}\label{class_c_finalized_budget_a701687a3f6f5dadaa8cf20b188306005}} 
+{\bfseries C\+Finalized\+Budget} (const \mbox{\hyperlink{class_c_finalized_budget}{C\+Finalized\+Budget}} \&other)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a11cbbc4f8f84e5ffb2b7257168da98be}\label{class_c_finalized_budget_a11cbbc4f8f84e5ffb2b7257168da98be}} 
+void {\bfseries Clean\+And\+Remove} (bool f\+Signature\+Check)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a63fadb286f5d0f9f735bc33deba56b02}\label{class_c_finalized_budget_a63fadb286f5d0f9f735bc33deba56b02}} 
+bool {\bfseries Add\+Or\+Update\+Vote} (\mbox{\hyperlink{class_c_finalized_budget_vote}{C\+Finalized\+Budget\+Vote}} \&vote, std\+::string \&str\+Error)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_aadcaaf7b39cfe0400253db00c5fe0b03}\label{class_c_finalized_budget_aadcaaf7b39cfe0400253db00c5fe0b03}} 
+double {\bfseries Get\+Score} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a96b19202f64cb941239a500e7895c048}\label{class_c_finalized_budget_a96b19202f64cb941239a500e7895c048}} 
+bool {\bfseries Has\+Minimum\+Required\+Support} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_ae91a3b63f88979a2cf5252b91b9f339d}\label{class_c_finalized_budget_ae91a3b63f88979a2cf5252b91b9f339d}} 
+bool {\bfseries Is\+Valid} (std\+::string \&str\+Error, bool f\+Check\+Collateral=true)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_adc46e6b0931fd6335d0788311886a1ba}\label{class_c_finalized_budget_adc46e6b0931fd6335d0788311886a1ba}} 
+std\+::string {\bfseries Get\+Name} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a49cb2b919e0de352628d6157cfa1e1c8}\label{class_c_finalized_budget_a49cb2b919e0de352628d6157cfa1e1c8}} 
+std\+::string {\bfseries Get\+Proposals} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_adf320ff0b74a982c0aadc5d8a5e168db}\label{class_c_finalized_budget_adf320ff0b74a982c0aadc5d8a5e168db}} 
+int {\bfseries Get\+Block\+Start} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a45b354d7c3ea65128130cf28e78f4bf4}\label{class_c_finalized_budget_a45b354d7c3ea65128130cf28e78f4bf4}} 
+int {\bfseries Get\+Block\+End} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a6958b394133bceca95b49c25ce337b06}\label{class_c_finalized_budget_a6958b394133bceca95b49c25ce337b06}} 
+int {\bfseries Get\+Vote\+Count} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a32c98c7a24100e099093e7d33b9330f2}\label{class_c_finalized_budget_a32c98c7a24100e099093e7d33b9330f2}} 
+bool {\bfseries Is\+Transaction\+Valid} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx\+New, int n\+Block\+Height)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_aa5ec8ed8c03ce6bbc1c49edd942501c8}\label{class_c_finalized_budget_aa5ec8ed8c03ce6bbc1c49edd942501c8}} 
+bool {\bfseries Get\+Budget\+Payment\+By\+Block} (int64\+\_\+t n\+Block\+Height, \mbox{\hyperlink{class_c_tx_budget_payment}{C\+Tx\+Budget\+Payment}} \&payment)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a75c6ae33fd0079e732e1103d29501d01}\label{class_c_finalized_budget_a75c6ae33fd0079e732e1103d29501d01}} 
+bool {\bfseries Get\+Payee\+And\+Amount} (int64\+\_\+t n\+Block\+Height, \mbox{\hyperlink{class_c_script}{C\+Script}} \&payee, C\+Amount \&n\+Amount)
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a88614fdccb5cdf722403c11832df2ad0}\label{class_c_finalized_budget_a88614fdccb5cdf722403c11832df2ad0}} 
+void {\bfseries Auto\+Check} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a20f2cdac9403d59688b527a98474cc7a}\label{class_c_finalized_budget_a20f2cdac9403d59688b527a98474cc7a}} 
+C\+Amount {\bfseries Get\+Total\+Payout} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a8d5710eaf0fe541dcdce1d5f2ebee51c}\label{class_c_finalized_budget_a8d5710eaf0fe541dcdce1d5f2ebee51c}} 
+void {\bfseries Submit\+Vote} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a9a6fbb2d494342fb6d1c48a98d7cc856}\label{class_c_finalized_budget_a9a6fbb2d494342fb6d1c48a98d7cc856}} 
+string {\bfseries Get\+Status} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a0ce6295086247f5982f93ee3cea956e6}\label{class_c_finalized_budget_a0ce6295086247f5982f93ee3cea956e6}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Hash} ()
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a1bbf758b27a7fb175e2889290f5ef78f}\label{class_c_finalized_budget_a1bbf758b27a7fb175e2889290f5ef78f}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a00d9e3055bebaaef28543bd67e4ca162}\label{class_c_finalized_budget_a00d9e3055bebaaef28543bd67e4ca162}} 
+bool {\bfseries f\+Valid}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_ae2a467abad2985ff3c32b29fc75500aa}\label{class_c_finalized_budget_ae2a467abad2985ff3c32b29fc75500aa}} 
+std\+::string {\bfseries str\+Budget\+Name}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a1d04c262e10f4588b17eb3aba5ed9b52}\label{class_c_finalized_budget_a1d04c262e10f4588b17eb3aba5ed9b52}} 
+int {\bfseries n\+Block\+Start}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a639e7be9254d99deb42aeeb15de63174}\label{class_c_finalized_budget_a639e7be9254d99deb42aeeb15de63174}} 
+std\+::vector$<$ \mbox{\hyperlink{class_c_tx_budget_payment}{C\+Tx\+Budget\+Payment}} $>$ {\bfseries vec\+Budget\+Payments}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a756460095ed59fd39e7f3018b4b208dd}\label{class_c_finalized_budget_a756460095ed59fd39e7f3018b4b208dd}} 
+map$<$ \mbox{\hyperlink{classuint256}{uint256}}, \mbox{\hyperlink{class_c_finalized_budget_vote}{C\+Finalized\+Budget\+Vote}} $>$ {\bfseries map\+Votes}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a699a2f3cbea723957c2a944b08484bb5}\label{class_c_finalized_budget_a699a2f3cbea723957c2a944b08484bb5}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries n\+Fee\+T\+X\+Hash}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_a3bb3cb1d44021d5ef9996a81f3e09734}\label{class_c_finalized_budget_a3bb3cb1d44021d5ef9996a81f3e09734}} 
+int64\+\_\+t {\bfseries n\+Time}
+\item 
+\mbox{\Hypertarget{class_c_finalized_budget_ad426a5e67867bcb8f73df4aef50ac588}\label{class_c_finalized_budget_ad426a5e67867bcb8f73df4aef50ac588}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/masternode-\/budget.\+h\item 
+P\+I\+V\+X/src/masternode-\/budget.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,173 @@
+\hypertarget{class_transaction_table_model}{}\section{Transaction\+Table\+Model Class Reference}
+\label{class_transaction_table_model}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}}
+
+
+{\ttfamily \#include $<$transactiontablemodel.\+h$>$}
+
+Inheritance diagram for Transaction\+Table\+Model\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_transaction_table_model}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_aca9d1efb507b6e471b31dc8c73c5bb43}\label{class_transaction_table_model_aca9d1efb507b6e471b31dc8c73c5bb43}} 
+enum {\bfseries Column\+Index} \{ \newline
+{\bfseries Status} = 0, 
+{\bfseries Watchonly} = 1, 
+{\bfseries Date} = 2, 
+{\bfseries Type} = 3, 
+\newline
+{\bfseries To\+Address} = 4, 
+{\bfseries Amount} = 5
+ \}
+\item 
+enum \mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6}{Role\+Index}} \{ \newline
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a35c49f8c0732954b2812c67e4c745840}{Type\+Role}} = Qt\+:\+:User\+Role, 
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a46e879bd509162d980df3692c65eb66e}{Date\+Role}}, 
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ac9d6c430f98f849e491b36dc316fe1f4}{Watchonly\+Role}}, 
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ab8c8d02e47656a5086bafcb7c21847db}{Watchonly\+Decoration\+Role}}, 
+\newline
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a2957b8435634d7602e74b513d392d82c}{Long\+Description\+Role}}, 
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ab82599f86b9cf8d0907e42bc8158ef16}{Address\+Role}}, 
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a286d79e8b1e0bfc8cb6bb72bbec78de2}{Label\+Role}}, 
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ace07f7f11257526cef9d6613c23cfff4}{Amount\+Role}}, 
+\newline
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6aaf979aec852c99afac10243f78a8a1e0}{Tx\+I\+D\+Role}}, 
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a4e585e010f9933a35ab12affb42d251d}{Tx\+Hash\+Role}}, 
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ae4fb059af39604caf75e71f9176edb16}{Confirmed\+Role}}, 
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6affd966c654a96ad65574e30986f80563}{Formatted\+Amount\+Role}}, 
+\newline
+\mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a3f8e62622565f361805b2d050da5b2b6}{Status\+Role}}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_a8de43b3c7ba0612304906eb5a2f51a06}\label{class_transaction_table_model_a8de43b3c7ba0612304906eb5a2f51a06}} 
+void {\bfseries update\+Transaction} (const Q\+String \&hash, int status, bool show\+Transaction)
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_a5899d9eda6465bfb16d2846b6459567e}\label{class_transaction_table_model_a5899d9eda6465bfb16d2846b6459567e}} 
+void {\bfseries update\+Confirmations} ()
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_a8b73ff7d72ec2dd69790bc61bbe8575e}\label{class_transaction_table_model_a8b73ff7d72ec2dd69790bc61bbe8575e}} 
+void {\bfseries update\+Display\+Unit} ()
+\item 
+void \mbox{\hyperlink{class_transaction_table_model_acbb6e7531f507369ad18b656ad7b3f10}{update\+Amount\+Column\+Title}} ()
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_a9f8f2cdb61517ab04f880d416aa927c7}\label{class_transaction_table_model_a9f8f2cdb61517ab04f880d416aa927c7}} 
+void {\bfseries set\+Processing\+Queued\+Transactions} (bool value)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_a6c10b7cab9804eee6df9e049a978dc62}\label{class_transaction_table_model_a6c10b7cab9804eee6df9e049a978dc62}} 
+{\bfseries Transaction\+Table\+Model} (\mbox{\hyperlink{class_c_wallet}{C\+Wallet}} $\ast$wallet, \mbox{\hyperlink{class_wallet_model}{Wallet\+Model}} $\ast$parent=0)
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_a133baec4cadf0b6b9f7a355d1fa14ee6}\label{class_transaction_table_model_a133baec4cadf0b6b9f7a355d1fa14ee6}} 
+int {\bfseries row\+Count} (const Q\+Model\+Index \&parent) const
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_ae1fee81ee053bb2bf434051583538124}\label{class_transaction_table_model_ae1fee81ee053bb2bf434051583538124}} 
+int {\bfseries column\+Count} (const Q\+Model\+Index \&parent) const
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_a02173c31b6014bff182e320217e30e10}\label{class_transaction_table_model_a02173c31b6014bff182e320217e30e10}} 
+Q\+Variant {\bfseries data} (const Q\+Model\+Index \&index, int role) const
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_ac705ce31fd03c56c936a9df88a216628}\label{class_transaction_table_model_ac705ce31fd03c56c936a9df88a216628}} 
+Q\+Variant {\bfseries header\+Data} (int section, Qt\+::\+Orientation orientation, int role) const
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_af3a9a49314f80268a77a704f7f028905}\label{class_transaction_table_model_af3a9a49314f80268a77a704f7f028905}} 
+Q\+Model\+Index {\bfseries index} (int row, int column, const Q\+Model\+Index \&parent=Q\+Model\+Index()) const
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_acc2d1abbd5e637b8a754c6d18a46437a}\label{class_transaction_table_model_acc2d1abbd5e637b8a754c6d18a46437a}} 
+bool {\bfseries processing\+Queued\+Transactions} ()
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_transaction_table_model_a39d3ddddb3af12905ad5538a91753736}\label{class_transaction_table_model_a39d3ddddb3af12905ad5538a91753736}} 
+class {\bfseries Transaction\+Table\+Priv}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+UI model for the transaction table of a wallet. 
+
+\subsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6}} 
+\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Role\+Index@{Role\+Index}}
+\index{Role\+Index@{Role\+Index}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}
+\subsubsection{\texorpdfstring{Role\+Index}{RoleIndex}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6}{Transaction\+Table\+Model\+::\+Role\+Index}}}
+
+Roles to get specific information from a transaction row. These are independent of column. \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Type\+Role@{Type\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Type\+Role@{Type\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a35c49f8c0732954b2812c67e4c745840}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a35c49f8c0732954b2812c67e4c745840}} 
+Type\+Role&Type of transaction \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Date\+Role@{Date\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Date\+Role@{Date\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a46e879bd509162d980df3692c65eb66e}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a46e879bd509162d980df3692c65eb66e}} 
+Date\+Role&Date and time this transaction was created \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Watchonly\+Role@{Watchonly\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Watchonly\+Role@{Watchonly\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ac9d6c430f98f849e491b36dc316fe1f4}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ac9d6c430f98f849e491b36dc316fe1f4}} 
+Watchonly\+Role&Watch-\/only boolean \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Watchonly\+Decoration\+Role@{Watchonly\+Decoration\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Watchonly\+Decoration\+Role@{Watchonly\+Decoration\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ab8c8d02e47656a5086bafcb7c21847db}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ab8c8d02e47656a5086bafcb7c21847db}} 
+Watchonly\+Decoration\+Role&Watch-\/only icon \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Long\+Description\+Role@{Long\+Description\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Long\+Description\+Role@{Long\+Description\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a2957b8435634d7602e74b513d392d82c}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a2957b8435634d7602e74b513d392d82c}} 
+Long\+Description\+Role&Long description (H\+T\+ML format) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Address\+Role@{Address\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Address\+Role@{Address\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ab82599f86b9cf8d0907e42bc8158ef16}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ab82599f86b9cf8d0907e42bc8158ef16}} 
+Address\+Role&Address of transaction \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Label\+Role@{Label\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Label\+Role@{Label\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a286d79e8b1e0bfc8cb6bb72bbec78de2}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a286d79e8b1e0bfc8cb6bb72bbec78de2}} 
+Label\+Role&Label of address related to transaction \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Amount\+Role@{Amount\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Amount\+Role@{Amount\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ace07f7f11257526cef9d6613c23cfff4}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ace07f7f11257526cef9d6613c23cfff4}} 
+Amount\+Role&Net amount of transaction \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Tx\+I\+D\+Role@{Tx\+I\+D\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Tx\+I\+D\+Role@{Tx\+I\+D\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6aaf979aec852c99afac10243f78a8a1e0}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6aaf979aec852c99afac10243f78a8a1e0}} 
+Tx\+I\+D\+Role&Unique identifier \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Tx\+Hash\+Role@{Tx\+Hash\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Tx\+Hash\+Role@{Tx\+Hash\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a4e585e010f9933a35ab12affb42d251d}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a4e585e010f9933a35ab12affb42d251d}} 
+Tx\+Hash\+Role&Transaction hash \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Confirmed\+Role@{Confirmed\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Confirmed\+Role@{Confirmed\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ae4fb059af39604caf75e71f9176edb16}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6ae4fb059af39604caf75e71f9176edb16}} 
+Confirmed\+Role&Is transaction confirmed? \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Formatted\+Amount\+Role@{Formatted\+Amount\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Formatted\+Amount\+Role@{Formatted\+Amount\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6affd966c654a96ad65574e30986f80563}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6affd966c654a96ad65574e30986f80563}} 
+Formatted\+Amount\+Role&Formatted amount, without brackets when unconfirmed \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Status\+Role@{Status\+Role}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!Status\+Role@{Status\+Role}}}\mbox{\Hypertarget{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a3f8e62622565f361805b2d050da5b2b6}\label{class_transaction_table_model_a4b248508c36df598476affbf9871d1e6a3f8e62622565f361805b2d050da5b2b6}} 
+Status\+Role&Transaction status (Transaction\+Record\+::\+Status) \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_transaction_table_model_acbb6e7531f507369ad18b656ad7b3f10}\label{class_transaction_table_model_acbb6e7531f507369ad18b656ad7b3f10}} 
+\index{Transaction\+Table\+Model@{Transaction\+Table\+Model}!update\+Amount\+Column\+Title@{update\+Amount\+Column\+Title}}
+\index{update\+Amount\+Column\+Title@{update\+Amount\+Column\+Title}!Transaction\+Table\+Model@{Transaction\+Table\+Model}}
+\subsubsection{\texorpdfstring{update\+Amount\+Column\+Title}{updateAmountColumnTitle}}
+{\footnotesize\ttfamily void Transaction\+Table\+Model\+::update\+Amount\+Column\+Title (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [slot]}}
+
+Updates the column title to \char`\"{}\+Amount (\+Display\+Unit)\char`\"{} and emits header\+Data\+Changed() signal for table headers to react. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/transactiontablemodel.\+h\item 
+P\+I\+V\+X/src/qt/transactiontablemodel.\+cpp\end{DoxyCompactItemize}

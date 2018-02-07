@@ -1,0 +1,60 @@
+\hypertarget{classleveldb_1_1_version}{}\section{leveldb\+:\+:Version Class Reference}
+\label{classleveldb_1_1_version}\index{leveldb\+::\+Version@{leveldb\+::\+Version}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structleveldb_1_1_version_1_1_get_stats}{Get\+Stats}}
+\item 
+class \mbox{\hyperlink{classleveldb_1_1_version_1_1_level_file_num_iterator}{Level\+File\+Num\+Iterator}}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_a6a1056992a12e327d9b156aa00edb270}\label{classleveldb_1_1_version_a6a1056992a12e327d9b156aa00edb270}} 
+void {\bfseries Add\+Iterators} (const \mbox{\hyperlink{structleveldb_1_1_read_options}{Read\+Options}} \&, std\+::vector$<$ \mbox{\hyperlink{classleveldb_1_1_iterator}{Iterator}} $\ast$$>$ $\ast$iters)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_a42c439d4a2a767fe281c7a75d4255038}\label{classleveldb_1_1_version_a42c439d4a2a767fe281c7a75d4255038}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Get} (const \mbox{\hyperlink{structleveldb_1_1_read_options}{Read\+Options}} \&, const \mbox{\hyperlink{classleveldb_1_1_lookup_key}{Lookup\+Key}} \&key, std\+::string $\ast$val, \mbox{\hyperlink{structleveldb_1_1_version_1_1_get_stats}{Get\+Stats}} $\ast$stats)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_a7e5b8451deb7c4b9006fd9d5ccfc2cef}\label{classleveldb_1_1_version_a7e5b8451deb7c4b9006fd9d5ccfc2cef}} 
+bool {\bfseries Update\+Stats} (const \mbox{\hyperlink{structleveldb_1_1_version_1_1_get_stats}{Get\+Stats}} \&stats)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_a8b9e51b3d0503fe5868f656356557ded}\label{classleveldb_1_1_version_a8b9e51b3d0503fe5868f656356557ded}} 
+bool {\bfseries Record\+Read\+Sample} (\mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} key)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_ad237b446c7f7d9e63c4b7c162d6f0064}\label{classleveldb_1_1_version_ad237b446c7f7d9e63c4b7c162d6f0064}} 
+void {\bfseries Ref} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_a3f623697f625d4740d5b273c0bf6223a}\label{classleveldb_1_1_version_a3f623697f625d4740d5b273c0bf6223a}} 
+void {\bfseries Unref} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_af3d28a0710b0b497512651353e2f8a4f}\label{classleveldb_1_1_version_af3d28a0710b0b497512651353e2f8a4f}} 
+void {\bfseries Get\+Overlapping\+Inputs} (int level, const \mbox{\hyperlink{classleveldb_1_1_internal_key}{Internal\+Key}} $\ast$begin, const \mbox{\hyperlink{classleveldb_1_1_internal_key}{Internal\+Key}} $\ast$end, std\+::vector$<$ \mbox{\hyperlink{structleveldb_1_1_file_meta_data}{File\+Meta\+Data}} $\ast$$>$ $\ast$inputs)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_a7945e88b8a4f2f7b6f3201cb3d791f1e}\label{classleveldb_1_1_version_a7945e88b8a4f2f7b6f3201cb3d791f1e}} 
+bool {\bfseries Overlap\+In\+Level} (int level, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$smallest\+\_\+user\+\_\+key, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$largest\+\_\+user\+\_\+key)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_ac3b623319110ed2a9491723dd4675431}\label{classleveldb_1_1_version_ac3b623319110ed2a9491723dd4675431}} 
+int {\bfseries Pick\+Level\+For\+Mem\+Table\+Output} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&smallest\+\_\+user\+\_\+key, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&largest\+\_\+user\+\_\+key)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_a3860dac2fe3c61ef20edb8482a2a3746}\label{classleveldb_1_1_version_a3860dac2fe3c61ef20edb8482a2a3746}} 
+int {\bfseries Num\+Files} (int level) const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_abf1f1702c439aea453b041d5db6b7e63}\label{classleveldb_1_1_version_abf1f1702c439aea453b041d5db6b7e63}} 
+std\+::string {\bfseries Debug\+String} () const
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_a9372e882b35d27c78356228e4b758917}\label{classleveldb_1_1_version_a9372e882b35d27c78356228e4b758917}} 
+class {\bfseries Compaction}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_a1827cd1b4d6e9e3c378ce37ca3cce635}\label{classleveldb_1_1_version_a1827cd1b4d6e9e3c378ce37ca3cce635}} 
+class {\bfseries Version\+Set}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/db/version\+\_\+set.\+h\item 
+P\+I\+V\+X/src/leveldb/db/version\+\_\+set.\+cc\end{DoxyCompactItemize}

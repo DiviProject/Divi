@@ -1,0 +1,214 @@
+\hypertarget{namespace_g_u_i_util}{}\section{G\+U\+I\+Util Namespace Reference}
+\label{namespace_g_u_i_util}\index{G\+U\+I\+Util@{G\+U\+I\+Util}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_g_u_i_util_1_1_d_h_m_s_table_widget_item}{D\+H\+M\+S\+Table\+Widget\+Item}}
+\item 
+class \mbox{\hyperlink{class_g_u_i_util_1_1_table_view_last_column_resizing_fixer}{Table\+View\+Last\+Column\+Resizing\+Fixer}}
+\item 
+class \mbox{\hyperlink{class_g_u_i_util_1_1_tool_tip_to_rich_text_filter}{Tool\+Tip\+To\+Rich\+Text\+Filter}}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_aa539741b94e182723c059c3fc8d58f01}\label{namespace_g_u_i_util_aa539741b94e182723c059c3fc8d58f01}} 
+typedef Q\+Progress\+Bar {\bfseries Progress\+Bar}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_aae732a04fea25190081120bf0cc773e8}\label{namespace_g_u_i_util_aae732a04fea25190081120bf0cc773e8}} 
+Q\+String {\bfseries date\+Time\+Str} (const Q\+Date\+Time \&date)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_ad182b65c8060da6b6c99b8574820084d}\label{namespace_g_u_i_util_ad182b65c8060da6b6c99b8574820084d}} 
+Q\+String {\bfseries date\+Time\+Str} (qint64 n\+Time)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a6630c77d0f51ac2a1acdc5fe06c75283}\label{namespace_g_u_i_util_a6630c77d0f51ac2a1acdc5fe06c75283}} 
+Q\+Font {\bfseries bitcoin\+Address\+Font} ()
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_aeb3b902c0536bdb9c2def3d3e465aeba}\label{namespace_g_u_i_util_aeb3b902c0536bdb9c2def3d3e465aeba}} 
+void {\bfseries setup\+Address\+Widget} (\mbox{\hyperlink{class_q_validated_line_edit}{Q\+Validated\+Line\+Edit}} $\ast$widget, Q\+Widget $\ast$parent)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a168a2c8d25a022bbd979c0693ce08297}\label{namespace_g_u_i_util_a168a2c8d25a022bbd979c0693ce08297}} 
+void {\bfseries setup\+Amount\+Widget} (Q\+Line\+Edit $\ast$widget, Q\+Widget $\ast$parent)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_ad39b3e74aaf6adc45b34b36a0649db45}\label{namespace_g_u_i_util_ad39b3e74aaf6adc45b34b36a0649db45}} 
+bool {\bfseries parse\+Bitcoin\+U\+RI} (const Q\+Url \&uri, \mbox{\hyperlink{class_send_coins_recipient}{Send\+Coins\+Recipient}} $\ast$out)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a8f3da194579b804909f4ffc73c77fd9e}\label{namespace_g_u_i_util_a8f3da194579b804909f4ffc73c77fd9e}} 
+bool {\bfseries parse\+Bitcoin\+U\+RI} (Q\+String uri, \mbox{\hyperlink{class_send_coins_recipient}{Send\+Coins\+Recipient}} $\ast$out)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_ab9d4ba8e8713eebbe4e5eb7cd1ba479e}\label{namespace_g_u_i_util_ab9d4ba8e8713eebbe4e5eb7cd1ba479e}} 
+Q\+String {\bfseries format\+Bitcoin\+U\+RI} (const \mbox{\hyperlink{class_send_coins_recipient}{Send\+Coins\+Recipient}} \&info)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_af72fd9408f5cc4f11f6adb4dd533aa40}\label{namespace_g_u_i_util_af72fd9408f5cc4f11f6adb4dd533aa40}} 
+bool {\bfseries is\+Dust} (const Q\+String \&address, const C\+Amount \&amount)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a2d4b7f2c11ebc4b97af10bc20d19b1b2}\label{namespace_g_u_i_util_a2d4b7f2c11ebc4b97af10bc20d19b1b2}} 
+Q\+String {\bfseries Html\+Escape} (const Q\+String \&str, bool f\+Multi\+Line)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_ad6086df566cf2cb7f699a24e099dc59c}\label{namespace_g_u_i_util_ad6086df566cf2cb7f699a24e099dc59c}} 
+Q\+String {\bfseries Html\+Escape} (const std\+::string \&str, bool f\+Multi\+Line)
+\item 
+void \mbox{\hyperlink{namespace_g_u_i_util_aad7852433ad4953a9bcae9a6e735b2d4}{copy\+Entry\+Data}} (Q\+Abstract\+Item\+View $\ast$view, int column, int role)
+\item 
+Q\+String \mbox{\hyperlink{namespace_g_u_i_util_a788c51092a2255b1f8976d4794fc3ee6}{get\+Save\+File\+Name}} (Q\+Widget $\ast$parent, const Q\+String \&caption, const Q\+String \&dir, const Q\+String \&filter, Q\+String $\ast$selected\+Suffix\+Out)
+\item 
+Q\+String \mbox{\hyperlink{namespace_g_u_i_util_a644a552cbcaf32591bb2cc59167ee61e}{get\+Open\+File\+Name}} (Q\+Widget $\ast$parent, const Q\+String \&caption, const Q\+String \&dir, const Q\+String \&filter, Q\+String $\ast$selected\+Suffix\+Out)
+\item 
+Qt\+::\+Connection\+Type \mbox{\hyperlink{namespace_g_u_i_util_a2046fc343a70996c23cae6fe7f8d94f2}{blocking\+G\+U\+I\+Thread\+Connection}} ()
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_ab2e7ef0aa9a1ad3f86d67a3f596b6fc4}\label{namespace_g_u_i_util_ab2e7ef0aa9a1ad3f86d67a3f596b6fc4}} 
+bool {\bfseries check\+Point} (const Q\+Point \&p, const Q\+Widget $\ast$w)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a0b7266e2b8e7de5f5fd1c7ddb9e5b637}\label{namespace_g_u_i_util_a0b7266e2b8e7de5f5fd1c7ddb9e5b637}} 
+bool {\bfseries is\+Obscured} (Q\+Widget $\ast$w)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_aad169e3227e7a851db52a08bfb30391c}\label{namespace_g_u_i_util_aad169e3227e7a851db52a08bfb30391c}} 
+void {\bfseries open\+Debug\+Logfile} ()
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a995fae29ee632b8b0810b840d3d06bf1}\label{namespace_g_u_i_util_a995fae29ee632b8b0810b840d3d06bf1}} 
+void {\bfseries open\+Configfile} ()
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a17cced42f0ebd5fb923eba61015308a8}\label{namespace_g_u_i_util_a17cced42f0ebd5fb923eba61015308a8}} 
+void {\bfseries open\+M\+N\+Configfile} ()
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a16fd78c7608981cc405561a8d5e8d7e3}\label{namespace_g_u_i_util_a16fd78c7608981cc405561a8d5e8d7e3}} 
+void {\bfseries show\+Backups} ()
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_aa76f59ed024e930768abd3df71f9e353}\label{namespace_g_u_i_util_aa76f59ed024e930768abd3df71f9e353}} 
+void {\bfseries Substitute\+Fonts} (const Q\+String \&language)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_adca0cdbc1de324bc53c891bdcafa6513}\label{namespace_g_u_i_util_adca0cdbc1de324bc53c891bdcafa6513}} 
+bool {\bfseries Get\+Start\+On\+System\+Startup} ()
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a82afe76b9469d777217438a25ab7f95e}\label{namespace_g_u_i_util_a82afe76b9469d777217438a25ab7f95e}} 
+bool {\bfseries Set\+Start\+On\+System\+Startup} (bool f\+Auto\+Start)
+\item 
+void \mbox{\hyperlink{namespace_g_u_i_util_a5bd5d67910917446f2f3aa97d7c8b85a}{save\+Window\+Geometry}} (const Q\+String \&str\+Setting, Q\+Widget $\ast$parent)
+\item 
+void \mbox{\hyperlink{namespace_g_u_i_util_aded16e1d178a93b809819884af8351db}{restore\+Window\+Geometry}} (const Q\+String \&str\+Setting, const Q\+Size \&default\+Size, Q\+Widget $\ast$parent)
+\item 
+bool \mbox{\hyperlink{namespace_g_u_i_util_a2e5ef5c3c42eeecfc616aeae7cba0488}{is\+External}} (Q\+String theme)
+\item 
+Q\+String \mbox{\hyperlink{namespace_g_u_i_util_a2e749681627868ac0f70c0c8aa1dcb32}{load\+Style\+Sheet}} ()
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_aef655b19f129179ca32f11a4d0da1a07}\label{namespace_g_u_i_util_aef655b19f129179ca32f11a4d0da1a07}} 
+void {\bfseries set\+Clipboard} (const Q\+String \&str)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a23e76d4663b416f0d59f0a8fe89b018c}\label{namespace_g_u_i_util_a23e76d4663b416f0d59f0a8fe89b018c}} 
+boost\+::filesystem\+::path {\bfseries qstring\+To\+Boost\+Path} (const Q\+String \&path)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a8bbd2bea6cbc55658e8496603d1fd564}\label{namespace_g_u_i_util_a8bbd2bea6cbc55658e8496603d1fd564}} 
+Q\+String {\bfseries boost\+Path\+To\+Q\+String} (const boost\+::filesystem\+::path \&path)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_aaf51686c47c77ad81c51d115d150e867}\label{namespace_g_u_i_util_aaf51686c47c77ad81c51d115d150e867}} 
+Q\+String {\bfseries format\+Duration\+Str} (int secs)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_ac0c0a23fbbfefc827220eebcacc3ee63}\label{namespace_g_u_i_util_ac0c0a23fbbfefc827220eebcacc3ee63}} 
+Q\+String {\bfseries format\+Services\+Str} (quint64 mask)
+\item 
+\mbox{\Hypertarget{namespace_g_u_i_util_a432bcee36e242a968c9149fadfba44fa}\label{namespace_g_u_i_util_a432bcee36e242a968c9149fadfba44fa}} 
+Q\+String {\bfseries format\+Ping\+Time} (double d\+Ping\+Time)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Utility functions used by the P\+I\+VX Qt UI. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{namespace_g_u_i_util_a2046fc343a70996c23cae6fe7f8d94f2}\label{namespace_g_u_i_util_a2046fc343a70996c23cae6fe7f8d94f2}} 
+\index{G\+U\+I\+Util@{G\+U\+I\+Util}!blocking\+G\+U\+I\+Thread\+Connection@{blocking\+G\+U\+I\+Thread\+Connection}}
+\index{blocking\+G\+U\+I\+Thread\+Connection@{blocking\+G\+U\+I\+Thread\+Connection}!G\+U\+I\+Util@{G\+U\+I\+Util}}
+\subsubsection{\texorpdfstring{blocking\+G\+U\+I\+Thread\+Connection()}{blockingGUIThreadConnection()}}
+{\footnotesize\ttfamily Qt\+::\+Connection\+Type G\+U\+I\+Util\+::blocking\+G\+U\+I\+Thread\+Connection (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Get connection type to call object slot in G\+UI thread with invoke\+Method. The call will be blocking.
+
+\begin{DoxyReturn}{Returns}
+If called from the G\+UI thread, return a Qt\+::\+Direct\+Connection. If called from another thread, return a Qt\+::\+Blocking\+Queued\+Connection. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespace_g_u_i_util_aad7852433ad4953a9bcae9a6e735b2d4}\label{namespace_g_u_i_util_aad7852433ad4953a9bcae9a6e735b2d4}} 
+\index{G\+U\+I\+Util@{G\+U\+I\+Util}!copy\+Entry\+Data@{copy\+Entry\+Data}}
+\index{copy\+Entry\+Data@{copy\+Entry\+Data}!G\+U\+I\+Util@{G\+U\+I\+Util}}
+\subsubsection{\texorpdfstring{copy\+Entry\+Data()}{copyEntryData()}}
+{\footnotesize\ttfamily void G\+U\+I\+Util\+::copy\+Entry\+Data (\begin{DoxyParamCaption}\item[{Q\+Abstract\+Item\+View $\ast$}]{view,  }\item[{int}]{column,  }\item[{int}]{role = {\ttfamily Qt\+:\+:EditRole} }\end{DoxyParamCaption})}
+
+Copy a field of the currently selected entry of a view to the clipboard. Does nothing if nothing is selected. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em column} & Data column to extract from the model \\
+\hline
+\mbox{\tt in}  & {\em role} & Data role to extract from the model \\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+Transaction\+View\+::copy\+Label, Transaction\+View\+::copy\+Amount, Transaction\+View\+::copy\+Address 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{namespace_g_u_i_util_a644a552cbcaf32591bb2cc59167ee61e}\label{namespace_g_u_i_util_a644a552cbcaf32591bb2cc59167ee61e}} 
+\index{G\+U\+I\+Util@{G\+U\+I\+Util}!get\+Open\+File\+Name@{get\+Open\+File\+Name}}
+\index{get\+Open\+File\+Name@{get\+Open\+File\+Name}!G\+U\+I\+Util@{G\+U\+I\+Util}}
+\subsubsection{\texorpdfstring{get\+Open\+File\+Name()}{getOpenFileName()}}
+{\footnotesize\ttfamily Q\+String G\+U\+I\+Util\+::get\+Open\+File\+Name (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const Q\+String \&}]{caption,  }\item[{const Q\+String \&}]{dir,  }\item[{const Q\+String \&}]{filter,  }\item[{Q\+String $\ast$}]{selected\+Suffix\+Out }\end{DoxyParamCaption})}
+
+Get open filename, convenience wrapper for Q\+File\+Dialog\+::get\+Open\+File\+Name.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em parent} & Parent window (or 0) \\
+\hline
+\mbox{\tt in}  & {\em caption} & Window caption (or empty, for default) \\
+\hline
+\mbox{\tt in}  & {\em dir} & Starting directory (or empty, to default to documents directory) \\
+\hline
+\mbox{\tt in}  & {\em filter} & Filter specification such as \char`\"{}\+Comma Separated Files ($\ast$.\+csv)\char`\"{} \\
+\hline
+\mbox{\tt out}  & {\em selected\+Suffix\+Out} & Pointer to return the suffix (file type) that was selected (or 0). Can be useful when choosing the save file format based on suffix. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespace_g_u_i_util_a788c51092a2255b1f8976d4794fc3ee6}\label{namespace_g_u_i_util_a788c51092a2255b1f8976d4794fc3ee6}} 
+\index{G\+U\+I\+Util@{G\+U\+I\+Util}!get\+Save\+File\+Name@{get\+Save\+File\+Name}}
+\index{get\+Save\+File\+Name@{get\+Save\+File\+Name}!G\+U\+I\+Util@{G\+U\+I\+Util}}
+\subsubsection{\texorpdfstring{get\+Save\+File\+Name()}{getSaveFileName()}}
+{\footnotesize\ttfamily Q\+String G\+U\+I\+Util\+::get\+Save\+File\+Name (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{parent,  }\item[{const Q\+String \&}]{caption,  }\item[{const Q\+String \&}]{dir,  }\item[{const Q\+String \&}]{filter,  }\item[{Q\+String $\ast$}]{selected\+Suffix\+Out }\end{DoxyParamCaption})}
+
+Get save filename, mimics Q\+File\+Dialog\+::get\+Save\+File\+Name, except that it appends a default suffix when no suffix is provided by the user.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em parent} & Parent window (or 0) \\
+\hline
+\mbox{\tt in}  & {\em caption} & Window caption (or empty, for default) \\
+\hline
+\mbox{\tt in}  & {\em dir} & Starting directory (or empty, to default to documents directory) \\
+\hline
+\mbox{\tt in}  & {\em filter} & Filter specification such as \char`\"{}\+Comma Separated Files ($\ast$.\+csv)\char`\"{} \\
+\hline
+\mbox{\tt out}  & {\em selected\+Suffix\+Out} & Pointer to return the suffix (file type) that was selected (or 0). Can be useful when choosing the save file format based on suffix. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespace_g_u_i_util_a2e5ef5c3c42eeecfc616aeae7cba0488}\label{namespace_g_u_i_util_a2e5ef5c3c42eeecfc616aeae7cba0488}} 
+\index{G\+U\+I\+Util@{G\+U\+I\+Util}!is\+External@{is\+External}}
+\index{is\+External@{is\+External}!G\+U\+I\+Util@{G\+U\+I\+Util}}
+\subsubsection{\texorpdfstring{is\+External()}{isExternal()}}
+{\footnotesize\ttfamily bool G\+U\+I\+Util\+::is\+External (\begin{DoxyParamCaption}\item[{Q\+String}]{theme }\end{DoxyParamCaption})}
+
+Check whether a theme is not build-\/in \mbox{\Hypertarget{namespace_g_u_i_util_a2e749681627868ac0f70c0c8aa1dcb32}\label{namespace_g_u_i_util_a2e749681627868ac0f70c0c8aa1dcb32}} 
+\index{G\+U\+I\+Util@{G\+U\+I\+Util}!load\+Style\+Sheet@{load\+Style\+Sheet}}
+\index{load\+Style\+Sheet@{load\+Style\+Sheet}!G\+U\+I\+Util@{G\+U\+I\+Util}}
+\subsubsection{\texorpdfstring{load\+Style\+Sheet()}{loadStyleSheet()}}
+{\footnotesize\ttfamily Q\+String G\+U\+I\+Util\+::load\+Style\+Sheet (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Load global C\+SS theme \mbox{\Hypertarget{namespace_g_u_i_util_aded16e1d178a93b809819884af8351db}\label{namespace_g_u_i_util_aded16e1d178a93b809819884af8351db}} 
+\index{G\+U\+I\+Util@{G\+U\+I\+Util}!restore\+Window\+Geometry@{restore\+Window\+Geometry}}
+\index{restore\+Window\+Geometry@{restore\+Window\+Geometry}!G\+U\+I\+Util@{G\+U\+I\+Util}}
+\subsubsection{\texorpdfstring{restore\+Window\+Geometry()}{restoreWindowGeometry()}}
+{\footnotesize\ttfamily void G\+U\+I\+Util\+::restore\+Window\+Geometry (\begin{DoxyParamCaption}\item[{const Q\+String \&}]{str\+Setting,  }\item[{const Q\+Size \&}]{default\+Size\+In,  }\item[{Q\+Widget $\ast$}]{parent }\end{DoxyParamCaption})}
+
+Restore window size and position \mbox{\Hypertarget{namespace_g_u_i_util_a5bd5d67910917446f2f3aa97d7c8b85a}\label{namespace_g_u_i_util_a5bd5d67910917446f2f3aa97d7c8b85a}} 
+\index{G\+U\+I\+Util@{G\+U\+I\+Util}!save\+Window\+Geometry@{save\+Window\+Geometry}}
+\index{save\+Window\+Geometry@{save\+Window\+Geometry}!G\+U\+I\+Util@{G\+U\+I\+Util}}
+\subsubsection{\texorpdfstring{save\+Window\+Geometry()}{saveWindowGeometry()}}
+{\footnotesize\ttfamily void G\+U\+I\+Util\+::save\+Window\+Geometry (\begin{DoxyParamCaption}\item[{const Q\+String \&}]{str\+Setting,  }\item[{Q\+Widget $\ast$}]{parent }\end{DoxyParamCaption})}
+
+Save window size and position 

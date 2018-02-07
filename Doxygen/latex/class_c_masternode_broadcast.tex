@@ -1,0 +1,57 @@
+\hypertarget{class_c_masternode_broadcast}{}\section{C\+Masternode\+Broadcast Class Reference}
+\label{class_c_masternode_broadcast}\index{C\+Masternode\+Broadcast@{C\+Masternode\+Broadcast}}
+Inheritance diagram for C\+Masternode\+Broadcast\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_masternode_broadcast}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_ae74dd3f7c12e22286adf47ea4918048c}\label{class_c_masternode_broadcast_ae74dd3f7c12e22286adf47ea4918048c}} 
+{\bfseries C\+Masternode\+Broadcast} (\mbox{\hyperlink{class_c_service}{C\+Service}} new\+Addr, \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} new\+Vin, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} new\+Pubkey, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} new\+Pubkey2, int protocol\+Version\+In)
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_ad85a19b0a20ea5ad6a65bc98fcd40cea}\label{class_c_masternode_broadcast_ad85a19b0a20ea5ad6a65bc98fcd40cea}} 
+{\bfseries C\+Masternode\+Broadcast} (const \mbox{\hyperlink{class_c_masternode}{C\+Masternode}} \&mn)
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_a3692f64d331acb81af066806a685eceb}\label{class_c_masternode_broadcast_a3692f64d331acb81af066806a685eceb}} 
+bool {\bfseries Check\+And\+Update} (int \&n\+DoS)
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_af62fbef289c7a262da6fcd6cfadeda3c}\label{class_c_masternode_broadcast_af62fbef289c7a262da6fcd6cfadeda3c}} 
+bool {\bfseries Check\+Inputs\+And\+Add} (int \&n\+Dos)
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_a60496c36bcb74c3f5516faac1a08b376}\label{class_c_masternode_broadcast_a60496c36bcb74c3f5516faac1a08b376}} 
+bool {\bfseries Sign} (\mbox{\hyperlink{class_c_key}{C\+Key}} \&key\+Collateral\+Address)
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_a54fc9e822e1524bee8852a0bf6d82736}\label{class_c_masternode_broadcast_a54fc9e822e1524bee8852a0bf6d82736}} 
+void {\bfseries Relay} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_a6e697696503e9416437067cb33edc084}\label{class_c_masternode_broadcast_a6e697696503e9416437067cb33edc084}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_a0ada325e5672c4cd178cf02cdc0a7bd5}\label{class_c_masternode_broadcast_a0ada325e5672c4cd178cf02cdc0a7bd5}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Hash} ()
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_a3b331bac6aa4ab8ece112b62243f7498}\label{class_c_masternode_broadcast_a3b331bac6aa4ab8ece112b62243f7498}} 
+static bool \mbox{\hyperlink{class_c_masternode_broadcast_a3b331bac6aa4ab8ece112b62243f7498}{Create}} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} vin, \mbox{\hyperlink{class_c_service}{C\+Service}} service, \mbox{\hyperlink{class_c_key}{C\+Key}} key\+Collateral\+Address\+New, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} pub\+Key\+Collateral\+Address\+New, \mbox{\hyperlink{class_c_key}{C\+Key}} key\+Masternode\+New, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} pub\+Key\+Masternode\+New, std\+::string \&str\+Error\+Ret, \mbox{\hyperlink{class_c_masternode_broadcast}{C\+Masternode\+Broadcast}} \&mnb\+Ret)
+\begin{DoxyCompactList}\small\item\em Create Masternode broadcast, needs to be relayed manually after that. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_a5b999adcbdb1de059cb226f3367771b0}\label{class_c_masternode_broadcast_a5b999adcbdb1de059cb226f3367771b0}} 
+static bool {\bfseries Create} (std\+::string str\+Service, std\+::string str\+Key, std\+::string str\+Tx\+Hash, std\+::string str\+Output\+Index, std\+::string \&str\+Error\+Ret, \mbox{\hyperlink{class_c_masternode_broadcast}{C\+Masternode\+Broadcast}} \&mnb\+Ret, bool f\+Offline=false)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_broadcast_a3b423bd09c06dbb8b75dc06d3d34a4b0}\label{class_c_masternode_broadcast_a3b423bd09c06dbb8b75dc06d3d34a4b0}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/masternode.\+h\item 
+P\+I\+V\+X/src/masternode.\+cpp\end{DoxyCompactItemize}

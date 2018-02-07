@@ -1,0 +1,82 @@
+\hypertarget{class_ask_passphrase_dialog}{}\section{Ask\+Passphrase\+Dialog Class Reference}
+\label{class_ask_passphrase_dialog}\index{Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}}
+
+
+{\ttfamily \#include $<$askpassphrasedialog.\+h$>$}
+
+Inheritance diagram for Ask\+Passphrase\+Dialog\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_ask_passphrase_dialog}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538}{Mode}} \{ \newline
+\mbox{\hyperlink{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538a5894886141cada548b21488927acc467}{Encrypt}}, 
+\mbox{\hyperlink{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538abf838fdbee2ab76b043faed745c9ed7b}{Unlock\+Anonymize}}, 
+\mbox{\hyperlink{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538a2af79cac6134924405d6c620fb0f4c7e}{Unlock}}, 
+\mbox{\hyperlink{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538abc3f96ab0f90c0a3b0606407b4f662cc}{Change\+Pass}}, 
+\newline
+\mbox{\hyperlink{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538aac5e2489527af224fc5e1316a77ba478}{Decrypt}}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_ask_passphrase_dialog_aa178a465211ad6aa8cab642a295c244c}\label{class_ask_passphrase_dialog_aa178a465211ad6aa8cab642a295c244c}} 
+{\bfseries Ask\+Passphrase\+Dialog} (\mbox{\hyperlink{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538}{Mode}} mode, Q\+Widget $\ast$parent, \mbox{\hyperlink{class_wallet_model}{Wallet\+Model}} $\ast$model)
+\item 
+\mbox{\Hypertarget{class_ask_passphrase_dialog_ac2f176af3693b73870d26ef0bfc6cbb9}\label{class_ask_passphrase_dialog_ac2f176af3693b73870d26ef0bfc6cbb9}} 
+void {\bfseries accept} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_ask_passphrase_dialog_ad309d9188638afd3288d0ab40ac3e817}\label{class_ask_passphrase_dialog_ad309d9188638afd3288d0ab40ac3e817}} 
+bool {\bfseries event} (Q\+Event $\ast$event)
+\item 
+\mbox{\Hypertarget{class_ask_passphrase_dialog_ade161d6ea4bb94248b7e7bc044d1a787}\label{class_ask_passphrase_dialog_ade161d6ea4bb94248b7e7bc044d1a787}} 
+bool {\bfseries event\+Filter} (Q\+Object $\ast$object, Q\+Event $\ast$event)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Multifunctional dialog to ask for passphrases. Used for encryption, unlocking, and changing the passphrase. 
+
+\subsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538}\label{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538}} 
+\index{Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}!Mode@{Mode}}
+\index{Mode@{Mode}!Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}}
+\subsubsection{\texorpdfstring{Mode}{Mode}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538}{Ask\+Passphrase\+Dialog\+::\+Mode}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Encrypt@{Encrypt}!Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}}\index{Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}!Encrypt@{Encrypt}}}\mbox{\Hypertarget{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538a5894886141cada548b21488927acc467}\label{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538a5894886141cada548b21488927acc467}} 
+Encrypt&Ask passphrase twice and encrypt \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Unlock\+Anonymize@{Unlock\+Anonymize}!Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}}\index{Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}!Unlock\+Anonymize@{Unlock\+Anonymize}}}\mbox{\Hypertarget{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538abf838fdbee2ab76b043faed745c9ed7b}\label{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538abf838fdbee2ab76b043faed745c9ed7b}} 
+Unlock\+Anonymize&Ask passphrase and unlock only for anonymization \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Unlock@{Unlock}!Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}}\index{Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}!Unlock@{Unlock}}}\mbox{\Hypertarget{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538a2af79cac6134924405d6c620fb0f4c7e}\label{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538a2af79cac6134924405d6c620fb0f4c7e}} 
+Unlock&Ask passphrase and unlock \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Change\+Pass@{Change\+Pass}!Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}}\index{Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}!Change\+Pass@{Change\+Pass}}}\mbox{\Hypertarget{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538abc3f96ab0f90c0a3b0606407b4f662cc}\label{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538abc3f96ab0f90c0a3b0606407b4f662cc}} 
+Change\+Pass&Ask old passphrase + new passphrase twice \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Decrypt@{Decrypt}!Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}}\index{Ask\+Passphrase\+Dialog@{Ask\+Passphrase\+Dialog}!Decrypt@{Decrypt}}}\mbox{\Hypertarget{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538aac5e2489527af224fc5e1316a77ba478}\label{class_ask_passphrase_dialog_a96abf4d3c36c1ef9e268fb546ae76538aac5e2489527af224fc5e1316a77ba478}} 
+Decrypt&Ask passphrase and decrypt wallet \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/askpassphrasedialog.\+h\item 
+P\+I\+V\+X/src/qt/askpassphrasedialog.\+cpp\end{DoxyCompactItemize}

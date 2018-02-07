@@ -1,0 +1,33 @@
+\hypertarget{class_g_u_i_util_1_1_tool_tip_to_rich_text_filter}{}\section{G\+U\+I\+Util\+:\+:Tool\+Tip\+To\+Rich\+Text\+Filter Class Reference}
+\label{class_g_u_i_util_1_1_tool_tip_to_rich_text_filter}\index{G\+U\+I\+Util\+::\+Tool\+Tip\+To\+Rich\+Text\+Filter@{G\+U\+I\+Util\+::\+Tool\+Tip\+To\+Rich\+Text\+Filter}}
+
+
+{\ttfamily \#include $<$guiutil.\+h$>$}
+
+Inheritance diagram for G\+U\+I\+Util\+:\+:Tool\+Tip\+To\+Rich\+Text\+Filter\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_g_u_i_util_1_1_tool_tip_to_rich_text_filter}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_g_u_i_util_1_1_tool_tip_to_rich_text_filter_abdb48682c8ec34a8f774813cd9449f0d}\label{class_g_u_i_util_1_1_tool_tip_to_rich_text_filter_abdb48682c8ec34a8f774813cd9449f0d}} 
+{\bfseries Tool\+Tip\+To\+Rich\+Text\+Filter} (int size\+\_\+threshold, Q\+Object $\ast$parent=0)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_g_u_i_util_1_1_tool_tip_to_rich_text_filter_a5f4450d8b203f009a8bdc67d6d3f388c}\label{class_g_u_i_util_1_1_tool_tip_to_rich_text_filter_a5f4450d8b203f009a8bdc67d6d3f388c}} 
+bool {\bfseries event\+Filter} (Q\+Object $\ast$obj, Q\+Event $\ast$evt)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Qt event filter that intercepts Tool\+Tip\+Change events, and replaces the tooltip with a rich text representation if needed. This assures that Qt can word-\/wrap long tooltip messages. Tooltips longer than the provided size threshold (in characters) are wrapped. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/guiutil.\+h\item 
+P\+I\+V\+X/src/qt/guiutil.\+cpp\end{DoxyCompactItemize}

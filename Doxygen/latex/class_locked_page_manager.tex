@@ -1,0 +1,30 @@
+\hypertarget{class_locked_page_manager}{}\section{Locked\+Page\+Manager Class Reference}
+\label{class_locked_page_manager}\index{Locked\+Page\+Manager@{Locked\+Page\+Manager}}
+
+
+{\ttfamily \#include $<$allocators.\+h$>$}
+
+Inheritance diagram for Locked\+Page\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_locked_page_manager}
+\end{center}
+\end{figure}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_locked_page_manager_ac9b1d42d240dba4714a35fff970b6dde}\label{class_locked_page_manager_ac9b1d42d240dba4714a35fff970b6dde}} 
+static \mbox{\hyperlink{class_locked_page_manager}{Locked\+Page\+Manager}} \& {\bfseries Instance} ()
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Singleton class to keep track of locked (ie, non-\/swappable) memory pages, for use in std\+::allocator templates.
+
+Some implementations of the S\+TL allocate memory in some constructors (i.\+e., see M\+S\+VC\textquotesingle{}s vector$<$\+T$>$ implementation where it allocates 1 byte of memory in the allocator.) Due to the unpredictable order of static initializers, we have to make sure the \mbox{\hyperlink{class_locked_page_manager}{Locked\+Page\+Manager}} instance exists before any other S\+T\+L-\/based objects that use \mbox{\hyperlink{structsecure__allocator}{secure\+\_\+allocator}} are created. So instead of having \mbox{\hyperlink{class_locked_page_manager}{Locked\+Page\+Manager}} also be static-\/initialized, it is created on demand. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/allocators.\+h\item 
+P\+I\+V\+X/src/allocators.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,44 @@
+\hypertarget{class_c_level_d_b_wrapper}{}\section{C\+Level\+D\+B\+Wrapper Class Reference}
+\label{class_c_level_d_b_wrapper}\index{C\+Level\+D\+B\+Wrapper@{C\+Level\+D\+B\+Wrapper}}
+Inheritance diagram for C\+Level\+D\+B\+Wrapper\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_level_d_b_wrapper}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_level_d_b_wrapper_ae796b1190c072df6275e0ada4d187943}\label{class_c_level_d_b_wrapper_ae796b1190c072df6275e0ada4d187943}} 
+{\bfseries C\+Level\+D\+B\+Wrapper} (const boost\+::filesystem\+::path \&path, size\+\_\+t n\+Cache\+Size, bool f\+Memory=false, bool f\+Wipe=false)
+\item 
+\mbox{\Hypertarget{class_c_level_d_b_wrapper_a0cb51d3b8f042641b2d0aa76c3185527}\label{class_c_level_d_b_wrapper_a0cb51d3b8f042641b2d0aa76c3185527}} 
+{\footnotesize template$<$typename K , typename V $>$ }\\bool {\bfseries Read} (const K \&key, V \&value) const  throw (leveldb\+\_\+error)
+\item 
+\mbox{\Hypertarget{class_c_level_d_b_wrapper_a740caa1aefbafc888838ea7f70dc31f4}\label{class_c_level_d_b_wrapper_a740caa1aefbafc888838ea7f70dc31f4}} 
+{\footnotesize template$<$typename K , typename V $>$ }\\bool {\bfseries Write} (const K \&key, const V \&value, bool f\+Sync=false)  throw (leveldb\+\_\+error)
+\item 
+\mbox{\Hypertarget{class_c_level_d_b_wrapper_a43c427da8e32af87a09d3cb60353ef0e}\label{class_c_level_d_b_wrapper_a43c427da8e32af87a09d3cb60353ef0e}} 
+{\footnotesize template$<$typename K $>$ }\\bool {\bfseries Exists} (const K \&key) const  throw (leveldb\+\_\+error)
+\item 
+\mbox{\Hypertarget{class_c_level_d_b_wrapper_a9f67e2880ba191fdc9439ba34e315d72}\label{class_c_level_d_b_wrapper_a9f67e2880ba191fdc9439ba34e315d72}} 
+{\footnotesize template$<$typename K $>$ }\\bool {\bfseries Erase} (const K \&key, bool f\+Sync=false)  throw (leveldb\+\_\+error)
+\item 
+\mbox{\Hypertarget{class_c_level_d_b_wrapper_a820484c9e427f9e3400396e750acf4b8}\label{class_c_level_d_b_wrapper_a820484c9e427f9e3400396e750acf4b8}} 
+bool {\bfseries Write\+Batch} (\mbox{\hyperlink{class_c_level_d_b_batch}{C\+Level\+D\+B\+Batch}} \&batch, bool f\+Sync=false)  throw (leveldb\+\_\+error)
+\item 
+\mbox{\Hypertarget{class_c_level_d_b_wrapper_a639fbfd6652941a1ab570c202197a32a}\label{class_c_level_d_b_wrapper_a639fbfd6652941a1ab570c202197a32a}} 
+bool {\bfseries Flush} ()
+\item 
+\mbox{\Hypertarget{class_c_level_d_b_wrapper_abd05e914893cd610e8444871f829d8c9}\label{class_c_level_d_b_wrapper_abd05e914893cd610e8444871f829d8c9}} 
+bool {\bfseries Sync} ()  throw (leveldb\+\_\+error)
+\item 
+\mbox{\Hypertarget{class_c_level_d_b_wrapper_a5f43d01a8a6b26464b875d190e002d74}\label{class_c_level_d_b_wrapper_a5f43d01a8a6b26464b875d190e002d74}} 
+\mbox{\hyperlink{classleveldb_1_1_iterator}{leveldb\+::\+Iterator}} $\ast$ {\bfseries New\+Iterator} ()
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldbwrapper.\+h\item 
+P\+I\+V\+X/src/leveldbwrapper.\+cpp\end{DoxyCompactItemize}

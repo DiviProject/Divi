@@ -1,0 +1,154 @@
+\hypertarget{class_c_partial_merkle_tree}{}\section{C\+Partial\+Merkle\+Tree Class Reference}
+\label{class_c_partial_merkle_tree}\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+
+
+{\ttfamily \#include $<$merkleblock.\+h$>$}
+
+Inheritance diagram for C\+Partial\+Merkle\+Tree\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_partial_merkle_tree}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_partial_merkle_tree_a44903b156e6c77f3ef977324b24daf1f}\label{class_c_partial_merkle_tree_a44903b156e6c77f3ef977324b24daf1f}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\hyperlink{class_c_partial_merkle_tree_a0656767dc0d8f3d603c54e5be21d3890}{C\+Partial\+Merkle\+Tree}} (const std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&v\+Txid, const std\+::vector$<$ bool $>$ \&v\+Match)
+\item 
+\mbox{\hyperlink{classuint256}{uint256}} \mbox{\hyperlink{class_c_partial_merkle_tree_a28c3456d1159b33b6c2689ac88eb56ad}{Extract\+Matches}} (std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&v\+Match)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_c_partial_merkle_tree_ae218db8103edb6672fe0d642535c7490}{A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \mbox{\hyperlink{class_c_partial_merkle_tree_a7dd0288d62321fb5aa2c27a3372ee8fe}{Calc\+Tree\+Width}} (int height)
+\item 
+\mbox{\hyperlink{classuint256}{uint256}} \mbox{\hyperlink{class_c_partial_merkle_tree_a69e7771f95c498f6a340dcc227abcde4}{Calc\+Hash}} (int height, unsigned int pos, const std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&v\+Txid)
+\item 
+void \mbox{\hyperlink{class_c_partial_merkle_tree_a62bdcaf5b5ee6c6327ef67fb027a5fef}{Traverse\+And\+Build}} (int height, unsigned int pos, const std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&v\+Txid, const std\+::vector$<$ bool $>$ \&v\+Match)
+\item 
+\mbox{\hyperlink{classuint256}{uint256}} \mbox{\hyperlink{class_c_partial_merkle_tree_a3ddbe75a92d93059c30f6e60bacc7054}{Traverse\+And\+Extract}} (int height, unsigned int pos, unsigned int \&n\+Bits\+Used, unsigned int \&n\+Hash\+Used, std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&v\+Match)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \mbox{\hyperlink{class_c_partial_merkle_tree_a0d3bd530f19f2c75c140a05c6f99782a}{n\+Transactions}}
+\item 
+std\+::vector$<$ bool $>$ \mbox{\hyperlink{class_c_partial_merkle_tree_a22a522d1fb8d449f4c91b65283339e7d}{v\+Bits}}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \mbox{\hyperlink{class_c_partial_merkle_tree_a863cf9024be1b8fa97db08dfd6dbd687}{v\+Hash}}
+\item 
+bool \mbox{\hyperlink{class_c_partial_merkle_tree_a24bb0d9d17d6001dcfbca4d550c64ba3}{f\+Bad}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Data structure that represents a partial merkle tree.
+
+It represents a subset of the txid\textquotesingle{}s of a known block, in a way that allows recovery of the list of txid\textquotesingle{}s and the merkle root, in an authenticated way.
+
+The encoding works as follows\+: we traverse the tree in depth-\/first order, storing a bit for each traversed node, signifying whether the node is the parent of at least one matched leaf txid (or a matched txid itself). In case we are at the leaf level, or this bit is 0, its merkle node hash is stored, and its children are not explorer further. Otherwise, no hash is stored, but we recurse into both (or the only) child branch. During decoding, the same depth-\/first traversal is performed, consuming bits and hashes as they written during encoding.
+
+The serialization is fixed and provides a hard guarantee about the encoded size\+:
+
+S\+I\+ZE $<$= 10 + ceil(32.\+25$\ast$N)
+
+Where N represents the number of leaf nodes of the partial tree. N itself is bounded by\+:
+
+N $<$= total\+\_\+transactions N $<$= 1 + matched\+\_\+transactions$\ast$tree\+\_\+height
+
+The serialization format\+:
+\begin{DoxyItemize}
+\item uint32 total\+\_\+transactions (4 bytes)
+\item varint number of hashes (1-\/3 bytes)
+\item \mbox{\hyperlink{classuint256}{uint256}}\mbox{[}\mbox{]} hashes in depth-\/first order ($<$= 32$\ast$N bytes)
+\item varint number of bytes of flag bits (1-\/3 bytes)
+\item byte\mbox{[}\mbox{]} flag bits, packed per 8 in a byte, least significant bit first ($<$= 2$\ast$\+N-\/1 bits) The size constraints follow from this. 
+\end{DoxyItemize}
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_c_partial_merkle_tree_a0656767dc0d8f3d603c54e5be21d3890}\label{class_c_partial_merkle_tree_a0656767dc0d8f3d603c54e5be21d3890}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{C\+Partial\+Merkle\+Tree()}{CPartialMerkleTree()}}
+{\footnotesize\ttfamily C\+Partial\+Merkle\+Tree\+::\+C\+Partial\+Merkle\+Tree (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&}]{v\+Txid,  }\item[{const std\+::vector$<$ bool $>$ \&}]{v\+Match }\end{DoxyParamCaption})}
+
+Construct a partial merkle tree from a list of transaction id\textquotesingle{}s, and a mask that selects a subset of them 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_partial_merkle_tree_a69e7771f95c498f6a340dcc227abcde4}\label{class_c_partial_merkle_tree_a69e7771f95c498f6a340dcc227abcde4}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!Calc\+Hash@{Calc\+Hash}}
+\index{Calc\+Hash@{Calc\+Hash}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{Calc\+Hash()}{CalcHash()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classuint256}{uint256}} C\+Partial\+Merkle\+Tree\+::\+Calc\+Hash (\begin{DoxyParamCaption}\item[{int}]{height,  }\item[{unsigned int}]{pos,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&}]{v\+Txid }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+calculate the hash of a node in the merkle tree (at leaf level\+: the txid\textquotesingle{}s themselves) \mbox{\Hypertarget{class_c_partial_merkle_tree_a7dd0288d62321fb5aa2c27a3372ee8fe}\label{class_c_partial_merkle_tree_a7dd0288d62321fb5aa2c27a3372ee8fe}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!Calc\+Tree\+Width@{Calc\+Tree\+Width}}
+\index{Calc\+Tree\+Width@{Calc\+Tree\+Width}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{Calc\+Tree\+Width()}{CalcTreeWidth()}}
+{\footnotesize\ttfamily unsigned int C\+Partial\+Merkle\+Tree\+::\+Calc\+Tree\+Width (\begin{DoxyParamCaption}\item[{int}]{height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+helper function to efficiently calculate the number of nodes at given height in the merkle tree \mbox{\Hypertarget{class_c_partial_merkle_tree_a28c3456d1159b33b6c2689ac88eb56ad}\label{class_c_partial_merkle_tree_a28c3456d1159b33b6c2689ac88eb56ad}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!Extract\+Matches@{Extract\+Matches}}
+\index{Extract\+Matches@{Extract\+Matches}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{Extract\+Matches()}{ExtractMatches()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classuint256}{uint256}} C\+Partial\+Merkle\+Tree\+::\+Extract\+Matches (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&}]{v\+Match }\end{DoxyParamCaption})}
+
+extract the matching txid\textquotesingle{}s represented by this partial merkle tree. returns the merkle root, or 0 in case of failure \mbox{\Hypertarget{class_c_partial_merkle_tree_a62bdcaf5b5ee6c6327ef67fb027a5fef}\label{class_c_partial_merkle_tree_a62bdcaf5b5ee6c6327ef67fb027a5fef}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!Traverse\+And\+Build@{Traverse\+And\+Build}}
+\index{Traverse\+And\+Build@{Traverse\+And\+Build}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{Traverse\+And\+Build()}{TraverseAndBuild()}}
+{\footnotesize\ttfamily void C\+Partial\+Merkle\+Tree\+::\+Traverse\+And\+Build (\begin{DoxyParamCaption}\item[{int}]{height,  }\item[{unsigned int}]{pos,  }\item[{const std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&}]{v\+Txid,  }\item[{const std\+::vector$<$ bool $>$ \&}]{v\+Match }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+recursive function that traverses tree nodes, storing the data as bits and hashes \mbox{\Hypertarget{class_c_partial_merkle_tree_a3ddbe75a92d93059c30f6e60bacc7054}\label{class_c_partial_merkle_tree_a3ddbe75a92d93059c30f6e60bacc7054}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!Traverse\+And\+Extract@{Traverse\+And\+Extract}}
+\index{Traverse\+And\+Extract@{Traverse\+And\+Extract}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{Traverse\+And\+Extract()}{TraverseAndExtract()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classuint256}{uint256}} C\+Partial\+Merkle\+Tree\+::\+Traverse\+And\+Extract (\begin{DoxyParamCaption}\item[{int}]{height,  }\item[{unsigned int}]{pos,  }\item[{unsigned int \&}]{n\+Bits\+Used,  }\item[{unsigned int \&}]{n\+Hash\+Used,  }\item[{std\+::vector$<$ \mbox{\hyperlink{classuint256}{uint256}} $>$ \&}]{v\+Match }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+recursive function that traverses tree nodes, consuming the bits and hashes produced by Traverse\+And\+Build. it returns the hash of the respective node. 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_c_partial_merkle_tree_ae218db8103edb6672fe0d642535c7490}\label{class_c_partial_merkle_tree_ae218db8103edb6672fe0d642535c7490}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS@{A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}}
+\index{A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS@{A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}{ADD\_SERIALIZE\_METHODS}}
+{\footnotesize\ttfamily C\+Partial\+Merkle\+Tree\+::\+A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+
+serialization implementation \mbox{\Hypertarget{class_c_partial_merkle_tree_a24bb0d9d17d6001dcfbca4d550c64ba3}\label{class_c_partial_merkle_tree_a24bb0d9d17d6001dcfbca4d550c64ba3}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!f\+Bad@{f\+Bad}}
+\index{f\+Bad@{f\+Bad}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{f\+Bad}{fBad}}
+{\footnotesize\ttfamily bool C\+Partial\+Merkle\+Tree\+::f\+Bad\hspace{0.3cm}{\ttfamily [protected]}}
+
+flag set when encountering invalid data \mbox{\Hypertarget{class_c_partial_merkle_tree_a0d3bd530f19f2c75c140a05c6f99782a}\label{class_c_partial_merkle_tree_a0d3bd530f19f2c75c140a05c6f99782a}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!n\+Transactions@{n\+Transactions}}
+\index{n\+Transactions@{n\+Transactions}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{n\+Transactions}{nTransactions}}
+{\footnotesize\ttfamily unsigned int C\+Partial\+Merkle\+Tree\+::n\+Transactions\hspace{0.3cm}{\ttfamily [protected]}}
+
+the total number of transactions in the block \mbox{\Hypertarget{class_c_partial_merkle_tree_a22a522d1fb8d449f4c91b65283339e7d}\label{class_c_partial_merkle_tree_a22a522d1fb8d449f4c91b65283339e7d}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!v\+Bits@{v\+Bits}}
+\index{v\+Bits@{v\+Bits}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{v\+Bits}{vBits}}
+{\footnotesize\ttfamily std\+::vector$<$bool$>$ C\+Partial\+Merkle\+Tree\+::v\+Bits\hspace{0.3cm}{\ttfamily [protected]}}
+
+node-\/is-\/parent-\/of-\/matched-\/txid bits \mbox{\Hypertarget{class_c_partial_merkle_tree_a863cf9024be1b8fa97db08dfd6dbd687}\label{class_c_partial_merkle_tree_a863cf9024be1b8fa97db08dfd6dbd687}} 
+\index{C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}!v\+Hash@{v\+Hash}}
+\index{v\+Hash@{v\+Hash}!C\+Partial\+Merkle\+Tree@{C\+Partial\+Merkle\+Tree}}
+\subsubsection{\texorpdfstring{v\+Hash}{vHash}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{classuint256}{uint256}}$>$ C\+Partial\+Merkle\+Tree\+::v\+Hash\hspace{0.3cm}{\ttfamily [protected]}}
+
+txids and internal hashes 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/merkleblock.\+h\item 
+P\+I\+V\+X/src/merkleblock.\+cpp\end{DoxyCompactItemize}

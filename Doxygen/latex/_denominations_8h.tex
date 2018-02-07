@@ -1,0 +1,69 @@
+\hypertarget{_denominations_8h}{}\section{P\+I\+V\+X/src/libzerocoin/\+Denominations.h File Reference}
+\label{_denominations_8h}\index{P\+I\+V\+X/src/libzerocoin/\+Denominations.\+h@{P\+I\+V\+X/src/libzerocoin/\+Denominations.\+h}}
+
+
+Denomination info for the Zerocoin library.  
+
+
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{_denominations_8h_a5ce9030ca9170bbb2d8f319b53ad1302}\label{_denominations_8h_a5ce9030ca9170bbb2d8f319b53ad1302}} 
+enum {\bfseries Coin\+Denomination} \{ \newline
+{\bfseries Z\+Q\+\_\+\+E\+R\+R\+OR} = 0, 
+{\bfseries Z\+Q\+\_\+\+O\+NE} = 1, 
+{\bfseries Z\+Q\+\_\+\+F\+I\+VE} = 5, 
+{\bfseries Z\+Q\+\_\+\+T\+EN} = 10, 
+\newline
+{\bfseries Z\+Q\+\_\+\+F\+I\+F\+TY} = 50, 
+{\bfseries Z\+Q\+\_\+\+O\+N\+E\+\_\+\+H\+U\+N\+D\+R\+ED} = 100, 
+{\bfseries Z\+Q\+\_\+\+F\+I\+V\+E\+\_\+\+H\+U\+N\+D\+R\+ED} = 500, 
+{\bfseries Z\+Q\+\_\+\+O\+N\+E\+\_\+\+T\+H\+O\+U\+S\+A\+ND} = 1000, 
+\newline
+{\bfseries Z\+Q\+\_\+\+F\+I\+V\+E\+\_\+\+T\+H\+O\+U\+S\+A\+ND} = 5000
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{_denominations_8cpp_a91af721392a13cabe0725410d018eb8f}\label{_denominations_8cpp_a91af721392a13cabe0725410d018eb8f}} 
+int64\+\_\+t {\bfseries libzerocoin\+::\+Zerocoin\+Denomination\+To\+Int} (const Coin\+Denomination \&denomination)
+\item 
+\mbox{\Hypertarget{_denominations_8cpp_aa2479161e18a4df0c60a6256e47cac97}\label{_denominations_8cpp_aa2479161e18a4df0c60a6256e47cac97}} 
+C\+Amount {\bfseries libzerocoin\+::\+Zerocoin\+Denomination\+To\+Amount} (const Coin\+Denomination \&denomination)
+\item 
+\mbox{\Hypertarget{_denominations_8cpp_a59a7febb87e2521cec803d3bb3533c5f}\label{_denominations_8cpp_a59a7febb87e2521cec803d3bb3533c5f}} 
+Coin\+Denomination {\bfseries libzerocoin\+::\+Int\+To\+Zerocoin\+Denomination} (int64\+\_\+t amount)
+\item 
+\mbox{\Hypertarget{_denominations_8cpp_a134fac363d8467df4fbb539a880051ec}\label{_denominations_8cpp_a134fac363d8467df4fbb539a880051ec}} 
+Coin\+Denomination {\bfseries libzerocoin\+::\+Amount\+To\+Zerocoin\+Denomination} (C\+Amount amount)
+\item 
+\mbox{\Hypertarget{_denominations_8cpp_a775d9e146aa1f501842eecaad815d55d}\label{_denominations_8cpp_a775d9e146aa1f501842eecaad815d55d}} 
+Coin\+Denomination {\bfseries libzerocoin\+::\+Amount\+To\+Closest\+Denomination} (C\+Amount n\+Amount, C\+Amount \&n\+Remaining)
+\item 
+\mbox{\Hypertarget{_denominations_8cpp_a08ca1ae0ece49d18f90a7c6151cb11ec}\label{_denominations_8cpp_a08ca1ae0ece49d18f90a7c6151cb11ec}} 
+Coin\+Denomination {\bfseries libzerocoin\+::get\+\_\+denomination} (std\+::string denom\+Amount)
+\item 
+\mbox{\Hypertarget{_denominations_8cpp_ad4134490b1b334c1c1bc38dcf06a8a05}\label{_denominations_8cpp_ad4134490b1b334c1c1bc38dcf06a8a05}} 
+int64\+\_\+t {\bfseries libzerocoin\+::get\+\_\+amount} (std\+::string denom\+Amount)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{_denominations_8h_a260407e8113f16487bd00b3320843d66}\label{_denominations_8h_a260407e8113f16487bd00b3320843d66}} 
+const std\+::vector$<$ Coin\+Denomination $>$ {\bfseries libzerocoin\+::zerocoin\+Denom\+List} = \{Z\+Q\+\_\+\+O\+NE, Z\+Q\+\_\+\+F\+I\+VE, Z\+Q\+\_\+\+T\+EN, Z\+Q\+\_\+\+F\+I\+F\+TY, Z\+Q\+\_\+\+O\+N\+E\+\_\+\+H\+U\+N\+D\+R\+ED, Z\+Q\+\_\+\+F\+I\+V\+E\+\_\+\+H\+U\+N\+D\+R\+ED, Z\+Q\+\_\+\+O\+N\+E\+\_\+\+T\+H\+O\+U\+S\+A\+ND, Z\+Q\+\_\+\+F\+I\+V\+E\+\_\+\+T\+H\+O\+U\+S\+A\+ND\}
+\item 
+\mbox{\Hypertarget{_denominations_8h_a179506a5825b68b9d22c71a7790a3fd1}\label{_denominations_8h_a179506a5825b68b9d22c71a7790a3fd1}} 
+const std\+::vector$<$ int $>$ {\bfseries libzerocoin\+::max\+Coins\+At\+Denom} = \{4, 1, 4, 1, 4, 1, 4, 4\}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Denomination info for the Zerocoin library. 
+
+\begin{DoxyCopyright}{Copyright}
+Copyright 2017 P\+I\+VX Developers  This project is released under the M\+IT license. 
+\end{DoxyCopyright}

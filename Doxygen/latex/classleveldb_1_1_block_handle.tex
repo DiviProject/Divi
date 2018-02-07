@@ -1,0 +1,36 @@
+\hypertarget{classleveldb_1_1_block_handle}{}\section{leveldb\+:\+:Block\+Handle Class Reference}
+\label{classleveldb_1_1_block_handle}\index{leveldb\+::\+Block\+Handle@{leveldb\+::\+Block\+Handle}}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_handle_a63d4b12a32c670d18b74a2ff9451da28}\label{classleveldb_1_1_block_handle_a63d4b12a32c670d18b74a2ff9451da28}} 
+enum \{ {\bfseries k\+Max\+Encoded\+Length} = 10 + 10
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_handle_adb071cded811275424d2cf33757d42e5}\label{classleveldb_1_1_block_handle_adb071cded811275424d2cf33757d42e5}} 
+uint64\+\_\+t {\bfseries offset} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_handle_ae6dad857a4f7f5e051762f874f0050bc}\label{classleveldb_1_1_block_handle_ae6dad857a4f7f5e051762f874f0050bc}} 
+void {\bfseries set\+\_\+offset} (uint64\+\_\+t offset)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_handle_a82b79636d23162c441fb33b71849371d}\label{classleveldb_1_1_block_handle_a82b79636d23162c441fb33b71849371d}} 
+uint64\+\_\+t {\bfseries size} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_handle_a47a4169dce3026122b76d594453b78a8}\label{classleveldb_1_1_block_handle_a47a4169dce3026122b76d594453b78a8}} 
+void {\bfseries set\+\_\+size} (uint64\+\_\+t size)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_handle_aed011eeca92f0852caa106a34c3a80e6}\label{classleveldb_1_1_block_handle_aed011eeca92f0852caa106a34c3a80e6}} 
+void {\bfseries Encode\+To} (std\+::string $\ast$dst) const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_block_handle_a1660fd202984d8d5bfa4bed6c5613621}\label{classleveldb_1_1_block_handle_a1660fd202984d8d5bfa4bed6c5613621}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Decode\+From} (\mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$input)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/table/format.\+h\item 
+P\+I\+V\+X/src/leveldb/table/format.\+cc\end{DoxyCompactItemize}

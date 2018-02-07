@@ -1,0 +1,34 @@
+\hypertarget{structsph__simd__big__context}{}\section{sph\+\_\+simd\+\_\+big\+\_\+context Struct Reference}
+\label{structsph__simd__big__context}\index{sph\+\_\+simd\+\_\+big\+\_\+context@{sph\+\_\+simd\+\_\+big\+\_\+context}}
+
+
+{\ttfamily \#include $<$sph\+\_\+simd.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsph__simd__big__context_a4d67b9491c7243d7e372de7ca01a717f}\label{structsph__simd__big__context_a4d67b9491c7243d7e372de7ca01a717f}} 
+unsigned char {\bfseries buf} \mbox{[}128\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__simd__big__context_a0f5cd2f56abcf6ab9e0a6177e970814f}\label{structsph__simd__big__context_a0f5cd2f56abcf6ab9e0a6177e970814f}} 
+size\+\_\+t {\bfseries ptr}
+\item 
+\mbox{\Hypertarget{structsph__simd__big__context_ac1948fd0308eb6281db68aaa9ee4178e}\label{structsph__simd__big__context_ac1948fd0308eb6281db68aaa9ee4178e}} 
+sph\+\_\+u32 {\bfseries state} \mbox{[}32\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__simd__big__context_a0869d428ed186efa3137783052da74d4}\label{structsph__simd__big__context_a0869d428ed186efa3137783052da74d4}} 
+sph\+\_\+u32 {\bfseries count\+\_\+low}
+\item 
+\mbox{\Hypertarget{structsph__simd__big__context_ae7c05aa3d59f60bd4d06b6abe04e7a7b}\label{structsph__simd__big__context_ae7c05aa3d59f60bd4d06b6abe04e7a7b}} 
+sph\+\_\+u32 {\bfseries count\+\_\+high}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This structure is a context for S\+I\+MD computations\+: it contains the intermediate values and some data from the last entered block. Once an S\+I\+MD computation has been performed, the context can be reused for another computation. This specific structure is used for S\+I\+M\+D-\/384 and S\+I\+M\+D-\/512.
+
+The contents of this structure are private. A running S\+I\+MD computation can be cloned by copying the context (e.\+g. with a simple {\ttfamily memcpy()}). 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/crypto/\mbox{\hyperlink{sph__simd_8h}{sph\+\_\+simd.\+h}}\end{DoxyCompactItemize}

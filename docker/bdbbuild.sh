@@ -1,4 +1,5 @@
-PIVX_ROOT='/var/divi/PIVX'
+cd /var/divi/PIVX
+PIVX_ROOT=$(pwd)
 
 # Pick some path to install BDB to, here we create a directory within the pivx directory
 BDB_PREFIX="${PIVX_ROOT}/db4"

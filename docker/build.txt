@@ -14,3 +14,18 @@ docker image rm -f $(docker image ls -a -q)
 docker commit -m "all the way up to autogen in pivxmake.sh" efdfdd9adb7c dcaldwellsw/pivx-docker:ranAutogen 
 
 docker commit -m "CLI PIVX container defaults" efdfdd9adb7c dcaldwellsw/pivx-docker:cliBuild 
+
+d5db71f8ea60
+docker commit -m "Byrds pull version of BerkeleyDB, after bdbbuild.sh." d5db71f8ea60 dcaldwellsw/pivx-docker:bdbBuild 
+
+
+# Byrds work integrated:
+docker build -t dcaldwellsw/pivx-docker:dockerfileOnly .
+docker push dcaldwellsw/pivx-docker:dockerfileOnly
+
+# ran scripts after Dockerfile:
+docker commit -m "after adjusting Byrds changes and running bdbbuild.sh" 33867987299e dcaldwellsw/pivx-docker:bdbBuild 
+docker push dcaldwellsw/pivx-docker:bdbBuild
+
+
+

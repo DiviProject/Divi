@@ -1,3 +1,5 @@
+#! /bin/bash
+
 cd /var/divi/PIVX
 PIVX_ROOT=$(pwd)
 
@@ -19,4 +21,3 @@ make install
 
 # Configure PIVX Core to use our own-built instance of BDB
 cd $PIVX_ROOT
-./configure LDFLAGS="-L${BDB_PREFIX}/lib/" CPPFLAGS="-I${BDB_PREFIX}/include/"

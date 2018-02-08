@@ -36,7 +36,6 @@ RUN chmod +x /var/divi/bdbbuild.sh
 
 # All...
 # git clone -b 3.0 "https://github.com/PIVX-Project/PIVX.git"
-# cd /var/divi/PIVX
 # ./bdbbuild.sh
 
 # image is taken here

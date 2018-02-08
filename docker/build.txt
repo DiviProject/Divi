@@ -11,3 +11,6 @@ docker run --rm -it --entrypoint /bin/bash  dcaldwellsw/pivx-docker
 
 docker image rm -f $(docker image ls -a -q) 
 
+docker commit -m "all the way up to autogen in pivxmake.sh" efdfdd9adb7c dcaldwellsw/pivx-docker:ranAutogen 
+
+docker commit -m "CLI PIVX container defaults" efdfdd9adb7c dcaldwellsw/pivx-docker:cliBuild 

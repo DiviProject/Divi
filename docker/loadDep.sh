@@ -35,6 +35,6 @@ make install
 # cd /var/divi/PIVX-3.0
 # /var/divi/PIVX-3.0/configure LDFLAGS="-L${BDB_PREFIX}/lib/" CPPFLAGS="-I${BDB_PREFIX}/include/"
 
-/var/divi/pivxmake.sh
+# /var/divi/pivxmake.sh
 echo "DONE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

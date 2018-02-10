@@ -1,0 +1,45 @@
+\hypertarget{structsph__echo__big__context}{}\section{sph\+\_\+echo\+\_\+big\+\_\+context Struct Reference}
+\label{structsph__echo__big__context}\index{sph\+\_\+echo\+\_\+big\+\_\+context@{sph\+\_\+echo\+\_\+big\+\_\+context}}
+
+
+{\ttfamily \#include $<$sph\+\_\+echo.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsph__echo__big__context_afbbb9735887ec344ebbf08794fb2ab88}\label{structsph__echo__big__context_afbbb9735887ec344ebbf08794fb2ab88}} 
+unsigned char {\bfseries buf} \mbox{[}128\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__echo__big__context_a6fdc1eb8dd708859a33005694d4f7bea}\label{structsph__echo__big__context_a6fdc1eb8dd708859a33005694d4f7bea}} 
+size\+\_\+t {\bfseries ptr}
+\item 
+\mbox{\Hypertarget{structsph__echo__big__context_ac7a92ae6c99561e741b06bb7c8249650}\label{structsph__echo__big__context_ac7a92ae6c99561e741b06bb7c8249650}} 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+union \{\\
+\>sph\_u32 {\bfseries Vs} \mbox{[}8\mbox{]}\mbox{[}4\mbox{]}\\
+\} {\bfseries u}\\
+
+\end{tabbing}\item 
+\mbox{\Hypertarget{structsph__echo__big__context_a09f8372745d87b7dbd3539537c0ffbe6}\label{structsph__echo__big__context_a09f8372745d87b7dbd3539537c0ffbe6}} 
+sph\+\_\+u32 {\bfseries C0}
+\item 
+\mbox{\Hypertarget{structsph__echo__big__context_a67491384a26e2b2b255acbf5c0d31dea}\label{structsph__echo__big__context_a67491384a26e2b2b255acbf5c0d31dea}} 
+sph\+\_\+u32 {\bfseries C1}
+\item 
+\mbox{\Hypertarget{structsph__echo__big__context_a23512c6f7c858b9fa14d266b230a0397}\label{structsph__echo__big__context_a23512c6f7c858b9fa14d266b230a0397}} 
+sph\+\_\+u32 {\bfseries C2}
+\item 
+\mbox{\Hypertarget{structsph__echo__big__context_ab35268b438f8a2aeb96a48ecbc055b81}\label{structsph__echo__big__context_ab35268b438f8a2aeb96a48ecbc055b81}} 
+sph\+\_\+u32 {\bfseries C3}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This structure is a context for E\+C\+HO computations\+: it contains the intermediate values and some data from the last entered block. Once an E\+C\+HO computation has been performed, the context can be reused for another computation. This specific structure is used for E\+C\+H\+O-\/384 and E\+C\+H\+O-\/512.
+
+The contents of this structure are private. A running E\+C\+HO computation can be cloned by copying the context (e.\+g. with a simple {\ttfamily memcpy()}). 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/crypto/\mbox{\hyperlink{sph__echo_8h}{sph\+\_\+echo.\+h}}\end{DoxyCompactItemize}

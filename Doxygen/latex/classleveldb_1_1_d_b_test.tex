@@ -1,0 +1,100 @@
+\hypertarget{classleveldb_1_1_d_b_test}{}\section{leveldb\+:\+:D\+B\+Test Class Reference}
+\label{classleveldb_1_1_d_b_test}\index{leveldb\+::\+D\+B\+Test@{leveldb\+::\+D\+B\+Test}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a587534fe403016f15cf1997ef7a40836}\label{classleveldb_1_1_d_b_test_a587534fe403016f15cf1997ef7a40836}} 
+bool {\bfseries Change\+Options} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a68db410e16195a3b67822bec05c06547}\label{classleveldb_1_1_d_b_test_a68db410e16195a3b67822bec05c06547}} 
+\mbox{\hyperlink{structleveldb_1_1_options}{Options}} {\bfseries Current\+Options} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a67de35d247ea077c1e4fdf2a7a0f0514}\label{classleveldb_1_1_d_b_test_a67de35d247ea077c1e4fdf2a7a0f0514}} 
+\mbox{\hyperlink{classleveldb_1_1_d_b_impl}{D\+B\+Impl}} $\ast$ {\bfseries dbfull} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a38170a082cbc71fb446408ff5634c797}\label{classleveldb_1_1_d_b_test_a38170a082cbc71fb446408ff5634c797}} 
+void {\bfseries Reopen} (\mbox{\hyperlink{structleveldb_1_1_options}{Options}} $\ast$options=N\+U\+LL)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_aee76446bbb9c34cdb1ae00318689aead}\label{classleveldb_1_1_d_b_test_aee76446bbb9c34cdb1ae00318689aead}} 
+void {\bfseries Close} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_ab798a43e7feab6dddc8fa1eb7a5f61f6}\label{classleveldb_1_1_d_b_test_ab798a43e7feab6dddc8fa1eb7a5f61f6}} 
+void {\bfseries Destroy\+And\+Reopen} (\mbox{\hyperlink{structleveldb_1_1_options}{Options}} $\ast$options=N\+U\+LL)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_aee588b2d13db6be2a651a8fabeac5c79}\label{classleveldb_1_1_d_b_test_aee588b2d13db6be2a651a8fabeac5c79}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Try\+Reopen} (\mbox{\hyperlink{structleveldb_1_1_options}{Options}} $\ast$options)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a5ec1a1d5ecc1744f325159eb81e46514}\label{classleveldb_1_1_d_b_test_a5ec1a1d5ecc1744f325159eb81e46514}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Put} (const std\+::string \&k, const std\+::string \&v)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a25716ec93d525adbeea8ff71e8f3a9f4}\label{classleveldb_1_1_d_b_test_a25716ec93d525adbeea8ff71e8f3a9f4}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Delete} (const std\+::string \&k)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a6af558e1fca4a9f1bbf86d72d3d4aa6c}\label{classleveldb_1_1_d_b_test_a6af558e1fca4a9f1bbf86d72d3d4aa6c}} 
+std\+::string {\bfseries Get} (const std\+::string \&k, const \mbox{\hyperlink{classleveldb_1_1_snapshot}{Snapshot}} $\ast$snapshot=N\+U\+LL)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a3cf871664bd22c6ed2d6c2a8834b49fc}\label{classleveldb_1_1_d_b_test_a3cf871664bd22c6ed2d6c2a8834b49fc}} 
+std\+::string {\bfseries Contents} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_adaf171601eaaf2cd24edaa394752f733}\label{classleveldb_1_1_d_b_test_adaf171601eaaf2cd24edaa394752f733}} 
+std\+::string {\bfseries All\+Entries\+For} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&user\+\_\+key)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_aa7c845810f6d57b0655eda370e8de33f}\label{classleveldb_1_1_d_b_test_aa7c845810f6d57b0655eda370e8de33f}} 
+int {\bfseries Num\+Table\+Files\+At\+Level} (int level)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a05fa745351a41ecc0165b391a605b79e}\label{classleveldb_1_1_d_b_test_a05fa745351a41ecc0165b391a605b79e}} 
+int {\bfseries Total\+Table\+Files} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a0e4d6292bcbe450d34b558d48a51a331}\label{classleveldb_1_1_d_b_test_a0e4d6292bcbe450d34b558d48a51a331}} 
+std\+::string {\bfseries Files\+Per\+Level} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a0c6c0c1d470a50fdcb6cdbc54977e907}\label{classleveldb_1_1_d_b_test_a0c6c0c1d470a50fdcb6cdbc54977e907}} 
+int {\bfseries Count\+Files} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a2b16106ccbd302127b5c0575e74e6be1}\label{classleveldb_1_1_d_b_test_a2b16106ccbd302127b5c0575e74e6be1}} 
+uint64\+\_\+t {\bfseries Size} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&start, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&limit)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a9b6cd10fd7c8fc54127b0c40c0ac7db5}\label{classleveldb_1_1_d_b_test_a9b6cd10fd7c8fc54127b0c40c0ac7db5}} 
+void {\bfseries Compact} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&start, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&limit)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_ace931478fa5ad2c48a8aa95a344e19fd}\label{classleveldb_1_1_d_b_test_ace931478fa5ad2c48a8aa95a344e19fd}} 
+void {\bfseries Make\+Tables} (int n, const std\+::string \&small, const std\+::string \&large)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_ac291d06db907f5fee7caf04f44f65493}\label{classleveldb_1_1_d_b_test_ac291d06db907f5fee7caf04f44f65493}} 
+void {\bfseries Fill\+Levels} (const std\+::string \&smallest, const std\+::string \&largest)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_ad045c5203b4ea785ab335ffc3ea833b3}\label{classleveldb_1_1_d_b_test_ad045c5203b4ea785ab335ffc3ea833b3}} 
+void {\bfseries Dump\+File\+Counts} (const char $\ast$label)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_afdfc077be555dea7eac220623f6d4deb}\label{classleveldb_1_1_d_b_test_afdfc077be555dea7eac220623f6d4deb}} 
+std\+::string {\bfseries Dump\+S\+S\+Table\+List} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_ad162fa0f5a31e61ee94ba9f45af716f8}\label{classleveldb_1_1_d_b_test_ad162fa0f5a31e61ee94ba9f45af716f8}} 
+std\+::string {\bfseries Iter\+Status} (\mbox{\hyperlink{classleveldb_1_1_iterator}{Iterator}} $\ast$iter)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_abcb2ebeb0733670d7634079c587426d2}\label{classleveldb_1_1_d_b_test_abcb2ebeb0733670d7634079c587426d2}} 
+bool {\bfseries Delete\+An\+S\+S\+T\+File} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a104ae4b9292787d0cfc9a9fb93cc5fa8}\label{classleveldb_1_1_d_b_test_a104ae4b9292787d0cfc9a9fb93cc5fa8}} 
+int {\bfseries Rename\+L\+D\+B\+To\+S\+ST} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_ab7eb9815f522ad154816d72d1cc23a86}\label{classleveldb_1_1_d_b_test_ab7eb9815f522ad154816d72d1cc23a86}} 
+std\+::string {\bfseries dbname\+\_\+}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_ae6bb66675fe5419ed647efd1bfd332f8}\label{classleveldb_1_1_d_b_test_ae6bb66675fe5419ed647efd1bfd332f8}} 
+\mbox{\hyperlink{classleveldb_1_1_special_env}{Special\+Env}} $\ast$ {\bfseries env\+\_\+}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_a2c3db8773f1aa15128432a87489b0d5a}\label{classleveldb_1_1_d_b_test_a2c3db8773f1aa15128432a87489b0d5a}} 
+\mbox{\hyperlink{classleveldb_1_1_d_b}{DB}} $\ast$ {\bfseries db\+\_\+}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_test_adc05df912917d8de411d0672af04330f}\label{classleveldb_1_1_d_b_test_adc05df912917d8de411d0672af04330f}} 
+\mbox{\hyperlink{structleveldb_1_1_options}{Options}} {\bfseries last\+\_\+options\+\_\+}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/db/db\+\_\+test.\+cc\end{DoxyCompactItemize}

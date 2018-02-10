@@ -1,0 +1,34 @@
+\hypertarget{classleveldb_1_1_cache}{}\section{leveldb\+:\+:Cache Class Reference}
+\label{classleveldb_1_1_cache}\index{leveldb\+::\+Cache@{leveldb\+::\+Cache}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structleveldb_1_1_cache_1_1_handle}{Handle}}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_af0b55b7fa0e64184fa62e0dbe9ba9eae}\label{classleveldb_1_1_cache_af0b55b7fa0e64184fa62e0dbe9ba9eae}} 
+virtual \mbox{\hyperlink{structleveldb_1_1_cache_1_1_handle}{Handle}} $\ast$ {\bfseries Insert} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, void $\ast$value, size\+\_\+t charge, void($\ast$deleter)(const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, void $\ast$value))=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_af90785205182a25cf741dc13a48d76cb}\label{classleveldb_1_1_cache_af90785205182a25cf741dc13a48d76cb}} 
+virtual \mbox{\hyperlink{structleveldb_1_1_cache_1_1_handle}{Handle}} $\ast$ {\bfseries Lookup} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_a712618c8bf3bfa48b7bab1fbc23c3002}\label{classleveldb_1_1_cache_a712618c8bf3bfa48b7bab1fbc23c3002}} 
+virtual void {\bfseries Release} (\mbox{\hyperlink{structleveldb_1_1_cache_1_1_handle}{Handle}} $\ast$handle)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_a454920df8e68917adcf011dfb3538661}\label{classleveldb_1_1_cache_a454920df8e68917adcf011dfb3538661}} 
+virtual void $\ast$ {\bfseries Value} (\mbox{\hyperlink{structleveldb_1_1_cache_1_1_handle}{Handle}} $\ast$handle)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_af833a38763598253338de37aba079db6}\label{classleveldb_1_1_cache_af833a38763598253338de37aba079db6}} 
+virtual void {\bfseries Erase} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key)=0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_cache_ae2d79bfe747fc6c165c77398cc31e125}\label{classleveldb_1_1_cache_ae2d79bfe747fc6c165c77398cc31e125}} 
+virtual uint64\+\_\+t {\bfseries New\+Id} ()=0
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/include/leveldb/cache.\+h\item 
+P\+I\+V\+X/src/leveldb/util/cache.\+cc\end{DoxyCompactItemize}

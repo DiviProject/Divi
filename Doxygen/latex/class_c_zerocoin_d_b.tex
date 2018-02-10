@@ -1,0 +1,47 @@
+\hypertarget{class_c_zerocoin_d_b}{}\section{C\+Zerocoin\+DB Class Reference}
+\label{class_c_zerocoin_d_b}\index{C\+Zerocoin\+DB@{C\+Zerocoin\+DB}}
+Inheritance diagram for C\+Zerocoin\+DB\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_zerocoin_d_b}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_ac955b184e894c817500fc11db0ec2670}\label{class_c_zerocoin_d_b_ac955b184e894c817500fc11db0ec2670}} 
+{\bfseries C\+Zerocoin\+DB} (size\+\_\+t n\+Cache\+Size, bool f\+Memory=false, bool f\+Wipe=false)
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_a58b78fd953536c0ad59e5193bcffabe7}\label{class_c_zerocoin_d_b_a58b78fd953536c0ad59e5193bcffabe7}} 
+bool {\bfseries Write\+Coin\+Mint} (const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{libzerocoin\+::\+Public\+Coin}} \&pub\+Coin, const \mbox{\hyperlink{classuint256}{uint256}} \&tx\+Hash)
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_a90b0f4aecbbbe57b1b9cad6e1c37ec15}\label{class_c_zerocoin_d_b_a90b0f4aecbbbe57b1b9cad6e1c37ec15}} 
+bool {\bfseries Read\+Coin\+Mint} (const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&bn\+Pubcoin, \mbox{\hyperlink{classuint256}{uint256}} \&tx\+Hash)
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_a8beb2643c918d7493f0fa3f773781b21}\label{class_c_zerocoin_d_b_a8beb2643c918d7493f0fa3f773781b21}} 
+bool {\bfseries Write\+Coin\+Spend} (const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&bn\+Serial, const \mbox{\hyperlink{classuint256}{uint256}} \&tx\+Hash)
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_abd5c1b53d5ed33d4196010e51e2b8cbb}\label{class_c_zerocoin_d_b_abd5c1b53d5ed33d4196010e51e2b8cbb}} 
+bool {\bfseries Read\+Coin\+Spend} (const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&bn\+Serial, \mbox{\hyperlink{classuint256}{uint256}} \&tx\+Hash)
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_acdef7b13610bd8f4ad5f4a3d5b314e33}\label{class_c_zerocoin_d_b_acdef7b13610bd8f4ad5f4a3d5b314e33}} 
+bool {\bfseries Erase\+Coin\+Mint} (const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&bn\+Pubcoin)
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_ae370638a6807897728027a73e46fa090}\label{class_c_zerocoin_d_b_ae370638a6807897728027a73e46fa090}} 
+bool {\bfseries Erase\+Coin\+Spend} (const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&bn\+Serial)
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_a189468104c0cbff0c4cf6032f1243acf}\label{class_c_zerocoin_d_b_a189468104c0cbff0c4cf6032f1243acf}} 
+bool {\bfseries Write\+Accumulator\+Value} (const uint32\+\_\+t \&n\+Checksum, const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&bn\+Value)
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_a8eb79c950d83952e2db1177c574addb5}\label{class_c_zerocoin_d_b_a8eb79c950d83952e2db1177c574addb5}} 
+bool {\bfseries Read\+Accumulator\+Value} (const uint32\+\_\+t \&n\+Checksum, \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&bn\+Value)
+\item 
+\mbox{\Hypertarget{class_c_zerocoin_d_b_a5ab8298648ee5017ae01d054eaebae0a}\label{class_c_zerocoin_d_b_a5ab8298648ee5017ae01d054eaebae0a}} 
+bool {\bfseries Erase\+Accumulator\+Value} (const uint32\+\_\+t \&n\+Checksum)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/txdb.\+h\item 
+P\+I\+V\+X/src/txdb.\+cpp\end{DoxyCompactItemize}

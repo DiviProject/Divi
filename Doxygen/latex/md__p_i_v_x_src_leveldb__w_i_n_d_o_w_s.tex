@@ -1,0 +1,40 @@
+\subsection*{Prereqs}
+
+Install the \href{http://www.microsoft.com/downloads/dlx/en-us/listdetailsview.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b}{\tt Windows Software Development Kit version 7.\+1}.
+
+Download and extract the \href{http://snappy.googlecode.com/files/snappy-1.0.5.tar.gz}{\tt Snappy source distribution}
+
+
+\begin{DoxyEnumerate}
+\item Open the \char`\"{}\+Windows S\+D\+K 7.\+1 Command Prompt\char`\"{} \+: Start Menu -\/$>$ \char`\"{}\+Microsoft Windows S\+D\+K v7.\+1\char`\"{} $>$ \char`\"{}\+Windows S\+D\+K 7.\+1 Command Prompt\char`\"{}
+\item Change the directory to the leveldb project
+\end{DoxyEnumerate}
+
+\subsection*{Building the Static lib}
+
+
+\begin{DoxyItemize}
+\item 32 bit Version \begin{DoxyVerb}  setenv /x86
+  msbuild.exe /p:Configuration=Release /p:Platform=Win32 /p:Snappy=..\snappy-1.0.5
+\end{DoxyVerb}
+
+\item 64 bit Version \begin{DoxyVerb}  setenv /x64
+  msbuild.exe /p:Configuration=Release /p:Platform=x64 /p:Snappy=..\snappy-1.0.5
+\end{DoxyVerb}
+
+\end{DoxyItemize}
+
+\subsection*{Building and Running the Benchmark app}
+
+
+\begin{DoxyItemize}
+\item 32 bit Version \begin{DoxyVerb}  setenv /x86
+  msbuild.exe /p:Configuration=Benchmark /p:Platform=Win32 /p:Snappy=..\snappy-1.0.5
+  Benchmark\leveldb.exe
+\end{DoxyVerb}
+
+\item 64 bit Version \begin{DoxyVerb}  setenv /x64
+  msbuild.exe /p:Configuration=Benchmark /p:Platform=x64 /p:Snappy=..\snappy-1.0.5
+  x64\Benchmark\leveldb.exe\end{DoxyVerb}
+ 
+\end{DoxyItemize}

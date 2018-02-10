@@ -1,0 +1,79 @@
+\hypertarget{class_send_coins_entry}{}\section{Send\+Coins\+Entry Class Reference}
+\label{class_send_coins_entry}\index{Send\+Coins\+Entry@{Send\+Coins\+Entry}}
+
+
+{\ttfamily \#include $<$sendcoinsentry.\+h$>$}
+
+Inheritance diagram for Send\+Coins\+Entry\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_send_coins_entry}
+\end{center}
+\end{figure}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_abff66fcd456c82144e7a2c410f5082ac}\label{class_send_coins_entry_abff66fcd456c82144e7a2c410f5082ac}} 
+void {\bfseries clear} ()
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_a9105a4f91781f96b91a1da65da9032bf}\label{class_send_coins_entry_a9105a4f91781f96b91a1da65da9032bf}} 
+void {\bfseries remove\+Entry} (\mbox{\hyperlink{class_send_coins_entry}{Send\+Coins\+Entry}} $\ast$entry)
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_a9f4fec53927c3ddd37ccea53f8d1e370}\label{class_send_coins_entry_a9f4fec53927c3ddd37ccea53f8d1e370}} 
+void {\bfseries pay\+Amount\+Changed} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_a1c385963cf2dd2eb618720908988d037}\label{class_send_coins_entry_a1c385963cf2dd2eb618720908988d037}} 
+{\bfseries Send\+Coins\+Entry} (Q\+Widget $\ast$parent=0)
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_a831f8f9a63acd77b7d66d5393e12310b}\label{class_send_coins_entry_a831f8f9a63acd77b7d66d5393e12310b}} 
+void {\bfseries set\+Model} (\mbox{\hyperlink{class_wallet_model}{Wallet\+Model}} $\ast$model)
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_ab77df95fe77e9a001190cd4dabe0dfec}\label{class_send_coins_entry_ab77df95fe77e9a001190cd4dabe0dfec}} 
+bool {\bfseries validate} ()
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_af36fb0ed9e2e07079c1a982b31e793c8}\label{class_send_coins_entry_af36fb0ed9e2e07079c1a982b31e793c8}} 
+\mbox{\hyperlink{class_send_coins_recipient}{Send\+Coins\+Recipient}} {\bfseries get\+Value} ()
+\item 
+bool \mbox{\hyperlink{class_send_coins_entry_a1dcce9480364868dfd0bb8782e039e57}{is\+Clear}} ()
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_a513dd22231d0d7c2550c5533e9518cf5}\label{class_send_coins_entry_a513dd22231d0d7c2550c5533e9518cf5}} 
+void {\bfseries set\+Value} (const \mbox{\hyperlink{class_send_coins_recipient}{Send\+Coins\+Recipient}} \&value)
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_a19aa4ce19ff25687203ac0790c241fee}\label{class_send_coins_entry_a19aa4ce19ff25687203ac0790c241fee}} 
+void {\bfseries set\+Address} (const Q\+String \&address)
+\item 
+Q\+Widget $\ast$ \mbox{\hyperlink{class_send_coins_entry_aa431a0bf53174b3a012fe224e472bc13}{setup\+Tab\+Chain}} (Q\+Widget $\ast$prev)
+\item 
+\mbox{\Hypertarget{class_send_coins_entry_a0dcb8720f234165b37f8b45b035320cc}\label{class_send_coins_entry_a0dcb8720f234165b37f8b45b035320cc}} 
+void {\bfseries set\+Focus} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A single entry in the dialog for sending bitcoins. Stacked widget, with different U\+Is for payment requests with a strong payee identity. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_send_coins_entry_a1dcce9480364868dfd0bb8782e039e57}\label{class_send_coins_entry_a1dcce9480364868dfd0bb8782e039e57}} 
+\index{Send\+Coins\+Entry@{Send\+Coins\+Entry}!is\+Clear@{is\+Clear}}
+\index{is\+Clear@{is\+Clear}!Send\+Coins\+Entry@{Send\+Coins\+Entry}}
+\subsubsection{\texorpdfstring{is\+Clear()}{isClear()}}
+{\footnotesize\ttfamily bool Send\+Coins\+Entry\+::is\+Clear (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Return whether the entry is still empty and unedited \mbox{\Hypertarget{class_send_coins_entry_aa431a0bf53174b3a012fe224e472bc13}\label{class_send_coins_entry_aa431a0bf53174b3a012fe224e472bc13}} 
+\index{Send\+Coins\+Entry@{Send\+Coins\+Entry}!setup\+Tab\+Chain@{setup\+Tab\+Chain}}
+\index{setup\+Tab\+Chain@{setup\+Tab\+Chain}!Send\+Coins\+Entry@{Send\+Coins\+Entry}}
+\subsubsection{\texorpdfstring{setup\+Tab\+Chain()}{setupTabChain()}}
+{\footnotesize\ttfamily Q\+Widget $\ast$ Send\+Coins\+Entry\+::setup\+Tab\+Chain (\begin{DoxyParamCaption}\item[{Q\+Widget $\ast$}]{prev }\end{DoxyParamCaption})}
+
+Set up the tab chain manually, as Qt messes up the tab chain by default in some cases (issue \href{https://bugreports.qt-project.org/browse/QTBUG-10907}{\tt https\+://bugreports.\+qt-\/project.\+org/browse/\+Q\+T\+B\+U\+G-\/10907}). 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/sendcoinsentry.\+h\item 
+P\+I\+V\+X/src/qt/sendcoinsentry.\+cpp\end{DoxyCompactItemize}

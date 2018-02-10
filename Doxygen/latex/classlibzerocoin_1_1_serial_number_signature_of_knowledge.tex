@@ -1,0 +1,75 @@
+\hypertarget{classlibzerocoin_1_1_serial_number_signature_of_knowledge}{}\section{libzerocoin\+:\+:Serial\+Number\+Signature\+Of\+Knowledge Class Reference}
+\label{classlibzerocoin_1_1_serial_number_signature_of_knowledge}\index{libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge@{libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge}}
+
+
+{\ttfamily \#include $<$Serial\+Number\+Signature\+Of\+Knowledge.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_serial_number_signature_of_knowledge_abcbaf654d0d45731bec4c2afd32c76bc}\label{classlibzerocoin_1_1_serial_number_signature_of_knowledge_abcbaf654d0d45731bec4c2afd32c76bc}} 
+{\bfseries Serial\+Number\+Signature\+Of\+Knowledge} (const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$p)
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_serial_number_signature_of_knowledge_adb04da379098298cad6e05c930d6483f}{Serial\+Number\+Signature\+Of\+Knowledge}} (const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$p, const \mbox{\hyperlink{classlibzerocoin_1_1_private_coin}{Private\+Coin}} \&coin, const \mbox{\hyperlink{classlibzerocoin_1_1_commitment}{Commitment}} \&commitment\+To\+Coin, \mbox{\hyperlink{classuint256}{uint256}} msghash)
+\item 
+bool \mbox{\hyperlink{classlibzerocoin_1_1_serial_number_signature_of_knowledge_a05f9c3d5aade741ee8aab51ed570b6b0}{Verify}} (const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&coin\+Serial\+Number, const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&value\+Of\+Commitment\+To\+Coin, const \mbox{\hyperlink{classuint256}{uint256}} msghash) const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_serial_number_signature_of_knowledge_a2ce04df85116071e75f8d463e584f4eb}\label{classlibzerocoin_1_1_serial_number_signature_of_knowledge_a2ce04df85116071e75f8d463e584f4eb}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_serial_number_signature_of_knowledge_a3ff30dcb83e75058b66e84cf1f9c671a}\label{classlibzerocoin_1_1_serial_number_signature_of_knowledge_a3ff30dcb83e75058b66e84cf1f9c671a}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A Signature of knowledge on the hash of metadata attesting that the signer knows the values necessary to open a commitment which contains a coin(which it self is of course a commitment) with a given serial number. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_serial_number_signature_of_knowledge_adb04da379098298cad6e05c930d6483f}\label{classlibzerocoin_1_1_serial_number_signature_of_knowledge_adb04da379098298cad6e05c930d6483f}} 
+\index{libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge@{libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge}!Serial\+Number\+Signature\+Of\+Knowledge@{Serial\+Number\+Signature\+Of\+Knowledge}}
+\index{Serial\+Number\+Signature\+Of\+Knowledge@{Serial\+Number\+Signature\+Of\+Knowledge}!libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge@{libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge}}
+\subsubsection{\texorpdfstring{Serial\+Number\+Signature\+Of\+Knowledge()}{SerialNumberSignatureOfKnowledge()}}
+{\footnotesize\ttfamily libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge\+::\+Serial\+Number\+Signature\+Of\+Knowledge (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$}]{p,  }\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_private_coin}{Private\+Coin}} \&}]{coin,  }\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_commitment}{Commitment}} \&}]{commitment\+To\+Coin,  }\item[{\mbox{\hyperlink{classuint256}{uint256}}}]{msghash }\end{DoxyParamCaption})}
+
+Creates a Signature of knowledge object that a commitment to a coin contains a coin with serial number x
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & params \\
+\hline
+{\em coin} & the coin we are going to prove the serial number of. \\
+\hline
+{\em commitment\+To\+Coin} & the commitment to the coin \\
+\hline
+{\em msghash} & hash of meta data to create a signature of knowledge on. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_serial_number_signature_of_knowledge_a05f9c3d5aade741ee8aab51ed570b6b0}\label{classlibzerocoin_1_1_serial_number_signature_of_knowledge_a05f9c3d5aade741ee8aab51ed570b6b0}} 
+\index{libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge@{libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge}!Verify@{Verify}}
+\index{Verify@{Verify}!libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge@{libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge}}
+\subsubsection{\texorpdfstring{Verify()}{Verify()}}
+{\footnotesize\ttfamily bool libzerocoin\+::\+Serial\+Number\+Signature\+Of\+Knowledge\+::\+Verify (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&}]{coin\+Serial\+Number,  }\item[{const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&}]{value\+Of\+Commitment\+To\+Coin,  }\item[{const \mbox{\hyperlink{classuint256}{uint256}}}]{msghash }\end{DoxyParamCaption}) const}
+
+Verifies the Signature of knowledge.
+
+
+\begin{DoxyParams}{Parameters}
+{\em msghash} & hash of meta data to create a signature of knowledge on. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_serial_number_signature_of_knowledge_8h}{Serial\+Number\+Signature\+Of\+Knowledge.\+h}}\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_serial_number_signature_of_knowledge_8cpp}{Serial\+Number\+Signature\+Of\+Knowledge.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,23 @@
+\hypertarget{classleveldb_1_1_table_cache}{}\section{leveldb\+:\+:Table\+Cache Class Reference}
+\label{classleveldb_1_1_table_cache}\index{leveldb\+::\+Table\+Cache@{leveldb\+::\+Table\+Cache}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_cache_acca8df0a6305b166a7c88f27d1b3e377}\label{classleveldb_1_1_table_cache_acca8df0a6305b166a7c88f27d1b3e377}} 
+{\bfseries Table\+Cache} (const std\+::string \&dbname, const \mbox{\hyperlink{structleveldb_1_1_options}{Options}} $\ast$options, int entries)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_cache_afe8c83b1cbbf3bfc06c66a69611aa250}\label{classleveldb_1_1_table_cache_afe8c83b1cbbf3bfc06c66a69611aa250}} 
+\mbox{\hyperlink{classleveldb_1_1_iterator}{Iterator}} $\ast$ {\bfseries New\+Iterator} (const \mbox{\hyperlink{structleveldb_1_1_read_options}{Read\+Options}} \&options, uint64\+\_\+t file\+\_\+number, uint64\+\_\+t file\+\_\+size, \mbox{\hyperlink{classleveldb_1_1_table}{Table}} $\ast$$\ast$tableptr=N\+U\+LL)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_cache_af43ba38b52742e9f5589321747535444}\label{classleveldb_1_1_table_cache_af43ba38b52742e9f5589321747535444}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Get} (const \mbox{\hyperlink{structleveldb_1_1_read_options}{Read\+Options}} \&options, uint64\+\_\+t file\+\_\+number, uint64\+\_\+t file\+\_\+size, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&k, void $\ast$arg, void($\ast$handle\+\_\+result)(void $\ast$, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&))
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_cache_a57b81c58ff0533514b3a5d1652f044bc}\label{classleveldb_1_1_table_cache_a57b81c58ff0533514b3a5d1652f044bc}} 
+void {\bfseries Evict} (uint64\+\_\+t file\+\_\+number)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/db/table\+\_\+cache.\+h\item 
+P\+I\+V\+X/src/leveldb/db/table\+\_\+cache.\+cc\end{DoxyCompactItemize}

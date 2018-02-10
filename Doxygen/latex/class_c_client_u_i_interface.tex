@@ -1,0 +1,155 @@
+\hypertarget{class_c_client_u_i_interface}{}\section{C\+Client\+U\+I\+Interface Class Reference}
+\label{class_c_client_u_i_interface}\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+
+
+{\ttfamily \#include $<$ui\+\_\+interface.\+h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1}{Message\+Box\+Flags}} \{ \newline
+{\bfseries I\+C\+O\+N\+\_\+\+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON} = 0, 
+{\bfseries I\+C\+O\+N\+\_\+\+W\+A\+R\+N\+I\+NG} = (1U $<$$<$ 0), 
+{\bfseries I\+C\+O\+N\+\_\+\+E\+R\+R\+OR} = (1U $<$$<$ 1), 
+\mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1a74ba4315826bb22d61da9aa413894052}{I\+C\+O\+N\+\_\+\+M\+A\+SK}} = (I\+C\+O\+N\+\_\+\+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON $\vert$ I\+C\+O\+N\+\_\+\+W\+A\+R\+N\+I\+NG $\vert$ I\+C\+O\+N\+\_\+\+E\+R\+R\+OR), 
+\newline
+\mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1a9874dd49edc70d5c347196ad8a631141}{B\+T\+N\+\_\+\+OK}} = 0x00000400U, 
+{\bfseries B\+T\+N\+\_\+\+Y\+ES} = 0x00004000U, 
+{\bfseries B\+T\+N\+\_\+\+NO} = 0x00010000U, 
+{\bfseries B\+T\+N\+\_\+\+A\+B\+O\+RT} = 0x00040000U, 
+\newline
+{\bfseries B\+T\+N\+\_\+\+R\+E\+T\+RY} = 0x00080000U, 
+{\bfseries B\+T\+N\+\_\+\+I\+G\+N\+O\+RE} = 0x00100000U, 
+{\bfseries B\+T\+N\+\_\+\+C\+L\+O\+SE} = 0x00200000U, 
+{\bfseries B\+T\+N\+\_\+\+C\+A\+N\+C\+EL} = 0x00400000U, 
+\newline
+{\bfseries B\+T\+N\+\_\+\+D\+I\+S\+C\+A\+RD} = 0x00800000U, 
+{\bfseries B\+T\+N\+\_\+\+H\+E\+LP} = 0x01000000U, 
+{\bfseries B\+T\+N\+\_\+\+A\+P\+P\+LY} = 0x02000000U, 
+{\bfseries B\+T\+N\+\_\+\+R\+E\+S\+ET} = 0x04000000U, 
+\newline
+\mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1a76de9bd8c805f928e7085bf925617076}{B\+T\+N\+\_\+\+M\+A\+SK}}, 
+\mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1ab03a110663fb005d666b74954a741304}{M\+O\+D\+AL}} = 0x10000000U, 
+\mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1af90760e28d736dcf6da59169ea69cc88}{S\+E\+C\+U\+RE}} = 0x40000000U, 
+\mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1aa19b607c0480fe7c25879f1f8fc54727}{M\+S\+G\+\_\+\+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON}} = I\+C\+O\+N\+\_\+\+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON, 
+\newline
+{\bfseries M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG} = (I\+C\+O\+N\+\_\+\+W\+A\+R\+N\+I\+NG $\vert$ B\+T\+N\+\_\+\+OK $\vert$ M\+O\+D\+AL), 
+{\bfseries M\+S\+G\+\_\+\+E\+R\+R\+OR} = (I\+C\+O\+N\+\_\+\+E\+R\+R\+OR $\vert$ B\+T\+N\+\_\+\+OK $\vert$ M\+O\+D\+AL)
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+boost\+::signals2\+::signal$<$ bool(const std\+::string \&message, const std\+::string \&caption, unsigned int style), boost\+::signals2\+::last\+\_\+value$<$ bool $>$ $>$ \mbox{\hyperlink{class_c_client_u_i_interface_a93e77ea8828d8d960348cf4648b7f374}{Thread\+Safe\+Message\+Box}}
+\item 
+boost\+::signals2\+::signal$<$ void(const std\+::string \&message)$>$ \mbox{\hyperlink{class_c_client_u_i_interface_a6192529915a5766d8f50ab642a278a26}{Init\+Message}}
+\item 
+boost\+::signals2\+::signal$<$ std\+::string(const char $\ast$psz)$>$ \mbox{\hyperlink{class_c_client_u_i_interface_a6e1e57cb42e3a1a0b133745a897cf8ed}{Translate}}
+\item 
+boost\+::signals2\+::signal$<$ void(int new\+Num\+Connections)$>$ \mbox{\hyperlink{class_c_client_u_i_interface_a6b0c2f21bb930d5a4e34244af6a0a3b5}{Notify\+Num\+Connections\+Changed}}
+\item 
+boost\+::signals2\+::signal$<$ void(const \mbox{\hyperlink{classuint256}{uint256}} \&hash, Change\+Type status)$>$ \mbox{\hyperlink{class_c_client_u_i_interface_ab633d1e727230ae86cae059dc4bc79f1}{Notify\+Alert\+Changed}}
+\item 
+boost\+::signals2\+::signal$<$ void(\mbox{\hyperlink{class_c_wallet}{C\+Wallet}} $\ast$wallet)$>$ \mbox{\hyperlink{class_c_client_u_i_interface_ac3755a3740bc70e69d81d7905a57faa6}{Load\+Wallet}}
+\item 
+boost\+::signals2\+::signal$<$ void(const std\+::string \&title, int n\+Progress)$>$ \mbox{\hyperlink{class_c_client_u_i_interface_a2190089fbdfd78221c4b74ca98e96e01}{Show\+Progress}}
+\item 
+boost\+::signals2\+::signal$<$ void(const \mbox{\hyperlink{classuint256}{uint256}} \&hash)$>$ \mbox{\hyperlink{class_c_client_u_i_interface_ab12afb3c938ce8754dcf5ee6ade4cc03}{Notify\+Block\+Tip}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Signals for UI communication. 
+
+\subsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1}\label{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1}} 
+\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!Message\+Box\+Flags@{Message\+Box\+Flags}}
+\index{Message\+Box\+Flags@{Message\+Box\+Flags}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+\subsubsection{\texorpdfstring{Message\+Box\+Flags}{MessageBoxFlags}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1}{C\+Client\+U\+I\+Interface\+::\+Message\+Box\+Flags}}}
+
+Flags for \mbox{\hyperlink{class_c_client_u_i_interface_a93e77ea8828d8d960348cf4648b7f374}{C\+Client\+U\+I\+Interface\+::\+Thread\+Safe\+Message\+Box}} \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{I\+C\+O\+N\+\_\+\+M\+A\+SK@{I\+C\+O\+N\+\_\+\+M\+A\+SK}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!I\+C\+O\+N\+\_\+\+M\+A\+SK@{I\+C\+O\+N\+\_\+\+M\+A\+SK}}}\mbox{\Hypertarget{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1a74ba4315826bb22d61da9aa413894052}\label{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1a74ba4315826bb22d61da9aa413894052}} 
+I\+C\+O\+N\+\_\+\+M\+A\+SK&Mask of all available icons in \mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1}{C\+Client\+U\+I\+Interface\+::\+Message\+Box\+Flags}} This needs to be updated, when icons are changed there! \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{B\+T\+N\+\_\+\+OK@{B\+T\+N\+\_\+\+OK}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!B\+T\+N\+\_\+\+OK@{B\+T\+N\+\_\+\+OK}}}\mbox{\Hypertarget{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1a9874dd49edc70d5c347196ad8a631141}\label{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1a9874dd49edc70d5c347196ad8a631141}} 
+B\+T\+N\+\_\+\+OK&These values are taken from qmessagebox.\+h \char`\"{}enum Standard\+Button\char`\"{} to be directly usable \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{B\+T\+N\+\_\+\+M\+A\+SK@{B\+T\+N\+\_\+\+M\+A\+SK}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!B\+T\+N\+\_\+\+M\+A\+SK@{B\+T\+N\+\_\+\+M\+A\+SK}}}\mbox{\Hypertarget{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1a76de9bd8c805f928e7085bf925617076}\label{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1a76de9bd8c805f928e7085bf925617076}} 
+B\+T\+N\+\_\+\+M\+A\+SK&Mask of all available buttons in \mbox{\hyperlink{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1}{C\+Client\+U\+I\+Interface\+::\+Message\+Box\+Flags}} This needs to be updated, when buttons are changed there! \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{M\+O\+D\+AL@{M\+O\+D\+AL}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!M\+O\+D\+AL@{M\+O\+D\+AL}}}\mbox{\Hypertarget{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1ab03a110663fb005d666b74954a741304}\label{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1ab03a110663fb005d666b74954a741304}} 
+M\+O\+D\+AL&Force blocking, modal message box dialog (not just OS notification) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{S\+E\+C\+U\+RE@{S\+E\+C\+U\+RE}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!S\+E\+C\+U\+RE@{S\+E\+C\+U\+RE}}}\mbox{\Hypertarget{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1af90760e28d736dcf6da59169ea69cc88}\label{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1af90760e28d736dcf6da59169ea69cc88}} 
+S\+E\+C\+U\+RE&Do not print contents of message to debug log \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{M\+S\+G\+\_\+\+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON@{M\+S\+G\+\_\+\+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!M\+S\+G\+\_\+\+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON@{M\+S\+G\+\_\+\+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON}}}\mbox{\Hypertarget{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1aa19b607c0480fe7c25879f1f8fc54727}\label{class_c_client_u_i_interface_a568cf07ecac3fac224d63b42a32e8bc1aa19b607c0480fe7c25879f1f8fc54727}} 
+M\+S\+G\+\_\+\+I\+N\+F\+O\+R\+M\+A\+T\+I\+ON&Predefined combinations for certain default usage cases \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_c_client_u_i_interface_a6192529915a5766d8f50ab642a278a26}\label{class_c_client_u_i_interface_a6192529915a5766d8f50ab642a278a26}} 
+\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!Init\+Message@{Init\+Message}}
+\index{Init\+Message@{Init\+Message}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+\subsubsection{\texorpdfstring{Init\+Message}{InitMessage}}
+{\footnotesize\ttfamily boost\+::signals2\+::signal$<$void(const std\+::string\& message)$>$ C\+Client\+U\+I\+Interface\+::\+Init\+Message}
+
+Progress message during initialization. \mbox{\Hypertarget{class_c_client_u_i_interface_ac3755a3740bc70e69d81d7905a57faa6}\label{class_c_client_u_i_interface_ac3755a3740bc70e69d81d7905a57faa6}} 
+\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!Load\+Wallet@{Load\+Wallet}}
+\index{Load\+Wallet@{Load\+Wallet}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+\subsubsection{\texorpdfstring{Load\+Wallet}{LoadWallet}}
+{\footnotesize\ttfamily boost\+::signals2\+::signal$<$void(\mbox{\hyperlink{class_c_wallet}{C\+Wallet}}$\ast$ wallet)$>$ C\+Client\+U\+I\+Interface\+::\+Load\+Wallet}
+
+A wallet has been loaded. \mbox{\Hypertarget{class_c_client_u_i_interface_ab633d1e727230ae86cae059dc4bc79f1}\label{class_c_client_u_i_interface_ab633d1e727230ae86cae059dc4bc79f1}} 
+\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!Notify\+Alert\+Changed@{Notify\+Alert\+Changed}}
+\index{Notify\+Alert\+Changed@{Notify\+Alert\+Changed}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+\subsubsection{\texorpdfstring{Notify\+Alert\+Changed}{NotifyAlertChanged}}
+{\footnotesize\ttfamily boost\+::signals2\+::signal$<$void(const \mbox{\hyperlink{classuint256}{uint256}}\& hash, Change\+Type status)$>$ C\+Client\+U\+I\+Interface\+::\+Notify\+Alert\+Changed}
+
+New, updated or cancelled alert. \begin{DoxyNote}{Note}
+called with lock cs\+\_\+map\+Alerts held. 
+\end{DoxyNote}
+\mbox{\Hypertarget{class_c_client_u_i_interface_ab12afb3c938ce8754dcf5ee6ade4cc03}\label{class_c_client_u_i_interface_ab12afb3c938ce8754dcf5ee6ade4cc03}} 
+\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!Notify\+Block\+Tip@{Notify\+Block\+Tip}}
+\index{Notify\+Block\+Tip@{Notify\+Block\+Tip}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+\subsubsection{\texorpdfstring{Notify\+Block\+Tip}{NotifyBlockTip}}
+{\footnotesize\ttfamily boost\+::signals2\+::signal$<$void(const \mbox{\hyperlink{classuint256}{uint256}}\& hash)$>$ C\+Client\+U\+I\+Interface\+::\+Notify\+Block\+Tip}
+
+New block has been accepted \mbox{\Hypertarget{class_c_client_u_i_interface_a6b0c2f21bb930d5a4e34244af6a0a3b5}\label{class_c_client_u_i_interface_a6b0c2f21bb930d5a4e34244af6a0a3b5}} 
+\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!Notify\+Num\+Connections\+Changed@{Notify\+Num\+Connections\+Changed}}
+\index{Notify\+Num\+Connections\+Changed@{Notify\+Num\+Connections\+Changed}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+\subsubsection{\texorpdfstring{Notify\+Num\+Connections\+Changed}{NotifyNumConnectionsChanged}}
+{\footnotesize\ttfamily boost\+::signals2\+::signal$<$void(int new\+Num\+Connections)$>$ C\+Client\+U\+I\+Interface\+::\+Notify\+Num\+Connections\+Changed}
+
+Number of network connections changed. \mbox{\Hypertarget{class_c_client_u_i_interface_a2190089fbdfd78221c4b74ca98e96e01}\label{class_c_client_u_i_interface_a2190089fbdfd78221c4b74ca98e96e01}} 
+\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!Show\+Progress@{Show\+Progress}}
+\index{Show\+Progress@{Show\+Progress}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+\subsubsection{\texorpdfstring{Show\+Progress}{ShowProgress}}
+{\footnotesize\ttfamily boost\+::signals2\+::signal$<$void(const std\+::string\& title, int n\+Progress)$>$ C\+Client\+U\+I\+Interface\+::\+Show\+Progress}
+
+Show progress e.\+g. for verifychain \mbox{\Hypertarget{class_c_client_u_i_interface_a93e77ea8828d8d960348cf4648b7f374}\label{class_c_client_u_i_interface_a93e77ea8828d8d960348cf4648b7f374}} 
+\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!Thread\+Safe\+Message\+Box@{Thread\+Safe\+Message\+Box}}
+\index{Thread\+Safe\+Message\+Box@{Thread\+Safe\+Message\+Box}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+\subsubsection{\texorpdfstring{Thread\+Safe\+Message\+Box}{ThreadSafeMessageBox}}
+{\footnotesize\ttfamily boost\+::signals2\+::signal$<$bool(const std\+::string\& message, const std\+::string\& caption, unsigned int style), boost\+::signals2\+::last\+\_\+value$<$bool$>$ $>$ C\+Client\+U\+I\+Interface\+::\+Thread\+Safe\+Message\+Box}
+
+Show message box. \mbox{\Hypertarget{class_c_client_u_i_interface_a6e1e57cb42e3a1a0b133745a897cf8ed}\label{class_c_client_u_i_interface_a6e1e57cb42e3a1a0b133745a897cf8ed}} 
+\index{C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}!Translate@{Translate}}
+\index{Translate@{Translate}!C\+Client\+U\+I\+Interface@{C\+Client\+U\+I\+Interface}}
+\subsubsection{\texorpdfstring{Translate}{Translate}}
+{\footnotesize\ttfamily boost\+::signals2\+::signal$<$std\+::string(const char$\ast$ psz)$>$ C\+Client\+U\+I\+Interface\+::\+Translate}
+
+Translate a message to the native language of the user. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/ui\+\_\+interface.\+h\end{DoxyCompactItemize}

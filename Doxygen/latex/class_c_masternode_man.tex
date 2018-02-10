@@ -1,0 +1,107 @@
+\hypertarget{class_c_masternode_man}{}\section{C\+Masternode\+Man Class Reference}
+\label{class_c_masternode_man}\index{C\+Masternode\+Man@{C\+Masternode\+Man}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_ab8cf7d821cda80603d10fb47f626d514}\label{class_c_masternode_man_ab8cf7d821cda80603d10fb47f626d514}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_aad482f1e78cfb4d7500369ae835dc4a3}\label{class_c_masternode_man_aad482f1e78cfb4d7500369ae835dc4a3}} 
+{\bfseries C\+Masternode\+Man} (\mbox{\hyperlink{class_c_masternode_man}{C\+Masternode\+Man}} \&other)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_a8e648f7e96931e683b3fd6c98a4c4715}\label{class_c_masternode_man_a8e648f7e96931e683b3fd6c98a4c4715}} 
+bool \mbox{\hyperlink{class_c_masternode_man_a8e648f7e96931e683b3fd6c98a4c4715}{Add}} (\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} \&mn)
+\begin{DoxyCompactList}\small\item\em Add an entry. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_ae4de44493ba42d53b9c3e7fba18c0f09}\label{class_c_masternode_man_ae4de44493ba42d53b9c3e7fba18c0f09}} 
+void \mbox{\hyperlink{class_c_masternode_man_ae4de44493ba42d53b9c3e7fba18c0f09}{Ask\+For\+MN}} (\mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$pnode, \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&vin)
+\begin{DoxyCompactList}\small\item\em Ask (source) node for mnb. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_a746a5bed8674a37f69f8987a2bd9bcd1}\label{class_c_masternode_man_a746a5bed8674a37f69f8987a2bd9bcd1}} 
+void \mbox{\hyperlink{class_c_masternode_man_a746a5bed8674a37f69f8987a2bd9bcd1}{Check}} ()
+\begin{DoxyCompactList}\small\item\em Check all Masternodes. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_afe98a39ce1377f9e58ea410842187b0d}\label{class_c_masternode_man_afe98a39ce1377f9e58ea410842187b0d}} 
+void \mbox{\hyperlink{class_c_masternode_man_afe98a39ce1377f9e58ea410842187b0d}{Check\+And\+Remove}} (bool force\+Expired\+Removal=false)
+\begin{DoxyCompactList}\small\item\em Check all Masternodes and remove inactive. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_ab18e991ea61209e6282aee80121724dd}\label{class_c_masternode_man_ab18e991ea61209e6282aee80121724dd}} 
+void \mbox{\hyperlink{class_c_masternode_man_ab18e991ea61209e6282aee80121724dd}{Clear}} ()
+\begin{DoxyCompactList}\small\item\em Clear Masternode vector. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_ae495279a035d7d259375ae95cbde28f4}\label{class_c_masternode_man_ae495279a035d7d259375ae95cbde28f4}} 
+int {\bfseries Count\+Enabled} (int protocol\+Version=-\/1)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_ad9c856855690a334742d7044c7166a2a}\label{class_c_masternode_man_ad9c856855690a334742d7044c7166a2a}} 
+void {\bfseries Count\+Networks} (int protocol\+Version, int \&ipv4, int \&ipv6, int \&onion)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_a5aa389cb63e70edf9fd9e2eb7fe90750}\label{class_c_masternode_man_a5aa389cb63e70edf9fd9e2eb7fe90750}} 
+void {\bfseries Dseg\+Update} (\mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$pnode)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_a3d34836c6992d29c485ba94a0c1e0ae6}\label{class_c_masternode_man_a3d34836c6992d29c485ba94a0c1e0ae6}} 
+\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $\ast$ \mbox{\hyperlink{class_c_masternode_man_a3d34836c6992d29c485ba94a0c1e0ae6}{Find}} (const \mbox{\hyperlink{class_c_script}{C\+Script}} \&payee)
+\begin{DoxyCompactList}\small\item\em Find an entry. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_aade63e2fbea916e7051819015ef31dc5}\label{class_c_masternode_man_aade63e2fbea916e7051819015ef31dc5}} 
+\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $\ast$ {\bfseries Find} (const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&vin)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_a2dddce0ba7602d92e5a7b18e28147d3c}\label{class_c_masternode_man_a2dddce0ba7602d92e5a7b18e28147d3c}} 
+\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $\ast$ {\bfseries Find} (const \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pub\+Key\+Masternode)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_af90f3376d7f264536207b08e2fc395d8}\label{class_c_masternode_man_af90f3376d7f264536207b08e2fc395d8}} 
+\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $\ast$ \mbox{\hyperlink{class_c_masternode_man_af90f3376d7f264536207b08e2fc395d8}{Get\+Next\+Masternode\+In\+Queue\+For\+Payment}} (int n\+Block\+Height, bool f\+Filter\+Sig\+Time, int \&n\+Count)
+\begin{DoxyCompactList}\small\item\em Find an entry in the masternode list that is next to be paid. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_abfe90ee0fb23e6ff54b7801f6ddf4155}\label{class_c_masternode_man_abfe90ee0fb23e6ff54b7801f6ddf4155}} 
+\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $\ast$ \mbox{\hyperlink{class_c_masternode_man_abfe90ee0fb23e6ff54b7801f6ddf4155}{Find\+Random\+Not\+In\+Vec}} (std\+::vector$<$ \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} $>$ \&vec\+To\+Exclude, int protocol\+Version=-\/1)
+\begin{DoxyCompactList}\small\item\em Find a random entry. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_a2b3a91870855e8fcb9b2b6e00c35197f}\label{class_c_masternode_man_a2b3a91870855e8fcb9b2b6e00c35197f}} 
+\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $\ast$ \mbox{\hyperlink{class_c_masternode_man_a2b3a91870855e8fcb9b2b6e00c35197f}{Get\+Current\+Master\+Node}} (int mod=1, int64\+\_\+t n\+Block\+Height=0, int min\+Protocol=0)
+\begin{DoxyCompactList}\small\item\em Get the current winner for this block. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_ab39e213a7601e1bef2eba1d5d63206f5}\label{class_c_masternode_man_ab39e213a7601e1bef2eba1d5d63206f5}} 
+std\+::vector$<$ \mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $>$ {\bfseries Get\+Full\+Masternode\+Vector} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_ac06180b4570d5d1b098979c2f59a7a90}\label{class_c_masternode_man_ac06180b4570d5d1b098979c2f59a7a90}} 
+std\+::vector$<$ pair$<$ int, \mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $>$ $>$ {\bfseries Get\+Masternode\+Ranks} (int64\+\_\+t n\+Block\+Height, int min\+Protocol=0)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_a41fd522da90284837d5dcb1e2d2e7d7c}\label{class_c_masternode_man_a41fd522da90284837d5dcb1e2d2e7d7c}} 
+int {\bfseries Get\+Masternode\+Rank} (const \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&vin, int64\+\_\+t n\+Block\+Height, int min\+Protocol=0, bool f\+Only\+Active=true)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_ab32afaad2651c69d2f93c68aee466677}\label{class_c_masternode_man_ab32afaad2651c69d2f93c68aee466677}} 
+\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} $\ast$ {\bfseries Get\+Masternode\+By\+Rank} (int n\+Rank, int64\+\_\+t n\+Block\+Height, int min\+Protocol=0, bool f\+Only\+Active=true)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_ad8a9994f53e2d6385b8caba4cd5ee4b9}\label{class_c_masternode_man_ad8a9994f53e2d6385b8caba4cd5ee4b9}} 
+void {\bfseries Process\+Masternode\+Connections} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_ae3e5d263cebdcd932eca49caeadce9aa}\label{class_c_masternode_man_ae3e5d263cebdcd932eca49caeadce9aa}} 
+void {\bfseries Process\+Message} (\mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$pfrom, std\+::string \&str\+Command, \mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \&v\+Recv)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_a794ebfab7b09b51619a14d07306d817e}\label{class_c_masternode_man_a794ebfab7b09b51619a14d07306d817e}} 
+int \mbox{\hyperlink{class_c_masternode_man_a794ebfab7b09b51619a14d07306d817e}{size}} ()
+\begin{DoxyCompactList}\small\item\em Return the number of (unique) Masternodes. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_a35baa3dcb49d2a8e38376747b7b44c59}\label{class_c_masternode_man_a35baa3dcb49d2a8e38376747b7b44c59}} 
+int \mbox{\hyperlink{class_c_masternode_man_a35baa3dcb49d2a8e38376747b7b44c59}{stable\+\_\+size}} ()
+\begin{DoxyCompactList}\small\item\em Return the number of Masternodes older than (default) 8000 seconds. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_masternode_man_a7308c49a95bf9313a71a0b988256cfb4}\label{class_c_masternode_man_a7308c49a95bf9313a71a0b988256cfb4}} 
+std\+::string {\bfseries To\+String} () const
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_aa36d42c46e914925b9cf0fa34fc712f1}\label{class_c_masternode_man_aa36d42c46e914925b9cf0fa34fc712f1}} 
+void {\bfseries Remove} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} vin)
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_aed8b4c3eec39239a4c63c2cda5e7588c}\label{class_c_masternode_man_aed8b4c3eec39239a4c63c2cda5e7588c}} 
+void \mbox{\hyperlink{class_c_masternode_man_aed8b4c3eec39239a4c63c2cda5e7588c}{Update\+Masternode\+List}} (\mbox{\hyperlink{class_c_masternode_broadcast}{C\+Masternode\+Broadcast}} mnb)
+\begin{DoxyCompactList}\small\item\em Update masternode list and maps using provided \mbox{\hyperlink{class_c_masternode_broadcast}{C\+Masternode\+Broadcast}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_a9fe5b66d097008700dc4abb28e9a50d5}\label{class_c_masternode_man_a9fe5b66d097008700dc4abb28e9a50d5}} 
+map$<$ \mbox{\hyperlink{classuint256}{uint256}}, \mbox{\hyperlink{class_c_masternode_broadcast}{C\+Masternode\+Broadcast}} $>$ {\bfseries map\+Seen\+Masternode\+Broadcast}
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_a9efa7ab1dcd28acc3039ae46f4da0361}\label{class_c_masternode_man_a9efa7ab1dcd28acc3039ae46f4da0361}} 
+map$<$ \mbox{\hyperlink{classuint256}{uint256}}, \mbox{\hyperlink{class_c_masternode_ping}{C\+Masternode\+Ping}} $>$ {\bfseries map\+Seen\+Masternode\+Ping}
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_a8527c447711c3909cf1bdefec1a7e9be}\label{class_c_masternode_man_a8527c447711c3909cf1bdefec1a7e9be}} 
+int64\+\_\+t {\bfseries n\+Dsq\+Count}
+\item 
+\mbox{\Hypertarget{class_c_masternode_man_ae39ed8b30469e9fdc42aa09d175e1f78}\label{class_c_masternode_man_ae39ed8b30469e9fdc42aa09d175e1f78}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/masternodeman.\+h\item 
+P\+I\+V\+X/src/masternodeman.\+cpp\end{DoxyCompactItemize}

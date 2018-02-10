@@ -1,0 +1,81 @@
+\hypertarget{classlibzerocoin_1_1_public_coin}{}\section{libzerocoin\+:\+:Public\+Coin Class Reference}
+\label{classlibzerocoin_1_1_public_coin}\index{libzerocoin\+::\+Public\+Coin@{libzerocoin\+::\+Public\+Coin}}
+
+
+{\ttfamily \#include $<$Coin.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_ad4544eb813805545f3cb16e75a110415}\label{classlibzerocoin_1_1_public_coin_ad4544eb813805545f3cb16e75a110415}} 
+{\footnotesize template$<$typename Stream $>$ }\\{\bfseries Public\+Coin} (const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$p, Stream \&strm)
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_a3d4568ae75e82a14be9d2b1e9e11b17f}\label{classlibzerocoin_1_1_public_coin_a3d4568ae75e82a14be9d2b1e9e11b17f}} 
+{\bfseries Public\+Coin} (const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$p)
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_public_coin_a514aa6588149238148c7cbae15181b1c}{Public\+Coin}} (const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$p, const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&coin, const Coin\+Denomination d)
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_abf335a1f7458e510bf46a73611200b3b}\label{classlibzerocoin_1_1_public_coin_abf335a1f7458e510bf46a73611200b3b}} 
+const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \& {\bfseries get\+Value} () const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_a150f84ac8998d73e223c74a311d48891}\label{classlibzerocoin_1_1_public_coin_a150f84ac8998d73e223c74a311d48891}} 
+Coin\+Denomination {\bfseries get\+Denomination} () const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_a29c59b2fd71163c417eb35633fdf0e8c}\label{classlibzerocoin_1_1_public_coin_a29c59b2fd71163c417eb35633fdf0e8c}} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} \&rhs) const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_a6b21e12acb24c79f5eb4688a39d637b9}\label{classlibzerocoin_1_1_public_coin_a6b21e12acb24c79f5eb4688a39d637b9}} 
+bool {\bfseries operator!=} (const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} \&rhs) const
+\item 
+bool \mbox{\hyperlink{classlibzerocoin_1_1_public_coin_a99e0a8bd9dcbb1ff210ea88595787d40}{validate}} () const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_a122053f2a790814df042d8fd3eb4af2f}\label{classlibzerocoin_1_1_public_coin_a122053f2a790814df042d8fd3eb4af2f}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_a68f14ce9969f6299301eed4d77082066}\label{classlibzerocoin_1_1_public_coin_a68f14ce9969f6299301eed4d77082066}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A Public coin is the part of a coin that is published to the network and what is handled by other clients. It contains only the value of commitment to a serial number and the denomination of the coin. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_a514aa6588149238148c7cbae15181b1c}\label{classlibzerocoin_1_1_public_coin_a514aa6588149238148c7cbae15181b1c}} 
+\index{libzerocoin\+::\+Public\+Coin@{libzerocoin\+::\+Public\+Coin}!Public\+Coin@{Public\+Coin}}
+\index{Public\+Coin@{Public\+Coin}!libzerocoin\+::\+Public\+Coin@{libzerocoin\+::\+Public\+Coin}}
+\subsubsection{\texorpdfstring{Public\+Coin()}{PublicCoin()}}
+{\footnotesize\ttfamily libzerocoin\+::\+Public\+Coin\+::\+Public\+Coin (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$}]{p,  }\item[{const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&}]{coin,  }\item[{const Coin\+Denomination}]{d }\end{DoxyParamCaption})}
+
+Generates a public coin
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & cryptographic paramters \\
+\hline
+{\em coin} & the value of the commitment. \\
+\hline
+{\em denomination} & The denomination of the coin. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_public_coin_a99e0a8bd9dcbb1ff210ea88595787d40}\label{classlibzerocoin_1_1_public_coin_a99e0a8bd9dcbb1ff210ea88595787d40}} 
+\index{libzerocoin\+::\+Public\+Coin@{libzerocoin\+::\+Public\+Coin}!validate@{validate}}
+\index{validate@{validate}!libzerocoin\+::\+Public\+Coin@{libzerocoin\+::\+Public\+Coin}}
+\subsubsection{\texorpdfstring{validate()}{validate()}}
+{\footnotesize\ttfamily bool libzerocoin\+::\+Public\+Coin\+::validate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Checks that coin is prime and in the appropriate range given the parameters \begin{DoxyReturn}{Returns}
+true if valid 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_coin_8h}{Coin.\+h}}\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_coin_8cpp}{Coin.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,43 @@
+\hypertarget{structleveldb__filterpolicy__t}{}\section{leveldb\+\_\+filterpolicy\+\_\+t Struct Reference}
+\label{structleveldb__filterpolicy__t}\index{leveldb\+\_\+filterpolicy\+\_\+t@{leveldb\+\_\+filterpolicy\+\_\+t}}
+Inheritance diagram for leveldb\+\_\+filterpolicy\+\_\+t\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structleveldb__filterpolicy__t}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structleveldb__filterpolicy__t_a94f31f3d4576ed53d9277e461717e9f3}\label{structleveldb__filterpolicy__t_a94f31f3d4576ed53d9277e461717e9f3}} 
+virtual const char $\ast$ {\bfseries Name} () const
+\item 
+\mbox{\Hypertarget{structleveldb__filterpolicy__t_aa833af852917381cd8db4c8ec21a3762}\label{structleveldb__filterpolicy__t_aa833af852917381cd8db4c8ec21a3762}} 
+virtual void {\bfseries Create\+Filter} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$keys, int n, std\+::string $\ast$dst) const
+\item 
+\mbox{\Hypertarget{structleveldb__filterpolicy__t_a76ed49d956a58622e86d87a89a9ba1f1}\label{structleveldb__filterpolicy__t_a76ed49d956a58622e86d87a89a9ba1f1}} 
+virtual bool {\bfseries Key\+May\+Match} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&filter) const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structleveldb__filterpolicy__t_a35aa5dd2f350f6eafa4ae904e55dcbe2}\label{structleveldb__filterpolicy__t_a35aa5dd2f350f6eafa4ae904e55dcbe2}} 
+void $\ast$ {\bfseries state\+\_\+}
+\item 
+\mbox{\Hypertarget{structleveldb__filterpolicy__t_ac743c53a14a4061cf30832a1861573ed}\label{structleveldb__filterpolicy__t_ac743c53a14a4061cf30832a1861573ed}} 
+void($\ast$ {\bfseries destructor\+\_\+} )(void $\ast$)
+\item 
+\mbox{\Hypertarget{structleveldb__filterpolicy__t_a5fbc18ad0916314ffafe205543bad720}\label{structleveldb__filterpolicy__t_a5fbc18ad0916314ffafe205543bad720}} 
+const char $\ast$($\ast$ {\bfseries name\+\_\+} )(void $\ast$)
+\item 
+\mbox{\Hypertarget{structleveldb__filterpolicy__t_acf8194876ecb2c47ef33cb7a7dec3d8e}\label{structleveldb__filterpolicy__t_acf8194876ecb2c47ef33cb7a7dec3d8e}} 
+char $\ast$($\ast$ {\bfseries create\+\_\+} )(void $\ast$, const char $\ast$const $\ast$key\+\_\+array, const size\+\_\+t $\ast$key\+\_\+length\+\_\+array, int num\+\_\+keys, size\+\_\+t $\ast$filter\+\_\+length)
+\item 
+\mbox{\Hypertarget{structleveldb__filterpolicy__t_a453f04cb3420879256c6194b5de0a818}\label{structleveldb__filterpolicy__t_a453f04cb3420879256c6194b5de0a818}} 
+unsigned char($\ast$ {\bfseries key\+\_\+match\+\_\+} )(void $\ast$, const char $\ast$key, size\+\_\+t length, const char $\ast$filter, size\+\_\+t filter\+\_\+length)
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/db/c.\+cc\end{DoxyCompactItemize}

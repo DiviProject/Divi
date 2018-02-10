@@ -1,0 +1,80 @@
+\hypertarget{class_platform_style}{}\section{Platform\+Style Class Reference}
+\label{class_platform_style}\index{Platform\+Style@{Platform\+Style}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_platform_style_a0f1f0292263509c1585d35e9268694d3}\label{class_platform_style_a0f1f0292263509c1585d35e9268694d3}} 
+const Q\+String \& {\bfseries get\+Name} () const
+\item 
+\mbox{\Hypertarget{class_platform_style_ab1c3a5c2bc7b5ff91d3e166fee62eea5}\label{class_platform_style_ab1c3a5c2bc7b5ff91d3e166fee62eea5}} 
+bool {\bfseries get\+Images\+On\+Buttons} () const
+\item 
+\mbox{\Hypertarget{class_platform_style_a67b6942f6dcf2ca765f8af2d6f377ce8}\label{class_platform_style_a67b6942f6dcf2ca765f8af2d6f377ce8}} 
+bool {\bfseries get\+Use\+Extra\+Spacing} () const
+\item 
+\mbox{\Hypertarget{class_platform_style_ad9c6683d8af86105edcb53970b689afb}\label{class_platform_style_ad9c6683d8af86105edcb53970b689afb}} 
+Q\+Color {\bfseries Text\+Color} () const
+\item 
+\mbox{\Hypertarget{class_platform_style_a76949291f8dfc8b7a34f90cf119ed8e4}\label{class_platform_style_a76949291f8dfc8b7a34f90cf119ed8e4}} 
+Q\+Color {\bfseries Single\+Color} () const
+\item 
+Q\+Image \mbox{\hyperlink{class_platform_style_adecebc4670880700203340d322351f89}{Single\+Color\+Image}} (const Q\+String \&filename) const
+\item 
+Q\+Icon \mbox{\hyperlink{class_platform_style_a3f4ff8b7a2054cbd4283e67208523035}{Single\+Color\+Icon}} (const Q\+String \&filename) const
+\item 
+Q\+Icon \mbox{\hyperlink{class_platform_style_af2ff6ee24cd5745b34a945afecdf41f7}{Single\+Color\+Icon}} (const Q\+Icon \&icon) const
+\item 
+Q\+Icon \mbox{\hyperlink{class_platform_style_ac3c91893b60a84a98155b7b9603918bd}{Text\+Color\+Icon}} (const Q\+String \&filename) const
+\item 
+Q\+Icon \mbox{\hyperlink{class_platform_style_adf1b4129d4d6ccff590d202b95718892}{Text\+Color\+Icon}} (const Q\+Icon \&icon) const
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static const \mbox{\hyperlink{class_platform_style}{Platform\+Style}} $\ast$ \mbox{\hyperlink{class_platform_style_ab55b9c4d135bfddc4494f6eaac26becf}{instantiate}} (const Q\+String \&platform\+Id)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_platform_style_ab55b9c4d135bfddc4494f6eaac26becf}\label{class_platform_style_ab55b9c4d135bfddc4494f6eaac26becf}} 
+\index{Platform\+Style@{Platform\+Style}!instantiate@{instantiate}}
+\index{instantiate@{instantiate}!Platform\+Style@{Platform\+Style}}
+\subsubsection{\texorpdfstring{instantiate()}{instantiate()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_platform_style}{Platform\+Style}} $\ast$ Platform\+Style\+::instantiate (\begin{DoxyParamCaption}\item[{const Q\+String \&}]{platform\+Id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Get style associated with provided platform name, or 0 if not known \mbox{\Hypertarget{class_platform_style_a3f4ff8b7a2054cbd4283e67208523035}\label{class_platform_style_a3f4ff8b7a2054cbd4283e67208523035}} 
+\index{Platform\+Style@{Platform\+Style}!Single\+Color\+Icon@{Single\+Color\+Icon}}
+\index{Single\+Color\+Icon@{Single\+Color\+Icon}!Platform\+Style@{Platform\+Style}}
+\subsubsection{\texorpdfstring{Single\+Color\+Icon()}{SingleColorIcon()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Q\+Icon Platform\+Style\+::\+Single\+Color\+Icon (\begin{DoxyParamCaption}\item[{const Q\+String \&}]{filename }\end{DoxyParamCaption}) const}
+
+Colorize an icon (given filename) with the icon color \mbox{\Hypertarget{class_platform_style_af2ff6ee24cd5745b34a945afecdf41f7}\label{class_platform_style_af2ff6ee24cd5745b34a945afecdf41f7}} 
+\index{Platform\+Style@{Platform\+Style}!Single\+Color\+Icon@{Single\+Color\+Icon}}
+\index{Single\+Color\+Icon@{Single\+Color\+Icon}!Platform\+Style@{Platform\+Style}}
+\subsubsection{\texorpdfstring{Single\+Color\+Icon()}{SingleColorIcon()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Q\+Icon Platform\+Style\+::\+Single\+Color\+Icon (\begin{DoxyParamCaption}\item[{const Q\+Icon \&}]{icon }\end{DoxyParamCaption}) const}
+
+Colorize an icon (given object) with the icon color \mbox{\Hypertarget{class_platform_style_adecebc4670880700203340d322351f89}\label{class_platform_style_adecebc4670880700203340d322351f89}} 
+\index{Platform\+Style@{Platform\+Style}!Single\+Color\+Image@{Single\+Color\+Image}}
+\index{Single\+Color\+Image@{Single\+Color\+Image}!Platform\+Style@{Platform\+Style}}
+\subsubsection{\texorpdfstring{Single\+Color\+Image()}{SingleColorImage()}}
+{\footnotesize\ttfamily Q\+Image Platform\+Style\+::\+Single\+Color\+Image (\begin{DoxyParamCaption}\item[{const Q\+String \&}]{filename }\end{DoxyParamCaption}) const}
+
+Colorize an image (given filename) with the icon color \mbox{\Hypertarget{class_platform_style_ac3c91893b60a84a98155b7b9603918bd}\label{class_platform_style_ac3c91893b60a84a98155b7b9603918bd}} 
+\index{Platform\+Style@{Platform\+Style}!Text\+Color\+Icon@{Text\+Color\+Icon}}
+\index{Text\+Color\+Icon@{Text\+Color\+Icon}!Platform\+Style@{Platform\+Style}}
+\subsubsection{\texorpdfstring{Text\+Color\+Icon()}{TextColorIcon()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Q\+Icon Platform\+Style\+::\+Text\+Color\+Icon (\begin{DoxyParamCaption}\item[{const Q\+String \&}]{filename }\end{DoxyParamCaption}) const}
+
+Colorize an icon (given filename) with the text color \mbox{\Hypertarget{class_platform_style_adf1b4129d4d6ccff590d202b95718892}\label{class_platform_style_adf1b4129d4d6ccff590d202b95718892}} 
+\index{Platform\+Style@{Platform\+Style}!Text\+Color\+Icon@{Text\+Color\+Icon}}
+\index{Text\+Color\+Icon@{Text\+Color\+Icon}!Platform\+Style@{Platform\+Style}}
+\subsubsection{\texorpdfstring{Text\+Color\+Icon()}{TextColorIcon()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Q\+Icon Platform\+Style\+::\+Text\+Color\+Icon (\begin{DoxyParamCaption}\item[{const Q\+Icon \&}]{icon }\end{DoxyParamCaption}) const}
+
+Colorize an icon (given object) with the text color 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/platformstyle.\+h\item 
+P\+I\+V\+X/src/qt/platformstyle.\+cpp\end{DoxyCompactItemize}

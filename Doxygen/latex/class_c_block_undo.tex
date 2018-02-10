@@ -1,0 +1,36 @@
+\hypertarget{class_c_block_undo}{}\section{C\+Block\+Undo Class Reference}
+\label{class_c_block_undo}\index{C\+Block\+Undo@{C\+Block\+Undo}}
+
+
+{\ttfamily \#include $<$main.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_undo_ad4d50e2b34e291dbe2d15fbe3ae3670b}\label{class_c_block_undo_ad4d50e2b34e291dbe2d15fbe3ae3670b}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_block_undo_a5411380452c33aeb6ccccbdf6ffda066}\label{class_c_block_undo_a5411380452c33aeb6ccccbdf6ffda066}} 
+bool {\bfseries Write\+To\+Disk} (\mbox{\hyperlink{struct_c_disk_block_pos}{C\+Disk\+Block\+Pos}} \&pos, const \mbox{\hyperlink{classuint256}{uint256}} \&hash\+Block)
+\item 
+\mbox{\Hypertarget{class_c_block_undo_a9b3d67fdd3a2b88dbbd543bf530ee924}\label{class_c_block_undo_a9b3d67fdd3a2b88dbbd543bf530ee924}} 
+bool {\bfseries Read\+From\+Disk} (const \mbox{\hyperlink{struct_c_disk_block_pos}{C\+Disk\+Block\+Pos}} \&pos, const \mbox{\hyperlink{classuint256}{uint256}} \&hash\+Block)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_undo_ad0baf7a4d3634b27b4affac2e7cf75c9}\label{class_c_block_undo_ad0baf7a4d3634b27b4affac2e7cf75c9}} 
+std\+::vector$<$ \mbox{\hyperlink{class_c_tx_undo}{C\+Tx\+Undo}} $>$ {\bfseries vtxundo}
+\item 
+\mbox{\Hypertarget{class_c_block_undo_a4fecc9723902f51e25b57e2e2d45334a}\label{class_c_block_undo_a4fecc9723902f51e25b57e2e2d45334a}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Undo information for a \mbox{\hyperlink{class_c_block}{C\+Block}} 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/main.\+h\item 
+P\+I\+V\+X/src/main.\+cpp\end{DoxyCompactItemize}

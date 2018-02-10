@@ -1,0 +1,65 @@
+\hypertarget{class_peer_table_priv}{}\section{Peer\+Table\+Priv Class Reference}
+\label{class_peer_table_priv}\index{Peer\+Table\+Priv@{Peer\+Table\+Priv}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_peer_table_priv_a304d99874f6cd0c67ed207546a5ca904}{refresh\+Peers}} ()
+\item 
+\mbox{\Hypertarget{class_peer_table_priv_abc703185b3067489b0d5ad22c2147112}\label{class_peer_table_priv_abc703185b3067489b0d5ad22c2147112}} 
+int {\bfseries size} ()
+\item 
+\mbox{\Hypertarget{class_peer_table_priv_a58c817cce967ddd5ae4bad622bfaecb4}\label{class_peer_table_priv_a58c817cce967ddd5ae4bad622bfaecb4}} 
+\mbox{\hyperlink{struct_c_node_combined_stats}{C\+Node\+Combined\+Stats}} $\ast$ {\bfseries index} (int idx)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+Q\+List$<$ \mbox{\hyperlink{struct_c_node_combined_stats}{C\+Node\+Combined\+Stats}} $>$ \mbox{\hyperlink{class_peer_table_priv_a8da9d0256d11f205dfa1cdce86843761}{cached\+Node\+Stats}}
+\item 
+int \mbox{\hyperlink{class_peer_table_priv_a4917597853d2d5f0055be017b8ab33c5}{sort\+Column}}
+\item 
+Qt\+::\+Sort\+Order \mbox{\hyperlink{class_peer_table_priv_adb95d4bbc4fb13a21a360108aeca5c32}{sort\+Order}}
+\item 
+std\+::map$<$ Node\+Id, int $>$ \mbox{\hyperlink{class_peer_table_priv_ae27db14bcbe769f494c4db56ef27fb08}{map\+Node\+Rows}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_peer_table_priv_a304d99874f6cd0c67ed207546a5ca904}\label{class_peer_table_priv_a304d99874f6cd0c67ed207546a5ca904}} 
+\index{Peer\+Table\+Priv@{Peer\+Table\+Priv}!refresh\+Peers@{refresh\+Peers}}
+\index{refresh\+Peers@{refresh\+Peers}!Peer\+Table\+Priv@{Peer\+Table\+Priv}}
+\subsubsection{\texorpdfstring{refresh\+Peers()}{refreshPeers()}}
+{\footnotesize\ttfamily void Peer\+Table\+Priv\+::refresh\+Peers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Pull a full list of peers from v\+Nodes into our cache 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_peer_table_priv_a8da9d0256d11f205dfa1cdce86843761}\label{class_peer_table_priv_a8da9d0256d11f205dfa1cdce86843761}} 
+\index{Peer\+Table\+Priv@{Peer\+Table\+Priv}!cached\+Node\+Stats@{cached\+Node\+Stats}}
+\index{cached\+Node\+Stats@{cached\+Node\+Stats}!Peer\+Table\+Priv@{Peer\+Table\+Priv}}
+\subsubsection{\texorpdfstring{cached\+Node\+Stats}{cachedNodeStats}}
+{\footnotesize\ttfamily Q\+List$<$\mbox{\hyperlink{struct_c_node_combined_stats}{C\+Node\+Combined\+Stats}}$>$ Peer\+Table\+Priv\+::cached\+Node\+Stats}
+
+Local cache of peer information \mbox{\Hypertarget{class_peer_table_priv_ae27db14bcbe769f494c4db56ef27fb08}\label{class_peer_table_priv_ae27db14bcbe769f494c4db56ef27fb08}} 
+\index{Peer\+Table\+Priv@{Peer\+Table\+Priv}!map\+Node\+Rows@{map\+Node\+Rows}}
+\index{map\+Node\+Rows@{map\+Node\+Rows}!Peer\+Table\+Priv@{Peer\+Table\+Priv}}
+\subsubsection{\texorpdfstring{map\+Node\+Rows}{mapNodeRows}}
+{\footnotesize\ttfamily std\+::map$<$Node\+Id, int$>$ Peer\+Table\+Priv\+::map\+Node\+Rows}
+
+Index of rows by node ID \mbox{\Hypertarget{class_peer_table_priv_a4917597853d2d5f0055be017b8ab33c5}\label{class_peer_table_priv_a4917597853d2d5f0055be017b8ab33c5}} 
+\index{Peer\+Table\+Priv@{Peer\+Table\+Priv}!sort\+Column@{sort\+Column}}
+\index{sort\+Column@{sort\+Column}!Peer\+Table\+Priv@{Peer\+Table\+Priv}}
+\subsubsection{\texorpdfstring{sort\+Column}{sortColumn}}
+{\footnotesize\ttfamily int Peer\+Table\+Priv\+::sort\+Column}
+
+Column to sort nodes by \mbox{\Hypertarget{class_peer_table_priv_adb95d4bbc4fb13a21a360108aeca5c32}\label{class_peer_table_priv_adb95d4bbc4fb13a21a360108aeca5c32}} 
+\index{Peer\+Table\+Priv@{Peer\+Table\+Priv}!sort\+Order@{sort\+Order}}
+\index{sort\+Order@{sort\+Order}!Peer\+Table\+Priv@{Peer\+Table\+Priv}}
+\subsubsection{\texorpdfstring{sort\+Order}{sortOrder}}
+{\footnotesize\ttfamily Qt\+::\+Sort\+Order Peer\+Table\+Priv\+::sort\+Order}
+
+Order (ascending or descending) to sort nodes by 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/peertablemodel.\+cpp\end{DoxyCompactItemize}

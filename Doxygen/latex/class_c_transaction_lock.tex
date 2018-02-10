@@ -1,0 +1,41 @@
+\hypertarget{class_c_transaction_lock}{}\section{C\+Transaction\+Lock Class Reference}
+\label{class_c_transaction_lock}\index{C\+Transaction\+Lock@{C\+Transaction\+Lock}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_transaction_lock_a71cb6705a8f0bfb4a8453d3b284e3cf7}\label{class_c_transaction_lock_a71cb6705a8f0bfb4a8453d3b284e3cf7}} 
+bool {\bfseries Signatures\+Valid} ()
+\item 
+\mbox{\Hypertarget{class_c_transaction_lock_aa74b16eec6daee397785a91193fc3306}\label{class_c_transaction_lock_aa74b16eec6daee397785a91193fc3306}} 
+int {\bfseries Count\+Signatures} ()
+\item 
+\mbox{\Hypertarget{class_c_transaction_lock_a8f09c2c0453950fb6deadcccf5f518d7}\label{class_c_transaction_lock_a8f09c2c0453950fb6deadcccf5f518d7}} 
+void {\bfseries Add\+Signature} (\mbox{\hyperlink{class_c_consensus_vote}{C\+Consensus\+Vote}} \&cv)
+\item 
+\mbox{\Hypertarget{class_c_transaction_lock_a2142d2e27db93d33ac93761058f8d803}\label{class_c_transaction_lock_a2142d2e27db93d33ac93761058f8d803}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Hash} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_transaction_lock_a358a18da2b8b378cc7cd1dae145f611f}\label{class_c_transaction_lock_a358a18da2b8b378cc7cd1dae145f611f}} 
+int {\bfseries n\+Block\+Height}
+\item 
+\mbox{\Hypertarget{class_c_transaction_lock_a9d4babccfcdf7fe3806dd3ec1b56d08a}\label{class_c_transaction_lock_a9d4babccfcdf7fe3806dd3ec1b56d08a}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries tx\+Hash}
+\item 
+\mbox{\Hypertarget{class_c_transaction_lock_a399f0d14a38794034c5f530599e95b3a}\label{class_c_transaction_lock_a399f0d14a38794034c5f530599e95b3a}} 
+std\+::vector$<$ \mbox{\hyperlink{class_c_consensus_vote}{C\+Consensus\+Vote}} $>$ {\bfseries vec\+Consensus\+Votes}
+\item 
+\mbox{\Hypertarget{class_c_transaction_lock_aec15172be9c7f1cbe4b989387fdb1b52}\label{class_c_transaction_lock_aec15172be9c7f1cbe4b989387fdb1b52}} 
+int {\bfseries n\+Expiration}
+\item 
+\mbox{\Hypertarget{class_c_transaction_lock_a8c18d2530bfcea24bee8d5773d12c0a9}\label{class_c_transaction_lock_a8c18d2530bfcea24bee8d5773d12c0a9}} 
+int {\bfseries n\+Timeout}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/swifttx.\+h\item 
+P\+I\+V\+X/src/swifttx.\+cpp\end{DoxyCompactItemize}

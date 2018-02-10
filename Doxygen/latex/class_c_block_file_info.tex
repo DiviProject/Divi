@@ -1,0 +1,58 @@
+\hypertarget{class_c_block_file_info}{}\section{C\+Block\+File\+Info Class Reference}
+\label{class_c_block_file_info}\index{C\+Block\+File\+Info@{C\+Block\+File\+Info}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_file_info_a5d48a4fe1f8b3903131d121fc14a5a6f}\label{class_c_block_file_info_a5d48a4fe1f8b3903131d121fc14a5a6f}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_block_file_info_a21bd4f8e92c47646737fc57446a86cc2}\label{class_c_block_file_info_a21bd4f8e92c47646737fc57446a86cc2}} 
+void {\bfseries Set\+Null} ()
+\item 
+\mbox{\Hypertarget{class_c_block_file_info_a2754dd93534e2fda8674ffc5d007611e}\label{class_c_block_file_info_a2754dd93534e2fda8674ffc5d007611e}} 
+std\+::string {\bfseries To\+String} () const
+\item 
+void \mbox{\hyperlink{class_c_block_file_info_a66867569ffe06068b8c6eb1139934fbf}{Add\+Block}} (unsigned int n\+Height\+In, uint64\+\_\+t n\+Time\+In)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_file_info_adf2de4bb4d8a0a8f2116ed90f0770d03}\label{class_c_block_file_info_adf2de4bb4d8a0a8f2116ed90f0770d03}} 
+unsigned int {\bfseries n\+Blocks}
+\item 
+\mbox{\Hypertarget{class_c_block_file_info_afb13102ba49548c24812a4236851c3a9}\label{class_c_block_file_info_afb13102ba49548c24812a4236851c3a9}} 
+unsigned int \mbox{\hyperlink{class_c_block_file_info_afb13102ba49548c24812a4236851c3a9}{n\+Size}}
+\begin{DoxyCompactList}\small\item\em number of blocks stored in file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_file_info_ad3e555fd733ef8f38430554c2db5e9d1}\label{class_c_block_file_info_ad3e555fd733ef8f38430554c2db5e9d1}} 
+unsigned int \mbox{\hyperlink{class_c_block_file_info_ad3e555fd733ef8f38430554c2db5e9d1}{n\+Undo\+Size}}
+\begin{DoxyCompactList}\small\item\em number of used bytes of block file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_file_info_a66d258b11b1aec30cbacdc6130c271a8}\label{class_c_block_file_info_a66d258b11b1aec30cbacdc6130c271a8}} 
+unsigned int \mbox{\hyperlink{class_c_block_file_info_a66d258b11b1aec30cbacdc6130c271a8}{n\+Height\+First}}
+\begin{DoxyCompactList}\small\item\em number of used bytes in the undo file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_file_info_aabbcf808931e7eaf2278b3d7172fad3a}\label{class_c_block_file_info_aabbcf808931e7eaf2278b3d7172fad3a}} 
+unsigned int \mbox{\hyperlink{class_c_block_file_info_aabbcf808931e7eaf2278b3d7172fad3a}{n\+Height\+Last}}
+\begin{DoxyCompactList}\small\item\em lowest height of block in file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_file_info_a0e928257d1f003ede485ce49e8cf9189}\label{class_c_block_file_info_a0e928257d1f003ede485ce49e8cf9189}} 
+uint64\+\_\+t \mbox{\hyperlink{class_c_block_file_info_a0e928257d1f003ede485ce49e8cf9189}{n\+Time\+First}}
+\begin{DoxyCompactList}\small\item\em highest height of block in file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_file_info_a1d12e4202474bb2f299d18d7d1f28c78}\label{class_c_block_file_info_a1d12e4202474bb2f299d18d7d1f28c78}} 
+uint64\+\_\+t \mbox{\hyperlink{class_c_block_file_info_a1d12e4202474bb2f299d18d7d1f28c78}{n\+Time\+Last}}
+\begin{DoxyCompactList}\small\item\em earliest time of block in file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_file_info_ab4daf4df00f90dee15e3a7d2cdb7a273}\label{class_c_block_file_info_ab4daf4df00f90dee15e3a7d2cdb7a273}} 
+\mbox{\hyperlink{class_c_block_file_info_ab4daf4df00f90dee15e3a7d2cdb7a273}{A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}}
+\begin{DoxyCompactList}\small\item\em latest time of block in file \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_block_file_info_a66867569ffe06068b8c6eb1139934fbf}\label{class_c_block_file_info_a66867569ffe06068b8c6eb1139934fbf}} 
+\index{C\+Block\+File\+Info@{C\+Block\+File\+Info}!Add\+Block@{Add\+Block}}
+\index{Add\+Block@{Add\+Block}!C\+Block\+File\+Info@{C\+Block\+File\+Info}}
+\subsubsection{\texorpdfstring{Add\+Block()}{AddBlock()}}
+{\footnotesize\ttfamily void C\+Block\+File\+Info\+::\+Add\+Block (\begin{DoxyParamCaption}\item[{unsigned int}]{n\+Height\+In,  }\item[{uint64\+\_\+t}]{n\+Time\+In }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+update statistics (does not update n\+Size) 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/main.\+h\item 
+P\+I\+V\+X/src/main.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,71 @@
+\hypertarget{class_c_coin_control}{}\section{C\+Coin\+Control Class Reference}
+\label{class_c_coin_control}\index{C\+Coin\+Control@{C\+Coin\+Control}}
+
+
+{\ttfamily \#include $<$coincontrol.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_coin_control_aadca0a9e82e1e6d84dff4649e1d29d31}\label{class_c_coin_control_aadca0a9e82e1e6d84dff4649e1d29d31}} 
+void {\bfseries Set\+Null} ()
+\item 
+\mbox{\Hypertarget{class_c_coin_control_a20b259681a7c62b2119256a4862091ac}\label{class_c_coin_control_a20b259681a7c62b2119256a4862091ac}} 
+bool {\bfseries Has\+Selected} () const
+\item 
+\mbox{\Hypertarget{class_c_coin_control_adcd674d510015f3212e489ab6bd74067}\label{class_c_coin_control_adcd674d510015f3212e489ab6bd74067}} 
+bool {\bfseries Is\+Selected} (const \mbox{\hyperlink{classuint256}{uint256}} \&hash, unsigned int n) const
+\item 
+\mbox{\Hypertarget{class_c_coin_control_a7903e85623ba9b21583bd4018d17546c}\label{class_c_coin_control_a7903e85623ba9b21583bd4018d17546c}} 
+void {\bfseries Select} (const \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} \&output)
+\item 
+\mbox{\Hypertarget{class_c_coin_control_a7f9b8135840df5907bc49a4c5cb19ba4}\label{class_c_coin_control_a7f9b8135840df5907bc49a4c5cb19ba4}} 
+void {\bfseries Un\+Select} (const \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} \&output)
+\item 
+\mbox{\Hypertarget{class_c_coin_control_a78bc21b1698e6ae5e6c2fef9758db39c}\label{class_c_coin_control_a78bc21b1698e6ae5e6c2fef9758db39c}} 
+void {\bfseries Un\+Select\+All} ()
+\item 
+\mbox{\Hypertarget{class_c_coin_control_a176b3a32b5f623fe25b8e61ca561422e}\label{class_c_coin_control_a176b3a32b5f623fe25b8e61ca561422e}} 
+void {\bfseries List\+Selected} (std\+::vector$<$ \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} $>$ \&v\+Outpoints)
+\item 
+\mbox{\Hypertarget{class_c_coin_control_afa6598ec7f1a77214480b76698e2f7f6}\label{class_c_coin_control_afa6598ec7f1a77214480b76698e2f7f6}} 
+unsigned int {\bfseries Quantity\+Selected} ()
+\item 
+\mbox{\Hypertarget{class_c_coin_control_a4593e2dcebfdaa7cdd8eb461887eaec4}\label{class_c_coin_control_a4593e2dcebfdaa7cdd8eb461887eaec4}} 
+void {\bfseries Set\+Selection} (std\+::set$<$ \mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} $>$ set\+Selected)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_coin_control_aa991ffd830267f6c2103fa7e03213f41}\label{class_c_coin_control_aa991ffd830267f6c2103fa7e03213f41}} 
+C\+Tx\+Destination {\bfseries dest\+Change}
+\item 
+\mbox{\Hypertarget{class_c_coin_control_a34c74f6fa2f58c1adb80602fd67c9e92}\label{class_c_coin_control_a34c74f6fa2f58c1adb80602fd67c9e92}} 
+bool {\bfseries use\+Obfu\+Scation}
+\item 
+\mbox{\Hypertarget{class_c_coin_control_a4e1471ca5bf0dfc84b95e6fa7eeeb722}\label{class_c_coin_control_a4e1471ca5bf0dfc84b95e6fa7eeeb722}} 
+bool {\bfseries use\+Swift\+TX}
+\item 
+\mbox{\Hypertarget{class_c_coin_control_acad36178a2488dc978a39fbee43453f3}\label{class_c_coin_control_acad36178a2488dc978a39fbee43453f3}} 
+bool {\bfseries f\+Split\+Block}
+\item 
+\mbox{\Hypertarget{class_c_coin_control_ac75208bc1c4e0fad9de35997ee24d766}\label{class_c_coin_control_ac75208bc1c4e0fad9de35997ee24d766}} 
+int {\bfseries n\+Split\+Block}
+\item 
+\mbox{\Hypertarget{class_c_coin_control_acd3e8686c8d78535153ed9fd734ef029}\label{class_c_coin_control_acd3e8686c8d78535153ed9fd734ef029}} 
+bool \mbox{\hyperlink{class_c_coin_control_acd3e8686c8d78535153ed9fd734ef029}{f\+Allow\+Other\+Inputs}}
+\begin{DoxyCompactList}\small\item\em If false, allows unselected inputs, but requires all selected inputs be used. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_coin_control_a83d3144efcfdd0e87467f0b2d98b4302}\label{class_c_coin_control_a83d3144efcfdd0e87467f0b2d98b4302}} 
+bool \mbox{\hyperlink{class_c_coin_control_a83d3144efcfdd0e87467f0b2d98b4302}{f\+Allow\+Watch\+Only}}
+\begin{DoxyCompactList}\small\item\em Includes watch only addresses which match the I\+S\+M\+I\+N\+E\+\_\+\+W\+A\+T\+C\+H\+\_\+\+S\+O\+L\+V\+A\+B\+LE criteria. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_coin_control_ae33d88969604e91eea3167f5626a5c82}\label{class_c_coin_control_ae33d88969604e91eea3167f5626a5c82}} 
+C\+Amount \mbox{\hyperlink{class_c_coin_control_ae33d88969604e91eea3167f5626a5c82}{n\+Minimum\+Total\+Fee}}
+\begin{DoxyCompactList}\small\item\em Minimum absolute fee (not per kilobyte) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Coin Control Features. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/coincontrol.\+h\end{DoxyCompactItemize}

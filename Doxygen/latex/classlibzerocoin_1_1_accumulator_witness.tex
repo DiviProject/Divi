@@ -1,0 +1,125 @@
+\hypertarget{classlibzerocoin_1_1_accumulator_witness}{}\section{libzerocoin\+:\+:Accumulator\+Witness Class Reference}
+\label{classlibzerocoin_1_1_accumulator_witness}\index{libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}}
+
+
+{\ttfamily \#include $<$Accumulator.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_witness_a98162d6119fe9aa6399df99aac06d159}\label{classlibzerocoin_1_1_accumulator_witness_a98162d6119fe9aa6399df99aac06d159}} 
+{\footnotesize template$<$typename Stream $>$ }\\{\bfseries Accumulator\+Witness} (const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$p, Stream \&strm)
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness_af1abca6db569d151f4b416221f28d18e}{Accumulator\+Witness}} (const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$p, const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&checkpoint, const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} coin)
+\item 
+void \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness_aa567ece888a3b06498b668ed3f613bdb}{Add\+Element}} (const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} \&c)
+\item 
+void \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness_a7c5b47a42f8a2c51f7c7f64ff0809f7d}{add\+Raw\+Value}} (const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&bn\+Value)
+\item 
+const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \& \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness_af0afa4225f01cd21bdc8e88e310a0168}{get\+Value}} () const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_witness_a6edd0f05c65891cc10a58e5cd7eaf277}\label{classlibzerocoin_1_1_accumulator_witness_a6edd0f05c65891cc10a58e5cd7eaf277}} 
+void {\bfseries reset\+Value} (const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&checkpoint, const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} coin)
+\item 
+bool \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness_a76ce479fd510ed04d78c821cdb2a37bd}{Verify\+Witness}} (const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&a, const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} \&public\+Coin) const
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness}{Accumulator\+Witness}} \& \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness_a57de1414fbb80e5259a76e70b4baa28e}{operator+=}} (const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} \&rhs)
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_witness_abf74598e2b7b1db65aaf0ad27d325daa}\label{classlibzerocoin_1_1_accumulator_witness_abf74598e2b7b1db65aaf0ad27d325daa}} 
+\mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness}{Accumulator\+Witness}} \& {\bfseries operator=} (\mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness}{Accumulator\+Witness}} rhs)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A witness that a \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} is in the accumulation of a set of coins 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_witness_af1abca6db569d151f4b416221f28d18e}\label{classlibzerocoin_1_1_accumulator_witness_af1abca6db569d151f4b416221f28d18e}} 
+\index{libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}!Accumulator\+Witness@{Accumulator\+Witness}}
+\index{Accumulator\+Witness@{Accumulator\+Witness}!libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}}
+\subsubsection{\texorpdfstring{Accumulator\+Witness()}{AccumulatorWitness()}}
+{\footnotesize\ttfamily libzerocoin\+::\+Accumulator\+Witness\+::\+Accumulator\+Witness (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$}]{p,  }\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&}]{checkpoint,  }\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}}}]{coin }\end{DoxyParamCaption})}
+
+Construct\textquotesingle{}s a witness. You must add all elements after the witness 
+\begin{DoxyParams}{Parameters}
+{\em p} & pointer to params \\
+\hline
+{\em checkpoint} & the last known accumulator value before the element was added \\
+\hline
+{\em coin} & the coin we want a witness to \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_witness_aa567ece888a3b06498b668ed3f613bdb}\label{classlibzerocoin_1_1_accumulator_witness_aa567ece888a3b06498b668ed3f613bdb}} 
+\index{libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}!Add\+Element@{Add\+Element}}
+\index{Add\+Element@{Add\+Element}!libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}}
+\subsubsection{\texorpdfstring{Add\+Element()}{AddElement()}}
+{\footnotesize\ttfamily void libzerocoin\+::\+Accumulator\+Witness\+::\+Add\+Element (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} \&}]{c }\end{DoxyParamCaption})}
+
+Adds element to the set whose\textquotesingle{}s accumulation we are proving coin is a member of
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & the coin to add \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_witness_a7c5b47a42f8a2c51f7c7f64ff0809f7d}\label{classlibzerocoin_1_1_accumulator_witness_a7c5b47a42f8a2c51f7c7f64ff0809f7d}} 
+\index{libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}!add\+Raw\+Value@{add\+Raw\+Value}}
+\index{add\+Raw\+Value@{add\+Raw\+Value}!libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}}
+\subsubsection{\texorpdfstring{add\+Raw\+Value()}{addRawValue()}}
+{\footnotesize\ttfamily void libzerocoin\+::\+Accumulator\+Witness\+::add\+Raw\+Value (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \&}]{bn\+Value }\end{DoxyParamCaption})}
+
+Adds element to the set whose\textquotesingle{}s accumulation we are proving coin is a member of. No checks performed!
+
+
+\begin{DoxyParams}{Parameters}
+{\em bn\+Value} & the coin\textquotesingle{}s value to add \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_witness_af0afa4225f01cd21bdc8e88e310a0168}\label{classlibzerocoin_1_1_accumulator_witness_af0afa4225f01cd21bdc8e88e310a0168}} 
+\index{libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}!get\+Value@{get\+Value}}
+\index{get\+Value@{get\+Value}!libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}}
+\subsubsection{\texorpdfstring{get\+Value()}{getValue()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \& libzerocoin\+::\+Accumulator\+Witness\+::get\+Value (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\begin{DoxyReturn}{Returns}
+the value of the witness 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_witness_a57de1414fbb80e5259a76e70b4baa28e}\label{classlibzerocoin_1_1_accumulator_witness_a57de1414fbb80e5259a76e70b4baa28e}} 
+\index{libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}}
+\subsubsection{\texorpdfstring{operator+=()}{operator+=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness}{Accumulator\+Witness}} \& libzerocoin\+::\+Accumulator\+Witness\+::operator+= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} \&}]{rhs }\end{DoxyParamCaption})}
+
+Adds rhs to the set whose\textquotesingle{}s accumulation ware proving coin is a member of 
+\begin{DoxyParams}{Parameters}
+{\em rhs} & the \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} to add \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlibzerocoin_1_1_accumulator_witness_a76ce479fd510ed04d78c821cdb2a37bd}\label{classlibzerocoin_1_1_accumulator_witness_a76ce479fd510ed04d78c821cdb2a37bd}} 
+\index{libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}!Verify\+Witness@{Verify\+Witness}}
+\index{Verify\+Witness@{Verify\+Witness}!libzerocoin\+::\+Accumulator\+Witness@{libzerocoin\+::\+Accumulator\+Witness}}
+\subsubsection{\texorpdfstring{Verify\+Witness()}{VerifyWitness()}}
+{\footnotesize\ttfamily bool libzerocoin\+::\+Accumulator\+Witness\+::\+Verify\+Witness (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&}]{a,  }\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_public_coin}{Public\+Coin}} \&}]{public\+Coin }\end{DoxyParamCaption}) const}
+
+Checks that this is a witness to the accumulation of coin 
+\begin{DoxyParams}{Parameters}
+{\em a} & the accumulator we are checking against. \\
+\hline
+{\em public\+Coin} & the coin we\textquotesingle{}re providing a witness for \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the witness computation validates 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_accumulator_8h}{Accumulator.\+h}}\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_accumulator_8cpp}{Accumulator.\+cpp}}\end{DoxyCompactItemize}

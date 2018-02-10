@@ -1,0 +1,60 @@
+\hypertarget{structsecure__allocator}{}\section{secure\+\_\+allocator$<$ T $>$ Struct Template Reference}
+\label{structsecure__allocator}\index{secure\+\_\+allocator$<$ T $>$@{secure\+\_\+allocator$<$ T $>$}}
+Inheritance diagram for secure\+\_\+allocator$<$ T $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structsecure__allocator}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structsecure__allocator_1_1rebind}{rebind}}
+\end{DoxyCompactItemize}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsecure__allocator_aecbe486abe3e32e35e3289e149bd2356}\label{structsecure__allocator_aecbe486abe3e32e35e3289e149bd2356}} 
+typedef std\+::allocator$<$ T $>$ {\bfseries base}
+\item 
+\mbox{\Hypertarget{structsecure__allocator_aa9db67804b069d61983213bded98c08f}\label{structsecure__allocator_aa9db67804b069d61983213bded98c08f}} 
+typedef base\+::size\+\_\+type {\bfseries size\+\_\+type}
+\item 
+\mbox{\Hypertarget{structsecure__allocator_a6ced0c166194ce9a266df10018cbb862}\label{structsecure__allocator_a6ced0c166194ce9a266df10018cbb862}} 
+typedef base\+::difference\+\_\+type {\bfseries difference\+\_\+type}
+\item 
+\mbox{\Hypertarget{structsecure__allocator_a71b267e8d1667eacf8c3505cce785aea}\label{structsecure__allocator_a71b267e8d1667eacf8c3505cce785aea}} 
+typedef base\+::pointer {\bfseries pointer}
+\item 
+\mbox{\Hypertarget{structsecure__allocator_abf76dd1c45de47c15d7a8c53cb2d8ab9}\label{structsecure__allocator_abf76dd1c45de47c15d7a8c53cb2d8ab9}} 
+typedef base\+::const\+\_\+pointer {\bfseries const\+\_\+pointer}
+\item 
+\mbox{\Hypertarget{structsecure__allocator_a6d85bb5fed183fb2304b8403a8843eb4}\label{structsecure__allocator_a6d85bb5fed183fb2304b8403a8843eb4}} 
+typedef base\+::reference {\bfseries reference}
+\item 
+\mbox{\Hypertarget{structsecure__allocator_a5ec58945b7a8010f7e8a77ebfd96ae8e}\label{structsecure__allocator_a5ec58945b7a8010f7e8a77ebfd96ae8e}} 
+typedef base\+::const\+\_\+reference {\bfseries const\+\_\+reference}
+\item 
+\mbox{\Hypertarget{structsecure__allocator_a344198c1316ccf0a1b58ce9c0de7c012}\label{structsecure__allocator_a344198c1316ccf0a1b58ce9c0de7c012}} 
+typedef base\+::value\+\_\+type {\bfseries value\+\_\+type}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsecure__allocator_ae5bfb3589a310e55894bae988d566c44}\label{structsecure__allocator_ae5bfb3589a310e55894bae988d566c44}} 
+{\bfseries secure\+\_\+allocator} (const \mbox{\hyperlink{structsecure__allocator}{secure\+\_\+allocator}} \&a)  throw ()
+\item 
+\mbox{\Hypertarget{structsecure__allocator_ad7605317012ed2eed2eecb955345d140}\label{structsecure__allocator_ad7605317012ed2eed2eecb955345d140}} 
+{\footnotesize template$<$typename U $>$ }\\{\bfseries secure\+\_\+allocator} (const \mbox{\hyperlink{structsecure__allocator}{secure\+\_\+allocator}}$<$ U $>$ \&a)  throw ()
+\item 
+\mbox{\Hypertarget{structsecure__allocator_aee6c375ead3ab5b477898787308bd2d9}\label{structsecure__allocator_aee6c375ead3ab5b477898787308bd2d9}} 
+T $\ast$ {\bfseries allocate} (std\+::size\+\_\+t n, const void $\ast$hint=0)
+\item 
+\mbox{\Hypertarget{structsecure__allocator_af86cc49185bd507b8b479e070d744eb0}\label{structsecure__allocator_af86cc49185bd507b8b479e070d744eb0}} 
+void {\bfseries deallocate} (T $\ast$p, std\+::size\+\_\+t n)
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/allocators.\+h\end{DoxyCompactItemize}

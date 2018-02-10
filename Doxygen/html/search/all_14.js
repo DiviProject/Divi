@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['univalue',['UniValue',['../md__p_i_v_x_src_univalue__r_e_a_d_m_e.html',1,'']]],
+  ['uint160',['uint160',['../classuint160.html',1,'']]],
+  ['uint256',['uint256',['../classuint256.html',1,'']]],
+  ['uint512',['uint512',['../classuint512.html',1,'']]],
+  ['uint_5ferror',['uint_error',['../classuint__error.html',1,'']]],
+  ['unconfirmed',['Unconfirmed',['../class_transaction_status.html#aaa6cc19ca3509bbae72d0df1661f85cba6aa37fcd802ffec2cc13db46dcc41c03',1,'TransactionStatus']]],
+  ['unit',['Unit',['../class_bitcoin_units.html#ae41018ba530b4c8bdc74fd163709fb9d',1,'BitcoinUnits']]],
+  ['unitdisplaystatusbarcontrol',['UnitDisplayStatusBarControl',['../class_unit_display_status_bar_control.html',1,'']]],
+  ['unitrole',['UnitRole',['../class_bitcoin_units.html#a094a1a150647021c419f06a923795959adba268d796f853874a3b830bb92c5c80',1,'BitcoinUnits']]],
+  ['univalue',['UniValue',['../class_uni_value.html',1,'']]],
+  ['unlock',['Unlock',['../class_ask_passphrase_dialog.html#a96abf4d3c36c1ef9e268fb546ae76538a2af79cac6134924405d6c620fb0f4c7e',1,'AskPassphraseDialog::Unlock()'],['../class_memory_page_locker.html#af9e9ad0edadcd8250db05f95cd6a49a7',1,'MemoryPageLocker::Unlock()']]],
+  ['unlockanonymize',['UnlockAnonymize',['../class_ask_passphrase_dialog.html#a96abf4d3c36c1ef9e268fb546ae76538abf838fdbee2ab76b043faed745c9ed7b',1,'AskPassphraseDialog']]],
+  ['unlockcontext',['UnlockContext',['../class_wallet_model_1_1_unlock_context.html',1,'WalletModel']]],
+  ['unlockwallet',['unlockWallet',['../class_wallet_frame.html#a31b6e87c87b383ef53225b6c2b37f057',1,'WalletFrame::unlockWallet()'],['../class_wallet_view.html#ac258d549f0e55ad4f84b9d21848faf02',1,'WalletView::unlockWallet()']]],
+  ['updateamountcolumntitle',['updateAmountColumnTitle',['../class_transaction_table_model.html#acbb6e7531f507369ad18b656ad7b3f10',1,'TransactionTableModel']]],
+  ['updatedblocktip',['UpdatedBlockTip',['../struct_c_main_signals.html#a0380ea185992a8ee3572b5cf2aaa7677',1,'CMainSignals']]],
+  ['updatedtransaction',['UpdatedTransaction',['../struct_c_main_signals.html#a5c4626fe1ae15530b27a29cde74ed9c2',1,'CMainSignals']]],
+  ['updateemptyfull',['UpdateEmptyFull',['../class_c_bloom_filter.html#af98b43e91c82a1e4afc7454e8c5672c2',1,'CBloomFilter']]],
+  ['updateencryptionstatus',['updateEncryptionStatus',['../class_wallet_view.html#ad348f2ed9f843ef9125ca416307c7412',1,'WalletView']]],
+  ['updatemasternodelist',['UpdateMasternodeList',['../class_c_masternode_man.html#aed8b4c3eec39239a4c63c2cda5e7588c',1,'CMasternodeMan']]],
+  ['updatestatus',['updateStatus',['../class_transaction_record.html#a9b643dd885a790ae511705a1446556be',1,'TransactionRecord']]],
+  ['uritests',['URITests',['../class_u_r_i_tests.html',1,'']]],
+  ['usedreceivingaddresses',['usedReceivingAddresses',['../class_wallet_frame.html#a9273a0b98cf7ec9fc344658c38a4a0a3',1,'WalletFrame::usedReceivingAddresses()'],['../class_wallet_view.html#accb5d9e2789c62e03ad1723518d31c02',1,'WalletView::usedReceivingAddresses()']]],
+  ['usedsendingaddresses',['usedSendingAddresses',['../class_wallet_frame.html#a7f697d220e7ea40d6e4d6e6c5e9ef3b4',1,'WalletFrame::usedSendingAddresses()'],['../class_wallet_view.html#a6f0d012c18ea2df7336c852abe2a50d0',1,'WalletView::usedSendingAddresses()']]]
+];

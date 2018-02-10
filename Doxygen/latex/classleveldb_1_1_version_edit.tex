@@ -1,0 +1,53 @@
+\hypertarget{classleveldb_1_1_version_edit}{}\section{leveldb\+:\+:Version\+Edit Class Reference}
+\label{classleveldb_1_1_version_edit}\index{leveldb\+::\+Version\+Edit@{leveldb\+::\+Version\+Edit}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_a259c9de14d58e231178904c1559e4b5e}\label{classleveldb_1_1_version_edit_a259c9de14d58e231178904c1559e4b5e}} 
+void {\bfseries Clear} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_ab562147cdd82b184e86e88bd375a718c}\label{classleveldb_1_1_version_edit_ab562147cdd82b184e86e88bd375a718c}} 
+void {\bfseries Set\+Comparator\+Name} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&name)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_a47e5c58d34b0e27dc8990687e0c5477a}\label{classleveldb_1_1_version_edit_a47e5c58d34b0e27dc8990687e0c5477a}} 
+void {\bfseries Set\+Log\+Number} (uint64\+\_\+t num)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_ac1b5689f62e7a8f63c4eefa437a4f2f3}\label{classleveldb_1_1_version_edit_ac1b5689f62e7a8f63c4eefa437a4f2f3}} 
+void {\bfseries Set\+Prev\+Log\+Number} (uint64\+\_\+t num)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_a4c104515adf573be0ead29e6835f14fb}\label{classleveldb_1_1_version_edit_a4c104515adf573be0ead29e6835f14fb}} 
+void {\bfseries Set\+Next\+File} (uint64\+\_\+t num)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_abd6e841ed400672d33d26f4b187a66bf}\label{classleveldb_1_1_version_edit_abd6e841ed400672d33d26f4b187a66bf}} 
+void {\bfseries Set\+Last\+Sequence} (Sequence\+Number seq)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_ac9b26dfba1188705d7fc4deaf047271c}\label{classleveldb_1_1_version_edit_ac9b26dfba1188705d7fc4deaf047271c}} 
+void {\bfseries Set\+Compact\+Pointer} (int level, const \mbox{\hyperlink{classleveldb_1_1_internal_key}{Internal\+Key}} \&key)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_a4cd5cc92761b7ae5b5f9cff46cb88263}\label{classleveldb_1_1_version_edit_a4cd5cc92761b7ae5b5f9cff46cb88263}} 
+void {\bfseries Add\+File} (int level, uint64\+\_\+t file, uint64\+\_\+t file\+\_\+size, const \mbox{\hyperlink{classleveldb_1_1_internal_key}{Internal\+Key}} \&smallest, const \mbox{\hyperlink{classleveldb_1_1_internal_key}{Internal\+Key}} \&largest)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_ac222bfd1055114d57aadbd124f24ad0c}\label{classleveldb_1_1_version_edit_ac222bfd1055114d57aadbd124f24ad0c}} 
+void {\bfseries Delete\+File} (int level, uint64\+\_\+t file)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_af95009ddc020f72a32a1aa805bcf3a91}\label{classleveldb_1_1_version_edit_af95009ddc020f72a32a1aa805bcf3a91}} 
+void {\bfseries Encode\+To} (std\+::string $\ast$dst) const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_ac0f431c5e8f08c74c697d8480f7c005f}\label{classleveldb_1_1_version_edit_ac0f431c5e8f08c74c697d8480f7c005f}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Decode\+From} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&src)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_a535f639edaa85da0d602b145528c6303}\label{classleveldb_1_1_version_edit_a535f639edaa85da0d602b145528c6303}} 
+std\+::string {\bfseries Debug\+String} () const
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_version_edit_a1827cd1b4d6e9e3c378ce37ca3cce635}\label{classleveldb_1_1_version_edit_a1827cd1b4d6e9e3c378ce37ca3cce635}} 
+class {\bfseries Version\+Set}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/db/version\+\_\+edit.\+h\item 
+P\+I\+V\+X/src/leveldb/db/version\+\_\+edit.\+cc\end{DoxyCompactItemize}

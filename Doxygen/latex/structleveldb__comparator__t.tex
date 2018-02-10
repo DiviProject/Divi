@@ -1,0 +1,43 @@
+\hypertarget{structleveldb__comparator__t}{}\section{leveldb\+\_\+comparator\+\_\+t Struct Reference}
+\label{structleveldb__comparator__t}\index{leveldb\+\_\+comparator\+\_\+t@{leveldb\+\_\+comparator\+\_\+t}}
+Inheritance diagram for leveldb\+\_\+comparator\+\_\+t\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structleveldb__comparator__t}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structleveldb__comparator__t_abad34abeefd52bcfd421e14f426f6d05}\label{structleveldb__comparator__t_abad34abeefd52bcfd421e14f426f6d05}} 
+virtual int {\bfseries Compare} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&a, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&b) const
+\item 
+\mbox{\Hypertarget{structleveldb__comparator__t_aaf7e79d77687d0542037ae5310296180}\label{structleveldb__comparator__t_aaf7e79d77687d0542037ae5310296180}} 
+virtual const char $\ast$ {\bfseries Name} () const
+\item 
+\mbox{\Hypertarget{structleveldb__comparator__t_ad5bc952c5129d060c1ffe7a830eb3820}\label{structleveldb__comparator__t_ad5bc952c5129d060c1ffe7a830eb3820}} 
+virtual void {\bfseries Find\+Shortest\+Separator} (std\+::string $\ast$, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&) const
+\item 
+\mbox{\Hypertarget{structleveldb__comparator__t_a46671a92506b28d1df61125499df3d23}\label{structleveldb__comparator__t_a46671a92506b28d1df61125499df3d23}} 
+virtual void {\bfseries Find\+Short\+Successor} (std\+::string $\ast$key) const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structleveldb__comparator__t_a720da927befa8098f21437c663d0b0e2}\label{structleveldb__comparator__t_a720da927befa8098f21437c663d0b0e2}} 
+void $\ast$ {\bfseries state\+\_\+}
+\item 
+\mbox{\Hypertarget{structleveldb__comparator__t_a757b51457e991ab2219fd5931426bb29}\label{structleveldb__comparator__t_a757b51457e991ab2219fd5931426bb29}} 
+void($\ast$ {\bfseries destructor\+\_\+} )(void $\ast$)
+\item 
+\mbox{\Hypertarget{structleveldb__comparator__t_a55906beb72b9f3502c941c16c1187719}\label{structleveldb__comparator__t_a55906beb72b9f3502c941c16c1187719}} 
+int($\ast$ {\bfseries compare\+\_\+} )(void $\ast$, const char $\ast$a, size\+\_\+t alen, const char $\ast$b, size\+\_\+t blen)
+\item 
+\mbox{\Hypertarget{structleveldb__comparator__t_a0ed64d60a3e077ed065d745fb6bdee15}\label{structleveldb__comparator__t_a0ed64d60a3e077ed065d745fb6bdee15}} 
+const char $\ast$($\ast$ {\bfseries name\+\_\+} )(void $\ast$)
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/db/c.\+cc\end{DoxyCompactItemize}

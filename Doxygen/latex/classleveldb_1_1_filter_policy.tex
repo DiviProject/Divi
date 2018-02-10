@@ -1,0 +1,26 @@
+\hypertarget{classleveldb_1_1_filter_policy}{}\section{leveldb\+:\+:Filter\+Policy Class Reference}
+\label{classleveldb_1_1_filter_policy}\index{leveldb\+::\+Filter\+Policy@{leveldb\+::\+Filter\+Policy}}
+Inheritance diagram for leveldb\+:\+:Filter\+Policy\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classleveldb_1_1_filter_policy}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_filter_policy_afd5e951892a2e740f186c0658913ea1b}\label{classleveldb_1_1_filter_policy_afd5e951892a2e740f186c0658913ea1b}} 
+virtual const char $\ast$ {\bfseries Name} () const =0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_filter_policy_a355e9797e16dd16b93d19056781126b2}\label{classleveldb_1_1_filter_policy_a355e9797e16dd16b93d19056781126b2}} 
+virtual void {\bfseries Create\+Filter} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$keys, int n, std\+::string $\ast$dst) const =0
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_filter_policy_a6f8ba10ea25e0b4b8d0a6607c361c718}\label{classleveldb_1_1_filter_policy_a6f8ba10ea25e0b4b8d0a6607c361c718}} 
+virtual bool {\bfseries Key\+May\+Match} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&filter) const =0
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/include/leveldb/filter\+\_\+policy.\+h\item 
+P\+I\+V\+X/src/leveldb/util/filter\+\_\+policy.\+cc\end{DoxyCompactItemize}

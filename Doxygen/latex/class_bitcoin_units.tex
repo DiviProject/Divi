@@ -1,0 +1,136 @@
+\hypertarget{class_bitcoin_units}{}\section{Bitcoin\+Units Class Reference}
+\label{class_bitcoin_units}\index{Bitcoin\+Units@{Bitcoin\+Units}}
+
+
+{\ttfamily \#include $<$bitcoinunits.\+h$>$}
+
+Inheritance diagram for Bitcoin\+Units\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_bitcoin_units}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_bitcoin_units_ae41018ba530b4c8bdc74fd163709fb9d}{Unit}} \{ {\bfseries P\+IV}, 
+{\bfseries m\+P\+IV}, 
+{\bfseries u\+P\+IV}
+ \}
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_a5151919ed4f75e0597047b0287b9ebf8}\label{class_bitcoin_units_a5151919ed4f75e0597047b0287b9ebf8}} 
+enum {\bfseries Separator\+Style} \{ {\bfseries separator\+Never}, 
+{\bfseries separator\+Standard}, 
+{\bfseries separator\+Always}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_ae4ca04589b255e9fc4c8dd28c56a7347}\label{class_bitcoin_units_ae4ca04589b255e9fc4c8dd28c56a7347}} 
+{\bfseries Bitcoin\+Units} (Q\+Object $\ast$parent)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_a9354c3d913372b03101a23dc9cd18023}\label{class_bitcoin_units_a9354c3d913372b03101a23dc9cd18023}} 
+static Q\+String {\bfseries remove\+Spaces} (Q\+String text)
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_a310bc10d6973f335b5757a341909b7fe}\label{class_bitcoin_units_a310bc10d6973f335b5757a341909b7fe}} 
+static C\+Amount \mbox{\hyperlink{class_bitcoin_units_a310bc10d6973f335b5757a341909b7fe}{max\+Money}} ()
+\begin{DoxyCompactList}\small\item\em Return maximum number of base units (Satoshis) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Static A\+PI}\par
+{\em Unit conversion and formatting }\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_acb8409daeca006436380f69b4ad4903a}\label{class_bitcoin_units_acb8409daeca006436380f69b4ad4903a}} 
+static Q\+List$<$ \mbox{\hyperlink{class_bitcoin_units_ae41018ba530b4c8bdc74fd163709fb9d}{Unit}} $>$ \mbox{\hyperlink{class_bitcoin_units_acb8409daeca006436380f69b4ad4903a}{available\+Units}} ()
+\begin{DoxyCompactList}\small\item\em Get list of units, for drop-\/down box. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_a81cbc41480adfb600dad79711d336e5f}\label{class_bitcoin_units_a81cbc41480adfb600dad79711d336e5f}} 
+static bool \mbox{\hyperlink{class_bitcoin_units_a81cbc41480adfb600dad79711d336e5f}{valid}} (int unit)
+\begin{DoxyCompactList}\small\item\em Is unit ID valid? \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_a595f9407b7113f660bec04155e2c7394}\label{class_bitcoin_units_a595f9407b7113f660bec04155e2c7394}} 
+static Q\+String \mbox{\hyperlink{class_bitcoin_units_a595f9407b7113f660bec04155e2c7394}{id}} (int unit)
+\begin{DoxyCompactList}\small\item\em Identifier, e.\+g. for image names. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_a4cf46136434ed30728608e67e90a9cbe}\label{class_bitcoin_units_a4cf46136434ed30728608e67e90a9cbe}} 
+static Q\+String \mbox{\hyperlink{class_bitcoin_units_a4cf46136434ed30728608e67e90a9cbe}{name}} (int unit)
+\begin{DoxyCompactList}\small\item\em Short name. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_a8918c3f3da1279d923256166aa7066ae}\label{class_bitcoin_units_a8918c3f3da1279d923256166aa7066ae}} 
+static Q\+String \mbox{\hyperlink{class_bitcoin_units_a8918c3f3da1279d923256166aa7066ae}{description}} (int unit)
+\begin{DoxyCompactList}\small\item\em Longer description. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_ae967b9e6ecbb8f041bfe398d27533b09}\label{class_bitcoin_units_ae967b9e6ecbb8f041bfe398d27533b09}} 
+static qint64 \mbox{\hyperlink{class_bitcoin_units_ae967b9e6ecbb8f041bfe398d27533b09}{factor}} (int unit)
+\begin{DoxyCompactList}\small\item\em Number of Satoshis (1e-\/8) per unit. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_a3f0fc21634520ea06c684ba0d7e25f2f}\label{class_bitcoin_units_a3f0fc21634520ea06c684ba0d7e25f2f}} 
+static int \mbox{\hyperlink{class_bitcoin_units_a3f0fc21634520ea06c684ba0d7e25f2f}{decimals}} (int unit)
+\begin{DoxyCompactList}\small\item\em Number of decimals left. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_ab07437e5a788c80a82d75e3714bd3925}\label{class_bitcoin_units_ab07437e5a788c80a82d75e3714bd3925}} 
+static Q\+String \mbox{\hyperlink{class_bitcoin_units_ab07437e5a788c80a82d75e3714bd3925}{format}} (int unit, const C\+Amount \&amount, bool plussign=false, Separator\+Style separators=separator\+Standard)
+\begin{DoxyCompactList}\small\item\em Format as string. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_ac1919e2899157a9af5ada7495eeca3ea}\label{class_bitcoin_units_ac1919e2899157a9af5ada7495eeca3ea}} 
+static Q\+String {\bfseries simple\+Format} (int unit, const C\+Amount \&amount, bool plussign=false, Separator\+Style separators=separator\+Standard)
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_aef9fb7509257bc84ee459d7f0c663020}\label{class_bitcoin_units_aef9fb7509257bc84ee459d7f0c663020}} 
+static Q\+String \mbox{\hyperlink{class_bitcoin_units_aef9fb7509257bc84ee459d7f0c663020}{format\+With\+Unit}} (int unit, const C\+Amount \&amount, bool plussign=false, Separator\+Style separators=separator\+Standard)
+\begin{DoxyCompactList}\small\item\em Format as string (with unit) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_a5f4ef08b81386d393a16001bdfef5d56}\label{class_bitcoin_units_a5f4ef08b81386d393a16001bdfef5d56}} 
+static Q\+String {\bfseries format\+Html\+With\+Unit} (int unit, const C\+Amount \&amount, bool plussign=false, Separator\+Style separators=separator\+Standard)
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_a27f991fa46140fcdbb59d842996ee711}\label{class_bitcoin_units_a27f991fa46140fcdbb59d842996ee711}} 
+static Q\+String \mbox{\hyperlink{class_bitcoin_units_a27f991fa46140fcdbb59d842996ee711}{floor\+With\+Unit}} (int unit, const C\+Amount \&amount, bool plussign=false, Separator\+Style separators=separator\+Standard)
+\begin{DoxyCompactList}\small\item\em Format as string (with unit) but floor value up to \char`\"{}digits\char`\"{} settings. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_a4aa9805ae1c4b512fabf91451945f503}\label{class_bitcoin_units_a4aa9805ae1c4b512fabf91451945f503}} 
+static Q\+String {\bfseries floor\+Html\+With\+Unit} (int unit, const C\+Amount \&amount, bool plussign=false, Separator\+Style separators=separator\+Standard)
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_a23b5ed29b71bd5039776e8f3a87d668d}\label{class_bitcoin_units_a23b5ed29b71bd5039776e8f3a87d668d}} 
+static bool \mbox{\hyperlink{class_bitcoin_units_a23b5ed29b71bd5039776e8f3a87d668d}{parse}} (int unit, const Q\+String \&value, C\+Amount $\ast$val\+\_\+out)
+\begin{DoxyCompactList}\small\item\em Parse string to coin amount. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_units_ae15618373f7e2230cb6263a0f06d2180}\label{class_bitcoin_units_ae15618373f7e2230cb6263a0f06d2180}} 
+static Q\+String \mbox{\hyperlink{class_bitcoin_units_ae15618373f7e2230cb6263a0f06d2180}{get\+Amount\+Column\+Title}} (int unit)
+\begin{DoxyCompactList}\small\item\em Gets title for amount column including current display unit if options\+Model reference available $\ast$/. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Abstract\+List\+Model implementation}
+\label{_amgrp2e845e8604997c2ca3724f5375e55564}%
+ List model for unit drop-\/down selection box. \begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_bitcoin_units_a094a1a150647021c419f06a923795959}{Role\+Index}} \{ \mbox{\hyperlink{class_bitcoin_units_a094a1a150647021c419f06a923795959adba268d796f853874a3b830bb92c5c80}{Unit\+Role}} = Qt\+:\+:User\+Role
+ \}
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_aa3f7476c7e9a452082977a48384d8814}\label{class_bitcoin_units_aa3f7476c7e9a452082977a48384d8814}} 
+int {\bfseries row\+Count} (const Q\+Model\+Index \&parent) const
+\item 
+\mbox{\Hypertarget{class_bitcoin_units_a576f4d0219a807146cf0306a824c5ef9}\label{class_bitcoin_units_a576f4d0219a807146cf0306a824c5ef9}} 
+Q\+Variant {\bfseries data} (const Q\+Model\+Index \&index, int role) const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+P\+I\+VX unit definitions. Encapsulates parsing and formatting and serves as list model for drop-\/down selection boxes. 
+
+\subsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{class_bitcoin_units_a094a1a150647021c419f06a923795959}\label{class_bitcoin_units_a094a1a150647021c419f06a923795959}} 
+\index{Bitcoin\+Units@{Bitcoin\+Units}!Role\+Index@{Role\+Index}}
+\index{Role\+Index@{Role\+Index}!Bitcoin\+Units@{Bitcoin\+Units}}
+\subsubsection{\texorpdfstring{Role\+Index}{RoleIndex}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{class_bitcoin_units_a094a1a150647021c419f06a923795959}{Bitcoin\+Units\+::\+Role\+Index}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Unit\+Role@{Unit\+Role}!Bitcoin\+Units@{Bitcoin\+Units}}\index{Bitcoin\+Units@{Bitcoin\+Units}!Unit\+Role@{Unit\+Role}}}\mbox{\Hypertarget{class_bitcoin_units_a094a1a150647021c419f06a923795959adba268d796f853874a3b830bb92c5c80}\label{class_bitcoin_units_a094a1a150647021c419f06a923795959adba268d796f853874a3b830bb92c5c80}} 
+Unit\+Role&Unit identifier \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{class_bitcoin_units_ae41018ba530b4c8bdc74fd163709fb9d}\label{class_bitcoin_units_ae41018ba530b4c8bdc74fd163709fb9d}} 
+\index{Bitcoin\+Units@{Bitcoin\+Units}!Unit@{Unit}}
+\index{Unit@{Unit}!Bitcoin\+Units@{Bitcoin\+Units}}
+\subsubsection{\texorpdfstring{Unit}{Unit}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{class_bitcoin_units_ae41018ba530b4c8bdc74fd163709fb9d}{Bitcoin\+Units\+::\+Unit}}}
+
+P\+I\+VX units. \begin{DoxyNote}{Note}
+Source\+: \href{https://en.bitcoin.it/wiki/Units}{\tt https\+://en.\+bitcoin.\+it/wiki/\+Units} . Please add only sensible ones 
+\end{DoxyNote}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/bitcoinunits.\+h\item 
+P\+I\+V\+X/src/qt/bitcoinunits.\+cpp\end{DoxyCompactItemize}

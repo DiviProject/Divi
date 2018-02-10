@@ -1,0 +1,75 @@
+\hypertarget{class_c_base58_data}{}\section{C\+Base58\+Data Class Reference}
+\label{class_c_base58_data}\index{C\+Base58\+Data@{C\+Base58\+Data}}
+
+
+{\ttfamily \#include $<$base58.\+h$>$}
+
+Inheritance diagram for C\+Base58\+Data\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.581921cm]{class_c_base58_data}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a250fa3bc97d03c7d87de5485c8b49b57}\label{class_c_base58_data_a250fa3bc97d03c7d87de5485c8b49b57}} 
+bool {\bfseries Set\+String} (const char $\ast$psz, unsigned int n\+Version\+Bytes=1)
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a8e0cba75a3e0a5b21defaf1471d8659c}\label{class_c_base58_data_a8e0cba75a3e0a5b21defaf1471d8659c}} 
+bool {\bfseries Set\+String} (const std\+::string \&str)
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a7dc91af403ca02694b3247b15604e220}\label{class_c_base58_data_a7dc91af403ca02694b3247b15604e220}} 
+std\+::string {\bfseries To\+String} () const
+\item 
+\mbox{\Hypertarget{class_c_base58_data_ad89d6bd7afa8d831dffce12803c5f58d}\label{class_c_base58_data_ad89d6bd7afa8d831dffce12803c5f58d}} 
+int {\bfseries Compare\+To} (const \mbox{\hyperlink{class_c_base58_data}{C\+Base58\+Data}} \&b58) const
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a2e7a634c3a008adf3f74d72ed9dbd68c}\label{class_c_base58_data_a2e7a634c3a008adf3f74d72ed9dbd68c}} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_c_base58_data}{C\+Base58\+Data}} \&b58) const
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a1d99c2d0a82cbe648ba2a99e41386486}\label{class_c_base58_data_a1d99c2d0a82cbe648ba2a99e41386486}} 
+bool {\bfseries operator$<$=} (const \mbox{\hyperlink{class_c_base58_data}{C\+Base58\+Data}} \&b58) const
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a0cac1805398e2b09a498ba884c7a0057}\label{class_c_base58_data_a0cac1805398e2b09a498ba884c7a0057}} 
+bool {\bfseries operator$>$=} (const \mbox{\hyperlink{class_c_base58_data}{C\+Base58\+Data}} \&b58) const
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a7377c5628c43551ca22af1c0dfbaebae}\label{class_c_base58_data_a7377c5628c43551ca22af1c0dfbaebae}} 
+bool {\bfseries operator$<$} (const \mbox{\hyperlink{class_c_base58_data}{C\+Base58\+Data}} \&b58) const
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a7d8052eacc8de55a0f4ec91306dfbec3}\label{class_c_base58_data_a7d8052eacc8de55a0f4ec91306dfbec3}} 
+bool {\bfseries operator$>$} (const \mbox{\hyperlink{class_c_base58_data}{C\+Base58\+Data}} \&b58) const
+\end{DoxyCompactItemize}
+\subsection*{Protected Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a193d64487a0b4f6df24f8bd380956ec1}\label{class_c_base58_data_a193d64487a0b4f6df24f8bd380956ec1}} 
+typedef std\+::vector$<$ unsigned char, \mbox{\hyperlink{structzero__after__free__allocator}{zero\+\_\+after\+\_\+free\+\_\+allocator}}$<$ unsigned char $>$ $>$ \mbox{\hyperlink{class_c_base58_data_a193d64487a0b4f6df24f8bd380956ec1}{vector\+\_\+uchar}}
+\begin{DoxyCompactList}\small\item\em the actually encoded data \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_base58_data_afab1c06a0a4f631fd889434a2bc48c27}\label{class_c_base58_data_afab1c06a0a4f631fd889434a2bc48c27}} 
+void {\bfseries Set\+Data} (const std\+::vector$<$ unsigned char $>$ \&vch\+Version\+In, const void $\ast$pdata, size\+\_\+t n\+Size)
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a8314b00685e590b4005be5cdfd36aeb9}\label{class_c_base58_data_a8314b00685e590b4005be5cdfd36aeb9}} 
+void {\bfseries Set\+Data} (const std\+::vector$<$ unsigned char $>$ \&vch\+Version\+In, const unsigned char $\ast$pbegin, const unsigned char $\ast$pend)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_base58_data_a110c1008f399053098a1bdf63408e923}\label{class_c_base58_data_a110c1008f399053098a1bdf63408e923}} 
+std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{class_c_base58_data_a110c1008f399053098a1bdf63408e923}{vch\+Version}}
+\begin{DoxyCompactList}\small\item\em the version byte(s) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_base58_data_ae7ef7dfb93683aa4aaee8b74da5abb9c}\label{class_c_base58_data_ae7ef7dfb93683aa4aaee8b74da5abb9c}} 
+\mbox{\hyperlink{class_c_base58_data_a193d64487a0b4f6df24f8bd380956ec1}{vector\+\_\+uchar}} {\bfseries vch\+Data}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Base class for all base58-\/encoded data 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/base58.\+h\item 
+P\+I\+V\+X/src/base58.\+cpp\end{DoxyCompactItemize}

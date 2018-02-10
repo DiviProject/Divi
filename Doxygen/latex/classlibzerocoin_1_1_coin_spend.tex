@@ -1,0 +1,138 @@
+\hypertarget{classlibzerocoin_1_1_coin_spend}{}\section{libzerocoin\+:\+:Coin\+Spend Class Reference}
+\label{classlibzerocoin_1_1_coin_spend}\index{libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}}
+
+
+{\ttfamily \#include $<$Coin\+Spend.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_af4adb9a70e147e566ce7a54b1747e517}\label{classlibzerocoin_1_1_coin_spend_af4adb9a70e147e566ce7a54b1747e517}} 
+{\footnotesize template$<$typename Stream $>$ }\\{\bfseries Coin\+Spend} (const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$p, Stream \&strm)
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_coin_spend_ab26a001c08285be91ca2bf1d310d3cd6}{Coin\+Spend}} (const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$p, const \mbox{\hyperlink{classlibzerocoin_1_1_private_coin}{Private\+Coin}} \&coin, \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&a, const uint32\+\_\+t checksum, const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness}{Accumulator\+Witness}} \&witness, const \mbox{\hyperlink{classuint256}{uint256}} \&ptx\+Hash)
+\item 
+const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} \& \mbox{\hyperlink{classlibzerocoin_1_1_coin_spend_a125e5f3e268571a5549aa10bf9ad0f2b}{get\+Coin\+Serial\+Number}} () const
+\item 
+Coin\+Denomination \mbox{\hyperlink{classlibzerocoin_1_1_coin_spend_a1e36726a516e8b0a110fa40afbcc76bc}{get\+Denomination}} () const
+\item 
+uint32\+\_\+t \mbox{\hyperlink{classlibzerocoin_1_1_coin_spend_af28d898602cc07bd02f77fd8bc641600}{get\+Accumulator\+Checksum}} () const
+\item 
+\mbox{\hyperlink{classuint256}{uint256}} \mbox{\hyperlink{classlibzerocoin_1_1_coin_spend_a58d9ad8806aac3e37ff1110d95a12bbb}{get\+Tx\+Out\+Hash}} () const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_a993416fb14e9c64efd30250d660aa6e0}\label{classlibzerocoin_1_1_coin_spend_a993416fb14e9c64efd30250d660aa6e0}} 
+\mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} {\bfseries get\+Acc\+Commitment} () const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_a1c8a4c89acab5b530f728c4a57389c6f}\label{classlibzerocoin_1_1_coin_spend_a1c8a4c89acab5b530f728c4a57389c6f}} 
+\mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} {\bfseries get\+Serial\+Comm} () const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_ad8005b899d45939c63ccaba43011c85b}\label{classlibzerocoin_1_1_coin_spend_ad8005b899d45939c63ccaba43011c85b}} 
+bool {\bfseries Verify} (const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&a) const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_a64eae09a4ab03e01e46f7a967f0ab1b9}\label{classlibzerocoin_1_1_coin_spend_a64eae09a4ab03e01e46f7a967f0ab1b9}} 
+bool {\bfseries Has\+Valid\+Serial} (\mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$params) const
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_a9d3f9990bf4a44242f392fbda37503f5}\label{classlibzerocoin_1_1_coin_spend_a9d3f9990bf4a44242f392fbda37503f5}} 
+\mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} {\bfseries Calculate\+Valid\+Serial} (\mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$params)
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_a1e805030691223c64506a3c5558423d0}\label{classlibzerocoin_1_1_coin_spend_a1e805030691223c64506a3c5558423d0}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_aee9039ba19056a64591ba4c6f9720290}\label{classlibzerocoin_1_1_coin_spend_aee9039ba19056a64591ba4c6f9720290}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The complete proof needed to spend a zerocoin. Composes together a proof that a coin is accumulated and that it has a given serial number. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_ab26a001c08285be91ca2bf1d310d3cd6}\label{classlibzerocoin_1_1_coin_spend_ab26a001c08285be91ca2bf1d310d3cd6}} 
+\index{libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}!Coin\+Spend@{Coin\+Spend}}
+\index{Coin\+Spend@{Coin\+Spend}!libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}}
+\subsubsection{\texorpdfstring{Coin\+Spend()}{CoinSpend()}}
+{\footnotesize\ttfamily libzerocoin\+::\+Coin\+Spend\+::\+Coin\+Spend (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{Zerocoin\+Params}} $\ast$}]{p,  }\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_private_coin}{Private\+Coin}} \&}]{coin,  }\item[{\mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} \&}]{a,  }\item[{const uint32\+\_\+t}]{checksum,  }\item[{const \mbox{\hyperlink{classlibzerocoin_1_1_accumulator_witness}{Accumulator\+Witness}} \&}]{witness,  }\item[{const \mbox{\hyperlink{classuint256}{uint256}} \&}]{ptx\+Hash }\end{DoxyParamCaption})}
+
+Generates a proof spending a zerocoin.
+
+To use this, provide an unspent \mbox{\hyperlink{classlibzerocoin_1_1_private_coin}{Private\+Coin}}, the latest \mbox{\hyperlink{classlibzerocoin_1_1_accumulator}{Accumulator}} (e.\+g from the most recent Bitcoin block) containing the public part of the coin, a witness to that, and whatever medeta data is needed.
+
+Once constructed, this proof can be serialized and sent. It is validated simply be calling validate. \begin{DoxyWarning}{Warning}
+Validation only checks that the proof is correct 
+
+for the specified values in this class. These values must be validated Clients ought to check that 1) params is the right params 2) the accumulator actually is in some block 3) that the serial number is unspent 4) that the transaction
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+{\em p} & cryptographic parameters \\
+\hline
+{\em coin} & The coin to be spend \\
+\hline
+{\em a} & The current accumulator containing the coin \\
+\hline
+{\em witness} & The witness showing that the accumulator contains the coin \\
+\hline
+{\em a} & hash of the partial transaction that contains this coin spend \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Zerocoin\+Exception} & if the process fails \\
+\hline
+\end{DoxyExceptions}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_af28d898602cc07bd02f77fd8bc641600}\label{classlibzerocoin_1_1_coin_spend_af28d898602cc07bd02f77fd8bc641600}} 
+\index{libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}!get\+Accumulator\+Checksum@{get\+Accumulator\+Checksum}}
+\index{get\+Accumulator\+Checksum@{get\+Accumulator\+Checksum}!libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}}
+\subsubsection{\texorpdfstring{get\+Accumulator\+Checksum()}{getAccumulatorChecksum()}}
+{\footnotesize\ttfamily uint32\+\_\+t libzerocoin\+::\+Coin\+Spend\+::get\+Accumulator\+Checksum (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Gets the checksum of the accumulator used in this proof.
+
+\begin{DoxyReturn}{Returns}
+the checksum 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_a125e5f3e268571a5549aa10bf9ad0f2b}\label{classlibzerocoin_1_1_coin_spend_a125e5f3e268571a5549aa10bf9ad0f2b}} 
+\index{libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}!get\+Coin\+Serial\+Number@{get\+Coin\+Serial\+Number}}
+\index{get\+Coin\+Serial\+Number@{get\+Coin\+Serial\+Number}!libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}}
+\subsubsection{\texorpdfstring{get\+Coin\+Serial\+Number()}{getCoinSerialNumber()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}}\& libzerocoin\+::\+Coin\+Spend\+::get\+Coin\+Serial\+Number (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Returns the serial number of the coin spend by this proof.
+
+\begin{DoxyReturn}{Returns}
+the coin\textquotesingle{}s serial number 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_a1e36726a516e8b0a110fa40afbcc76bc}\label{classlibzerocoin_1_1_coin_spend_a1e36726a516e8b0a110fa40afbcc76bc}} 
+\index{libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}!get\+Denomination@{get\+Denomination}}
+\index{get\+Denomination@{get\+Denomination}!libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}}
+\subsubsection{\texorpdfstring{get\+Denomination()}{getDenomination()}}
+{\footnotesize\ttfamily Coin\+Denomination libzerocoin\+::\+Coin\+Spend\+::get\+Denomination (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Gets the denomination of the coin spent in this proof.
+
+\begin{DoxyReturn}{Returns}
+the denomination 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlibzerocoin_1_1_coin_spend_a58d9ad8806aac3e37ff1110d95a12bbb}\label{classlibzerocoin_1_1_coin_spend_a58d9ad8806aac3e37ff1110d95a12bbb}} 
+\index{libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}!get\+Tx\+Out\+Hash@{get\+Tx\+Out\+Hash}}
+\index{get\+Tx\+Out\+Hash@{get\+Tx\+Out\+Hash}!libzerocoin\+::\+Coin\+Spend@{libzerocoin\+::\+Coin\+Spend}}
+\subsubsection{\texorpdfstring{get\+Tx\+Out\+Hash()}{getTxOutHash()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classuint256}{uint256}} libzerocoin\+::\+Coin\+Spend\+::get\+Tx\+Out\+Hash (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Gets the txout hash used in this proof.
+
+\begin{DoxyReturn}{Returns}
+the txout hash 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_coin_spend_8h}{Coin\+Spend.\+h}}\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_coin_spend_8cpp}{Coin\+Spend.\+cpp}}\end{DoxyCompactItemize}

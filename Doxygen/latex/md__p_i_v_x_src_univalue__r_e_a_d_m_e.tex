@@ -1,0 +1,23 @@
+\subsection*{Summary}
+
+A universal value class, with J\+S\+ON encoding and decoding.
+
+\mbox{\hyperlink{class_uni_value}{Uni\+Value}} is an abstract data type that may be a null, boolean, string, number, array container, or a key/value dictionary container, nested to an arbitrary depth.
+
+This class is aligned with the J\+S\+ON standard, \href{https://tools.ietf.org/html/rfc7159.html}{\tt R\+FC 7159}.
+
+\subsection*{Installation}
+
+This project is a standard G\+NU \href{https://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html}{\tt autotools} project. Build and install instructions are available in the {\ttfamily I\+N\+S\+T\+A\+LL} file provided with G\+NU autotools.
+
+
+\begin{DoxyCode}
+$ ./autogen.sh
+$ ./configure
+$ make
+\end{DoxyCode}
+
+
+\subsection*{Design}
+
+\mbox{\hyperlink{class_uni_value}{Uni\+Value}} provides a single dynamic R\+A\+II C++ object class, and minimizes template use (contra json\+\_\+spirit). 

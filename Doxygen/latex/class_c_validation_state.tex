@@ -1,0 +1,50 @@
+\hypertarget{class_c_validation_state}{}\section{C\+Validation\+State Class Reference}
+\label{class_c_validation_state}\index{C\+Validation\+State@{C\+Validation\+State}}
+
+
+{\ttfamily \#include $<$main.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_validation_state_a3c6786d00da8d1c5df25b4c3876409e8}\label{class_c_validation_state_a3c6786d00da8d1c5df25b4c3876409e8}} 
+bool {\bfseries DoS} (int level, bool ret=false, unsigned char ch\+Reject\+Code\+In=0, std\+::string str\+Reject\+Reason\+In=\char`\"{}\char`\"{}, bool corruption\+In=false)
+\item 
+\mbox{\Hypertarget{class_c_validation_state_a88ff08b67f7f44bb3c7f7053bb1ee6fc}\label{class_c_validation_state_a88ff08b67f7f44bb3c7f7053bb1ee6fc}} 
+bool {\bfseries Invalid} (bool ret=false, unsigned char \+\_\+ch\+Reject\+Code=0, std\+::string \+\_\+str\+Reject\+Reason=\char`\"{}\char`\"{})
+\item 
+\mbox{\Hypertarget{class_c_validation_state_abf67ad56f62df5679d47c289684c554c}\label{class_c_validation_state_abf67ad56f62df5679d47c289684c554c}} 
+bool {\bfseries Error} (std\+::string str\+Reject\+Reason\+In=\char`\"{}\char`\"{})
+\item 
+\mbox{\Hypertarget{class_c_validation_state_a6788cb521cf538ac80413a1c6c3da5e8}\label{class_c_validation_state_a6788cb521cf538ac80413a1c6c3da5e8}} 
+bool {\bfseries Abort} (const std\+::string \&msg)
+\item 
+\mbox{\Hypertarget{class_c_validation_state_a7dc31c88ba63ad17a954f247d21b550c}\label{class_c_validation_state_a7dc31c88ba63ad17a954f247d21b550c}} 
+bool {\bfseries Is\+Valid} () const
+\item 
+\mbox{\Hypertarget{class_c_validation_state_ace1d536f4003d3a6689fccd0f496c977}\label{class_c_validation_state_ace1d536f4003d3a6689fccd0f496c977}} 
+bool {\bfseries Is\+Invalid} () const
+\item 
+\mbox{\Hypertarget{class_c_validation_state_aeac85935d695254422bc5f2db8a5516b}\label{class_c_validation_state_aeac85935d695254422bc5f2db8a5516b}} 
+bool {\bfseries Is\+Error} () const
+\item 
+\mbox{\Hypertarget{class_c_validation_state_a37ddca2d02e6cd6394e04040148edb12}\label{class_c_validation_state_a37ddca2d02e6cd6394e04040148edb12}} 
+bool {\bfseries Is\+Invalid} (int \&n\+Do\+S\+Out) const
+\item 
+\mbox{\Hypertarget{class_c_validation_state_add2b2dc505a8527fda32295b65bb636b}\label{class_c_validation_state_add2b2dc505a8527fda32295b65bb636b}} 
+bool {\bfseries Corruption\+Possible} () const
+\item 
+\mbox{\Hypertarget{class_c_validation_state_ad90959549444c9795484785d8af97850}\label{class_c_validation_state_ad90959549444c9795484785d8af97850}} 
+unsigned char {\bfseries Get\+Reject\+Code} () const
+\item 
+\mbox{\Hypertarget{class_c_validation_state_a8fa9612cb40c3c8592f7cd29b5931ccd}\label{class_c_validation_state_a8fa9612cb40c3c8592f7cd29b5931ccd}} 
+std\+::string {\bfseries Get\+Reject\+Reason} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Capture information about block/transaction validation 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/main.\+h\end{DoxyCompactItemize}

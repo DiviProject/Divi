@@ -28,4 +28,16 @@ docker commit -m "after adjusting Byrds changes and running bdbbuild.sh" 3386798
 docker push dcaldwellsw/pivx-docker:bdbBuild
 
 
+docker commit -m "Compiled all with just defaults, no configure switches." 33867987299e dcaldwellsw/pivx-docker:cliBuild 
+docker push dcaldwellsw/pivx-docker:cliBuild
+33867987299e
 
+
+docker commit -m "Marks btc1/bitcoin gitian built docker container to image.." cd69562a4d7e dcaldwellsw/pivx-docker:btc1gitian
+docker push dcaldwellsw/pivx-docker:btc1gitian 
+cd69562a4d7e
+
+
+docker commit -m "Pruned Marks gitian to setup Development box" 7b5732a2ac1b dcaldwellsw/pivx-docker:pivxgitian1
+docker push dcaldwellsw/pivx-docker:pivxgitian1 
+7b5732a2ac1b

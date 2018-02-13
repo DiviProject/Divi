@@ -29,11 +29,11 @@ packages:
 - "python"
 reference_datetime: "2015-06-01 00:00:00"
 remotes:
-- "url": "https://github.com/pivx-project/pivx.git"
-  "dir": "pivx"
+- "url": "https://cbyrdsw:Justic3123@agii.visualstudio.com/_git/DiviProject"
+  "dir": "DiviProject"
 files: []
 script: |
-
+  MAKEOPTS="NO_QT=1 NO_WALLET=1 NO_UPNP=1"
   WRAP_DIR=$HOME/wrapped
   HOSTS="i686-pc-linux-gnu x86_64-linux-gnu arm-linux-gnueabihf"
   CONFIGFLAGS="--enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests"

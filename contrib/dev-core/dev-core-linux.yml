@@ -1,5 +1,5 @@
 ---
-name: "DiviProject-linux-3.0"
+name: "pivx-linux-3.0"
 enable_cache: true
 suites:
 - "trusty"
@@ -29,13 +29,13 @@ packages:
 - "python"
 reference_datetime: "2015-06-01 00:00:00"
 remotes:
-- "url": "https://cbyrdsw:Justic3123@agii.visualstudio.com/_git/DiviProject"
-  "dir": "DiviProject"
+- "url": "https://github.com/pivx-project/pivx.git"
+  "dir": "pivx"
 files: []
 script: |
-  MAKEOPTS="NO_QT=1 NO_WALLET=1 NO_UPNP=1"
+  MAKEOPTS="NO_QT=1"
   WRAP_DIR=$HOME/wrapped
-  HOSTS="i686-pc-linux-gnu x86_64-linux-gnu arm-linux-gnueabihf"
+  HOSTS="x86_64-linux-gnu"
   CONFIGFLAGS="--enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests"
   FAKETIME_HOST_PROGS=""
   FAKETIME_PROGS="date ar ranlib nm"
@@ -114,7 +114,7 @@ script: |
   chmod +x ${WRAP_DIR}/${prog}
   done
 
-  cd DiviProject
+  cd pivx
   BASEPREFIX=`pwd`/depends
   # Build dependencies for each host
   for i in $HOSTS; do
@@ -136,13 +136,13 @@ script: |
   ./autogen.sh
   CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
   make dist
-  SOURCEDIST=`echo DiviProject-*.tar.gz`
+  SOURCEDIST=`echo pivx-*.tar.gz`
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
   # Correct tar file order
   mkdir -p temp
   pushd temp
   tar xf ../$SOURCEDIST
-  find DiviProject-* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
+  find pivx-* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
   popd
 
   ORIGPATH="$PATH"

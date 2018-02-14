@@ -41,3 +41,4 @@ cd69562a4d7e
 docker commit -m "Pruned Marks gitian to setup Development box" 7b5732a2ac1b dcaldwellsw/pivx-docker:pivxgitian1
 docker push dcaldwellsw/pivx-docker:pivxgitian1 
 7b5732a2ac1b
+docker commit -m "CLI PIVX container defaults" efdfdd9adb7c dcaldwellsw/pivx-docker:cliBuild 

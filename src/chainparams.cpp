@@ -152,7 +152,7 @@ public:
          *     CTxOut(nValue=50.00000000, scriptPubKey=0xA9037BAC7050C479B121CF)
          *   vMerkleTree: e0028e
          */
-        const char* pszTimestamp = "What happened to the Tesla that Elon Musk shot into space?";
+        const char* pszTimestamp = "U.S. News & World Report Jan 28 2016 With His Absence, Trump Dominates Another Debate";
         CMutableTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -163,9 +163,9 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1518723178;
+        genesis.nTime = 1454124731;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 8118856;
+        genesis.nNonce = 2402015;
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x0000041e482b9b9691d98eefb48473405c0b8ec31b76df3797c74a78680ef818"));
@@ -261,8 +261,8 @@ public:
         nBlockEnforceInvalidUTXO = 9902850; //Start enforcing the invalid UTXO's
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1518723178;
-        genesis.nNonce = 8118856;
+        genesis.nTime = 1454124731;
+        genesis.nNonce = 2402015;
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x0000041e482b9b9691d98eefb48473405c0b8ec31b76df3797c74a78680ef818"));
@@ -331,9 +331,9 @@ public:
         nTargetTimespan = 24 * 60 * 60; // Pivx: 1 day
         nTargetSpacing = 1 * 60;        // Pivx: 1 minutes
         bnProofOfWorkLimit = ~uint256(0) >> 1;
-        genesis.nTime = 1518723178;
+        genesis.nTime = 1454124731;
         genesis.nBits = 0x207fffff;
-        genesis.nNonce = 22345;
+        genesis.nNonce = 12345;
 
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;

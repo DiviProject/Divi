@@ -171,12 +171,12 @@ public:
         if (true && genesis.GetHash() != hashGenesisBlock)
         {
             printf("recalculating params for mainnet.\n");
-            printf("old mainnet genesis nonce: %s\n", genesis.nNonce.ToString().c_str());
+            printf("old mainnet genesis nonce: %s\n", genesis.nNonce.ToString());
             printf("old mainnet genesis hash:  %s\n", hashGenesisBlock.ToString().c_str());
             // deliberately empty for loop finds nonce value.
             for(genesis.nNonce == 0; genesis.GetHash() > bnProofOfWorkLimit; genesis.nNonce++){ } 
             printf("new mainnet genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
-            printf("new mainnet genesis nonce: %s\n", genesis.nNonce.ToString().c_str());
+            printf("new mainnet genesis nonce: %s\n", genesis.nNonce.ToString());
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
 

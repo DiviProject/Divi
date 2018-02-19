@@ -351,12 +351,31 @@ public:
         nTargetTimespan = 24 * 60 * 60; // Pivx: 1 day
         nTargetSpacing = 1 * 60;        // Pivx: 1 minutes
         bnProofOfWorkLimit = ~uint256(0) >> 1;
-        genesis.nTime = 1454124731;
+        genesis.nTime = 1518723178;
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12345;
 
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
+
+        hashGenesisBlock = uint256("0x01");
+        
+        new mainnet genesis merkle root: 8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f
+        new mainnet genesis nonce: 94062553
+        new mainnet genesis hash: 000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5
+        
+        if (true && genesis.GetHash() != hashGenesisBlock)
+        {
+            printf("recalculating params for mainnet.\n");
+            printf("old mainnet genesis nonce: %d\n", genesis.nNonce);
+            printf("old mainnet genesis hash:  %s\n", hashGenesisBlock.ToString().c_str());
+            // deliberately empty for loop finds nonce value.
+            for(genesis.nNonce == 0; genesis.GetHash() > bnProofOfWorkLimit; genesis.nNonce++){ } 
+            printf("new mainnet genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
+            printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
+            printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
+        }
+
         assert(hashGenesisBlock == uint256("0x4f023a2120d9127b21bbad01724fdb79b519f593f2a85b60d3d79160ec5f29df"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.

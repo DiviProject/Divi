@@ -53,7 +53,7 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of
-    (0, uint256("0x000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5"));
+    (0, uint256("0x00000e6cc349dc1757a8b28e9121adb148fefa9bf490f6a660a077a6a4320834"));
     //(424998, uint256("f31e381eedb0ed3ed65fcc98cc71f36012bee32e8efd017c4f9fb0620fd35f6b"))
     //(616764, uint256("29dd0bd1c59484f290896687b4ffb6a49afa5c498caf61967c69a541f8191557")) //first block to use modifierV2
     //(623933, uint256("c7aafa648a0f1450157dc93bd4d7448913a85b7448f803b4ab970d91fc2a7da7"))
@@ -165,15 +165,11 @@ public:
         genesis.nVersion = 1;
         genesis.nTime = 1518723178;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 94062553;
+        genesis.nNonce = 95551581;
         
         hashGenesisBlock = uint256("0x01");
         
-        //new mainnet genesis merkle root: 8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f
-        //new mainnet genesis nonce: 94062553
-        //new mainnet genesis hash: 000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5
-        
-        if (true && genesis.GetHash() != hashGenesisBlock)
+       if (true && genesis.GetHash() != hashGenesisBlock)
         {
             printf("recalculating params for mainnet.\n");
             printf("old mainnet genesis nonce: %d\n", genesis.nNonce);
@@ -186,8 +182,8 @@ public:
         }
         
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5"));
-        assert(genesis.hashMerkleRoot == uint256("0x8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f"));
+        assert(hashGenesisBlock == uint256("0x00000e6cc349dc1757a8b28e9121adb148fefa9bf490f6a660a077a6a4320834"));
+        assert(genesis.hashMerkleRoot == uint256("8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f"));
 
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "pivx.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "pivx.seed2.fuzzbawls.pw"));    // Secondary DNS Seeder from Fuzzbawls
@@ -285,7 +281,7 @@ public:
         genesis.nNonce = 94062553;
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5"));
+        assert(hashGenesisBlock == uint256("0x00000e6cc349dc1757a8b28e9121adb148fefa9bf490f6a660a077a6a4320834"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -360,11 +356,7 @@ public:
 
         /*
         hashGenesisBlock = uint256("0x01");
-        
-        new mainnet genesis merkle root: 8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f
-        new mainnet genesis nonce: 94062553
-        new mainnet genesis hash: 000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5
-        
+
         if (true && genesis.GetHash() != hashGenesisBlock)
         {
             printf("recalculating params for mainnet.\n");

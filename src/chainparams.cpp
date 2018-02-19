@@ -164,16 +164,27 @@ public:
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
         genesis.nTime = 1518723178;
-        genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 8118856;
+        genesis.nBits = 0x1d00ffff;
+        genesis.nNonce = 92707062;
 
         hashGenesisBlock = genesis.GetHash();
-        //printf('newgenesishash');
-        //printf(hashGenesisBlock);
-        //printf('newmerkleroot');
-        //printf(genesis.hashMerkleRoot);
-        //assert(hashGenesisBlock == uint256("0x0000041e482b9b9691d98eefb48473405c0b8ec31b76df3797c74a78680ef818"));
-        //assert(genesis.hashMerkleRoot == uint256("0x1b2ef6e2f28be914103a277377ae7729dcd125dfeb8bf97bd5964ba72b6dc39b"));
+
+        /*
+        04ffff001d01043a576861742068617070656e656420746f20746865205465736c61207468617420456c6f6e204d75736b2073686f7420696e746f2073706163653f
+        algorithm: SHA256
+        merkle hash: 4ce0a0264ba534a9ea6bd1e4723f77d4b64a121fbb015990aad9972aef1d92e6
+        pszTimestamp: What happened to the Tesla that Elon Musk shot into space?
+        pubkey: 04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f
+        time: 1518723178
+        bits: 0x1d00ffff
+        Searching for genesis hash..
+        142948.0 hash/s, estimate: 8.3 hgenesis hash found!
+        nonce: 92707062
+        genesis hash: 00000000c02530ba0aa427b0e2a8a6b1746a8a11c0105c002e31b0f044c4e625
+        */
+
+        assert(hashGenesisBlock == uint256("0x00000000c02530ba0aa427b0e2a8a6b1746a8a11c0105c002e31b0f044c4e625"));
+        assert(genesis.hashMerkleRoot == uint256("0x4ce0a0264ba534a9ea6bd1e4723f77d4b64a121fbb015990aad9972aef1d92e6"));
 
         vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "pivx.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
         vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "pivx.seed2.fuzzbawls.pw"));    // Secondary DNS Seeder from Fuzzbawls

@@ -359,11 +359,11 @@ public:
         nDefaultPort = 51476;
 
         hashGenesisBlock = uint256("0x01");
-        
+        /*
         new mainnet genesis merkle root: 8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f
         new mainnet genesis nonce: 94062553
         new mainnet genesis hash: 000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5
-        
+        */
         if (true && genesis.GetHash() != hashGenesisBlock)
         {
             printf("recalculating params for mainnet.\n");

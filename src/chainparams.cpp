@@ -357,13 +357,14 @@ public:
 
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
-
-        hashGenesisBlock = uint256("0x01");
+        
         /*
+        hashGenesisBlock = uint256("0x01");
+        
         new mainnet genesis merkle root: 8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f
         new mainnet genesis nonce: 94062553
         new mainnet genesis hash: 000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5
-        */
+        
         if (true && genesis.GetHash() != hashGenesisBlock)
         {
             printf("recalculating params for mainnet.\n");
@@ -375,8 +376,8 @@ public:
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-
-        assert(hashGenesisBlock == uint256("0x4f023a2120d9127b21bbad01724fdb79b519f593f2a85b60d3d79160ec5f29df"));
+        */
+        assert(hashGenesisBlock == uint256("0x3ddc134f4710bc604c3755b8b4f4643fe9584a79e9e3f170452c1bfe61df54eb"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

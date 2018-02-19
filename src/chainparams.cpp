@@ -69,8 +69,8 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
     //(908000, uint256("202708f8c289b676fceb832a079ff6b308a28608339acbf7584de533619d014d"));
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1510948627, // * UNIX timestamp of last checkpoint block
-    1842739,    // * total number of transactions between genesis and last checkpoint
+    1518723178, // * UNIX timestamp of last checkpoint block
+    0,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
     2000        // * estimated number of transactions per day after checkpoint
 };
@@ -79,7 +79,7 @@ static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
     boost::assign::map_list_of(0, uint256("0x001"));
 static const Checkpoints::CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
-    1740710,
+    1518723178,
     0,
     250};
 
@@ -87,7 +87,7 @@ static Checkpoints::MapCheckpoints mapCheckpointsRegtest =
     boost::assign::map_list_of(0, uint256("0x001"));
 static const Checkpoints::CCheckpointData dataRegtest = {
     &mapCheckpointsRegtest,
-    1454124731,
+    1518723178,
     0,
     100};
 
@@ -365,7 +365,7 @@ public:
         genesis.nTime = 1518723178;
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12345;
-        
+        /*
         hashGenesisBlock = uint256("0x01");
 
         if (true && genesis.GetHash() != hashGenesisBlock)
@@ -379,7 +379,7 @@ public:
             printf("new regtest genesis nonce: %d\n", genesis.nNonce);
             printf("new regtest genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-
+        */
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
         

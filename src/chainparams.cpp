@@ -53,7 +53,7 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of
-    (0, uint256("0x001"));
+    (0, uint256("0x00000e6cc349dc1757a8b28e9121adb148fefa9bf490f6a660a077a6a4320834"));
     //(424998, uint256("f31e381eedb0ed3ed65fcc98cc71f36012bee32e8efd017c4f9fb0620fd35f6b"))
     //(616764, uint256("29dd0bd1c59484f290896687b4ffb6a49afa5c498caf61967c69a541f8191557")) //first block to use modifierV2
     //(623933, uint256("c7aafa648a0f1450157dc93bd4d7448913a85b7448f803b4ab970d91fc2a7da7"))
@@ -166,7 +166,7 @@ public:
         genesis.nTime = 1518723178;
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 95551581;
-        
+        /*
         hashGenesisBlock = uint256("0x01");
         
        if (true && genesis.GetHash() != hashGenesisBlock)
@@ -180,7 +180,7 @@ public:
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        
+        */
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000e6cc349dc1757a8b28e9121adb148fefa9bf490f6a660a077a6a4320834"));
         assert(genesis.hashMerkleRoot == uint256("8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f"));
@@ -280,7 +280,7 @@ public:
         genesis.nTime = 1518723178;
         genesis.nNonce = 95551581;
 
-        hashGenesisBlock = uint256("0x01");
+       /* hashGenesisBlock = uint256("0x01");
         
        if (true && genesis.GetHash() != hashGenesisBlock)
         {
@@ -293,6 +293,7 @@ public:
             printf("new testnet genesis nonce: %d\n", genesis.nNonce);
             printf("new testnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
+        */
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000e6cc349dc1757a8b28e9121adb148fefa9bf490f6a660a077a6a4320834"));
@@ -364,7 +365,6 @@ public:
         genesis.nTime = 1518723178;
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12345;
-
         
         hashGenesisBlock = uint256("0x01");
 

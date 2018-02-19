@@ -166,7 +166,7 @@ public:
         genesis.nTime = 1518723178;
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 95551581;
-        /*
+        
         hashGenesisBlock = uint256("0x01");
         
        if (true && genesis.GetHash() != hashGenesisBlock)
@@ -180,7 +180,7 @@ public:
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        */
+        
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000e6cc349dc1757a8b28e9121adb148fefa9bf490f6a660a077a6a4320834"));
         assert(genesis.hashMerkleRoot == uint256("8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f"));

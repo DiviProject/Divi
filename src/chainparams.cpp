@@ -164,14 +164,14 @@ public:
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
         genesis.nTime = 1518723178;
-        genesis.nBits = 0x1d00ffff;
+        genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 94062553;
-        /*
+        
         hashGenesisBlock = uint256("0x01");
         
-        new mainnet genesis merkle root: 8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f
-    new mainnet genesis nonce: 94062553
-    new mainnet genesis hash: 000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5
+        //new mainnet genesis merkle root: 8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f
+        //new mainnet genesis nonce: 94062553
+        //new mainnet genesis hash: 000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5
         
         if (true && genesis.GetHash() != hashGenesisBlock)
         {
@@ -184,7 +184,7 @@ public:
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        */
+        
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5"));
         assert(genesis.hashMerkleRoot == uint256("0x8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f"));
@@ -357,7 +357,7 @@ public:
 
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
-        
+
         /*
         hashGenesisBlock = uint256("0x01");
         

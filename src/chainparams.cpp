@@ -282,17 +282,17 @@ public:
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1518723178;
-        genesis.nNonce = 8118856;
+        genesis.nNonce = 94062553;
 
         hashGenesisBlock = genesis.GetHash();
-        //assert(hashGenesisBlock == uint256("0x0000041e482b9b9691d98eefb48473405c0b8ec31b76df3797c74a78680ef818"));
+        assert(hashGenesisBlock == uint256("0x000003a30b5f79fc5eba07d8fbd04adcfcaa9b6be3d4ebc79163a3defd780fb5"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "pivx-testnet.seed.fuzzbawls.pw"));
-        vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "pivx-testnet.seed2.fuzzbawls.pw"));
-        vSeeds.push_back(CDNSSeedData("s3v3nh4cks.ddns.net", "s3v3nh4cks.ddns.net"));
-        vSeeds.push_back(CDNSSeedData("88.198.192.110", "88.198.192.110"));
+        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "pivx-testnet.seed.fuzzbawls.pw"));
+        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "pivx-testnet.seed2.fuzzbawls.pw"));
+        //vSeeds.push_back(CDNSSeedData("s3v3nh4cks.ddns.net", "s3v3nh4cks.ddns.net"));
+        //vSeeds.push_back(CDNSSeedData("88.198.192.110", "88.198.192.110"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 139); // Testnet pivx addresses start with 'x' or 'y'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 19);  // Testnet pivx script addresses start with '8' or '9'
@@ -351,13 +351,13 @@ public:
         nTargetTimespan = 24 * 60 * 60; // Pivx: 1 day
         nTargetSpacing = 1 * 60;        // Pivx: 1 minutes
         bnProofOfWorkLimit = ~uint256(0) >> 1;
-        genesis.nTime = 1518723178;
+        genesis.nTime = 1454124731;
         genesis.nBits = 0x207fffff;
-        genesis.nNonce = 22345;
+        genesis.nNonce = 12345;
 
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
-        //assert(hashGenesisBlock == uint256("0x4f023a2120d9127b21bbad01724fdb79b519f593f2a85b60d3d79160ec5f29df"));
+        assert(hashGenesisBlock == uint256("0x4f023a2120d9127b21bbad01724fdb79b519f593f2a85b60d3d79160ec5f29df"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

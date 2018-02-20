@@ -8,6 +8,7 @@
 #include "libzerocoin/Params.h"
 #include "chainparams.h"
 #include "random.h"
+#include "pow.h"
 #include "util.h"
 #include "utilstrencodings.h"
 

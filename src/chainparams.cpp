@@ -41,7 +41,7 @@ bool CheckProofOfWorkGen(uint256 hash, unsigned int nBits)
     bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
 
     // Check range
-    if (fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit())
+    if (fNegative || bnTarget == 0 || fOverflow || bnTarget > (~uint256(0) >> 20))
         return false;
 
     // Check proof of work matches claimed amount

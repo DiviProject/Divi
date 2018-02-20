@@ -35,8 +35,8 @@ bool CheckProofOfWorkGen(uint256 hash, unsigned int nBits)
     bool fOverflow;
     uint256 bnTarget;
 
-    if (Params().SkipProofOfWorkCheck())
-        return true;
+    //if (Params().SkipProofOfWorkCheck())
+    //    return true;
 
     bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
 

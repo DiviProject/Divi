@@ -29,7 +29,7 @@ struct SeedSpec6 {
  * Main network
  */
 
-bool CheckProofOfWork(uint256 hash, unsigned int nBits)
+bool CheckProofOfWorkGen(uint256 hash, unsigned int nBits)
 {
     bool fNegative;
     bool fOverflow;
@@ -197,7 +197,7 @@ public:
             printf("old mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("old mainnet genesis hash:  %s\n", hashGenesisBlock.ToString().c_str());
             // deliberately empty for loop finds nonce value.
-            for(genesis.nNonce == 0; CheckProofOfWork(genesis.GetHash(),genesis.nBits); genesis.nNonce++){ } 
+            for(genesis.nNonce == 0; CheckProofOfWorkGen(genesis.GetHash(),genesis.nBits); genesis.nNonce++){ } 
             printf("new mainnet genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());

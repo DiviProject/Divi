@@ -192,7 +192,8 @@ public:
         hashGenesisBlock = uint256("0x01");
         
        if (true && genesis.GetHash() != hashGenesisBlock)
-        {
+        {   
+            genesis.nNonce = 1000000;
             printf("recalculating params for mainnet.\n");
             printf("old mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("old mainnet genesis hash:  %s\n", hashGenesisBlock.ToString().c_str());

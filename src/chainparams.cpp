@@ -29,6 +29,28 @@ struct SeedSpec6 {
  * Main network
  */
 
+bool CheckProofOfWork(uint256 hash, unsigned int nBits)
+{
+    bool fNegative;
+    bool fOverflow;
+    uint256 bnTarget;
+
+    if (Params().SkipProofOfWorkCheck())
+        return true;
+
+    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+
+    // Check range
+    if (fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit())
+        return false;
+
+    // Check proof of work matches claimed amount
+    if (hash > bnTarget)
+        return false;
+
+    return true;
+}
+
 //! Convert the pnSeeds6 array into usable address objects.
 static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data, unsigned int count)
 {
@@ -487,27 +509,5 @@ bool SelectParamsFromCommandLine()
         return false;
 
     SelectParams(network);
-    return true;
-}
-
-bool CheckProofOfWork(uint256 hash, unsigned int nBits)
-{
-    bool fNegative;
-    bool fOverflow;
-    uint256 bnTarget;
-
-    if (Params().SkipProofOfWorkCheck())
-        return true;
-
-    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
-
-    // Check range
-    if (fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit())
-        return false;
-
-    // Check proof of work matches claimed amount
-    if (hash > bnTarget)
-        return false;
-
     return true;
 }

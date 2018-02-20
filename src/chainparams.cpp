@@ -8,7 +8,6 @@
 #include "libzerocoin/Params.h"
 #include "chainparams.h"
 #include "random.h"
-#include "pow.h"
 #include "util.h"
 #include "utilstrencodings.h"
 
@@ -176,7 +175,7 @@ public:
             printf("old mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("old mainnet genesis hash:  %s\n", hashGenesisBlock.ToString().c_str());
             // deliberately empty for loop finds nonce value.
-            for(genesis.nNonce == 0; CheckProofOfWork(genesis.GetHash(), genesis.nBits); genesis.nNonce++){ }
+            for(genesis.nNonce == 0; CheckProofOfWork(genesis.GetHash(),genesis.nBits); genesis.nNonce++){ } 
             printf("new mainnet genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
@@ -488,5 +487,27 @@ bool SelectParamsFromCommandLine()
         return false;
 
     SelectParams(network);
+    return true;
+}
+
+bool CheckProofOfWork(uint256 hash, unsigned int nBits)
+{
+    bool fNegative;
+    bool fOverflow;
+    uint256 bnTarget;
+
+    if (Params().SkipProofOfWorkCheck())
+        return true;
+
+    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+
+    // Check range
+    if (fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit())
+        return false);
+
+    // Check proof of work matches claimed amount
+    if (hash > bnTarget)
+        return false);
+
     return true;
 }

@@ -49,13 +49,22 @@ RUN /bin/bash /home/ubuntu/pullvso.sh
 
 CMD /bin/bash
 
-# cd /shared/vso/pivx
-# # git checkout 3.0
-# # git pull
+# I was doing this part when I was doing the unix build, probably why my first ones were 3+GB.
+# It seems to work without this, but when I ran the test_pivx there were 3 errors I think are related to the Genesis Block.
+  # cd /shared/vso/pivx/depends
+  # sudo make
+  # sudo make install
+
+# Byrd: here is where you've been starting...
+# cd /shared/vso/pivx/
 # ./autogen.sh
 # ./configure --disable-zerocoin --without-gui --enable-debug
 # sudo make
 # sudo make install
+
 # cd /home/ubuntu
+# pivxd -debug
+
+# Fix pivx.conf and run again
 # pivxd -debug
 

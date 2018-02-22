@@ -43,13 +43,13 @@ USER ubuntu
 ENV VSOUSER cbyrdsw
 ENV VSOPASSWORD Justic3123
 
-RUN echo 'git clone -b "master" --depth 1 "https://$VSOUSER:$VSOPASSWORD@agii.visualstudio.com/_git/DiviProject" /shared/pivx' > /home/ubuntu/pullvso.sh
+RUN echo 'git clone -b "master" --depth 1 "https://$VSOUSER:$VSOPASSWORD@agii.visualstudio.com/_git/DiviProject" /shared/vso' > /home/ubuntu/pullvso.sh
 RUN chmod +x /home/ubuntu/pullvso.sh
 RUN /bin/bash /home/ubuntu/pullvso.sh
 
 CMD /bin/bash
 
-# cd /shared/pivx
+# cd /shared/vso/pivx
 # # git checkout 3.0
 # # git pull
 # ./autogen.sh

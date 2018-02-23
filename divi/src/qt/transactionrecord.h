@@ -84,7 +84,7 @@ public:
         ZerocoinMint,
         ZerocoinSpend,
         RecvFromZerocoinSpend,
-        ZerocoinSpend_Change_zPiv,
+        ZerocoinSpend_Change_zDiv,
         ZerocoinSpend_FromMe,
         RecvWithObfuscation,
         ObfuscationDenominate,

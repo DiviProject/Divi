@@ -62,12 +62,12 @@
         <translation>Indirizzi di ricezione</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Questi sono gli indirizzi PIVX per l'invio di pagamenti. Controlla sempre l'importo e l'indirizzo di ricezione prima di inviare valuta.</translation>
+        <source>These are your DIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Questi sono gli indirizzi DIVX per l'invio di pagamenti. Controlla sempre l'importo e l'indirizzo di ricezione prima di inviare valuta.</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Questi sono gli indirizzi PIVX per la ricezione di pagamenti. Si raccomanda di utilizzare un indirizzo diverso per ogni transazione.</translation>
+        <source>These are your DIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Questi sono gli indirizzi DIVX per la ricezione di pagamenti. Si raccomanda di utilizzare un indirizzo diverso per ogni transazione.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -176,8 +176,8 @@
         <translation>Conferma cifratura portafoglio</translation>
     </message>
     <message>
-        <source>PIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
-        <translation>PIVX verrà ora chiuso per completare il processo di cifratura. Ricorda che crittografare il tuo portafoglio non protegge completamente i tuoi PIV dal furto da parte di software malevoli che potrebbero infettare il tuo computer.</translation>
+        <source>DIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
+        <translation>DIVX verrà ora chiuso per completare il processo di cifratura. Ricorda che crittografare il tuo portafoglio non protegge completamente i tuoi PIV dal furto da parte di software malevoli che potrebbero infettare il tuo computer.</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -239,16 +239,16 @@
         <translation>&amp;BIP 38 Criptato</translation>
     </message>
     <message>
-        <source>Enter a Pivx Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
-        <translation>Inserisci un indirizzo Pivx che desideri crittografare utilizzando BIP 38. Inserisci una passphrase nella casella centrale. Premi Cripta per calcolare la chiave privata crittografata.</translation>
+        <source>Enter a Divx Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
+        <translation>Inserisci un indirizzo Divx che desideri crittografare utilizzando BIP 38. Inserisci una passphrase nella casella centrale. Premi Cripta per calcolare la chiave privata crittografata.</translation>
     </message>
     <message>
         <source>Address:</source>
         <translation>Indirizzo:</translation>
     </message>
     <message>
-        <source>The PIVX address to sign the message with</source>
-        <translation>L'indirizzo PIVX per firmare il messaggio con</translation>
+        <source>The DIVX address to sign the message with</source>
+        <translation>L'indirizzo DIVX per firmare il messaggio con</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -279,8 +279,8 @@
         <translation>Copiare la firma corrente negli Appunti di sistema</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this PIVX address</source>
-        <translation>Firmare il messaggio per dimostrare di possedere questo indirizzo PIVX</translation>
+        <source>Sign the message to prove you own this DIVX address</source>
+        <translation>Firmare il messaggio per dimostrare di possedere questo indirizzo DIVX</translation>
     </message>
     <message>
         <source>Encrypt &amp;Key</source>
@@ -303,12 +303,12 @@
         <translation>Immettere la chiave privata codificata BIP 38. Inserire la passphrase nella casella centrale. Fare clic su Decripta Chiave per calcolare la chiave privata. Dopo che la chiave viene decrittata, cliccando su "Importa indirizzo" verrà aggiunta questa chiave privata al portafoglio.</translation>
     </message>
     <message>
-        <source>The PIVX address the message was signed with</source>
-        <translation>L'indirizzo PIVX con cui è stato firmato il messaggio</translation>
+        <source>The DIVX address the message was signed with</source>
+        <translation>L'indirizzo DIVX con cui è stato firmato il messaggio</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified PIVX address</source>
-        <translation>Verificare il messaggio per assicurarsi che sia stato firmato con l'indirizzo PIVX specificato </translation>
+        <source>Verify the message to ensure it was signed with the specified DIVX address</source>
+        <translation>Verificare il messaggio per assicurarsi che sia stato firmato con l'indirizzo DIVX specificato </translation>
     </message>
     <message>
         <source>Decrypt &amp;Key</source>
@@ -590,16 +590,16 @@
         <translation>Schede degli strumenti</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Core</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Core</translation>
     </message>
     <message>
-        <source>Send coins to a PIVX address</source>
-        <translation>Invia monete all' indirizzo PIVX</translation>
+        <source>Send coins to a DIVX address</source>
+        <translation>Invia monete all' indirizzo DIVX</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and pivx: URIs)</source>
-        <translation>Richiedi pagamenti (genera codici QR e pivx: URIs)</translation>
+        <source>Request payments (generates QR codes and divx: URIs)</source>
+        <translation>Richiedi pagamenti (genera codici QR e divx: URIs)</translation>
     </message>
     <message>
         <source>&amp;Masternodes</source>
@@ -610,24 +610,24 @@
         <translation>Esplora i masternodes</translation>
     </message>
     <message>
-        <source>&amp;About PIVX Core</source>
-        <translation>&amp;Informazioni PIVX Core</translation>
+        <source>&amp;About DIVX Core</source>
+        <translation>&amp;Informazioni DIVX Core</translation>
     </message>
     <message>
-        <source>Show information about PIVX Core</source>
-        <translation>Visualizza informazioni su PIVX Core</translation>
+        <source>Show information about DIVX Core</source>
+        <translation>Visualizza informazioni su DIVX Core</translation>
     </message>
     <message>
-        <source>Modify configuration options for PIVX</source>
-        <translation>Modifica le opzioni di configurazione per PIVX</translation>
+        <source>Modify configuration options for DIVX</source>
+        <translation>Modifica le opzioni di configurazione per DIVX</translation>
     </message>
     <message>
-        <source>Sign messages with your PIVX addresses to prove you own them</source>
-        <translation>Firma i messaggi con i tuoi indirizzi PIVX per dimostrare di essere il proprietario </translation>
+        <source>Sign messages with your DIVX addresses to prove you own them</source>
+        <translation>Firma i messaggi con i tuoi indirizzi DIVX per dimostrare di essere il proprietario </translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified PIVX addresses</source>
-        <translation>Verifica i messaggi per assicurarsi che siano stati firmati con indirizzi PIVX specifici</translation>
+        <source>Verify messages to ensure they were signed with specified DIVX addresses</source>
+        <translation>Verifica i messaggi per assicurarsi che siano stati firmati con indirizzi DIVX specifici</translation>
     </message>
     <message>
         <source>Encrypt and decrypt private keys using a passphrase</source>
@@ -638,16 +638,16 @@
         <translation>Impostazioni MultiSend</translation>
     </message>
     <message>
-        <source>Open a PIVX: URI or payment request</source>
-        <translation>Apri un PIVX: URI o richiesta di pagamento</translation>
+        <source>Open a DIVX: URI or payment request</source>
+        <translation>Apri un DIVX: URI o richiesta di pagamento</translation>
     </message>
     <message>
         <source>Block explorer window</source>
         <translation>Finestra Block Explorer</translation>
     </message>
     <message>
-        <source>Show the PIVX Core help message to get a list with possible PIVX command-line options</source>
-        <translation>Mostra il messaggio di aiuto PIVX Core per ottenere un elenco con le possibili opzioni di riga di comando PIVX</translation>
+        <source>Show the DIVX Core help message to get a list with possible DIVX command-line options</source>
+        <translation>Mostra il messaggio di aiuto DIVX Core per ottenere un elenco con le possibili opzioni di riga di comando DIVX</translation>
     </message>
     <message>
         <source>Synchronizing with network...</source>
@@ -753,8 +753,8 @@ MultiSend: %1</translation>
         <translation>Cerca</translation>
     </message>
     <message>
-        <source>Not all transactions will be shown. To view all transactions you need to set txindex=1 in the configuration file (pivx.conf).</source>
-        <translation>Non tutte le transazioni verranno visualizzate. Per vedere tutte le transazioni è necessario aggiungere txindex=1 nel file di configurazione (pivx.conf)</translation>
+        <source>Not all transactions will be shown. To view all transactions you need to set txindex=1 in the configuration file (divx.conf).</source>
+        <translation>Non tutte le transazioni verranno visualizzate. Per vedere tutte le transazioni è necessario aggiungere txindex=1 nel file di configurazione (divx.conf)</translation>
     </message>
 </context>
 <context>
@@ -888,8 +888,8 @@ MultiSend: %1</translation>
         <translation>versione</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Core</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Core</translation>
     </message>
     <message>
         <source>(%1-bit)</source>
@@ -915,8 +915,8 @@ MultiSend: %1</translation>
         <translation>Benvenuto</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Core</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Core</translation>
     </message>
     <message>
         <source>Error</source>
@@ -1151,8 +1151,8 @@ MultiSend: %1</translation>
 <context>
     <name>SignVerifyMessageDialog</name>
     <message>
-        <source>The PIVX address to sign the message with</source>
-        <translation>L'indirizzo PIVX per firmare il messaggio con</translation>
+        <source>The DIVX address to sign the message with</source>
+        <translation>L'indirizzo DIVX per firmare il messaggio con</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -1175,16 +1175,16 @@ MultiSend: %1</translation>
         <translation>Copiare la firma corrente negli Appunti di sistema</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this PIVX address</source>
-        <translation>Firmare il messaggio per dimostrare di possedere questo indirizzo PIVX</translation>
+        <source>Sign the message to prove you own this DIVX address</source>
+        <translation>Firmare il messaggio per dimostrare di possedere questo indirizzo DIVX</translation>
     </message>
     <message>
-        <source>The PIVX address the message was signed with</source>
-        <translation>L'indirizzo PIVX con cui è stato firmato il messaggio</translation>
+        <source>The DIVX address the message was signed with</source>
+        <translation>L'indirizzo DIVX con cui è stato firmato il messaggio</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified PIVX address</source>
-        <translation>Verificare il messaggio per assicurarsi che sia stato firmato con l'indirizzo PIVX specificato </translation>
+        <source>Verify the message to ensure it was signed with the specified DIVX address</source>
+        <translation>Verificare il messaggio per assicurarsi che sia stato firmato con l'indirizzo DIVX specificato </translation>
     </message>
     <message>
         <source>Reset all sign message fields</source>
@@ -1222,8 +1222,8 @@ MultiSend: %1</translation>
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Core</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Core</translation>
     </message>
     </context>
 <context>
@@ -1321,7 +1321,7 @@ MultiSend: %1</translation>
     <name>ZPivControlDialog</name>
     </context>
 <context>
-    <name>pivx-core</name>
+    <name>divx-core</name>
     <message>
         <source>Error</source>
         <translation>Errore</translation>

@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2017 The PIVX developers
+// Copyright (c) 2015-2017 The PIVX Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -2413,7 +2413,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 if (nChange > 0) {
                     // Fill a vout to ourself
                     // TODO: pass in scriptChange instead of reservekey so
-                    // change transaction isn't always pay-to-pivx-address
+                    // change transaction isn't always pay-to-divx-address
                     CScript scriptChange;
 
                     // coin control: send change to custom address
@@ -4024,7 +4024,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
     }
 
     //any change that is less than 0.0100000 will be ignored and given as an extra fee
-    //also assume that a zerocoinspend that is minting the change will not have any change that goes to Piv
+    //also assume that a zerocoinspend that is minting the change will not have any change that goes to Div
     CAmount nChange = nValueIn - nTotalValue; // Fee already accounted for in nTotalValue
     if (nChange > 1 * CENT && !isZCSpendChange) {
         // Fill a vout to ourself
@@ -4048,7 +4048,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
             reservekey->ReturnKey();
     }
 
-    // Sign if these are pivx outputs - NOTE that zPiv outputs are signed later in SoK
+    // Sign if these are divx outputs - NOTE that zDiv outputs are signed later in SoK
     if (!isZCSpendChange) {
         int nIn = 0;
         for (const std::pair<const CWalletTx*, unsigned int>& coin : setCoins) {
@@ -4107,7 +4107,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
         serializedCoinSpend << spend;
         std::vector<unsigned char> data(serializedCoinSpend.begin(), serializedCoinSpend.end());
 
-        //Add the coin spend into a PIVX transaction
+        //Add the coin spend into a DIVX transaction
         newTxIn.scriptSig = CScript() << OP_ZEROCOINSPEND << data.size();
         newTxIn.scriptSig.insert(newTxIn.scriptSig.end(), data.begin(), data.end());
         newTxIn.prevout.SetNull();
@@ -4135,7 +4135,7 @@ bool CWallet::MintToTxIn(CZerocoinMint zerocoinSelected, int nSecurityLevel, con
         std::list<CBigNum> listCoinSpendSerial = CWalletDB(strWalletFile).ListSpentCoinsSerial();
         for (const CBigNum& item : listCoinSpendSerial) {
             if (spend.getCoinSerialNumber() == item) {
-                //Tried to spend an already spent zPiv
+                //Tried to spend an already spent zDiv
                 zerocoinSelected.SetUsed(true);
                 if (!CWalletDB(strWalletFile).WriteZerocoinMint(zerocoinSelected))
                     LogPrintf("%s failed to write zerocoinmint\n", __func__);
@@ -4171,7 +4171,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
     }
 
     if (nValue < 1) {
-        receipt.SetStatus(_("Value is below the the smallest available denomination (= 1) of zPiv"), nStatus);
+        receipt.SetStatus(_("Value is below the the smallest available denomination (= 1) of zDiv"), nStatus);
         return false;
     }
 
@@ -4199,7 +4199,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
         if(!fWholeNumber)
             nValueToSelect = static_cast<CAmount>(ceil(dValue) * COIN);
 
-        // Select the zPiv mints to use in this spend
+        // Select the zDiv mints to use in this spend
         std::map<libzerocoin::CoinDenomination, CAmount> DenomMap = GetMyZerocoinDistribution();
         vSelectedMints = SelectMintsFromList(nValueToSelect, nValueSelected, nMaxSpends, fMinimizeChange,
                                              nCoinsReturned, listMints, DenomMap, nNeededSpends);
@@ -4310,7 +4310,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
                 }
             }
 
-            //add output to pivx address to the transaction (the actual primary spend taking place)
+            //add output to divx address to the transaction (the actual primary spend taking place)
             CTxOut txOutZerocoinSpend(nValue, scriptZerocoinSpend);
             txNew.vout.push_back(txOutZerocoinSpend);
 
@@ -4463,14 +4463,14 @@ void CWallet::ZPivBackupWallet()
     string strNewBackupName;
 
     for (int i = 0; i < 10; i++) {
-        strNewBackupName = strprintf("wallet-autozpivbackup-%d.dat", i);
+        strNewBackupName = strprintf("wallet-autozdivbackup-%d.dat", i);
         backupPath = backupDir / strNewBackupName;
 
         if (filesystem::exists(backupPath)) {
             //Keep up to 10 backups
             if (i <= 8) {
                 //If the next file backup exists and is newer, then iterate
-                filesystem::path nextBackupPath = backupDir / strprintf("wallet-autozpivbackup-%d.dat", i + 1);
+                filesystem::path nextBackupPath = backupDir / strprintf("wallet-autozdivbackup-%d.dat", i + 1);
                 if (filesystem::exists(nextBackupPath)) {
                     time_t timeThis = filesystem::last_write_time(backupPath);
                     time_t timeNext = filesystem::last_write_time(nextBackupPath);
@@ -4485,7 +4485,7 @@ void CWallet::ZPivBackupWallet()
                 continue;
             }
             //reset to 0 because name with 9 already used
-            strNewBackupName = strprintf("wallet-autozpivbackup-%d.dat", 0);
+            strNewBackupName = strprintf("wallet-autozdivbackup-%d.dat", 0);
             backupPath = backupDir / strNewBackupName;
             break;
         }

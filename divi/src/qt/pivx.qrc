@@ -38,12 +38,12 @@
         <file alias="tx_input">res/icons/tx_input.png</file>
         <file alias="tx_output">res/icons/tx_output.png</file>
         <file alias="tx_inout">res/icons/tx_inout.png</file>
-        <file alias="unit_pivx">res/icons/unit_pivx.png</file>
-        <file alias="unit_mpivx">res/icons/unit_mpivx.png</file>
-        <file alias="unit_upivx">res/icons/unit_upivx.png</file>
-        <file alias="unit_tpivx">res/icons/unit_tpivx.png</file>
-        <file alias="unit_tmpivx">res/icons/unit_tmpivx.png</file>
-        <file alias="unit_tupivx">res/icons/unit_tupivx.png</file>
+        <file alias="unit_divx">res/icons/unit_divx.png</file>
+        <file alias="unit_mdivx">res/icons/unit_mdivx.png</file>
+        <file alias="unit_udivx">res/icons/unit_udivx.png</file>
+        <file alias="unit_tdivx">res/icons/unit_tdivx.png</file>
+        <file alias="unit_tmdivx">res/icons/unit_tmdivx.png</file>
+        <file alias="unit_tudivx">res/icons/unit_tudivx.png</file>
         <file alias="lock_closed">res/icons/lock_closed.png</file>
         <file alias="lock_open">res/icons/lock_open.png</file>
         <file alias="key">res/icons/key.png</file>
@@ -59,7 +59,7 @@
     </qresource>
     <qresource prefix="/images">
         <file alias="about">res/images/about.png</file>
-        <file alias="pivx_logo_horizontal">res/images/pivx_logo_horizontal.png</file>
+        <file alias="divx_logo_horizontal">res/images/divx_logo_horizontal.png</file>
         <file alias="downArrow">res/images/downArrow.png</file>
         <file alias="downArrow_small">res/images/downArrow_small.png</file>
         <file alias="upArrow_small">res/images/upArrow_small.png</file>

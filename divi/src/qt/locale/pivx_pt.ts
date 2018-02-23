@@ -62,12 +62,12 @@
         <translation>Endereços de recebimento</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Esses são seus endereços PIVX para enviar pagamentos. Sempre confira a quantidade e os endereços de destino antes de enviar moedas.</translation>
+        <source>These are your DIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Esses são seus endereços DIVX para enviar pagamentos. Sempre confira a quantidade e os endereços de destino antes de enviar moedas.</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Esses são seus endereços PIVX para receber pagamentos. É recomendado usar um novo endereço para cada transação.</translation>
+        <source>These are your DIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Esses são seus endereços DIVX para receber pagamentos. É recomendado usar um novo endereço para cada transação.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -176,8 +176,8 @@
         <translation>Confirmar encriptação da carteira</translation>
     </message>
     <message>
-        <source>PIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
-        <translation>PIVX encerrará para terminar o processo de encriptação. Lembre-se que encriptar sua carteira não protege completamente suas PIVs contra roubo por malware infectando seu computador.</translation>
+        <source>DIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
+        <translation>DIVX encerrará para terminar o processo de encriptação. Lembre-se que encriptar sua carteira não protege completamente suas PIVs contra roubo por malware infectando seu computador.</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -239,16 +239,16 @@
         <translation>Encriptar com &amp;BIP 38</translation>
     </message>
     <message>
-        <source>Enter a Pivx Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
-        <translation>Digite um endereço Pivx que você gostaria de criptografar usando BIP 38. Digite uma frase secreta na caixa do meio. Pressione criptografar para calcular a chave privada criptografada.</translation>
+        <source>Enter a Divx Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
+        <translation>Digite um endereço Divx que você gostaria de criptografar usando BIP 38. Digite uma frase secreta na caixa do meio. Pressione criptografar para calcular a chave privada criptografada.</translation>
     </message>
     <message>
         <source>Address:</source>
         <translation>Endereço:</translation>
     </message>
     <message>
-        <source>The PIVX address to sign the message with</source>
-        <translation>Um endereço PIVX para assinar a mensagem</translation>
+        <source>The DIVX address to sign the message with</source>
+        <translation>Um endereço DIVX para assinar a mensagem</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -279,8 +279,8 @@
         <translation>Copiar a assinatura para a area de trabalho</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this PIVX address</source>
-        <translation>Assinar a Mensagem para provar que você e dono desse endereço PIVX.</translation>
+        <source>Sign the message to prove you own this DIVX address</source>
+        <translation>Assinar a Mensagem para provar que você e dono desse endereço DIVX.</translation>
     </message>
     <message>
         <source>Encrypt &amp;Key</source>
@@ -299,8 +299,8 @@
         <translation>Criptografia BIP 38</translation>
     </message>
     <message>
-        <source>The PIVX address the message was signed with</source>
-        <translation>O endereço PIVX que foi assinado com</translation>
+        <source>The DIVX address the message was signed with</source>
+        <translation>O endereço DIVX que foi assinado com</translation>
     </message>
     <message>
         <source>Decrypted Key:</source>
@@ -675,8 +675,8 @@
 <context>
     <name>SignVerifyMessageDialog</name>
     <message>
-        <source>The PIVX address to sign the message with</source>
-        <translation>Um endereço PIVX para assinar a mensagem</translation>
+        <source>The DIVX address to sign the message with</source>
+        <translation>Um endereço DIVX para assinar a mensagem</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -707,12 +707,12 @@
         <translation>Copiar a assinatura para a area de trabalho</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this PIVX address</source>
-        <translation>Assinar a Mensagem para provar que você e dono desse endereço PIVX.</translation>
+        <source>Sign the message to prove you own this DIVX address</source>
+        <translation>Assinar a Mensagem para provar que você e dono desse endereço DIVX.</translation>
     </message>
     <message>
-        <source>The PIVX address the message was signed with</source>
-        <translation>O endereço PIVX que foi assinado com</translation>
+        <source>The DIVX address the message was signed with</source>
+        <translation>O endereço DIVX que foi assinado com</translation>
     </message>
     <message>
         <source>Reset all sign message fields</source>
@@ -913,7 +913,7 @@
     <name>ZPivControlDialog</name>
     </context>
 <context>
-    <name>pivx-core</name>
+    <name>divx-core</name>
     <message>
         <source>Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup</source>
         <translation>Deletar todas as transações da carteira e somente recuperar aquelas partes do blockchain através de -rescan na inicialização</translation>
@@ -1271,8 +1271,8 @@
         <translation>Carteira esta bloqueada.</translation>
     </message>
     <message>
-        <source>Wallet needed to be rewritten: restart PIVX Core to complete</source>
-        <translation>Carteira precisa ser reescrita: reinicie o PIVX Core para completar.</translation>
+        <source>Wallet needed to be rewritten: restart DIVX Core to complete</source>
+        <translation>Carteira precisa ser reescrita: reinicie o DIVX Core para completar.</translation>
     </message>
     <message>
         <source>Wallet options:</source>

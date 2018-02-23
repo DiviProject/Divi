@@ -66,15 +66,15 @@ bin_PROGRAMS =
 TESTS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += pivxd
+  bin_PROGRAMS += divxd
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += pivx-cli pivx-tx
+  bin_PROGRAMS += divx-cli divx-tx
 endif
 
 .PHONY: FORCE
-# pivx core #
+# divx core #
 BITCOIN_CORE_H = \
   activemasternode.h \
   accumulators.h \
@@ -190,7 +190,7 @@ obj/build.h: FORCE
 	  $(abs_top_srcdir)
 libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
-# server: shared between pivxd and pivx-qt
+# server: shared between divxd and divx-qt
 libbitcoin_server_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libbitcoin_server_a_SOURCES = \
   addrman.cpp \
@@ -236,7 +236,7 @@ libbitcoin_zmq_a_SOURCES = \
   zmq/zmqpublishnotifier.cpp
 endif
 
-# wallet: shared between pivxd and pivx-qt, but only linked
+# wallet: shared between divxd and divx-qt, but only linked
 # when wallet enabled
 
 libbitcoin_wallet_a_CFLAGS = -fPIC
@@ -332,7 +332,7 @@ libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
   libzerocoin/Params.cpp \
   libzerocoin/SerialNumberSignatureOfKnowledge.cpp
 
-# common: shared between pivxd, and pivx-qt and non-server tools
+# common: shared between divxd, and divx-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_common_a_SOURCES = \
   accumulators.cpp \
@@ -392,7 +392,7 @@ libbitcoin_util_a_SOURCES += compat/glibc_compat.cpp
 libbitcoin_util_a_SOURCES += compat/glibcxx_compat.cpp
 endif
 
-# cli: shared between pivx-cli and pivx-qt
+# cli: shared between divx-cli and divx-qt
 libbitcoin_cli_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_cli_a_SOURCES = \
   rpcclient.cpp \
@@ -402,7 +402,7 @@ nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
 # bitcoind binary #
-pivxd_LDADD = \
+divxd_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UNIVALUE) \
@@ -414,26 +414,26 @@ pivxd_LDADD = \
   $(LIBSECP256K1)
 
 if ENABLE_ZMQ
-pivxd_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
+divxd_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
 endif
 
 if ENABLE_WALLET
-pivxd_LDADD += libbitcoin_wallet.a
+divxd_LDADD += libbitcoin_wallet.a
 endif
-pivxd_SOURCES = pivxd.cpp
+divxd_SOURCES = divxd.cpp
 #
 
 if TARGET_WINDOWS
-pivxd_SOURCES += pivxd-res.rc
+divxd_SOURCES += divxd-res.rc
 endif
 
-pivxd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS)
-pivxd_CPPFLAGS = $(BITCOIN_INCLUDES)
-pivxd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+divxd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS)
+divxd_CPPFLAGS = $(BITCOIN_INCLUDES)
+divxd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 
-# pivx-cli binary #
-pivx_cli_LDADD = \
+# divx-cli binary #
+divx_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBBITCOIN_UTIL) \
   $(BOOST_LIBS) \
@@ -441,14 +441,14 @@ pivx_cli_LDADD = \
   $(CRYPTO_LIBS) \
   $(EVENT_LIBS)
 
-pivx_cli_SOURCES = \
-  pivx-cli.cpp
+divx_cli_SOURCES = \
+  divx-cli.cpp
 
-pivx_cli_CPPFLAGS = $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+divx_cli_CPPFLAGS = $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
 #
 
-# pivx-tx binary #
-pivx_tx_LDADD = \
+# divx-tx binary #
+divx_tx_LDADD = \
   $(LIBBITCOIN_UNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_ZEROCOIN) \
@@ -458,15 +458,15 @@ pivx_tx_LDADD = \
   $(BOOST_LIBS) \
   $(CRYPTO_LIBS)
 
-pivx_tx_SOURCES = pivx-tx.cpp
-pivx_tx_CPPFLAGS = $(BITCOIN_INCLUDES)
+divx_tx_SOURCES = divx-tx.cpp
+divx_tx_CPPFLAGS = $(BITCOIN_INCLUDES)
 #
-pivx_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+divx_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-pivx_cli_SOURCES += pivx-cli-res.rc
+divx_cli_SOURCES += divx-cli-res.rc
 endif
-pivx_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+divx_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if BUILD_BITCOIN_LIBS
 include_HEADERS = script/bitcoinconsensus.h

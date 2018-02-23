@@ -1,10 +1,10 @@
 Sample configuration files for:
 
-SystemD: pivxd.service
-Upstart: pivxd.conf
-OpenRC:  pivxd.openrc
-         pivxd.openrcconf
-CentOS:  pivxd.init
+SystemD: divxd.service
+Upstart: divxd.conf
+OpenRC:  divxd.openrc
+         divxd.openrcconf
+CentOS:  divxd.init
 
 have been made available to assist packagers in creating node packages here.
 

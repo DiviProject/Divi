@@ -62,12 +62,12 @@
         <translation>Адреса отримання</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Це ваші PIVX-адреси для надсилання платежів. Завжди перевіряйте суму та адресу одержувача перед відправленням монет.</translation>
+        <source>These are your DIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Це ваші DIVX-адреси для надсилання платежів. Завжди перевіряйте суму та адресу одержувача перед відправленням монет.</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Це ваші PIVX адреси для отримання платежів. Для кожної транзакції рекомендується використовувати нову адресу одержувача.</translation>
+        <source>These are your DIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Це ваші DIVX адреси для отримання платежів. Для кожної транзакції рекомендується використовувати нову адресу одержувача.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -176,8 +176,8 @@
         <translation>Підтвердження шифрування гаманця</translation>
     </message>
     <message>
-        <source>PIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
-        <translation>PIVX зараз закриється, щоб завершити процес шифрування. Пам'ятайте, що шифрування гаманця не може повністю захистити ваші PIV'и від крадіжки зловмисним програмним забезпеченням, що заражає ваш комп'ютер.</translation>
+        <source>DIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
+        <translation>DIVX зараз закриється, щоб завершити процес шифрування. Пам'ятайте, що шифрування гаманця не може повністю захистити ваші PIV'и від крадіжки зловмисним програмним забезпеченням, що заражає ваш комп'ютер.</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -373,6 +373,6 @@
     <name>ZPivControlDialog</name>
     </context>
 <context>
-    <name>pivx-core</name>
+    <name>divx-core</name>
     </context>
 </TS>

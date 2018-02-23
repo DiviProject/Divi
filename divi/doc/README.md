@@ -1,39 +1,39 @@
-PIVX Core
+DIVX Core
 =====================
 
 Setup
 ---------------------
-[PIVX Core](http://pivx.org/wallet) is the original PIVX client and it builds the backbone of the network. However, it downloads and stores the entire history of PIVX transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
+[DIVX Core](http://divx.org/wallet) is the original DIVX client and it builds the backbone of the network. However, it downloads and stores the entire history of DIVX transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
 
 Running
 ---------------------
-The following are some helpful notes on how to run PIVX on your native platform.
+The following are some helpful notes on how to run DIVX on your native platform.
 
 ### Unix
 
 Unpack the files into a directory and run:
 
-- bin/32/pivx-qt (GUI, 32-bit) or bin/32/pivxd (headless, 32-bit)
-- bin/64/pivx-qt (GUI, 64-bit) or bin/64/pivxd (headless, 64-bit)
+- bin/32/divx-qt (GUI, 32-bit) or bin/32/divxd (headless, 32-bit)
+- bin/64/divx-qt (GUI, 64-bit) or bin/64/divxd (headless, 64-bit)
 
 ### Windows
 
-Unpack the files into a directory, and then run pivx-qt.exe.
+Unpack the files into a directory, and then run divx-qt.exe.
 
 ### OSX
 
-Drag PIVX-Qt to your applications folder, and then run PIVX-Qt.
+Drag DIVX-Qt to your applications folder, and then run DIVX-Qt.
 
 ### Need Help?
 
-* See the documentation at the [PIVX Wiki](https://en.bitcoin.it/wiki/Main_Page) ***TODO***
+* See the documentation at the [DIVX Wiki](https://en.bitcoin.it/wiki/Main_Page) ***TODO***
 for help and more information.
-* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [PIVX Forum](http://forum.pivx.org/).
-* Join one of our Slack groups [PIVX Slack Groups](https://pivx.org/slack-logins/).
+* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [DIVX Forum](http://forum.divx.org/).
+* Join one of our Slack groups [DIVX Slack Groups](https://divx.org/slack-logins/).
 
 Building
 ---------------------
-The following are developer notes on how to build PIVX on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+The following are developer notes on how to build DIVX on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [OSX Build Notes](build-osx.md)
 - [Unix Build Notes](build-unix.md)
@@ -41,7 +41,7 @@ The following are developer notes on how to build PIVX on your native platform. 
 
 Development
 ---------------------
-The Pivx repo's [root README](https://github.com/PIVX-Project/PIVX/blob/master/README.md) contains relevant information on the development process and automated testing.
+The Divx repo's [root README](https://github.com/Divi-Project/Divi/blob/master/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Multiwallet Qt Development](multiwallet-qt.md)
@@ -55,8 +55,8 @@ The Pivx repo's [root README](https://github.com/PIVX-Project/PIVX/blob/master/R
 
 ### Resources
 
-* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [PIVX](http://forum.pivx.org/) forum.
-* Join the [PIVX-Dev](https://pivx-dev.slack.com/) Slack group ([Sign-Up](https://pivx-dev.herokuapp.com/)).
+* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [DIVX](http://forum.divx.org/) forum.
+* Join the [DIVX-Dev](https://divx-dev.slack.com/) Slack group ([Sign-Up](https://divx-dev.herokuapp.com/)).
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

@@ -70,7 +70,7 @@
                <cursorShape>WhatsThisCursor</cursorShape>
               </property>
               <property name="toolTip">
-               <string>The displayed information may be out of date. Your wallet automatically synchronizes with the PIVX network after a connection is established, but this process has not completed yet.</string>
+               <string>The displayed information may be out of date. Your wallet automatically synchronizes with the DIVX network after a connection is established, but this process has not completed yet.</string>
               </property>
               <property name="styleSheet">
                <string notr="true">QLabel { color: red; }</string>
@@ -1463,7 +1463,7 @@ Immature: confirmed, but less than 3 mints of the same denomination after it was
                <cursorShape>WhatsThisCursor</cursorShape>
               </property>
               <property name="toolTip">
-               <string>The displayed information may be out of date. Your wallet automatically synchronizes with the PIVX network after a connection is established, but this process has not completed yet.</string>
+               <string>The displayed information may be out of date. Your wallet automatically synchronizes with the DIVX network after a connection is established, but this process has not completed yet.</string>
               </property>
               <property name="styleSheet">
                <string notr="true">QLabel { color: red; }</string>

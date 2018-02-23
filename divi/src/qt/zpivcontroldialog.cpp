@@ -1,9 +1,9 @@
-// Copyright (c) 2017 The PIVX developers
+// Copyright (c) 2017 The PIVX Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "zpivcontroldialog.h"
-#include "ui_zpivcontroldialog.h"
+#include "zdivcontroldialog.h"
+#include "ui_zdivcontroldialog.h"
 
 #include "main.h"
 #include "walletmodel.h"

@@ -62,12 +62,12 @@
         <translation>Ontvangstadressen</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>Dit zijn uw PIVXadressen om betalingen mee te verzenden. Controleer altijd zowel het bedrag als het ontvangstadres voor het verzenden.</translation>
+        <source>These are your DIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>Dit zijn uw DIVXadressen om betalingen mee te verzenden. Controleer altijd zowel het bedrag als het ontvangstadres voor het verzenden.</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>Dit zijn uw PIVXadressen waarop betalingen kunnen worden ontvangen. Het wordt aangeraden om een nieuw ontvangstadres voor elke transactie te gebruiken.</translation>
+        <source>These are your DIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Dit zijn uw DIVXadressen waarop betalingen kunnen worden ontvangen. Het wordt aangeraden om een nieuw ontvangstadres voor elke transactie te gebruiken.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -176,8 +176,8 @@
         <translation>Bevestig versleuteling van de portemonnee</translation>
     </message>
     <message>
-        <source>PIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
-        <translation>PIVX zal nu afsluiten om het versleutelingsproces te voltooien. Onthoud dat het versleutelen van uw portemonnee u niet volledig kan beschermen: Malware kan uw computer infecteren en uw PIVs stelen.</translation>
+        <source>DIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
+        <translation>DIVX zal nu afsluiten om het versleutelingsproces te voltooien. Onthoud dat het versleutelen van uw portemonnee u niet volledig kan beschermen: Malware kan uw computer infecteren en uw PIVs stelen.</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -239,16 +239,16 @@
         <translation>&amp;BIP 38 Versleuteling</translation>
     </message>
     <message>
-        <source>Enter a Pivx Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
-        <translation>Voer een PIVX adres in dat u wilt versleutelen met BIP 38. Voer een wachtwoord in, in het middelste veld. Druk op versleutelen om de versleutelde geheime sleutel te berekenen.</translation>
+        <source>Enter a Divx Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
+        <translation>Voer een DIVX adres in dat u wilt versleutelen met BIP 38. Voer een wachtwoord in, in het middelste veld. Druk op versleutelen om de versleutelde geheime sleutel te berekenen.</translation>
     </message>
     <message>
         <source>Address:</source>
         <translation>Adres:</translation>
     </message>
     <message>
-        <source>The PIVX address to sign the message with</source>
-        <translation>Het PIVX adres om het bericht met te ondertekenen</translation>
+        <source>The DIVX address to sign the message with</source>
+        <translation>Het DIVX adres om het bericht met te ondertekenen</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -279,8 +279,8 @@
         <translation>Kopieer de huidige handtekening naar het systeemklembord</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this PIVX address</source>
-        <translation>Onderteken het bericht om te bewijzen dat u het PIVX adres bezit</translation>
+        <source>Sign the message to prove you own this DIVX address</source>
+        <translation>Onderteken het bericht om te bewijzen dat u het DIVX adres bezit</translation>
     </message>
     <message>
         <source>Encrypt &amp;Key</source>
@@ -303,12 +303,12 @@
         <translation>Voer de BIP 38 versleutelde geheime sleutel in. Voer het wachtwoord in, in het middelste veld. Druk op Ontsleutelen Sleutel om de geheime sleutel te berekenen.  Nadat de geheime sleutel is ontsleuteld, zal het klikken op 'Adres Importeren' de geheime sleutel toevoegen aan de portemonnee.</translation>
     </message>
     <message>
-        <source>The PIVX address the message was signed with</source>
-        <translation>Het PIVX adres waarmee het bericht was ondertekend</translation>
+        <source>The DIVX address the message was signed with</source>
+        <translation>Het DIVX adres waarmee het bericht was ondertekend</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified PIVX address</source>
-        <translation>Controleer een bericht om te verifiëren dat het ondertekend is door het gespecificeerde PIVX adres</translation>
+        <source>Verify the message to ensure it was signed with the specified DIVX address</source>
+        <translation>Controleer een bericht om te verifiëren dat het ondertekend is door het gespecificeerde DIVX adres</translation>
     </message>
     <message>
         <source>Decrypt &amp;Key</source>
@@ -602,16 +602,16 @@
         <translation>Tabblad werkbalk</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Kern</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Kern</translation>
     </message>
     <message>
-        <source>Send coins to a PIVX address</source>
-        <translation>Verstuur munten naar een PIVX adres</translation>
+        <source>Send coins to a DIVX address</source>
+        <translation>Verstuur munten naar een DIVX adres</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and pivx: URIs)</source>
-        <translation>Vraag betaling aan (genereert QR-codes en PIVX: URI's)</translation>
+        <source>Request payments (generates QR codes and divx: URIs)</source>
+        <translation>Vraag betaling aan (genereert QR-codes en DIVX: URI's)</translation>
     </message>
     <message>
         <source>&amp;Privacy</source>
@@ -626,24 +626,24 @@
         <translation>Bekijk masternodes</translation>
     </message>
     <message>
-        <source>&amp;About PIVX Core</source>
-        <translation>&amp;Over PIVX Kern</translation>
+        <source>&amp;About DIVX Core</source>
+        <translation>&amp;Over DIVX Kern</translation>
     </message>
     <message>
-        <source>Show information about PIVX Core</source>
-        <translation>Toon informatie over PIVX Kern</translation>
+        <source>Show information about DIVX Core</source>
+        <translation>Toon informatie over DIVX Kern</translation>
     </message>
     <message>
-        <source>Modify configuration options for PIVX</source>
-        <translation>Wijzig PIVX configuratie opties</translation>
+        <source>Modify configuration options for DIVX</source>
+        <translation>Wijzig DIVX configuratie opties</translation>
     </message>
     <message>
-        <source>Sign messages with your PIVX addresses to prove you own them</source>
-        <translation>Onderteken berichten met uw PIVX adressen om te bewijzen dat u deze adressen bezit</translation>
+        <source>Sign messages with your DIVX addresses to prove you own them</source>
+        <translation>Onderteken berichten met uw DIVX adressen om te bewijzen dat u deze adressen bezit</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified PIVX addresses</source>
-        <translation>Controleer berichten om te verifiëren dat deze ondertekend zijn met de gespecificeerde PIVX adressen</translation>
+        <source>Verify messages to ensure they were signed with specified DIVX addresses</source>
+        <translation>Controleer berichten om te verifiëren dat deze ondertekend zijn met de gespecificeerde DIVX adressen</translation>
     </message>
     <message>
         <source>&amp;BIP38 tool</source>
@@ -674,8 +674,8 @@
         <translation>Open Masternode configuratiebestand</translation>
     </message>
     <message>
-        <source>Open a PIVX: URI or payment request</source>
-        <translation>Open een PIVX: URI of betaalverzoek</translation>
+        <source>Open a DIVX: URI or payment request</source>
+        <translation>Open een DIVX: URI of betaalverzoek</translation>
     </message>
     <message>
         <source>&amp;Blockchain explorer</source>
@@ -686,16 +686,16 @@
         <translation>Block verkenner venster</translation>
     </message>
     <message>
-        <source>Show the PIVX Core help message to get a list with possible PIVX command-line options</source>
-        <translation>Toon het PIVX Core help bericht om een ​​lijst te krijgen met mogelijke PIVX command line opties</translation>
+        <source>Show the DIVX Core help message to get a list with possible DIVX command-line options</source>
+        <translation>Toon het DIVX Core help bericht om een ​​lijst te krijgen met mogelijke DIVX command line opties</translation>
     </message>
     <message>
-        <source>PIVX Core client</source>
-        <translation>PIVX Core client</translation>
+        <source>DIVX Core client</source>
+        <translation>DIVX Core client</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to PIVX network</source>
-        <translation><numerusform>%n actieve verbinding(en) naar het PIVX netwerk</numerusform><numerusform>%n actieve verbinding(en) naar het PIVX netwerk</numerusform></translation>
+        <source>%n active connection(s) to DIVX network</source>
+        <translation><numerusform>%n actieve verbinding(en) naar het DIVX netwerk</numerusform><numerusform>%n actieve verbinding(en) naar het DIVX netwerk</numerusform></translation>
     </message>
     <message>
         <source>Synchronizing with network...</source>
@@ -841,8 +841,8 @@ MultiSend: %1</translation>
         <translation>TextLabel</translation>
     </message>
     <message>
-        <source>Not all transactions will be shown. To view all transactions you need to set txindex=1 in the configuration file (pivx.conf).</source>
-        <translation>Niet alle transacties worden getoond. Om alle transacties te bekijken moet u txindex=1 instellen in het configuratie bestand (pivx.conf).</translation>
+        <source>Not all transactions will be shown. To view all transactions you need to set txindex=1 in the configuration file (divx.conf).</source>
+        <translation>Niet alle transacties worden getoond. Om alle transacties te bekijken moet u txindex=1 instellen in het configuratie bestand (divx.conf).</translation>
     </message>
 </context>
 <context>
@@ -1130,8 +1130,8 @@ MultiSend: %1</translation>
         <translation>Wijzig verzendadres</translation>
     </message>
     <message>
-        <source>The entered address "%1" is not a valid PIVX address.</source>
-        <translation>Het ingevoerde adres: "%1" is geen geldig PIVX adres.</translation>
+        <source>The entered address "%1" is not a valid DIVX address.</source>
+        <translation>Het ingevoerde adres: "%1" is geen geldig DIVX adres.</translation>
     </message>
     <message>
         <source>The entered address "%1" is already in the address book.</source>
@@ -1176,16 +1176,16 @@ MultiSend: %1</translation>
         <translation>versie</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Kern</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Kern</translation>
     </message>
     <message>
         <source>(%1-bit)</source>
         <translation>(%1-bit)</translation>
     </message>
     <message>
-        <source>About PIVX Core</source>
-        <translation>Over PIVX Core</translation>
+        <source>About DIVX Core</source>
+        <translation>Over DIVX Core</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1223,16 +1223,16 @@ MultiSend: %1</translation>
         <translation>Welkom</translation>
     </message>
     <message>
-        <source>Welcome to PIVX Core.</source>
-        <translation>Welkom bij PIVX Core</translation>
+        <source>Welcome to DIVX Core.</source>
+        <translation>Welkom bij DIVX Core</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where PIVX Core will store its data.</source>
-        <translation>Aangezien dit de eerste keer is dat het programma is gestart, kun je kiezen waar PIVX Core zijn gegevens opslaat.</translation>
+        <source>As this is the first time the program is launched, you can choose where DIVX Core will store its data.</source>
+        <translation>Aangezien dit de eerste keer is dat het programma is gestart, kun je kiezen waar DIVX Core zijn gegevens opslaat.</translation>
     </message>
     <message>
-        <source>PIVX Core will download and store a copy of the PIVX block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>PIVX Core zal een kopie van de PIVX blockchain downloaden en opslaan. Tenminste %1GB aan data zal worden opgeslagen in deze map en het zal over de tijd groeien. De portemonnee wordt ook in deze map opgeslagen.</translation>
+        <source>DIVX Core will download and store a copy of the DIVX block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <translation>DIVX Core zal een kopie van de DIVX blockchain downloaden en opslaan. Tenminste %1GB aan data zal worden opgeslagen in deze map en het zal over de tijd groeien. De portemonnee wordt ook in deze map opgeslagen.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -1243,8 +1243,8 @@ MultiSend: %1</translation>
         <translation>Gebruik een aangepaste data directory:</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Kern</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Kern</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
@@ -1385,12 +1385,12 @@ MultiSend: %1</translation>
         <translation>Vul het verzendadres in</translation>
     </message>
     <message>
-        <source>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other PIVX addresses after it matures.
-To Add: enter percentage to give and PIVX address to add to the MultiSend vector.
+        <source>MultiSend allows you to automatically send up to 100% of your stake or masternode reward to a list of other DIVX addresses after it matures.
+To Add: enter percentage to give and DIVX address to add to the MultiSend vector.
 To Delete: Enter address to delete and press delete.
 MultiSend will not be activated unless you have clicked Activate</source>
-        <translation>MultiSend stelt je in staat om automatisch 100% van uw inzet of masternode-beloning automatisch te verzenden naar een lijst van andere PIVX adressen nadat het volwassen is. 
-Toevoegen: voer percentage in om te geven en PIVX adres om toe te voegen aan de MultiSend vector.
+        <translation>MultiSend stelt je in staat om automatisch 100% van uw inzet of masternode-beloning automatisch te verzenden naar een lijst van andere DIVX adressen nadat het volwassen is. 
+Toevoegen: voer percentage in om te geven en DIVX adres om toe te voegen aan de MultiSend vector.
 Verwijderen: Voer adres in om te verwijderen en druk op delete.
 MultiSend wordt niet geactiveerd, tenzij je op Activeer hebt geklikt</translation>
     </message>
@@ -1578,16 +1578,16 @@ Controleer het adres alsjeblieft en probeer het opnieuw.</translation>
         <translation>Verduistering configuratie</translation>
     </message>
     <message>
-        <source>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening PIVX's configuration screen.</source>
-        <translation>Verduistering is succesvol ingesteld op basic (%1 en 2 rondes). Je kunt dit op elk gewenst moment wijzigen door het configuratiescherm van PIVX te openen.</translation>
+        <source>Obfuscation was successfully set to basic (%1 and 2 rounds). You can change this at any time by opening DIVX's configuration screen.</source>
+        <translation>Verduistering is succesvol ingesteld op basic (%1 en 2 rondes). Je kunt dit op elk gewenst moment wijzigen door het configuratiescherm van DIVX te openen.</translation>
     </message>
     <message>
-        <source>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening PIVX's configuration screen.</source>
-        <translation>Verduistering is succesvol ingesteld op hoog (%1 en 8 rondes). U kunt dit op elk gewenst moment wijzigen door het configuratiescherm van PIVX te openen.</translation>
+        <source>Obfuscation was successfully set to high (%1 and 8 rounds). You can change this at any time by opening DIVX's configuration screen.</source>
+        <translation>Verduistering is succesvol ingesteld op hoog (%1 en 8 rondes). U kunt dit op elk gewenst moment wijzigen door het configuratiescherm van DIVX te openen.</translation>
     </message>
     <message>
-        <source>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening PIVX's configuration screen.</source>
-        <translation>Verduistering is succesvol ingesteld op hoog (%1 en 16 rondes). U kunt dit op elk gewenst moment wijzigen door het configuratiescherm van PIVX te openen.</translation>
+        <source>Obfuscation was successfully set to maximum (%1 and 16 rounds). You can change this at any time by opening DIVX's configuration screen.</source>
+        <translation>Verduistering is succesvol ingesteld op hoog (%1 en 16 rondes). U kunt dit op elk gewenst moment wijzigen door het configuratiescherm van DIVX te openen.</translation>
     </message>
 </context>
 <context>
@@ -1648,8 +1648,8 @@ Controleer het adres alsjeblieft en probeer het opnieuw.</translation>
         <translation>Als je de uitgaven van onbevestigde wijzigingen uitschakelt, de wijziging van een transactie&lt;br/&gt;kan niet worden gebruikt tot die transactie tenminste één bevestiging heeft.&lt;br/&gt;Dit beïnvloedt ook hoe uw saldo is berekend.</translation>
     </message>
     <message>
-        <source>Automatically open the PIVX client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Open de PIVX client poort automatisch op de router. Dit werkt alleen als je router UPnP ondersteunt en het is ingeschakeld.</translation>
+        <source>Automatically open the DIVX client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Open de DIVX client poort automatisch op de router. Dit werkt alleen als je router UPnP ondersteunt en het is ingeschakeld.</translation>
     </message>
     <message>
         <source>Accept connections from outside</source>
@@ -1668,12 +1668,12 @@ Controleer het adres alsjeblieft en probeer het opnieuw.</translation>
         <translation>Expert</translation>
     </message>
     <message>
-        <source>Automatically start PIVX after logging in to the system.</source>
-        <translation>PIVX automatisch opstarten na inloggen op het systeem.</translation>
+        <source>Automatically start DIVX after logging in to the system.</source>
+        <translation>DIVX automatisch opstarten na inloggen op het systeem.</translation>
     </message>
     <message>
-        <source>&amp;Start PIVX on system login</source>
-        <translation>&amp;PIVX starten bij systeemlogin</translation>
+        <source>&amp;Start DIVX on system login</source>
+        <translation>&amp;DIVX starten bij systeemlogin</translation>
     </message>
     <message>
         <source>Whether to show coin control features or not.</source>
@@ -1700,14 +1700,14 @@ Controleer het adres alsjeblieft en probeer het opnieuw.</translation>
         <translation>&amp;Netwerk</translation>
     </message>
     <message>
-        <source>The user interface language can be set here. This setting will take effect after restarting PIVX.</source>
-        <translation>De gebruikersinterface taal kan hier ingesteld worden. Deze instelling zal uitgevoerd na herstart van PIVX.</translation>
+        <source>The user interface language can be set here. This setting will take effect after restarting DIVX.</source>
+        <translation>De gebruikersinterface taal kan hier ingesteld worden. Deze instelling zal uitgevoerd na herstart van DIVX.</translation>
     </message>
     <message>
         <source>Language missing or translation incomplete? Help contributing translations here:
-https://www.transifex.com/pivx-project/pivx-project-translations</source>
+https://www.transifex.com/divx-project/divx-project-translations</source>
         <translation>Taal ontbreekt of vertaling onvolledig? Help om bij te dragen aan vertalingen:
-https://www.transifex.com/pivx-project/pivx-project-translations</translation>
+https://www.transifex.com/divx-project/divx-project-translations</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -1730,8 +1730,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Gewenste Automint zPIV denominatie</translation>
     </message>
     <message>
-        <source>Connect to the PIVX network through a SOCKS5 proxy.</source>
-        <translation>Maak verbinding met het PIVX netwerk via een SOCKS5 proxy.</translation>
+        <source>Connect to the DIVX network through a SOCKS5 proxy.</source>
+        <translation>Maak verbinding met het DIVX netwerk via een SOCKS5 proxy.</translation>
     </message>
     <message>
         <source>Proxy &amp;IP:</source>
@@ -1889,8 +1889,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Staked of masternode beloningen die nog niet volwassen zijn</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the PIVX network after a connection is established, but this process has not completed yet.</source>
-        <translation>De weergegeven informatie kan verouderd zijn. Je portemonnee synchroniseert automatisch met het PIVX netwerk nadat een verbinding is opgezet, maar dit proces is nog niet afgerond.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the DIVX network after a connection is established, but this process has not completed yet.</source>
+        <translation>De weergegeven informatie kan verouderd zijn. Je portemonnee synchroniseert automatisch met het DIVX netwerk nadat een verbinding is opgezet, maar dit proces is nog niet afgerond.</translation>
     </message>
     <message>
         <source>Unconfirmed transactions to watch-only addresses</source>
@@ -1976,12 +1976,12 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Ongeldig betalingsadres %1</translation>
     </message>
     <message>
-        <source>Cannot start pivx: click-to-pay handler</source>
-        <translation>Kan pivx niet starten: click-to-pay handler</translation>
+        <source>Cannot start divx: click-to-pay handler</source>
+        <translation>Kan divx niet starten: click-to-pay handler</translation>
     </message>
     <message>
-        <source>URI cannot be parsed! This can be caused by an invalid PIVX address or malformed URI parameters.</source>
-        <translation>URL kan niet ontleed worden! Dit kan worden veroorzaakt door een ongeldig PIVX adres of misvormde URL parameters.</translation>
+        <source>URI cannot be parsed! This can be caused by an invalid DIVX address or malformed URI parameters.</source>
+        <translation>URL kan niet ontleed worden! Dit kan worden veroorzaakt door een ongeldig DIVX adres of misvormde URL parameters.</translation>
     </message>
     <message>
         <source>Payment request file cannot be read! This can be caused by an invalid payment request file.</source>
@@ -2074,12 +2074,12 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Zerocoin Acties:</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the PIVX network after a connection is established, but this process has not completed yet.</source>
-        <translation>De weergegeven informatie kan verouderd zijn. Je portemonnee synchroniseert automatisch met het PIVX netwerk nadat een verbinding is opgezet, maar dit proces is nog niet afgerond.</translation>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the DIVX network after a connection is established, but this process has not completed yet.</source>
+        <translation>De weergegeven informatie kan verouderd zijn. Je portemonnee synchroniseert automatisch met het DIVX netwerk nadat een verbinding is opgezet, maar dit proces is nog niet afgerond.</translation>
     </message>
     <message>
-        <source>Enter an amount of Piv to convert to zPiv</source>
-        <translation>Vul de hoeveleheid in om Piv te converteren naar zPiv</translation>
+        <source>Enter an amount of Div to convert to zDiv</source>
+        <translation>Vul de hoeveleheid in om Div te converteren naar zDiv</translation>
     </message>
     <message>
         <source>Mint Zerocoin</source>
@@ -2134,12 +2134,12 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Status en/of Berichten van de laatste mint actie.</translation>
     </message>
     <message>
-        <source>zPiv Control</source>
-        <translation>zPiv controle</translation>
+        <source>zDiv Control</source>
+        <translation>zDiv controle</translation>
     </message>
     <message>
-        <source>zPiv Selected:</source>
-        <translation>zPiv geselecteerd:</translation>
+        <source>zDiv Selected:</source>
+        <translation>zDiv geselecteerd:</translation>
     </message>
     <message>
         <source>Quantity Selected:</source>
@@ -2178,8 +2178,8 @@ https://www.transifex.com/pivx-project/pivx-project-translations</translation>
         <translation>Betaal &amp;Naar:</translation>
     </message>
     <message>
-        <source>The PIVX address to send the payment to. Creates local payment to yourself when empty.</source>
-        <translation>Het PIVX adres om de betaling naar te verzenden. Maakt lokale betaling aan jezelf als je leeg bent.</translation>
+        <source>The DIVX address to send the payment to. Creates local payment to yourself when empty.</source>
+        <translation>Het DIVX adres om de betaling naar te verzenden. Maakt lokale betaling aan jezelf als je leeg bent.</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -2420,8 +2420,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Geen 'Betaal aan' adres verstrekt, lokale betaling wordt gemaakt</translation>
     </message>
     <message>
-        <source>Invalid Pivx Address</source>
-        <translation>Ongeldig Pivx addres</translation>
+        <source>Invalid Divx Address</source>
+        <translation>Ongeldig Divx addres</translation>
     </message>
     <message>
         <source>Invalid Send Amount</source>
@@ -2461,8 +2461,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Bestede Zerocoin mislukt met status =</translation>
     </message>
     <message>
-        <source>zPiv Spend #: </source>
-        <translation>zPiv besteed #: </translation>
+        <source>zDiv Spend #: </source>
+        <translation>zDiv besteed #: </translation>
     </message>
     <message>
         <source>denomination: </source>
@@ -2485,8 +2485,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>adres:</translation>
     </message>
     <message>
-        <source>zPiv Mint</source>
-        <translation>zPiv Mint</translation>
+        <source>zDiv Mint</source>
+        <translation>zDiv Mint</translation>
     </message>
     <message>
         <source>Sending successful, return code: </source>
@@ -2508,8 +2508,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Hoeveelheid</translation>
     </message>
     <message>
-        <source>Enter a PIVX address (e.g. %1)</source>
-        <translation>Voer een PIVX adres in (b.v. %1)</translation>
+        <source>Enter a DIVX address (e.g. %1)</source>
+        <translation>Voer een DIVX adres in (b.v. %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
@@ -2646,8 +2646,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Blockchain</translation>
     </message>
     <message>
-        <source>Open the PIVX debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Open het PIVX debug log bestand uit de huidige data directory. Dit kan enkele seconden duren voor grote logbestanden.</translation>
+        <source>Open the DIVX debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation>Open het DIVX debug log bestand uit de huidige data directory. Dit kan enkele seconden duren voor grote logbestanden.</translation>
     </message>
     <message>
         <source>Number of Masternodes</source>
@@ -2814,8 +2814,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Uit:</translation>
     </message>
     <message>
-        <source>Welcome to the PIVX RPC console.</source>
-        <translation>Welkom bij de PIVX RPC console.</translation>
+        <source>Welcome to the DIVX RPC console.</source>
+        <translation>Welkom bij de DIVX RPC console.</translation>
     </message>
     <message>
         <source>Use up and down arrows to navigate history, and &lt;b&gt;Ctrl-L&lt;/b&gt; to clear screen.</source>
@@ -2885,12 +2885,12 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Een optioneel label om te associëren met het nieuwe ontvangstadres.</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the PIVX network.</source>
-        <translation>Een optioneel bericht dat aan het betalingsverzoek wordt gehecht, dat wordt weergegeven wanneer het verzoek wordt geopend. Opmerking: het bericht wordt niet verzonden met de betaling via het PIVX netwerk.</translation>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the DIVX network.</source>
+        <translation>Een optioneel bericht dat aan het betalingsverzoek wordt gehecht, dat wordt weergegeven wanneer het verzoek wordt geopend. Opmerking: het bericht wordt niet verzonden met de betaling via het DIVX netwerk.</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the PIVX network.</source>
-        <translation>Een optioneel bericht dat aan het betalingsverzoek wordt gehecht, dat wordt weergegeven wanneer het verzoek wordt geopend.&lt;br&gt;Opmerking: het bericht wordt niet verzonden met de betaling via het PIVX netwerk.</translation>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened.&lt;br&gt;Note: The message will not be sent with the payment over the DIVX network.</source>
+        <translation>Een optioneel bericht dat aan het betalingsverzoek wordt gehecht, dat wordt weergegeven wanneer het verzoek wordt geopend.&lt;br&gt;Opmerking: het bericht wordt niet verzonden met de betaling via het DIVX netwerk.</translation>
     </message>
     <message>
         <source>Use this form to request payments. All fields are &lt;b&gt;optional&lt;/b&gt;.</source>
@@ -3174,8 +3174,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Als de aangepaste vergoeding is ingesteld op 1000 uPIVs en de transactie is slechts 250 bytes, dan betaalt per kilobyte alleen 250 uPIV's in vergoeding,&lt;br /&gt;terwijl "totaal minstens" 1000 uPIV's betaalt. Voor transacties die groter zijn dan een kilobyte, betalen beiden per kilobyte.</translation>
     </message>
     <message>
-        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for PIVX transactions than the network can process.</source>
-        <translation>Alleen de minimale vergoeding betalen is prima, zolang er minder transactie volume is dan ruimte in de blokken. &lt;br /&gt;Maar wees ervan bewust dat dit kan leiden tot een nooit bevestigende transactie wanneer er meer vraag is naar PIVX transacties dan het netwerk kan verwerken.</translation>
+        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for DIVX transactions than the network can process.</source>
+        <translation>Alleen de minimale vergoeding betalen is prima, zolang er minder transactie volume is dan ruimte in de blokken. &lt;br /&gt;Maar wees ervan bewust dat dit kan leiden tot een nooit bevestigende transactie wanneer er meer vraag is naar DIVX transacties dan het netwerk kan verwerken.</translation>
     </message>
     <message>
         <source>normal</source>
@@ -3278,8 +3278,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>anonieme financiën</translation>
     </message>
     <message>
-        <source>Warning: Invalid PIVX address</source>
-        <translation>Waarschuwing: Ongeldig PIVX adres</translation>
+        <source>Warning: Invalid DIVX address</source>
+        <translation>Waarschuwing: Ongeldig DIVX adres</translation>
     </message>
     <message>
         <source>any available funds (not recommended)</source>
@@ -3381,8 +3381,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Betaal &amp;Naar:</translation>
     </message>
     <message>
-        <source>The PIVX address to send the payment to</source>
-        <translation>Het PIVX adres om de betaling naar te verzenden</translation>
+        <source>The DIVX address to send the payment to</source>
+        <translation>Het DIVX adres om de betaling naar te verzenden</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -3421,8 +3421,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Bericht:</translation>
     </message>
     <message>
-        <source>A message that was attached to the PIVX: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the PIVX network.</source>
-        <translation>Een bericht dat is gehecht aan de PIVX: URI die bij de transactie wordt opgeslagen voor uw referentie. Opmerking: dit bericht wordt niet verzonden via het PIVX netwerk.</translation>
+        <source>A message that was attached to the DIVX: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the DIVX network.</source>
+        <translation>Een bericht dat is gehecht aan de DIVX: URI die bij de transactie wordt opgeslagen voor uw referentie. Opmerking: dit bericht wordt niet verzonden via het DIVX netwerk.</translation>
     </message>
     <message>
         <source>This is an unverified payment request.</source>
@@ -3448,8 +3448,8 @@ Wees alsjeblieft geduldig...</translation>
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>PIVX Core is shutting down...</source>
-        <translation>PIVX Core is aan het afsluiten...</translation>
+        <source>DIVX Core is shutting down...</source>
+        <translation>DIVX Core is aan het afsluiten...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
@@ -3471,8 +3471,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Je kunt berichten met je adressen ondertekenen om te bewijzen dat je ze bezit. Wees voorzichtig om niets vaags te ondertekenen, omdat phishing aanvallen je misschien kunnen proberen om je identiteit over te geven. Teken alleen volledig gedetailleerde verklaringen aan waar je mee akkoord gaat.</translation>
     </message>
     <message>
-        <source>The PIVX address to sign the message with</source>
-        <translation>Het PIVX adres om het bericht met te ondertekenen</translation>
+        <source>The DIVX address to sign the message with</source>
+        <translation>Het DIVX adres om het bericht met te ondertekenen</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -3503,16 +3503,16 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Kopieer de huidige handtekening naar het systeemklembord</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this PIVX address</source>
-        <translation>Onderteken het bericht om te bewijzen dat u het PIVX adres bezit</translation>
+        <source>Sign the message to prove you own this DIVX address</source>
+        <translation>Onderteken het bericht om te bewijzen dat u het DIVX adres bezit</translation>
     </message>
     <message>
-        <source>The PIVX address the message was signed with</source>
-        <translation>Het PIVX adres waarmee het bericht was ondertekend</translation>
+        <source>The DIVX address the message was signed with</source>
+        <translation>Het DIVX adres waarmee het bericht was ondertekend</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified PIVX address</source>
-        <translation>Controleer een bericht om te verifiëren dat het ondertekend is door het gespecificeerde PIVX adres</translation>
+        <source>Verify the message to ensure it was signed with the specified DIVX address</source>
+        <translation>Controleer een bericht om te verifiëren dat het ondertekend is door het gespecificeerde DIVX adres</translation>
     </message>
     <message>
         <source>Sign &amp;Message</source>
@@ -3598,8 +3598,8 @@ Wees alsjeblieft geduldig...</translation>
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Kern</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Kern</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -3614,8 +3614,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>De Dash Kernontwikkelaars</translation>
     </message>
     <message>
-        <source>The PIVX Core developers</source>
-        <translation>De PIVX Kernontwikkelaars</translation>
+        <source>The DIVX Core developers</source>
+        <translation>De DIVX Kernontwikkelaars</translation>
     </message>
     <message>
         <source>[testnet]</source>
@@ -3902,32 +3902,32 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Verduisterd</translation>
     </message>
     <message>
-        <source>Converted Piv to zPiv</source>
-        <translation>Geconverteerde Piv naar zPiv</translation>
+        <source>Converted Div to zDiv</source>
+        <translation>Geconverteerde Div naar zDiv</translation>
     </message>
     <message>
-        <source>Spent zPiv</source>
-        <translation>Uitgegeven zPiv</translation>
+        <source>Spent zDiv</source>
+        <translation>Uitgegeven zDiv</translation>
     </message>
     <message>
-        <source>Received Piv from zPiv</source>
-        <translation>Verkregen Piv van zPiv</translation>
+        <source>Received Div from zDiv</source>
+        <translation>Verkregen Div van zDiv</translation>
     </message>
     <message>
-        <source>Minted Change as zPiv from zPiv Spend</source>
-        <translation>Minted wisselgeld als zPiv van uitgegeven zPiv</translation>
+        <source>Minted Change as zDiv from zDiv Spend</source>
+        <translation>Minted wisselgeld als zDiv van uitgegeven zDiv</translation>
     </message>
     <message>
-        <source>Converted zPiv to Piv</source>
-        <translation>Geconverteerde zPiv naar Piv</translation>
+        <source>Converted zDiv to Div</source>
+        <translation>Geconverteerde zDiv naar Div</translation>
     </message>
     <message>
         <source>watch-only</source>
         <translation>watch-only</translation>
     </message>
     <message>
-        <source>zPiv Accumulator</source>
-        <translation>zPiv Accumulator</translation>
+        <source>zDiv Accumulator</source>
+        <translation>zDiv Accumulator</translation>
     </message>
     <message>
         <source>(n/a)</source>
@@ -4037,8 +4037,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Masternode beloning</translation>
     </message>
     <message>
-        <source>Received Piv from zPiv</source>
-        <translation>Verkregen Piv van zPiv</translation>
+        <source>Received Div from zDiv</source>
+        <translation>Verkregen Div van zDiv</translation>
     </message>
     <message>
         <source>Zerocoin Mint</source>
@@ -4049,8 +4049,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Zerocoin uitgegeven</translation>
     </message>
     <message>
-        <source>Zerocoin Spend, Change in zPiv</source>
-        <translation>Zerocoin uitgegeven, wisselgeld in zPiv</translation>
+        <source>Zerocoin Spend, Change in zDiv</source>
+        <translation>Zerocoin uitgegeven, wisselgeld in zDiv</translation>
     </message>
     <message>
         <source>Zerocoin Spend to Self</source>
@@ -4216,8 +4216,8 @@ Wees alsjeblieft geduldig...</translation>
 <context>
     <name>ZPivControlDialog</name>
     <message>
-        <source>Select zPiv to Spend</source>
-        <translation>Selecteer zPiv om te spenderen</translation>
+        <source>Select zDiv to Spend</source>
+        <translation>Selecteer zDiv om te spenderen</translation>
     </message>
     <message>
         <source>Quantity</source>
@@ -4228,8 +4228,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>0</translation>
     </message>
     <message>
-        <source>zPiv</source>
-        <translation>zPiv</translation>
+        <source>zDiv</source>
+        <translation>zDiv</translation>
     </message>
     <message>
         <source>Select/Deselect All</source>
@@ -4241,7 +4241,7 @@ Wees alsjeblieft geduldig...</translation>
     </message>
 </context>
 <context>
-    <name>pivx-core</name>
+    <name>divx-core</name>
     <message>
         <source>(1 = keep tx meta data e.g. account owner and payment request information, 2 = drop tx meta data)</source>
         <translation>(1 = houd tx meta data, bijvoorbeeld account eigenaar en betalingsverzoek informatie, 2 = drop tx meta data)</translation>
@@ -4271,8 +4271,8 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Het berekende accumulatie controlepunt is niet wat wordt geregistreerd door de blokindex</translation>
     </message>
     <message>
-        <source>Cannot obtain a lock on data directory %s. PIVX Core is probably already running.</source>
-        <translation>Kan geen vergrendeling op data directory %s verkrijgen. PIVX Core loopt waarschijnlijk al.</translation>
+        <source>Cannot obtain a lock on data directory %s. DIVX Core is probably already running.</source>
+        <translation>Kan geen vergrendeling op data directory %s verkrijgen. DIVX Core loopt waarschijnlijk al.</translation>
     </message>
     <message>
         <source>Change automatic finalized budget voting behavior. mode=auto: Vote for only exact finalized budget match to my generated budget. (string, default: auto)</source>
@@ -4423,32 +4423,32 @@ Wees alsjeblieft geduldig...</translation>
         <translation>Dit product bevat software ontwikkeld door het OpenSSL Project voor gebruik in de OpenSSL Toolkit &lt;https://www.openssl.org/&gt; en cryptografische software geschreven door Eric Young en UPnP software geschreven door Thomas Bernard.</translation>
     </message>
     <message>
-        <source>To use pivxd, or the -server option to pivx-qt, you must set an rpcpassword in the configuration file:
+        <source>To use divxd, or the -server option to divx-qt, you must set an rpcpassword in the configuration file:
 %s
 It is recommended you use the following random password:
-rpcuser=pivxrpc
+rpcuser=divxrpc
 rpcpassword=%s
 (you do not need to remember this password)
 The username and password MUST NOT be the same.
 If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s "PIVX Alert" admin@foo.com
+for example: alertnotify=echo %%s | mail -s "DIVX Alert" admin@foo.com
 </source>
-        <translation>Om pivxd of de -server optie om pivx-qt te gebruiken, moet je een rpcpassword instellen in het configuratiebestand:
+        <translation>Om divxd of de -server optie om divx-qt te gebruiken, moet je een rpcpassword instellen in het configuratiebestand:
 %s
 Het is aan te raden het volgende willekeurige wachtwoord te gebruiken:
-rpcuser=pivxrpc
+rpcuser=divxrpc
 rpcpassword=%s
 (je hoeft dit wachtwoord niet te onthouden)
 De gebruikersnaam en het wachtwoord MOETEN NIET hetzelfde zijn.
 Als het bestand niet bestaat, creëer het dan met owner-readable-only bestandsrechten.
 Het is ook aan te raden om alertnotify in te stellen, zodat je van problemen op de hoogte wordt gebracht;
-bijvoorbeeld: alertnotify = echo %%s | mail -s "PIVX Alert" admin@foo.com
+bijvoorbeeld: alertnotify = echo %%s | mail -s "DIVX Alert" admin@foo.com
 </translation>
     </message>
     <message>
-        <source>Unable to bind to %s on this computer. PIVX Core is probably already running.</source>
-        <translation>Niet mogelijk te binden aan %s op deze computer. PIVX Core loopt waarschijnlijk al.</translation>
+        <source>Unable to bind to %s on this computer. DIVX Core is probably already running.</source>
+        <translation>Niet mogelijk te binden aan %s op deze computer. DIVX Core loopt waarschijnlijk al.</translation>
     </message>
     <message>
         <source>Unable to locate enough Obfuscation denominated funds for this transaction.</source>
@@ -4475,8 +4475,8 @@ bijvoorbeeld: alertnotify = echo %%s | mail -s "PIVX Alert" admin@foo.com
         <translation>Waarschuwing: -paytxfee is zeer hoog ingesteld! Dit zijn de transactie kosten die je betaalt als je een transactie verstuurt.</translation>
     </message>
     <message>
-        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong PIVX Core will not work properly.</source>
-        <translation>Waarschuwing: Controleer of de datum en tijd van je computer juist zijn! Als je klok verkeerd staat, werkt PIVX Core niet goed.</translation>
+        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong DIVX Core will not work properly.</source>
+        <translation>Waarschuwing: Controleer of de datum en tijd van je computer juist zijn! Als je klok verkeerd staat, werkt DIVX Core niet goed.</translation>
     </message>
     <message>
         <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
@@ -4631,8 +4631,8 @@ bijvoorbeeld: alertnotify = echo %%s | mail -s "PIVX Alert" admin@foo.com
         <translation>Copyright (C) 2014-%i The Dash Kernontwikkelaars</translation>
     </message>
     <message>
-        <source>Copyright (C) 2015-%i The PIVX Core Developers</source>
-        <translation>Copyright (C) 2015-%i The PIVX Kernontwikkelaars</translation>
+        <source>Copyright (C) 2015-%i The DIVX Core Developers</source>
+        <translation>Copyright (C) 2015-%i The DIVX Kernontwikkelaars</translation>
     </message>
     <message>
         <source>Corrupted block database detected</source>
@@ -4711,8 +4711,8 @@ bijvoorbeeld: alertnotify = echo %%s | mail -s "PIVX Alert" admin@foo.com
         <translation>Error tijdens het laden van wallet.dat: Portemonnee corrupt</translation>
     </message>
     <message>
-        <source>Error loading wallet.dat: Wallet requires newer version of PIVX Core</source>
-        <translation>Fout bij het laden van wallet.dat: Portemonnee vereist een nieuwere versie van PIVX Core</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of DIVX Core</source>
+        <translation>Fout bij het laden van wallet.dat: Portemonnee vereist een nieuwere versie van DIVX Core</translation>
     </message>
     <message>
         <source>Error opening block database</source>
@@ -4823,8 +4823,8 @@ bijvoorbeeld: alertnotify = echo %%s | mail -s "PIVX Alert" admin@foo.com
         <translation>Informatie</translation>
     </message>
     <message>
-        <source>Initialization sanity check failed. PIVX Core is shutting down.</source>
-        <translation>Initialisatie saniteitscontrole mislukt. PIVX Core wordt afgesloten.</translation>
+        <source>Initialization sanity check failed. DIVX Core is shutting down.</source>
+        <translation>Initialisatie saniteitscontrole mislukt. DIVX Core wordt afgesloten.</translation>
     </message>
     <message>
         <source>Input is not valid.</source>
@@ -5483,8 +5483,8 @@ bijvoorbeeld: alertnotify = echo %%s | mail -s "PIVX Alert" admin@foo.com
         <translation>Portemonnee is vergrendeld.</translation>
     </message>
     <message>
-        <source>Wallet needed to be rewritten: restart PIVX Core to complete</source>
-        <translation>Wallet moest worden herschreven: start PIVX Core opnieuw om te voltooien</translation>
+        <source>Wallet needed to be rewritten: restart DIVX Core to complete</source>
+        <translation>Wallet moest worden herschreven: start DIVX Core opnieuw om te voltooien</translation>
     </message>
     <message>
         <source>Wallet options:</source>

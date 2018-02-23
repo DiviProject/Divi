@@ -1,19 +1,19 @@
 [Unit]
-Description=PIVX's distributed currency daemon
+Description=DIVX's distributed currency daemon
 After=network.target
 
 [Service]
-User=pivx
-Group=pivx
+User=divx
+Group=divx
 
 Type=forking
-PIDFile=/var/lib/pivxd/pivxd.pid
+PIDFile=/var/lib/divxd/divxd.pid
 
-ExecStart=/usr/bin/pivxd -daemon -pid=/var/lib/pivxd/pivxd.pid \
-          -conf=/etc/pivx/pivx.conf -datadir=/var/lib/pivxd
+ExecStart=/usr/bin/divxd -daemon -pid=/var/lib/divxd/divxd.pid \
+          -conf=/etc/divx/divx.conf -datadir=/var/lib/divxd
 
-ExecStop=-/usr/bin/pivx-cli -conf=/etc/pivx/pivx.conf \
-         -datadir=/var/lib/pivxd stop
+ExecStop=-/usr/bin/divx-cli -conf=/etc/divx/divx.conf \
+         -datadir=/var/lib/divxd stop
 
 Restart=always
 PrivateTmp=true

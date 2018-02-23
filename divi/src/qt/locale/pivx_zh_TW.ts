@@ -43,11 +43,11 @@
     </message>
     <message>
         <source>Choose the address to send coins to</source>
-        <translation>選擇要匯出PIVX幣的位址</translation>
+        <translation>選擇要匯出DIVX幣的位址</translation>
     </message>
     <message>
         <source>Choose the address to receive coins with</source>
-        <translation>選擇要接收PIVX幣的位址</translation>
+        <translation>選擇要接收DIVX幣的位址</translation>
     </message>
     <message>
         <source>C&amp;hoose</source>
@@ -62,12 +62,12 @@
         <translation>接收的位址</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>這是你用來付款的 PIVX 位址, 送出前, 請務必確認金額及接收位址是否正確.</translation>
+        <source>These are your DIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>這是你用來付款的 DIVX 位址, 送出前, 請務必確認金額及接收位址是否正確.</translation>
     </message>
     <message>
-        <source>These are your PIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>這是你用來接收款項的 PIVX 位址, 建議你每次付款都使用新的位址.</translation>
+        <source>These are your DIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>這是你用來接收款項的 DIVX 位址, 建議你每次付款都使用新的位址.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -164,8 +164,8 @@
         <translation>錢包確認加密</translation>
     </message>
     <message>
-        <source>PIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
-        <translation>PIVX 現在會關閉程式來處理加密流程, 請注意, 僅僅是加密你的錢包並不能完全保護你的 PIV 幣被可疑軟體或病毒偷走的風險.</translation>
+        <source>DIVX will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
+        <translation>DIVX 現在會關閉程式來處理加密流程, 請注意, 僅僅是加密你的錢包並不能完全保護你的 PIV 幣被可疑軟體或病毒偷走的風險.</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -227,16 +227,16 @@
         <translation>&amp;BIP 38 加密</translation>
     </message>
     <message>
-        <source>Enter a Pivx Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
-        <translation>輸入你想 BIP 38 加密的 Pivx 位址, 輸入密碼在中間欄, 按下加密按鈕來產生加密私鑰.</translation>
+        <source>Enter a Divx Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
+        <translation>輸入你想 BIP 38 加密的 Divx 位址, 輸入密碼在中間欄, 按下加密按鈕來產生加密私鑰.</translation>
     </message>
     <message>
         <source>Address:</source>
         <translation>位址:</translation>
     </message>
     <message>
-        <source>The PIVX address to sign the message with</source>
-        <translation>對訊息簽名的 PIVX 位址</translation>
+        <source>The DIVX address to sign the message with</source>
+        <translation>對訊息簽名的 DIVX 位址</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -267,8 +267,8 @@
         <translation>拷貝目前的簽章到系統剪貼簿</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this PIVX address</source>
-        <translation>使用簽章來證明你是該  PIVX 位址的擁有者,</translation>
+        <source>Sign the message to prove you own this DIVX address</source>
+        <translation>使用簽章來證明你是該  DIVX 位址的擁有者,</translation>
     </message>
     <message>
         <source>Encrypt &amp;Key</source>
@@ -287,12 +287,12 @@
         <translation>&amp;BIP 38 解密</translation>
     </message>
     <message>
-        <source>The PIVX address the message was signed with</source>
-        <translation>此訊息之 PIVX 位址已簽章於</translation>
+        <source>The DIVX address the message was signed with</source>
+        <translation>此訊息之 DIVX 位址已簽章於</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified PIVX address</source>
-        <translation>驗證訊息以確保該  PIVX 位址已被簽章</translation>
+        <source>Verify the message to ensure it was signed with the specified DIVX address</source>
+        <translation>驗證訊息以確保該  DIVX 位址已被簽章</translation>
     </message>
     <message>
         <source>Decrypt &amp;Key</source>
@@ -582,16 +582,16 @@
         <translation>Tabs 工具列</translation>
     </message>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Core</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Core</translation>
     </message>
     <message>
-        <source>Send coins to a PIVX address</source>
-        <translation>送出錢幣到 PIVX 地址</translation>
+        <source>Send coins to a DIVX address</source>
+        <translation>送出錢幣到 DIVX 地址</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and pivx: URIs)</source>
-        <translation>請求付款 (會產生 QR Code跟 pivx 位址)</translation>
+        <source>Request payments (generates QR codes and divx: URIs)</source>
+        <translation>請求付款 (會產生 QR Code跟 divx 位址)</translation>
     </message>
     <message>
         <source>&amp;Masternodes</source>
@@ -602,24 +602,24 @@
         <translation>瀏覽 Masternodes</translation>
     </message>
     <message>
-        <source>&amp;About PIVX Core</source>
-        <translation>&amp;關於 PIVX Core</translation>
+        <source>&amp;About DIVX Core</source>
+        <translation>&amp;關於 DIVX Core</translation>
     </message>
     <message>
-        <source>Show information about PIVX Core</source>
-        <translation>顯示 PIVX Core 相關資訊</translation>
+        <source>Show information about DIVX Core</source>
+        <translation>顯示 DIVX Core 相關資訊</translation>
     </message>
     <message>
-        <source>Modify configuration options for PIVX</source>
-        <translation>修改 PIVX 設定</translation>
+        <source>Modify configuration options for DIVX</source>
+        <translation>修改 DIVX 設定</translation>
     </message>
     <message>
-        <source>Sign messages with your PIVX addresses to prove you own them</source>
-        <translation>使用你的 PIVX 位址對訊息簽章, 來證明你是擁有者</translation>
+        <source>Sign messages with your DIVX addresses to prove you own them</source>
+        <translation>使用你的 DIVX 位址對訊息簽章, 來證明你是擁有者</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified PIVX addresses</source>
-        <translation>驗證訊息簽章與 PIVX 位址吻合</translation>
+        <source>Verify messages to ensure they were signed with specified DIVX addresses</source>
+        <translation>驗證訊息簽章與 DIVX 位址吻合</translation>
     </message>
     <message>
         <source>&amp;BIP38 tool</source>
@@ -650,8 +650,8 @@
         <translation>打開Masternode設定檔</translation>
     </message>
     <message>
-        <source>Open a PIVX: URI or payment request</source>
-        <translation>打開PIVX: 位址或付款請求 </translation>
+        <source>Open a DIVX: URI or payment request</source>
+        <translation>打開DIVX: 位址或付款請求 </translation>
     </message>
     <message>
         <source>&amp;Blockchain explorer</source>
@@ -662,12 +662,12 @@
         <translation>區塊鏈瀏覽視窗</translation>
     </message>
     <message>
-        <source>Show the PIVX Core help message to get a list with possible PIVX command-line options</source>
-        <translation>顯示 PIVX Core 幫助訊息以取得 PIVX 命令列表選項</translation>
+        <source>Show the DIVX Core help message to get a list with possible DIVX command-line options</source>
+        <translation>顯示 DIVX Core 幫助訊息以取得 DIVX 命令列表選項</translation>
     </message>
     <message>
-        <source>PIVX Core client</source>
-        <translation>PIVX Core 客戶端</translation>
+        <source>DIVX Core client</source>
+        <translation>DIVX Core 客戶端</translation>
     </message>
     </context>
 <context>
@@ -696,15 +696,15 @@
 <context>
     <name>HelpMessageDialog</name>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Core</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Core</translation>
     </message>
     </context>
 <context>
     <name>Intro</name>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Core</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Core</translation>
     </message>
     </context>
 <context>
@@ -839,8 +839,8 @@
 <context>
     <name>SignVerifyMessageDialog</name>
     <message>
-        <source>The PIVX address to sign the message with</source>
-        <translation>對訊息簽名的 PIVX 位址</translation>
+        <source>The DIVX address to sign the message with</source>
+        <translation>對訊息簽名的 DIVX 位址</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -863,16 +863,16 @@
         <translation>拷貝目前的簽章到系統剪貼簿</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this PIVX address</source>
-        <translation>使用簽章來證明你是該  PIVX 位址的擁有者,</translation>
+        <source>Sign the message to prove you own this DIVX address</source>
+        <translation>使用簽章來證明你是該  DIVX 位址的擁有者,</translation>
     </message>
     <message>
-        <source>The PIVX address the message was signed with</source>
-        <translation>此訊息之 PIVX 位址已簽章於</translation>
+        <source>The DIVX address the message was signed with</source>
+        <translation>此訊息之 DIVX 位址已簽章於</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified PIVX address</source>
-        <translation>驗證訊息以確保該  PIVX 位址已被簽章</translation>
+        <source>Verify the message to ensure it was signed with the specified DIVX address</source>
+        <translation>驗證訊息以確保該  DIVX 位址已被簽章</translation>
     </message>
     <message>
         <source>Reset all sign message fields</source>
@@ -910,8 +910,8 @@
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>PIVX Core</source>
-        <translation>PIVX Core</translation>
+        <source>DIVX Core</source>
+        <translation>DIVX Core</translation>
     </message>
     </context>
 <context>
@@ -977,6 +977,6 @@
     <name>ZPivControlDialog</name>
     </context>
 <context>
-    <name>pivx-core</name>
+    <name>divx-core</name>
     </context>
 </TS>

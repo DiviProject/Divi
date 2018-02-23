@@ -189,6 +189,6 @@
     <name>ZPivControlDialog</name>
     </context>
 <context>
-    <name>pivx-core</name>
+    <name>divx-core</name>
     </context>
 </TS>

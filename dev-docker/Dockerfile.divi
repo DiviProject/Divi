@@ -41,7 +41,7 @@ USER ubuntu
 
 # EDIT These to your VSO username and password
 ENV VSOUSER dcaldwellsw
-ENV VSOPASSWORD Me55!er31
+ENV VSOPASSWORD 
 
 RUN echo 'git clone -b "caldwell" --depth 1 "https://$VSOUSER:$VSOPASSWORD@agii.visualstudio.com/_git/DiviProject" /shared/vso' > /home/ubuntu/pullvso.sh
 RUN chmod +x /home/ubuntu/pullvso.sh

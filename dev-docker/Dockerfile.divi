@@ -40,7 +40,7 @@ chown -R ubuntu.ubuntu /home/ubuntu
 USER ubuntu
 
 # EDIT These to your VSO username and password
-ENV VSOUSER caldwell
+ENV VSOUSER dcaldwellsw
 ENV VSOPASSWORD Me55!er31
 
 RUN echo 'git clone -b "caldwell" --depth 1 "https://$VSOUSER:$VSOPASSWORD@agii.visualstudio.com/_git/DiviProject" /shared/vso' > /home/ubuntu/pullvso.sh

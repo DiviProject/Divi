@@ -1,0 +1,26 @@
+# /etc/conf.d/divxd: config file for /etc/init.d/divxd
+
+# Config file location
+#BITCOIND_CONFIGFILE="/etc/divx/divx.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCOIND_USER)
+#BITCOIND_PIDDIR="/var/run/divxd"
+
+# What filename to give the pidfile
+#BITCOIND_PIDFILE="${BITCOIND_PIDDIR}/divxd.pid"
+
+# Where to write divxd data (be mindful that the blockchain is large)
+#BITCOIND_DATADIR="/var/lib/divxd"
+
+# User and group to own divxd process
+#BITCOIND_USER="divx"
+#BITCOIND_GROUP="divx"
+
+# Path to divxd executable
+#BITCOIND_BIN="/usr/bin/divxd"
+
+# Nice value to run divxd under
+#BITCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+BITCOIND_OPTS=""

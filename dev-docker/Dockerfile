@@ -38,17 +38,19 @@ chown root.root /etc/sudoers.d/ubuntu && \
 chmod 0400 /etc/sudoers.d/ubuntu && \
 chown -R ubuntu.ubuntu /home/ubuntu
 USER ubuntu
-# RUN cd ~
 COPY gitclone.sh /home/ubuntu/gitclone.sh
 COPY genconf.sh /home/ubuntu/genconf.sh
 COPY runbuild.sh /home/ubuntu/runbuild.sh
 
 # In the container's command prompt execute gitclone.sh with parameters
+#                   BRANCH GIT_URI
 # EX: ./gitclone.sh master https://github.com/Divicoin/Divi.git
 
 # Generate the conf file for this node:
+# 				 FOLDER RPCUSER RPCPASSWORD
 # EX: ./genconf.sh divi diviABC ABCD1234EFGH5678IJKL90ABCD1234EFGH5678IJKL90
 
 # After the clone run the build:
+#                   FOLDER
 # EX: ./runbuild.sh pivx
 # EX: ./runbuild.sh divi

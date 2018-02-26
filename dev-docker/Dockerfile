@@ -42,6 +42,9 @@ COPY gitclone.sh /home/ubuntu/gitclone.sh
 COPY genconf.sh /home/ubuntu/genconf.sh
 COPY runbuild.sh /home/ubuntu/runbuild.sh
 
+# Always starts in /shared for some reason, we can't put scripts there and pull repo into that so:
+# cd /home/ubuntu
+
 # In the container's command prompt execute gitclone.sh with parameters
 #                   BRANCH GIT_URI
 # EX: ./gitclone.sh master https://github.com/Divicoin/Divi.git

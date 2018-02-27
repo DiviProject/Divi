@@ -49,11 +49,14 @@ COPY runbuild.sh /home/ubuntu/runbuild.sh
 #                   BRANCH GIT_URI
 # EX: ./gitclone.sh master https://github.com/Divicoin/Divi.git
 
-# Generate the conf file for this node:
-# 				 FOLDER RPCUSER RPCPASSWORD
-# EX: ./genconf.sh divi diviABC ABCD1234EFGH5678IJKL90ABCD1234EFGH5678IJKL90
-
 # After the clone run the build:
 #                   FOLDER
 # EX: ./runbuild.sh pivx
 # EX: ./runbuild.sh divi
+
+# run "divxd -debug" or "pivxd -debug" or "mkdir /home/ubuntu/.pivx" or "mkdir /home/ubuntu/.divx"
+# Generate the conf file for this node:
+# 				 FOLDER RPCUSER RPCPASSWORD
+# EX: ./genconf.sh divx diviABC ABCD1234EFGH5678IJKL90ABCD1234EFGH5678IJKL90
+
+

@@ -41,5 +41,5 @@ USER ubuntu
 COPY cbr.sh /home/ubuntu/cbr.sh
 COPY divx.conf /home/ubuntu/divx.conf
 ENV GITBRANCH caldwell
-ENV GITURI https://raropw5qsohn7txdy3aug3wmgjwvbyxgdsckh3asjym6u5nzwjhq@agii.visualstudio.com/_git/DiviProject
+ENV GITURI https://personalaccesstoken@agii.visualstudio.com/_git/DiviProject
 # RUN /home/ubuntu/cbr.sh

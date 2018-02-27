@@ -6,5 +6,5 @@ cd /shared/divi/
 make
 sudo make install
 mkdir .divx
-cp ./divx.conf ./.divx/divx.conf
+cp /home/ubuntu/divx.conf /home/ubuntu/.divx/divx.conf
 divxd -debug

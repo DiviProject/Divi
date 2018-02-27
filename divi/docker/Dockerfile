@@ -26,7 +26,9 @@ bsdmainutils \
 vim \
 ruby \
 sudo \
-rsync && \
+rsync \
+dos2unix \
+net-tools && \
 apt-get -yq purge grub > /dev/null 2>&1 || true && \
 apt-get -y dist-upgrade && \
 locale-gen en_US.UTF-8 && \
@@ -39,7 +41,8 @@ chmod 0400 /etc/sudoers.d/ubuntu && \
 chown -R ubuntu.ubuntu /home/ubuntu
 USER ubuntu
 COPY cbr.sh /home/ubuntu/cbr.sh
+COPY pbr.sh /home/ubuntu/pbr.sh
 COPY divx.conf /home/ubuntu/divx.conf
 ENV GITBRANCH master
-ENV GITURI https://personalaccesstoken@agii.visualstudio.com/_git/DiviProject
-# RUN /home/ubuntu/cbr.sh
+ENV GITURI https://github.com/Divicoin/Divi
+RUN /home/ubuntu/cbr.sh

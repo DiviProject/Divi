@@ -40,6 +40,6 @@ chown -R ubuntu.ubuntu /home/ubuntu
 USER ubuntu
 COPY cbr.sh /home/ubuntu/cbr.sh
 COPY divx.conf /home/ubuntu/divx.conf
-ENV GITBRANCH caldwell
+ENV GITBRANCH master
 ENV GITURI https://personalaccesstoken@agii.visualstudio.com/_git/DiviProject
 # RUN /home/ubuntu/cbr.sh

@@ -1,8 +1,8 @@
 #! /bin/bash
 PRESENTDIR={pwd}
 # try to run clone
-cd /shared/divi/
 if [git clone -b "$GITBRANCH" --depth 1 "$GITURI" /shared ]; then
+  cd /shared/divi/
   ./autogen.sh
   ./configure --disable-zerocoin --without-gui --enable-debug
   make

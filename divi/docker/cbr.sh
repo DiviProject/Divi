@@ -1,5 +1,5 @@
 #! /bin/bash
-PRESENTDIR=(pwd)
+PRESENTDIR=$(pwd)
 # try to run clone
 if [ git clone -b "$GITBRANCH" --depth 1 "$GITURI" /shared ] ; then
   cd /shared/divi/

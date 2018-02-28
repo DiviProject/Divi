@@ -45,5 +45,5 @@ COPY pbr.sh /home/ubuntu/pbr.sh
 COPY divx.conf /home/ubuntu/divx.conf
 ENV GITBRANCH master
 ENV GITURI https://github.com/Divicoin/Divi
-RUN dos2unix /home/ubuntu/cbr.sh /home/ubuntu/pbr.sh
+RUN sudo dos2unix /home/ubuntu/cbr.sh /home/ubuntu/pbr.sh
 RUN /home/ubuntu/cbr.sh

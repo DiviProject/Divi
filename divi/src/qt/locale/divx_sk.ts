@@ -1306,7 +1306,7 @@ MultiSend: %1</translation>
     </message>
     </context>
 <context>
-    <name>ZPivControlDialog</name>
+    <name>ZDivControlDialog</name>
     </context>
 <context>
     <name>divx-core</name>

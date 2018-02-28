@@ -4210,7 +4210,7 @@ Please be patient...</source>
     </message>
 </context>
 <context>
-    <name>ZPivControlDialog</name>
+    <name>ZDivControlDialog</name>
     <message>
         <source>Select zDiv to Spend</source>
         <translation>Изберете zPIV за Изпращане</translation>

@@ -4214,7 +4214,7 @@ Wees alsjeblieft geduldig...</translation>
     </message>
 </context>
 <context>
-    <name>ZPivControlDialog</name>
+    <name>ZDivControlDialog</name>
     <message>
         <source>Select zDiv to Spend</source>
         <translation>Selecteer zDiv om te spenderen</translation>

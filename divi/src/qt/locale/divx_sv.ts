@@ -1423,7 +1423,7 @@ Ange en lösenfras i den mellersta boxen. Tryck kryptera för att beräkna den k
     </message>
     </context>
 <context>
-    <name>ZPivControlDialog</name>
+    <name>ZDivControlDialog</name>
     </context>
 <context>
     <name>divx-core</name>

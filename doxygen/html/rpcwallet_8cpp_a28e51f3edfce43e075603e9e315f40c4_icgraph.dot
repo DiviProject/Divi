@@ -1,0 +1,9 @@
+digraph "WalletTxToJSON"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node2369 [label="WalletTxToJSON",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2369 -> Node2370 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2370 [label="gettransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a845c15a1402787fcf2cc021111ea89f5"];
+}

@@ -1,0 +1,33 @@
+digraph "CreateNewBlock"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node2 [label="CreateNewBlock",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node2 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="CChainParams::MineBlocks\lOnDemand",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html#a96be31ff3d8525c9d5458b7d07ada6bb",tooltip="Make miner stop after a block is found. "];
+  Node2 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="GetArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8",tooltip="Return string argument or default value. "];
+  Node2 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="GetAdjustedTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$timedata_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6"];
+  Node6 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node6 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="GetTimeOffset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$timedata_8cpp.html#a50ca5344c75631267633f15cfe5e983e",tooltip="\"Never go to sea with two chronometers; take one or three.\" Our three time sources are: ..."];
+  Node2 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="CChainParams::Zerocoin\l_StartTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html#ae921b3c9f58708e4a694bb0b1e42173a"];
+  Node2 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="CChain::Tip",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#a40ccefec14f8f3195c08c827af8cf412",tooltip="Returns the index entry for the tip of this chain, or NULL if none. "];
+  Node10 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="CBlockIndex::IsProofOfStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a2438a891e9d43821c0d99e1bdac56fde"];
+  Node2 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="GetNextWorkRequired",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae7e7ea002d3ece5e1a7461f4997cd21f"];
+  Node2 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="CWallet::CreateCoinStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#gaa5c623fd859d4155b17386bc7b785983"];
+  Node13 -> Node14 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="CScript::clear",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_script.html#a7b2baf842621f07c4939408acf63377c"];
+  Node13 -> Node15 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="ParseMoney",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilmoneystr_8cpp.html#a9ebffff9292ea77a3801d29ae2f23572"];
+}

@@ -1,0 +1,17 @@
+digraph "GetMasternodeConfigFile"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node288 [label="GetMasternodeConfigFile",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node288 -> Node289 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node289 [label="CMasternodeConfig::read",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_config.html#a028d769bc39a23177cf81a3e433b6e86"];
+  Node289 -> Node290 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node290 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#ac59316b767e6984e1285f0531275286b"];
+  Node290 -> Node291 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node291 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
+  Node288 -> Node292 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node292 [label="GUIUtil::openMNConfigfile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a17cced42f0ebd5fb923eba61015308a8"];
+  Node292 -> Node293 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node293 [label="RPCConsole::showMNConfEditor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a8adc9441d40b37a037ecdfe8183323f7",tooltip="Open external (default) editor with masternode.conf. "];
+}

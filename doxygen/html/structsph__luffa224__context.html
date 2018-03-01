@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: sph_luffa224_context Struct Reference</title>
+<title>DIVX: sph_luffa224_context Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -69,30 +72,82 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>This structure is a context for Luffa-224 computations: it contains the intermediate values and some data from the last entered block.  
+ <a href="structsph__luffa224__context.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="sph__luffa_8h_source.html">sph_luffa.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ad6cc353326e629ce48de2486870ff0b6"><td class="memItemLeft" align="right" valign="top"><a id="ad6cc353326e629ce48de2486870ff0b6"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>buf</b> [32]</td></tr>
+<tr class="memitem:ad6cc353326e629ce48de2486870ff0b6"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__luffa224__context.html#ad6cc353326e629ce48de2486870ff0b6">buf</a> [32]</td></tr>
 <tr class="separator:ad6cc353326e629ce48de2486870ff0b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b262de3994c59a1cbea33de785355c8"><td class="memItemLeft" align="right" valign="top"><a id="a9b262de3994c59a1cbea33de785355c8"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ptr</b></td></tr>
+<tr class="memitem:a9b262de3994c59a1cbea33de785355c8"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__luffa224__context.html#a9b262de3994c59a1cbea33de785355c8">ptr</a></td></tr>
 <tr class="separator:a9b262de3994c59a1cbea33de785355c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2adb6333eb0d783338dcf17866d91dd"><td class="memItemLeft" align="right" valign="top"><a id="ad2adb6333eb0d783338dcf17866d91dd"></a>
-sph_u32&#160;</td><td class="memItemRight" valign="bottom"><b>V</b> [3][8]</td></tr>
+<tr class="memitem:ad2adb6333eb0d783338dcf17866d91dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__luffa224__context.html#ad2adb6333eb0d783338dcf17866d91dd">V</a> [3][8]</td></tr>
 <tr class="separator:ad2adb6333eb0d783338dcf17866d91dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This structure is a context for Luffa-224 computations: it contains the intermediate values and some data from the last entered block. Once a Luffa computation has been performed, the context can be reused for another computation.</p>
-<p>The contents of this structure are private. A running Luffa computation can be cloned by copying the context (e.g. with a simple <code>memcpy()</code>). </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>PIVX/src/crypto/<a class="el" href="sph__luffa_8h_source.html">sph_luffa.h</a></li>
+<div class="textblock"><p>This structure is a context for Luffa-224 computations: it contains the intermediate values and some data from the last entered block. </p>
+<p>Once a Luffa computation has been performed, the context can be reused for another computation.</p>
+<p>The contents of this structure are private. A running Luffa computation can be cloned by copying the context (e.g. with a simple <code><a class="el" href="glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf">memcpy()</a></code>). </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__luffa_8h_source.html#l00076">76</a> of file <a class="el" href="sph__luffa_8h_source.html">sph_luffa.h</a>.</p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="ad6cc353326e629ce48de2486870ff0b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6cc353326e629ce48de2486870ff0b6">&#9670;&nbsp;</a></span>buf</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char sph_luffa224_context::buf[32]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__luffa_8h_source.html#l00078">78</a> of file <a class="el" href="sph__luffa_8h_source.html">sph_luffa.h</a>.</p>
+
+</div>
+</div>
+<a id="a9b262de3994c59a1cbea33de785355c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b262de3994c59a1cbea33de785355c8">&#9670;&nbsp;</a></span>ptr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t sph_luffa224_context::ptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__luffa_8h_source.html#l00079">79</a> of file <a class="el" href="sph__luffa_8h_source.html">sph_luffa.h</a>.</p>
+
+</div>
+</div>
+<a id="ad2adb6333eb0d783338dcf17866d91dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2adb6333eb0d783338dcf17866d91dd">&#9670;&nbsp;</a></span>V</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a> sph_luffa224_context::V[3][8]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__luffa_8h_source.html#l00080">80</a> of file <a class="el" href="sph__luffa_8h_source.html">sph_luffa.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>src/crypto/<a class="el" href="sph__luffa_8h_source.html">sph_luffa.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:29 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

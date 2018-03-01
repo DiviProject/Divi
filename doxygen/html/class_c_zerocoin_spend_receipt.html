@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CZerocoinSpendReceipt Class Reference</title>
+<title>DIVX: CZerocoinSpendReceipt Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -63,41 +66,300 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_c_zerocoin_spend_receipt-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CZerocoinSpendReceipt Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="zerocoin_8h_source.html">zerocoin.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1f90eb105cda7710a73155152a47bc3f"><td class="memItemLeft" align="right" valign="top"><a id="a1f90eb105cda7710a73155152a47bc3f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AddSpend</b> (const <a class="el" href="class_c_zerocoin_spend.html">CZerocoinSpend</a> &amp;spend)</td></tr>
+<tr class="memitem:a1f90eb105cda7710a73155152a47bc3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#a1f90eb105cda7710a73155152a47bc3f">AddSpend</a> (const <a class="el" href="class_c_zerocoin_spend.html">CZerocoinSpend</a> &amp;spend)</td></tr>
 <tr class="separator:a1f90eb105cda7710a73155152a47bc3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4baa56bcb6fb34fa67e1bad32036ca91"><td class="memItemLeft" align="right" valign="top"><a id="a4baa56bcb6fb34fa67e1bad32036ca91"></a>
-std::vector&lt; <a class="el" href="class_c_zerocoin_spend.html">CZerocoinSpend</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetSpends</b> ()</td></tr>
+<tr class="memitem:a4baa56bcb6fb34fa67e1bad32036ca91"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_c_zerocoin_spend.html">CZerocoinSpend</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#a4baa56bcb6fb34fa67e1bad32036ca91">GetSpends</a> ()</td></tr>
 <tr class="separator:a4baa56bcb6fb34fa67e1bad32036ca91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1ab82e92b9dea235c7ccbad660be7ba"><td class="memItemLeft" align="right" valign="top"><a id="af1ab82e92b9dea235c7ccbad660be7ba"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetStatus</b> (std::string strStatus, int nStatus, int nNeededSpends=0)</td></tr>
+<tr class="memitem:af1ab82e92b9dea235c7ccbad660be7ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#af1ab82e92b9dea235c7ccbad660be7ba">SetStatus</a> (std::string strStatus, int <a class="el" href="class_c_zerocoin_spend_receipt.html#ae79c138a7f01e4598b18cce551edbea1">nStatus</a>, int <a class="el" href="class_c_zerocoin_spend_receipt.html#ad72f5b7dfe136a75fdcc278e85924014">nNeededSpends</a>=0)</td></tr>
 <tr class="separator:af1ab82e92b9dea235c7ccbad660be7ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a165f5aa949e97e47ab7007a1d2c4b1bb"><td class="memItemLeft" align="right" valign="top"><a id="a165f5aa949e97e47ab7007a1d2c4b1bb"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetStatusMessage</b> ()</td></tr>
+<tr class="memitem:a165f5aa949e97e47ab7007a1d2c4b1bb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#a165f5aa949e97e47ab7007a1d2c4b1bb">GetStatusMessage</a> ()</td></tr>
 <tr class="separator:a165f5aa949e97e47ab7007a1d2c4b1bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12432383fc7558ad8192c607cab4c715"><td class="memItemLeft" align="right" valign="top"><a id="a12432383fc7558ad8192c607cab4c715"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetStatus</b> ()</td></tr>
+<tr class="memitem:a12432383fc7558ad8192c607cab4c715"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#a12432383fc7558ad8192c607cab4c715">GetStatus</a> ()</td></tr>
 <tr class="separator:a12432383fc7558ad8192c607cab4c715"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf2523b9f1e65f04a9554a8bab1df554"><td class="memItemLeft" align="right" valign="top"><a id="acf2523b9f1e65f04a9554a8bab1df554"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetNeededSpends</b> ()</td></tr>
+<tr class="memitem:acf2523b9f1e65f04a9554a8bab1df554"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#acf2523b9f1e65f04a9554a8bab1df554">GetNeededSpends</a> ()</td></tr>
 <tr class="separator:acf2523b9f1e65f04a9554a8bab1df554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a2ec20f0a38a3e073533d0a6694b3c98b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#a2ec20f0a38a3e073533d0a6694b3c98b">strStatusMessage</a></td></tr>
+<tr class="separator:a2ec20f0a38a3e073533d0a6694b3c98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae79c138a7f01e4598b18cce551edbea1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#ae79c138a7f01e4598b18cce551edbea1">nStatus</a></td></tr>
+<tr class="separator:ae79c138a7f01e4598b18cce551edbea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad72f5b7dfe136a75fdcc278e85924014"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#ad72f5b7dfe136a75fdcc278e85924014">nNeededSpends</a></td></tr>
+<tr class="separator:ad72f5b7dfe136a75fdcc278e85924014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58c873523f2b9118bf0663cd21f41d75"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_c_zerocoin_spend.html">CZerocoinSpend</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_zerocoin_spend_receipt.html#a58c873523f2b9118bf0663cd21f41d75">vSpends</a></td></tr>
+<tr class="separator:a58c873523f2b9118bf0663cd21f41d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="zerocoin_8h_source.html#l00175">175</a> of file <a class="el" href="zerocoin_8h_source.html">zerocoin.h</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1f90eb105cda7710a73155152a47bc3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f90eb105cda7710a73155152a47bc3f">&#9670;&nbsp;</a></span>AddSpend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CZerocoinSpendReceipt::AddSpend </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_zerocoin_spend.html">CZerocoinSpend</a> &amp;&#160;</td>
+          <td class="paramname"><em>spend</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8cpp_source.html#l00007">7</a> of file <a class="el" href="zerocoin_8cpp_source.html">zerocoin.cpp</a>.</p>
+
+</div>
+</div>
+<a id="acf2523b9f1e65f04a9554a8bab1df554"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf2523b9f1e65f04a9554a8bab1df554">&#9670;&nbsp;</a></span>GetNeededSpends()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CZerocoinSpendReceipt::GetNeededSpends </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8cpp_source.html#l00034">34</a> of file <a class="el" href="zerocoin_8cpp_source.html">zerocoin.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a4baa56bcb6fb34fa67e1bad32036ca91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4baa56bcb6fb34fa67e1bad32036ca91">&#9670;&nbsp;</a></span>GetSpends()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="class_c_zerocoin_spend.html">CZerocoinSpend</a> &gt; CZerocoinSpendReceipt::GetSpends </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8cpp_source.html#l00012">12</a> of file <a class="el" href="zerocoin_8cpp_source.html">zerocoin.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a12432383fc7558ad8192c607cab4c715"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12432383fc7558ad8192c607cab4c715">&#9670;&nbsp;</a></span>GetStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CZerocoinSpendReceipt::GetStatus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8cpp_source.html#l00029">29</a> of file <a class="el" href="zerocoin_8cpp_source.html">zerocoin.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a165f5aa949e97e47ab7007a1d2c4b1bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a165f5aa949e97e47ab7007a1d2c4b1bb">&#9670;&nbsp;</a></span>GetStatusMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string CZerocoinSpendReceipt::GetStatusMessage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8cpp_source.html#l00024">24</a> of file <a class="el" href="zerocoin_8cpp_source.html">zerocoin.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="af1ab82e92b9dea235c7ccbad660be7ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1ab82e92b9dea235c7ccbad660be7ba">&#9670;&nbsp;</a></span>SetStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CZerocoinSpendReceipt::SetStatus </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>strStatus</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nStatus</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nNeededSpends</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8cpp_source.html#l00017">17</a> of file <a class="el" href="zerocoin_8cpp_source.html">zerocoin.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ad72f5b7dfe136a75fdcc278e85924014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad72f5b7dfe136a75fdcc278e85924014">&#9670;&nbsp;</a></span>nNeededSpends</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CZerocoinSpendReceipt::nNeededSpends</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8h_source.html#l00180">180</a> of file <a class="el" href="zerocoin_8h_source.html">zerocoin.h</a>.</p>
+
+</div>
+</div>
+<a id="ae79c138a7f01e4598b18cce551edbea1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae79c138a7f01e4598b18cce551edbea1">&#9670;&nbsp;</a></span>nStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CZerocoinSpendReceipt::nStatus</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8h_source.html#l00179">179</a> of file <a class="el" href="zerocoin_8h_source.html">zerocoin.h</a>.</p>
+
+</div>
+</div>
+<a id="a2ec20f0a38a3e073533d0a6694b3c98b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ec20f0a38a3e073533d0a6694b3c98b">&#9670;&nbsp;</a></span>strStatusMessage</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string CZerocoinSpendReceipt::strStatusMessage</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8h_source.html#l00178">178</a> of file <a class="el" href="zerocoin_8h_source.html">zerocoin.h</a>.</p>
+
+</div>
+</div>
+<a id="a58c873523f2b9118bf0663cd21f41d75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58c873523f2b9118bf0663cd21f41d75">&#9670;&nbsp;</a></span>vSpends</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="class_c_zerocoin_spend.html">CZerocoinSpend</a>&gt; CZerocoinSpendReceipt::vSpends</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="zerocoin_8h_source.html#l00181">181</a> of file <a class="el" href="zerocoin_8h_source.html">zerocoin.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/primitives/<a class="el" href="zerocoin_8h_source.html">zerocoin.h</a></li>
-<li>PIVX/src/primitives/zerocoin.cpp</li>
+<li>src/primitives/<a class="el" href="zerocoin_8h_source.html">zerocoin.h</a></li>
+<li>src/primitives/<a class="el" href="zerocoin_8cpp_source.html">zerocoin.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

@@ -1,0 +1,13 @@
+digraph "SendCoinsRecipient::SerializationOp"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node4 [label="SendCoinsRecipient\l::SerializationOp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node4 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="PaymentRequestPlus\l::IsInitialized",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_payment_request_plus.html#aa3d8c57af7c7bc4ffbc31da32e5a40a6"];
+  Node4 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="PaymentRequestPlus\l::SerializeToString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_payment_request_plus.html#afa9333f9f50c9ce8e137aef31cfd01b4"];
+  Node4 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="PaymentRequestPlus\l::parse",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_payment_request_plus.html#aaa495c136209bac976cc195705a6c509"];
+}

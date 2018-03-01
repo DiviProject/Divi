@@ -1,0 +1,9 @@
+digraph "WalletModel::isSpent"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node933 [label="WalletModel::isSpent",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node933 -> Node934 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node934 [label="CWallet::IsSpent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__map_wallet.html#ga6adcf1c224ed3c3fe4b0b19f6fca75d8",tooltip="Outpoint is spent if any non-conflicted transaction spends it: "];
+}

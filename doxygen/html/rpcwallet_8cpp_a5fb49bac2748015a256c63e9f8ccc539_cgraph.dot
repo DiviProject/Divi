@@ -1,0 +1,41 @@
+digraph "encryptwallet"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node108 [label="encryptwallet",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node108 -> Node109 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node109 [label="CCryptoKeyStore::IsCrypted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#acc8fed44366c98fb481333ca6e867088"];
+  Node108 -> Node110 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node110 [label="HelpExampleCli",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec"];
+  Node108 -> Node111 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node111 [label="HelpExampleRpc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef"];
+  Node108 -> Node112 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node112 [label="JSONRPCError",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039"];
+  Node108 -> Node113 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node113 [label="CWallet::EncryptWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__map_wallet.html#gab34fe5bf771619dcbe22a65f013e5469"];
+  Node113 -> Node114 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node114 [label="RandAddSeedPerfmon",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$random_8cpp.html#a786af12a87491f8dc24351d93b9833b6"];
+  Node114 -> Node115 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node115 [label="RandAddSeed",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$random_8cpp.html#ab699fbdf803610a4e2060fd87787f7e0",tooltip="Seed OpenSSL PRNG with additional entropy data. "];
+  Node114 -> Node116 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node116 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node114 -> Node117 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node117 [label="begin_ptr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$serialize_8h.html#a19966d167c527d2be493ac9aba27c249",tooltip="Get begin pointer of vector (non-const version). "];
+  Node113 -> Node118 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node118 [label="GetRandBytes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$random_8cpp.html#ada0c29949c4d1ac0cc027d93c4771423",tooltip="Functions to gather random data via the OpenSSL PRNG. "];
+  Node113 -> Node119 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node119 [label="GetTimeMillis",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a139d0fe6387b9e230a9b8bb12d9b43b9"];
+  Node113 -> Node120 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node120 [label="CCrypter::SetKeyFromPassphrase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypter.html#a5368279e4a1549d3c1d15d8aa2179708"];
+  Node113 -> Node121 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node121 [label="CCrypter::Encrypt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypter.html#a124fcd3021569a660ce2daa3391c8ea4"];
+  Node113 -> Node122 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node122 [label="CDB::Rewrite",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b.html#acfb8a373edb9c4cfab780fb7578b277e"];
+  Node122 -> Node123 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node123 [label="CDBEnv::CloseDb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b_env.html#ac53fd53afdd1e0881b8ffbb11a89b556"];
+  Node122 -> Node124 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node124 [label="CDBEnv::CheckpointLSN",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b_env.html#aa4e0fe52dfc0da22fe9bf59eeda57fba"];
+  Node108 -> Node125 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node125 [label="StartShutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#ac7140c7327b1e6a8d46470b1cd0e8e1b"];
+}

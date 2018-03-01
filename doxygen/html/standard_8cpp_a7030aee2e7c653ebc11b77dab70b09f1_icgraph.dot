@@ -1,0 +1,13 @@
+digraph "GetScriptForMultisig"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node360 [label="GetScriptForMultisig",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node360 -> Node361 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node361 [label="_createmultisig_redeemScript",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#aa9b91e060b2d18fffb3b57a679441e68",tooltip="Used by addmultisigaddress / createmultisig: "];
+  Node361 -> Node362 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node362 [label="createmultisig",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmisc_8cpp.html#a10f145bcadd06025abb3b065e2fa7a84"];
+  Node361 -> Node363 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node363 [label="addmultisigaddress",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a01e8a83cbd4209f10c71719383d7ca2d"];
+}

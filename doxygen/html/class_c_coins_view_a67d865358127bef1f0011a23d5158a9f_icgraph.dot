@@ -1,0 +1,17 @@
+digraph "CCoinsView::GetCoins"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node16 [label="CCoinsView::GetCoins",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node16 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="CCoinsViewBacked::GetCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_backed.html#a456f9e85817556329a959c120998df5b",tooltip="Retrieve the CCoins (unspent transaction outputs) for a given txid. "];
+  Node17 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="CCoinsViewErrorCatcher\l::GetCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_error_catcher.html#a909f7b9e364b6f06bfea955209aa015d",tooltip="Retrieve the CCoins (unspent transaction outputs) for a given txid. "];
+  Node16 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="CCoinsViewCache::FetchCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a964e8bc4a5f8131eab430d356a25fc6d"];
+  Node16 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="CCoinsViewCache::ModifyCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#ab67c0d489873ed735c4fc52aa66f0830",tooltip="Return a modifiable reference to a CCoins. "];
+  Node20 -> Node21 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="UpdateCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#acb54672aa2ce74f5068a5cf660432b67",tooltip="Apply the effects of this transaction on the UTXO set represented by view. "];
+}

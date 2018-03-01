@@ -1,0 +1,15 @@
+digraph "CChainParams::COINBASE_MATURITY"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node66 [label="CChainParams::COINBASE\l_MATURITY",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node66 -> Node67 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node67 [label="TransactionDesc::toHTML",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4"];
+  Node67 -> Node68 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 [label="TransactionTablePriv\l::describe",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780"];
+  Node66 -> Node69 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="CTxMemPool::removeCoinbase\lSpends",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_mem_pool.html#a6d1292640d0b6028bd5c602a6a50a983"];
+  Node66 -> Node70 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node70 [label="CWallet::SelectStakeCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#gafdc9becbee910eb3115cb14e6964c59b"];
+}

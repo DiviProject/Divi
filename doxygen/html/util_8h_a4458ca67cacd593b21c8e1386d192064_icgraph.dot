@@ -1,0 +1,24 @@
+digraph "TryCreateDirectory"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node397 [label="TryCreateDirectory",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node397 -> Node398 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node398 [label="CDBEnv::Open",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b_env.html#aaaef61cd032e25144c06e405fb7f93cf"];
+  Node398 -> Node399 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node399 [label="CDB::CDB",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b.html#aa5f2317ab28c6424bfebdaa969aa2b2c"];
+  Node397 -> Node400 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node400 [label="Intro::pickDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#a3e0e541cd0e55fe71484055964925cfc",tooltip="Determine data directory. "];
+  Node397 -> Node401 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node401 [label="GetDefaultDataDir",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8h.html#ab272995de020a3bcbf743be630e485c6"];
+  Node401 -> Node402 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node402 [label="Intro::getDefaultDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#aad225845533fc7f451648dc7c9643e6a",tooltip="Determine default data directory for operating system. "];
+  Node402 -> Node403 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node403 [label="Intro::setDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#a2f11c0fccc56ec7bb53cfddec98ee21b"];
+  Node403 -> Node400 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node403 -> Node404 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node404 [label="Intro::on_dataDirDefault\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#ae4cefbcd5e61f62cb2a59f38bc2ae52f"];
+  Node402 -> Node400 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node402 -> Node404 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

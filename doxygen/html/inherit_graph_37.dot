@@ -1,0 +1,9 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="CBlockIndex",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html",tooltip="The block chain is a tree shaped structure starting with the genesis block at the root..."];
+  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="CDiskBlockIndex",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_disk_block_index.html",tooltip="Used to marshal pointers into hashes for db storage. "];
+}

@@ -1,0 +1,18 @@
+digraph "MultisigDialog::deleteFrame"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node202 [label="MultisigDialog::deleteFrame",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node202 -> Node203 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node203 [label="MultisigDialog::on\l_addAddressButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a8f26906e6f4d25273e15c95d90cc14fa"];
+  Node203 -> Node204 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node204 [label="MultisigDialog::Multisig\lDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#af8ff2a9f6dc05a9468d955cb428c6474"];
+  Node202 -> Node205 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node205 [label="MultisigDialog::on\l_addInputButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#ade82771bf434da5e2747601c84cd9125"];
+  Node202 -> Node206 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node206 [label="MultisigDialog::on\l_addDestinationButton\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a09ccfdb42e70bd8c480f39f2b01a6de8"];
+  Node206 -> Node204 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node202 -> Node207 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node207 [label="MultisigDialog::on\l_addPrivKeyButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#acc869f9b2fe08ab9e40d63876b5c9781"];
+}

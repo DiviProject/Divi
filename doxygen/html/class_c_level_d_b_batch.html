@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CLevelDBBatch Class Reference</title>
+<title>DIVX: CLevelDBBatch Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -63,6 +66,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="class_c_level_d_b_batch-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -70,34 +74,174 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Batch of changes queued to be written to a <a class="el" href="class_c_level_d_b_wrapper.html">CLevelDBWrapper</a>.  
+ <a href="class_c_level_d_b_batch.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="leveldbwrapper_8h_source.html">leveldbwrapper.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab459da1abafa27e834de9a4cc25b6f2d"><td class="memTemplParams" colspan="2"><a id="ab459da1abafa27e834de9a4cc25b6f2d"></a>
-template&lt;typename K , typename V &gt; </td></tr>
-<tr class="memitem:ab459da1abafa27e834de9a4cc25b6f2d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Write</b> (const K &amp;key, const V &amp;value)</td></tr>
+<tr class="memitem:ab459da1abafa27e834de9a4cc25b6f2d"><td class="memTemplParams" colspan="2">template&lt;typename K , typename V &gt; </td></tr>
+<tr class="memitem:ab459da1abafa27e834de9a4cc25b6f2d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_batch.html#ab459da1abafa27e834de9a4cc25b6f2d">Write</a> (const K &amp;<a class="el" href="bip38tooldialog_8cpp.html#a8d350ff361690ac2a2db267f5ea63dc9">key</a>, const V &amp;value)</td></tr>
 <tr class="separator:ab459da1abafa27e834de9a4cc25b6f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22bf093d560b4ce3333e8f4a947faa7f"><td class="memTemplParams" colspan="2"><a id="a22bf093d560b4ce3333e8f4a947faa7f"></a>
-template&lt;typename K &gt; </td></tr>
-<tr class="memitem:a22bf093d560b4ce3333e8f4a947faa7f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Erase</b> (const K &amp;key)</td></tr>
+<tr class="memitem:a22bf093d560b4ce3333e8f4a947faa7f"><td class="memTemplParams" colspan="2">template&lt;typename K &gt; </td></tr>
+<tr class="memitem:a22bf093d560b4ce3333e8f4a947faa7f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_batch.html#a22bf093d560b4ce3333e8f4a947faa7f">Erase</a> (const K &amp;<a class="el" href="bip38tooldialog_8cpp.html#a8d350ff361690ac2a2db267f5ea63dc9">key</a>)</td></tr>
 <tr class="separator:a22bf093d560b4ce3333e8f4a947faa7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:af404cb1abfb4d62781eb6d22d408cd5d"><td class="memItemLeft" align="right" valign="top">leveldb::WriteBatch&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_batch.html#af404cb1abfb4d62781eb6d22d408cd5d">batch</a></td></tr>
+<tr class="separator:af404cb1abfb4d62781eb6d22d408cd5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:acbe5e6be88c5bccb0ec229ebc91dde82"><td class="memItemLeft" align="right" valign="top"><a id="acbe5e6be88c5bccb0ec229ebc91dde82"></a>
-class&#160;</td><td class="memItemRight" valign="bottom"><b>CLevelDBWrapper</b></td></tr>
+<tr class="memitem:acbe5e6be88c5bccb0ec229ebc91dde82"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_batch.html#acbe5e6be88c5bccb0ec229ebc91dde82">CLevelDBWrapper</a></td></tr>
 <tr class="separator:acbe5e6be88c5bccb0ec229ebc91dde82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Batch of changes queued to be written to a <a class="el" href="class_c_level_d_b_wrapper.html">CLevelDBWrapper</a> </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>PIVX/src/<a class="el" href="leveldbwrapper_8h_source.html">leveldbwrapper.h</a></li>
+<div class="textblock"><p>Batch of changes queued to be written to a <a class="el" href="class_c_level_d_b_wrapper.html">CLevelDBWrapper</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="leveldbwrapper_8h_source.html#l00028">28</a> of file <a class="el" href="leveldbwrapper_8h_source.html">leveldbwrapper.h</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a22bf093d560b4ce3333e8f4a947faa7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22bf093d560b4ce3333e8f4a947faa7f">&#9670;&nbsp;</a></span>Erase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename K &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CLevelDBBatch::Erase </td>
+          <td>(</td>
+          <td class="paramtype">const K &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="leveldbwrapper_8h_source.html#l00053">53</a> of file <a class="el" href="leveldbwrapper_8h_source.html">leveldbwrapper.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ab459da1abafa27e834de9a4cc25b6f2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab459da1abafa27e834de9a4cc25b6f2d">&#9670;&nbsp;</a></span>Write()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename K , typename V &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CLevelDBBatch::Write </td>
+          <td>(</td>
+          <td class="paramtype">const K &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const V &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="leveldbwrapper_8h_source.html#l00037">37</a> of file <a class="el" href="leveldbwrapper_8h_source.html">leveldbwrapper.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="acbe5e6be88c5bccb0ec229ebc91dde82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbe5e6be88c5bccb0ec229ebc91dde82">&#9670;&nbsp;</a></span>CLevelDBWrapper</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="class_c_level_d_b_wrapper.html">CLevelDBWrapper</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="leveldbwrapper_8h_source.html#l00030">30</a> of file <a class="el" href="leveldbwrapper_8h_source.html">leveldbwrapper.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="af404cb1abfb4d62781eb6d22d408cd5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af404cb1abfb4d62781eb6d22d408cd5d">&#9670;&nbsp;</a></span>batch</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">leveldb::WriteBatch CLevelDBBatch::batch</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="leveldbwrapper_8h_source.html#l00033">33</a> of file <a class="el" href="leveldbwrapper_8h_source.html">leveldbwrapper.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>src/<a class="el" href="leveldbwrapper_8h_source.html">leveldbwrapper.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:27 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

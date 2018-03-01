@@ -1,0 +1,16 @@
+digraph "CZerocoinSpendReceipt::SetStatus"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node15 [label="CZerocoinSpendReceipt\l::SetStatus",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node15 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="CWallet::MintToTxIn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#a5b32d86806615c59f15431f300f0c729"];
+  Node15 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="CWallet::CreateZerocoinSpend\lTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#a7dfcafe767983d2be451af8ea15dda94"];
+  Node17 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="CWallet::SpendZerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#aedd0ae4e683ee642272e170b7afd33fe"];
+  Node18 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="spendzerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#adea64c692ec279a1a3a2c9143f264955"];
+  Node15 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

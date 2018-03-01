@@ -1,0 +1,17 @@
+digraph "OptionsDialog::clearStatusLabel"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node7 [label="OptionsDialog::clearStatus\lLabel",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="OptionsDialog::showRestart\lWarning",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_dialog.html#a866e74896ea7dacdc99b5e0af4fd5b38"];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="OptionsDialog::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_dialog.html#a11e902a52cb7472497d14e70cd9399d9"];
+  Node9 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="BitcoinGUI::optionsClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a366dfb05459cb49fec8adb7f97bf2ad7",tooltip="Show configuration dialog. "];
+  Node10 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="BitcoinGUI::createActions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a218c9f5712e5a08ebc9ce06513430bba",tooltip="Create the main UI actions. "];
+  Node11 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="BitcoinGUI::BitcoinGUI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a2598b4ffab4a206877bee80916cc775c"];
+}

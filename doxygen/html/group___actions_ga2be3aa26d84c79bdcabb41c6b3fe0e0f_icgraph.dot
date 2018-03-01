@@ -1,0 +1,33 @@
+digraph "CWallet::LockCoin"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1134 [label="CWallet::LockCoin",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1134 -> Node1135 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1135 [label="CActiveMasternode::\lSelectCoinsMasternode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#ac4fc5fb1681bf0a0f3d30e706fb0577a"];
+  Node1135 -> Node1136 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1136 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node1136 -> Node1137 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1137 [label="CActiveMasternode::\lRegister",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#a99e26870efec1ea98738cda1a5a85702",tooltip="Register remote Masternode. "];
+  Node1136 -> Node1138 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1138 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#af9f32ec3d13b161d6a89839dab17b154",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node1136 -> Node1139 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1139 [label="masternodedebug",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a8522c187a75142b1b267edca0734238c"];
+  Node1139 -> Node1140 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1140 [label="masternode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a30609e443aeb47c29ed0878d16b1b5e1"];
+  Node1135 -> Node1141 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1141 [label="getmasternodeoutputs",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#ab5b7e62bb3fb0e2a7a325520273f3bf5"];
+  Node1141 -> Node1140 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1134 -> Node1142 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1142 [label="WalletModel::lockCoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a9bb6c954dc3cf27e25ced65375fa02f0"];
+  Node1142 -> Node1143 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1143 [label="CoinControlDialog::\lbuttonToggleLockClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a6da2f01f4e266766a0be3609890b22f2"];
+  Node1143 -> Node1144 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1144 [label="CoinControlDialog::\lCoinControlDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a8eafb58ed1c5668af9a4890704136671"];
+  Node1142 -> Node1145 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1145 [label="CoinControlDialog::\llockCoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a92d82e9a08d81b99fda6546d83f63a19"];
+  Node1145 -> Node1144 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1134 -> Node1146 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1146 [label="lockunspent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a039075982abdf78052b40886b5b3e2cf"];
+}

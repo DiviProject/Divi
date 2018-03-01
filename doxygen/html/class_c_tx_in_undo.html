@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CTxInUndo Class Reference</title>
+<title>DIVX: CTxInUndo Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -70,53 +73,371 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Undo information for a <a class="el" href="class_c_tx_in.html" title="An input of a transaction. ">CTxIn</a>.  
+ <a href="class_c_tx_in_undo.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="undo_8h_source.html">undo.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for CTxInUndo:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae3cdf8e4de3eae7518d63b9b669d4040"><td class="memItemLeft" align="right" valign="top"><a id="ae3cdf8e4de3eae7518d63b9b669d4040"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CTxInUndo</b> (const <a class="el" href="class_c_tx_out.html">CTxOut</a> &amp;txoutIn, bool fCoinBaseIn=false, bool fCoinStakeIn=false, unsigned int nHeightIn=0, int nVersionIn=0)</td></tr>
+<tr class="memitem:a9f8d4a16f1cb14fcec729becdb944003"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#a9f8d4a16f1cb14fcec729becdb944003">CTxInUndo</a> ()</td></tr>
+<tr class="separator:a9f8d4a16f1cb14fcec729becdb944003"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3cdf8e4de3eae7518d63b9b669d4040"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#ae3cdf8e4de3eae7518d63b9b669d4040">CTxInUndo</a> (const <a class="el" href="class_c_tx_out.html">CTxOut</a> &amp;txoutIn, bool fCoinBaseIn=false, bool fCoinStakeIn=false, unsigned int nHeightIn=0, int nVersionIn=0)</td></tr>
 <tr class="separator:ae3cdf8e4de3eae7518d63b9b669d4040"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae02e42aeabd614a26ba5657f60ec6921"><td class="memItemLeft" align="right" valign="top"><a id="ae02e42aeabd614a26ba5657f60ec6921"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>GetSerializeSize</b> (int nType, int nVersion) const</td></tr>
+<tr class="memitem:ae02e42aeabd614a26ba5657f60ec6921"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#ae02e42aeabd614a26ba5657f60ec6921">GetSerializeSize</a> (int nType, int <a class="el" href="class_c_tx_in_undo.html#a193281289475ca792e436a7a02de23ef">nVersion</a>) const</td></tr>
 <tr class="separator:ae02e42aeabd614a26ba5657f60ec6921"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a4e1cf026b5308fdca471bada9cebaf"><td class="memTemplParams" colspan="2"><a id="a7a4e1cf026b5308fdca471bada9cebaf"></a>
-template&lt;typename Stream &gt; </td></tr>
-<tr class="memitem:a7a4e1cf026b5308fdca471bada9cebaf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Serialize</b> (Stream &amp;s, int nType, int nVersion) const</td></tr>
+<tr class="memitem:a7a4e1cf026b5308fdca471bada9cebaf"><td class="memTemplParams" colspan="2">template&lt;typename Stream &gt; </td></tr>
+<tr class="memitem:a7a4e1cf026b5308fdca471bada9cebaf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#a7a4e1cf026b5308fdca471bada9cebaf">Serialize</a> (Stream &amp;s, int nType, int <a class="el" href="class_c_tx_in_undo.html#a193281289475ca792e436a7a02de23ef">nVersion</a>) const</td></tr>
 <tr class="separator:a7a4e1cf026b5308fdca471bada9cebaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a2b82f03edad7ad85a66e63e4552af9"><td class="memTemplParams" colspan="2"><a id="a0a2b82f03edad7ad85a66e63e4552af9"></a>
-template&lt;typename Stream &gt; </td></tr>
-<tr class="memitem:a0a2b82f03edad7ad85a66e63e4552af9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Unserialize</b> (Stream &amp;s, int nType, int nVersion)</td></tr>
+<tr class="memitem:a0a2b82f03edad7ad85a66e63e4552af9"><td class="memTemplParams" colspan="2">template&lt;typename Stream &gt; </td></tr>
+<tr class="memitem:a0a2b82f03edad7ad85a66e63e4552af9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#a0a2b82f03edad7ad85a66e63e4552af9">Unserialize</a> (Stream &amp;s, int nType, int <a class="el" href="class_c_tx_in_undo.html#a193281289475ca792e436a7a02de23ef">nVersion</a>)</td></tr>
 <tr class="separator:a0a2b82f03edad7ad85a66e63e4552af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a0eb1374984b5b68b0af14d88d7d4b821"><td class="memItemLeft" align="right" valign="top"><a id="a0eb1374984b5b68b0af14d88d7d4b821"></a>
-<a class="el" href="class_c_tx_out.html">CTxOut</a>&#160;</td><td class="memItemRight" valign="bottom"><b>txout</b></td></tr>
+<tr class="memitem:a0eb1374984b5b68b0af14d88d7d4b821"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_tx_out.html">CTxOut</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#a0eb1374984b5b68b0af14d88d7d4b821">txout</a></td></tr>
 <tr class="separator:a0eb1374984b5b68b0af14d88d7d4b821"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5952f917224de3a2193157b856c47864"><td class="memItemLeft" align="right" valign="top"><a id="a5952f917224de3a2193157b856c47864"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fCoinBase</b></td></tr>
+<tr class="memitem:a5952f917224de3a2193157b856c47864"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#a5952f917224de3a2193157b856c47864">fCoinBase</a></td></tr>
 <tr class="separator:a5952f917224de3a2193157b856c47864"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59d196d060b8241e8e95640144de6155"><td class="memItemLeft" align="right" valign="top"><a id="a59d196d060b8241e8e95640144de6155"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fCoinStake</b></td></tr>
+<tr class="memitem:a59d196d060b8241e8e95640144de6155"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#a59d196d060b8241e8e95640144de6155">fCoinStake</a></td></tr>
 <tr class="separator:a59d196d060b8241e8e95640144de6155"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af022118f015a9b1b9ab96e04e8452292"><td class="memItemLeft" align="right" valign="top"><a id="af022118f015a9b1b9ab96e04e8452292"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>nHeight</b></td></tr>
+<tr class="memitem:af022118f015a9b1b9ab96e04e8452292"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#af022118f015a9b1b9ab96e04e8452292">nHeight</a></td></tr>
 <tr class="separator:af022118f015a9b1b9ab96e04e8452292"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a193281289475ca792e436a7a02de23ef"><td class="memItemLeft" align="right" valign="top"><a id="a193281289475ca792e436a7a02de23ef"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nVersion</b></td></tr>
+<tr class="memitem:a193281289475ca792e436a7a02de23ef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_in_undo.html#a193281289475ca792e436a7a02de23ef">nVersion</a></td></tr>
 <tr class="separator:a193281289475ca792e436a7a02de23ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Undo information for a <a class="el" href="class_c_tx_in.html">CTxIn</a></p>
-<p>Contains the prevout's <a class="el" href="class_c_tx_out.html">CTxOut</a> being spent, and if this was the last output of the affected transaction, its metadata as well (coinbase or not, height, transaction version) </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>PIVX/src/<a class="el" href="undo_8h_source.html">undo.h</a></li>
+<div class="textblock"><p>Undo information for a <a class="el" href="class_c_tx_in.html" title="An input of a transaction. ">CTxIn</a>. </p>
+<p>Contains the prevout's <a class="el" href="class_c_tx_out.html" title="An output of a transaction. ">CTxOut</a> being spent, and if this was the last output of the affected transaction, its metadata as well (coinbase or not, height, transaction version) </p>
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00019">19</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9f8d4a16f1cb14fcec729becdb944003"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f8d4a16f1cb14fcec729becdb944003">&#9670;&nbsp;</a></span>CTxInUndo() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CTxInUndo::CTxInUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00028">28</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+
+</div>
+</div>
+<a id="ae3cdf8e4de3eae7518d63b9b669d4040"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3cdf8e4de3eae7518d63b9b669d4040">&#9670;&nbsp;</a></span>CTxInUndo() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CTxInUndo::CTxInUndo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_tx_out.html">CTxOut</a> &amp;&#160;</td>
+          <td class="paramname"><em>txoutIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fCoinBaseIn</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fCoinStakeIn</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>nHeightIn</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersionIn</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00029">29</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae02e42aeabd614a26ba5657f60ec6921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae02e42aeabd614a26ba5657f60ec6921">&#9670;&nbsp;</a></span>GetSerializeSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int CTxInUndo::GetSerializeSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00031">31</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a7a4e1cf026b5308fdca471bada9cebaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a4e1cf026b5308fdca471bada9cebaf">&#9670;&nbsp;</a></span>Serialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CTxInUndo::Serialize </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00039">39</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a0a2b82f03edad7ad85a66e63e4552af9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2b82f03edad7ad85a66e63e4552af9">&#9670;&nbsp;</a></span>Unserialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CTxInUndo::Unserialize </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00048">48</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a5952f917224de3a2193157b856c47864"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5952f917224de3a2193157b856c47864">&#9670;&nbsp;</a></span>fCoinBase</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CTxInUndo::fCoinBase</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00023">23</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+
+</div>
+</div>
+<a id="a59d196d060b8241e8e95640144de6155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59d196d060b8241e8e95640144de6155">&#9670;&nbsp;</a></span>fCoinStake</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CTxInUndo::fCoinStake</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00024">24</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+
+</div>
+</div>
+<a id="af022118f015a9b1b9ab96e04e8452292"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af022118f015a9b1b9ab96e04e8452292">&#9670;&nbsp;</a></span>nHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int CTxInUndo::nHeight</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00025">25</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+
+</div>
+</div>
+<a id="a193281289475ca792e436a7a02de23ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a193281289475ca792e436a7a02de23ef">&#9670;&nbsp;</a></span>nVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CTxInUndo::nVersion</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00026">26</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+
+</div>
+</div>
+<a id="a0eb1374984b5b68b0af14d88d7d4b821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0eb1374984b5b68b0af14d88d7d4b821">&#9670;&nbsp;</a></span>txout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_tx_out.html">CTxOut</a> CTxInUndo::txout</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="undo_8h_source.html#l00022">22</a> of file <a class="el" href="undo_8h_source.html">undo.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>src/<a class="el" href="undo_8h_source.html">undo.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

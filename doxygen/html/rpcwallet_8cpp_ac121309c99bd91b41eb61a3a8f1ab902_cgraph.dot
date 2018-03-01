@@ -1,0 +1,15 @@
+digraph "reservebalance"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1537 [label="reservebalance",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1537 -> Node1538 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1538 [label="HelpExampleCli",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec"];
+  Node1537 -> Node1539 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1539 [label="HelpExampleRpc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef"];
+  Node1537 -> Node1540 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1540 [label="AmountFromValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#a848a8074b8c630442ccdd556a0f38a51"];
+  Node1540 -> Node1541 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1541 [label="JSONRPCError",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039"];
+}

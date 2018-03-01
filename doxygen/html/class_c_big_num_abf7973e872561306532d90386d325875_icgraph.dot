@@ -1,0 +1,21 @@
+digraph "CBigNum::mul_mod"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node151 [label="CBigNum::mul_mod",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node151 -> Node152 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node152 [label="libzerocoin::PrivateCoin\l::mintCoinFast",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_private_coin.html#ae466bc27aabcf43feb7cc62aba6f7f1e",tooltip="Mint a new coin using a faster process. "];
+  Node152 -> Node153 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node153 [label="libzerocoin::PrivateCoin\l::PrivateCoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_private_coin.html#a62fe12639a5a9e520f7bcc15722a1520"];
+  Node151 -> Node154 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node154 [label="libzerocoin::CoinSpend\l::CalculateValidSerial",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_coin_spend.html#a9d3f9990bf4a44242f392fbda37503f5"];
+  Node151 -> Node155 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node155 [label="libzerocoin::CommitmentProof\lOfKnowledge::CommitmentProofOfKnowledge",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#af66449f2c4c0cb88d19cb409b67b4cff",tooltip="Generates a proof that two commitments, a and b, open to the same value. "];
+  Node151 -> Node156 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node156 [label="libzerocoin::CommitmentProof\lOfKnowledge::Verify",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a36196236b6f40da17e1dd4fcb42c6794",tooltip="Verifies the proof. "];
+  Node156 -> Node157 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node157 [label="libzerocoin::CoinSpend\l::Verify",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_coin_spend.html#ad8005b899d45939c63ccaba43011c85b"];
+  Node157 -> Node158 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node158 [label="CWallet::MintToTxIn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#a5b32d86806615c59f15431f300f0c729"];
+}

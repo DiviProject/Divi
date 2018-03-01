@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CKeyPool Class Reference</title>
+<title>DIVX: CKeyPool Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -70,40 +73,202 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>A key pool entry.  
+ <a href="class_c_key_pool.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="wallet_8h_source.html">wallet.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for CKeyPool:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a63e27cd41ea374cc909436b3083b68c4"><td class="memItemLeft" align="right" valign="top"><a id="a63e27cd41ea374cc909436b3083b68c4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CKeyPool</b> (const <a class="el" href="class_c_pub_key.html">CPubKey</a> &amp;vchPubKeyIn)</td></tr>
+<tr class="memitem:ab1f33489faff7a7e1edbd61a5a18f604"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_key_pool.html#ab1f33489faff7a7e1edbd61a5a18f604">CKeyPool</a> ()</td></tr>
+<tr class="separator:ab1f33489faff7a7e1edbd61a5a18f604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63e27cd41ea374cc909436b3083b68c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_key_pool.html#a63e27cd41ea374cc909436b3083b68c4">CKeyPool</a> (const <a class="el" href="class_c_pub_key.html">CPubKey</a> &amp;vchPubKeyIn)</td></tr>
 <tr class="separator:a63e27cd41ea374cc909436b3083b68c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2589572f0eb90da9237684a16484c03d"><td class="memTemplParams" colspan="2"><a id="a2589572f0eb90da9237684a16484c03d"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:a2589572f0eb90da9237684a16484c03d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:a2589572f0eb90da9237684a16484c03d"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:a2589572f0eb90da9237684a16484c03d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_key_pool.html#a2589572f0eb90da9237684a16484c03d">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:a2589572f0eb90da9237684a16484c03d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aa2f8263f0baf732ad5b4e4b59b482209"><td class="memItemLeft" align="right" valign="top"><a id="aa2f8263f0baf732ad5b4e4b59b482209"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>nTime</b></td></tr>
+<tr class="memitem:aa2f8263f0baf732ad5b4e4b59b482209"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_key_pool.html#aa2f8263f0baf732ad5b4e4b59b482209">nTime</a></td></tr>
 <tr class="separator:aa2f8263f0baf732ad5b4e4b59b482209"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a937080a4cec1f2b138ebd200557c82b5"><td class="memItemLeft" align="right" valign="top"><a id="a937080a4cec1f2b138ebd200557c82b5"></a>
-<a class="el" href="class_c_pub_key.html">CPubKey</a>&#160;</td><td class="memItemRight" valign="bottom"><b>vchPubKey</b></td></tr>
+<tr class="memitem:a937080a4cec1f2b138ebd200557c82b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_pub_key.html">CPubKey</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_key_pool.html#a937080a4cec1f2b138ebd200557c82b5">vchPubKey</a></td></tr>
 <tr class="separator:a937080a4cec1f2b138ebd200557c82b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4bc93c36031a3e6306c102008be5f51"><td class="memItemLeft" align="right" valign="top"><a id="ad4bc93c36031a3e6306c102008be5f51"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:ad4bc93c36031a3e6306c102008be5f51"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_key_pool.html#ad4bc93c36031a3e6306c102008be5f51">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:ad4bc93c36031a3e6306c102008be5f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A key pool entry </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="wallet_8h_source.html">wallet.h</a></li>
-<li>PIVX/src/wallet.cpp</li>
+<div class="textblock"><p>A key pool entry. </p>
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00119">119</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab1f33489faff7a7e1edbd61a5a18f604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1f33489faff7a7e1edbd61a5a18f604">&#9670;&nbsp;</a></span>CKeyPool() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CKeyPool::CKeyPool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8cpp_source.html#l03818">3818</a> of file <a class="el" href="wallet_8cpp_source.html">wallet.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a63e27cd41ea374cc909436b3083b68c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63e27cd41ea374cc909436b3083b68c4">&#9670;&nbsp;</a></span>CKeyPool() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CKeyPool::CKeyPool </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_pub_key.html">CPubKey</a> &amp;&#160;</td>
+          <td class="paramname"><em>vchPubKeyIn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8cpp_source.html#l03823">3823</a> of file <a class="el" href="wallet_8cpp_source.html">wallet.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2589572f0eb90da9237684a16484c03d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2589572f0eb90da9237684a16484c03d">&#9670;&nbsp;</a></span>SerializationOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream , typename Operation &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CKeyPool::SerializationOp </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Operation&#160;</td>
+          <td class="paramname"><em>ser_action</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00131">131</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ad4bc93c36031a3e6306c102008be5f51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4bc93c36031a3e6306c102008be5f51">&#9670;&nbsp;</a></span>ADD_SERIALIZE_METHODS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CKeyPool::ADD_SERIALIZE_METHODS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00128">128</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+
+</div>
+</div>
+<a id="aa2f8263f0baf732ad5b4e4b59b482209"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2f8263f0baf732ad5b4e4b59b482209">&#9670;&nbsp;</a></span>nTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CKeyPool::nTime</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00122">122</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+
+</div>
+</div>
+<a id="a937080a4cec1f2b138ebd200557c82b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a937080a4cec1f2b138ebd200557c82b5">&#9670;&nbsp;</a></span>vchPubKey</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_pub_key.html">CPubKey</a> CKeyPool::vchPubKey</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00123">123</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>src/<a class="el" href="wallet_8h_source.html">wallet.h</a></li>
+<li>src/<a class="el" href="wallet_8cpp_source.html">wallet.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:27 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

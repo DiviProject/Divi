@@ -1,0 +1,39 @@
+digraph "CObfuscationPool"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="CObfuscationPool",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" collateralPubKey" ,fontname="Helvetica"];
+  Node2 [label="CScript",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_script.html",tooltip="Serialized script, used inside transaction inputs and outputs. "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="std::vector\< unsigned\l char \>",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cs_obfuscation" ,fontname="Helvetica"];
+  Node4 [label="AnnotatedMixin\< boost\l::recursive_mutex \>",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="boost::recursive_mutex",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pSubmittedToMasternode" ,fontname="Helvetica"];
+  Node6 [label="CMasternode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode.html"];
+  Node7 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" vin" ,fontname="Helvetica"];
+  Node7 [label="CTxIn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_in.html",tooltip="An input of a transaction. "];
+  Node2 -> Node7 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" scriptSig\nprevPubKey" ,fontname="Helvetica"];
+  Node8 -> Node7 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" prevout" ,fontname="Helvetica"];
+  Node8 [label="COutPoint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_out_point.html",tooltip="An outpoint - a combination of a transaction hash and an index n into its vout. "];
+  Node9 -> Node8 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" hash" ,fontname="Helvetica"];
+  Node9 [label="uint256",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classuint256.html",tooltip="256-bit unsigned big integer. "];
+  Node10 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="base_uint\< 256 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html"];
+  Node11 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pubKeyMasternode\npubKeyCollateralAddress1\npubKeyCollateralAddress\npubKeyMasternode1" ,fontname="Helvetica"];
+  Node11 [label="CPubKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html",tooltip="An encapsulated public key. "];
+  Node4 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cs" ,fontname="Helvetica"];
+  Node12 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" lastPing" ,fontname="Helvetica"];
+  Node12 [label="CMasternodePing",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_ping.html"];
+  Node7 -> Node12 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" vin" ,fontname="Helvetica"];
+  Node9 -> Node12 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" blockHash" ,fontname="Helvetica"];
+  Node13 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" addr" ,fontname="Helvetica"];
+  Node13 [label="CService",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_service.html",tooltip="A combination of a network address (CNetAddr) and a (TCP) port. "];
+  Node14 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="CNetAddr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_net_addr.html",tooltip="IP address (IPv6, or IPv4 using mapped IPv6 range (::FFFF:0:0/96)) "];
+  Node15 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" finalTransaction\ntxCollateral" ,fontname="Helvetica"];
+  Node15 [label="CMutableTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct_c_mutable_transaction.html",tooltip="A mutable version of CTransaction. "];
+}

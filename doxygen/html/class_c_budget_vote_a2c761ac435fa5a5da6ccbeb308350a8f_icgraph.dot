@@ -1,0 +1,13 @@
+digraph "CBudgetVote::Relay"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node26 [label="CBudgetVote::Relay",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node26 -> Node27 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node27 [label="mnbudgetvote",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a56da074ff2f33c0ef53bb451c67c0761"];
+  Node27 -> Node28 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node28 [label="mnbudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#aeabbf924be4d2ce4bedb28a394e1fc6b"];
+  Node26 -> Node29 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node29 [label="mnbudgetrawvote",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a3ae70ddb7080492d70c053fdf06320f7"];
+}

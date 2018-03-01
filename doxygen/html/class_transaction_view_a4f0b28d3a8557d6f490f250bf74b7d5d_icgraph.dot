@@ -1,0 +1,13 @@
+digraph "TransactionView::updateWatchOnlyColumn"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node388 [label="TransactionView::updateWatch\lOnlyColumn",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node388 -> Node389 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node389 [label="TransactionView::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_view.html#a4920c2cd57d72eb50248948fa160c83c"];
+  Node389 -> Node390 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node390 [label="WalletView::setWalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be",tooltip="Set the wallet model. "];
+  Node390 -> Node391 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node391 [label="WalletFrame::addWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86"];
+}

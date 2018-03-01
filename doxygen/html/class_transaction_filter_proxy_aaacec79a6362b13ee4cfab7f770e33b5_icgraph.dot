@@ -1,0 +1,11 @@
+digraph "TransactionFilterProxy::TYPE"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node46 [label="TransactionFilterProxy\l::TYPE",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node46 -> Node47 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node47 [label="TransactionFilterProxy\l::filterAcceptsRow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_filter_proxy.html#a6ab964123a0a3f2a28049a44153fce49"];
+  Node46 -> Node48 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node48 [label="TransactionView::TransactionView",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_view.html#a0c5e8b90206b4e8b8bf68dd7e319798f"];
+}

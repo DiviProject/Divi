@@ -1,0 +1,15 @@
+digraph "CWallet::ReturnKey"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1262 [label="CWallet::ReturnKey",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1262 -> Node1263 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1263 [label="CWallet::GetOldestKeyPoolTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#ga2555a9442e58b3c5593fef21f1b39d2d"];
+  Node1263 -> Node1264 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1264 [label="getwalletinfo",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a9401fef738a283075915e0ea0086fae9"];
+  Node1262 -> Node1265 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1265 [label="CReserveKey::ReturnKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#gaf7b0a61f8c70c8146e42e82b4e227204"];
+  Node1265 -> Node1266 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1266 [label="CReserveKey::~CReserveKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_reserve_key.html#a71dc4f86968df51ffa263371fdb93f3f"];
+}

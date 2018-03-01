@@ -1,0 +1,9 @@
+digraph "CZMQAbstractNotifier::SetAddress"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node22 [label="CZMQAbstractNotifier\l::SetAddress",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node22 -> Node23 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 [label="CZMQNotificationInterface\l::CreateWithArguments",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_z_m_q_notification_interface.html#a791ea8fd1b414482c9a811ac5ae79a26"];
+}

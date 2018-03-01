@@ -1,0 +1,27 @@
+digraph "CFinalizedBudget::GetVoteCount"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node85 [label="CFinalizedBudget::GetVote\lCount",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node85 -> Node86 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node86 [label="CBudgetManager::FillBlock\lPayee",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#aa52f3ff6c434fa5bf1a9e40d41bf4ade"];
+  Node86 -> Node87 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node87 [label="FillBlockPayee",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-payments_8h.html#a2bd3aae33d7ebbea97792d1f1abfff03"];
+  Node85 -> Node88 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node88 [label="CBudgetManager::IsBudget\lPaymentBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a1011c9399df614e09f77d87ebe4f7bca"];
+  Node88 -> Node87 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node88 -> Node89 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node89 [label="GetRequiredPaymentsString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-payments_8h.html#a7828ab0b9a1302db35b658f727b260e1"];
+  Node89 -> Node90 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node90 [label="getmasternodewinners",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a35582999650d0aa49b5d99299ea6770f"];
+  Node90 -> Node91 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node91 [label="masternode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a30609e443aeb47c29ed0878d16b1b5e1"];
+  Node85 -> Node92 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node92 [label="CBudgetManager::IsTransaction\lValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a1ad65c9d6a743371c0033abf623a291f"];
+  Node85 -> Node93 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node93 [label="CBudgetManager::GetFinalized\lBudgets",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#ab806fb2d22db385f22bc9655e09b2944"];
+  Node93 -> Node94 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node94 [label="mnfinalbudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a9377cde49f5b62904aafb46d7d3c5e7c"];
+  Node85 -> Node94 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

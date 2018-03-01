@@ -1,0 +1,13 @@
+digraph "CLevelDBWrapper::Exists"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node24 [label="CLevelDBWrapper::Exists",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node24 -> Node25 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="CSporkDB::SporkExists",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_spork_d_b.html#ae86fb3937491e8509a5d2b7d5b8dbc53"];
+  Node24 -> Node26 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 [label="CCoinsViewDB::HaveCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_d_b.html#af55f35faadeb74b5406559fe3ed20114",tooltip="Just check whether we have data for a given txid. "];
+  Node24 -> Node27 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node27 [label="CBlockTreeDB::ReadReindexing",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_tree_d_b.html#a1abf6fc392048428aa24a12b7942824b"];
+}

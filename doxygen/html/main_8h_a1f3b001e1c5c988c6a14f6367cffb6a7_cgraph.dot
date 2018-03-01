@@ -1,0 +1,11 @@
+digraph "ValidOutPoint"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1305 [label="ValidOutPoint",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1305 -> Node1306 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1306 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node1305 -> Node1307 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1307 [label="CChainParams::Block\l_Enforce_Invalid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html#a273dbde532ea4c5cf57eea2150d1bea3"];
+}

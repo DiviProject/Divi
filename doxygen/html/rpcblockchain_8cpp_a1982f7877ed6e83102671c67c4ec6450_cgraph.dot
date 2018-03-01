@@ -1,0 +1,33 @@
+digraph "gettxout"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node162 [label="gettxout",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node162 -> Node163 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node163 [label="HelpExampleCli",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec"];
+  Node162 -> Node164 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node164 [label="HelpExampleRpc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef"];
+  Node162 -> Node165 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node165 [label="CCoinsViewMemPool::\lGetCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_mem_pool.html#a1a4a556821b1680ff4b73758c8a1e471",tooltip="Retrieve the CCoins (unspent transaction outputs) for a given txid. "];
+  Node165 -> Node166 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node166 [label="CTxMemPool::lookup",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_mem_pool.html#ad6d9966cdeb4b6586f7186e709b4e77e"];
+  Node162 -> Node167 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node167 [label="CTxMemPool::pruneSpent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_mem_pool.html#ad6142b7cd3a58dae6cdaf03551c2f989"];
+  Node167 -> Node168 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node168 [label="CCoins::Spend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#a8d5fe8c1ab0c9558620448a19ecdb8b2",tooltip="mark an outpoint spent, and construct undo information "];
+  Node168 -> Node169 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node169 [label="CCoins::Cleanup",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#a7cfa2efc07f4d35785c9c75caa8bddcb",tooltip="remove spent outputs at the end of vout "];
+  Node162 -> Node170 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node170 [label="CCoinsViewCache::GetCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a1b62444593fdb580bfa4bd6fab41fafa",tooltip="Retrieve the CCoins (unspent transaction outputs) for a given txid. "];
+  Node170 -> Node171 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node171 [label="CCoinsViewCache::FetchCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a7d385628b7d821d2d5b6c5aaf1734616"];
+  Node162 -> Node172 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node172 [label="CCoinsViewCache::GetBest\lBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a1190c94a943c067d13211179ef06470b",tooltip="Retrieve the block hash whose state this CCoinsView currently represents. "];
+  Node172 -> Node173 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node173 [label="CCoinsView::GetBestBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view.html#af81f2907d360a2548d59a61388e5e5cb",tooltip="Retrieve the block hash whose state this CCoinsView currently represents. "];
+  Node162 -> Node174 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node174 [label="CBlockIndex::GetBlockHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a98490a2788c65cdd6ae9002b004dd74c"];
+  Node162 -> Node175 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node175 [label="base_uint::GetHex",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#ae5e7b7481de91ebead20eebd5d685441"];
+}

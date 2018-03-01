@@ -1,0 +1,13 @@
+digraph "CChainParams::LAST_POW_BLOCK"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node102 [label="CChainParams::LAST\l_POW_BLOCK",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node102 -> Node103 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node103 [label="ConnectBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ad4ce8957600f6ee11bbf095226a8e83e",tooltip="Apply the effects of this block (with given index) on the UTXO set represented by coins..."];
+  Node103 -> Node104 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node104 [label="TestBlockValidity",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#aa778166224b25355c113d1706df12ffd",tooltip="Check a block is completely valid from start to finish (only works on top of our current best block..."];
+  Node104 -> Node105 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node105 [label="getblocktemplate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a"];
+}

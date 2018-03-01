@@ -1,0 +1,13 @@
+digraph "CMasternodeSync::GetNextAsset"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node18 [label="CMasternodeSync::GetNext\lAsset",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node18 -> Node19 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="CMasternodeSync::ClearFulfilled\lRequest",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_sync.html#a3cf95b0b811b5d1b03adc5e2a15dbbdd"];
+  Node19 -> Node20 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="CNode::ClearFulfilledRequest",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#aa57c7ad448501f5c8667d430b390b5ea"];
+  Node18 -> Node21 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+}

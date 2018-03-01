@@ -1,0 +1,22 @@
+digraph "TransactionSignatureChecker::VerifySignature"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node13 [label="TransactionSignatureChecker\l::VerifySignature",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node13 -> Node14 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="CPubKey::Verify",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a5b3fef213b227394ca9d0a1e3baa957e",tooltip="Verify a DER signature (~72 bytes). "];
+  Node14 -> Node15 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="CPubKey::IsValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a4fa94293cf8577fd039b9a133f6c7f30"];
+  Node15 -> Node16 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="CPubKey::size",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a6bb28fcf0a5f799c69f5b7269363b309",tooltip="Simple read-only vector-like interface to the pubkey data. "];
+  Node16 -> Node17 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="CPubKey::GetLen",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb",tooltip="Compute the length of a pubkey with a given first byte. "];
+  Node14 -> Node18 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="secp256k1_ecdsa_verify",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$secp256k1_8h.html#a036c40da27ed92a1054da4226660127a",tooltip="Verify an ECDSA signature. "];
+  Node14 -> Node19 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="base_uint::size",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#a1f49b034e686269601ea89b0319b8004"];
+  Node14 -> Node20 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="CPubKey::begin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a859ab9909d68092d6d4fc739237ab358"];
+  Node14 -> Node16 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

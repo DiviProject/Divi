@@ -1,0 +1,17 @@
+digraph "CheckZerocoinMint"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node299 [label="CheckZerocoinMint",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node299 -> Node300 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node300 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node299 -> Node301 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node301 [label="TxOutToPublicCoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#aac3e600e13586e9d4aa42571d6cd2637"];
+  Node301 -> Node302 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node302 [label="CBigNum::setvch",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#aa9236c14e34519e9b173a9a4b80f5621"];
+  Node301 -> Node303 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node303 [label="libzerocoin::AmountToZerocoin\lDenomination",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacelibzerocoin.html#a134fac363d8467df4fbb539a880051ec"];
+  Node299 -> Node304 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node304 [label="CValidationState::DoS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_validation_state.html#a3c6786d00da8d1c5df25b4c3876409e8"];
+}

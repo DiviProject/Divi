@@ -1,0 +1,13 @@
+digraph "CWalletDB::ListArchivedZerocoins"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node99 [label="CWalletDB::ListArchivedZerocoins",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node99 -> Node100 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node100 [label="getarchivedzerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a9b9073ec6e10b65313bda370403da179"];
+  Node99 -> Node101 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node101 [label="CWallet::ReconsiderZerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#ae0d869b52e1efd245bd5fcbbff925531"];
+  Node101 -> Node102 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node102 [label="reconsiderzerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a2e2e1892b694084c83714431479f5c7a"];
+}

@@ -1,0 +1,13 @@
+digraph "CWalletDB::ListAccountCreditDebit"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node94 [label="CWalletDB::ListAccountCredit\lDebit",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node94 -> Node95 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node95 [label="listaccounts",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a0cd5dc1112a6c6d5a29a381cd7967fc5"];
+  Node94 -> Node96 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node96 [label="CWallet::OrderedTxItems",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__map_wallet.html#ga740572131004d77fbdb4617ec1aafb4a",tooltip="Get the wallet&#39;s activity log. "];
+  Node96 -> Node97 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node97 [label="listtransactions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a3247ccfc52f810122e28895d423e13fd"];
+}

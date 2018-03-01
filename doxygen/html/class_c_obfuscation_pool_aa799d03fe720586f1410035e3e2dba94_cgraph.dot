@@ -1,0 +1,31 @@
+digraph "CObfuscationPool::SetCollateralAddress"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node485 [label="CObfuscationPool::SetCollateral\lAddress",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node485 -> Node486 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node486 [label="CBase58Data::SetString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_base58_data.html#a250fa3bc97d03c7d87de5485c8b49b57"];
+  Node486 -> Node487 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node487 [label="DecodeBase58Check",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$base58_8cpp.html#ae2dc7ad63e243509e0871ec4a5890678",tooltip="Decode a base58-encoded string (psz) that includes a checksum into a byte vector (vchRet), return true if decoding is successful. "];
+  Node487 -> Node488 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node488 [label="DecodeBase58",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$base58_8cpp.html#a0f74d1d6e7e982cad4b0e538acea4538",tooltip="Decode a base58-encoded string (psz) into a byte vector (vchRet). "];
+  Node487 -> Node489 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node489 [label="Hash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8h.html#a12c5e981d7f5f2850027fd5e932eff61",tooltip="Compute the 256-bit hash of a std::string. "];
+  Node487 -> Node490 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node490 [label="base_uint::end",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#a76539ef6be800bc02e4038f457a4f74a"];
+  Node486 -> Node491 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node491 [label="memcpy",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf"];
+  Node491 -> Node492 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node492 [label="memmove",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1"];
+  Node485 -> Node493 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node493 [label="GetScriptForDestination",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$standard_8cpp.html#ae40f28d3b46c21033f6ee1f1200d0321"];
+  Node485 -> Node494 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node494 [label="CBitcoinAddress::Get",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bitcoin_address.html#a1e44de10dfc84d1fd2e15150f1e22b8e"];
+  Node494 -> Node495 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node495 [label="CBitcoinAddress::IsValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bitcoin_address.html#ab39907ce6895062a8f8bf585270ef13b"];
+  Node495 -> Node496 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node496 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node494 -> Node491 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node494 -> Node496 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

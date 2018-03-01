@@ -1,0 +1,15 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node142 [label="QAbstractTableModel",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node142 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="AddressTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_address_table_model.html",tooltip="Qt model of the address book in the core. "];
+  Node142 -> Node144 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node144 [label="PeerTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_peer_table_model.html",tooltip="Qt model providing information about connected peers, similar to the \"getpeerinfo\" RPC call..."];
+  Node142 -> Node145 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node145 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divx: URIs. "];
+  Node142 -> Node146 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node146 [label="TransactionTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_table_model.html",tooltip="UI model for the transaction table of a wallet. "];
+}

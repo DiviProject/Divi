@@ -1,0 +1,28 @@
+digraph "src/addrman.h"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node51 [label="src/addrman.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node51 -> Node52 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node52 [label="src/activemasternode.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$activemasternode_8cpp.html"];
+  Node51 -> Node53 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node53 [label="src/addrman.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$addrman_8cpp.html"];
+  Node51 -> Node54 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node54 [label="src/db.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$db_8cpp.html"];
+  Node51 -> Node55 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node55 [label="src/init.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html"];
+  Node51 -> Node56 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node56 [label="src/main.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html"];
+  Node51 -> Node57 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node57 [label="src/masternode-budget.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-budget_8cpp.html"];
+  Node51 -> Node58 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node58 [label="src/masternode-payments.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-payments_8cpp.html"];
+  Node51 -> Node59 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node59 [label="src/masternode-sync.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-sync_8cpp.html"];
+  Node51 -> Node60 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node60 [label="src/masternode.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode_8cpp.html"];
+  Node51 -> Node61 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node61 [label="src/masternodeman.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternodeman_8cpp.html"];
+  Node51 -> Node62 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node62 [label="src/net.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8cpp.html"];
+}

@@ -1,0 +1,33 @@
+digraph "BIP38_Encrypt"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node54 [label="BIP38_Encrypt",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node54 -> Node55 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node55 [label="AddressToBip38Hash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$bip38_8cpp.html#a316d78ad4929a28e63f746aa5da410aa"];
+  Node55 -> Node56 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node56 [label="Hash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8h.html#a12c5e981d7f5f2850027fd5e932eff61",tooltip="Compute the 256-bit hash of a std::string. "];
+  Node55 -> Node57 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node57 [label="base_uint::begin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#aaa32054bf4e8fbb31d54a75f6065174d"];
+  Node55 -> Node58 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node58 [label="HexStr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilstrencodings_8h.html#ace13a819ca4e98c22847d26b3b357e75"];
+  Node54 -> Node59 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node59 [label="ReverseEndianString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilstrencodings_8h.html#a699915db9972f1502ab6867bb78d8e01",tooltip="Reverse the endianess of a string. "];
+  Node54 -> Node60 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node60 [label="base_uint::Get64",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#aae5336be1799bd2debf74efb1d2cc542"];
+  Node54 -> Node61 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node61 [label="scrypt_hash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8cpp.html#ac1ac2ae4cd8d6d9b314d6817e20ac297"];
+  Node61 -> Node62 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node62 [label="scrypt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$scrypt_8cpp.html#a60889112ef65bb6f6c43075746696313"];
+  Node62 -> Node63 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node63 [label="PBKDF2_SHA256",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$scrypt_8cpp.html#aee9e3622e2f69c23a5891ddc86fd1228",tooltip="PBKDF2_SHA256(passwd, passwdlen, salt, saltlen, c, buf, dkLen): Compute PBKDF2(passwd, salt, c, dkLen) using HMAC-SHA256 as the PRF, and write the output to buf. "];
+  Node62 -> Node64 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node64 [label="SMix",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$scrypt_8cpp.html#aa7931df6bf0ca37533c41dc6f792e9f1"];
+  Node54 -> Node65 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node65 [label="base_uint::ToString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#acccba4d9d51a0c36261718ca0cbb293b"];
+  Node54 -> Node57 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node54 -> Node56 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node54 -> Node66 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node66 [label="EncodeBase58",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$base58_8cpp.html#a8d6f0e9d5df175b4966dcede31dc90ad",tooltip="Why base-58 instead of standard base-64 encoding? "];
+}

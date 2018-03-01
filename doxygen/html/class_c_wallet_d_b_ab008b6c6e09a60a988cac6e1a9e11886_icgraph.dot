@@ -1,0 +1,9 @@
+digraph "CWalletDB::WriteMinVersion"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node273 [label="CWalletDB::WriteMinVersion",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node273 -> Node274 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node274 [label="CWallet::SetMinVersion",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__map_wallet.html#gafa48a3ee3096681650c8b9589579e9cb",tooltip="signify that a particular wallet feature is now used. this may change nWalletVersion and nWalletMaxVe..."];
+}

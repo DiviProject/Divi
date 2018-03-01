@@ -1,0 +1,28 @@
+digraph "CSporkManager::UpdateSpork"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node321 [label="CSporkManager::UpdateSpork",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node321 -> Node322 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node322 [label="spork",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmisc_8cpp.html#a8dcc7f3e5749bbd1dad163b85d0abdcb"];
+  Node322 -> Node323 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node323 [label="LoadSporksFromDB",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8h.html#a8ca9266accb6cf34f86a4f9244f22e79"];
+  Node322 -> Node324 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node324 [label="ProcessSpork",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8h.html#a3f9c24c1f4c012152fb4422ca981610a"];
+  Node322 -> Node325 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node325 [label="CSporkManager::CheckSignature",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_spork_manager.html#a697d8c0ce5c422ea125eee96687aa7b3"];
+  Node325 -> Node324 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node325 -> Node326 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node326 [label="CSporkManager::SetPrivKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_spork_manager.html#a599d088218de9d242e4dc5cb17dd310b"];
+  Node322 -> Node327 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node327 [label="CSporkManager::Sign",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_spork_manager.html#adf1b5d40f378c4bd3a5ea31905b11f30"];
+  Node327 -> Node321 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node327 -> Node326 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node322 -> Node328 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node328 [label="CSporkDB::WriteSpork",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_spork_d_b.html#a642de787a3b991b3ce7d33125ca19828"];
+  Node328 -> Node324 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node322 -> Node329 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node329 [label="CSporkDB::ReadSpork",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_spork_d_b.html#a346e545c337070e9f7827c4eb1abcdb1"];
+  Node329 -> Node323 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

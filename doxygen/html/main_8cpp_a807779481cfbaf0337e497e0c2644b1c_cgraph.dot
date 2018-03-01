@@ -1,0 +1,13 @@
+digraph "CheckZerocoinSpend"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node378 [label="CheckZerocoinSpend",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node378 -> Node379 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node379 [label="CTxOut::IsZerocoinMint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_out.html#a94d2d89e02ab1e8a7d0c2326aaa35725"];
+  Node379 -> Node380 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node380 [label="CScript::IsZerocoinMint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_script.html#aadeaf93bd9c00abc9e20d082051adac8"];
+  Node378 -> Node381 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node381 [label="CValidationState::DoS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_validation_state.html#a3c6786d00da8d1c5df25b4c3876409e8"];
+}

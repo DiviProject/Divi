@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: PIVX/src/crypto/sph_shavite.h File Reference</title>
+<title>DIVX: src/crypto/sph_shavite.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -61,7 +64,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_99392e72b35c7f25e8ea4b7ee23fbaff.html">PIVX</a></li><li class="navelem"><a class="el" href="dir_2daf99c3a7cf26bd67a6e059ee4a1333.html">src</a></li><li class="navelem"><a class="el" href="dir_d641de86a9a5208d57c21dc37a9357c7.html">crypto</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_4261af1259721e3e39e0d2dd7354b511.html">crypto</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -74,77 +77,119 @@ $(function() {
 <div class="title">sph_shavite.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>SHAvite-3 interface.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stddef.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="sph__types_8h_source.html">sph_types.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for sph_shavite.h:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
 </div>
 <p><a href="sph__shavite_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__shavite__small__context.html">sph_shavite_small_context</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is a context for SHAvite-224 and SHAvite-256 computations: it contains the intermediate values and some data from the last entered block.  <a href="structsph__shavite__small__context.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__shavite__big__context.html">sph_shavite_big_context</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is a context for SHAvite-384 and SHAvite-512 computations: it contains the intermediate values and some data from the last entered block.  <a href="structsph__shavite__big__context.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a1d9c04a5b04796c32e9c3c65f15eefe0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a1d9c04a5b04796c32e9c3c65f15eefe0">SPH_SIZE_shavite224</a>&#160;&#160;&#160;224</td></tr>
+<tr class="memdesc:a1d9c04a5b04796c32e9c3c65f15eefe0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output size (in bits) for SHAvite-224.  <a href="#a1d9c04a5b04796c32e9c3c65f15eefe0">More...</a><br /></td></tr>
 <tr class="separator:a1d9c04a5b04796c32e9c3c65f15eefe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a9d2d739912ddb93c12344cb53cd6b0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a2a9d2d739912ddb93c12344cb53cd6b0">SPH_SIZE_shavite256</a>&#160;&#160;&#160;256</td></tr>
+<tr class="memdesc:a2a9d2d739912ddb93c12344cb53cd6b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output size (in bits) for SHAvite-256.  <a href="#a2a9d2d739912ddb93c12344cb53cd6b0">More...</a><br /></td></tr>
 <tr class="separator:a2a9d2d739912ddb93c12344cb53cd6b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada64b5cb7e79e653f5a180a36f81e7f2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#ada64b5cb7e79e653f5a180a36f81e7f2">SPH_SIZE_shavite384</a>&#160;&#160;&#160;384</td></tr>
+<tr class="memdesc:ada64b5cb7e79e653f5a180a36f81e7f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output size (in bits) for SHAvite-384.  <a href="#ada64b5cb7e79e653f5a180a36f81e7f2">More...</a><br /></td></tr>
 <tr class="separator:ada64b5cb7e79e653f5a180a36f81e7f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade3f30324c8061408291ec402f080e62"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#ade3f30324c8061408291ec402f080e62">SPH_SIZE_shavite512</a>&#160;&#160;&#160;512</td></tr>
+<tr class="memdesc:ade3f30324c8061408291ec402f080e62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output size (in bits) for SHAvite-512.  <a href="#ade3f30324c8061408291ec402f080e62">More...</a><br /></td></tr>
 <tr class="separator:ade3f30324c8061408291ec402f080e62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a992beee7941b335e44d35cfd0f7aa600"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structsph__shavite__small__context.html">sph_shavite_small_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a992beee7941b335e44d35cfd0f7aa600">sph_shavite224_context</a></td></tr>
+<tr class="memdesc:a992beee7941b335e44d35cfd0f7aa600"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is a context for SHAvite-224 computations.  <a href="#a992beee7941b335e44d35cfd0f7aa600">More...</a><br /></td></tr>
 <tr class="separator:a992beee7941b335e44d35cfd0f7aa600"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6916dd4100271b817e60c9738c7b9ed"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structsph__shavite__small__context.html">sph_shavite_small_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#ab6916dd4100271b817e60c9738c7b9ed">sph_shavite256_context</a></td></tr>
+<tr class="memdesc:ab6916dd4100271b817e60c9738c7b9ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is a context for SHAvite-256 computations.  <a href="#ab6916dd4100271b817e60c9738c7b9ed">More...</a><br /></td></tr>
 <tr class="separator:ab6916dd4100271b817e60c9738c7b9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a850062ea3ec589eabbee12c98963d09e"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structsph__shavite__big__context.html">sph_shavite_big_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a850062ea3ec589eabbee12c98963d09e">sph_shavite384_context</a></td></tr>
+<tr class="memdesc:a850062ea3ec589eabbee12c98963d09e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is a context for SHAvite-384 computations.  <a href="#a850062ea3ec589eabbee12c98963d09e">More...</a><br /></td></tr>
 <tr class="separator:a850062ea3ec589eabbee12c98963d09e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a582d64c420383ce0ee233a116ae3ae85"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structsph__shavite__big__context.html">sph_shavite_big_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a582d64c420383ce0ee233a116ae3ae85">sph_shavite512_context</a></td></tr>
+<tr class="memdesc:a582d64c420383ce0ee233a116ae3ae85"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is a context for SHAvite-512 computations.  <a href="#a582d64c420383ce0ee233a116ae3ae85">More...</a><br /></td></tr>
 <tr class="separator:a582d64c420383ce0ee233a116ae3ae85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a10fb074feeeff43ec30e80ac91acd82b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a10fb074feeeff43ec30e80ac91acd82b">sph_shavite224_init</a> (void *cc)</td></tr>
+<tr class="memdesc:a10fb074feeeff43ec30e80ac91acd82b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a SHAvite-224 context.  <a href="#a10fb074feeeff43ec30e80ac91acd82b">More...</a><br /></td></tr>
 <tr class="separator:a10fb074feeeff43ec30e80ac91acd82b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51cde08306509091a06a7e7d7b4a47ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a51cde08306509091a06a7e7d7b4a47ee">sph_shavite224</a> (void *cc, const void *data, size_t len)</td></tr>
+<tr class="memdesc:a51cde08306509091a06a7e7d7b4a47ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process some data bytes.  <a href="#a51cde08306509091a06a7e7d7b4a47ee">More...</a><br /></td></tr>
 <tr class="separator:a51cde08306509091a06a7e7d7b4a47ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7e1a1304736b591b2e54c60e58c218d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#ae7e1a1304736b591b2e54c60e58c218d">sph_shavite224_close</a> (void *cc, void *dst)</td></tr>
+<tr class="memdesc:ae7e1a1304736b591b2e54c60e58c218d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminate the current SHAvite-224 computation and output the result into the provided buffer.  <a href="#ae7e1a1304736b591b2e54c60e58c218d">More...</a><br /></td></tr>
 <tr class="separator:ae7e1a1304736b591b2e54c60e58c218d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f7522a5fd82677d2784a157a1751f0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a2f7522a5fd82677d2784a157a1751f0e">sph_shavite224_addbits_and_close</a> (void *cc, unsigned ub, unsigned n, void *dst)</td></tr>
+<tr class="memdesc:a2f7522a5fd82677d2784a157a1751f0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (28 bytes).  <a href="#a2f7522a5fd82677d2784a157a1751f0e">More...</a><br /></td></tr>
 <tr class="separator:a2f7522a5fd82677d2784a157a1751f0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a213c83121c42b380f9f2f83a9f74bada"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a213c83121c42b380f9f2f83a9f74bada">sph_shavite256_init</a> (void *cc)</td></tr>
+<tr class="memdesc:a213c83121c42b380f9f2f83a9f74bada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a SHAvite-256 context.  <a href="#a213c83121c42b380f9f2f83a9f74bada">More...</a><br /></td></tr>
 <tr class="separator:a213c83121c42b380f9f2f83a9f74bada"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae904e5277a0c65894a5c38b2194b25ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#ae904e5277a0c65894a5c38b2194b25ac">sph_shavite256</a> (void *cc, const void *data, size_t len)</td></tr>
+<tr class="memdesc:ae904e5277a0c65894a5c38b2194b25ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process some data bytes.  <a href="#ae904e5277a0c65894a5c38b2194b25ac">More...</a><br /></td></tr>
 <tr class="separator:ae904e5277a0c65894a5c38b2194b25ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a470d7f6d8021476772ca0a7e41dbe683"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a470d7f6d8021476772ca0a7e41dbe683">sph_shavite256_close</a> (void *cc, void *dst)</td></tr>
+<tr class="memdesc:a470d7f6d8021476772ca0a7e41dbe683"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminate the current SHAvite-256 computation and output the result into the provided buffer.  <a href="#a470d7f6d8021476772ca0a7e41dbe683">More...</a><br /></td></tr>
 <tr class="separator:a470d7f6d8021476772ca0a7e41dbe683"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4364e6fccebec060d834b563e43594d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a4364e6fccebec060d834b563e43594d3">sph_shavite256_addbits_and_close</a> (void *cc, unsigned ub, unsigned n, void *dst)</td></tr>
+<tr class="memdesc:a4364e6fccebec060d834b563e43594d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (32 bytes).  <a href="#a4364e6fccebec060d834b563e43594d3">More...</a><br /></td></tr>
 <tr class="separator:a4364e6fccebec060d834b563e43594d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f6cd837ee680a8930e28a91b6e1aa7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a9f6cd837ee680a8930e28a91b6e1aa7a">sph_shavite384_init</a> (void *cc)</td></tr>
+<tr class="memdesc:a9f6cd837ee680a8930e28a91b6e1aa7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a SHAvite-384 context.  <a href="#a9f6cd837ee680a8930e28a91b6e1aa7a">More...</a><br /></td></tr>
 <tr class="separator:a9f6cd837ee680a8930e28a91b6e1aa7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a908dd0119bbab8d33c8114122d0ec508"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a908dd0119bbab8d33c8114122d0ec508">sph_shavite384</a> (void *cc, const void *data, size_t len)</td></tr>
+<tr class="memdesc:a908dd0119bbab8d33c8114122d0ec508"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process some data bytes.  <a href="#a908dd0119bbab8d33c8114122d0ec508">More...</a><br /></td></tr>
 <tr class="separator:a908dd0119bbab8d33c8114122d0ec508"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa7cf4b03c09c4c94239514b1e2bd8a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#aaa7cf4b03c09c4c94239514b1e2bd8a3">sph_shavite384_close</a> (void *cc, void *dst)</td></tr>
+<tr class="memdesc:aaa7cf4b03c09c4c94239514b1e2bd8a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminate the current SHAvite-384 computation and output the result into the provided buffer.  <a href="#aaa7cf4b03c09c4c94239514b1e2bd8a3">More...</a><br /></td></tr>
 <tr class="separator:aaa7cf4b03c09c4c94239514b1e2bd8a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11fd646bf978c0866472d45668ac6d31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a11fd646bf978c0866472d45668ac6d31">sph_shavite384_addbits_and_close</a> (void *cc, unsigned ub, unsigned n, void *dst)</td></tr>
+<tr class="memdesc:a11fd646bf978c0866472d45668ac6d31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (48 bytes).  <a href="#a11fd646bf978c0866472d45668ac6d31">More...</a><br /></td></tr>
 <tr class="separator:a11fd646bf978c0866472d45668ac6d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2c7b79f7fda3cde0d0086b13304645b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#aa2c7b79f7fda3cde0d0086b13304645b">sph_shavite512_init</a> (void *cc)</td></tr>
+<tr class="memdesc:aa2c7b79f7fda3cde0d0086b13304645b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a SHAvite-512 context.  <a href="#aa2c7b79f7fda3cde0d0086b13304645b">More...</a><br /></td></tr>
 <tr class="separator:aa2c7b79f7fda3cde0d0086b13304645b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17ebbdb9a0c3d75d0ff0440f05129b7e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#a17ebbdb9a0c3d75d0ff0440f05129b7e">sph_shavite512</a> (void *cc, const void *data, size_t len)</td></tr>
+<tr class="memdesc:a17ebbdb9a0c3d75d0ff0440f05129b7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process some data bytes.  <a href="#a17ebbdb9a0c3d75d0ff0440f05129b7e">More...</a><br /></td></tr>
 <tr class="separator:a17ebbdb9a0c3d75d0ff0440f05129b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade0688e75cf0cf367af9b510d8618a75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#ade0688e75cf0cf367af9b510d8618a75">sph_shavite512_close</a> (void *cc, void *dst)</td></tr>
+<tr class="memdesc:ade0688e75cf0cf367af9b510d8618a75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminate the current SHAvite-512 computation and output the result into the provided buffer.  <a href="#ade0688e75cf0cf367af9b510d8618a75">More...</a><br /></td></tr>
 <tr class="separator:ade0688e75cf0cf367af9b510d8618a75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0edf5d83523a83c54935874261f034f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__shavite_8h.html#ad0edf5d83523a83c54935874261f034f">sph_shavite512_addbits_and_close</a> (void *cc, unsigned ub, unsigned n, void *dst)</td></tr>
+<tr class="memdesc:ad0edf5d83523a83c54935874261f034f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (64 bytes).  <a href="#ad0edf5d83523a83c54935874261f034f">More...</a><br /></td></tr>
 <tr class="separator:ad0edf5d83523a83c54935874261f034f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>SHAvite-3 interface. This code implements SHAvite-3 with the recommended parameters for SHA-3, with outputs of 224, 256, 384 and 512 bits. In the following, we call the function "SHAvite" (without the "-3" suffix), thus "SHAvite-224" is "SHAvite-3 with a 224-bit
+<div class="textblock"><p>SHAvite-3 interface. </p>
+<p>This code implements SHAvite-3 with the recommended parameters for SHA-3, with outputs of 224, 256, 384 and 512 bits. In the following, we call the function "SHAvite" (without the "-3" suffix), thus "SHAvite-224" is "SHAvite-3 with a 224-bit
 output".</p>
 <p>==========================(LICENSE BEGIN)============================</p>
 <p>Copyright (c) 2007-2010 Projet RNRT SAPHIR</p>
@@ -153,6 +198,8 @@ output".</p>
 <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 <p>===========================(LICENSE END)=============================</p>
 <dl class="section author"><dt>Author</dt><dd>Thomas Pornin <a href="#" onclick="location.href='mai'+'lto:'+'tho'+'ma'+'s.p'+'or'+'nin'+'@c'+'ryp'+'to'+'log'+'.c'+'om'; return false;">thoma<span style="display: none;">.nosp@m.</span>s.po<span style="display: none;">.nosp@m.</span>rnin@<span style="display: none;">.nosp@m.</span>cryp<span style="display: none;">.nosp@m.</span>tolog<span style="display: none;">.nosp@m.</span>.com</a> </dd></dl>
+
+<p class="definition">Definition in file <a class="el" href="sph__shavite_8h_source.html">sph_shavite.h</a>.</p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a1d9c04a5b04796c32e9c3c65f15eefe0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1d9c04a5b04796c32e9c3c65f15eefe0">&#9670;&nbsp;</a></span>SPH_SIZE_shavite224</h2>
@@ -165,7 +212,10 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Output size (in bits) for SHAvite-224. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__shavite_8h_source.html#l00051">51</a> of file <a class="el" href="sph__shavite_8h_source.html">sph_shavite.h</a>.</p>
 
 </div>
 </div>
@@ -180,7 +230,10 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Output size (in bits) for SHAvite-256. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__shavite_8h_source.html#l00056">56</a> of file <a class="el" href="sph__shavite_8h_source.html">sph_shavite.h</a>.</p>
 
 </div>
 </div>
@@ -195,7 +248,10 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Output size (in bits) for SHAvite-384. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__shavite_8h_source.html#l00061">61</a> of file <a class="el" href="sph__shavite_8h_source.html">sph_shavite.h</a>.</p>
 
 </div>
 </div>
@@ -210,7 +266,10 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Output size (in bits) for SHAvite-512. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__shavite_8h_source.html#l00066">66</a> of file <a class="el" href="sph__shavite_8h_source.html">sph_shavite.h</a>.</p>
 
 </div>
 </div>
@@ -226,7 +285,11 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>This structure is a context for SHAvite-224 computations. It is identical to the common <code><a class="el" href="structsph__shavite__small__context.html">sph_shavite_small_context</a></code>. </p>
+
+<p>This structure is a context for SHAvite-224 computations. </p>
+<p>It is identical to the common <code><a class="el" href="structsph__shavite__small__context.html" title="This structure is a context for SHAvite-224 and SHAvite-256 computations: it contains the intermediat...">sph_shavite_small_context</a></code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__shavite_8h_source.html#l00091">91</a> of file <a class="el" href="sph__shavite_8h_source.html">sph_shavite.h</a>.</p>
 
 </div>
 </div>
@@ -241,7 +304,11 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>This structure is a context for SHAvite-256 computations. It is identical to the common <code><a class="el" href="structsph__shavite__small__context.html">sph_shavite_small_context</a></code>. </p>
+
+<p>This structure is a context for SHAvite-256 computations. </p>
+<p>It is identical to the common <code><a class="el" href="structsph__shavite__small__context.html" title="This structure is a context for SHAvite-224 and SHAvite-256 computations: it contains the intermediat...">sph_shavite_small_context</a></code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__shavite_8h_source.html#l00097">97</a> of file <a class="el" href="sph__shavite_8h_source.html">sph_shavite.h</a>.</p>
 
 </div>
 </div>
@@ -256,7 +323,11 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>This structure is a context for SHAvite-384 computations. It is identical to the common <code><a class="el" href="structsph__shavite__small__context.html">sph_shavite_small_context</a></code>. </p>
+
+<p>This structure is a context for SHAvite-384 computations. </p>
+<p>It is identical to the common <code><a class="el" href="structsph__shavite__small__context.html" title="This structure is a context for SHAvite-224 and SHAvite-256 computations: it contains the intermediat...">sph_shavite_small_context</a></code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__shavite_8h_source.html#l00122">122</a> of file <a class="el" href="sph__shavite_8h_source.html">sph_shavite.h</a>.</p>
 
 </div>
 </div>
@@ -271,7 +342,11 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>This structure is a context for SHAvite-512 computations. It is identical to the common <code><a class="el" href="structsph__shavite__small__context.html">sph_shavite_small_context</a></code>. </p>
+
+<p>This structure is a context for SHAvite-512 computations. </p>
+<p>It is identical to the common <code><a class="el" href="structsph__shavite__small__context.html" title="This structure is a context for SHAvite-224 and SHAvite-256 computations: it contains the intermediat...">sph_shavite_small_context</a></code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__shavite_8h_source.html#l00128">128</a> of file <a class="el" href="sph__shavite_8h_source.html">sph_shavite.h</a>.</p>
 
 </div>
 </div>
@@ -307,7 +382,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Process some data bytes. It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
+
+<p>Process some data bytes. </p>
+<p>It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-224 context </td></tr>
@@ -316,6 +393,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01651">1651</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -356,7 +435,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (28 bytes). If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
+
+<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (28 bytes). </p>
+<p>If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-224 context </td></tr>
@@ -366,6 +447,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01666">1666</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -394,7 +477,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Terminate the current SHAvite-224 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (28 bytes). The context is automatically reinitialized.</p>
+
+<p>Terminate the current SHAvite-224 computation and output the result into the provided buffer. </p>
+<p>The destination buffer must be wide enough to accomodate the result (28 bytes). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-224 context </td></tr>
@@ -402,6 +487,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01658">1658</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -420,13 +507,17 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize a SHAvite-224 context. This process performs no memory allocation.</p>
+
+<p>Initialize a SHAvite-224 context. </p>
+<p>This process performs no memory allocation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-224 context (pointer to a <code>sph_shavite224_context</code>) </td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01644">1644</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -461,7 +552,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Process some data bytes. It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
+
+<p>Process some data bytes. </p>
+<p>It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-256 context </td></tr>
@@ -470,6 +563,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01681">1681</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -510,7 +605,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (32 bytes). If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
+
+<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (32 bytes). </p>
+<p>If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-256 context </td></tr>
@@ -520,6 +617,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01696">1696</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -548,7 +647,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Terminate the current SHAvite-256 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (32 bytes). The context is automatically reinitialized.</p>
+
+<p>Terminate the current SHAvite-256 computation and output the result into the provided buffer. </p>
+<p>The destination buffer must be wide enough to accomodate the result (32 bytes). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-256 context </td></tr>
@@ -556,6 +657,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01688">1688</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -574,13 +677,17 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize a SHAvite-256 context. This process performs no memory allocation.</p>
+
+<p>Initialize a SHAvite-256 context. </p>
+<p>This process performs no memory allocation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-256 context (pointer to a <code>sph_shavite256_context</code>) </td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01674">1674</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -615,7 +722,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Process some data bytes. It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
+
+<p>Process some data bytes. </p>
+<p>It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-384 context </td></tr>
@@ -624,6 +733,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01711">1711</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -664,7 +775,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (48 bytes). If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
+
+<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (48 bytes). </p>
+<p>If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-384 context </td></tr>
@@ -674,6 +787,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01726">1726</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -702,7 +817,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Terminate the current SHAvite-384 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (48 bytes). The context is automatically reinitialized.</p>
+
+<p>Terminate the current SHAvite-384 computation and output the result into the provided buffer. </p>
+<p>The destination buffer must be wide enough to accomodate the result (48 bytes). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-384 context </td></tr>
@@ -710,6 +827,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01718">1718</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -728,13 +847,17 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize a SHAvite-384 context. This process performs no memory allocation.</p>
+
+<p>Initialize a SHAvite-384 context. </p>
+<p>This process performs no memory allocation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-384 context (pointer to a <code>sph_shavite384_context</code>) </td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01704">1704</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -769,7 +892,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Process some data bytes. It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
+
+<p>Process some data bytes. </p>
+<p>It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-512 context </td></tr>
@@ -778,6 +903,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01741">1741</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -818,7 +945,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (64 bytes). If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
+
+<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (64 bytes). </p>
+<p>If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-512 context </td></tr>
@@ -828,6 +957,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01756">1756</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -856,7 +987,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Terminate the current SHAvite-512 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (64 bytes). The context is automatically reinitialized.</p>
+
+<p>Terminate the current SHAvite-512 computation and output the result into the provided buffer. </p>
+<p>The destination buffer must be wide enough to accomodate the result (64 bytes). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-512 context </td></tr>
@@ -864,6 +997,8 @@ output".</p>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01748">1748</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
 
 </div>
 </div>
@@ -882,7 +1017,9 @@ output".</p>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize a SHAvite-512 context. This process performs no memory allocation.</p>
+
+<p>Initialize a SHAvite-512 context. </p>
+<p>This process performs no memory allocation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the SHAvite-512 context (pointer to a <code>sph_shavite512_context</code>) </td></tr>
@@ -890,12 +1027,14 @@ output".</p>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="shavite_8c_source.html#l01734">1734</a> of file <a class="el" href="shavite_8c_source.html">shavite.c</a>.</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:23 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

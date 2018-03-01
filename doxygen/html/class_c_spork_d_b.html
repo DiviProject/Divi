@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CSporkDB Class Reference</title>
+<title>DIVX: CSporkDB Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -63,76 +66,281 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="class_c_spork_d_b-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CSporkDB Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="sporkdb_8h_source.html">sporkdb.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for CSporkDB:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_c_spork_d_b.png" usemap="#CSporkDB_map" alt=""/>
-  <map id="CSporkDB_map" name="CSporkDB_map">
-<area href="class_c_level_d_b_wrapper.html" alt="CLevelDBWrapper" shape="rect" coords="0,0,118,24"/>
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for CSporkDB:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a85a36bd2aa74e2cd1522ed49e661484f"><td class="memItemLeft" align="right" valign="top"><a id="a85a36bd2aa74e2cd1522ed49e661484f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CSporkDB</b> (size_t nCacheSize, bool fMemory=false, bool fWipe=false)</td></tr>
+<tr class="memitem:a85a36bd2aa74e2cd1522ed49e661484f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_spork_d_b.html#a85a36bd2aa74e2cd1522ed49e661484f">CSporkDB</a> (size_t nCacheSize, bool fMemory=false, bool fWipe=false)</td></tr>
 <tr class="separator:a85a36bd2aa74e2cd1522ed49e661484f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a642de787a3b991b3ce7d33125ca19828"><td class="memItemLeft" align="right" valign="top"><a id="a642de787a3b991b3ce7d33125ca19828"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>WriteSpork</b> (const int nSporkId, const <a class="el" href="class_c_spork_message.html">CSporkMessage</a> &amp;spork)</td></tr>
+<tr class="memitem:a642de787a3b991b3ce7d33125ca19828"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_spork_d_b.html#a642de787a3b991b3ce7d33125ca19828">WriteSpork</a> (const int nSporkId, const <a class="el" href="class_c_spork_message.html">CSporkMessage</a> &amp;<a class="el" href="rpcserver_8h.html#ae1217adbb7feda4992da3e630c7e2aea">spork</a>)</td></tr>
 <tr class="separator:a642de787a3b991b3ce7d33125ca19828"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a346e545c337070e9f7827c4eb1abcdb1"><td class="memItemLeft" align="right" valign="top"><a id="a346e545c337070e9f7827c4eb1abcdb1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ReadSpork</b> (const int nSporkId, <a class="el" href="class_c_spork_message.html">CSporkMessage</a> &amp;spork)</td></tr>
+<tr class="memitem:a346e545c337070e9f7827c4eb1abcdb1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_spork_d_b.html#a346e545c337070e9f7827c4eb1abcdb1">ReadSpork</a> (const int nSporkId, <a class="el" href="class_c_spork_message.html">CSporkMessage</a> &amp;<a class="el" href="rpcserver_8h.html#ae1217adbb7feda4992da3e630c7e2aea">spork</a>)</td></tr>
 <tr class="separator:a346e545c337070e9f7827c4eb1abcdb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae86fb3937491e8509a5d2b7d5b8dbc53"><td class="memItemLeft" align="right" valign="top"><a id="ae86fb3937491e8509a5d2b7d5b8dbc53"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>SporkExists</b> (const int nSporkId)</td></tr>
+<tr class="memitem:ae86fb3937491e8509a5d2b7d5b8dbc53"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_spork_d_b.html#ae86fb3937491e8509a5d2b7d5b8dbc53">SporkExists</a> (const int nSporkId)</td></tr>
 <tr class="separator:ae86fb3937491e8509a5d2b7d5b8dbc53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_c_level_d_b_wrapper"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_c_level_d_b_wrapper')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_c_level_d_b_wrapper.html">CLevelDBWrapper</a></td></tr>
-<tr class="memitem:ae796b1190c072df6275e0ada4d187943 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top"><a id="ae796b1190c072df6275e0ada4d187943"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CLevelDBWrapper</b> (const boost::filesystem::path &amp;path, size_t nCacheSize, bool fMemory=false, bool fWipe=false)</td></tr>
+<tr class="memitem:ae796b1190c072df6275e0ada4d187943 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#ae796b1190c072df6275e0ada4d187943">CLevelDBWrapper</a> (const boost::filesystem::path &amp;path, size_t nCacheSize, bool fMemory=false, bool fWipe=false)</td></tr>
 <tr class="separator:ae796b1190c072df6275e0ada4d187943 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cb51d3b8f042641b2d0aa76c3185527 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplParams" colspan="2"><a id="a0cb51d3b8f042641b2d0aa76c3185527"></a>
-template&lt;typename K , typename V &gt; </td></tr>
-<tr class="memitem:a0cb51d3b8f042641b2d0aa76c3185527 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Read</b> (const K &amp;key, V &amp;value) const  throw (leveldb_error)</td></tr>
+<tr class="memitem:a7ffe7edeadfcf521d32509216e95403b inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#a7ffe7edeadfcf521d32509216e95403b">~CLevelDBWrapper</a> ()</td></tr>
+<tr class="separator:a7ffe7edeadfcf521d32509216e95403b inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cb51d3b8f042641b2d0aa76c3185527 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplParams" colspan="2">template&lt;typename K , typename V &gt; </td></tr>
+<tr class="memitem:a0cb51d3b8f042641b2d0aa76c3185527 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#a0cb51d3b8f042641b2d0aa76c3185527">Read</a> (const K &amp;<a class="el" href="bip38tooldialog_8cpp.html#a8d350ff361690ac2a2db267f5ea63dc9">key</a>, V &amp;value) const  throw (leveldb_error)</td></tr>
 <tr class="separator:a0cb51d3b8f042641b2d0aa76c3185527 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a740caa1aefbafc888838ea7f70dc31f4 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplParams" colspan="2"><a id="a740caa1aefbafc888838ea7f70dc31f4"></a>
-template&lt;typename K , typename V &gt; </td></tr>
-<tr class="memitem:a740caa1aefbafc888838ea7f70dc31f4 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Write</b> (const K &amp;key, const V &amp;value, bool fSync=false)  throw (leveldb_error)</td></tr>
+<tr class="memitem:a740caa1aefbafc888838ea7f70dc31f4 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplParams" colspan="2">template&lt;typename K , typename V &gt; </td></tr>
+<tr class="memitem:a740caa1aefbafc888838ea7f70dc31f4 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#a740caa1aefbafc888838ea7f70dc31f4">Write</a> (const K &amp;<a class="el" href="bip38tooldialog_8cpp.html#a8d350ff361690ac2a2db267f5ea63dc9">key</a>, const V &amp;value, bool fSync=false)  throw (leveldb_error)</td></tr>
 <tr class="separator:a740caa1aefbafc888838ea7f70dc31f4 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43c427da8e32af87a09d3cb60353ef0e inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplParams" colspan="2"><a id="a43c427da8e32af87a09d3cb60353ef0e"></a>
-template&lt;typename K &gt; </td></tr>
-<tr class="memitem:a43c427da8e32af87a09d3cb60353ef0e inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Exists</b> (const K &amp;key) const  throw (leveldb_error)</td></tr>
+<tr class="memitem:a43c427da8e32af87a09d3cb60353ef0e inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplParams" colspan="2">template&lt;typename K &gt; </td></tr>
+<tr class="memitem:a43c427da8e32af87a09d3cb60353ef0e inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#a43c427da8e32af87a09d3cb60353ef0e">Exists</a> (const K &amp;<a class="el" href="bip38tooldialog_8cpp.html#a8d350ff361690ac2a2db267f5ea63dc9">key</a>) const  throw (leveldb_error)</td></tr>
 <tr class="separator:a43c427da8e32af87a09d3cb60353ef0e inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f67e2880ba191fdc9439ba34e315d72 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplParams" colspan="2"><a id="a9f67e2880ba191fdc9439ba34e315d72"></a>
-template&lt;typename K &gt; </td></tr>
-<tr class="memitem:a9f67e2880ba191fdc9439ba34e315d72 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Erase</b> (const K &amp;key, bool fSync=false)  throw (leveldb_error)</td></tr>
+<tr class="memitem:a9f67e2880ba191fdc9439ba34e315d72 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplParams" colspan="2">template&lt;typename K &gt; </td></tr>
+<tr class="memitem:a9f67e2880ba191fdc9439ba34e315d72 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#a9f67e2880ba191fdc9439ba34e315d72">Erase</a> (const K &amp;<a class="el" href="bip38tooldialog_8cpp.html#a8d350ff361690ac2a2db267f5ea63dc9">key</a>, bool fSync=false)  throw (leveldb_error)</td></tr>
 <tr class="separator:a9f67e2880ba191fdc9439ba34e315d72 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a820484c9e427f9e3400396e750acf4b8 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top"><a id="a820484c9e427f9e3400396e750acf4b8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>WriteBatch</b> (<a class="el" href="class_c_level_d_b_batch.html">CLevelDBBatch</a> &amp;batch, bool fSync=false)  throw (leveldb_error)</td></tr>
+<tr class="memitem:a820484c9e427f9e3400396e750acf4b8 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#a820484c9e427f9e3400396e750acf4b8">WriteBatch</a> (<a class="el" href="class_c_level_d_b_batch.html">CLevelDBBatch</a> &amp;batch, bool fSync=false)  throw (leveldb_error)</td></tr>
 <tr class="separator:a820484c9e427f9e3400396e750acf4b8 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a639fbfd6652941a1ab570c202197a32a inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top"><a id="a639fbfd6652941a1ab570c202197a32a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Flush</b> ()</td></tr>
+<tr class="memitem:a639fbfd6652941a1ab570c202197a32a inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#a639fbfd6652941a1ab570c202197a32a">Flush</a> ()</td></tr>
 <tr class="separator:a639fbfd6652941a1ab570c202197a32a inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd05e914893cd610e8444871f829d8c9 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top"><a id="abd05e914893cd610e8444871f829d8c9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Sync</b> ()  throw (leveldb_error)</td></tr>
+<tr class="memitem:abd05e914893cd610e8444871f829d8c9 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#abd05e914893cd610e8444871f829d8c9">Sync</a> ()  throw (leveldb_error)</td></tr>
 <tr class="separator:abd05e914893cd610e8444871f829d8c9 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f43d01a8a6b26464b875d190e002d74 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top"><a id="a5f43d01a8a6b26464b875d190e002d74"></a>
-<a class="el" href="classleveldb_1_1_iterator.html">leveldb::Iterator</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>NewIterator</b> ()</td></tr>
+<tr class="memitem:a5f43d01a8a6b26464b875d190e002d74 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memItemLeft" align="right" valign="top">leveldb::Iterator *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_level_d_b_wrapper.html#a5f43d01a8a6b26464b875d190e002d74">NewIterator</a> ()</td></tr>
 <tr class="separator:a5f43d01a8a6b26464b875d190e002d74 inherit pub_methods_class_c_level_d_b_wrapper"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a985c9ad211d5a2a394512488a2b2c524"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_spork_d_b.html#a985c9ad211d5a2a394512488a2b2c524">CSporkDB</a> (const <a class="el" href="class_c_spork_d_b.html">CSporkDB</a> &amp;)</td></tr>
+<tr class="separator:a985c9ad211d5a2a394512488a2b2c524"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b8bcf88faa9807098b1c9c4bb9e96b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_spork_d_b.html#a5b8bcf88faa9807098b1c9c4bb9e96b3">operator=</a> (const <a class="el" href="class_c_spork_d_b.html">CSporkDB</a> &amp;)</td></tr>
+<tr class="separator:a5b8bcf88faa9807098b1c9c4bb9e96b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="sporkdb_8h_source.html#l00012">12</a> of file <a class="el" href="sporkdb_8h_source.html">sporkdb.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a85a36bd2aa74e2cd1522ed49e661484f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85a36bd2aa74e2cd1522ed49e661484f">&#9670;&nbsp;</a></span>CSporkDB() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CSporkDB::CSporkDB </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>nCacheSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fMemory</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fWipe</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sporkdb_8cpp_source.html#l00008">8</a> of file <a class="el" href="sporkdb_8cpp_source.html">sporkdb.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a985c9ad211d5a2a394512488a2b2c524"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a985c9ad211d5a2a394512488a2b2c524">&#9670;&nbsp;</a></span>CSporkDB() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CSporkDB::CSporkDB </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_spork_d_b.html">CSporkDB</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a5b8bcf88faa9807098b1c9c4bb9e96b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b8bcf88faa9807098b1c9c4bb9e96b3">&#9670;&nbsp;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CSporkDB::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_spork_d_b.html">CSporkDB</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a346e545c337070e9f7827c4eb1abcdb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a346e545c337070e9f7827c4eb1abcdb1">&#9670;&nbsp;</a></span>ReadSpork()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CSporkDB::ReadSpork </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>nSporkId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_c_spork_message.html">CSporkMessage</a> &amp;&#160;</td>
+          <td class="paramname"><em>spork</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sporkdb_8cpp_source.html#l00017">17</a> of file <a class="el" href="sporkdb_8cpp_source.html">sporkdb.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae86fb3937491e8509a5d2b7d5b8dbc53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae86fb3937491e8509a5d2b7d5b8dbc53">&#9670;&nbsp;</a></span>SporkExists()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CSporkDB::SporkExists </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>nSporkId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sporkdb_8cpp_source.html#l00022">22</a> of file <a class="el" href="sporkdb_8cpp_source.html">sporkdb.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a642de787a3b991b3ce7d33125ca19828"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a642de787a3b991b3ce7d33125ca19828">&#9670;&nbsp;</a></span>WriteSpork()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CSporkDB::WriteSpork </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>nSporkId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_spork_message.html">CSporkMessage</a> &amp;&#160;</td>
+          <td class="paramname"><em>spork</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sporkdb_8cpp_source.html#l00010">10</a> of file <a class="el" href="sporkdb_8cpp_source.html">sporkdb.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="sporkdb_8h_source.html">sporkdb.h</a></li>
-<li>PIVX/src/sporkdb.cpp</li>
+<li>src/<a class="el" href="sporkdb_8h_source.html">sporkdb.h</a></li>
+<li>src/<a class="el" href="sporkdb_8cpp_source.html">sporkdb.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:27 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

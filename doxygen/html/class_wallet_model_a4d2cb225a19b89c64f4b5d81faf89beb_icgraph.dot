@@ -1,0 +1,34 @@
+digraph "WalletModel::getBalance"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node330 [label="WalletModel::getBalance",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node330 -> Node331 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node331 [label="OverviewPage::setWalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_overview_page.html#a2ed52a3a87e9c74fee38fa873c9bc71f"];
+  Node331 -> Node332 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node332 [label="WalletView::setWalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be",tooltip="Set the wallet model. "];
+  Node332 -> Node333 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node333 [label="WalletFrame::addWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86"];
+  Node330 -> Node334 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node334 [label="PrivacyDialog::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a7a2e2a84934e59ff1ff88de325036472"];
+  Node334 -> Node332 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node330 -> Node335 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node335 [label="SendCoinsDialog::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa"];
+  Node335 -> Node332 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node330 -> Node336 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node336 [label="SendCoinsDialog::updateDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a74815ad8502b126200b6fd2e59e9f042"];
+  Node336 -> Node335 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node330 -> Node337 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node337 [label="WalletModel::checkBalance\lChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#adcc4eb8cd71cb4de223621866bb7fb7d"];
+  Node337 -> Node338 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node338 [label="WalletModel::pollBalance\lChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95"];
+  Node338 -> Node339 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node339 [label="WalletModel::WalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1"];
+  Node330 -> Node340 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node340 [label="WalletModel::prepareTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a8abc851901c7c7343ebfb5a8e5fc0154"];
+  Node340 -> Node341 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node341 [label="SendCoinsDialog::send",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#afd8d436a16ea7dba1276e8fdfdc8b2d3"];
+  Node341 -> Node342 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node342 [label="SendCoinsDialog::on\l_sendButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764"];
+}

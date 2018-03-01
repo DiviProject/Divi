@@ -1,0 +1,9 @@
+digraph "libzerocoin::AccumulatorWitness::getValue"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node12 [label="libzerocoin::Accumulator\lWitness::getValue",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node12 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="libzerocoin::Accumulator\l::getValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_accumulator.html#abe9f6281164864e8cd7ca48ad8a7bd18",tooltip="Get the accumulator result. "];
+}

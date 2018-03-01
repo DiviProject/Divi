@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: MacNotificationHandler Class Reference</title>
+<title>DIVX: MacNotificationHandler Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -70,33 +73,44 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Macintosh-specific notification handler (supports UserNotificationCenter and Growl).  
+ <a href="class_mac_notification_handler.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="macnotificationhandler_8h_source.html">macnotificationhandler.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for MacNotificationHandler:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_mac_notification_handler.png" usemap="#MacNotificationHandler_map" alt=""/>
-  <map id="MacNotificationHandler_map" name="MacNotificationHandler_map">
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for MacNotificationHandler:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abeb9b3a7c81397499fbb7e1d24610cd9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mac_notification_handler.html#abeb9b3a7c81397499fbb7e1d24610cd9">showNotification</a> (const QString &amp;title, const QString &amp;text)</td></tr>
+<tr class="memdesc:abeb9b3a7c81397499fbb7e1d24610cd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">shows a 10.8+ UserNotification in the UserNotificationCenter  <a href="#abeb9b3a7c81397499fbb7e1d24610cd9">More...</a><br /></td></tr>
 <tr class="separator:abeb9b3a7c81397499fbb7e1d24610cd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39051c00850f7b6cb644cdb60006dc2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mac_notification_handler.html#a39051c00850f7b6cb644cdb60006dc2e">sendAppleScript</a> (const QString &amp;script)</td></tr>
+<tr class="memdesc:a39051c00850f7b6cb644cdb60006dc2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">executes AppleScript  <a href="#a39051c00850f7b6cb644cdb60006dc2e">More...</a><br /></td></tr>
 <tr class="separator:a39051c00850f7b6cb644cdb60006dc2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a132cba3b7df82afd3b07ca08599b94a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mac_notification_handler.html#a132cba3b7df82afd3b07ca08599b94a5">hasUserNotificationCenterSupport</a> (void)</td></tr>
+<tr class="memdesc:a132cba3b7df82afd3b07ca08599b94a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">check if OS can handle UserNotifications  <a href="#a132cba3b7df82afd3b07ca08599b94a5">More...</a><br /></td></tr>
 <tr class="separator:a132cba3b7df82afd3b07ca08599b94a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a8ba83adcb63db47e3f7a76a0afc02b9d"><td class="memItemLeft" align="right" valign="top"><a id="a8ba83adcb63db47e3f7a76a0afc02b9d"></a>
-static <a class="el" href="class_mac_notification_handler.html">MacNotificationHandler</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>instance</b> ()</td></tr>
+<tr class="memitem:a8ba83adcb63db47e3f7a76a0afc02b9d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_mac_notification_handler.html">MacNotificationHandler</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mac_notification_handler.html#a8ba83adcb63db47e3f7a76a0afc02b9d">instance</a> ()</td></tr>
 <tr class="separator:a8ba83adcb63db47e3f7a76a0afc02b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Macintosh-specific notification handler (supports UserNotificationCenter and Growl). </p>
+
+<p class="definition">Definition at line <a class="el" href="macnotificationhandler_8h_source.html#l00012">12</a> of file <a class="el" href="macnotificationhandler_8h_source.html">macnotificationhandler.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a132cba3b7df82afd3b07ca08599b94a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a132cba3b7df82afd3b07ca08599b94a5">&#9670;&nbsp;</a></span>hasUserNotificationCenterSupport()</h2>
@@ -113,7 +127,49 @@ static <a class="el" href="class_mac_notification_handler.html">MacNotificationH
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>check if OS can handle UserNotifications </p>
+
+<p class="definition">Definition at line <a class="el" href="macnotificationhandler_8mm_source.html#l00065">65</a> of file <a class="el" href="macnotificationhandler_8mm_source.html">macnotificationhandler.mm</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a8ba83adcb63db47e3f7a76a0afc02b9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ba83adcb63db47e3f7a76a0afc02b9d">&#9670;&nbsp;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_mac_notification_handler.html">MacNotificationHandler</a> * MacNotificationHandler::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="macnotificationhandler_8mm_source.html#l00077">77</a> of file <a class="el" href="macnotificationhandler_8mm_source.html">macnotificationhandler.mm</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -132,7 +188,10 @@ static <a class="el" href="class_mac_notification_handler.html">MacNotificationH
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>executes AppleScript </p>
+
+<p class="definition">Definition at line <a class="el" href="macnotificationhandler_8mm_source.html#l00052">52</a> of file <a class="el" href="macnotificationhandler_8mm_source.html">macnotificationhandler.mm</a>.</p>
 
 </div>
 </div>
@@ -161,18 +220,21 @@ static <a class="el" href="class_mac_notification_handler.html">MacNotificationH
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>shows a 10.8+ UserNotification in the UserNotificationCenter </p>
+
+<p class="definition">Definition at line <a class="el" href="macnotificationhandler_8mm_source.html#l00024">24</a> of file <a class="el" href="macnotificationhandler_8mm_source.html">macnotificationhandler.mm</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/qt/<a class="el" href="macnotificationhandler_8h_source.html">macnotificationhandler.h</a></li>
-<li>PIVX/src/qt/macnotificationhandler.mm</li>
+<li>src/qt/<a class="el" href="macnotificationhandler_8h_source.html">macnotificationhandler.h</a></li>
+<li>src/qt/<a class="el" href="macnotificationhandler_8mm_source.html">macnotificationhandler.mm</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

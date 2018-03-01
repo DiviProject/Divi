@@ -1,0 +1,39 @@
+digraph "CBudgetProposal::IsValid"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node174 [label="CBudgetProposal::IsValid",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node174 -> Node175 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node175 [label="CBudgetProposal::GetNays",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_proposal.html#a25210a8820448464f88721937b4570a5"];
+  Node174 -> Node176 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node176 [label="CBudgetProposal::GetYeas",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_proposal.html#afa25c9e366bff2c00ba488ce5d89e0d1"];
+  Node174 -> Node177 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node177 [label="CMasternodeMan::CountEnabled",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_man.html#ae495279a035d7d259375ae95cbde28f4"];
+  Node177 -> Node178 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node178 [label="CMasternodePayments\l::GetMinMasternodePayments\lProto",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_payments.html#adb98cc9f21cf8746c0b6ac3131b85dfb"];
+  Node178 -> Node179 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node179 [label="IsSporkActive",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a3305663176e21e81c80dc951a7f8ea5e"];
+  Node179 -> Node180 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node180 [label="GetSporkValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a7125c44e1c9a54dc7c28556b3fb24a8f"];
+  Node179 -> Node181 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node181 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node178 -> Node182 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node182 [label="ActiveProtocol",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a138f84e8c8976fe85712b695c32ee3c7",tooltip="See whether the protocol update is enforced for connected nodes. "];
+  Node182 -> Node179 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node177 -> Node183 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node183 [label="CMasternode::Check",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode.html#aa5892c0b8ec6d2a05cbb081cb1e0aa3c"];
+  Node183 -> Node184 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node184 [label="ShutdownRequested",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a6f201ca9fe6b594f1985c12b4482ea5a"];
+  Node183 -> Node181 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node183 -> Node185 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node185 [label="CMasternode::IsPingedWithin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode.html#ab4d54c22f0e31b0d2ee111c6b11d7e72"];
+  Node185 -> Node186 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node186 [label="GetAdjustedTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$timedata_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6"];
+  Node186 -> Node181 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node186 -> Node187 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node187 [label="GetTimeOffset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$timedata_8cpp.html#a50ca5344c75631267633f15cfe5e983e",tooltip="\"Never go to sea with two chronometers; take one or three.\" Our three time sources are: ..."];
+  Node177 -> Node188 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node188 [label="CMasternode::IsEnabled",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode.html#a08782379f6ba10e9087b39f0cef19bce"];
+  Node174 -> Node182 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

@@ -1,0 +1,11 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node78 [label="QValidator",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node78 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="BitcoinAddressCheckValidator",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_address_check_validator.html",tooltip="Bitcoin address widget validator, checks for a valid bitcoin address. "];
+  Node78 -> Node80 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node80 [label="BitcoinAddressEntryValidator",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_address_entry_validator.html",tooltip="Base58 entry widget validator, checks for valid characters and removes some whitespace. "];
+}

@@ -1,0 +1,9 @@
+digraph "RPCConsole::eventFilter"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node58 [label="RPCConsole::eventFilter",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node58 -> Node59 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node59 [label="RPCConsole::browseHistory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a1c2ccbaedfeb8ed8cd3f73307a38bd7f",tooltip="Go forward or back in history. "];
+}

@@ -1,0 +1,40 @@
+digraph "CCryptoKeyStore::GetKey"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node82 [label="CCryptoKeyStore::GetKey",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node82 -> Node83 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node83 [label="CCryptoKeyStore::IsCrypted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#acc8fed44366c98fb481333ca6e867088"];
+  Node82 -> Node84 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node84 [label="CBasicKeyStore::GetKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_basic_key_store.html#a69328ee642e4234922356f59876e956d"];
+  Node82 -> Node85 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node85 [label="DecryptSecret",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$crypter_8cpp.html#aded00aa7498a7485a00e77a20856b3e4"];
+  Node85 -> Node86 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node86 [label="memcpy",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf"];
+  Node86 -> Node87 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node87 [label="memmove",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1"];
+  Node85 -> Node88 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node88 [label="CCrypter::SetKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypter.html#a0d948dd4796e2420e1dd9c1ddbf7974e"];
+  Node88 -> Node86 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node85 -> Node89 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node89 [label="CCrypter::Decrypt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypter.html#a4dbabed4975d4435d22c76deac43df7f"];
+  Node82 -> Node90 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node90 [label="CPubKey::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#ab1aaa3f6085a3e9bc034d3e1269d870d",tooltip="Get the 256-bit hash of this public key. "];
+  Node90 -> Node91 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node91 [label="Hash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8h.html#a12c5e981d7f5f2850027fd5e932eff61",tooltip="Compute the 256-bit hash of a std::string. "];
+  Node90 -> Node92 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node92 [label="CPubKey::size",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a6bb28fcf0a5f799c69f5b7269363b309",tooltip="Simple read-only vector-like interface to the pubkey data. "];
+  Node92 -> Node93 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node93 [label="CPubKey::GetLen",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb",tooltip="Compute the length of a pubkey with a given first byte. "];
+  Node82 -> Node94 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node94 [label="CKey::Set",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_key.html#aaa13d5f08456bba094210c5eeabf64c8",tooltip="Initialize using begin and end iterators to byte data. "];
+  Node94 -> Node95 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node95 [label="CKey::Check",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_key.html#acec869bc75fa8f4d619ab025d367a97c",tooltip="Check whether the 32-byte array pointed to be vch is valid keydata. "];
+  Node95 -> Node96 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node96 [label="eccrypto::Check",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespaceeccrypto.html#a231bdcb32521375b68fbdaf0d952cfd0"];
+  Node94 -> Node86 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node82 -> Node97 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node97 [label="CPubKey::IsCompressed",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a25f8b70340ad20ddab0f80ec4cee9396",tooltip="Check whether this is a compressed public key. "];
+  Node97 -> Node92 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

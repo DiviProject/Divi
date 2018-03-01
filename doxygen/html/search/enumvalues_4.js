@@ -1,4 +1,28 @@
 var searchData=
 [
-  ['encrypt',['Encrypt',['../class_ask_passphrase_dialog.html#a96abf4d3c36c1ef9e268fb546ae76538a5894886141cada548b21488927acc467',1,'AskPassphraseDialog']]]
+  ['editreceivingaddress',['EditReceivingAddress',['../class_edit_address_dialog.html#a456fdd27ee1c150824241ded7bb4de3aa9fb7cde7f74d41aa4439d6c1a8b53507',1,'EditAddressDialog']]],
+  ['editsendingaddress',['EditSendingAddress',['../class_edit_address_dialog.html#a456fdd27ee1c150824241ded7bb4de3aa16a8a82d7d10059eb7c03952438aa193',1,'EditAddressDialog']]],
+  ['encrypt',['Encrypt',['../class_ask_passphrase_dialog.html#a96abf4d3c36c1ef9e268fb546ae76538a5894886141cada548b21488927acc467',1,'AskPassphraseDialog']]],
+  ['err_5falready_5fhave',['ERR_ALREADY_HAVE',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aae4f66ee7ea9adee54ee089ec999f57b1',1,'CObfuscationPool']]],
+  ['err_5fdenom',['ERR_DENOM',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aae786570038fec8d68b97ce5e0dd5cbf2',1,'CObfuscationPool']]],
+  ['err_5fentries_5ffull',['ERR_ENTRIES_FULL',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa06071598ca558b28184256882d24c355',1,'CObfuscationPool']]],
+  ['err_5fexisting_5ftx',['ERR_EXISTING_TX',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa0abbaef92bc46ad1c47f11abd75339b5',1,'CObfuscationPool']]],
+  ['err_5ffees',['ERR_FEES',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa5d6c43cdf0dd98a16f60c7806ec2511a',1,'CObfuscationPool']]],
+  ['err_5finvalid_5fcollateral',['ERR_INVALID_COLLATERAL',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa032b3f2ee8ad20379ddd66b5da3d7d8e',1,'CObfuscationPool']]],
+  ['err_5finvalid_5finput',['ERR_INVALID_INPUT',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa27603406287f728239c75f69b0b2b08e',1,'CObfuscationPool']]],
+  ['err_5finvalid_5fscript',['ERR_INVALID_SCRIPT',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa533e2325f462bb4bf8be0cfab66d8d02',1,'CObfuscationPool']]],
+  ['err_5finvalid_5ftx',['ERR_INVALID_TX',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa3a31072d9511eebb0ac0ef4f67efa0c1',1,'CObfuscationPool']]],
+  ['err_5fmaximum',['ERR_MAXIMUM',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa43feeeaf64cc84c07eff5280b8a047f4',1,'CObfuscationPool']]],
+  ['err_5fmissing_5ftx',['ERR_MISSING_TX',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa3da108bb19c423cfe6e8b26fc70d9aa9',1,'CObfuscationPool']]],
+  ['err_5fmn_5flist',['ERR_MN_LIST',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aacecdb7c1f20940a5ad8189e8c945f36e',1,'CObfuscationPool']]],
+  ['err_5fmode',['ERR_MODE',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa606d840789e0bf50f72b847d491e1bc4',1,'CObfuscationPool']]],
+  ['err_5fnon_5fstandard_5fpubkey',['ERR_NON_STANDARD_PUBKEY',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa3683305bd69a3f12b0a4018ca02d2609',1,'CObfuscationPool']]],
+  ['err_5fnot_5fa_5fmn',['ERR_NOT_A_MN',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aaf7180d73bfce0d31b0873d1187479832',1,'CObfuscationPool']]],
+  ['err_5fqueue_5ffull',['ERR_QUEUE_FULL',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa60b4ee009e3e73958537c88ac3236cad',1,'CObfuscationPool']]],
+  ['err_5frecent',['ERR_RECENT',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa9a9aa89655aff6e70e056e8d579d05aa',1,'CObfuscationPool']]],
+  ['err_5fsession',['ERR_SESSION',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aaab8476ec237c700dc292c5e54db03ea1',1,'CObfuscationPool']]],
+  ['err_5fversion',['ERR_VERSION',['../class_c_obfuscation_pool.html#a9ae4a793e3b26ba61096fd27e962293aa048671779c74056d59e3dfacd9f9723d',1,'CObfuscationPool']]],
+  ['ext_5fcoin_5ftype',['EXT_COIN_TYPE',['../class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058a2387f8db1b1f25629f019ea6bddbb7ab',1,'CChainParams']]],
+  ['ext_5fpublic_5fkey',['EXT_PUBLIC_KEY',['../class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058a1259eb07831c689e393e5008d7bd0085',1,'CChainParams']]],
+  ['ext_5fsecret_5fkey',['EXT_SECRET_KEY',['../class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058ab5636e60152f35f6595fe413eae430b0',1,'CChainParams']]]
 ];

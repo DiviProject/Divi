@@ -1,0 +1,11 @@
+digraph "ReceiveCoinsDialog::on_removeRequestButton_clicked"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node303 [label="ReceiveCoinsDialog\l::on_removeRequestButton\l_clicked",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node303 -> Node304 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node304 [label="WalletModel::getRecentRequests\lTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#ab13ca64220a1652d63e1e042d3be578f"];
+  Node303 -> Node305 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node305 [label="RecentRequestsTableModel\l::removeRows",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#a63504be44ff9d33d5c508f6303622e5a"];
+}

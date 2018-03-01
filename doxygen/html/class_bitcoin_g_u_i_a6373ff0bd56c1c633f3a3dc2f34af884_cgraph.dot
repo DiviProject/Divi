@@ -1,0 +1,23 @@
+digraph "BitcoinGUI::createTrayIconMenu"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node82 [label="BitcoinGUI::createTrayIconMenu",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node82 -> Node83 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node83 [label="BitcoinGUI::trayIconActivated",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#ae753f1d521f7c17804419f6a9054738b",tooltip="Handle tray icon clicked. "];
+  Node83 -> Node84 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node84 [label="BitcoinGUI::toggleHidden",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a6ca9ded69ab510195ff04fe7f5754ff5",tooltip="Simply calls showNormalIfMinimized(true) for use in SLOT() macro. "];
+  Node84 -> Node85 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node85 [label="BitcoinGUI::showNormalIf\lMinimized",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a0aed98ed2a278a2effdd9a4b34ba8620",tooltip="Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHid..."];
+  Node85 -> Node86 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node86 [label="GUIUtil::isObscured",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a0b7266e2b8e7de5f5fd1c7ddb9e5b637"];
+  Node86 -> Node87 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node87 [label="GUIUtil::checkPoint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#ab2e7ef0aa9a1ad3f86d67a3f596b6fc4"];
+  Node82 -> Node88 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node88 [label="MacDockIconHandler\l::instance",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_mac_dock_icon_handler.html#afd3ef7126d0b6ef02eaf85e5455fe6f4"];
+  Node82 -> Node89 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node89 [label="MacDockIconHandler\l::setMainWindow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_mac_dock_icon_handler.html#a4d2d18c7d56286ea745e349497941293"];
+  Node82 -> Node90 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node90 [label="MacDockIconHandler\l::dockMenu",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_mac_dock_icon_handler.html#a8aff3dc6410687e432f8d9314eba0ab9"];
+}

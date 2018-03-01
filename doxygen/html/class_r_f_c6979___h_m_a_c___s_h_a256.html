@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: RFC6979_HMAC_SHA256 Class Reference</title>
+<title>DIVX: RFC6979_HMAC_SHA256 Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -63,23 +66,42 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_r_f_c6979___h_m_a_c___s_h_a256-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">RFC6979_HMAC_SHA256 Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>The RFC 6979 PRNG using HMAC-SHA256.  
+ <a href="class_r_f_c6979___h_m_a_c___s_h_a256.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="rfc6979__hmac__sha256_8h_source.html">rfc6979_hmac_sha256.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aeab9ec7d2a564e2d98f2157ee7b83bef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_f_c6979___h_m_a_c___s_h_a256.html#aeab9ec7d2a564e2d98f2157ee7b83bef">RFC6979_HMAC_SHA256</a> (const unsigned char *key, size_t keylen, const unsigned char *msg, size_t msglen)</td></tr>
+<tr class="memitem:aeab9ec7d2a564e2d98f2157ee7b83bef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_f_c6979___h_m_a_c___s_h_a256.html#aeab9ec7d2a564e2d98f2157ee7b83bef">RFC6979_HMAC_SHA256</a> (const unsigned char *<a class="el" href="bip38tooldialog_8cpp.html#a8d350ff361690ac2a2db267f5ea63dc9">key</a>, size_t keylen, const unsigned char *msg, size_t msglen)</td></tr>
+<tr class="memdesc:aeab9ec7d2a564e2d98f2157ee7b83bef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new RFC6979 PRNG, using the given key and message.  <a href="#aeab9ec7d2a564e2d98f2157ee7b83bef">More...</a><br /></td></tr>
 <tr class="separator:aeab9ec7d2a564e2d98f2157ee7b83bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f841d552097f528631538e9939e0f70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_f_c6979___h_m_a_c___s_h_a256.html#a9f841d552097f528631538e9939e0f70">Generate</a> (unsigned char *output, size_t outputlen)</td></tr>
+<tr class="memdesc:a9f841d552097f528631538e9939e0f70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a byte array.  <a href="#a9f841d552097f528631538e9939e0f70">More...</a><br /></td></tr>
 <tr class="separator:a9f841d552097f528631538e9939e0f70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae9e35137b1201051005a175268f52a7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_f_c6979___h_m_a_c___s_h_a256.html#aae9e35137b1201051005a175268f52a7">~RFC6979_HMAC_SHA256</a> ()</td></tr>
+<tr class="separator:aae9e35137b1201051005a175268f52a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:aadcbd681018fb7a8b8d188898a493c07"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_f_c6979___h_m_a_c___s_h_a256.html#aadcbd681018fb7a8b8d188898a493c07">V</a> [<a class="el" href="class_c_h_m_a_c___s_h_a256.html#a6c94951e3698ec9bd4af95a1b9f9a2bb">CHMAC_SHA256::OUTPUT_SIZE</a>]</td></tr>
+<tr class="separator:aadcbd681018fb7a8b8d188898a493c07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfbbbe014039971f3aca1f03473f387e"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_f_c6979___h_m_a_c___s_h_a256.html#abfbbbe014039971f3aca1f03473f387e">K</a> [<a class="el" href="class_c_h_m_a_c___s_h_a256.html#a6c94951e3698ec9bd4af95a1b9f9a2bb">CHMAC_SHA256::OUTPUT_SIZE</a>]</td></tr>
+<tr class="separator:abfbbbe014039971f3aca1f03473f387e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a342e4af96f315478630fd2fb55de0927"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_r_f_c6979___h_m_a_c___s_h_a256.html#a342e4af96f315478630fd2fb55de0927">retry</a></td></tr>
+<tr class="separator:a342e4af96f315478630fd2fb55de0927"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The RFC 6979 PRNG using HMAC-SHA256. </p>
+
+<p class="definition">Definition at line <a class="el" href="rfc6979__hmac__sha256_8h_source.html#l00014">14</a> of file <a class="el" href="rfc6979__hmac__sha256_8h_source.html">rfc6979_hmac_sha256.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aeab9ec7d2a564e2d98f2157ee7b83bef"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeab9ec7d2a564e2d98f2157ee7b83bef">&#9670;&nbsp;</a></span>RFC6979_HMAC_SHA256()</h2>
@@ -118,7 +140,36 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Construct a new RFC6979 PRNG, using the given key and message. The message is assumed to be already hashed. </p>
+
+<p>Construct a new RFC6979 PRNG, using the given key and message. </p>
+<p>The message is assumed to be already hashed. </p>
+
+<p class="definition">Definition at line <a class="el" href="rfc6979__hmac__sha256_8cpp_source.html#l00014">14</a> of file <a class="el" href="rfc6979__hmac__sha256_8cpp_source.html">rfc6979_hmac_sha256.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="aae9e35137b1201051005a175268f52a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae9e35137b1201051005a175268f52a7">&#9670;&nbsp;</a></span>~RFC6979_HMAC_SHA256()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RFC6979_HMAC_SHA256::~RFC6979_HMAC_SHA256 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="rfc6979__hmac__sha256_8cpp_source.html#l00025">25</a> of file <a class="el" href="rfc6979__hmac__sha256_8cpp_source.html">rfc6979_hmac_sha256.cpp</a>.</p>
 
 </div>
 </div>
@@ -148,18 +199,106 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Generate a byte array. </p>
+
+<p class="definition">Definition at line <a class="el" href="rfc6979__hmac__sha256_8cpp_source.html#l00031">31</a> of file <a class="el" href="rfc6979__hmac__sha256_8cpp_source.html">rfc6979_hmac_sha256.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="abfbbbe014039971f3aca1f03473f387e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfbbbe014039971f3aca1f03473f387e">&#9670;&nbsp;</a></span>K</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char RFC6979_HMAC_SHA256::K[<a class="el" href="class_c_h_m_a_c___s_h_a256.html#a6c94951e3698ec9bd4af95a1b9f9a2bb">CHMAC_SHA256::OUTPUT_SIZE</a>]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="rfc6979__hmac__sha256_8h_source.html#l00018">18</a> of file <a class="el" href="rfc6979__hmac__sha256_8h_source.html">rfc6979_hmac_sha256.h</a>.</p>
+
+</div>
+</div>
+<a id="a342e4af96f315478630fd2fb55de0927"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a342e4af96f315478630fd2fb55de0927">&#9670;&nbsp;</a></span>retry</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RFC6979_HMAC_SHA256::retry</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="rfc6979__hmac__sha256_8h_source.html#l00019">19</a> of file <a class="el" href="rfc6979__hmac__sha256_8h_source.html">rfc6979_hmac_sha256.h</a>.</p>
+
+</div>
+</div>
+<a id="aadcbd681018fb7a8b8d188898a493c07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadcbd681018fb7a8b8d188898a493c07">&#9670;&nbsp;</a></span>V</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char RFC6979_HMAC_SHA256::V[<a class="el" href="class_c_h_m_a_c___s_h_a256.html#a6c94951e3698ec9bd4af95a1b9f9a2bb">CHMAC_SHA256::OUTPUT_SIZE</a>]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="rfc6979__hmac__sha256_8h_source.html#l00017">17</a> of file <a class="el" href="rfc6979__hmac__sha256_8h_source.html">rfc6979_hmac_sha256.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/crypto/<a class="el" href="rfc6979__hmac__sha256_8h_source.html">rfc6979_hmac_sha256.h</a></li>
-<li>PIVX/src/crypto/rfc6979_hmac_sha256.cpp</li>
+<li>src/crypto/<a class="el" href="rfc6979__hmac__sha256_8h_source.html">rfc6979_hmac_sha256.h</a></li>
+<li>src/crypto/<a class="el" href="rfc6979__hmac__sha256_8cpp_source.html">rfc6979_hmac_sha256.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

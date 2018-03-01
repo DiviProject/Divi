@@ -1,0 +1,17 @@
+digraph "ReadCompactSize"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node165 [label="ReadCompactSize",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node165 -> Node166 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node166 [label="CPubKey::Unserialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a1cfd8e3c711f5298eecdacd5979f6e6c"];
+  Node165 -> Node167 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node167 [label="LimitedString::Unserialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_limited_string.html#a21ec9b742da8f8ff7b9a8b89131f943b"];
+  Node165 -> Node168 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node168 [label="Unserialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$serialize_8h.html#aa688c53c27044d715917e33769b4f415"];
+  Node165 -> Node169 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node169 [label="Unserialize_impl",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$serialize_8h.html#a92432e5377aca757f1e248516214932d"];
+  Node169 -> Node170 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node170 [label="Unserialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$serialize_8h.html#aefdf63d8c997767d3e3535a54f35025c"];
+}

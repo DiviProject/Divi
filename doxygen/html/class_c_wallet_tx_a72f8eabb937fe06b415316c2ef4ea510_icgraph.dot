@@ -1,0 +1,32 @@
+digraph "CWalletTx::GetImmatureWatchOnlyCredit"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node369 [label="CWalletTx::GetImmatureWatch\lOnlyCredit",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node369 -> Node370 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node370 [label="CWallet::GetImmatureWatch\lOnlyBalance",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#ga1372ba886aaeda65bf28758c9ccb65b4"];
+  Node370 -> Node371 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node371 [label="WalletModel::getWatchImmature\lBalance",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a9da743fbe881d4928eeafc48f50ef3d5"];
+  Node371 -> Node372 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node372 [label="OverviewPage::setWalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_overview_page.html#a2ed52a3a87e9c74fee38fa873c9bc71f"];
+  Node372 -> Node373 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node373 [label="WalletView::setWalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be",tooltip="Set the wallet model. "];
+  Node373 -> Node374 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node374 [label="WalletFrame::addWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86"];
+  Node371 -> Node375 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node375 [label="PrivacyDialog::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a7a2e2a84934e59ff1ff88de325036472"];
+  Node375 -> Node373 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node371 -> Node376 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node376 [label="SendCoinsDialog::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa"];
+  Node376 -> Node373 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node371 -> Node377 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node377 [label="SendCoinsDialog::updateDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a74815ad8502b126200b6fd2e59e9f042"];
+  Node377 -> Node376 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node371 -> Node378 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node378 [label="WalletModel::checkBalance\lChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#adcc4eb8cd71cb4de223621866bb7fb7d"];
+  Node378 -> Node379 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node379 [label="WalletModel::pollBalance\lChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95"];
+  Node379 -> Node380 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node380 [label="WalletModel::WalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1"];
+}

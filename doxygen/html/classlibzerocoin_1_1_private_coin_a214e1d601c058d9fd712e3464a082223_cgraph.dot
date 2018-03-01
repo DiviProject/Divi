@@ -1,0 +1,15 @@
+digraph "libzerocoin::PrivateCoin::mintCoin"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node22 [label="libzerocoin::PrivateCoin\l::mintCoin",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node22 -> Node23 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 [label="CBigNum::randBignum",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a83e20522f042dd2b738bd26e21605e3b",tooltip="Generates a cryptographically secure random number between zero and range exclusive i..."];
+  Node22 -> Node24 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 [label="libzerocoin::Commitment\l::getCommitmentValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_commitment.html#a512ade1b225b10f92f71b3c05869c23a"];
+  Node22 -> Node25 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="CBigNum::isPrime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a6d51387c37d74d3c9dfe4fc7aa8affce",tooltip="Miller-Rabin primality test on this element. "];
+  Node22 -> Node26 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 [label="libzerocoin::Commitment\l::getRandomness",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_commitment.html#ac84eccbba59e5c0cb76ee8fd827d80de"];
+}

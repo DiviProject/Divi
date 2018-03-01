@@ -1,0 +1,48 @@
+digraph "getmininginfo"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node58 [label="getmininginfo",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node58 -> Node59 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node59 [label="HelpExampleCli",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec"];
+  Node58 -> Node60 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node60 [label="HelpExampleRpc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef"];
+  Node58 -> Node61 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node61 [label="CChain::Height",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#ad4758bc8872ce065a9579f77c3171d40",tooltip="Return the maximal height in the chain. "];
+  Node58 -> Node62 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node62 [label="GetDifficulty",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$blockexplorer_8cpp.html#a8fcb55e3479716ded2b499e470bdc13a"];
+  Node58 -> Node63 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node63 [label="GetWarnings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a70b1d1b79f1c760e65c960713b87b732"];
+  Node63 -> Node64 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node64 [label="_",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1",tooltip="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..."];
+  Node63 -> Node65 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node65 [label="GetBoolArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d",tooltip="Return boolean argument or default value. "];
+  Node63 -> Node66 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node66 [label="CAlert::AppliesToMe",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_alert.html#aba79cc9e957446fe93f05cb18f12b24b"];
+  Node58 -> Node67 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node67 [label="GetArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8",tooltip="Return string argument or default value. "];
+  Node58 -> Node68 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 [label="getnetworkhashps",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmining_8cpp.html#a6ccd12b4cf085555ab3528ad6661e75f"];
+  Node68 -> Node59 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 -> Node60 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 -> Node69 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="GetNetworkHashPS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmining_8cpp.html#a0727ff0776708e62ed17b0ddc184d50e",tooltip="Return average network hashes per second based on the last &#39;lookup&#39; blocks, or from the last difficul..."];
+  Node69 -> Node70 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node70 [label="CChain::Tip",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#a40ccefec14f8f3195c08c827af8cf412",tooltip="Returns the index entry for the tip of this chain, or NULL if none. "];
+  Node70 -> Node71 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node71 [label="CBlockIndex::IsProofOfStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a2438a891e9d43821c0d99e1bdac56fde"];
+  Node69 -> Node61 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 -> Node72 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node72 [label="CBlockIndex::GetBlockTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a9fe0d4463c07c466f66252e8eec25f5c"];
+  Node69 -> Node73 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node73 [label="base_uint::getdouble",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#ac989d44cd0d60e6c510722a714b817fa"];
+  Node58 -> Node74 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node74 [label="CTxMemPool::size",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_mem_pool.html#a867f7b452141770f3b2e8697fb3513d8"];
+  Node58 -> Node75 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node58 -> Node76 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node76 [label="getgenerate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8h.html#a0d915dd7ca06e4208a5ac6e01fb63890"];
+  Node58 -> Node77 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node77 [label="gethashespersec",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8h.html#aeeb19b07d59d0bc28a6d5b9df8534553"];
+}

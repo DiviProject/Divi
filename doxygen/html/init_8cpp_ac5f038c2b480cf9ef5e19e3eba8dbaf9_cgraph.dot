@@ -1,0 +1,48 @@
+digraph "Shutdown"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node74 [label="Shutdown",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node74 -> Node75 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 [label="PrepareShutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a5cb3db83cb0ba2e421f651a1ee1f2cfe",tooltip="Preparing steps before shutting down or restarting the wallet. "];
+  Node75 -> Node76 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node76 [label="RenameThread",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a85fc1244e0bd3c91ee7a1c05ed10ebbb"];
+  Node75 -> Node77 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node77 [label="CTxMemPool::AddTransactions\lUpdated",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_mem_pool.html#a3039b67e5eebaa3ff830261c192816f2"];
+  Node75 -> Node78 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node78 [label="StopRPCThreads",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#af5be6ec7b71359ed4111f1a5ed93b893",tooltip="Stop RPC threads. "];
+  Node75 -> Node79 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node79 [label="CDBEnv::Flush",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b_env.html#a09c5850b88919553a8db416ce288ff1a"];
+  Node79 -> Node80 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node80 [label="GetTimeMillis",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a139d0fe6387b9e230a9b8bb12d9b43b9"];
+  Node75 -> Node81 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node81 [label="GenerateBitcoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$miner_8h.html#a68f26f8b17696398b2768e8c358d3a0e",tooltip="Run the miner threads. "];
+  Node75 -> Node82 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node82 [label="StopNode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8cpp.html#ac9110488f45c160d58f3c7ab7197bcea"];
+  Node82 -> Node83 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node83 [label="MapPort",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8cpp.html#a93e4e6fbe288b6e882e697918695f88e"];
+  Node75 -> Node84 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node84 [label="InterruptTorControl",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$torcontrol_8cpp.html#aa3f2e0ce7300bbbedc6da69566e426e6"];
+  Node75 -> Node85 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node85 [label="StopTorControl",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$torcontrol_8cpp.html#af056d7647453338e57eca61f23aebb14"];
+  Node75 -> Node86 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node86 [label="DumpMasternodes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternodeman_8cpp.html#af82c3cd6928301020e80458410608fa1"];
+  Node86 -> Node80 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 -> Node87 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node87 [label="DumpBudgets",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-budget_8cpp.html#a277f8d83f6cfcfbe4ee3f622d38f8790"];
+  Node87 -> Node80 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 -> Node88 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node88 [label="DumpMasternodePayments",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-payments_8cpp.html#a96a9e9887c483e301d8468f0f1642fe7"];
+  Node88 -> Node80 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 -> Node89 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node89 [label="UnregisterNodeSignals",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a3ef0cc6e9d9d6435ee2a5569244d6ebd",tooltip="Unregister a network node. "];
+  Node89 -> Node90 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node90 [label="ProcessMessages",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a196f9318f02448b85b28d612698934fd",tooltip="Process protocol messages received from a given node. "];
+  Node89 -> Node91 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node91 [label="SendMessages",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a711a5bdb30c9c9bbdc83011b1cbbe2f3",tooltip="Send queued protocol messages to be sent to a give node. "];
+  Node75 -> Node92 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node92 [label="GetNodeSignals",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8cpp.html#a475f2fc7d8f5cd7511db253cae8fe28a"];
+  Node75 -> Node93 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node93 [label="GetDataDir",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba"];
+}

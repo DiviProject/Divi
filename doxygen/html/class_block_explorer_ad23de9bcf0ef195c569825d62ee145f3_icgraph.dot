@@ -1,0 +1,24 @@
+digraph "BlockExplorer::updateNavButtons"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node356 [label="BlockExplorer::updateNav\lButtons",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node356 -> Node357 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node357 [label="BlockExplorer::showEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#a2558e79dbb14bda3d9367f0b50240fa4"];
+  Node356 -> Node358 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node358 [label="BlockExplorer::goTo",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#a32a642323bf89030d4f3519d79893ccd"];
+  Node358 -> Node359 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node359 [label="BlockExplorer::BlockExplorer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#aa1824a81f9b6d20dce7be419170ea02b"];
+  Node358 -> Node360 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node360 [label="BlockExplorer::onSearch",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#a5d9b6b07b7a7cb14c9731950d76074a4"];
+  Node360 -> Node359 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node360 -> Node361 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node361 [label="BlockExplorer::keyPressEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#ae64a065d31adf1c1411dc1810cdd576c"];
+  Node356 -> Node362 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node362 [label="BlockExplorer::back",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#aed5a84d4c9691f29721829eca6023169"];
+  Node362 -> Node359 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node356 -> Node363 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node363 [label="BlockExplorer::forward",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#a062131c18869d12dc393775f3695e89f"];
+  Node363 -> Node359 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

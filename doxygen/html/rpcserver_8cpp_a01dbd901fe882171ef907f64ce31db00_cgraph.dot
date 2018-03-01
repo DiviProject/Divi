@@ -1,0 +1,13 @@
+digraph "ErrorReply"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node28 [label="ErrorReply",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node28 -> Node29 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node29 [label="JSONRPCReply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcprotocol_8cpp.html#a091e4839a15f5f6d569a97c709d80374"];
+  Node28 -> Node30 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node30 [label="HTTPReply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcprotocol_8cpp.html#ab53c17ac43829711f4567fc97feb6a62"];
+  Node30 -> Node31 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node31 [label="HTTPReplyHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcprotocol_8cpp.html#a062c0344c6ae13637fdc6f2fc44b5007"];
+}

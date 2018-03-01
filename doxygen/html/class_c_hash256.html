@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CHash256 Class Reference</title>
+<title>DIVX: CHash256 Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -64,41 +67,221 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_c_hash256-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CHash256 Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>A hasher class for Bitcoin's 256-bit hash (double SHA-256).  
+ <a href="class_c_hash256.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="hash_8h_source.html">hash.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for CHash256:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa8a70c1b7cf24ce7d00240a1131cf4e7"><td class="memItemLeft" align="right" valign="top"><a id="aa8a70c1b7cf24ce7d00240a1131cf4e7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Finalize</b> (unsigned char hash[OUTPUT_SIZE])</td></tr>
+<tr class="memitem:aa8a70c1b7cf24ce7d00240a1131cf4e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_hash256.html#aa8a70c1b7cf24ce7d00240a1131cf4e7">Finalize</a> (unsigned char hash[<a class="el" href="class_c_hash256.html#a6812a40441acb1c3b7f10c7e38c7d467">OUTPUT_SIZE</a>])</td></tr>
 <tr class="separator:aa8a70c1b7cf24ce7d00240a1131cf4e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9cc25033c6435cb28e2e8e377c949a7a"><td class="memItemLeft" align="right" valign="top"><a id="a9cc25033c6435cb28e2e8e377c949a7a"></a>
-<a class="el" href="class_c_hash256.html">CHash256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Write</b> (const unsigned char *data, size_t len)</td></tr>
+<tr class="memitem:a9cc25033c6435cb28e2e8e377c949a7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_hash256.html">CHash256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_hash256.html#a9cc25033c6435cb28e2e8e377c949a7a">Write</a> (const unsigned char *data, size_t len)</td></tr>
 <tr class="separator:a9cc25033c6435cb28e2e8e377c949a7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab25b00e4cda7e209173f2ce90475953d"><td class="memItemLeft" align="right" valign="top"><a id="ab25b00e4cda7e209173f2ce90475953d"></a>
-<a class="el" href="class_c_hash256.html">CHash256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> ()</td></tr>
+<tr class="memitem:ab25b00e4cda7e209173f2ce90475953d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_hash256.html">CHash256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_hash256.html#ab25b00e4cda7e209173f2ce90475953d">Reset</a> ()</td></tr>
 <tr class="separator:ab25b00e4cda7e209173f2ce90475953d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a6812a40441acb1c3b7f10c7e38c7d467"><td class="memItemLeft" align="right" valign="top"><a id="a6812a40441acb1c3b7f10c7e38c7d467"></a>
-static const size_t&#160;</td><td class="memItemRight" valign="bottom"><b>OUTPUT_SIZE</b> = CSHA256::OUTPUT_SIZE</td></tr>
+<tr class="memitem:a6812a40441acb1c3b7f10c7e38c7d467"><td class="memItemLeft" align="right" valign="top">static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_hash256.html#a6812a40441acb1c3b7f10c7e38c7d467">OUTPUT_SIZE</a> = CSHA256::OUTPUT_SIZE</td></tr>
 <tr class="separator:a6812a40441acb1c3b7f10c7e38c7d467"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:af06b992e00e1bd7290388aed522a535f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_s_h_a256.html">CSHA256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_hash256.html#af06b992e00e1bd7290388aed522a535f">sha</a></td></tr>
+<tr class="separator:af06b992e00e1bd7290388aed522a535f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A hasher class for Bitcoin's 256-bit hash (double SHA-256). </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>PIVX/src/<a class="el" href="hash_8h_source.html">hash.h</a></li>
+
+<p class="definition">Definition at line <a class="el" href="hash_8h_source.html#l00032">32</a> of file <a class="el" href="hash_8h_source.html">hash.h</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="aa8a70c1b7cf24ce7d00240a1131cf4e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8a70c1b7cf24ce7d00240a1131cf4e7">&#9670;&nbsp;</a></span>Finalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CHash256::Finalize </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char&#160;</td>
+          <td class="paramname"><em>hash</em>[OUTPUT_SIZE]</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="hash_8h_source.html#l00040">40</a> of file <a class="el" href="hash_8h_source.html">hash.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ab25b00e4cda7e209173f2ce90475953d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab25b00e4cda7e209173f2ce90475953d">&#9670;&nbsp;</a></span>Reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_hash256.html">CHash256</a>&amp; CHash256::Reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="hash_8h_source.html#l00053">53</a> of file <a class="el" href="hash_8h_source.html">hash.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9cc25033c6435cb28e2e8e377c949a7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cc25033c6435cb28e2e8e377c949a7a">&#9670;&nbsp;</a></span>Write()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_hash256.html">CHash256</a>&amp; CHash256::Write </td>
+          <td>(</td>
+          <td class="paramtype">const unsigned char *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="hash_8h_source.html#l00047">47</a> of file <a class="el" href="hash_8h_source.html">hash.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a6812a40441acb1c3b7f10c7e38c7d467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6812a40441acb1c3b7f10c7e38c7d467">&#9670;&nbsp;</a></span>OUTPUT_SIZE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const size_t CHash256::OUTPUT_SIZE = CSHA256::OUTPUT_SIZE</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="hash_8h_source.html#l00038">38</a> of file <a class="el" href="hash_8h_source.html">hash.h</a>.</p>
+
+</div>
+</div>
+<a id="af06b992e00e1bd7290388aed522a535f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af06b992e00e1bd7290388aed522a535f">&#9670;&nbsp;</a></span>sha</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_s_h_a256.html">CSHA256</a> CHash256::sha</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="hash_8h_source.html#l00035">35</a> of file <a class="el" href="hash_8h_source.html">hash.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>src/<a class="el" href="hash_8h_source.html">hash.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:27 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

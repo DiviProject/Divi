@@ -1,0 +1,11 @@
+digraph "MultisigDialog::addMultisig"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node70 [label="MultisigDialog::addMultisig",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node70 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node71 [label="MultisigDialog::on\l_addMultisigButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a6674d42511cedc0cd5b52dee9071acd5"];
+  Node70 -> Node72 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node72 [label="MultisigDialog::on\l_importAddressButton\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#acd1dfe3a52a5a91b31f8042a119c7618"];
+}

@@ -1,0 +1,9 @@
+digraph "CBigNum::SetHexBool"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node243 [label="CBigNum::SetHexBool",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node243 -> Node244 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node244 [label="CBigNum::CBigNum",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a250bd7117bd7fa99bbd53f496f76058e"];
+}

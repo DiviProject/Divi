@@ -1,0 +1,21 @@
+digraph "CCoinsView::GetBestBlock"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node7 [label="CCoinsView::GetBestBlock",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="CCoinsViewBacked::GetBest\lBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_backed.html#a39bca41ae922d0ce7f40e8aeab289280",tooltip="Retrieve the block hash whose state this CCoinsView currently represents. "];
+  Node7 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="CCoinsViewCache::GetBest\lBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a1190c94a943c067d13211179ef06470b",tooltip="Retrieve the block hash whose state this CCoinsView currently represents. "];
+  Node9 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="DisconnectBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#aa7213dfc13e3b470a5690b0b86c951c6",tooltip="Functions for validating blocks and updating the block tree. "];
+  Node9 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="ConnectBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ad4ce8957600f6ee11bbf095226a8e83e",tooltip="Apply the effects of this block (with given index) on the UTXO set represented by coins..."];
+  Node11 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="TestBlockValidity",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#aa778166224b25355c113d1706df12ffd",tooltip="Check a block is completely valid from start to finish (only works on top of our current best block..."];
+  Node12 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="getblocktemplate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a"];
+  Node9 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="gettxout",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcblockchain_8cpp.html#a1982f7877ed6e83102671c67c4ec6450"];
+}

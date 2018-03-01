@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: TorController Class Reference</title>
+<title>DIVX: TorController Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -63,25 +66,350 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-static-methods">Static Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_tor_controller-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">TorController Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Controller that connects to Tor control socket, authenticate, then create and maintain a ephemeral hidden service.  
+ <a href="class_tor_controller.html#details">More...</a></p>
+<div class="dynheader">
+Collaboration diagram for TorController:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab38d90df15a9e3f2c6e1f4f24073a64e"><td class="memItemLeft" align="right" valign="top"><a id="ab38d90df15a9e3f2c6e1f4f24073a64e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TorController</b> (struct event_base *base, const std::string &amp;target)</td></tr>
+<tr class="memitem:ab38d90df15a9e3f2c6e1f4f24073a64e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#ab38d90df15a9e3f2c6e1f4f24073a64e">TorController</a> (struct event_base *<a class="el" href="class_tor_controller.html#a490cb6f1e683bbff4a6da80f054a1f14">base</a>, const std::string &amp;<a class="el" href="class_tor_controller.html#ae082deff33f6f1db7e51825113c1adab">target</a>)</td></tr>
 <tr class="separator:ab38d90df15a9e3f2c6e1f4f24073a64e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98c6b822f4a60da7847a974607b95963"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a98c6b822f4a60da7847a974607b95963">~TorController</a> ()</td></tr>
+<tr class="separator:a98c6b822f4a60da7847a974607b95963"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a524481ece961670f745dbbfb4d9d5a33"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a524481ece961670f745dbbfb4d9d5a33">GetPrivateKeyFile</a> ()</td></tr>
+<tr class="memdesc:a524481ece961670f745dbbfb4d9d5a33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get name fo file to store private key in.  <a href="#a524481ece961670f745dbbfb4d9d5a33">More...</a><br /></td></tr>
 <tr class="separator:a524481ece961670f745dbbfb4d9d5a33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5d4304836fce79574ec540c5ada8269"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#ae5d4304836fce79574ec540c5ada8269">Reconnect</a> ()</td></tr>
+<tr class="memdesc:ae5d4304836fce79574ec540c5ada8269"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconnect, after getting disconnected.  <a href="#ae5d4304836fce79574ec540c5ada8269">More...</a><br /></td></tr>
 <tr class="separator:ae5d4304836fce79574ec540c5ada8269"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a78b762c14a006b2f509261a95963ff67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a78b762c14a006b2f509261a95963ff67">add_onion_cb</a> (<a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;<a class="el" href="class_tor_controller.html#a0cd0abc08230a17743b1bfa22196a7ed">conn</a>, const <a class="el" href="class_tor_control_reply.html">TorControlReply</a> &amp;reply)</td></tr>
+<tr class="memdesc:a78b762c14a006b2f509261a95963ff67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for ADD_ONION result.  <a href="#a78b762c14a006b2f509261a95963ff67">More...</a><br /></td></tr>
+<tr class="separator:a78b762c14a006b2f509261a95963ff67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae36bc33cb3088384517c68f71e9944ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#ae36bc33cb3088384517c68f71e9944ce">auth_cb</a> (<a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;<a class="el" href="class_tor_controller.html#a0cd0abc08230a17743b1bfa22196a7ed">conn</a>, const <a class="el" href="class_tor_control_reply.html">TorControlReply</a> &amp;reply)</td></tr>
+<tr class="memdesc:ae36bc33cb3088384517c68f71e9944ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for AUTHENTICATE result.  <a href="#ae36bc33cb3088384517c68f71e9944ce">More...</a><br /></td></tr>
+<tr class="separator:ae36bc33cb3088384517c68f71e9944ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86f1396b9f242183ffe777e0951eb997"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a86f1396b9f242183ffe777e0951eb997">authchallenge_cb</a> (<a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;<a class="el" href="class_tor_controller.html#a0cd0abc08230a17743b1bfa22196a7ed">conn</a>, const <a class="el" href="class_tor_control_reply.html">TorControlReply</a> &amp;reply)</td></tr>
+<tr class="memdesc:a86f1396b9f242183ffe777e0951eb997"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for AUTHCHALLENGE result.  <a href="#a86f1396b9f242183ffe777e0951eb997">More...</a><br /></td></tr>
+<tr class="separator:a86f1396b9f242183ffe777e0951eb997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee36fcd1cd60d7f4eb007d909894b1c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#aee36fcd1cd60d7f4eb007d909894b1c3">protocolinfo_cb</a> (<a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;<a class="el" href="class_tor_controller.html#a0cd0abc08230a17743b1bfa22196a7ed">conn</a>, const <a class="el" href="class_tor_control_reply.html">TorControlReply</a> &amp;reply)</td></tr>
+<tr class="memdesc:aee36fcd1cd60d7f4eb007d909894b1c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for PROTOCOLINFO result.  <a href="#aee36fcd1cd60d7f4eb007d909894b1c3">More...</a><br /></td></tr>
+<tr class="separator:aee36fcd1cd60d7f4eb007d909894b1c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59d56a1525a08235b07dd9eadbae0d1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a59d56a1525a08235b07dd9eadbae0d1f">connected_cb</a> (<a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;<a class="el" href="class_tor_controller.html#a0cd0abc08230a17743b1bfa22196a7ed">conn</a>)</td></tr>
+<tr class="memdesc:a59d56a1525a08235b07dd9eadbae0d1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback after successful connection.  <a href="#a59d56a1525a08235b07dd9eadbae0d1f">More...</a><br /></td></tr>
+<tr class="separator:a59d56a1525a08235b07dd9eadbae0d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81392f33f0c7e069762668ec3a757075"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a81392f33f0c7e069762668ec3a757075">disconnected_cb</a> (<a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;<a class="el" href="class_tor_controller.html#a0cd0abc08230a17743b1bfa22196a7ed">conn</a>)</td></tr>
+<tr class="memdesc:a81392f33f0c7e069762668ec3a757075"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback after connection lost or failed connection attempt.  <a href="#a81392f33f0c7e069762668ec3a757075">More...</a><br /></td></tr>
+<tr class="separator:a81392f33f0c7e069762668ec3a757075"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
+Static Private Member Functions</h2></td></tr>
+<tr class="memitem:a2fa9614b4fa0e24c57f443b3c56f835c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a2fa9614b4fa0e24c57f443b3c56f835c">reconnect_cb</a> (evutil_socket_t fd, short what, void *arg)</td></tr>
+<tr class="memdesc:a2fa9614b4fa0e24c57f443b3c56f835c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for reconnect timer.  <a href="#a2fa9614b4fa0e24c57f443b3c56f835c">More...</a><br /></td></tr>
+<tr class="separator:a2fa9614b4fa0e24c57f443b3c56f835c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a490cb6f1e683bbff4a6da80f054a1f14"><td class="memItemLeft" align="right" valign="top">struct event_base *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a490cb6f1e683bbff4a6da80f054a1f14">base</a></td></tr>
+<tr class="separator:a490cb6f1e683bbff4a6da80f054a1f14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae082deff33f6f1db7e51825113c1adab"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#ae082deff33f6f1db7e51825113c1adab">target</a></td></tr>
+<tr class="separator:ae082deff33f6f1db7e51825113c1adab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cd0abc08230a17743b1bfa22196a7ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_tor_control_connection.html">TorControlConnection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a0cd0abc08230a17743b1bfa22196a7ed">conn</a></td></tr>
+<tr class="separator:a0cd0abc08230a17743b1bfa22196a7ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea1fe61c7404d74ccfaf1e875737e043"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#aea1fe61c7404d74ccfaf1e875737e043">private_key</a></td></tr>
+<tr class="separator:aea1fe61c7404d74ccfaf1e875737e043"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a471e6bcf2090fd772503d22f3e028968"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a471e6bcf2090fd772503d22f3e028968">service_id</a></td></tr>
+<tr class="separator:a471e6bcf2090fd772503d22f3e028968"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1d071e936a3d0060bad73e84cb9775b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#ab1d071e936a3d0060bad73e84cb9775b">reconnect</a></td></tr>
+<tr class="separator:ab1d071e936a3d0060bad73e84cb9775b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab18e159e5ccad27e30c91ffad82edc89"><td class="memItemLeft" align="right" valign="top">struct event *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#ab18e159e5ccad27e30c91ffad82edc89">reconnect_ev</a></td></tr>
+<tr class="separator:ab18e159e5ccad27e30c91ffad82edc89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb85d5d34fe9c86307d0a8730ce7cf1d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#acb85d5d34fe9c86307d0a8730ce7cf1d">reconnect_timeout</a></td></tr>
+<tr class="separator:acb85d5d34fe9c86307d0a8730ce7cf1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa460dee5c02e036c6784f64b4a3634e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_service.html">CService</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#aa460dee5c02e036c6784f64b4a3634e3">service</a></td></tr>
+<tr class="separator:aa460dee5c02e036c6784f64b4a3634e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5ab87c1c502c60ee2f3806f9380cbb5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#aa5ab87c1c502c60ee2f3806f9380cbb5">cookie</a></td></tr>
+<tr class="memdesc:aa5ab87c1c502c60ee2f3806f9380cbb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cookie for SAFECOOKIE auth.  <a href="#aa5ab87c1c502c60ee2f3806f9380cbb5">More...</a><br /></td></tr>
+<tr class="separator:aa5ab87c1c502c60ee2f3806f9380cbb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56ee03f969e52fb735d2741565132968"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tor_controller.html#a56ee03f969e52fb735d2741565132968">clientNonce</a></td></tr>
+<tr class="memdesc:a56ee03f969e52fb735d2741565132968"><td class="mdescLeft">&#160;</td><td class="mdescRight">ClientNonce for SAFECOOKIE auth.  <a href="#a56ee03f969e52fb735d2741565132968">More...</a><br /></td></tr>
+<tr class="separator:a56ee03f969e52fb735d2741565132968"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Controller that connects to Tor control socket, authenticate, then create and maintain a ephemeral hidden service. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00412">412</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab38d90df15a9e3f2c6e1f4f24073a64e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab38d90df15a9e3f2c6e1f4f24073a64e">&#9670;&nbsp;</a></span>TorController()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TorController::TorController </td>
+          <td>(</td>
+          <td class="paramtype">struct event_base *&#160;</td>
+          <td class="paramname"><em>base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00455">455</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a98c6b822f4a60da7847a974607b95963"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98c6b822f4a60da7847a974607b95963">&#9670;&nbsp;</a></span>~TorController()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TorController::~TorController </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00476">476</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a78b762c14a006b2f509261a95963ff67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78b762c14a006b2f509261a95963ff67">&#9670;&nbsp;</a></span>add_onion_cb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TorController::add_onion_cb </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;&#160;</td>
+          <td class="paramname"><em>conn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_tor_control_reply.html">TorControlReply</a> &amp;&#160;</td>
+          <td class="paramname"><em>reply</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback for ADD_ONION result. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00487">487</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae36bc33cb3088384517c68f71e9944ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae36bc33cb3088384517c68f71e9944ce">&#9670;&nbsp;</a></span>auth_cb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TorController::auth_cb </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;&#160;</td>
+          <td class="paramname"><em>conn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_tor_control_reply.html">TorControlReply</a> &amp;&#160;</td>
+          <td class="paramname"><em>reply</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback for AUTHENTICATE result. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00522">522</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a86f1396b9f242183ffe777e0951eb997"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86f1396b9f242183ffe777e0951eb997">&#9670;&nbsp;</a></span>authchallenge_cb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TorController::authchallenge_cb </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;&#160;</td>
+          <td class="paramname"><em>conn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_tor_control_reply.html">TorControlReply</a> &amp;&#160;</td>
+          <td class="paramname"><em>reply</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback for AUTHCHALLENGE result. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00577">577</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a59d56a1525a08235b07dd9eadbae0d1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59d56a1525a08235b07dd9eadbae0d1f">&#9670;&nbsp;</a></span>connected_cb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TorController::connected_cb </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;&#160;</td>
+          <td class="paramname"><em>conn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback after successful connection. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00686">686</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a81392f33f0c7e069762668ec3a757075"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81392f33f0c7e069762668ec3a757075">&#9670;&nbsp;</a></span>disconnected_cb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TorController::disconnected_cb </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;&#160;</td>
+          <td class="paramname"><em>conn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback after connection lost or failed connection attempt. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00694">694</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
 <a id="a524481ece961670f745dbbfb4d9d5a33"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a524481ece961670f745dbbfb4d9d5a33">&#9670;&nbsp;</a></span>GetPrivateKeyFile()</h2>
 
@@ -96,7 +424,56 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get name fo file to store private key in </p>
+
+<p>Get name fo file to store private key in. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00723">723</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="aee36fcd1cd60d7f4eb007d909894b1c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee36fcd1cd60d7f4eb007d909894b1c3">&#9670;&nbsp;</a></span>protocolinfo_cb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TorController::protocolinfo_cb </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_tor_control_connection.html">TorControlConnection</a> &amp;&#160;</td>
+          <td class="paramname"><em>conn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_tor_control_reply.html">TorControlReply</a> &amp;&#160;</td>
+          <td class="paramname"><em>reply</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback for PROTOCOLINFO result. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00612">612</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
 
 </div>
 </div>
@@ -114,17 +491,353 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Reconnect, after getting disconnected </p>
+
+<p>Reconnect, after getting disconnected. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00712">712</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a2fa9614b4fa0e24c57f443b3c56f835c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fa9614b4fa0e24c57f443b3c56f835c">&#9670;&nbsp;</a></span>reconnect_cb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TorController::reconnect_cb </td>
+          <td>(</td>
+          <td class="paramtype">evutil_socket_t&#160;</td>
+          <td class="paramname"><em>fd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">short&#160;</td>
+          <td class="paramname"><em>what</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>arg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Callback for reconnect timer. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00728">728</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a490cb6f1e683bbff4a6da80f054a1f14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a490cb6f1e683bbff4a6da80f054a1f14">&#9670;&nbsp;</a></span>base</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct event_base* TorController::base</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00424">424</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a56ee03f969e52fb735d2741565132968"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56ee03f969e52fb735d2741565132968">&#9670;&nbsp;</a></span>clientNonce</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;uint8_t&gt; TorController::clientNonce</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>ClientNonce for SAFECOOKIE auth. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00436">436</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a0cd0abc08230a17743b1bfa22196a7ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cd0abc08230a17743b1bfa22196a7ed">&#9670;&nbsp;</a></span>conn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_tor_control_connection.html">TorControlConnection</a> TorController::conn</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00426">426</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa5ab87c1c502c60ee2f3806f9380cbb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5ab87c1c502c60ee2f3806f9380cbb5">&#9670;&nbsp;</a></span>cookie</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;uint8_t&gt; TorController::cookie</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cookie for SAFECOOKIE auth. </p>
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00434">434</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aea1fe61c7404d74ccfaf1e875737e043"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea1fe61c7404d74ccfaf1e875737e043">&#9670;&nbsp;</a></span>private_key</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string TorController::private_key</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00427">427</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ab1d071e936a3d0060bad73e84cb9775b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1d071e936a3d0060bad73e84cb9775b">&#9670;&nbsp;</a></span>reconnect</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool TorController::reconnect</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00429">429</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ab18e159e5ccad27e30c91ffad82edc89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab18e159e5ccad27e30c91ffad82edc89">&#9670;&nbsp;</a></span>reconnect_ev</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct event* TorController::reconnect_ev</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00430">430</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="acb85d5d34fe9c86307d0a8730ce7cf1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb85d5d34fe9c86307d0a8730ce7cf1d">&#9670;&nbsp;</a></span>reconnect_timeout</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float TorController::reconnect_timeout</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00431">431</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa460dee5c02e036c6784f64b4a3634e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa460dee5c02e036c6784f64b4a3634e3">&#9670;&nbsp;</a></span>service</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_service.html">CService</a> TorController::service</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00432">432</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a471e6bcf2090fd772503d22f3e028968"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a471e6bcf2090fd772503d22f3e028968">&#9670;&nbsp;</a></span>service_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string TorController::service_id</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00428">428</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae082deff33f6f1db7e51825113c1adab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae082deff33f6f1db7e51825113c1adab">&#9670;&nbsp;</a></span>target</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string TorController::target</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torcontrol_8cpp_source.html#l00425">425</a> of file <a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>PIVX/src/torcontrol.cpp</li>
+<li>src/<a class="el" href="torcontrol_8cpp_source.html">torcontrol.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:29 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

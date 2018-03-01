@@ -1,0 +1,31 @@
+digraph "RecentRequestsTableModel::index"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node67 [label="RecentRequestsTableModel\l::index",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node67 -> Node68 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 [label="RecentRequestsTableModel\l::data",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#ad42929c480fc50cad83114ca5f2cc382"];
+  Node68 -> Node69 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="ReceiveCoinsDialog\l::copyColumnToClipboard",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#adcf53aced7dfa041a55278b4807a20a2"];
+  Node69 -> Node70 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node70 [label="ReceiveCoinsDialog\l::copyLabel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#abdd69012e01da1d61b0bf622f9e156b1"];
+  Node70 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node71 [label="ReceiveCoinsDialog\l::ReceiveCoinsDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a0c982b94b7f23da8f208d09904352f89"];
+  Node69 -> Node72 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node72 [label="ReceiveCoinsDialog\l::copyMessage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a99b4d3cbb14744e8b3eff41f83413cb7"];
+  Node72 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 -> Node73 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node73 [label="ReceiveCoinsDialog\l::copyAmount",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a3f8309dfaa944576bae760ba33222463"];
+  Node73 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 -> Node74 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node74 [label="RecentRequestsTableModel\l::addNewRequest",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#aad0b9435284ed1f4b67852b34d7694a9"];
+  Node67 -> Node75 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 [label="RecentRequestsTableModel\l::sort",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#a63ba78741b7115af25908f88d138c201"];
+  Node75 -> Node76 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node76 [label="ReceiveCoinsDialog\l::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a856e5bbe280d792004e97e703f42c7f8"];
+  Node76 -> Node77 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node77 [label="WalletView::setWalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be",tooltip="Set the wallet model. "];
+  Node77 -> Node78 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node78 [label="WalletFrame::addWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86"];
+}

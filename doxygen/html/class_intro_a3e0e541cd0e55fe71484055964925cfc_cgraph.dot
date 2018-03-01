@@ -1,0 +1,29 @@
+digraph "Intro::pickDataDirectory"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node35 [label="Intro::pickDataDirectory",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node35 -> Node36 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node36 [label="GetArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8",tooltip="Return string argument or default value. "];
+  Node35 -> Node37 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 [label="Intro::getDefaultDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#aad225845533fc7f451648dc7c9643e6a",tooltip="Determine default data directory for operating system. "];
+  Node37 -> Node38 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node38 [label="GUIUtil::boostPathToQString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a8bbd2bea6cbc55658e8496603d1fd564"];
+  Node37 -> Node39 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="GetDefaultDataDir",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#ab272995de020a3bcbf743be630e485c6"];
+  Node39 -> Node40 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node40 [label="TryCreateDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064",tooltip="Ignores exceptions thrown by Boost&#39;s create_directory if the requested directory exists. "];
+  Node35 -> Node41 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node41 [label="GUIUtil::qstringToBoostPath",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a23e76d4663b416f0d59f0a8fe89b018c"];
+  Node35 -> Node42 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 [label="GetBoolArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d",tooltip="Return boolean argument or default value. "];
+  Node35 -> Node43 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="Intro::setDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#a2f11c0fccc56ec7bb53cfddec98ee21b"];
+  Node43 -> Node37 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node35 -> Node44 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="Intro::getDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#adb031cec261524a5ef561eb75f099f90"];
+  Node35 -> Node40 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node35 -> Node45 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node45 [label="SoftSetArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a9d94ca9f7c1496626992d1873e3f69df",tooltip="Set an argument if it doesn&#39;t already have a value. "];
+}

@@ -1,0 +1,19 @@
+digraph "CMasternodeBroadcast::Relay"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node68 [label="CMasternodeBroadcast\l::Relay",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node68 -> Node69 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="MasternodeList::StartAlias",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_masternode_list.html#ab3a42d1c66f3b28e9843335d8ce0178d"];
+  Node69 -> Node70 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node70 [label="MasternodeList::on\l_startButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_masternode_list.html#a4370755b1dcdbf4a9396108c2b7ae76a"];
+  Node70 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node71 [label="MasternodeList::MasternodeList",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_masternode_list.html#a341c2ce3e55eecb90f8733c72af375c4"];
+  Node68 -> Node72 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node72 [label="MasternodeList::StartAll",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_masternode_list.html#a0ebd5301adf7567e6a82550ba6d02ccc"];
+  Node72 -> Node73 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node73 [label="MasternodeList::on\l_startAllButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_masternode_list.html#a12e7d7a66cc6ce787fb5de9babfd7358"];
+  Node72 -> Node74 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node74 [label="MasternodeList::on\l_startMissingButton\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_masternode_list.html#a559cf1011eede788d0416c7390e25145"];
+}

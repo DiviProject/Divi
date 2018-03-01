@@ -1,0 +1,35 @@
+digraph "libzerocoin::calculateGroupModulusAndOrder"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node24 [label="libzerocoin::calculateGroup\lModulusAndOrder",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node24 -> Node25 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="libzerocoin::generateRandom\lPrime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacelibzerocoin.html#a2099b8bbbed1501554a9be21e74b9254",tooltip="Deterministically compute a random prime number. "];
+  Node25 -> Node26 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 [label="libzerocoin::generateInteger\lFromSeed",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacelibzerocoin.html#a6f07f95c6873008f19659311147e7a41"];
+  Node25 -> Node27 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node27 [label="CBigNum::getulong",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a035dfd4984c0dfb5400e83afa11e0d21"];
+  Node25 -> Node28 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node28 [label="libzerocoin::primalityTest\lByTrialDivision",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacelibzerocoin.html#aeda115c7208be9405f951779ec131494",tooltip="Determines whether a uint32_t is a prime through trial division. "];
+  Node28 -> Node29 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node29 [label="CBigNum::isPrime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a6d51387c37d74d3c9dfe4fc7aa8affce",tooltip="Miller-Rabin primality test on this element. "];
+  Node25 -> Node30 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node30 [label="CBigNum::pow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#aa8c79c0a8ca34ed34ef315047137ecc7",tooltip="exponentiation with an int. "];
+  Node30 -> Node31 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node31 [label="CBigNum::CBigNum",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a272ed55454635b770e181bddc1a9c071"];
+  Node25 -> Node32 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node32 [label="CBigNum::bitSize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#ab4b035b81263dcba7b996997ecdcea8d",tooltip="Returns the size in bits of the underlying bignum. "];
+  Node25 -> Node33 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node33 [label="CBigNum::pow_mod",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a949004e3f63921b28b4e245624854289",tooltip="modular exponentiation: this^e mod n "];
+  Node33 -> Node34 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node34 [label="CBigNum::inverse",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#ace6cb4447751b27f00139d60dd8ebba4",tooltip="Calculates the inverse of this element mod m. "];
+  Node25 -> Node35 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node35 [label="CBigNum::gcd",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a404a5797d26614e7854947e00d286d36",tooltip="Calculates the greatest common divisor (GCD) of two numbers. "];
+  Node25 -> Node36 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node36 [label="CBigNum::isOne",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a0e237d40f4ea66b930b8136f77fd1349"];
+  Node24 -> Node26 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 -> Node30 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 -> Node33 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 -> Node35 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

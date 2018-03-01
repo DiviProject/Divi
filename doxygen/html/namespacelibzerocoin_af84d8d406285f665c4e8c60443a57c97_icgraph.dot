@@ -1,0 +1,11 @@
+digraph "libzerocoin::calculateGroupParamLengths"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node42 [label="libzerocoin::calculateGroup\lParamLengths",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node42 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="libzerocoin::CalculateParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacelibzerocoin.html#a6304d284cf7c81d9598ea68f3c5a81df",tooltip="Fill in a set of Zerocoin parameters from a modulus \"N\". "];
+  Node43 -> Node44 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="libzerocoin::ZerocoinParams\l::ZerocoinParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_zerocoin_params.html#ad7abfc8417e3f07feb7b786cb13c72b0",tooltip="Construct a set of Zerocoin parameters from a modulus \"N\". "];
+}

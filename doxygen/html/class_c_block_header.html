@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CBlockHeader Class Reference</title>
+<title>DIVX: CBlockHeader Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -71,79 +74,446 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="primitives_2block_8h_source.html">block.h</a>&gt;</code></p>
+<p>Nodes collect new transactions into a block, hash them into a hash tree, and scan through nonce values to make the block's hash satisfy proof-of-work requirements.  
+ <a href="class_c_block_header.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="block_8h_source.html">block.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for CBlockHeader:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_c_block_header.png" usemap="#CBlockHeader_map" alt=""/>
-  <map id="CBlockHeader_map" name="CBlockHeader_map">
-<area href="class_c_block.html" alt="CBlock" shape="rect" coords="0,56,94,80"/>
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for CBlockHeader:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae564e96da45702d79c83e3ad0ce19873"><td class="memTemplParams" colspan="2"><a id="ae564e96da45702d79c83e3ad0ce19873"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:ae564e96da45702d79c83e3ad0ce19873"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:a9afed57bea877bbd25b5eb6740c6990d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#a9afed57bea877bbd25b5eb6740c6990d">CBlockHeader</a> ()</td></tr>
+<tr class="separator:a9afed57bea877bbd25b5eb6740c6990d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae564e96da45702d79c83e3ad0ce19873"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:ae564e96da45702d79c83e3ad0ce19873"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#ae564e96da45702d79c83e3ad0ce19873">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int <a class="el" href="class_c_block_header.html#ad64b7a76914741861f55f0f38ed66fb5">nVersion</a>)</td></tr>
 <tr class="separator:ae564e96da45702d79c83e3ad0ce19873"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae39c04a4357417d98954a51f53beb78a"><td class="memItemLeft" align="right" valign="top"><a id="ae39c04a4357417d98954a51f53beb78a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetNull</b> ()</td></tr>
+<tr class="memitem:ae39c04a4357417d98954a51f53beb78a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#ae39c04a4357417d98954a51f53beb78a">SetNull</a> ()</td></tr>
 <tr class="separator:ae39c04a4357417d98954a51f53beb78a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb875dba7ce6e26c01509244e3cd950f"><td class="memItemLeft" align="right" valign="top"><a id="afb875dba7ce6e26c01509244e3cd950f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsNull</b> () const</td></tr>
+<tr class="memitem:afb875dba7ce6e26c01509244e3cd950f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#afb875dba7ce6e26c01509244e3cd950f">IsNull</a> () const</td></tr>
 <tr class="separator:afb875dba7ce6e26c01509244e3cd950f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0239f86a13f622a826e9eea66b2d7f3"><td class="memItemLeft" align="right" valign="top"><a id="af0239f86a13f622a826e9eea66b2d7f3"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GetHash</b> () const</td></tr>
+<tr class="memitem:af0239f86a13f622a826e9eea66b2d7f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#af0239f86a13f622a826e9eea66b2d7f3">GetHash</a> () const</td></tr>
 <tr class="separator:af0239f86a13f622a826e9eea66b2d7f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abad634d81d4c810390fa2080d79633e8"><td class="memItemLeft" align="right" valign="top"><a id="abad634d81d4c810390fa2080d79633e8"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>GetBlockTime</b> () const</td></tr>
+<tr class="memitem:abad634d81d4c810390fa2080d79633e8"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#abad634d81d4c810390fa2080d79633e8">GetBlockTime</a> () const</td></tr>
 <tr class="separator:abad634d81d4c810390fa2080d79633e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ad64b7a76914741861f55f0f38ed66fb5"><td class="memItemLeft" align="right" valign="top"><a id="ad64b7a76914741861f55f0f38ed66fb5"></a>
-int32_t&#160;</td><td class="memItemRight" valign="bottom"><b>nVersion</b></td></tr>
+<tr class="memitem:ad64b7a76914741861f55f0f38ed66fb5"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#ad64b7a76914741861f55f0f38ed66fb5">nVersion</a></td></tr>
 <tr class="separator:ad64b7a76914741861f55f0f38ed66fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9b904df502d648309342e5e5b0949a6"><td class="memItemLeft" align="right" valign="top"><a id="ad9b904df502d648309342e5e5b0949a6"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hashPrevBlock</b></td></tr>
+<tr class="memitem:ad9b904df502d648309342e5e5b0949a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#ad9b904df502d648309342e5e5b0949a6">hashPrevBlock</a></td></tr>
 <tr class="separator:ad9b904df502d648309342e5e5b0949a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9ef013abbcfbd9f8bc23dbcda0fd5af"><td class="memItemLeft" align="right" valign="top"><a id="ae9ef013abbcfbd9f8bc23dbcda0fd5af"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hashMerkleRoot</b></td></tr>
+<tr class="memitem:ae9ef013abbcfbd9f8bc23dbcda0fd5af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#ae9ef013abbcfbd9f8bc23dbcda0fd5af">hashMerkleRoot</a></td></tr>
 <tr class="separator:ae9ef013abbcfbd9f8bc23dbcda0fd5af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa435a58a8f13a304681e797366e0d56d"><td class="memItemLeft" align="right" valign="top"><a id="aa435a58a8f13a304681e797366e0d56d"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>nTime</b></td></tr>
+<tr class="memitem:aa435a58a8f13a304681e797366e0d56d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#aa435a58a8f13a304681e797366e0d56d">nTime</a></td></tr>
 <tr class="separator:aa435a58a8f13a304681e797366e0d56d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88d501b1da4d34d7dc80c65bd4837670"><td class="memItemLeft" align="right" valign="top"><a id="a88d501b1da4d34d7dc80c65bd4837670"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>nBits</b></td></tr>
+<tr class="memitem:a88d501b1da4d34d7dc80c65bd4837670"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#a88d501b1da4d34d7dc80c65bd4837670">nBits</a></td></tr>
 <tr class="separator:a88d501b1da4d34d7dc80c65bd4837670"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3826d43cd36673027e17ecc674450e71"><td class="memItemLeft" align="right" valign="top"><a id="a3826d43cd36673027e17ecc674450e71"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>nNonce</b></td></tr>
+<tr class="memitem:a3826d43cd36673027e17ecc674450e71"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#a3826d43cd36673027e17ecc674450e71">nNonce</a></td></tr>
 <tr class="separator:a3826d43cd36673027e17ecc674450e71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b4db9d8346617d609e8a47125d163a8"><td class="memItemLeft" align="right" valign="top"><a id="a9b4db9d8346617d609e8a47125d163a8"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>nAccumulatorCheckpoint</b></td></tr>
+<tr class="memitem:a9b4db9d8346617d609e8a47125d163a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#a9b4db9d8346617d609e8a47125d163a8">nAccumulatorCheckpoint</a></td></tr>
 <tr class="separator:a9b4db9d8346617d609e8a47125d163a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abddc9307695fbe6bd9bb1a7f48d38011"><td class="memItemLeft" align="right" valign="top"><a id="abddc9307695fbe6bd9bb1a7f48d38011"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:abddc9307695fbe6bd9bb1a7f48d38011"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#abddc9307695fbe6bd9bb1a7f48d38011">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:abddc9307695fbe6bd9bb1a7f48d38011"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a1da5740e22d124df509383a1ff96eb7c"><td class="memItemLeft" align="right" valign="top"><a id="a1da5740e22d124df509383a1ff96eb7c"></a>
-static const int32_t&#160;</td><td class="memItemRight" valign="bottom"><b>CURRENT_VERSION</b> =4</td></tr>
+<tr class="memitem:a1da5740e22d124df509383a1ff96eb7c"><td class="memItemLeft" align="right" valign="top">static const int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_header.html#a1da5740e22d124df509383a1ff96eb7c">CURRENT_VERSION</a> =4</td></tr>
 <tr class="separator:a1da5740e22d124df509383a1ff96eb7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Nodes collect new transactions into a block, hash them into a hash tree, and scan through nonce values to make the block's hash satisfy proof-of-work requirements. When they solve the proof-of-work, they broadcast the block to everyone and the block is added to the block chain. The first transaction in the block is a special one that creates a new coin owned by the creator of the block. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/primitives/<a class="el" href="primitives_2block_8h_source.html">block.h</a></li>
-<li>PIVX/src/primitives/block.cpp</li>
+<div class="textblock"><p>Nodes collect new transactions into a block, hash them into a hash tree, and scan through nonce values to make the block's hash satisfy proof-of-work requirements. </p>
+<p>When they solve the proof-of-work, they broadcast the block to everyone and the block is added to the block chain. The first transaction in the block is a special one that creates a new coin owned by the creator of the block. </p>
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00026">26</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9afed57bea877bbd25b5eb6740c6990d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9afed57bea877bbd25b5eb6740c6990d">&#9670;&nbsp;</a></span>CBlockHeader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CBlockHeader::CBlockHeader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00039">39</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="abad634d81d4c810390fa2080d79633e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abad634d81d4c810390fa2080d79633e8">&#9670;&nbsp;</a></span>GetBlockTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CBlockHeader::GetBlockTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00079">79</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="af0239f86a13f622a826e9eea66b2d7f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0239f86a13f622a826e9eea66b2d7f3">&#9670;&nbsp;</a></span>GetHash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> CBlockHeader::GetHash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8cpp_source.html#l00016">16</a> of file <a class="el" href="block_8cpp_source.html">block.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="afb875dba7ce6e26c01509244e3cd950f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb875dba7ce6e26c01509244e3cd950f">&#9670;&nbsp;</a></span>IsNull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CBlockHeader::IsNull </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00072">72</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="ae564e96da45702d79c83e3ad0ce19873"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae564e96da45702d79c83e3ad0ce19873">&#9670;&nbsp;</a></span>SerializationOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream , typename Operation &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBlockHeader::SerializationOp </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Operation&#160;</td>
+          <td class="paramname"><em>ser_action</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00047">47</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="ae39c04a4357417d98954a51f53beb78a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae39c04a4357417d98954a51f53beb78a">&#9670;&nbsp;</a></span>SetNull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBlockHeader::SetNull </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00061">61</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="abddc9307695fbe6bd9bb1a7f48d38011"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abddc9307695fbe6bd9bb1a7f48d38011">&#9670;&nbsp;</a></span>ADD_SERIALIZE_METHODS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CBlockHeader::ADD_SERIALIZE_METHODS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00044">44</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="a1da5740e22d124df509383a1ff96eb7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1da5740e22d124df509383a1ff96eb7c">&#9670;&nbsp;</a></span>CURRENT_VERSION</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int32_t CBlockHeader::CURRENT_VERSION =4</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00030">30</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="ae9ef013abbcfbd9f8bc23dbcda0fd5af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9ef013abbcfbd9f8bc23dbcda0fd5af">&#9670;&nbsp;</a></span>hashMerkleRoot</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> CBlockHeader::hashMerkleRoot</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00033">33</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="ad9b904df502d648309342e5e5b0949a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9b904df502d648309342e5e5b0949a6">&#9670;&nbsp;</a></span>hashPrevBlock</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> CBlockHeader::hashPrevBlock</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00032">32</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="a9b4db9d8346617d609e8a47125d163a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b4db9d8346617d609e8a47125d163a8">&#9670;&nbsp;</a></span>nAccumulatorCheckpoint</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> CBlockHeader::nAccumulatorCheckpoint</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00037">37</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="a88d501b1da4d34d7dc80c65bd4837670"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88d501b1da4d34d7dc80c65bd4837670">&#9670;&nbsp;</a></span>nBits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t CBlockHeader::nBits</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00035">35</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="a3826d43cd36673027e17ecc674450e71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3826d43cd36673027e17ecc674450e71">&#9670;&nbsp;</a></span>nNonce</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t CBlockHeader::nNonce</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00036">36</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="aa435a58a8f13a304681e797366e0d56d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa435a58a8f13a304681e797366e0d56d">&#9670;&nbsp;</a></span>nTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t CBlockHeader::nTime</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00034">34</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<a id="ad64b7a76914741861f55f0f38ed66fb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad64b7a76914741861f55f0f38ed66fb5">&#9670;&nbsp;</a></span>nVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t CBlockHeader::nVersion</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="block_8h_source.html#l00031">31</a> of file <a class="el" href="block_8h_source.html">block.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>src/primitives/<a class="el" href="block_8h_source.html">block.h</a></li>
+<li>src/primitives/<a class="el" href="block_8cpp_source.html">block.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:26 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

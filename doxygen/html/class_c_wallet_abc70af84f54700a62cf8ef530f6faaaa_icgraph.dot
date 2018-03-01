@@ -1,0 +1,9 @@
+digraph "CWallet::ResetSpentZerocoin"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node566 [label="CWallet::ResetSpentZerocoin",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node566 -> Node567 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node567 [label="PrivacyDialog::on_pushButton\lSpentReset_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a4bbf07a37a93225e0ef7806d77ff3264"];
+}

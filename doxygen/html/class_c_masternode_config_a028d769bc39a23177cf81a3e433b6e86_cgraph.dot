@@ -1,0 +1,22 @@
+digraph "CMasternodeConfig::read"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node37 [label="CMasternodeConfig::read",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node37 -> Node38 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node38 [label="GetMasternodeConfigFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#ae5f844c4e12d08214929430505218e74"];
+  Node38 -> Node39 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="GetArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8",tooltip="Return string argument or default value. "];
+  Node38 -> Node40 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node40 [label="GetDataDir",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba"];
+  Node37 -> Node41 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node41 [label="alias",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$glibc__compat_8cpp.html#aeb0c9f8029e0f7d5ed735bce73b3704b"];
+  Node37 -> Node42 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 [label="_",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1",tooltip="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..."];
+  Node37 -> Node43 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node37 -> Node44 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="CMasternodeConfig::add",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_config.html#a578068fd91293257e3f302c002c6ba43"];
+  Node44 -> Node41 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

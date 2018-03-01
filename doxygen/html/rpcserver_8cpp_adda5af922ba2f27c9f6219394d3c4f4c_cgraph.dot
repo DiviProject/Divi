@@ -1,0 +1,21 @@
+digraph "ServiceConnection"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node336 [label="ServiceConnection",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node336 -> Node337 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node337 [label="ShutdownRequested",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a6f201ca9fe6b594f1985c12b4482ea5a"];
+  Node336 -> Node338 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node338 [label="ReadHTTPRequestLine",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcprotocol_8cpp.html#add578b3fb095706a7a78d265fa97d8d0"];
+  Node338 -> Node339 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node339 [label="atoi",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilstrencodings_8cpp.html#aa5ce96ec36f4413f820cec9c1831c070"];
+  Node339 -> Node339 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node336 -> Node340 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node340 [label="AcceptedConnection\l::stream",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_accepted_connection.html#a2072a12e4d8f1b79a67bc86903400a0e"];
+  Node336 -> Node341 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node341 [label="ReadHTTPMessage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcprotocol_8cpp.html#a04ef20cccddfd1505806982c3c232325"];
+  Node341 -> Node342 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node342 [label="ReadHTTPHeaders",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcprotocol_8cpp.html#adfa1ef30dd1e00dcbecff15e1161e369"];
+  Node342 -> Node339 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

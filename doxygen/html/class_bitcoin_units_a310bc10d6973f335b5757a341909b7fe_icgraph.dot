@@ -1,0 +1,37 @@
+digraph "BitcoinUnits::maxMoney"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node363 [label="BitcoinUnits::maxMoney",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node363 -> Node364 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node364 [label="AmountSpinBox::stepBy",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_amount_spin_box.html#a055616d98771e6fcef3ee225d7b09ee9"];
+  Node363 -> Node365 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node365 [label="AmountSpinBox::minimumSizeHint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_amount_spin_box.html#a40ee094061b19892825e7b30d3825ded"];
+  Node363 -> Node366 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node366 [label="AmountSpinBox::parse",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_amount_spin_box.html#a487085fe9dc6d6aaa1d2e2a55852f587",tooltip="Parse a string into a number of base monetary units and return validity. "];
+  Node366 -> Node367 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node367 [label="AmountSpinBox::validate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_amount_spin_box.html#afebc9df8aca245c93d460a48675586e1"];
+  Node366 -> Node368 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node368 [label="AmountSpinBox::fixup",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_amount_spin_box.html#a082bac9de36ad4bb0c0f2d5d42f0acc6"];
+  Node366 -> Node369 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node369 [label="AmountSpinBox::value",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_amount_spin_box.html#ab7e522a441231ceaeeb0682ec62a06a9"];
+  Node369 -> Node370 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node370 [label="AmountSpinBox::setValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_amount_spin_box.html#aca3825a8e5735dd99d3fa9665afb614c"];
+  Node370 -> Node364 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node370 -> Node371 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node371 [label="AmountSpinBox::setDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_amount_spin_box.html#aef946e84b685f35c02782b50f4cce842"];
+  Node371 -> Node372 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node372 [label="BitcoinAmountField\l::unitChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_amount_field.html#a5cee72f97d1a77da3514197aaf2ea6c5"];
+  Node372 -> Node373 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node373 [label="BitcoinAmountField\l::BitcoinAmountField",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_amount_field.html#a94510575103488c6f2319aada366aca5"];
+  Node370 -> Node374 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node374 [label="BitcoinAmountField\l::setValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_amount_field.html#ad34b8770f7acfc23be8a8780ad8742fe"];
+  Node369 -> Node364 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node369 -> Node371 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node369 -> Node375 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node375 [label="AmountSpinBox::stepEnabled",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_amount_spin_box.html#aab6a98db725aa53d43f7863c831d6d7f"];
+  Node369 -> Node376 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node376 [label="BitcoinAmountField\l::value",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_amount_field.html#a2d9051926a2eb1ca799408a545622420"];
+  Node363 -> Node375 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

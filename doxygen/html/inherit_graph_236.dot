@@ -1,0 +1,11 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node419 [label="allocator",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node419 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="secure_allocator\< T \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsecure__allocator.html"];
+  Node419 -> Node421 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node421 [label="zero_after_free_allocator\< T \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structzero__after__free__allocator.html"];
+}

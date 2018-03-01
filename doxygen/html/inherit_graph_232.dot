@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="secp256k1_gej_t",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsecp256k1__gej__t.html",tooltip="A group element of the secp256k1 curve, in jacobian coordinates. "];
+}

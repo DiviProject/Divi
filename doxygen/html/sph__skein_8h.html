@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: PIVX/src/crypto/sph_skein.h File Reference</title>
+<title>DIVX: src/crypto/sph_skein.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -61,7 +64,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_99392e72b35c7f25e8ea4b7ee23fbaff.html">PIVX</a></li><li class="navelem"><a class="el" href="dir_2daf99c3a7cf26bd67a6e059ee4a1333.html">src</a></li><li class="navelem"><a class="el" href="dir_d641de86a9a5208d57c21dc37a9357c7.html">crypto</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_4261af1259721e3e39e0d2dd7354b511.html">crypto</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -69,12 +72,28 @@ $(function() {
 <div class="title">sph_skein.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Skein interface.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stddef.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="sph__types_8h_source.html">sph_types.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for sph_skein.h:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
 </div>
 <p><a href="sph__skein_8h_source.html">Go to the source code of this file.</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Skein interface. The Skein specification defines three main functions, called Skein-256, Skein-512 and Skein-1024, which can be further parameterized with an output length. For the SHA-3 competition, Skein-512 is used for output sizes of 224, 256, 384 and 512 bits; this is what this code implements. Thus, we hereafter call Skein-224, Skein-256, Skein-384 and Skein-512 what the Skein specification defines as Skein-512-224, Skein-512-256, Skein-512-384 and Skein-512-512, respectively.</p>
+<div class="textblock"><p>Skein interface. </p>
+<p>The Skein specification defines three main functions, called Skein-256, Skein-512 and Skein-1024, which can be further parameterized with an output length. For the SHA-3 competition, Skein-512 is used for output sizes of 224, 256, 384 and 512 bits; this is what this code implements. Thus, we hereafter call Skein-224, Skein-256, Skein-384 and Skein-512 what the Skein specification defines as Skein-512-224, Skein-512-256, Skein-512-384 and Skein-512-512, respectively.</p>
 <p>==========================(LICENSE BEGIN)============================</p>
 <p>Copyright (c) 2007-2010 Projet RNRT SAPHIR</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
@@ -82,10 +101,12 @@ $(function() {
 <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 <p>===========================(LICENSE END)=============================</p>
 <dl class="section author"><dt>Author</dt><dd>Thomas Pornin <a href="#" onclick="location.href='mai'+'lto:'+'tho'+'ma'+'s.p'+'or'+'nin'+'@c'+'ryp'+'to'+'log'+'.c'+'om'; return false;">thoma<span style="display: none;">.nosp@m.</span>s.po<span style="display: none;">.nosp@m.</span>rnin@<span style="display: none;">.nosp@m.</span>cryp<span style="display: none;">.nosp@m.</span>tolog<span style="display: none;">.nosp@m.</span>.com</a> </dd></dl>
+
+<p class="definition">Definition in file <a class="el" href="sph__skein_8h_source.html">sph_skein.h</a>.</p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:23 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

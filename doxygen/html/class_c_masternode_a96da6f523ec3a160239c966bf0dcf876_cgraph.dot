@@ -1,0 +1,17 @@
+digraph "CMasternode::UpdateFromNewBroadcast"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node265 [label="CMasternode::UpdateFromNew\lBroadcast",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node265 -> Node266 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node266 [label="CMasternodePing::CheckAnd\lUpdate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_ping.html#a24181eca6ed6d01d8260bf0ed35435eb"];
+  Node266 -> Node267 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node267 [label="GetAdjustedTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$timedata_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6"];
+  Node267 -> Node268 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node268 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node267 -> Node269 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node269 [label="GetTimeOffset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$timedata_8cpp.html#a50ca5344c75631267633f15cfe5e983e",tooltip="\"Never go to sea with two chronometers; take one or three.\" Our three time sources are: ..."];
+  Node265 -> Node270 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node270 [label="CMasternodePing::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_ping.html#a3aff56c6fc3ff76363d4e527db6a812e"];
+}

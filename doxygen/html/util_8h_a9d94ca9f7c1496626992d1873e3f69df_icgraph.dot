@@ -1,0 +1,15 @@
+digraph "SoftSetArg"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node380 [label="SoftSetArg",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node380 -> Node381 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node381 [label="Intro::pickDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#a3e0e541cd0e55fe71484055964925cfc",tooltip="Determine data directory. "];
+  Node380 -> Node382 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node382 [label="SoftSetBoolArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8h.html#acb3060cad083d342898b6055e43692ae",tooltip="Set a boolean argument if it doesn&#39;t already have a value. "];
+  Node382 -> Node383 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node383 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#ac59316b767e6984e1285f0531275286b"];
+  Node383 -> Node384 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node384 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
+}

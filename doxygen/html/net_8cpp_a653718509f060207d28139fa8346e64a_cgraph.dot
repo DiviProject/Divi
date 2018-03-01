@@ -1,0 +1,21 @@
+digraph "RelayInv"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node246 [label="RelayInv",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node246 -> Node247 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node247 [label="CInv::IsMasterNodeType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_inv.html#ab96a3a729beb1092a87604667dc5baba"];
+  Node246 -> Node248 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node248 [label="ActiveProtocol",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a138f84e8c8976fe85712b695c32ee3c7",tooltip="See whether the protocol update is enforced for connected nodes. "];
+  Node248 -> Node249 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node249 [label="IsSporkActive",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a3305663176e21e81c80dc951a7f8ea5e"];
+  Node249 -> Node250 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node250 [label="GetSporkValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a7125c44e1c9a54dc7c28556b3fb24a8f"];
+  Node249 -> Node251 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node251 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node246 -> Node252 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node252 [label="CNode::PushInventory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#a7cef2333aa8776127a7e7fcab659eb6a"];
+  Node252 -> Node253 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node253 [label="mruset::count",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classmruset.html#aff65b732aed809fb84542e1136321a24"];
+}

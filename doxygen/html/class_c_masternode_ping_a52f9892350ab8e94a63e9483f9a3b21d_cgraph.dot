@@ -1,0 +1,25 @@
+digraph "CMasternodePing::Relay"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node31 [label="CMasternodePing::Relay",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node31 -> Node32 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node32 [label="CMasternodePing::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_ping.html#a3aff56c6fc3ff76363d4e527db6a812e"];
+  Node31 -> Node33 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node33 [label="RelayInv",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8cpp.html#a653718509f060207d28139fa8346e64a"];
+  Node33 -> Node34 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node34 [label="CInv::IsMasterNodeType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_inv.html#ab96a3a729beb1092a87604667dc5baba"];
+  Node33 -> Node35 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node35 [label="ActiveProtocol",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a138f84e8c8976fe85712b695c32ee3c7",tooltip="See whether the protocol update is enforced for connected nodes. "];
+  Node35 -> Node36 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node36 [label="IsSporkActive",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a3305663176e21e81c80dc951a7f8ea5e"];
+  Node36 -> Node37 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 [label="GetSporkValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a7125c44e1c9a54dc7c28556b3fb24a8f"];
+  Node36 -> Node38 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node38 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node33 -> Node39 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="CNode::PushInventory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#a7cef2333aa8776127a7e7fcab659eb6a"];
+  Node39 -> Node40 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node40 [label="mruset::count",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classmruset.html#aff65b732aed809fb84542e1136321a24"];
+}

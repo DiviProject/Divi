@@ -1,0 +1,26 @@
+digraph "CZerocoinDB::ReadCoinSpend"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node68 [label="CZerocoinDB::ReadCoinSpend",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node68 -> Node69 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="FindMints",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a5bdf923beb5f3417fd033c28216b6acb"];
+  Node69 -> Node70 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node70 [label="resetmintzerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a9336d9bdaa3e1ebb98fb2cc6fdef1d9b"];
+  Node69 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node71 [label="CWallet::ResetMintZerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#a48b81fb27683fe4693a7385909dcd391"];
+  Node71 -> Node72 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node72 [label="PrivacyDialog::on_pushButton\lMintReset_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a1a50924516087ce5810b2b2831567a31"];
+  Node68 -> Node73 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node73 [label="IsSerialKnown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a42a7565c77e2237490c244e5485b59c8"];
+  Node73 -> Node74 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node74 [label="CWallet::ReconsiderZerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#ae0d869b52e1efd245bd5fcbbff925531"];
+  Node74 -> Node75 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 [label="reconsiderzerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a2e2e1892b694084c83714431479f5c7a"];
+  Node68 -> Node76 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node76 [label="IsSerialInBlockchain",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a1a986f7c3a557068daa8fa72f7daf3e6"];
+  Node76 -> Node69 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 -> Node77 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node77 [label="IsZerocoinSpendUnknown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a637dff8c0434cbe7170e3e799d64fad7"];
+}

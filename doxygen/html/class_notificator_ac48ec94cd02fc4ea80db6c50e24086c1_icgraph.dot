@@ -1,0 +1,22 @@
+digraph "Notificator::notifySystray"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node16 [label="Notificator::notifySystray",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node16 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="Notificator::notify",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_notificator.html#ae08e1e7e85ddc4690f307649021f7fdc",tooltip="Show notification message. "];
+  Node17 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="BitcoinGUI::message",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#abf1d036341d1fb122398b2b78d2734ea",tooltip="Notify the user of an event from the core network or transaction handling code. "];
+  Node18 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="BitcoinGUI::setClientModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a99d71e1f8478ab937ce2522c8d3815e3",tooltip="Set the client model. "];
+  Node19 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="BitcoinApplication\l::requestShutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a37c560d4c04d14a6da151b82caf8888f",tooltip="Request core shutdown. "];
+  Node19 -> Node21 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="BitcoinApplication\l::initializeResult",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#aceb08b4063e4fb264cf11cf7f9edd969"];
+  Node21 -> Node22 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node22 [label="BitcoinApplication\l::startThread",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a61afce9356e452c53ad4c83f5ca19df8"];
+  Node22 -> Node23 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 [label="BitcoinApplication\l::requestInitialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#ade19c44b87b00b6b19b433caf4c22ba6",tooltip="Request core initialization. "];
+  Node22 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

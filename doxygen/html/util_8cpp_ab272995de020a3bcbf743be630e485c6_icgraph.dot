@@ -1,0 +1,17 @@
+digraph "GetDefaultDataDir"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node280 [label="GetDefaultDataDir",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node280 -> Node281 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node281 [label="Intro::getDefaultDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#aad225845533fc7f451648dc7c9643e6a",tooltip="Determine default data directory for operating system. "];
+  Node281 -> Node282 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node282 [label="Intro::setDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#a2f11c0fccc56ec7bb53cfddec98ee21b"];
+  Node282 -> Node283 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node283 [label="Intro::pickDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#a3e0e541cd0e55fe71484055964925cfc",tooltip="Determine data directory. "];
+  Node282 -> Node284 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node284 [label="Intro::on_dataDirDefault\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#ae4cefbcd5e61f62cb2a59f38bc2ae52f"];
+  Node281 -> Node283 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node281 -> Node284 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

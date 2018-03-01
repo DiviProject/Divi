@@ -1,0 +1,13 @@
+digraph "SendCoinsDialog::updateGlobalFeeVariables"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1810 [label="SendCoinsDialog::updateGlobal\lFeeVariables",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1810 -> Node1811 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1811 [label="SendCoinsDialog::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a73a6c1b1850a334ee652ac167713a2aa"];
+  Node1811 -> Node1812 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1812 [label="WalletView::setWalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be",tooltip="Set the wallet model. "];
+  Node1812 -> Node1813 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1813 [label="WalletFrame::addWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86"];
+}

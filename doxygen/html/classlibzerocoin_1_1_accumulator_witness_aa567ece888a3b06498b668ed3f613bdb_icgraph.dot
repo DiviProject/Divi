@@ -1,0 +1,9 @@
+digraph "libzerocoin::AccumulatorWitness::AddElement"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node5 [label="libzerocoin::Accumulator\lWitness::AddElement",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="libzerocoin::Accumulator\lWitness::operator+=",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_accumulator_witness.html#a57de1414fbb80e5259a76e70b4baa28e",tooltip="Adds rhs to the set whose&#39;s accumulation ware proving coin is a member of. "];
+}

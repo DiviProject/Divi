@@ -1,0 +1,9 @@
+digraph "CZerocoinDB::ReadAccumulatorValue"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node38 [label="CZerocoinDB::ReadAccumulator\lValue",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node38 -> Node39 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="CLevelDBWrapper::Read",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_level_d_b_wrapper.html#a0cb51d3b8f042641b2d0aa76c3185527"];
+}

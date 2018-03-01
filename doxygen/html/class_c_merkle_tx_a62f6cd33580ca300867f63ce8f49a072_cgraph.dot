@@ -1,0 +1,33 @@
+digraph "CMerkleTx::GetDepthInMainChain"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node236 [label="CMerkleTx::GetDepthInMain\lChain",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node236 -> Node237 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node237 [label="CMerkleTx::GetDepthInMain\lChain",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_merkle_tx.html#a5bf3a355593ecce5799de92d013149b1",tooltip="Return depth of transaction in blockchain: -1 : not in blockchain, and not in memory pool (conflicted..."];
+  Node237 -> Node238 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node238 [label="CMerkleTx::GetDepthInMain\lChainINTERNAL",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_merkle_tx.html#ada4285bcdc83c90dc5829d9902b1271c"];
+  Node238 -> Node239 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node239 [label="CChain::Contains",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#af1786dc229c215dea7f727c11df2c8dc",tooltip="Efficiently check whether a block is present in this chain. "];
+  Node238 -> Node240 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node240 [label="CBlock::CheckMerkleBranch",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block.html#a81684cf96f6fb6731c869865b80d1ccd"];
+  Node240 -> Node241 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node241 [label="Hash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8h.html#a12c5e981d7f5f2850027fd5e932eff61",tooltip="Compute the 256-bit hash of a std::string. "];
+  Node238 -> Node242 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node242 [label="CTransaction::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a7efd1379de830341417c0bfa23a149aa"];
+  Node238 -> Node243 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node243 [label="CChain::Height",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#ad4758bc8872ce065a9579f77c3171d40",tooltip="Return the maximal height in the chain. "];
+  Node237 -> Node244 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node244 [label="CTxMemPool::exists",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_mem_pool.html#adba06e79be4a1a092dd2db8290733be7"];
+  Node237 -> Node242 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node237 -> Node245 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node245 [label="CMerkleTx::GetTransaction\lLockSignatures",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_merkle_tx.html#a29ab20d0785095dba254ca1050ba6989"];
+  Node245 -> Node246 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node246 [label="IsSporkActive",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a3305663176e21e81c80dc951a7f8ea5e"];
+  Node246 -> Node247 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node247 [label="GetSporkValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a7125c44e1c9a54dc7c28556b3fb24a8f"];
+  Node246 -> Node248 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node248 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node245 -> Node242 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

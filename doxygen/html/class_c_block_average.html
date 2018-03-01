@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CBlockAverage Class Reference</title>
+<title>DIVX: CBlockAverage Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -64,58 +67,98 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_c_block_average-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CBlockAverage Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Keep track of fee/priority for transactions confirmed within N blocks.  
+ <a href="class_c_block_average.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a50af3241dc8fb3e49e1e980ed2a7fc95"><td class="memItemLeft" align="right" valign="top"><a id="a50af3241dc8fb3e49e1e980ed2a7fc95"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RecordFee</b> (const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;feeRate)</td></tr>
+<tr class="memitem:adec219b95a2e1c67471f188dee48fb3a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#adec219b95a2e1c67471f188dee48fb3a">CBlockAverage</a> ()</td></tr>
+<tr class="separator:adec219b95a2e1c67471f188dee48fb3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50af3241dc8fb3e49e1e980ed2a7fc95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a50af3241dc8fb3e49e1e980ed2a7fc95">RecordFee</a> (const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;feeRate)</td></tr>
 <tr class="separator:a50af3241dc8fb3e49e1e980ed2a7fc95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4d71208ccf3ecd85751ce3644d12853"><td class="memItemLeft" align="right" valign="top"><a id="ae4d71208ccf3ecd85751ce3644d12853"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RecordPriority</b> (double priority)</td></tr>
+<tr class="memitem:ae4d71208ccf3ecd85751ce3644d12853"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#ae4d71208ccf3ecd85751ce3644d12853">RecordPriority</a> (double priority)</td></tr>
 <tr class="separator:ae4d71208ccf3ecd85751ce3644d12853"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38c311149c426f0abf07ff6ac52b033c"><td class="memItemLeft" align="right" valign="top"><a id="a38c311149c426f0abf07ff6ac52b033c"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>FeeSamples</b> () const</td></tr>
+<tr class="memitem:a38c311149c426f0abf07ff6ac52b033c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a38c311149c426f0abf07ff6ac52b033c">FeeSamples</a> () const</td></tr>
 <tr class="separator:a38c311149c426f0abf07ff6ac52b033c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92007db34b4a44738a50d5d8c0cb5234"><td class="memItemLeft" align="right" valign="top"><a id="a92007db34b4a44738a50d5d8c0cb5234"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>GetFeeSamples</b> (std::vector&lt; <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &gt; &amp;insertInto) const</td></tr>
+<tr class="memitem:a92007db34b4a44738a50d5d8c0cb5234"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a92007db34b4a44738a50d5d8c0cb5234">GetFeeSamples</a> (std::vector&lt; <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &gt; &amp;insertInto) const</td></tr>
 <tr class="separator:a92007db34b4a44738a50d5d8c0cb5234"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50351224b6b0a54051d57d16072741e5"><td class="memItemLeft" align="right" valign="top"><a id="a50351224b6b0a54051d57d16072741e5"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>PrioritySamples</b> () const</td></tr>
+<tr class="memitem:a50351224b6b0a54051d57d16072741e5"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a50351224b6b0a54051d57d16072741e5">PrioritySamples</a> () const</td></tr>
 <tr class="separator:a50351224b6b0a54051d57d16072741e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a927ff52139522ee22069fadb959f353a"><td class="memItemLeft" align="right" valign="top"><a id="a927ff52139522ee22069fadb959f353a"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>GetPrioritySamples</b> (std::vector&lt; double &gt; &amp;insertInto) const</td></tr>
+<tr class="memitem:a927ff52139522ee22069fadb959f353a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a927ff52139522ee22069fadb959f353a">GetPrioritySamples</a> (std::vector&lt; double &gt; &amp;insertInto) const</td></tr>
 <tr class="separator:a927ff52139522ee22069fadb959f353a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2bdaa124642e799a4ed5d6840f6e59a4"><td class="memItemLeft" align="right" valign="top"><a id="a2bdaa124642e799a4ed5d6840f6e59a4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Write</b> (<a class="el" href="class_c_auto_file.html">CAutoFile</a> &amp;fileout) const</td></tr>
+<tr class="memitem:a2bdaa124642e799a4ed5d6840f6e59a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a2bdaa124642e799a4ed5d6840f6e59a4">Write</a> (<a class="el" href="class_c_auto_file.html">CAutoFile</a> &amp;fileout) const</td></tr>
 <tr class="separator:a2bdaa124642e799a4ed5d6840f6e59a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac4081eec4bf68d7d3a07521ea953489"><td class="memItemLeft" align="right" valign="top"><a id="aac4081eec4bf68d7d3a07521ea953489"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Read</b> (<a class="el" href="class_c_auto_file.html">CAutoFile</a> &amp;filein, const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;minRelayFee)</td></tr>
+<tr class="memitem:aac4081eec4bf68d7d3a07521ea953489"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#aac4081eec4bf68d7d3a07521ea953489">Read</a> (<a class="el" href="class_c_auto_file.html">CAutoFile</a> &amp;filein, const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;minRelayFee)</td></tr>
 <tr class="separator:aac4081eec4bf68d7d3a07521ea953489"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a31ed22222a49a95787f9791f212ec521"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a31ed22222a49a95787f9791f212ec521">AreSane</a> (const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> fee, const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;minRelayFee)</td></tr>
+<tr class="memdesc:a31ed22222a49a95787f9791f212ec521"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used as belt-and-suspenders check when reading to detect file corruption.  <a href="#a31ed22222a49a95787f9791f212ec521">More...</a><br /></td></tr>
 <tr class="separator:a31ed22222a49a95787f9791f212ec521"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92abf5615a926971eba5f6fbaadac880"><td class="memItemLeft" align="right" valign="top"><a id="a92abf5615a926971eba5f6fbaadac880"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>AreSane</b> (const std::vector&lt; <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &gt; &amp;vecFee, const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;minRelayFee)</td></tr>
+<tr class="memitem:a92abf5615a926971eba5f6fbaadac880"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a92abf5615a926971eba5f6fbaadac880">AreSane</a> (const std::vector&lt; <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &gt; &amp;vecFee, const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;minRelayFee)</td></tr>
 <tr class="separator:a92abf5615a926971eba5f6fbaadac880"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5b855fc318c24c1eda1998ae07a8ed2"><td class="memItemLeft" align="right" valign="top"><a id="af5b855fc318c24c1eda1998ae07a8ed2"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>AreSane</b> (const double priority)</td></tr>
+<tr class="memitem:af5b855fc318c24c1eda1998ae07a8ed2"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#af5b855fc318c24c1eda1998ae07a8ed2">AreSane</a> (const double priority)</td></tr>
 <tr class="separator:af5b855fc318c24c1eda1998ae07a8ed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2bdd0f3aa2eb5edddde259551965fcaf"><td class="memItemLeft" align="right" valign="top"><a id="a2bdd0f3aa2eb5edddde259551965fcaf"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>AreSane</b> (const std::vector&lt; double &gt; vecPriority)</td></tr>
+<tr class="memitem:a2bdd0f3aa2eb5edddde259551965fcaf"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a2bdd0f3aa2eb5edddde259551965fcaf">AreSane</a> (const std::vector&lt; double &gt; vecPriority)</td></tr>
 <tr class="separator:a2bdd0f3aa2eb5edddde259551965fcaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:ac0269a46559cad8a8d3d2467a7abb4d8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac0269a46559cad8a8d3d2467a7abb4d8"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#ac0269a46559cad8a8d3d2467a7abb4d8">buf2vec</a> (boost::circular_buffer&lt; T &gt; buf) const</td></tr>
+<tr class="separator:ac0269a46559cad8a8d3d2467a7abb4d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a1081285bac1ee777eac3d4919463f6fb"><td class="memItemLeft" align="right" valign="top">boost::circular_buffer&lt; <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#a1081285bac1ee777eac3d4919463f6fb">feeSamples</a></td></tr>
+<tr class="separator:a1081285bac1ee777eac3d4919463f6fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade7273ae47dc45963d7daf870942cdb0"><td class="memItemLeft" align="right" valign="top">boost::circular_buffer&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_block_average.html#ade7273ae47dc45963d7daf870942cdb0">prioritySamples</a></td></tr>
+<tr class="separator:ade7273ae47dc45963d7daf870942cdb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Keep track of fee/priority for transactions confirmed within N blocks </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<div class="textblock"><p>Keep track of fee/priority for transactions confirmed within N blocks. </p>
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00049">49</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="adec219b95a2e1c67471f188dee48fb3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adec219b95a2e1c67471f188dee48fb3a">&#9670;&nbsp;</a></span>CBlockAverage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CBlockAverage::CBlockAverage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00063">63</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a31ed22222a49a95787f9791f212ec521"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a31ed22222a49a95787f9791f212ec521">&#9670;&nbsp;</a></span>AreSane()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a31ed22222a49a95787f9791f212ec521">&#9670;&nbsp;</a></span>AreSane() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -147,17 +190,461 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>AreSane</b> (c
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Used as belt-and-suspenders check when reading to detect file corruption </p>
+
+<p>Used as belt-and-suspenders check when reading to detect file corruption. </p>
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00094">94</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a92abf5615a926971eba5f6fbaadac880"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92abf5615a926971eba5f6fbaadac880">&#9670;&nbsp;</a></span>AreSane() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool CBlockAverage::AreSane </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vecFee</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;&#160;</td>
+          <td class="paramname"><em>minRelayFee</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00102">102</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="af5b855fc318c24c1eda1998ae07a8ed2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5b855fc318c24c1eda1998ae07a8ed2">&#9670;&nbsp;</a></span>AreSane() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool CBlockAverage::AreSane </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>priority</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00110">110</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a2bdd0f3aa2eb5edddde259551965fcaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bdd0f3aa2eb5edddde259551965fcaf">&#9670;&nbsp;</a></span>AreSane() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool CBlockAverage::AreSane </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; double &gt;&#160;</td>
+          <td class="paramname"><em>vecPriority</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00114">114</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac0269a46559cad8a8d3d2467a7abb4d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0269a46559cad8a8d3d2467a7abb4d8">&#9670;&nbsp;</a></span>buf2vec()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;T&gt; CBlockAverage::buf2vec </td>
+          <td>(</td>
+          <td class="paramtype">boost::circular_buffer&lt; T &gt;&#160;</td>
+          <td class="paramname"><em>buf</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00056">56</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a38c311149c426f0abf07ff6ac52b033c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38c311149c426f0abf07ff6ac52b033c">&#9670;&nbsp;</a></span>FeeSamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t CBlockAverage::FeeSamples </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00075">75</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a92007db34b4a44738a50d5d8c0cb5234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92007db34b4a44738a50d5d8c0cb5234">&#9670;&nbsp;</a></span>GetFeeSamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t CBlockAverage::GetFeeSamples </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>insertInto</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00076">76</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a927ff52139522ee22069fadb959f353a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a927ff52139522ee22069fadb959f353a">&#9670;&nbsp;</a></span>GetPrioritySamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t CBlockAverage::GetPrioritySamples </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>insertInto</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00083">83</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a50351224b6b0a54051d57d16072741e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50351224b6b0a54051d57d16072741e5">&#9670;&nbsp;</a></span>PrioritySamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t CBlockAverage::PrioritySamples </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00082">82</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aac4081eec4bf68d7d3a07521ea953489"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac4081eec4bf68d7d3a07521ea953489">&#9670;&nbsp;</a></span>Read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBlockAverage::Read </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_auto_file.html">CAutoFile</a> &amp;&#160;</td>
+          <td class="paramname"><em>filein</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;&#160;</td>
+          <td class="paramname"><em>minRelayFee</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00131">131</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a50af3241dc8fb3e49e1e980ed2a7fc95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50af3241dc8fb3e49e1e980ed2a7fc95">&#9670;&nbsp;</a></span>RecordFee()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBlockAverage::RecordFee </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_fee_rate.html">CFeeRate</a> &amp;&#160;</td>
+          <td class="paramname"><em>feeRate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00065">65</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae4d71208ccf3ecd85751ce3644d12853"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4d71208ccf3ecd85751ce3644d12853">&#9670;&nbsp;</a></span>RecordPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBlockAverage::RecordPriority </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>priority</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00070">70</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a2bdaa124642e799a4ed5d6840f6e59a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bdaa124642e799a4ed5d6840f6e59a4">&#9670;&nbsp;</a></span>Write()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBlockAverage::Write </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_auto_file.html">CAutoFile</a> &amp;&#160;</td>
+          <td class="paramname"><em>fileout</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00123">123</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a1081285bac1ee777eac3d4919463f6fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1081285bac1ee777eac3d4919463f6fb">&#9670;&nbsp;</a></span>feeSamples</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">boost::circular_buffer&lt;<a class="el" href="class_c_fee_rate.html">CFeeRate</a>&gt; CBlockAverage::feeSamples</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00052">52</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ade7273ae47dc45963d7daf870942cdb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade7273ae47dc45963d7daf870942cdb0">&#9670;&nbsp;</a></span>prioritySamples</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">boost::circular_buffer&lt;double&gt; CBlockAverage::prioritySamples</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00053">53</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>PIVX/src/txmempool.cpp</li>
+<li>src/<a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:26 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

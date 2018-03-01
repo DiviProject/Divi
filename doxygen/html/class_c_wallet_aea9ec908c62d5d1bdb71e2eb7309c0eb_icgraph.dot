@@ -1,0 +1,11 @@
+digraph "CWallet::isMultiSendEnabled"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node298 [label="CWallet::isMultiSendEnabled",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node298 -> Node299 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node299 [label="BitcoinGUI::setStakingStatus",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#ae512b4ad46f9cba31be53de5a5c1d398"];
+  Node298 -> Node300 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node300 [label="MultiSendDialog::on\l_viewButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multi_send_dialog.html#a91be9127f7fa0b64c4a16c411f8848f8"];
+}

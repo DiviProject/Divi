@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: RecentRequestsTableModel Class Reference</title>
+<title>DIVX: RecentRequestsTableModel Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -65,97 +68,837 @@ $(function() {
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-slots">Public Slots</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_recent_requests_table_model-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">RecentRequestsTableModel Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>Model for list of recently generated payment requests / divx: URIs.  
+ <a href="class_recent_requests_table_model.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for RecentRequestsTableModel:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_recent_requests_table_model.png" usemap="#RecentRequestsTableModel_map" alt=""/>
-  <map id="RecentRequestsTableModel_map" name="RecentRequestsTableModel_map">
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for RecentRequestsTableModel:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a720ff50ef9f8e016a5d2bbd8fd7fb41d"><td class="memItemLeft" align="right" valign="top"><a id="a720ff50ef9f8e016a5d2bbd8fd7fb41d"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ColumnIndex</b> { <br />
-&#160;&#160;<b>Date</b> = 0, 
-<b>Label</b> = 1, 
-<b>Message</b> = 2, 
-<b>Amount</b> = 3, 
+<tr class="memitem:a720ff50ef9f8e016a5d2bbd8fd7fb41d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a720ff50ef9f8e016a5d2bbd8fd7fb41d">ColumnIndex</a> { <br />
+&#160;&#160;<a class="el" href="class_recent_requests_table_model.html#a720ff50ef9f8e016a5d2bbd8fd7fb41da3ff407ecf3d7984a65768911638f5add">Date</a> = 0, 
+<a class="el" href="class_recent_requests_table_model.html#a720ff50ef9f8e016a5d2bbd8fd7fb41da6122ebd2a6dc081e6b25727cd4962fad">Label</a> = 1, 
+<a class="el" href="class_recent_requests_table_model.html#a720ff50ef9f8e016a5d2bbd8fd7fb41da771dbe3a12d351feb56440829ed3dee7">Message</a> = 2, 
+<a class="el" href="class_recent_requests_table_model.html#a720ff50ef9f8e016a5d2bbd8fd7fb41da7441e7cada665765c9823817d13bc637">Amount</a> = 3, 
 <br />
-&#160;&#160;<b>NUMBER_OF_COLUMNS</b>
+&#160;&#160;<a class="el" href="class_recent_requests_table_model.html#a720ff50ef9f8e016a5d2bbd8fd7fb41da5518c3c0fa0dc017518f200d39f39c25">NUMBER_OF_COLUMNS</a>
 <br />
  }</td></tr>
 <tr class="separator:a720ff50ef9f8e016a5d2bbd8fd7fb41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-slots"></a>
 Public Slots</h2></td></tr>
-<tr class="memitem:a63ba78741b7115af25908f88d138c201"><td class="memItemLeft" align="right" valign="top"><a id="a63ba78741b7115af25908f88d138c201"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>sort</b> (int column, Qt::SortOrder order=Qt::AscendingOrder)</td></tr>
+<tr class="memitem:a63ba78741b7115af25908f88d138c201"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a63ba78741b7115af25908f88d138c201">sort</a> (int column, Qt::SortOrder order=Qt::AscendingOrder)</td></tr>
 <tr class="separator:a63ba78741b7115af25908f88d138c201"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c4fe82f628df4e3a46809514ba9fe03"><td class="memItemLeft" align="right" valign="top"><a id="a8c4fe82f628df4e3a46809514ba9fe03"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateDisplayUnit</b> ()</td></tr>
+<tr class="memitem:a8c4fe82f628df4e3a46809514ba9fe03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a8c4fe82f628df4e3a46809514ba9fe03">updateDisplayUnit</a> ()</td></tr>
 <tr class="separator:a8c4fe82f628df4e3a46809514ba9fe03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab3ef691b8c34e6d6e5ae0bdf7953a360"><td class="memItemLeft" align="right" valign="top"><a id="ab3ef691b8c34e6d6e5ae0bdf7953a360"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>RecentRequestsTableModel</b> (<a class="el" href="class_c_wallet.html">CWallet</a> *wallet, <a class="el" href="class_wallet_model.html">WalletModel</a> *parent)</td></tr>
+<tr class="memitem:ab3ef691b8c34e6d6e5ae0bdf7953a360"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#ab3ef691b8c34e6d6e5ae0bdf7953a360">RecentRequestsTableModel</a> (<a class="el" href="class_c_wallet.html">CWallet</a> *wallet, <a class="el" href="class_wallet_model.html">WalletModel</a> *parent)</td></tr>
 <tr class="separator:ab3ef691b8c34e6d6e5ae0bdf7953a360"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d0dead09080f7f8201a3feff0c30bb7"><td class="memItemLeft" align="right" valign="top"><a id="a6d0dead09080f7f8201a3feff0c30bb7"></a>
-const <a class="el" href="class_recent_request_entry.html">RecentRequestEntry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>entry</b> (int row) const</td></tr>
+<tr class="memitem:a662c2b125ca4a1a11721ad6f7047b6b7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a662c2b125ca4a1a11721ad6f7047b6b7">~RecentRequestsTableModel</a> ()</td></tr>
+<tr class="separator:a662c2b125ca4a1a11721ad6f7047b6b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d0dead09080f7f8201a3feff0c30bb7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_recent_request_entry.html">RecentRequestEntry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a6d0dead09080f7f8201a3feff0c30bb7">entry</a> (int row) const</td></tr>
 <tr class="separator:a6d0dead09080f7f8201a3feff0c30bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9866ffd5aed0f041437996410928edd"><td class="memItemLeft" align="right" valign="top"><a id="ae9866ffd5aed0f041437996410928edd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addNewRequest</b> (const <a class="el" href="class_send_coins_recipient.html">SendCoinsRecipient</a> &amp;recipient)</td></tr>
+<tr class="memitem:ae9866ffd5aed0f041437996410928edd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#ae9866ffd5aed0f041437996410928edd">addNewRequest</a> (const <a class="el" href="class_send_coins_recipient.html">SendCoinsRecipient</a> &amp;recipient)</td></tr>
 <tr class="separator:ae9866ffd5aed0f041437996410928edd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad0b9435284ed1f4b67852b34d7694a9"><td class="memItemLeft" align="right" valign="top"><a id="aad0b9435284ed1f4b67852b34d7694a9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addNewRequest</b> (const std::string &amp;recipient)</td></tr>
+<tr class="memitem:aad0b9435284ed1f4b67852b34d7694a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#aad0b9435284ed1f4b67852b34d7694a9">addNewRequest</a> (const std::string &amp;recipient)</td></tr>
 <tr class="separator:aad0b9435284ed1f4b67852b34d7694a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a740761ab9075472df23be66d0a52f141"><td class="memItemLeft" align="right" valign="top"><a id="a740761ab9075472df23be66d0a52f141"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addNewRequest</b> (<a class="el" href="class_recent_request_entry.html">RecentRequestEntry</a> &amp;recipient)</td></tr>
+<tr class="memitem:a740761ab9075472df23be66d0a52f141"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a740761ab9075472df23be66d0a52f141">addNewRequest</a> (<a class="el" href="class_recent_request_entry.html">RecentRequestEntry</a> &amp;recipient)</td></tr>
 <tr class="separator:a740761ab9075472df23be66d0a52f141"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Methods overridden from QAbstractTableModel</div></td></tr>
-<tr class="memitem:a339effe43b403b984b8453f774482790"><td class="memItemLeft" align="right" valign="top"><a id="a339effe43b403b984b8453f774482790"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>rowCount</b> (const QModelIndex &amp;parent) const</td></tr>
+<tr class="memitem:a339effe43b403b984b8453f774482790"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a339effe43b403b984b8453f774482790">rowCount</a> (const QModelIndex &amp;parent) const</td></tr>
 <tr class="separator:a339effe43b403b984b8453f774482790"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c18b9f18bf931c31d28dfd7d42b394a"><td class="memItemLeft" align="right" valign="top"><a id="a6c18b9f18bf931c31d28dfd7d42b394a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>columnCount</b> (const QModelIndex &amp;parent) const</td></tr>
+<tr class="memitem:a6c18b9f18bf931c31d28dfd7d42b394a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a6c18b9f18bf931c31d28dfd7d42b394a">columnCount</a> (const QModelIndex &amp;parent) const</td></tr>
 <tr class="separator:a6c18b9f18bf931c31d28dfd7d42b394a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad42929c480fc50cad83114ca5f2cc382"><td class="memItemLeft" align="right" valign="top"><a id="ad42929c480fc50cad83114ca5f2cc382"></a>
-QVariant&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> (const QModelIndex &amp;index, int role) const</td></tr>
+<tr class="memitem:ad42929c480fc50cad83114ca5f2cc382"><td class="memItemLeft" align="right" valign="top">QVariant&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#ad42929c480fc50cad83114ca5f2cc382">data</a> (const QModelIndex &amp;<a class="el" href="class_recent_requests_table_model.html#a744b879be9546793860528f6c5350289">index</a>, int role) const</td></tr>
 <tr class="separator:ad42929c480fc50cad83114ca5f2cc382"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57aa7dfaeead22d00b9dd3d704fb20e2"><td class="memItemLeft" align="right" valign="top"><a id="a57aa7dfaeead22d00b9dd3d704fb20e2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>setData</b> (const QModelIndex &amp;index, const QVariant &amp;value, int role)</td></tr>
+<tr class="memitem:a57aa7dfaeead22d00b9dd3d704fb20e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a57aa7dfaeead22d00b9dd3d704fb20e2">setData</a> (const QModelIndex &amp;<a class="el" href="class_recent_requests_table_model.html#a744b879be9546793860528f6c5350289">index</a>, const QVariant &amp;value, int role)</td></tr>
 <tr class="separator:a57aa7dfaeead22d00b9dd3d704fb20e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a526f89b7a3b29d47152d456671d12ddb"><td class="memItemLeft" align="right" valign="top"><a id="a526f89b7a3b29d47152d456671d12ddb"></a>
-QVariant&#160;</td><td class="memItemRight" valign="bottom"><b>headerData</b> (int section, Qt::Orientation orientation, int role) const</td></tr>
+<tr class="memitem:a526f89b7a3b29d47152d456671d12ddb"><td class="memItemLeft" align="right" valign="top">QVariant&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a526f89b7a3b29d47152d456671d12ddb">headerData</a> (int section, Qt::Orientation orientation, int role) const</td></tr>
 <tr class="separator:a526f89b7a3b29d47152d456671d12ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a744b879be9546793860528f6c5350289"><td class="memItemLeft" align="right" valign="top"><a id="a744b879be9546793860528f6c5350289"></a>
-QModelIndex&#160;</td><td class="memItemRight" valign="bottom"><b>index</b> (int row, int column, const QModelIndex &amp;parent) const</td></tr>
+<tr class="memitem:a744b879be9546793860528f6c5350289"><td class="memItemLeft" align="right" valign="top">QModelIndex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a744b879be9546793860528f6c5350289">index</a> (int row, int column, const QModelIndex &amp;parent) const</td></tr>
 <tr class="separator:a744b879be9546793860528f6c5350289"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63504be44ff9d33d5c508f6303622e5a"><td class="memItemLeft" align="right" valign="top"><a id="a63504be44ff9d33d5c508f6303622e5a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>removeRows</b> (int row, int count, const QModelIndex &amp;parent=QModelIndex())</td></tr>
+<tr class="memitem:a63504be44ff9d33d5c508f6303622e5a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a63504be44ff9d33d5c508f6303622e5a">removeRows</a> (int row, int count, const QModelIndex &amp;parent=QModelIndex())</td></tr>
 <tr class="separator:a63504be44ff9d33d5c508f6303622e5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67967379939cd8f9dd8c97d6ee18b28f"><td class="memItemLeft" align="right" valign="top"><a id="a67967379939cd8f9dd8c97d6ee18b28f"></a>
-Qt::ItemFlags&#160;</td><td class="memItemRight" valign="bottom"><b>flags</b> (const QModelIndex &amp;index) const</td></tr>
+<tr class="memitem:a67967379939cd8f9dd8c97d6ee18b28f"><td class="memItemLeft" align="right" valign="top">Qt::ItemFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a67967379939cd8f9dd8c97d6ee18b28f">flags</a> (const QModelIndex &amp;<a class="el" href="class_recent_requests_table_model.html#a744b879be9546793860528f6c5350289">index</a>) const</td></tr>
 <tr class="separator:a67967379939cd8f9dd8c97d6ee18b28f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a8bc224f31142bd2da1c2729010ee84a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a8bc224f31142bd2da1c2729010ee84a3">updateAmountColumnTitle</a> ()</td></tr>
+<tr class="memdesc:a8bc224f31142bd2da1c2729010ee84a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the column title to "Amount (DisplayUnit)" and emits headerDataChanged() signal for table headers to react.  <a href="#a8bc224f31142bd2da1c2729010ee84a3">More...</a><br /></td></tr>
+<tr class="separator:a8bc224f31142bd2da1c2729010ee84a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0116f41ff8773ec18e68205b2917301"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#ab0116f41ff8773ec18e68205b2917301">getAmountTitle</a> ()</td></tr>
+<tr class="memdesc:ab0116f41ff8773ec18e68205b2917301"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets title for amount column including current display unit if optionsModel reference available.  <a href="#ab0116f41ff8773ec18e68205b2917301">More...</a><br /></td></tr>
+<tr class="separator:ab0116f41ff8773ec18e68205b2917301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ae1ce2bad316f5f965200ba1f679396d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_wallet_model.html">WalletModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#ae1ce2bad316f5f965200ba1f679396d8">walletModel</a></td></tr>
+<tr class="separator:ae1ce2bad316f5f965200ba1f679396d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09362cd1146b7b801e8fa5ef8d04e2a3"><td class="memItemLeft" align="right" valign="top">QStringList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a09362cd1146b7b801e8fa5ef8d04e2a3">columns</a></td></tr>
+<tr class="separator:a09362cd1146b7b801e8fa5ef8d04e2a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84c7de31f5b343da9464359007995ed5"><td class="memItemLeft" align="right" valign="top">QList&lt; <a class="el" href="class_recent_request_entry.html">RecentRequestEntry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#a84c7de31f5b343da9464359007995ed5">list</a></td></tr>
+<tr class="separator:a84c7de31f5b343da9464359007995ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af002ebf0f01a35a1cf29be7106aa98ed"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_recent_requests_table_model.html#af002ebf0f01a35a1cf29be7106aa98ed">nReceiveRequestsMaxId</a></td></tr>
+<tr class="separator:af002ebf0f01a35a1cf29be7106aa98ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Model for list of recently generated payment requests / pivx: URIs. Part of wallet model. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/qt/<a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a></li>
-<li>PIVX/src/qt/recentrequeststablemodel.cpp</li>
+<div class="textblock"><p>Model for list of recently generated payment requests / divx: URIs. </p>
+<p>Part of wallet model. </p>
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8h_source.html#l00059">59</a> of file <a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a>.</p>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a720ff50ef9f8e016a5d2bbd8fd7fb41d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a720ff50ef9f8e016a5d2bbd8fd7fb41d">&#9670;&nbsp;</a></span>ColumnIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_recent_requests_table_model.html#a720ff50ef9f8e016a5d2bbd8fd7fb41d">RecentRequestsTableModel::ColumnIndex</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a720ff50ef9f8e016a5d2bbd8fd7fb41da3ff407ecf3d7984a65768911638f5add"></a>Date&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a720ff50ef9f8e016a5d2bbd8fd7fb41da6122ebd2a6dc081e6b25727cd4962fad"></a>Label&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a720ff50ef9f8e016a5d2bbd8fd7fb41da771dbe3a12d351feb56440829ed3dee7"></a>Message&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a720ff50ef9f8e016a5d2bbd8fd7fb41da7441e7cada665765c9823817d13bc637"></a>Amount&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a720ff50ef9f8e016a5d2bbd8fd7fb41da5518c3c0fa0dc017518f200d39f39c25"></a>NUMBER_OF_COLUMNS&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8h_source.html#l00067">67</a> of file <a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab3ef691b8c34e6d6e5ae0bdf7953a360"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3ef691b8c34e6d6e5ae0bdf7953a360">&#9670;&nbsp;</a></span>RecentRequestsTableModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">RecentRequestsTableModel::RecentRequestsTableModel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_wallet.html">CWallet</a> *&#160;</td>
+          <td class="paramname"><em>wallet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_wallet_model.html">WalletModel</a> *&#160;</td>
+          <td class="paramname"><em>parent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00015">15</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a662c2b125ca4a1a11721ad6f7047b6b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a662c2b125ca4a1a11721ad6f7047b6b7">&#9670;&nbsp;</a></span>~RecentRequestsTableModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">RecentRequestsTableModel::~RecentRequestsTableModel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00032">32</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ae9866ffd5aed0f041437996410928edd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9866ffd5aed0f041437996410928edd">&#9670;&nbsp;</a></span>addNewRequest() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RecentRequestsTableModel::addNewRequest </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_send_coins_recipient.html">SendCoinsRecipient</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipient</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00155">155</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="aad0b9435284ed1f4b67852b34d7694a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad0b9435284ed1f4b67852b34d7694a9">&#9670;&nbsp;</a></span>addNewRequest() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RecentRequestsTableModel::addNewRequest </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>recipient</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00172">172</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a740761ab9075472df23be66d0a52f141"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a740761ab9075472df23be66d0a52f141">&#9670;&nbsp;</a></span>addNewRequest() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RecentRequestsTableModel::addNewRequest </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_recent_request_entry.html">RecentRequestEntry</a> &amp;&#160;</td>
+          <td class="paramname"><em>recipient</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00190">190</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a6c18b9f18bf931c31d28dfd7d42b394a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c18b9f18bf931c31d28dfd7d42b394a">&#9670;&nbsp;</a></span>columnCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RecentRequestsTableModel::columnCount </td>
+          <td>(</td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>parent</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00044">44</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad42929c480fc50cad83114ca5f2cc382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad42929c480fc50cad83114ca5f2cc382">&#9670;&nbsp;</a></span>data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QVariant RecentRequestsTableModel::data </td>
+          <td>(</td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>role</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00051">51</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6d0dead09080f7f8201a3feff0c30bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d0dead09080f7f8201a3feff0c30bb7">&#9670;&nbsp;</a></span>entry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_recent_request_entry.html">RecentRequestEntry</a>&amp; RecentRequestsTableModel::entry </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>row</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8h_source.html#l00087">87</a> of file <a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a67967379939cd8f9dd8c97d6ee18b28f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67967379939cd8f9dd8c97d6ee18b28f">&#9670;&nbsp;</a></span>flags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Qt::ItemFlags RecentRequestsTableModel::flags </td>
+          <td>(</td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00149">149</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ab0116f41ff8773ec18e68205b2917301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0116f41ff8773ec18e68205b2917301">&#9670;&nbsp;</a></span>getAmountTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString RecentRequestsTableModel::getAmountTitle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets title for amount column including current display unit if optionsModel reference available. </p>
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00112">112</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 9 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a526f89b7a3b29d47152d456671d12ddb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a526f89b7a3b29d47152d456671d12ddb">&#9670;&nbsp;</a></span>headerData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QVariant RecentRequestsTableModel::headerData </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>section</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Qt::Orientation&#160;</td>
+          <td class="paramname"><em>orientation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>role</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00094">94</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a744b879be9546793860528f6c5350289"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a744b879be9546793860528f6c5350289">&#9670;&nbsp;</a></span>index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QModelIndex RecentRequestsTableModel::index </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>parent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00121">121</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 10 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a63504be44ff9d33d5c508f6303622e5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63504be44ff9d33d5c508f6303622e5a">&#9670;&nbsp;</a></span>removeRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RecentRequestsTableModel::removeRows </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>parent</em> = <code>QModelIndex()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00128">128</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 11 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a339effe43b403b984b8453f774482790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a339effe43b403b984b8453f774482790">&#9670;&nbsp;</a></span>rowCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RecentRequestsTableModel::rowCount </td>
+          <td>(</td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>parent</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00037">37</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a57aa7dfaeead22d00b9dd3d704fb20e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57aa7dfaeead22d00b9dd3d704fb20e2">&#9670;&nbsp;</a></span>setData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RecentRequestsTableModel::setData </td>
+          <td>(</td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QVariant &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>role</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00089">89</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a63ba78741b7115af25908f88d138c201"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63ba78741b7115af25908f88d138c201">&#9670;&nbsp;</a></span>sort</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RecentRequestsTableModel::sort </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Qt::SortOrder&#160;</td>
+          <td class="paramname"><em>order</em> = <code>Qt::AscendingOrder</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00197">197</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 12 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 13 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a8bc224f31142bd2da1c2729010ee84a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bc224f31142bd2da1c2729010ee84a3">&#9670;&nbsp;</a></span>updateAmountColumnTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RecentRequestsTableModel::updateAmountColumnTitle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Updates the column title to "Amount (DisplayUnit)" and emits headerDataChanged() signal for table headers to react. </p>
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00105">105</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 14 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 15 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a8c4fe82f628df4e3a46809514ba9fe03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c4fe82f628df4e3a46809514ba9fe03">&#9670;&nbsp;</a></span>updateDisplayUnit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RecentRequestsTableModel::updateDisplayUnit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8cpp_source.html#l00203">203</a> of file <a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 16 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 17 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a09362cd1146b7b801e8fa5ef8d04e2a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09362cd1146b7b801e8fa5ef8d04e2a3">&#9670;&nbsp;</a></span>columns</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QStringList RecentRequestsTableModel::columns</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8h_source.html#l00098">98</a> of file <a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a84c7de31f5b343da9464359007995ed5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84c7de31f5b343da9464359007995ed5">&#9670;&nbsp;</a></span>list</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QList&lt;<a class="el" href="class_recent_request_entry.html">RecentRequestEntry</a>&gt; RecentRequestsTableModel::list</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8h_source.html#l00099">99</a> of file <a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a>.</p>
+
+</div>
+</div>
+<a id="af002ebf0f01a35a1cf29be7106aa98ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af002ebf0f01a35a1cf29be7106aa98ed">&#9670;&nbsp;</a></span>nReceiveRequestsMaxId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t RecentRequestsTableModel::nReceiveRequestsMaxId</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8h_source.html#l00100">100</a> of file <a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a>.</p>
+
+</div>
+</div>
+<a id="ae1ce2bad316f5f965200ba1f679396d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1ce2bad316f5f965200ba1f679396d8">&#9670;&nbsp;</a></span>walletModel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_wallet_model.html">WalletModel</a>* RecentRequestsTableModel::walletModel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="recentrequeststablemodel_8h_source.html#l00097">97</a> of file <a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>src/qt/<a class="el" href="recentrequeststablemodel_8h_source.html">recentrequeststablemodel.h</a></li>
+<li>src/qt/<a class="el" href="recentrequeststablemodel_8cpp_source.html">recentrequeststablemodel.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

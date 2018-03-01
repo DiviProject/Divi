@@ -1,0 +1,17 @@
+digraph "CWalletDB::Recover"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node200 [label="CWalletDB::Recover",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node200 -> Node201 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node201 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node200 -> Node202 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node202 [label="CDBEnv::Salvage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b_env.html#a08726637bff0809ab9c7c493383a3914"];
+  Node202 -> Node203 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node203 [label="ParseHex",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilstrencodings_8cpp.html#abea395175fbc4a788ed0f0a41710b8a7"];
+  Node203 -> Node204 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node204 [label="HexDigit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilstrencodings_8cpp.html#aa59e8a8c5a39cb5041f93bb95dd02119"];
+  Node200 -> Node205 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node205 [label="CDBEnv::TxnBegin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b_env.html#a5f1daab338b2098ea693efad6edefb9b"];
+}

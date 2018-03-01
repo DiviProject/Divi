@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="tinyformat::detail\l::is_wchar\< wchar_t[n]\>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structtinyformat_1_1detail_1_1is__wchar_3_01wchar__t[n]_4.html"];
+}

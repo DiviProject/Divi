@@ -1,0 +1,41 @@
+digraph "RecalculateZPIVSpent"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1128 [label="RecalculateZPIVSpent",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1128 -> Node1129 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1129 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node1128 -> Node1130 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1130 [label="CChainParams::Zerocoin\l_StartHeight",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html#a5c3b62573db5b5a6cdaee67d608353e0"];
+  Node1128 -> Node1131 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1131 [label="ReadBlockFromDisk",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a2dc350346749b7da7f4b40c114ee5147"];
+  Node1131 -> Node1132 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1132 [label="CBlock::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block.html#a0410d7ba8d60679c4cf364b82ffffea5"];
+  Node1132 -> Node1133 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1133 [label="CBlockHeader::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_header.html#ae39c04a4357417d98954a51f53beb78a"];
+  Node1133 -> Node1134 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1134 [label="base_uint::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#ab7f832a0d48a7da00296497c820ae775"];
+  Node1131 -> Node1135 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1135 [label="OpenBlockFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a0d81388930a4ccb6a69b9abdd1ef5097",tooltip="Open a block file (blk?????.dat) "];
+  Node1135 -> Node1136 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1136 [label="OpenDiskFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635"];
+  Node1136 -> Node1137 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1137 [label="CDiskBlockPos::IsNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct_c_disk_block_pos.html#a7dd98fe3f5372d358df61db31899b0af"];
+  Node1136 -> Node1138 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1138 [label="GetBlockPosFilename",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a2f26f074aac584c3398de1dcdac59de9",tooltip="Translation to a filesystem path. "];
+  Node1138 -> Node1139 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1139 [label="GetDataDir",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba"];
+  Node1128 -> Node1140 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1140 [label="ZerocoinSpendListFromBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a79d886b5a0e7d08dc7308749b7aed9d7"];
+  Node1140 -> Node1141 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1141 [label="CTransaction::IsZerocoin\lSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a4cda5603795c5f9179d4c8bd43f809cd"];
+  Node1140 -> Node1142 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1142 [label="CScript::IsZerocoinSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_script.html#a84914a83542deece42dda7b22b043c1f"];
+  Node1140 -> Node1143 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1143 [label="TxInToZerocoinSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#af5469af7fa8bbe7c9572e68c041e8e21"];
+  Node1140 -> Node1144 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1144 [label="libzerocoin::CoinSpend\l::getCoinSerialNumber",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_coin_spend.html#a125e5f3e268571a5549aa10bf9ad0f2b",tooltip="Returns the serial number of the coin spend by this proof. "];
+  Node1140 -> Node1145 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1145 [label="libzerocoin::IntToZerocoin\lDenomination",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacelibzerocoin.html#a59a7febb87e2521cec803d3bb3533c5f"];
+}

@@ -1,0 +1,15 @@
+digraph "src/secp256k1/src/java" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_8db2ef784512d48b2a7d00369dfaac28 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="src" fontname="Helvetica", fontsize="10", URL="dir_8db2ef784512d48b2a7d00369dfaac28.html"]
+  subgraph clusterdir_6aa3a68224b805bba267e8177562bcaa {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_6aa3a68224b805bba267e8177562bcaa.html"];
+    dir_6aa3a68224b805bba267e8177562bcaa [shape=plaintext label="java"];
+    dir_a627ed3c38bd665a787e034da3e074e5 [shape=box label="org" color="red" fillcolor="white" style="filled" URL="dir_a627ed3c38bd665a787e034da3e074e5.html"];
+  }
+  }
+  dir_1b4df0b9bba47cf333db333897c5a5a4 [shape=box label="include" URL="dir_1b4df0b9bba47cf333db333897c5a5a4.html"];
+  dir_6aa3a68224b805bba267e8177562bcaa->dir_1b4df0b9bba47cf333db333897c5a5a4 [headlabel="1", labeldistance=1.5 headhref="dir_000011_000009.html"];
+}

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: TransactionView Class Reference</title>
+<title>DIVX: TransactionView Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -66,96 +69,450 @@ $(function() {
 <a href="#pub-slots">Public Slots</a> &#124;
 <a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-slots">Private Slots</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_transaction_view-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">TransactionView Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>Widget showing the transaction list for a wallet, including a filter row.  
+ <a href="class_transaction_view.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="transactionview_8h_source.html">transactionview.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for TransactionView:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_transaction_view.png" usemap="#TransactionView_map" alt=""/>
-  <map id="TransactionView_map" name="TransactionView_map">
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for TransactionView:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a73d1bbedc72fa131591aadb3aba150f8"><td class="memItemLeft" align="right" valign="top"><a id="a73d1bbedc72fa131591aadb3aba150f8"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>DateEnum</b> { <br />
-&#160;&#160;<b>All</b>, 
-<b>Today</b>, 
-<b>ThisWeek</b>, 
-<b>ThisMonth</b>, 
+<tr class="memitem:a73d1bbedc72fa131591aadb3aba150f8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a73d1bbedc72fa131591aadb3aba150f8">DateEnum</a> { <br />
+&#160;&#160;<a class="el" href="class_transaction_view.html#a73d1bbedc72fa131591aadb3aba150f8a4c8bf710ad7b3be71d6da978c62e49fe">All</a>, 
+<a class="el" href="class_transaction_view.html#a73d1bbedc72fa131591aadb3aba150f8af944f2a9373333fc348d517aad15fd93">Today</a>, 
+<a class="el" href="class_transaction_view.html#a73d1bbedc72fa131591aadb3aba150f8ad690fc9e22dbb55e86f2198553d26bec">ThisWeek</a>, 
+<a class="el" href="class_transaction_view.html#a73d1bbedc72fa131591aadb3aba150f8a34f3d05ba9262c629e7d6a4e809ab927">ThisMonth</a>, 
 <br />
-&#160;&#160;<b>LastMonth</b>, 
-<b>ThisYear</b>, 
-<b>Range</b>
+&#160;&#160;<a class="el" href="class_transaction_view.html#a73d1bbedc72fa131591aadb3aba150f8ab119e2fd1a4a132c780c82cfe982f218">LastMonth</a>, 
+<a class="el" href="class_transaction_view.html#a73d1bbedc72fa131591aadb3aba150f8a783e0105c0ec8447b33a84ce44951eb5">ThisYear</a>, 
+<a class="el" href="class_transaction_view.html#a73d1bbedc72fa131591aadb3aba150f8a5282c94849c51ee19eaa9cf929428b10">Range</a>
 <br />
  }</td></tr>
 <tr class="separator:a73d1bbedc72fa131591aadb3aba150f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a330f6333f7d24ceef963729fa35fe985"><td class="memItemLeft" align="right" valign="top"><a id="a330f6333f7d24ceef963729fa35fe985"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ColumnWidths</b> { <br />
-&#160;&#160;<b>STATUS_COLUMN_WIDTH</b> = 23, 
-<b>WATCHONLY_COLUMN_WIDTH</b> = 23, 
-<b>DATE_COLUMN_WIDTH</b> = 120, 
-<b>TYPE_COLUMN_WIDTH</b> = 240, 
+<tr class="memitem:a330f6333f7d24ceef963729fa35fe985"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a330f6333f7d24ceef963729fa35fe985">ColumnWidths</a> { <br />
+&#160;&#160;<a class="el" href="class_transaction_view.html#a330f6333f7d24ceef963729fa35fe985a3220bee9d0f9f96c95abe07763105772">STATUS_COLUMN_WIDTH</a> = 23, 
+<a class="el" href="class_transaction_view.html#a330f6333f7d24ceef963729fa35fe985a3b652334c12361760c237732b101a9f9">WATCHONLY_COLUMN_WIDTH</a> = 23, 
+<a class="el" href="class_transaction_view.html#a330f6333f7d24ceef963729fa35fe985a0f69ae6a6e98a15184edf87b4ec3b72b">DATE_COLUMN_WIDTH</a> = 120, 
+<a class="el" href="class_transaction_view.html#a330f6333f7d24ceef963729fa35fe985a7f9f9978247cb741168e554fa30a1070">TYPE_COLUMN_WIDTH</a> = 240, 
 <br />
-&#160;&#160;<b>AMOUNT_MINIMUM_COLUMN_WIDTH</b> = 120, 
-<b>MINIMUM_COLUMN_WIDTH</b> = 23
+&#160;&#160;<a class="el" href="class_transaction_view.html#a330f6333f7d24ceef963729fa35fe985a5c6ab036d55c60a7496c9cb5690c343d">AMOUNT_MINIMUM_COLUMN_WIDTH</a> = 120, 
+<a class="el" href="class_transaction_view.html#a330f6333f7d24ceef963729fa35fe985ab148c4972a9957d6e5f6140f17fc8b99">MINIMUM_COLUMN_WIDTH</a> = 23
 <br />
  }</td></tr>
 <tr class="separator:a330f6333f7d24ceef963729fa35fe985"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-slots"></a>
 Public Slots</h2></td></tr>
-<tr class="memitem:abd49a0777b14f7bf5a72a4d5901d033d"><td class="memItemLeft" align="right" valign="top"><a id="abd49a0777b14f7bf5a72a4d5901d033d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>chooseDate</b> (int idx)</td></tr>
+<tr class="memitem:abd49a0777b14f7bf5a72a4d5901d033d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#abd49a0777b14f7bf5a72a4d5901d033d">chooseDate</a> (int idx)</td></tr>
 <tr class="separator:abd49a0777b14f7bf5a72a4d5901d033d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a590f0edc4ab4d59f88d7fc494e852f80"><td class="memItemLeft" align="right" valign="top"><a id="a590f0edc4ab4d59f88d7fc494e852f80"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>chooseType</b> (int idx)</td></tr>
+<tr class="memitem:a590f0edc4ab4d59f88d7fc494e852f80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a590f0edc4ab4d59f88d7fc494e852f80">chooseType</a> (int idx)</td></tr>
 <tr class="separator:a590f0edc4ab4d59f88d7fc494e852f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f3b9936adcb622403210e7b38a64574"><td class="memItemLeft" align="right" valign="top"><a id="a0f3b9936adcb622403210e7b38a64574"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>chooseWatchonly</b> (int idx)</td></tr>
+<tr class="memitem:a0f3b9936adcb622403210e7b38a64574"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a0f3b9936adcb622403210e7b38a64574">chooseWatchonly</a> (int idx)</td></tr>
 <tr class="separator:a0f3b9936adcb622403210e7b38a64574"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2ed41556913e588c667490860717efa"><td class="memItemLeft" align="right" valign="top"><a id="ac2ed41556913e588c667490860717efa"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>changedPrefix</b> (const QString &amp;prefix)</td></tr>
+<tr class="memitem:ac2ed41556913e588c667490860717efa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#ac2ed41556913e588c667490860717efa">changedPrefix</a> (const QString &amp;<a class="el" href="rest_8cpp.html#a5b41c5ae4505891e6c53e26df197e02b">prefix</a>)</td></tr>
 <tr class="separator:ac2ed41556913e588c667490860717efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0075048c06bb54da5c5e5d2691198984"><td class="memItemLeft" align="right" valign="top"><a id="a0075048c06bb54da5c5e5d2691198984"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>changedAmount</b> (const QString &amp;amount)</td></tr>
+<tr class="memitem:a0075048c06bb54da5c5e5d2691198984"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a0075048c06bb54da5c5e5d2691198984">changedAmount</a> (const QString &amp;amount)</td></tr>
 <tr class="separator:a0075048c06bb54da5c5e5d2691198984"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5983022ff1e5395f87de3c5728eff8da"><td class="memItemLeft" align="right" valign="top"><a id="a5983022ff1e5395f87de3c5728eff8da"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>exportClicked</b> ()</td></tr>
+<tr class="memitem:a5983022ff1e5395f87de3c5728eff8da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a5983022ff1e5395f87de3c5728eff8da">exportClicked</a> ()</td></tr>
 <tr class="separator:a5983022ff1e5395f87de3c5728eff8da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6d126806467ae9dc273cbe19a7477cc"><td class="memItemLeft" align="right" valign="top"><a id="ab6d126806467ae9dc273cbe19a7477cc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>focusTransaction</b> (const QModelIndex &amp;)</td></tr>
+<tr class="memitem:ab6d126806467ae9dc273cbe19a7477cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#ab6d126806467ae9dc273cbe19a7477cc">focusTransaction</a> (const QModelIndex &amp;)</td></tr>
 <tr class="separator:ab6d126806467ae9dc273cbe19a7477cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb2ea48a61bb12a0dda9d63952adc50e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#abb2ea48a61bb12a0dda9d63952adc50e">computeSum</a> ()</td></tr>
+<tr class="memdesc:abb2ea48a61bb12a0dda9d63952adc50e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute sum of all selected transactions.  <a href="#abb2ea48a61bb12a0dda9d63952adc50e">More...</a><br /></td></tr>
 <tr class="separator:abb2ea48a61bb12a0dda9d63952adc50e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
 Signals</h2></td></tr>
-<tr class="memitem:ad7f18fdb4db9a4a307eeba8bf1fec4e3"><td class="memItemLeft" align="right" valign="top"><a id="ad7f18fdb4db9a4a307eeba8bf1fec4e3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>doubleClicked</b> (const QModelIndex &amp;)</td></tr>
+<tr class="memitem:ad7f18fdb4db9a4a307eeba8bf1fec4e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#ad7f18fdb4db9a4a307eeba8bf1fec4e3">doubleClicked</a> (const QModelIndex &amp;)</td></tr>
 <tr class="separator:ad7f18fdb4db9a4a307eeba8bf1fec4e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56d909951088cfc74b8b18fc2693e3b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a56d909951088cfc74b8b18fc2693e3b1">message</a> (const QString &amp;title, const QString &amp;message, unsigned int style)</td></tr>
+<tr class="memdesc:a56d909951088cfc74b8b18fc2693e3b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fired when a message should be reported to the user.  <a href="#a56d909951088cfc74b8b18fc2693e3b1">More...</a><br /></td></tr>
 <tr class="separator:a56d909951088cfc74b8b18fc2693e3b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a139ef5288ce13ce14c17907b4d80c0e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a139ef5288ce13ce14c17907b4d80c0e8">trxAmount</a> (QString amount)</td></tr>
+<tr class="memdesc:a139ef5288ce13ce14c17907b4d80c0e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send computed sum back to wallet-view.  <a href="#a139ef5288ce13ce14c17907b4d80c0e8">More...</a><br /></td></tr>
 <tr class="separator:a139ef5288ce13ce14c17907b4d80c0e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0c5e8b90206b4e8b8bf68dd7e319798f"><td class="memItemLeft" align="right" valign="top"><a id="a0c5e8b90206b4e8b8bf68dd7e319798f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TransactionView</b> (QWidget *parent=0)</td></tr>
+<tr class="memitem:a0c5e8b90206b4e8b8bf68dd7e319798f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a0c5e8b90206b4e8b8bf68dd7e319798f">TransactionView</a> (QWidget *parent=0)</td></tr>
 <tr class="separator:a0c5e8b90206b4e8b8bf68dd7e319798f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4920c2cd57d72eb50248948fa160c83c"><td class="memItemLeft" align="right" valign="top"><a id="a4920c2cd57d72eb50248948fa160c83c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setModel</b> (<a class="el" href="class_wallet_model.html">WalletModel</a> *model)</td></tr>
+<tr class="memitem:a4920c2cd57d72eb50248948fa160c83c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a4920c2cd57d72eb50248948fa160c83c">setModel</a> (<a class="el" href="class_wallet_model.html">WalletModel</a> *<a class="el" href="class_transaction_view.html#a06a93328d9ce20a850a3830d246b195c">model</a>)</td></tr>
 <tr class="separator:a4920c2cd57d72eb50248948fa160c83c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-slots"></a>
+Private Slots</h2></td></tr>
+<tr class="memitem:abe5793b86a4ea6f80a6d822ee878e646"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#abe5793b86a4ea6f80a6d822ee878e646">contextualMenu</a> (const QPoint &amp;)</td></tr>
+<tr class="separator:abe5793b86a4ea6f80a6d822ee878e646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9000969ec2cc3617b9c06caf33e747a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#ab9000969ec2cc3617b9c06caf33e747a">dateRangeChanged</a> ()</td></tr>
+<tr class="separator:ab9000969ec2cc3617b9c06caf33e747a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae62e0e0941a219c927d83190c3b5def6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#ae62e0e0941a219c927d83190c3b5def6">showDetails</a> ()</td></tr>
+<tr class="separator:ae62e0e0941a219c927d83190c3b5def6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a768ffc4deca27f0cfffb39003bf46f75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a768ffc4deca27f0cfffb39003bf46f75">copyAddress</a> ()</td></tr>
+<tr class="separator:a768ffc4deca27f0cfffb39003bf46f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18817639384e53f94fc1ad956d7263d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a18817639384e53f94fc1ad956d7263d9">editLabel</a> ()</td></tr>
+<tr class="separator:a18817639384e53f94fc1ad956d7263d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78d63230a1b7810108f46bb2366b2038"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a78d63230a1b7810108f46bb2366b2038">copyLabel</a> ()</td></tr>
+<tr class="separator:a78d63230a1b7810108f46bb2366b2038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83e5ce148e328b673c1b6af09a1d94ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a83e5ce148e328b673c1b6af09a1d94ea">copyAmount</a> ()</td></tr>
+<tr class="separator:a83e5ce148e328b673c1b6af09a1d94ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a465c51f03cf28f66492766b4a5da8896"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a465c51f03cf28f66492766b4a5da8896">copyTxID</a> ()</td></tr>
+<tr class="separator:a465c51f03cf28f66492766b4a5da8896"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1d088fbd25c0841dbc7c5de25583d79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#ad1d088fbd25c0841dbc7c5de25583d79">openThirdPartyTxUrl</a> (QString <a class="el" href="rpcconsole_8cpp.html#aec657bef26e5ff27b9442563a591d9ec">url</a>)</td></tr>
+<tr class="separator:ad1d088fbd25c0841dbc7c5de25583d79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f0b28d3a8557d6f490f250bf74b7d5d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a4f0b28d3a8557d6f490f250bf74b7d5d">updateWatchOnlyColumn</a> (bool fHaveWatchOnly)</td></tr>
+<tr class="separator:a4f0b28d3a8557d6f490f250bf74b7d5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a4455d37773d81280d068f0b7751150f7"><td class="memItemLeft" align="right" valign="top">QWidget *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a4455d37773d81280d068f0b7751150f7">createDateRangeWidget</a> ()</td></tr>
+<tr class="separator:a4455d37773d81280d068f0b7751150f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bcc05526bc111b4299d32d882f633b8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a6bcc05526bc111b4299d32d882f633b8">resizeEvent</a> (QResizeEvent *event)</td></tr>
+<tr class="separator:a6bcc05526bc111b4299d32d882f633b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074558e027cc1128e55a66ea47328403"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a074558e027cc1128e55a66ea47328403">eventFilter</a> (QObject *obj, QEvent *event)</td></tr>
+<tr class="separator:a074558e027cc1128e55a66ea47328403"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a06a93328d9ce20a850a3830d246b195c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_wallet_model.html">WalletModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a06a93328d9ce20a850a3830d246b195c">model</a></td></tr>
+<tr class="separator:a06a93328d9ce20a850a3830d246b195c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a941a92702d4adc4f388007d304532b32"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_transaction_filter_proxy.html">TransactionFilterProxy</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a941a92702d4adc4f388007d304532b32">transactionProxyModel</a></td></tr>
+<tr class="separator:a941a92702d4adc4f388007d304532b32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3e626f7153376a86d60e5e4d3562b97"><td class="memItemLeft" align="right" valign="top">QTableView *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#aa3e626f7153376a86d60e5e4d3562b97">transactionView</a></td></tr>
+<tr class="separator:aa3e626f7153376a86d60e5e4d3562b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc54e9aee244fb3fa7fd94e9fe39076b"><td class="memItemLeft" align="right" valign="top">QComboBox *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#acc54e9aee244fb3fa7fd94e9fe39076b">dateWidget</a></td></tr>
+<tr class="separator:acc54e9aee244fb3fa7fd94e9fe39076b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eb4d5258aa59a92a8513109b7e8c99c"><td class="memItemLeft" align="right" valign="top">QComboBox *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a1eb4d5258aa59a92a8513109b7e8c99c">typeWidget</a></td></tr>
+<tr class="separator:a1eb4d5258aa59a92a8513109b7e8c99c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a788b3483bcce9c112553aba80503adc6"><td class="memItemLeft" align="right" valign="top">QComboBox *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a788b3483bcce9c112553aba80503adc6">watchOnlyWidget</a></td></tr>
+<tr class="separator:a788b3483bcce9c112553aba80503adc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d380b8ea48761f027d6efe61b5104c1"><td class="memItemLeft" align="right" valign="top">QLineEdit *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a3d380b8ea48761f027d6efe61b5104c1">addressWidget</a></td></tr>
+<tr class="separator:a3d380b8ea48761f027d6efe61b5104c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af389b21503e220bb8aa6a2b5b3767c01"><td class="memItemLeft" align="right" valign="top">QLineEdit *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#af389b21503e220bb8aa6a2b5b3767c01">amountWidget</a></td></tr>
+<tr class="separator:af389b21503e220bb8aa6a2b5b3767c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21740dc2428d8fd14296e93b3c659b67"><td class="memItemLeft" align="right" valign="top">QMenu *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a21740dc2428d8fd14296e93b3c659b67">contextMenu</a></td></tr>
+<tr class="separator:a21740dc2428d8fd14296e93b3c659b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44fe33f8549627ea35e0ab549d3acf48"><td class="memItemLeft" align="right" valign="top">QSignalMapper *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a44fe33f8549627ea35e0ab549d3acf48">mapperThirdPartyTxUrls</a></td></tr>
+<tr class="separator:a44fe33f8549627ea35e0ab549d3acf48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8130e1d90d098a325d705dc1339be507"><td class="memItemLeft" align="right" valign="top">QFrame *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a8130e1d90d098a325d705dc1339be507">dateRangeWidget</a></td></tr>
+<tr class="separator:a8130e1d90d098a325d705dc1339be507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bdec02590acb5fc5d29141e0ae3fbeb"><td class="memItemLeft" align="right" valign="top">QDateTimeEdit *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a2bdec02590acb5fc5d29141e0ae3fbeb">dateFrom</a></td></tr>
+<tr class="separator:a2bdec02590acb5fc5d29141e0ae3fbeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e997a38970509e6d9a99890d85a645c"><td class="memItemLeft" align="right" valign="top">QDateTimeEdit *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a8e997a38970509e6d9a99890d85a645c">dateTo</a></td></tr>
+<tr class="separator:a8e997a38970509e6d9a99890d85a645c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b43fde145519cca7876dff376c3e6ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html">GUIUtil::TableViewLastColumnResizingFixer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_transaction_view.html#a4b43fde145519cca7876dff376c3e6ce">columnResizingFixer</a></td></tr>
+<tr class="separator:a4b43fde145519cca7876dff376c3e6ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Widget showing the transaction list for a wallet, including a filter row. Using the filter row, the user can view or export a subset of the transactions. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<div class="textblock"><p>Widget showing the transaction list for a wallet, including a filter row. </p>
+<p>Using the filter row, the user can view or export a subset of the transactions. </p>
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00031">31</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a330f6333f7d24ceef963729fa35fe985"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a330f6333f7d24ceef963729fa35fe985">&#9670;&nbsp;</a></span>ColumnWidths</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_transaction_view.html#a330f6333f7d24ceef963729fa35fe985">TransactionView::ColumnWidths</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a330f6333f7d24ceef963729fa35fe985a3220bee9d0f9f96c95abe07763105772"></a>STATUS_COLUMN_WIDTH&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a330f6333f7d24ceef963729fa35fe985a3b652334c12361760c237732b101a9f9"></a>WATCHONLY_COLUMN_WIDTH&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a330f6333f7d24ceef963729fa35fe985a0f69ae6a6e98a15184edf87b4ec3b72b"></a>DATE_COLUMN_WIDTH&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a330f6333f7d24ceef963729fa35fe985a7f9f9978247cb741168e554fa30a1070"></a>TYPE_COLUMN_WIDTH&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a330f6333f7d24ceef963729fa35fe985a5c6ab036d55c60a7496c9cb5690c343d"></a>AMOUNT_MINIMUM_COLUMN_WIDTH&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a330f6333f7d24ceef963729fa35fe985ab148c4972a9957d6e5f6140f17fc8b99"></a>MINIMUM_COLUMN_WIDTH&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00051">51</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a73d1bbedc72fa131591aadb3aba150f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73d1bbedc72fa131591aadb3aba150f8">&#9670;&nbsp;</a></span>DateEnum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_transaction_view.html#a73d1bbedc72fa131591aadb3aba150f8">TransactionView::DateEnum</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a73d1bbedc72fa131591aadb3aba150f8a4c8bf710ad7b3be71d6da978c62e49fe"></a>All&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a73d1bbedc72fa131591aadb3aba150f8af944f2a9373333fc348d517aad15fd93"></a>Today&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a73d1bbedc72fa131591aadb3aba150f8ad690fc9e22dbb55e86f2198553d26bec"></a>ThisWeek&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a73d1bbedc72fa131591aadb3aba150f8a34f3d05ba9262c629e7d6a4e809ab927"></a>ThisMonth&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a73d1bbedc72fa131591aadb3aba150f8ab119e2fd1a4a132c780c82cfe982f218"></a>LastMonth&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a73d1bbedc72fa131591aadb3aba150f8a783e0105c0ec8447b33a84ce44951eb5"></a>ThisYear&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a73d1bbedc72fa131591aadb3aba150f8a5282c94849c51ee19eaa9cf929428b10"></a>Range&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00041">41</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a0c5e8b90206b4e8b8bf68dd7e319798f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c5e8b90206b4e8b8bf68dd7e319798f">&#9670;&nbsp;</a></span>TransactionView()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TransactionView::TransactionView </td>
+          <td>(</td>
+          <td class="paramtype">QWidget *&#160;</td>
+          <td class="paramname"><em>parent</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00038">38</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a0075048c06bb54da5c5e5d2691198984"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0075048c06bb54da5c5e5d2691198984">&#9670;&nbsp;</a></span>changedAmount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::changedAmount </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>amount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00329">329</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac2ed41556913e588c667490860717efa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ed41556913e588c667490860717efa">&#9670;&nbsp;</a></span>changedPrefix</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::changedPrefix </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>prefix</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00322">322</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="abd49a0777b14f7bf5a72a4d5901d033d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd49a0777b14f7bf5a72a4d5901d033d">&#9670;&nbsp;</a></span>chooseDate</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::chooseDate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00251">251</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a590f0edc4ab4d59f88d7fc494e852f80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a590f0edc4ab4d59f88d7fc494e852f80">&#9670;&nbsp;</a></span>chooseType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::chooseType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00303">303</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 9 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 10 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a0f3b9936adcb622403210e7b38a64574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f3b9936adcb622403210e7b38a64574">&#9670;&nbsp;</a></span>chooseWatchonly</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::chooseWatchonly </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00314">314</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 11 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 12 -->
+</div>
+</div>
+
+</div>
+</div>
 <a id="abb2ea48a61bb12a0dda9d63952adc50e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abb2ea48a61bb12a0dda9d63952adc50e">&#9670;&nbsp;</a></span>computeSum</h2>
 
@@ -178,7 +535,478 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setModel</b> (<a clas
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Compute sum of all selected transactions </p>
+
+<p>Compute sum of all selected transactions. </p>
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00466">466</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 13 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 14 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="abe5793b86a4ea6f80a6d822ee878e646"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe5793b86a4ea6f80a6d822ee878e646">&#9670;&nbsp;</a></span>contextualMenu</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::contextualMenu </td>
+          <td>(</td>
+          <td class="paramtype">const QPoint &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00387">387</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 15 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 16 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a768ffc4deca27f0cfffb39003bf46f75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a768ffc4deca27f0cfffb39003bf46f75">&#9670;&nbsp;</a></span>copyAddress</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::copyAddress </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00395">395</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 17 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 18 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a83e5ce148e328b673c1b6af09a1d94ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83e5ce148e328b673c1b6af09a1d94ea">&#9670;&nbsp;</a></span>copyAmount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::copyAmount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00405">405</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 19 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 20 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a78d63230a1b7810108f46bb2366b2038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78d63230a1b7810108f46bb2366b2038">&#9670;&nbsp;</a></span>copyLabel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::copyLabel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00400">400</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 21 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 22 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a465c51f03cf28f66492766b4a5da8896"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a465c51f03cf28f66492766b4a5da8896">&#9670;&nbsp;</a></span>copyTxID</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::copyTxID </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00410">410</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 23 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 24 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4455d37773d81280d068f0b7751150f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4455d37773d81280d068f0b7751150f7">&#9670;&nbsp;</a></span>createDateRangeWidget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QWidget * TransactionView::createDateRangeWidget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00491">491</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 25 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 26 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ab9000969ec2cc3617b9c06caf33e747a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9000969ec2cc3617b9c06caf33e747a">&#9670;&nbsp;</a></span>dateRangeChanged</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::dateRangeChanged </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00527">527</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 27 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 28 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad7f18fdb4db9a4a307eeba8bf1fec4e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7f18fdb4db9a4a307eeba8bf1fec4e3">&#9670;&nbsp;</a></span>doubleClicked</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::doubleClicked </td>
+          <td>(</td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 29 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a18817639384e53f94fc1ad956d7263d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18817639384e53f94fc1ad956d7263d9">&#9670;&nbsp;</a></span>editLabel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::editLabel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00415">415</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 30 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 31 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a074558e027cc1128e55a66ea47328403"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a074558e027cc1128e55a66ea47328403">&#9670;&nbsp;</a></span>eventFilter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool TransactionView::eventFilter </td>
+          <td>(</td>
+          <td class="paramtype">QObject *&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QEvent *&#160;</td>
+          <td class="paramname"><em>event</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00557">557</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 32 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a5983022ff1e5395f87de3c5728eff8da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5983022ff1e5395f87de3c5728eff8da">&#9670;&nbsp;</a></span>exportClicked</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::exportClicked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00348">348</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 33 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ab6d126806467ae9dc273cbe19a7477cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6d126806467ae9dc273cbe19a7477cc">&#9670;&nbsp;</a></span>focusTransaction</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::focusTransaction </td>
+          <td>(</td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00536">536</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 34 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -221,7 +1049,147 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setModel</b> (<a clas
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Fired when a message should be reported to the user </p>
+
+<p>Fired when a message should be reported to the user. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 35 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad1d088fbd25c0841dbc7c5de25583d79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1d088fbd25c0841dbc7c5de25583d79">&#9670;&nbsp;</a></span>openThirdPartyTxUrl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::openThirdPartyTxUrl </td>
+          <td>(</td>
+          <td class="paramtype">QString&#160;</td>
+          <td class="paramname"><em>url</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00482">482</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 36 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6bcc05526bc111b4299d32d882f633b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bcc05526bc111b4299d32d882f633b8">&#9670;&nbsp;</a></span>resizeEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::resizeEvent </td>
+          <td>(</td>
+          <td class="paramtype">QResizeEvent *&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00550">550</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 37 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4920c2cd57d72eb50248948fa160c83c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4920c2cd57d72eb50248948fa160c83c">&#9670;&nbsp;</a></span>setModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::setModel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_wallet_model.html">WalletModel</a> *&#160;</td>
+          <td class="paramname"><em>model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00190">190</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 38 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 39 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae62e0e0941a219c927d83190c3b5def6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae62e0e0941a219c927d83190c3b5def6">&#9670;&nbsp;</a></span>showDetails</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::showDetails </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00454">454</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 40 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -248,18 +1216,396 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setModel</b> (<a clas
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Send computed sum back to wallet-view </p>
+
+<p>Send computed sum back to wallet-view. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 41 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4f0b28d3a8557d6f490f250bf74b7d5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f0b28d3a8557d6f490f250bf74b7d5d">&#9670;&nbsp;</a></span>updateWatchOnlyColumn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void TransactionView::updateWatchOnlyColumn </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fHaveWatchOnly</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8cpp_source.html#l00573">573</a> of file <a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 42 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a3d380b8ea48761f027d6efe61b5104c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d380b8ea48761f027d6efe61b5104c1">&#9670;&nbsp;</a></span>addressWidget</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QLineEdit* TransactionView::addressWidget</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00067">67</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="af389b21503e220bb8aa6a2b5b3767c01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af389b21503e220bb8aa6a2b5b3767c01">&#9670;&nbsp;</a></span>amountWidget</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QLineEdit* TransactionView::amountWidget</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00068">68</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a4b43fde145519cca7876dff376c3e6ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b43fde145519cca7876dff376c3e6ce">&#9670;&nbsp;</a></span>columnResizingFixer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html">GUIUtil::TableViewLastColumnResizingFixer</a>* TransactionView::columnResizingFixer</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00079">79</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a21740dc2428d8fd14296e93b3c659b67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21740dc2428d8fd14296e93b3c659b67">&#9670;&nbsp;</a></span>contextMenu</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QMenu* TransactionView::contextMenu</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00070">70</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a2bdec02590acb5fc5d29141e0ae3fbeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bdec02590acb5fc5d29141e0ae3fbeb">&#9670;&nbsp;</a></span>dateFrom</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QDateTimeEdit* TransactionView::dateFrom</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00074">74</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a8130e1d90d098a325d705dc1339be507"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8130e1d90d098a325d705dc1339be507">&#9670;&nbsp;</a></span>dateRangeWidget</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QFrame* TransactionView::dateRangeWidget</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00073">73</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a8e997a38970509e6d9a99890d85a645c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e997a38970509e6d9a99890d85a645c">&#9670;&nbsp;</a></span>dateTo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QDateTimeEdit* TransactionView::dateTo</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00075">75</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="acc54e9aee244fb3fa7fd94e9fe39076b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc54e9aee244fb3fa7fd94e9fe39076b">&#9670;&nbsp;</a></span>dateWidget</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QComboBox* TransactionView::dateWidget</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00064">64</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a44fe33f8549627ea35e0ab549d3acf48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44fe33f8549627ea35e0ab549d3acf48">&#9670;&nbsp;</a></span>mapperThirdPartyTxUrls</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QSignalMapper* TransactionView::mapperThirdPartyTxUrls</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00071">71</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a06a93328d9ce20a850a3830d246b195c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06a93328d9ce20a850a3830d246b195c">&#9670;&nbsp;</a></span>model</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_wallet_model.html">WalletModel</a>* TransactionView::model</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00061">61</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a941a92702d4adc4f388007d304532b32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a941a92702d4adc4f388007d304532b32">&#9670;&nbsp;</a></span>transactionProxyModel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_transaction_filter_proxy.html">TransactionFilterProxy</a>* TransactionView::transactionProxyModel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00062">62</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="aa3e626f7153376a86d60e5e4d3562b97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3e626f7153376a86d60e5e4d3562b97">&#9670;&nbsp;</a></span>transactionView</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QTableView* TransactionView::transactionView</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00063">63</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a1eb4d5258aa59a92a8513109b7e8c99c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1eb4d5258aa59a92a8513109b7e8c99c">&#9670;&nbsp;</a></span>typeWidget</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QComboBox* TransactionView::typeWidget</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00065">65</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
+
+</div>
+</div>
+<a id="a788b3483bcce9c112553aba80503adc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a788b3483bcce9c112553aba80503adc6">&#9670;&nbsp;</a></span>watchOnlyWidget</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QComboBox* TransactionView::watchOnlyWidget</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transactionview_8h_source.html#l00066">66</a> of file <a class="el" href="transactionview_8h_source.html">transactionview.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/qt/<a class="el" href="transactionview_8h_source.html">transactionview.h</a></li>
-<li>PIVX/src/qt/transactionview.cpp</li>
+<li>src/qt/<a class="el" href="transactionview_8h_source.html">transactionview.h</a></li>
+<li>src/qt/<a class="el" href="transactionview_8cpp_source.html">transactionview.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:29 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

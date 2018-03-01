@@ -1,0 +1,32 @@
+digraph "uint256::GetCompact"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node13 [label="uint256::GetCompact",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node13 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="CMasternodeMan::GetCurrent\lMasterNode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_man.html#a2b3a91870855e8fcb9b2b6e00c35197f",tooltip="Get the current winner for this block. "];
+  Node14 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="CMasternodePayments\l::FillBlockPayee",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_payments.html#a459bf2e3a7e56743663026fd8f6d768d"];
+  Node15 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="FillBlockPayee",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-payments_8h.html#a2bd3aae33d7ebbea97792d1f1abfff03"];
+  Node14 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="getpoolinfo",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#aea4471c128eb07bb1b70b4344ac38564"];
+  Node14 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="masternodecurrent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a12991e9d740341923f120e5be868ac1b"];
+  Node18 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="masternode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a30609e443aeb47c29ed0878d16b1b5e1"];
+  Node13 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="CMasternodeMan::GetMasternode\lRanks",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_man.html#ac06180b4570d5d1b098979c2f59a7a90"];
+  Node20 -> Node21 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="listmasternodes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a7670cc32a8bffbd99760becd8d33357a"];
+  Node21 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 -> Node22 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node22 [label="CMasternodeMan::GetMasternode\lByRank",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_man.html#ab32afaad2651c69d2f93c68aee466677"];
+  Node22 -> Node23 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 [label="CObfuScationRelay::\lRelayThroughNode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfu_scation_relay.html#a68272322a5123591a9f57a8ff07943f6"];
+  Node23 -> Node24 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 [label="CObfuScationRelay::\lRelay",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfu_scation_relay.html#ae3bb081dc03a7c07be2a85ca2512f581"];
+  Node13 -> Node25 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="GetNextWorkRequired",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pow_8h.html#a5ab312a838f427dd7a13b999fe21a52e"];
+}

@@ -1,0 +1,39 @@
+digraph "CMasternodeMan::size"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node359 [label="CMasternodeMan::size",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node359 -> Node360 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node360 [label="CMasternodeBlockPayees\l::IsTransactionValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_block_payees.html#a6721f357d17e653ceb93c28ffd3ae528"];
+  Node359 -> Node361 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node361 [label="CMasternodePayments\l::CleanPaymentList",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_payments.html#a386648607692fe65b9a42c0692da033d"];
+  Node361 -> Node362 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node362 [label="ThreadCheckObfuScationPool",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$obfuscation_8h.html#a3f96a5ca9c6735e5bfac77582f0af321"];
+  Node359 -> Node363 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node363 [label="CObfuscationPool::DoAutomatic\lDenominating",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#a5b8c42ae53f4f04ab4a93da2aab47a4b",tooltip="Passively run Obfuscation in the background according to the configuration in settings (only for QT) ..."];
+  Node363 -> Node362 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node363 -> Node364 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node364 [label="obfuscation",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a6cdbacc257b42445f0c6122a061af2ca"];
+  Node359 -> Node365 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node365 [label="ClientModel::getMasternode\lCountString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_client_model.html#ab8dae86e417c050723fee66420a333ed"];
+  Node365 -> Node366 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node366 [label="ClientModel::updateMnTimer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_client_model.html#a2c343f22834086eb6e6172dbcaf6426c"];
+  Node365 -> Node367 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node367 [label="RPCConsole::setClientModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a355349a33664a07628e9ca22a60f5fa7"];
+  Node367 -> Node368 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node368 [label="BitcoinGUI::setClientModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a99d71e1f8478ab937ce2522c8d3815e3",tooltip="Set the client model. "];
+  Node368 -> Node369 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node369 [label="BitcoinApplication\l::requestShutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a37c560d4c04d14a6da151b82caf8888f",tooltip="Request core shutdown. "];
+  Node368 -> Node370 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node370 [label="BitcoinApplication\l::initializeResult",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#aceb08b4063e4fb264cf11cf7f9edd969"];
+  Node370 -> Node371 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node371 [label="BitcoinApplication\l::startThread",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a61afce9356e452c53ad4c83f5ca19df8"];
+  Node371 -> Node372 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node372 [label="BitcoinApplication\l::requestInitialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#ade19c44b87b00b6b19b433caf4c22ba6",tooltip="Request core initialization. "];
+  Node371 -> Node369 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node359 -> Node373 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node373 [label="getmasternodecount",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#af5cafe7e6498c3c5629dfc95bbf8d6cd"];
+  Node373 -> Node374 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node374 [label="masternode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a30609e443aeb47c29ed0878d16b1b5e1"];
+}

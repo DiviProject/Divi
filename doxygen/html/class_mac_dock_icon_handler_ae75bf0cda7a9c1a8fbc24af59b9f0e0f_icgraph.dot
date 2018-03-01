@@ -1,0 +1,9 @@
+digraph "MacDockIconHandler::dockIconClicked"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node13 [label="MacDockIconHandler\l::dockIconClicked",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node13 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="MacDockIconHandler\l::handleDockIconClickEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_mac_dock_icon_handler.html#a38f422d9dde7df4ccfdda97b08467e0a"];
+}

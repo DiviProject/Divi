@@ -1,0 +1,13 @@
+digraph "run_ecdsa_edge_cases"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node65 [label="run_ecdsa_edge_cases",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node65 -> Node66 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node66 [label="test_ecdsa_edge_cases",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$tests_8c.html#abbcb27d1eb13654db9b2e281ffce021e"];
+  Node66 -> Node67 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node67 [label="secp256k1_ecdsa_recover\l_compact",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$secp256k1_8h.html#ad1f2dda163655017f0ab2ec246328975",tooltip="Recover an ECDSA public key from a compact signature. "];
+  Node66 -> Node68 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 [label="secp256k1_ecdsa_verify",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$secp256k1_8h.html#a036c40da27ed92a1054da4226660127a",tooltip="Verify an ECDSA signature. "];
+}

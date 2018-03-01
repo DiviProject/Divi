@@ -1,0 +1,15 @@
+digraph "WalletModelTransaction::getPossibleKeyChange"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node5 [label="WalletModelTransaction\l::getPossibleKeyChange",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="WalletModel::prepareTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a8abc851901c7c7343ebfb5a8e5fc0154"];
+  Node6 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="SendCoinsDialog::send",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#afd8d436a16ea7dba1276e8fdfdc8b2d3"];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="SendCoinsDialog::on\l_sendButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a2cab7cf9ea5040b9e2189297f7d3c764"];
+  Node5 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="WalletModel::sendCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39"];
+}

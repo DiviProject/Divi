@@ -1,0 +1,40 @@
+digraph "CWalletDB::WritePurpose"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node337 [label="CWalletDB::WritePurpose",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node337 -> Node338 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node338 [label="CWallet::SetAddressBook",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#ga53e5528d7005608594e73f500bc5bb8f"];
+  Node338 -> Node339 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node339 [label="AddressTableModel::\lsetData",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_address_table_model.html#a5c6bd467fd1fc499d126fe2b7380ce5c"];
+  Node338 -> Node340 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node340 [label="AddressTableModel::\laddRow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_address_table_model.html#aa72edd2a093a6e9318639d69d3a23488"];
+  Node340 -> Node341 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node341 [label="EditAddressDialog::\lsaveCurrentRow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_edit_address_dialog.html#a8494a551799cd1f4c253e557424c206c"];
+  Node341 -> Node342 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node342 [label="EditAddressDialog::\laccept",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_edit_address_dialog.html#ac52b71129806bccf6533d0e9441393b6"];
+  Node340 -> Node343 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node343 [label="ReceiveCoinsDialog\l::on_receiveButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd"];
+  Node343 -> Node344 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node344 [label="ReceiveCoinsDialog\l::keyPressEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10"];
+  Node338 -> Node345 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node345 [label="Bip38ToolDialog::on\l_importAddressButton\l_DEC_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bip38_tool_dialog.html#a20a1363ad4ff8e241583b3ceb19379e6"];
+  Node338 -> Node346 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node346 [label="PaymentServer::fetchPaymentACK",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_payment_server.html#ab846f9e8778e5cc878b644133e8628f1"];
+  Node338 -> Node347 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node347 [label="importprivkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcdump_8cpp.html#a3a6fdb974fce01220a895393d444e981"];
+  Node338 -> Node348 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node348 [label="bip38decrypt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcdump_8cpp.html#a64a0e2e87f6d741efd662ac94080159d"];
+  Node338 -> Node349 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node349 [label="getnewaddress",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#aead824d845d670fbd8f187ebd4f9a535"];
+  Node338 -> Node350 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node350 [label="GetAccountAddress",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#aa3d9baf7a6fc6c9f0a08ec861ca52f59"];
+  Node350 -> Node351 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node351 [label="getaccountaddress",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a92145bcb3cfb45eb47dca18f1c94c434"];
+  Node350 -> Node352 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node352 [label="setaccount",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a6bf0dc200554f841a4549a2e5087f699"];
+  Node338 -> Node352 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node338 -> Node353 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node353 [label="addmultisigaddress",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a01e8a83cbd4209f10c71719383d7ca2d"];
+}

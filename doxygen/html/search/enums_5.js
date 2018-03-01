@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['unit',['Unit',['../class_bitcoin_units.html#ae41018ba530b4c8bdc74fd163709fb9d',1,'BitcoinUnits']]]
+  ['flags',['Flags',['../struct_c_coins_cache_entry.html#a1d5ac74da0f6ff5ab056e47ce79753c7',1,'CCoinsCacheEntry']]],
+  ['flushstatemode',['FlushStateMode',['../main_8cpp.html#ae2877520fcc46d869b4f5e9768227e25',1,'main.cpp']]]
 ];

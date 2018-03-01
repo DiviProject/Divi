@@ -1,0 +1,17 @@
+digraph "ZerocoinSpendListFromBlock"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1318 [label="ZerocoinSpendListFromBlock",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1318 -> Node1319 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1319 [label="CTransaction::IsZerocoin\lSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a4cda5603795c5f9179d4c8bd43f809cd"];
+  Node1318 -> Node1320 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1320 [label="CScript::IsZerocoinSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_script.html#a84914a83542deece42dda7b22b043c1f"];
+  Node1318 -> Node1321 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1321 [label="TxInToZerocoinSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#af5469af7fa8bbe7c9572e68c041e8e21"];
+  Node1318 -> Node1322 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1322 [label="libzerocoin::CoinSpend\l::getCoinSerialNumber",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_coin_spend.html#a125e5f3e268571a5549aa10bf9ad0f2b",tooltip="Returns the serial number of the coin spend by this proof. "];
+  Node1318 -> Node1323 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1323 [label="libzerocoin::IntToZerocoin\lDenomination",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacelibzerocoin.html#a59a7febb87e2521cec803d3bb3533c5f"];
+}

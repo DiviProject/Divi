@@ -1,0 +1,21 @@
+digraph "BitcoinGUI::optionsClicked"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node121 [label="BitcoinGUI::optionsClicked",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node121 -> Node122 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node122 [label="ClientModel::getOptionsModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_client_model.html#ae8da1e2eabfbbcc49a7eed821908bdb6"];
+  Node121 -> Node123 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node123 [label="OptionsDialog::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_dialog.html#a11e902a52cb7472497d14e70cd9399d9"];
+  Node123 -> Node124 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node124 [label="OptionsModel::isRestartRequired",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#a75c15f2cb96ee8efe7b9e756e5c8e69c"];
+  Node123 -> Node125 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node125 [label="OptionsDialog::showRestart\lWarning",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_dialog.html#a866e74896ea7dacdc99b5e0af4fd5b38"];
+  Node125 -> Node126 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node126 [label="OptionsDialog::clearStatus\lLabel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_dialog.html#acd07b7058fd097bea5beb5cdd6fc1ad9"];
+  Node123 -> Node127 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node127 [label="OptionsModel::getOverridden\lByCommandLine",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#ac5d555492fa4d6bba68d00e798efca50"];
+  Node123 -> Node128 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node128 [label="OptionsDialog::setMapper",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_dialog.html#a2088ec5bbb90ec27675f441e750e55b8"];
+}

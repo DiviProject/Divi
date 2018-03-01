@@ -1,0 +1,30 @@
+digraph "ReceiveRequestDialog::setInfo"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node15 [label="ReceiveRequestDialog\l::setInfo",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node15 -> Node16 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="ReceiveRequestDialog\l::update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_request_dialog.html#a8e1c0ee2fbacf42b4dc7ea05986c86c9"];
+  Node16 -> Node17 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="GUIUtil::formatBitcoinURI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#ab9d4ba8e8713eebbe4e5eb7cd1ba479e"];
+  Node17 -> Node18 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="BitcoinUnits::format",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#ab07437e5a788c80a82d75e3714bd3925",tooltip="Format as string. "];
+  Node18 -> Node19 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="BitcoinUnits::valid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a81cbc41480adfb600dad79711d336e5f",tooltip="Is unit ID valid? "];
+  Node18 -> Node20 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="BitcoinUnits::factor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#ae967b9e6ecbb8f041bfe398d27533b09",tooltip="Number of Satoshis (1e-8) per unit. "];
+  Node18 -> Node21 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="BitcoinUnits::decimals",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a3f0fc21634520ea06c684ba0d7e25f2f",tooltip="Number of decimals left. "];
+  Node16 -> Node22 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node22 [label="GUIUtil::HtmlEscape",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a2d4b7f2c11ebc4b97af10bc20d19b1b2"];
+  Node16 -> Node23 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 [label="BitcoinUnits::formatWithUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#aef9fb7509257bc84ee459d7f0c663020",tooltip="Format as string (with unit) "];
+  Node23 -> Node18 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 -> Node24 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 [label="BitcoinUnits::name",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a4cf46136434ed30728608e67e90a9cbe",tooltip="Short name. "];
+  Node24 -> Node25 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node16 -> Node26 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 [label="OptionsModel::getDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e"];
+}

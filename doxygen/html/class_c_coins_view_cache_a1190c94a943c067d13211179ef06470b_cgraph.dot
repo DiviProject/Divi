@@ -1,0 +1,9 @@
+digraph "CCoinsViewCache::GetBestBlock"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node97 [label="CCoinsViewCache::GetBest\lBlock",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node97 -> Node98 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node98 [label="CCoinsView::GetBestBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view.html#af81f2907d360a2548d59a61388e5e5cb",tooltip="Retrieve the block hash whose state this CCoinsView currently represents. "];
+}

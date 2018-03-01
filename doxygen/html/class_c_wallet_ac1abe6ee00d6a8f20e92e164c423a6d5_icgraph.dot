@@ -1,0 +1,15 @@
+digraph "CWallet::GetChange"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node127 [label="CWallet::GetChange",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node127 -> Node128 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node128 [label="CWallet::GetChange",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#a3e9a088a7b6b77edd7a0f80ed246eb58"];
+  Node127 -> Node129 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node129 [label="CWalletTx::GetChange",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet_tx.html#a714fe72284e4cc436d84f751a9a7aa60"];
+  Node129 -> Node130 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node130 [label="TransactionDesc::toHTML",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4"];
+  Node130 -> Node131 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node131 [label="TransactionTablePriv\l::describe",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780"];
+}

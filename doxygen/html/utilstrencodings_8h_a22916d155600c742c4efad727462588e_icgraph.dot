@@ -1,0 +1,11 @@
+digraph "atoi64"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node18 [label="atoi64",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node18 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="ParseScript",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__read_8cpp.html#a360605a787c2a0c8929399919f0474dc"];
+  Node18 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="GetArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8h.html#a1bade4f0fca4498b4911abdbe4227dc4",tooltip="Return integer argument or default value. "];
+}

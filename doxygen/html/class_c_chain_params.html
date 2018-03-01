@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CChainParams Class Reference</title>
+<title>DIVX: CChainParams Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -64,6 +67,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="class_c_chain_params-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -71,346 +75,365 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="class_c_chain_params.html" title="CChainParams defines various tweakable parameters of a given instance of the DIVX system...">CChainParams</a> defines various tweakable parameters of a given instance of the DIVX system.  
+ <a href="class_c_chain_params.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="chainparams_8h_source.html">chainparams.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for CChainParams:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_c_chain_params.png" usemap="#CChainParams_map" alt=""/>
-  <map id="CChainParams_map" name="CChainParams_map">
-<area href="class_c_main_params.html" alt="CMainParams" shape="rect" coords="59,56,167,80"/>
-<area href="class_c_test_net_params.html" alt="CTestNetParams" shape="rect" coords="0,112,108,136"/>
-<area href="class_c_unit_test_params.html" alt="CUnitTestParams" shape="rect" coords="118,112,226,136"/>
-<area href="class_c_reg_test_params.html" alt="CRegTestParams" shape="rect" coords="0,168,108,192"/>
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for CChainParams:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aa294058ec2e3586bd8d03d6c39667058"><td class="memItemLeft" align="right" valign="top"><a id="aa294058ec2e3586bd8d03d6c39667058"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Base58Type</b> { <br />
-&#160;&#160;<b>PUBKEY_ADDRESS</b>, 
-<b>SCRIPT_ADDRESS</b>, 
-<b>SECRET_KEY</b>, 
-<b>EXT_PUBLIC_KEY</b>, 
+<tr class="memitem:aa294058ec2e3586bd8d03d6c39667058"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058">Base58Type</a> { <br />
+&#160;&#160;<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058af088724f20c49c73e548f94d8f1808dd">PUBKEY_ADDRESS</a>, 
+<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058adf0172df56140eb2f6fb7a59df0bb76a">SCRIPT_ADDRESS</a>, 
+<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058aacf95cbb9b5f51445295c704540adb18">SECRET_KEY</a>, 
+<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058a1259eb07831c689e393e5008d7bd0085">EXT_PUBLIC_KEY</a>, 
 <br />
-&#160;&#160;<b>EXT_SECRET_KEY</b>, 
-<b>EXT_COIN_TYPE</b>, 
-<b>MAX_BASE58_TYPES</b>
+&#160;&#160;<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058ab5636e60152f35f6595fe413eae430b0">EXT_SECRET_KEY</a>, 
+<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058a2387f8db1b1f25629f019ea6bddbb7ab">EXT_COIN_TYPE</a>, 
+<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058a6b21a525c7fab64a5df656e708f71a98">MAX_BASE58_TYPES</a>
 <br />
  }</td></tr>
 <tr class="separator:aa294058ec2e3586bd8d03d6c39667058"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a68e10a5e6ad16a5c2bfa0a8a1c8f4c4b"><td class="memItemLeft" align="right" valign="top"><a id="a68e10a5e6ad16a5c2bfa0a8a1c8f4c4b"></a>
-const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>HashGenesisBlock</b> () const</td></tr>
+<tr class="memitem:a68e10a5e6ad16a5c2bfa0a8a1c8f4c4b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a68e10a5e6ad16a5c2bfa0a8a1c8f4c4b">HashGenesisBlock</a> () const</td></tr>
 <tr class="separator:a68e10a5e6ad16a5c2bfa0a8a1c8f4c4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accc01cc5a34b449c3370f46a5b4c5190"><td class="memItemLeft" align="right" valign="top"><a id="accc01cc5a34b449c3370f46a5b4c5190"></a>
-const MessageStartChars &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>MessageStart</b> () const</td></tr>
+<tr class="memitem:accc01cc5a34b449c3370f46a5b4c5190"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="chainparams_8h.html#a606a5a0100b84686ef50bf2cb2a591a0">MessageStartChars</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#accc01cc5a34b449c3370f46a5b4c5190">MessageStart</a> () const</td></tr>
 <tr class="separator:accc01cc5a34b449c3370f46a5b4c5190"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ca8fe289d1c3d5851d6aebaf28db22f"><td class="memItemLeft" align="right" valign="top"><a id="a8ca8fe289d1c3d5851d6aebaf28db22f"></a>
-const std::vector&lt; unsigned char &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>AlertKey</b> () const</td></tr>
+<tr class="memitem:a8ca8fe289d1c3d5851d6aebaf28db22f"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; unsigned char &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a8ca8fe289d1c3d5851d6aebaf28db22f">AlertKey</a> () const</td></tr>
 <tr class="separator:a8ca8fe289d1c3d5851d6aebaf28db22f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e796bba356e7ce2040f545ea466754f"><td class="memItemLeft" align="right" valign="top"><a id="a2e796bba356e7ce2040f545ea466754f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetDefaultPort</b> () const</td></tr>
+<tr class="memitem:a2e796bba356e7ce2040f545ea466754f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a2e796bba356e7ce2040f545ea466754f">GetDefaultPort</a> () const</td></tr>
 <tr class="separator:a2e796bba356e7ce2040f545ea466754f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af171e47287f097c8753b9581fd3c3c58"><td class="memItemLeft" align="right" valign="top"><a id="af171e47287f097c8753b9581fd3c3c58"></a>
-const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>ProofOfWorkLimit</b> () const</td></tr>
+<tr class="memitem:af171e47287f097c8753b9581fd3c3c58"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#af171e47287f097c8753b9581fd3c3c58">ProofOfWorkLimit</a> () const</td></tr>
 <tr class="separator:af171e47287f097c8753b9581fd3c3c58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dc06a2a30742a9beb8953622cbaf477"><td class="memItemLeft" align="right" valign="top"><a id="a3dc06a2a30742a9beb8953622cbaf477"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>SubsidyHalvingInterval</b> () const</td></tr>
+<tr class="memitem:a3dc06a2a30742a9beb8953622cbaf477"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a3dc06a2a30742a9beb8953622cbaf477">SubsidyHalvingInterval</a> () const</td></tr>
 <tr class="separator:a3dc06a2a30742a9beb8953622cbaf477"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac55b927a13650f1b6593b0200258ce62"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ac55b927a13650f1b6593b0200258ce62">EnforceBlockUpgradeMajority</a> () const</td></tr>
+<tr class="memdesc:ac55b927a13650f1b6593b0200258ce62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to check majorities for block version upgrade.  <a href="#ac55b927a13650f1b6593b0200258ce62">More...</a><br /></td></tr>
 <tr class="separator:ac55b927a13650f1b6593b0200258ce62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a759fe1926448351c9a0856b28e83e794"><td class="memItemLeft" align="right" valign="top"><a id="a759fe1926448351c9a0856b28e83e794"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>RejectBlockOutdatedMajority</b> () const</td></tr>
+<tr class="memitem:a759fe1926448351c9a0856b28e83e794"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a759fe1926448351c9a0856b28e83e794">RejectBlockOutdatedMajority</a> () const</td></tr>
 <tr class="separator:a759fe1926448351c9a0856b28e83e794"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84aa3a27051e0bc1d47586c24983548c"><td class="memItemLeft" align="right" valign="top"><a id="a84aa3a27051e0bc1d47586c24983548c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>ToCheckBlockUpgradeMajority</b> () const</td></tr>
+<tr class="memitem:a84aa3a27051e0bc1d47586c24983548c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a84aa3a27051e0bc1d47586c24983548c">ToCheckBlockUpgradeMajority</a> () const</td></tr>
 <tr class="separator:a84aa3a27051e0bc1d47586c24983548c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53d47c5358366c218fc26cacb9bd4010"><td class="memItemLeft" align="right" valign="top"><a id="a53d47c5358366c218fc26cacb9bd4010"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>MaxReorganizationDepth</b> () const</td></tr>
+<tr class="memitem:a53d47c5358366c218fc26cacb9bd4010"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a53d47c5358366c218fc26cacb9bd4010">MaxReorganizationDepth</a> () const</td></tr>
 <tr class="separator:a53d47c5358366c218fc26cacb9bd4010"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2da912493292c2139ca7753dde96b2e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ac2da912493292c2139ca7753dde96b2e">DefaultMinerThreads</a> () const</td></tr>
+<tr class="memdesc:ac2da912493292c2139ca7753dde96b2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used if GenerateBitcoins is called with a negative number of threads.  <a href="#ac2da912493292c2139ca7753dde96b2e">More...</a><br /></td></tr>
 <tr class="separator:ac2da912493292c2139ca7753dde96b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebd6cb9d986eeb2e6c228c04b3c39b42"><td class="memItemLeft" align="right" valign="top"><a id="aebd6cb9d986eeb2e6c228c04b3c39b42"></a>
-const <a class="el" href="class_c_block.html">CBlock</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GenesisBlock</b> () const</td></tr>
+<tr class="memitem:aebd6cb9d986eeb2e6c228c04b3c39b42"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_c_block.html">CBlock</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#aebd6cb9d986eeb2e6c228c04b3c39b42">GenesisBlock</a> () const</td></tr>
 <tr class="separator:aebd6cb9d986eeb2e6c228c04b3c39b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5cd19bae91d97cd28152dac47f29190"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#af5cd19bae91d97cd28152dac47f29190">RequireRPCPassword</a> () const</td></tr>
+<tr class="separator:af5cd19bae91d97cd28152dac47f29190"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a066ad4166984a31bdc0836193a6341ee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a066ad4166984a31bdc0836193a6341ee">MiningRequiresPeers</a> () const</td></tr>
+<tr class="memdesc:a066ad4166984a31bdc0836193a6341ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make miner wait to have peers to avoid wasting work.  <a href="#a066ad4166984a31bdc0836193a6341ee">More...</a><br /></td></tr>
 <tr class="separator:a066ad4166984a31bdc0836193a6341ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1bf9eed6ce76328909127bfc9965f76"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ae1bf9eed6ce76328909127bfc9965f76">HeadersFirstSyncingActive</a> () const</td></tr>
+<tr class="memdesc:ae1bf9eed6ce76328909127bfc9965f76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Headers first syncing is disabled.  <a href="#ae1bf9eed6ce76328909127bfc9965f76">More...</a><br /></td></tr>
 <tr class="separator:ae1bf9eed6ce76328909127bfc9965f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d12f9b4b1ea7d7a0416cb6045496342"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a1d12f9b4b1ea7d7a0416cb6045496342">DefaultConsistencyChecks</a> () const</td></tr>
+<tr class="memdesc:a1d12f9b4b1ea7d7a0416cb6045496342"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default value for -checkmempool and -checkblockindex argument.  <a href="#a1d12f9b4b1ea7d7a0416cb6045496342">More...</a><br /></td></tr>
 <tr class="separator:a1d12f9b4b1ea7d7a0416cb6045496342"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1202f87305ff3fdd4e1da28f1b35218"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ac1202f87305ff3fdd4e1da28f1b35218">AllowMinDifficultyBlocks</a> () const</td></tr>
+<tr class="memdesc:ac1202f87305ff3fdd4e1da28f1b35218"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allow mining of a min-difficulty block.  <a href="#ac1202f87305ff3fdd4e1da28f1b35218">More...</a><br /></td></tr>
 <tr class="separator:ac1202f87305ff3fdd4e1da28f1b35218"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79b6cb67af99906669f7219a14a83cf7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a79b6cb67af99906669f7219a14a83cf7">SkipProofOfWorkCheck</a> () const</td></tr>
+<tr class="memdesc:a79b6cb67af99906669f7219a14a83cf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skip proof-of-work check: allow mining of any difficulty block.  <a href="#a79b6cb67af99906669f7219a14a83cf7">More...</a><br /></td></tr>
 <tr class="separator:a79b6cb67af99906669f7219a14a83cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30c1b60e515537b01810e175844d852f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a30c1b60e515537b01810e175844d852f">RequireStandard</a> () const</td></tr>
+<tr class="memdesc:a30c1b60e515537b01810e175844d852f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make standard checks.  <a href="#a30c1b60e515537b01810e175844d852f">More...</a><br /></td></tr>
 <tr class="separator:a30c1b60e515537b01810e175844d852f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31aee5a207f45026c08cc37f3a0f7b89"><td class="memItemLeft" align="right" valign="top"><a id="a31aee5a207f45026c08cc37f3a0f7b89"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>TargetTimespan</b> () const</td></tr>
+<tr class="memitem:a31aee5a207f45026c08cc37f3a0f7b89"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a31aee5a207f45026c08cc37f3a0f7b89">TargetTimespan</a> () const</td></tr>
 <tr class="separator:a31aee5a207f45026c08cc37f3a0f7b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c039f77ecdc58117dca0c6a5bae0dff"><td class="memItemLeft" align="right" valign="top"><a id="a9c039f77ecdc58117dca0c6a5bae0dff"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>TargetSpacing</b> () const</td></tr>
+<tr class="memitem:a9c039f77ecdc58117dca0c6a5bae0dff"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a9c039f77ecdc58117dca0c6a5bae0dff">TargetSpacing</a> () const</td></tr>
 <tr class="separator:a9c039f77ecdc58117dca0c6a5bae0dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf86b1e5312dea14645af764fc41be7f"><td class="memItemLeft" align="right" valign="top"><a id="aaf86b1e5312dea14645af764fc41be7f"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>Interval</b> () const</td></tr>
+<tr class="memitem:aaf86b1e5312dea14645af764fc41be7f"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#aaf86b1e5312dea14645af764fc41be7f">Interval</a> () const</td></tr>
 <tr class="separator:aaf86b1e5312dea14645af764fc41be7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab752b3ae1230aaf40b5a2d14d628fab7"><td class="memItemLeft" align="right" valign="top"><a id="ab752b3ae1230aaf40b5a2d14d628fab7"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>COINBASE_MATURITY</b> () const</td></tr>
+<tr class="memitem:ab752b3ae1230aaf40b5a2d14d628fab7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ab752b3ae1230aaf40b5a2d14d628fab7">COINBASE_MATURITY</a> () const</td></tr>
 <tr class="separator:ab752b3ae1230aaf40b5a2d14d628fab7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82190f02d83daee6823362e3c25848d0"><td class="memItemLeft" align="right" valign="top"><a id="a82190f02d83daee6823362e3c25848d0"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>MaxMoneyOut</b> () const</td></tr>
+<tr class="memitem:a82190f02d83daee6823362e3c25848d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a82190f02d83daee6823362e3c25848d0">MaxMoneyOut</a> () const</td></tr>
 <tr class="separator:a82190f02d83daee6823362e3c25848d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d2e5ae617867ebcb930c65a146b6e5c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a9d2e5ae617867ebcb930c65a146b6e5c">MasternodeCountDrift</a> () const</td></tr>
+<tr class="memdesc:a9d2e5ae617867ebcb930c65a146b6e5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The masternode count that we will allow the see-saw reward payments to be off by.  <a href="#a9d2e5ae617867ebcb930c65a146b6e5c">More...</a><br /></td></tr>
 <tr class="separator:a9d2e5ae617867ebcb930c65a146b6e5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96be31ff3d8525c9d5458b7d07ada6bb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a96be31ff3d8525c9d5458b7d07ada6bb">MineBlocksOnDemand</a> () const</td></tr>
+<tr class="memdesc:a96be31ff3d8525c9d5458b7d07ada6bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make miner stop after a block is found.  <a href="#a96be31ff3d8525c9d5458b7d07ada6bb">More...</a><br /></td></tr>
 <tr class="separator:a96be31ff3d8525c9d5458b7d07ada6bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1552cea0636112ef84069cd6b7858b8e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a1552cea0636112ef84069cd6b7858b8e">TestnetToBeDeprecatedFieldRPC</a> () const</td></tr>
+<tr class="memdesc:a1552cea0636112ef84069cd6b7858b8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">In the future use <a class="el" href="class_c_chain_params.html#a2c02cc73f7fe9369cee9a39a0fd5b710" title="Return the BIP70 network string (main, test or regtest) ">NetworkIDString()</a> for RPC fields.  <a href="#a1552cea0636112ef84069cd6b7858b8e">More...</a><br /></td></tr>
 <tr class="separator:a1552cea0636112ef84069cd6b7858b8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c02cc73f7fe9369cee9a39a0fd5b710"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a2c02cc73f7fe9369cee9a39a0fd5b710">NetworkIDString</a> () const</td></tr>
+<tr class="memdesc:a2c02cc73f7fe9369cee9a39a0fd5b710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the BIP70 network string (main, test or regtest)  <a href="#a2c02cc73f7fe9369cee9a39a0fd5b710">More...</a><br /></td></tr>
 <tr class="separator:a2c02cc73f7fe9369cee9a39a0fd5b710"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a402b8df138b265619217ddf934bbc67a"><td class="memItemLeft" align="right" valign="top"><a id="a402b8df138b265619217ddf934bbc67a"></a>
-const std::vector&lt; <a class="el" href="struct_c_d_n_s_seed_data.html">CDNSSeedData</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>DNSSeeds</b> () const</td></tr>
+<tr class="memitem:a402b8df138b265619217ddf934bbc67a"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="struct_c_d_n_s_seed_data.html">CDNSSeedData</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a402b8df138b265619217ddf934bbc67a">DNSSeeds</a> () const</td></tr>
 <tr class="separator:a402b8df138b265619217ddf934bbc67a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a103c58eca4a26a71201882b3ed6c4cb4"><td class="memItemLeft" align="right" valign="top"><a id="a103c58eca4a26a71201882b3ed6c4cb4"></a>
-const std::vector&lt; unsigned char &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Base58Prefix</b> (Base58Type type) const</td></tr>
+<tr class="memitem:a103c58eca4a26a71201882b3ed6c4cb4"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; unsigned char &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a103c58eca4a26a71201882b3ed6c4cb4">Base58Prefix</a> (<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058">Base58Type</a> type) const</td></tr>
 <tr class="separator:a103c58eca4a26a71201882b3ed6c4cb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bd33f38910c2a7b435a71d270515b54"><td class="memItemLeft" align="right" valign="top"><a id="a3bd33f38910c2a7b435a71d270515b54"></a>
-const std::vector&lt; <a class="el" href="class_c_address.html">CAddress</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>FixedSeeds</b> () const</td></tr>
+<tr class="memitem:a3bd33f38910c2a7b435a71d270515b54"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="class_c_address.html">CAddress</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a3bd33f38910c2a7b435a71d270515b54">FixedSeeds</a> () const</td></tr>
 <tr class="separator:a3bd33f38910c2a7b435a71d270515b54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba314e7660492aee43812344fa796d6c"><td class="memItemLeft" align="right" valign="top"><a id="aba314e7660492aee43812344fa796d6c"></a>
-virtual const <a class="el" href="struct_checkpoints_1_1_c_checkpoint_data.html">Checkpoints::CCheckpointData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Checkpoints</b> () const =0</td></tr>
+<tr class="memitem:aba314e7660492aee43812344fa796d6c"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="struct_checkpoints_1_1_c_checkpoint_data.html">Checkpoints::CCheckpointData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#aba314e7660492aee43812344fa796d6c">Checkpoints</a> () const =0</td></tr>
 <tr class="separator:aba314e7660492aee43812344fa796d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a128aaa94e4cfcba19dc26e6d2f5ad467"><td class="memItemLeft" align="right" valign="top"><a id="a128aaa94e4cfcba19dc26e6d2f5ad467"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>PoolMaxTransactions</b> () const</td></tr>
+<tr class="memitem:a128aaa94e4cfcba19dc26e6d2f5ad467"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a128aaa94e4cfcba19dc26e6d2f5ad467">PoolMaxTransactions</a> () const</td></tr>
 <tr class="separator:a128aaa94e4cfcba19dc26e6d2f5ad467"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ad2fa7772a2d4fe430e6b933003a2c7"><td class="memItemLeft" align="right" valign="top"><a id="a8ad2fa7772a2d4fe430e6b933003a2c7"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>SporkKey</b> () const</td></tr>
+<tr class="memitem:a8ad2fa7772a2d4fe430e6b933003a2c7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a8ad2fa7772a2d4fe430e6b933003a2c7">SporkKey</a> () const</td></tr>
 <tr class="separator:a8ad2fa7772a2d4fe430e6b933003a2c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf6464af63708a37e52876d2792eb27e"><td class="memItemLeft" align="right" valign="top"><a id="acf6464af63708a37e52876d2792eb27e"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ObfuscationPoolDummyAddress</b> () const</td></tr>
+<tr class="memitem:acf6464af63708a37e52876d2792eb27e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#acf6464af63708a37e52876d2792eb27e">ObfuscationPoolDummyAddress</a> () const</td></tr>
 <tr class="separator:acf6464af63708a37e52876d2792eb27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af732a05c80cf79a71b0f6bc5ce113c98"><td class="memItemLeft" align="right" valign="top"><a id="af732a05c80cf79a71b0f6bc5ce113c98"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>StartMasternodePayments</b> () const</td></tr>
+<tr class="memitem:af732a05c80cf79a71b0f6bc5ce113c98"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#af732a05c80cf79a71b0f6bc5ce113c98">StartMasternodePayments</a> () const</td></tr>
 <tr class="separator:af732a05c80cf79a71b0f6bc5ce113c98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affd375d849ab3faefea3301b9ecbdf6b"><td class="memItemLeft" align="right" valign="top"><a id="affd375d849ab3faefea3301b9ecbdf6b"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>Budget_Fee_Confirmations</b> () const</td></tr>
+<tr class="memitem:affd375d849ab3faefea3301b9ecbdf6b"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#affd375d849ab3faefea3301b9ecbdf6b">Budget_Fee_Confirmations</a> () const</td></tr>
 <tr class="separator:affd375d849ab3faefea3301b9ecbdf6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3af50135596ad86019f274c8a15e580f"><td class="memItemLeft" align="right" valign="top"><a id="a3af50135596ad86019f274c8a15e580f"></a>
-CBaseChainParams::Network&#160;</td><td class="memItemRight" valign="bottom"><b>NetworkID</b> () const</td></tr>
+<tr class="memitem:a3af50135596ad86019f274c8a15e580f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_base_chain_params.html#a19fb46b499c21801c0ff3c8607a0994e">CBaseChainParams::Network</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a3af50135596ad86019f274c8a15e580f">NetworkID</a> () const</td></tr>
 <tr class="separator:a3af50135596ad86019f274c8a15e580f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6003afc48876c16e825f589eed0ff11"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#af6003afc48876c16e825f589eed0ff11">Zerocoin_Modulus</a> () const</td></tr>
+<tr class="memdesc:af6003afc48876c16e825f589eed0ff11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zerocoin.  <a href="#af6003afc48876c16e825f589eed0ff11">More...</a><br /></td></tr>
 <tr class="separator:af6003afc48876c16e825f589eed0ff11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a630db503e18106a7b797cdfe0a184437"><td class="memItemLeft" align="right" valign="top"><a id="a630db503e18106a7b797cdfe0a184437"></a>
-<a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">libzerocoin::ZerocoinParams</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_Params</b> () const</td></tr>
+<tr class="memitem:a630db503e18106a7b797cdfe0a184437"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">libzerocoin::ZerocoinParams</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a630db503e18106a7b797cdfe0a184437">Zerocoin_Params</a> () const</td></tr>
 <tr class="separator:a630db503e18106a7b797cdfe0a184437"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c9564cce9a2852ec277560c03c7bf5f"><td class="memItemLeft" align="right" valign="top"><a id="a9c9564cce9a2852ec277560c03c7bf5f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_MaxSpendsPerTransaction</b> () const</td></tr>
+<tr class="memitem:a9c9564cce9a2852ec277560c03c7bf5f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a9c9564cce9a2852ec277560c03c7bf5f">Zerocoin_MaxSpendsPerTransaction</a> () const</td></tr>
 <tr class="separator:a9c9564cce9a2852ec277560c03c7bf5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68324f698999844cf8bdb511ab5bf89a"><td class="memItemLeft" align="right" valign="top"><a id="a68324f698999844cf8bdb511ab5bf89a"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_MintFee</b> () const</td></tr>
+<tr class="memitem:a68324f698999844cf8bdb511ab5bf89a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a68324f698999844cf8bdb511ab5bf89a">Zerocoin_MintFee</a> () const</td></tr>
 <tr class="separator:a68324f698999844cf8bdb511ab5bf89a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76f3eaab883c0359e8c0b2d6941ef39c"><td class="memItemLeft" align="right" valign="top"><a id="a76f3eaab883c0359e8c0b2d6941ef39c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_MintRequiredConfirmations</b> () const</td></tr>
+<tr class="memitem:a76f3eaab883c0359e8c0b2d6941ef39c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a76f3eaab883c0359e8c0b2d6941ef39c">Zerocoin_MintRequiredConfirmations</a> () const</td></tr>
 <tr class="separator:a76f3eaab883c0359e8c0b2d6941ef39c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0c16d94f2017bc9fe0ab558447b61ed"><td class="memItemLeft" align="right" valign="top"><a id="ae0c16d94f2017bc9fe0ab558447b61ed"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_RequiredAccumulation</b> () const</td></tr>
+<tr class="memitem:ae0c16d94f2017bc9fe0ab558447b61ed"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ae0c16d94f2017bc9fe0ab558447b61ed">Zerocoin_RequiredAccumulation</a> () const</td></tr>
 <tr class="separator:ae0c16d94f2017bc9fe0ab558447b61ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae50ef1ebe703e91b9bef340e7557f24"><td class="memItemLeft" align="right" valign="top"><a id="aae50ef1ebe703e91b9bef340e7557f24"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_DefaultSpendSecurity</b> () const</td></tr>
+<tr class="memitem:aae50ef1ebe703e91b9bef340e7557f24"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#aae50ef1ebe703e91b9bef340e7557f24">Zerocoin_DefaultSpendSecurity</a> () const</td></tr>
 <tr class="separator:aae50ef1ebe703e91b9bef340e7557f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcf5e1e63110dc8242be2b631ead6f1e"><td class="memItemLeft" align="right" valign="top"><a id="afcf5e1e63110dc8242be2b631ead6f1e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_HeaderVersion</b> () const</td></tr>
+<tr class="memitem:afcf5e1e63110dc8242be2b631ead6f1e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#afcf5e1e63110dc8242be2b631ead6f1e">Zerocoin_HeaderVersion</a> () const</td></tr>
 <tr class="separator:afcf5e1e63110dc8242be2b631ead6f1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad166dbdd9631958fa0126e13dec1630a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ad166dbdd9631958fa0126e13dec1630a">ModifierUpgradeBlock</a> () const</td></tr>
+<tr class="memdesc:ad166dbdd9631958fa0126e13dec1630a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Height or Time Based Activations.  <a href="#ad166dbdd9631958fa0126e13dec1630a">More...</a><br /></td></tr>
 <tr class="separator:ad166dbdd9631958fa0126e13dec1630a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a836847832c07d43f71d371aed259fb80"><td class="memItemLeft" align="right" valign="top"><a id="a836847832c07d43f71d371aed259fb80"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>LAST_POW_BLOCK</b> () const</td></tr>
+<tr class="memitem:a836847832c07d43f71d371aed259fb80"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a836847832c07d43f71d371aed259fb80">LAST_POW_BLOCK</a> () const</td></tr>
 <tr class="separator:a836847832c07d43f71d371aed259fb80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c3b62573db5b5a6cdaee67d608353e0"><td class="memItemLeft" align="right" valign="top"><a id="a5c3b62573db5b5a6cdaee67d608353e0"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_StartHeight</b> () const</td></tr>
+<tr class="memitem:a5c3b62573db5b5a6cdaee67d608353e0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a5c3b62573db5b5a6cdaee67d608353e0">Zerocoin_StartHeight</a> () const</td></tr>
 <tr class="separator:a5c3b62573db5b5a6cdaee67d608353e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed556aae7f3b194eb3d1699daa7d6b35"><td class="memItemLeft" align="right" valign="top"><a id="aed556aae7f3b194eb3d1699daa7d6b35"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_Block_EnforceSerialRange</b> () const</td></tr>
+<tr class="memitem:aed556aae7f3b194eb3d1699daa7d6b35"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#aed556aae7f3b194eb3d1699daa7d6b35">Zerocoin_Block_EnforceSerialRange</a> () const</td></tr>
 <tr class="separator:aed556aae7f3b194eb3d1699daa7d6b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4dcfed7f6d901fb89a5b77376e9d19f2"><td class="memItemLeft" align="right" valign="top"><a id="a4dcfed7f6d901fb89a5b77376e9d19f2"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_Block_RecalculateAccumulators</b> () const</td></tr>
+<tr class="memitem:a4dcfed7f6d901fb89a5b77376e9d19f2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a4dcfed7f6d901fb89a5b77376e9d19f2">Zerocoin_Block_RecalculateAccumulators</a> () const</td></tr>
 <tr class="separator:a4dcfed7f6d901fb89a5b77376e9d19f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92c49924432a4786282ccfe32ecadf8a"><td class="memItemLeft" align="right" valign="top"><a id="a92c49924432a4786282ccfe32ecadf8a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_Block_FirstFraudulent</b> () const</td></tr>
+<tr class="memitem:a92c49924432a4786282ccfe32ecadf8a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a92c49924432a4786282ccfe32ecadf8a">Zerocoin_Block_FirstFraudulent</a> () const</td></tr>
 <tr class="separator:a92c49924432a4786282ccfe32ecadf8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d9e9fc154ad9bfc22f149a2a8903a9f"><td class="memItemLeft" align="right" valign="top"><a id="a7d9e9fc154ad9bfc22f149a2a8903a9f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_Block_LastGoodCheckpoint</b> () const</td></tr>
+<tr class="memitem:a7d9e9fc154ad9bfc22f149a2a8903a9f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a7d9e9fc154ad9bfc22f149a2a8903a9f">Zerocoin_Block_LastGoodCheckpoint</a> () const</td></tr>
 <tr class="separator:a7d9e9fc154ad9bfc22f149a2a8903a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae921b3c9f58708e4a694bb0b1e42173a"><td class="memItemLeft" align="right" valign="top"><a id="ae921b3c9f58708e4a694bb0b1e42173a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Zerocoin_StartTime</b> () const</td></tr>
+<tr class="memitem:ae921b3c9f58708e4a694bb0b1e42173a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ae921b3c9f58708e4a694bb0b1e42173a">Zerocoin_StartTime</a> () const</td></tr>
 <tr class="separator:ae921b3c9f58708e4a694bb0b1e42173a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a273dbde532ea4c5cf57eea2150d1bea3"><td class="memItemLeft" align="right" valign="top"><a id="a273dbde532ea4c5cf57eea2150d1bea3"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Block_Enforce_Invalid</b> () const</td></tr>
+<tr class="memitem:a273dbde532ea4c5cf57eea2150d1bea3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a273dbde532ea4c5cf57eea2150d1bea3">Block_Enforce_Invalid</a> () const</td></tr>
 <tr class="separator:a273dbde532ea4c5cf57eea2150d1bea3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a8d07fce73d4160244459c5aaae8fb966"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a8d07fce73d4160244459c5aaae8fb966">CChainParams</a> ()</td></tr>
+<tr class="separator:a8d07fce73d4160244459c5aaae8fb966"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a3033bae1b7e966358f80b6cbb2e2a3d8"><td class="memItemLeft" align="right" valign="top"><a id="a3033bae1b7e966358f80b6cbb2e2a3d8"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hashGenesisBlock</b></td></tr>
+<tr class="memitem:a3033bae1b7e966358f80b6cbb2e2a3d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a3033bae1b7e966358f80b6cbb2e2a3d8">hashGenesisBlock</a></td></tr>
 <tr class="separator:a3033bae1b7e966358f80b6cbb2e2a3d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06130a926927697ae8a6c211a60233a7"><td class="memItemLeft" align="right" valign="top"><a id="a06130a926927697ae8a6c211a60233a7"></a>
-MessageStartChars&#160;</td><td class="memItemRight" valign="bottom"><b>pchMessageStart</b></td></tr>
+<tr class="memitem:a06130a926927697ae8a6c211a60233a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="chainparams_8h.html#a606a5a0100b84686ef50bf2cb2a591a0">MessageStartChars</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a06130a926927697ae8a6c211a60233a7">pchMessageStart</a></td></tr>
 <tr class="separator:a06130a926927697ae8a6c211a60233a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf435bdf2d9cd00936d7da0fb4237921"><td class="memItemLeft" align="right" valign="top"><a id="adf435bdf2d9cd00936d7da0fb4237921"></a>
-std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#adf435bdf2d9cd00936d7da0fb4237921">vAlertPubKey</a></td></tr>
-<tr class="memdesc:adf435bdf2d9cd00936d7da0fb4237921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw pub key bytes for the broadcast alert signing key. <br /></td></tr>
+<tr class="memitem:adf435bdf2d9cd00936d7da0fb4237921"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#adf435bdf2d9cd00936d7da0fb4237921">vAlertPubKey</a></td></tr>
+<tr class="memdesc:adf435bdf2d9cd00936d7da0fb4237921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw pub key bytes for the broadcast alert signing key.  <a href="#adf435bdf2d9cd00936d7da0fb4237921">More...</a><br /></td></tr>
 <tr class="separator:adf435bdf2d9cd00936d7da0fb4237921"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76d9a8dc59e179ca94b6b9e04a93e5f4"><td class="memItemLeft" align="right" valign="top"><a id="a76d9a8dc59e179ca94b6b9e04a93e5f4"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nDefaultPort</b></td></tr>
+<tr class="memitem:a76d9a8dc59e179ca94b6b9e04a93e5f4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a76d9a8dc59e179ca94b6b9e04a93e5f4">nDefaultPort</a></td></tr>
 <tr class="separator:a76d9a8dc59e179ca94b6b9e04a93e5f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9b383ab55dbc41f87c5d5f21ec245ac"><td class="memItemLeft" align="right" valign="top"><a id="ac9b383ab55dbc41f87c5d5f21ec245ac"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>bnProofOfWorkLimit</b></td></tr>
+<tr class="memitem:ac9b383ab55dbc41f87c5d5f21ec245ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ac9b383ab55dbc41f87c5d5f21ec245ac">bnProofOfWorkLimit</a></td></tr>
 <tr class="separator:ac9b383ab55dbc41f87c5d5f21ec245ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8648767ca452c2a20c68ede2c7b54e77"><td class="memItemLeft" align="right" valign="top"><a id="a8648767ca452c2a20c68ede2c7b54e77"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nMaxReorganizationDepth</b></td></tr>
+<tr class="memitem:a8648767ca452c2a20c68ede2c7b54e77"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a8648767ca452c2a20c68ede2c7b54e77">nMaxReorganizationDepth</a></td></tr>
 <tr class="separator:a8648767ca452c2a20c68ede2c7b54e77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8618df6217285a39e86d44fba35a21af"><td class="memItemLeft" align="right" valign="top"><a id="a8618df6217285a39e86d44fba35a21af"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nSubsidyHalvingInterval</b></td></tr>
+<tr class="memitem:a8618df6217285a39e86d44fba35a21af"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a8618df6217285a39e86d44fba35a21af">nSubsidyHalvingInterval</a></td></tr>
 <tr class="separator:a8618df6217285a39e86d44fba35a21af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee2c84cf7f2c75f086953fd690d30532"><td class="memItemLeft" align="right" valign="top"><a id="aee2c84cf7f2c75f086953fd690d30532"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nEnforceBlockUpgradeMajority</b></td></tr>
+<tr class="memitem:aee2c84cf7f2c75f086953fd690d30532"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#aee2c84cf7f2c75f086953fd690d30532">nEnforceBlockUpgradeMajority</a></td></tr>
 <tr class="separator:aee2c84cf7f2c75f086953fd690d30532"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47b7660a7f47f6c7bc7c5e7c02d86c4f"><td class="memItemLeft" align="right" valign="top"><a id="a47b7660a7f47f6c7bc7c5e7c02d86c4f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nRejectBlockOutdatedMajority</b></td></tr>
+<tr class="memitem:a47b7660a7f47f6c7bc7c5e7c02d86c4f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a47b7660a7f47f6c7bc7c5e7c02d86c4f">nRejectBlockOutdatedMajority</a></td></tr>
 <tr class="separator:a47b7660a7f47f6c7bc7c5e7c02d86c4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7439dfd29226ebef8dfcb9a1afc733ff"><td class="memItemLeft" align="right" valign="top"><a id="a7439dfd29226ebef8dfcb9a1afc733ff"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nToCheckBlockUpgradeMajority</b></td></tr>
+<tr class="memitem:a7439dfd29226ebef8dfcb9a1afc733ff"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a7439dfd29226ebef8dfcb9a1afc733ff">nToCheckBlockUpgradeMajority</a></td></tr>
 <tr class="separator:a7439dfd29226ebef8dfcb9a1afc733ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3b007501adc348636d1107c10c72e41"><td class="memItemLeft" align="right" valign="top"><a id="ae3b007501adc348636d1107c10c72e41"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>nTargetTimespan</b></td></tr>
+<tr class="memitem:ae3b007501adc348636d1107c10c72e41"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ae3b007501adc348636d1107c10c72e41">nTargetTimespan</a></td></tr>
 <tr class="separator:ae3b007501adc348636d1107c10c72e41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45a8d931326b48a91df0762bce9a2f97"><td class="memItemLeft" align="right" valign="top"><a id="a45a8d931326b48a91df0762bce9a2f97"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>nTargetSpacing</b></td></tr>
+<tr class="memitem:a45a8d931326b48a91df0762bce9a2f97"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a45a8d931326b48a91df0762bce9a2f97">nTargetSpacing</a></td></tr>
 <tr class="separator:a45a8d931326b48a91df0762bce9a2f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1376cb171648b51385a44fe0b30a5b4b"><td class="memItemLeft" align="right" valign="top"><a id="a1376cb171648b51385a44fe0b30a5b4b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nLastPOWBlock</b></td></tr>
+<tr class="memitem:a1376cb171648b51385a44fe0b30a5b4b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a1376cb171648b51385a44fe0b30a5b4b">nLastPOWBlock</a></td></tr>
 <tr class="separator:a1376cb171648b51385a44fe0b30a5b4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2d0255279f57ab4b6e61b1031ca4d39"><td class="memItemLeft" align="right" valign="top"><a id="ae2d0255279f57ab4b6e61b1031ca4d39"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nMasternodeCountDrift</b></td></tr>
+<tr class="memitem:ae2d0255279f57ab4b6e61b1031ca4d39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ae2d0255279f57ab4b6e61b1031ca4d39">nMasternodeCountDrift</a></td></tr>
 <tr class="separator:ae2d0255279f57ab4b6e61b1031ca4d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15482c3ec35d6748a8026bfee288728c"><td class="memItemLeft" align="right" valign="top"><a id="a15482c3ec35d6748a8026bfee288728c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nMaturity</b></td></tr>
+<tr class="memitem:a15482c3ec35d6748a8026bfee288728c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a15482c3ec35d6748a8026bfee288728c">nMaturity</a></td></tr>
 <tr class="separator:a15482c3ec35d6748a8026bfee288728c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22eb28020f13dd6df96158abcb227b25"><td class="memItemLeft" align="right" valign="top"><a id="a22eb28020f13dd6df96158abcb227b25"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nModifierUpdateBlock</b></td></tr>
+<tr class="memitem:a22eb28020f13dd6df96158abcb227b25"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a22eb28020f13dd6df96158abcb227b25">nModifierUpdateBlock</a></td></tr>
 <tr class="separator:a22eb28020f13dd6df96158abcb227b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a654ff32ca59e910f589b5acad4110ba2"><td class="memItemLeft" align="right" valign="top"><a id="a654ff32ca59e910f589b5acad4110ba2"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>nMaxMoneyOut</b></td></tr>
+<tr class="memitem:a654ff32ca59e910f589b5acad4110ba2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a654ff32ca59e910f589b5acad4110ba2">nMaxMoneyOut</a></td></tr>
 <tr class="separator:a654ff32ca59e910f589b5acad4110ba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3efbcec19f3883c8300063ec0acf4a35"><td class="memItemLeft" align="right" valign="top"><a id="a3efbcec19f3883c8300063ec0acf4a35"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nMinerThreads</b></td></tr>
+<tr class="memitem:a3efbcec19f3883c8300063ec0acf4a35"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a3efbcec19f3883c8300063ec0acf4a35">nMinerThreads</a></td></tr>
 <tr class="separator:a3efbcec19f3883c8300063ec0acf4a35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ce50b4162fb2ebf5bd72ad4045aa70c"><td class="memItemLeft" align="right" valign="top"><a id="a9ce50b4162fb2ebf5bd72ad4045aa70c"></a>
-std::vector&lt; <a class="el" href="struct_c_d_n_s_seed_data.html">CDNSSeedData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vSeeds</b></td></tr>
+<tr class="memitem:a9ce50b4162fb2ebf5bd72ad4045aa70c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="struct_c_d_n_s_seed_data.html">CDNSSeedData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a9ce50b4162fb2ebf5bd72ad4045aa70c">vSeeds</a></td></tr>
 <tr class="separator:a9ce50b4162fb2ebf5bd72ad4045aa70c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a923d956c5d3891d0c682b7ef5410ed8f"><td class="memItemLeft" align="right" valign="top"><a id="a923d956c5d3891d0c682b7ef5410ed8f"></a>
-std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>base58Prefixes</b> [MAX_BASE58_TYPES]</td></tr>
+<tr class="memitem:a923d956c5d3891d0c682b7ef5410ed8f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a923d956c5d3891d0c682b7ef5410ed8f">base58Prefixes</a> [<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058a6b21a525c7fab64a5df656e708f71a98">MAX_BASE58_TYPES</a>]</td></tr>
 <tr class="separator:a923d956c5d3891d0c682b7ef5410ed8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a607373a144da14ba379464b370ceb2b8"><td class="memItemLeft" align="right" valign="top"><a id="a607373a144da14ba379464b370ceb2b8"></a>
-CBaseChainParams::Network&#160;</td><td class="memItemRight" valign="bottom"><b>networkID</b></td></tr>
+<tr class="memitem:a607373a144da14ba379464b370ceb2b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_base_chain_params.html#a19fb46b499c21801c0ff3c8607a0994e">CBaseChainParams::Network</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a607373a144da14ba379464b370ceb2b8">networkID</a></td></tr>
 <tr class="separator:a607373a144da14ba379464b370ceb2b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8542ce21d5b9bdc2eadad8702fdd584a"><td class="memItemLeft" align="right" valign="top"><a id="a8542ce21d5b9bdc2eadad8702fdd584a"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>strNetworkID</b></td></tr>
+<tr class="memitem:a8542ce21d5b9bdc2eadad8702fdd584a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a8542ce21d5b9bdc2eadad8702fdd584a">strNetworkID</a></td></tr>
 <tr class="separator:a8542ce21d5b9bdc2eadad8702fdd584a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e4119fa75f6ea0c64ba8809dab5c4f8"><td class="memItemLeft" align="right" valign="top"><a id="a2e4119fa75f6ea0c64ba8809dab5c4f8"></a>
-<a class="el" href="class_c_block.html">CBlock</a>&#160;</td><td class="memItemRight" valign="bottom"><b>genesis</b></td></tr>
+<tr class="memitem:a2e4119fa75f6ea0c64ba8809dab5c4f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_block.html">CBlock</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a2e4119fa75f6ea0c64ba8809dab5c4f8">genesis</a></td></tr>
 <tr class="separator:a2e4119fa75f6ea0c64ba8809dab5c4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af3ad79fb5bf4938750317c91e4c4b954"><td class="memItemLeft" align="right" valign="top"><a id="af3ad79fb5bf4938750317c91e4c4b954"></a>
-std::vector&lt; <a class="el" href="class_c_address.html">CAddress</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vFixedSeeds</b></td></tr>
+<tr class="memitem:af3ad79fb5bf4938750317c91e4c4b954"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_c_address.html">CAddress</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#af3ad79fb5bf4938750317c91e4c4b954">vFixedSeeds</a></td></tr>
 <tr class="separator:af3ad79fb5bf4938750317c91e4c4b954"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe9980263561e3f26b6352daa64092da"><td class="memItemLeft" align="right" valign="top"><a id="abe9980263561e3f26b6352daa64092da"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fMiningRequiresPeers</b></td></tr>
+<tr class="memitem:af84ed151ace6ddc0cbfa649b1c263e9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#af84ed151ace6ddc0cbfa649b1c263e9d">fRequireRPCPassword</a></td></tr>
+<tr class="separator:af84ed151ace6ddc0cbfa649b1c263e9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe9980263561e3f26b6352daa64092da"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#abe9980263561e3f26b6352daa64092da">fMiningRequiresPeers</a></td></tr>
 <tr class="separator:abe9980263561e3f26b6352daa64092da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74e3e9749210d78d6d3e021254bb8ac4"><td class="memItemLeft" align="right" valign="top"><a id="a74e3e9749210d78d6d3e021254bb8ac4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fAllowMinDifficultyBlocks</b></td></tr>
+<tr class="memitem:a74e3e9749210d78d6d3e021254bb8ac4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a74e3e9749210d78d6d3e021254bb8ac4">fAllowMinDifficultyBlocks</a></td></tr>
 <tr class="separator:a74e3e9749210d78d6d3e021254bb8ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a630f023ae4a95a8b420bad0a08b4428c"><td class="memItemLeft" align="right" valign="top"><a id="a630f023ae4a95a8b420bad0a08b4428c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fDefaultConsistencyChecks</b></td></tr>
+<tr class="memitem:a630f023ae4a95a8b420bad0a08b4428c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a630f023ae4a95a8b420bad0a08b4428c">fDefaultConsistencyChecks</a></td></tr>
 <tr class="separator:a630f023ae4a95a8b420bad0a08b4428c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc615d2750d847e1eac0ecb7fc8d2da8"><td class="memItemLeft" align="right" valign="top"><a id="abc615d2750d847e1eac0ecb7fc8d2da8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fRequireStandard</b></td></tr>
+<tr class="memitem:abc615d2750d847e1eac0ecb7fc8d2da8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#abc615d2750d847e1eac0ecb7fc8d2da8">fRequireStandard</a></td></tr>
 <tr class="separator:abc615d2750d847e1eac0ecb7fc8d2da8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad640045ea40c569df7b826551872e1bd"><td class="memItemLeft" align="right" valign="top"><a id="ad640045ea40c569df7b826551872e1bd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fMineBlocksOnDemand</b></td></tr>
+<tr class="memitem:ad640045ea40c569df7b826551872e1bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ad640045ea40c569df7b826551872e1bd">fMineBlocksOnDemand</a></td></tr>
 <tr class="separator:ad640045ea40c569df7b826551872e1bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69af48fdfc37e1b6bc9ebf99cbd3d381"><td class="memItemLeft" align="right" valign="top"><a id="a69af48fdfc37e1b6bc9ebf99cbd3d381"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fSkipProofOfWorkCheck</b></td></tr>
+<tr class="memitem:a69af48fdfc37e1b6bc9ebf99cbd3d381"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a69af48fdfc37e1b6bc9ebf99cbd3d381">fSkipProofOfWorkCheck</a></td></tr>
 <tr class="separator:a69af48fdfc37e1b6bc9ebf99cbd3d381"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f62f1b7070f83b48aa86564628a2e7d"><td class="memItemLeft" align="right" valign="top"><a id="a4f62f1b7070f83b48aa86564628a2e7d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fTestnetToBeDeprecatedFieldRPC</b></td></tr>
+<tr class="memitem:a4f62f1b7070f83b48aa86564628a2e7d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a4f62f1b7070f83b48aa86564628a2e7d">fTestnetToBeDeprecatedFieldRPC</a></td></tr>
 <tr class="separator:a4f62f1b7070f83b48aa86564628a2e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9f11f9732810c7773747b2746be299c"><td class="memItemLeft" align="right" valign="top"><a id="af9f11f9732810c7773747b2746be299c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fHeadersFirstSyncingActive</b></td></tr>
+<tr class="memitem:af9f11f9732810c7773747b2746be299c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#af9f11f9732810c7773747b2746be299c">fHeadersFirstSyncingActive</a></td></tr>
 <tr class="separator:af9f11f9732810c7773747b2746be299c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:addb1962eb12784aaea932fd49b5fd40b"><td class="memItemLeft" align="right" valign="top"><a id="addb1962eb12784aaea932fd49b5fd40b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nPoolMaxTransactions</b></td></tr>
+<tr class="memitem:addb1962eb12784aaea932fd49b5fd40b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#addb1962eb12784aaea932fd49b5fd40b">nPoolMaxTransactions</a></td></tr>
 <tr class="separator:addb1962eb12784aaea932fd49b5fd40b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58ca704d8cc6f625f8757487cccb6250"><td class="memItemLeft" align="right" valign="top"><a id="a58ca704d8cc6f625f8757487cccb6250"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>strSporkKey</b></td></tr>
+<tr class="memitem:a58ca704d8cc6f625f8757487cccb6250"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a58ca704d8cc6f625f8757487cccb6250">strSporkKey</a></td></tr>
 <tr class="separator:a58ca704d8cc6f625f8757487cccb6250"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a652c1db947c78ef3c6a1e7f599d33525"><td class="memItemLeft" align="right" valign="top"><a id="a652c1db947c78ef3c6a1e7f599d33525"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>strObfuscationPoolDummyAddress</b></td></tr>
+<tr class="memitem:a652c1db947c78ef3c6a1e7f599d33525"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a652c1db947c78ef3c6a1e7f599d33525">strObfuscationPoolDummyAddress</a></td></tr>
 <tr class="separator:a652c1db947c78ef3c6a1e7f599d33525"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80fe48978b6626fdbc50b314a030511b"><td class="memItemLeft" align="right" valign="top"><a id="a80fe48978b6626fdbc50b314a030511b"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>nStartMasternodePayments</b></td></tr>
+<tr class="memitem:a80fe48978b6626fdbc50b314a030511b"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a80fe48978b6626fdbc50b314a030511b">nStartMasternodePayments</a></td></tr>
 <tr class="separator:a80fe48978b6626fdbc50b314a030511b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf6118d28adb3e4284323ddaf8d88bdb"><td class="memItemLeft" align="right" valign="top"><a id="adf6118d28adb3e4284323ddaf8d88bdb"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>zerocoinModulus</b></td></tr>
+<tr class="memitem:adf6118d28adb3e4284323ddaf8d88bdb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#adf6118d28adb3e4284323ddaf8d88bdb">zerocoinModulus</a></td></tr>
 <tr class="separator:adf6118d28adb3e4284323ddaf8d88bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cde3d26a9cdd7bbf40c01322a65b19f"><td class="memItemLeft" align="right" valign="top"><a id="a4cde3d26a9cdd7bbf40c01322a65b19f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nMaxZerocoinSpendsPerTransaction</b></td></tr>
+<tr class="memitem:a4cde3d26a9cdd7bbf40c01322a65b19f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a4cde3d26a9cdd7bbf40c01322a65b19f">nMaxZerocoinSpendsPerTransaction</a></td></tr>
 <tr class="separator:a4cde3d26a9cdd7bbf40c01322a65b19f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae272352816d1a4bcaca51d9ff38ee9c9"><td class="memItemLeft" align="right" valign="top"><a id="ae272352816d1a4bcaca51d9ff38ee9c9"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>nMinZerocoinMintFee</b></td></tr>
+<tr class="memitem:ae272352816d1a4bcaca51d9ff38ee9c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ae272352816d1a4bcaca51d9ff38ee9c9">nMinZerocoinMintFee</a></td></tr>
 <tr class="separator:ae272352816d1a4bcaca51d9ff38ee9c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d5815ad4550d75b90e7b1aed21ed324"><td class="memItemLeft" align="right" valign="top"><a id="a1d5815ad4550d75b90e7b1aed21ed324"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nMintRequiredConfirmations</b></td></tr>
+<tr class="memitem:a1d5815ad4550d75b90e7b1aed21ed324"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a1d5815ad4550d75b90e7b1aed21ed324">nMintRequiredConfirmations</a></td></tr>
 <tr class="separator:a1d5815ad4550d75b90e7b1aed21ed324"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2f6ee6ffdd7f14ef7e5a2fb40276f53"><td class="memItemLeft" align="right" valign="top"><a id="ab2f6ee6ffdd7f14ef7e5a2fb40276f53"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nRequiredAccumulation</b></td></tr>
+<tr class="memitem:ab2f6ee6ffdd7f14ef7e5a2fb40276f53"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#ab2f6ee6ffdd7f14ef7e5a2fb40276f53">nRequiredAccumulation</a></td></tr>
 <tr class="separator:ab2f6ee6ffdd7f14ef7e5a2fb40276f53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d1590c701c4ba85601ced386103e2cc"><td class="memItemLeft" align="right" valign="top"><a id="a9d1590c701c4ba85601ced386103e2cc"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nDefaultSecurityLevel</b></td></tr>
+<tr class="memitem:a9d1590c701c4ba85601ced386103e2cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a9d1590c701c4ba85601ced386103e2cc">nDefaultSecurityLevel</a></td></tr>
 <tr class="separator:a9d1590c701c4ba85601ced386103e2cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc2851a966d3668c09bfdbea7bb5de96"><td class="memItemLeft" align="right" valign="top"><a id="acc2851a966d3668c09bfdbea7bb5de96"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nZerocoinHeaderVersion</b></td></tr>
+<tr class="memitem:acc2851a966d3668c09bfdbea7bb5de96"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#acc2851a966d3668c09bfdbea7bb5de96">nZerocoinHeaderVersion</a></td></tr>
 <tr class="separator:acc2851a966d3668c09bfdbea7bb5de96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bc99b0b408a74f8946a220c5feb5b0c"><td class="memItemLeft" align="right" valign="top"><a id="a1bc99b0b408a74f8946a220c5feb5b0c"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>nBudget_Fee_Confirmations</b></td></tr>
+<tr class="memitem:a1bc99b0b408a74f8946a220c5feb5b0c"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a1bc99b0b408a74f8946a220c5feb5b0c">nBudget_Fee_Confirmations</a></td></tr>
 <tr class="separator:a1bc99b0b408a74f8946a220c5feb5b0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca752e6cd13e695d2f679fed05ce15a6"><td class="memItemLeft" align="right" valign="top"><a id="aca752e6cd13e695d2f679fed05ce15a6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nZerocoinStartHeight</b></td></tr>
+<tr class="memitem:aca752e6cd13e695d2f679fed05ce15a6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#aca752e6cd13e695d2f679fed05ce15a6">nZerocoinStartHeight</a></td></tr>
 <tr class="separator:aca752e6cd13e695d2f679fed05ce15a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ece3e405b68957ccc0b8269d4f1c99f"><td class="memItemLeft" align="right" valign="top"><a id="a1ece3e405b68957ccc0b8269d4f1c99f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nZerocoinStartTime</b></td></tr>
+<tr class="memitem:a1ece3e405b68957ccc0b8269d4f1c99f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a1ece3e405b68957ccc0b8269d4f1c99f">nZerocoinStartTime</a></td></tr>
 <tr class="separator:a1ece3e405b68957ccc0b8269d4f1c99f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52246ab367decc6365b4ca07f1502a9e"><td class="memItemLeft" align="right" valign="top"><a id="a52246ab367decc6365b4ca07f1502a9e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceSerialRange</b></td></tr>
+<tr class="memitem:a52246ab367decc6365b4ca07f1502a9e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a52246ab367decc6365b4ca07f1502a9e">nBlockEnforceSerialRange</a></td></tr>
 <tr class="separator:a52246ab367decc6365b4ca07f1502a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f1c3b37309c7df072a82aaa94010fe3"><td class="memItemLeft" align="right" valign="top"><a id="a0f1c3b37309c7df072a82aaa94010fe3"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockRecalculateAccumulators</b></td></tr>
+<tr class="memitem:a0f1c3b37309c7df072a82aaa94010fe3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a0f1c3b37309c7df072a82aaa94010fe3">nBlockRecalculateAccumulators</a></td></tr>
 <tr class="separator:a0f1c3b37309c7df072a82aaa94010fe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa3d076eba27a08e2163e4763d91e02f"><td class="memItemLeft" align="right" valign="top"><a id="afa3d076eba27a08e2163e4763d91e02f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockFirstFraudulent</b></td></tr>
+<tr class="memitem:afa3d076eba27a08e2163e4763d91e02f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#afa3d076eba27a08e2163e4763d91e02f">nBlockFirstFraudulent</a></td></tr>
 <tr class="separator:afa3d076eba27a08e2163e4763d91e02f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a054fbf57da6d3f8f042093b07e79b13d"><td class="memItemLeft" align="right" valign="top"><a id="a054fbf57da6d3f8f042093b07e79b13d"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockLastGoodCheckpoint</b></td></tr>
+<tr class="memitem:a054fbf57da6d3f8f042093b07e79b13d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a054fbf57da6d3f8f042093b07e79b13d">nBlockLastGoodCheckpoint</a></td></tr>
 <tr class="separator:a054fbf57da6d3f8f042093b07e79b13d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a728b558cdbea31d05d5c76ea55b0c40a"><td class="memItemLeft" align="right" valign="top"><a id="a728b558cdbea31d05d5c76ea55b0c40a"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUTXO</b></td></tr>
+<tr class="memitem:a728b558cdbea31d05d5c76ea55b0c40a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_chain_params.html#a728b558cdbea31d05d5c76ea55b0c40a">nBlockEnforceInvalidUTXO</a></td></tr>
 <tr class="separator:a728b558cdbea31d05d5c76ea55b0c40a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="class_c_chain_params.html">CChainParams</a> defines various tweakable parameters of a given instance of the PIVX system. There are three: the main network on which people trade goods and services, the public test network which gets reset from time to time and a regression test mode which is intended for private networks only. It has minimal difficulty to ensure that blocks can be found instantly. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<div class="textblock"><p><a class="el" href="class_c_chain_params.html" title="CChainParams defines various tweakable parameters of a given instance of the DIVX system...">CChainParams</a> defines various tweakable parameters of a given instance of the DIVX system. </p>
+<p>There are three: the main network on which people trade goods and services, the public test network which gets reset from time to time and a regression test mode which is intended for private networks only. It has minimal difficulty to ensure that blocks can be found instantly. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00034">34</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="aa294058ec2e3586bd8d03d6c39667058"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa294058ec2e3586bd8d03d6c39667058">&#9670;&nbsp;</a></span>Base58Type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058">CChainParams::Base58Type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa294058ec2e3586bd8d03d6c39667058af088724f20c49c73e548f94d8f1808dd"></a>PUBKEY_ADDRESS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa294058ec2e3586bd8d03d6c39667058adf0172df56140eb2f6fb7a59df0bb76a"></a>SCRIPT_ADDRESS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa294058ec2e3586bd8d03d6c39667058aacf95cbb9b5f51445295c704540adb18"></a>SECRET_KEY&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa294058ec2e3586bd8d03d6c39667058a1259eb07831c689e393e5008d7bd0085"></a>EXT_PUBLIC_KEY&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa294058ec2e3586bd8d03d6c39667058ab5636e60152f35f6595fe413eae430b0"></a>EXT_SECRET_KEY&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa294058ec2e3586bd8d03d6c39667058a2387f8db1b1f25629f019ea6bddbb7ab"></a>EXT_COIN_TYPE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa294058ec2e3586bd8d03d6c39667058a6b21a525c7fab64a5df656e708f71a98"></a>MAX_BASE58_TYPES&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00037">37</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a8d07fce73d4160244459c5aaae8fb966"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d07fce73d4160244459c5aaae8fb966">&#9670;&nbsp;</a></span>CChainParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CChainParams::CChainParams </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00122">122</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8ca8fe289d1c3d5851d6aebaf28db22f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ca8fe289d1c3d5851d6aebaf28db22f">&#9670;&nbsp;</a></span>AlertKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;unsigned char&gt;&amp; CChainParams::AlertKey </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00050">50</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
 <a id="ac1202f87305ff3fdd4e1da28f1b35218"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac1202f87305ff3fdd4e1da28f1b35218">&#9670;&nbsp;</a></span>AllowMinDifficultyBlocks()</h2>
 
@@ -433,7 +456,176 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Allow mining of a min-difficulty block </p>
+
+<p>Allow mining of a min-difficulty block. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00071">71</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a103c58eca4a26a71201882b3ed6c4cb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a103c58eca4a26a71201882b3ed6c4cb4">&#9670;&nbsp;</a></span>Base58Prefix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;unsigned char&gt;&amp; CChainParams::Base58Prefix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058">Base58Type</a>&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00090">90</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a273dbde532ea4c5cf57eea2150d1bea3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a273dbde532ea4c5cf57eea2150d1bea3">&#9670;&nbsp;</a></span>Block_Enforce_Invalid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Block_Enforce_Invalid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00119">119</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="affd375d849ab3faefea3301b9ecbdf6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affd375d849ab3faefea3301b9ecbdf6b">&#9670;&nbsp;</a></span>Budget_Fee_Confirmations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CChainParams::Budget_Fee_Confirmations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00097">97</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="aba314e7660492aee43812344fa796d6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba314e7660492aee43812344fa796d6c">&#9670;&nbsp;</a></span>Checkpoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="struct_checkpoints_1_1_c_checkpoint_data.html">Checkpoints::CCheckpointData</a>&amp; CChainParams::Checkpoints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="class_c_unit_test_params.html#a2ae5bc37269708082a6c95ad647d13d0">CUnitTestParams</a>, <a class="el" href="class_c_reg_test_params.html#a35c41705020a5f5a4cf461ce00b954f0">CRegTestParams</a>, <a class="el" href="class_c_test_net_params.html#af19780caeb765b7d8b51cd1c0a109fa1">CTestNetParams</a>, and <a class="el" href="class_c_main_params.html#a7c74a76c96714b533ac485e2e9b25f15">CMainParams</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ab752b3ae1230aaf40b5a2d14d628fab7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab752b3ae1230aaf40b5a2d14d628fab7">&#9670;&nbsp;</a></span>COINBASE_MATURITY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::COINBASE_MATURITY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00079">79</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -459,7 +651,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Default value for -checkmempool and -checkblockindex argument </p>
+
+<p>Default value for -checkmempool and -checkblockindex argument. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00069">69</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
 
 </div>
 </div>
@@ -485,7 +680,43 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Used if GenerateBitcoins is called with a negative number of threads </p>
+
+<p>Used if GenerateBitcoins is called with a negative number of threads. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00061">61</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a402b8df138b265619217ddf934bbc67a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a402b8df138b265619217ddf934bbc67a">&#9670;&nbsp;</a></span>DNSSeeds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="struct_c_d_n_s_seed_data.html">CDNSSeedData</a>&gt;&amp; CChainParams::DNSSeeds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00089">89</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -511,7 +742,136 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Used to check majorities for block version upgrade </p>
+
+<p>Used to check majorities for block version upgrade. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00055">55</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a3bd33f38910c2a7b435a71d270515b54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bd33f38910c2a7b435a71d270515b54">&#9670;&nbsp;</a></span>FixedSeeds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;<a class="el" href="class_c_address.html">CAddress</a>&gt;&amp; CChainParams::FixedSeeds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00091">91</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="aebd6cb9d986eeb2e6c228c04b3c39b42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebd6cb9d986eeb2e6c228c04b3c39b42">&#9670;&nbsp;</a></span>GenesisBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_c_block.html">CBlock</a>&amp; CChainParams::GenesisBlock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00062">62</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a2e796bba356e7ce2040f545ea466754f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e796bba356e7ce2040f545ea466754f">&#9670;&nbsp;</a></span>GetDefaultPort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::GetDefaultPort </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00051">51</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 9 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a68e10a5e6ad16a5c2bfa0a8a1c8f4c4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68e10a5e6ad16a5c2bfa0a8a1c8f4c4b">&#9670;&nbsp;</a></span>HashGenesisBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classuint256.html">uint256</a>&amp; CChainParams::HashGenesisBlock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00048">48</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 10 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -537,7 +897,70 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Headers first syncing is disabled </p>
+
+<p>Headers first syncing is disabled. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00067">67</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="aaf86b1e5312dea14645af764fc41be7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf86b1e5312dea14645af764fc41be7f">&#9670;&nbsp;</a></span>Interval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CChainParams::Interval </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00078">78</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a836847832c07d43f71d371aed259fb80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a836847832c07d43f71d371aed259fb80">&#9670;&nbsp;</a></span>LAST_POW_BLOCK()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::LAST_POW_BLOCK </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00112">112</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 11 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -563,7 +986,103 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>The masternode count that we will allow the see-saw reward payments to be off by </p>
+
+<p>The masternode count that we will allow the see-saw reward payments to be off by. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00082">82</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 12 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a82190f02d83daee6823362e3c25848d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82190f02d83daee6823362e3c25848d0">&#9670;&nbsp;</a></span>MaxMoneyOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> CChainParams::MaxMoneyOut </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00080">80</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 13 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a53d47c5358366c218fc26cacb9bd4010"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53d47c5358366c218fc26cacb9bd4010">&#9670;&nbsp;</a></span>MaxReorganizationDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::MaxReorganizationDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00058">58</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="accc01cc5a34b449c3370f46a5b4c5190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accc01cc5a34b449c3370f46a5b4c5190">&#9670;&nbsp;</a></span>MessageStart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="chainparams_8h.html#a606a5a0100b84686ef50bf2cb2a591a0">MessageStartChars</a>&amp; CChainParams::MessageStart </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00049">49</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
 
 </div>
 </div>
@@ -589,7 +1108,17 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Make miner stop after a block is found. In RPC, don't return until nGenProcLimit blocks are generated </p>
+
+<p>Make miner stop after a block is found. </p>
+<p>In RPC, don't return until nGenProcLimit blocks are generated </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00084">84</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 14 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -615,7 +1144,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Make miner wait to have peers to avoid wasting work </p>
+
+<p>Make miner wait to have peers to avoid wasting work. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00065">65</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
 
 </div>
 </div>
@@ -641,7 +1173,43 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Height or Time Based Activations </p>
+
+<p>Height or Time Based Activations. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00111">111</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a3af50135596ad86019f274c8a15e580f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3af50135596ad86019f274c8a15e580f">&#9670;&nbsp;</a></span>NetworkID()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_base_chain_params.html#a19fb46b499c21801c0ff3c8607a0994e">CBaseChainParams::Network</a> CChainParams::NetworkID </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00098">98</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 15 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -667,7 +1235,163 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
+
 <p>Return the BIP70 network string (main, test or regtest) </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00088">88</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 16 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="acf6464af63708a37e52876d2792eb27e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf6464af63708a37e52876d2792eb27e">&#9670;&nbsp;</a></span>ObfuscationPoolDummyAddress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string CChainParams::ObfuscationPoolDummyAddress </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00095">95</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a128aaa94e4cfcba19dc26e6d2f5ad467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a128aaa94e4cfcba19dc26e6d2f5ad467">&#9670;&nbsp;</a></span>PoolMaxTransactions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::PoolMaxTransactions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00093">93</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 17 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="af171e47287f097c8753b9581fd3c3c58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af171e47287f097c8753b9581fd3c3c58">&#9670;&nbsp;</a></span>ProofOfWorkLimit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classuint256.html">uint256</a>&amp; CChainParams::ProofOfWorkLimit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00052">52</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 18 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a759fe1926448351c9a0856b28e83e794"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a759fe1926448351c9a0856b28e83e794">&#9670;&nbsp;</a></span>RejectBlockOutdatedMajority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::RejectBlockOutdatedMajority </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00056">56</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="af5cd19bae91d97cd28152dac47f29190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5cd19bae91d97cd28152dac47f29190">&#9670;&nbsp;</a></span>RequireRPCPassword()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::RequireRPCPassword </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00063">63</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
 
 </div>
 </div>
@@ -693,7 +1417,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Make standard checks </p>
+
+<p>Make standard checks. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00075">75</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
 
 </div>
 </div>
@@ -719,7 +1446,151 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Skip proof-of-work check: allow mining of any difficulty block </p>
+
+<p>Skip proof-of-work check: allow mining of any difficulty block. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00073">73</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a8ad2fa7772a2d4fe430e6b933003a2c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ad2fa7772a2d4fe430e6b933003a2c7">&#9670;&nbsp;</a></span>SporkKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string CChainParams::SporkKey </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00094">94</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="af732a05c80cf79a71b0f6bc5ce113c98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af732a05c80cf79a71b0f6bc5ce113c98">&#9670;&nbsp;</a></span>StartMasternodePayments()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CChainParams::StartMasternodePayments </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00096">96</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a3dc06a2a30742a9beb8953622cbaf477"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dc06a2a30742a9beb8953622cbaf477">&#9670;&nbsp;</a></span>SubsidyHalvingInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::SubsidyHalvingInterval </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00053">53</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a9c039f77ecdc58117dca0c6a5bae0dff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c039f77ecdc58117dca0c6a5bae0dff">&#9670;&nbsp;</a></span>TargetSpacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CChainParams::TargetSpacing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00077">77</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 19 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a31aee5a207f45026c08cc37f3a0f7b89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31aee5a207f45026c08cc37f3a0f7b89">&#9670;&nbsp;</a></span>TargetTimespan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CChainParams::TargetTimespan </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00076">76</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
 
 </div>
 </div>
@@ -745,7 +1616,322 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>In the future use <a class="el" href="class_c_chain_params.html#a2c02cc73f7fe9369cee9a39a0fd5b710">NetworkIDString()</a> for RPC fields </p>
+
+<p>In the future use <a class="el" href="class_c_chain_params.html#a2c02cc73f7fe9369cee9a39a0fd5b710" title="Return the BIP70 network string (main, test or regtest) ">NetworkIDString()</a> for RPC fields. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00086">86</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a84aa3a27051e0bc1d47586c24983548c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84aa3a27051e0bc1d47586c24983548c">&#9670;&nbsp;</a></span>ToCheckBlockUpgradeMajority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::ToCheckBlockUpgradeMajority </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00057">57</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 20 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="aed556aae7f3b194eb3d1699daa7d6b35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed556aae7f3b194eb3d1699daa7d6b35">&#9670;&nbsp;</a></span>Zerocoin_Block_EnforceSerialRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_Block_EnforceSerialRange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00114">114</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a92c49924432a4786282ccfe32ecadf8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92c49924432a4786282ccfe32ecadf8a">&#9670;&nbsp;</a></span>Zerocoin_Block_FirstFraudulent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_Block_FirstFraudulent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00116">116</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 21 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a7d9e9fc154ad9bfc22f149a2a8903a9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d9e9fc154ad9bfc22f149a2a8903a9f">&#9670;&nbsp;</a></span>Zerocoin_Block_LastGoodCheckpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_Block_LastGoodCheckpoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00117">117</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 22 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4dcfed7f6d901fb89a5b77376e9d19f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dcfed7f6d901fb89a5b77376e9d19f2">&#9670;&nbsp;</a></span>Zerocoin_Block_RecalculateAccumulators()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_Block_RecalculateAccumulators </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00115">115</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 23 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="aae50ef1ebe703e91b9bef340e7557f24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae50ef1ebe703e91b9bef340e7557f24">&#9670;&nbsp;</a></span>Zerocoin_DefaultSpendSecurity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_DefaultSpendSecurity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00107">107</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="afcf5e1e63110dc8242be2b631ead6f1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcf5e1e63110dc8242be2b631ead6f1e">&#9670;&nbsp;</a></span>Zerocoin_HeaderVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_HeaderVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00108">108</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a9c9564cce9a2852ec277560c03c7bf5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c9564cce9a2852ec277560c03c7bf5f">&#9670;&nbsp;</a></span>Zerocoin_MaxSpendsPerTransaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_MaxSpendsPerTransaction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00103">103</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 24 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a68324f698999844cf8bdb511ab5bf89a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68324f698999844cf8bdb511ab5bf89a">&#9670;&nbsp;</a></span>Zerocoin_MintFee()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> CChainParams::Zerocoin_MintFee </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00104">104</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 25 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a76f3eaab883c0359e8c0b2d6941ef39c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76f3eaab883c0359e8c0b2d6941ef39c">&#9670;&nbsp;</a></span>Zerocoin_MintRequiredConfirmations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_MintRequiredConfirmations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00105">105</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 26 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -771,18 +1957,1384 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockEnforceInvalidUT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Zerocoin </p>
+
+<p>Zerocoin. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00101">101</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a630db503e18106a7b797cdfe0a184437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a630db503e18106a7b797cdfe0a184437">&#9670;&nbsp;</a></span>Zerocoin_Params()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">libzerocoin::ZerocoinParams</a> * CChainParams::Zerocoin_Params </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8cpp_source.html#l00116">116</a> of file <a class="el" href="chainparams_8cpp_source.html">chainparams.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae0c16d94f2017bc9fe0ab558447b61ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0c16d94f2017bc9fe0ab558447b61ed">&#9670;&nbsp;</a></span>Zerocoin_RequiredAccumulation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_RequiredAccumulation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00106">106</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a5c3b62573db5b5a6cdaee67d608353e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c3b62573db5b5a6cdaee67d608353e0">&#9670;&nbsp;</a></span>Zerocoin_StartHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_StartHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00113">113</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 27 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae921b3c9f58708e4a694bb0b1e42173a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae921b3c9f58708e4a694bb0b1e42173a">&#9670;&nbsp;</a></span>Zerocoin_StartTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::Zerocoin_StartTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00118">118</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 28 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a923d956c5d3891d0c682b7ef5410ed8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a923d956c5d3891d0c682b7ef5410ed8f">&#9670;&nbsp;</a></span>base58Prefixes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;unsigned char&gt; CChainParams::base58Prefixes[<a class="el" href="class_c_chain_params.html#aa294058ec2e3586bd8d03d6c39667058a6b21a525c7fab64a5df656e708f71a98">MAX_BASE58_TYPES</a>]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00144">144</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="ac9b383ab55dbc41f87c5d5f21ec245ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9b383ab55dbc41f87c5d5f21ec245ac">&#9670;&nbsp;</a></span>bnProofOfWorkLimit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> CChainParams::bnProofOfWorkLimit</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00129">129</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a74e3e9749210d78d6d3e021254bb8ac4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74e3e9749210d78d6d3e021254bb8ac4">&#9670;&nbsp;</a></span>fAllowMinDifficultyBlocks</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::fAllowMinDifficultyBlocks</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00151">151</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a630f023ae4a95a8b420bad0a08b4428c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a630f023ae4a95a8b420bad0a08b4428c">&#9670;&nbsp;</a></span>fDefaultConsistencyChecks</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::fDefaultConsistencyChecks</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00152">152</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="af9f11f9732810c7773747b2746be299c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9f11f9732810c7773747b2746be299c">&#9670;&nbsp;</a></span>fHeadersFirstSyncingActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::fHeadersFirstSyncingActive</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00157">157</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="ad640045ea40c569df7b826551872e1bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad640045ea40c569df7b826551872e1bd">&#9670;&nbsp;</a></span>fMineBlocksOnDemand</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::fMineBlocksOnDemand</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00154">154</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="abe9980263561e3f26b6352daa64092da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe9980263561e3f26b6352daa64092da">&#9670;&nbsp;</a></span>fMiningRequiresPeers</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::fMiningRequiresPeers</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00150">150</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="af84ed151ace6ddc0cbfa649b1c263e9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84ed151ace6ddc0cbfa649b1c263e9d">&#9670;&nbsp;</a></span>fRequireRPCPassword</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::fRequireRPCPassword</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00149">149</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="abc615d2750d847e1eac0ecb7fc8d2da8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc615d2750d847e1eac0ecb7fc8d2da8">&#9670;&nbsp;</a></span>fRequireStandard</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::fRequireStandard</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00153">153</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a69af48fdfc37e1b6bc9ebf99cbd3d381"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69af48fdfc37e1b6bc9ebf99cbd3d381">&#9670;&nbsp;</a></span>fSkipProofOfWorkCheck</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::fSkipProofOfWorkCheck</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00155">155</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a4f62f1b7070f83b48aa86564628a2e7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f62f1b7070f83b48aa86564628a2e7d">&#9670;&nbsp;</a></span>fTestnetToBeDeprecatedFieldRPC</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CChainParams::fTestnetToBeDeprecatedFieldRPC</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00156">156</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a2e4119fa75f6ea0c64ba8809dab5c4f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e4119fa75f6ea0c64ba8809dab5c4f8">&#9670;&nbsp;</a></span>genesis</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_block.html">CBlock</a> CChainParams::genesis</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00147">147</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a3033bae1b7e966358f80b6cbb2e2a3d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3033bae1b7e966358f80b6cbb2e2a3d8">&#9670;&nbsp;</a></span>hashGenesisBlock</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> CChainParams::hashGenesisBlock</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00124">124</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a728b558cdbea31d05d5c76ea55b0c40a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a728b558cdbea31d05d5c76ea55b0c40a">&#9670;&nbsp;</a></span>nBlockEnforceInvalidUTXO</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nBlockEnforceInvalidUTXO</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00177">177</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a52246ab367decc6365b4ca07f1502a9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52246ab367decc6365b4ca07f1502a9e">&#9670;&nbsp;</a></span>nBlockEnforceSerialRange</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nBlockEnforceSerialRange</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00173">173</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="afa3d076eba27a08e2163e4763d91e02f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa3d076eba27a08e2163e4763d91e02f">&#9670;&nbsp;</a></span>nBlockFirstFraudulent</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nBlockFirstFraudulent</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00175">175</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a054fbf57da6d3f8f042093b07e79b13d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a054fbf57da6d3f8f042093b07e79b13d">&#9670;&nbsp;</a></span>nBlockLastGoodCheckpoint</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nBlockLastGoodCheckpoint</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00176">176</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a0f1c3b37309c7df072a82aaa94010fe3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f1c3b37309c7df072a82aaa94010fe3">&#9670;&nbsp;</a></span>nBlockRecalculateAccumulators</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nBlockRecalculateAccumulators</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00174">174</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a1bc99b0b408a74f8946a220c5feb5b0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bc99b0b408a74f8946a220c5feb5b0c">&#9670;&nbsp;</a></span>nBudget_Fee_Confirmations</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CChainParams::nBudget_Fee_Confirmations</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00169">169</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a76d9a8dc59e179ca94b6b9e04a93e5f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76d9a8dc59e179ca94b6b9e04a93e5f4">&#9670;&nbsp;</a></span>nDefaultPort</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nDefaultPort</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00128">128</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a9d1590c701c4ba85601ced386103e2cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d1590c701c4ba85601ced386103e2cc">&#9670;&nbsp;</a></span>nDefaultSecurityLevel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nDefaultSecurityLevel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00167">167</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="aee2c84cf7f2c75f086953fd690d30532"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee2c84cf7f2c75f086953fd690d30532">&#9670;&nbsp;</a></span>nEnforceBlockUpgradeMajority</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nEnforceBlockUpgradeMajority</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00132">132</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a607373a144da14ba379464b370ceb2b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a607373a144da14ba379464b370ceb2b8">&#9670;&nbsp;</a></span>networkID</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_base_chain_params.html#a19fb46b499c21801c0ff3c8607a0994e">CBaseChainParams::Network</a> CChainParams::networkID</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00145">145</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a1376cb171648b51385a44fe0b30a5b4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1376cb171648b51385a44fe0b30a5b4b">&#9670;&nbsp;</a></span>nLastPOWBlock</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nLastPOWBlock</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00137">137</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="ae2d0255279f57ab4b6e61b1031ca4d39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2d0255279f57ab4b6e61b1031ca4d39">&#9670;&nbsp;</a></span>nMasternodeCountDrift</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nMasternodeCountDrift</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00138">138</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a15482c3ec35d6748a8026bfee288728c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15482c3ec35d6748a8026bfee288728c">&#9670;&nbsp;</a></span>nMaturity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nMaturity</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00139">139</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a654ff32ca59e910f589b5acad4110ba2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a654ff32ca59e910f589b5acad4110ba2">&#9670;&nbsp;</a></span>nMaxMoneyOut</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> CChainParams::nMaxMoneyOut</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00141">141</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a8648767ca452c2a20c68ede2c7b54e77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8648767ca452c2a20c68ede2c7b54e77">&#9670;&nbsp;</a></span>nMaxReorganizationDepth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nMaxReorganizationDepth</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00130">130</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a4cde3d26a9cdd7bbf40c01322a65b19f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cde3d26a9cdd7bbf40c01322a65b19f">&#9670;&nbsp;</a></span>nMaxZerocoinSpendsPerTransaction</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nMaxZerocoinSpendsPerTransaction</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00163">163</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a3efbcec19f3883c8300063ec0acf4a35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3efbcec19f3883c8300063ec0acf4a35">&#9670;&nbsp;</a></span>nMinerThreads</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nMinerThreads</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00142">142</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a1d5815ad4550d75b90e7b1aed21ed324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d5815ad4550d75b90e7b1aed21ed324">&#9670;&nbsp;</a></span>nMintRequiredConfirmations</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nMintRequiredConfirmations</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00165">165</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="ae272352816d1a4bcaca51d9ff38ee9c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae272352816d1a4bcaca51d9ff38ee9c9">&#9670;&nbsp;</a></span>nMinZerocoinMintFee</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> CChainParams::nMinZerocoinMintFee</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00164">164</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a22eb28020f13dd6df96158abcb227b25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22eb28020f13dd6df96158abcb227b25">&#9670;&nbsp;</a></span>nModifierUpdateBlock</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nModifierUpdateBlock</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00140">140</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="addb1962eb12784aaea932fd49b5fd40b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addb1962eb12784aaea932fd49b5fd40b">&#9670;&nbsp;</a></span>nPoolMaxTransactions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nPoolMaxTransactions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00158">158</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a47b7660a7f47f6c7bc7c5e7c02d86c4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47b7660a7f47f6c7bc7c5e7c02d86c4f">&#9670;&nbsp;</a></span>nRejectBlockOutdatedMajority</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nRejectBlockOutdatedMajority</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00133">133</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="ab2f6ee6ffdd7f14ef7e5a2fb40276f53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2f6ee6ffdd7f14ef7e5a2fb40276f53">&#9670;&nbsp;</a></span>nRequiredAccumulation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nRequiredAccumulation</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00166">166</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a80fe48978b6626fdbc50b314a030511b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80fe48978b6626fdbc50b314a030511b">&#9670;&nbsp;</a></span>nStartMasternodePayments</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CChainParams::nStartMasternodePayments</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00161">161</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a8618df6217285a39e86d44fba35a21af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8618df6217285a39e86d44fba35a21af">&#9670;&nbsp;</a></span>nSubsidyHalvingInterval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nSubsidyHalvingInterval</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00131">131</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a45a8d931326b48a91df0762bce9a2f97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45a8d931326b48a91df0762bce9a2f97">&#9670;&nbsp;</a></span>nTargetSpacing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CChainParams::nTargetSpacing</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00136">136</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="ae3b007501adc348636d1107c10c72e41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3b007501adc348636d1107c10c72e41">&#9670;&nbsp;</a></span>nTargetTimespan</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CChainParams::nTargetTimespan</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00135">135</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a7439dfd29226ebef8dfcb9a1afc733ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7439dfd29226ebef8dfcb9a1afc733ff">&#9670;&nbsp;</a></span>nToCheckBlockUpgradeMajority</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nToCheckBlockUpgradeMajority</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00134">134</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="acc2851a966d3668c09bfdbea7bb5de96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc2851a966d3668c09bfdbea7bb5de96">&#9670;&nbsp;</a></span>nZerocoinHeaderVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nZerocoinHeaderVersion</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00168">168</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="aca752e6cd13e695d2f679fed05ce15a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca752e6cd13e695d2f679fed05ce15a6">&#9670;&nbsp;</a></span>nZerocoinStartHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nZerocoinStartHeight</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00170">170</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a1ece3e405b68957ccc0b8269d4f1c99f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ece3e405b68957ccc0b8269d4f1c99f">&#9670;&nbsp;</a></span>nZerocoinStartTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CChainParams::nZerocoinStartTime</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00171">171</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a06130a926927697ae8a6c211a60233a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06130a926927697ae8a6c211a60233a7">&#9670;&nbsp;</a></span>pchMessageStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="chainparams_8h.html#a606a5a0100b84686ef50bf2cb2a591a0">MessageStartChars</a> CChainParams::pchMessageStart</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00125">125</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a8542ce21d5b9bdc2eadad8702fdd584a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8542ce21d5b9bdc2eadad8702fdd584a">&#9670;&nbsp;</a></span>strNetworkID</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string CChainParams::strNetworkID</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00146">146</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a652c1db947c78ef3c6a1e7f599d33525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a652c1db947c78ef3c6a1e7f599d33525">&#9670;&nbsp;</a></span>strObfuscationPoolDummyAddress</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string CChainParams::strObfuscationPoolDummyAddress</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00160">160</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a58ca704d8cc6f625f8757487cccb6250"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58ca704d8cc6f625f8757487cccb6250">&#9670;&nbsp;</a></span>strSporkKey</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string CChainParams::strSporkKey</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00159">159</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="adf435bdf2d9cd00936d7da0fb4237921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf435bdf2d9cd00936d7da0fb4237921">&#9670;&nbsp;</a></span>vAlertPubKey</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;unsigned char&gt; CChainParams::vAlertPubKey</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Raw pub key bytes for the broadcast alert signing key. </p>
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00127">127</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="af3ad79fb5bf4938750317c91e4c4b954"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3ad79fb5bf4938750317c91e4c4b954">&#9670;&nbsp;</a></span>vFixedSeeds</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="class_c_address.html">CAddress</a>&gt; CChainParams::vFixedSeeds</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00148">148</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="a9ce50b4162fb2ebf5bd72ad4045aa70c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ce50b4162fb2ebf5bd72ad4045aa70c">&#9670;&nbsp;</a></span>vSeeds</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="struct_c_d_n_s_seed_data.html">CDNSSeedData</a>&gt; CChainParams::vSeeds</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00143">143</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
+
+</div>
+</div>
+<a id="adf6118d28adb3e4284323ddaf8d88bdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf6118d28adb3e4284323ddaf8d88bdb">&#9670;&nbsp;</a></span>zerocoinModulus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string CChainParams::zerocoinModulus</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="chainparams_8h_source.html#l00162">162</a> of file <a class="el" href="chainparams_8h_source.html">chainparams.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="chainparams_8h_source.html">chainparams.h</a></li>
-<li>PIVX/src/chainparams.cpp</li>
+<li>src/<a class="el" href="chainparams_8h_source.html">chainparams.h</a></li>
+<li>src/<a class="el" href="chainparams_8cpp_source.html">chainparams.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:26 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

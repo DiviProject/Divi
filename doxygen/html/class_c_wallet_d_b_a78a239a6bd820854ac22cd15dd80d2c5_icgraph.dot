@@ -1,0 +1,13 @@
+digraph "CWalletDB::WriteMSettings"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node279 [label="CWalletDB::WriteMSettings",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node279 -> Node280 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node280 [label="MultiSendDialog::on\l_activateButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multi_send_dialog.html#adf654f7723cf0f4d49df096e5e7fa055"];
+  Node279 -> Node281 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node281 [label="MultiSendDialog::on\l_disableButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multi_send_dialog.html#a39b930ad8841db493de3296acf2cc7dc"];
+  Node279 -> Node282 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node282 [label="multisend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a6fa4654a100cc6506c8e050a4c85fdc2"];
+}

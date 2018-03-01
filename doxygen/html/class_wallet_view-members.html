@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: Member List</title>
+<title>DIVX: Member List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -70,8 +73,10 @@ $(function() {
 <table class="directory">
   <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a9800d793b552076b4207276d9e08c8b6">backupWallet</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
   <tr><td class="entry"><a class="el" href="class_wallet_view.html#a36699c31e256becb2afd92f834830ba0">changePassphrase</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a98ed22bbde34c1e614e60ecd0b07f03b">encryptionStatusChanged</a>(int status)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a164c3de8fc69ef6f39fb7c15e4bda553">encryptWallet</a>(bool status)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#aa8a62c8d61d537f5d7a88c1c42460ee3">clientModel</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a98ed22bbde34c1e614e60ecd0b07f03b">encryptionStatusChanged</a>(int status)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a164c3de8fc69ef6f39fb7c15e4bda553">encryptWallet</a>(bool status)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a77e98b04a363a2f113c9c82bc80e5b78">explorerWindow</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#adeeea711b11aaaaedeba5cb4500fd3d1">gotoBip38Tool</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
   <tr><td class="entry"><a class="el" href="class_wallet_view.html#a7a537efdf362fbbe43098eb147362159">gotoBlockExplorerPage</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a04b97e2623ac678e92111f1db14fde83">gotoHistoryPage</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
@@ -84,29 +89,39 @@ $(function() {
   <tr><td class="entry"><a class="el" href="class_wallet_view.html#a2a70c2b00b097dd7b83b6915bb037ea3">gotoSendCoinsPage</a>(QString addr=&quot;&quot;)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a6443ddcb872a1743a61102a3dcd2d560">gotoSignMessageTab</a>(QString addr=&quot;&quot;)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
   <tr><td class="entry"><a class="el" href="class_wallet_view.html#a0a23aaaf87d3aec5ae8b1b8320d66796">gotoVerifyMessageTab</a>(QString addr=&quot;&quot;)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>handlePaymentRequest</b>(const SendCoinsRecipient &amp;recipient) (defined in <a class="el" href="class_wallet_view.html">WalletView</a>)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a0ae21d91a9d7755026ce2a6846cef68d">handlePaymentRequest</a>(const SendCoinsRecipient &amp;recipient)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="class_wallet_view.html#aa2348613d312c4c762d3e8100bd38067">incomingTransaction</a>(const QString &amp;date, int unit, const CAmount &amp;amount, const QString &amp;type, const QString &amp;address)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#ae76bd29c36d1cfa9bc986924a0454eeb">lockWallet</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a901527bc1086ef5443a264af651de178">message</a>(const QString &amp;title, const QString &amp;message, unsigned int style)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a">processNewTransaction</a>(const QModelIndex &amp;parent, int start, int)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>setBitcoinGUI</b>(BitcoinGUI *gui) (defined in <a class="el" href="class_wallet_view.html">WalletView</a>)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a8d76dfaef9de0f8802e0c3c8b6374080">masternodeListPage</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a901527bc1086ef5443a264af651de178">message</a>(const QString &amp;title, const QString &amp;message, unsigned int style)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a4049958d049676ab39001ed92a570bf2">overviewPage</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a61c30a914453167edd6444623b67cf49">privacyPage</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#addde7d2260658ee06f47f9c095a8cb2a">processNewTransaction</a>(const QModelIndex &amp;parent, int start, int)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a3bbce26f4dd453ceaa46d1688f9ef879">progressDialog</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a6f2b3f3c978ec2e9dcc0f61757fa75d6">receiveCoinsPage</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a3f0578d8a8ef5842ae8b980739a9a0aa">sendCoinsPage</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a4405b0cf33d31ea663cb1e5047ae1d97">setBitcoinGUI</a>(BitcoinGUI *gui)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a46d9a8d93adfdcc29cae9ff0d44c313e">setClientModel</a>(ClientModel *clientModel)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be">setWalletModel</a>(WalletModel *walletModel)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#aac71ea140f87cd60081b56e579b6fa0c">showNormalIfMinimized</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">signal</span></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>showOutOfSyncWarning</b>(bool fShow) (defined in <a class="el" href="class_wallet_view.html">WalletView</a>)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#af3ed06b191b6d933788f32ed2daa5fae">showOutOfSyncWarning</a>(bool fShow)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a8a1f4b689abc0f1073c547ec1f871a26">showProgress</a>(const QString &amp;title, int nProgress)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
   <tr><td class="entry"><a class="el" href="class_wallet_view.html#a739b3c92d336efb3cf1249a84d4deeab">toggleLockWallet</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#ac4206b008b9c16dd6931aa56d9fb6fd4">trxAmount</a>(QString amount)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_wallet_view.html#ac258d549f0e55ad4f84b9d21848faf02">unlockWallet</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#ad348f2ed9f843ef9125ca416307c7412">updateEncryptionStatus</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_wallet_view.html#accb5d9e2789c62e03ad1723518d31c02">usedReceivingAddresses</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a6f0d012c18ea2df7336c852abe2a50d0">usedSendingAddresses</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>WalletView</b>(QWidget *parent) (defined in <a class="el" href="class_wallet_view.html">WalletView</a>)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>~WalletView</b>() (defined in <a class="el" href="class_wallet_view.html">WalletView</a>)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a687b6071e59d92ffbfde333aec5c6546">transactionsPage</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#ab712a04d742009486d7bccdb7092c657">transactionSum</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#a73c2b3b4575011357fdff8749f15930e">transactionView</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#ac4206b008b9c16dd6931aa56d9fb6fd4">trxAmount</a>(QString amount)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#ac258d549f0e55ad4f84b9d21848faf02">unlockWallet</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#ad348f2ed9f843ef9125ca416307c7412">updateEncryptionStatus</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#accb5d9e2789c62e03ad1723518d31c02">usedReceivingAddresses</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a6f0d012c18ea2df7336c852abe2a50d0">usedSendingAddresses</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#ac78b56acc1a55b636ed4b0e42d7f0447">walletModel</a></td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_wallet_view.html#a015da635646a47196bbcd819f7e01e7c">WalletView</a>(QWidget *parent)</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_wallet_view.html#ab341d74706ad40dc732cc9daa16b425d">~WalletView</a>()</td><td class="entry"><a class="el" href="class_wallet_view.html">WalletView</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:29 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

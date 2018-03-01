@@ -1,0 +1,31 @@
+digraph "CWallet::AddToWallet"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node78 [label="CWallet::AddToWallet",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node78 -> Node79 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node79 [label="CWallet::CommitTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#gaa13fbeaebd271f910a54cc5b82d73fde",tooltip="Call after CreateTransaction unless you want to abort. "];
+  Node79 -> Node80 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node80 [label="MultisigDialog::commitMultisigTx",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a4b8f46adc64493a801bffb464b7c09ea"];
+  Node80 -> Node81 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node81 [label="MultisigDialog::Multisig\lDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#af8ff2a9f6dc05a9468d955cb428c6474"];
+  Node79 -> Node82 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node82 [label="WalletModel::sendCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39"];
+  Node79 -> Node83 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node83 [label="preparebudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a8c07f1b00f74d9d2227428a552679b8c"];
+  Node83 -> Node84 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node84 [label="mnbudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#aeabbf924be4d2ce4bedb28a394e1fc6b"];
+  Node79 -> Node85 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node85 [label="SendMoney",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a49669702f73a24c1d1dc5a08d7c0785f"];
+  Node85 -> Node86 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node86 [label="obfuscation",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a6cdbacc257b42445f0c6122a061af2ca"];
+  Node79 -> Node87 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node87 [label="sendmany",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d"];
+  Node79 -> Node88 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node88 [label="CWallet::SpendZerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#aedd0ae4e683ee642272e170b7afd33fe"];
+  Node88 -> Node89 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node89 [label="spendzerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#adea64c692ec279a1a3a2c9143f264955"];
+  Node78 -> Node90 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node90 [label="ReadKeyValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$walletdb_8cpp.html#ad1f171cf096f5479805a06fc20480343"];
+}

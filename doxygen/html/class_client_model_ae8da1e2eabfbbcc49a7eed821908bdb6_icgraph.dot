@@ -1,0 +1,28 @@
+digraph "ClientModel::getOptionsModel"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node124 [label="ClientModel::getOptionsModel",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node124 -> Node125 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node125 [label="BitcoinGUI::setClientModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a99d71e1f8478ab937ce2522c8d3815e3",tooltip="Set the client model. "];
+  Node125 -> Node126 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node126 [label="BitcoinApplication\l::requestShutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a37c560d4c04d14a6da151b82caf8888f",tooltip="Request core shutdown. "];
+  Node125 -> Node127 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node127 [label="BitcoinApplication\l::initializeResult",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#aceb08b4063e4fb264cf11cf7f9edd969"];
+  Node127 -> Node128 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node128 [label="BitcoinApplication\l::startThread",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a61afce9356e452c53ad4c83f5ca19df8"];
+  Node128 -> Node129 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node129 [label="BitcoinApplication\l::requestInitialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#ade19c44b87b00b6b19b433caf4c22ba6",tooltip="Request core initialization. "];
+  Node128 -> Node126 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node124 -> Node130 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node130 [label="BitcoinGUI::optionsClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a366dfb05459cb49fec8adb7f97bf2ad7",tooltip="Show configuration dialog. "];
+  Node130 -> Node131 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node131 [label="BitcoinGUI::createActions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a218c9f5712e5a08ebc9ce06513430bba",tooltip="Create the main UI actions. "];
+  Node131 -> Node132 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node132 [label="BitcoinGUI::BitcoinGUI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a2598b4ffab4a206877bee80916cc775c"];
+  Node124 -> Node133 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node133 [label="BitcoinGUI::changeEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a11e94d1243e51b6398e7ca4079f7c46a"];
+  Node124 -> Node134 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node134 [label="BitcoinGUI::closeEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#ac46f8826c13b6340f5568d3f31fc3dfa"];
+}

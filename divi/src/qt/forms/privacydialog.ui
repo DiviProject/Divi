@@ -474,7 +474,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QPushButton" name="pushButtonZPivControl">
+                <widget class="QPushButton" name="pushButtonZDivControl">
                  <property name="text">
                   <string>zDiv Control</string>
                  </property>

@@ -3732,7 +3732,7 @@ https://www.transifex.com/divx-project/divx-project-translations</translation>
     </message>
 </context>
 <context>
-    <name>ZPivControlDialog</name>
+    <name>ZDivControlDialog</name>
     <message>
         <source>0</source>
         <translation>0</translation>

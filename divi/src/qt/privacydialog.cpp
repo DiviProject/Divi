@@ -281,14 +281,14 @@ void PrivacyDialog::on_pushButtonSpendzPIV_clicked()
     sendzPIV();
 }
 
-void PrivacyDialog::on_pushButtonZPivControl_clicked()
+void PrivacyDialog::on_pushButtonZDivControl_clicked()
 {
-    ZPivControlDialog* zDivControl = new ZPivControlDialog(this);
+    ZDivControlDialog* zDivControl = new ZDivControlDialog(this);
     zDivControl->setModel(walletModel);
     zDivControl->exec();
 }
 
-void PrivacyDialog::setZPivControlLabels(int64_t nAmount, int nQuantity)
+void PrivacyDialog::setZDivControlLabels(int64_t nAmount, int nQuantity)
 {
     ui->labelzDivSelected_int->setText(QString::number(nAmount));
     ui->labelQuantitySelected_int->setText(QString::number(nQuantity));
@@ -398,8 +398,8 @@ void PrivacyDialog::sendzPIV()
 
     // use mints from zDiv selector if applicable
     vector<CZerocoinMint> vMintsSelected;
-    if (!ZPivControlDialog::listSelectedMints.empty()) {
-        vMintsSelected = ZPivControlDialog::GetSelectedMints();
+    if (!ZDivControlDialog::listSelectedMints.empty()) {
+        vMintsSelected = ZDivControlDialog::GetSelectedMints();
     }
 
     // Spend zPIV
@@ -435,7 +435,7 @@ void PrivacyDialog::sendzPIV()
     }
 
     // Clear zdiv selector in case it was used
-    ZPivControlDialog::listSelectedMints.clear();
+    ZDivControlDialog::listSelectedMints.clear();
 
     // Some statistics for entertainment
     QString strStats = "";

@@ -1,0 +1,42 @@
+********Genesis Block Creation Documentation
+
+********We are interested in step 7 of this:
+********https://bitcointalk.org/index.php?topic=225690.0
+
+********I didn't make it much farther since I decided to run through the steps again and make sure they worked.
+
+********Step 1: Create the docker container
+
+********copy the files I sent into an empty folder.
+********navigate to the directory on shell utility of choice.
+
+docker build -t pbuilder ./
+docker run -it pbuilder bash
+git clone -b "master" --depth 1 "https://cbyrdsw:Justic3123@agii.visualstudio.com/_git/DiviProject" /shared/pivx
+
+cd pivx
+********Note that any time you change the core code this must be run again.  But it doesn't take very long after first run.
+./autogen.sh
+./configure --disable-zerocoin --without-gui --enable-debug
+make
+sudo make install
+********End of build.
+cd /home/ubuntu
+
+********here I dropped in a pivx.conf file from
+********https://raw.githubusercontent.com/PIVX-Project/PIVX/master/contrib/debian/examples/pivx.conf.
+********Haven't added a wget for this into the Dockerfile yet.
+
+********uncomment line for rpcuser and rpcpassword.
+********Not sure how to cleanly stop and reinstall the daemon.  Once you start, open the debug file quickly, it fills up fast.
+pivxd -debug
+
+********Here you will need another powershell unless you are running the daemon correctly.  So I execed back into another shell using 
+docker exec -it yourcontainerhere bash
+cd /home/ubuntu/.pivx 
+********and you should see the config.log file!
+vi config.log
+
+
+
+

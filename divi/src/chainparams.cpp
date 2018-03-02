@@ -189,7 +189,7 @@ public:
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 414485914;
         
-        
+        /*
         hashGenesisBlock = uint256("0x01");
         if (true && genesis.GetHash() != hashGenesisBlock)
         {   
@@ -203,7 +203,7 @@ public:
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        
+        */
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
         assert(genesis.hashMerkleRoot == uint256("0x9360d505560e5b26470a658878d9469d89a191442aaa6bcf48a21fcfbb5c4738"));
@@ -303,8 +303,8 @@ public:
         genesis.nTime = 1520007171;
         genesis.nNonce = 414485914;
         
+        /*
         hashGenesisBlock = uint256("0x01");
-        
        if (true && genesis.GetHash() != hashGenesisBlock)
         {
             printf("recalculating params for testnet.\n");
@@ -316,7 +316,7 @@ public:
             printf("new testnet genesis nonce: %d\n", genesis.nNonce);
             printf("new testnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        
+        */
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
@@ -389,8 +389,8 @@ public:
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12347;
         
+        /*
         hashGenesisBlock = uint256("0x01");
-
         if (true && genesis.GetHash() != hashGenesisBlock)
         {
             printf("recalculating params for regtest.\n");
@@ -402,6 +402,7 @@ public:
             printf("new regtest genesis nonce: %d\n", genesis.nNonce);
             printf("new regtest genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
+        */
         
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;

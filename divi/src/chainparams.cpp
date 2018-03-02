@@ -189,7 +189,7 @@ public:
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 414414311;
         
-        /*
+        
         hashGenesisBlock = uint256("0x01");
         if (true && genesis.GetHash() != hashGenesisBlock)
         {   
@@ -203,7 +203,7 @@ public:
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        */
+        
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000f303f0cab81a40922310110bb41f6df7394bfa7a0447eda9359b2269361"));
         assert(genesis.hashMerkleRoot == uint256("1dba39218e7370adbec8e960d948dbbfb46be86a9502914506d23efa4f0e5d65"));
@@ -302,7 +302,7 @@ public:
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1520007171;
         genesis.nNonce = 414414311;
-        /*
+        
         hashGenesisBlock = uint256("0x01");
         
        if (true && genesis.GetHash() != hashGenesisBlock)
@@ -316,7 +316,7 @@ public:
             printf("new testnet genesis nonce: %d\n", genesis.nNonce);
             printf("new testnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        */
+        
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000f303f0cab81a40922310110bb41f6df7394bfa7a0447eda9359b2269361"));

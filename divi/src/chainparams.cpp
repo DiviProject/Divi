@@ -387,7 +387,7 @@ public:
         bnProofOfWorkLimit = ~uint256(0) >> 1;
         genesis.nTime = 1520007171;
         genesis.nBits = 0x207fffff;
-        genesis.nNonce = 12345;
+        genesis.nNonce = 12347;
         
         hashGenesisBlock = uint256("0x01");
 
@@ -406,7 +406,7 @@ public:
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
         
-        assert(hashGenesisBlock == uint256("0x3ddc134f4710bc604c3755b8b4f4643fe9584a79e9e3f170452c1bfe61df54eb"));
+        assert(hashGenesisBlock == uint256("0x79ba0d9d15d36edee8d07cc300379ec65ab7e12765acd883e870aa618dbcc1a8"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

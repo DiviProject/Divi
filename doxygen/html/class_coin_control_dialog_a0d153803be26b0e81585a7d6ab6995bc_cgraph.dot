@@ -1,0 +1,11 @@
+digraph "CoinControlDialog::copyAmount"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node313 [label="CoinControlDialog::\lcopyAmount",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node313 -> Node314 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node314 [label="GUIUtil::setClipboard",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#aef655b19f129179ca32f11a4d0da1a07"];
+  Node313 -> Node315 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node315 [label="BitcoinUnits::removeSpaces",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a9354c3d913372b03101a23dc9cd18023"];
+}

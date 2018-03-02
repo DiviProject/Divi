@@ -1,0 +1,25 @@
+digraph "uint256::SetCompact"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node41 [label="uint256::SetCompact",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node41 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 [label="CBlockIndex::GetBlockTrust",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a59372ec3586ce89140acf3affc6e1f70"];
+  Node42 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="AddToBlockIndex",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#acfdf6cde860f1f415882d69a562c40ee"];
+  Node41 -> Node44 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="CheckProofOfWorkGen",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#aff425b4ffc21445765b018b9014cca17",tooltip="Main network. "];
+  Node41 -> Node45 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node45 [label="GetNextWorkRequired",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pow_8h.html#a5ab312a838f427dd7a13b999fe21a52e"];
+  Node41 -> Node46 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node46 [label="CheckProofOfWork",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pow_8h.html#a20a76dbc6ac5b8a6e0aaef85522b1069",tooltip="Check whether a block hash satisfies the proof-of-work requirement specified by nBits. "];
+  Node41 -> Node47 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node47 [label="GetBlockProof",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pow_8h.html#a86d90ce055fbc9c67d2d600813f2ca4f"];
+  Node47 -> Node48 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node48 [label="CheckForkWarningConditions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a730d390bfb0df0e54a5c2ddb901e748a"];
+  Node48 -> Node49 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node49 [label="CheckForkWarningConditions\lOnNewFork",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a0577f78a333e075d3bbb64c0741b5080"];
+  Node47 -> Node49 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node47 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

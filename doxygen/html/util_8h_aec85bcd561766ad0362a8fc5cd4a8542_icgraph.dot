@@ -1,0 +1,18 @@
+digraph "HelpMessageOpt"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node306 [label="HelpMessageOpt",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node306 -> Node307 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node307 [label="HelpMessageCli",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-cli_8cpp.html#a1132a90be0b486a0c670ea50e2bf4c17"];
+  Node306 -> Node308 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node308 [label="HelpMessage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8h.html#a514083d1b88bf8cf314f27ee3dc966c1",tooltip="Help for options shared between UI and daemon (for -help) "];
+  Node308 -> Node309 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node309 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#ac59316b767e6984e1285f0531275286b"];
+  Node309 -> Node310 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node310 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
+  Node308 -> Node311 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node311 [label="HelpMessageDialog::\lHelpMessageDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_help_message_dialog.html#a776ac4235e2a407223c7729d7d4af6a9",tooltip="\"Help message\" or \"About\" dialog box "];
+  Node306 -> Node311 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

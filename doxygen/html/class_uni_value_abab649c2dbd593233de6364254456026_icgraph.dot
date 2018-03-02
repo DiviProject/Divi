@@ -1,0 +1,14 @@
+digraph "UniValue::pushKV"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node90 [label="UniValue::pushKV",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node90 -> Node91 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node91 [label="ScriptPubKeyToUniv",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__write_8cpp.html#a4a51bf7268adbdcd58e7af445ea4db61"];
+  Node91 -> Node92 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node92 [label="TxToUniv",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__write_8cpp.html#aeb901ca565e3df0e3bc0c9863ad8f53a"];
+  Node90 -> Node92 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node90 -> Node93 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node93 [label="UniValue::pushKV",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_uni_value.html#aa9330fadef9c72bb071dc8c67b5d4f42"];
+}

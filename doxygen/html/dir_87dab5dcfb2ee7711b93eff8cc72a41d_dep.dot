@@ -1,0 +1,9 @@
+digraph "src/qt/test" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_f0c29a9f5764d78706f34c972e8114d8 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="qt" fontname="Helvetica", fontsize="10", URL="dir_f0c29a9f5764d78706f34c972e8114d8.html"]
+  dir_87dab5dcfb2ee7711b93eff8cc72a41d [shape=box, label="test", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_87dab5dcfb2ee7711b93eff8cc72a41d.html"];
+  }
+}

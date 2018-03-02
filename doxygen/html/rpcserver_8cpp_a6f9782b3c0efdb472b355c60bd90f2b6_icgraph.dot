@@ -1,0 +1,27 @@
+digraph "RPCTypeCheck"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node322 [label="RPCTypeCheck",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node322 -> Node323 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node323 [label="estimatefee",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmining_8cpp.html#aa8966fea852c9e1183cbe1c651f90d37"];
+  Node322 -> Node324 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node324 [label="estimatepriority",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmining_8cpp.html#a6665a5f0485726c65bdb8b462a3ee645"];
+  Node322 -> Node325 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node325 [label="setmocktime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmisc_8cpp.html#a808646ce5129187238eb74115ca960a0"];
+  Node322 -> Node326 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node326 [label="createrawtransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#a7924d2aa3d68d890b82773445e0d949e"];
+  Node322 -> Node327 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node327 [label="decoderawtransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#a6775c600b1bfdbb22f38e5f1cd27cfea"];
+  Node322 -> Node328 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node328 [label="decodescript",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#a342172992e2fa92490e8d83c2e95e87e"];
+  Node322 -> Node329 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node329 [label="signrawtransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#aa0d151e35c0ad5ec82df451a833aeadb"];
+  Node322 -> Node330 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node330 [label="sendrawtransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#ad5aad44f890060f42efb49acf349511e"];
+  Node322 -> Node331 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node331 [label="lockunspent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a039075982abdf78052b40886b5b3e2cf"];
+  Node322 -> Node332 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node332 [label="importzerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#ae3d95ac635193504aa72b4a424909607"];
+}

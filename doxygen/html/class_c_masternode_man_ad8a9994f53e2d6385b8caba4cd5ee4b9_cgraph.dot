@@ -1,0 +1,9 @@
+digraph "CMasternodeMan::ProcessMasternodeConnections"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node318 [label="CMasternodeMan::ProcessMasternode\lConnections",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node318 -> Node319 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node319 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+}

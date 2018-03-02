@@ -1,0 +1,13 @@
+digraph "BitcoinGUI::toggleHidden"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node273 [label="BitcoinGUI::toggleHidden",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node273 -> Node274 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node274 [label="BitcoinGUI::showNormalIf\lMinimized",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a0aed98ed2a278a2effdd9a4b34ba8620",tooltip="Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHid..."];
+  Node274 -> Node275 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node275 [label="GUIUtil::isObscured",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a0b7266e2b8e7de5f5fd1c7ddb9e5b637"];
+  Node275 -> Node276 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node276 [label="GUIUtil::checkPoint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#ab2e7ef0aa9a1ad3f86d67a3f596b6fc4"];
+}

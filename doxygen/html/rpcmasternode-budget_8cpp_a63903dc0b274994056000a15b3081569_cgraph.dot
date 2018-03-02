@@ -1,0 +1,17 @@
+digraph "getbudgetvotes"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node201 [label="getbudgetvotes",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node201 -> Node202 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node202 [label="HelpExampleCli",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec"];
+  Node201 -> Node203 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node203 [label="HelpExampleRpc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef"];
+  Node201 -> Node204 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node204 [label="SanitizeString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilstrencodings_8cpp.html#ae204f01eeaadc5a85015a51f369a8356"];
+  Node201 -> Node205 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node205 [label="CBudgetManager::FindProposal",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a185f3408172582919cf072835e716373"];
+  Node205 -> Node206 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node206 [label="CBudgetProposal::GetYeas",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_proposal.html#afa25c9e366bff2c00ba488ce5d89e0d1"];
+}

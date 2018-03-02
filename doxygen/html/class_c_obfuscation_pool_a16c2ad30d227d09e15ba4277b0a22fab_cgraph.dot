@@ -1,0 +1,21 @@
+digraph "CObfuscationPool::GetStatus"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node231 [label="CObfuscationPool::GetStatus",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node231 -> Node232 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node232 [label="CChain::Tip",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#a40ccefec14f8f3195c08c827af8cf412",tooltip="Returns the index entry for the tip of this chain, or NULL if none. "];
+  Node232 -> Node233 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node233 [label="CBlockIndex::IsProofOfStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a2438a891e9d43821c0d99e1bdac56fde"];
+  Node231 -> Node234 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node234 [label="CMasternodeSync::IsBlockchain\lSynced",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_sync.html#a222b31867c8dd473a21ed4d2841ad477"];
+  Node234 -> Node235 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node235 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node234 -> Node236 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node236 [label="CMasternodeSync::Reset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_sync.html#a10c27866eb1d20c317a34fbde3fe1ef3"];
+  Node236 -> Node235 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node234 -> Node232 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node231 -> Node237 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node237 [label="_",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1",tooltip="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..."];
+}

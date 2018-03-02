@@ -1,0 +1,17 @@
+digraph "UnitDisplayStatusBarControl::createContextMenu"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node8 [label="UnitDisplayStatusBarControl\l::createContextMenu",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node8 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="BitcoinUnits::availableUnits",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#acb8409daeca006436380f69b4ad4903a",tooltip="Get list of units, for drop-down box. "];
+  Node8 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="BitcoinUnits::name",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a4cf46136434ed30728608e67e90a9cbe",tooltip="Short name. "];
+  Node10 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node8 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="UnitDisplayStatusBarControl\l::onMenuSelection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_unit_display_status_bar_control.html#a8989bed2d30e0e376046356adc216a12",tooltip="Tells underlying optionsModel to update its current display unit. "];
+  Node12 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="OptionsModel::setDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#a42efacc748130848acc20247a7ed4617",tooltip="Updates current unit in memory, settings and emits displayUnitChanged(newUnit) signal. "];
+}

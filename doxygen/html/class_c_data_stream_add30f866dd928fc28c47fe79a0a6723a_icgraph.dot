@@ -1,0 +1,15 @@
+digraph "CDataStream::size"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node215 [label="CDataStream::size",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node215 -> Node216 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node216 [label="CDB::ReadAtCursor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b.html#aa3f7c529fd233c106dca32845b593232"];
+  Node215 -> Node217 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node217 [label="CNode::GetTotalRecvSize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#a2cff79a034258ba032257e993fc42e62"];
+  Node215 -> Node218 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node218 [label="CDataStream::eof",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_data_stream.html#ac6b34149b7eea928c925100dfe10c087"];
+  Node215 -> Node219 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node219 [label="CDataStream::in_avail",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_data_stream.html#a0483fe7bccf16aa88bf7272f18a0a7b0"];
+}

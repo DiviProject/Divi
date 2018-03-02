@@ -1,0 +1,32 @@
+digraph "libzerocoin::CommitmentProofOfKnowledge::Verify"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node35 [label="libzerocoin::CommitmentProof\lOfKnowledge::Verify",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node35 -> Node36 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node36 [label="CBigNum::bitSize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#ab4b035b81263dcba7b996997ecdcea8d",tooltip="Returns the size in bits of the underlying bignum. "];
+  Node35 -> Node37 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 [label="CBigNum::pow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#aa8c79c0a8ca34ed34ef315047137ecc7",tooltip="exponentiation with an int. "];
+  Node37 -> Node38 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node38 [label="CBigNum::CBigNum",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a272ed55454635b770e181bddc1a9c071"];
+  Node35 -> Node39 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="CBigNum::pow_mod",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a949004e3f63921b28b4e245624854289",tooltip="modular exponentiation: this^e mod n "];
+  Node39 -> Node40 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node40 [label="CBigNum::inverse",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#ace6cb4447751b27f00139d60dd8ebba4",tooltip="Calculates the inverse of this element mod m. "];
+  Node35 -> Node40 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node35 -> Node41 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node41 [label="CBigNum::mul_mod",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#abf7973e872561306532d90386d325875",tooltip="modular multiplication: (this * b) mod m "];
+  Node35 -> Node42 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 [label="libzerocoin::CommitmentProof\lOfKnowledge::calculateChallenge",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_commitment_proof_of_knowledge.html#a267631e6e1829578b8ea6073c21c8d96"];
+  Node42 -> Node43 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="CHashWriter::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a"];
+  Node43 -> Node44 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="CHash256::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash256.html#aa8a70c1b7cf24ce7d00240a1131cf4e7"];
+  Node44 -> Node45 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node45 [label="CSHA256::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a4259230be0caefa590bc324fc12b9b90"];
+  Node44 -> Node46 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node46 [label="CSHA256::Reset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a2122395dd5604990eaa0077b43a0e8d4"];
+  Node44 -> Node47 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node47 [label="CSHA256::Write",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a9d7de520a562655da85349372820c883"];
+}

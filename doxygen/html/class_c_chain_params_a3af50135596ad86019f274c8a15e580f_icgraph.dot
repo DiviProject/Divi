@@ -1,0 +1,25 @@
+digraph "CChainParams::NetworkID"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node198 [label="CChainParams::NetworkID",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node198 -> Node199 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node199 [label="CBudgetManager::GetTotal\lBudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a3c6bc6278e7f394b6bfabbe757466e70"];
+  Node199 -> Node200 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node200 [label="CBudgetManager::GetBudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#acba591312f675bd37692e69410ff5735"];
+  Node200 -> Node201 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node201 [label="getbudgetprojection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a8e629a3c50d4496bdf961d2841754b27"];
+  Node201 -> Node202 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node202 [label="mnbudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#aeabbf924be4d2ce4bedb28a394e1fc6b"];
+  Node199 -> Node203 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node203 [label="CFinalizedBudget::IsValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_finalized_budget.html#ae91a3b63f88979a2cf5252b91b9f339d"];
+  Node203 -> Node204 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node204 [label="CBudgetManager::AddFinalized\lBudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a3639ad9a2b26e5d7611f55bbb79723d7"];
+  Node203 -> Node205 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node205 [label="mnfinalbudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a9377cde49f5b62904aafb46d7d3c5e7c"];
+  Node198 -> Node206 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node206 [label="CMasternodePayments\l::ProcessMessageMasternode\lPayments",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_payments.html#a8884bca6edff64f731b3c42ea4693251"];
+  Node198 -> Node207 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node207 [label="CMasternode::IsValidNetAddr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode.html#a70f120b4964fdd802a6975bfb9017a23"];
+}

@@ -1,0 +1,15 @@
+digraph "BackupWallet"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="BackupWallet",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node0 -> Node1 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="CDBEnv::CloseDb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b_env.html#ac53fd53afdd1e0881b8ffbb11a89b556"];
+  Node0 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="CDBEnv::CheckpointLSN",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b_env.html#aa4e0fe52dfc0da22fe9bf59eeda57fba"];
+  Node0 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="GetDataDir",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba"];
+  Node0 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="MilliSleep",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#ac635182d3e845eda4af4fa5ab31609da"];
+}

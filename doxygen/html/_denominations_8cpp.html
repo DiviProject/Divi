@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: PIVX/src/libzerocoin/Denominations.cpp File Reference</title>
+<title>DIVX: src/libzerocoin/Denominations.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -61,11 +64,12 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_99392e72b35c7f25e8ea4b7ee23fbaff.html">PIVX</a></li><li class="navelem"><a class="el" href="dir_2daf99c3a7cf26bd67a6e059ee4a1333.html">src</a></li><li class="navelem"><a class="el" href="dir_89cc3a9b0fcaeb11bb472acb34b0a91a.html">libzerocoin</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_8325677d7f168dcba2b2eb5d853c27cf.html">libzerocoin</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Denominations.cpp File Reference</div>  </div>
@@ -75,39 +79,47 @@ $(function() {
 <p>Functions for converting to/from Zerocoin Denominations to other values library.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_denominations_8h_source.html">Denominations.h</a>&quot;</code><br />
-<code>#include &quot;amount.h&quot;</code><br />
-</div><table class="memberdecls">
+<code>#include &quot;<a class="el" href="amount_8h_source.html">amount.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for Denominations.cpp:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+</div>
+<p><a href="_denominations_8cpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacelibzerocoin"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelibzerocoin.html">libzerocoin</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a59a7febb87e2521cec803d3bb3533c5f"><td class="memItemLeft" align="right" valign="top"><a id="a59a7febb87e2521cec803d3bb3533c5f"></a>
-CoinDenomination&#160;</td><td class="memItemRight" valign="bottom"><b>libzerocoin::IntToZerocoinDenomination</b> (int64_t amount)</td></tr>
+<tr class="memitem:a59a7febb87e2521cec803d3bb3533c5f"><td class="memItemLeft" align="right" valign="top">CoinDenomination&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelibzerocoin.html#a59a7febb87e2521cec803d3bb3533c5f">libzerocoin::IntToZerocoinDenomination</a> (int64_t amount)</td></tr>
 <tr class="separator:a59a7febb87e2521cec803d3bb3533c5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91af721392a13cabe0725410d018eb8f"><td class="memItemLeft" align="right" valign="top"><a id="a91af721392a13cabe0725410d018eb8f"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>libzerocoin::ZerocoinDenominationToInt</b> (const CoinDenomination &amp;denomination)</td></tr>
+<tr class="memitem:a91af721392a13cabe0725410d018eb8f"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelibzerocoin.html#a91af721392a13cabe0725410d018eb8f">libzerocoin::ZerocoinDenominationToInt</a> (const CoinDenomination &amp;denomination)</td></tr>
 <tr class="separator:a91af721392a13cabe0725410d018eb8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a134fac363d8467df4fbb539a880051ec"><td class="memItemLeft" align="right" valign="top"><a id="a134fac363d8467df4fbb539a880051ec"></a>
-CoinDenomination&#160;</td><td class="memItemRight" valign="bottom"><b>libzerocoin::AmountToZerocoinDenomination</b> (CAmount amount)</td></tr>
+<tr class="memitem:a134fac363d8467df4fbb539a880051ec"><td class="memItemLeft" align="right" valign="top">CoinDenomination&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelibzerocoin.html#a134fac363d8467df4fbb539a880051ec">libzerocoin::AmountToZerocoinDenomination</a> (<a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> amount)</td></tr>
 <tr class="separator:a134fac363d8467df4fbb539a880051ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a775d9e146aa1f501842eecaad815d55d"><td class="memItemLeft" align="right" valign="top"><a id="a775d9e146aa1f501842eecaad815d55d"></a>
-CoinDenomination&#160;</td><td class="memItemRight" valign="bottom"><b>libzerocoin::AmountToClosestDenomination</b> (CAmount nAmount, CAmount &amp;nRemaining)</td></tr>
+<tr class="memitem:a775d9e146aa1f501842eecaad815d55d"><td class="memItemLeft" align="right" valign="top">CoinDenomination&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelibzerocoin.html#a775d9e146aa1f501842eecaad815d55d">libzerocoin::AmountToClosestDenomination</a> (<a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> nAmount, <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;nRemaining)</td></tr>
 <tr class="separator:a775d9e146aa1f501842eecaad815d55d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa2479161e18a4df0c60a6256e47cac97"><td class="memItemLeft" align="right" valign="top"><a id="aa2479161e18a4df0c60a6256e47cac97"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>libzerocoin::ZerocoinDenominationToAmount</b> (const CoinDenomination &amp;denomination)</td></tr>
+<tr class="memitem:aa2479161e18a4df0c60a6256e47cac97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelibzerocoin.html#aa2479161e18a4df0c60a6256e47cac97">libzerocoin::ZerocoinDenominationToAmount</a> (const CoinDenomination &amp;denomination)</td></tr>
 <tr class="separator:aa2479161e18a4df0c60a6256e47cac97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08ca1ae0ece49d18f90a7c6151cb11ec"><td class="memItemLeft" align="right" valign="top"><a id="a08ca1ae0ece49d18f90a7c6151cb11ec"></a>
-CoinDenomination&#160;</td><td class="memItemRight" valign="bottom"><b>libzerocoin::get_denomination</b> (std::string denomAmount)</td></tr>
+<tr class="memitem:a08ca1ae0ece49d18f90a7c6151cb11ec"><td class="memItemLeft" align="right" valign="top">CoinDenomination&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelibzerocoin.html#a08ca1ae0ece49d18f90a7c6151cb11ec">libzerocoin::get_denomination</a> (std::string denomAmount)</td></tr>
 <tr class="separator:a08ca1ae0ece49d18f90a7c6151cb11ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4134490b1b334c1c1bc38dcf06a8a05"><td class="memItemLeft" align="right" valign="top"><a id="ad4134490b1b334c1c1bc38dcf06a8a05"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>libzerocoin::get_amount</b> (std::string denomAmount)</td></tr>
+<tr class="memitem:ad4134490b1b334c1c1bc38dcf06a8a05"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelibzerocoin.html#ad4134490b1b334c1c1bc38dcf06a8a05">libzerocoin::get_amount</a> (std::string denomAmount)</td></tr>
 <tr class="separator:ad4134490b1b334c1c1bc38dcf06a8a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions for converting to/from Zerocoin Denominations to other values library. </p>
 <dl class="section copyright"><dt>Copyright</dt><dd>Copyright 2017 PIVX Developers  This project is released under the MIT license. </dd></dl>
+
+<p class="definition">Definition in file <a class="el" href="_denominations_8cpp_source.html">Denominations.cpp</a>.</p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:23 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CTxMemPoolEntry Class Reference</title>
+<title>DIVX: CTxMemPoolEntry Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -63,52 +66,553 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_c_tx_mem_pool_entry-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CTxMemPoolEntry Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="class_c_tx_mem_pool.html" title="CTxMemPool stores valid-according-to-the-current-best-chain transactions that may be included in the ...">CTxMemPool</a> stores these:  
+ <a href="class_c_tx_mem_pool_entry.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="txmempool_8h_source.html">txmempool.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for CTxMemPoolEntry:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2ceb48d4c37f0308e97f57e237b50a67"><td class="memItemLeft" align="right" valign="top"><a id="a2ceb48d4c37f0308e97f57e237b50a67"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a2ceb48d4c37f0308e97f57e237b50a67">CTxMemPoolEntry</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;_tx, const CAmount &amp;_nFee, int64_t _nTime, double _dPriority, unsigned int _nHeight)</td></tr>
-<tr class="memdesc:a2ceb48d4c37f0308e97f57e237b50a67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chain height when entering the mempool. <br /></td></tr>
+<tr class="memitem:a2ceb48d4c37f0308e97f57e237b50a67"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a2ceb48d4c37f0308e97f57e237b50a67">CTxMemPoolEntry</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;_tx, const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;_nFee, int64_t _nTime, double _dPriority, unsigned int _nHeight)</td></tr>
+<tr class="memdesc:a2ceb48d4c37f0308e97f57e237b50a67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chain height when entering the mempool.  <a href="#a2ceb48d4c37f0308e97f57e237b50a67">More...</a><br /></td></tr>
 <tr class="separator:a2ceb48d4c37f0308e97f57e237b50a67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad62eaba6adc7ec36487ae690b5b93148"><td class="memItemLeft" align="right" valign="top"><a id="ad62eaba6adc7ec36487ae690b5b93148"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CTxMemPoolEntry</b> (const <a class="el" href="class_c_tx_mem_pool_entry.html">CTxMemPoolEntry</a> &amp;other)</td></tr>
+<tr class="memitem:a4a22f1c696136f99f5c296c90cf0406a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a4a22f1c696136f99f5c296c90cf0406a">CTxMemPoolEntry</a> ()</td></tr>
+<tr class="separator:a4a22f1c696136f99f5c296c90cf0406a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad62eaba6adc7ec36487ae690b5b93148"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#ad62eaba6adc7ec36487ae690b5b93148">CTxMemPoolEntry</a> (const <a class="el" href="class_c_tx_mem_pool_entry.html">CTxMemPoolEntry</a> &amp;other)</td></tr>
 <tr class="separator:ad62eaba6adc7ec36487ae690b5b93148"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2deed4202061edf8b040a3f554417c20"><td class="memItemLeft" align="right" valign="top"><a id="a2deed4202061edf8b040a3f554417c20"></a>
-const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetTx</b> () const</td></tr>
+<tr class="memitem:a2deed4202061edf8b040a3f554417c20"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a2deed4202061edf8b040a3f554417c20">GetTx</a> () const</td></tr>
 <tr class="separator:a2deed4202061edf8b040a3f554417c20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a189d5dbafa6e955524692c0743dc0e0b"><td class="memItemLeft" align="right" valign="top"><a id="a189d5dbafa6e955524692c0743dc0e0b"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>GetPriority</b> (unsigned int currentHeight) const</td></tr>
+<tr class="memitem:a189d5dbafa6e955524692c0743dc0e0b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a189d5dbafa6e955524692c0743dc0e0b">GetPriority</a> (unsigned int currentHeight) const</td></tr>
 <tr class="separator:a189d5dbafa6e955524692c0743dc0e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:addd42d65919922f8d864c702aa9a7cfb"><td class="memItemLeft" align="right" valign="top"><a id="addd42d65919922f8d864c702aa9a7cfb"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>GetFee</b> () const</td></tr>
+<tr class="memitem:addd42d65919922f8d864c702aa9a7cfb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#addd42d65919922f8d864c702aa9a7cfb">GetFee</a> () const</td></tr>
 <tr class="separator:addd42d65919922f8d864c702aa9a7cfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89325fcaa8efbd1d6fe68c39d7d676b0"><td class="memItemLeft" align="right" valign="top"><a id="a89325fcaa8efbd1d6fe68c39d7d676b0"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>GetTxSize</b> () const</td></tr>
+<tr class="memitem:a89325fcaa8efbd1d6fe68c39d7d676b0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a89325fcaa8efbd1d6fe68c39d7d676b0">GetTxSize</a> () const</td></tr>
 <tr class="separator:a89325fcaa8efbd1d6fe68c39d7d676b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9da5719dfd04508342009bea9c752160"><td class="memItemLeft" align="right" valign="top"><a id="a9da5719dfd04508342009bea9c752160"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>GetTime</b> () const</td></tr>
+<tr class="memitem:a9da5719dfd04508342009bea9c752160"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a9da5719dfd04508342009bea9c752160">GetTime</a> () const</td></tr>
 <tr class="separator:a9da5719dfd04508342009bea9c752160"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a319f8093929fc5b6c3c66ba53ac172b5"><td class="memItemLeft" align="right" valign="top"><a id="a319f8093929fc5b6c3c66ba53ac172b5"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>GetHeight</b> () const</td></tr>
+<tr class="memitem:a319f8093929fc5b6c3c66ba53ac172b5"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a319f8093929fc5b6c3c66ba53ac172b5">GetHeight</a> () const</td></tr>
 <tr class="separator:a319f8093929fc5b6c3c66ba53ac172b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a8b320073dcb7010fbd19b100c8e13e57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_transaction.html">CTransaction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a8b320073dcb7010fbd19b100c8e13e57">tx</a></td></tr>
+<tr class="separator:a8b320073dcb7010fbd19b100c8e13e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdeeb2a36948b64dfa391e214e99e12e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#afdeeb2a36948b64dfa391e214e99e12e">nFee</a></td></tr>
+<tr class="separator:afdeeb2a36948b64dfa391e214e99e12e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25fcb552777ae6f36df9de3f4c23bad3"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a25fcb552777ae6f36df9de3f4c23bad3">nTxSize</a></td></tr>
+<tr class="memdesc:a25fcb552777ae6f36df9de3f4c23bad3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cached to avoid expensive parent-transaction lookups.  <a href="#a25fcb552777ae6f36df9de3f4c23bad3">More...</a><br /></td></tr>
+<tr class="separator:a25fcb552777ae6f36df9de3f4c23bad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af543eb39d3cb3f5bbf8244f19f22ee28"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#af543eb39d3cb3f5bbf8244f19f22ee28">nModSize</a></td></tr>
+<tr class="memdesc:af543eb39d3cb3f5bbf8244f19f22ee28"><td class="mdescLeft">&#160;</td><td class="mdescRight">... and avoid recomputing tx size  <a href="#af543eb39d3cb3f5bbf8244f19f22ee28">More...</a><br /></td></tr>
+<tr class="separator:af543eb39d3cb3f5bbf8244f19f22ee28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50519989258aefe31a7687feefa06022"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a50519989258aefe31a7687feefa06022">nTime</a></td></tr>
+<tr class="memdesc:a50519989258aefe31a7687feefa06022"><td class="mdescLeft">&#160;</td><td class="mdescRight">... and modified size for priority  <a href="#a50519989258aefe31a7687feefa06022">More...</a><br /></td></tr>
+<tr class="separator:a50519989258aefe31a7687feefa06022"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d7b12ccb464bc49883a8d3db4b4b26f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a4d7b12ccb464bc49883a8d3db4b4b26f">dPriority</a></td></tr>
+<tr class="memdesc:a4d7b12ccb464bc49883a8d3db4b4b26f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local time when entering the mempool.  <a href="#a4d7b12ccb464bc49883a8d3db4b4b26f">More...</a><br /></td></tr>
+<tr class="separator:a4d7b12ccb464bc49883a8d3db4b4b26f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cf8cf0f447dcc47de2f49131545214d"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_tx_mem_pool_entry.html#a9cf8cf0f447dcc47de2f49131545214d">nHeight</a></td></tr>
+<tr class="memdesc:a9cf8cf0f447dcc47de2f49131545214d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Priority when entering the mempool.  <a href="#a9cf8cf0f447dcc47de2f49131545214d">More...</a><br /></td></tr>
+<tr class="separator:a9cf8cf0f447dcc47de2f49131545214d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="class_c_tx_mem_pool.html">CTxMemPool</a> stores these: </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="txmempool_8h_source.html">txmempool.h</a></li>
-<li>PIVX/src/txmempool.cpp</li>
+<div class="textblock"><p><a class="el" href="class_c_tx_mem_pool.html" title="CTxMemPool stores valid-according-to-the-current-best-chain transactions that may be included in the ...">CTxMemPool</a> stores these: </p>
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00038">38</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a2ceb48d4c37f0308e97f57e237b50a67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ceb48d4c37f0308e97f57e237b50a67">&#9670;&nbsp;</a></span>CTxMemPoolEntry() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CTxMemPoolEntry::CTxMemPoolEntry </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;&#160;</td>
+          <td class="paramname"><em>_tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>_nFee</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>_nTime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>_dPriority</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>_nHeight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Chain height when entering the mempool. </p>
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00025">25</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4a22f1c696136f99f5c296c90cf0406a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a22f1c696136f99f5c296c90cf0406a">&#9670;&nbsp;</a></span>CTxMemPoolEntry() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CTxMemPoolEntry::CTxMemPoolEntry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00020">20</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad62eaba6adc7ec36487ae690b5b93148"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad62eaba6adc7ec36487ae690b5b93148">&#9670;&nbsp;</a></span>CTxMemPoolEntry() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CTxMemPoolEntry::CTxMemPoolEntry </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_tx_mem_pool_entry.html">CTxMemPoolEntry</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00032">32</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="addd42d65919922f8d864c702aa9a7cfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addd42d65919922f8d864c702aa9a7cfb">&#9670;&nbsp;</a></span>GetFee()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> CTxMemPoolEntry::GetFee </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00056">56</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a319f8093929fc5b6c3c66ba53ac172b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a319f8093929fc5b6c3c66ba53ac172b5">&#9670;&nbsp;</a></span>GetHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int CTxMemPoolEntry::GetHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00059">59</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a189d5dbafa6e955524692c0743dc0e0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a189d5dbafa6e955524692c0743dc0e0b">&#9670;&nbsp;</a></span>GetPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double CTxMemPoolEntry::GetPriority </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>currentHeight</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8cpp_source.html#l00038">38</a> of file <a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9da5719dfd04508342009bea9c752160"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9da5719dfd04508342009bea9c752160">&#9670;&nbsp;</a></span>GetTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CTxMemPoolEntry::GetTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00058">58</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a2deed4202061edf8b040a3f554417c20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2deed4202061edf8b040a3f554417c20">&#9670;&nbsp;</a></span>GetTx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_c_transaction.html">CTransaction</a>&amp; CTxMemPoolEntry::GetTx </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00054">54</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a89325fcaa8efbd1d6fe68c39d7d676b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89325fcaa8efbd1d6fe68c39d7d676b0">&#9670;&nbsp;</a></span>GetTxSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t CTxMemPoolEntry::GetTxSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00057">57</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a4d7b12ccb464bc49883a8d3db4b4b26f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d7b12ccb464bc49883a8d3db4b4b26f">&#9670;&nbsp;</a></span>dPriority</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double CTxMemPoolEntry::dPriority</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Local time when entering the mempool. </p>
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00046">46</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+
+</div>
+</div>
+<a id="afdeeb2a36948b64dfa391e214e99e12e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdeeb2a36948b64dfa391e214e99e12e">&#9670;&nbsp;</a></span>nFee</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> CTxMemPoolEntry::nFee</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00042">42</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+
+</div>
+</div>
+<a id="a9cf8cf0f447dcc47de2f49131545214d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cf8cf0f447dcc47de2f49131545214d">&#9670;&nbsp;</a></span>nHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int CTxMemPoolEntry::nHeight</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Priority when entering the mempool. </p>
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00047">47</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+
+</div>
+</div>
+<a id="af543eb39d3cb3f5bbf8244f19f22ee28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af543eb39d3cb3f5bbf8244f19f22ee28">&#9670;&nbsp;</a></span>nModSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t CTxMemPoolEntry::nModSize</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>... and avoid recomputing tx size </p>
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00044">44</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+
+</div>
+</div>
+<a id="a50519989258aefe31a7687feefa06022"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50519989258aefe31a7687feefa06022">&#9670;&nbsp;</a></span>nTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CTxMemPoolEntry::nTime</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>... and modified size for priority </p>
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00045">45</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+
+</div>
+</div>
+<a id="a25fcb552777ae6f36df9de3f4c23bad3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25fcb552777ae6f36df9de3f4c23bad3">&#9670;&nbsp;</a></span>nTxSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t CTxMemPoolEntry::nTxSize</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cached to avoid expensive parent-transaction lookups. </p>
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00043">43</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+
+</div>
+</div>
+<a id="a8b320073dcb7010fbd19b100c8e13e57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b320073dcb7010fbd19b100c8e13e57">&#9670;&nbsp;</a></span>tx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_transaction.html">CTransaction</a> CTxMemPoolEntry::tx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="txmempool_8h_source.html#l00041">41</a> of file <a class="el" href="txmempool_8h_source.html">txmempool.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>src/<a class="el" href="txmempool_8h_source.html">txmempool.h</a></li>
+<li>src/<a class="el" href="txmempool_8cpp_source.html">txmempool.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

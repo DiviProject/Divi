@@ -1,0 +1,26 @@
+digraph "UpdateCoins"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1294 [label="UpdateCoins",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1294 -> Node1295 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1295 [label="CTransaction::IsCoinBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a96256e8ac1bf79ad9c057e48c41132dd"];
+  Node1295 -> Node1296 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1296 [label="CTransaction::ContainsZerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a613051e8e5651a7500cb455f37dd1116"];
+  Node1296 -> Node1297 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1297 [label="CTransaction::IsZerocoin\lSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a4cda5603795c5f9179d4c8bd43f809cd"];
+  Node1296 -> Node1298 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1298 [label="CTransaction::IsZerocoinMint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#ab91efb1c2312e6feeecfbbfff11abbb1"];
+  Node1294 -> Node1297 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1294 -> Node1299 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1299 [label="CCoinsViewCache::ModifyCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#ab67c0d489873ed735c4fc52aa66f0830",tooltip="Return a modifiable reference to a CCoins. "];
+  Node1299 -> Node1300 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1300 [label="CCoinsView::GetCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view.html#a67d865358127bef1f0011a23d5158a9f",tooltip="Retrieve the CCoins (unspent transaction outputs) for a given txid. "];
+  Node1294 -> Node1301 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1301 [label="CCoins::Spend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#a8d5fe8c1ab0c9558620448a19ecdb8b2",tooltip="mark an outpoint spent, and construct undo information "];
+  Node1301 -> Node1302 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1302 [label="CCoins::Cleanup",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#a7cfa2efc07f4d35785c9c75caa8bddcb",tooltip="remove spent outputs at the end of vout "];
+  Node1294 -> Node1303 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1303 [label="CTransaction::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a7efd1379de830341417c0bfa23a149aa"];
+}

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: PeerTablePriv Class Reference</title>
+<title>DIVX: PeerTablePriv Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -73,26 +76,66 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a304d99874f6cd0c67ed207546a5ca904"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_peer_table_priv.html#a304d99874f6cd0c67ed207546a5ca904">refreshPeers</a> ()</td></tr>
+<tr class="memdesc:a304d99874f6cd0c67ed207546a5ca904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pull a full list of peers from vNodes into our cache.  <a href="#a304d99874f6cd0c67ed207546a5ca904">More...</a><br /></td></tr>
 <tr class="separator:a304d99874f6cd0c67ed207546a5ca904"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc703185b3067489b0d5ad22c2147112"><td class="memItemLeft" align="right" valign="top"><a id="abc703185b3067489b0d5ad22c2147112"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> ()</td></tr>
+<tr class="memitem:abc703185b3067489b0d5ad22c2147112"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_peer_table_priv.html#abc703185b3067489b0d5ad22c2147112">size</a> ()</td></tr>
 <tr class="separator:abc703185b3067489b0d5ad22c2147112"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58c817cce967ddd5ae4bad622bfaecb4"><td class="memItemLeft" align="right" valign="top"><a id="a58c817cce967ddd5ae4bad622bfaecb4"></a>
-<a class="el" href="struct_c_node_combined_stats.html">CNodeCombinedStats</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>index</b> (int idx)</td></tr>
+<tr class="memitem:a58c817cce967ddd5ae4bad622bfaecb4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_c_node_combined_stats.html">CNodeCombinedStats</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_peer_table_priv.html#a58c817cce967ddd5ae4bad622bfaecb4">index</a> (int idx)</td></tr>
 <tr class="separator:a58c817cce967ddd5ae4bad622bfaecb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a8da9d0256d11f205dfa1cdce86843761"><td class="memItemLeft" align="right" valign="top">QList&lt; <a class="el" href="struct_c_node_combined_stats.html">CNodeCombinedStats</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_peer_table_priv.html#a8da9d0256d11f205dfa1cdce86843761">cachedNodeStats</a></td></tr>
+<tr class="memdesc:a8da9d0256d11f205dfa1cdce86843761"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local cache of peer information.  <a href="#a8da9d0256d11f205dfa1cdce86843761">More...</a><br /></td></tr>
 <tr class="separator:a8da9d0256d11f205dfa1cdce86843761"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4917597853d2d5f0055be017b8ab33c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_peer_table_priv.html#a4917597853d2d5f0055be017b8ab33c5">sortColumn</a></td></tr>
+<tr class="memdesc:a4917597853d2d5f0055be017b8ab33c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Column to sort nodes by.  <a href="#a4917597853d2d5f0055be017b8ab33c5">More...</a><br /></td></tr>
 <tr class="separator:a4917597853d2d5f0055be017b8ab33c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb95d4bbc4fb13a21a360108aeca5c32"><td class="memItemLeft" align="right" valign="top">Qt::SortOrder&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_peer_table_priv.html#adb95d4bbc4fb13a21a360108aeca5c32">sortOrder</a></td></tr>
+<tr class="memdesc:adb95d4bbc4fb13a21a360108aeca5c32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Order (ascending or descending) to sort nodes by.  <a href="#adb95d4bbc4fb13a21a360108aeca5c32">More...</a><br /></td></tr>
 <tr class="separator:adb95d4bbc4fb13a21a360108aeca5c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae27db14bcbe769f494c4db56ef27fb08"><td class="memItemLeft" align="right" valign="top">std::map&lt; NodeId, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_peer_table_priv.html#ae27db14bcbe769f494c4db56ef27fb08">mapNodeRows</a></td></tr>
+<tr class="memitem:ae27db14bcbe769f494c4db56ef27fb08"><td class="memItemLeft" align="right" valign="top">std::map&lt; <a class="el" href="net_8h.html#a954d746a58632565552615fd0a4ee660">NodeId</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_peer_table_priv.html#ae27db14bcbe769f494c4db56ef27fb08">mapNodeRows</a></td></tr>
+<tr class="memdesc:ae27db14bcbe769f494c4db56ef27fb08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index of rows by node ID.  <a href="#ae27db14bcbe769f494c4db56ef27fb08">More...</a><br /></td></tr>
 <tr class="separator:ae27db14bcbe769f494c4db56ef27fb08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="peertablemodel_8cpp_source.html#l00039">39</a> of file <a class="el" href="peertablemodel_8cpp_source.html">peertablemodel.cpp</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a58c817cce967ddd5ae4bad622bfaecb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58c817cce967ddd5ae4bad622bfaecb4">&#9670;&nbsp;</a></span>index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_c_node_combined_stats.html">CNodeCombinedStats</a>* PeerTablePriv::index </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="peertablemodel_8cpp_source.html#l00099">99</a> of file <a class="el" href="peertablemodel_8cpp_source.html">peertablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+
+</div>
+</div>
 <a id="a304d99874f6cd0c67ed207546a5ca904"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a304d99874f6cd0c67ed207546a5ca904">&#9670;&nbsp;</a></span>refreshPeers()</h2>
 
@@ -115,7 +158,55 @@ Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Pull a full list of peers from vNodes into our cache </p>
+
+<p>Pull a full list of peers from vNodes into our cache. </p>
+
+<p class="definition">Definition at line <a class="el" href="peertablemodel_8cpp_source.html#l00052">52</a> of file <a class="el" href="peertablemodel_8cpp_source.html">peertablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="abc703185b3067489b0d5ad22c2147112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc703185b3067489b0d5ad22c2147112">&#9670;&nbsp;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int PeerTablePriv::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="peertablemodel_8cpp_source.html#l00094">94</a> of file <a class="el" href="peertablemodel_8cpp_source.html">peertablemodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -131,7 +222,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Local cache of peer information </p>
+
+<p>Local cache of peer information. </p>
+
+<p class="definition">Definition at line <a class="el" href="peertablemodel_8cpp_source.html#l00043">43</a> of file <a class="el" href="peertablemodel_8cpp_source.html">peertablemodel.cpp</a>.</p>
 
 </div>
 </div>
@@ -142,11 +236,14 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::map&lt;NodeId, int&gt; PeerTablePriv::mapNodeRows</td>
+          <td class="memname">std::map&lt;<a class="el" href="net_8h.html#a954d746a58632565552615fd0a4ee660">NodeId</a>, int&gt; PeerTablePriv::mapNodeRows</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Index of rows by node ID </p>
+
+<p>Index of rows by node ID. </p>
+
+<p class="definition">Definition at line <a class="el" href="peertablemodel_8cpp_source.html#l00049">49</a> of file <a class="el" href="peertablemodel_8cpp_source.html">peertablemodel.cpp</a>.</p>
 
 </div>
 </div>
@@ -161,7 +258,10 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Column to sort nodes by </p>
+
+<p>Column to sort nodes by. </p>
+
+<p class="definition">Definition at line <a class="el" href="peertablemodel_8cpp_source.html#l00045">45</a> of file <a class="el" href="peertablemodel_8cpp_source.html">peertablemodel.cpp</a>.</p>
 
 </div>
 </div>
@@ -176,17 +276,20 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Order (ascending or descending) to sort nodes by </p>
+
+<p>Order (ascending or descending) to sort nodes by. </p>
+
+<p class="definition">Definition at line <a class="el" href="peertablemodel_8cpp_source.html#l00047">47</a> of file <a class="el" href="peertablemodel_8cpp_source.html">peertablemodel.cpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>PIVX/src/qt/peertablemodel.cpp</li>
+<li>src/qt/<a class="el" href="peertablemodel_8cpp_source.html">peertablemodel.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

@@ -1,0 +1,13 @@
+digraph "CBlock::CBlock"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node5 [label="CBlock::CBlock",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node5 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="CBlock::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block.html#a0410d7ba8d60679c4cf364b82ffffea5"];
+  Node6 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="CBlockHeader::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_header.html#ae39c04a4357417d98954a51f53beb78a"];
+  Node7 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="base_uint::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#ab7f832a0d48a7da00296497c820ae775"];
+}

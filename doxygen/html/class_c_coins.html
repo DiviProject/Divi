@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CCoins Class Reference</title>
+<title>DIVX: CCoins Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -71,109 +74,95 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Note - for DIVX we added fCoinStake to the 2nd bit.  
+ <a href="class_c_coins.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="coins_8h_source.html">coins.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abf67e501a1d207c892c1f52dd383956e"><td class="memItemLeft" align="right" valign="top"><a id="abf67e501a1d207c892c1f52dd383956e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>FromTx</b> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, int nHeightIn)</td></tr>
+<tr class="memitem:abf67e501a1d207c892c1f52dd383956e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#abf67e501a1d207c892c1f52dd383956e">FromTx</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, int nHeightIn)</td></tr>
 <tr class="separator:abf67e501a1d207c892c1f52dd383956e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a303f3b245c339c11a1ea4318b01ec290"><td class="memItemLeft" align="right" valign="top"><a id="a303f3b245c339c11a1ea4318b01ec290"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a303f3b245c339c11a1ea4318b01ec290">CCoins</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, int nHeightIn)</td></tr>
-<tr class="memdesc:a303f3b245c339c11a1ea4318b01ec290"><td class="mdescLeft">&#160;</td><td class="mdescRight">construct a <a class="el" href="class_c_coins.html">CCoins</a> from a <a class="el" href="class_c_transaction.html">CTransaction</a>, at a given height <br /></td></tr>
+<tr class="memitem:a303f3b245c339c11a1ea4318b01ec290"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a303f3b245c339c11a1ea4318b01ec290">CCoins</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, int nHeightIn)</td></tr>
+<tr class="memdesc:a303f3b245c339c11a1ea4318b01ec290"><td class="mdescLeft">&#160;</td><td class="mdescRight">construct a <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> from a <a class="el" href="class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ...">CTransaction</a>, at a given height  <a href="#a303f3b245c339c11a1ea4318b01ec290">More...</a><br /></td></tr>
 <tr class="separator:a303f3b245c339c11a1ea4318b01ec290"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d4197688436b752234bea95f0230b82"><td class="memItemLeft" align="right" valign="top"><a id="a4d4197688436b752234bea95f0230b82"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Clear</b> ()</td></tr>
+<tr class="memitem:a4d4197688436b752234bea95f0230b82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a4d4197688436b752234bea95f0230b82">Clear</a> ()</td></tr>
 <tr class="separator:a4d4197688436b752234bea95f0230b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a543757065d6c77d23953a33eecb31a46"><td class="memItemLeft" align="right" valign="top"><a id="a543757065d6c77d23953a33eecb31a46"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a543757065d6c77d23953a33eecb31a46">CCoins</a> ()</td></tr>
-<tr class="memdesc:a543757065d6c77d23953a33eecb31a46"><td class="mdescLeft">&#160;</td><td class="mdescRight">empty constructor <br /></td></tr>
+<tr class="memitem:a543757065d6c77d23953a33eecb31a46"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a543757065d6c77d23953a33eecb31a46">CCoins</a> ()</td></tr>
+<tr class="memdesc:a543757065d6c77d23953a33eecb31a46"><td class="mdescLeft">&#160;</td><td class="mdescRight">empty constructor  <a href="#a543757065d6c77d23953a33eecb31a46">More...</a><br /></td></tr>
 <tr class="separator:a543757065d6c77d23953a33eecb31a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cfa2efc07f4d35785c9c75caa8bddcb"><td class="memItemLeft" align="right" valign="top"><a id="a7cfa2efc07f4d35785c9c75caa8bddcb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a7cfa2efc07f4d35785c9c75caa8bddcb">Cleanup</a> ()</td></tr>
-<tr class="memdesc:a7cfa2efc07f4d35785c9c75caa8bddcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">remove spent outputs at the end of vout <br /></td></tr>
+<tr class="memitem:a7cfa2efc07f4d35785c9c75caa8bddcb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a7cfa2efc07f4d35785c9c75caa8bddcb">Cleanup</a> ()</td></tr>
+<tr class="memdesc:a7cfa2efc07f4d35785c9c75caa8bddcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">remove spent outputs at the end of vout  <a href="#a7cfa2efc07f4d35785c9c75caa8bddcb">More...</a><br /></td></tr>
 <tr class="separator:a7cfa2efc07f4d35785c9c75caa8bddcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8b649abb32bdba255adec6dcfd57fc5"><td class="memItemLeft" align="right" valign="top"><a id="ad8b649abb32bdba255adec6dcfd57fc5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearUnspendable</b> ()</td></tr>
+<tr class="memitem:ad8b649abb32bdba255adec6dcfd57fc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#ad8b649abb32bdba255adec6dcfd57fc5">ClearUnspendable</a> ()</td></tr>
 <tr class="separator:ad8b649abb32bdba255adec6dcfd57fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9581324a74e9500b3d2cad472c0a830f"><td class="memItemLeft" align="right" valign="top"><a id="a9581324a74e9500b3d2cad472c0a830f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> (<a class="el" href="class_c_coins.html">CCoins</a> &amp;to)</td></tr>
+<tr class="memitem:a9581324a74e9500b3d2cad472c0a830f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a9581324a74e9500b3d2cad472c0a830f">swap</a> (<a class="el" href="class_c_coins.html">CCoins</a> &amp;to)</td></tr>
 <tr class="separator:a9581324a74e9500b3d2cad472c0a830f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fc7a42f2b5d7cf7476bfe3e10141e18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a7fc7a42f2b5d7cf7476bfe3e10141e18">CalcMaskSize</a> (unsigned int &amp;nBytes, unsigned int &amp;nNonzeroBytes) const</td></tr>
+<tr class="memdesc:a7fc7a42f2b5d7cf7476bfe3e10141e18"><td class="mdescLeft">&#160;</td><td class="mdescRight">calculate number of bytes for the bitmask, and its number of non-zero bytes each bit in the bitmask represents the availability of one output, but the availabilities of the first two outputs are encoded separately  <a href="#a7fc7a42f2b5d7cf7476bfe3e10141e18">More...</a><br /></td></tr>
 <tr class="separator:a7fc7a42f2b5d7cf7476bfe3e10141e18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a976c1374c3398e1ee23b1110f1663895"><td class="memItemLeft" align="right" valign="top"><a id="a976c1374c3398e1ee23b1110f1663895"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsCoinBase</b> () const</td></tr>
+<tr class="memitem:a976c1374c3398e1ee23b1110f1663895"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a976c1374c3398e1ee23b1110f1663895">IsCoinBase</a> () const</td></tr>
 <tr class="separator:a976c1374c3398e1ee23b1110f1663895"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace818e478f11f06a6f9bebd7adb5933e"><td class="memItemLeft" align="right" valign="top"><a id="ace818e478f11f06a6f9bebd7adb5933e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsCoinStake</b> () const</td></tr>
+<tr class="memitem:ace818e478f11f06a6f9bebd7adb5933e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#ace818e478f11f06a6f9bebd7adb5933e">IsCoinStake</a> () const</td></tr>
 <tr class="separator:ace818e478f11f06a6f9bebd7adb5933e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63916fcdb2305c47e6360cf533c27438"><td class="memItemLeft" align="right" valign="top"><a id="a63916fcdb2305c47e6360cf533c27438"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>GetSerializeSize</b> (int nType, int <a class="el" href="class_c_coins.html#a96fea4ee8841e9ce32f60c2e7e3cf6b6">nVersion</a>) const</td></tr>
+<tr class="memitem:a63916fcdb2305c47e6360cf533c27438"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a63916fcdb2305c47e6360cf533c27438">GetSerializeSize</a> (int nType, int <a class="el" href="class_c_coins.html#a96fea4ee8841e9ce32f60c2e7e3cf6b6">nVersion</a>) const</td></tr>
 <tr class="separator:a63916fcdb2305c47e6360cf533c27438"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7adea91f27b75755e8cfbc7c46fe3848"><td class="memTemplParams" colspan="2"><a id="a7adea91f27b75755e8cfbc7c46fe3848"></a>
-template&lt;typename Stream &gt; </td></tr>
-<tr class="memitem:a7adea91f27b75755e8cfbc7c46fe3848"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Serialize</b> (Stream &amp;s, int nType, int <a class="el" href="class_c_coins.html#a96fea4ee8841e9ce32f60c2e7e3cf6b6">nVersion</a>) const</td></tr>
+<tr class="memitem:a7adea91f27b75755e8cfbc7c46fe3848"><td class="memTemplParams" colspan="2">template&lt;typename Stream &gt; </td></tr>
+<tr class="memitem:a7adea91f27b75755e8cfbc7c46fe3848"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a7adea91f27b75755e8cfbc7c46fe3848">Serialize</a> (Stream &amp;s, int nType, int <a class="el" href="class_c_coins.html#a96fea4ee8841e9ce32f60c2e7e3cf6b6">nVersion</a>) const</td></tr>
 <tr class="separator:a7adea91f27b75755e8cfbc7c46fe3848"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adaa98cb6d8da3a4d573cd799ddd11051"><td class="memTemplParams" colspan="2"><a id="adaa98cb6d8da3a4d573cd799ddd11051"></a>
-template&lt;typename Stream &gt; </td></tr>
-<tr class="memitem:adaa98cb6d8da3a4d573cd799ddd11051"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Unserialize</b> (Stream &amp;s, int nType, int <a class="el" href="class_c_coins.html#a96fea4ee8841e9ce32f60c2e7e3cf6b6">nVersion</a>)</td></tr>
+<tr class="memitem:adaa98cb6d8da3a4d573cd799ddd11051"><td class="memTemplParams" colspan="2">template&lt;typename Stream &gt; </td></tr>
+<tr class="memitem:adaa98cb6d8da3a4d573cd799ddd11051"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_coins.html#adaa98cb6d8da3a4d573cd799ddd11051">Unserialize</a> (Stream &amp;s, int nType, int <a class="el" href="class_c_coins.html#a96fea4ee8841e9ce32f60c2e7e3cf6b6">nVersion</a>)</td></tr>
 <tr class="separator:adaa98cb6d8da3a4d573cd799ddd11051"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d5fe8c1ab0c9558620448a19ecdb8b2"><td class="memItemLeft" align="right" valign="top"><a id="a8d5fe8c1ab0c9558620448a19ecdb8b2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a8d5fe8c1ab0c9558620448a19ecdb8b2">Spend</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;out, <a class="el" href="class_c_tx_in_undo.html">CTxInUndo</a> &amp;undo)</td></tr>
-<tr class="memdesc:a8d5fe8c1ab0c9558620448a19ecdb8b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">mark an outpoint spent, and construct undo information <br /></td></tr>
+<tr class="memitem:a8d5fe8c1ab0c9558620448a19ecdb8b2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a8d5fe8c1ab0c9558620448a19ecdb8b2">Spend</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;out, <a class="el" href="class_c_tx_in_undo.html">CTxInUndo</a> &amp;undo)</td></tr>
+<tr class="memdesc:a8d5fe8c1ab0c9558620448a19ecdb8b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">mark an outpoint spent, and construct undo information  <a href="#a8d5fe8c1ab0c9558620448a19ecdb8b2">More...</a><br /></td></tr>
 <tr class="separator:a8d5fe8c1ab0c9558620448a19ecdb8b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99210076cac4b1ac521a532d3b5df182"><td class="memItemLeft" align="right" valign="top"><a id="a99210076cac4b1ac521a532d3b5df182"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a99210076cac4b1ac521a532d3b5df182">Spend</a> (int nPos)</td></tr>
-<tr class="memdesc:a99210076cac4b1ac521a532d3b5df182"><td class="mdescLeft">&#160;</td><td class="mdescRight">mark a vout spent <br /></td></tr>
+<tr class="memitem:a99210076cac4b1ac521a532d3b5df182"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a99210076cac4b1ac521a532d3b5df182">Spend</a> (int nPos)</td></tr>
+<tr class="memdesc:a99210076cac4b1ac521a532d3b5df182"><td class="mdescLeft">&#160;</td><td class="mdescRight">mark a vout spent  <a href="#a99210076cac4b1ac521a532d3b5df182">More...</a><br /></td></tr>
 <tr class="separator:a99210076cac4b1ac521a532d3b5df182"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa645bc3d18f74e91430ac178a9d28ee4"><td class="memItemLeft" align="right" valign="top"><a id="aa645bc3d18f74e91430ac178a9d28ee4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#aa645bc3d18f74e91430ac178a9d28ee4">IsAvailable</a> (unsigned int nPos) const</td></tr>
-<tr class="memdesc:aa645bc3d18f74e91430ac178a9d28ee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether a particular output is still available <br /></td></tr>
+<tr class="memitem:aa645bc3d18f74e91430ac178a9d28ee4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#aa645bc3d18f74e91430ac178a9d28ee4">IsAvailable</a> (unsigned int nPos) const</td></tr>
+<tr class="memdesc:aa645bc3d18f74e91430ac178a9d28ee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether a particular output is still available  <a href="#aa645bc3d18f74e91430ac178a9d28ee4">More...</a><br /></td></tr>
 <tr class="separator:aa645bc3d18f74e91430ac178a9d28ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a597a7cb8830fc29565918ce1823b2244"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a597a7cb8830fc29565918ce1823b2244">IsPruned</a> () const</td></tr>
+<tr class="memdesc:a597a7cb8830fc29565918ce1823b2244"><td class="mdescLeft">&#160;</td><td class="mdescRight">check whether the entire <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> is spent note that only !IsPruned() <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> can be serialized  <a href="#a597a7cb8830fc29565918ce1823b2244">More...</a><br /></td></tr>
 <tr class="separator:a597a7cb8830fc29565918ce1823b2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:adeedfaef84ba39b6e295d5d1fb9d8f0b"><td class="memItemLeft" align="right" valign="top"><a id="adeedfaef84ba39b6e295d5d1fb9d8f0b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#adeedfaef84ba39b6e295d5d1fb9d8f0b">fCoinBase</a></td></tr>
-<tr class="memdesc:adeedfaef84ba39b6e295d5d1fb9d8f0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether transaction is a coinbase <br /></td></tr>
+<tr class="memitem:adeedfaef84ba39b6e295d5d1fb9d8f0b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#adeedfaef84ba39b6e295d5d1fb9d8f0b">fCoinBase</a></td></tr>
+<tr class="memdesc:adeedfaef84ba39b6e295d5d1fb9d8f0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether transaction is a coinbase  <a href="#adeedfaef84ba39b6e295d5d1fb9d8f0b">More...</a><br /></td></tr>
 <tr class="separator:adeedfaef84ba39b6e295d5d1fb9d8f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acdb04fc05b8c2b5a75914c8aaedcd27d"><td class="memItemLeft" align="right" valign="top"><a id="acdb04fc05b8c2b5a75914c8aaedcd27d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fCoinStake</b></td></tr>
+<tr class="memitem:acdb04fc05b8c2b5a75914c8aaedcd27d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#acdb04fc05b8c2b5a75914c8aaedcd27d">fCoinStake</a></td></tr>
 <tr class="separator:acdb04fc05b8c2b5a75914c8aaedcd27d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1dcea1a6da9b25642337e286f9f59b03"><td class="memItemLeft" align="right" valign="top"><a id="a1dcea1a6da9b25642337e286f9f59b03"></a>
-std::vector&lt; <a class="el" href="class_c_tx_out.html">CTxOut</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a1dcea1a6da9b25642337e286f9f59b03">vout</a></td></tr>
-<tr class="memdesc:a1dcea1a6da9b25642337e286f9f59b03"><td class="mdescLeft">&#160;</td><td class="mdescRight">unspent transaction outputs; spent outputs are .IsNull(); spent outputs at the end of the array are dropped <br /></td></tr>
+<tr class="memitem:a1dcea1a6da9b25642337e286f9f59b03"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_c_tx_out.html">CTxOut</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a1dcea1a6da9b25642337e286f9f59b03">vout</a></td></tr>
+<tr class="memdesc:a1dcea1a6da9b25642337e286f9f59b03"><td class="mdescLeft">&#160;</td><td class="mdescRight">unspent transaction outputs; spent outputs are .IsNull(); spent outputs at the end of the array are dropped  <a href="#a1dcea1a6da9b25642337e286f9f59b03">More...</a><br /></td></tr>
 <tr class="separator:a1dcea1a6da9b25642337e286f9f59b03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7396dfad71367de46f21cf92e2c70ab"><td class="memItemLeft" align="right" valign="top"><a id="af7396dfad71367de46f21cf92e2c70ab"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#af7396dfad71367de46f21cf92e2c70ab">nHeight</a></td></tr>
-<tr class="memdesc:af7396dfad71367de46f21cf92e2c70ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">at which height this transaction was included in the active block chain <br /></td></tr>
+<tr class="memitem:af7396dfad71367de46f21cf92e2c70ab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#af7396dfad71367de46f21cf92e2c70ab">nHeight</a></td></tr>
+<tr class="memdesc:af7396dfad71367de46f21cf92e2c70ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">at which height this transaction was included in the active block chain  <a href="#af7396dfad71367de46f21cf92e2c70ab">More...</a><br /></td></tr>
 <tr class="separator:af7396dfad71367de46f21cf92e2c70ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96fea4ee8841e9ce32f60c2e7e3cf6b6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a96fea4ee8841e9ce32f60c2e7e3cf6b6">nVersion</a></td></tr>
+<tr class="memdesc:a96fea4ee8841e9ce32f60c2e7e3cf6b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">version of the <a class="el" href="class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ...">CTransaction</a>; accesses to this value should probably check for nHeight as well, as new tx version will probably only be introduced at certain heights  <a href="#a96fea4ee8841e9ce32f60c2e7e3cf6b6">More...</a><br /></td></tr>
 <tr class="separator:a96fea4ee8841e9ce32f60c2e7e3cf6b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a77593e3db3e4b369c21a91aad2afcc05"><td class="memItemLeft" align="right" valign="top"><a id="a77593e3db3e4b369c21a91aad2afcc05"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a77593e3db3e4b369c21a91aad2afcc05">operator==</a> (const <a class="el" href="class_c_coins.html">CCoins</a> &amp;a, const <a class="el" href="class_c_coins.html">CCoins</a> &amp;b)</td></tr>
-<tr class="memdesc:a77593e3db3e4b369c21a91aad2afcc05"><td class="mdescLeft">&#160;</td><td class="mdescRight">equality test <br /></td></tr>
+<tr class="memitem:a77593e3db3e4b369c21a91aad2afcc05"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a77593e3db3e4b369c21a91aad2afcc05">operator==</a> (const <a class="el" href="class_c_coins.html">CCoins</a> &amp;a, const <a class="el" href="class_c_coins.html">CCoins</a> &amp;<a class="el" href="field__5x52__asm__impl_8h.html#a3918a949ba563f8dbca32d694798b56a">b</a>)</td></tr>
+<tr class="memdesc:a77593e3db3e4b369c21a91aad2afcc05"><td class="mdescLeft">&#160;</td><td class="mdescRight">equality test  <a href="#a77593e3db3e4b369c21a91aad2afcc05">More...</a><br /></td></tr>
 <tr class="separator:a77593e3db3e4b369c21a91aad2afcc05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42ef9fcc8ca59916b5fb69904db1c9bd"><td class="memItemLeft" align="right" valign="top"><a id="a42ef9fcc8ca59916b5fb69904db1c9bd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="class_c_coins.html">CCoins</a> &amp;a, const <a class="el" href="class_c_coins.html">CCoins</a> &amp;b)</td></tr>
+<tr class="memitem:a42ef9fcc8ca59916b5fb69904db1c9bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins.html#a42ef9fcc8ca59916b5fb69904db1c9bd">operator!=</a> (const <a class="el" href="class_c_coins.html">CCoins</a> &amp;a, const <a class="el" href="class_c_coins.html">CCoins</a> &amp;<a class="el" href="field__5x52__asm__impl_8h.html#a3918a949ba563f8dbca32d694798b56a">b</a>)</td></tr>
 <tr class="separator:a42ef9fcc8ca59916b5fb69904db1c9bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Note - for PIVX we added fCoinStake to the 2nd bit. Keep in mind when reading the following and adjust as needed. Pruned version of <a class="el" href="class_c_transaction.html">CTransaction</a>: only retains metadata and unspent transaction outputs</p>
+<div class="textblock"><p>Note - for DIVX we added fCoinStake to the 2nd bit. </p>
+<p>Keep in mind when reading the following and adjust as needed. Pruned version of <a class="el" href="class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ...">CTransaction</a>: only retains metadata and unspent transaction outputs</p>
 <p>Serialized format:</p><ul>
-<li>VARINT(nVersion)</li>
-<li>VARINT(nCode)</li>
+<li><a class="el" href="serialize_8h.html#a1383f2a4c22ffaeba9b2924d90459f76">VARINT(nVersion)</a></li>
+<li><a class="el" href="serialize_8h.html#a1383f2a4c22ffaeba9b2924d90459f76">VARINT(nCode)</a></li>
 <li>unspentness bitvector, for vout[2] and further; least significant byte first</li>
-<li>the non-spent CTxOuts (via <a class="el" href="class_c_tx_out_compressor.html">CTxOutCompressor</a>)</li>
-<li>VARINT(nHeight)</li>
+<li>the non-spent CTxOuts (via <a class="el" href="class_c_tx_out_compressor.html" title="wrapper for CTxOut that provides a more compact serialization ">CTxOutCompressor</a>)</li>
+<li><a class="el" href="serialize_8h.html#a1383f2a4c22ffaeba9b2924d90459f76">VARINT(nHeight)</a></li>
 </ul>
 <p>The nCode value consists of:</p><ul>
-<li>bit 1: IsCoinBase()</li>
+<li>bit 1: <a class="el" href="class_c_coins.html#a976c1374c3398e1ee23b1110f1663895">IsCoinBase()</a></li>
 <li>bit 2: vout[0] is not spent</li>
 <li>bit 4: vout[1] is not spent</li>
 <li>The higher bits encode N, the number of non-zero bytes in the following bitvector.<ul>
@@ -189,7 +178,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
 <li>vout[1]: 835800816115944e077fe7c803cfa57f29b36bf87c1d35<ul>
 <li>8358: compact amount representation for 60000000000 (600 BTC)</li>
 <li>00: special txout type pay-to-pubkey-hash</li>
-<li>816115944e077fe7c803cfa57f29b36bf87c1d35: address <a class="el" href="classuint160.html">uint160</a></li>
+<li>816115944e077fe7c803cfa57f29b36bf87c1d35: address <a class="el" href="classuint160.html" title="160-bit unsigned big integer. ">uint160</a></li>
 </ul>
 </li>
 <li>height = 203998</li>
@@ -202,18 +191,96 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
 <li>vout[4]: 86ef97d5790061b01caab50f1b8e9c50a5057eb43c2d9563a4ee<ul>
 <li>86ef97d579: compact amount representation for 234925952 (2.35 BTC)</li>
 <li>00: special txout type pay-to-pubkey-hash</li>
-<li>61b01caab50f1b8e9c50a5057eb43c2d9563a4ee: address <a class="el" href="classuint160.html">uint160</a></li>
+<li>61b01caab50f1b8e9c50a5057eb43c2d9563a4ee: address <a class="el" href="classuint160.html" title="160-bit unsigned big integer. ">uint160</a></li>
 </ul>
 </li>
 <li>vout[16]: bbd123008c988f1a4a4de2161e0f50aac7f17e7f9555caa4<ul>
 <li>bbd123: compact amount representation for 110397 (0.001 BTC)</li>
 <li>00: special txout type pay-to-pubkey-hash</li>
-<li>8c988f1a4a4de2161e0f50aac7f17e7f9555caa4: address <a class="el" href="classuint160.html">uint160</a></li>
+<li>8c988f1a4a4de2161e0f50aac7f17e7f9555caa4: address <a class="el" href="classuint160.html" title="160-bit unsigned big integer. ">uint160</a></li>
 </ul>
 </li>
 <li>height = 120891 </li>
 </ul>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00074">74</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a303f3b245c339c11a1ea4318b01ec290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a303f3b245c339c11a1ea4318b01ec290">&#9670;&nbsp;</a></span>CCoins() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CCoins::CCoins </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nHeightIn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>construct a <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> from a <a class="el" href="class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ...">CTransaction</a>, at a given height </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00102">102</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a543757065d6c77d23953a33eecb31a46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a543757065d6c77d23953a33eecb31a46">&#9670;&nbsp;</a></span>CCoins() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CCoins::CCoins </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>empty constructor </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00117">117</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a7fc7a42f2b5d7cf7476bfe3e10141e18"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7fc7a42f2b5d7cf7476bfe3e10141e18">&#9670;&nbsp;</a></span>CalcMaskSize()</h2>
 
@@ -239,7 +306,319 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>calculate number of bytes for the bitmask, and its number of non-zero bytes each bit in the bitmask represents the availability of one output, but the availabilities of the first two outputs are encoded separately </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8cpp_source.html#l00017">17</a> of file <a class="el" href="coins_8cpp_source.html">coins.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a7cfa2efc07f4d35785c9c75caa8bddcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cfa2efc07f4d35785c9c75caa8bddcb">&#9670;&nbsp;</a></span>Cleanup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CCoins::Cleanup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>remove spent outputs at the end of vout </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00120">120</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4d4197688436b752234bea95f0230b82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d4197688436b752234bea95f0230b82">&#9670;&nbsp;</a></span>Clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CCoins::Clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00107">107</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad8b649abb32bdba255adec6dcfd57fc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8b649abb32bdba255adec6dcfd57fc5">&#9670;&nbsp;</a></span>ClearUnspendable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CCoins::ClearUnspendable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00128">128</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="abf67e501a1d207c892c1f52dd383956e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf67e501a1d207c892c1f52dd383956e">&#9670;&nbsp;</a></span>FromTx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CCoins::FromTx </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nHeightIn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00091">91</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a63916fcdb2305c47e6360cf533c27438"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63916fcdb2305c47e6360cf533c27438">&#9670;&nbsp;</a></span>GetSerializeSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int CCoins::GetSerializeSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00175">175</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="aa645bc3d18f74e91430ac178a9d28ee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa645bc3d18f74e91430ac178a9d28ee4">&#9670;&nbsp;</a></span>IsAvailable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CCoins::IsAvailable </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>nPos</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>check whether a particular output is still available </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00272">272</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 9 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a976c1374c3398e1ee23b1110f1663895"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a976c1374c3398e1ee23b1110f1663895">&#9670;&nbsp;</a></span>IsCoinBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CCoins::IsCoinBase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00165">165</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 10 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ace818e478f11f06a6f9bebd7adb5933e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace818e478f11f06a6f9bebd7adb5933e">&#9670;&nbsp;</a></span>IsCoinStake()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CCoins::IsCoinStake </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00170">170</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 11 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -265,11 +644,361 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
   </tr>
 </table>
 </div><div class="memdoc">
-<p>check whether the entire <a class="el" href="class_c_coins.html">CCoins</a> is spent note that only !IsPruned() <a class="el" href="class_c_coins.html">CCoins</a> can be serialized </p>
+
+<p>check whether the entire <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> is spent note that only !IsPruned() <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> can be serialized </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00279">279</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 12 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a7adea91f27b75755e8cfbc7c46fe3848"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7adea91f27b75755e8cfbc7c46fe3848">&#9670;&nbsp;</a></span>Serialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CCoins::Serialize </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00200">200</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 13 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a8d5fe8c1ab0c9558620448a19ecdb8b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d5fe8c1ab0c9558620448a19ecdb8b2">&#9670;&nbsp;</a></span>Spend() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CCoins::Spend </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_c_tx_in_undo.html">CTxInUndo</a> &amp;&#160;</td>
+          <td class="paramname"><em>undo</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>mark an outpoint spent, and construct undo information </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8cpp_source.html#l00036">36</a> of file <a class="el" href="coins_8cpp_source.html">coins.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 14 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 15 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a99210076cac4b1ac521a532d3b5df182"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99210076cac4b1ac521a532d3b5df182">&#9670;&nbsp;</a></span>Spend() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CCoins::Spend </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nPos</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>mark a vout spent </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8cpp_source.html#l00054">54</a> of file <a class="el" href="coins_8cpp_source.html">coins.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 16 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9581324a74e9500b3d2cad472c0a830f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9581324a74e9500b3d2cad472c0a830f">&#9670;&nbsp;</a></span>swap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CCoins::swap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_coins.html">CCoins</a> &amp;&#160;</td>
+          <td class="paramname"><em>to</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00137">137</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 17 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="adaa98cb6d8da3a4d573cd799ddd11051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaa98cb6d8da3a4d573cd799ddd11051">&#9670;&nbsp;</a></span>Unserialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CCoins::Unserialize </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00230">230</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 18 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="a42ef9fcc8ca59916b5fb69904db1c9bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42ef9fcc8ca59916b5fb69904db1c9bd">&#9670;&nbsp;</a></span>operator!=</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_coins.html">CCoins</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_coins.html">CCoins</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00158">158</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+
+</div>
+</div>
+<a id="a77593e3db3e4b369c21a91aad2afcc05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77593e3db3e4b369c21a91aad2afcc05">&#9670;&nbsp;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_coins.html">CCoins</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_coins.html">CCoins</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>equality test </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00147">147</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="adeedfaef84ba39b6e295d5d1fb9d8f0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeedfaef84ba39b6e295d5d1fb9d8f0b">&#9670;&nbsp;</a></span>fCoinBase</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CCoins::fCoinBase</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>whether transaction is a coinbase </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00078">78</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+
+</div>
+</div>
+<a id="acdb04fc05b8c2b5a75914c8aaedcd27d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdb04fc05b8c2b5a75914c8aaedcd27d">&#9670;&nbsp;</a></span>fCoinStake</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CCoins::fCoinStake</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00079">79</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+
+</div>
+</div>
+<a id="af7396dfad71367de46f21cf92e2c70ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7396dfad71367de46f21cf92e2c70ab">&#9670;&nbsp;</a></span>nHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CCoins::nHeight</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>at which height this transaction was included in the active block chain </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00085">85</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+
+</div>
+</div>
 <a id="a96fea4ee8841e9ce32f60c2e7e3cf6b6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a96fea4ee8841e9ce32f60c2e7e3cf6b6">&#9670;&nbsp;</a></span>nVersion</h2>
 
@@ -281,18 +1010,39 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
         </tr>
       </table>
 </div><div class="memdoc">
-<p>version of the <a class="el" href="class_c_transaction.html">CTransaction</a>; accesses to this value should probably check for nHeight as well, as new tx version will probably only be introduced at certain heights </p>
+
+<p>version of the <a class="el" href="class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ...">CTransaction</a>; accesses to this value should probably check for nHeight as well, as new tx version will probably only be introduced at certain heights </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00089">89</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+
+</div>
+</div>
+<a id="a1dcea1a6da9b25642337e286f9f59b03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dcea1a6da9b25642337e286f9f59b03">&#9670;&nbsp;</a></span>vout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="class_c_tx_out.html">CTxOut</a>&gt; CCoins::vout</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>unspent transaction outputs; spent outputs are .IsNull(); spent outputs at the end of the array are dropped </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00082">82</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="coins_8h_source.html">coins.h</a></li>
-<li>PIVX/src/coins.cpp</li>
+<li>src/<a class="el" href="coins_8h_source.html">coins.h</a></li>
+<li>src/<a class="el" href="coins_8cpp_source.html">coins.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:26 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: sph_jh_context Struct Reference</title>
+<title>DIVX: sph_jh_context Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -69,40 +72,135 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>This structure is a context for JH computations: it contains the intermediate values and some data from the last entered block.  
+ <a href="structsph__jh__context.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="sph__jh_8h_source.html">sph_jh.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a3dc7aa585cff408e168f5d0c5cc61400"><td class="memItemLeft" align="right" valign="top"><a id="a3dc7aa585cff408e168f5d0c5cc61400"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>buf</b> [64]</td></tr>
+<tr class="memitem:a3dc7aa585cff408e168f5d0c5cc61400"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__jh__context.html#a3dc7aa585cff408e168f5d0c5cc61400">buf</a> [64]</td></tr>
 <tr class="separator:a3dc7aa585cff408e168f5d0c5cc61400"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6880d19dbdea6b710eb36447c4fc835"><td class="memItemLeft" align="right" valign="top"><a id="aa6880d19dbdea6b710eb36447c4fc835"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ptr</b></td></tr>
+<tr class="memitem:aa6880d19dbdea6b710eb36447c4fc835"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__jh__context.html#aa6880d19dbdea6b710eb36447c4fc835">ptr</a></td></tr>
 <tr class="separator:aa6880d19dbdea6b710eb36447c4fc835"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa994b5fb7ec509c80b5306bd4f12f311"><td class="memItemLeft" ><a id="aa994b5fb7ec509c80b5306bd4f12f311"></a>
-union {</td></tr>
-<tr class="memitem:a0773afc4af4ef2da7450df1e2949f328"><td class="memItemLeft" >
-&#160;&#160;&#160;sph_u32&#160;&#160;&#160;<b>narrow</b> [32]</td></tr>
+<tr class="memitem:aa994b5fb7ec509c80b5306bd4f12f311"><td class="memItemLeft" >union {</td></tr>
+<tr class="memitem:a0773afc4af4ef2da7450df1e2949f328"><td class="memItemLeft" >&#160;&#160;&#160;<a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a>&#160;&#160;&#160;<a class="el" href="structsph__jh__context.html#aa130648954246edd6623c1c36a896e5a">narrow</a> [32]</td></tr>
 <tr class="separator:a0773afc4af4ef2da7450df1e2949f328"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa994b5fb7ec509c80b5306bd4f12f311"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><b>H</b></td></tr>
+<tr class="memitem:aa994b5fb7ec509c80b5306bd4f12f311"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__jh__context.html#aa994b5fb7ec509c80b5306bd4f12f311">H</a></td></tr>
 <tr class="separator:aa994b5fb7ec509c80b5306bd4f12f311"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ae4f4f5695c9d96ced8beeefe9e5114"><td class="memItemLeft" align="right" valign="top"><a id="a7ae4f4f5695c9d96ced8beeefe9e5114"></a>
-sph_u32&#160;</td><td class="memItemRight" valign="bottom"><b>block_count_high</b></td></tr>
+<tr class="memitem:a7ae4f4f5695c9d96ced8beeefe9e5114"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__jh__context.html#a7ae4f4f5695c9d96ced8beeefe9e5114">block_count_high</a></td></tr>
 <tr class="separator:a7ae4f4f5695c9d96ced8beeefe9e5114"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0aefbe622c0463e587bcd8fc257f8ecf"><td class="memItemLeft" align="right" valign="top"><a id="a0aefbe622c0463e587bcd8fc257f8ecf"></a>
-sph_u32&#160;</td><td class="memItemRight" valign="bottom"><b>block_count_low</b></td></tr>
+<tr class="memitem:a0aefbe622c0463e587bcd8fc257f8ecf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__jh__context.html#a0aefbe622c0463e587bcd8fc257f8ecf">block_count_low</a></td></tr>
 <tr class="separator:a0aefbe622c0463e587bcd8fc257f8ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This structure is a context for JH computations: it contains the intermediate values and some data from the last entered block. Once a JH computation has been performed, the context can be reused for another computation.</p>
-<p>The contents of this structure are private. A running JH computation can be cloned by copying the context (e.g. with a simple <code>memcpy()</code>). </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>PIVX/src/crypto/<a class="el" href="sph__jh_8h_source.html">sph_jh.h</a></li>
+<div class="textblock"><p>This structure is a context for JH computations: it contains the intermediate values and some data from the last entered block. </p>
+<p>Once a JH computation has been performed, the context can be reused for another computation.</p>
+<p>The contents of this structure are private. A running JH computation can be cloned by copying the context (e.g. with a simple <code><a class="el" href="glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf">memcpy()</a></code>). </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__jh_8h_source.html#l00076">76</a> of file <a class="el" href="sph__jh_8h_source.html">sph_jh.h</a>.</p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a7ae4f4f5695c9d96ced8beeefe9e5114"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ae4f4f5695c9d96ced8beeefe9e5114">&#9670;&nbsp;</a></span>block_count_high</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a> sph_jh_context::block_count_high</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__jh_8h_source.html#l00089">89</a> of file <a class="el" href="sph__jh_8h_source.html">sph_jh.h</a>.</p>
+
+</div>
+</div>
+<a id="a0aefbe622c0463e587bcd8fc257f8ecf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0aefbe622c0463e587bcd8fc257f8ecf">&#9670;&nbsp;</a></span>block_count_low</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a> sph_jh_context::block_count_low</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__jh_8h_source.html#l00089">89</a> of file <a class="el" href="sph__jh_8h_source.html">sph_jh.h</a>.</p>
+
+</div>
+</div>
+<a id="a3dc7aa585cff408e168f5d0c5cc61400"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dc7aa585cff408e168f5d0c5cc61400">&#9670;&nbsp;</a></span>buf</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char sph_jh_context::buf[64]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__jh_8h_source.html#l00078">78</a> of file <a class="el" href="sph__jh_8h_source.html">sph_jh.h</a>.</p>
+
+</div>
+</div>
+<a id="aa994b5fb7ec509c80b5306bd4f12f311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa994b5fb7ec509c80b5306bd4f12f311">&#9670;&nbsp;</a></span>H</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">union { ... }   sph_jh_context::H</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa130648954246edd6623c1c36a896e5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa130648954246edd6623c1c36a896e5a">&#9670;&nbsp;</a></span>narrow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a> sph_jh_context::narrow[32]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__jh_8h_source.html#l00084">84</a> of file <a class="el" href="sph__jh_8h_source.html">sph_jh.h</a>.</p>
+
+</div>
+</div>
+<a id="aa6880d19dbdea6b710eb36447c4fc835"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6880d19dbdea6b710eb36447c4fc835">&#9670;&nbsp;</a></span>ptr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t sph_jh_context::ptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__jh_8h_source.html#l00079">79</a> of file <a class="el" href="sph__jh_8h_source.html">sph_jh.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>src/crypto/<a class="el" href="sph__jh_8h_source.html">sph_jh.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:29 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

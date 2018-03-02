@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CBloomFilter Class Reference</title>
+<title>DIVX: CBloomFilter Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -64,67 +67,87 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_c_bloom_filter-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CBloomFilter Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>BloomFilter is a probabilistic filter which SPV clients provide so that we can filter the transactions we sends them.  
+ <a href="class_c_bloom_filter.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="bloom_8h_source.html">bloom.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6395cfcb278ed9cf4ae873549c996f83"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a6395cfcb278ed9cf4ae873549c996f83">CBloomFilter</a> (unsigned int nElements, double nFPRate, unsigned int nTweak, unsigned char nFlagsIn)</td></tr>
+<tr class="memitem:a6395cfcb278ed9cf4ae873549c996f83"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a6395cfcb278ed9cf4ae873549c996f83">CBloomFilter</a> (unsigned int nElements, double nFPRate, unsigned int <a class="el" href="class_c_bloom_filter.html#af372d9a72fd69dc5e9f31e38ab84bf29">nTweak</a>, unsigned char nFlagsIn)</td></tr>
+<tr class="memdesc:a6395cfcb278ed9cf4ae873549c996f83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new bloom filter which will provide the given fp rate when filled with the given number of elements Note that if the given parameters will result in a filter outside the bounds of the protocol limits, the filter created will be as close to the given parameters as possible within the protocol limits.  <a href="#a6395cfcb278ed9cf4ae873549c996f83">More...</a><br /></td></tr>
 <tr class="separator:a6395cfcb278ed9cf4ae873549c996f83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d12234d7febc6197a7349d609733cca"><td class="memTemplParams" colspan="2"><a id="a2d12234d7febc6197a7349d609733cca"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:a2d12234d7febc6197a7349d609733cca"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:ab38a984b1020bc4afd85c06e90353b28"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#ab38a984b1020bc4afd85c06e90353b28">CBloomFilter</a> ()</td></tr>
+<tr class="separator:ab38a984b1020bc4afd85c06e90353b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d12234d7febc6197a7349d609733cca"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:a2d12234d7febc6197a7349d609733cca"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a2d12234d7febc6197a7349d609733cca">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:a2d12234d7febc6197a7349d609733cca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abba52843c7c691ef7deb07d9a645dcc2"><td class="memItemLeft" align="right" valign="top"><a id="abba52843c7c691ef7deb07d9a645dcc2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>insert</b> (const std::vector&lt; unsigned char &gt; &amp;vKey)</td></tr>
+<tr class="memitem:abba52843c7c691ef7deb07d9a645dcc2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#abba52843c7c691ef7deb07d9a645dcc2">insert</a> (const std::vector&lt; unsigned char &gt; &amp;vKey)</td></tr>
 <tr class="separator:abba52843c7c691ef7deb07d9a645dcc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa77e023fc94fd17a0532bf17906e2146"><td class="memItemLeft" align="right" valign="top"><a id="aa77e023fc94fd17a0532bf17906e2146"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>insert</b> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;outpoint)</td></tr>
+<tr class="memitem:aa77e023fc94fd17a0532bf17906e2146"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#aa77e023fc94fd17a0532bf17906e2146">insert</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;outpoint)</td></tr>
 <tr class="separator:aa77e023fc94fd17a0532bf17906e2146"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac86479ac4ac157a7f0188baaa93202cb"><td class="memItemLeft" align="right" valign="top"><a id="ac86479ac4ac157a7f0188baaa93202cb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>insert</b> (const <a class="el" href="classuint256.html">uint256</a> &amp;hash)</td></tr>
+<tr class="memitem:ac86479ac4ac157a7f0188baaa93202cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#ac86479ac4ac157a7f0188baaa93202cb">insert</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;hash)</td></tr>
 <tr class="separator:ac86479ac4ac157a7f0188baaa93202cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe62e10a4c4cf64e18a2a659d0bcc31b"><td class="memItemLeft" align="right" valign="top"><a id="afe62e10a4c4cf64e18a2a659d0bcc31b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (const std::vector&lt; unsigned char &gt; &amp;vKey) const</td></tr>
+<tr class="memitem:afe62e10a4c4cf64e18a2a659d0bcc31b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#afe62e10a4c4cf64e18a2a659d0bcc31b">contains</a> (const std::vector&lt; unsigned char &gt; &amp;vKey) const</td></tr>
 <tr class="separator:afe62e10a4c4cf64e18a2a659d0bcc31b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4557c3253f218eaf13e6d7da53e20e9"><td class="memItemLeft" align="right" valign="top"><a id="af4557c3253f218eaf13e6d7da53e20e9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;outpoint) const</td></tr>
+<tr class="memitem:af4557c3253f218eaf13e6d7da53e20e9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#af4557c3253f218eaf13e6d7da53e20e9">contains</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;outpoint) const</td></tr>
 <tr class="separator:af4557c3253f218eaf13e6d7da53e20e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c26810781cdc0fd34443f32612ac83b"><td class="memItemLeft" align="right" valign="top"><a id="a4c26810781cdc0fd34443f32612ac83b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>contains</b> (const <a class="el" href="classuint256.html">uint256</a> &amp;hash) const</td></tr>
+<tr class="memitem:a4c26810781cdc0fd34443f32612ac83b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a4c26810781cdc0fd34443f32612ac83b">contains</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;hash) const</td></tr>
 <tr class="separator:a4c26810781cdc0fd34443f32612ac83b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf30228c0b24c57530f6b6734cd40252"><td class="memItemLeft" align="right" valign="top"><a id="abf30228c0b24c57530f6b6734cd40252"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memitem:abf30228c0b24c57530f6b6734cd40252"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#abf30228c0b24c57530f6b6734cd40252">clear</a> ()</td></tr>
 <tr class="separator:abf30228c0b24c57530f6b6734cd40252"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06f2094da8e7d9c6ad4ea426858e32de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a06f2094da8e7d9c6ad4ea426858e32de">IsWithinSizeConstraints</a> () const</td></tr>
+<tr class="memdesc:a06f2094da8e7d9c6ad4ea426858e32de"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the size is &lt;= MAX_BLOOM_FILTER_SIZE and the number of hash functions is &lt;= MAX_HASH_FUNCS (catch a filter which was just deserialized which was too big)  <a href="#a06f2094da8e7d9c6ad4ea426858e32de">More...</a><br /></td></tr>
 <tr class="separator:a06f2094da8e7d9c6ad4ea426858e32de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec420a9b66ab133090c2b4b8ed286f79"><td class="memItemLeft" align="right" valign="top"><a id="aec420a9b66ab133090c2b4b8ed286f79"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#aec420a9b66ab133090c2b4b8ed286f79">IsRelevantAndUpdate</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx)</td></tr>
-<tr class="memdesc:aec420a9b66ab133090c2b4b8ed286f79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Also adds any outputs which match the filter to the filter (to match their spending txes) <br /></td></tr>
+<tr class="memitem:aec420a9b66ab133090c2b4b8ed286f79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#aec420a9b66ab133090c2b4b8ed286f79">IsRelevantAndUpdate</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx)</td></tr>
+<tr class="memdesc:aec420a9b66ab133090c2b4b8ed286f79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Also adds any outputs which match the filter to the filter (to match their spending txes)  <a href="#aec420a9b66ab133090c2b4b8ed286f79">More...</a><br /></td></tr>
 <tr class="separator:aec420a9b66ab133090c2b4b8ed286f79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af98b43e91c82a1e4afc7454e8c5672c2"><td class="memItemLeft" align="right" valign="top"><a id="af98b43e91c82a1e4afc7454e8c5672c2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#af98b43e91c82a1e4afc7454e8c5672c2">UpdateEmptyFull</a> ()</td></tr>
-<tr class="memdesc:af98b43e91c82a1e4afc7454e8c5672c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks for empty and full filters to avoid wasting cpu. <br /></td></tr>
+<tr class="memitem:af98b43e91c82a1e4afc7454e8c5672c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#af98b43e91c82a1e4afc7454e8c5672c2">UpdateEmptyFull</a> ()</td></tr>
+<tr class="memdesc:af98b43e91c82a1e4afc7454e8c5672c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks for empty and full filters to avoid wasting cpu.  <a href="#af98b43e91c82a1e4afc7454e8c5672c2">More...</a><br /></td></tr>
 <tr class="separator:af98b43e91c82a1e4afc7454e8c5672c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aac1b6a065059e07177ec836929190ad0"><td class="memItemLeft" align="right" valign="top"><a id="aac1b6a065059e07177ec836929190ad0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:aac1b6a065059e07177ec836929190ad0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#aac1b6a065059e07177ec836929190ad0">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:aac1b6a065059e07177ec836929190ad0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a19031bd85ec49cb6f6d2cd8aa3414c75"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a19031bd85ec49cb6f6d2cd8aa3414c75">Hash</a> (unsigned int nHashNum, const std::vector&lt; unsigned char &gt; &amp;vDataToHash) const</td></tr>
+<tr class="separator:a19031bd85ec49cb6f6d2cd8aa3414c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a494abe120d62978951cc0f0db916f50e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a494abe120d62978951cc0f0db916f50e">vData</a></td></tr>
+<tr class="separator:a494abe120d62978951cc0f0db916f50e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ded8502360023ed194686c0b8df635d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a4ded8502360023ed194686c0b8df635d">isFull</a></td></tr>
+<tr class="separator:a4ded8502360023ed194686c0b8df635d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3db306b7ea8e7dc6281b36de9ca6750a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a3db306b7ea8e7dc6281b36de9ca6750a">isEmpty</a></td></tr>
+<tr class="separator:a3db306b7ea8e7dc6281b36de9ca6750a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5538222a099be8261258526204b1f1dd"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a5538222a099be8261258526204b1f1dd">nHashFuncs</a></td></tr>
+<tr class="separator:a5538222a099be8261258526204b1f1dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af372d9a72fd69dc5e9f31e38ab84bf29"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#af372d9a72fd69dc5e9f31e38ab84bf29">nTweak</a></td></tr>
+<tr class="separator:af372d9a72fd69dc5e9f31e38ab84bf29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3368a76443d81e0349debe514a524dfb"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_bloom_filter.html#a3368a76443d81e0349debe514a524dfb">nFlags</a></td></tr>
+<tr class="separator:a3368a76443d81e0349debe514a524dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>BloomFilter is a probabilistic filter which SPV clients provide so that we can filter the transactions we sends them.</p>
+<div class="textblock"><p>BloomFilter is a probabilistic filter which SPV clients provide so that we can filter the transactions we sends them. </p>
 <p>This allows for significantly more efficient transaction and block downloads.</p>
 <p>Because bloom filters are probabilistic, an SPV node can increase the false- positive rate, making us send them transactions which aren't actually theirs, allowing clients to trade more bandwidth for more privacy by obfuscating which keys are owned by them. </p>
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00043">43</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6395cfcb278ed9cf4ae873549c996f83"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6395cfcb278ed9cf4ae873549c996f83">&#9670;&nbsp;</a></span>CBloomFilter()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6395cfcb278ed9cf4ae873549c996f83">&#9670;&nbsp;</a></span>CBloomFilter() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -160,14 +183,289 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Creates a new bloom filter which will provide the given fp rate when filled with the given number of elements Note that if the given parameters will result in a filter outside the bounds of the protocol limits, the filter created will be as close to the given parameters as possible within the protocol limits. This will apply if nFPRate is very low or nElements is unreasonably high. nTweak is a constant which is added to the seed value passed to the hash function It should generally always be a random value (and is largely only exposed for unit testing) nFlags should be one of the BLOOM_UPDATE_* enums (not _MASK)</p>
-<p>The ideal size for a bloom filter with a given number of elements and false positive rate is:</p><ul>
+
+<p>Creates a new bloom filter which will provide the given fp rate when filled with the given number of elements Note that if the given parameters will result in a filter outside the bounds of the protocol limits, the filter created will be as close to the given parameters as possible within the protocol limits. </p>
+<p><br />
+<br />
+The ideal size for a bloom filter with a given number of elements and false positive rate is:</p>
+<p>This will apply if nFPRate is very low or nElements is unreasonably high. nTweak is a constant which is added to the seed value passed to the hash function It should generally always be a random value (and is largely only exposed for unit testing) nFlags should be one of the BLOOM_UPDATE_* enums (not _MASK)</p>
+<ul>
 <li>nElements * log(fp rate) / ln(2)^2 We ignore filter parameters which will create a bloom filter larger than the protocol limits The ideal number of hash functions is filter size * ln(2) / number of elements Again, we ignore filter parameters which will create a bloom filter with more hash functions than the protocol limits See <a href="https://en.wikipedia.org/wiki/Bloom_filter">https://en.wikipedia.org/wiki/Bloom_filter</a> for an explanation of these formulas </li>
 </ul>
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00023">23</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ab38a984b1020bc4afd85c06e90353b28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab38a984b1020bc4afd85c06e90353b28">&#9670;&nbsp;</a></span>CBloomFilter() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CBloomFilter::CBloomFilter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00066">66</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="abf30228c0b24c57530f6b6734cd40252"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf30228c0b24c57530f6b6734cd40252">&#9670;&nbsp;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBloomFilter::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00104">104</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+
+</div>
+</div>
+<a id="afe62e10a4c4cf64e18a2a659d0bcc31b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe62e10a4c4cf64e18a2a659d0bcc31b">&#9670;&nbsp;</a></span>contains() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CBloomFilter::contains </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; unsigned char &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vKey</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00075">75</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="af4557c3253f218eaf13e6d7da53e20e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4557c3253f218eaf13e6d7da53e20e9">&#9670;&nbsp;</a></span>contains() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CBloomFilter::contains </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>outpoint</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00090">90</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a4c26810781cdc0fd34443f32612ac83b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c26810781cdc0fd34443f32612ac83b">&#9670;&nbsp;</a></span>contains() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CBloomFilter::contains </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td>
+          <td class="paramname"><em>hash</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00098">98</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a19031bd85ec49cb6f6d2cd8aa3414c75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19031bd85ec49cb6f6d2cd8aa3414c75">&#9670;&nbsp;</a></span>Hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int CBloomFilter::Hash </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>nHashNum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; unsigned char &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vDataToHash</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00043">43</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="abba52843c7c691ef7deb07d9a645dcc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abba52843c7c691ef7deb07d9a645dcc2">&#9670;&nbsp;</a></span>insert() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBloomFilter::insert </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; unsigned char &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vKey</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00049">49</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="aa77e023fc94fd17a0532bf17906e2146"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa77e023fc94fd17a0532bf17906e2146">&#9670;&nbsp;</a></span>insert() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBloomFilter::insert </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>outpoint</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00061">61</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ac86479ac4ac157a7f0188baaa93202cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac86479ac4ac157a7f0188baaa93202cb">&#9670;&nbsp;</a></span>insert() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBloomFilter::insert </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td>
+          <td class="paramname"><em>hash</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00069">69</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aec420a9b66ab133090c2b4b8ed286f79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec420a9b66ab133090c2b4b8ed286f79">&#9670;&nbsp;</a></span>IsRelevantAndUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CBloomFilter::IsRelevantAndUpdate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;&#160;</td>
+          <td class="paramname"><em>tx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Also adds any outputs which match the filter to the filter (to match their spending txes) </p>
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00116">116</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+
+</div>
+</div>
 <a id="a06f2094da8e7d9c6ad4ea426858e32de"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a06f2094da8e7d9c6ad4ea426858e32de">&#9670;&nbsp;</a></span>IsWithinSizeConstraints()</h2>
 
@@ -182,18 +480,255 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>True if the size is &lt;= MAX_BLOOM_FILTER_SIZE and the number of hash functions is &lt;= MAX_HASH_FUNCS (catch a filter which was just deserialized which was too big) </p>
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00111">111</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a2d12234d7febc6197a7349d609733cca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d12234d7febc6197a7349d609733cca">&#9670;&nbsp;</a></span>SerializationOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream , typename Operation &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBloomFilter::SerializationOp </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Operation&#160;</td>
+          <td class="paramname"><em>ser_action</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00071">71</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
+
+</div>
+</div>
+<a id="af98b43e91c82a1e4afc7454e8c5672c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af98b43e91c82a1e4afc7454e8c5672c2">&#9670;&nbsp;</a></span>UpdateEmptyFull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CBloomFilter::UpdateEmptyFull </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks for empty and full filters to avoid wasting cpu. </p>
+
+<p class="definition">Definition at line <a class="el" href="bloom_8cpp_source.html#l00180">180</a> of file <a class="el" href="bloom_8cpp_source.html">bloom.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aac1b6a065059e07177ec836929190ad0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac1b6a065059e07177ec836929190ad0">&#9670;&nbsp;</a></span>ADD_SERIALIZE_METHODS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CBloomFilter::ADD_SERIALIZE_METHODS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00068">68</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
+
+</div>
+</div>
+<a id="a3db306b7ea8e7dc6281b36de9ca6750a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3db306b7ea8e7dc6281b36de9ca6750a">&#9670;&nbsp;</a></span>isEmpty</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CBloomFilter::isEmpty</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00048">48</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
+
+</div>
+</div>
+<a id="a4ded8502360023ed194686c0b8df635d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ded8502360023ed194686c0b8df635d">&#9670;&nbsp;</a></span>isFull</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CBloomFilter::isFull</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00047">47</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
+
+</div>
+</div>
+<a id="a3368a76443d81e0349debe514a524dfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3368a76443d81e0349debe514a524dfb">&#9670;&nbsp;</a></span>nFlags</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char CBloomFilter::nFlags</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00051">51</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
+
+</div>
+</div>
+<a id="a5538222a099be8261258526204b1f1dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5538222a099be8261258526204b1f1dd">&#9670;&nbsp;</a></span>nHashFuncs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int CBloomFilter::nHashFuncs</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00049">49</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
+
+</div>
+</div>
+<a id="af372d9a72fd69dc5e9f31e38ab84bf29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af372d9a72fd69dc5e9f31e38ab84bf29">&#9670;&nbsp;</a></span>nTweak</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int CBloomFilter::nTweak</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00050">50</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
+
+</div>
+</div>
+<a id="a494abe120d62978951cc0f0db916f50e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a494abe120d62978951cc0f0db916f50e">&#9670;&nbsp;</a></span>vData</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;unsigned char&gt; CBloomFilter::vData</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="bloom_8h_source.html#l00046">46</a> of file <a class="el" href="bloom_8h_source.html">bloom.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="bloom_8h_source.html">bloom.h</a></li>
-<li>PIVX/src/bloom.cpp</li>
+<li>src/<a class="el" href="bloom_8h_source.html">bloom.h</a></li>
+<li>src/<a class="el" href="bloom_8cpp_source.html">bloom.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:26 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

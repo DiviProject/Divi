@@ -1,0 +1,15 @@
+digraph "WalletFrame::gotoMultisigDialog"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node282 [label="WalletFrame::gotoMultisig\lDialog",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node282 -> Node283 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node283 [label="WalletFrame::currentWalletView",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#a026798332d142b693e4f1820185d3f1c"];
+  Node282 -> Node284 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node284 [label="WalletView::gotoMultisig\lDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_view.html#a73b3738ee4714ac1f461bfa84a249ab9",tooltip="Show a multisig tab. "];
+  Node284 -> Node285 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node285 [label="MultisigDialog::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#ae2709a2ffd629acafa4c90811402c64a"];
+  Node284 -> Node286 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node286 [label="MultisigDialog::showTab",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a2fc79dce0675edaa3e25caf8969a77b5"];
+}

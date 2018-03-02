@@ -1,0 +1,36 @@
+digraph "PaymentServer::initNetManager"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node78 [label="PaymentServer::initNetManager",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node78 -> Node79 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node79 [label="OptionsModel::getProxySettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#a0fa582a801df3753c2c50840c40bb350"];
+  Node79 -> Node80 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node80 [label="GetProxy",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$netbase_8cpp.html#a4e67b39fc1769663260d791d2f4d049d"];
+  Node79 -> Node81 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node81 [label="CNetAddr::ToStringIP",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_net_addr.html#a0c8d9b5ed3824546ff4dccca3b28b073"];
+  Node81 -> Node82 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node82 [label="EncodeBase32",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilstrencodings_8cpp.html#a71aa75e646de8a10971f887bc71d9a75"];
+  Node81 -> Node83 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node83 [label="CService::GetSockAddr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_service.html#ac4c6d655fab3af40937f0b0c65581745"];
+  Node83 -> Node84 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node84 [label="CNetAddr::IsIPv4",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_net_addr.html#a7021b79e9a33c342b68db09dbb6c2293"];
+  Node83 -> Node85 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node85 [label="CNetAddr::GetInAddr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_net_addr.html#a4f73432c55d4acb6b9e4c54833eefea6"];
+  Node85 -> Node86 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node86 [label="memcpy",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf"];
+  Node86 -> Node87 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node87 [label="memmove",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$glibc__compat_8cpp.html#a9778d49e9029dd75bc53ecbbf9f5e9a1"];
+  Node83 -> Node88 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node88 [label="CNetAddr::IsIPv6",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_net_addr.html#aad5f7a372c56ccf4d773f728b6b46e18"];
+  Node83 -> Node89 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node89 [label="CNetAddr::GetIn6Addr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_net_addr.html#a3616012f94b27148e5b8e27d943d4884"];
+  Node89 -> Node86 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node79 -> Node90 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node90 [label="CService::GetPort",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_service.html#a71caa0d6aa6ab12758bde8b6a6bcfd2a"];
+  Node78 -> Node91 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node91 [label="PaymentServer::netRequest\lFinished",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_payment_server.html#a5b8e2e6380142fb7ad631400bcfc6f28"];
+  Node78 -> Node92 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node92 [label="PaymentServer::reportSsl\lErrors",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_payment_server.html#aa773cdbc021130ad3d2c7687a561de96"];
+}

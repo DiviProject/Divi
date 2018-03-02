@@ -1,0 +1,9 @@
+digraph "CSporkDB::ReadSpork"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node72 [label="CSporkDB::ReadSpork",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node72 -> Node73 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node73 [label="LoadSporksFromDB",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8h.html#a8ca9266accb6cf34f86a4f9244f22e79"];
+}

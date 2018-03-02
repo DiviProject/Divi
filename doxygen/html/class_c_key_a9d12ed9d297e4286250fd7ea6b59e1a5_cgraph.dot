@@ -1,0 +1,13 @@
+digraph "CKey::MakeNewKey"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node553 [label="CKey::MakeNewKey",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node553 -> Node554 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node554 [label="GetRandBytes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$random_8cpp.html#ada0c29949c4d1ac0cc027d93c4771423",tooltip="Functions to gather random data via the OpenSSL PRNG. "];
+  Node553 -> Node555 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node555 [label="CKey::Check",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_key.html#acec869bc75fa8f4d619ab025d367a97c",tooltip="Check whether the 32-byte array pointed to be vch is valid keydata. "];
+  Node555 -> Node556 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node556 [label="eccrypto::Check",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespaceeccrypto.html#a231bdcb32521375b68fbdaf0d952cfd0"];
+}

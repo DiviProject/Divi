@@ -1,0 +1,22 @@
+digraph "ReceiveCoinsDialog::setModel"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node348 [label="ReceiveCoinsDialog\l::setModel",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node348 -> Node349 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node349 [label="WalletModel::getOptionsModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300"];
+  Node348 -> Node350 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node350 [label="WalletModel::getRecentRequests\lTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#ab13ca64220a1652d63e1e042d3be578f"];
+  Node348 -> Node351 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node351 [label="RecentRequestsTableModel\l::sort",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#a63ba78741b7115af25908f88d138c201"];
+  Node351 -> Node352 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node352 [label="RecentRequestsTableModel\l::index",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#a744b879be9546793860528f6c5350289"];
+  Node348 -> Node353 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node353 [label="ReceiveCoinsDialog\l::updateDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a19eca7743c5326eee821bb8c0af234bb"];
+  Node353 -> Node349 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node353 -> Node354 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node354 [label="OptionsModel::getDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e"];
+  Node348 -> Node355 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node355 [label="ReceiveCoinsDialog\l::recentRequestsView\l_selectionChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a7f6250ef737d2700d392612813f1d03c"];
+}

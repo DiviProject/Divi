@@ -1,0 +1,13 @@
+digraph "CCoins::swap"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node95 [label="CCoins::swap",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node95 -> Node96 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node96 [label="CCoinsViewCache::FetchCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a964e8bc4a5f8131eab430d356a25fc6d"];
+  Node95 -> Node97 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node97 [label="CCoinsViewCache::BatchWrite",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a561bb7c6c97701b12c48fbbb563d0a91",tooltip="Do a bulk modification (multiple CCoins changes + BestBlock change). "];
+  Node95 -> Node98 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node98 [label="CCoins::Clear",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#a4d4197688436b752234bea95f0230b82"];
+}

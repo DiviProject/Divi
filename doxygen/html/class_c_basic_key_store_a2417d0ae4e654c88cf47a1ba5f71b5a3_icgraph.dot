@@ -1,0 +1,11 @@
+digraph "CBasicKeyStore::AddWatchOnly"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node28 [label="CBasicKeyStore::AddWatchOnly",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node28 -> Node29 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node29 [label="CWallet::AddWatchOnly",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__map_wallet.html#ga022f12d5f56bbe831136388e2ac19969",tooltip="Adds a watch-only address to the store, and saves it to disk. "];
+  Node28 -> Node30 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node30 [label="CWallet::LoadWatchOnly",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__map_wallet.html#gad6580f1844fc639389e1c6a1e2787ee6",tooltip="Adds a watch-only address to the store, without saving it to disk (used by LoadWallet) ..."];
+}

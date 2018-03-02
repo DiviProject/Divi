@@ -1,0 +1,11 @@
+digraph "CoinControlDialog::showMenu"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node706 [label="CoinControlDialog::\lshowMenu",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node706 -> Node707 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node707 [label="WalletModel::isLockedCoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#abeea7ae42ec38ace2786b2e3d340f5a2"];
+  Node707 -> Node708 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node708 [label="CWallet::IsLockedCoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#ga58abc6e61537f10bfb9429587ed29074"];
+}

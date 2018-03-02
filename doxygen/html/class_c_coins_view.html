@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CCoinsView Class Reference</title>
+<title>DIVX: CCoinsView Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -69,47 +72,73 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Abstract view on the open txout dataset.  
+ <a href="class_c_coins_view.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="coins_8h_source.html">coins.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for CCoinsView:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_c_coins_view.png" usemap="#CCoinsView_map" alt=""/>
-  <map id="CCoinsView_map" name="CCoinsView_map">
-<area href="class_c_coins_view_backed.html" alt="CCoinsViewBacked" shape="rect" coords="166,56,322,80"/>
-<area href="class_c_coins_view_d_b.html" alt="CCoinsViewDB" shape="rect" coords="332,56,488,80"/>
-<area href="class_c_coins_view_cache.html" alt="CCoinsViewCache" shape="rect" coords="0,112,156,136"/>
-<area href="class_c_coins_view_error_catcher.html" alt="CCoinsViewErrorCatcher" shape="rect" coords="166,112,322,136"/>
-<area href="class_c_coins_view_mem_pool.html" alt="CCoinsViewMemPool" shape="rect" coords="332,112,488,136"/>
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a67d865358127bef1f0011a23d5158a9f"><td class="memItemLeft" align="right" valign="top"><a id="a67d865358127bef1f0011a23d5158a9f"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#a67d865358127bef1f0011a23d5158a9f">GetCoins</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;txid, <a class="el" href="class_c_coins.html">CCoins</a> &amp;coins) const</td></tr>
-<tr class="memdesc:a67d865358127bef1f0011a23d5158a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the <a class="el" href="class_c_coins.html">CCoins</a> (unspent transaction outputs) for a given txid. <br /></td></tr>
+<tr class="memitem:a67d865358127bef1f0011a23d5158a9f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#a67d865358127bef1f0011a23d5158a9f">GetCoins</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;txid, <a class="el" href="class_c_coins.html">CCoins</a> &amp;coins) const</td></tr>
+<tr class="memdesc:a67d865358127bef1f0011a23d5158a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> (unspent transaction outputs) for a given txid.  <a href="#a67d865358127bef1f0011a23d5158a9f">More...</a><br /></td></tr>
 <tr class="separator:a67d865358127bef1f0011a23d5158a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade3a65fc3f1b02baf7bebce630e4eba3"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#ade3a65fc3f1b02baf7bebce630e4eba3">HaveCoins</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;txid) const</td></tr>
+<tr class="memdesc:ade3a65fc3f1b02baf7bebce630e4eba3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Just check whether we have data for a given txid.  <a href="#ade3a65fc3f1b02baf7bebce630e4eba3">More...</a><br /></td></tr>
 <tr class="separator:ade3a65fc3f1b02baf7bebce630e4eba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af81f2907d360a2548d59a61388e5e5cb"><td class="memItemLeft" align="right" valign="top"><a id="af81f2907d360a2548d59a61388e5e5cb"></a>
-virtual <a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#af81f2907d360a2548d59a61388e5e5cb">GetBestBlock</a> () const</td></tr>
-<tr class="memdesc:af81f2907d360a2548d59a61388e5e5cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the block hash whose state this <a class="el" href="class_c_coins_view.html">CCoinsView</a> currently represents. <br /></td></tr>
+<tr class="memitem:af81f2907d360a2548d59a61388e5e5cb"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#af81f2907d360a2548d59a61388e5e5cb">GetBestBlock</a> () const</td></tr>
+<tr class="memdesc:af81f2907d360a2548d59a61388e5e5cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the block hash whose state this <a class="el" href="class_c_coins_view.html" title="Abstract view on the open txout dataset. ">CCoinsView</a> currently represents.  <a href="#af81f2907d360a2548d59a61388e5e5cb">More...</a><br /></td></tr>
 <tr class="separator:af81f2907d360a2548d59a61388e5e5cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7dc37396ca4fac7014cea06fec7178e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#ad7dc37396ca4fac7014cea06fec7178e">BatchWrite</a> (CCoinsMap &amp;mapCoins, const <a class="el" href="classuint256.html">uint256</a> &amp;hashBlock)</td></tr>
+<tr class="memitem:ad7dc37396ca4fac7014cea06fec7178e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#ad7dc37396ca4fac7014cea06fec7178e">BatchWrite</a> (<a class="el" href="coins_8h.html#a2886ba2fd0428bae777e1cbcabc02834">CCoinsMap</a> &amp;mapCoins, const <a class="el" href="classuint256.html">uint256</a> &amp;hashBlock)</td></tr>
+<tr class="memdesc:ad7dc37396ca4fac7014cea06fec7178e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do a bulk modification (multiple <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> changes + BestBlock change).  <a href="#ad7dc37396ca4fac7014cea06fec7178e">More...</a><br /></td></tr>
 <tr class="separator:ad7dc37396ca4fac7014cea06fec7178e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbd7f73ba071c6e441dd88d95b8f2c0d"><td class="memItemLeft" align="right" valign="top"><a id="adbd7f73ba071c6e441dd88d95b8f2c0d"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#adbd7f73ba071c6e441dd88d95b8f2c0d">GetStats</a> (<a class="el" href="struct_c_coins_stats.html">CCoinsStats</a> &amp;stats) const</td></tr>
-<tr class="memdesc:adbd7f73ba071c6e441dd88d95b8f2c0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate statistics about the unspent transaction output set. <br /></td></tr>
+<tr class="memitem:adbd7f73ba071c6e441dd88d95b8f2c0d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#adbd7f73ba071c6e441dd88d95b8f2c0d">GetStats</a> (<a class="el" href="struct_c_coins_stats.html">CCoinsStats</a> &amp;stats) const</td></tr>
+<tr class="memdesc:adbd7f73ba071c6e441dd88d95b8f2c0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate statistics about the unspent transaction output set.  <a href="#adbd7f73ba071c6e441dd88d95b8f2c0d">More...</a><br /></td></tr>
 <tr class="separator:adbd7f73ba071c6e441dd88d95b8f2c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ffb4218bf991ddff47339e44c8710da"><td class="memItemLeft" align="right" valign="top"><a id="a7ffb4218bf991ddff47339e44c8710da"></a>
-virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#a7ffb4218bf991ddff47339e44c8710da">~CCoinsView</a> ()</td></tr>
-<tr class="memdesc:a7ffb4218bf991ddff47339e44c8710da"><td class="mdescLeft">&#160;</td><td class="mdescRight">As we use CCoinsViews polymorphically, have a virtual destructor. <br /></td></tr>
+<tr class="memitem:a7ffb4218bf991ddff47339e44c8710da"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#a7ffb4218bf991ddff47339e44c8710da">~CCoinsView</a> ()</td></tr>
+<tr class="memdesc:a7ffb4218bf991ddff47339e44c8710da"><td class="mdescLeft">&#160;</td><td class="mdescRight">As we use CCoinsViews polymorphically, have a virtual destructor.  <a href="#a7ffb4218bf991ddff47339e44c8710da">More...</a><br /></td></tr>
 <tr class="separator:a7ffb4218bf991ddff47339e44c8710da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract view on the open txout dataset. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00335">335</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a7ffb4218bf991ddff47339e44c8710da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ffb4218bf991ddff47339e44c8710da">&#9670;&nbsp;</a></span>~CCoinsView()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual CCoinsView::~CCoinsView </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>As we use CCoinsViews polymorphically, have a virtual destructor. </p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8h_source.html#l00356">356</a> of file <a class="el" href="coins_8h_source.html">coins.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="ad7dc37396ca4fac7014cea06fec7178e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad7dc37396ca4fac7014cea06fec7178e">&#9670;&nbsp;</a></span>BatchWrite()</h2>
 
@@ -122,7 +151,7 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
         <tr>
           <td class="memname">bool CCoinsView::BatchWrite </td>
           <td>(</td>
-          <td class="paramtype">CCoinsMap &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="coins_8h.html#a2886ba2fd0428bae777e1cbcabc02834">CCoinsMap</a> &amp;&#160;</td>
           <td class="paramname"><em>mapCoins</em>, </td>
         </tr>
         <tr>
@@ -143,9 +172,142 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Do a bulk modification (multiple <a class="el" href="class_c_coins.html">CCoins</a> changes + BestBlock change). The passed mapCoins can be modified. </p>
+
+<p>Do a bulk modification (multiple <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> changes + BestBlock change). </p>
+<p>The passed mapCoins can be modified. </p>
 
 <p>Reimplemented in <a class="el" href="class_c_coins_view_cache.html#a561bb7c6c97701b12c48fbbb563d0a91">CCoinsViewCache</a>, <a class="el" href="class_c_coins_view_backed.html#ace15da3934c9d7a9cb9c7a787f92f764">CCoinsViewBacked</a>, and <a class="el" href="class_c_coins_view_d_b.html#a33f98ec9323ce48e1704327bc8a2a002">CCoinsViewDB</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8cpp_source.html#l00065">65</a> of file <a class="el" href="coins_8cpp_source.html">coins.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="af81f2907d360a2548d59a61388e5e5cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af81f2907d360a2548d59a61388e5e5cb">&#9670;&nbsp;</a></span>GetBestBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> CCoinsView::GetBestBlock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the block hash whose state this <a class="el" href="class_c_coins_view.html" title="Abstract view on the open txout dataset. ">CCoinsView</a> currently represents. </p>
+
+<p>Reimplemented in <a class="el" href="class_c_coins_view_cache.html#a1190c94a943c067d13211179ef06470b">CCoinsViewCache</a>, <a class="el" href="class_c_coins_view_backed.html#a39bca41ae922d0ce7f40e8aeab289280">CCoinsViewBacked</a>, and <a class="el" href="class_c_coins_view_d_b.html#ac9c513a34b9e58d942fdbeafd9e5bbce">CCoinsViewDB</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8cpp_source.html#l00064">64</a> of file <a class="el" href="coins_8cpp_source.html">coins.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a67d865358127bef1f0011a23d5158a9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67d865358127bef1f0011a23d5158a9f">&#9670;&nbsp;</a></span>GetCoins()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CCoinsView::GetCoins </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td>
+          <td class="paramname"><em>txid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_c_coins.html">CCoins</a> &amp;&#160;</td>
+          <td class="paramname"><em>coins</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> (unspent transaction outputs) for a given txid. </p>
+
+<p>Reimplemented in <a class="el" href="class_c_coins_view_cache.html#a1b62444593fdb580bfa4bd6fab41fafa">CCoinsViewCache</a>, <a class="el" href="class_c_coins_view_backed.html#a456f9e85817556329a959c120998df5b">CCoinsViewBacked</a>, <a class="el" href="class_c_coins_view_mem_pool.html#a1a4a556821b1680ff4b73758c8a1e471">CCoinsViewMemPool</a>, <a class="el" href="class_c_coins_view_error_catcher.html#a909f7b9e364b6f06bfea955209aa015d">CCoinsViewErrorCatcher</a>, and <a class="el" href="class_c_coins_view_d_b.html#ac35a80d1115ec697101d382e71db5b31">CCoinsViewDB</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8cpp_source.html#l00062">62</a> of file <a class="el" href="coins_8cpp_source.html">coins.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="adbd7f73ba071c6e441dd88d95b8f2c0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbd7f73ba071c6e441dd88d95b8f2c0d">&#9670;&nbsp;</a></span>GetStats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CCoinsView::GetStats </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_c_coins_stats.html">CCoinsStats</a> &amp;&#160;</td>
+          <td class="paramname"><em>stats</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calculate statistics about the unspent transaction output set. </p>
+
+<p>Reimplemented in <a class="el" href="class_c_coins_view_backed.html#aa787da5760afa843d32764b70420b2d6">CCoinsViewBacked</a>, and <a class="el" href="class_c_coins_view_d_b.html#a227bf56f8801921f12e56c6839104fce">CCoinsViewDB</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8cpp_source.html#l00066">66</a> of file <a class="el" href="coins_8cpp_source.html">coins.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -172,20 +334,30 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Just check whether we have data for a given txid. This may (but cannot always) return true for fully spent transactions </p>
+
+<p>Just check whether we have data for a given txid. </p>
+<p>This may (but cannot always) return true for fully spent transactions </p>
 
 <p>Reimplemented in <a class="el" href="class_c_coins_view_cache.html#aa8f0c55b6fc207d2188948a565125ab7">CCoinsViewCache</a>, <a class="el" href="class_c_coins_view_backed.html#ad49041658bdec807d556e080476e6543">CCoinsViewBacked</a>, <a class="el" href="class_c_coins_view_mem_pool.html#a2c5900448dc5570053060686ad1f014b">CCoinsViewMemPool</a>, and <a class="el" href="class_c_coins_view_d_b.html#af55f35faadeb74b5406559fe3ed20114">CCoinsViewDB</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="coins_8cpp_source.html#l00063">63</a> of file <a class="el" href="coins_8cpp_source.html">coins.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="coins_8h_source.html">coins.h</a></li>
-<li>PIVX/src/coins.cpp</li>
+<li>src/<a class="el" href="coins_8h_source.html">coins.h</a></li>
+<li>src/<a class="el" href="coins_8cpp_source.html">coins.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:26 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

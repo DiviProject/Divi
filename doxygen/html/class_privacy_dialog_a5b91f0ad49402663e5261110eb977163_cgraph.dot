@@ -1,0 +1,15 @@
+digraph "PrivacyDialog::on_pushButtonZDivControl_clicked"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node481 [label="PrivacyDialog::on_pushButton\lZDivControl_clicked",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node481 -> Node482 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node482 [label="ZDivControlDialog::\lsetModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_z_div_control_dialog.html#a4ab4c00c0dbba743cbaaacc4f229cfa2"];
+  Node482 -> Node483 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node483 [label="ZDivControlDialog::\lupdateList",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_z_div_control_dialog.html#af31333e9a73a658c6fb164b40dd958e6"];
+  Node483 -> Node484 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node484 [label="WalletModel::listZerocoin\lMints",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a901e0b3c32c39bd3301d90f05255f442"];
+  Node484 -> Node485 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node485 [label="CWalletDB::ListMintedCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet_d_b.html#a906d7b97c6b94f4225957d576222bbb6"];
+}

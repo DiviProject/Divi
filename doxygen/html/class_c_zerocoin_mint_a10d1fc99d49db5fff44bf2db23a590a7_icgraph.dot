@@ -1,0 +1,17 @@
+digraph "CZerocoinMint::IsUsed"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node75 [label="CZerocoinMint::IsUsed",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node75 -> Node76 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node76 [label="CZerocoinMint::CZerocoinMint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_zerocoin_mint.html#a8afb621c6d895c04e2ebcdb66346e7cf"];
+  Node75 -> Node77 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node77 [label="CZerocoinMint::operator=",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_zerocoin_mint.html#a855136e027945ccacebc50745f1757fe"];
+  Node75 -> Node78 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node78 [label="CZerocoinMint::checkUnused",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_zerocoin_mint.html#a80abac803dd79861be847593d0664682"];
+  Node75 -> Node79 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node79 [label="CWallet::SpendZerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#aedd0ae4e683ee642272e170b7afd33fe"];
+  Node79 -> Node80 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node80 [label="spendzerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#adea64c692ec279a1a3a2c9143f264955"];
+}

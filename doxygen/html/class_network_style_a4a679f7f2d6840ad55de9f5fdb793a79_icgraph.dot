@@ -1,0 +1,9 @@
+digraph "NetworkStyle::getSplashImage"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node10 [label="NetworkStyle::getSplashImage",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node10 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="SplashScreen::SplashScreen",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_splash_screen.html#aa6f816612e26f1fec23e428b0f290c2d"];
+}

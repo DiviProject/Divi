@@ -1,0 +1,9 @@
+digraph "CChainParams::Zerocoin_Block_FirstFraudulent"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node247 [label="CChainParams::Zerocoin\l_Block_FirstFraudulent",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node247 -> Node248 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node248 [label="PopulateInvalidOutPointMap",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae7d38ec9b36061a4216d318d34dde6e2"];
+}

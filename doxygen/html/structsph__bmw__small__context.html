@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: sph_bmw_small_context Struct Reference</title>
+<title>DIVX: sph_bmw_small_context Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -69,36 +72,118 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>This structure is a context for BMW-224 and BMW-256 computations: it contains the intermediate values and some data from the last entered block.  
+ <a href="structsph__bmw__small__context.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="sph__bmw_8h_source.html">sph_bmw.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a5f1580ed6522ddbb529017d3ba68e7b5"><td class="memItemLeft" align="right" valign="top"><a id="a5f1580ed6522ddbb529017d3ba68e7b5"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>buf</b> [64]</td></tr>
+<tr class="memitem:a5f1580ed6522ddbb529017d3ba68e7b5"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__bmw__small__context.html#a5f1580ed6522ddbb529017d3ba68e7b5">buf</a> [64]</td></tr>
 <tr class="separator:a5f1580ed6522ddbb529017d3ba68e7b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3a10222d190e8421416d19330dc3629"><td class="memItemLeft" align="right" valign="top"><a id="ac3a10222d190e8421416d19330dc3629"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ptr</b></td></tr>
+<tr class="memitem:ac3a10222d190e8421416d19330dc3629"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__bmw__small__context.html#ac3a10222d190e8421416d19330dc3629">ptr</a></td></tr>
 <tr class="separator:ac3a10222d190e8421416d19330dc3629"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a764567f1e5b6b3e8f9b14d87735ea4d8"><td class="memItemLeft" align="right" valign="top"><a id="a764567f1e5b6b3e8f9b14d87735ea4d8"></a>
-sph_u32&#160;</td><td class="memItemRight" valign="bottom"><b>H</b> [16]</td></tr>
+<tr class="memitem:a764567f1e5b6b3e8f9b14d87735ea4d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__bmw__small__context.html#a764567f1e5b6b3e8f9b14d87735ea4d8">H</a> [16]</td></tr>
 <tr class="separator:a764567f1e5b6b3e8f9b14d87735ea4d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97ea70c252613bc1c1b41a862c8368ac"><td class="memItemLeft" align="right" valign="top"><a id="a97ea70c252613bc1c1b41a862c8368ac"></a>
-sph_u32&#160;</td><td class="memItemRight" valign="bottom"><b>bit_count_high</b></td></tr>
+<tr class="memitem:a97ea70c252613bc1c1b41a862c8368ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__bmw__small__context.html#a97ea70c252613bc1c1b41a862c8368ac">bit_count_high</a></td></tr>
 <tr class="separator:a97ea70c252613bc1c1b41a862c8368ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f4f38d96781dea1579d0e3320fa8968"><td class="memItemLeft" align="right" valign="top"><a id="a1f4f38d96781dea1579d0e3320fa8968"></a>
-sph_u32&#160;</td><td class="memItemRight" valign="bottom"><b>bit_count_low</b></td></tr>
+<tr class="memitem:a1f4f38d96781dea1579d0e3320fa8968"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__bmw__small__context.html#a1f4f38d96781dea1579d0e3320fa8968">bit_count_low</a></td></tr>
 <tr class="separator:a1f4f38d96781dea1579d0e3320fa8968"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This structure is a context for BMW-224 and BMW-256 computations: it contains the intermediate values and some data from the last entered block. Once a BMW computation has been performed, the context can be reused for another computation.</p>
-<p>The contents of this structure are private. A running BMW computation can be cloned by copying the context (e.g. with a simple <code>memcpy()</code>). </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>PIVX/src/crypto/<a class="el" href="sph__bmw_8h_source.html">sph_bmw.h</a></li>
+<div class="textblock"><p>This structure is a context for BMW-224 and BMW-256 computations: it contains the intermediate values and some data from the last entered block. </p>
+<p>Once a BMW computation has been performed, the context can be reused for another computation.</p>
+<p>The contents of this structure are private. A running BMW computation can be cloned by copying the context (e.g. with a simple <code><a class="el" href="glibc__compat_8cpp.html#a0f46826ab0466591e136db24394923cf">memcpy()</a></code>). </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__bmw_8h_source.html#l00080">80</a> of file <a class="el" href="sph__bmw_8h_source.html">sph_bmw.h</a>.</p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a97ea70c252613bc1c1b41a862c8368ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ea70c252613bc1c1b41a862c8368ac">&#9670;&nbsp;</a></span>bit_count_high</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a> sph_bmw_small_context::bit_count_high</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__bmw_8h_source.html#l00088">88</a> of file <a class="el" href="sph__bmw_8h_source.html">sph_bmw.h</a>.</p>
+
+</div>
+</div>
+<a id="a1f4f38d96781dea1579d0e3320fa8968"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f4f38d96781dea1579d0e3320fa8968">&#9670;&nbsp;</a></span>bit_count_low</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a> sph_bmw_small_context::bit_count_low</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__bmw_8h_source.html#l00088">88</a> of file <a class="el" href="sph__bmw_8h_source.html">sph_bmw.h</a>.</p>
+
+</div>
+</div>
+<a id="a5f1580ed6522ddbb529017d3ba68e7b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f1580ed6522ddbb529017d3ba68e7b5">&#9670;&nbsp;</a></span>buf</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char sph_bmw_small_context::buf[64]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__bmw_8h_source.html#l00082">82</a> of file <a class="el" href="sph__bmw_8h_source.html">sph_bmw.h</a>.</p>
+
+</div>
+</div>
+<a id="a764567f1e5b6b3e8f9b14d87735ea4d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a764567f1e5b6b3e8f9b14d87735ea4d8">&#9670;&nbsp;</a></span>H</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="sph__types_8h.html#abe306859da1253f97285b59a6d87a997">sph_u32</a> sph_bmw_small_context::H[16]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__bmw_8h_source.html#l00084">84</a> of file <a class="el" href="sph__bmw_8h_source.html">sph_bmw.h</a>.</p>
+
+</div>
+</div>
+<a id="ac3a10222d190e8421416d19330dc3629"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3a10222d190e8421416d19330dc3629">&#9670;&nbsp;</a></span>ptr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t sph_bmw_small_context::ptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="sph__bmw_8h_source.html#l00083">83</a> of file <a class="el" href="sph__bmw_8h_source.html">sph_bmw.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>src/crypto/<a class="el" href="sph__bmw_8h_source.html">sph_bmw.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:29 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

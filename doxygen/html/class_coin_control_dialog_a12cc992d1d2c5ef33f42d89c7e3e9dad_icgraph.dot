@@ -1,0 +1,35 @@
+digraph "CoinControlDialog::getMappedColumn"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node327 [label="CoinControlDialog::\lgetMappedColumn",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node327 -> Node328 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node328 [label="CoinControlDialog::\lsortView",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a9573211ed101522c9b4307a02b268e39"];
+  Node328 -> Node329 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node329 [label="CoinControlDialog::\lCoinControlDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a8eafb58ed1c5668af9a4890704136671"];
+  Node328 -> Node330 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node330 [label="CoinControlDialog::\lheaderSectionClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a00055d2685a3625cb1fc5f84e8cb0a05"];
+  Node330 -> Node329 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node328 -> Node331 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node331 [label="CoinControlDialog::\lupdateView",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#aadea33050e5c1efd5eae8d2fcfa721f9"];
+  Node331 -> Node332 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node332 [label="CoinControlDialog::\lsetModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a"];
+  Node332 -> Node333 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node333 [label="MultisigDialog::on\l_pushButtonCoinControl\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a3d21b360d294040f947ce6cc685dfdfa"];
+  Node332 -> Node334 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node334 [label="PrivacyDialog::coinControl\lButtonClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a16488c5d2fb41caedb18e9a6c1a376bb"];
+  Node334 -> Node335 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node335 [label="PrivacyDialog::PrivacyDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#ab7308b7ed5782dfa26fb1f216385207c"];
+  Node332 -> Node336 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node336 [label="SendCoinsDialog::coinControl\lButtonClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49"];
+  Node336 -> Node337 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node337 [label="SendCoinsDialog::SendCoins\lDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f"];
+  Node331 -> Node338 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node338 [label="CoinControlDialog::\lradioTreeMode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a1990d478f3ffba666c358a4f1bd395ec"];
+  Node338 -> Node329 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node331 -> Node339 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node339 [label="CoinControlDialog::\lradioListMode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a775c6d290cb63667a434b09072094533"];
+  Node339 -> Node329 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node327 -> Node330 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

@@ -1,0 +1,21 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node70 [label="QWidget",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node70 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="BitcoinAmountField",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_amount_field.html",tooltip="Widget for entering bitcoin amounts. "];
+  Node70 -> Node72 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node72 [label="MasternodeList",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_masternode_list.html",tooltip="Masternode Manager page widget. "];
+  Node70 -> Node73 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node73 [label="OverviewPage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_overview_page.html",tooltip="Overview (\"home\") page widget. "];
+  Node70 -> Node74 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node74 [label="ShutdownWindow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_shutdown_window.html",tooltip="\"Shutdown\" window "];
+  Node70 -> Node75 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 [label="SplashScreen",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_splash_screen.html",tooltip="Class for the splashscreen with information of the running client. "];
+  Node70 -> Node76 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node76 [label="TrafficGraphWidget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_traffic_graph_widget.html"];
+  Node70 -> Node77 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node77 [label="TransactionView",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_view.html",tooltip="Widget showing the transaction list for a wallet, including a filter row. "];
+}

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: org.bitcoin.NativeSecp256k1 Class Reference</title>
+<title>DIVX: org.bitcoin.NativeSecp256k1 Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -61,33 +64,84 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>org</b></li><li class="navelem"><b>bitcoin</b></li><li class="navelem"><a class="el" href="classorg_1_1bitcoin_1_1_native_secp256k1.html">NativeSecp256k1</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceorg.html">org</a></li><li class="navelem"><a class="el" href="namespaceorg_1_1bitcoin.html">bitcoin</a></li><li class="navelem"><a class="el" href="classorg_1_1bitcoin_1_1_native_secp256k1.html">NativeSecp256k1</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pri-static-methods">Static Private Member Functions</a> &#124;
+<a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="classorg_1_1bitcoin_1_1_native_secp256k1-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">org.bitcoin.NativeSecp256k1 Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>This class holds native methods to handle ECDSA verification.  
+ <a href="classorg_1_1bitcoin_1_1_native_secp256k1.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a7ff9dbab59c8cff4ce489651f045cd0a"><td class="memItemLeft" align="right" valign="top">static boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classorg_1_1bitcoin_1_1_native_secp256k1.html#a7ff9dbab59c8cff4ce489651f045cd0a">verify</a> (byte[] data, byte[] signature, byte[] pub)</td></tr>
+<tr class="memdesc:a7ff9dbab59c8cff4ce489651f045cd0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies the given secp256k1 signature in native code.  <a href="#a7ff9dbab59c8cff4ce489651f045cd0a">More...</a><br /></td></tr>
 <tr class="separator:a7ff9dbab59c8cff4ce489651f045cd0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a52e69585bc6f643505a508812f566a7d"><td class="memItemLeft" align="right" valign="top"><a id="a52e69585bc6f643505a508812f566a7d"></a>
-static final boolean&#160;</td><td class="memItemRight" valign="bottom"><b>enabled</b></td></tr>
+<tr class="memitem:a52e69585bc6f643505a508812f566a7d"><td class="memItemLeft" align="right" valign="top">static final boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classorg_1_1bitcoin_1_1_native_secp256k1.html#a52e69585bc6f643505a508812f566a7d">enabled</a></td></tr>
 <tr class="separator:a52e69585bc6f643505a508812f566a7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
+Static Private Member Functions</h2></td></tr>
+<tr class="memitem:a4e17ade799de36b0b823d0de80b78fad"><td class="memItemLeft" align="right" valign="top">static native int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classorg_1_1bitcoin_1_1_native_secp256k1.html#a4e17ade799de36b0b823d0de80b78fad">secp256k1_ecdsa_verify</a> (ByteBuffer byteBuff)</td></tr>
+<tr class="separator:a4e17ade799de36b0b823d0de80b78fad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
+Static Private Attributes</h2></td></tr>
+<tr class="memitem:a709957178cded2ef778ce97a83b78e51"><td class="memItemLeft" align="right" valign="top">static ThreadLocal&lt; ByteBuffer &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classorg_1_1bitcoin_1_1_native_secp256k1.html#a709957178cded2ef778ce97a83b78e51">nativeECDSABuffer</a> = new ThreadLocal&lt;ByteBuffer&gt;()</td></tr>
+<tr class="separator:a709957178cded2ef778ce97a83b78e51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This class holds native methods to handle ECDSA verification. You can find an example library that can be used for this at <a href="https://github.com/sipa/secp256k1">https://github.com/sipa/secp256k1</a> </p>
+<div class="textblock"><p>This class holds native methods to handle ECDSA verification. </p>
+<p>You can find an example library that can be used for this at <a href="https://github.com/sipa/secp256k1">https://github.com/sipa/secp256k1</a> </p>
+
+<p class="definition">Definition at line <a class="el" href="_native_secp256k1_8java_source.html#l00014">14</a> of file <a class="el" href="_native_secp256k1_8java_source.html">NativeSecp256k1.java</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a4e17ade799de36b0b823d0de80b78fad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e17ade799de36b0b823d0de80b78fad">&#9670;&nbsp;</a></span>secp256k1_ecdsa_verify()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static native int org.bitcoin.NativeSecp256k1.secp256k1_ecdsa_verify </td>
+          <td>(</td>
+          <td class="paramtype">ByteBuffer&#160;</td>
+          <td class="paramname"><em>byteBuff</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">byteBuff</td><td>signature format is byte[32] data, native-endian int signatureLength, native-endian int pubkeyLength, byte[signatureLength] signature, byte[pubkeyLength] pub </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 for valid signature, anything else for invalid </dd></dl>
+
+</div>
+</div>
 <a id="a7ff9dbab59c8cff4ce489651f045cd0a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7ff9dbab59c8cff4ce489651f045cd0a">&#9670;&nbsp;</a></span>verify()</h2>
 
@@ -127,7 +181,9 @@ static final boolean&#160;</td><td class="memItemRight" valign="bottom"><b>enabl
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Verifies the given secp256k1 signature in native code. Calling when enabled == false is undefined (probably library not loaded)</p>
+
+<p>Verifies the given secp256k1 signature in native code. </p>
+<p>Calling when enabled == false is undefined (probably library not loaded)</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>The data which was signed, must be exactly 32 bytes </td></tr>
@@ -137,15 +193,66 @@ static final boolean&#160;</td><td class="memItemRight" valign="bottom"><b>enabl
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_native_secp256k1_8java_source.html#l00035">35</a> of file <a class="el" href="_native_secp256k1_8java_source.html">NativeSecp256k1.java</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a52e69585bc6f643505a508812f566a7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52e69585bc6f643505a508812f566a7d">&#9670;&nbsp;</a></span>enabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">final boolean org.bitcoin.NativeSecp256k1.enabled</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_native_secp256k1_8java_source.html#l00015">15</a> of file <a class="el" href="_native_secp256k1_8java_source.html">NativeSecp256k1.java</a>.</p>
+
+</div>
+</div>
+<a id="a709957178cded2ef778ce97a83b78e51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a709957178cded2ef778ce97a83b78e51">&#9670;&nbsp;</a></span>nativeECDSABuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ThreadLocal&lt;ByteBuffer&gt; org.bitcoin.NativeSecp256k1.nativeECDSABuffer = new ThreadLocal&lt;ByteBuffer&gt;()</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_native_secp256k1_8java_source.html#l00026">26</a> of file <a class="el" href="_native_secp256k1_8java_source.html">NativeSecp256k1.java</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>PIVX/src/secp256k1/src/java/org/bitcoin/NativeSecp256k1.java</li>
+<li>src/secp256k1/src/java/org/bitcoin/<a class="el" href="_native_secp256k1_8java_source.html">NativeSecp256k1.java</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:29 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

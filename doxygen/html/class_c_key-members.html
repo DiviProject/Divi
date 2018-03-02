@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: Member List</title>
+<title>DIVX: Member List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -68,31 +71,35 @@ $(function() {
 
 <p>This is the complete list of members for <a class="el" href="class_c_key.html">CKey</a>, including all inherited members.</p>
 <table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>begin</b>() const (defined in <a class="el" href="class_c_key.html">CKey</a>)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_key.html#a625c363d9adfbd4dda22f3a67a898cf4">CheckSignatureElement</a>(const unsigned char *vch, int len, bool half)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a8f4ca910c7b7e729a3f2a5c59d060d3d">CKey</a>()</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_key.html#afcea34cefd25675f4cf9b03eaa4bb7d9">CKey</a>(const CKey &amp;secret)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a5166e6f49c17c3ad47ac0fa89305307b">Derive</a>(CKey &amp;keyChild, unsigned char ccChild[32], unsigned int nChild, const unsigned char cc[32]) const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>end</b>() const (defined in <a class="el" href="class_c_key.html">CKey</a>)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a91b6ecf71cc16e0b05ce79ec9276e729">GetPrivKey</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>GetPrivKey_256</b>() (defined in <a class="el" href="class_c_key.html">CKey</a>)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#aa1085c59603a62db6ec776300f250337">GetPubKey</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_key.html#a96b017433a65335775cf3807d73f85ce">IsCompressed</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a56e06c48d504a1a65e244e5fc35cdecc">IsValid</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_key.html#a141751588f8bfe5f1b6fc27f4e64b63f">Load</a>(CPrivKey &amp;privkey, CPubKey &amp;vchPubKey, bool fSkipCheck)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a9d12ed9d297e4286250fd7ea6b59e1a5">MakeNewKey</a>(bool fCompressed)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>operator==</b> (defined in <a class="el" href="class_c_key.html">CKey</a>)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#aaa13d5f08456bba094210c5eeabf64c8">Set</a>(const T pbegin, const T pend, bool fCompressedIn)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_key.html#aa62c082c9037565fce02b457cc335e7b">SetPrivKey</a>(const CPrivKey &amp;vchPrivKey, bool fCompressed)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#aa9b184a4a71d3e1a40aab360cf68e86c">Sign</a>(const uint256 &amp;hash, std::vector&lt; unsigned char &gt; &amp;vchSig, uint32_t test_case=0) const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_key.html#afe77d80889aa68e92e6882e75424cfb8">SignCompact</a>(const uint256 &amp;hash, std::vector&lt; unsigned char &gt; &amp;vchSig) const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a468a9a8cd148ab4a43e7d76bbdc78abe">size</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#ab8dee0ad9d933304a22284ee40040847">begin</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#acec869bc75fa8f4d619ab025d367a97c">Check</a>(const unsigned char *vch)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a625c363d9adfbd4dda22f3a67a898cf4">CheckSignatureElement</a>(const unsigned char *vch, int len, bool half)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#a8f4ca910c7b7e729a3f2a5c59d060d3d">CKey</a>()</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#afcea34cefd25675f4cf9b03eaa4bb7d9">CKey</a>(const CKey &amp;secret)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#a5166e6f49c17c3ad47ac0fa89305307b">Derive</a>(CKey &amp;keyChild, unsigned char ccChild[32], unsigned int nChild, const unsigned char cc[32]) const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a41c700c4a732672e4b7cc60d811dbf41">end</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#a9e5f8cac8811466c735d7af6f17a0dfe">fCompressed</a></td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a78cdd7f831519b5167f6c801f49fa977">fValid</a></td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#a91b6ecf71cc16e0b05ce79ec9276e729">GetPrivKey</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a2984be4b20b4873c440e846d8e5594e0">GetPrivKey_256</a>()</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#aa1085c59603a62db6ec776300f250337">GetPubKey</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a96b017433a65335775cf3807d73f85ce">IsCompressed</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#a56e06c48d504a1a65e244e5fc35cdecc">IsValid</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a141751588f8bfe5f1b6fc27f4e64b63f">Load</a>(CPrivKey &amp;privkey, CPubKey &amp;vchPubKey, bool fSkipCheck)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#a9d12ed9d297e4286250fd7ea6b59e1a5">MakeNewKey</a>(bool fCompressed)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a381efd9184dc467e73e690329c70371d">operator==</a>(const CKey &amp;a, const CKey &amp;b)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#aaa13d5f08456bba094210c5eeabf64c8">Set</a>(const T pbegin, const T pend, bool fCompressedIn)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#aa62c082c9037565fce02b457cc335e7b">SetPrivKey</a>(const CPrivKey &amp;vchPrivKey, bool fCompressed)</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#aa9b184a4a71d3e1a40aab360cf68e86c">Sign</a>(const uint256 &amp;hash, std::vector&lt; unsigned char &gt; &amp;vchSig, uint32_t test_case=0) const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#afe77d80889aa68e92e6882e75424cfb8">SignCompact</a>(const uint256 &amp;hash, std::vector&lt; unsigned char &gt; &amp;vchSig) const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_key.html#a468a9a8cd148ab4a43e7d76bbdc78abe">size</a>() const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a07f9e2b043670dfbaa9b7b4e782ed116">vch</a></td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_key.html#ac53425b8d0f89067bce781c485101b20">VerifyPubKey</a>(const CPubKey &amp;vchPubKey) const</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_key.html#a57d5b254748cef054c40f99c1c339147">~CKey</a>()</td><td class="entry"><a class="el" href="class_c_key.html">CKey</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:27 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

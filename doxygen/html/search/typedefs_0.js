@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keyvalpair',['KeyValPair',['../class_c_d_b_env.html#a53fd285f09c312973caa6f90b33937f5',1,'CDBEnv']]]
+  ['allocator_5ftype',['allocator_type',['../class_c_data_stream.html#a297dff00e40bb161aab89fde868ee7b1',1,'CDataStream']]]
 ];

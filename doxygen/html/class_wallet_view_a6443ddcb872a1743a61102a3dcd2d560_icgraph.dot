@@ -1,0 +1,9 @@
+digraph "WalletView::gotoSignMessageTab"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node138 [label="WalletView::gotoSignMessageTab",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node138 -> Node139 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node139 [label="WalletFrame::gotoSignMessageTab",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#a386b4f2e20af7d13a688662cd3f9e1fc",tooltip="Show Sign/Verify Message dialog and switch to sign message tab. "];
+}

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: COutPoint Class Reference</title>
+<title>DIVX: COutPoint Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -71,70 +74,555 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>An outpoint - a combination of a transaction hash and an index n into its vout.  
+ <a href="class_c_out_point.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="transaction_8h_source.html">transaction.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for COutPoint:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1dca427b8cabc8eefe9dc13757b6b475"><td class="memItemLeft" align="right" valign="top"><a id="a1dca427b8cabc8eefe9dc13757b6b475"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>COutPoint</b> (<a class="el" href="classuint256.html">uint256</a> hashIn, uint32_t nIn)</td></tr>
+<tr class="memitem:a4912217c2fe5e353d9f5546abb377e86"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#a4912217c2fe5e353d9f5546abb377e86">COutPoint</a> ()</td></tr>
+<tr class="separator:a4912217c2fe5e353d9f5546abb377e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dca427b8cabc8eefe9dc13757b6b475"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#a1dca427b8cabc8eefe9dc13757b6b475">COutPoint</a> (<a class="el" href="classuint256.html">uint256</a> hashIn, uint32_t nIn)</td></tr>
 <tr class="separator:a1dca427b8cabc8eefe9dc13757b6b475"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a171ccb3afa9bf9443a91e5ba3fdb911b"><td class="memTemplParams" colspan="2"><a id="a171ccb3afa9bf9443a91e5ba3fdb911b"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:a171ccb3afa9bf9443a91e5ba3fdb911b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:a171ccb3afa9bf9443a91e5ba3fdb911b"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:a171ccb3afa9bf9443a91e5ba3fdb911b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#a171ccb3afa9bf9443a91e5ba3fdb911b">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:a171ccb3afa9bf9443a91e5ba3fdb911b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa98ceceb3fc5f4d2c52033451ee8e251"><td class="memItemLeft" align="right" valign="top"><a id="aa98ceceb3fc5f4d2c52033451ee8e251"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetNull</b> ()</td></tr>
+<tr class="memitem:aa98ceceb3fc5f4d2c52033451ee8e251"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#aa98ceceb3fc5f4d2c52033451ee8e251">SetNull</a> ()</td></tr>
 <tr class="separator:aa98ceceb3fc5f4d2c52033451ee8e251"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1516581fa2234556761f04af3a207a6"><td class="memItemLeft" align="right" valign="top"><a id="ae1516581fa2234556761f04af3a207a6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsNull</b> () const</td></tr>
+<tr class="memitem:ae1516581fa2234556761f04af3a207a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#ae1516581fa2234556761f04af3a207a6">IsNull</a> () const</td></tr>
 <tr class="separator:ae1516581fa2234556761f04af3a207a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d3a8d27d7bec8290c14aa46e5179de4"><td class="memItemLeft" align="right" valign="top"><a id="a9d3a8d27d7bec8290c14aa46e5179de4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsMasternodeReward</b> (const <a class="el" href="class_c_transaction.html">CTransaction</a> *tx) const</td></tr>
+<tr class="memitem:a9d3a8d27d7bec8290c14aa46e5179de4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#a9d3a8d27d7bec8290c14aa46e5179de4">IsMasternodeReward</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> *tx) const</td></tr>
 <tr class="separator:a9d3a8d27d7bec8290c14aa46e5179de4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0026adab6a1098cf00de05c872fbb5d"><td class="memItemLeft" align="right" valign="top"><a id="ab0026adab6a1098cf00de05c872fbb5d"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToString</b> () const</td></tr>
+<tr class="memitem:ab0026adab6a1098cf00de05c872fbb5d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#ab0026adab6a1098cf00de05c872fbb5d">ToString</a> () const</td></tr>
 <tr class="separator:ab0026adab6a1098cf00de05c872fbb5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85f13609edc1f66afe82fb68f28fb8b7"><td class="memItemLeft" align="right" valign="top"><a id="a85f13609edc1f66afe82fb68f28fb8b7"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToStringShort</b> () const</td></tr>
+<tr class="memitem:a85f13609edc1f66afe82fb68f28fb8b7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#a85f13609edc1f66afe82fb68f28fb8b7">ToStringShort</a> () const</td></tr>
 <tr class="separator:a85f13609edc1f66afe82fb68f28fb8b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad27bc2d181d21a921e6811d24203c6bb"><td class="memItemLeft" align="right" valign="top"><a id="ad27bc2d181d21a921e6811d24203c6bb"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GetHash</b> ()</td></tr>
+<tr class="memitem:ad27bc2d181d21a921e6811d24203c6bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#ad27bc2d181d21a921e6811d24203c6bb">GetHash</a> ()</td></tr>
 <tr class="separator:ad27bc2d181d21a921e6811d24203c6bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:af131c7194a660558b0ff158f4efa7a28"><td class="memItemLeft" align="right" valign="top"><a id="af131c7194a660558b0ff158f4efa7a28"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hash</b></td></tr>
+<tr class="memitem:af131c7194a660558b0ff158f4efa7a28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#af131c7194a660558b0ff158f4efa7a28">hash</a></td></tr>
 <tr class="separator:af131c7194a660558b0ff158f4efa7a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b857e3a0412ff741da2c9f8defe315c"><td class="memItemLeft" align="right" valign="top"><a id="a1b857e3a0412ff741da2c9f8defe315c"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>n</b></td></tr>
+<tr class="memitem:a1b857e3a0412ff741da2c9f8defe315c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#a1b857e3a0412ff741da2c9f8defe315c">n</a></td></tr>
 <tr class="separator:a1b857e3a0412ff741da2c9f8defe315c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac025da4b121ed1bca9a4d88bcb9d3a90"><td class="memItemLeft" align="right" valign="top"><a id="ac025da4b121ed1bca9a4d88bcb9d3a90"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:ac025da4b121ed1bca9a4d88bcb9d3a90"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#ac025da4b121ed1bca9a4d88bcb9d3a90">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:ac025da4b121ed1bca9a4d88bcb9d3a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a83395b7e70479c621c95e1a0d7f2497c"><td class="memItemLeft" align="right" valign="top"><a id="a83395b7e70479c621c95e1a0d7f2497c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;a, const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;b)</td></tr>
+<tr class="memitem:a83395b7e70479c621c95e1a0d7f2497c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#a83395b7e70479c621c95e1a0d7f2497c">operator&lt;</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;a, const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;<a class="el" href="field__5x52__asm__impl_8h.html#a3918a949ba563f8dbca32d694798b56a">b</a>)</td></tr>
 <tr class="separator:a83395b7e70479c621c95e1a0d7f2497c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30d4f5afdf664bb4ea5a3496bbc2bd12"><td class="memItemLeft" align="right" valign="top"><a id="a30d4f5afdf664bb4ea5a3496bbc2bd12"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;a, const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;b)</td></tr>
+<tr class="memitem:a30d4f5afdf664bb4ea5a3496bbc2bd12"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#a30d4f5afdf664bb4ea5a3496bbc2bd12">operator==</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;a, const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;<a class="el" href="field__5x52__asm__impl_8h.html#a3918a949ba563f8dbca32d694798b56a">b</a>)</td></tr>
 <tr class="separator:a30d4f5afdf664bb4ea5a3496bbc2bd12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a212e1733899b0444f0e4e1e3deae33b1"><td class="memItemLeft" align="right" valign="top"><a id="a212e1733899b0444f0e4e1e3deae33b1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;a, const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;b)</td></tr>
+<tr class="memitem:a212e1733899b0444f0e4e1e3deae33b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_out_point.html#a212e1733899b0444f0e4e1e3deae33b1">operator!=</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;a, const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;<a class="el" href="field__5x52__asm__impl_8h.html#a3918a949ba563f8dbca32d694798b56a">b</a>)</td></tr>
 <tr class="separator:a212e1733899b0444f0e4e1e3deae33b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>An outpoint - a combination of a transaction hash and an index n into its vout </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/primitives/<a class="el" href="transaction_8h_source.html">transaction.h</a></li>
-<li>PIVX/src/primitives/transaction.cpp</li>
+<div class="textblock"><p>An outpoint - a combination of a transaction hash and an index n into its vout. </p>
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00020">20</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a4912217c2fe5e353d9f5546abb377e86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4912217c2fe5e353d9f5546abb377e86">&#9670;&nbsp;</a></span>COutPoint() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">COutPoint::COutPoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00026">26</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a1dca427b8cabc8eefe9dc13757b6b475"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dca427b8cabc8eefe9dc13757b6b475">&#9670;&nbsp;</a></span>COutPoint() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">COutPoint::COutPoint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classuint256.html">uint256</a>&#160;</td>
+          <td class="paramname"><em>hashIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>nIn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00027">27</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad27bc2d181d21a921e6811d24203c6bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad27bc2d181d21a921e6811d24203c6bb">&#9670;&nbsp;</a></span>GetHash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> COutPoint::GetHash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8cpp_source.html#l00031">31</a> of file <a class="el" href="transaction_8cpp_source.html">transaction.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9d3a8d27d7bec8290c14aa46e5179de4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d3a8d27d7bec8290c14aa46e5179de4">&#9670;&nbsp;</a></span>IsMasternodeReward()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool COutPoint::IsMasternodeReward </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_transaction.html">CTransaction</a> *&#160;</td>
+          <td class="paramname"><em>tx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8cpp_source.html#l00075">75</a> of file <a class="el" href="transaction_8cpp_source.html">transaction.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae1516581fa2234556761f04af3a207a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1516581fa2234556761f04af3a207a6">&#9670;&nbsp;</a></span>IsNull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool COutPoint::IsNull </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00037">37</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a171ccb3afa9bf9443a91e5ba3fdb911b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a171ccb3afa9bf9443a91e5ba3fdb911b">&#9670;&nbsp;</a></span>SerializationOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream , typename Operation &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void COutPoint::SerializationOp </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Operation&#160;</td>
+          <td class="paramname"><em>ser_action</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00032">32</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+
+</div>
+</div>
+<a id="aa98ceceb3fc5f4d2c52033451ee8e251"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa98ceceb3fc5f4d2c52033451ee8e251">&#9670;&nbsp;</a></span>SetNull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void COutPoint::SetNull </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00036">36</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ab0026adab6a1098cf00de05c872fbb5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0026adab6a1098cf00de05c872fbb5d">&#9670;&nbsp;</a></span>ToString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string COutPoint::ToString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8cpp_source.html#l00021">21</a> of file <a class="el" href="transaction_8cpp_source.html">transaction.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 9 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 10 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a85f13609edc1f66afe82fb68f28fb8b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85f13609edc1f66afe82fb68f28fb8b7">&#9670;&nbsp;</a></span>ToStringShort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string COutPoint::ToStringShort </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8cpp_source.html#l00026">26</a> of file <a class="el" href="transaction_8cpp_source.html">transaction.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 11 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 12 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="a212e1733899b0444f0e4e1e3deae33b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a212e1733899b0444f0e4e1e3deae33b1">&#9670;&nbsp;</a></span>operator!=</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00050">50</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+
+</div>
+</div>
+<a id="a83395b7e70479c621c95e1a0d7f2497c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83395b7e70479c621c95e1a0d7f2497c">&#9670;&nbsp;</a></span>operator&lt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator&lt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00040">40</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+
+</div>
+</div>
+<a id="a30d4f5afdf664bb4ea5a3496bbc2bd12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30d4f5afdf664bb4ea5a3496bbc2bd12">&#9670;&nbsp;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00045">45</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ac025da4b121ed1bca9a4d88bcb9d3a90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac025da4b121ed1bca9a4d88bcb9d3a90">&#9670;&nbsp;</a></span>ADD_SERIALIZE_METHODS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">COutPoint::ADD_SERIALIZE_METHODS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00029">29</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+
+</div>
+</div>
+<a id="af131c7194a660558b0ff158f4efa7a28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af131c7194a660558b0ff158f4efa7a28">&#9670;&nbsp;</a></span>hash</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> COutPoint::hash</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00023">23</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+
+</div>
+</div>
+<a id="a1b857e3a0412ff741da2c9f8defe315c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b857e3a0412ff741da2c9f8defe315c">&#9670;&nbsp;</a></span>n</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t COutPoint::n</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="transaction_8h_source.html#l00024">24</a> of file <a class="el" href="transaction_8h_source.html">transaction.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>src/primitives/<a class="el" href="transaction_8h_source.html">transaction.h</a></li>
+<li>src/primitives/<a class="el" href="transaction_8cpp_source.html">transaction.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:27 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

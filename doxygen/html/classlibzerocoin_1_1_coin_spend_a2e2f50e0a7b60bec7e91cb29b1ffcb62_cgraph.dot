@@ -1,0 +1,17 @@
+digraph "libzerocoin::CoinSpend::signatureHash"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node48 [label="libzerocoin::CoinSpend\l::signatureHash",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node48 -> Node49 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node49 [label="CHashWriter::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a"];
+  Node49 -> Node50 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node50 [label="CHash256::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash256.html#aa8a70c1b7cf24ce7d00240a1131cf4e7"];
+  Node50 -> Node51 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node51 [label="CSHA256::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a4259230be0caefa590bc324fc12b9b90"];
+  Node50 -> Node52 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node52 [label="CSHA256::Reset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a2122395dd5604990eaa0077b43a0e8d4"];
+  Node50 -> Node53 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node53 [label="CSHA256::Write",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a9d7de520a562655da85349372820c883"];
+}

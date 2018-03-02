@@ -1,0 +1,45 @@
+digraph "CheckForkWarningConditionsOnNewFork"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node333 [label="CheckForkWarningConditions\lOnNewFork",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node333 -> Node334 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node334 [label="CChain::Tip",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#a40ccefec14f8f3195c08c827af8cf412",tooltip="Returns the index entry for the tip of this chain, or NULL if none. "];
+  Node334 -> Node335 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node335 [label="CBlockIndex::IsProofOfStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a2438a891e9d43821c0d99e1bdac56fde"];
+  Node333 -> Node336 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node336 [label="GetBlockProof",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pow_8cpp.html#a86d90ce055fbc9c67d2d600813f2ca4f"];
+  Node336 -> Node337 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node337 [label="uint256::SetCompact",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classuint256.html#a54bc91c8535c43f881bba1fdb11ca7fa",tooltip="The \"compact\" format is a representation of a whole number N using an unsigned 32bit number similar t..."];
+  Node333 -> Node338 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node338 [label="CChain::Height",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#ad4758bc8872ce065a9579f77c3171d40",tooltip="Return the maximal height in the chain. "];
+  Node333 -> Node339 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node339 [label="CheckForkWarningConditions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a730d390bfb0df0e54a5c2ddb901e748a"];
+  Node339 -> Node340 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node340 [label="IsInitialBlockDownload",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a5edcd96316574fd4a7f3ae0922a5cfd6",tooltip="Check whether we are doing an initial block download (synchronizing from disk or network) ..."];
+  Node340 -> Node338 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node340 -> Node341 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node341 [label="Checkpoints::GetTotalBlocks\lEstimate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_checkpoints.html#ac4dc0a0ba00009be52fee3eef694c2c0",tooltip="Return conservative estimate of total number of blocks, 0 if unknown. "];
+  Node341 -> Node342 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node342 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node341 -> Node343 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node343 [label="CChainParams::Checkpoints",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html#aba314e7660492aee43812344fa796d6c"];
+  Node340 -> Node344 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node344 [label="CBlockIndex::GetBlockTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a9fe0d4463c07c466f66252e8eec25f5c"];
+  Node340 -> Node345 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node345 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node339 -> Node338 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node339 -> Node334 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node339 -> Node336 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node339 -> Node346 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node346 [label="base_uint::ToString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#acccba4d9d51a0c36261718ca0cbb293b"];
+  Node339 -> Node347 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node347 [label="CAlert::Notify",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_alert.html#a3da23857c8ed275621ee032a703c04a1"];
+  Node347 -> Node348 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node348 [label="GetArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a24f685720bf40370e5bd2a192ad50cd8",tooltip="Return string argument or default value. "];
+  Node347 -> Node349 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node349 [label="SanitizeString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilstrencodings_8cpp.html#ae204f01eeaadc5a85015a51f369a8356"];
+  Node347 -> Node350 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node350 [label="runCommand",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#adf94c00a5ac719c92a2f1bb2f8b2167f"];
+}

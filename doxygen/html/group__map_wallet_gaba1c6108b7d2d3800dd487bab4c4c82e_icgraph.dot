@@ -1,0 +1,44 @@
+digraph "CWallet::IsChange"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node557 [label="CWallet::IsChange",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node557 -> Node558 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node558 [label="WalletModel::listCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#ae5ce26bba42701b45de766ef11cc9a47"];
+  Node558 -> Node559 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node559 [label="CoinControlDialog::\lupdateView",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#aadea33050e5c1efd5eae8d2fcfa721f9"];
+  Node559 -> Node560 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node560 [label="CoinControlDialog::\lsetModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a"];
+  Node560 -> Node561 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node561 [label="MultisigDialog::on\l_pushButtonCoinControl\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a3d21b360d294040f947ce6cc685dfdfa"];
+  Node560 -> Node562 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node562 [label="PrivacyDialog::coinControl\lButtonClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a16488c5d2fb41caedb18e9a6c1a376bb"];
+  Node562 -> Node563 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node563 [label="PrivacyDialog::PrivacyDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#ab7308b7ed5782dfa26fb1f216385207c"];
+  Node560 -> Node564 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node564 [label="SendCoinsDialog::coinControl\lButtonClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49"];
+  Node564 -> Node565 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node565 [label="SendCoinsDialog::SendCoins\lDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f"];
+  Node559 -> Node566 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node566 [label="CoinControlDialog::\lradioTreeMode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a1990d478f3ffba666c358a4f1bd395ec"];
+  Node566 -> Node567 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node567 [label="CoinControlDialog::\lCoinControlDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a8eafb58ed1c5668af9a4890704136671"];
+  Node559 -> Node568 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node568 [label="CoinControlDialog::\lradioListMode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a775c6d290cb63667a434b09072094533"];
+  Node568 -> Node567 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node557 -> Node569 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node569 [label="CWallet::GetAddressGroupings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#ga8eacbac6ad3697d90b98dfe02632f8ef"];
+  Node569 -> Node570 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node570 [label="listaddressgroupings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a6be618acd7a7b1fb454dacbf24294317"];
+  Node557 -> Node571 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node571 [label="CWallet::GetChange",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#ac1abe6ee00d6a8f20e92e164c423a6d5"];
+  Node571 -> Node572 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node572 [label="CWallet::GetChange",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#a3e9a088a7b6b77edd7a0f80ed246eb58"];
+  Node571 -> Node573 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node573 [label="CWalletTx::GetChange",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet_tx.html#a714fe72284e4cc436d84f751a9a7aa60"];
+  Node573 -> Node574 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node574 [label="TransactionDesc::toHTML",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_desc.html#ab7c9dbb2048aae121dd9d75df86e64f4"];
+  Node574 -> Node575 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node575 [label="TransactionTablePriv\l::describe",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_table_priv.html#ab08d44e16bf6dd95b5b83959b3013780"];
+}

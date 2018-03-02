@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CAddrInfo Class Reference</title>
+<title>DIVX: CAddrInfo Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -64,6 +67,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="class_c_addr_info-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -71,294 +75,819 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Extended statistics about a <a class="el" href="class_c_address.html" title="A CService with information about it as peer. ">CAddress</a>.  
+ <a href="class_c_addr_info.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="addrman_8h_source.html">addrman.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for CAddrInfo:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_c_addr_info.png" usemap="#CAddrInfo_map" alt=""/>
-  <map id="CAddrInfo_map" name="CAddrInfo_map">
-<area href="class_c_address.html" alt="CAddress" shape="rect" coords="0,112,70,136"/>
-<area href="class_c_service.html" alt="CService" shape="rect" coords="0,56,70,80"/>
-<area href="class_c_net_addr.html" alt="CNetAddr" shape="rect" coords="0,0,70,24"/>
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for CAddrInfo:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae80fdec7d3b48278033ea2280f66e68b"><td class="memTemplParams" colspan="2"><a id="ae80fdec7d3b48278033ea2280f66e68b"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:ae80fdec7d3b48278033ea2280f66e68b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:ae80fdec7d3b48278033ea2280f66e68b"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:ae80fdec7d3b48278033ea2280f66e68b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#ae80fdec7d3b48278033ea2280f66e68b">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:ae80fdec7d3b48278033ea2280f66e68b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1df1f12bc71ed7f3debae61058b9b9f"><td class="memItemLeft" align="right" valign="top"><a id="af1df1f12bc71ed7f3debae61058b9b9f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> ()</td></tr>
+<tr class="memitem:af1df1f12bc71ed7f3debae61058b9b9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#af1df1f12bc71ed7f3debae61058b9b9f">Init</a> ()</td></tr>
 <tr class="separator:af1df1f12bc71ed7f3debae61058b9b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27e773233e8d7e7d183f138d24cc40ef"><td class="memItemLeft" align="right" valign="top"><a id="a27e773233e8d7e7d183f138d24cc40ef"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CAddrInfo</b> (const <a class="el" href="class_c_address.html">CAddress</a> &amp;addrIn, const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;addrSource)</td></tr>
+<tr class="memitem:a27e773233e8d7e7d183f138d24cc40ef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a27e773233e8d7e7d183f138d24cc40ef">CAddrInfo</a> (const <a class="el" href="class_c_address.html">CAddress</a> &amp;addrIn, const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;addrSource)</td></tr>
 <tr class="separator:a27e773233e8d7e7d183f138d24cc40ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11e2712f11c0d92c75976e90f2c5003e"><td class="memItemLeft" align="right" valign="top"><a id="a11e2712f11c0d92c75976e90f2c5003e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a11e2712f11c0d92c75976e90f2c5003e">GetTriedBucket</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;nKey) const</td></tr>
-<tr class="memdesc:a11e2712f11c0d92c75976e90f2c5003e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate in which "tried" bucket this entry belongs. <br /></td></tr>
+<tr class="memitem:ae14c3a91bb669e5580be1d3767264187"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#ae14c3a91bb669e5580be1d3767264187">CAddrInfo</a> ()</td></tr>
+<tr class="separator:ae14c3a91bb669e5580be1d3767264187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11e2712f11c0d92c75976e90f2c5003e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a11e2712f11c0d92c75976e90f2c5003e">GetTriedBucket</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;nKey) const</td></tr>
+<tr class="memdesc:a11e2712f11c0d92c75976e90f2c5003e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate in which "tried" bucket this entry belongs.  <a href="#a11e2712f11c0d92c75976e90f2c5003e">More...</a><br /></td></tr>
 <tr class="separator:a11e2712f11c0d92c75976e90f2c5003e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4459cd7719834bbcf77874757c6875e"><td class="memItemLeft" align="right" valign="top"><a id="ae4459cd7719834bbcf77874757c6875e"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#ae4459cd7719834bbcf77874757c6875e">GetNewBucket</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;nKey, const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;src) const</td></tr>
-<tr class="memdesc:ae4459cd7719834bbcf77874757c6875e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate in which "new" bucket this entry belongs, given a certain source. <br /></td></tr>
+<tr class="memitem:ae4459cd7719834bbcf77874757c6875e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#ae4459cd7719834bbcf77874757c6875e">GetNewBucket</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;nKey, const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;src) const</td></tr>
+<tr class="memdesc:ae4459cd7719834bbcf77874757c6875e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate in which "new" bucket this entry belongs, given a certain source.  <a href="#ae4459cd7719834bbcf77874757c6875e">More...</a><br /></td></tr>
 <tr class="separator:ae4459cd7719834bbcf77874757c6875e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04ac79764971242edce1e82aefb2aea0"><td class="memItemLeft" align="right" valign="top"><a id="a04ac79764971242edce1e82aefb2aea0"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a04ac79764971242edce1e82aefb2aea0">GetNewBucket</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;nKey) const</td></tr>
-<tr class="memdesc:a04ac79764971242edce1e82aefb2aea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate in which "new" bucket this entry belongs, using its default source. <br /></td></tr>
+<tr class="memitem:a04ac79764971242edce1e82aefb2aea0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a04ac79764971242edce1e82aefb2aea0">GetNewBucket</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;nKey) const</td></tr>
+<tr class="memdesc:a04ac79764971242edce1e82aefb2aea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate in which "new" bucket this entry belongs, using its default source.  <a href="#a04ac79764971242edce1e82aefb2aea0">More...</a><br /></td></tr>
 <tr class="separator:a04ac79764971242edce1e82aefb2aea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a133ffb3fbf67cbeb5f4bc683fa9126"><td class="memItemLeft" align="right" valign="top"><a id="a3a133ffb3fbf67cbeb5f4bc683fa9126"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a3a133ffb3fbf67cbeb5f4bc683fa9126">GetBucketPosition</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;nKey, bool fNew, int nBucket) const</td></tr>
-<tr class="memdesc:a3a133ffb3fbf67cbeb5f4bc683fa9126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate in which position of a bucket to store this entry. <br /></td></tr>
+<tr class="memitem:a3a133ffb3fbf67cbeb5f4bc683fa9126"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a3a133ffb3fbf67cbeb5f4bc683fa9126">GetBucketPosition</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;nKey, bool fNew, int nBucket) const</td></tr>
+<tr class="memdesc:a3a133ffb3fbf67cbeb5f4bc683fa9126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate in which position of a bucket to store this entry.  <a href="#a3a133ffb3fbf67cbeb5f4bc683fa9126">More...</a><br /></td></tr>
 <tr class="separator:a3a133ffb3fbf67cbeb5f4bc683fa9126"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a600725db90b879aee92128a3409af8aa"><td class="memItemLeft" align="right" valign="top"><a id="a600725db90b879aee92128a3409af8aa"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a600725db90b879aee92128a3409af8aa">IsTerrible</a> (int64_t nNow=GetAdjustedTime()) const</td></tr>
-<tr class="memdesc:a600725db90b879aee92128a3409af8aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the statistics about this entry are bad enough so that it can just be deleted. <br /></td></tr>
+<tr class="memitem:a600725db90b879aee92128a3409af8aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a600725db90b879aee92128a3409af8aa">IsTerrible</a> (int64_t nNow=<a class="el" href="timedata_8h.html#a09f81b9c7650f898cf3cf305b87547e6">GetAdjustedTime</a>()) const</td></tr>
+<tr class="memdesc:a600725db90b879aee92128a3409af8aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine whether the statistics about this entry are bad enough so that it can just be deleted.  <a href="#a600725db90b879aee92128a3409af8aa">More...</a><br /></td></tr>
 <tr class="separator:a600725db90b879aee92128a3409af8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6788fe5a5364e63896ab9dedb8e5d40"><td class="memItemLeft" align="right" valign="top"><a id="af6788fe5a5364e63896ab9dedb8e5d40"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#af6788fe5a5364e63896ab9dedb8e5d40">GetChance</a> (int64_t nNow=GetAdjustedTime()) const</td></tr>
-<tr class="memdesc:af6788fe5a5364e63896ab9dedb8e5d40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the relative chance this entry should be given when selecting nodes to connect to. <br /></td></tr>
+<tr class="memitem:af6788fe5a5364e63896ab9dedb8e5d40"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#af6788fe5a5364e63896ab9dedb8e5d40">GetChance</a> (int64_t nNow=<a class="el" href="timedata_8h.html#a09f81b9c7650f898cf3cf305b87547e6">GetAdjustedTime</a>()) const</td></tr>
+<tr class="memdesc:af6788fe5a5364e63896ab9dedb8e5d40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the relative chance this entry should be given when selecting nodes to connect to.  <a href="#af6788fe5a5364e63896ab9dedb8e5d40">More...</a><br /></td></tr>
 <tr class="separator:af6788fe5a5364e63896ab9dedb8e5d40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_c_address"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_c_address')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_c_address.html">CAddress</a></td></tr>
-<tr class="memitem:a806e75f363ec49bfab92a686a8774ac3 inherit pub_methods_class_c_address"><td class="memItemLeft" align="right" valign="top"><a id="a806e75f363ec49bfab92a686a8774ac3"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CAddress</b> (<a class="el" href="class_c_service.html">CService</a> ipIn, uint64_t nServicesIn=NODE_NETWORK)</td></tr>
+<tr class="memitem:a84cd336180580ab69b8888a4339ccc37 inherit pub_methods_class_c_address"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_address.html#a84cd336180580ab69b8888a4339ccc37">CAddress</a> ()</td></tr>
+<tr class="separator:a84cd336180580ab69b8888a4339ccc37 inherit pub_methods_class_c_address"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a806e75f363ec49bfab92a686a8774ac3 inherit pub_methods_class_c_address"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_address.html#a806e75f363ec49bfab92a686a8774ac3">CAddress</a> (<a class="el" href="class_c_service.html">CService</a> ipIn, uint64_t nServicesIn=<a class="el" href="protocol_8h.html#a05589fbab0657f08285ebdfe93f5ec9ea9d1154f0e7e56f183a5c8373abe2e86c">NODE_NETWORK</a>)</td></tr>
 <tr class="separator:a806e75f363ec49bfab92a686a8774ac3 inherit pub_methods_class_c_address"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac060c84dcf47b8ccfae0142c9b29a243 inherit pub_methods_class_c_address"><td class="memItemLeft" align="right" valign="top"><a id="ac060c84dcf47b8ccfae0142c9b29a243"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> ()</td></tr>
+<tr class="memitem:ac060c84dcf47b8ccfae0142c9b29a243 inherit pub_methods_class_c_address"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_address.html#ac060c84dcf47b8ccfae0142c9b29a243">Init</a> ()</td></tr>
 <tr class="separator:ac060c84dcf47b8ccfae0142c9b29a243 inherit pub_methods_class_c_address"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec10c7075404eefbcf6f7a4c5671be02 inherit pub_methods_class_c_address"><td class="memTemplParams" colspan="2"><a id="aec10c7075404eefbcf6f7a4c5671be02"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:aec10c7075404eefbcf6f7a4c5671be02 inherit pub_methods_class_c_address"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:aec10c7075404eefbcf6f7a4c5671be02 inherit pub_methods_class_c_address"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:aec10c7075404eefbcf6f7a4c5671be02 inherit pub_methods_class_c_address"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_address.html#aec10c7075404eefbcf6f7a4c5671be02">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:aec10c7075404eefbcf6f7a4c5671be02 inherit pub_methods_class_c_address"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_c_service"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_c_service')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_c_service.html">CService</a></td></tr>
-<tr class="memitem:a43a0d18387ce3837d48020da47a1087c inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a43a0d18387ce3837d48020da47a1087c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CService</b> (const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;ip, unsigned short port)</td></tr>
+<tr class="memitem:a3003da1c50f2135123ebb3109340b9b2 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a3003da1c50f2135123ebb3109340b9b2">CService</a> ()</td></tr>
+<tr class="separator:a3003da1c50f2135123ebb3109340b9b2 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43a0d18387ce3837d48020da47a1087c inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a43a0d18387ce3837d48020da47a1087c">CService</a> (const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;<a class="el" href="class_c_net_addr.html#acff7ce68f33f8dfbfe6d79d80928d417">ip</a>, unsigned short <a class="el" href="class_c_service.html#aef17734203dc2125cbdf4d23e50be410">port</a>)</td></tr>
 <tr class="separator:a43a0d18387ce3837d48020da47a1087c inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fcc14e589f6d3e92b43707a5f71368f inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a1fcc14e589f6d3e92b43707a5f71368f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CService</b> (const struct in_addr &amp;ipv4Addr, unsigned short port)</td></tr>
+<tr class="memitem:a1fcc14e589f6d3e92b43707a5f71368f inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a1fcc14e589f6d3e92b43707a5f71368f">CService</a> (const struct in_addr &amp;ipv4Addr, unsigned short <a class="el" href="class_c_service.html#aef17734203dc2125cbdf4d23e50be410">port</a>)</td></tr>
 <tr class="separator:a1fcc14e589f6d3e92b43707a5f71368f inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa54fd9204530445647cd3d45056881e9 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="aa54fd9204530445647cd3d45056881e9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CService</b> (const struct sockaddr_in &amp;addr)</td></tr>
+<tr class="memitem:aa54fd9204530445647cd3d45056881e9 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#aa54fd9204530445647cd3d45056881e9">CService</a> (const struct sockaddr_in &amp;addr)</td></tr>
 <tr class="separator:aa54fd9204530445647cd3d45056881e9 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75b2a3cfa16642b0fcd74382203a9fdc inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a75b2a3cfa16642b0fcd74382203a9fdc"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CService</b> (const char *pszIpPort, int portDefault, bool fAllowLookup=false)</td></tr>
+<tr class="memitem:a75b2a3cfa16642b0fcd74382203a9fdc inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a75b2a3cfa16642b0fcd74382203a9fdc">CService</a> (const char *pszIpPort, int portDefault, bool fAllowLookup=false)</td></tr>
 <tr class="separator:a75b2a3cfa16642b0fcd74382203a9fdc inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8f5f4ae4e99a4edad8ba48642e36137 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="ab8f5f4ae4e99a4edad8ba48642e36137"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CService</b> (const char *pszIpPort, bool fAllowLookup=false)</td></tr>
+<tr class="memitem:ab8f5f4ae4e99a4edad8ba48642e36137 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#ab8f5f4ae4e99a4edad8ba48642e36137">CService</a> (const char *pszIpPort, bool fAllowLookup=false)</td></tr>
 <tr class="separator:ab8f5f4ae4e99a4edad8ba48642e36137 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a677f74b3520148f3e47a19bb9986922b inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a677f74b3520148f3e47a19bb9986922b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CService</b> (const std::string &amp;strIpPort, int portDefault, bool fAllowLookup=false)</td></tr>
+<tr class="memitem:a677f74b3520148f3e47a19bb9986922b inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a677f74b3520148f3e47a19bb9986922b">CService</a> (const std::string &amp;strIpPort, int portDefault, bool fAllowLookup=false)</td></tr>
 <tr class="separator:a677f74b3520148f3e47a19bb9986922b inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19a7a713dd9a30b2f78260e61d9a2604 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a19a7a713dd9a30b2f78260e61d9a2604"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CService</b> (const std::string &amp;strIpPort, bool fAllowLookup=false)</td></tr>
+<tr class="memitem:a19a7a713dd9a30b2f78260e61d9a2604 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a19a7a713dd9a30b2f78260e61d9a2604">CService</a> (const std::string &amp;strIpPort, bool fAllowLookup=false)</td></tr>
 <tr class="separator:a19a7a713dd9a30b2f78260e61d9a2604 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee07d7f18e672f16d26359e3cab779ff inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="aee07d7f18e672f16d26359e3cab779ff"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> ()</td></tr>
+<tr class="memitem:aee07d7f18e672f16d26359e3cab779ff inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#aee07d7f18e672f16d26359e3cab779ff">Init</a> ()</td></tr>
 <tr class="separator:aee07d7f18e672f16d26359e3cab779ff inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dedc3f12aa21bdbf1068b054d3e3d39 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a3dedc3f12aa21bdbf1068b054d3e3d39"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetPort</b> (unsigned short portIn)</td></tr>
+<tr class="memitem:a3dedc3f12aa21bdbf1068b054d3e3d39 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a3dedc3f12aa21bdbf1068b054d3e3d39">SetPort</a> (unsigned short portIn)</td></tr>
 <tr class="separator:a3dedc3f12aa21bdbf1068b054d3e3d39 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71caa0d6aa6ab12758bde8b6a6bcfd2a inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a71caa0d6aa6ab12758bde8b6a6bcfd2a"></a>
-unsigned short&#160;</td><td class="memItemRight" valign="bottom"><b>GetPort</b> () const</td></tr>
+<tr class="memitem:a71caa0d6aa6ab12758bde8b6a6bcfd2a inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">unsigned short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a71caa0d6aa6ab12758bde8b6a6bcfd2a">GetPort</a> () const</td></tr>
 <tr class="separator:a71caa0d6aa6ab12758bde8b6a6bcfd2a inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4c6d655fab3af40937f0b0c65581745 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="ac4c6d655fab3af40937f0b0c65581745"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>GetSockAddr</b> (struct sockaddr *paddr, socklen_t *addrlen) const</td></tr>
+<tr class="memitem:ac4c6d655fab3af40937f0b0c65581745 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#ac4c6d655fab3af40937f0b0c65581745">GetSockAddr</a> (struct sockaddr *paddr, socklen_t *addrlen) const</td></tr>
 <tr class="separator:ac4c6d655fab3af40937f0b0c65581745 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77782219f5d85f326b4c089cb2636e6f inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a77782219f5d85f326b4c089cb2636e6f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>SetSockAddr</b> (const struct sockaddr *paddr)</td></tr>
+<tr class="memitem:a77782219f5d85f326b4c089cb2636e6f inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a77782219f5d85f326b4c089cb2636e6f">SetSockAddr</a> (const struct sockaddr *paddr)</td></tr>
 <tr class="separator:a77782219f5d85f326b4c089cb2636e6f inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af21ea7db4318330b337c8bfdcc55aff0 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="af21ea7db4318330b337c8bfdcc55aff0"></a>
-std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetKey</b> () const</td></tr>
+<tr class="memitem:af21ea7db4318330b337c8bfdcc55aff0 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#af21ea7db4318330b337c8bfdcc55aff0">GetKey</a> () const</td></tr>
 <tr class="separator:af21ea7db4318330b337c8bfdcc55aff0 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a225473158bc07c87a6a862160d73cfea inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a225473158bc07c87a6a862160d73cfea"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToString</b> () const</td></tr>
+<tr class="memitem:a225473158bc07c87a6a862160d73cfea inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a225473158bc07c87a6a862160d73cfea">ToString</a> () const</td></tr>
 <tr class="separator:a225473158bc07c87a6a862160d73cfea inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95d6f24b6a613fca24734ba4e38ef3dc inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a95d6f24b6a613fca24734ba4e38ef3dc"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToStringPort</b> () const</td></tr>
+<tr class="memitem:a95d6f24b6a613fca24734ba4e38ef3dc inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a95d6f24b6a613fca24734ba4e38ef3dc">ToStringPort</a> () const</td></tr>
 <tr class="separator:a95d6f24b6a613fca24734ba4e38ef3dc inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a224204c838b12eeb49ca7eabe6f75004 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a224204c838b12eeb49ca7eabe6f75004"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToStringIPPort</b> () const</td></tr>
+<tr class="memitem:a224204c838b12eeb49ca7eabe6f75004 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a224204c838b12eeb49ca7eabe6f75004">ToStringIPPort</a> () const</td></tr>
 <tr class="separator:a224204c838b12eeb49ca7eabe6f75004 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92fd246e176f01266cb36beae0c8f4fe inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a92fd246e176f01266cb36beae0c8f4fe"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CService</b> (const struct in6_addr &amp;ipv6Addr, unsigned short port)</td></tr>
+<tr class="memitem:a92fd246e176f01266cb36beae0c8f4fe inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a92fd246e176f01266cb36beae0c8f4fe">CService</a> (const struct in6_addr &amp;ipv6Addr, unsigned short <a class="el" href="class_c_service.html#aef17734203dc2125cbdf4d23e50be410">port</a>)</td></tr>
 <tr class="separator:a92fd246e176f01266cb36beae0c8f4fe inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0eb3107507be78cc683e7a7fa8d56e4 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="ac0eb3107507be78cc683e7a7fa8d56e4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CService</b> (const struct sockaddr_in6 &amp;addr)</td></tr>
+<tr class="memitem:ac0eb3107507be78cc683e7a7fa8d56e4 inherit pub_methods_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#ac0eb3107507be78cc683e7a7fa8d56e4">CService</a> (const struct sockaddr_in6 &amp;addr)</td></tr>
 <tr class="separator:ac0eb3107507be78cc683e7a7fa8d56e4 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0673ebec7bdc8558ce3fe1d63ea4d2e1 inherit pub_methods_class_c_service"><td class="memTemplParams" colspan="2"><a id="a0673ebec7bdc8558ce3fe1d63ea4d2e1"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:a0673ebec7bdc8558ce3fe1d63ea4d2e1 inherit pub_methods_class_c_service"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:a0673ebec7bdc8558ce3fe1d63ea4d2e1 inherit pub_methods_class_c_service"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:a0673ebec7bdc8558ce3fe1d63ea4d2e1 inherit pub_methods_class_c_service"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_service.html#a0673ebec7bdc8558ce3fe1d63ea4d2e1">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:a0673ebec7bdc8558ce3fe1d63ea4d2e1 inherit pub_methods_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_c_net_addr"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_c_net_addr')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_c_net_addr.html">CNetAddr</a></td></tr>
-<tr class="memitem:a0af492cd8aca9bbaa3392cdbfbb55681 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a0af492cd8aca9bbaa3392cdbfbb55681"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CNetAddr</b> (const struct in_addr &amp;ipv4Addr)</td></tr>
+<tr class="memitem:ad997a7ab057fbeab1dd6601135f8e02d inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#ad997a7ab057fbeab1dd6601135f8e02d">CNetAddr</a> ()</td></tr>
+<tr class="separator:ad997a7ab057fbeab1dd6601135f8e02d inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0af492cd8aca9bbaa3392cdbfbb55681 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a0af492cd8aca9bbaa3392cdbfbb55681">CNetAddr</a> (const struct in_addr &amp;ipv4Addr)</td></tr>
 <tr class="separator:a0af492cd8aca9bbaa3392cdbfbb55681 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3549332f92d95ccadf262bdce9f4eacf inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a3549332f92d95ccadf262bdce9f4eacf"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CNetAddr</b> (const char *pszIp, bool fAllowLookup=false)</td></tr>
+<tr class="memitem:a3549332f92d95ccadf262bdce9f4eacf inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a3549332f92d95ccadf262bdce9f4eacf">CNetAddr</a> (const char *pszIp, bool fAllowLookup=false)</td></tr>
 <tr class="separator:a3549332f92d95ccadf262bdce9f4eacf inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae237602be0e4bce6ff31061270371144 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="ae237602be0e4bce6ff31061270371144"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CNetAddr</b> (const std::string &amp;strIp, bool fAllowLookup=false)</td></tr>
+<tr class="memitem:ae237602be0e4bce6ff31061270371144 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#ae237602be0e4bce6ff31061270371144">CNetAddr</a> (const std::string &amp;strIp, bool fAllowLookup=false)</td></tr>
 <tr class="separator:ae237602be0e4bce6ff31061270371144 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adab412fbc5a9203bea90ae173996ab10 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="adab412fbc5a9203bea90ae173996ab10"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> ()</td></tr>
+<tr class="memitem:adab412fbc5a9203bea90ae173996ab10 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#adab412fbc5a9203bea90ae173996ab10">Init</a> ()</td></tr>
 <tr class="separator:adab412fbc5a9203bea90ae173996ab10 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c6087345e5ca07a151451cd6deb974f inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a1c6087345e5ca07a151451cd6deb974f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetIP</b> (const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;ip)</td></tr>
+<tr class="memitem:a1c6087345e5ca07a151451cd6deb974f inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a1c6087345e5ca07a151451cd6deb974f">SetIP</a> (const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;<a class="el" href="class_c_net_addr.html#acff7ce68f33f8dfbfe6d79d80928d417">ip</a>)</td></tr>
 <tr class="separator:a1c6087345e5ca07a151451cd6deb974f inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f0b23aca4ca78c11735d13f3583b7ad inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a1f0b23aca4ca78c11735d13f3583b7ad">SetRaw</a> (Network network, const uint8_t *data)</td></tr>
+<tr class="memitem:a1f0b23aca4ca78c11735d13f3583b7ad inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a1f0b23aca4ca78c11735d13f3583b7ad">SetRaw</a> (<a class="el" href="netbase_8h.html#acc9a38c714afe79b5035cb36f560dac3">Network</a> network, const uint8_t *data)</td></tr>
+<tr class="memdesc:a1f0b23aca4ca78c11735d13f3583b7ad inherit pub_methods_class_c_net_addr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set raw IPv4 or IPv6 address (in network byte order)  <a href="class_c_net_addr.html#a1f0b23aca4ca78c11735d13f3583b7ad">More...</a><br /></td></tr>
 <tr class="separator:a1f0b23aca4ca78c11735d13f3583b7ad inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3e44dfd064d9d8da1cb48cdcb7dd231 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="aa3e44dfd064d9d8da1cb48cdcb7dd231"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>SetSpecial</b> (const std::string &amp;strName)</td></tr>
+<tr class="memitem:aa3e44dfd064d9d8da1cb48cdcb7dd231 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#aa3e44dfd064d9d8da1cb48cdcb7dd231">SetSpecial</a> (const std::string &amp;strName)</td></tr>
 <tr class="separator:aa3e44dfd064d9d8da1cb48cdcb7dd231 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7021b79e9a33c342b68db09dbb6c2293 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a7021b79e9a33c342b68db09dbb6c2293"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsIPv4</b> () const</td></tr>
+<tr class="memitem:a7021b79e9a33c342b68db09dbb6c2293 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a7021b79e9a33c342b68db09dbb6c2293">IsIPv4</a> () const</td></tr>
 <tr class="separator:a7021b79e9a33c342b68db09dbb6c2293 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad5f7a372c56ccf4d773f728b6b46e18 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="aad5f7a372c56ccf4d773f728b6b46e18"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsIPv6</b> () const</td></tr>
+<tr class="memitem:aad5f7a372c56ccf4d773f728b6b46e18 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#aad5f7a372c56ccf4d773f728b6b46e18">IsIPv6</a> () const</td></tr>
 <tr class="separator:aad5f7a372c56ccf4d773f728b6b46e18 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c6d7376d8d0ae4c7cb0893add58069f inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a6c6d7376d8d0ae4c7cb0893add58069f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC1918</b> () const</td></tr>
+<tr class="memitem:a6c6d7376d8d0ae4c7cb0893add58069f inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a6c6d7376d8d0ae4c7cb0893add58069f">IsRFC1918</a> () const</td></tr>
 <tr class="separator:a6c6d7376d8d0ae4c7cb0893add58069f inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd1138ebc48eb28055a49e5ffe8ebc31 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="acd1138ebc48eb28055a49e5ffe8ebc31"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC2544</b> () const</td></tr>
+<tr class="memitem:acd1138ebc48eb28055a49e5ffe8ebc31 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#acd1138ebc48eb28055a49e5ffe8ebc31">IsRFC2544</a> () const</td></tr>
 <tr class="separator:acd1138ebc48eb28055a49e5ffe8ebc31 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a9595f10a7cb4518d9d577075eee57f inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a6a9595f10a7cb4518d9d577075eee57f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC6598</b> () const</td></tr>
+<tr class="memitem:a6a9595f10a7cb4518d9d577075eee57f inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a6a9595f10a7cb4518d9d577075eee57f">IsRFC6598</a> () const</td></tr>
 <tr class="separator:a6a9595f10a7cb4518d9d577075eee57f inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a3b09eb486dede48cb9427a9a0ed2e2 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a5a3b09eb486dede48cb9427a9a0ed2e2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC5737</b> () const</td></tr>
+<tr class="memitem:a5a3b09eb486dede48cb9427a9a0ed2e2 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a5a3b09eb486dede48cb9427a9a0ed2e2">IsRFC5737</a> () const</td></tr>
 <tr class="separator:a5a3b09eb486dede48cb9427a9a0ed2e2 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bf8bc283323c0cd9be42f921469c90f inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a7bf8bc283323c0cd9be42f921469c90f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC3849</b> () const</td></tr>
+<tr class="memitem:a7bf8bc283323c0cd9be42f921469c90f inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a7bf8bc283323c0cd9be42f921469c90f">IsRFC3849</a> () const</td></tr>
 <tr class="separator:a7bf8bc283323c0cd9be42f921469c90f inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af75408b0ae05d1e7d3931b80b65a70c4 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="af75408b0ae05d1e7d3931b80b65a70c4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC3927</b> () const</td></tr>
+<tr class="memitem:af75408b0ae05d1e7d3931b80b65a70c4 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#af75408b0ae05d1e7d3931b80b65a70c4">IsRFC3927</a> () const</td></tr>
 <tr class="separator:af75408b0ae05d1e7d3931b80b65a70c4 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0fcf758a607567f06cb966426289cd6 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="ae0fcf758a607567f06cb966426289cd6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC3964</b> () const</td></tr>
+<tr class="memitem:ae0fcf758a607567f06cb966426289cd6 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#ae0fcf758a607567f06cb966426289cd6">IsRFC3964</a> () const</td></tr>
 <tr class="separator:ae0fcf758a607567f06cb966426289cd6 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2eb12a3f11d9f54fa7c5072bf065d1c inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="ac2eb12a3f11d9f54fa7c5072bf065d1c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC4193</b> () const</td></tr>
+<tr class="memitem:ac2eb12a3f11d9f54fa7c5072bf065d1c inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#ac2eb12a3f11d9f54fa7c5072bf065d1c">IsRFC4193</a> () const</td></tr>
 <tr class="separator:ac2eb12a3f11d9f54fa7c5072bf065d1c inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec91b10228b37eb9bd67dec322730492 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="aec91b10228b37eb9bd67dec322730492"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC4380</b> () const</td></tr>
+<tr class="memitem:aec91b10228b37eb9bd67dec322730492 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#aec91b10228b37eb9bd67dec322730492">IsRFC4380</a> () const</td></tr>
 <tr class="separator:aec91b10228b37eb9bd67dec322730492 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9286890842869ccc5f6fb82ce316ede inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="af9286890842869ccc5f6fb82ce316ede"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC4843</b> () const</td></tr>
+<tr class="memitem:af9286890842869ccc5f6fb82ce316ede inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#af9286890842869ccc5f6fb82ce316ede">IsRFC4843</a> () const</td></tr>
 <tr class="separator:af9286890842869ccc5f6fb82ce316ede inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8e0bb6b81be814e528143471b2fb482 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="af8e0bb6b81be814e528143471b2fb482"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC4862</b> () const</td></tr>
+<tr class="memitem:af8e0bb6b81be814e528143471b2fb482 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#af8e0bb6b81be814e528143471b2fb482">IsRFC4862</a> () const</td></tr>
 <tr class="separator:af8e0bb6b81be814e528143471b2fb482 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15b47f1fa3ded708f0e02e842482ee60 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a15b47f1fa3ded708f0e02e842482ee60"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC6052</b> () const</td></tr>
+<tr class="memitem:a15b47f1fa3ded708f0e02e842482ee60 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a15b47f1fa3ded708f0e02e842482ee60">IsRFC6052</a> () const</td></tr>
 <tr class="separator:a15b47f1fa3ded708f0e02e842482ee60 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad134823c7f268f29653d135d33f879aa inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="ad134823c7f268f29653d135d33f879aa"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRFC6145</b> () const</td></tr>
+<tr class="memitem:ad134823c7f268f29653d135d33f879aa inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#ad134823c7f268f29653d135d33f879aa">IsRFC6145</a> () const</td></tr>
 <tr class="separator:ad134823c7f268f29653d135d33f879aa inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4db37b4997ff3b8c57959f2aa915a9a3 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a4db37b4997ff3b8c57959f2aa915a9a3"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsTor</b> () const</td></tr>
+<tr class="memitem:a4db37b4997ff3b8c57959f2aa915a9a3 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a4db37b4997ff3b8c57959f2aa915a9a3">IsTor</a> () const</td></tr>
 <tr class="separator:a4db37b4997ff3b8c57959f2aa915a9a3 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a857bfcf95814b7d6ef4db309c84f179d inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a857bfcf95814b7d6ef4db309c84f179d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsLocal</b> () const</td></tr>
+<tr class="memitem:a857bfcf95814b7d6ef4db309c84f179d inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a857bfcf95814b7d6ef4db309c84f179d">IsLocal</a> () const</td></tr>
 <tr class="separator:a857bfcf95814b7d6ef4db309c84f179d inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e3b2fea2a6151c76684b3812df4a5c3 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a4e3b2fea2a6151c76684b3812df4a5c3"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsRoutable</b> () const</td></tr>
+<tr class="memitem:a4e3b2fea2a6151c76684b3812df4a5c3 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a4e3b2fea2a6151c76684b3812df4a5c3">IsRoutable</a> () const</td></tr>
 <tr class="separator:a4e3b2fea2a6151c76684b3812df4a5c3 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fe20b8da9701ca5dc2af078e2e8ac25 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a6fe20b8da9701ca5dc2af078e2e8ac25"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsValid</b> () const</td></tr>
+<tr class="memitem:a6fe20b8da9701ca5dc2af078e2e8ac25 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a6fe20b8da9701ca5dc2af078e2e8ac25">IsValid</a> () const</td></tr>
 <tr class="separator:a6fe20b8da9701ca5dc2af078e2e8ac25 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabd54a329f70953f7895b56bcd000473 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="aabd54a329f70953f7895b56bcd000473"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsMulticast</b> () const</td></tr>
+<tr class="memitem:aabd54a329f70953f7895b56bcd000473 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#aabd54a329f70953f7895b56bcd000473">IsMulticast</a> () const</td></tr>
 <tr class="separator:aabd54a329f70953f7895b56bcd000473 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0162f2629f552a65acf934e1629c1db inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="ad0162f2629f552a65acf934e1629c1db"></a>
-enum Network&#160;</td><td class="memItemRight" valign="bottom"><b>GetNetwork</b> () const</td></tr>
+<tr class="memitem:ad0162f2629f552a65acf934e1629c1db inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">enum <a class="el" href="netbase_8h.html#acc9a38c714afe79b5035cb36f560dac3">Network</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#ad0162f2629f552a65acf934e1629c1db">GetNetwork</a> () const</td></tr>
 <tr class="separator:ad0162f2629f552a65acf934e1629c1db inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a474ea3874554fe3b79f607fdef97c243 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a474ea3874554fe3b79f607fdef97c243"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToString</b> () const</td></tr>
+<tr class="memitem:a474ea3874554fe3b79f607fdef97c243 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a474ea3874554fe3b79f607fdef97c243">ToString</a> () const</td></tr>
 <tr class="separator:a474ea3874554fe3b79f607fdef97c243 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c8d9b5ed3824546ff4dccca3b28b073 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a0c8d9b5ed3824546ff4dccca3b28b073"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToStringIP</b> () const</td></tr>
+<tr class="memitem:a0c8d9b5ed3824546ff4dccca3b28b073 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a0c8d9b5ed3824546ff4dccca3b28b073">ToStringIP</a> () const</td></tr>
 <tr class="separator:a0c8d9b5ed3824546ff4dccca3b28b073 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfd51ebf2030b01fa5ac133176512475 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="acfd51ebf2030b01fa5ac133176512475"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>GetByte</b> (int n) const</td></tr>
+<tr class="memitem:acfd51ebf2030b01fa5ac133176512475 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#acfd51ebf2030b01fa5ac133176512475">GetByte</a> (int n) const</td></tr>
 <tr class="separator:acfd51ebf2030b01fa5ac133176512475 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fae7d32e83e9fbb9ce0216f896133c9 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a8fae7d32e83e9fbb9ce0216f896133c9"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>GetHash</b> () const</td></tr>
+<tr class="memitem:a8fae7d32e83e9fbb9ce0216f896133c9 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a8fae7d32e83e9fbb9ce0216f896133c9">GetHash</a> () const</td></tr>
 <tr class="separator:a8fae7d32e83e9fbb9ce0216f896133c9 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f73432c55d4acb6b9e4c54833eefea6 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a4f73432c55d4acb6b9e4c54833eefea6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>GetInAddr</b> (struct in_addr *pipv4Addr) const</td></tr>
+<tr class="memitem:a4f73432c55d4acb6b9e4c54833eefea6 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a4f73432c55d4acb6b9e4c54833eefea6">GetInAddr</a> (struct in_addr *pipv4Addr) const</td></tr>
 <tr class="separator:a4f73432c55d4acb6b9e4c54833eefea6 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f8211515f809f6972ce327433d41458 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a6f8211515f809f6972ce327433d41458"></a>
-std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetGroup</b> () const</td></tr>
+<tr class="memitem:a6f8211515f809f6972ce327433d41458 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a6f8211515f809f6972ce327433d41458">GetGroup</a> () const</td></tr>
 <tr class="separator:a6f8211515f809f6972ce327433d41458 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa68c7d6112b22759dcd280ddad30808f inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#aa68c7d6112b22759dcd280ddad30808f">GetReachabilityFrom</a> (const <a class="el" href="class_c_net_addr.html">CNetAddr</a> *paddrPartner=NULL) const</td></tr>
+<tr class="memdesc:aa68c7d6112b22759dcd280ddad30808f inherit pub_methods_class_c_net_addr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates a metric for how reachable (*this) is from a given partner.  <a href="class_c_net_addr.html#aa68c7d6112b22759dcd280ddad30808f">More...</a><br /></td></tr>
 <tr class="separator:aa68c7d6112b22759dcd280ddad30808f inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9eae4232457f7659a157467274d1b444 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a9eae4232457f7659a157467274d1b444"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CNetAddr</b> (const struct in6_addr &amp;pipv6Addr)</td></tr>
+<tr class="memitem:a9eae4232457f7659a157467274d1b444 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a9eae4232457f7659a157467274d1b444">CNetAddr</a> (const struct in6_addr &amp;pipv6Addr)</td></tr>
 <tr class="separator:a9eae4232457f7659a157467274d1b444 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3616012f94b27148e5b8e27d943d4884 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="a3616012f94b27148e5b8e27d943d4884"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>GetIn6Addr</b> (struct in6_addr *pipv6Addr) const</td></tr>
+<tr class="memitem:a3616012f94b27148e5b8e27d943d4884 inherit pub_methods_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a3616012f94b27148e5b8e27d943d4884">GetIn6Addr</a> (struct in6_addr *pipv6Addr) const</td></tr>
 <tr class="separator:a3616012f94b27148e5b8e27d943d4884 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c914d155a533f64f8aa0d2f9bfff8a7 inherit pub_methods_class_c_net_addr"><td class="memTemplParams" colspan="2"><a id="a7c914d155a533f64f8aa0d2f9bfff8a7"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:a7c914d155a533f64f8aa0d2f9bfff8a7 inherit pub_methods_class_c_net_addr"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:a7c914d155a533f64f8aa0d2f9bfff8a7 inherit pub_methods_class_c_net_addr"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:a7c914d155a533f64f8aa0d2f9bfff8a7 inherit pub_methods_class_c_net_addr"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#a7c914d155a533f64f8aa0d2f9bfff8a7">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:a7c914d155a533f64f8aa0d2f9bfff8a7 inherit pub_methods_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a9d5e0b95fa494171e4bffb900094fe2e"><td class="memItemLeft" align="right" valign="top"><a id="a9d5e0b95fa494171e4bffb900094fe2e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:a9d5e0b95fa494171e4bffb900094fe2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a9d5e0b95fa494171e4bffb900094fe2e">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:a9d5e0b95fa494171e4bffb900094fe2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_class_c_address"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_class_c_address')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="class_c_address.html">CAddress</a></td></tr>
-<tr class="memitem:a9582fc22433b2ed275d4b65fb72551e7 inherit pub_attribs_class_c_address"><td class="memItemLeft" align="right" valign="top"><a id="a9582fc22433b2ed275d4b65fb72551e7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:a9582fc22433b2ed275d4b65fb72551e7 inherit pub_attribs_class_c_address"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_address.html#a9582fc22433b2ed275d4b65fb72551e7">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:a9582fc22433b2ed275d4b65fb72551e7 inherit pub_attribs_class_c_address"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a4a6aa020d0d558f238c7d04dd986c3 inherit pub_attribs_class_c_address"><td class="memItemLeft" align="right" valign="top"><a id="a6a4a6aa020d0d558f238c7d04dd986c3"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>nServices</b></td></tr>
+<tr class="memitem:a6a4a6aa020d0d558f238c7d04dd986c3 inherit pub_attribs_class_c_address"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_address.html#a6a4a6aa020d0d558f238c7d04dd986c3">nServices</a></td></tr>
 <tr class="separator:a6a4a6aa020d0d558f238c7d04dd986c3 inherit pub_attribs_class_c_address"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1c44aac968b11f90ce529b133ae4e9b inherit pub_attribs_class_c_address"><td class="memItemLeft" align="right" valign="top"><a id="ac1c44aac968b11f90ce529b133ae4e9b"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>nTime</b></td></tr>
+<tr class="memitem:ac1c44aac968b11f90ce529b133ae4e9b inherit pub_attribs_class_c_address"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_address.html#ac1c44aac968b11f90ce529b133ae4e9b">nTime</a></td></tr>
 <tr class="separator:ac1c44aac968b11f90ce529b133ae4e9b inherit pub_attribs_class_c_address"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcf198429efe135fa2424f7dbc0048b0 inherit pub_attribs_class_c_address"><td class="memItemLeft" align="right" valign="top"><a id="abcf198429efe135fa2424f7dbc0048b0"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>nLastTry</b></td></tr>
+<tr class="memitem:abcf198429efe135fa2424f7dbc0048b0 inherit pub_attribs_class_c_address"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_address.html#abcf198429efe135fa2424f7dbc0048b0">nLastTry</a></td></tr>
 <tr class="separator:abcf198429efe135fa2424f7dbc0048b0 inherit pub_attribs_class_c_address"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_class_c_service"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_class_c_service')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="class_c_service.html">CService</a></td></tr>
-<tr class="memitem:a3347aa84bd8f98ae853307ad4e47a4f5 inherit pub_attribs_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="a3347aa84bd8f98ae853307ad4e47a4f5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:a3347aa84bd8f98ae853307ad4e47a4f5 inherit pub_attribs_class_c_service"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#a3347aa84bd8f98ae853307ad4e47a4f5">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:a3347aa84bd8f98ae853307ad4e47a4f5 inherit pub_attribs_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_class_c_net_addr"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_class_c_net_addr')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="class_c_net_addr.html">CNetAddr</a></td></tr>
-<tr class="memitem:ab08e22719f96b42c61e998158a895e5f inherit pub_attribs_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="ab08e22719f96b42c61e998158a895e5f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:ab08e22719f96b42c61e998158a895e5f inherit pub_attribs_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#ab08e22719f96b42c61e998158a895e5f">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:ab08e22719f96b42c61e998158a895e5f inherit pub_attribs_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:adf38b9b84f6e9ec5f16bc265c5fcd2dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_net_addr.html">CNetAddr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#adf38b9b84f6e9ec5f16bc265c5fcd2dd">source</a></td></tr>
+<tr class="memdesc:adf38b9b84f6e9ec5f16bc265c5fcd2dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">where knowledge about this address first came from  <a href="#adf38b9b84f6e9ec5f16bc265c5fcd2dd">More...</a><br /></td></tr>
+<tr class="separator:adf38b9b84f6e9ec5f16bc265c5fcd2dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d064dfb61b2c0ac1e220c8b11962efb"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a2d064dfb61b2c0ac1e220c8b11962efb">nLastSuccess</a></td></tr>
+<tr class="memdesc:a2d064dfb61b2c0ac1e220c8b11962efb"><td class="mdescLeft">&#160;</td><td class="mdescRight">last successful connection by us  <a href="#a2d064dfb61b2c0ac1e220c8b11962efb">More...</a><br /></td></tr>
+<tr class="separator:a2d064dfb61b2c0ac1e220c8b11962efb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29f143837182a06bccbca363130d8e78"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a29f143837182a06bccbca363130d8e78">nAttempts</a></td></tr>
+<tr class="memdesc:a29f143837182a06bccbca363130d8e78"><td class="mdescLeft">&#160;</td><td class="mdescRight">last try whatsoever by us:  <a href="#a29f143837182a06bccbca363130d8e78">More...</a><br /></td></tr>
+<tr class="separator:a29f143837182a06bccbca363130d8e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada2f8362fe6ed379a6fdaa3aef682e45"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#ada2f8362fe6ed379a6fdaa3aef682e45">nRefCount</a></td></tr>
+<tr class="memdesc:ada2f8362fe6ed379a6fdaa3aef682e45"><td class="mdescLeft">&#160;</td><td class="mdescRight">reference count in new sets (memory only)  <a href="#ada2f8362fe6ed379a6fdaa3aef682e45">More...</a><br /></td></tr>
+<tr class="separator:ada2f8362fe6ed379a6fdaa3aef682e45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fe19a664819fa36ef549c06a5fe0fda"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a7fe19a664819fa36ef549c06a5fe0fda">fInTried</a></td></tr>
+<tr class="memdesc:a7fe19a664819fa36ef549c06a5fe0fda"><td class="mdescLeft">&#160;</td><td class="mdescRight">in tried set? (memory only)  <a href="#a7fe19a664819fa36ef549c06a5fe0fda">More...</a><br /></td></tr>
+<tr class="separator:a7fe19a664819fa36ef549c06a5fe0fda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a78ef782aae72a5a58fd4422cd8066"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a72a78ef782aae72a5a58fd4422cd8066">nRandomPos</a></td></tr>
+<tr class="memdesc:a72a78ef782aae72a5a58fd4422cd8066"><td class="mdescLeft">&#160;</td><td class="mdescRight">position in vRandom  <a href="#a72a78ef782aae72a5a58fd4422cd8066">More...</a><br /></td></tr>
+<tr class="separator:a72a78ef782aae72a5a58fd4422cd8066"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a17ec4e9e560da58786d2ca36092bf83d"><td class="memItemLeft" align="right" valign="top"><a id="a17ec4e9e560da58786d2ca36092bf83d"></a>
-class&#160;</td><td class="memItemRight" valign="bottom"><b>CAddrMan</b></td></tr>
+<tr class="memitem:a17ec4e9e560da58786d2ca36092bf83d"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_addr_info.html#a17ec4e9e560da58786d2ca36092bf83d">CAddrMan</a></td></tr>
 <tr class="separator:a17ec4e9e560da58786d2ca36092bf83d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_class_c_service"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_c_service')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_c_service.html">CService</a></td></tr>
-<tr class="memitem:aef17734203dc2125cbdf4d23e50be410 inherit pro_attribs_class_c_service"><td class="memItemLeft" align="right" valign="top"><a id="aef17734203dc2125cbdf4d23e50be410"></a>
-unsigned short&#160;</td><td class="memItemRight" valign="bottom"><b>port</b></td></tr>
+<tr class="memitem:aef17734203dc2125cbdf4d23e50be410 inherit pro_attribs_class_c_service"><td class="memItemLeft" align="right" valign="top">unsigned short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_service.html#aef17734203dc2125cbdf4d23e50be410">port</a></td></tr>
 <tr class="separator:aef17734203dc2125cbdf4d23e50be410 inherit pro_attribs_class_c_service"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_class_c_net_addr"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_c_net_addr')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_c_net_addr.html">CNetAddr</a></td></tr>
-<tr class="memitem:acff7ce68f33f8dfbfe6d79d80928d417 inherit pro_attribs_class_c_net_addr"><td class="memItemLeft" align="right" valign="top"><a id="acff7ce68f33f8dfbfe6d79d80928d417"></a>
-unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b>ip</b> [16]</td></tr>
+<tr class="memitem:acff7ce68f33f8dfbfe6d79d80928d417 inherit pro_attribs_class_c_net_addr"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_net_addr.html#acff7ce68f33f8dfbfe6d79d80928d417">ip</a> [16]</td></tr>
 <tr class="separator:acff7ce68f33f8dfbfe6d79d80928d417 inherit pro_attribs_class_c_net_addr"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Extended statistics about a <a class="el" href="class_c_address.html">CAddress</a> </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="addrman_8h_source.html">addrman.h</a></li>
-<li>PIVX/src/addrman.cpp</li>
+<div class="textblock"><p>Extended statistics about a <a class="el" href="class_c_address.html" title="A CService with information about it as peer. ">CAddress</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00023">23</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a27e773233e8d7e7d183f138d24cc40ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27e773233e8d7e7d183f138d24cc40ef">&#9670;&nbsp;</a></span>CAddrInfo() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CAddrInfo::CAddrInfo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_address.html">CAddress</a> &amp;&#160;</td>
+          <td class="paramname"><em>addrIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;&#160;</td>
+          <td class="paramname"><em>addrSource</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00071">71</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae14c3a91bb669e5580be1d3767264187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae14c3a91bb669e5580be1d3767264187">&#9670;&nbsp;</a></span>CAddrInfo() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CAddrInfo::CAddrInfo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00076">76</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a3a133ffb3fbf67cbeb5f4bc683fa9126"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a133ffb3fbf67cbeb5f4bc683fa9126">&#9670;&nbsp;</a></span>GetBucketPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CAddrInfo::GetBucketPosition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td>
+          <td class="paramname"><em>nKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fNew</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nBucket</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculate in which position of a bucket to store this entry. </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8cpp_source.html#l00028">28</a> of file <a class="el" href="addrman_8cpp_source.html">addrman.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="af6788fe5a5364e63896ab9dedb8e5d40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6788fe5a5364e63896ab9dedb8e5d40">&#9670;&nbsp;</a></span>GetChance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double CAddrInfo::GetChance </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>nNow</em> = <code><a class="el" href="timedata_8h.html#a09f81b9c7650f898cf3cf305b87547e6">GetAdjustedTime</a>()</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculate the relative chance this entry should be given when selecting nodes to connect to. </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8cpp_source.html#l00054">54</a> of file <a class="el" href="addrman_8cpp_source.html">addrman.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae4459cd7719834bbcf77874757c6875e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4459cd7719834bbcf77874757c6875e">&#9670;&nbsp;</a></span>GetNewBucket() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CAddrInfo::GetNewBucket </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td>
+          <td class="paramname"><em>nKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_net_addr.html">CNetAddr</a> &amp;&#160;</td>
+          <td class="paramname"><em>src</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculate in which "new" bucket this entry belongs, given a certain source. </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8cpp_source.html#l00020">20</a> of file <a class="el" href="addrman_8cpp_source.html">addrman.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a04ac79764971242edce1e82aefb2aea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04ac79764971242edce1e82aefb2aea0">&#9670;&nbsp;</a></span>GetNewBucket() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CAddrInfo::GetNewBucket </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td>
+          <td class="paramname"><em>nKey</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calculate in which "new" bucket this entry belongs, using its default source. </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00088">88</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a11e2712f11c0d92c75976e90f2c5003e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11e2712f11c0d92c75976e90f2c5003e">&#9670;&nbsp;</a></span>GetTriedBucket()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CAddrInfo::GetTriedBucket </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td>
+          <td class="paramname"><em>nKey</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculate in which "tried" bucket this entry belongs. </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8cpp_source.html#l00013">13</a> of file <a class="el" href="addrman_8cpp_source.html">addrman.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="af1df1f12bc71ed7f3debae61058b9b9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1df1f12bc71ed7f3debae61058b9b9f">&#9670;&nbsp;</a></span>Init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CAddrInfo::Init </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00061">61</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 9 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a600725db90b879aee92128a3409af8aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a600725db90b879aee92128a3409af8aa">&#9670;&nbsp;</a></span>IsTerrible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CAddrInfo::IsTerrible </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>nNow</em> = <code><a class="el" href="timedata_8h.html#a09f81b9c7650f898cf3cf305b87547e6">GetAdjustedTime</a>()</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine whether the statistics about this entry are bad enough so that it can just be deleted. </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8cpp_source.html#l00034">34</a> of file <a class="el" href="addrman_8cpp_source.html">addrman.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 10 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae80fdec7d3b48278033ea2280f66e68b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae80fdec7d3b48278033ea2280f66e68b">&#9670;&nbsp;</a></span>SerializationOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream , typename Operation &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CAddrInfo::SerializationOp </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Operation&#160;</td>
+          <td class="paramname"><em>ser_action</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00053">53</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Function Documentation</h2>
+<a id="a17ec4e9e560da58786d2ca36092bf83d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17ec4e9e560da58786d2ca36092bf83d">&#9670;&nbsp;</a></span>CAddrMan</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="class_c_addr_man.html">CAddrMan</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00047">47</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a9d5e0b95fa494171e4bffb900094fe2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d5e0b95fa494171e4bffb900094fe2e">&#9670;&nbsp;</a></span>ADD_SERIALIZE_METHODS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CAddrInfo::ADD_SERIALIZE_METHODS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00050">50</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+
+</div>
+</div>
+<a id="a7fe19a664819fa36ef549c06a5fe0fda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fe19a664819fa36ef549c06a5fe0fda">&#9670;&nbsp;</a></span>fInTried</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CAddrInfo::fInTried</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>in tried set? (memory only) </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00042">42</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+
+</div>
+</div>
+<a id="a29f143837182a06bccbca363130d8e78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29f143837182a06bccbca363130d8e78">&#9670;&nbsp;</a></span>nAttempts</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CAddrInfo::nAttempts</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>last try whatsoever by us: </p>
+<p>connection attempts since last successful attempt </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00036">36</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+
+</div>
+</div>
+<a id="a2d064dfb61b2c0ac1e220c8b11962efb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d064dfb61b2c0ac1e220c8b11962efb">&#9670;&nbsp;</a></span>nLastSuccess</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t CAddrInfo::nLastSuccess</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>last successful connection by us </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00030">30</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+
+</div>
+</div>
+<a id="a72a78ef782aae72a5a58fd4422cd8066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72a78ef782aae72a5a58fd4422cd8066">&#9670;&nbsp;</a></span>nRandomPos</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CAddrInfo::nRandomPos</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>position in vRandom </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00045">45</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+
+</div>
+</div>
+<a id="ada2f8362fe6ed379a6fdaa3aef682e45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada2f8362fe6ed379a6fdaa3aef682e45">&#9670;&nbsp;</a></span>nRefCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CAddrInfo::nRefCount</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>reference count in new sets (memory only) </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00039">39</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+
+</div>
+</div>
+<a id="adf38b9b84f6e9ec5f16bc265c5fcd2dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf38b9b84f6e9ec5f16bc265c5fcd2dd">&#9670;&nbsp;</a></span>source</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_net_addr.html">CNetAddr</a> CAddrInfo::source</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>where knowledge about this address first came from </p>
+
+<p class="definition">Definition at line <a class="el" href="addrman_8h_source.html#l00027">27</a> of file <a class="el" href="addrman_8h_source.html">addrman.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>src/<a class="el" href="addrman_8h_source.html">addrman.h</a></li>
+<li>src/<a class="el" href="addrman_8cpp_source.html">addrman.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:26 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

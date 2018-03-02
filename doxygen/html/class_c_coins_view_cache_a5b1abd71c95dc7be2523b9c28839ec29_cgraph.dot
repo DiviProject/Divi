@@ -1,0 +1,22 @@
+digraph "CCoinsViewCache::HaveInputs"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node148 [label="CCoinsViewCache::HaveInputs",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node148 -> Node149 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node149 [label="CTransaction::IsCoinBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a96256e8ac1bf79ad9c057e48c41132dd"];
+  Node149 -> Node150 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node150 [label="CTransaction::ContainsZerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a613051e8e5651a7500cb455f37dd1116"];
+  Node150 -> Node151 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node151 [label="CTransaction::IsZerocoin\lSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a4cda5603795c5f9179d4c8bd43f809cd"];
+  Node150 -> Node152 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node152 [label="CTransaction::IsZerocoinMint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#ab91efb1c2312e6feeecfbbfff11abbb1"];
+  Node148 -> Node151 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node148 -> Node153 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node153 [label="CCoinsViewCache::AccessCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a8e5341e8b01233949d6170dd4d1fd75d",tooltip="Return a pointer to CCoins in the cache, or NULL if not found. "];
+  Node153 -> Node154 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node154 [label="CCoinsViewCache::FetchCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a7d385628b7d821d2d5b6c5aaf1734616"];
+  Node148 -> Node155 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node155 [label="CCoins::IsAvailable",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#aa645bc3d18f74e91430ac178a9d28ee4",tooltip="check whether a particular output is still available "];
+}

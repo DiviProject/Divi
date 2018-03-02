@@ -1,0 +1,11 @@
+digraph "CDBEnv::Open"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node59 [label="CDBEnv::Open",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node59 -> Node60 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node60 [label="TryCreateDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a4458ca67cacd593b21c8e1386d192064",tooltip="Ignores exceptions thrown by Boost&#39;s create_directory if the requested directory exists. "];
+  Node59 -> Node61 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node61 [label="GetBoolArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d",tooltip="Return boolean argument or default value. "];
+}

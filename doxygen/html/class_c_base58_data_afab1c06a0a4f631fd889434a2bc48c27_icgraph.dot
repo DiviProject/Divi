@@ -1,0 +1,21 @@
+digraph "CBase58Data::SetData"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node27 [label="CBase58Data::SetData",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node27 -> Node28 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node28 [label="CBase58Data::SetData",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_base58_data.html#a8314b00685e590b4005be5cdfd36aeb9"];
+  Node27 -> Node29 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node29 [label="CBitcoinAddress::Set",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bitcoin_address.html#abe1614f9ecd143ae69256d65c5edbcab"];
+  Node29 -> Node30 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node30 [label="CBitcoinAddress::CBitcoin\lAddress",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bitcoin_address.html#a4c9c03791561557b8a1926567456712e"];
+  Node27 -> Node31 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node31 [label="CBitcoinSecret::SetKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bitcoin_secret.html#a3629c0fce320664c3c07cb082939d6ec"];
+  Node31 -> Node32 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node32 [label="CBitcoinSecret::CBitcoin\lSecret",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bitcoin_secret.html#a0358baa459a1f22661b601d9d83eacf8"];
+  Node27 -> Node33 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node33 [label="CBitcoinExtKeyBase\l::SetKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bitcoin_ext_key_base.html#aa6041045bb68b3f24d92f5e3b96aeef6"];
+  Node33 -> Node34 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node34 [label="CBitcoinExtKeyBase\l::CBitcoinExtKeyBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bitcoin_ext_key_base.html#a61b09dabc0849ba24520a78c5996096a"];
+}

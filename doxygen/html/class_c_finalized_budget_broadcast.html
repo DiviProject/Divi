@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CFinalizedBudgetBroadcast Class Reference</title>
+<title>DIVX: CFinalizedBudgetBroadcast Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -64,144 +67,394 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_c_finalized_budget_broadcast-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CFinalizedBudgetBroadcast Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="masternode-budget_8h_source.html">masternode-budget.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for CFinalizedBudgetBroadcast:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_c_finalized_budget_broadcast.png" usemap="#CFinalizedBudgetBroadcast_map" alt=""/>
-  <map id="CFinalizedBudgetBroadcast_map" name="CFinalizedBudgetBroadcast_map">
-<area href="class_c_finalized_budget.html" alt="CFinalizedBudget" shape="rect" coords="0,0,168,24"/>
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for CFinalizedBudgetBroadcast:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0fc9903afc9a1ccfc7008f0bb95ba26e"><td class="memItemLeft" align="right" valign="top"><a id="a0fc9903afc9a1ccfc7008f0bb95ba26e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CFinalizedBudgetBroadcast</b> (const <a class="el" href="class_c_finalized_budget.html">CFinalizedBudget</a> &amp;other)</td></tr>
+<tr class="memitem:a3d89b0b5358a37cff1c1b549c910681f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget_broadcast.html#a3d89b0b5358a37cff1c1b549c910681f">CFinalizedBudgetBroadcast</a> ()</td></tr>
+<tr class="separator:a3d89b0b5358a37cff1c1b549c910681f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fc9903afc9a1ccfc7008f0bb95ba26e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget_broadcast.html#a0fc9903afc9a1ccfc7008f0bb95ba26e">CFinalizedBudgetBroadcast</a> (const <a class="el" href="class_c_finalized_budget.html">CFinalizedBudget</a> &amp;other)</td></tr>
 <tr class="separator:a0fc9903afc9a1ccfc7008f0bb95ba26e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a800780793836750ec3c848e87fb397a7"><td class="memItemLeft" align="right" valign="top"><a id="a800780793836750ec3c848e87fb397a7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CFinalizedBudgetBroadcast</b> (std::string strBudgetNameIn, int nBlockStartIn, std::vector&lt; <a class="el" href="class_c_tx_budget_payment.html">CTxBudgetPayment</a> &gt; vecBudgetPaymentsIn, <a class="el" href="classuint256.html">uint256</a> nFeeTXHashIn)</td></tr>
+<tr class="memitem:a800780793836750ec3c848e87fb397a7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget_broadcast.html#a800780793836750ec3c848e87fb397a7">CFinalizedBudgetBroadcast</a> (std::string strBudgetNameIn, int nBlockStartIn, std::vector&lt; <a class="el" href="class_c_tx_budget_payment.html">CTxBudgetPayment</a> &gt; vecBudgetPaymentsIn, <a class="el" href="classuint256.html">uint256</a> nFeeTXHashIn)</td></tr>
 <tr class="separator:a800780793836750ec3c848e87fb397a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9e99f471d82a9c2d76137a758740315"><td class="memItemLeft" align="right" valign="top"><a id="ac9e99f471d82a9c2d76137a758740315"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>swap</b> (<a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> &amp;first, <a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> &amp;second)</td></tr>
+<tr class="memitem:ac9e99f471d82a9c2d76137a758740315"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget_broadcast.html#ac9e99f471d82a9c2d76137a758740315">swap</a> (<a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> &amp;first, <a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> &amp;second)</td></tr>
 <tr class="separator:ac9e99f471d82a9c2d76137a758740315"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afccbdda2d00c695c63802db0fda2d489"><td class="memItemLeft" align="right" valign="top"><a id="afccbdda2d00c695c63802db0fda2d489"></a>
-<a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> from)</td></tr>
+<tr class="memitem:afccbdda2d00c695c63802db0fda2d489"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget_broadcast.html#afccbdda2d00c695c63802db0fda2d489">operator=</a> (<a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> from)</td></tr>
 <tr class="separator:afccbdda2d00c695c63802db0fda2d489"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb4cfac3327e7cb912b368054d23fc9c"><td class="memItemLeft" align="right" valign="top"><a id="abb4cfac3327e7cb912b368054d23fc9c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Relay</b> ()</td></tr>
+<tr class="memitem:abb4cfac3327e7cb912b368054d23fc9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget_broadcast.html#abb4cfac3327e7cb912b368054d23fc9c">Relay</a> ()</td></tr>
 <tr class="separator:abb4cfac3327e7cb912b368054d23fc9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c9bac4bb653dbae4c3861fd12380dcd"><td class="memTemplParams" colspan="2"><a id="a2c9bac4bb653dbae4c3861fd12380dcd"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:a2c9bac4bb653dbae4c3861fd12380dcd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:a2c9bac4bb653dbae4c3861fd12380dcd"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:a2c9bac4bb653dbae4c3861fd12380dcd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget_broadcast.html#a2c9bac4bb653dbae4c3861fd12380dcd">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:a2c9bac4bb653dbae4c3861fd12380dcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_c_finalized_budget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_c_finalized_budget')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_c_finalized_budget.html">CFinalizedBudget</a></td></tr>
-<tr class="memitem:a701687a3f6f5dadaa8cf20b188306005 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a701687a3f6f5dadaa8cf20b188306005"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CFinalizedBudget</b> (const <a class="el" href="class_c_finalized_budget.html">CFinalizedBudget</a> &amp;other)</td></tr>
+<tr class="memitem:a70a5842e7be58407c5ff5daade0e6e45 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a70a5842e7be58407c5ff5daade0e6e45">CFinalizedBudget</a> ()</td></tr>
+<tr class="separator:a70a5842e7be58407c5ff5daade0e6e45 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a701687a3f6f5dadaa8cf20b188306005 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a701687a3f6f5dadaa8cf20b188306005">CFinalizedBudget</a> (const <a class="el" href="class_c_finalized_budget.html">CFinalizedBudget</a> &amp;other)</td></tr>
 <tr class="separator:a701687a3f6f5dadaa8cf20b188306005 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11cbbc4f8f84e5ffb2b7257168da98be inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a11cbbc4f8f84e5ffb2b7257168da98be"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CleanAndRemove</b> (bool fSignatureCheck)</td></tr>
+<tr class="memitem:a11cbbc4f8f84e5ffb2b7257168da98be inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a11cbbc4f8f84e5ffb2b7257168da98be">CleanAndRemove</a> (bool fSignatureCheck)</td></tr>
 <tr class="separator:a11cbbc4f8f84e5ffb2b7257168da98be inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63fadb286f5d0f9f735bc33deba56b02 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a63fadb286f5d0f9f735bc33deba56b02"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>AddOrUpdateVote</b> (<a class="el" href="class_c_finalized_budget_vote.html">CFinalizedBudgetVote</a> &amp;vote, std::string &amp;strError)</td></tr>
+<tr class="memitem:a63fadb286f5d0f9f735bc33deba56b02 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a63fadb286f5d0f9f735bc33deba56b02">AddOrUpdateVote</a> (<a class="el" href="class_c_finalized_budget_vote.html">CFinalizedBudgetVote</a> &amp;vote, std::string &amp;strError)</td></tr>
 <tr class="separator:a63fadb286f5d0f9f735bc33deba56b02 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadcaaf7b39cfe0400253db00c5fe0b03 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="aadcaaf7b39cfe0400253db00c5fe0b03"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>GetScore</b> ()</td></tr>
+<tr class="memitem:aadcaaf7b39cfe0400253db00c5fe0b03 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#aadcaaf7b39cfe0400253db00c5fe0b03">GetScore</a> ()</td></tr>
 <tr class="separator:aadcaaf7b39cfe0400253db00c5fe0b03 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96b19202f64cb941239a500e7895c048 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a96b19202f64cb941239a500e7895c048"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>HasMinimumRequiredSupport</b> ()</td></tr>
+<tr class="memitem:a96b19202f64cb941239a500e7895c048 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a96b19202f64cb941239a500e7895c048">HasMinimumRequiredSupport</a> ()</td></tr>
 <tr class="separator:a96b19202f64cb941239a500e7895c048 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae91a3b63f88979a2cf5252b91b9f339d inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="ae91a3b63f88979a2cf5252b91b9f339d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsValid</b> (std::string &amp;strError, bool fCheckCollateral=true)</td></tr>
+<tr class="memitem:ae91a3b63f88979a2cf5252b91b9f339d inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#ae91a3b63f88979a2cf5252b91b9f339d">IsValid</a> (std::string &amp;strError, bool fCheckCollateral=true)</td></tr>
 <tr class="separator:ae91a3b63f88979a2cf5252b91b9f339d inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc46e6b0931fd6335d0788311886a1ba inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="adc46e6b0931fd6335d0788311886a1ba"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetName</b> ()</td></tr>
+<tr class="memitem:adc46e6b0931fd6335d0788311886a1ba inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#adc46e6b0931fd6335d0788311886a1ba">GetName</a> ()</td></tr>
 <tr class="separator:adc46e6b0931fd6335d0788311886a1ba inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49cb2b919e0de352628d6157cfa1e1c8 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a49cb2b919e0de352628d6157cfa1e1c8"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetProposals</b> ()</td></tr>
+<tr class="memitem:a49cb2b919e0de352628d6157cfa1e1c8 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a49cb2b919e0de352628d6157cfa1e1c8">GetProposals</a> ()</td></tr>
 <tr class="separator:a49cb2b919e0de352628d6157cfa1e1c8 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf320ff0b74a982c0aadc5d8a5e168db inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="adf320ff0b74a982c0aadc5d8a5e168db"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetBlockStart</b> ()</td></tr>
+<tr class="memitem:adf320ff0b74a982c0aadc5d8a5e168db inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#adf320ff0b74a982c0aadc5d8a5e168db">GetBlockStart</a> ()</td></tr>
 <tr class="separator:adf320ff0b74a982c0aadc5d8a5e168db inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45b354d7c3ea65128130cf28e78f4bf4 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a45b354d7c3ea65128130cf28e78f4bf4"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetBlockEnd</b> ()</td></tr>
+<tr class="memitem:a45b354d7c3ea65128130cf28e78f4bf4 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a45b354d7c3ea65128130cf28e78f4bf4">GetBlockEnd</a> ()</td></tr>
 <tr class="separator:a45b354d7c3ea65128130cf28e78f4bf4 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6958b394133bceca95b49c25ce337b06 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a6958b394133bceca95b49c25ce337b06"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetVoteCount</b> ()</td></tr>
+<tr class="memitem:a6958b394133bceca95b49c25ce337b06 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a6958b394133bceca95b49c25ce337b06">GetVoteCount</a> ()</td></tr>
 <tr class="separator:a6958b394133bceca95b49c25ce337b06 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32c98c7a24100e099093e7d33b9330f2 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a32c98c7a24100e099093e7d33b9330f2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsTransactionValid</b> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;txNew, int nBlockHeight)</td></tr>
+<tr class="memitem:a32c98c7a24100e099093e7d33b9330f2 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a32c98c7a24100e099093e7d33b9330f2">IsTransactionValid</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;txNew, int nBlockHeight)</td></tr>
 <tr class="separator:a32c98c7a24100e099093e7d33b9330f2 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5ec8ed8c03ce6bbc1c49edd942501c8 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="aa5ec8ed8c03ce6bbc1c49edd942501c8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>GetBudgetPaymentByBlock</b> (int64_t nBlockHeight, <a class="el" href="class_c_tx_budget_payment.html">CTxBudgetPayment</a> &amp;payment)</td></tr>
+<tr class="memitem:aa5ec8ed8c03ce6bbc1c49edd942501c8 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#aa5ec8ed8c03ce6bbc1c49edd942501c8">GetBudgetPaymentByBlock</a> (int64_t nBlockHeight, <a class="el" href="class_c_tx_budget_payment.html">CTxBudgetPayment</a> &amp;payment)</td></tr>
 <tr class="separator:aa5ec8ed8c03ce6bbc1c49edd942501c8 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75c6ae33fd0079e732e1103d29501d01 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a75c6ae33fd0079e732e1103d29501d01"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>GetPayeeAndAmount</b> (int64_t nBlockHeight, <a class="el" href="class_c_script.html">CScript</a> &amp;payee, CAmount &amp;nAmount)</td></tr>
+<tr class="memitem:a75c6ae33fd0079e732e1103d29501d01 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a75c6ae33fd0079e732e1103d29501d01">GetPayeeAndAmount</a> (int64_t nBlockHeight, <a class="el" href="class_c_script.html">CScript</a> &amp;payee, <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;nAmount)</td></tr>
 <tr class="separator:a75c6ae33fd0079e732e1103d29501d01 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88614fdccb5cdf722403c11832df2ad0 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a88614fdccb5cdf722403c11832df2ad0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AutoCheck</b> ()</td></tr>
+<tr class="memitem:a88614fdccb5cdf722403c11832df2ad0 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a88614fdccb5cdf722403c11832df2ad0">AutoCheck</a> ()</td></tr>
 <tr class="separator:a88614fdccb5cdf722403c11832df2ad0 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20f2cdac9403d59688b527a98474cc7a inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a20f2cdac9403d59688b527a98474cc7a"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>GetTotalPayout</b> ()</td></tr>
+<tr class="memitem:a20f2cdac9403d59688b527a98474cc7a inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a20f2cdac9403d59688b527a98474cc7a">GetTotalPayout</a> ()</td></tr>
 <tr class="separator:a20f2cdac9403d59688b527a98474cc7a inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d5710eaf0fe541dcdce1d5f2ebee51c inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a8d5710eaf0fe541dcdce1d5f2ebee51c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SubmitVote</b> ()</td></tr>
+<tr class="memitem:a8d5710eaf0fe541dcdce1d5f2ebee51c inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a8d5710eaf0fe541dcdce1d5f2ebee51c">SubmitVote</a> ()</td></tr>
 <tr class="separator:a8d5710eaf0fe541dcdce1d5f2ebee51c inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a6fbb2d494342fb6d1c48a98d7cc856 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a9a6fbb2d494342fb6d1c48a98d7cc856"></a>
-string&#160;</td><td class="memItemRight" valign="bottom"><b>GetStatus</b> ()</td></tr>
+<tr class="memitem:a9a6fbb2d494342fb6d1c48a98d7cc856 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a9a6fbb2d494342fb6d1c48a98d7cc856">GetStatus</a> ()</td></tr>
 <tr class="separator:a9a6fbb2d494342fb6d1c48a98d7cc856 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ce6295086247f5982f93ee3cea956e6 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a0ce6295086247f5982f93ee3cea956e6"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GetHash</b> ()</td></tr>
+<tr class="memitem:a0ce6295086247f5982f93ee3cea956e6 inherit pub_methods_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a0ce6295086247f5982f93ee3cea956e6">GetHash</a> ()</td></tr>
 <tr class="separator:a0ce6295086247f5982f93ee3cea956e6 inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bbf758b27a7fb175e2889290f5ef78f inherit pub_methods_class_c_finalized_budget"><td class="memTemplParams" colspan="2"><a id="a1bbf758b27a7fb175e2889290f5ef78f"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:a1bbf758b27a7fb175e2889290f5ef78f inherit pub_methods_class_c_finalized_budget"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:a1bbf758b27a7fb175e2889290f5ef78f inherit pub_methods_class_c_finalized_budget"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:a1bbf758b27a7fb175e2889290f5ef78f inherit pub_methods_class_c_finalized_budget"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a1bbf758b27a7fb175e2889290f5ef78f">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:a1bbf758b27a7fb175e2889290f5ef78f inherit pub_methods_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a543ef11ceec3a6488050d62a7e27a465"><td class="memItemLeft" align="right" valign="top"><a id="a543ef11ceec3a6488050d62a7e27a465"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:a543ef11ceec3a6488050d62a7e27a465"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget_broadcast.html#a543ef11ceec3a6488050d62a7e27a465">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:a543ef11ceec3a6488050d62a7e27a465"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_class_c_finalized_budget"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_class_c_finalized_budget')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="class_c_finalized_budget.html">CFinalizedBudget</a></td></tr>
-<tr class="memitem:a00d9e3055bebaaef28543bd67e4ca162 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a00d9e3055bebaaef28543bd67e4ca162"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fValid</b></td></tr>
+<tr class="memitem:a00d9e3055bebaaef28543bd67e4ca162 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a00d9e3055bebaaef28543bd67e4ca162">fValid</a></td></tr>
 <tr class="separator:a00d9e3055bebaaef28543bd67e4ca162 inherit pub_attribs_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2a467abad2985ff3c32b29fc75500aa inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="ae2a467abad2985ff3c32b29fc75500aa"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>strBudgetName</b></td></tr>
+<tr class="memitem:ae2a467abad2985ff3c32b29fc75500aa inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#ae2a467abad2985ff3c32b29fc75500aa">strBudgetName</a></td></tr>
 <tr class="separator:ae2a467abad2985ff3c32b29fc75500aa inherit pub_attribs_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d04c262e10f4588b17eb3aba5ed9b52 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a1d04c262e10f4588b17eb3aba5ed9b52"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nBlockStart</b></td></tr>
+<tr class="memitem:a1d04c262e10f4588b17eb3aba5ed9b52 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a1d04c262e10f4588b17eb3aba5ed9b52">nBlockStart</a></td></tr>
 <tr class="separator:a1d04c262e10f4588b17eb3aba5ed9b52 inherit pub_attribs_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a639e7be9254d99deb42aeeb15de63174 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a639e7be9254d99deb42aeeb15de63174"></a>
-std::vector&lt; <a class="el" href="class_c_tx_budget_payment.html">CTxBudgetPayment</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vecBudgetPayments</b></td></tr>
+<tr class="memitem:a639e7be9254d99deb42aeeb15de63174 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_c_tx_budget_payment.html">CTxBudgetPayment</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a639e7be9254d99deb42aeeb15de63174">vecBudgetPayments</a></td></tr>
 <tr class="separator:a639e7be9254d99deb42aeeb15de63174 inherit pub_attribs_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a756460095ed59fd39e7f3018b4b208dd inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a756460095ed59fd39e7f3018b4b208dd"></a>
-map&lt; <a class="el" href="classuint256.html">uint256</a>, <a class="el" href="class_c_finalized_budget_vote.html">CFinalizedBudgetVote</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>mapVotes</b></td></tr>
+<tr class="memitem:a756460095ed59fd39e7f3018b4b208dd inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">map&lt; <a class="el" href="classuint256.html">uint256</a>, <a class="el" href="class_c_finalized_budget_vote.html">CFinalizedBudgetVote</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a756460095ed59fd39e7f3018b4b208dd">mapVotes</a></td></tr>
 <tr class="separator:a756460095ed59fd39e7f3018b4b208dd inherit pub_attribs_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a699a2f3cbea723957c2a944b08484bb5 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a699a2f3cbea723957c2a944b08484bb5"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>nFeeTXHash</b></td></tr>
+<tr class="memitem:a699a2f3cbea723957c2a944b08484bb5 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a699a2f3cbea723957c2a944b08484bb5">nFeeTXHash</a></td></tr>
 <tr class="separator:a699a2f3cbea723957c2a944b08484bb5 inherit pub_attribs_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bb3cb1d44021d5ef9996a81f3e09734 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="a3bb3cb1d44021d5ef9996a81f3e09734"></a>
-int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>nTime</b></td></tr>
+<tr class="memitem:a3bb3cb1d44021d5ef9996a81f3e09734 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#a3bb3cb1d44021d5ef9996a81f3e09734">nTime</a></td></tr>
 <tr class="separator:a3bb3cb1d44021d5ef9996a81f3e09734 inherit pub_attribs_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad426a5e67867bcb8f73df4aef50ac588 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top"><a id="ad426a5e67867bcb8f73df4aef50ac588"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:ad426a5e67867bcb8f73df4aef50ac588 inherit pub_attribs_class_c_finalized_budget"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget.html#ad426a5e67867bcb8f73df4aef50ac588">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:ad426a5e67867bcb8f73df4aef50ac588 inherit pub_attribs_class_c_finalized_budget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:aca095d8c66f7a40205cc5344ba12d786"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_finalized_budget_broadcast.html#aca095d8c66f7a40205cc5344ba12d786">vchSig</a></td></tr>
+<tr class="separator:aca095d8c66f7a40205cc5344ba12d786"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8h_source.html#l00400">400</a> of file <a class="el" href="masternode-budget_8h_source.html">masternode-budget.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a3d89b0b5358a37cff1c1b549c910681f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d89b0b5358a37cff1c1b549c910681f">&#9670;&nbsp;</a></span>CFinalizedBudgetBroadcast() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CFinalizedBudgetBroadcast::CFinalizedBudgetBroadcast </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8cpp_source.html#l02060">2060</a> of file <a class="el" href="masternode-budget_8cpp_source.html">masternode-budget.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a0fc9903afc9a1ccfc7008f0bb95ba26e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fc9903afc9a1ccfc7008f0bb95ba26e">&#9670;&nbsp;</a></span>CFinalizedBudgetBroadcast() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CFinalizedBudgetBroadcast::CFinalizedBudgetBroadcast </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_finalized_budget.html">CFinalizedBudget</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8cpp_source.html#l02070">2070</a> of file <a class="el" href="masternode-budget_8cpp_source.html">masternode-budget.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a800780793836750ec3c848e87fb397a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a800780793836750ec3c848e87fb397a7">&#9670;&nbsp;</a></span>CFinalizedBudgetBroadcast() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CFinalizedBudgetBroadcast::CFinalizedBudgetBroadcast </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>strBudgetNameIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nBlockStartIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="class_c_tx_budget_payment.html">CTxBudgetPayment</a> &gt;&#160;</td>
+          <td class="paramname"><em>vecBudgetPaymentsIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classuint256.html">uint256</a>&#160;</td>
+          <td class="paramname"><em>nFeeTXHashIn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8cpp_source.html#l02080">2080</a> of file <a class="el" href="masternode-budget_8cpp_source.html">masternode-budget.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="afccbdda2d00c695c63802db0fda2d489"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afccbdda2d00c695c63802db0fda2d489">&#9670;&nbsp;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a>&amp; CFinalizedBudgetBroadcast::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a>&#160;</td>
+          <td class="paramname"><em>from</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8h_source.html#l00425">425</a> of file <a class="el" href="masternode-budget_8h_source.html">masternode-budget.h</a>.</p>
+
+</div>
+</div>
+<a id="abb4cfac3327e7cb912b368054d23fc9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb4cfac3327e7cb912b368054d23fc9c">&#9670;&nbsp;</a></span>Relay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CFinalizedBudgetBroadcast::Relay </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8cpp_source.html#l02090">2090</a> of file <a class="el" href="masternode-budget_8cpp_source.html">masternode-budget.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a2c9bac4bb653dbae4c3861fd12380dcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c9bac4bb653dbae4c3861fd12380dcd">&#9670;&nbsp;</a></span>SerializationOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream , typename Operation &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CFinalizedBudgetBroadcast::SerializationOp </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Operation&#160;</td>
+          <td class="paramname"><em>ser_action</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8h_source.html#l00437">437</a> of file <a class="el" href="masternode-budget_8h_source.html">masternode-budget.h</a>.</p>
+
+</div>
+</div>
+<a id="ac9e99f471d82a9c2d76137a758740315"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9e99f471d82a9c2d76137a758740315">&#9670;&nbsp;</a></span>swap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CFinalizedBudgetBroadcast::swap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> &amp;&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_c_finalized_budget_broadcast.html">CFinalizedBudgetBroadcast</a> &amp;&#160;</td>
+          <td class="paramname"><em>second</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8h_source.html#l00410">410</a> of file <a class="el" href="masternode-budget_8h_source.html">masternode-budget.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a543ef11ceec3a6488050d62a7e27a465"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a543ef11ceec3a6488050d62a7e27a465">&#9670;&nbsp;</a></span>ADD_SERIALIZE_METHODS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CFinalizedBudgetBroadcast::ADD_SERIALIZE_METHODS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8h_source.html#l00433">433</a> of file <a class="el" href="masternode-budget_8h_source.html">masternode-budget.h</a>.</p>
+
+</div>
+</div>
+<a id="aca095d8c66f7a40205cc5344ba12d786"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca095d8c66f7a40205cc5344ba12d786">&#9670;&nbsp;</a></span>vchSig</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;unsigned char&gt; CFinalizedBudgetBroadcast::vchSig</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="masternode-budget_8h_source.html#l00403">403</a> of file <a class="el" href="masternode-budget_8h_source.html">masternode-budget.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="masternode-budget_8h_source.html">masternode-budget.h</a></li>
-<li>PIVX/src/masternode-budget.cpp</li>
+<li>src/<a class="el" href="masternode-budget_8h_source.html">masternode-budget.h</a></li>
+<li>src/<a class="el" href="masternode-budget_8cpp_source.html">masternode-budget.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:27 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

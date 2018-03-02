@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="sph_shavite_big_context",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsph__shavite__big__context.html",tooltip="This structure is a context for SHAvite-384 and SHAvite-512 computations: it contains the intermediat..."];
+}

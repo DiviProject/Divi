@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: PIVX/src/crypto/sph_cubehash.h File Reference</title>
+<title>DIVX: src/crypto/sph_cubehash.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -61,7 +64,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_99392e72b35c7f25e8ea4b7ee23fbaff.html">PIVX</a></li><li class="navelem"><a class="el" href="dir_2daf99c3a7cf26bd67a6e059ee4a1333.html">src</a></li><li class="navelem"><a class="el" href="dir_d641de86a9a5208d57c21dc37a9357c7.html">crypto</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_4261af1259721e3e39e0d2dd7354b511.html">crypto</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -74,75 +77,116 @@ $(function() {
 <div class="title">sph_cubehash.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>CubeHash interface.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stddef.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="sph__types_8h_source.html">sph_types.h</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for sph_cubehash.h:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
 </div>
 <p><a href="sph__cubehash_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsph__cubehash__context.html">sph_cubehash_context</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This structure is a context for CubeHash computations: it contains the intermediate values and some data from the last entered block.  <a href="structsph__cubehash__context.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a462036f7b48d79b83a5e43f73e58488b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a462036f7b48d79b83a5e43f73e58488b">SPH_SIZE_cubehash224</a>&#160;&#160;&#160;224</td></tr>
+<tr class="memdesc:a462036f7b48d79b83a5e43f73e58488b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output size (in bits) for CubeHash-224.  <a href="#a462036f7b48d79b83a5e43f73e58488b">More...</a><br /></td></tr>
 <tr class="separator:a462036f7b48d79b83a5e43f73e58488b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf4a9013a30ebf39fdd23b44f738525e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#aaf4a9013a30ebf39fdd23b44f738525e">SPH_SIZE_cubehash256</a>&#160;&#160;&#160;256</td></tr>
+<tr class="memdesc:aaf4a9013a30ebf39fdd23b44f738525e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output size (in bits) for CubeHash-256.  <a href="#aaf4a9013a30ebf39fdd23b44f738525e">More...</a><br /></td></tr>
 <tr class="separator:aaf4a9013a30ebf39fdd23b44f738525e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a724fec5d0915cbffc660a0a9103bb7d1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a724fec5d0915cbffc660a0a9103bb7d1">SPH_SIZE_cubehash384</a>&#160;&#160;&#160;384</td></tr>
+<tr class="memdesc:a724fec5d0915cbffc660a0a9103bb7d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output size (in bits) for CubeHash-384.  <a href="#a724fec5d0915cbffc660a0a9103bb7d1">More...</a><br /></td></tr>
 <tr class="separator:a724fec5d0915cbffc660a0a9103bb7d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b1c9c1b1f6fa1db7d8d09f6c37c0ecf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a2b1c9c1b1f6fa1db7d8d09f6c37c0ecf">SPH_SIZE_cubehash512</a>&#160;&#160;&#160;512</td></tr>
+<tr class="memdesc:a2b1c9c1b1f6fa1db7d8d09f6c37c0ecf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output size (in bits) for CubeHash-512.  <a href="#a2b1c9c1b1f6fa1db7d8d09f6c37c0ecf">More...</a><br /></td></tr>
 <tr class="separator:a2b1c9c1b1f6fa1db7d8d09f6c37c0ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a0eedb73bd6abdfaf4bb44603223ad6eb"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structsph__cubehash__context.html">sph_cubehash_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a0eedb73bd6abdfaf4bb44603223ad6eb">sph_cubehash224_context</a></td></tr>
+<tr class="memdesc:a0eedb73bd6abdfaf4bb44603223ad6eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for a CubeHash-224 context (identical to the common context).  <a href="#a0eedb73bd6abdfaf4bb44603223ad6eb">More...</a><br /></td></tr>
 <tr class="separator:a0eedb73bd6abdfaf4bb44603223ad6eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e82988547ad908f9da4e94c41ec5d06"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structsph__cubehash__context.html">sph_cubehash_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a1e82988547ad908f9da4e94c41ec5d06">sph_cubehash256_context</a></td></tr>
+<tr class="memdesc:a1e82988547ad908f9da4e94c41ec5d06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for a CubeHash-256 context (identical to the common context).  <a href="#a1e82988547ad908f9da4e94c41ec5d06">More...</a><br /></td></tr>
 <tr class="separator:a1e82988547ad908f9da4e94c41ec5d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac52c6f16fb25333034a060ee5c6d557d"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structsph__cubehash__context.html">sph_cubehash_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#ac52c6f16fb25333034a060ee5c6d557d">sph_cubehash384_context</a></td></tr>
+<tr class="memdesc:ac52c6f16fb25333034a060ee5c6d557d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for a CubeHash-384 context (identical to the common context).  <a href="#ac52c6f16fb25333034a060ee5c6d557d">More...</a><br /></td></tr>
 <tr class="separator:ac52c6f16fb25333034a060ee5c6d557d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf7697e5be1bf7d2d06f24d48531a7a2"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structsph__cubehash__context.html">sph_cubehash_context</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#acf7697e5be1bf7d2d06f24d48531a7a2">sph_cubehash512_context</a></td></tr>
+<tr class="memdesc:acf7697e5be1bf7d2d06f24d48531a7a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for a CubeHash-512 context (identical to the common context).  <a href="#acf7697e5be1bf7d2d06f24d48531a7a2">More...</a><br /></td></tr>
 <tr class="separator:acf7697e5be1bf7d2d06f24d48531a7a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a77e1a7f6aee90b3f5e75d00bd9a81ae2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a77e1a7f6aee90b3f5e75d00bd9a81ae2">sph_cubehash224_init</a> (void *cc)</td></tr>
+<tr class="memdesc:a77e1a7f6aee90b3f5e75d00bd9a81ae2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a CubeHash-224 context.  <a href="#a77e1a7f6aee90b3f5e75d00bd9a81ae2">More...</a><br /></td></tr>
 <tr class="separator:a77e1a7f6aee90b3f5e75d00bd9a81ae2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5369d99cbcdde4c85cb3e180f06bf617"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a5369d99cbcdde4c85cb3e180f06bf617">sph_cubehash224</a> (void *cc, const void *data, size_t len)</td></tr>
+<tr class="memdesc:a5369d99cbcdde4c85cb3e180f06bf617"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process some data bytes.  <a href="#a5369d99cbcdde4c85cb3e180f06bf617">More...</a><br /></td></tr>
 <tr class="separator:a5369d99cbcdde4c85cb3e180f06bf617"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ca7820df2296260c03ac34dcdd48622"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a0ca7820df2296260c03ac34dcdd48622">sph_cubehash224_close</a> (void *cc, void *dst)</td></tr>
+<tr class="memdesc:a0ca7820df2296260c03ac34dcdd48622"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminate the current CubeHash-224 computation and output the result into the provided buffer.  <a href="#a0ca7820df2296260c03ac34dcdd48622">More...</a><br /></td></tr>
 <tr class="separator:a0ca7820df2296260c03ac34dcdd48622"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a446468c3435bf779317d5cdbda7868ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a446468c3435bf779317d5cdbda7868ad">sph_cubehash224_addbits_and_close</a> (void *cc, unsigned ub, unsigned n, void *dst)</td></tr>
+<tr class="memdesc:a446468c3435bf779317d5cdbda7868ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (28 bytes).  <a href="#a446468c3435bf779317d5cdbda7868ad">More...</a><br /></td></tr>
 <tr class="separator:a446468c3435bf779317d5cdbda7868ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a314cb63762aa2793b8c46833a65007f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a314cb63762aa2793b8c46833a65007f7">sph_cubehash256_init</a> (void *cc)</td></tr>
+<tr class="memdesc:a314cb63762aa2793b8c46833a65007f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a CubeHash-256 context.  <a href="#a314cb63762aa2793b8c46833a65007f7">More...</a><br /></td></tr>
 <tr class="separator:a314cb63762aa2793b8c46833a65007f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6c74b703f3e50e3af803f5eb788fb3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#ac6c74b703f3e50e3af803f5eb788fb3f">sph_cubehash256</a> (void *cc, const void *data, size_t len)</td></tr>
+<tr class="memdesc:ac6c74b703f3e50e3af803f5eb788fb3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process some data bytes.  <a href="#ac6c74b703f3e50e3af803f5eb788fb3f">More...</a><br /></td></tr>
 <tr class="separator:ac6c74b703f3e50e3af803f5eb788fb3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a746cbe1fb847c651d59e76cc9a5298e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a746cbe1fb847c651d59e76cc9a5298e6">sph_cubehash256_close</a> (void *cc, void *dst)</td></tr>
+<tr class="memdesc:a746cbe1fb847c651d59e76cc9a5298e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminate the current CubeHash-256 computation and output the result into the provided buffer.  <a href="#a746cbe1fb847c651d59e76cc9a5298e6">More...</a><br /></td></tr>
 <tr class="separator:a746cbe1fb847c651d59e76cc9a5298e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d91a4e83be2dd3aae8c3ef0e763c35f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a2d91a4e83be2dd3aae8c3ef0e763c35f">sph_cubehash256_addbits_and_close</a> (void *cc, unsigned ub, unsigned n, void *dst)</td></tr>
+<tr class="memdesc:a2d91a4e83be2dd3aae8c3ef0e763c35f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (32 bytes).  <a href="#a2d91a4e83be2dd3aae8c3ef0e763c35f">More...</a><br /></td></tr>
 <tr class="separator:a2d91a4e83be2dd3aae8c3ef0e763c35f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e54cf407552f6b738fc72627db37e4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a2e54cf407552f6b738fc72627db37e4f">sph_cubehash384_init</a> (void *cc)</td></tr>
+<tr class="memdesc:a2e54cf407552f6b738fc72627db37e4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a CubeHash-384 context.  <a href="#a2e54cf407552f6b738fc72627db37e4f">More...</a><br /></td></tr>
 <tr class="separator:a2e54cf407552f6b738fc72627db37e4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a262455fe81b8a08e354852f5233c7eb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a262455fe81b8a08e354852f5233c7eb8">sph_cubehash384</a> (void *cc, const void *data, size_t len)</td></tr>
+<tr class="memdesc:a262455fe81b8a08e354852f5233c7eb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process some data bytes.  <a href="#a262455fe81b8a08e354852f5233c7eb8">More...</a><br /></td></tr>
 <tr class="separator:a262455fe81b8a08e354852f5233c7eb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3900bccd525116277111e12612ed0e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#ac3900bccd525116277111e12612ed0e3">sph_cubehash384_close</a> (void *cc, void *dst)</td></tr>
+<tr class="memdesc:ac3900bccd525116277111e12612ed0e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminate the current CubeHash-384 computation and output the result into the provided buffer.  <a href="#ac3900bccd525116277111e12612ed0e3">More...</a><br /></td></tr>
 <tr class="separator:ac3900bccd525116277111e12612ed0e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a716c56c6ddf7ffafb4854195f00a11a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a716c56c6ddf7ffafb4854195f00a11a4">sph_cubehash384_addbits_and_close</a> (void *cc, unsigned ub, unsigned n, void *dst)</td></tr>
+<tr class="memdesc:a716c56c6ddf7ffafb4854195f00a11a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (48 bytes).  <a href="#a716c56c6ddf7ffafb4854195f00a11a4">More...</a><br /></td></tr>
 <tr class="separator:a716c56c6ddf7ffafb4854195f00a11a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f59b7878edb26c01da43141f158b6eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a5f59b7878edb26c01da43141f158b6eb">sph_cubehash512_init</a> (void *cc)</td></tr>
+<tr class="memdesc:a5f59b7878edb26c01da43141f158b6eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a CubeHash-512 context.  <a href="#a5f59b7878edb26c01da43141f158b6eb">More...</a><br /></td></tr>
 <tr class="separator:a5f59b7878edb26c01da43141f158b6eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad63e5eeb1d5d272d84be5272d281e44e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#ad63e5eeb1d5d272d84be5272d281e44e">sph_cubehash512</a> (void *cc, const void *data, size_t len)</td></tr>
+<tr class="memdesc:ad63e5eeb1d5d272d84be5272d281e44e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process some data bytes.  <a href="#ad63e5eeb1d5d272d84be5272d281e44e">More...</a><br /></td></tr>
 <tr class="separator:ad63e5eeb1d5d272d84be5272d281e44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8450930057421f35b61795e8101e44d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#a8450930057421f35b61795e8101e44d1">sph_cubehash512_close</a> (void *cc, void *dst)</td></tr>
+<tr class="memdesc:a8450930057421f35b61795e8101e44d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminate the current CubeHash-512 computation and output the result into the provided buffer.  <a href="#a8450930057421f35b61795e8101e44d1">More...</a><br /></td></tr>
 <tr class="separator:a8450930057421f35b61795e8101e44d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecc593c4125e80af4b82bb1b43495448"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sph__cubehash_8h.html#aecc593c4125e80af4b82bb1b43495448">sph_cubehash512_addbits_and_close</a> (void *cc, unsigned ub, unsigned n, void *dst)</td></tr>
+<tr class="memdesc:aecc593c4125e80af4b82bb1b43495448"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (64 bytes).  <a href="#aecc593c4125e80af4b82bb1b43495448">More...</a><br /></td></tr>
 <tr class="separator:aecc593c4125e80af4b82bb1b43495448"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>CubeHash interface. CubeHash is a family of functions which differ by their output size; this implementation defines CubeHash for output sizes 224, 256, 384 and 512 bits, with the "standard parameters" (CubeHash16/32 with the CubeHash specification notations).</p>
+<div class="textblock"><p>CubeHash interface. </p>
+<p>CubeHash is a family of functions which differ by their output size; this implementation defines CubeHash for output sizes 224, 256, 384 and 512 bits, with the "standard parameters" (CubeHash16/32 with the CubeHash specification notations).</p>
 <p>==========================(LICENSE BEGIN)============================</p>
 <p>Copyright (c) 2007-2010 Projet RNRT SAPHIR</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
@@ -150,6 +194,8 @@ Functions</h2></td></tr>
 <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 <p>===========================(LICENSE END)=============================</p>
 <dl class="section author"><dt>Author</dt><dd>Thomas Pornin <a href="#" onclick="location.href='mai'+'lto:'+'tho'+'ma'+'s.p'+'or'+'nin'+'@c'+'ryp'+'to'+'log'+'.c'+'om'; return false;">thoma<span style="display: none;">.nosp@m.</span>s.po<span style="display: none;">.nosp@m.</span>rnin@<span style="display: none;">.nosp@m.</span>cryp<span style="display: none;">.nosp@m.</span>tolog<span style="display: none;">.nosp@m.</span>.com</a> </dd></dl>
+
+<p class="definition">Definition in file <a class="el" href="sph__cubehash_8h_source.html">sph_cubehash.h</a>.</p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a462036f7b48d79b83a5e43f73e58488b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a462036f7b48d79b83a5e43f73e58488b">&#9670;&nbsp;</a></span>SPH_SIZE_cubehash224</h2>
@@ -162,7 +208,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Output size (in bits) for CubeHash-224. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__cubehash_8h_source.html#l00050">50</a> of file <a class="el" href="sph__cubehash_8h_source.html">sph_cubehash.h</a>.</p>
 
 </div>
 </div>
@@ -177,7 +226,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Output size (in bits) for CubeHash-256. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__cubehash_8h_source.html#l00055">55</a> of file <a class="el" href="sph__cubehash_8h_source.html">sph_cubehash.h</a>.</p>
 
 </div>
 </div>
@@ -192,7 +244,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Output size (in bits) for CubeHash-384. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__cubehash_8h_source.html#l00060">60</a> of file <a class="el" href="sph__cubehash_8h_source.html">sph_cubehash.h</a>.</p>
 
 </div>
 </div>
@@ -207,7 +262,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Output size (in bits) for CubeHash-512. </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__cubehash_8h_source.html#l00065">65</a> of file <a class="el" href="sph__cubehash_8h_source.html">sph_cubehash.h</a>.</p>
 
 </div>
 </div>
@@ -223,7 +281,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Type for a CubeHash-224 context (identical to the common context). </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__cubehash_8h_source.html#l00088">88</a> of file <a class="el" href="sph__cubehash_8h_source.html">sph_cubehash.h</a>.</p>
 
 </div>
 </div>
@@ -238,7 +299,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Type for a CubeHash-256 context (identical to the common context). </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__cubehash_8h_source.html#l00093">93</a> of file <a class="el" href="sph__cubehash_8h_source.html">sph_cubehash.h</a>.</p>
 
 </div>
 </div>
@@ -253,7 +317,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Type for a CubeHash-384 context (identical to the common context). </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__cubehash_8h_source.html#l00098">98</a> of file <a class="el" href="sph__cubehash_8h_source.html">sph_cubehash.h</a>.</p>
 
 </div>
 </div>
@@ -268,7 +335,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Type for a CubeHash-512 context (identical to the common context). </p>
+
+<p class="definition">Definition at line <a class="el" href="sph__cubehash_8h_source.html#l00103">103</a> of file <a class="el" href="sph__cubehash_8h_source.html">sph_cubehash.h</a>.</p>
 
 </div>
 </div>
@@ -304,7 +374,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Process some data bytes. It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
+
+<p>Process some data bytes. </p>
+<p>It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-224 context </td></tr>
@@ -313,6 +385,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00615">615</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
 
 </div>
 </div>
@@ -353,7 +427,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (28 bytes). If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
+
+<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (28 bytes). </p>
+<p>If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-224 context </td></tr>
@@ -363,6 +439,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00629">629</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -391,7 +475,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Terminate the current CubeHash-224 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (28 bytes). The context is automatically reinitialized.</p>
+
+<p>Terminate the current CubeHash-224 computation and output the result into the provided buffer. </p>
+<p>The destination buffer must be wide enough to accomodate the result (28 bytes). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-224 context </td></tr>
@@ -399,6 +485,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00622">622</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -417,13 +511,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize a CubeHash-224 context. This process performs no memory allocation.</p>
+
+<p>Initialize a CubeHash-224 context. </p>
+<p>This process performs no memory allocation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-224 context (pointer to a <code>sph_cubehash224_context</code>) </td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00608">608</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
 
 </div>
 </div>
@@ -458,7 +556,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Process some data bytes. It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
+
+<p>Process some data bytes. </p>
+<p>It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-256 context </td></tr>
@@ -467,6 +567,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00644">644</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
 
 </div>
 </div>
@@ -507,7 +609,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (32 bytes). If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
+
+<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (32 bytes). </p>
+<p>If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-256 context </td></tr>
@@ -517,6 +621,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00658">658</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -545,7 +657,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Terminate the current CubeHash-256 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (32 bytes). The context is automatically reinitialized.</p>
+
+<p>Terminate the current CubeHash-256 computation and output the result into the provided buffer. </p>
+<p>The destination buffer must be wide enough to accomodate the result (32 bytes). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-256 context </td></tr>
@@ -553,6 +667,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00651">651</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -571,13 +693,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize a CubeHash-256 context. This process performs no memory allocation.</p>
+
+<p>Initialize a CubeHash-256 context. </p>
+<p>This process performs no memory allocation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-256 context (pointer to a <code>sph_cubehash256_context</code>) </td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00637">637</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
 
 </div>
 </div>
@@ -612,7 +738,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Process some data bytes. It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
+
+<p>Process some data bytes. </p>
+<p>It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-384 context </td></tr>
@@ -621,6 +749,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00673">673</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
 
 </div>
 </div>
@@ -661,7 +791,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (48 bytes). If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
+
+<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (48 bytes). </p>
+<p>If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-384 context </td></tr>
@@ -671,6 +803,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00687">687</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -699,7 +839,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Terminate the current CubeHash-384 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (48 bytes). The context is automatically reinitialized.</p>
+
+<p>Terminate the current CubeHash-384 computation and output the result into the provided buffer. </p>
+<p>The destination buffer must be wide enough to accomodate the result (48 bytes). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-384 context </td></tr>
@@ -707,6 +849,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00680">680</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -725,13 +875,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize a CubeHash-384 context. This process performs no memory allocation.</p>
+
+<p>Initialize a CubeHash-384 context. </p>
+<p>This process performs no memory allocation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-384 context (pointer to a <code>sph_cubehash384_context</code>) </td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00666">666</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
 
 </div>
 </div>
@@ -766,7 +920,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Process some data bytes. It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
+
+<p>Process some data bytes. </p>
+<p>It is acceptable that <code>len</code> is zero (in which case this function does nothing).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-512 context </td></tr>
@@ -775,6 +931,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00702">702</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
 
 </div>
 </div>
@@ -815,7 +973,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (64 bytes). If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
+
+<p>Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (64 bytes). </p>
+<p>If bit number i in <code>ub</code> has value 2^i, then the extra bits are those numbered 7 downto 8-n (this is the big-endian convention at the byte level). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-512 context </td></tr>
@@ -825,6 +985,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00716">716</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -853,7 +1021,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Terminate the current CubeHash-512 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (64 bytes). The context is automatically reinitialized.</p>
+
+<p>Terminate the current CubeHash-512 computation and output the result into the provided buffer. </p>
+<p>The destination buffer must be wide enough to accomodate the result (64 bytes). The context is automatically reinitialized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-512 context </td></tr>
@@ -861,6 +1031,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00709">709</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 9 -->
+</div>
+</div>
 
 </div>
 </div>
@@ -879,7 +1057,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize a CubeHash-512 context. This process performs no memory allocation.</p>
+
+<p>Initialize a CubeHash-512 context. </p>
+<p>This process performs no memory allocation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cc</td><td>the CubeHash-512 context (pointer to a <code>sph_cubehash512_context</code>) </td></tr>
@@ -887,12 +1067,14 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="cubehash_8c_source.html#l00695">695</a> of file <a class="el" href="cubehash_8c_source.html">cubehash.c</a>.</p>
+
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:23 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

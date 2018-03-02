@@ -1,0 +1,17 @@
+digraph "COutPoint::SetNull"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node38 [label="COutPoint::SetNull",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node38 -> Node39 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="CBlockIndex::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a6139e9e2cfceaef3694631cb7c330ff0"];
+  Node39 -> Node40 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node40 [label="CBlockIndex::CBlockIndex",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a0eff34cbfb4470885020734581dc1555"];
+  Node38 -> Node41 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node41 [label="CBlockIndex::CBlockIndex",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a13df42495bcb07ed87e15efb5d43c324"];
+  Node38 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 [label="CDiskBlockIndex::SerializationOp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_disk_block_index.html#a2ef7b51f2777fcc1b9625a0ee000f9b5"];
+  Node38 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="COutPoint::COutPoint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_out_point.html#a4912217c2fe5e353d9f5546abb377e86"];
+}

@@ -1,0 +1,27 @@
+digraph "GUIUtil::TableViewLastColumnResizingFixer::disconnectViewHeadersSignals"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node42 [label="GUIUtil::TableViewLastColumn\lResizingFixer::disconnectViewHeaders\lSignals",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node42 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="GUIUtil::TableViewLastColumn\lResizingFixer::adjustTableColumnsWidth",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ac5622cca5767d788033fff5d54629d7f"];
+  Node43 -> Node44 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="GUIUtil::TableViewLastColumn\lResizingFixer::on_sectionResized",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a31422ff98c30c95c01dba5bbb8ccbcae"];
+  Node44 -> Node45 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node45 [label="GUIUtil::TableViewLastColumn\lResizingFixer::connectViewHeaders\lSignals",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ab01fe3dbf021a9306ec74afda41d6f45"];
+  Node45 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node45 -> Node46 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node46 [label="GUIUtil::TableViewLastColumn\lResizingFixer::stretchColumnWidth",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a89971ed347cf9d25e02cfb7d9c7e3ca6"];
+  Node46 -> Node47 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node47 [label="ReceiveCoinsDialog\l::resizeEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a8ebec2144a935622b4a33c57601a8868"];
+  Node46 -> Node48 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node48 [label="TransactionView::resizeEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_view.html#a6bcc05526bc111b4299d32d882f633b8"];
+  Node45 -> Node49 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node49 [label="GUIUtil::TableViewLastColumn\lResizingFixer::on_geometriesChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a93f3b32cf06688099875a1c9d2df57f2"];
+  Node49 -> Node45 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node49 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 -> Node46 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 -> Node49 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

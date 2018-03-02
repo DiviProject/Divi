@@ -1,0 +1,19 @@
+digraph "libzerocoin::Accumulator::getValue"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node23 [label="libzerocoin::Accumulator\l::getValue",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node23 -> Node24 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 [label="libzerocoin::Accumulator\lWitness::resetValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_accumulator_witness.html#a6edd0f05c65891cc10a58e5cd7eaf277"];
+  Node23 -> Node25 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="libzerocoin::Accumulator\lWitness::getValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_accumulator_witness.html#af0afa4225f01cd21bdc8e88e310a0168"];
+  Node25 -> Node26 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 [label="libzerocoin::Accumulator\lProofOfKnowledge::Accumulator\lProofOfKnowledge",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_accumulator_proof_of_knowledge.html#acce987e79e2498918495c3a7e8873810",tooltip="Generates a proof that a commitment to a coin c was accumulated. "];
+  Node23 -> Node27 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node27 [label="libzerocoin::Accumulator\lProofOfKnowledge::Verify",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_accumulator_proof_of_knowledge.html#afa37fa003c2e3ce95e00525fe84d1e52",tooltip="Verifies that a commitment c is accumulated in accumulated a. "];
+  Node27 -> Node28 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node28 [label="libzerocoin::CoinSpend\l::Verify",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_coin_spend.html#ad8005b899d45939c63ccaba43011c85b"];
+  Node28 -> Node29 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node29 [label="CWallet::MintToTxIn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#a5b32d86806615c59f15431f300f0c729"];
+}

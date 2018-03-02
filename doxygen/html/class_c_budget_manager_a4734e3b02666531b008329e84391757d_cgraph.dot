@@ -1,0 +1,13 @@
+digraph "CBudgetManager::MarkSynced"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node188 [label="CBudgetManager::MarkSynced",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node188 -> Node189 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node189 [label="CBudgetManager::FindProposal",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a185f3408172582919cf072835e716373"];
+  Node189 -> Node190 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node190 [label="CBudgetProposal::GetYeas",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_proposal.html#afa25c9e366bff2c00ba488ce5d89e0d1"];
+  Node188 -> Node191 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node191 [label="CBudgetManager::FindFinalized\lBudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a26ebbe767534cce413810d7e7a1bf78c"];
+}

@@ -1,0 +1,46 @@
+digraph "CValidationState::GetRejectReason"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node47 [label="CValidationState::GetReject\lReason",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node47 -> Node48 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node48 [label="MultisigDialog::commitMultisigTx",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a4b8f46adc64493a801bffb464b7c09ea"];
+  Node48 -> Node49 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node49 [label="MultisigDialog::Multisig\lDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#af8ff2a9f6dc05a9468d955cb428c6474"];
+  Node47 -> Node50 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node50 [label="invalidateblock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcblockchain_8cpp.html#aad7d6af4efa7bf90262450c0dd5998da"];
+  Node47 -> Node51 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node51 [label="reconsiderblock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcblockchain_8cpp.html#a2188d4f05e6f6176e49da2a1d41b55e3"];
+  Node47 -> Node52 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node52 [label="sendrawtransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#ad5aad44f890060f42efb49acf349511e"];
+  Node47 -> Node53 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node53 [label="CMerkleTx::AcceptToMemoryPool",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_merkle_tx.html#a61126e811a53b941b3efdf5a4e83db90"];
+  Node53 -> Node54 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node54 [label="CObfuscationPool::ChargeFees",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#a683c9cff6eb710592b4cf81f3076fe25",tooltip="Charge fees to bad actors (Charge clients a fee if they&#39;re abusive) "];
+  Node53 -> Node55 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node55 [label="CObfuscationPool::Charge\lRandomFees",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#a5853e64dcd6b6125ba9e52688eee29a3",tooltip="Rarely charge fees to pay miners. "];
+  Node53 -> Node56 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node56 [label="CWallet::ReacceptWalletTransactions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__map_wallet.html#ga796c23450c8482e10e0c75ae5c1fa8ed"];
+  Node56 -> Node57 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node57 [label="MultisigDialog::on\l_importAddressButton\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#acd1dfe3a52a5a91b31f8042a119c7618"];
+  Node53 -> Node58 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node58 [label="CWallet::CommitTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#gaa13fbeaebd271f910a54cc5b82d73fde",tooltip="Call after CreateTransaction unless you want to abort. "];
+  Node58 -> Node48 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node58 -> Node59 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node59 [label="WalletModel::sendCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39"];
+  Node58 -> Node60 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node60 [label="preparebudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a8c07f1b00f74d9d2227428a552679b8c"];
+  Node60 -> Node61 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node61 [label="mnbudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#aeabbf924be4d2ce4bedb28a394e1fc6b"];
+  Node58 -> Node62 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node62 [label="SendMoney",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a49669702f73a24c1d1dc5a08d7c0785f"];
+  Node62 -> Node63 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node63 [label="obfuscation",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a6cdbacc257b42445f0c6122a061af2ca"];
+  Node58 -> Node64 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node64 [label="sendmany",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d"];
+  Node58 -> Node65 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node65 [label="CWallet::SpendZerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#aedd0ae4e683ee642272e170b7afd33fe"];
+  Node65 -> Node66 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node66 [label="spendzerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#adea64c692ec279a1a3a2c9143f264955"];
+}

@@ -1,0 +1,14 @@
+digraph "WalletView::unlockWallet"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node604 [label="WalletView::unlockWallet",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node604 -> Node605 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node605 [label="WalletModel::getEncryption\lStatus",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#aa89632d2019414f2ab85674cd4d01398"];
+  Node605 -> Node606 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node606 [label="CCryptoKeyStore::IsCrypted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#acc8fed44366c98fb481333ca6e867088"];
+  Node605 -> Node607 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node607 [label="CCryptoKeyStore::IsLocked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#a52919fa284a3aa10f1b4bd6018b6dbee"];
+  Node607 -> Node606 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

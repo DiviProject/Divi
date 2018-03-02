@@ -75,7 +75,7 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of
-    (0, uint256("0x000002694c35a5badd25c360d2c269bfc0b56dce9ec46994a668e4a46bc73629"));
+    (0, uint256("0x001"));
     //(424998, uint256("f31e381eedb0ed3ed65fcc98cc71f36012bee32e8efd017c4f9fb0620fd35f6b"))
     //(616764, uint256("29dd0bd1c59484f290896687b4ffb6a49afa5c498caf61967c69a541f8191557")) //first block to use modifierV2
     //(623933, uint256("c7aafa648a0f1450157dc93bd4d7448913a85b7448f803b4ab970d91fc2a7da7"))
@@ -91,7 +91,7 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
     //(908000, uint256("202708f8c289b676fceb832a079ff6b308a28608339acbf7584de533619d014d"));
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1518723178, // * UNIX timestamp of last checkpoint block
+    1520007171, // * UNIX timestamp of last checkpoint block
     0,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
     2000        // * estimated number of transactions per day after checkpoint
@@ -101,7 +101,7 @@ static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
     boost::assign::map_list_of(0, uint256("0x001"));
 static const Checkpoints::CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
-    1518723178,
+    1520007171,
     0,
     250};
 
@@ -134,11 +134,11 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 4-byte int at any alignment.
          */
-        pchMessageStart[0] = 0x90;
-        pchMessageStart[1] = 0xc4;
-        pchMessageStart[2] = 0xfd;
-        pchMessageStart[3] = 0xe9;
-        vAlertPubKey = ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f");
+        pchMessageStart[0] = 0xdf;
+        pchMessageStart[1] = 0xa0;
+        pchMessageStart[2] = 0x8d;
+        pchMessageStart[3] = 0x70;
+        vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51472;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVX starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 210000;
@@ -174,22 +174,22 @@ public:
          *     CTxOut(nValue=50.00000000, scriptPubKey=0xA9037BAC7050C479B121CF)
          *   vMerkleTree: e0028e
          */
-        const char* pszTimestamp = "What happened to the Tesla that Elon Musk shot into space?";
+        const char* pszTimestamp = "March 2, 2018 - East And West, Both Coasts Brace For Major Winter Storms";
         CMutableTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CScriptNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
         txNew.vout[0].nValue = 250 * COIN;
-        txNew.vout[0].scriptPubKey = CScript() << ParseHex("04c10e83b2703ccf322f7dbd62dd5855ac7c10bd055814ce121ba32607d573b8810c02c0582aed05b4deb9c4b77b26d92428c61256cd42774babea0a073b2ed0c9") << OP_CHECKSIG;
+        txNew.vout[0].scriptPubKey = CScript() << ParseHex("04b6f1de3a2f94bfc70917cd7e14a948e78c1638b30524370ac40d3a0fa298e10bbaf7f5c564279c3fddf3f9f785cf3ac4e2031a5e6451f455e5aa60d1e536b379") << OP_CHECKSIG;
         genesis.vtx.push_back(txNew);
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1518723178;
+        genesis.nTime = 1520007171;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 1132702;
+        genesis.nNonce = 414098458;
         
-        /*
+        
         hashGenesisBlock = uint256("0x01");
         
         if (true && genesis.GetHash() != hashGenesisBlock)
@@ -204,7 +204,7 @@ public:
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        */
+        
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x000002694c35a5badd25c360d2c269bfc0b56dce9ec46994a668e4a46bc73629"));
         assert(genesis.hashMerkleRoot == uint256("8462c1c07e618b6e9a4f0fe25bb6a5079e3cfdf702a3719167ebde52d4f06a8f"));
@@ -240,7 +240,7 @@ public:
         nPoolMaxTransactions = 3;
         strSporkKey = "04B433E6598390C992F4F022F20D3B4CBBE691652EE7C48243B81701CBDB7CC7D7BF0EE09E154E6FCBF2043D65AF4E9E97B89B5DBAF830D83B9B7F469A6C45A717";
         strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
-        nStartMasternodePayments = 1403728576; //Wed, 25 Jun 2014 20:36:16 GMT
+        nStartMasternodePayments = 1520007171; //Wed, 25 Jun 2014 20:36:16 GMT
 
         /** Zerocoin */
         zerocoinModulus = "25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784"
@@ -275,11 +275,11 @@ public:
     {
         networkID = CBaseChainParams::TESTNET;
         strNetworkID = "test";
-        pchMessageStart[0] = 0x45;
-        pchMessageStart[1] = 0x76;
-        pchMessageStart[2] = 0x65;
-        pchMessageStart[3] = 0xba;
-        vAlertPubKey = ParseHex("000010e83b2703ccf322f7dbd62dd5855ac7c10bd055814ce121ba32607d573b8810c02c0582aed05b4deb9c4b77b26d92428c61256cd42774babea0a073b2ed0c9");
+        pchMessageStart[0] = 0xda;
+        pchMessageStart[1] = 0x80;
+        pchMessageStart[2] = 0x9d;
+        pchMessageStart[3] = 0x93;
+        vAlertPubKey = ParseHex("04b6f1de3a2f94bfc70917cd7e14a948e78c1638b30524370ac40d3a0fa298e10bbaf7f5c564279c3fddf3f9f785cf3ac4e2031a5e6451f455e5aa60d1e536b379");
         nDefaultPort = 51474;
         nEnforceBlockUpgradeMajority = 51;
         nRejectBlockOutdatedMajority = 75;
@@ -301,10 +301,10 @@ public:
         nBlockEnforceInvalidUTXO = 9902850; //Start enforcing the invalid UTXO's
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1518723178;
-        genesis.nNonce = 1132702;
+        genesis.nTime = 1520007171;
+        genesis.nNonce = 414098458;
 
-       /* hashGenesisBlock = uint256("0x01");
+        hashGenesisBlock = uint256("0x01");
         
        if (true && genesis.GetHash() != hashGenesisBlock)
         {
@@ -317,7 +317,7 @@ public:
             printf("new testnet genesis nonce: %d\n", genesis.nNonce);
             printf("new testnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        */
+        
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x000002694c35a5badd25c360d2c269bfc0b56dce9ec46994a668e4a46bc73629"));
@@ -352,7 +352,7 @@ public:
         nPoolMaxTransactions = 2;
         strSporkKey = "04348C2F50F90267E64FACC65BFDC9D0EB147D090872FB97ABAE92E9A36E6CA60983E28E741F8E7277B11A7479B626AC115BA31463AC48178A5075C5A9319D4A38";
         strObfuscationPoolDummyAddress = "y57cqfGRkekRyDRNeJiLtYVEbvhXrNbmox";
-        nStartMasternodePayments = 1420837558; //Fri, 09 Jan 2015 21:05:58 GMT
+        nStartMasternodePayments = 1520007171; //Fri, 09 Jan 2015 21:05:58 GMT
         nBudget_Fee_Confirmations = 3; // Number of confirmations for the finalization fee. We have to make this very short
                                        // here because we only have a 8 block finalization window on testnet
     }
@@ -386,10 +386,10 @@ public:
         nTargetTimespan = 24 * 60 * 60; // Divx: 1 day
         nTargetSpacing = 1 * 60;        // Divx: 1 minutes
         bnProofOfWorkLimit = ~uint256(0) >> 1;
-        genesis.nTime = 1518723178;
+        genesis.nTime = 1520007171;
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12345;
-        /*
+        
         hashGenesisBlock = uint256("0x01");
 
         if (true && genesis.GetHash() != hashGenesisBlock)
@@ -403,7 +403,7 @@ public:
             printf("new regtest genesis nonce: %d\n", genesis.nNonce);
             printf("new regtest genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        */
+        
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
         

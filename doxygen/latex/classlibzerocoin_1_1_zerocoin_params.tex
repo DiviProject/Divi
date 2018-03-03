@@ -1,0 +1,85 @@
+\hypertarget{classlibzerocoin_1_1_zerocoin_params}{}\section{libzerocoin\+:\+:Zerocoin\+Params Class Reference}
+\label{classlibzerocoin_1_1_zerocoin_params}\index{libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params_ad7abfc8417e3f07feb7b786cb13c72b0}{Zerocoin\+Params}} (\mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}} accumulator\+Modulus, uint32\+\_\+t security\+Level=Z\+E\+R\+O\+C\+O\+I\+N\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+S\+E\+C\+U\+R\+I\+T\+Y\+L\+E\+V\+EL)
+\begin{DoxyCompactList}\small\item\em Construct a set of Zerocoin parameters from a modulus \char`\"{}\+N\char`\"{}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_zerocoin_params_ae1b316d1ff232c8f152118c6ae136428}\label{classlibzerocoin_1_1_zerocoin_params_ae1b316d1ff232c8f152118c6ae136428}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_zerocoin_params_aef4cd7f30006de8958807457bfd905cc}\label{classlibzerocoin_1_1_zerocoin_params_aef4cd7f30006de8958807457bfd905cc}} 
+bool {\bfseries initialized}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_zerocoin_params_a56681302f7f55802c58499092d7399a8}\label{classlibzerocoin_1_1_zerocoin_params_a56681302f7f55802c58499092d7399a8}} 
+\mbox{\hyperlink{classlibzerocoin_1_1_accumulator_and_proof_params}{Accumulator\+And\+Proof\+Params}} {\bfseries accumulator\+Params}
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_integer_group_params}{Integer\+Group\+Params}} \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params_a4d3f02e31698e16f5edd844d3edc4b35}{coin\+Commitment\+Group}}
+\item 
+\mbox{\hyperlink{classlibzerocoin_1_1_integer_group_params}{Integer\+Group\+Params}} \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params_a6360b02f49690260136fe79d85914dcc}{serial\+Number\+So\+K\+Commitment\+Group}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params_a9bdd86029187d93275c5362ff858b81c}{zkp\+\_\+iterations}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params_a76d6a2e590469d3e07200aa0f4b5ddef}{zkp\+\_\+hash\+\_\+len}}
+\item 
+\mbox{\Hypertarget{classlibzerocoin_1_1_zerocoin_params_a3bbd50045b8bb01a4b7a469faf7af784}\label{classlibzerocoin_1_1_zerocoin_params_a3bbd50045b8bb01a4b7a469faf7af784}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_zerocoin_params_ad7abfc8417e3f07feb7b786cb13c72b0}\label{classlibzerocoin_1_1_zerocoin_params_ad7abfc8417e3f07feb7b786cb13c72b0}} 
+\index{libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}!Zerocoin\+Params@{Zerocoin\+Params}}
+\index{Zerocoin\+Params@{Zerocoin\+Params}!libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}}
+\subsubsection{\texorpdfstring{Zerocoin\+Params()}{ZerocoinParams()}}
+{\footnotesize\ttfamily libzerocoin\+::\+Zerocoin\+Params\+::\+Zerocoin\+Params (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_c_big_num}{C\+Big\+Num}}}]{accumulator\+Modulus,  }\item[{uint32\+\_\+t}]{security\+Level = {\ttfamily ZEROCOIN\+\_\+DEFAULT\+\_\+SECURITYLEVEL} }\end{DoxyParamCaption})}
+
+
+
+Construct a set of Zerocoin parameters from a modulus \char`\"{}\+N\char`\"{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em N} & A trusted R\+SA modulus \\
+\hline
+{\em security\+Level} & A security level expressed in symmetric bits (default 80)\\
+\hline
+\end{DoxyParams}
+Allocates and derives a set of Zerocoin parameters from a trustworthy R\+SA modulus \char`\"{}\+N\char`\"{}. This routine calculates all of the remaining parameters (group descriptions etc.) from N using a verifiable, deterministic procedure.
+
+Note\+: this constructor makes the fundamental assumption that \char`\"{}\+N\char`\"{} encodes a valid R\+S\+A-\/style modulus of the form \char`\"{}e1 $\ast$ e2\char`\"{} where \char`\"{}e1\char`\"{} and \char`\"{}e2\char`\"{} are safe primes. The factors \char`\"{}e1\char`\"{}, \char`\"{}e2\char`\"{} M\+U\+ST N\+OT be known to any party, or the security of Zerocoin is compromised. The integer \char`\"{}\+N\char`\"{} must be a M\+I\+N\+I\+M\+UM of 1024 in length. 3072 bits is strongly recommended. 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classlibzerocoin_1_1_zerocoin_params_a4d3f02e31698e16f5edd844d3edc4b35}\label{classlibzerocoin_1_1_zerocoin_params_a4d3f02e31698e16f5edd844d3edc4b35}} 
+\index{libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}!coin\+Commitment\+Group@{coin\+Commitment\+Group}}
+\index{coin\+Commitment\+Group@{coin\+Commitment\+Group}!libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}}
+\subsubsection{\texorpdfstring{coin\+Commitment\+Group}{coinCommitmentGroup}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classlibzerocoin_1_1_integer_group_params}{Integer\+Group\+Params}} libzerocoin\+::\+Zerocoin\+Params\+::coin\+Commitment\+Group}
+
+The Quadratic Residue group from which we form a coin as a commitment to a serial number. \mbox{\Hypertarget{classlibzerocoin_1_1_zerocoin_params_a6360b02f49690260136fe79d85914dcc}\label{classlibzerocoin_1_1_zerocoin_params_a6360b02f49690260136fe79d85914dcc}} 
+\index{libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}!serial\+Number\+So\+K\+Commitment\+Group@{serial\+Number\+So\+K\+Commitment\+Group}}
+\index{serial\+Number\+So\+K\+Commitment\+Group@{serial\+Number\+So\+K\+Commitment\+Group}!libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}}
+\subsubsection{\texorpdfstring{serial\+Number\+So\+K\+Commitment\+Group}{serialNumberSoKCommitmentGroup}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classlibzerocoin_1_1_integer_group_params}{Integer\+Group\+Params}} libzerocoin\+::\+Zerocoin\+Params\+::serial\+Number\+So\+K\+Commitment\+Group}
+
+One of two groups used to form a commitment to a coin (which it self is a commitment to a serial number). This is the one used in the serial number poof. It\textquotesingle{}s order must be equal to the modulus of coin\+Commitment\+Group. \mbox{\Hypertarget{classlibzerocoin_1_1_zerocoin_params_a76d6a2e590469d3e07200aa0f4b5ddef}\label{classlibzerocoin_1_1_zerocoin_params_a76d6a2e590469d3e07200aa0f4b5ddef}} 
+\index{libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}!zkp\+\_\+hash\+\_\+len@{zkp\+\_\+hash\+\_\+len}}
+\index{zkp\+\_\+hash\+\_\+len@{zkp\+\_\+hash\+\_\+len}!libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}}
+\subsubsection{\texorpdfstring{zkp\+\_\+hash\+\_\+len}{zkp\_hash\_len}}
+{\footnotesize\ttfamily uint32\+\_\+t libzerocoin\+::\+Zerocoin\+Params\+::zkp\+\_\+hash\+\_\+len}
+
+The amount of the hash function we use for proofs. \mbox{\Hypertarget{classlibzerocoin_1_1_zerocoin_params_a9bdd86029187d93275c5362ff858b81c}\label{classlibzerocoin_1_1_zerocoin_params_a9bdd86029187d93275c5362ff858b81c}} 
+\index{libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}!zkp\+\_\+iterations@{zkp\+\_\+iterations}}
+\index{zkp\+\_\+iterations@{zkp\+\_\+iterations}!libzerocoin\+::\+Zerocoin\+Params@{libzerocoin\+::\+Zerocoin\+Params}}
+\subsubsection{\texorpdfstring{zkp\+\_\+iterations}{zkp\_iterations}}
+{\footnotesize\ttfamily uint32\+\_\+t libzerocoin\+::\+Zerocoin\+Params\+::zkp\+\_\+iterations}
+
+The number of iterations to use in the serial number proof. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_params_8h}{Params.\+h}}\item 
+P\+I\+V\+X/src/libzerocoin/\mbox{\hyperlink{_params_8cpp}{Params.\+cpp}}\end{DoxyCompactItemize}

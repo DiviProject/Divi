@@ -1,0 +1,43 @@
+\hypertarget{classleveldb_1_1_table_builder}{}\section{leveldb\+:\+:Table\+Builder Class Reference}
+\label{classleveldb_1_1_table_builder}\index{leveldb\+::\+Table\+Builder@{leveldb\+::\+Table\+Builder}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structleveldb_1_1_table_builder_1_1_rep}{Rep}}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_builder_a7f5d99e06039848d9b342a4871b31cc6}\label{classleveldb_1_1_table_builder_a7f5d99e06039848d9b342a4871b31cc6}} 
+{\bfseries Table\+Builder} (const \mbox{\hyperlink{structleveldb_1_1_options}{Options}} \&options, \mbox{\hyperlink{classleveldb_1_1_writable_file}{Writable\+File}} $\ast$file)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_builder_a6e37a5ddc82161e8665f2fba08031c24}\label{classleveldb_1_1_table_builder_a6e37a5ddc82161e8665f2fba08031c24}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Change\+Options} (const \mbox{\hyperlink{structleveldb_1_1_options}{Options}} \&options)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_builder_a37bd347cb6340215475ac9b42dc19d10}\label{classleveldb_1_1_table_builder_a37bd347cb6340215475ac9b42dc19d10}} 
+void {\bfseries Add} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&value)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_builder_a544560b4c97cd382ba9b8e0ef69dacfa}\label{classleveldb_1_1_table_builder_a544560b4c97cd382ba9b8e0ef69dacfa}} 
+void {\bfseries Flush} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_builder_a9199d15b39f1b7ec83c49b58e8bd4768}\label{classleveldb_1_1_table_builder_a9199d15b39f1b7ec83c49b58e8bd4768}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries status} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_builder_a88f4bae006782e24462362d489dd3f35}\label{classleveldb_1_1_table_builder_a88f4bae006782e24462362d489dd3f35}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Finish} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_builder_a3b4dded079f960b8624bdfa13d967b94}\label{classleveldb_1_1_table_builder_a3b4dded079f960b8624bdfa13d967b94}} 
+void {\bfseries Abandon} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_builder_a1449306d91ce2edfd88625482ecd03d1}\label{classleveldb_1_1_table_builder_a1449306d91ce2edfd88625482ecd03d1}} 
+uint64\+\_\+t {\bfseries Num\+Entries} () const
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_table_builder_a50ac83aca1c3321f16f26748d654a6ae}\label{classleveldb_1_1_table_builder_a50ac83aca1c3321f16f26748d654a6ae}} 
+uint64\+\_\+t {\bfseries File\+Size} () const
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/include/leveldb/table\+\_\+builder.\+h\item 
+P\+I\+V\+X/src/leveldb/table/table\+\_\+builder.\+cc\end{DoxyCompactItemize}

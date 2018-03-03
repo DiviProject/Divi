@@ -1,0 +1,28 @@
+digraph "GetP2SHSigOpCount"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node566 [label="GetP2SHSigOpCount",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node566 -> Node567 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node567 [label="CTransaction::IsCoinBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a96256e8ac1bf79ad9c057e48c41132dd"];
+  Node567 -> Node568 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node568 [label="CTransaction::ContainsZerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a613051e8e5651a7500cb455f37dd1116"];
+  Node568 -> Node569 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node569 [label="CTransaction::IsZerocoin\lSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a4cda5603795c5f9179d4c8bd43f809cd"];
+  Node568 -> Node570 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node570 [label="CTransaction::IsZerocoinMint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#ab91efb1c2312e6feeecfbbfff11abbb1"];
+  Node566 -> Node569 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node566 -> Node571 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node571 [label="CCoinsViewCache::GetOutputFor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a54a0de51586fa92d83cfa321fb8936c5"];
+  Node571 -> Node572 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node572 [label="CCoinsViewCache::AccessCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a8e5341e8b01233949d6170dd4d1fd75d",tooltip="Return a pointer to CCoins in the cache, or NULL if not found. "];
+  Node572 -> Node573 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node573 [label="CCoinsViewCache::FetchCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a7d385628b7d821d2d5b6c5aaf1734616"];
+  Node571 -> Node574 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node574 [label="CCoins::IsAvailable",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#aa645bc3d18f74e91430ac178a9d28ee4",tooltip="check whether a particular output is still available "];
+  Node566 -> Node575 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node575 [label="CScript::IsPayToScriptHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_script.html#a0c3729c606d318923dc06f95d85a0971"];
+  Node566 -> Node576 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node576 [label="CScript::GetSigOpCount",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_script.html#a957f92ddf3efcd76b66e514c05f27dde",tooltip="Pre-version-0.6, Bitcoin always counted CHECKMULTISIGs as 20 sigops. "];
+}

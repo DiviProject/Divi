@@ -1,0 +1,13 @@
+digraph "OptionsModel::getThirdPartyTxUrls"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node176 [label="OptionsModel::getThirdParty\lTxUrls",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node176 -> Node177 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node177 [label="TransactionView::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_view.html#a4920c2cd57d72eb50248948fa160c83c"];
+  Node177 -> Node178 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node178 [label="WalletView::setWalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be",tooltip="Set the wallet model. "];
+  Node178 -> Node179 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node179 [label="WalletFrame::addWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86"];
+}

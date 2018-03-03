@@ -1,0 +1,13 @@
+digraph "CNode::~CNode"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node2 [label="CNode::~CNode",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="CloseSocket",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$netbase_8cpp.html#aeb0961aecb19bbca063c3514b25b20c9",tooltip="Close socket and set hSocket to INVALID_SOCKET. "];
+  Node2 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="GetNodeSignals",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8cpp.html#a475f2fc7d8f5cd7511db253cae8fe28a"];
+  Node2 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="CNode::GetId",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#a157903f7830c0dfbf6a93852066f0b8f"];
+}

@@ -1,0 +1,27 @@
+digraph "RecentRequestsTableModel::RecentRequestsTableModel"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="RecentRequestsTableModel\l::RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node0 -> Node1 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="WalletModel::loadReceive\lRequests",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a0ec10fbe74317b1949ac4ae63451d115"];
+  Node0 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="RecentRequestsTableModel\l::addNewRequest",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#ae9866ffd5aed0f041437996410928edd"];
+  Node0 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="RecentRequestsTableModel\l::getAmountTitle",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#ab0116f41ff8773ec18e68205b2917301",tooltip="Gets title for amount column including current display unit if optionsModel reference available..."];
+  Node3 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="WalletModel::getOptionsModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300"];
+  Node3 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="BitcoinUnits::name",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a4cf46136434ed30728608e67e90a9cbe",tooltip="Short name. "];
+  Node5 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node3 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="OptionsModel::getDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e"];
+  Node0 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="RecentRequestsTableModel\l::updateDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#a8c4fe82f628df4e3a46809514ba9fe03"];
+  Node8 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="RecentRequestsTableModel\l::updateAmountColumnTitle",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#a8bc224f31142bd2da1c2729010ee84a3",tooltip="Updates the column title to \"Amount (DisplayUnit)\" and emits headerDataChanged() signal for table hea..."];
+  Node9 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

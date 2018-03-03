@@ -1,0 +1,9 @@
+digraph "SendCoinsEntry::updateLabel"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node178 [label="SendCoinsEntry::updateLabel",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node178 -> Node179 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node179 [label="SendCoinsEntry::on\l_payTo_textChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_entry.html#a73088d2789e8ced5de3a0597fb1f30c5"];
+}

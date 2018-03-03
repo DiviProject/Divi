@@ -1,0 +1,9 @@
+digraph "CChainParams::ProofOfWorkLimit"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node218 [label="CChainParams::ProofOfWork\lLimit",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node218 -> Node219 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node219 [label="GetNextWorkRequired",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pow_8h.html#a5ab312a838f427dd7a13b999fe21a52e"];
+}

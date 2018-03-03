@@ -1,0 +1,11 @@
+digraph "ContextualCheckBlock"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node412 [label="ContextualCheckBlock",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node412 -> Node413 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node413 [label="TestBlockValidity",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#aa778166224b25355c113d1706df12ffd",tooltip="Check a block is completely valid from start to finish (only works on top of our current best block..."];
+  Node413 -> Node414 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node414 [label="getblocktemplate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmining_8cpp.html#a27347eecedd59156c914fcb5ce488f9a"];
+}

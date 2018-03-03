@@ -1,0 +1,84 @@
+\hypertarget{class_intro}{}\section{Intro Class Reference}
+\label{class_intro}\index{Intro@{Intro}}
+
+
+{\ttfamily \#include $<$intro.\+h$>$}
+
+Inheritance diagram for Intro\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_intro}
+\end{center}
+\end{figure}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_intro_a07d9b3b639deb51f1c7b1a9cedf09840}\label{class_intro_a07d9b3b639deb51f1c7b1a9cedf09840}} 
+void {\bfseries set\+Status} (int status, const Q\+String \&message, quint64 bytes\+Available)
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_intro_ac749e739adfe5830ffd7c62b72580adb}\label{class_intro_ac749e739adfe5830ffd7c62b72580adb}} 
+void {\bfseries request\+Check} ()
+\item 
+\mbox{\Hypertarget{class_intro_a062971eb5d928316b3d59b771d3b0397}\label{class_intro_a062971eb5d928316b3d59b771d3b0397}} 
+void {\bfseries stop\+Thread} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_intro_a82415c2693757f51e4e93ccc8abd720e}\label{class_intro_a82415c2693757f51e4e93ccc8abd720e}} 
+{\bfseries Intro} (Q\+Widget $\ast$parent=0)
+\item 
+\mbox{\Hypertarget{class_intro_adb031cec261524a5ef561eb75f099f90}\label{class_intro_adb031cec261524a5ef561eb75f099f90}} 
+Q\+String {\bfseries get\+Data\+Directory} ()
+\item 
+\mbox{\Hypertarget{class_intro_a2f11c0fccc56ec7bb53cfddec98ee21b}\label{class_intro_a2f11c0fccc56ec7bb53cfddec98ee21b}} 
+void {\bfseries set\+Data\+Directory} (const Q\+String \&data\+Dir)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static bool \mbox{\hyperlink{class_intro_a3e0e541cd0e55fe71484055964925cfc}{pick\+Data\+Directory}} ()
+\item 
+static Q\+String \mbox{\hyperlink{class_intro_aad225845533fc7f451648dc7c9643e6a}{get\+Default\+Data\+Directory}} ()
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_intro_a79efd513440e3e26be2203f570653407}\label{class_intro_a79efd513440e3e26be2203f570653407}} 
+class {\bfseries Freespace\+Checker}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Introduction screen (pre-\/\+G\+UI startup). Allows the user to choose a data directory, in which the wallet and block chain will be stored. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_intro_aad225845533fc7f451648dc7c9643e6a}\label{class_intro_aad225845533fc7f451648dc7c9643e6a}} 
+\index{Intro@{Intro}!get\+Default\+Data\+Directory@{get\+Default\+Data\+Directory}}
+\index{get\+Default\+Data\+Directory@{get\+Default\+Data\+Directory}!Intro@{Intro}}
+\subsubsection{\texorpdfstring{get\+Default\+Data\+Directory()}{getDefaultDataDirectory()}}
+{\footnotesize\ttfamily Q\+String Intro\+::get\+Default\+Data\+Directory (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Determine default data directory for operating system. \mbox{\Hypertarget{class_intro_a3e0e541cd0e55fe71484055964925cfc}\label{class_intro_a3e0e541cd0e55fe71484055964925cfc}} 
+\index{Intro@{Intro}!pick\+Data\+Directory@{pick\+Data\+Directory}}
+\index{pick\+Data\+Directory@{pick\+Data\+Directory}!Intro@{Intro}}
+\subsubsection{\texorpdfstring{pick\+Data\+Directory()}{pickDataDirectory()}}
+{\footnotesize\ttfamily bool Intro\+::pick\+Data\+Directory (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Determine data directory. Let the user choose if the current one doesn\textquotesingle{}t exist.
+
+\begin{DoxyReturn}{Returns}
+true if a data directory was selected, false if the user cancelled the selection dialog.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+do N\+OT call global Get\+Data\+Dir() before calling this function, this will cause the wrong path to be cached. 
+\end{DoxyNote}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/intro.\+h\item 
+P\+I\+V\+X/src/qt/intro.\+cpp\end{DoxyCompactItemize}

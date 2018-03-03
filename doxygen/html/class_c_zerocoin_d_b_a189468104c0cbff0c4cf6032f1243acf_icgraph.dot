@@ -1,0 +1,11 @@
+digraph "CZerocoinDB::WriteAccumulatorValue"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node79 [label="CZerocoinDB::WriteAccumulator\lValue",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node79 -> Node80 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node80 [label="AddAccumulatorChecksum",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$accumulators_8h.html#a37c819c5dbfceea96febbe9216ec5164"];
+  Node80 -> Node81 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node81 [label="DatabaseChecksums",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$accumulators_8cpp.html#a6a1c27832edd01320bb4e30718058335"];
+}

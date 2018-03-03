@@ -1,0 +1,11 @@
+digraph "ClientModel::numBlocksChanged"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node212 [label="ClientModel::numBlocksChanged",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node212 -> Node213 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node213 [label="ClientModel::updateTimer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_client_model.html#a82d434ebd032c00736e043ce2d36ac5e"];
+  Node213 -> Node214 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node214 [label="ClientModel::ClientModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_client_model.html#aec1d32d5dc8c094eba66036a19a22854"];
+}

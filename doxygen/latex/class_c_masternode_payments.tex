@@ -1,0 +1,88 @@
+\hypertarget{class_c_masternode_payments}{}\section{C\+Masternode\+Payments Class Reference}
+\label{class_c_masternode_payments}\index{C\+Masternode\+Payments@{C\+Masternode\+Payments}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_ace5711bd6c2b17cd1e35e0924aae4268}\label{class_c_masternode_payments_ace5711bd6c2b17cd1e35e0924aae4268}} 
+void {\bfseries Clear} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a0812cd761893ca4fc5b1131fc535115c}\label{class_c_masternode_payments_a0812cd761893ca4fc5b1131fc535115c}} 
+bool {\bfseries Add\+Winning\+Masternode} (\mbox{\hyperlink{class_c_masternode_payment_winner}{C\+Masternode\+Payment\+Winner}} \&winner)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_aa23dfbc148f10f601e9771bfcffea441}\label{class_c_masternode_payments_aa23dfbc148f10f601e9771bfcffea441}} 
+bool {\bfseries Process\+Block} (int n\+Block\+Height)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a7363554e7f7a23a718e2b50980c7516f}\label{class_c_masternode_payments_a7363554e7f7a23a718e2b50980c7516f}} 
+void {\bfseries Sync} (\mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$node, int n\+Count\+Needed)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a386648607692fe65b9a42c0692da033d}\label{class_c_masternode_payments_a386648607692fe65b9a42c0692da033d}} 
+void {\bfseries Clean\+Payment\+List} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a69ca0e611580d8ca03793cb4340e23c0}\label{class_c_masternode_payments_a69ca0e611580d8ca03793cb4340e23c0}} 
+int {\bfseries Last\+Payment} (\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} \&mn)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a23ced53f72a503a71bbe6be8d472ecfd}\label{class_c_masternode_payments_a23ced53f72a503a71bbe6be8d472ecfd}} 
+bool {\bfseries Get\+Block\+Payee} (int n\+Block\+Height, \mbox{\hyperlink{class_c_script}{C\+Script}} \&payee)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_aa1376c50210f892f65ad7ee6408c02f9}\label{class_c_masternode_payments_aa1376c50210f892f65ad7ee6408c02f9}} 
+bool {\bfseries Is\+Transaction\+Valid} (const \mbox{\hyperlink{class_c_transaction}{C\+Transaction}} \&tx\+New, int n\+Block\+Height)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_ae7b481b02b86b14946497bb21e375f1a}\label{class_c_masternode_payments_ae7b481b02b86b14946497bb21e375f1a}} 
+bool {\bfseries Is\+Scheduled} (\mbox{\hyperlink{class_c_masternode}{C\+Masternode}} \&mn, int n\+Not\+Block\+Height)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_ad0891106128d392e1cb4206061b4aec4}\label{class_c_masternode_payments_ad0891106128d392e1cb4206061b4aec4}} 
+bool {\bfseries Can\+Vote} (\mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} out\+Masternode, int n\+Block\+Height)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_adb98cc9f21cf8746c0b6ac3131b85dfb}\label{class_c_masternode_payments_adb98cc9f21cf8746c0b6ac3131b85dfb}} 
+int {\bfseries Get\+Min\+Masternode\+Payments\+Proto} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a8884bca6edff64f731b3c42ea4693251}\label{class_c_masternode_payments_a8884bca6edff64f731b3c42ea4693251}} 
+void {\bfseries Process\+Message\+Masternode\+Payments} (\mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$pfrom, std\+::string \&str\+Command, \mbox{\hyperlink{class_c_data_stream}{C\+Data\+Stream}} \&v\+Recv)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a5527c8d625c8e32ea27cf645453365cc}\label{class_c_masternode_payments_a5527c8d625c8e32ea27cf645453365cc}} 
+std\+::string {\bfseries Get\+Required\+Payments\+String} (int n\+Block\+Height)
+\item 
+void \mbox{\hyperlink{class_c_masternode_payments_a459bf2e3a7e56743663026fd8f6d768d}{Fill\+Block\+Payee}} (\mbox{\hyperlink{struct_c_mutable_transaction}{C\+Mutable\+Transaction}} \&tx\+New, int64\+\_\+t n\+Fees, bool f\+Proof\+Of\+Stake)
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_ac020d2b42771a003a271d4ddb014272a}\label{class_c_masternode_payments_ac020d2b42771a003a271d4ddb014272a}} 
+std\+::string {\bfseries To\+String} () const
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a61e838b723c876d944a56dc51c8995ce}\label{class_c_masternode_payments_a61e838b723c876d944a56dc51c8995ce}} 
+int {\bfseries Get\+Oldest\+Block} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_ad61c535b18ebd9e669fa607ab5b3033a}\label{class_c_masternode_payments_ad61c535b18ebd9e669fa607ab5b3033a}} 
+int {\bfseries Get\+Newest\+Block} ()
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a94644b08b8e3d359794457a0871f95cc}\label{class_c_masternode_payments_a94644b08b8e3d359794457a0871f95cc}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_ab88cc3dc744299f7ac159ec44d9225ef}\label{class_c_masternode_payments_ab88cc3dc744299f7ac159ec44d9225ef}} 
+std\+::map$<$ \mbox{\hyperlink{classuint256}{uint256}}, \mbox{\hyperlink{class_c_masternode_payment_winner}{C\+Masternode\+Payment\+Winner}} $>$ {\bfseries map\+Masternode\+Payee\+Votes}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a6feb2c94183cd649ede84dc38d3ae442}\label{class_c_masternode_payments_a6feb2c94183cd649ede84dc38d3ae442}} 
+std\+::map$<$ int, \mbox{\hyperlink{class_c_masternode_block_payees}{C\+Masternode\+Block\+Payees}} $>$ {\bfseries map\+Masternode\+Blocks}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a189376c929b638e6ba7dbf6a0b34b545}\label{class_c_masternode_payments_a189376c929b638e6ba7dbf6a0b34b545}} 
+std\+::map$<$ \mbox{\hyperlink{classuint256}{uint256}}, int $>$ {\bfseries map\+Masternodes\+Last\+Vote}
+\item 
+\mbox{\Hypertarget{class_c_masternode_payments_a0f90877d276308aa16314dcaa84f332c}\label{class_c_masternode_payments_a0f90877d276308aa16314dcaa84f332c}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_masternode_payments_a459bf2e3a7e56743663026fd8f6d768d}\label{class_c_masternode_payments_a459bf2e3a7e56743663026fd8f6d768d}} 
+\index{C\+Masternode\+Payments@{C\+Masternode\+Payments}!Fill\+Block\+Payee@{Fill\+Block\+Payee}}
+\index{Fill\+Block\+Payee@{Fill\+Block\+Payee}!C\+Masternode\+Payments@{C\+Masternode\+Payments}}
+\subsubsection{\texorpdfstring{Fill\+Block\+Payee()}{FillBlockPayee()}}
+{\footnotesize\ttfamily void C\+Masternode\+Payments\+::\+Fill\+Block\+Payee (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_c_mutable_transaction}{C\+Mutable\+Transaction}} \&}]{tx\+New,  }\item[{int64\+\_\+t}]{n\+Fees,  }\item[{bool}]{f\+Proof\+Of\+Stake }\end{DoxyParamCaption})}
+
+For Proof Of Stake vout\mbox{[}0\mbox{]} must be null Stake reward can be split into many different outputs, so we must use vout.\+size() to align with several different cases. An additional output is appended as the masternode payment
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/masternode-\/payments.\+h\item 
+P\+I\+V\+X/src/masternode-\/payments.\+cpp\end{DoxyCompactItemize}

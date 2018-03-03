@@ -1,0 +1,40 @@
+digraph "RelayTransaction"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node261 [label="RelayTransaction",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node261 -> Node262 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node262 [label="MultisigDialog::commitMultisigTx",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a4b8f46adc64493a801bffb464b7c09ea"];
+  Node262 -> Node263 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node263 [label="MultisigDialog::Multisig\lDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#af8ff2a9f6dc05a9468d955cb428c6474"];
+  Node261 -> Node264 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node264 [label="sendrawtransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#ad5aad44f890060f42efb49acf349511e"];
+  Node261 -> Node265 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node265 [label="CWalletTx::RelayWalletTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__map_wallet.html#ga1eac2a5eea87ed88b73777bea5c733b6"];
+  Node265 -> Node266 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node266 [label="CObfuscationPool::ChargeFees",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#a683c9cff6eb710592b4cf81f3076fe25",tooltip="Charge fees to bad actors (Charge clients a fee if they&#39;re abusive) "];
+  Node265 -> Node267 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node267 [label="CObfuscationPool::Charge\lRandomFees",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#a5853e64dcd6b6125ba9e52688eee29a3",tooltip="Rarely charge fees to pay miners. "];
+  Node265 -> Node268 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node268 [label="CWallet::ResendWalletTransactions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__map_wallet.html#gaef8d6e5b4701ca3a64486c4232acc3fa"];
+  Node265 -> Node269 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node269 [label="CWallet::CommitTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#gaa13fbeaebd271f910a54cc5b82d73fde",tooltip="Call after CreateTransaction unless you want to abort. "];
+  Node269 -> Node262 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node269 -> Node270 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node270 [label="WalletModel::sendCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39"];
+  Node269 -> Node271 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node271 [label="preparebudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a8c07f1b00f74d9d2227428a552679b8c"];
+  Node271 -> Node272 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node272 [label="mnbudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#aeabbf924be4d2ce4bedb28a394e1fc6b"];
+  Node269 -> Node273 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node273 [label="SendMoney",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a49669702f73a24c1d1dc5a08d7c0785f"];
+  Node273 -> Node274 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node274 [label="obfuscation",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a6cdbacc257b42445f0c6122a061af2ca"];
+  Node269 -> Node275 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node275 [label="sendmany",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#adeb5f23f20fb4e589dab23cadf75c92d"];
+  Node269 -> Node276 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node276 [label="CWallet::SpendZerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#aedd0ae4e683ee642272e170b7afd33fe"];
+  Node276 -> Node277 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node277 [label="spendzerocoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#adea64c692ec279a1a3a2c9143f264955"];
+}

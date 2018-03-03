@@ -1,0 +1,105 @@
+\hypertarget{class_c_service}{}\section{C\+Service Class Reference}
+\label{class_c_service}\index{C\+Service@{C\+Service}}
+
+
+{\ttfamily \#include $<$netbase.\+h$>$}
+
+Inheritance diagram for C\+Service\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_c_service}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_service_a43a0d18387ce3837d48020da47a1087c}\label{class_c_service_a43a0d18387ce3837d48020da47a1087c}} 
+{\bfseries C\+Service} (const \mbox{\hyperlink{class_c_net_addr}{C\+Net\+Addr}} \&ip, unsigned short port)
+\item 
+\mbox{\Hypertarget{class_c_service_a1fcc14e589f6d3e92b43707a5f71368f}\label{class_c_service_a1fcc14e589f6d3e92b43707a5f71368f}} 
+{\bfseries C\+Service} (const struct in\+\_\+addr \&ipv4\+Addr, unsigned short port)
+\item 
+\mbox{\Hypertarget{class_c_service_aa54fd9204530445647cd3d45056881e9}\label{class_c_service_aa54fd9204530445647cd3d45056881e9}} 
+{\bfseries C\+Service} (const struct sockaddr\+\_\+in \&addr)
+\item 
+\mbox{\Hypertarget{class_c_service_a75b2a3cfa16642b0fcd74382203a9fdc}\label{class_c_service_a75b2a3cfa16642b0fcd74382203a9fdc}} 
+{\bfseries C\+Service} (const char $\ast$psz\+Ip\+Port, int port\+Default, bool f\+Allow\+Lookup=false)
+\item 
+\mbox{\Hypertarget{class_c_service_ab8f5f4ae4e99a4edad8ba48642e36137}\label{class_c_service_ab8f5f4ae4e99a4edad8ba48642e36137}} 
+{\bfseries C\+Service} (const char $\ast$psz\+Ip\+Port, bool f\+Allow\+Lookup=false)
+\item 
+\mbox{\Hypertarget{class_c_service_a677f74b3520148f3e47a19bb9986922b}\label{class_c_service_a677f74b3520148f3e47a19bb9986922b}} 
+{\bfseries C\+Service} (const std\+::string \&str\+Ip\+Port, int port\+Default, bool f\+Allow\+Lookup=false)
+\item 
+\mbox{\Hypertarget{class_c_service_a19a7a713dd9a30b2f78260e61d9a2604}\label{class_c_service_a19a7a713dd9a30b2f78260e61d9a2604}} 
+{\bfseries C\+Service} (const std\+::string \&str\+Ip\+Port, bool f\+Allow\+Lookup=false)
+\item 
+\mbox{\Hypertarget{class_c_service_aee07d7f18e672f16d26359e3cab779ff}\label{class_c_service_aee07d7f18e672f16d26359e3cab779ff}} 
+void {\bfseries Init} ()
+\item 
+\mbox{\Hypertarget{class_c_service_a3dedc3f12aa21bdbf1068b054d3e3d39}\label{class_c_service_a3dedc3f12aa21bdbf1068b054d3e3d39}} 
+void {\bfseries Set\+Port} (unsigned short port\+In)
+\item 
+\mbox{\Hypertarget{class_c_service_a71caa0d6aa6ab12758bde8b6a6bcfd2a}\label{class_c_service_a71caa0d6aa6ab12758bde8b6a6bcfd2a}} 
+unsigned short {\bfseries Get\+Port} () const
+\item 
+\mbox{\Hypertarget{class_c_service_ac4c6d655fab3af40937f0b0c65581745}\label{class_c_service_ac4c6d655fab3af40937f0b0c65581745}} 
+bool {\bfseries Get\+Sock\+Addr} (struct sockaddr $\ast$paddr, socklen\+\_\+t $\ast$addrlen) const
+\item 
+\mbox{\Hypertarget{class_c_service_a77782219f5d85f326b4c089cb2636e6f}\label{class_c_service_a77782219f5d85f326b4c089cb2636e6f}} 
+bool {\bfseries Set\+Sock\+Addr} (const struct sockaddr $\ast$paddr)
+\item 
+\mbox{\Hypertarget{class_c_service_af21ea7db4318330b337c8bfdcc55aff0}\label{class_c_service_af21ea7db4318330b337c8bfdcc55aff0}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries Get\+Key} () const
+\item 
+\mbox{\Hypertarget{class_c_service_a225473158bc07c87a6a862160d73cfea}\label{class_c_service_a225473158bc07c87a6a862160d73cfea}} 
+std\+::string {\bfseries To\+String} () const
+\item 
+\mbox{\Hypertarget{class_c_service_a95d6f24b6a613fca24734ba4e38ef3dc}\label{class_c_service_a95d6f24b6a613fca24734ba4e38ef3dc}} 
+std\+::string {\bfseries To\+String\+Port} () const
+\item 
+\mbox{\Hypertarget{class_c_service_a224204c838b12eeb49ca7eabe6f75004}\label{class_c_service_a224204c838b12eeb49ca7eabe6f75004}} 
+std\+::string {\bfseries To\+String\+I\+P\+Port} () const
+\item 
+\mbox{\Hypertarget{class_c_service_a92fd246e176f01266cb36beae0c8f4fe}\label{class_c_service_a92fd246e176f01266cb36beae0c8f4fe}} 
+{\bfseries C\+Service} (const struct in6\+\_\+addr \&ipv6\+Addr, unsigned short port)
+\item 
+\mbox{\Hypertarget{class_c_service_ac0eb3107507be78cc683e7a7fa8d56e4}\label{class_c_service_ac0eb3107507be78cc683e7a7fa8d56e4}} 
+{\bfseries C\+Service} (const struct sockaddr\+\_\+in6 \&addr)
+\item 
+\mbox{\Hypertarget{class_c_service_a0673ebec7bdc8558ce3fe1d63ea4d2e1}\label{class_c_service_a0673ebec7bdc8558ce3fe1d63ea4d2e1}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_service_a3347aa84bd8f98ae853307ad4e47a4f5}\label{class_c_service_a3347aa84bd8f98ae853307ad4e47a4f5}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_service_aef17734203dc2125cbdf4d23e50be410}\label{class_c_service_aef17734203dc2125cbdf4d23e50be410}} 
+unsigned short {\bfseries port}
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_service_a7abc2516fa7e015cafcf9b98bc33e2ea}\label{class_c_service_a7abc2516fa7e015cafcf9b98bc33e2ea}} 
+bool {\bfseries operator==} (const \mbox{\hyperlink{class_c_service}{C\+Service}} \&a, const \mbox{\hyperlink{class_c_service}{C\+Service}} \&b)
+\item 
+\mbox{\Hypertarget{class_c_service_a5834e0ab5104fffac621ea53fa2c3860}\label{class_c_service_a5834e0ab5104fffac621ea53fa2c3860}} 
+bool {\bfseries operator!=} (const \mbox{\hyperlink{class_c_service}{C\+Service}} \&a, const \mbox{\hyperlink{class_c_service}{C\+Service}} \&b)
+\item 
+\mbox{\Hypertarget{class_c_service_a26d0e22a8e7ae213b25467da3556c9e4}\label{class_c_service_a26d0e22a8e7ae213b25467da3556c9e4}} 
+bool {\bfseries operator$<$} (const \mbox{\hyperlink{class_c_service}{C\+Service}} \&a, const \mbox{\hyperlink{class_c_service}{C\+Service}} \&b)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A combination of a network address (\mbox{\hyperlink{class_c_net_addr}{C\+Net\+Addr}}) and a (T\+CP) port 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/netbase.\+h\item 
+P\+I\+V\+X/src/netbase.\+cpp\end{DoxyCompactItemize}

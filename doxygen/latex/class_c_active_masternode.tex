@@ -1,0 +1,47 @@
+\hypertarget{class_c_active_masternode}{}\section{C\+Active\+Masternode Class Reference}
+\label{class_c_active_masternode}\index{C\+Active\+Masternode@{C\+Active\+Masternode}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_active_masternode_a8004b3b2100da7dcfedbd1e959633e51}\label{class_c_active_masternode_a8004b3b2100da7dcfedbd1e959633e51}} 
+void \mbox{\hyperlink{class_c_active_masternode_a8004b3b2100da7dcfedbd1e959633e51}{Manage\+Status}} ()
+\begin{DoxyCompactList}\small\item\em Manage status of main Masternode. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_active_masternode_a64035096453592380bcb606a75237c60}\label{class_c_active_masternode_a64035096453592380bcb606a75237c60}} 
+std\+::string {\bfseries Get\+Status} ()
+\item 
+\mbox{\Hypertarget{class_c_active_masternode_a99e26870efec1ea98738cda1a5a85702}\label{class_c_active_masternode_a99e26870efec1ea98738cda1a5a85702}} 
+bool \mbox{\hyperlink{class_c_active_masternode_a99e26870efec1ea98738cda1a5a85702}{Register}} (std\+::string str\+Service, std\+::string str\+Key, std\+::string str\+Tx\+Hash, std\+::string str\+Output\+Index, std\+::string \&error\+Message)
+\begin{DoxyCompactList}\small\item\em Register remote Masternode. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_active_masternode_af9f32ec3d13b161d6a89839dab17b154}\label{class_c_active_masternode_af9f32ec3d13b161d6a89839dab17b154}} 
+bool \mbox{\hyperlink{class_c_active_masternode_af9f32ec3d13b161d6a89839dab17b154}{Get\+Master\+Node\+Vin}} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&vin, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pubkey, \mbox{\hyperlink{class_c_key}{C\+Key}} \&secret\+Key)
+\begin{DoxyCompactList}\small\item\em Get 10000 P\+IV input that can be used for the Masternode. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_active_masternode_ac4fc5fb1681bf0a0f3d30e706fb0577a}\label{class_c_active_masternode_ac4fc5fb1681bf0a0f3d30e706fb0577a}} 
+vector$<$ \mbox{\hyperlink{class_c_output}{C\+Output}} $>$ {\bfseries Select\+Coins\+Masternode} ()
+\item 
+\mbox{\Hypertarget{class_c_active_masternode_a2ab446c7b350b9971089c27f83b9ebb0}\label{class_c_active_masternode_a2ab446c7b350b9971089c27f83b9ebb0}} 
+bool \mbox{\hyperlink{class_c_active_masternode_a2ab446c7b350b9971089c27f83b9ebb0}{Enable\+Hot\+Cold\+Master\+Node}} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&vin, \mbox{\hyperlink{class_c_service}{C\+Service}} \&addr)
+\begin{DoxyCompactList}\small\item\em Enable cold wallet mode (run a Masternode with no funds) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_active_masternode_a005f6d9c1e40efd38ab5ceddcb56628b}\label{class_c_active_masternode_a005f6d9c1e40efd38ab5ceddcb56628b}} 
+\mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} {\bfseries pub\+Key\+Masternode}
+\item 
+\mbox{\Hypertarget{class_c_active_masternode_a0fe32edc638ebd2866dda14fd490d78e}\label{class_c_active_masternode_a0fe32edc638ebd2866dda14fd490d78e}} 
+\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} {\bfseries vin}
+\item 
+\mbox{\Hypertarget{class_c_active_masternode_a5b990857c9dc1005d0c134c608474c8f}\label{class_c_active_masternode_a5b990857c9dc1005d0c134c608474c8f}} 
+\mbox{\hyperlink{class_c_service}{C\+Service}} {\bfseries service}
+\item 
+\mbox{\Hypertarget{class_c_active_masternode_af43fe0c6da3192458ddc827ff2e0294c}\label{class_c_active_masternode_af43fe0c6da3192458ddc827ff2e0294c}} 
+int {\bfseries status}
+\item 
+\mbox{\Hypertarget{class_c_active_masternode_a9f70460608657fcbda659b650e2180cd}\label{class_c_active_masternode_a9f70460608657fcbda659b650e2180cd}} 
+std\+::string {\bfseries not\+Capable\+Reason}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/activemasternode.\+h\item 
+P\+I\+V\+X/src/activemasternode.\+cpp\end{DoxyCompactItemize}

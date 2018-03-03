@@ -1,0 +1,13 @@
+digraph "BitcoinApplication::handleRunawayException"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node15 [label="BitcoinApplication\l::handleRunawayException",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node15 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="BitcoinApplication\l::startThread",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a61afce9356e452c53ad4c83f5ca19df8"];
+  Node16 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="BitcoinApplication\l::requestInitialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#ade19c44b87b00b6b19b433caf4c22ba6",tooltip="Request core initialization. "];
+  Node16 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="BitcoinApplication\l::requestShutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a37c560d4c04d14a6da151b82caf8888f",tooltip="Request core shutdown. "];
+}

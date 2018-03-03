@@ -1,0 +1,19 @@
+digraph "ReceiveRequestDialog::on_btnCopyURI_clicked"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node7 [label="ReceiveRequestDialog\l::on_btnCopyURI_clicked",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node7 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="GUIUtil::setClipboard",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#aef655b19f129179ca32f11a4d0da1a07"];
+  Node7 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="GUIUtil::formatBitcoinURI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#ab9d4ba8e8713eebbe4e5eb7cd1ba479e"];
+  Node9 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="BitcoinUnits::format",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#ab07437e5a788c80a82d75e3714bd3925",tooltip="Format as string. "];
+  Node10 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="BitcoinUnits::valid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a81cbc41480adfb600dad79711d336e5f",tooltip="Is unit ID valid? "];
+  Node10 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="BitcoinUnits::factor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#ae967b9e6ecbb8f041bfe398d27533b09",tooltip="Number of Satoshis (1e-8) per unit. "];
+  Node10 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="BitcoinUnits::decimals",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a3f0fc21634520ea06c684ba0d7e25f2f",tooltip="Number of decimals left. "];
+}

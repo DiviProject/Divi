@@ -1,0 +1,430 @@
+\hypertarget{class_c_chain_params}{}\section{C\+Chain\+Params Class Reference}
+\label{class_c_chain_params}\index{C\+Chain\+Params@{C\+Chain\+Params}}
+
+
+{\ttfamily \#include $<$chainparams.\+h$>$}
+
+Inheritance diagram for C\+Chain\+Params\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{class_c_chain_params}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_aa294058ec2e3586bd8d03d6c39667058}\label{class_c_chain_params_aa294058ec2e3586bd8d03d6c39667058}} 
+enum {\bfseries Base58\+Type} \{ \newline
+{\bfseries P\+U\+B\+K\+E\+Y\+\_\+\+A\+D\+D\+R\+E\+SS}, 
+{\bfseries S\+C\+R\+I\+P\+T\+\_\+\+A\+D\+D\+R\+E\+SS}, 
+{\bfseries S\+E\+C\+R\+E\+T\+\_\+\+K\+EY}, 
+{\bfseries E\+X\+T\+\_\+\+P\+U\+B\+L\+I\+C\+\_\+\+K\+EY}, 
+\newline
+{\bfseries E\+X\+T\+\_\+\+S\+E\+C\+R\+E\+T\+\_\+\+K\+EY}, 
+{\bfseries E\+X\+T\+\_\+\+C\+O\+I\+N\+\_\+\+T\+Y\+PE}, 
+{\bfseries M\+A\+X\+\_\+\+B\+A\+S\+E58\+\_\+\+T\+Y\+P\+ES}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a68e10a5e6ad16a5c2bfa0a8a1c8f4c4b}\label{class_c_chain_params_a68e10a5e6ad16a5c2bfa0a8a1c8f4c4b}} 
+const \mbox{\hyperlink{classuint256}{uint256}} \& {\bfseries Hash\+Genesis\+Block} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_accc01cc5a34b449c3370f46a5b4c5190}\label{class_c_chain_params_accc01cc5a34b449c3370f46a5b4c5190}} 
+const Message\+Start\+Chars \& {\bfseries Message\+Start} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a8ca8fe289d1c3d5851d6aebaf28db22f}\label{class_c_chain_params_a8ca8fe289d1c3d5851d6aebaf28db22f}} 
+const std\+::vector$<$ unsigned char $>$ \& {\bfseries Alert\+Key} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a2e796bba356e7ce2040f545ea466754f}\label{class_c_chain_params_a2e796bba356e7ce2040f545ea466754f}} 
+int {\bfseries Get\+Default\+Port} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_af171e47287f097c8753b9581fd3c3c58}\label{class_c_chain_params_af171e47287f097c8753b9581fd3c3c58}} 
+const \mbox{\hyperlink{classuint256}{uint256}} \& {\bfseries Proof\+Of\+Work\+Limit} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a3dc06a2a30742a9beb8953622cbaf477}\label{class_c_chain_params_a3dc06a2a30742a9beb8953622cbaf477}} 
+int {\bfseries Subsidy\+Halving\+Interval} () const
+\item 
+int \mbox{\hyperlink{class_c_chain_params_ac55b927a13650f1b6593b0200258ce62}{Enforce\+Block\+Upgrade\+Majority}} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a759fe1926448351c9a0856b28e83e794}\label{class_c_chain_params_a759fe1926448351c9a0856b28e83e794}} 
+int {\bfseries Reject\+Block\+Outdated\+Majority} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a84aa3a27051e0bc1d47586c24983548c}\label{class_c_chain_params_a84aa3a27051e0bc1d47586c24983548c}} 
+int {\bfseries To\+Check\+Block\+Upgrade\+Majority} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a53d47c5358366c218fc26cacb9bd4010}\label{class_c_chain_params_a53d47c5358366c218fc26cacb9bd4010}} 
+int {\bfseries Max\+Reorganization\+Depth} () const
+\item 
+int \mbox{\hyperlink{class_c_chain_params_ac2da912493292c2139ca7753dde96b2e}{Default\+Miner\+Threads}} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_aebd6cb9d986eeb2e6c228c04b3c39b42}\label{class_c_chain_params_aebd6cb9d986eeb2e6c228c04b3c39b42}} 
+const \mbox{\hyperlink{class_c_block}{C\+Block}} \& {\bfseries Genesis\+Block} () const
+\item 
+bool \mbox{\hyperlink{class_c_chain_params_a066ad4166984a31bdc0836193a6341ee}{Mining\+Requires\+Peers}} () const
+\item 
+bool \mbox{\hyperlink{class_c_chain_params_ae1bf9eed6ce76328909127bfc9965f76}{Headers\+First\+Syncing\+Active}} () const
+\item 
+bool \mbox{\hyperlink{class_c_chain_params_a1d12f9b4b1ea7d7a0416cb6045496342}{Default\+Consistency\+Checks}} () const
+\item 
+bool \mbox{\hyperlink{class_c_chain_params_ac1202f87305ff3fdd4e1da28f1b35218}{Allow\+Min\+Difficulty\+Blocks}} () const
+\item 
+bool \mbox{\hyperlink{class_c_chain_params_a79b6cb67af99906669f7219a14a83cf7}{Skip\+Proof\+Of\+Work\+Check}} () const
+\item 
+bool \mbox{\hyperlink{class_c_chain_params_a30c1b60e515537b01810e175844d852f}{Require\+Standard}} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a31aee5a207f45026c08cc37f3a0f7b89}\label{class_c_chain_params_a31aee5a207f45026c08cc37f3a0f7b89}} 
+int64\+\_\+t {\bfseries Target\+Timespan} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a9c039f77ecdc58117dca0c6a5bae0dff}\label{class_c_chain_params_a9c039f77ecdc58117dca0c6a5bae0dff}} 
+int64\+\_\+t {\bfseries Target\+Spacing} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_aaf86b1e5312dea14645af764fc41be7f}\label{class_c_chain_params_aaf86b1e5312dea14645af764fc41be7f}} 
+int64\+\_\+t {\bfseries Interval} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_ab752b3ae1230aaf40b5a2d14d628fab7}\label{class_c_chain_params_ab752b3ae1230aaf40b5a2d14d628fab7}} 
+int {\bfseries C\+O\+I\+N\+B\+A\+S\+E\+\_\+\+M\+A\+T\+U\+R\+I\+TY} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a82190f02d83daee6823362e3c25848d0}\label{class_c_chain_params_a82190f02d83daee6823362e3c25848d0}} 
+C\+Amount {\bfseries Max\+Money\+Out} () const
+\item 
+int \mbox{\hyperlink{class_c_chain_params_a9d2e5ae617867ebcb930c65a146b6e5c}{Masternode\+Count\+Drift}} () const
+\item 
+bool \mbox{\hyperlink{class_c_chain_params_a96be31ff3d8525c9d5458b7d07ada6bb}{Mine\+Blocks\+On\+Demand}} () const
+\item 
+bool \mbox{\hyperlink{class_c_chain_params_a1552cea0636112ef84069cd6b7858b8e}{Testnet\+To\+Be\+Deprecated\+Field\+R\+PC}} () const
+\item 
+std\+::string \mbox{\hyperlink{class_c_chain_params_a2c02cc73f7fe9369cee9a39a0fd5b710}{Network\+I\+D\+String}} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a402b8df138b265619217ddf934bbc67a}\label{class_c_chain_params_a402b8df138b265619217ddf934bbc67a}} 
+const std\+::vector$<$ \mbox{\hyperlink{struct_c_d_n_s_seed_data}{C\+D\+N\+S\+Seed\+Data}} $>$ \& {\bfseries D\+N\+S\+Seeds} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a103c58eca4a26a71201882b3ed6c4cb4}\label{class_c_chain_params_a103c58eca4a26a71201882b3ed6c4cb4}} 
+const std\+::vector$<$ unsigned char $>$ \& {\bfseries Base58\+Prefix} (Base58\+Type type) const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a3bd33f38910c2a7b435a71d270515b54}\label{class_c_chain_params_a3bd33f38910c2a7b435a71d270515b54}} 
+const std\+::vector$<$ \mbox{\hyperlink{class_c_address}{C\+Address}} $>$ \& {\bfseries Fixed\+Seeds} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_aba314e7660492aee43812344fa796d6c}\label{class_c_chain_params_aba314e7660492aee43812344fa796d6c}} 
+virtual const \mbox{\hyperlink{struct_checkpoints_1_1_c_checkpoint_data}{Checkpoints\+::\+C\+Checkpoint\+Data}} \& {\bfseries Checkpoints} () const =0
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a128aaa94e4cfcba19dc26e6d2f5ad467}\label{class_c_chain_params_a128aaa94e4cfcba19dc26e6d2f5ad467}} 
+int {\bfseries Pool\+Max\+Transactions} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a8ad2fa7772a2d4fe430e6b933003a2c7}\label{class_c_chain_params_a8ad2fa7772a2d4fe430e6b933003a2c7}} 
+std\+::string {\bfseries Spork\+Key} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_acf6464af63708a37e52876d2792eb27e}\label{class_c_chain_params_acf6464af63708a37e52876d2792eb27e}} 
+std\+::string {\bfseries Obfuscation\+Pool\+Dummy\+Address} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_af732a05c80cf79a71b0f6bc5ce113c98}\label{class_c_chain_params_af732a05c80cf79a71b0f6bc5ce113c98}} 
+int64\+\_\+t {\bfseries Start\+Masternode\+Payments} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_affd375d849ab3faefea3301b9ecbdf6b}\label{class_c_chain_params_affd375d849ab3faefea3301b9ecbdf6b}} 
+int64\+\_\+t {\bfseries Budget\+\_\+\+Fee\+\_\+\+Confirmations} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a3af50135596ad86019f274c8a15e580f}\label{class_c_chain_params_a3af50135596ad86019f274c8a15e580f}} 
+C\+Base\+Chain\+Params\+::\+Network {\bfseries Network\+ID} () const
+\item 
+std\+::string \mbox{\hyperlink{class_c_chain_params_af6003afc48876c16e825f589eed0ff11}{Zerocoin\+\_\+\+Modulus}} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a630db503e18106a7b797cdfe0a184437}\label{class_c_chain_params_a630db503e18106a7b797cdfe0a184437}} 
+\mbox{\hyperlink{classlibzerocoin_1_1_zerocoin_params}{libzerocoin\+::\+Zerocoin\+Params}} $\ast$ {\bfseries Zerocoin\+\_\+\+Params} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a9c9564cce9a2852ec277560c03c7bf5f}\label{class_c_chain_params_a9c9564cce9a2852ec277560c03c7bf5f}} 
+int {\bfseries Zerocoin\+\_\+\+Max\+Spends\+Per\+Transaction} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a68324f698999844cf8bdb511ab5bf89a}\label{class_c_chain_params_a68324f698999844cf8bdb511ab5bf89a}} 
+C\+Amount {\bfseries Zerocoin\+\_\+\+Mint\+Fee} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a76f3eaab883c0359e8c0b2d6941ef39c}\label{class_c_chain_params_a76f3eaab883c0359e8c0b2d6941ef39c}} 
+int {\bfseries Zerocoin\+\_\+\+Mint\+Required\+Confirmations} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_ae0c16d94f2017bc9fe0ab558447b61ed}\label{class_c_chain_params_ae0c16d94f2017bc9fe0ab558447b61ed}} 
+int {\bfseries Zerocoin\+\_\+\+Required\+Accumulation} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_aae50ef1ebe703e91b9bef340e7557f24}\label{class_c_chain_params_aae50ef1ebe703e91b9bef340e7557f24}} 
+int {\bfseries Zerocoin\+\_\+\+Default\+Spend\+Security} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_afcf5e1e63110dc8242be2b631ead6f1e}\label{class_c_chain_params_afcf5e1e63110dc8242be2b631ead6f1e}} 
+int {\bfseries Zerocoin\+\_\+\+Header\+Version} () const
+\item 
+int \mbox{\hyperlink{class_c_chain_params_ad166dbdd9631958fa0126e13dec1630a}{Modifier\+Upgrade\+Block}} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a836847832c07d43f71d371aed259fb80}\label{class_c_chain_params_a836847832c07d43f71d371aed259fb80}} 
+int {\bfseries L\+A\+S\+T\+\_\+\+P\+O\+W\+\_\+\+B\+L\+O\+CK} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a5c3b62573db5b5a6cdaee67d608353e0}\label{class_c_chain_params_a5c3b62573db5b5a6cdaee67d608353e0}} 
+int {\bfseries Zerocoin\+\_\+\+Start\+Height} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_aed556aae7f3b194eb3d1699daa7d6b35}\label{class_c_chain_params_aed556aae7f3b194eb3d1699daa7d6b35}} 
+int {\bfseries Zerocoin\+\_\+\+Block\+\_\+\+Enforce\+Serial\+Range} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a4dcfed7f6d901fb89a5b77376e9d19f2}\label{class_c_chain_params_a4dcfed7f6d901fb89a5b77376e9d19f2}} 
+int {\bfseries Zerocoin\+\_\+\+Block\+\_\+\+Recalculate\+Accumulators} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a92c49924432a4786282ccfe32ecadf8a}\label{class_c_chain_params_a92c49924432a4786282ccfe32ecadf8a}} 
+int {\bfseries Zerocoin\+\_\+\+Block\+\_\+\+First\+Fraudulent} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a7d9e9fc154ad9bfc22f149a2a8903a9f}\label{class_c_chain_params_a7d9e9fc154ad9bfc22f149a2a8903a9f}} 
+int {\bfseries Zerocoin\+\_\+\+Block\+\_\+\+Last\+Good\+Checkpoint} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_ae921b3c9f58708e4a694bb0b1e42173a}\label{class_c_chain_params_ae921b3c9f58708e4a694bb0b1e42173a}} 
+int {\bfseries Zerocoin\+\_\+\+Start\+Time} () const
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a273dbde532ea4c5cf57eea2150d1bea3}\label{class_c_chain_params_a273dbde532ea4c5cf57eea2150d1bea3}} 
+int {\bfseries Block\+\_\+\+Enforce\+\_\+\+Invalid} () const
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a3033bae1b7e966358f80b6cbb2e2a3d8}\label{class_c_chain_params_a3033bae1b7e966358f80b6cbb2e2a3d8}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries hash\+Genesis\+Block}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a06130a926927697ae8a6c211a60233a7}\label{class_c_chain_params_a06130a926927697ae8a6c211a60233a7}} 
+Message\+Start\+Chars {\bfseries pch\+Message\+Start}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_adf435bdf2d9cd00936d7da0fb4237921}\label{class_c_chain_params_adf435bdf2d9cd00936d7da0fb4237921}} 
+std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{class_c_chain_params_adf435bdf2d9cd00936d7da0fb4237921}{v\+Alert\+Pub\+Key}}
+\begin{DoxyCompactList}\small\item\em Raw pub key bytes for the broadcast alert signing key. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_chain_params_a76d9a8dc59e179ca94b6b9e04a93e5f4}\label{class_c_chain_params_a76d9a8dc59e179ca94b6b9e04a93e5f4}} 
+int {\bfseries n\+Default\+Port}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_ac9b383ab55dbc41f87c5d5f21ec245ac}\label{class_c_chain_params_ac9b383ab55dbc41f87c5d5f21ec245ac}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries bn\+Proof\+Of\+Work\+Limit}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a8648767ca452c2a20c68ede2c7b54e77}\label{class_c_chain_params_a8648767ca452c2a20c68ede2c7b54e77}} 
+int {\bfseries n\+Max\+Reorganization\+Depth}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a8618df6217285a39e86d44fba35a21af}\label{class_c_chain_params_a8618df6217285a39e86d44fba35a21af}} 
+int {\bfseries n\+Subsidy\+Halving\+Interval}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_aee2c84cf7f2c75f086953fd690d30532}\label{class_c_chain_params_aee2c84cf7f2c75f086953fd690d30532}} 
+int {\bfseries n\+Enforce\+Block\+Upgrade\+Majority}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a47b7660a7f47f6c7bc7c5e7c02d86c4f}\label{class_c_chain_params_a47b7660a7f47f6c7bc7c5e7c02d86c4f}} 
+int {\bfseries n\+Reject\+Block\+Outdated\+Majority}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a7439dfd29226ebef8dfcb9a1afc733ff}\label{class_c_chain_params_a7439dfd29226ebef8dfcb9a1afc733ff}} 
+int {\bfseries n\+To\+Check\+Block\+Upgrade\+Majority}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_ae3b007501adc348636d1107c10c72e41}\label{class_c_chain_params_ae3b007501adc348636d1107c10c72e41}} 
+int64\+\_\+t {\bfseries n\+Target\+Timespan}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a45a8d931326b48a91df0762bce9a2f97}\label{class_c_chain_params_a45a8d931326b48a91df0762bce9a2f97}} 
+int64\+\_\+t {\bfseries n\+Target\+Spacing}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a1376cb171648b51385a44fe0b30a5b4b}\label{class_c_chain_params_a1376cb171648b51385a44fe0b30a5b4b}} 
+int {\bfseries n\+Last\+P\+O\+W\+Block}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_ae2d0255279f57ab4b6e61b1031ca4d39}\label{class_c_chain_params_ae2d0255279f57ab4b6e61b1031ca4d39}} 
+int {\bfseries n\+Masternode\+Count\+Drift}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a15482c3ec35d6748a8026bfee288728c}\label{class_c_chain_params_a15482c3ec35d6748a8026bfee288728c}} 
+int {\bfseries n\+Maturity}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a22eb28020f13dd6df96158abcb227b25}\label{class_c_chain_params_a22eb28020f13dd6df96158abcb227b25}} 
+int {\bfseries n\+Modifier\+Update\+Block}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a654ff32ca59e910f589b5acad4110ba2}\label{class_c_chain_params_a654ff32ca59e910f589b5acad4110ba2}} 
+C\+Amount {\bfseries n\+Max\+Money\+Out}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a3efbcec19f3883c8300063ec0acf4a35}\label{class_c_chain_params_a3efbcec19f3883c8300063ec0acf4a35}} 
+int {\bfseries n\+Miner\+Threads}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a9ce50b4162fb2ebf5bd72ad4045aa70c}\label{class_c_chain_params_a9ce50b4162fb2ebf5bd72ad4045aa70c}} 
+std\+::vector$<$ \mbox{\hyperlink{struct_c_d_n_s_seed_data}{C\+D\+N\+S\+Seed\+Data}} $>$ {\bfseries v\+Seeds}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a923d956c5d3891d0c682b7ef5410ed8f}\label{class_c_chain_params_a923d956c5d3891d0c682b7ef5410ed8f}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries base58\+Prefixes} \mbox{[}M\+A\+X\+\_\+\+B\+A\+S\+E58\+\_\+\+T\+Y\+P\+ES\mbox{]}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a607373a144da14ba379464b370ceb2b8}\label{class_c_chain_params_a607373a144da14ba379464b370ceb2b8}} 
+C\+Base\+Chain\+Params\+::\+Network {\bfseries network\+ID}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a8542ce21d5b9bdc2eadad8702fdd584a}\label{class_c_chain_params_a8542ce21d5b9bdc2eadad8702fdd584a}} 
+std\+::string {\bfseries str\+Network\+ID}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a2e4119fa75f6ea0c64ba8809dab5c4f8}\label{class_c_chain_params_a2e4119fa75f6ea0c64ba8809dab5c4f8}} 
+\mbox{\hyperlink{class_c_block}{C\+Block}} {\bfseries genesis}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_af3ad79fb5bf4938750317c91e4c4b954}\label{class_c_chain_params_af3ad79fb5bf4938750317c91e4c4b954}} 
+std\+::vector$<$ \mbox{\hyperlink{class_c_address}{C\+Address}} $>$ {\bfseries v\+Fixed\+Seeds}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_abe9980263561e3f26b6352daa64092da}\label{class_c_chain_params_abe9980263561e3f26b6352daa64092da}} 
+bool {\bfseries f\+Mining\+Requires\+Peers}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a74e3e9749210d78d6d3e021254bb8ac4}\label{class_c_chain_params_a74e3e9749210d78d6d3e021254bb8ac4}} 
+bool {\bfseries f\+Allow\+Min\+Difficulty\+Blocks}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a630f023ae4a95a8b420bad0a08b4428c}\label{class_c_chain_params_a630f023ae4a95a8b420bad0a08b4428c}} 
+bool {\bfseries f\+Default\+Consistency\+Checks}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_abc615d2750d847e1eac0ecb7fc8d2da8}\label{class_c_chain_params_abc615d2750d847e1eac0ecb7fc8d2da8}} 
+bool {\bfseries f\+Require\+Standard}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_ad640045ea40c569df7b826551872e1bd}\label{class_c_chain_params_ad640045ea40c569df7b826551872e1bd}} 
+bool {\bfseries f\+Mine\+Blocks\+On\+Demand}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a69af48fdfc37e1b6bc9ebf99cbd3d381}\label{class_c_chain_params_a69af48fdfc37e1b6bc9ebf99cbd3d381}} 
+bool {\bfseries f\+Skip\+Proof\+Of\+Work\+Check}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a4f62f1b7070f83b48aa86564628a2e7d}\label{class_c_chain_params_a4f62f1b7070f83b48aa86564628a2e7d}} 
+bool {\bfseries f\+Testnet\+To\+Be\+Deprecated\+Field\+R\+PC}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_af9f11f9732810c7773747b2746be299c}\label{class_c_chain_params_af9f11f9732810c7773747b2746be299c}} 
+bool {\bfseries f\+Headers\+First\+Syncing\+Active}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_addb1962eb12784aaea932fd49b5fd40b}\label{class_c_chain_params_addb1962eb12784aaea932fd49b5fd40b}} 
+int {\bfseries n\+Pool\+Max\+Transactions}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a58ca704d8cc6f625f8757487cccb6250}\label{class_c_chain_params_a58ca704d8cc6f625f8757487cccb6250}} 
+std\+::string {\bfseries str\+Spork\+Key}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a652c1db947c78ef3c6a1e7f599d33525}\label{class_c_chain_params_a652c1db947c78ef3c6a1e7f599d33525}} 
+std\+::string {\bfseries str\+Obfuscation\+Pool\+Dummy\+Address}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a80fe48978b6626fdbc50b314a030511b}\label{class_c_chain_params_a80fe48978b6626fdbc50b314a030511b}} 
+int64\+\_\+t {\bfseries n\+Start\+Masternode\+Payments}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_adf6118d28adb3e4284323ddaf8d88bdb}\label{class_c_chain_params_adf6118d28adb3e4284323ddaf8d88bdb}} 
+std\+::string {\bfseries zerocoin\+Modulus}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a4cde3d26a9cdd7bbf40c01322a65b19f}\label{class_c_chain_params_a4cde3d26a9cdd7bbf40c01322a65b19f}} 
+int {\bfseries n\+Max\+Zerocoin\+Spends\+Per\+Transaction}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_ae272352816d1a4bcaca51d9ff38ee9c9}\label{class_c_chain_params_ae272352816d1a4bcaca51d9ff38ee9c9}} 
+C\+Amount {\bfseries n\+Min\+Zerocoin\+Mint\+Fee}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a1d5815ad4550d75b90e7b1aed21ed324}\label{class_c_chain_params_a1d5815ad4550d75b90e7b1aed21ed324}} 
+int {\bfseries n\+Mint\+Required\+Confirmations}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_ab2f6ee6ffdd7f14ef7e5a2fb40276f53}\label{class_c_chain_params_ab2f6ee6ffdd7f14ef7e5a2fb40276f53}} 
+int {\bfseries n\+Required\+Accumulation}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a9d1590c701c4ba85601ced386103e2cc}\label{class_c_chain_params_a9d1590c701c4ba85601ced386103e2cc}} 
+int {\bfseries n\+Default\+Security\+Level}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_acc2851a966d3668c09bfdbea7bb5de96}\label{class_c_chain_params_acc2851a966d3668c09bfdbea7bb5de96}} 
+int {\bfseries n\+Zerocoin\+Header\+Version}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a1bc99b0b408a74f8946a220c5feb5b0c}\label{class_c_chain_params_a1bc99b0b408a74f8946a220c5feb5b0c}} 
+int64\+\_\+t {\bfseries n\+Budget\+\_\+\+Fee\+\_\+\+Confirmations}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_aca752e6cd13e695d2f679fed05ce15a6}\label{class_c_chain_params_aca752e6cd13e695d2f679fed05ce15a6}} 
+int {\bfseries n\+Zerocoin\+Start\+Height}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a1ece3e405b68957ccc0b8269d4f1c99f}\label{class_c_chain_params_a1ece3e405b68957ccc0b8269d4f1c99f}} 
+int {\bfseries n\+Zerocoin\+Start\+Time}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a52246ab367decc6365b4ca07f1502a9e}\label{class_c_chain_params_a52246ab367decc6365b4ca07f1502a9e}} 
+int {\bfseries n\+Block\+Enforce\+Serial\+Range}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a0f1c3b37309c7df072a82aaa94010fe3}\label{class_c_chain_params_a0f1c3b37309c7df072a82aaa94010fe3}} 
+int {\bfseries n\+Block\+Recalculate\+Accumulators}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_afa3d076eba27a08e2163e4763d91e02f}\label{class_c_chain_params_afa3d076eba27a08e2163e4763d91e02f}} 
+int {\bfseries n\+Block\+First\+Fraudulent}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a054fbf57da6d3f8f042093b07e79b13d}\label{class_c_chain_params_a054fbf57da6d3f8f042093b07e79b13d}} 
+int {\bfseries n\+Block\+Last\+Good\+Checkpoint}
+\item 
+\mbox{\Hypertarget{class_c_chain_params_a728b558cdbea31d05d5c76ea55b0c40a}\label{class_c_chain_params_a728b558cdbea31d05d5c76ea55b0c40a}} 
+int {\bfseries n\+Block\+Enforce\+Invalid\+U\+T\+XO}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\mbox{\hyperlink{class_c_chain_params}{C\+Chain\+Params}} defines various tweakable parameters of a given instance of the P\+I\+VX system. There are three\+: the main network on which people trade goods and services, the public test network which gets reset from time to time and a regression test mode which is intended for private networks only. It has minimal difficulty to ensure that blocks can be found instantly. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_chain_params_ac1202f87305ff3fdd4e1da28f1b35218}\label{class_c_chain_params_ac1202f87305ff3fdd4e1da28f1b35218}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Allow\+Min\+Difficulty\+Blocks@{Allow\+Min\+Difficulty\+Blocks}}
+\index{Allow\+Min\+Difficulty\+Blocks@{Allow\+Min\+Difficulty\+Blocks}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Allow\+Min\+Difficulty\+Blocks()}{AllowMinDifficultyBlocks()}}
+{\footnotesize\ttfamily bool C\+Chain\+Params\+::\+Allow\+Min\+Difficulty\+Blocks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Allow mining of a min-\/difficulty block \mbox{\Hypertarget{class_c_chain_params_a1d12f9b4b1ea7d7a0416cb6045496342}\label{class_c_chain_params_a1d12f9b4b1ea7d7a0416cb6045496342}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Default\+Consistency\+Checks@{Default\+Consistency\+Checks}}
+\index{Default\+Consistency\+Checks@{Default\+Consistency\+Checks}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Default\+Consistency\+Checks()}{DefaultConsistencyChecks()}}
+{\footnotesize\ttfamily bool C\+Chain\+Params\+::\+Default\+Consistency\+Checks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Default value for -\/checkmempool and -\/checkblockindex argument \mbox{\Hypertarget{class_c_chain_params_ac2da912493292c2139ca7753dde96b2e}\label{class_c_chain_params_ac2da912493292c2139ca7753dde96b2e}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Default\+Miner\+Threads@{Default\+Miner\+Threads}}
+\index{Default\+Miner\+Threads@{Default\+Miner\+Threads}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Default\+Miner\+Threads()}{DefaultMinerThreads()}}
+{\footnotesize\ttfamily int C\+Chain\+Params\+::\+Default\+Miner\+Threads (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Used if Generate\+Bitcoins is called with a negative number of threads \mbox{\Hypertarget{class_c_chain_params_ac55b927a13650f1b6593b0200258ce62}\label{class_c_chain_params_ac55b927a13650f1b6593b0200258ce62}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Enforce\+Block\+Upgrade\+Majority@{Enforce\+Block\+Upgrade\+Majority}}
+\index{Enforce\+Block\+Upgrade\+Majority@{Enforce\+Block\+Upgrade\+Majority}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Enforce\+Block\+Upgrade\+Majority()}{EnforceBlockUpgradeMajority()}}
+{\footnotesize\ttfamily int C\+Chain\+Params\+::\+Enforce\+Block\+Upgrade\+Majority (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Used to check majorities for block version upgrade \mbox{\Hypertarget{class_c_chain_params_ae1bf9eed6ce76328909127bfc9965f76}\label{class_c_chain_params_ae1bf9eed6ce76328909127bfc9965f76}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Headers\+First\+Syncing\+Active@{Headers\+First\+Syncing\+Active}}
+\index{Headers\+First\+Syncing\+Active@{Headers\+First\+Syncing\+Active}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Headers\+First\+Syncing\+Active()}{HeadersFirstSyncingActive()}}
+{\footnotesize\ttfamily bool C\+Chain\+Params\+::\+Headers\+First\+Syncing\+Active (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Headers first syncing is disabled \mbox{\Hypertarget{class_c_chain_params_a9d2e5ae617867ebcb930c65a146b6e5c}\label{class_c_chain_params_a9d2e5ae617867ebcb930c65a146b6e5c}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Masternode\+Count\+Drift@{Masternode\+Count\+Drift}}
+\index{Masternode\+Count\+Drift@{Masternode\+Count\+Drift}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Masternode\+Count\+Drift()}{MasternodeCountDrift()}}
+{\footnotesize\ttfamily int C\+Chain\+Params\+::\+Masternode\+Count\+Drift (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+The masternode count that we will allow the see-\/saw reward payments to be off by \mbox{\Hypertarget{class_c_chain_params_a96be31ff3d8525c9d5458b7d07ada6bb}\label{class_c_chain_params_a96be31ff3d8525c9d5458b7d07ada6bb}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Mine\+Blocks\+On\+Demand@{Mine\+Blocks\+On\+Demand}}
+\index{Mine\+Blocks\+On\+Demand@{Mine\+Blocks\+On\+Demand}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Mine\+Blocks\+On\+Demand()}{MineBlocksOnDemand()}}
+{\footnotesize\ttfamily bool C\+Chain\+Params\+::\+Mine\+Blocks\+On\+Demand (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Make miner stop after a block is found. In R\+PC, don\textquotesingle{}t return until n\+Gen\+Proc\+Limit blocks are generated \mbox{\Hypertarget{class_c_chain_params_a066ad4166984a31bdc0836193a6341ee}\label{class_c_chain_params_a066ad4166984a31bdc0836193a6341ee}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Mining\+Requires\+Peers@{Mining\+Requires\+Peers}}
+\index{Mining\+Requires\+Peers@{Mining\+Requires\+Peers}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Mining\+Requires\+Peers()}{MiningRequiresPeers()}}
+{\footnotesize\ttfamily bool C\+Chain\+Params\+::\+Mining\+Requires\+Peers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Make miner wait to have peers to avoid wasting work \mbox{\Hypertarget{class_c_chain_params_ad166dbdd9631958fa0126e13dec1630a}\label{class_c_chain_params_ad166dbdd9631958fa0126e13dec1630a}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Modifier\+Upgrade\+Block@{Modifier\+Upgrade\+Block}}
+\index{Modifier\+Upgrade\+Block@{Modifier\+Upgrade\+Block}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Modifier\+Upgrade\+Block()}{ModifierUpgradeBlock()}}
+{\footnotesize\ttfamily int C\+Chain\+Params\+::\+Modifier\+Upgrade\+Block (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Height or Time Based Activations \mbox{\Hypertarget{class_c_chain_params_a2c02cc73f7fe9369cee9a39a0fd5b710}\label{class_c_chain_params_a2c02cc73f7fe9369cee9a39a0fd5b710}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Network\+I\+D\+String@{Network\+I\+D\+String}}
+\index{Network\+I\+D\+String@{Network\+I\+D\+String}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Network\+I\+D\+String()}{NetworkIDString()}}
+{\footnotesize\ttfamily std\+::string C\+Chain\+Params\+::\+Network\+I\+D\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Return the B\+I\+P70 network string (main, test or regtest) \mbox{\Hypertarget{class_c_chain_params_a30c1b60e515537b01810e175844d852f}\label{class_c_chain_params_a30c1b60e515537b01810e175844d852f}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Require\+Standard@{Require\+Standard}}
+\index{Require\+Standard@{Require\+Standard}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Require\+Standard()}{RequireStandard()}}
+{\footnotesize\ttfamily bool C\+Chain\+Params\+::\+Require\+Standard (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Make standard checks \mbox{\Hypertarget{class_c_chain_params_a79b6cb67af99906669f7219a14a83cf7}\label{class_c_chain_params_a79b6cb67af99906669f7219a14a83cf7}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Skip\+Proof\+Of\+Work\+Check@{Skip\+Proof\+Of\+Work\+Check}}
+\index{Skip\+Proof\+Of\+Work\+Check@{Skip\+Proof\+Of\+Work\+Check}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Skip\+Proof\+Of\+Work\+Check()}{SkipProofOfWorkCheck()}}
+{\footnotesize\ttfamily bool C\+Chain\+Params\+::\+Skip\+Proof\+Of\+Work\+Check (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Skip proof-\/of-\/work check\+: allow mining of any difficulty block \mbox{\Hypertarget{class_c_chain_params_a1552cea0636112ef84069cd6b7858b8e}\label{class_c_chain_params_a1552cea0636112ef84069cd6b7858b8e}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Testnet\+To\+Be\+Deprecated\+Field\+R\+PC@{Testnet\+To\+Be\+Deprecated\+Field\+R\+PC}}
+\index{Testnet\+To\+Be\+Deprecated\+Field\+R\+PC@{Testnet\+To\+Be\+Deprecated\+Field\+R\+PC}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Testnet\+To\+Be\+Deprecated\+Field\+R\+P\+C()}{TestnetToBeDeprecatedFieldRPC()}}
+{\footnotesize\ttfamily bool C\+Chain\+Params\+::\+Testnet\+To\+Be\+Deprecated\+Field\+R\+PC (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+In the future use \mbox{\hyperlink{class_c_chain_params_a2c02cc73f7fe9369cee9a39a0fd5b710}{Network\+I\+D\+String()}} for R\+PC fields \mbox{\Hypertarget{class_c_chain_params_af6003afc48876c16e825f589eed0ff11}\label{class_c_chain_params_af6003afc48876c16e825f589eed0ff11}} 
+\index{C\+Chain\+Params@{C\+Chain\+Params}!Zerocoin\+\_\+\+Modulus@{Zerocoin\+\_\+\+Modulus}}
+\index{Zerocoin\+\_\+\+Modulus@{Zerocoin\+\_\+\+Modulus}!C\+Chain\+Params@{C\+Chain\+Params}}
+\subsubsection{\texorpdfstring{Zerocoin\+\_\+\+Modulus()}{Zerocoin\_Modulus()}}
+{\footnotesize\ttfamily std\+::string C\+Chain\+Params\+::\+Zerocoin\+\_\+\+Modulus (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Zerocoin 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/chainparams.\+h\item 
+P\+I\+V\+X/src/chainparams.\+cpp\end{DoxyCompactItemize}

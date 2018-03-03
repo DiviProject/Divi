@@ -1,0 +1,58 @@
+\hypertarget{class_c_master_key}{}\section{C\+Master\+Key Class Reference}
+\label{class_c_master_key}\index{C\+Master\+Key@{C\+Master\+Key}}
+
+
+{\ttfamily \#include $<$crypter.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_master_key_a32456e3080cf3a9818850f3c458594ea}\label{class_c_master_key_a32456e3080cf3a9818850f3c458594ea}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_master_key_ab52e0eaabb0eb3af78fc4879c192e163}\label{class_c_master_key_ab52e0eaabb0eb3af78fc4879c192e163}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries vch\+Crypted\+Key}
+\item 
+\mbox{\Hypertarget{class_c_master_key_a00009f4b4feaa2ebe630a0d7cc854d3a}\label{class_c_master_key_a00009f4b4feaa2ebe630a0d7cc854d3a}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries vch\+Salt}
+\item 
+unsigned int \mbox{\hyperlink{class_c_master_key_a7a4b1e432a30011297f496441769957f}{n\+Derivation\+Method}}
+\item 
+\mbox{\Hypertarget{class_c_master_key_aec53e0be82d1053cf5a70a67fd4cc25d}\label{class_c_master_key_aec53e0be82d1053cf5a70a67fd4cc25d}} 
+unsigned int {\bfseries n\+Derive\+Iterations}
+\item 
+std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{class_c_master_key_abfd00b311d5e5cf9ae1a6f3877ed35f7}{vch\+Other\+Derivation\+Parameters}}
+\item 
+\mbox{\Hypertarget{class_c_master_key_a0e49e2a9206051c91388b2077eacb8c8}\label{class_c_master_key_a0e49e2a9206051c91388b2077eacb8c8}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Private key encryption is done based on a \mbox{\hyperlink{class_c_master_key}{C\+Master\+Key}}, which holds a salt and random encryption key.
+
+C\+Master\+Keys are encrypted using A\+E\+S-\/256-\/\+C\+BC using a key derived using derivation method n\+Derivation\+Method (0 == E\+V\+P\+\_\+sha512()) and derivation iterations n\+Derive\+Iterations. vch\+Other\+Derivation\+Parameters is provided for alternative algorithms which may require more parameters (such as scrypt).
+
+Wallet Private Keys are then encrypted using A\+E\+S-\/256-\/\+C\+BC with the double-\/sha256 of the public key as the IV, and the master key\textquotesingle{}s key as the encryption key (see keystore.\mbox{[}ch\mbox{]}).Master key for wallet encryption 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_c_master_key_a7a4b1e432a30011297f496441769957f}\label{class_c_master_key_a7a4b1e432a30011297f496441769957f}} 
+\index{C\+Master\+Key@{C\+Master\+Key}!n\+Derivation\+Method@{n\+Derivation\+Method}}
+\index{n\+Derivation\+Method@{n\+Derivation\+Method}!C\+Master\+Key@{C\+Master\+Key}}
+\subsubsection{\texorpdfstring{n\+Derivation\+Method}{nDerivationMethod}}
+{\footnotesize\ttfamily unsigned int C\+Master\+Key\+::n\+Derivation\+Method}
+
+0 = E\+V\+P\+\_\+sha512() 1 = scrypt() \mbox{\Hypertarget{class_c_master_key_abfd00b311d5e5cf9ae1a6f3877ed35f7}\label{class_c_master_key_abfd00b311d5e5cf9ae1a6f3877ed35f7}} 
+\index{C\+Master\+Key@{C\+Master\+Key}!vch\+Other\+Derivation\+Parameters@{vch\+Other\+Derivation\+Parameters}}
+\index{vch\+Other\+Derivation\+Parameters@{vch\+Other\+Derivation\+Parameters}!C\+Master\+Key@{C\+Master\+Key}}
+\subsubsection{\texorpdfstring{vch\+Other\+Derivation\+Parameters}{vchOtherDerivationParameters}}
+{\footnotesize\ttfamily std\+::vector$<$unsigned char$>$ C\+Master\+Key\+::vch\+Other\+Derivation\+Parameters}
+
+Use this for more parameters to key derivation, such as the various parameters to scrypt 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/crypter.\+h\end{DoxyCompactItemize}

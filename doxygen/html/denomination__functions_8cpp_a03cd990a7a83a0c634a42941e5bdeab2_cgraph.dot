@@ -1,0 +1,11 @@
+digraph "getIdealSpends"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node20 [label="getIdealSpends",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node20 -> Node21 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="reverse_iterate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$reverse__iterate_8h.html#a5c42501cbdd92bec9f5a7886c4e9cfd5"];
+  Node20 -> Node22 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node22 [label="libzerocoin::ZerocoinDenomination\lToAmount",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacelibzerocoin.html#aa2479161e18a4df0c60a6256e47cac97"];
+}

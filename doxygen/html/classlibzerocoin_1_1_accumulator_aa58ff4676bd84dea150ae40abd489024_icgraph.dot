@@ -1,0 +1,9 @@
+digraph "libzerocoin::Accumulator::accumulate"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node16 [label="libzerocoin::Accumulator\l::accumulate",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node16 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="libzerocoin::Accumulator\l::operator+=",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_accumulator.html#a03bec513778240e9ddfcd2103524fd33",tooltip="Used to set the accumulator value. "];
+}

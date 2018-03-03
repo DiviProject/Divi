@@ -1,0 +1,11 @@
+digraph "CTxMemPool::removeConflicts"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node284 [label="CTxMemPool::removeConflicts",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node284 -> Node285 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node285 [label="DisconnectBlockAndInputs",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#acc33d7f850152cbbb9d00f7c71d99704"];
+  Node284 -> Node286 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node286 [label="CTxMemPool::removeForBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_mem_pool.html#ac97207311007676bd7ef056a625e0e0a",tooltip="Called when a block is connected. "];
+}

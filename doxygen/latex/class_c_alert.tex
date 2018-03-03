@@ -1,0 +1,78 @@
+\hypertarget{class_c_alert}{}\section{C\+Alert Class Reference}
+\label{class_c_alert}\index{C\+Alert@{C\+Alert}}
+
+
+{\ttfamily \#include $<$alert.\+h$>$}
+
+Inheritance diagram for C\+Alert\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_alert}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_alert_a51d73ab316bb42e65b87ec14ac536b14}\label{class_c_alert_a51d73ab316bb42e65b87ec14ac536b14}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_alert_a93fd881c55ab448213787f49e316eb99}\label{class_c_alert_a93fd881c55ab448213787f49e316eb99}} 
+void {\bfseries Set\+Null} ()
+\item 
+\mbox{\Hypertarget{class_c_alert_a9c728b7fe91e74c51116a23b07d6978a}\label{class_c_alert_a9c728b7fe91e74c51116a23b07d6978a}} 
+bool {\bfseries Is\+Null} () const
+\item 
+\mbox{\Hypertarget{class_c_alert_a059c136c9556e5e59a1a4dc39a97366d}\label{class_c_alert_a059c136c9556e5e59a1a4dc39a97366d}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Hash} () const
+\item 
+\mbox{\Hypertarget{class_c_alert_a018da40779a5c095c38bf10f4256cee6}\label{class_c_alert_a018da40779a5c095c38bf10f4256cee6}} 
+bool {\bfseries Is\+In\+Effect} () const
+\item 
+\mbox{\Hypertarget{class_c_alert_a75777afd3418c6cd74f7e9e4caed3472}\label{class_c_alert_a75777afd3418c6cd74f7e9e4caed3472}} 
+bool {\bfseries Cancels} (const \mbox{\hyperlink{class_c_alert}{C\+Alert}} \&alert) const
+\item 
+\mbox{\Hypertarget{class_c_alert_a75a0fea5dc20ad704d10496f2ef0d419}\label{class_c_alert_a75a0fea5dc20ad704d10496f2ef0d419}} 
+bool {\bfseries Applies\+To} (int n\+Version, std\+::string str\+Sub\+Ver\+In) const
+\item 
+\mbox{\Hypertarget{class_c_alert_aba79cc9e957446fe93f05cb18f12b24b}\label{class_c_alert_aba79cc9e957446fe93f05cb18f12b24b}} 
+bool {\bfseries Applies\+To\+Me} () const
+\item 
+\mbox{\Hypertarget{class_c_alert_a21a801f1a5978889722771d4eb13bf37}\label{class_c_alert_a21a801f1a5978889722771d4eb13bf37}} 
+bool {\bfseries Relay\+To} (\mbox{\hyperlink{class_c_node}{C\+Node}} $\ast$pnode) const
+\item 
+\mbox{\Hypertarget{class_c_alert_a862d9fb7ebdfc0483b30862d2a75d527}\label{class_c_alert_a862d9fb7ebdfc0483b30862d2a75d527}} 
+bool {\bfseries Check\+Signature} () const
+\item 
+\mbox{\Hypertarget{class_c_alert_af3e6b2e5d3584f58c5d7be9dbd72b4cc}\label{class_c_alert_af3e6b2e5d3584f58c5d7be9dbd72b4cc}} 
+bool {\bfseries Process\+Alert} (bool f\+Thread=true)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_alert_a3da23857c8ed275621ee032a703c04a1}\label{class_c_alert_a3da23857c8ed275621ee032a703c04a1}} 
+static void {\bfseries Notify} (const std\+::string \&str\+Message, bool f\+Thread)
+\item 
+\mbox{\Hypertarget{class_c_alert_aa37df9d177a6841ec5fa1e611c42b968}\label{class_c_alert_aa37df9d177a6841ec5fa1e611c42b968}} 
+static \mbox{\hyperlink{class_c_alert}{C\+Alert}} {\bfseries get\+Alert\+By\+Hash} (const \mbox{\hyperlink{classuint256}{uint256}} \&hash)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_alert_abfcb3b339d052cd3dd6670b03286758a}\label{class_c_alert_abfcb3b339d052cd3dd6670b03286758a}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries vch\+Msg}
+\item 
+\mbox{\Hypertarget{class_c_alert_a541b49670ebf387a5f8b7de59277fed0}\label{class_c_alert_a541b49670ebf387a5f8b7de59277fed0}} 
+std\+::vector$<$ unsigned char $>$ {\bfseries vch\+Sig}
+\item 
+\mbox{\Hypertarget{class_c_alert_aca9310112e67fb38ef88f385a4ac6fc0}\label{class_c_alert_aca9310112e67fb38ef88f385a4ac6fc0}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An alert is a combination of a serialized \mbox{\hyperlink{class_c_unsigned_alert}{C\+Unsigned\+Alert}} and a signature. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/alert.\+h\item 
+P\+I\+V\+X/src/alert.\+cpp\end{DoxyCompactItemize}

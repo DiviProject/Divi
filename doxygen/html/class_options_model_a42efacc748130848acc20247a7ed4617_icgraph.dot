@@ -1,0 +1,15 @@
+digraph "OptionsModel::setDisplayUnit"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node209 [label="OptionsModel::setDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node209 -> Node210 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node210 [label="UnitDisplayStatusBarControl\l::onMenuSelection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_unit_display_status_bar_control.html#a8989bed2d30e0e376046356adc216a12",tooltip="Tells underlying optionsModel to update its current display unit. "];
+  Node210 -> Node211 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node211 [label="UnitDisplayStatusBarControl\l::createContextMenu",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_unit_display_status_bar_control.html#a3d131e977c2e9095d05d362d456a0e47",tooltip="Creates context menu, its actions, and wires up all the relevant signals for mouse events..."];
+  Node211 -> Node212 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node212 [label="UnitDisplayStatusBarControl\l::UnitDisplayStatusBarControl",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_unit_display_status_bar_control.html#aa4a399de0d0d93dedf44bcb328f78131"];
+  Node209 -> Node213 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node213 [label="OptionsModel::setData",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#a3102b457f4d46efac8ecb03b3d536b62"];
+}

@@ -1,0 +1,79 @@
+\hypertarget{classleveldb_1_1_d_b_impl}{}\section{leveldb\+:\+:D\+B\+Impl Class Reference}
+\label{classleveldb_1_1_d_b_impl}\index{leveldb\+::\+D\+B\+Impl@{leveldb\+::\+D\+B\+Impl}}
+Inheritance diagram for leveldb\+:\+:D\+B\+Impl\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classleveldb_1_1_d_b_impl}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structleveldb_1_1_d_b_impl_1_1_compaction_state}{Compaction\+State}}
+\item 
+struct \mbox{\hyperlink{structleveldb_1_1_d_b_impl_1_1_writer}{Writer}}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_a269b55605b27271d6ca5fee68af0d8f3}\label{classleveldb_1_1_d_b_impl_a269b55605b27271d6ca5fee68af0d8f3}} 
+{\bfseries D\+B\+Impl} (const \mbox{\hyperlink{structleveldb_1_1_options}{Options}} \&options, const std\+::string \&dbname)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_ad0d56aeb4d84ff9632c9a7f3f1b7c4d5}\label{classleveldb_1_1_d_b_impl_ad0d56aeb4d84ff9632c9a7f3f1b7c4d5}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Put} (const \mbox{\hyperlink{structleveldb_1_1_write_options}{Write\+Options}} \&, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&value)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_af050f77e8c22bd6638fed5a46a59399d}\label{classleveldb_1_1_d_b_impl_af050f77e8c22bd6638fed5a46a59399d}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Delete} (const \mbox{\hyperlink{structleveldb_1_1_write_options}{Write\+Options}} \&, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_ac0d0b472717099d6a02ad9dace4e8ef4}\label{classleveldb_1_1_d_b_impl_ac0d0b472717099d6a02ad9dace4e8ef4}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Write} (const \mbox{\hyperlink{structleveldb_1_1_write_options}{Write\+Options}} \&options, \mbox{\hyperlink{classleveldb_1_1_write_batch}{Write\+Batch}} $\ast$updates)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_a089964ddcd1f5dc85e73499ae57be508}\label{classleveldb_1_1_d_b_impl_a089964ddcd1f5dc85e73499ae57be508}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries Get} (const \mbox{\hyperlink{structleveldb_1_1_read_options}{Read\+Options}} \&options, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&key, std\+::string $\ast$value)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_ae955dc8f2a1c38588723a0882653cb58}\label{classleveldb_1_1_d_b_impl_ae955dc8f2a1c38588723a0882653cb58}} 
+virtual \mbox{\hyperlink{classleveldb_1_1_iterator}{Iterator}} $\ast$ {\bfseries New\+Iterator} (const \mbox{\hyperlink{structleveldb_1_1_read_options}{Read\+Options}} \&)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_a4bec3d8ffd65fec562b2dd1f6eaba137}\label{classleveldb_1_1_d_b_impl_a4bec3d8ffd65fec562b2dd1f6eaba137}} 
+virtual const \mbox{\hyperlink{classleveldb_1_1_snapshot}{Snapshot}} $\ast$ {\bfseries Get\+Snapshot} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_a6c0b6abfc9a30cc8e5412d4fc3e8c886}\label{classleveldb_1_1_d_b_impl_a6c0b6abfc9a30cc8e5412d4fc3e8c886}} 
+virtual void {\bfseries Release\+Snapshot} (const \mbox{\hyperlink{classleveldb_1_1_snapshot}{Snapshot}} $\ast$snapshot)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_ad1a2023ce171c8f8476664f5b1cbab4d}\label{classleveldb_1_1_d_b_impl_ad1a2023ce171c8f8476664f5b1cbab4d}} 
+virtual bool {\bfseries Get\+Property} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} \&property, std\+::string $\ast$value)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_af08e218d92064699942c195ce0f06010}\label{classleveldb_1_1_d_b_impl_af08e218d92064699942c195ce0f06010}} 
+virtual void {\bfseries Get\+Approximate\+Sizes} (const \mbox{\hyperlink{structleveldb_1_1_range}{Range}} $\ast$range, int n, uint64\+\_\+t $\ast$sizes)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_aa6df0739fc0b49380c284347e411b8ed}\label{classleveldb_1_1_d_b_impl_aa6df0739fc0b49380c284347e411b8ed}} 
+virtual void {\bfseries Compact\+Range} (const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$begin, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$end)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_a63fcb49466b689a534ba77d32cf84f99}\label{classleveldb_1_1_d_b_impl_a63fcb49466b689a534ba77d32cf84f99}} 
+void {\bfseries T\+E\+S\+T\+\_\+\+Compact\+Range} (int level, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$begin, const \mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} $\ast$end)
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_a8642703fd1398cd8e3f5f24ee0b9da23}\label{classleveldb_1_1_d_b_impl_a8642703fd1398cd8e3f5f24ee0b9da23}} 
+\mbox{\hyperlink{classleveldb_1_1_status}{Status}} {\bfseries T\+E\+S\+T\+\_\+\+Compact\+Mem\+Table} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_adba5bf4252bd94f7db50e62921b7ba53}\label{classleveldb_1_1_d_b_impl_adba5bf4252bd94f7db50e62921b7ba53}} 
+\mbox{\hyperlink{classleveldb_1_1_iterator}{Iterator}} $\ast$ {\bfseries T\+E\+S\+T\+\_\+\+New\+Internal\+Iterator} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_af621636048b8d3cfaa21238fe26ef0ca}\label{classleveldb_1_1_d_b_impl_af621636048b8d3cfaa21238fe26ef0ca}} 
+int64\+\_\+t {\bfseries T\+E\+S\+T\+\_\+\+Max\+Next\+Level\+Overlapping\+Bytes} ()
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_a254ae98e3425046c28ed0aa6d78b37d8}\label{classleveldb_1_1_d_b_impl_a254ae98e3425046c28ed0aa6d78b37d8}} 
+void {\bfseries Record\+Read\+Sample} (\mbox{\hyperlink{classleveldb_1_1_slice}{Slice}} key)
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classleveldb_1_1_d_b_impl_ad22eb7a23cbf34de526efa966c578d4a}\label{classleveldb_1_1_d_b_impl_ad22eb7a23cbf34de526efa966c578d4a}} 
+class {\bfseries DB}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/leveldb/db/db\+\_\+impl.\+h\item 
+P\+I\+V\+X/src/leveldb/db/db\+\_\+impl.\+cc\end{DoxyCompactItemize}

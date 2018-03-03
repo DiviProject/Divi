@@ -1,0 +1,33 @@
+\hypertarget{class_c_obfu_scation_signer}{}\section{C\+Obfu\+Scation\+Signer Class Reference}
+\label{class_c_obfu_scation_signer}\index{C\+Obfu\+Scation\+Signer@{C\+Obfu\+Scation\+Signer}}
+
+
+{\ttfamily \#include $<$obfuscation.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_signer_ae52356535949db63ac24a3815c0ca117}\label{class_c_obfu_scation_signer_ae52356535949db63ac24a3815c0ca117}} 
+bool \mbox{\hyperlink{class_c_obfu_scation_signer_ae52356535949db63ac24a3815c0ca117}{Is\+Vin\+Associated\+With\+Pubkey}} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&vin, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pubkey)
+\begin{DoxyCompactList}\small\item\em Is the inputs associated with this public key? (and there is 10000 P\+IV -\/ checking if valid masternode) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfu_scation_signer_a1e649a4b0bbeb5921ce2c37a240a98ae}\label{class_c_obfu_scation_signer_a1e649a4b0bbeb5921ce2c37a240a98ae}} 
+bool \mbox{\hyperlink{class_c_obfu_scation_signer_a1e649a4b0bbeb5921ce2c37a240a98ae}{Get\+Keys\+From\+Secret}} (std\+::string str\+Secret, \mbox{\hyperlink{class_c_key}{C\+Key}} \&key\+Ret, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pubkey\+Ret)
+\begin{DoxyCompactList}\small\item\em Set the private/public key values, returns true if successful. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfu_scation_signer_a4a12e41611db1b711d59ac4c3323dd36}\label{class_c_obfu_scation_signer_a4a12e41611db1b711d59ac4c3323dd36}} 
+bool \mbox{\hyperlink{class_c_obfu_scation_signer_a4a12e41611db1b711d59ac4c3323dd36}{Set\+Key}} (std\+::string str\+Secret, std\+::string \&error\+Message, \mbox{\hyperlink{class_c_key}{C\+Key}} \&key, \mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pubkey)
+\begin{DoxyCompactList}\small\item\em Set the private/public key values, returns true if successful. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfu_scation_signer_a004eab16d18045b42d51037eab817585}\label{class_c_obfu_scation_signer_a004eab16d18045b42d51037eab817585}} 
+bool \mbox{\hyperlink{class_c_obfu_scation_signer_a004eab16d18045b42d51037eab817585}{Sign\+Message}} (std\+::string str\+Message, std\+::string \&error\+Message, std\+::vector$<$ unsigned char $>$ \&vch\+Sig, \mbox{\hyperlink{class_c_key}{C\+Key}} key)
+\begin{DoxyCompactList}\small\item\em Sign the message, returns true if successful. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_obfu_scation_signer_aaf770086b8defa6568da76bee8fb5269}\label{class_c_obfu_scation_signer_aaf770086b8defa6568da76bee8fb5269}} 
+bool \mbox{\hyperlink{class_c_obfu_scation_signer_aaf770086b8defa6568da76bee8fb5269}{Verify\+Message}} (\mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} pubkey, std\+::vector$<$ unsigned char $>$ \&vch\+Sig, std\+::string str\+Message, std\+::string \&error\+Message)
+\begin{DoxyCompactList}\small\item\em Verify the message, returns true if succcessful. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Helper object for signing and checking signatures 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/obfuscation.\+h\item 
+P\+I\+V\+X/src/obfuscation.\+cpp\end{DoxyCompactItemize}

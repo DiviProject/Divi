@@ -1,0 +1,13 @@
+digraph "CloseSocket"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="CloseSocket",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="CNetCleanup::~CNetCleanup",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_net_cleanup.html#a29b59094c7697b45ca6d13424012506b"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="CNode::~CNode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#ac9b30cb93e91a48dacc58821abfc44f0"];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="SetSocketNonBlocking",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$netbase_8h.html#a6c44614cb5f9293d8419248a0b72d4b0",tooltip="Disable or enable blocking-mode for a socket. "];
+}

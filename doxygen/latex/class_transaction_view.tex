@@ -1,0 +1,113 @@
+\hypertarget{class_transaction_view}{}\section{Transaction\+View Class Reference}
+\label{class_transaction_view}\index{Transaction\+View@{Transaction\+View}}
+
+
+{\ttfamily \#include $<$transactionview.\+h$>$}
+
+Inheritance diagram for Transaction\+View\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_transaction_view}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_transaction_view_a73d1bbedc72fa131591aadb3aba150f8}\label{class_transaction_view_a73d1bbedc72fa131591aadb3aba150f8}} 
+enum {\bfseries Date\+Enum} \{ \newline
+{\bfseries All}, 
+{\bfseries Today}, 
+{\bfseries This\+Week}, 
+{\bfseries This\+Month}, 
+\newline
+{\bfseries Last\+Month}, 
+{\bfseries This\+Year}, 
+{\bfseries Range}
+ \}
+\item 
+\mbox{\Hypertarget{class_transaction_view_a330f6333f7d24ceef963729fa35fe985}\label{class_transaction_view_a330f6333f7d24ceef963729fa35fe985}} 
+enum {\bfseries Column\+Widths} \{ \newline
+{\bfseries S\+T\+A\+T\+U\+S\+\_\+\+C\+O\+L\+U\+M\+N\+\_\+\+W\+I\+D\+TH} = 23, 
+{\bfseries W\+A\+T\+C\+H\+O\+N\+L\+Y\+\_\+\+C\+O\+L\+U\+M\+N\+\_\+\+W\+I\+D\+TH} = 23, 
+{\bfseries D\+A\+T\+E\+\_\+\+C\+O\+L\+U\+M\+N\+\_\+\+W\+I\+D\+TH} = 120, 
+{\bfseries T\+Y\+P\+E\+\_\+\+C\+O\+L\+U\+M\+N\+\_\+\+W\+I\+D\+TH} = 240, 
+\newline
+{\bfseries A\+M\+O\+U\+N\+T\+\_\+\+M\+I\+N\+I\+M\+U\+M\+\_\+\+C\+O\+L\+U\+M\+N\+\_\+\+W\+I\+D\+TH} = 120, 
+{\bfseries M\+I\+N\+I\+M\+U\+M\+\_\+\+C\+O\+L\+U\+M\+N\+\_\+\+W\+I\+D\+TH} = 23
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_transaction_view_abd49a0777b14f7bf5a72a4d5901d033d}\label{class_transaction_view_abd49a0777b14f7bf5a72a4d5901d033d}} 
+void {\bfseries choose\+Date} (int idx)
+\item 
+\mbox{\Hypertarget{class_transaction_view_a590f0edc4ab4d59f88d7fc494e852f80}\label{class_transaction_view_a590f0edc4ab4d59f88d7fc494e852f80}} 
+void {\bfseries choose\+Type} (int idx)
+\item 
+\mbox{\Hypertarget{class_transaction_view_a0f3b9936adcb622403210e7b38a64574}\label{class_transaction_view_a0f3b9936adcb622403210e7b38a64574}} 
+void {\bfseries choose\+Watchonly} (int idx)
+\item 
+\mbox{\Hypertarget{class_transaction_view_ac2ed41556913e588c667490860717efa}\label{class_transaction_view_ac2ed41556913e588c667490860717efa}} 
+void {\bfseries changed\+Prefix} (const Q\+String \&prefix)
+\item 
+\mbox{\Hypertarget{class_transaction_view_a0075048c06bb54da5c5e5d2691198984}\label{class_transaction_view_a0075048c06bb54da5c5e5d2691198984}} 
+void {\bfseries changed\+Amount} (const Q\+String \&amount)
+\item 
+\mbox{\Hypertarget{class_transaction_view_a5983022ff1e5395f87de3c5728eff8da}\label{class_transaction_view_a5983022ff1e5395f87de3c5728eff8da}} 
+void {\bfseries export\+Clicked} ()
+\item 
+\mbox{\Hypertarget{class_transaction_view_ab6d126806467ae9dc273cbe19a7477cc}\label{class_transaction_view_ab6d126806467ae9dc273cbe19a7477cc}} 
+void {\bfseries focus\+Transaction} (const Q\+Model\+Index \&)
+\item 
+void \mbox{\hyperlink{class_transaction_view_abb2ea48a61bb12a0dda9d63952adc50e}{compute\+Sum}} ()
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_transaction_view_ad7f18fdb4db9a4a307eeba8bf1fec4e3}\label{class_transaction_view_ad7f18fdb4db9a4a307eeba8bf1fec4e3}} 
+void {\bfseries double\+Clicked} (const Q\+Model\+Index \&)
+\item 
+void \mbox{\hyperlink{class_transaction_view_a56d909951088cfc74b8b18fc2693e3b1}{message}} (const Q\+String \&title, const Q\+String \&message, unsigned int style)
+\item 
+void \mbox{\hyperlink{class_transaction_view_a139ef5288ce13ce14c17907b4d80c0e8}{trx\+Amount}} (Q\+String amount)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_transaction_view_a0c5e8b90206b4e8b8bf68dd7e319798f}\label{class_transaction_view_a0c5e8b90206b4e8b8bf68dd7e319798f}} 
+{\bfseries Transaction\+View} (Q\+Widget $\ast$parent=0)
+\item 
+\mbox{\Hypertarget{class_transaction_view_a4920c2cd57d72eb50248948fa160c83c}\label{class_transaction_view_a4920c2cd57d72eb50248948fa160c83c}} 
+void {\bfseries set\+Model} (\mbox{\hyperlink{class_wallet_model}{Wallet\+Model}} $\ast$model)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Widget showing the transaction list for a wallet, including a filter row. Using the filter row, the user can view or export a subset of the transactions. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_transaction_view_abb2ea48a61bb12a0dda9d63952adc50e}\label{class_transaction_view_abb2ea48a61bb12a0dda9d63952adc50e}} 
+\index{Transaction\+View@{Transaction\+View}!compute\+Sum@{compute\+Sum}}
+\index{compute\+Sum@{compute\+Sum}!Transaction\+View@{Transaction\+View}}
+\subsubsection{\texorpdfstring{compute\+Sum}{computeSum}}
+{\footnotesize\ttfamily void Transaction\+View\+::compute\+Sum (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [slot]}}
+
+Compute sum of all selected transactions \mbox{\Hypertarget{class_transaction_view_a56d909951088cfc74b8b18fc2693e3b1}\label{class_transaction_view_a56d909951088cfc74b8b18fc2693e3b1}} 
+\index{Transaction\+View@{Transaction\+View}!message@{message}}
+\index{message@{message}!Transaction\+View@{Transaction\+View}}
+\subsubsection{\texorpdfstring{message}{message}}
+{\footnotesize\ttfamily void Transaction\+View\+::message (\begin{DoxyParamCaption}\item[{const Q\+String \&}]{title,  }\item[{const Q\+String \&}]{message,  }\item[{unsigned int}]{style }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [signal]}}
+
+Fired when a message should be reported to the user \mbox{\Hypertarget{class_transaction_view_a139ef5288ce13ce14c17907b4d80c0e8}\label{class_transaction_view_a139ef5288ce13ce14c17907b4d80c0e8}} 
+\index{Transaction\+View@{Transaction\+View}!trx\+Amount@{trx\+Amount}}
+\index{trx\+Amount@{trx\+Amount}!Transaction\+View@{Transaction\+View}}
+\subsubsection{\texorpdfstring{trx\+Amount}{trxAmount}}
+{\footnotesize\ttfamily void Transaction\+View\+::trx\+Amount (\begin{DoxyParamCaption}\item[{Q\+String}]{amount }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [signal]}}
+
+Send computed sum back to wallet-\/view 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/transactionview.\+h\item 
+P\+I\+V\+X/src/qt/transactionview.\+cpp\end{DoxyCompactItemize}

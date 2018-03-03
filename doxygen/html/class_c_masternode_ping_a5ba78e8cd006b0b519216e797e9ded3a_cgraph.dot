@@ -1,0 +1,15 @@
+digraph "CMasternodePing::CMasternodePing"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node2 [label="CMasternodePing::CMasternodePing",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="CChain::Height",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#ad4758bc8872ce065a9579f77c3171d40",tooltip="Return the maximal height in the chain. "];
+  Node2 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="GetAdjustedTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$timedata_8cpp.html#a09f81b9c7650f898cf3cf305b87547e6"];
+  Node4 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node4 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="GetTimeOffset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$timedata_8cpp.html#a50ca5344c75631267633f15cfe5e983e",tooltip="\"Never go to sea with two chronometers; take one or three.\" Our three time sources are: ..."];
+}

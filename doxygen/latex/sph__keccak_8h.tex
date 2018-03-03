@@ -1,0 +1,399 @@
+\hypertarget{sph__keccak_8h}{}\section{P\+I\+V\+X/src/crypto/sph\+\_\+keccak.h File Reference}
+\label{sph__keccak_8h}\index{P\+I\+V\+X/src/crypto/sph\+\_\+keccak.\+h@{P\+I\+V\+X/src/crypto/sph\+\_\+keccak.\+h}}
+{\ttfamily \#include $<$stddef.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}sph\+\_\+types.\+h\char`\"{}}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structsph__keccak__context}{sph\+\_\+keccak\+\_\+context}}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{sph__keccak_8h_a1306b7dc74cb82a5a5a014553cf2c65c}{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak224}}~224
+\item 
+\#define \mbox{\hyperlink{sph__keccak_8h_a766fccfe5cddc76783ceaa7a8d9ddc58}{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak256}}~256
+\item 
+\#define \mbox{\hyperlink{sph__keccak_8h_a1aaa9eb78c4b19d3201a66c5c52239ce}{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak384}}~384
+\item 
+\#define \mbox{\hyperlink{sph__keccak_8h_a37874398eeca199d5b63aa7cd21e665a}{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak512}}~512
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{structsph__keccak__context}{sph\+\_\+keccak\+\_\+context}} \mbox{\hyperlink{sph__keccak_8h_a01da9407e68e8db1cb666b97ab8785c5}{sph\+\_\+keccak224\+\_\+context}}
+\item 
+typedef \mbox{\hyperlink{structsph__keccak__context}{sph\+\_\+keccak\+\_\+context}} \mbox{\hyperlink{sph__keccak_8h_ac0cdb04d0c76f1042cec4fb094baf17c}{sph\+\_\+keccak256\+\_\+context}}
+\item 
+typedef \mbox{\hyperlink{structsph__keccak__context}{sph\+\_\+keccak\+\_\+context}} \mbox{\hyperlink{sph__keccak_8h_a53960a977261995160bab689003cc56b}{sph\+\_\+keccak384\+\_\+context}}
+\item 
+typedef \mbox{\hyperlink{structsph__keccak__context}{sph\+\_\+keccak\+\_\+context}} \mbox{\hyperlink{sph__keccak_8h_a373216ad229939efdcc7461107d68c85}{sph\+\_\+keccak512\+\_\+context}}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a938ec696348c295b6072dcb5a39f3bf5}{sph\+\_\+keccak224\+\_\+init}} (void $\ast$cc)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a2480fe27f09486f0942b572357aca15c}{sph\+\_\+keccak224}} (void $\ast$cc, const void $\ast$data, size\+\_\+t len)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a4a95ae46921e32a461ee8bf9f1bdf5ca}{sph\+\_\+keccak224\+\_\+close}} (void $\ast$cc, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_aaa1181acc37c4b105b72d5eceac2a41c}{sph\+\_\+keccak224\+\_\+addbits\+\_\+and\+\_\+close}} (void $\ast$cc, unsigned ub, unsigned n, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_af7fc9db83bb9aeb5aca568c77fc106ca}{sph\+\_\+keccak256\+\_\+init}} (void $\ast$cc)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a0a055a41ba0531a1f09667528fb13062}{sph\+\_\+keccak256}} (void $\ast$cc, const void $\ast$data, size\+\_\+t len)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a0a98f1541080a1052c23014e93985577}{sph\+\_\+keccak256\+\_\+close}} (void $\ast$cc, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a93b2f9fbeeb740ac13387185764fa674}{sph\+\_\+keccak256\+\_\+addbits\+\_\+and\+\_\+close}} (void $\ast$cc, unsigned ub, unsigned n, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_ad691b61e7e487d19ee9d71f6db960d5c}{sph\+\_\+keccak384\+\_\+init}} (void $\ast$cc)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a44cd06f4470f53d4dc461a9315411277}{sph\+\_\+keccak384}} (void $\ast$cc, const void $\ast$data, size\+\_\+t len)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_af0fd0edc052f407b312f9dbee8797471}{sph\+\_\+keccak384\+\_\+close}} (void $\ast$cc, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_ac4e27a50a59e97ef6dc80e4261ad553d}{sph\+\_\+keccak384\+\_\+addbits\+\_\+and\+\_\+close}} (void $\ast$cc, unsigned ub, unsigned n, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a84f1e9fe46fe6ce80c6b8dced5892c9a}{sph\+\_\+keccak512\+\_\+init}} (void $\ast$cc)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a008a64465822dbd2900686f161feb31b}{sph\+\_\+keccak512}} (void $\ast$cc, const void $\ast$data, size\+\_\+t len)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_abb8c404657c19eec855f28750b70a3c0}{sph\+\_\+keccak512\+\_\+close}} (void $\ast$cc, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__keccak_8h_a9b1cadf5ab3346f0b056aa4b6871708b}{sph\+\_\+keccak512\+\_\+addbits\+\_\+and\+\_\+close}} (void $\ast$cc, unsigned ub, unsigned n, void $\ast$dst)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Keccak interface. This is the interface for Keccak with the recommended parameters for S\+H\+A-\/3, with output lengths 224, 256, 384 and 512 bits.
+
+==========================(L\+I\+C\+E\+N\+SE B\+E\+G\+IN)============================
+
+Copyright (c) 2007-\/2010 Projet R\+N\+RT S\+A\+P\+H\+IR
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \char`\"{}\+Software\char`\"{}), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions\+:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+T\+HE S\+O\+F\+T\+W\+A\+RE IS P\+R\+O\+V\+I\+D\+ED \char`\"{}\+A\+S I\+S\char`\"{}, W\+I\+T\+H\+O\+UT W\+A\+R\+R\+A\+N\+TY OF A\+NY K\+I\+ND, E\+X\+P\+R\+E\+SS OR I\+M\+P\+L\+I\+ED, I\+N\+C\+L\+U\+D\+I\+NG B\+UT N\+OT L\+I\+M\+I\+T\+ED TO T\+HE W\+A\+R\+R\+A\+N\+T\+I\+ES OF M\+E\+R\+C\+H\+A\+N\+T\+A\+B\+I\+L\+I\+TY, F\+I\+T\+N\+E\+SS F\+OR A P\+A\+R\+T\+I\+C\+U\+L\+AR P\+U\+R\+P\+O\+SE A\+ND N\+O\+N\+I\+N\+F\+R\+I\+N\+G\+E\+M\+E\+NT. IN NO E\+V\+E\+NT S\+H\+A\+LL T\+HE A\+U\+T\+H\+O\+RS OR C\+O\+P\+Y\+R\+I\+G\+HT H\+O\+L\+D\+E\+RS BE L\+I\+A\+B\+LE F\+OR A\+NY C\+L\+A\+IM, D\+A\+M\+A\+G\+ES OR O\+T\+H\+ER L\+I\+A\+B\+I\+L\+I\+TY, W\+H\+E\+T\+H\+ER IN AN A\+C\+T\+I\+ON OF C\+O\+N\+T\+R\+A\+CT, T\+O\+RT OR O\+T\+H\+E\+R\+W\+I\+SE, A\+R\+I\+S\+I\+NG F\+R\+OM, O\+UT OF OR IN C\+O\+N\+N\+E\+C\+T\+I\+ON W\+I\+TH T\+HE S\+O\+F\+T\+W\+A\+RE OR T\+HE U\+SE OR O\+T\+H\+ER D\+E\+A\+L\+I\+N\+GS IN T\+HE S\+O\+F\+T\+W\+A\+RE.
+
+===========================(L\+I\+C\+E\+N\+SE E\+ND)=============================
+
+\begin{DoxyAuthor}{Author}
+Thomas Pornin \href{mailto:thomas.pornin@cryptolog.com}{\tt thomas.\+pornin@cryptolog.\+com} 
+\end{DoxyAuthor}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{sph__keccak_8h_a1306b7dc74cb82a5a5a014553cf2c65c}\label{sph__keccak_8h_a1306b7dc74cb82a5a5a014553cf2c65c}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak224@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak224}}
+\index{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak224@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak224}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak224}{SPH\_SIZE\_keccak224}}
+{\footnotesize\ttfamily \#define S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak224~224}
+
+Output size (in bits) for Keccak-\/224. \mbox{\Hypertarget{sph__keccak_8h_a766fccfe5cddc76783ceaa7a8d9ddc58}\label{sph__keccak_8h_a766fccfe5cddc76783ceaa7a8d9ddc58}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak256@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak256}}
+\index{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak256@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak256}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak256}{SPH\_SIZE\_keccak256}}
+{\footnotesize\ttfamily \#define S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak256~256}
+
+Output size (in bits) for Keccak-\/256. \mbox{\Hypertarget{sph__keccak_8h_a1aaa9eb78c4b19d3201a66c5c52239ce}\label{sph__keccak_8h_a1aaa9eb78c4b19d3201a66c5c52239ce}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak384@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak384}}
+\index{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak384@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak384}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak384}{SPH\_SIZE\_keccak384}}
+{\footnotesize\ttfamily \#define S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak384~384}
+
+Output size (in bits) for Keccak-\/384. \mbox{\Hypertarget{sph__keccak_8h_a37874398eeca199d5b63aa7cd21e665a}\label{sph__keccak_8h_a37874398eeca199d5b63aa7cd21e665a}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak512@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak512}}
+\index{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak512@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak512}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak512}{SPH\_SIZE\_keccak512}}
+{\footnotesize\ttfamily \#define S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+keccak512~512}
+
+Output size (in bits) for Keccak-\/512. 
+
+\subsection{Typedef Documentation}
+\mbox{\Hypertarget{sph__keccak_8h_a01da9407e68e8db1cb666b97ab8785c5}\label{sph__keccak_8h_a01da9407e68e8db1cb666b97ab8785c5}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak224\+\_\+context@{sph\+\_\+keccak224\+\_\+context}}
+\index{sph\+\_\+keccak224\+\_\+context@{sph\+\_\+keccak224\+\_\+context}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak224\+\_\+context}{sph\_keccak224\_context}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{structsph__keccak__context}{sph\+\_\+keccak\+\_\+context}} \mbox{\hyperlink{sph__keccak_8h_a01da9407e68e8db1cb666b97ab8785c5}{sph\+\_\+keccak224\+\_\+context}}}
+
+Type for a Keccak-\/224 context (identical to the common context). \mbox{\Hypertarget{sph__keccak_8h_ac0cdb04d0c76f1042cec4fb094baf17c}\label{sph__keccak_8h_ac0cdb04d0c76f1042cec4fb094baf17c}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak256\+\_\+context@{sph\+\_\+keccak256\+\_\+context}}
+\index{sph\+\_\+keccak256\+\_\+context@{sph\+\_\+keccak256\+\_\+context}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak256\+\_\+context}{sph\_keccak256\_context}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{structsph__keccak__context}{sph\+\_\+keccak\+\_\+context}} \mbox{\hyperlink{sph__keccak_8h_ac0cdb04d0c76f1042cec4fb094baf17c}{sph\+\_\+keccak256\+\_\+context}}}
+
+Type for a Keccak-\/256 context (identical to the common context). \mbox{\Hypertarget{sph__keccak_8h_a53960a977261995160bab689003cc56b}\label{sph__keccak_8h_a53960a977261995160bab689003cc56b}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak384\+\_\+context@{sph\+\_\+keccak384\+\_\+context}}
+\index{sph\+\_\+keccak384\+\_\+context@{sph\+\_\+keccak384\+\_\+context}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak384\+\_\+context}{sph\_keccak384\_context}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{structsph__keccak__context}{sph\+\_\+keccak\+\_\+context}} \mbox{\hyperlink{sph__keccak_8h_a53960a977261995160bab689003cc56b}{sph\+\_\+keccak384\+\_\+context}}}
+
+Type for a Keccak-\/384 context (identical to the common context). \mbox{\Hypertarget{sph__keccak_8h_a373216ad229939efdcc7461107d68c85}\label{sph__keccak_8h_a373216ad229939efdcc7461107d68c85}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak512\+\_\+context@{sph\+\_\+keccak512\+\_\+context}}
+\index{sph\+\_\+keccak512\+\_\+context@{sph\+\_\+keccak512\+\_\+context}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak512\+\_\+context}{sph\_keccak512\_context}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{structsph__keccak__context}{sph\+\_\+keccak\+\_\+context}} \mbox{\hyperlink{sph__keccak_8h_a373216ad229939efdcc7461107d68c85}{sph\+\_\+keccak512\+\_\+context}}}
+
+Type for a Keccak-\/512 context (identical to the common context). 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{sph__keccak_8h_a2480fe27f09486f0942b572357aca15c}\label{sph__keccak_8h_a2480fe27f09486f0942b572357aca15c}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak224@{sph\+\_\+keccak224}}
+\index{sph\+\_\+keccak224@{sph\+\_\+keccak224}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak224()}{sph\_keccak224()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak224 (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{const void $\ast$}]{data,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Process some data bytes. It is acceptable that {\ttfamily len} is zero (in which case this function does nothing).
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/224 context \\
+\hline
+{\em data} & the input data \\
+\hline
+{\em len} & the input data length (in bytes) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_aaa1181acc37c4b105b72d5eceac2a41c}\label{sph__keccak_8h_aaa1181acc37c4b105b72d5eceac2a41c}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak224\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+keccak224\+\_\+addbits\+\_\+and\+\_\+close}}
+\index{sph\+\_\+keccak224\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+keccak224\+\_\+addbits\+\_\+and\+\_\+close}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak224\+\_\+addbits\+\_\+and\+\_\+close()}{sph\_keccak224\_addbits\_and\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak224\+\_\+addbits\+\_\+and\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{unsigned}]{ub,  }\item[{unsigned}]{n,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (28 bytes). If bit number i in {\ttfamily ub} has value 2$^\wedge$i, then the extra bits are those numbered 7 downto 8-\/n (this is the big-\/endian convention at the byte level). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/224 context \\
+\hline
+{\em ub} & the extra bits \\
+\hline
+{\em n} & the number of extra bits (0 to 7) \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_a4a95ae46921e32a461ee8bf9f1bdf5ca}\label{sph__keccak_8h_a4a95ae46921e32a461ee8bf9f1bdf5ca}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak224\+\_\+close@{sph\+\_\+keccak224\+\_\+close}}
+\index{sph\+\_\+keccak224\+\_\+close@{sph\+\_\+keccak224\+\_\+close}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak224\+\_\+close()}{sph\_keccak224\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak224\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Terminate the current Keccak-\/224 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (28 bytes). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/224 context \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_a938ec696348c295b6072dcb5a39f3bf5}\label{sph__keccak_8h_a938ec696348c295b6072dcb5a39f3bf5}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak224\+\_\+init@{sph\+\_\+keccak224\+\_\+init}}
+\index{sph\+\_\+keccak224\+\_\+init@{sph\+\_\+keccak224\+\_\+init}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak224\+\_\+init()}{sph\_keccak224\_init()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak224\+\_\+init (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc }\end{DoxyParamCaption})}
+
+Initialize a Keccak-\/224 context. This process performs no memory allocation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/224 context (pointer to a {\ttfamily sph\+\_\+keccak224\+\_\+context}) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_a0a055a41ba0531a1f09667528fb13062}\label{sph__keccak_8h_a0a055a41ba0531a1f09667528fb13062}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak256@{sph\+\_\+keccak256}}
+\index{sph\+\_\+keccak256@{sph\+\_\+keccak256}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak256()}{sph\_keccak256()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak256 (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{const void $\ast$}]{data,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Process some data bytes. It is acceptable that {\ttfamily len} is zero (in which case this function does nothing).
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/256 context \\
+\hline
+{\em data} & the input data \\
+\hline
+{\em len} & the input data length (in bytes) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_a93b2f9fbeeb740ac13387185764fa674}\label{sph__keccak_8h_a93b2f9fbeeb740ac13387185764fa674}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak256\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+keccak256\+\_\+addbits\+\_\+and\+\_\+close}}
+\index{sph\+\_\+keccak256\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+keccak256\+\_\+addbits\+\_\+and\+\_\+close}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak256\+\_\+addbits\+\_\+and\+\_\+close()}{sph\_keccak256\_addbits\_and\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak256\+\_\+addbits\+\_\+and\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{unsigned}]{ub,  }\item[{unsigned}]{n,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (32 bytes). If bit number i in {\ttfamily ub} has value 2$^\wedge$i, then the extra bits are those numbered 7 downto 8-\/n (this is the big-\/endian convention at the byte level). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/256 context \\
+\hline
+{\em ub} & the extra bits \\
+\hline
+{\em n} & the number of extra bits (0 to 7) \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_a0a98f1541080a1052c23014e93985577}\label{sph__keccak_8h_a0a98f1541080a1052c23014e93985577}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak256\+\_\+close@{sph\+\_\+keccak256\+\_\+close}}
+\index{sph\+\_\+keccak256\+\_\+close@{sph\+\_\+keccak256\+\_\+close}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak256\+\_\+close()}{sph\_keccak256\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak256\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Terminate the current Keccak-\/256 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (32 bytes). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/256 context \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_af7fc9db83bb9aeb5aca568c77fc106ca}\label{sph__keccak_8h_af7fc9db83bb9aeb5aca568c77fc106ca}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak256\+\_\+init@{sph\+\_\+keccak256\+\_\+init}}
+\index{sph\+\_\+keccak256\+\_\+init@{sph\+\_\+keccak256\+\_\+init}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak256\+\_\+init()}{sph\_keccak256\_init()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak256\+\_\+init (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc }\end{DoxyParamCaption})}
+
+Initialize a Keccak-\/256 context. This process performs no memory allocation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/256 context (pointer to a {\ttfamily sph\+\_\+keccak256\+\_\+context}) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_a44cd06f4470f53d4dc461a9315411277}\label{sph__keccak_8h_a44cd06f4470f53d4dc461a9315411277}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak384@{sph\+\_\+keccak384}}
+\index{sph\+\_\+keccak384@{sph\+\_\+keccak384}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak384()}{sph\_keccak384()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak384 (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{const void $\ast$}]{data,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Process some data bytes. It is acceptable that {\ttfamily len} is zero (in which case this function does nothing).
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/384 context \\
+\hline
+{\em data} & the input data \\
+\hline
+{\em len} & the input data length (in bytes) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_ac4e27a50a59e97ef6dc80e4261ad553d}\label{sph__keccak_8h_ac4e27a50a59e97ef6dc80e4261ad553d}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak384\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+keccak384\+\_\+addbits\+\_\+and\+\_\+close}}
+\index{sph\+\_\+keccak384\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+keccak384\+\_\+addbits\+\_\+and\+\_\+close}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak384\+\_\+addbits\+\_\+and\+\_\+close()}{sph\_keccak384\_addbits\_and\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak384\+\_\+addbits\+\_\+and\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{unsigned}]{ub,  }\item[{unsigned}]{n,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (48 bytes). If bit number i in {\ttfamily ub} has value 2$^\wedge$i, then the extra bits are those numbered 7 downto 8-\/n (this is the big-\/endian convention at the byte level). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/384 context \\
+\hline
+{\em ub} & the extra bits \\
+\hline
+{\em n} & the number of extra bits (0 to 7) \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_af0fd0edc052f407b312f9dbee8797471}\label{sph__keccak_8h_af0fd0edc052f407b312f9dbee8797471}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak384\+\_\+close@{sph\+\_\+keccak384\+\_\+close}}
+\index{sph\+\_\+keccak384\+\_\+close@{sph\+\_\+keccak384\+\_\+close}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak384\+\_\+close()}{sph\_keccak384\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak384\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Terminate the current Keccak-\/384 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (48 bytes). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/384 context \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_ad691b61e7e487d19ee9d71f6db960d5c}\label{sph__keccak_8h_ad691b61e7e487d19ee9d71f6db960d5c}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak384\+\_\+init@{sph\+\_\+keccak384\+\_\+init}}
+\index{sph\+\_\+keccak384\+\_\+init@{sph\+\_\+keccak384\+\_\+init}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak384\+\_\+init()}{sph\_keccak384\_init()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak384\+\_\+init (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc }\end{DoxyParamCaption})}
+
+Initialize a Keccak-\/384 context. This process performs no memory allocation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/384 context (pointer to a {\ttfamily sph\+\_\+keccak384\+\_\+context}) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_a008a64465822dbd2900686f161feb31b}\label{sph__keccak_8h_a008a64465822dbd2900686f161feb31b}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak512@{sph\+\_\+keccak512}}
+\index{sph\+\_\+keccak512@{sph\+\_\+keccak512}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak512()}{sph\_keccak512()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak512 (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{const void $\ast$}]{data,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Process some data bytes. It is acceptable that {\ttfamily len} is zero (in which case this function does nothing).
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/512 context \\
+\hline
+{\em data} & the input data \\
+\hline
+{\em len} & the input data length (in bytes) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_a9b1cadf5ab3346f0b056aa4b6871708b}\label{sph__keccak_8h_a9b1cadf5ab3346f0b056aa4b6871708b}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak512\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+keccak512\+\_\+addbits\+\_\+and\+\_\+close}}
+\index{sph\+\_\+keccak512\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+keccak512\+\_\+addbits\+\_\+and\+\_\+close}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak512\+\_\+addbits\+\_\+and\+\_\+close()}{sph\_keccak512\_addbits\_and\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak512\+\_\+addbits\+\_\+and\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{unsigned}]{ub,  }\item[{unsigned}]{n,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (64 bytes). If bit number i in {\ttfamily ub} has value 2$^\wedge$i, then the extra bits are those numbered 7 downto 8-\/n (this is the big-\/endian convention at the byte level). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/512 context \\
+\hline
+{\em ub} & the extra bits \\
+\hline
+{\em n} & the number of extra bits (0 to 7) \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_abb8c404657c19eec855f28750b70a3c0}\label{sph__keccak_8h_abb8c404657c19eec855f28750b70a3c0}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak512\+\_\+close@{sph\+\_\+keccak512\+\_\+close}}
+\index{sph\+\_\+keccak512\+\_\+close@{sph\+\_\+keccak512\+\_\+close}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak512\+\_\+close()}{sph\_keccak512\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak512\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Terminate the current Keccak-\/512 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (64 bytes). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/512 context \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__keccak_8h_a84f1e9fe46fe6ce80c6b8dced5892c9a}\label{sph__keccak_8h_a84f1e9fe46fe6ce80c6b8dced5892c9a}} 
+\index{sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}!sph\+\_\+keccak512\+\_\+init@{sph\+\_\+keccak512\+\_\+init}}
+\index{sph\+\_\+keccak512\+\_\+init@{sph\+\_\+keccak512\+\_\+init}!sph\+\_\+keccak.\+h@{sph\+\_\+keccak.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+keccak512\+\_\+init()}{sph\_keccak512\_init()}}
+{\footnotesize\ttfamily void sph\+\_\+keccak512\+\_\+init (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc }\end{DoxyParamCaption})}
+
+Initialize a Keccak-\/512 context. This process performs no memory allocation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the Keccak-\/512 context (pointer to a {\ttfamily sph\+\_\+keccak512\+\_\+context}) \\
+\hline
+\end{DoxyParams}

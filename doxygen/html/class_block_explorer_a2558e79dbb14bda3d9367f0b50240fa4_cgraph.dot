@@ -1,0 +1,43 @@
+digraph "BlockExplorer::showEvent"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node291 [label="BlockExplorer::showEvent",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node291 -> Node292 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node292 [label="CChain::Tip",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#a40ccefec14f8f3195c08c827af8cf412",tooltip="Returns the index entry for the tip of this chain, or NULL if none. "];
+  Node292 -> Node293 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node293 [label="CBlockIndex::IsProofOfStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a2438a891e9d43821c0d99e1bdac56fde"];
+  Node291 -> Node294 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node294 [label="CBlockIndex::GetBlockHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a98490a2788c65cdd6ae9002b004dd74c"];
+  Node291 -> Node295 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node295 [label="BlockExplorer::setBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#ac6dea0edb51e7410dacc99feaf9af916"];
+  Node295 -> Node296 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node296 [label="BlockExplorer::setContent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#ac46af3a727258870e7ce742210bfd13d"];
+  Node295 -> Node297 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node297 [label="BlockToString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$blockexplorer_8cpp.html#a6caededa67ac9ad171dc1a6fac4a708f"];
+  Node297 -> Node298 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node298 [label="ReadBlockFromDisk",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a2dc350346749b7da7f4b40c114ee5147"];
+  Node298 -> Node299 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node299 [label="CBlock::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block.html#a0410d7ba8d60679c4cf364b82ffffea5"];
+  Node299 -> Node300 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node300 [label="CBlockHeader::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_header.html#ae39c04a4357417d98954a51f53beb78a"];
+  Node300 -> Node301 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node301 [label="base_uint::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#ab7f832a0d48a7da00296497c820ae775"];
+  Node298 -> Node302 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node302 [label="OpenBlockFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a0d81388930a4ccb6a69b9abdd1ef5097",tooltip="Open a block file (blk?????.dat) "];
+  Node302 -> Node303 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node303 [label="OpenDiskFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635"];
+  Node303 -> Node304 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node304 [label="CDiskBlockPos::IsNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct_c_disk_block_pos.html#a7dd98fe3f5372d358df61db31899b0af"];
+  Node303 -> Node305 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node305 [label="GetBlockPosFilename",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a2f26f074aac584c3398de1dcdac59de9",tooltip="Translation to a filesystem path. "];
+  Node305 -> Node306 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node306 [label="GetDataDir",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba"];
+  Node297 -> Node307 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node307 [label="_",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ui__interface_8h.html#aad133bb6103b53cebf03fd01e2f11ba1",tooltip="Translation function: Call Translate signal on UI interface, which returns a boost::optional result..."];
+  Node291 -> Node308 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node308 [label="BlockExplorer::updateNav\lButtons",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_block_explorer.html#ad23de9bcf0ef195c569825d62ee145f3"];
+  Node291 -> Node309 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node309 [label="GetBoolArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d",tooltip="Return boolean argument or default value. "];
+}

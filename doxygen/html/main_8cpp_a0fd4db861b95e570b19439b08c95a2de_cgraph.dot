@@ -1,0 +1,25 @@
+digraph "AddInvalidSpendsToMap"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node120 [label="AddInvalidSpendsToMap",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node120 -> Node121 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node121 [label="CTransaction::ContainsZerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a613051e8e5651a7500cb455f37dd1116"];
+  Node121 -> Node122 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node122 [label="CTransaction::IsZerocoin\lSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a4cda5603795c5f9179d4c8bd43f809cd"];
+  Node121 -> Node123 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node123 [label="CTransaction::IsZerocoinMint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#ab91efb1c2312e6feeecfbbfff11abbb1"];
+  Node120 -> Node124 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node124 [label="CScript::IsZerocoinSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_script.html#a84914a83542deece42dda7b22b043c1f"];
+  Node120 -> Node125 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node125 [label="TxInToZerocoinSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#af5469af7fa8bbe7c9572e68c041e8e21"];
+  Node120 -> Node126 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node126 [label="libzerocoin::CoinSpend\l::HasValidSerial",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_coin_spend.html#a64eae09a4ab03e01e46f7a967f0ab1b9"];
+  Node120 -> Node127 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node127 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node120 -> Node128 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node128 [label="libzerocoin::CoinSpend\l::getCoinSerialNumber",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_coin_spend.html#a125e5f3e268571a5549aa10bf9ad0f2b",tooltip="Returns the serial number of the coin spend by this proof. "];
+  Node120 -> Node129 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node129 [label="libzerocoin::CoinSpend\l::getDenomination",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_coin_spend.html#a1e36726a516e8b0a110fa40afbcc76bc",tooltip="Gets the denomination of the coin spent in this proof. "];
+}

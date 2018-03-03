@@ -1,0 +1,9 @@
+digraph "BitcoinGUI::setStakingStatus"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node238 [label="BitcoinGUI::setStakingStatus",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node238 -> Node239 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node239 [label="CWallet::isMultiSendEnabled",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#aea9ec908c62d5d1bdb71e2eb7309c0eb"];
+}

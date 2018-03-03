@@ -1,0 +1,34 @@
+digraph "WalletModel::isLockedCoin"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node909 [label="WalletModel::isLockedCoin",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node909 -> Node910 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node910 [label="CoinControlDialog::\lbuttonToggleLockClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a6da2f01f4e266766a0be3609890b22f2"];
+  Node910 -> Node911 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node911 [label="CoinControlDialog::\lCoinControlDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a8eafb58ed1c5668af9a4890704136671"];
+  Node909 -> Node912 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node912 [label="CoinControlDialog::\lshowMenu",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#aaab37948490af620c7c2a1ab809c15ff"];
+  Node912 -> Node911 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node909 -> Node913 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node913 [label="CoinControlDialog::\lupdateView",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#aadea33050e5c1efd5eae8d2fcfa721f9"];
+  Node913 -> Node914 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node914 [label="CoinControlDialog::\lsetModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a"];
+  Node914 -> Node915 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node915 [label="MultisigDialog::on\l_pushButtonCoinControl\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a3d21b360d294040f947ce6cc685dfdfa"];
+  Node914 -> Node916 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node916 [label="PrivacyDialog::coinControl\lButtonClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a16488c5d2fb41caedb18e9a6c1a376bb"];
+  Node916 -> Node917 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node917 [label="PrivacyDialog::PrivacyDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#ab7308b7ed5782dfa26fb1f216385207c"];
+  Node914 -> Node918 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node918 [label="SendCoinsDialog::coinControl\lButtonClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49"];
+  Node918 -> Node919 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node919 [label="SendCoinsDialog::SendCoins\lDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f"];
+  Node913 -> Node920 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node920 [label="CoinControlDialog::\lradioTreeMode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a1990d478f3ffba666c358a4f1bd395ec"];
+  Node920 -> Node911 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node913 -> Node921 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node921 [label="CoinControlDialog::\lradioListMode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a775c6d290cb63667a434b09072094533"];
+  Node921 -> Node911 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="org.bitcoin.NativeSecp256k1",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classorg_1_1bitcoin_1_1_native_secp256k1.html",tooltip="This class holds native methods to handle ECDSA verification. "];
+}

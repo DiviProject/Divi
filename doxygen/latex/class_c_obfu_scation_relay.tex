@@ -1,0 +1,59 @@
+\hypertarget{class_c_obfu_scation_relay}{}\section{C\+Obfu\+Scation\+Relay Class Reference}
+\label{class_c_obfu_scation_relay}\index{C\+Obfu\+Scation\+Relay@{C\+Obfu\+Scation\+Relay}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a88c7ba392483fb5cf5a3de649c7e2845}\label{class_c_obfu_scation_relay_a88c7ba392483fb5cf5a3de649c7e2845}} 
+{\bfseries C\+Obfu\+Scation\+Relay} (\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&vin\+Masternode\+In, vector$<$ unsigned char $>$ \&vch\+Sig\+In, int n\+Block\+Height\+In, int n\+Relay\+Type\+In, \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} \&in2, \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} \&out2)
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_ad9a09a7e51b76c6bb0a13d2312dd7ea5}\label{class_c_obfu_scation_relay_ad9a09a7e51b76c6bb0a13d2312dd7ea5}} 
+{\footnotesize template$<$typename Stream , typename Operation $>$ }\\void {\bfseries Serialization\+Op} (Stream \&s, Operation ser\+\_\+action, int n\+Type, int n\+Version)
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a193896557689f778a5381ea8dc7e66b8}\label{class_c_obfu_scation_relay_a193896557689f778a5381ea8dc7e66b8}} 
+std\+::string {\bfseries To\+String} ()
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a6a0c143f5d9536a64bcb1745d2011761}\label{class_c_obfu_scation_relay_a6a0c143f5d9536a64bcb1745d2011761}} 
+bool {\bfseries Sign} (std\+::string str\+Shared\+Key)
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_aa76fd65563c22d322350e09b2b876e9d}\label{class_c_obfu_scation_relay_aa76fd65563c22d322350e09b2b876e9d}} 
+bool {\bfseries Verify\+Message} (std\+::string str\+Shared\+Key)
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_ae3bb081dc03a7c07be2a85ca2512f581}\label{class_c_obfu_scation_relay_ae3bb081dc03a7c07be2a85ca2512f581}} 
+void {\bfseries Relay} ()
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a68272322a5123591a9f57a8ff07943f6}\label{class_c_obfu_scation_relay_a68272322a5123591a9f57a8ff07943f6}} 
+void {\bfseries Relay\+Through\+Node} (int n\+Rank)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a2ed0c6540e4ca29ca8a3da93a7afcd6c}\label{class_c_obfu_scation_relay_a2ed0c6540e4ca29ca8a3da93a7afcd6c}} 
+\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} {\bfseries vin\+Masternode}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a447bd41831d194cb75bc510c6e017d09}\label{class_c_obfu_scation_relay_a447bd41831d194cb75bc510c6e017d09}} 
+vector$<$ unsigned char $>$ {\bfseries vch\+Sig}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a9219391dcbec4c9ee0908cda8231db87}\label{class_c_obfu_scation_relay_a9219391dcbec4c9ee0908cda8231db87}} 
+vector$<$ unsigned char $>$ {\bfseries vch\+Sig2}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a2fff72497df00c2cdfb831d509e6eee8}\label{class_c_obfu_scation_relay_a2fff72497df00c2cdfb831d509e6eee8}} 
+int {\bfseries n\+Block\+Height}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a5649103671b2584c53b66ae889103c0a}\label{class_c_obfu_scation_relay_a5649103671b2584c53b66ae889103c0a}} 
+int {\bfseries n\+Relay\+Type}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a360c5bb13099d76d38218ae146e6bcff}\label{class_c_obfu_scation_relay_a360c5bb13099d76d38218ae146e6bcff}} 
+\mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}} {\bfseries in}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_a9dce88a9df20b198f0feb9c95953dcc9}\label{class_c_obfu_scation_relay_a9dce88a9df20b198f0feb9c95953dcc9}} 
+\mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} {\bfseries out}
+\item 
+\mbox{\Hypertarget{class_c_obfu_scation_relay_ae493c4af77e1350956ffabce327c54ad}\label{class_c_obfu_scation_relay_ae493c4af77e1350956ffabce327c54ad}} 
+{\bfseries A\+D\+D\+\_\+\+S\+E\+R\+I\+A\+L\+I\+Z\+E\+\_\+\+M\+E\+T\+H\+O\+DS}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/obfuscation-\/relay.\+h\item 
+P\+I\+V\+X/src/obfuscation-\/relay.\+cpp\end{DoxyCompactItemize}

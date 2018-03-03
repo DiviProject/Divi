@@ -1,0 +1,235 @@
+\hypertarget{class_c_block_index}{}\section{C\+Block\+Index Class Reference}
+\label{class_c_block_index}\index{C\+Block\+Index@{C\+Block\+Index}}
+
+
+{\ttfamily \#include $<$chain.\+h$>$}
+
+Inheritance diagram for C\+Block\+Index\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_c_block_index}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_index_aa518b1ab90f8a0bb1df29da6063d886b}\label{class_c_block_index_aa518b1ab90f8a0bb1df29da6063d886b}} 
+enum \{ {\bfseries B\+L\+O\+C\+K\+\_\+\+P\+R\+O\+O\+F\+\_\+\+O\+F\+\_\+\+S\+T\+A\+KE} = (1 $<$$<$ 0), 
+{\bfseries B\+L\+O\+C\+K\+\_\+\+S\+T\+A\+K\+E\+\_\+\+E\+N\+T\+R\+O\+PY} = (1 $<$$<$ 1), 
+{\bfseries B\+L\+O\+C\+K\+\_\+\+S\+T\+A\+K\+E\+\_\+\+M\+O\+D\+I\+F\+I\+ER} = (1 $<$$<$ 2)
+ \}
+\item 
+\mbox{\Hypertarget{class_c_block_index_acefc16035e60d7bd52ed2c9bb1aa838e}\label{class_c_block_index_acefc16035e60d7bd52ed2c9bb1aa838e}} 
+enum \{ {\bfseries n\+Median\+Time\+Span} = 11
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a59372ec3586ce89140acf3affc6e1f70}\label{class_c_block_index_a59372ec3586ce89140acf3affc6e1f70}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Block\+Trust} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_a6139e9e2cfceaef3694631cb7c330ff0}\label{class_c_block_index_a6139e9e2cfceaef3694631cb7c330ff0}} 
+void {\bfseries Set\+Null} ()
+\item 
+\mbox{\Hypertarget{class_c_block_index_a13df42495bcb07ed87e15efb5d43c324}\label{class_c_block_index_a13df42495bcb07ed87e15efb5d43c324}} 
+{\bfseries C\+Block\+Index} (const \mbox{\hyperlink{class_c_block}{C\+Block}} \&block)
+\item 
+\mbox{\Hypertarget{class_c_block_index_ad0d95bf8524a1e94bc6cfb92adea0c63}\label{class_c_block_index_ad0d95bf8524a1e94bc6cfb92adea0c63}} 
+\mbox{\hyperlink{struct_c_disk_block_pos}{C\+Disk\+Block\+Pos}} {\bfseries Get\+Block\+Pos} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_aa06679e5dd3f2425a1b667f6804b1a94}\label{class_c_block_index_aa06679e5dd3f2425a1b667f6804b1a94}} 
+\mbox{\hyperlink{struct_c_disk_block_pos}{C\+Disk\+Block\+Pos}} {\bfseries Get\+Undo\+Pos} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_a29df6a3c3195ff87c650348a27959fa2}\label{class_c_block_index_a29df6a3c3195ff87c650348a27959fa2}} 
+\mbox{\hyperlink{class_c_block_header}{C\+Block\+Header}} {\bfseries Get\+Block\+Header} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_ac164ec0f41e20b6f1fdce4ac5d4eadc4}\label{class_c_block_index_ac164ec0f41e20b6f1fdce4ac5d4eadc4}} 
+int64\+\_\+t {\bfseries Get\+Zerocoin\+Supply} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_ae9fa684c1aa77f3c664389132d077f06}\label{class_c_block_index_ae9fa684c1aa77f3c664389132d077f06}} 
+bool {\bfseries Minted\+Denomination} (libzerocoin\+::\+Coin\+Denomination denom) const
+\item 
+\mbox{\Hypertarget{class_c_block_index_a98490a2788c65cdd6ae9002b004dd74c}\label{class_c_block_index_a98490a2788c65cdd6ae9002b004dd74c}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries Get\+Block\+Hash} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_a9fe0d4463c07c466f66252e8eec25f5c}\label{class_c_block_index_a9fe0d4463c07c466f66252e8eec25f5c}} 
+int64\+\_\+t {\bfseries Get\+Block\+Time} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_aa9bd0ab02cf8b9c866618cee3a5a0583}\label{class_c_block_index_aa9bd0ab02cf8b9c866618cee3a5a0583}} 
+int64\+\_\+t {\bfseries Get\+Median\+Time\+Past} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_a857e290d668b5f2e9c19cd9c6f5b3eb3}\label{class_c_block_index_a857e290d668b5f2e9c19cd9c6f5b3eb3}} 
+bool {\bfseries Is\+Proof\+Of\+Work} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_a2438a891e9d43821c0d99e1bdac56fde}\label{class_c_block_index_a2438a891e9d43821c0d99e1bdac56fde}} 
+bool {\bfseries Is\+Proof\+Of\+Stake} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_a4c1eb937c07db986f698909e66754c9e}\label{class_c_block_index_a4c1eb937c07db986f698909e66754c9e}} 
+void {\bfseries Set\+Proof\+Of\+Stake} ()
+\item 
+\mbox{\Hypertarget{class_c_block_index_a22a225e6caa79bb05f4d996cc48ca7ad}\label{class_c_block_index_a22a225e6caa79bb05f4d996cc48ca7ad}} 
+unsigned int {\bfseries Get\+Stake\+Entropy\+Bit} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_a7a161878ce10e36cf7c12004f31357cf}\label{class_c_block_index_a7a161878ce10e36cf7c12004f31357cf}} 
+bool {\bfseries Set\+Stake\+Entropy\+Bit} (unsigned int n\+Entropy\+Bit)
+\item 
+\mbox{\Hypertarget{class_c_block_index_a7b629ae58cb86d49d7fb6f4f7411062d}\label{class_c_block_index_a7b629ae58cb86d49d7fb6f4f7411062d}} 
+bool {\bfseries Generated\+Stake\+Modifier} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_acc51fc41aa2b57c4f700aa09cdde92f8}\label{class_c_block_index_acc51fc41aa2b57c4f700aa09cdde92f8}} 
+void {\bfseries Set\+Stake\+Modifier} (uint64\+\_\+t n\+Modifier, bool f\+Generated\+Stake\+Modifier)
+\item 
+\mbox{\Hypertarget{class_c_block_index_a18258e956a4bc77dcccdb0db8f91effe}\label{class_c_block_index_a18258e956a4bc77dcccdb0db8f91effe}} 
+std\+::string {\bfseries To\+String} () const
+\item 
+\mbox{\Hypertarget{class_c_block_index_ad8b5a6560e7c0d4222066e2922178683}\label{class_c_block_index_ad8b5a6560e7c0d4222066e2922178683}} 
+bool \mbox{\hyperlink{class_c_block_index_ad8b5a6560e7c0d4222066e2922178683}{Is\+Valid}} (enum Block\+Status n\+Up\+To=B\+L\+O\+C\+K\+\_\+\+V\+A\+L\+I\+D\+\_\+\+T\+R\+A\+N\+S\+A\+C\+T\+I\+O\+NS) const
+\begin{DoxyCompactList}\small\item\em Check whether this block index entry is valid up to the passed validity level. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_c_block_index_a076aff906933e9d75a37aa9b81c01384}{Raise\+Validity}} (enum Block\+Status n\+Up\+To)
+\item 
+\mbox{\Hypertarget{class_c_block_index_a21209a71e50daf10e283bd4049e46f64}\label{class_c_block_index_a21209a71e50daf10e283bd4049e46f64}} 
+void \mbox{\hyperlink{class_c_block_index_a21209a71e50daf10e283bd4049e46f64}{Build\+Skip}} ()
+\begin{DoxyCompactList}\small\item\em Build the skiplist pointer for this entry. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_ae1f702384690c6b8302e026a84172ef3}\label{class_c_block_index_ae1f702384690c6b8302e026a84172ef3}} 
+\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ \mbox{\hyperlink{class_c_block_index_ae1f702384690c6b8302e026a84172ef3}{Get\+Ancestor}} (int height)
+\begin{DoxyCompactList}\small\item\em Efficiently find an ancestor of this block. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a7a58b33d64fde3df36c6e61371d031cc}\label{class_c_block_index_a7a58b33d64fde3df36c6e61371d031cc}} 
+const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ {\bfseries Get\+Ancestor} (int height) const
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static bool \mbox{\hyperlink{class_c_block_index_a96fbd9608432d92c27d4314f32341988}{Is\+Super\+Majority}} (int min\+Version, const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$pstart, unsigned int n\+Required)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_block_index_afac8099e03ffda463c7153ca82d37b66}\label{class_c_block_index_afac8099e03ffda463c7153ca82d37b66}} 
+const \mbox{\hyperlink{classuint256}{uint256}} $\ast$ \mbox{\hyperlink{class_c_block_index_afac8099e03ffda463c7153ca82d37b66}{phash\+Block}}
+\begin{DoxyCompactList}\small\item\em pointer to the hash of the block, if any. memory is owned by this \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a1ef11137155df1dd5c81491630cece39}\label{class_c_block_index_a1ef11137155df1dd5c81491630cece39}} 
+\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ \mbox{\hyperlink{class_c_block_index_a1ef11137155df1dd5c81491630cece39}{pprev}}
+\begin{DoxyCompactList}\small\item\em pointer to the index of the predecessor of this block \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a2f0acd342accaab731d887584b444590}\label{class_c_block_index_a2f0acd342accaab731d887584b444590}} 
+\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ \mbox{\hyperlink{class_c_block_index_a2f0acd342accaab731d887584b444590}{pnext}}
+\begin{DoxyCompactList}\small\item\em pointer to the index of the next block \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_ab6242bb77bc01617f5b402d14e6a3883}\label{class_c_block_index_ab6242bb77bc01617f5b402d14e6a3883}} 
+\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ \mbox{\hyperlink{class_c_block_index_ab6242bb77bc01617f5b402d14e6a3883}{pskip}}
+\begin{DoxyCompactList}\small\item\em pointer to the index of some further predecessor of this block \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a537fc664728daf6113e7e00e09444f55}\label{class_c_block_index_a537fc664728daf6113e7e00e09444f55}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries bn\+Chain\+Trust}
+\item 
+\mbox{\Hypertarget{class_c_block_index_aebfc8d6b95852546760e742553d7bfd5}\label{class_c_block_index_aebfc8d6b95852546760e742553d7bfd5}} 
+int \mbox{\hyperlink{class_c_block_index_aebfc8d6b95852546760e742553d7bfd5}{n\+Height}}
+\begin{DoxyCompactList}\small\item\em height of the entry in the chain. The genesis block has height 0 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a3653cb1e1bc3fa3fcdf1ed50ff93b50a}\label{class_c_block_index_a3653cb1e1bc3fa3fcdf1ed50ff93b50a}} 
+int \mbox{\hyperlink{class_c_block_index_a3653cb1e1bc3fa3fcdf1ed50ff93b50a}{n\+File}}
+\begin{DoxyCompactList}\small\item\em Which \# file this block is stored in (blk?????.dat) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_af164283dfb2d62ac44be8d10446bce4a}\label{class_c_block_index_af164283dfb2d62ac44be8d10446bce4a}} 
+unsigned int \mbox{\hyperlink{class_c_block_index_af164283dfb2d62ac44be8d10446bce4a}{n\+Data\+Pos}}
+\begin{DoxyCompactList}\small\item\em Byte offset within blk?????.dat where this block\textquotesingle{}s data is stored. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a865ddd56406c23e98cdc61511a61eb64}\label{class_c_block_index_a865ddd56406c23e98cdc61511a61eb64}} 
+unsigned int \mbox{\hyperlink{class_c_block_index_a865ddd56406c23e98cdc61511a61eb64}{n\+Undo\+Pos}}
+\begin{DoxyCompactList}\small\item\em Byte offset within rev?????.dat where this block\textquotesingle{}s undo data is stored. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a8451dbcf199348b9efe4ee3625e9b0f0}\label{class_c_block_index_a8451dbcf199348b9efe4ee3625e9b0f0}} 
+\mbox{\hyperlink{classuint256}{uint256}} \mbox{\hyperlink{class_c_block_index_a8451dbcf199348b9efe4ee3625e9b0f0}{n\+Chain\+Work}}
+\begin{DoxyCompactList}\small\item\em (memory only) Total amount of work (expected number of hashes) in the chain up to and including this block \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{class_c_block_index_ac8e219a377839d2f9133a4387f46e44e}{n\+Tx}}
+\item 
+unsigned int \mbox{\hyperlink{class_c_block_index_af3c6d6dd8a7579e5ce516d94b98d2db5}{n\+Chain\+Tx}}
+\item 
+\mbox{\Hypertarget{class_c_block_index_ac5a336b45ca70e3ed2fc090bf2ee3011}\label{class_c_block_index_ac5a336b45ca70e3ed2fc090bf2ee3011}} 
+unsigned int \mbox{\hyperlink{class_c_block_index_ac5a336b45ca70e3ed2fc090bf2ee3011}{n\+Status}}
+\begin{DoxyCompactList}\small\item\em Verification status of this block. See enum Block\+Status. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a02aaba7d27ec615e6f9f740353d839de}\label{class_c_block_index_a02aaba7d27ec615e6f9f740353d839de}} 
+unsigned int {\bfseries n\+Flags}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a2aa226c04d79a4d932ed6eb0abd02cbe}\label{class_c_block_index_a2aa226c04d79a4d932ed6eb0abd02cbe}} 
+uint64\+\_\+t {\bfseries n\+Stake\+Modifier}
+\item 
+\mbox{\Hypertarget{class_c_block_index_ad29fd7c96d1e350aa39c61a2afcfdb26}\label{class_c_block_index_ad29fd7c96d1e350aa39c61a2afcfdb26}} 
+unsigned int {\bfseries n\+Stake\+Modifier\+Checksum}
+\item 
+\mbox{\Hypertarget{class_c_block_index_ac2c040d5e3db73a5ceb87ee4095a405f}\label{class_c_block_index_ac2c040d5e3db73a5ceb87ee4095a405f}} 
+\mbox{\hyperlink{class_c_out_point}{C\+Out\+Point}} {\bfseries prevout\+Stake}
+\item 
+\mbox{\Hypertarget{class_c_block_index_ae6870336a5bf237680502fa067262af8}\label{class_c_block_index_ae6870336a5bf237680502fa067262af8}} 
+unsigned int {\bfseries n\+Stake\+Time}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a0618ad34da3f9a1d02ce7a120e055fb9}\label{class_c_block_index_a0618ad34da3f9a1d02ce7a120e055fb9}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries hash\+Proof\+Of\+Stake}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a6559fddea3401548ae144e870d150359}\label{class_c_block_index_a6559fddea3401548ae144e870d150359}} 
+int64\+\_\+t {\bfseries n\+Mint}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a309fdc44d871b336abe64eadf250cafd}\label{class_c_block_index_a309fdc44d871b336abe64eadf250cafd}} 
+int64\+\_\+t {\bfseries n\+Money\+Supply}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a45126301a0a6e26010527a7bbfc1ef58}\label{class_c_block_index_a45126301a0a6e26010527a7bbfc1ef58}} 
+int \mbox{\hyperlink{class_c_block_index_a45126301a0a6e26010527a7bbfc1ef58}{n\+Version}}
+\begin{DoxyCompactList}\small\item\em block header \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a0601b6b2bd6eaedfbc283c00d045a21c}\label{class_c_block_index_a0601b6b2bd6eaedfbc283c00d045a21c}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries hash\+Merkle\+Root}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a4b687a226e9e166b0f91c1b616b543a6}\label{class_c_block_index_a4b687a226e9e166b0f91c1b616b543a6}} 
+unsigned int {\bfseries n\+Time}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a3324894e6af612d1bd76f89378435713}\label{class_c_block_index_a3324894e6af612d1bd76f89378435713}} 
+unsigned int {\bfseries n\+Bits}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a5e0a648ed1df8da171eba636d5ebef01}\label{class_c_block_index_a5e0a648ed1df8da171eba636d5ebef01}} 
+unsigned int {\bfseries n\+Nonce}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a88a596f588bc18689b30238af86fbd97}\label{class_c_block_index_a88a596f588bc18689b30238af86fbd97}} 
+\mbox{\hyperlink{classuint256}{uint256}} {\bfseries n\+Accumulator\+Checkpoint}
+\item 
+\mbox{\Hypertarget{class_c_block_index_a4a679af5f7924cc594b8131371b21e54}\label{class_c_block_index_a4a679af5f7924cc594b8131371b21e54}} 
+uint32\+\_\+t \mbox{\hyperlink{class_c_block_index_a4a679af5f7924cc594b8131371b21e54}{n\+Sequence\+Id}}
+\begin{DoxyCompactList}\small\item\em (memory only) Sequential id assigned to distinguish order in which blocks are received. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a0a25aebf3adf907ea8847e7a108d8225}\label{class_c_block_index_a0a25aebf3adf907ea8847e7a108d8225}} 
+std\+::map$<$ libzerocoin\+::\+Coin\+Denomination, int64\+\_\+t $>$ \mbox{\hyperlink{class_c_block_index_a0a25aebf3adf907ea8847e7a108d8225}{map\+Zerocoin\+Supply}}
+\begin{DoxyCompactList}\small\item\em zerocoin specific fields \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_c_block_index_a7337ba7a13a51b7f200b352caf074eb1}\label{class_c_block_index_a7337ba7a13a51b7f200b352caf074eb1}} 
+std\+::vector$<$ libzerocoin\+::\+Coin\+Denomination $>$ {\bfseries v\+Mint\+Denominations\+In\+Block}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The block chain is a tree shaped structure starting with the genesis block at the root, with each block potentially having multiple candidates to be the next block. A blockindex may have multiple pprev pointing to it, but at most one of them can be part of the currently active branch. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_block_index_a96fbd9608432d92c27d4314f32341988}\label{class_c_block_index_a96fbd9608432d92c27d4314f32341988}} 
+\index{C\+Block\+Index@{C\+Block\+Index}!Is\+Super\+Majority@{Is\+Super\+Majority}}
+\index{Is\+Super\+Majority@{Is\+Super\+Majority}!C\+Block\+Index@{C\+Block\+Index}}
+\subsubsection{\texorpdfstring{Is\+Super\+Majority()}{IsSuperMajority()}}
+{\footnotesize\ttfamily bool C\+Block\+Index\+::\+Is\+Super\+Majority (\begin{DoxyParamCaption}\item[{int}]{min\+Version,  }\item[{const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$}]{pstart,  }\item[{unsigned int}]{n\+Required }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Returns true if there are n\+Required or more blocks of min\+Version or above in the last Params().To\+Check\+Block\+Upgrade\+Majority() blocks, starting at pstart and going backwards. \mbox{\Hypertarget{class_c_block_index_a076aff906933e9d75a37aa9b81c01384}\label{class_c_block_index_a076aff906933e9d75a37aa9b81c01384}} 
+\index{C\+Block\+Index@{C\+Block\+Index}!Raise\+Validity@{Raise\+Validity}}
+\index{Raise\+Validity@{Raise\+Validity}!C\+Block\+Index@{C\+Block\+Index}}
+\subsubsection{\texorpdfstring{Raise\+Validity()}{RaiseValidity()}}
+{\footnotesize\ttfamily bool C\+Block\+Index\+::\+Raise\+Validity (\begin{DoxyParamCaption}\item[{enum Block\+Status}]{n\+Up\+To }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Raise the validity level of this block index entry. Returns true if the validity was changed. 
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_c_block_index_af3c6d6dd8a7579e5ce516d94b98d2db5}\label{class_c_block_index_af3c6d6dd8a7579e5ce516d94b98d2db5}} 
+\index{C\+Block\+Index@{C\+Block\+Index}!n\+Chain\+Tx@{n\+Chain\+Tx}}
+\index{n\+Chain\+Tx@{n\+Chain\+Tx}!C\+Block\+Index@{C\+Block\+Index}}
+\subsubsection{\texorpdfstring{n\+Chain\+Tx}{nChainTx}}
+{\footnotesize\ttfamily unsigned int C\+Block\+Index\+::n\+Chain\+Tx}
+
+(memory only) Number of transactions in the chain up to and including this block. This value will be non-\/zero only if and only if transactions for this block and all its parents are available. Change to 64-\/bit type when necessary; won\textquotesingle{}t happen before 2030 \mbox{\Hypertarget{class_c_block_index_ac8e219a377839d2f9133a4387f46e44e}\label{class_c_block_index_ac8e219a377839d2f9133a4387f46e44e}} 
+\index{C\+Block\+Index@{C\+Block\+Index}!n\+Tx@{n\+Tx}}
+\index{n\+Tx@{n\+Tx}!C\+Block\+Index@{C\+Block\+Index}}
+\subsubsection{\texorpdfstring{n\+Tx}{nTx}}
+{\footnotesize\ttfamily unsigned int C\+Block\+Index\+::n\+Tx}
+
+Number of transactions in this block. Note\+: in a potential headers-\/first mode, this number cannot be relied upon 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/chain.\+h\item 
+P\+I\+V\+X/src/chain.\+cpp\item 
+P\+I\+V\+X/src/main.\+cpp\end{DoxyCompactItemize}

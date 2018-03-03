@@ -1,0 +1,37 @@
+\hypertarget{class_memory_page_locker}{}\section{Memory\+Page\+Locker Class Reference}
+\label{class_memory_page_locker}\index{Memory\+Page\+Locker@{Memory\+Page\+Locker}}
+
+
+{\ttfamily \#include $<$allocators.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{class_memory_page_locker_af411b6f6320864616cdd1b28ba9201fe}{Lock}} (const void $\ast$addr, size\+\_\+t len)
+\item 
+bool \mbox{\hyperlink{class_memory_page_locker_af9e9ad0edadcd8250db05f95cd6a49a7}{Unlock}} (const void $\ast$addr, size\+\_\+t len)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+O\+S-\/dependent memory page locking/unlocking. Defined as policy class to make stubbing for test possible. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_memory_page_locker_af411b6f6320864616cdd1b28ba9201fe}\label{class_memory_page_locker_af411b6f6320864616cdd1b28ba9201fe}} 
+\index{Memory\+Page\+Locker@{Memory\+Page\+Locker}!Lock@{Lock}}
+\index{Lock@{Lock}!Memory\+Page\+Locker@{Memory\+Page\+Locker}}
+\subsubsection{\texorpdfstring{Lock()}{Lock()}}
+{\footnotesize\ttfamily bool Memory\+Page\+Locker\+::\+Lock (\begin{DoxyParamCaption}\item[{const void $\ast$}]{addr,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Lock memory pages. addr and len must be a multiple of the system page size \mbox{\Hypertarget{class_memory_page_locker_af9e9ad0edadcd8250db05f95cd6a49a7}\label{class_memory_page_locker_af9e9ad0edadcd8250db05f95cd6a49a7}} 
+\index{Memory\+Page\+Locker@{Memory\+Page\+Locker}!Unlock@{Unlock}}
+\index{Unlock@{Unlock}!Memory\+Page\+Locker@{Memory\+Page\+Locker}}
+\subsubsection{\texorpdfstring{Unlock()}{Unlock()}}
+{\footnotesize\ttfamily bool Memory\+Page\+Locker\+::\+Unlock (\begin{DoxyParamCaption}\item[{const void $\ast$}]{addr,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Unlock memory pages. addr and len must be a multiple of the system page size 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/allocators.\+h\item 
+P\+I\+V\+X/src/allocators.\+cpp\end{DoxyCompactItemize}

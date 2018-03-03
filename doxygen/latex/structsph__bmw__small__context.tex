@@ -1,0 +1,34 @@
+\hypertarget{structsph__bmw__small__context}{}\section{sph\+\_\+bmw\+\_\+small\+\_\+context Struct Reference}
+\label{structsph__bmw__small__context}\index{sph\+\_\+bmw\+\_\+small\+\_\+context@{sph\+\_\+bmw\+\_\+small\+\_\+context}}
+
+
+{\ttfamily \#include $<$sph\+\_\+bmw.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsph__bmw__small__context_a5f1580ed6522ddbb529017d3ba68e7b5}\label{structsph__bmw__small__context_a5f1580ed6522ddbb529017d3ba68e7b5}} 
+unsigned char {\bfseries buf} \mbox{[}64\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__bmw__small__context_ac3a10222d190e8421416d19330dc3629}\label{structsph__bmw__small__context_ac3a10222d190e8421416d19330dc3629}} 
+size\+\_\+t {\bfseries ptr}
+\item 
+\mbox{\Hypertarget{structsph__bmw__small__context_a764567f1e5b6b3e8f9b14d87735ea4d8}\label{structsph__bmw__small__context_a764567f1e5b6b3e8f9b14d87735ea4d8}} 
+sph\+\_\+u32 {\bfseries H} \mbox{[}16\mbox{]}
+\item 
+\mbox{\Hypertarget{structsph__bmw__small__context_a97ea70c252613bc1c1b41a862c8368ac}\label{structsph__bmw__small__context_a97ea70c252613bc1c1b41a862c8368ac}} 
+sph\+\_\+u32 {\bfseries bit\+\_\+count\+\_\+high}
+\item 
+\mbox{\Hypertarget{structsph__bmw__small__context_a1f4f38d96781dea1579d0e3320fa8968}\label{structsph__bmw__small__context_a1f4f38d96781dea1579d0e3320fa8968}} 
+sph\+\_\+u32 {\bfseries bit\+\_\+count\+\_\+low}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This structure is a context for B\+M\+W-\/224 and B\+M\+W-\/256 computations\+: it contains the intermediate values and some data from the last entered block. Once a B\+MW computation has been performed, the context can be reused for another computation.
+
+The contents of this structure are private. A running B\+MW computation can be cloned by copying the context (e.\+g. with a simple {\ttfamily memcpy()}). 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/crypto/\mbox{\hyperlink{sph__bmw_8h}{sph\+\_\+bmw.\+h}}\end{DoxyCompactItemize}

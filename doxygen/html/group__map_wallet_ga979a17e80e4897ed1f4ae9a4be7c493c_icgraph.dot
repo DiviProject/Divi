@@ -1,0 +1,15 @@
+digraph "CWallet::ScanForWalletTransactions"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node933 [label="CWallet::ScanForWalletTransactions",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node933 -> Node934 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node934 [label="Bip38ToolDialog::on\l_importAddressButton\l_DEC_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bip38_tool_dialog.html#a20a1363ad4ff8e241583b3ceb19379e6"];
+  Node933 -> Node935 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node935 [label="MultisigDialog::on\l_importAddressButton\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#acd1dfe3a52a5a91b31f8042a119c7618"];
+  Node933 -> Node936 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node936 [label="importprivkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcdump_8cpp.html#a3a6fdb974fce01220a895393d444e981"];
+  Node933 -> Node937 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node937 [label="bip38decrypt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcdump_8cpp.html#a64a0e2e87f6d741efd662ac94080159d"];
+}

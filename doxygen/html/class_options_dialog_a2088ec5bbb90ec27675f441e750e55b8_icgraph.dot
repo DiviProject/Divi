@@ -1,0 +1,15 @@
+digraph "OptionsDialog::setMapper"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node48 [label="OptionsDialog::setMapper",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node48 -> Node49 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node49 [label="OptionsDialog::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_dialog.html#a11e902a52cb7472497d14e70cd9399d9"];
+  Node49 -> Node50 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node50 [label="BitcoinGUI::optionsClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a366dfb05459cb49fec8adb7f97bf2ad7",tooltip="Show configuration dialog. "];
+  Node50 -> Node51 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node51 [label="BitcoinGUI::createActions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a218c9f5712e5a08ebc9ce06513430bba",tooltip="Create the main UI actions. "];
+  Node51 -> Node52 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node52 [label="BitcoinGUI::BitcoinGUI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a2598b4ffab4a206877bee80916cc775c"];
+}

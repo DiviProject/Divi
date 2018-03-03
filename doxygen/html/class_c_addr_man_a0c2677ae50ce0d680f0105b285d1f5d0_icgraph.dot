@@ -1,0 +1,25 @@
+digraph "CAddrMan::Check"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node66 [label="CAddrMan::Check",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node66 -> Node67 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node67 [label="CAddrMan::Add",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_addr_man.html#a03fcc7109b5f014760dc50a81f68c5ec",tooltip="Add a single address. "];
+  Node67 -> Node68 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 [label="CActiveMasternode::\lRegister",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#a99e26870efec1ea98738cda1a5a85702",tooltip="Register remote Masternode. "];
+  Node67 -> Node69 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="ThreadDNSAddressSeed",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8cpp.html#ab2d8883b5524ec7b80d3b9535e73a3ed"];
+  Node66 -> Node70 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node70 [label="CAddrMan::Good",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_addr_man.html#a993e80e74701d7bc6bb49880c387b847",tooltip="Mark an entry as accessible. "];
+  Node66 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node71 [label="CAddrMan::Attempt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_addr_man.html#afcddc2573121065177dc981cea710789",tooltip="Mark an entry as connection attempted to. "];
+  Node66 -> Node72 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node72 [label="CAddrMan::Select",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_addr_man.html#ae4b1b65cc15f9a12f90db362fb9c8488",tooltip="Choose an address to connect to. "];
+  Node66 -> Node73 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node73 [label="CAddrMan::GetAddr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_addr_man.html#a69cc6138e696cf88de60925d26023bf2",tooltip="Return a bunch of addresses, selected at random. "];
+  Node66 -> Node74 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node74 [label="CAddrMan::Connected",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_addr_man.html#a7aba66d9e9527522fed974567d34c322",tooltip="Mark an entry as currently-connected-to. "];
+  Node74 -> Node75 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 [label="AddressCurrentlyConnected",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8h.html#ad4aabaa937cd6f4b708c47dbbdb8ea60"];
+}

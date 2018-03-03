@@ -1,0 +1,17 @@
+digraph "CoinControlDialog::lockCoin"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node385 [label="CoinControlDialog::\llockCoin",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node385 -> Node386 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node386 [label="WalletModel::lockCoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a9bb6c954dc3cf27e25ced65375fa02f0"];
+  Node386 -> Node387 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node387 [label="CWallet::LockCoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#ga2be3aa26d84c79bdcabb41c6b3fe0e0f"];
+  Node385 -> Node388 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node388 [label="CoinControlDialog::\lupdateLabelLocked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#acedbd41abf3490c556afbebde2ba6b49"];
+  Node388 -> Node389 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node389 [label="WalletModel::listLockedCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a367977352d1ef183ec2cb6b508a85bc2"];
+  Node389 -> Node390 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node390 [label="CWallet::ListLockedCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___actions.html#ga41f4c77a0843692388f8b11d5fb88042"];
+}

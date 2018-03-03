@@ -1,0 +1,36 @@
+digraph "GUIUtil::checkPoint"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node51 [label="GUIUtil::checkPoint",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node51 -> Node52 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node52 [label="GUIUtil::isObscured",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a0b7266e2b8e7de5f5fd1c7ddb9e5b637"];
+  Node52 -> Node53 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node53 [label="BitcoinGUI::showNormalIf\lMinimized",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a0aed98ed2a278a2effdd9a4b34ba8620",tooltip="Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHid..."];
+  Node53 -> Node54 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node54 [label="BitcoinGUI::createActions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a218c9f5712e5a08ebc9ce06513430bba",tooltip="Create the main UI actions. "];
+  Node54 -> Node55 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node55 [label="BitcoinGUI::BitcoinGUI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a2598b4ffab4a206877bee80916cc775c"];
+  Node53 -> Node56 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node56 [label="BitcoinGUI::message",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#abf1d036341d1fb122398b2b78d2734ea",tooltip="Notify the user of an event from the core network or transaction handling code. "];
+  Node56 -> Node57 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node57 [label="BitcoinGUI::setClientModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a99d71e1f8478ab937ce2522c8d3815e3",tooltip="Set the client model. "];
+  Node57 -> Node58 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node58 [label="BitcoinApplication\l::requestShutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a37c560d4c04d14a6da151b82caf8888f",tooltip="Request core shutdown. "];
+  Node57 -> Node59 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node59 [label="BitcoinApplication\l::initializeResult",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#aceb08b4063e4fb264cf11cf7f9edd969"];
+  Node59 -> Node60 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node60 [label="BitcoinApplication\l::startThread",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#a61afce9356e452c53ad4c83f5ca19df8"];
+  Node60 -> Node61 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node61 [label="BitcoinApplication\l::requestInitialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_application.html#ade19c44b87b00b6b19b433caf4c22ba6",tooltip="Request core initialization. "];
+  Node60 -> Node58 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node53 -> Node62 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node62 [label="BitcoinGUI::toggleHidden",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a6ca9ded69ab510195ff04fe7f5754ff5",tooltip="Simply calls showNormalIfMinimized(true) for use in SLOT() macro. "];
+  Node62 -> Node54 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node62 -> Node63 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node63 [label="BitcoinGUI::trayIconActivated",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#ae753f1d521f7c17804419f6a9054738b",tooltip="Handle tray icon clicked. "];
+  Node63 -> Node64 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node64 [label="BitcoinGUI::createTrayIconMenu",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a6373ff0bd56c1c633f3a3dc2f34af884",tooltip="Create system tray menu (or setup the dock menu) "];
+  Node64 -> Node57 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

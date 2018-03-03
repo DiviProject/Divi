@@ -1,0 +1,27 @@
+digraph "TxInToZerocoinSpend"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1523 [label="TxInToZerocoinSpend",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1523 -> Node1524 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1524 [label="ZerocoinSpendListFromBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a79d886b5a0e7d08dc7308749b7aed9d7"];
+  Node1524 -> Node1525 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1525 [label="RecalculateZPIVSpent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ab76a54f954d7ae3a7b89bccd76a8592d"];
+  Node1523 -> Node1526 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1526 [label="AddInvalidSpendsToMap",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a0fd4db861b95e570b19439b08c95a2de"];
+  Node1526 -> Node1527 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1527 [label="PopulateInvalidOutPointMap",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae7d38ec9b36061a4216d318d34dde6e2"];
+  Node1523 -> Node1528 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1528 [label="TransactionRecord::\ldecomposeTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_record.html#a9f5db4465fa5fdcc3f9af525096bcdb9"];
+  Node1528 -> Node1529 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1529 [label="TransactionTablePriv\l::refreshWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_table_priv.html#a1f81da5d7cfb2aac03a5e18e6bc91792"];
+  Node1529 -> Node1530 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1530 [label="TransactionTableModel\l::TransactionTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_table_model.html#a6c10b7cab9804eee6df9e049a978dc62"];
+  Node1528 -> Node1531 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1531 [label="TransactionTablePriv\l::updateWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_table_priv.html#a5a8454ce91251c4d9eb927bf2850745c"];
+  Node1531 -> Node1532 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1532 [label="TransactionTableModel\l::updateTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_table_model.html#a8de43b3c7ba0612304906eb5a2f51a06"];
+  Node1523 -> Node1533 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1533 [label="getspentzerocoinamount",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#af1e6a7813ea10b5897295724b9f06dfb"];
+}

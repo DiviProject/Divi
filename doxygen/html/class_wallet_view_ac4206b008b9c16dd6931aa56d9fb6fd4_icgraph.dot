@@ -1,0 +1,9 @@
+digraph "WalletView::trxAmount"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node602 [label="WalletView::trxAmount",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node602 -> Node603 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node603 [label="WalletView::WalletView",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_view.html#a015da635646a47196bbcd819f7e01e7c"];
+}

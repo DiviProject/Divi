@@ -1,0 +1,224 @@
+\hypertarget{sph__blake_8h}{}\section{P\+I\+V\+X/src/crypto/sph\+\_\+blake.h File Reference}
+\label{sph__blake_8h}\index{P\+I\+V\+X/src/crypto/sph\+\_\+blake.\+h@{P\+I\+V\+X/src/crypto/sph\+\_\+blake.\+h}}
+{\ttfamily \#include $<$stddef.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}sph\+\_\+types.\+h\char`\"{}}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structsph__blake__small__context}{sph\+\_\+blake\+\_\+small\+\_\+context}}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{sph__blake_8h_ab61132c48361d081517323b70a94e2c5}{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake224}}~224
+\item 
+\#define \mbox{\hyperlink{sph__blake_8h_a627397f2a25ae8deeaae8a2ca1ef11c2}{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake256}}~256
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{structsph__blake__small__context}{sph\+\_\+blake\+\_\+small\+\_\+context}} \mbox{\hyperlink{sph__blake_8h_a19093bf2b46d90330071f61cb117810a}{sph\+\_\+blake224\+\_\+context}}
+\item 
+typedef \mbox{\hyperlink{structsph__blake__small__context}{sph\+\_\+blake\+\_\+small\+\_\+context}} \mbox{\hyperlink{sph__blake_8h_a2f993c166ca9f59fd74b586644807d0e}{sph\+\_\+blake256\+\_\+context}}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{sph__blake_8h_a346ad2ca450ff8f602ce69d62dc1804a}{sph\+\_\+blake224\+\_\+init}} (void $\ast$cc)
+\item 
+void \mbox{\hyperlink{sph__blake_8h_afad0615022fa242b3a11dd75109f9baf}{sph\+\_\+blake224}} (void $\ast$cc, const void $\ast$data, size\+\_\+t len)
+\item 
+void \mbox{\hyperlink{sph__blake_8h_a09ade0b15ff7b741201920d7d65f6dab}{sph\+\_\+blake224\+\_\+close}} (void $\ast$cc, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__blake_8h_a625237497b55ca8e0ba614cb5cd8d420}{sph\+\_\+blake224\+\_\+addbits\+\_\+and\+\_\+close}} (void $\ast$cc, unsigned ub, unsigned n, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__blake_8h_ade2efd7f08575de2284fea2a66778333}{sph\+\_\+blake256\+\_\+init}} (void $\ast$cc)
+\item 
+void \mbox{\hyperlink{sph__blake_8h_adf87eacadce6451f9e34b32f2acf6c92}{sph\+\_\+blake256}} (void $\ast$cc, const void $\ast$data, size\+\_\+t len)
+\item 
+void \mbox{\hyperlink{sph__blake_8h_afc3819c6410202b5da3015509a83e64b}{sph\+\_\+blake256\+\_\+close}} (void $\ast$cc, void $\ast$dst)
+\item 
+void \mbox{\hyperlink{sph__blake_8h_a47422e40c0d7ae6cec34ad02c7eb565f}{sph\+\_\+blake256\+\_\+addbits\+\_\+and\+\_\+close}} (void $\ast$cc, unsigned ub, unsigned n, void $\ast$dst)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+B\+L\+A\+KE interface. B\+L\+A\+KE is a family of functions which differ by their output size; this implementation defines B\+L\+A\+KE for output sizes 224, 256, 384 and 512 bits. This implementation conforms to the \char`\"{}third
+round\char`\"{} specification.
+
+==========================(L\+I\+C\+E\+N\+SE B\+E\+G\+IN)============================
+
+Copyright (c) 2007-\/2010 Projet R\+N\+RT S\+A\+P\+H\+IR
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \char`\"{}\+Software\char`\"{}), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions\+:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+T\+HE S\+O\+F\+T\+W\+A\+RE IS P\+R\+O\+V\+I\+D\+ED \char`\"{}\+A\+S I\+S\char`\"{}, W\+I\+T\+H\+O\+UT W\+A\+R\+R\+A\+N\+TY OF A\+NY K\+I\+ND, E\+X\+P\+R\+E\+SS OR I\+M\+P\+L\+I\+ED, I\+N\+C\+L\+U\+D\+I\+NG B\+UT N\+OT L\+I\+M\+I\+T\+ED TO T\+HE W\+A\+R\+R\+A\+N\+T\+I\+ES OF M\+E\+R\+C\+H\+A\+N\+T\+A\+B\+I\+L\+I\+TY, F\+I\+T\+N\+E\+SS F\+OR A P\+A\+R\+T\+I\+C\+U\+L\+AR P\+U\+R\+P\+O\+SE A\+ND N\+O\+N\+I\+N\+F\+R\+I\+N\+G\+E\+M\+E\+NT. IN NO E\+V\+E\+NT S\+H\+A\+LL T\+HE A\+U\+T\+H\+O\+RS OR C\+O\+P\+Y\+R\+I\+G\+HT H\+O\+L\+D\+E\+RS BE L\+I\+A\+B\+LE F\+OR A\+NY C\+L\+A\+IM, D\+A\+M\+A\+G\+ES OR O\+T\+H\+ER L\+I\+A\+B\+I\+L\+I\+TY, W\+H\+E\+T\+H\+ER IN AN A\+C\+T\+I\+ON OF C\+O\+N\+T\+R\+A\+CT, T\+O\+RT OR O\+T\+H\+E\+R\+W\+I\+SE, A\+R\+I\+S\+I\+NG F\+R\+OM, O\+UT OF OR IN C\+O\+N\+N\+E\+C\+T\+I\+ON W\+I\+TH T\+HE S\+O\+F\+T\+W\+A\+RE OR T\+HE U\+SE OR O\+T\+H\+ER D\+E\+A\+L\+I\+N\+GS IN T\+HE S\+O\+F\+T\+W\+A\+RE.
+
+===========================(L\+I\+C\+E\+N\+SE E\+ND)=============================
+
+\begin{DoxyAuthor}{Author}
+Thomas Pornin \href{mailto:thomas.pornin@cryptolog.com}{\tt thomas.\+pornin@cryptolog.\+com} 
+\end{DoxyAuthor}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{sph__blake_8h_ab61132c48361d081517323b70a94e2c5}\label{sph__blake_8h_ab61132c48361d081517323b70a94e2c5}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake224@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake224}}
+\index{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake224@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake224}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake224}{SPH\_SIZE\_blake224}}
+{\footnotesize\ttfamily \#define S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake224~224}
+
+Output size (in bits) for B\+L\+A\+K\+E-\/224. \mbox{\Hypertarget{sph__blake_8h_a627397f2a25ae8deeaae8a2ca1ef11c2}\label{sph__blake_8h_a627397f2a25ae8deeaae8a2ca1ef11c2}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake256@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake256}}
+\index{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake256@{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake256}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake256}{SPH\_SIZE\_blake256}}
+{\footnotesize\ttfamily \#define S\+P\+H\+\_\+\+S\+I\+Z\+E\+\_\+blake256~256}
+
+Output size (in bits) for B\+L\+A\+K\+E-\/256. 
+
+\subsection{Typedef Documentation}
+\mbox{\Hypertarget{sph__blake_8h_a19093bf2b46d90330071f61cb117810a}\label{sph__blake_8h_a19093bf2b46d90330071f61cb117810a}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake224\+\_\+context@{sph\+\_\+blake224\+\_\+context}}
+\index{sph\+\_\+blake224\+\_\+context@{sph\+\_\+blake224\+\_\+context}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake224\+\_\+context}{sph\_blake224\_context}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{structsph__blake__small__context}{sph\+\_\+blake\+\_\+small\+\_\+context}} \mbox{\hyperlink{sph__blake_8h_a19093bf2b46d90330071f61cb117810a}{sph\+\_\+blake224\+\_\+context}}}
+
+This structure is a context for B\+L\+A\+K\+E-\/224 computations. It is identical to the common {\ttfamily \mbox{\hyperlink{structsph__blake__small__context}{sph\+\_\+blake\+\_\+small\+\_\+context}}}. \mbox{\Hypertarget{sph__blake_8h_a2f993c166ca9f59fd74b586644807d0e}\label{sph__blake_8h_a2f993c166ca9f59fd74b586644807d0e}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake256\+\_\+context@{sph\+\_\+blake256\+\_\+context}}
+\index{sph\+\_\+blake256\+\_\+context@{sph\+\_\+blake256\+\_\+context}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake256\+\_\+context}{sph\_blake256\_context}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{structsph__blake__small__context}{sph\+\_\+blake\+\_\+small\+\_\+context}} \mbox{\hyperlink{sph__blake_8h_a2f993c166ca9f59fd74b586644807d0e}{sph\+\_\+blake256\+\_\+context}}}
+
+This structure is a context for B\+L\+A\+K\+E-\/256 computations. It is identical to the common {\ttfamily \mbox{\hyperlink{structsph__blake__small__context}{sph\+\_\+blake\+\_\+small\+\_\+context}}}. 
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{sph__blake_8h_afad0615022fa242b3a11dd75109f9baf}\label{sph__blake_8h_afad0615022fa242b3a11dd75109f9baf}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake224@{sph\+\_\+blake224}}
+\index{sph\+\_\+blake224@{sph\+\_\+blake224}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake224()}{sph\_blake224()}}
+{\footnotesize\ttfamily void sph\+\_\+blake224 (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{const void $\ast$}]{data,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Process some data bytes. It is acceptable that {\ttfamily len} is zero (in which case this function does nothing).
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the B\+L\+A\+K\+E-\/224 context \\
+\hline
+{\em data} & the input data \\
+\hline
+{\em len} & the input data length (in bytes) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__blake_8h_a625237497b55ca8e0ba614cb5cd8d420}\label{sph__blake_8h_a625237497b55ca8e0ba614cb5cd8d420}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake224\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+blake224\+\_\+addbits\+\_\+and\+\_\+close}}
+\index{sph\+\_\+blake224\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+blake224\+\_\+addbits\+\_\+and\+\_\+close}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake224\+\_\+addbits\+\_\+and\+\_\+close()}{sph\_blake224\_addbits\_and\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+blake224\+\_\+addbits\+\_\+and\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{unsigned}]{ub,  }\item[{unsigned}]{n,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (28 bytes). If bit number i in {\ttfamily ub} has value 2$^\wedge$i, then the extra bits are those numbered 7 downto 8-\/n (this is the big-\/endian convention at the byte level). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the B\+L\+A\+K\+E-\/224 context \\
+\hline
+{\em ub} & the extra bits \\
+\hline
+{\em n} & the number of extra bits (0 to 7) \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__blake_8h_a09ade0b15ff7b741201920d7d65f6dab}\label{sph__blake_8h_a09ade0b15ff7b741201920d7d65f6dab}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake224\+\_\+close@{sph\+\_\+blake224\+\_\+close}}
+\index{sph\+\_\+blake224\+\_\+close@{sph\+\_\+blake224\+\_\+close}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake224\+\_\+close()}{sph\_blake224\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+blake224\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Terminate the current B\+L\+A\+K\+E-\/224 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (28 bytes). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the B\+L\+A\+K\+E-\/224 context \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__blake_8h_a346ad2ca450ff8f602ce69d62dc1804a}\label{sph__blake_8h_a346ad2ca450ff8f602ce69d62dc1804a}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake224\+\_\+init@{sph\+\_\+blake224\+\_\+init}}
+\index{sph\+\_\+blake224\+\_\+init@{sph\+\_\+blake224\+\_\+init}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake224\+\_\+init()}{sph\_blake224\_init()}}
+{\footnotesize\ttfamily void sph\+\_\+blake224\+\_\+init (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc }\end{DoxyParamCaption})}
+
+Initialize a B\+L\+A\+K\+E-\/224 context. This process performs no memory allocation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the B\+L\+A\+K\+E-\/224 context (pointer to a {\ttfamily sph\+\_\+blake224\+\_\+context}) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__blake_8h_adf87eacadce6451f9e34b32f2acf6c92}\label{sph__blake_8h_adf87eacadce6451f9e34b32f2acf6c92}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake256@{sph\+\_\+blake256}}
+\index{sph\+\_\+blake256@{sph\+\_\+blake256}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake256()}{sph\_blake256()}}
+{\footnotesize\ttfamily void sph\+\_\+blake256 (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{const void $\ast$}]{data,  }\item[{size\+\_\+t}]{len }\end{DoxyParamCaption})}
+
+Process some data bytes. It is acceptable that {\ttfamily len} is zero (in which case this function does nothing).
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the B\+L\+A\+K\+E-\/256 context \\
+\hline
+{\em data} & the input data \\
+\hline
+{\em len} & the input data length (in bytes) \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__blake_8h_a47422e40c0d7ae6cec34ad02c7eb565f}\label{sph__blake_8h_a47422e40c0d7ae6cec34ad02c7eb565f}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake256\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+blake256\+\_\+addbits\+\_\+and\+\_\+close}}
+\index{sph\+\_\+blake256\+\_\+addbits\+\_\+and\+\_\+close@{sph\+\_\+blake256\+\_\+addbits\+\_\+and\+\_\+close}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake256\+\_\+addbits\+\_\+and\+\_\+close()}{sph\_blake256\_addbits\_and\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+blake256\+\_\+addbits\+\_\+and\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{unsigned}]{ub,  }\item[{unsigned}]{n,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Add a few additional bits (0 to 7) to the current computation, then terminate it and output the result in the provided buffer, which must be wide enough to accomodate the result (32 bytes). If bit number i in {\ttfamily ub} has value 2$^\wedge$i, then the extra bits are those numbered 7 downto 8-\/n (this is the big-\/endian convention at the byte level). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the B\+L\+A\+K\+E-\/256 context \\
+\hline
+{\em ub} & the extra bits \\
+\hline
+{\em n} & the number of extra bits (0 to 7) \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__blake_8h_afc3819c6410202b5da3015509a83e64b}\label{sph__blake_8h_afc3819c6410202b5da3015509a83e64b}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake256\+\_\+close@{sph\+\_\+blake256\+\_\+close}}
+\index{sph\+\_\+blake256\+\_\+close@{sph\+\_\+blake256\+\_\+close}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake256\+\_\+close()}{sph\_blake256\_close()}}
+{\footnotesize\ttfamily void sph\+\_\+blake256\+\_\+close (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc,  }\item[{void $\ast$}]{dst }\end{DoxyParamCaption})}
+
+Terminate the current B\+L\+A\+K\+E-\/256 computation and output the result into the provided buffer. The destination buffer must be wide enough to accomodate the result (32 bytes). The context is automatically reinitialized.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the B\+L\+A\+K\+E-\/256 context \\
+\hline
+{\em dst} & the destination buffer \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sph__blake_8h_ade2efd7f08575de2284fea2a66778333}\label{sph__blake_8h_ade2efd7f08575de2284fea2a66778333}} 
+\index{sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}!sph\+\_\+blake256\+\_\+init@{sph\+\_\+blake256\+\_\+init}}
+\index{sph\+\_\+blake256\+\_\+init@{sph\+\_\+blake256\+\_\+init}!sph\+\_\+blake.\+h@{sph\+\_\+blake.\+h}}
+\subsubsection{\texorpdfstring{sph\+\_\+blake256\+\_\+init()}{sph\_blake256\_init()}}
+{\footnotesize\ttfamily void sph\+\_\+blake256\+\_\+init (\begin{DoxyParamCaption}\item[{void $\ast$}]{cc }\end{DoxyParamCaption})}
+
+Initialize a B\+L\+A\+K\+E-\/256 context. This process performs no memory allocation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em cc} & the B\+L\+A\+K\+E-\/256 context (pointer to a {\ttfamily sph\+\_\+blake256\+\_\+context}) \\
+\hline
+\end{DoxyParams}

@@ -1,0 +1,39 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node90 [label="QObject",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node90 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="BitcoinCore",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_core.html",tooltip="Class encapsulating DIVX Core startup and shutdown. "];
+  Node90 -> Node92 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node92 [label="ClientModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_client_model.html",tooltip="Model for DIVX network client. "];
+  Node90 -> Node93 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node93 [label="CSVModelWriter",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_v_model_writer.html",tooltip="Export a Qt table model to a CSV file. "];
+  Node90 -> Node94 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node94 [label="FreespaceChecker",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_freespace_checker.html"];
+  Node90 -> Node95 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node95 [label="GUIUtil::TableViewLastColumn\lResizingFixer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html",tooltip="Makes a QTableView last column feel as if it was being resized from its left border. "];
+  Node90 -> Node96 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node96 [label="GUIUtil::ToolTipToRichText\lFilter",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_tool_tip_to_rich_text_filter.html",tooltip="Qt event filter that intercepts ToolTipChange events, and replaces the tooltip with a rich text repre..."];
+  Node90 -> Node97 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node97 [label="MacDockIconHandler",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_mac_dock_icon_handler.html",tooltip="Macintosh-specific dock icon handler. "];
+  Node90 -> Node98 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node98 [label="MacNotificationHandler",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_mac_notification_handler.html",tooltip="Macintosh-specific notification handler (supports UserNotificationCenter and Growl). "];
+  Node90 -> Node99 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node99 [label="Notificator",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_notificator.html",tooltip="Cross-platform desktop notification client. "];
+  Node90 -> Node100 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node100 [label="PaymentServer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_payment_server.html"];
+  Node90 -> Node101 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node101 [label="PaymentServerTests",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_payment_server_tests.html"];
+  Node90 -> Node102 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node102 [label="RecipientCatcher",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recipient_catcher.html"];
+  Node90 -> Node103 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node103 [label="RPCExecutor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_executor.html"];
+  Node90 -> Node104 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node104 [label="TransactionDesc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_desc.html",tooltip="Provide a human-readable extended HTML description of a transaction. "];
+  Node90 -> Node105 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node105 [label="URITests",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_u_r_i_tests.html"];
+  Node90 -> Node106 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node106 [label="WalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html",tooltip="Interface to Bitcoin wallet from Qt view code. "];
+}

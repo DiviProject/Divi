@@ -1,0 +1,18 @@
+digraph "CRPCTable::help"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node12 [label="CRPCTable::help",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node12 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="help",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#a64b7a85139e261640892b6ac1a2a23aa"];
+  Node13 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="BitcoinGUI::createMenuBar",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#ad2b1493b0020942a205874cd6ba92aa3",tooltip="Create the menu bar and sub-menus. "];
+  Node14 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="BitcoinGUI::BitcoinGUI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a2598b4ffab4a206877bee80916cc775c"];
+  Node13 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="BitcoinGUI::showHelpMessage\lClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#ad6fbd364904e1468e77f09265f7a287b",tooltip="Show help message dialog. "];
+  Node16 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="BitcoinGUI::createActions",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_g_u_i.html#a218c9f5712e5a08ebc9ce06513430bba",tooltip="Create the main UI actions. "];
+  Node17 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

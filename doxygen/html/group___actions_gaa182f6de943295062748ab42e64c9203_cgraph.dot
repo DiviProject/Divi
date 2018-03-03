@@ -1,0 +1,36 @@
+digraph "CWallet::GetAllReserveKeys"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node279 [label="CWallet::GetAllReserveKeys",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node279 -> Node280 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node280 [label="CWalletDB::ReadPool",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet_d_b.html#a6a03927cf247314ccd9b285139de0bd1"];
+  Node279 -> Node281 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node281 [label="CPubKey::IsValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a4fa94293cf8577fd039b9a133f6c7f30"];
+  Node281 -> Node282 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node282 [label="CPubKey::size",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a6bb28fcf0a5f799c69f5b7269363b309",tooltip="Simple read-only vector-like interface to the pubkey data. "];
+  Node282 -> Node283 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node283 [label="CPubKey::GetLen",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a7dc71b3f037c84268dc22de97d7b65fb",tooltip="Compute the length of a pubkey with a given first byte. "];
+  Node279 -> Node284 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node284 [label="CPubKey::GetID",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a2675f7e6f72eff68e7a5227289feb021",tooltip="Get the KeyID of this public key (hash of its serialization) "];
+  Node284 -> Node285 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node285 [label="Hash160",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8h.html#a4490f70ddae16e9e48460a0416a48a6b",tooltip="Compute the 160-bit hash an object. "];
+  Node285 -> Node286 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node286 [label="CHash160::Write",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash160.html#af56cdd9443013eb68b246aa8450217f2"];
+  Node285 -> Node287 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node287 [label="CHash160::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash160.html#a9bb08e1772002ae1a5d85017ba7952ee"];
+  Node287 -> Node288 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node288 [label="CSHA256::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a4259230be0caefa590bc324fc12b9b90"];
+  Node287 -> Node289 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node289 [label="CRIPEMD160::Write",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_r_i_p_e_m_d160.html#a221143b9d94af623d07c4f4ba1bf6007"];
+  Node287 -> Node290 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node290 [label="CRIPEMD160::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_r_i_p_e_m_d160.html#a2a11566fbf9d1339b819833313fc4e51"];
+  Node284 -> Node282 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node279 -> Node291 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node291 [label="CCryptoKeyStore::HaveKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#a6c115cf1fc4129b43c8846b3d51d8ff5",tooltip="Check whether a key corresponding to a given address is present in the store. "];
+  Node291 -> Node292 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node292 [label="CCryptoKeyStore::IsCrypted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#acc8fed44366c98fb481333ca6e867088"];
+  Node291 -> Node293 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node293 [label="CBasicKeyStore::HaveKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_basic_key_store.html#afc99762e3e58f93e198d85ecfdf5804a",tooltip="Check whether a key corresponding to a given address is present in the store. "];
+}

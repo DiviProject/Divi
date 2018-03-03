@@ -1,0 +1,73 @@
+\hypertarget{class_bitcoin_application}{}\section{Bitcoin\+Application Class Reference}
+\label{class_bitcoin_application}\index{Bitcoin\+Application@{Bitcoin\+Application}}
+Inheritance diagram for Bitcoin\+Application\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_bitcoin_application}
+\end{center}
+\end{figure}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_aceb08b4063e4fb264cf11cf7f9edd969}\label{class_bitcoin_application_aceb08b4063e4fb264cf11cf7f9edd969}} 
+void {\bfseries initialize\+Result} (int retval)
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_ab5f7ccaede7e0bd417627c03ccbe20e6}\label{class_bitcoin_application_ab5f7ccaede7e0bd417627c03ccbe20e6}} 
+void {\bfseries shutdown\+Result} (int retval)
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_a77999ba9fde6eaaa0f9a0d4313ca3855}\label{class_bitcoin_application_a77999ba9fde6eaaa0f9a0d4313ca3855}} 
+void \mbox{\hyperlink{class_bitcoin_application_a77999ba9fde6eaaa0f9a0d4313ca3855}{handle\+Runaway\+Exception}} (const Q\+String \&message)
+\begin{DoxyCompactList}\small\item\em Handle runaway exceptions. Shows a message box with the problem and quits the program. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_a1d523693dd9473db887a8dabea1fd6e5}\label{class_bitcoin_application_a1d523693dd9473db887a8dabea1fd6e5}} 
+void {\bfseries requested\+Initialize} ()
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_a1bea4299d3c9ec6b063d1413aca9b738}\label{class_bitcoin_application_a1bea4299d3c9ec6b063d1413aca9b738}} 
+void {\bfseries requested\+Restart} (Q\+String\+List args)
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_aa18558117bf6e7ba458d0ce05f2ef6e6}\label{class_bitcoin_application_aa18558117bf6e7ba458d0ce05f2ef6e6}} 
+void {\bfseries requested\+Shutdown} ()
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_a7f117b69142316e07e0292a1b11f0768}\label{class_bitcoin_application_a7f117b69142316e07e0292a1b11f0768}} 
+void {\bfseries stop\+Thread} ()
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_a2beb256cc754bcce12f6690e7e1c57db}\label{class_bitcoin_application_a2beb256cc754bcce12f6690e7e1c57db}} 
+void {\bfseries splash\+Finished} (Q\+Widget $\ast$window)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_afdf0d19b7426063fccf08d0cdb297571}\label{class_bitcoin_application_afdf0d19b7426063fccf08d0cdb297571}} 
+{\bfseries Bitcoin\+Application} (int \&argc, char $\ast$$\ast$argv)
+\item 
+\mbox{\Hypertarget{class_bitcoin_application_ac70b5cf40c4a3d450b6f9a835880f46c}\label{class_bitcoin_application_ac70b5cf40c4a3d450b6f9a835880f46c}} 
+void \mbox{\hyperlink{class_bitcoin_application_ac70b5cf40c4a3d450b6f9a835880f46c}{create\+Options\+Model}} ()
+\begin{DoxyCompactList}\small\item\em Create options model. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_application_a6703e53287323f1437ea445e1c635151}\label{class_bitcoin_application_a6703e53287323f1437ea445e1c635151}} 
+void \mbox{\hyperlink{class_bitcoin_application_a6703e53287323f1437ea445e1c635151}{create\+Window}} (const \mbox{\hyperlink{class_network_style}{Network\+Style}} $\ast$network\+Style)
+\begin{DoxyCompactList}\small\item\em Create main window. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_application_a30f9832445d8d59374d185eb1400ab59}\label{class_bitcoin_application_a30f9832445d8d59374d185eb1400ab59}} 
+void \mbox{\hyperlink{class_bitcoin_application_a30f9832445d8d59374d185eb1400ab59}{create\+Splash\+Screen}} (const \mbox{\hyperlink{class_network_style}{Network\+Style}} $\ast$network\+Style)
+\begin{DoxyCompactList}\small\item\em Create splash screen. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_application_ade19c44b87b00b6b19b433caf4c22ba6}\label{class_bitcoin_application_ade19c44b87b00b6b19b433caf4c22ba6}} 
+void \mbox{\hyperlink{class_bitcoin_application_ade19c44b87b00b6b19b433caf4c22ba6}{request\+Initialize}} ()
+\begin{DoxyCompactList}\small\item\em Request core initialization. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_application_a37c560d4c04d14a6da151b82caf8888f}\label{class_bitcoin_application_a37c560d4c04d14a6da151b82caf8888f}} 
+void \mbox{\hyperlink{class_bitcoin_application_a37c560d4c04d14a6da151b82caf8888f}{request\+Shutdown}} ()
+\begin{DoxyCompactList}\small\item\em Request core shutdown. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_application_a9d3e9f2aa0663d41976b20d33702992c}\label{class_bitcoin_application_a9d3e9f2aa0663d41976b20d33702992c}} 
+int \mbox{\hyperlink{class_bitcoin_application_a9d3e9f2aa0663d41976b20d33702992c}{get\+Return\+Value}} ()
+\begin{DoxyCompactList}\small\item\em Get process return value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_bitcoin_application_aea7267368b0e232e2fe8485f29ca4180}\label{class_bitcoin_application_aea7267368b0e232e2fe8485f29ca4180}} 
+W\+Id \mbox{\hyperlink{class_bitcoin_application_aea7267368b0e232e2fe8485f29ca4180}{get\+Main\+Win\+Id}} () const
+\begin{DoxyCompactList}\small\item\em Get window identifier of Q\+Main\+Window (\mbox{\hyperlink{class_bitcoin_g_u_i}{Bitcoin\+G\+UI}}) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Main P\+I\+VX application object 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/pivx.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,29 @@
+digraph "getmasternodescores"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node124 [label="getmasternodescores",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node124 -> Node125 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node125 [label="HelpExampleCli",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec"];
+  Node124 -> Node126 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node126 [label="HelpExampleRpc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef"];
+  Node124 -> Node127 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node127 [label="CMasternodeMan::GetFullMasternode\lVector",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_man.html#ab39e213a7601e1bef2eba1d5d63206f5"];
+  Node127 -> Node128 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node128 [label="eccrypto::Check",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespaceeccrypto.html#a231bdcb32521375b68fbdaf0d952cfd0"];
+  Node124 -> Node129 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node129 [label="CChain::Tip",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#a40ccefec14f8f3195c08c827af8cf412",tooltip="Returns the index entry for the tip of this chain, or NULL if none. "];
+  Node129 -> Node130 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node130 [label="CBlockIndex::IsProofOfStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a2438a891e9d43821c0d99e1bdac56fde"];
+  Node124 -> Node131 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node131 [label="CMasternode::CalculateScore",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode.html#a5193b7bca7224b39c455ddd39f0846f3"];
+  Node131 -> Node129 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node131 -> Node132 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node132 [label="GetBlockHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode_8cpp.html#a32f5cbabfc2bd53c2f2daedf122a83cb"];
+  Node132 -> Node129 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node132 -> Node133 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node133 [label="CBlockIndex::GetBlockHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a98490a2788c65cdd6ae9002b004dd74c"];
+  Node124 -> Node134 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node134 [label="base_uint::ToString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#acccba4d9d51a0c36261718ca0cbb293b"];
+}

@@ -1,0 +1,16 @@
+digraph "libzerocoin::AccumulatorProofOfKnowledge"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="libzerocoin::Accumulator\lProofOfKnowledge",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" s_eta\nC_r\nt_1\ns_psi\nt_2\nt_3\nC_u\nt_4\nC_e\nst_1\n..." ,fontname="Helvetica"];
+  Node2 [label="CBigNum",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html",tooltip="C++ wrapper for BIGNUM (OpenSSL bignum) "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="BIGNUM",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" params" ,fontname="Helvetica"];
+  Node4 [label="libzerocoin::Accumulator\lAndProofParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_accumulator_and_proof_params.html"];
+  Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" accumulatorQRNCommitment\lGroup\naccumulatorPoKCommitment\lGroup" ,fontname="Helvetica"];
+  Node5 [label="libzerocoin::IntegerGroup\lParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_integer_group_params.html"];
+  Node2 -> Node5 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" g\nh\nmodulus\ngroupOrder" ,fontname="Helvetica"];
+  Node2 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" maxCoinValue\nminCoinValue\naccumulatorModulus\naccumulatorBase" ,fontname="Helvetica"];
+}

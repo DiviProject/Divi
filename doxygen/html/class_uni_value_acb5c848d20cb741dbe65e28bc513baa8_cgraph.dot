@@ -1,0 +1,9 @@
+digraph "UniValue::getBool"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node38 [label="UniValue::getBool",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node38 -> Node39 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="UniValue::isTrue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_uni_value.html#a1491167609f899d0c7773749b5047969"];
+}

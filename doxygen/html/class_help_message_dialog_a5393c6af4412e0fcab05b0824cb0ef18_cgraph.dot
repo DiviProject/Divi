@@ -1,0 +1,9 @@
+digraph "HelpMessageDialog::~HelpMessageDialog"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node11 [label="HelpMessageDialog::\l~HelpMessageDialog",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node11 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="GUIUtil::saveWindowGeometry",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a5bd5d67910917446f2f3aa97d7c8b85a",tooltip="Save window size and position. "];
+}

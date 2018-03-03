@@ -1,0 +1,27 @@
+digraph "libzerocoin::CoinSpend::CoinSpend"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node2 [label="libzerocoin::CoinSpend\l::CoinSpend",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="libzerocoin::PrivateCoin\l::getPublicCoin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_private_coin.html#ae548bbe6dffd09cdc58860c0f1bfd833"];
+  Node2 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="libzerocoin::PublicCoin\l::getDenomination",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_public_coin.html#a150f84ac8998d73e223c74a311d48891"];
+  Node2 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="libzerocoin::Accumulator\lWitness::VerifyWitness",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_accumulator_witness.html#a76ce479fd510ed04d78c821cdb2a37bd",tooltip="Checks that this is a witness to the accumulation of coin. "];
+  Node2 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="libzerocoin::PublicCoin\l::getValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_public_coin.html#abf335a1f7458e510bf46a73611200b3b"];
+  Node2 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="libzerocoin::CoinSpend\l::signatureHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_coin_spend.html#a2e2f50e0a7b60bec7e91cb29b1ffcb62"];
+  Node7 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="CHashWriter::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a"];
+  Node8 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="CHash256::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash256.html#aa8a70c1b7cf24ce7d00240a1131cf4e7"];
+  Node9 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="CSHA256::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a4259230be0caefa590bc324fc12b9b90"];
+  Node9 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="CSHA256::Reset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a2122395dd5604990eaa0077b43a0e8d4"];
+  Node9 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="CSHA256::Write",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a9d7de520a562655da85349372820c883"];
+}

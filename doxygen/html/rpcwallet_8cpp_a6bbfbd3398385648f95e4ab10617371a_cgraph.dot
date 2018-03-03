@@ -1,0 +1,18 @@
+digraph "listmintedzerocoins"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1034 [label="listmintedzerocoins",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1034 -> Node1035 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1035 [label="HelpRequiringPassphrase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#abcfbb0ad9335791f2832c01209b8f12d"];
+  Node1035 -> Node1036 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1036 [label="CCryptoKeyStore::IsCrypted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#acc8fed44366c98fb481333ca6e867088"];
+  Node1034 -> Node1037 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1037 [label="CCryptoKeyStore::IsLocked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#a52919fa284a3aa10f1b4bd6018b6dbee"];
+  Node1037 -> Node1036 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1034 -> Node1038 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1038 [label="JSONRPCError",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcprotocol_8cpp.html#a17b1bb111ab339efc951929834766039"];
+  Node1034 -> Node1039 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1039 [label="CWalletDB::ListMintedCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet_d_b.html#a906d7b97c6b94f4225957d576222bbb6"];
+}

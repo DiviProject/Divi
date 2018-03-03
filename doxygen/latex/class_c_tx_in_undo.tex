@@ -1,0 +1,49 @@
+\hypertarget{class_c_tx_in_undo}{}\section{C\+Tx\+In\+Undo Class Reference}
+\label{class_c_tx_in_undo}\index{C\+Tx\+In\+Undo@{C\+Tx\+In\+Undo}}
+
+
+{\ttfamily \#include $<$undo.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_undo_ae3cdf8e4de3eae7518d63b9b669d4040}\label{class_c_tx_in_undo_ae3cdf8e4de3eae7518d63b9b669d4040}} 
+{\bfseries C\+Tx\+In\+Undo} (const \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} \&txout\+In, bool f\+Coin\+Base\+In=false, bool f\+Coin\+Stake\+In=false, unsigned int n\+Height\+In=0, int n\+Version\+In=0)
+\item 
+\mbox{\Hypertarget{class_c_tx_in_undo_ae02e42aeabd614a26ba5657f60ec6921}\label{class_c_tx_in_undo_ae02e42aeabd614a26ba5657f60ec6921}} 
+unsigned int {\bfseries Get\+Serialize\+Size} (int n\+Type, int n\+Version) const
+\item 
+\mbox{\Hypertarget{class_c_tx_in_undo_a7a4e1cf026b5308fdca471bada9cebaf}\label{class_c_tx_in_undo_a7a4e1cf026b5308fdca471bada9cebaf}} 
+{\footnotesize template$<$typename Stream $>$ }\\void {\bfseries Serialize} (Stream \&s, int n\+Type, int n\+Version) const
+\item 
+\mbox{\Hypertarget{class_c_tx_in_undo_a0a2b82f03edad7ad85a66e63e4552af9}\label{class_c_tx_in_undo_a0a2b82f03edad7ad85a66e63e4552af9}} 
+{\footnotesize template$<$typename Stream $>$ }\\void {\bfseries Unserialize} (Stream \&s, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_undo_a0eb1374984b5b68b0af14d88d7d4b821}\label{class_c_tx_in_undo_a0eb1374984b5b68b0af14d88d7d4b821}} 
+\mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} {\bfseries txout}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_undo_a5952f917224de3a2193157b856c47864}\label{class_c_tx_in_undo_a5952f917224de3a2193157b856c47864}} 
+bool {\bfseries f\+Coin\+Base}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_undo_a59d196d060b8241e8e95640144de6155}\label{class_c_tx_in_undo_a59d196d060b8241e8e95640144de6155}} 
+bool {\bfseries f\+Coin\+Stake}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_undo_af022118f015a9b1b9ab96e04e8452292}\label{class_c_tx_in_undo_af022118f015a9b1b9ab96e04e8452292}} 
+unsigned int {\bfseries n\+Height}
+\item 
+\mbox{\Hypertarget{class_c_tx_in_undo_a193281289475ca792e436a7a02de23ef}\label{class_c_tx_in_undo_a193281289475ca792e436a7a02de23ef}} 
+int {\bfseries n\+Version}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Undo information for a \mbox{\hyperlink{class_c_tx_in}{C\+Tx\+In}}
+
+Contains the prevout\textquotesingle{}s \mbox{\hyperlink{class_c_tx_out}{C\+Tx\+Out}} being spent, and if this was the last output of the affected transaction, its metadata as well (coinbase or not, height, transaction version) 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/undo.\+h\end{DoxyCompactItemize}

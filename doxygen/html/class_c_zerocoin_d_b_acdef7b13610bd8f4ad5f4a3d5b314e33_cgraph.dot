@@ -1,0 +1,21 @@
+digraph "CZerocoinDB::EraseCoinMint"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node8 [label="CZerocoinDB::EraseCoinMint",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node8 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="Hash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8h.html#a12c5e981d7f5f2850027fd5e932eff61",tooltip="Compute the 256-bit hash of a std::string. "];
+  Node8 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="CDataStream::begin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_data_stream.html#a2355d11752d8622badfbc03e9ed192fd"];
+  Node8 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="CDataStream::end",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_data_stream.html#a66409dbd4403682fe674e2e71173cab4"];
+  Node8 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="CLevelDBWrapper::Erase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_level_d_b_wrapper.html#a9f67e2880ba191fdc9439ba34e315d72"];
+  Node12 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="CLevelDBBatch::Erase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_level_d_b_batch.html#a22bf093d560b4ce3333e8f4a947faa7f"];
+  Node12 -> Node14 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="CLevelDBWrapper::WriteBatch",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_level_d_b_wrapper.html#a820484c9e427f9e3400396e750acf4b8"];
+  Node14 -> Node15 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="HandleError",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$leveldbwrapper_8cpp.html#aea36eb5fddb6266b14ea8cb15e183486"];
+}

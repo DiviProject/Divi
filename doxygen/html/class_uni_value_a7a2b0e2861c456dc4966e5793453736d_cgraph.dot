@@ -1,0 +1,15 @@
+digraph "UniValue::read"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node114 [label="UniValue::read",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node114 -> Node115 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node115 [label="getJsonToken",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$univalue__read_8cpp.html#aea0a2050f525218d9bb75e36e023bde0"];
+  Node114 -> Node116 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node116 [label="UniValue::push_back",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_uni_value.html#a944cd1b59b040cd24c9f46b55a68d49a"];
+  Node114 -> Node117 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node117 [label="UniValue::getType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_uni_value.html#a2dbc9c5aa9d209338b0bef650f3d1987"];
+  Node114 -> Node118 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node118 [label="UniValue::setBool",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_uni_value.html#afd5b112dc63426ca6b0a6137041e0809"];
+}

@@ -1,0 +1,40 @@
+digraph "libzerocoin::SerialNumberSignatureOfKnowledge::SerialNumberSignatureOfKnowledge"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node2 [label="libzerocoin::SerialNumber\lSignatureOfKnowledge::SerialNumber\lSignatureOfKnowledge",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="libzerocoin::Commitment\l::getCommitmentValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_commitment.html#a512ade1b225b10f92f71b3c05869c23a"];
+  Node2 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="libzerocoin::PrivateCoin\l::getSerialNumber",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_private_coin.html#aa0adb0b69df57a41aabec28e91ede86b"];
+  Node2 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="CBigNum::randBignum",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a83e20522f042dd2b738bd26e21605e3b",tooltip="Generates a cryptographically secure random number between zero and range exclusive i..."];
+  Node2 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="CBigNum::getuint256",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a0acdf0ee722fe320e961863b792bf609"];
+  Node2 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="libzerocoin::SeedTo1024",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacelibzerocoin.html#a0dfd40059182babce28ba7acf734d123"];
+  Node7 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="CHashWriter::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash_writer.html#ae94a937211502eabf19477630090093a"];
+  Node8 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="CHash256::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash256.html#aa8a70c1b7cf24ce7d00240a1131cf4e7"];
+  Node9 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="CSHA256::Finalize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a4259230be0caefa590bc324fc12b9b90"];
+  Node9 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="CSHA256::Reset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a2122395dd5604990eaa0077b43a0e8d4"];
+  Node9 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="CSHA256::Write",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_s_h_a256.html#a9d7de520a562655da85349372820c883"];
+  Node7 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="CBigNum::setvch",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#aa9236c14e34519e9b173a9a4b80f5621"];
+  Node2 -> Node14 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="libzerocoin::SerialNumber\lSignatureOfKnowledge::challenge\lCalculation",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html#a564f58bd562d441ae8503c2904fb8270"];
+  Node14 -> Node15 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="CBigNum::pow_mod",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#a949004e3f63921b28b4e245624854289",tooltip="modular exponentiation: this^e mod n "];
+  Node15 -> Node16 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="CBigNum::inverse",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#ace6cb4447751b27f00139d60dd8ebba4",tooltip="Calculates the inverse of this element mod m. "];
+  Node2 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node17 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="libzerocoin::PrivateCoin\l::getRandomness",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_private_coin.html#a48bb6b7a80d58e357348c294e9a34b71"];
+  Node2 -> Node18 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="libzerocoin::Commitment\l::getRandomness",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_commitment.html#ac84eccbba59e5c0cb76ee8fd827d80de"];
+}

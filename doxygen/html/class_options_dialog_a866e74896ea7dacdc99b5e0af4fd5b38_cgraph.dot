@@ -1,0 +1,9 @@
+digraph "OptionsDialog::showRestartWarning"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node68 [label="OptionsDialog::showRestart\lWarning",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node68 -> Node69 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="OptionsDialog::clearStatus\lLabel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_dialog.html#acd07b7058fd097bea5beb5cdd6fc1ad9"];
+}

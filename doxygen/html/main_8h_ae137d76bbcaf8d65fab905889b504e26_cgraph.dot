@@ -1,0 +1,17 @@
+digraph "GetInputAge"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node503 [label="GetInputAge",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node503 -> Node504 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node504 [label="CCoinsViewBacked::SetBackend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_backed.html#a7eaddfbfd401a95c2fda2a8d8feaaf73"];
+  Node503 -> Node505 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node505 [label="CCoinsViewCache::AccessCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a8e5341e8b01233949d6170dd4d1fd75d",tooltip="Return a pointer to CCoins in the cache, or NULL if not found. "];
+  Node505 -> Node506 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node506 [label="CCoinsViewCache::FetchCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a7d385628b7d821d2d5b6c5aaf1734616"];
+  Node503 -> Node507 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node507 [label="CChain::Tip",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#a40ccefec14f8f3195c08c827af8cf412",tooltip="Returns the index entry for the tip of this chain, or NULL if none. "];
+  Node507 -> Node508 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node508 [label="CBlockIndex::IsProofOfStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a2438a891e9d43821c0d99e1bdac56fde"];
+}

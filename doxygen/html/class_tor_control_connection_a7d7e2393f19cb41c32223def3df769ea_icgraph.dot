@@ -1,0 +1,13 @@
+digraph "TorControlConnection::readcb"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node26 [label="TorControlConnection\l::readcb",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node26 -> Node27 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node27 [label="TorControlConnection\l::Connect",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_tor_control_connection.html#a36b6359caf9a304efe310b9b7141a939",tooltip="Connect to a Tor control port. "];
+  Node27 -> Node28 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node28 [label="TorController::Reconnect",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_tor_controller.html#ae5d4304836fce79574ec540c5ada8269",tooltip="Reconnect, after getting disconnected. "];
+  Node28 -> Node29 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node29 [label="TorController::reconnect_cb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_tor_controller.html#a2fa9614b4fa0e24c57f443b3c56f835c",tooltip="Callback for reconnect timer. "];
+}

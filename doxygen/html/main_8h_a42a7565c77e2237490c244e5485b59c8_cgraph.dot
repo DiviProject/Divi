@@ -1,0 +1,17 @@
+digraph "IsSerialKnown"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node757 [label="IsSerialKnown",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node757 -> Node758 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node758 [label="CZerocoinDB::ReadCoinSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_zerocoin_d_b.html#abd5c1b53d5ed33d4196010e51e2b8cbb"];
+  Node758 -> Node759 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node759 [label="Hash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8h.html#a12c5e981d7f5f2850027fd5e932eff61",tooltip="Compute the 256-bit hash of a std::string. "];
+  Node758 -> Node760 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node760 [label="CDataStream::begin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_data_stream.html#a2355d11752d8622badfbc03e9ed192fd"];
+  Node758 -> Node761 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node761 [label="CDataStream::end",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_data_stream.html#a66409dbd4403682fe674e2e71173cab4"];
+  Node758 -> Node762 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node762 [label="CLevelDBWrapper::Read",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_level_d_b_wrapper.html#a0cb51d3b8f042641b2d0aa76c3185527"];
+}

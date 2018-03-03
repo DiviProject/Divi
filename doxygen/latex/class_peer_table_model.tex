@@ -1,0 +1,79 @@
+\hypertarget{class_peer_table_model}{}\section{Peer\+Table\+Model Class Reference}
+\label{class_peer_table_model}\index{Peer\+Table\+Model@{Peer\+Table\+Model}}
+
+
+{\ttfamily \#include $<$peertablemodel.\+h$>$}
+
+Inheritance diagram for Peer\+Table\+Model\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_peer_table_model}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_peer_table_model_a10a32ec5f31c9765c80b611760f7e590}\label{class_peer_table_model_a10a32ec5f31c9765c80b611760f7e590}} 
+enum {\bfseries Column\+Index} \{ {\bfseries Address} = 0, 
+{\bfseries Subversion} = 1, 
+{\bfseries Ping} = 2
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_peer_table_model_abae14b3fd8a38a60f752f67a57b5b0b3}\label{class_peer_table_model_abae14b3fd8a38a60f752f67a57b5b0b3}} 
+void {\bfseries refresh} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_peer_table_model_a94e40794eeb946475a4a747c1fe1a2c2}\label{class_peer_table_model_a94e40794eeb946475a4a747c1fe1a2c2}} 
+{\bfseries Peer\+Table\+Model} (\mbox{\hyperlink{class_client_model}{Client\+Model}} $\ast$parent=0)
+\item 
+\mbox{\Hypertarget{class_peer_table_model_a98084d3299642316c71c5de3d36b9859}\label{class_peer_table_model_a98084d3299642316c71c5de3d36b9859}} 
+const \mbox{\hyperlink{struct_c_node_combined_stats}{C\+Node\+Combined\+Stats}} $\ast$ {\bfseries get\+Node\+Stats} (int idx)
+\item 
+\mbox{\Hypertarget{class_peer_table_model_aa735d366015dafba4c5d79dfb76abe49}\label{class_peer_table_model_aa735d366015dafba4c5d79dfb76abe49}} 
+int {\bfseries get\+Row\+By\+Node\+Id} (Node\+Id nodeid)
+\item 
+\mbox{\Hypertarget{class_peer_table_model_aba0f9c1535e2d718950edea1c166cc9d}\label{class_peer_table_model_aba0f9c1535e2d718950edea1c166cc9d}} 
+void {\bfseries start\+Auto\+Refresh} ()
+\item 
+\mbox{\Hypertarget{class_peer_table_model_a2a738ac95fc16e0e1db9693eadc4f8b4}\label{class_peer_table_model_a2a738ac95fc16e0e1db9693eadc4f8b4}} 
+void {\bfseries stop\+Auto\+Refresh} ()
+\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Methods overridden from Q\+Abstract\+Table\+Model}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_peer_table_model_a893cd78a1bfc89c71a1746d3c3e70e95}\label{class_peer_table_model_a893cd78a1bfc89c71a1746d3c3e70e95}} 
+int {\bfseries row\+Count} (const Q\+Model\+Index \&parent) const
+\item 
+\mbox{\Hypertarget{class_peer_table_model_aec5793e7f02694bd35b05ea1200c4b46}\label{class_peer_table_model_aec5793e7f02694bd35b05ea1200c4b46}} 
+int {\bfseries column\+Count} (const Q\+Model\+Index \&parent) const
+\item 
+\mbox{\Hypertarget{class_peer_table_model_a7229a1e75b1ecab25add4098b6bb9d27}\label{class_peer_table_model_a7229a1e75b1ecab25add4098b6bb9d27}} 
+Q\+Variant {\bfseries data} (const Q\+Model\+Index \&index, int role) const
+\item 
+\mbox{\Hypertarget{class_peer_table_model_ab2db3038337ab51cf8655a4d9f0546d2}\label{class_peer_table_model_ab2db3038337ab51cf8655a4d9f0546d2}} 
+Q\+Variant {\bfseries header\+Data} (int section, Qt\+::\+Orientation orientation, int role) const
+\item 
+\mbox{\Hypertarget{class_peer_table_model_a11faadd62beac5b9dec146045e8ecbbb}\label{class_peer_table_model_a11faadd62beac5b9dec146045e8ecbbb}} 
+Q\+Model\+Index {\bfseries index} (int row, int column, const Q\+Model\+Index \&parent) const
+\item 
+\mbox{\Hypertarget{class_peer_table_model_ad0e101ec541cde4a163d490b58c5442a}\label{class_peer_table_model_ad0e101ec541cde4a163d490b58c5442a}} 
+Qt\+::\+Item\+Flags {\bfseries flags} (const Q\+Model\+Index \&index) const
+\item 
+\mbox{\Hypertarget{class_peer_table_model_ac2211cda0ce659ac4c324c6ff24e1e5f}\label{class_peer_table_model_ac2211cda0ce659ac4c324c6ff24e1e5f}} 
+void {\bfseries sort} (int column, Qt\+::\+Sort\+Order order)
+\end{DoxyCompactItemize}
+\end{Indent}
+
+
+\subsection{Detailed Description}
+Qt model providing information about connected peers, similar to the \char`\"{}getpeerinfo\char`\"{} R\+PC call. Used by the rpc console UI. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/qt/peertablemodel.\+h\item 
+P\+I\+V\+X/src/qt/peertablemodel.\+cpp\end{DoxyCompactItemize}

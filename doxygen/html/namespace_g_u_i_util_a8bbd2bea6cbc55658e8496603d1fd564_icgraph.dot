@@ -1,0 +1,33 @@
+digraph "GUIUtil::boostPathToQString"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node37 [label="GUIUtil::boostPathToQString",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node37 -> Node38 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node38 [label="GUIUtil::openDebugLogfile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#aad169e3227e7a851db52a08bfb30391c"];
+  Node38 -> Node39 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="RPCConsole::on_openDebug\lLogfileButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#adf26672994effc0bf948e8d83e1a8cb3",tooltip="open the debug.log from the current datadir "];
+  Node37 -> Node40 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node40 [label="GUIUtil::openConfigfile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a995fae29ee632b8b0810b840d3d06bf1"];
+  Node40 -> Node41 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node41 [label="RPCConsole::showConfEditor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#ab7e647de183fc0d139bac81ed0492667",tooltip="Open external (default) editor with divx.conf. "];
+  Node37 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 [label="GUIUtil::openMNConfigfile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a17cced42f0ebd5fb923eba61015308a8"];
+  Node42 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="RPCConsole::showMNConfEditor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a8adc9441d40b37a037ecdfe8183323f7",tooltip="Open external (default) editor with masternode.conf. "];
+  Node37 -> Node44 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="GUIUtil::showBackups",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a16fd78c7608981cc405561a8d5e8d7e3"];
+  Node44 -> Node45 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node45 [label="RPCConsole::showBackups",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a013ee20b746b6453375738e7b5e1cb4e",tooltip="Show folder with wallet backups in default browser. "];
+  Node37 -> Node46 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node46 [label="Intro::getDefaultDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#aad225845533fc7f451648dc7c9643e6a",tooltip="Determine default data directory for operating system. "];
+  Node46 -> Node47 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node47 [label="Intro::setDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#a2f11c0fccc56ec7bb53cfddec98ee21b"];
+  Node47 -> Node48 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node48 [label="Intro::pickDataDirectory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#a3e0e541cd0e55fe71484055964925cfc",tooltip="Determine data directory. "];
+  Node47 -> Node49 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node49 [label="Intro::on_dataDirDefault\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_intro.html#ae4cefbcd5e61f62cb2a59f38bc2ae52f"];
+  Node46 -> Node48 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node46 -> Node49 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

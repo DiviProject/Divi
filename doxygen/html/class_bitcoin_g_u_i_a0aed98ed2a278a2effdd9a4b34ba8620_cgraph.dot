@@ -1,0 +1,11 @@
+digraph "BitcoinGUI::showNormalIfMinimized"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node249 [label="BitcoinGUI::showNormalIf\lMinimized",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node249 -> Node250 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node250 [label="GUIUtil::isObscured",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a0b7266e2b8e7de5f5fd1c7ddb9e5b637"];
+  Node250 -> Node251 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node251 [label="GUIUtil::checkPoint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#ab2e7ef0aa9a1ad3f86d67a3f596b6fc4"];
+}

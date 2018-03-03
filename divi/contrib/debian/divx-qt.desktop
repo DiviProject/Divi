@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Divx
+Comment=Divx P2P Cryptocurrency
+Comment[fr]=Divx, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Divx, eşten eşe kriptografik sanal para birimi
+Exec=divx-qt %u
+Terminal=false
+Type=Application
+Icon=divx128
+MimeType=x-scheme-handler/divx;
+Categories=Office;Finance;

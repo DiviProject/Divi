@@ -1,0 +1,17 @@
+digraph "PeerTableModel::PeerTableModel"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="PeerTableModel::PeerTable\lModel",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node0 -> Node1 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="PeerTableModel::refresh",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_peer_table_model.html#abae14b3fd8a38a60f752f67a57b5b0b3"];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="PeerTablePriv::refreshPeers",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_peer_table_priv.html#a304d99874f6cd0c67ed207546a5ca904",tooltip="Pull a full list of peers from vNodes into our cache. "];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="CNode::copyStats",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#aaa77188d9df85b80e3f8a30292acf6a9"];
+  Node3 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="GetTimeMicros",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a0c5a06b50cd805b1923552114494c029"];
+  Node2 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="GetNodeStateStats",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#af0793c7c14e94d2d642f4ac89067a429",tooltip="Get statistics from node state. "];
+}

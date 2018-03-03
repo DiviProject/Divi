@@ -1,0 +1,31 @@
+digraph "MultisigDialog::updateCoinControl"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node599 [label="MultisigDialog::updateCoin\lControl",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node599 -> Node600 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node600 [label="CoinControlDialog::\lupdateDialogLabels",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#ae0162e01893a3c85aeeee743c1cb1084"];
+  Node600 -> Node601 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node601 [label="CoinControlDialog::\lsetModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a4c34a48574814089c54f763a22f5317a"];
+  Node601 -> Node602 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node602 [label="MultisigDialog::on\l_pushButtonCoinControl\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a3d21b360d294040f947ce6cc685dfdfa"];
+  Node601 -> Node603 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node603 [label="PrivacyDialog::coinControl\lButtonClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a16488c5d2fb41caedb18e9a6c1a376bb"];
+  Node603 -> Node604 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node604 [label="PrivacyDialog::PrivacyDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#ab7308b7ed5782dfa26fb1f216385207c"];
+  Node601 -> Node605 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node605 [label="SendCoinsDialog::coinControl\lButtonClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a59d757d9e4bea5b380eb480fd79cfb49"];
+  Node605 -> Node606 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node606 [label="SendCoinsDialog::SendCoins\lDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a0df5bc29d1df68eda44826651afc595f"];
+  Node600 -> Node607 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node607 [label="CoinControlDialog::\lbuttonSelectAllClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#ae106a71c5b87ac8bea8c52e7c4f4a129"];
+  Node607 -> Node608 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node608 [label="CoinControlDialog::\lCoinControlDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a8eafb58ed1c5668af9a4890704136671"];
+  Node600 -> Node609 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node609 [label="CoinControlDialog::\lbuttonToggleLockClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a6da2f01f4e266766a0be3609890b22f2"];
+  Node609 -> Node608 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node600 -> Node610 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node610 [label="CoinControlDialog::\lviewItemChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#ac3c37dabd83f71d9c96bf5567fe85234"];
+  Node610 -> Node608 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

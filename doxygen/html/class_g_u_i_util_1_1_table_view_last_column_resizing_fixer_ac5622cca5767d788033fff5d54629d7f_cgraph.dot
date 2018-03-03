@@ -1,0 +1,32 @@
+digraph "GUIUtil::TableViewLastColumnResizingFixer::adjustTableColumnsWidth"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node2 [label="GUIUtil::TableViewLastColumn\lResizingFixer::adjustTableColumnsWidth",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="GUIUtil::TableViewLastColumn\lResizingFixer::disconnectViewHeaders\lSignals",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ae36cd142d60656073928ba6bd05a6661"];
+  Node3 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="GUIUtil::TableViewLastColumn\lResizingFixer::on_sectionResized",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a31422ff98c30c95c01dba5bbb8ccbcae"];
+  Node4 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="GUIUtil::TableViewLastColumn\lResizingFixer::getAvailableWidth\lForColumn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ad0c6ff117107634ae8d37f056d27e711"];
+  Node5 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="GUIUtil::TableViewLastColumn\lResizingFixer::getColumnsWidth",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a9abbf570cbaad95acfd772ddf712cbbb"];
+  Node4 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="GUIUtil::TableViewLastColumn\lResizingFixer::resizeColumn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a284107daa657b2d34a196b886538c02c"];
+  Node3 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="GUIUtil::TableViewLastColumn\lResizingFixer::on_geometriesChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#a93f3b32cf06688099875a1c9d2df57f2"];
+  Node8 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="GUIUtil::TableViewLastColumn\lResizingFixer::connectViewHeaders\lSignals",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_g_u_i_util_1_1_table_view_last_column_resizing_fixer.html#ab01fe3dbf021a9306ec74afda41d6f45"];
+  Node9 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

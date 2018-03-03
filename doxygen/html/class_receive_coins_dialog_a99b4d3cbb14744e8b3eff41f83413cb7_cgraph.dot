@@ -1,0 +1,31 @@
+digraph "ReceiveCoinsDialog::copyMessage"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node85 [label="ReceiveCoinsDialog\l::copyMessage",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node85 -> Node86 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node86 [label="ReceiveCoinsDialog\l::copyColumnToClipboard",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#adcf53aced7dfa041a55278b4807a20a2"];
+  Node86 -> Node87 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node87 [label="WalletModel::getRecentRequests\lTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#ab13ca64220a1652d63e1e042d3be578f"];
+  Node86 -> Node88 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node88 [label="GUIUtil::setClipboard",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#aef655b19f129179ca32f11a4d0da1a07"];
+  Node86 -> Node89 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node89 [label="RecentRequestsTableModel\l::data",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#ad42929c480fc50cad83114ca5f2cc382"];
+  Node89 -> Node90 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node90 [label="RecentRequestsTableModel\l::index",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html#a744b879be9546793860528f6c5350289"];
+  Node89 -> Node91 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node91 [label="GUIUtil::dateTimeStr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#aae732a04fea25190081120bf0cc773e8"];
+  Node89 -> Node92 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node92 [label="BitcoinUnits::format",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#ab07437e5a788c80a82d75e3714bd3925",tooltip="Format as string. "];
+  Node92 -> Node93 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node93 [label="BitcoinUnits::valid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a81cbc41480adfb600dad79711d336e5f",tooltip="Is unit ID valid? "];
+  Node92 -> Node94 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node94 [label="BitcoinUnits::factor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#ae967b9e6ecbb8f041bfe398d27533b09",tooltip="Number of Satoshis (1e-8) per unit. "];
+  Node92 -> Node95 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node95 [label="BitcoinUnits::decimals",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html#a3f0fc21634520ea06c684ba0d7e25f2f",tooltip="Number of decimals left. "];
+  Node89 -> Node96 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node96 [label="WalletModel::getOptionsModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300"];
+  Node89 -> Node97 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node97 [label="OptionsModel::getDisplayUnit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#a3b6e4d4ef42be3aaba315b8cd14f468e"];
+}

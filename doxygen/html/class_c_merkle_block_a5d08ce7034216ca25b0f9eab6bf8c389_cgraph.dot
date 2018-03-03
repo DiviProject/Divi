@@ -1,0 +1,21 @@
+digraph "CMerkleBlock::CMerkleBlock"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="CMerkleBlock::CMerkleBlock",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node0 -> Node1 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 [label="CBlock::GetBlockHeader",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block.html#a7c8d280db581c02f49a66a5cdef2eded"];
+  Node0 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="CBloomFilter::IsRelevant\lAndUpdate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bloom_filter.html#aec420a9b66ab133090c2b4b8ed286f79",tooltip="Also adds any outputs which match the filter to the filter (to match their spending txes) ..."];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="CTransaction::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a7efd1379de830341417c0bfa23a149aa"];
+  Node2 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="CBloomFilter::contains",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bloom_filter.html#afe62e10a4c4cf64e18a2a659d0bcc31b"];
+  Node4 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="CBloomFilter::Hash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bloom_filter.html#a19031bd85ec49cb6f6d2cd8aa3414c75"];
+  Node5 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="MurmurHash3",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8cpp.html#a3cf0406d24590eaad9a3163c552e9730"];
+  Node6 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="ROTL32",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8cpp.html#aa8045f521ac28bee04e4980f93272dc0"];
+}

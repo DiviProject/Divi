@@ -1,0 +1,11 @@
+digraph "RPCConsole::setTrafficGraphRange"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node242 [label="RPCConsole::setTrafficGraph\lRange",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node242 -> Node243 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node243 [label="RPCConsole::RPCConsole",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#aeac546e68f8c2cafa79a0294dd78f2ad"];
+  Node242 -> Node244 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node244 [label="RPCConsole::on_sldGraphRange\l_valueChanged",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a9eab099b48f3135fb4a98591fd48e88b",tooltip="change the time range of the network traffic graph "];
+}

@@ -1,0 +1,23 @@
+digraph "REF"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node174 [label="REF",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node174 -> Node175 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node175 [label="CCoins::GetSerializeSize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#a63916fcdb2305c47e6360cf533c27438"];
+  Node174 -> Node176 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node176 [label="CCoins::Serialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#a7adea91f27b75755e8cfbc7c46fe3848"];
+  Node174 -> Node177 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node177 [label="CCoins::Unserialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html#adaa98cb6d8da3a4d573cd799ddd11051"];
+  Node174 -> Node178 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node178 [label="CScriptCompressor::\lUnserialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_script_compressor.html#a016fa6e3d2735d95fcf773271da073d5"];
+  Node174 -> Node179 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node179 [label="CTxOutCompressor::SerializationOp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_out_compressor.html#aad933ec09f7d6a764bd49da399f9083b"];
+  Node174 -> Node180 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node180 [label="CTxInUndo::GetSerializeSize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_in_undo.html#ae02e42aeabd614a26ba5657f60ec6921"];
+  Node174 -> Node181 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node181 [label="CTxInUndo::Serialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_in_undo.html#a7a4e1cf026b5308fdca471bada9cebaf"];
+  Node174 -> Node182 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node182 [label="CTxInUndo::Unserialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_tx_in_undo.html#a0a2b82f03edad7ad85a66e63e4552af9"];
+}

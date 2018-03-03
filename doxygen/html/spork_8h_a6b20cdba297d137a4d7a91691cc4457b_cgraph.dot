@@ -1,0 +1,23 @@
+digraph "ReprocessBlocks"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node495 [label="ReprocessBlocks",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node495 -> Node496 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node496 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node495 -> Node497 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node497 [label="ReconsiderBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a8302271cb4b4deed26c45b002ce2b4a0",tooltip="Remove invalidity status from a block and its descendants. "];
+  Node497 -> Node498 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node498 [label="CChain::Tip",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#a40ccefec14f8f3195c08c827af8cf412",tooltip="Returns the index entry for the tip of this chain, or NULL if none. "];
+  Node498 -> Node499 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node499 [label="CBlockIndex::IsProofOfStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_index.html#a2438a891e9d43821c0d99e1bdac56fde"];
+  Node495 -> Node500 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node500 [label="DisconnectBlocksAndReprocess",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#af2b1f603b58c5364716253a0711f0e91",tooltip="Reprocess a number of blocks to try and get on the correct chain again. "];
+  Node495 -> Node501 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node501 [label="CValidationState::IsValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_validation_state.html#a7dc31c88ba63ad17a954f247d21b550c"];
+  Node495 -> Node502 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node502 [label="ActivateBestChain",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#ac59c8d1f38aa3ece703960bd3912a952",tooltip="Make the best chain active, in multiple steps. "];
+  Node502 -> Node503 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node503 [label="MilliSleep",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#ac635182d3e845eda4af4fa5ab31609da"];
+}

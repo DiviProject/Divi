@@ -1,0 +1,22 @@
+digraph "RPCConsole::walletZaptxes2"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node372 [label="RPCConsole::walletZaptxes2",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node372 -> Node373 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node373 [label="RPCConsole::buildParameterlist",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a317ca97b14efb6af2c2e22d5a60e8872",tooltip="Build parameter list for restart. "];
+  Node373 -> Node374 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node374 [label="SALVAGEWALLET",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcconsole_8cpp.html#aae924d25a586ad1b39c5e2d5e1e731f4"];
+  Node373 -> Node375 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node375 [label="RESCAN",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcconsole_8cpp.html#af007bb2ea31fde5ef557de07fbbec40f"];
+  Node373 -> Node376 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node376 [label="ZAPTXES1",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcconsole_8cpp.html#a24cf492047fa76d0994be667ce8fbb1d"];
+  Node373 -> Node377 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node377 [label="ZAPTXES2",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcconsole_8cpp.html#a2aa0870b5231eed82a4be1d0ae9f3d1c"];
+  Node373 -> Node378 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node378 [label="UPGRADEWALLET",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcconsole_8cpp.html#a576eef2e43d89e19c6f369e980413376"];
+  Node373 -> Node379 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node379 [label="REINDEX",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcconsole_8cpp.html#adeb5e7f9d8eef5f2bdf8d575ebc2a66a"];
+  Node372 -> Node377 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

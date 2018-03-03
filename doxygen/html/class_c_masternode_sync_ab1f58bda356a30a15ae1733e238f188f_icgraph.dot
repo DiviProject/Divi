@@ -1,0 +1,35 @@
+digraph "CMasternodeSync::IsSynced"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node57 [label="CMasternodeSync::IsSynced",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node57 -> Node58 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node58 [label="CBudgetManager::NewBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a9c62c8f18b6f101465415952349ce203"];
+  Node57 -> Node59 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node59 [label="CBudgetManager::UpdateProposal",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a643d564d0232ed6f9e6ca025b8377c13"];
+  Node59 -> Node60 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node60 [label="CBudgetManager::CheckOrphan\lVotes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a73100cfcd156e567eab9e62eff332659"];
+  Node59 -> Node61 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node61 [label="mnbudgetvote",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a56da074ff2f33c0ef53bb451c67c0761"];
+  Node61 -> Node62 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node62 [label="mnbudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#aeabbf924be4d2ce4bedb28a394e1fc6b"];
+  Node59 -> Node63 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node63 [label="mnbudgetrawvote",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a3ae70ddb7080492d70c053fdf06320f7"];
+  Node57 -> Node64 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node64 [label="CBudgetManager::UpdateFinalized\lBudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a4ac3207b673d7163a7d03005e35d6f8b"];
+  Node64 -> Node65 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node65 [label="mnfinalbudget",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode-budget_8cpp.html#a9377cde49f5b62904aafb46d7d3c5e7c"];
+  Node57 -> Node66 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node66 [label="IsBlockPayeeValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-payments_8h.html#a58ce9c0914415f9f81723b1e2eebcc88"];
+  Node57 -> Node67 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node67 [label="CMasternodeSync::Process",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_sync.html#a5d4668c5e5f589629bfa137cccc387f4"];
+  Node67 -> Node68 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node68 [label="ThreadCheckObfuScationPool",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$obfuscation_8h.html#a3f96a5ca9c6735e5bfac77582f0af321"];
+  Node57 -> Node69 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="masternodedebug",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a8522c187a75142b1b267edca0734238c"];
+  Node69 -> Node70 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node70 [label="masternode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a30609e443aeb47c29ed0878d16b1b5e1"];
+  Node57 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node71 [label="CWallet::AutoZeromint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#aef0cf2b12b958c75d72e694e4f4dad9f"];
+}

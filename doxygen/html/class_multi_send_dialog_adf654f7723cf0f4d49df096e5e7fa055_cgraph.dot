@@ -1,0 +1,13 @@
+digraph "MultiSendDialog::on_activateButton_clicked"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node5 [label="MultiSendDialog::on\l_activateButton_clicked",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node5 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="CBitcoinAddress::IsValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_bitcoin_address.html#ab39907ce6895062a8f8bf585270ef13b"];
+  Node6 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node5 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="CWalletDB::WriteMSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet_d_b.html#a78a239a6bd820854ac22cd15dd80d2c5"];
+}

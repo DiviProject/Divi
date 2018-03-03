@@ -1,0 +1,12 @@
+digraph "WalletModel::getEncryptionStatus"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node343 [label="WalletModel::getEncryption\lStatus",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node343 -> Node344 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node344 [label="CCryptoKeyStore::IsCrypted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#acc8fed44366c98fb481333ca6e867088"];
+  Node343 -> Node345 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node345 [label="CCryptoKeyStore::IsLocked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html#a52919fa284a3aa10f1b4bd6018b6dbee"];
+  Node345 -> Node344 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

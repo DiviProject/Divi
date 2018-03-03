@@ -1,0 +1,29 @@
+\hypertarget{structsecp256k1__fe__consts__t}{}\section{secp256k1\+\_\+fe\+\_\+consts\+\_\+t Struct Reference}
+\label{structsecp256k1__fe__consts__t}\index{secp256k1\+\_\+fe\+\_\+consts\+\_\+t@{secp256k1\+\_\+fe\+\_\+consts\+\_\+t}}
+
+
+{\ttfamily \#include $<$field.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsecp256k1__fe__consts__t_ae656567993b69f0bb28f674419ff5af6}\label{structsecp256k1__fe__consts__t_ae656567993b69f0bb28f674419ff5af6}} 
+\mbox{\hyperlink{structsecp256k1__num__t}{secp256k1\+\_\+num\+\_\+t}} {\bfseries p}
+\item 
+\mbox{\Hypertarget{structsecp256k1__fe__consts__t_a9c673aff0a37334f7fec58961e7d0696}\label{structsecp256k1__fe__consts__t_a9c673aff0a37334f7fec58961e7d0696}} 
+\mbox{\hyperlink{structsecp256k1__fe__t}{secp256k1\+\_\+fe\+\_\+t}} {\bfseries order}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Field element module.
+
+Field elements can be represented in several ways, but code accessing it (and implementations) need to take certain properaties into account\+:
+\begin{DoxyItemize}
+\item Each field element can be normalized or not.
+\item Each field element has a magnitude, which represents how far away its representation is away from normalization. Normalized elements always have a magnitude of 1, but a magnitude of 1 doesn\textquotesingle{}t imply normality. 
+\end{DoxyItemize}
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/secp256k1/src/field.\+h\end{DoxyCompactItemize}

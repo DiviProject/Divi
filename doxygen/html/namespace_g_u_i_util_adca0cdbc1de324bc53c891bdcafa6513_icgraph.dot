@@ -1,0 +1,13 @@
+digraph "GUIUtil::GetStartOnSystemStartup"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node178 [label="GUIUtil::GetStartOnSystem\lStartup",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node178 -> Node179 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node179 [label="OptionsModel::Reset",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#ab952b1946cf3a4c76706ec796a3e629b"];
+  Node179 -> Node180 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node180 [label="OptionsDialog::on_resetButton\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_dialog.html#ab59345e0ce3db1d2cfb4ce50d39fb653"];
+  Node178 -> Node181 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node181 [label="OptionsModel::data",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html#abcd96450560150ec71b13958e7d11d47"];
+}

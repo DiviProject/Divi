@@ -1,0 +1,21 @@
+digraph "StartShutdown"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node156 [label="StartShutdown",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node156 -> Node157 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node157 [label="ThreadImport",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a0189c34248cd89bbbe20d4d6045bd7c9"];
+  Node156 -> Node158 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node158 [label="AbortNode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#af573b79d097a9ffe6503869f838ccf42",tooltip="Abort with a message. "];
+  Node158 -> Node159 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node159 [label="CValidationState::Abort",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_validation_state.html#a6788cb521cf538ac80413a1c6c3da5e8"];
+  Node159 -> Node160 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node160 [label="DisconnectBlockAndInputs",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#acc33d7f850152cbbb9d00f7c71d99704"];
+  Node156 -> Node161 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node161 [label="SplashScreen::closeEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_splash_screen.html#af2b8ee5e860e5584621eb6224ce7c959"];
+  Node156 -> Node162 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node162 [label="stop",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#a7ed4eb27f00f40cee8c15108916e8d71"];
+  Node156 -> Node163 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node163 [label="encryptwallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#a5fb49bac2748015a256c63e9f8ccc539"];
+}

@@ -1,0 +1,13 @@
+digraph "mruset::insert"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node51 [label="mruset::insert",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node51 -> Node52 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node52 [label="CNode::AddAddressKnown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#a1d2cecdd03c9da642d292f6a81ac6ed8"];
+  Node51 -> Node53 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node53 [label="CNode::AddInventoryKnown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#ac3054eb6ade84e8968f032ce3e700f6a"];
+  Node53 -> Node54 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node54 [label="ProcessMessageSwiftTX",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$swifttx_8h.html#a155e5c12fe35b2b4129c46ba9b66b06f"];
+}

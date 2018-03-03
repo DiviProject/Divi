@@ -1,0 +1,12 @@
+digraph "CoinControlDialog::headerSectionClicked"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node380 [label="CoinControlDialog::\lheaderSectionClicked",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node380 -> Node381 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node381 [label="CoinControlDialog::\lgetMappedColumn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a12cc992d1d2c5ef33f42d89c7e3e9dad"];
+  Node380 -> Node382 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node382 [label="CoinControlDialog::\lsortView",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_coin_control_dialog.html#a9573211ed101522c9b4307a02b268e39"];
+  Node382 -> Node381 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

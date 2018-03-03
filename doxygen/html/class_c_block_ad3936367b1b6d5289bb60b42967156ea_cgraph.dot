@@ -1,0 +1,9 @@
+digraph "CBlock::IsProofOfWork"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node190 [label="CBlock::IsProofOfWork",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node190 -> Node191 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node191 [label="CBlock::IsProofOfStake",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block.html#ab70bdac61ff8eca54fd29c835cb4f025"];
+}

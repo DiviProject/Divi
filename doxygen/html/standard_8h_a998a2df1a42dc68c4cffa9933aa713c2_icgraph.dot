@@ -1,0 +1,21 @@
+digraph "GetTxnOutputType"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node365 [label="GetTxnOutputType",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node365 -> Node366 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node366 [label="ScriptPubKeyToUniv",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__write_8cpp.html#a4a51bf7268adbdcd58e7af445ea4db61"];
+  Node366 -> Node367 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node367 [label="TxToUniv",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__write_8cpp.html#aeb901ca565e3df0e3bc0c9863ad8f53a"];
+  Node365 -> Node368 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node368 [label="ScriptPubKeyToJSON",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#acb6efc0d76394e3858fe7451148069c2"];
+  Node368 -> Node369 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node369 [label="TxToJSON",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#a366b04dae2aae86eee356cc85d759268"];
+  Node369 -> Node370 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node370 [label="getrawtransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#a12e1b8a05d99d1544e5343c2282cc55a"];
+  Node369 -> Node371 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node371 [label="decoderawtransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#a6775c600b1bfdbb22f38e5f1cd27cfea"];
+  Node368 -> Node372 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node372 [label="decodescript",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcrawtransaction_8cpp.html#a342172992e2fa92490e8d83c2e95e87e"];
+}

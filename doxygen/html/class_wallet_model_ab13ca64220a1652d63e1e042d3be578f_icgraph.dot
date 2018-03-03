@@ -1,0 +1,39 @@
+digraph "WalletModel::getRecentRequestsTableModel"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node646 [label="WalletModel::getRecentRequests\lTableModel",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node646 -> Node647 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node647 [label="ReceiveCoinsDialog\l::setModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a856e5bbe280d792004e97e703f42c7f8"];
+  Node647 -> Node648 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node648 [label="WalletView::setWalletModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_view.html#a0a37ff693a4f9c1e5ddc23f9cd3913be",tooltip="Set the wallet model. "];
+  Node648 -> Node649 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node649 [label="WalletFrame::addWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#aa199c3f27654199d84c365cf86167d86"];
+  Node646 -> Node650 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node650 [label="ReceiveCoinsDialog\l::on_receiveButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a9db8de31f6889288cb22c061aa51e0cd"];
+  Node650 -> Node651 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node651 [label="ReceiveCoinsDialog\l::keyPressEvent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#abcf17b510c473bf3e94ef12f7f5cfc10"];
+  Node646 -> Node652 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node652 [label="ReceiveCoinsDialog\l::on_recentRequestsView\l_doubleClicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a5eabd6106c8e3b275305b84c0303f314"];
+  Node652 -> Node653 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node653 [label="ReceiveCoinsDialog\l::on_showRequestButton\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a56df78045de75af55f4c4045ad4b7fcd"];
+  Node646 -> Node653 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node646 -> Node654 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node654 [label="ReceiveCoinsDialog\l::on_removeRequestButton\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a0cd8bb4c63c4b9bd3b27d9a4d6e08cfb"];
+  Node646 -> Node655 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node655 [label="ReceiveCoinsDialog\l::copyColumnToClipboard",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#adcf53aced7dfa041a55278b4807a20a2"];
+  Node655 -> Node656 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node656 [label="ReceiveCoinsDialog\l::copyLabel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#abdd69012e01da1d61b0bf622f9e156b1"];
+  Node656 -> Node657 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node657 [label="ReceiveCoinsDialog\l::ReceiveCoinsDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a0c982b94b7f23da8f208d09904352f89"];
+  Node655 -> Node658 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node658 [label="ReceiveCoinsDialog\l::copyMessage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a99b4d3cbb14744e8b3eff41f83413cb7"];
+  Node658 -> Node657 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node655 -> Node659 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node659 [label="ReceiveCoinsDialog\l::copyAmount",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a3f8309dfaa944576bae760ba33222463"];
+  Node659 -> Node657 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node646 -> Node660 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node660 [label="ReceiveCoinsDialog\l::showMenu",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_receive_coins_dialog.html#a9b485c40590668ac2e7d0a4a827a334f"];
+  Node660 -> Node657 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

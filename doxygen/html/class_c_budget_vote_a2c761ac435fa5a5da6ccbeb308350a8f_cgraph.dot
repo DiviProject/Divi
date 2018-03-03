@@ -1,0 +1,25 @@
+digraph "CBudgetVote::Relay"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node16 [label="CBudgetVote::Relay",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node16 -> Node17 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="CBudgetVote::GetHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_vote.html#acb9bda3b41d3bd1ebf04ccdcb3d2d926"];
+  Node16 -> Node18 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="RelayInv",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8cpp.html#a653718509f060207d28139fa8346e64a"];
+  Node18 -> Node19 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="CInv::IsMasterNodeType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_inv.html#ab96a3a729beb1092a87604667dc5baba"];
+  Node18 -> Node20 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="ActiveProtocol",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a138f84e8c8976fe85712b695c32ee3c7",tooltip="See whether the protocol update is enforced for connected nodes. "];
+  Node20 -> Node21 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="IsSporkActive",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a3305663176e21e81c80dc951a7f8ea5e"];
+  Node21 -> Node22 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node22 [label="GetSporkValue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$spork_8cpp.html#a7125c44e1c9a54dc7c28556b3fb24a8f"];
+  Node21 -> Node23 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 [label="GetTime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utiltime_8cpp.html#a46fac5fba8ba905b5f9acb364f5d8c6f",tooltip="For unit testing. "];
+  Node18 -> Node24 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 [label="CNode::PushInventory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#a7cef2333aa8776127a7e7fcab659eb6a"];
+  Node24 -> Node25 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="mruset::count",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classmruset.html#aff65b732aed809fb84542e1136321a24"];
+}

@@ -1,0 +1,41 @@
+digraph "COutput"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="COutput",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" tx" ,fontname="Helvetica"];
+  Node2 [label="CWalletTx",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet_tx.html",tooltip="A transaction with a bunch of additional info that only the owner cares about. "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="CMerkleTx",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_merkle_tx.html",tooltip="A transaction with a merkle branch linking it to the block chain. "];
+  Node4 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="CTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html",tooltip="The basic transaction that is broadcasted on the network and contained in blocks. ..."];
+  Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" hash" ,fontname="Helvetica"];
+  Node5 [label="uint256",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classuint256.html",tooltip="256-bit unsigned big integer. "];
+  Node6 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="base_uint\< 256 \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html"];
+  Node5 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" hashBlock" ,fontname="Helvetica"];
+  Node7 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pwallet" ,fontname="Helvetica"];
+  Node7 [label="CWallet",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html",tooltip="A CWallet is an extension of a keystore, which also maintains a set of transactions and balances..."];
+  Node8 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="CCryptoKeyStore",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_crypto_key_store.html",tooltip="Keystore which keeps the private keys encrypted. "];
+  Node9 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="CBasicKeyStore",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_basic_key_store.html",tooltip="Basic key store, that keeps keys in an address->secret map. "];
+  Node10 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="CKeyStore",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_key_store.html",tooltip="A virtual base class for key stores. "];
+  Node11 -> Node10 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cs_KeyStore" ,fontname="Helvetica"];
+  Node11 [label="AnnotatedMixin\< boost\l::recursive_mutex \>",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node12 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="boost::recursive_mutex",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node13 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="CValidationInterface",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_validation_interface.html"];
+  Node14 -> Node7 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" minTxFee" ,fontname="Helvetica"];
+  Node14 [label="CFeeRate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_fee_rate.html",tooltip="Type-safe wrapper class to for fee rates (how much to pay based on transaction size) ..."];
+  Node15 -> Node7 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" vchDefaultKey" ,fontname="Helvetica"];
+  Node15 [label="CPubKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html",tooltip="An encapsulated public key. "];
+  Node11 -> Node7 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cs_wallet" ,fontname="Helvetica"];
+  Node16 -> Node7 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pwalletdbEncryption" ,fontname="Helvetica"];
+  Node16 [label="CWalletDB",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet_d_b.html",tooltip="Access to the wallet database (wallet.dat) "];
+  Node17 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="CDB",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b.html",tooltip="RAII class that provides access to a Berkeley database. "];
+}

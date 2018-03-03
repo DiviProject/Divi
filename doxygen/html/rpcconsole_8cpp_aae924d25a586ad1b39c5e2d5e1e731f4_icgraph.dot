@@ -1,0 +1,32 @@
+digraph "SALVAGEWALLET"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node34 [label="SALVAGEWALLET",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node34 -> Node35 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node35 [label="RPCConsole::walletSalvage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#ad272e3e402b452d470e5d0cc22dfa838",tooltip="Wallet repair options. "];
+  Node35 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node36 [label="RPCConsole::RPCConsole",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#aeac546e68f8c2cafa79a0294dd78f2ad"];
+  Node34 -> Node37 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 [label="RPCConsole::buildParameterlist",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a317ca97b14efb6af2c2e22d5a60e8872",tooltip="Build parameter list for restart. "];
+  Node37 -> Node35 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 -> Node38 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node38 [label="RPCConsole::walletRescan",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a87bca6ab058743cda3d716543071ce03",tooltip="Restart wallet with \"-rescan\". "];
+  Node38 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 -> Node39 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="RPCConsole::walletZaptxes1",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#ab99e8a7e0a6164126aa18c59827722d5",tooltip="Restart wallet with \"-zapwallettxes=1\". "];
+  Node39 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 -> Node40 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node40 [label="RPCConsole::walletZaptxes2",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#ab96912afa85d43a67a4db4869faccdd9",tooltip="Restart wallet with \"-zapwallettxes=2\". "];
+  Node40 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 -> Node41 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node41 [label="RPCConsole::walletUpgrade",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a5ba9075f3f7dad2e84302ea3da9f51af",tooltip="Restart wallet with \"-upgradewallet\". "];
+  Node41 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 [label="RPCConsole::walletReindex",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#ac0e0d64fc96a4621dcb8006eafbb3bc5",tooltip="Restart wallet with \"-reindex\". "];
+  Node42 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="RPCConsole::walletResync",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#a32940def4bbbe99bebd243bace2101da",tooltip="Restart wallet with \"-resync\". "];
+  Node43 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

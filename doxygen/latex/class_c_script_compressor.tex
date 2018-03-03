@@ -1,0 +1,68 @@
+\hypertarget{class_c_script_compressor}{}\section{C\+Script\+Compressor Class Reference}
+\label{class_c_script_compressor}\index{C\+Script\+Compressor@{C\+Script\+Compressor}}
+
+
+{\ttfamily \#include $<$compressor.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_c_script_compressor_aad31afe3d14387b163b5c043e834ca2b}\label{class_c_script_compressor_aad31afe3d14387b163b5c043e834ca2b}} 
+{\bfseries C\+Script\+Compressor} (\mbox{\hyperlink{class_c_script}{C\+Script}} \&script\+In)
+\item 
+\mbox{\Hypertarget{class_c_script_compressor_afd6f2bea6c0ba2d34f770997e96bc23d}\label{class_c_script_compressor_afd6f2bea6c0ba2d34f770997e96bc23d}} 
+unsigned int {\bfseries Get\+Serialize\+Size} (int n\+Type, int n\+Version) const
+\item 
+\mbox{\Hypertarget{class_c_script_compressor_a5702b644df500ddd11c56d0490e8be44}\label{class_c_script_compressor_a5702b644df500ddd11c56d0490e8be44}} 
+{\footnotesize template$<$typename Stream $>$ }\\void {\bfseries Serialize} (Stream \&s, int n\+Type, int n\+Version) const
+\item 
+\mbox{\Hypertarget{class_c_script_compressor_a016fa6e3d2735d95fcf773271da073d5}\label{class_c_script_compressor_a016fa6e3d2735d95fcf773271da073d5}} 
+{\footnotesize template$<$typename Stream $>$ }\\void {\bfseries Unserialize} (Stream \&s, int n\+Type, int n\+Version)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{class_c_script_compressor_a38e2dcfce62bb157b55536d73748f556}{Is\+To\+Key\+ID}} (\mbox{\hyperlink{class_c_key_i_d}{C\+Key\+ID}} \&hash) const
+\item 
+\mbox{\Hypertarget{class_c_script_compressor_a7a995d1064299a58d4f2e9f0ac205d07}\label{class_c_script_compressor_a7a995d1064299a58d4f2e9f0ac205d07}} 
+bool {\bfseries Is\+To\+Script\+ID} (\mbox{\hyperlink{class_c_script_i_d}{C\+Script\+ID}} \&hash) const
+\item 
+\mbox{\Hypertarget{class_c_script_compressor_a19a67455a106e2e0528bc97cb60d2391}\label{class_c_script_compressor_a19a67455a106e2e0528bc97cb60d2391}} 
+bool {\bfseries Is\+To\+Pub\+Key} (\mbox{\hyperlink{class_c_pub_key}{C\+Pub\+Key}} \&pubkey) const
+\item 
+\mbox{\Hypertarget{class_c_script_compressor_a563ba251e7720841b4d5fc30ebd736e6}\label{class_c_script_compressor_a563ba251e7720841b4d5fc30ebd736e6}} 
+bool {\bfseries Compress} (std\+::vector$<$ unsigned char $>$ \&out) const
+\item 
+\mbox{\Hypertarget{class_c_script_compressor_aa702c1ed206804d016da3600e02d2169}\label{class_c_script_compressor_aa702c1ed206804d016da3600e02d2169}} 
+unsigned int {\bfseries Get\+Special\+Size} (unsigned int n\+Size) const
+\item 
+\mbox{\Hypertarget{class_c_script_compressor_a1feb663ddab3a45218c7cb02f2a25717}\label{class_c_script_compressor_a1feb663ddab3a45218c7cb02f2a25717}} 
+bool {\bfseries Decompress} (unsigned int n\+Size, const std\+::vector$<$ unsigned char $>$ \&out)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Compact serializer for scripts.
+
+It detects common cases and encodes them much more efficiently. 3 special cases are defined\+:
+\begin{DoxyItemize}
+\item Pay to pubkey hash (encoded as 21 bytes)
+\item Pay to script hash (encoded as 21 bytes)
+\item Pay to pubkey starting with 0x02, 0x03 or 0x04 (encoded as 33 bytes)
+\end{DoxyItemize}
+
+Other scripts up to 121 bytes require 1 byte + script length. Above that, scripts up to 16505 bytes require 2 bytes + script length. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_script_compressor_a38e2dcfce62bb157b55536d73748f556}\label{class_c_script_compressor_a38e2dcfce62bb157b55536d73748f556}} 
+\index{C\+Script\+Compressor@{C\+Script\+Compressor}!Is\+To\+Key\+ID@{Is\+To\+Key\+ID}}
+\index{Is\+To\+Key\+ID@{Is\+To\+Key\+ID}!C\+Script\+Compressor@{C\+Script\+Compressor}}
+\subsubsection{\texorpdfstring{Is\+To\+Key\+I\+D()}{IsToKeyID()}}
+{\footnotesize\ttfamily bool C\+Script\+Compressor\+::\+Is\+To\+Key\+ID (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_c_key_i_d}{C\+Key\+ID}} \&}]{hash }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+These check for scripts for which a special case with a shorter encoding is defined. They are implemented separately from the \mbox{\hyperlink{class_c_script}{C\+Script}} test, as these test for exact byte sequence correspondences, and are more strict. For example, Is\+To\+Pub\+Key also verifies whether the public key is valid (as invalid ones cannot be represented in compressed form). 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/compressor.\+h\item 
+P\+I\+V\+X/src/compressor.\+cpp\end{DoxyCompactItemize}

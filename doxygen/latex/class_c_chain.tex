@@ -1,0 +1,109 @@
+\hypertarget{class_c_chain}{}\section{C\+Chain Class Reference}
+\label{class_c_chain}\index{C\+Chain@{C\+Chain}}
+
+
+{\ttfamily \#include $<$chain.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ \mbox{\hyperlink{class_c_chain_a0af94042e68f7dbc86260d3a54f08a3f}{Genesis}} () const
+\item 
+\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ \mbox{\hyperlink{class_c_chain_a40ccefec14f8f3195c08c827af8cf412}{Tip}} (bool f\+Proof\+Of\+Stake=false) const
+\item 
+\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ \mbox{\hyperlink{class_c_chain_a13c4493c833ffb8d1725fde05e42b28a}{operator\mbox{[}$\,$\mbox{]}}} (int n\+Height) const
+\item 
+bool \mbox{\hyperlink{class_c_chain_af1786dc229c215dea7f727c11df2c8dc}{Contains}} (const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$pindex) const
+\item 
+\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ \mbox{\hyperlink{class_c_chain_a3077e83c87e8a974765fa76a57fd040b}{Next}} (const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$pindex) const
+\item 
+int \mbox{\hyperlink{class_c_chain_ad4758bc8872ce065a9579f77c3171d40}{Height}} () const
+\item 
+void \mbox{\hyperlink{class_c_chain_aeb563751f7362d4308c7c2cb35b834a5}{Set\+Tip}} (\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$pindex)
+\item 
+\mbox{\hyperlink{struct_c_block_locator}{C\+Block\+Locator}} \mbox{\hyperlink{class_c_chain_a03e98bebe804bfba219b4e6a2b858d9f}{Get\+Locator}} (const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$pindex=N\+U\+LL) const
+\item 
+const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ \mbox{\hyperlink{class_c_chain_adb9ec01329511e869bba95e3c143da71}{Find\+Fork}} (const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$pindex) const
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{class_c_chain_a0e46ed4192afeafb8d420b2d6d9bb24c}{operator==}} (const \mbox{\hyperlink{class_c_chain}{C\+Chain}} \&a, const \mbox{\hyperlink{class_c_chain}{C\+Chain}} \&b)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An in-\/memory indexed chain of blocks. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_c_chain_af1786dc229c215dea7f727c11df2c8dc}\label{class_c_chain_af1786dc229c215dea7f727c11df2c8dc}} 
+\index{C\+Chain@{C\+Chain}!Contains@{Contains}}
+\index{Contains@{Contains}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{Contains()}{Contains()}}
+{\footnotesize\ttfamily bool C\+Chain\+::\+Contains (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$}]{pindex }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Efficiently check whether a block is present in this chain. \mbox{\Hypertarget{class_c_chain_adb9ec01329511e869bba95e3c143da71}\label{class_c_chain_adb9ec01329511e869bba95e3c143da71}} 
+\index{C\+Chain@{C\+Chain}!Find\+Fork@{Find\+Fork}}
+\index{Find\+Fork@{Find\+Fork}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{Find\+Fork()}{FindFork()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$ C\+Chain\+::\+Find\+Fork (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$}]{pindex }\end{DoxyParamCaption}) const}
+
+Find the last common block between this chain and a block index entry. \mbox{\Hypertarget{class_c_chain_a0af94042e68f7dbc86260d3a54f08a3f}\label{class_c_chain_a0af94042e68f7dbc86260d3a54f08a3f}} 
+\index{C\+Chain@{C\+Chain}!Genesis@{Genesis}}
+\index{Genesis@{Genesis}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{Genesis()}{Genesis()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}}$\ast$ C\+Chain\+::\+Genesis (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Returns the index entry for the genesis block of this chain, or N\+U\+LL if none. \mbox{\Hypertarget{class_c_chain_a03e98bebe804bfba219b4e6a2b858d9f}\label{class_c_chain_a03e98bebe804bfba219b4e6a2b858d9f}} 
+\index{C\+Chain@{C\+Chain}!Get\+Locator@{Get\+Locator}}
+\index{Get\+Locator@{Get\+Locator}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{Get\+Locator()}{GetLocator()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_c_block_locator}{C\+Block\+Locator}} C\+Chain\+::\+Get\+Locator (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$}]{pindex = {\ttfamily NULL} }\end{DoxyParamCaption}) const}
+
+Return a \mbox{\hyperlink{struct_c_block_locator}{C\+Block\+Locator}} that refers to a block in this chain (by default the tip). \mbox{\Hypertarget{class_c_chain_ad4758bc8872ce065a9579f77c3171d40}\label{class_c_chain_ad4758bc8872ce065a9579f77c3171d40}} 
+\index{C\+Chain@{C\+Chain}!Height@{Height}}
+\index{Height@{Height}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{Height()}{Height()}}
+{\footnotesize\ttfamily int C\+Chain\+::\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Return the maximal height in the chain. Is equal to chain.\+Tip() ? chain.\+Tip()-\/$>$n\+Height \+: -\/1. \mbox{\Hypertarget{class_c_chain_a3077e83c87e8a974765fa76a57fd040b}\label{class_c_chain_a3077e83c87e8a974765fa76a57fd040b}} 
+\index{C\+Chain@{C\+Chain}!Next@{Next}}
+\index{Next@{Next}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{Next()}{Next()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}}$\ast$ C\+Chain\+::\+Next (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$}]{pindex }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Find the successor of a block in this chain, or N\+U\+LL if the given index is not found or is the tip. \mbox{\Hypertarget{class_c_chain_a13c4493c833ffb8d1725fde05e42b28a}\label{class_c_chain_a13c4493c833ffb8d1725fde05e42b28a}} 
+\index{C\+Chain@{C\+Chain}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}}$\ast$ C\+Chain\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{int}]{n\+Height }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Returns the index entry at a particular height in this chain, or N\+U\+LL if no such height exists. \mbox{\Hypertarget{class_c_chain_aeb563751f7362d4308c7c2cb35b834a5}\label{class_c_chain_aeb563751f7362d4308c7c2cb35b834a5}} 
+\index{C\+Chain@{C\+Chain}!Set\+Tip@{Set\+Tip}}
+\index{Set\+Tip@{Set\+Tip}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{Set\+Tip()}{SetTip()}}
+{\footnotesize\ttfamily void C\+Chain\+::\+Set\+Tip (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}} $\ast$}]{pindex }\end{DoxyParamCaption})}
+
+Set/initialize a chain with a given tip.
+
+\mbox{\hyperlink{class_c_chain}{C\+Chain}} implementation \mbox{\Hypertarget{class_c_chain_a40ccefec14f8f3195c08c827af8cf412}\label{class_c_chain_a40ccefec14f8f3195c08c827af8cf412}} 
+\index{C\+Chain@{C\+Chain}!Tip@{Tip}}
+\index{Tip@{Tip}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{Tip()}{Tip()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{class_c_block_index}{C\+Block\+Index}}$\ast$ C\+Chain\+::\+Tip (\begin{DoxyParamCaption}\item[{bool}]{f\+Proof\+Of\+Stake = {\ttfamily false} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Returns the index entry for the tip of this chain, or N\+U\+LL if none. 
+
+\subsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{class_c_chain_a0e46ed4192afeafb8d420b2d6d9bb24c}\label{class_c_chain_a0e46ed4192afeafb8d420b2d6d9bb24c}} 
+\index{C\+Chain@{C\+Chain}!operator==@{operator==}}
+\index{operator==@{operator==}!C\+Chain@{C\+Chain}}
+\subsubsection{\texorpdfstring{operator==}{operator==}}
+{\footnotesize\ttfamily bool operator== (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_c_chain}{C\+Chain}} \&}]{a,  }\item[{const \mbox{\hyperlink{class_c_chain}{C\+Chain}} \&}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+Compare two chains efficiently. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+P\+I\+V\+X/src/chain.\+h\item 
+P\+I\+V\+X/src/chain.\+cpp\end{DoxyCompactItemize}

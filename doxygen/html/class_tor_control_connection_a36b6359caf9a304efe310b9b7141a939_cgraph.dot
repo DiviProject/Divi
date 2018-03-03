@@ -1,0 +1,16 @@
+digraph "TorControlConnection::Connect"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node6 [label="TorControlConnection\l::Connect",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node6 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="TorControlConnection\l::Disconnect",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_tor_control_connection.html#addb42114063641eab12be2fc39b859d5",tooltip="Disconnect from Tor control port. "];
+  Node6 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="TorControlConnection\l::readcb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_tor_control_connection.html#a7d7e2393f19cb41c32223def3df769ea",tooltip="Libevent handlers: internal. "];
+  Node8 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="atoi",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$utilstrencodings_8cpp.html#aa5ce96ec36f4413f820cec9c1831c070"];
+  Node9 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="TorControlConnection\l::eventcb",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_tor_control_connection.html#a8b22b26822247f8be7d739e14a045e98"];
+}

@@ -1,0 +1,14 @@
+digraph "AddressTableModel::data"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node92 [label="AddressTableModel::data",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node92 -> Node93 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node93 [label="AddressTableModel::\lindex",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_address_table_model.html#a74e9123471948255f87271c823c82854"];
+  Node93 -> Node92 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node93 -> Node94 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node94 [label="AddressTablePriv::index",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_address_table_priv.html#af311eb7d0189a74a508d7ad0f563f307"];
+  Node92 -> Node95 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node95 [label="GUIUtil::bitcoinAddressFont",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a6630c77d0f51ac2a1acdc5fe06c75283"];
+}

@@ -1,16 +1,15 @@
 var searchData=
 [
-  ['parsedinternalkey',['ParsedInternalKey',['../structleveldb_1_1_parsed_internal_key.html',1,'leveldb']]],
-  ['paymentrequestplus',['PaymentRequestPlus',['../class_payment_request_plus.html',1,'']]],
-  ['paymentserver',['PaymentServer',['../class_payment_server.html',1,'']]],
-  ['paymentservertests',['PaymentServerTests',['../class_payment_server_tests.html',1,'']]],
-  ['peertablemodel',['PeerTableModel',['../class_peer_table_model.html',1,'']]],
-  ['peertablepriv',['PeerTablePriv',['../class_peer_table_priv.html',1,'']]],
-  ['platformstyle',['PlatformStyle',['../class_platform_style.html',1,'']]],
-  ['posixlogger',['PosixLogger',['../classleveldb_1_1_posix_logger.html',1,'leveldb']]],
-  ['privacydialog',['PrivacyDialog',['../class_privacy_dialog.html',1,'']]],
-  ['privatecoin',['PrivateCoin',['../classlibzerocoin_1_1_private_coin.html',1,'libzerocoin']]],
-  ['proxycredentials',['ProxyCredentials',['../struct_proxy_credentials.html',1,'']]],
-  ['proxytype',['proxyType',['../classproxy_type.html',1,'']]],
-  ['publiccoin',['PublicCoin',['../classlibzerocoin_1_1_public_coin.html',1,'libzerocoin']]]
+  ['rebind',['rebind',['../structzero__after__free__allocator_1_1rebind.html',1,'zero_after_free_allocator&lt; T &gt;::rebind&lt; _Other &gt;'],['../structsecure__allocator_1_1rebind.html',1,'secure_allocator&lt; T &gt;::rebind&lt; _Other &gt;']]],
+  ['receivecoinsdialog',['ReceiveCoinsDialog',['../class_receive_coins_dialog.html',1,'']]],
+  ['receiverequestdialog',['ReceiveRequestDialog',['../class_receive_request_dialog.html',1,'']]],
+  ['recentrequestentry',['RecentRequestEntry',['../class_recent_request_entry.html',1,'']]],
+  ['recentrequestentrylessthan',['RecentRequestEntryLessThan',['../class_recent_request_entry_less_than.html',1,'']]],
+  ['recentrequeststablemodel',['RecentRequestsTableModel',['../class_recent_requests_table_model.html',1,'']]],
+  ['recipientcatcher',['RecipientCatcher',['../class_recipient_catcher.html',1,'']]],
+  ['resterr',['RestErr',['../class_rest_err.html',1,'']]],
+  ['reverse_5frange',['reverse_range',['../classreverse__range.html',1,'']]],
+  ['rfc6979_5fhmac_5fsha256',['RFC6979_HMAC_SHA256',['../class_r_f_c6979___h_m_a_c___s_h_a256.html',1,'']]],
+  ['rpcconsole',['RPCConsole',['../class_r_p_c_console.html',1,'']]],
+  ['rpcexecutor',['RPCExecutor',['../class_r_p_c_executor.html',1,'']]]
 ];

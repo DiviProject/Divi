@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['operator_3d_3d',['operator==',['../class_c_chain.html#a0e46ed4192afeafb8d420b2d6d9bb24c',1,'CChain::operator==()'],['../class_c_coins.html#a77593e3db3e4b369c21a91aad2afcc05',1,'CCoins::operator==()'],['../class_c_pub_key.html#a864b3cdcb46fb85c1fc07e0686cc3a31',1,'CPubKey::operator==()']]]
+  ['addresstablepriv',['AddressTablePriv',['../class_address_table_model.html#aa3f1055879193511b3a0088db8c1d9ec',1,'AddressTableModel']]],
+  ['arithtouint256',['ArithToUint256',['../classarith__uint256.html#aef075fd8d1a7e5937e9775b8e82c8a1b',1,'arith_uint256']]],
+  ['arithtouint512',['ArithToUint512',['../classarith__uint512.html#aadfa4fe6eac47d5d53ec9532e9e35c01',1,'arith_uint512']]]
 ];

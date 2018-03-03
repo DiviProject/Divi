@@ -4406,7 +4406,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
 </context>
 <context>
-    <name>ZPivControlDialog</name>
+    <name>ZDivControlDialog</name>
     <message>
         <source>Select zDiv to Spend</source>
         <translation>전송할 zPIV 선택</translation>

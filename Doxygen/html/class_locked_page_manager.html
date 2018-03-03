@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: LockedPageManager Class Reference</title>
+<title>DIVX: LockedPageManager Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -63,56 +66,231 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-static-methods">Static Private Member Functions</a> &#124;
+<a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="class_locked_page_manager-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">LockedPageManager Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>Singleton class to keep track of locked (ie, non-swappable) memory pages, for use in std::allocator templates.  
+ <a href="class_locked_page_manager.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="allocators_8h_source.html">allocators.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for LockedPageManager:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_locked_page_manager.png" usemap="#LockedPageManager_map" alt=""/>
-  <map id="LockedPageManager_map" name="LockedPageManager_map">
-<area href="class_locked_page_manager_base.html" alt="LockedPageManagerBase&lt; MemoryPageLocker &gt;" shape="rect" coords="0,0,299,24"/>
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for LockedPageManager:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ac9b1d42d240dba4714a35fff970b6dde"><td class="memItemLeft" align="right" valign="top"><a id="ac9b1d42d240dba4714a35fff970b6dde"></a>
-static <a class="el" href="class_locked_page_manager.html">LockedPageManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Instance</b> ()</td></tr>
+<tr class="memitem:ac9b1d42d240dba4714a35fff970b6dde"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_locked_page_manager.html">LockedPageManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager.html#ac9b1d42d240dba4714a35fff970b6dde">Instance</a> ()</td></tr>
 <tr class="separator:ac9b1d42d240dba4714a35fff970b6dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a2314ed1fc7851a67384fbc2b3656b259"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager.html#a2314ed1fc7851a67384fbc2b3656b259">LockedPageManager</a> ()</td></tr>
+<tr class="separator:a2314ed1fc7851a67384fbc2b3656b259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
+Static Private Member Functions</h2></td></tr>
+<tr class="memitem:a3933ba60669b1c1b0ef03222637257e7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager.html#a3933ba60669b1c1b0ef03222637257e7">CreateInstance</a> ()</td></tr>
+<tr class="separator:a3933ba60669b1c1b0ef03222637257e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
+Static Private Attributes</h2></td></tr>
+<tr class="memitem:a28548f50fe302a322444c1cfe2a83487"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_locked_page_manager.html">LockedPageManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager.html#a28548f50fe302a322444c1cfe2a83487">_instance</a> = NULL</td></tr>
+<tr class="separator:a28548f50fe302a322444c1cfe2a83487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a081452980235d98b2269c34f094f300e"><td class="memItemLeft" align="right" valign="top">static boost::once_flag&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager.html#a081452980235d98b2269c34f094f300e">init_flag</a> = BOOST_ONCE_INIT</td></tr>
+<tr class="separator:a081452980235d98b2269c34f094f300e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_methods_class_locked_page_manager_base"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_locked_page_manager_base')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_locked_page_manager_base.html">LockedPageManagerBase&lt; MemoryPageLocker &gt;</a></td></tr>
-<tr class="memitem:ad1974eafb41a3cae3358e34b7896419a inherit pub_methods_class_locked_page_manager_base"><td class="memItemLeft" align="right" valign="top"><a id="ad1974eafb41a3cae3358e34b7896419a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>LockedPageManagerBase</b> (size_t page_size)</td></tr>
+<tr class="memitem:ad1974eafb41a3cae3358e34b7896419a inherit pub_methods_class_locked_page_manager_base"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager_base.html#ad1974eafb41a3cae3358e34b7896419a">LockedPageManagerBase</a> (size_t <a class="el" href="class_locked_page_manager_base.html#af485e095ca992fa134d5a441accfbf21">page_size</a>)</td></tr>
 <tr class="separator:ad1974eafb41a3cae3358e34b7896419a inherit pub_methods_class_locked_page_manager_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae24ac08899505b892d451404133fa494 inherit pub_methods_class_locked_page_manager_base"><td class="memItemLeft" align="right" valign="top"><a id="ae24ac08899505b892d451404133fa494"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>LockRange</b> (void *p, size_t size)</td></tr>
+<tr class="memitem:af57e9c9ea40884e105b25415148ee1d6 inherit pub_methods_class_locked_page_manager_base"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager_base.html#af57e9c9ea40884e105b25415148ee1d6">~LockedPageManagerBase</a> ()</td></tr>
+<tr class="separator:af57e9c9ea40884e105b25415148ee1d6 inherit pub_methods_class_locked_page_manager_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae24ac08899505b892d451404133fa494 inherit pub_methods_class_locked_page_manager_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager_base.html#ae24ac08899505b892d451404133fa494">LockRange</a> (void *p, size_t size)</td></tr>
 <tr class="separator:ae24ac08899505b892d451404133fa494 inherit pub_methods_class_locked_page_manager_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34bcf7b9120295ed178fe9545ed229af inherit pub_methods_class_locked_page_manager_base"><td class="memItemLeft" align="right" valign="top"><a id="a34bcf7b9120295ed178fe9545ed229af"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>UnlockRange</b> (void *p, size_t size)</td></tr>
+<tr class="memitem:a34bcf7b9120295ed178fe9545ed229af inherit pub_methods_class_locked_page_manager_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager_base.html#a34bcf7b9120295ed178fe9545ed229af">UnlockRange</a> (void *p, size_t size)</td></tr>
 <tr class="separator:a34bcf7b9120295ed178fe9545ed229af inherit pub_methods_class_locked_page_manager_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8074f7d1b43cc8dd34b3ba9cdb2eca50 inherit pub_methods_class_locked_page_manager_base"><td class="memItemLeft" align="right" valign="top"><a id="a8074f7d1b43cc8dd34b3ba9cdb2eca50"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetLockedPageCount</b> ()</td></tr>
+<tr class="memitem:a8074f7d1b43cc8dd34b3ba9cdb2eca50 inherit pub_methods_class_locked_page_manager_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_locked_page_manager_base.html#a8074f7d1b43cc8dd34b3ba9cdb2eca50">GetLockedPageCount</a> ()</td></tr>
 <tr class="separator:a8074f7d1b43cc8dd34b3ba9cdb2eca50 inherit pub_methods_class_locked_page_manager_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Singleton class to keep track of locked (ie, non-swappable) memory pages, for use in std::allocator templates.</p>
-<p>Some implementations of the STL allocate memory in some constructors (i.e., see MSVC's vector&lt;T&gt; implementation where it allocates 1 byte of memory in the allocator.) Due to the unpredictable order of static initializers, we have to make sure the <a class="el" href="class_locked_page_manager.html">LockedPageManager</a> instance exists before any other STL-based objects that use <a class="el" href="structsecure__allocator.html">secure_allocator</a> are created. So instead of having <a class="el" href="class_locked_page_manager.html">LockedPageManager</a> also be static-initialized, it is created on demand. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="allocators_8h_source.html">allocators.h</a></li>
-<li>PIVX/src/allocators.cpp</li>
+<div class="textblock"><p>Singleton class to keep track of locked (ie, non-swappable) memory pages, for use in std::allocator templates. </p>
+<p>Some implementations of the STL allocate memory in some constructors (i.e., see MSVC's vector&lt;T&gt; implementation where it allocates 1 byte of memory in the allocator.) Due to the unpredictable order of static initializers, we have to make sure the <a class="el" href="class_locked_page_manager.html" title="Singleton class to keep track of locked (ie, non-swappable) memory pages, for use in std::allocator t...">LockedPageManager</a> instance exists before any other STL-based objects that use <a class="el" href="structsecure__allocator.html">secure_allocator</a> are created. So instead of having <a class="el" href="class_locked_page_manager.html" title="Singleton class to keep track of locked (ie, non-swappable) memory pages, for use in std::allocator t...">LockedPageManager</a> also be static-initialized, it is created on demand. </p>
+
+<p class="definition">Definition at line <a class="el" href="allocators_8h_source.html#l00136">136</a> of file <a class="el" href="allocators_8h_source.html">allocators.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a2314ed1fc7851a67384fbc2b3656b259"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2314ed1fc7851a67384fbc2b3656b259">&#9670;&nbsp;</a></span>LockedPageManager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">LockedPageManager::LockedPageManager </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="allocators_8cpp_source.html#l00064">64</a> of file <a class="el" href="allocators_8cpp_source.html">allocators.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a3933ba60669b1c1b0ef03222637257e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3933ba60669b1c1b0ef03222637257e7">&#9670;&nbsp;</a></span>CreateInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void LockedPageManager::CreateInstance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="allocators_8h_source.html#l00148">148</a> of file <a class="el" href="allocators_8h_source.html">allocators.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac9b1d42d240dba4714a35fff970b6dde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9b1d42d240dba4714a35fff970b6dde">&#9670;&nbsp;</a></span>Instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_locked_page_manager.html">LockedPageManager</a>&amp; LockedPageManager::Instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="allocators_8h_source.html#l00139">139</a> of file <a class="el" href="allocators_8h_source.html">allocators.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a28548f50fe302a322444c1cfe2a83487"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28548f50fe302a322444c1cfe2a83487">&#9670;&nbsp;</a></span>_instance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_locked_page_manager.html">LockedPageManager</a> * LockedPageManager::_instance = NULL</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="allocators_8h_source.html#l00159">159</a> of file <a class="el" href="allocators_8h_source.html">allocators.h</a>.</p>
+
+</div>
+</div>
+<a id="a081452980235d98b2269c34f094f300e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a081452980235d98b2269c34f094f300e">&#9670;&nbsp;</a></span>init_flag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">boost::once_flag LockedPageManager::init_flag = BOOST_ONCE_INIT</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="allocators_8h_source.html#l00160">160</a> of file <a class="el" href="allocators_8h_source.html">allocators.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>src/<a class="el" href="allocators_8h_source.html">allocators.h</a></li>
+<li>src/<a class="el" href="allocators_8cpp_source.html">allocators.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: PIVX/src/utilmoneystr.h Source File</title>
+<title>DIVX: src/utilmoneystr.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -61,7 +64,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_99392e72b35c7f25e8ea4b7ee23fbaff.html">PIVX</a></li><li class="navelem"><a class="el" href="dir_2daf99c3a7cf26bd67a6e059ee4a1333.html">src</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -69,10 +72,14 @@ $(function() {
 <div class="title">utilmoneystr.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// Copyright (c) 2009-2010 Satoshi Nakamoto</span></div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// Copyright (c) 2009-2014 The Bitcoin developers</span></div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Distributed under the MIT software license, see the accompanying</span></div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// file COPYING or http://www.opensource.org/licenses/mit-license.php.</span></div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef BITCOIN_UTILMONEYSTR_H</span></div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define BITCOIN_UTILMONEYSTR_H</span></div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;amount.h&quot;</span></div><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;std::string FormatMoney(<span class="keyword">const</span> CAmount&amp; n, <span class="keywordtype">bool</span> fPlus = <span class="keyword">false</span>);</div><div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keywordtype">bool</span> ParseMoney(<span class="keyword">const</span> std::string&amp; str, CAmount&amp; nRet);</div><div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">bool</span> ParseMoney(<span class="keyword">const</span> <span class="keywordtype">char</span>* pszIn, CAmount&amp; nRet);</div><div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#endif // BITCOIN_UTILMONEYSTR_H</span></div></div><!-- fragment --></div><!-- contents -->
+<a href="utilmoneystr_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">// Copyright (c) 2009-2010 Satoshi Nakamoto</span></div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// Copyright (c) 2009-2014 The Bitcoin developers</span></div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Distributed under the MIT software license, see the accompanying</span></div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// file COPYING or http://www.opensource.org/licenses/mit-license.php.</span></div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef BITCOIN_UTILMONEYSTR_H</span></div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define BITCOIN_UTILMONEYSTR_H</span></div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="amount_8h.html">amount.h</a>&quot;</span></div><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;std::string <a class="code" href="utilmoneystr_8h.html#adee3e4fe76d08c7b524a8562b4b2fda8">FormatMoney</a>(<span class="keyword">const</span> <a class="code" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&amp; n, <span class="keywordtype">bool</span> fPlus = <span class="keyword">false</span>);</div><div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="utilmoneystr_8h.html#a1de857cb71a01a4104d131dc7c7b6b76">ParseMoney</a>(<span class="keyword">const</span> std::string&amp; str, <a class="code" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&amp; nRet);</div><div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="utilmoneystr_8h.html#a1de857cb71a01a4104d131dc7c7b6b76">ParseMoney</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* pszIn, <a class="code" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&amp; nRet);</div><div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#endif // BITCOIN_UTILMONEYSTR_H</span></div><div class="ttc" id="amount_8h_html_a4eaf3a5239714d8c45b851527f7cb564"><div class="ttname"><a href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a></div><div class="ttdeci">int64_t CAmount</div><div class="ttdef"><b>Definition:</b> <a href="amount_8h_source.html#l00014">amount.h:14</a></div></div>
+<div class="ttc" id="utilmoneystr_8h_html_a1de857cb71a01a4104d131dc7c7b6b76"><div class="ttname"><a href="utilmoneystr_8h.html#a1de857cb71a01a4104d131dc7c7b6b76">ParseMoney</a></div><div class="ttdeci">bool ParseMoney(const std::string &amp;str, CAmount &amp;nRet)</div></div>
+<div class="ttc" id="amount_8h_html"><div class="ttname"><a href="amount_8h.html">amount.h</a></div></div>
+<div class="ttc" id="utilmoneystr_8h_html_adee3e4fe76d08c7b524a8562b4b2fda8"><div class="ttname"><a href="utilmoneystr_8h.html#adee3e4fe76d08c7b524a8562b4b2fda8">FormatMoney</a></div><div class="ttdeci">std::string FormatMoney(const CAmount &amp;n, bool fPlus=false)</div><div class="ttdoc">Money parsing/formatting utilities. </div><div class="ttdef"><b>Definition:</b> <a href="utilmoneystr_8cpp_source.html#l00014">utilmoneystr.cpp:14</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:22 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

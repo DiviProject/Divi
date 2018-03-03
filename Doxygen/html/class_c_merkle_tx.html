@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: CMerkleTx Class Reference</title>
+<title>DIVX: CMerkleTx Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -64,169 +67,294 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="class_c_merkle_tx-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CMerkleTx Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>A transaction with a merkle branch linking it to the block chain.  
+ <a href="class_c_merkle_tx.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="wallet_8h_source.html">wallet.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for CMerkleTx:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_c_merkle_tx.png" usemap="#CMerkleTx_map" alt=""/>
-  <map id="CMerkleTx_map" name="CMerkleTx_map">
-<area href="class_c_transaction.html" alt="CTransaction" shape="rect" coords="0,0,87,24"/>
-<area href="class_c_wallet_tx.html" alt="CWalletTx" shape="rect" coords="0,112,87,136"/>
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for CMerkleTx:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aaf4aeddb032c6bb34559fa443bfc3476"><td class="memItemLeft" align="right" valign="top"><a id="aaf4aeddb032c6bb34559fa443bfc3476"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CMerkleTx</b> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;txIn)</td></tr>
+<tr class="memitem:a381bb26e9a8924b8a1311d45dfd18809"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a381bb26e9a8924b8a1311d45dfd18809">CMerkleTx</a> ()</td></tr>
+<tr class="separator:a381bb26e9a8924b8a1311d45dfd18809"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4aeddb032c6bb34559fa443bfc3476"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#aaf4aeddb032c6bb34559fa443bfc3476">CMerkleTx</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;txIn)</td></tr>
 <tr class="separator:aaf4aeddb032c6bb34559fa443bfc3476"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac57628e321f98642976d06b6cc231162"><td class="memItemLeft" align="right" valign="top"><a id="ac57628e321f98642976d06b6cc231162"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> ()</td></tr>
+<tr class="memitem:ac57628e321f98642976d06b6cc231162"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#ac57628e321f98642976d06b6cc231162">Init</a> ()</td></tr>
 <tr class="separator:ac57628e321f98642976d06b6cc231162"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afefd3a26c9505f1fa81587c19c22f09c"><td class="memTemplParams" colspan="2"><a id="afefd3a26c9505f1fa81587c19c22f09c"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:afefd3a26c9505f1fa81587c19c22f09c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:afefd3a26c9505f1fa81587c19c22f09c"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:afefd3a26c9505f1fa81587c19c22f09c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#afefd3a26c9505f1fa81587c19c22f09c">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int <a class="el" href="class_c_transaction.html#abda727662de83b84dc2ef56d30690cb1">nVersion</a>)</td></tr>
 <tr class="separator:afefd3a26c9505f1fa81587c19c22f09c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a538ba1b6faedbb447cb45ac7019b6f47"><td class="memItemLeft" align="right" valign="top"><a id="a538ba1b6faedbb447cb45ac7019b6f47"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>SetMerkleBranch</b> (const <a class="el" href="class_c_block.html">CBlock</a> &amp;block)</td></tr>
+<tr class="memitem:a538ba1b6faedbb447cb45ac7019b6f47"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a538ba1b6faedbb447cb45ac7019b6f47">SetMerkleBranch</a> (const <a class="el" href="class_c_block.html">CBlock</a> &amp;block)</td></tr>
 <tr class="separator:a538ba1b6faedbb447cb45ac7019b6f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bf3a355593ecce5799de92d013149b1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a5bf3a355593ecce5799de92d013149b1">GetDepthInMainChain</a> (const <a class="el" href="class_c_block_index.html">CBlockIndex</a> *&amp;pindexRet, bool enableIX=true) const</td></tr>
+<tr class="memdesc:a5bf3a355593ecce5799de92d013149b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return depth of transaction in blockchain: -1 : not in blockchain, and not in memory pool (conflicted transaction) 0 : in memory pool, waiting to be included in a block &gt;=1 : this many blocks deep in the main chain.  <a href="#a5bf3a355593ecce5799de92d013149b1">More...</a><br /></td></tr>
 <tr class="separator:a5bf3a355593ecce5799de92d013149b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62f6cd33580ca300867f63ce8f49a072"><td class="memItemLeft" align="right" valign="top"><a id="a62f6cd33580ca300867f63ce8f49a072"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetDepthInMainChain</b> (bool enableIX=true) const</td></tr>
+<tr class="memitem:a62f6cd33580ca300867f63ce8f49a072"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a62f6cd33580ca300867f63ce8f49a072">GetDepthInMainChain</a> (bool enableIX=true) const</td></tr>
 <tr class="separator:a62f6cd33580ca300867f63ce8f49a072"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4b3623fabf1924dba2a7694e3418e1e"><td class="memItemLeft" align="right" valign="top"><a id="ad4b3623fabf1924dba2a7694e3418e1e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsInMainChain</b> () const</td></tr>
+<tr class="memitem:ad4b3623fabf1924dba2a7694e3418e1e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#ad4b3623fabf1924dba2a7694e3418e1e">IsInMainChain</a> () const</td></tr>
 <tr class="separator:ad4b3623fabf1924dba2a7694e3418e1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69ebd437f7b44169659c3527fe73b6ab"><td class="memItemLeft" align="right" valign="top"><a id="a69ebd437f7b44169659c3527fe73b6ab"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetBlocksToMaturity</b> () const</td></tr>
+<tr class="memitem:a69ebd437f7b44169659c3527fe73b6ab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a69ebd437f7b44169659c3527fe73b6ab">GetBlocksToMaturity</a> () const</td></tr>
 <tr class="separator:a69ebd437f7b44169659c3527fe73b6ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61126e811a53b941b3efdf5a4e83db90"><td class="memItemLeft" align="right" valign="top"><a id="a61126e811a53b941b3efdf5a4e83db90"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>AcceptToMemoryPool</b> (bool fLimitFree=true, bool fRejectInsaneFee=true, bool ignoreFees=false)</td></tr>
+<tr class="memitem:a61126e811a53b941b3efdf5a4e83db90"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a61126e811a53b941b3efdf5a4e83db90">AcceptToMemoryPool</a> (bool fLimitFree=true, bool fRejectInsaneFee=true, bool ignoreFees=false)</td></tr>
 <tr class="separator:a61126e811a53b941b3efdf5a4e83db90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29ab20d0785095dba254ca1050ba6989"><td class="memItemLeft" align="right" valign="top"><a id="a29ab20d0785095dba254ca1050ba6989"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetTransactionLockSignatures</b> () const</td></tr>
+<tr class="memitem:a29ab20d0785095dba254ca1050ba6989"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a29ab20d0785095dba254ca1050ba6989">GetTransactionLockSignatures</a> () const</td></tr>
 <tr class="separator:a29ab20d0785095dba254ca1050ba6989"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72a7897d620c425280a4af4db87e3601"><td class="memItemLeft" align="right" valign="top"><a id="a72a7897d620c425280a4af4db87e3601"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsTransactionLockTimedOut</b> () const</td></tr>
+<tr class="memitem:a72a7897d620c425280a4af4db87e3601"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a72a7897d620c425280a4af4db87e3601">IsTransactionLockTimedOut</a> () const</td></tr>
 <tr class="separator:a72a7897d620c425280a4af4db87e3601"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_c_transaction"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_c_transaction')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_c_transaction.html">CTransaction</a></td></tr>
 <tr class="memitem:a41717180530fca69eb0163c1024ae286 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a41717180530fca69eb0163c1024ae286">CTransaction</a> ()</td></tr>
+<tr class="memdesc:a41717180530fca69eb0163c1024ae286 inherit pub_methods_class_c_transaction"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ...">CTransaction</a> that qualifies as <a class="el" href="class_c_transaction.html#a52965f371d2d3f723e88e60c8e68d6d0">IsNull()</a>  <a href="class_c_transaction.html#a41717180530fca69eb0163c1024ae286">More...</a><br /></td></tr>
 <tr class="separator:a41717180530fca69eb0163c1024ae286 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6607e95af3e2851ee3b7fe335a05eb4c inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a6607e95af3e2851ee3b7fe335a05eb4c">CTransaction</a> (const <a class="el" href="struct_c_mutable_transaction.html">CMutableTransaction</a> &amp;tx)</td></tr>
+<tr class="memdesc:a6607e95af3e2851ee3b7fe335a05eb4c inherit pub_methods_class_c_transaction"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a <a class="el" href="struct_c_mutable_transaction.html" title="A mutable version of CTransaction. ">CMutableTransaction</a> into a <a class="el" href="class_c_transaction.html" title="The basic transaction that is broadcasted on the network and contained in blocks. ...">CTransaction</a>.  <a href="class_c_transaction.html#a6607e95af3e2851ee3b7fe335a05eb4c">More...</a><br /></td></tr>
 <tr class="separator:a6607e95af3e2851ee3b7fe335a05eb4c inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93a05df7088ebef96adb2ea0442380e8 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a93a05df7088ebef96adb2ea0442380e8"></a>
-<a class="el" href="class_c_transaction.html">CTransaction</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx)</td></tr>
+<tr class="memitem:a93a05df7088ebef96adb2ea0442380e8 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_transaction.html">CTransaction</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a93a05df7088ebef96adb2ea0442380e8">operator=</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx)</td></tr>
 <tr class="separator:a93a05df7088ebef96adb2ea0442380e8 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa79659fab1e973a058494393209b0a59 inherit pub_methods_class_c_transaction"><td class="memTemplParams" colspan="2"><a id="aa79659fab1e973a058494393209b0a59"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:aa79659fab1e973a058494393209b0a59 inherit pub_methods_class_c_transaction"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:aa79659fab1e973a058494393209b0a59 inherit pub_methods_class_c_transaction"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:aa79659fab1e973a058494393209b0a59 inherit pub_methods_class_c_transaction"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#aa79659fab1e973a058494393209b0a59">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int <a class="el" href="class_c_transaction.html#abda727662de83b84dc2ef56d30690cb1">nVersion</a>)</td></tr>
 <tr class="separator:aa79659fab1e973a058494393209b0a59 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52965f371d2d3f723e88e60c8e68d6d0 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a52965f371d2d3f723e88e60c8e68d6d0"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsNull</b> () const</td></tr>
+<tr class="memitem:a52965f371d2d3f723e88e60c8e68d6d0 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a52965f371d2d3f723e88e60c8e68d6d0">IsNull</a> () const</td></tr>
 <tr class="separator:a52965f371d2d3f723e88e60c8e68d6d0 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7efd1379de830341417c0bfa23a149aa inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a7efd1379de830341417c0bfa23a149aa"></a>
-const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetHash</b> () const</td></tr>
+<tr class="memitem:a7efd1379de830341417c0bfa23a149aa inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classuint256.html">uint256</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a7efd1379de830341417c0bfa23a149aa">GetHash</a> () const</td></tr>
 <tr class="separator:a7efd1379de830341417c0bfa23a149aa inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4ce691dbb2ce32838d94d15801f6644 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="aa4ce691dbb2ce32838d94d15801f6644"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>GetValueOut</b> () const</td></tr>
+<tr class="memitem:aa4ce691dbb2ce32838d94d15801f6644 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#aa4ce691dbb2ce32838d94d15801f6644">GetValueOut</a> () const</td></tr>
 <tr class="separator:aa4ce691dbb2ce32838d94d15801f6644 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adccb264c374e4ad57e699947540256f8 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="adccb264c374e4ad57e699947540256f8"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>ComputePriority</b> (double dPriorityInputs, unsigned int nTxSize=0) const</td></tr>
+<tr class="memitem:adccb264c374e4ad57e699947540256f8 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#adccb264c374e4ad57e699947540256f8">ComputePriority</a> (double dPriorityInputs, unsigned int nTxSize=0) const</td></tr>
 <tr class="separator:adccb264c374e4ad57e699947540256f8 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a001aa818efad11751db060dd447dc28b inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a001aa818efad11751db060dd447dc28b"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>CalculateModifiedSize</b> (unsigned int nTxSize=0) const</td></tr>
+<tr class="memitem:a001aa818efad11751db060dd447dc28b inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a001aa818efad11751db060dd447dc28b">CalculateModifiedSize</a> (unsigned int nTxSize=0) const</td></tr>
 <tr class="separator:a001aa818efad11751db060dd447dc28b inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cda5603795c5f9179d4c8bd43f809cd inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a4cda5603795c5f9179d4c8bd43f809cd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsZerocoinSpend</b> () const</td></tr>
+<tr class="memitem:a4cda5603795c5f9179d4c8bd43f809cd inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a4cda5603795c5f9179d4c8bd43f809cd">IsZerocoinSpend</a> () const</td></tr>
 <tr class="separator:a4cda5603795c5f9179d4c8bd43f809cd inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab91efb1c2312e6feeecfbbfff11abbb1 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="ab91efb1c2312e6feeecfbbfff11abbb1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsZerocoinMint</b> () const</td></tr>
+<tr class="memitem:ab91efb1c2312e6feeecfbbfff11abbb1 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#ab91efb1c2312e6feeecfbbfff11abbb1">IsZerocoinMint</a> () const</td></tr>
 <tr class="separator:ab91efb1c2312e6feeecfbbfff11abbb1 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a613051e8e5651a7500cb455f37dd1116 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a613051e8e5651a7500cb455f37dd1116"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ContainsZerocoins</b> () const</td></tr>
+<tr class="memitem:a613051e8e5651a7500cb455f37dd1116 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a613051e8e5651a7500cb455f37dd1116">ContainsZerocoins</a> () const</td></tr>
 <tr class="separator:a613051e8e5651a7500cb455f37dd1116 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1af92675c3c7414013cc435bfb73f1e4 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a1af92675c3c7414013cc435bfb73f1e4"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>GetZerocoinMinted</b> () const</td></tr>
+<tr class="memitem:a1af92675c3c7414013cc435bfb73f1e4 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a1af92675c3c7414013cc435bfb73f1e4">GetZerocoinMinted</a> () const</td></tr>
 <tr class="separator:a1af92675c3c7414013cc435bfb73f1e4 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a531f3c53fe315296726dcdbf0b22f1dc inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a531f3c53fe315296726dcdbf0b22f1dc"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>GetZerocoinSpent</b> () const</td></tr>
+<tr class="memitem:a531f3c53fe315296726dcdbf0b22f1dc inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a531f3c53fe315296726dcdbf0b22f1dc">GetZerocoinSpent</a> () const</td></tr>
 <tr class="separator:a531f3c53fe315296726dcdbf0b22f1dc inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad685ade63504acb100d26535037a7ed2 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="ad685ade63504acb100d26535037a7ed2"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetZerocoinMintCount</b> () const</td></tr>
+<tr class="memitem:ad685ade63504acb100d26535037a7ed2 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#ad685ade63504acb100d26535037a7ed2">GetZerocoinMintCount</a> () const</td></tr>
 <tr class="separator:ad685ade63504acb100d26535037a7ed2 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a332488544b143d4409d0ce50acaa80b6 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a332488544b143d4409d0ce50acaa80b6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>UsesUTXO</b> (const <a class="el" href="class_c_out_point.html">COutPoint</a> out)</td></tr>
+<tr class="memitem:a332488544b143d4409d0ce50acaa80b6 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a332488544b143d4409d0ce50acaa80b6">UsesUTXO</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> out)</td></tr>
 <tr class="separator:a332488544b143d4409d0ce50acaa80b6 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3041c099eb8b4e019c26468099dcdb5 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="ac3041c099eb8b4e019c26468099dcdb5"></a>
-std::list&lt; <a class="el" href="class_c_out_point.html">COutPoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetOutPoints</b> () const</td></tr>
+<tr class="memitem:ac3041c099eb8b4e019c26468099dcdb5 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">std::list&lt; <a class="el" href="class_c_out_point.html">COutPoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#ac3041c099eb8b4e019c26468099dcdb5">GetOutPoints</a> () const</td></tr>
 <tr class="separator:ac3041c099eb8b4e019c26468099dcdb5 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96256e8ac1bf79ad9c057e48c41132dd inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a96256e8ac1bf79ad9c057e48c41132dd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsCoinBase</b> () const</td></tr>
+<tr class="memitem:a96256e8ac1bf79ad9c057e48c41132dd inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a96256e8ac1bf79ad9c057e48c41132dd">IsCoinBase</a> () const</td></tr>
 <tr class="separator:a96256e8ac1bf79ad9c057e48c41132dd inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace4278a41a296d40dcf5fb2b9cf007ec inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="ace4278a41a296d40dcf5fb2b9cf007ec"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsCoinStake</b> () const</td></tr>
+<tr class="memitem:ace4278a41a296d40dcf5fb2b9cf007ec inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#ace4278a41a296d40dcf5fb2b9cf007ec">IsCoinStake</a> () const</td></tr>
 <tr class="separator:ace4278a41a296d40dcf5fb2b9cf007ec inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80370923c3ac828de68919295d5d0659 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a80370923c3ac828de68919295d5d0659"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToString</b> () const</td></tr>
+<tr class="memitem:a80370923c3ac828de68919295d5d0659 inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a80370923c3ac828de68919295d5d0659">ToString</a> () const</td></tr>
 <tr class="separator:a80370923c3ac828de68919295d5d0659 inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1038c65bb9818f07fefe6161af88e48f inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a1038c65bb9818f07fefe6161af88e48f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>GetCoinAge</b> (uint64_t &amp;nCoinAge) const</td></tr>
+<tr class="memitem:a1038c65bb9818f07fefe6161af88e48f inherit pub_methods_class_c_transaction"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a1038c65bb9818f07fefe6161af88e48f">GetCoinAge</a> (uint64_t &amp;nCoinAge) const</td></tr>
 <tr class="separator:a1038c65bb9818f07fefe6161af88e48f inherit pub_methods_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a788ee54c14b6d9706eb3737404663238"><td class="memItemLeft" align="right" valign="top"><a id="a788ee54c14b6d9706eb3737404663238"></a>
-<a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><b>hashBlock</b></td></tr>
+<tr class="memitem:a788ee54c14b6d9706eb3737404663238"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classuint256.html">uint256</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a788ee54c14b6d9706eb3737404663238">hashBlock</a></td></tr>
 <tr class="separator:a788ee54c14b6d9706eb3737404663238"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ae6a408be914f486ebbb4161879ee69"><td class="memItemLeft" align="right" valign="top"><a id="a9ae6a408be914f486ebbb4161879ee69"></a>
-std::vector&lt; <a class="el" href="classuint256.html">uint256</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vMerkleBranch</b></td></tr>
+<tr class="memitem:a9ae6a408be914f486ebbb4161879ee69"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classuint256.html">uint256</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a9ae6a408be914f486ebbb4161879ee69">vMerkleBranch</a></td></tr>
 <tr class="separator:a9ae6a408be914f486ebbb4161879ee69"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a829655e70702fdf97b6e534dd3227b0b"><td class="memItemLeft" align="right" valign="top"><a id="a829655e70702fdf97b6e534dd3227b0b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>nIndex</b></td></tr>
+<tr class="memitem:a829655e70702fdf97b6e534dd3227b0b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a829655e70702fdf97b6e534dd3227b0b">nIndex</a></td></tr>
 <tr class="separator:a829655e70702fdf97b6e534dd3227b0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3626572f7dbb86eb1c36a6570d740c7f"><td class="memItemLeft" align="right" valign="top"><a id="a3626572f7dbb86eb1c36a6570d740c7f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>fMerkleVerified</b></td></tr>
+<tr class="memitem:a3626572f7dbb86eb1c36a6570d740c7f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a3626572f7dbb86eb1c36a6570d740c7f">fMerkleVerified</a></td></tr>
 <tr class="separator:a3626572f7dbb86eb1c36a6570d740c7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86d607a3e47700ed5ebcdd4d4fcda4d7"><td class="memItemLeft" align="right" valign="top"><a id="a86d607a3e47700ed5ebcdd4d4fcda4d7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:a86d607a3e47700ed5ebcdd4d4fcda4d7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#a86d607a3e47700ed5ebcdd4d4fcda4d7">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:a86d607a3e47700ed5ebcdd4d4fcda4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_class_c_transaction"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_class_c_transaction')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="class_c_transaction.html">CTransaction</a></td></tr>
-<tr class="memitem:abda727662de83b84dc2ef56d30690cb1 inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="abda727662de83b84dc2ef56d30690cb1"></a>
-const int32_t&#160;</td><td class="memItemRight" valign="bottom"><b>nVersion</b></td></tr>
+<tr class="memitem:abda727662de83b84dc2ef56d30690cb1 inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top">const int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#abda727662de83b84dc2ef56d30690cb1">nVersion</a></td></tr>
 <tr class="separator:abda727662de83b84dc2ef56d30690cb1 inherit pub_attribs_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53fa787e4ea57374b4fa2a28e9a957b2 inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a53fa787e4ea57374b4fa2a28e9a957b2"></a>
-std::vector&lt; <a class="el" href="class_c_tx_in.html">CTxIn</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vin</b></td></tr>
+<tr class="memitem:a53fa787e4ea57374b4fa2a28e9a957b2 inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_c_tx_in.html">CTxIn</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a53fa787e4ea57374b4fa2a28e9a957b2">vin</a></td></tr>
 <tr class="separator:a53fa787e4ea57374b4fa2a28e9a957b2 inherit pub_attribs_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae42c0032a464c3054c508017c7d040ef inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="ae42c0032a464c3054c508017c7d040ef"></a>
-std::vector&lt; <a class="el" href="class_c_tx_out.html">CTxOut</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>vout</b></td></tr>
+<tr class="memitem:ae42c0032a464c3054c508017c7d040ef inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_c_tx_out.html">CTxOut</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#ae42c0032a464c3054c508017c7d040ef">vout</a></td></tr>
 <tr class="separator:ae42c0032a464c3054c508017c7d040ef inherit pub_attribs_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54d5948c11f499b28276eab6bbfdf0c5 inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a54d5948c11f499b28276eab6bbfdf0c5"></a>
-const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>nLockTime</b></td></tr>
+<tr class="memitem:a54d5948c11f499b28276eab6bbfdf0c5 inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top">const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a54d5948c11f499b28276eab6bbfdf0c5">nLockTime</a></td></tr>
 <tr class="separator:a54d5948c11f499b28276eab6bbfdf0c5 inherit pub_attribs_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a329b40b323445b322ab460c966669944 inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="a329b40b323445b322ab460c966669944"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:a329b40b323445b322ab460c966669944 inherit pub_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#a329b40b323445b322ab460c966669944">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:a329b40b323445b322ab460c966669944 inherit pub_attribs_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:ada4285bcdc83c90dc5829d9902b1271c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_merkle_tx.html#ada4285bcdc83c90dc5829d9902b1271c">GetDepthInMainChainINTERNAL</a> (const <a class="el" href="class_c_block_index.html">CBlockIndex</a> *&amp;pindexRet) const</td></tr>
+<tr class="separator:ada4285bcdc83c90dc5829d9902b1271c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_static_attribs_class_c_transaction"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_class_c_transaction')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="class_c_transaction.html">CTransaction</a></td></tr>
-<tr class="memitem:afcc5960eab9d35f10c6f8e6675bf2a93 inherit pub_static_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top"><a id="afcc5960eab9d35f10c6f8e6675bf2a93"></a>
-static const int32_t&#160;</td><td class="memItemRight" valign="bottom"><b>CURRENT_VERSION</b> =1</td></tr>
+<tr class="memitem:afcc5960eab9d35f10c6f8e6675bf2a93 inherit pub_static_attribs_class_c_transaction"><td class="memItemLeft" align="right" valign="top">static const int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_transaction.html#afcc5960eab9d35f10c6f8e6675bf2a93">CURRENT_VERSION</a> =1</td></tr>
 <tr class="separator:afcc5960eab9d35f10c6f8e6675bf2a93 inherit pub_static_attribs_class_c_transaction"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A transaction with a merkle branch linking it to the block chain. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00697">697</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a381bb26e9a8924b8a1311d45dfd18809"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a381bb26e9a8924b8a1311d45dfd18809">&#9670;&nbsp;</a></span>CMerkleTx() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMerkleTx::CMerkleTx </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00711">711</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="aaf4aeddb032c6bb34559fa443bfc3476"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4aeddb032c6bb34559fa443bfc3476">&#9670;&nbsp;</a></span>CMerkleTx() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMerkleTx::CMerkleTx </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;&#160;</td>
+          <td class="paramname"><em>txIn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00716">716</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a61126e811a53b941b3efdf5a4e83db90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61126e811a53b941b3efdf5a4e83db90">&#9670;&nbsp;</a></span>AcceptToMemoryPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CMerkleTx::AcceptToMemoryPool </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fLimitFree</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fRejectInsaneFee</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ignoreFees</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8cpp_source.html#l03920">3920</a> of file <a class="el" href="wallet_8cpp_source.html">wallet.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a69ebd437f7b44169659c3527fe73b6ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69ebd437f7b44169659c3527fe73b6ab">&#9670;&nbsp;</a></span>GetBlocksToMaturity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CMerkleTx::GetBlocksToMaturity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8cpp_source.html#l03912">3912</a> of file <a class="el" href="wallet_8cpp_source.html">wallet.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+
+</div>
+</div>
 <a id="a5bf3a355593ecce5799de92d013149b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bf3a355593ecce5799de92d013149b1">&#9670;&nbsp;</a></span>GetDepthInMainChain()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bf3a355593ecce5799de92d013149b1">&#9670;&nbsp;</a></span>GetDepthInMainChain() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -250,18 +378,408 @@ static const int32_t&#160;</td><td class="memItemRight" valign="bottom"><b>CURRE
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return depth of transaction in blockchain: -1 : not in blockchain, and not in memory pool (conflicted transaction) 0 : in memory pool, waiting to be included in a block &gt;=1 : this many blocks deep in the main chain </p>
+
+<p>Return depth of transaction in blockchain: -1 : not in blockchain, and not in memory pool (conflicted transaction) 0 : in memory pool, waiting to be included in a block &gt;=1 : this many blocks deep in the main chain. </p>
+
+<p class="definition">Definition at line <a class="el" href="wallet_8cpp_source.html#l03893">3893</a> of file <a class="el" href="wallet_8cpp_source.html">wallet.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 9 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a62f6cd33580ca300867f63ce8f49a072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62f6cd33580ca300867f63ce8f49a072">&#9670;&nbsp;</a></span>GetDepthInMainChain() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CMerkleTx::GetDepthInMainChain </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enableIX</em> = <code>true</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00750">750</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 10 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ada4285bcdc83c90dc5829d9902b1271c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada4285bcdc83c90dc5829d9902b1271c">&#9670;&nbsp;</a></span>GetDepthInMainChainINTERNAL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CMerkleTx::GetDepthInMainChainINTERNAL </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_block_index.html">CBlockIndex</a> *&amp;&#160;</td>
+          <td class="paramname"><em>pindexRet</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8cpp_source.html#l03868">3868</a> of file <a class="el" href="wallet_8cpp_source.html">wallet.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 11 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 12 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a29ab20d0785095dba254ca1050ba6989"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29ab20d0785095dba254ca1050ba6989">&#9670;&nbsp;</a></span>GetTransactionLockSignatures()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CMerkleTx::GetTransactionLockSignatures </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8cpp_source.html#l03929">3929</a> of file <a class="el" href="wallet_8cpp_source.html">wallet.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 13 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 14 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac57628e321f98642976d06b6cc231162"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57628e321f98642976d06b6cc231162">&#9670;&nbsp;</a></span>Init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CMerkleTx::Init </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00721">721</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 15 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad4b3623fabf1924dba2a7694e3418e1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4b3623fabf1924dba2a7694e3418e1e">&#9670;&nbsp;</a></span>IsInMainChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CMerkleTx::IsInMainChain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00755">755</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 16 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 17 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a72a7897d620c425280a4af4db87e3601"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72a7897d620c425280a4af4db87e3601">&#9670;&nbsp;</a></span>IsTransactionLockTimedOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CMerkleTx::IsTransactionLockTimedOut </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8cpp_source.html#l03944">3944</a> of file <a class="el" href="wallet_8cpp_source.html">wallet.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 18 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="afefd3a26c9505f1fa81587c19c22f09c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afefd3a26c9505f1fa81587c19c22f09c">&#9670;&nbsp;</a></span>SerializationOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream , typename Operation &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CMerkleTx::SerializationOp </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Operation&#160;</td>
+          <td class="paramname"><em>ser_action</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00731">731</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+
+</div>
+</div>
+<a id="a538ba1b6faedbb447cb45ac7019b6f47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a538ba1b6faedbb447cb45ac7019b6f47">&#9670;&nbsp;</a></span>SetMerkleBranch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CMerkleTx::SetMerkleBranch </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_block.html">CBlock</a> &amp;&#160;</td>
+          <td class="paramname"><em>block</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8cpp_source.html#l03835">3835</a> of file <a class="el" href="wallet_8cpp_source.html">wallet.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 19 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 20 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a86d607a3e47700ed5ebcdd4d4fcda4d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86d607a3e47700ed5ebcdd4d4fcda4d7">&#9670;&nbsp;</a></span>ADD_SERIALIZE_METHODS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMerkleTx::ADD_SERIALIZE_METHODS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00728">728</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+
+</div>
+</div>
+<a id="a3626572f7dbb86eb1c36a6570d740c7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3626572f7dbb86eb1c36a6570d740c7f">&#9670;&nbsp;</a></span>fMerkleVerified</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CMerkleTx::fMerkleVerified</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00708">708</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+
+</div>
+</div>
+<a id="a788ee54c14b6d9706eb3737404663238"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a788ee54c14b6d9706eb3737404663238">&#9670;&nbsp;</a></span>hashBlock</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classuint256.html">uint256</a> CMerkleTx::hashBlock</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00703">703</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+
+</div>
+</div>
+<a id="a829655e70702fdf97b6e534dd3227b0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a829655e70702fdf97b6e534dd3227b0b">&#9670;&nbsp;</a></span>nIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CMerkleTx::nIndex</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00705">705</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
+
+</div>
+</div>
+<a id="a9ae6a408be914f486ebbb4161879ee69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ae6a408be914f486ebbb4161879ee69">&#9670;&nbsp;</a></span>vMerkleBranch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classuint256.html">uint256</a>&gt; CMerkleTx::vMerkleBranch</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="wallet_8h_source.html#l00704">704</a> of file <a class="el" href="wallet_8h_source.html">wallet.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/<a class="el" href="wallet_8h_source.html">wallet.h</a></li>
-<li>PIVX/src/wallet.cpp</li>
+<li>src/<a class="el" href="wallet_8h_source.html">wallet.h</a></li>
+<li>src/<a class="el" href="wallet_8cpp_source.html">wallet.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:27 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

@@ -4221,7 +4221,7 @@ Bitte haben Sie Geduld...</translation>
     </message>
 </context>
 <context>
-    <name>ZPivControlDialog</name>
+    <name>ZDivControlDialog</name>
     <message>
         <source>Select zDiv to Spend</source>
         <translation>Auswahl zPIV als Ausgabe</translation>

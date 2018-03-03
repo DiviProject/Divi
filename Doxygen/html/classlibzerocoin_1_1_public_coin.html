@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: libzerocoin::PublicCoin Class Reference</title>
+<title>DIVX: libzerocoin::PublicCoin Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -61,62 +64,138 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>libzerocoin</b></li><li class="navelem"><a class="el" href="classlibzerocoin_1_1_public_coin.html">PublicCoin</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacelibzerocoin.html">libzerocoin</a></li><li class="navelem"><a class="el" href="classlibzerocoin_1_1_public_coin.html">PublicCoin</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classlibzerocoin_1_1_public_coin-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">libzerocoin::PublicCoin Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>A Public coin is the part of a coin that is published to the network and what is handled by other clients.  
+ <a href="classlibzerocoin_1_1_public_coin.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_coin_8h_source.html">Coin.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for libzerocoin::PublicCoin:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad4544eb813805545f3cb16e75a110415"><td class="memTemplParams" colspan="2"><a id="ad4544eb813805545f3cb16e75a110415"></a>
-template&lt;typename Stream &gt; </td></tr>
-<tr class="memitem:ad4544eb813805545f3cb16e75a110415"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>PublicCoin</b> (const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a> *p, Stream &amp;strm)</td></tr>
+<tr class="memitem:ad4544eb813805545f3cb16e75a110415"><td class="memTemplParams" colspan="2">template&lt;typename Stream &gt; </td></tr>
+<tr class="memitem:ad4544eb813805545f3cb16e75a110415"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#ad4544eb813805545f3cb16e75a110415">PublicCoin</a> (const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a> *p, Stream &amp;strm)</td></tr>
 <tr class="separator:ad4544eb813805545f3cb16e75a110415"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d4568ae75e82a14be9d2b1e9e11b17f"><td class="memItemLeft" align="right" valign="top"><a id="a3d4568ae75e82a14be9d2b1e9e11b17f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PublicCoin</b> (const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a> *p)</td></tr>
+<tr class="memitem:a3d4568ae75e82a14be9d2b1e9e11b17f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a3d4568ae75e82a14be9d2b1e9e11b17f">PublicCoin</a> (const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a> *p)</td></tr>
 <tr class="separator:a3d4568ae75e82a14be9d2b1e9e11b17f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a514aa6588149238148c7cbae15181b1c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a514aa6588149238148c7cbae15181b1c">PublicCoin</a> (const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a> *p, const <a class="el" href="class_c_big_num.html">CBigNum</a> &amp;coin, const CoinDenomination d)</td></tr>
+<tr class="memitem:a514aa6588149238148c7cbae15181b1c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a514aa6588149238148c7cbae15181b1c">PublicCoin</a> (const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a> *p, const <a class="el" href="class_c_big_num.html">CBigNum</a> &amp;coin, const <a class="el" href="namespacelibzerocoin.html#a5ce9030ca9170bbb2d8f319b53ad1302">CoinDenomination</a> d)</td></tr>
+<tr class="memdesc:a514aa6588149238148c7cbae15181b1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a public coin.  <a href="#a514aa6588149238148c7cbae15181b1c">More...</a><br /></td></tr>
 <tr class="separator:a514aa6588149238148c7cbae15181b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf335a1f7458e510bf46a73611200b3b"><td class="memItemLeft" align="right" valign="top"><a id="abf335a1f7458e510bf46a73611200b3b"></a>
-const <a class="el" href="class_c_big_num.html">CBigNum</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getValue</b> () const</td></tr>
+<tr class="memitem:abf335a1f7458e510bf46a73611200b3b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_c_big_num.html">CBigNum</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#abf335a1f7458e510bf46a73611200b3b">getValue</a> () const</td></tr>
 <tr class="separator:abf335a1f7458e510bf46a73611200b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a150f84ac8998d73e223c74a311d48891"><td class="memItemLeft" align="right" valign="top"><a id="a150f84ac8998d73e223c74a311d48891"></a>
-CoinDenomination&#160;</td><td class="memItemRight" valign="bottom"><b>getDenomination</b> () const</td></tr>
+<tr class="memitem:a150f84ac8998d73e223c74a311d48891"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacelibzerocoin.html#a5ce9030ca9170bbb2d8f319b53ad1302">CoinDenomination</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a150f84ac8998d73e223c74a311d48891">getDenomination</a> () const</td></tr>
 <tr class="separator:a150f84ac8998d73e223c74a311d48891"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29c59b2fd71163c417eb35633fdf0e8c"><td class="memItemLeft" align="right" valign="top"><a id="a29c59b2fd71163c417eb35633fdf0e8c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classlibzerocoin_1_1_public_coin.html">PublicCoin</a> &amp;rhs) const</td></tr>
+<tr class="memitem:a29c59b2fd71163c417eb35633fdf0e8c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a29c59b2fd71163c417eb35633fdf0e8c">operator==</a> (const <a class="el" href="classlibzerocoin_1_1_public_coin.html">PublicCoin</a> &amp;rhs) const</td></tr>
 <tr class="separator:a29c59b2fd71163c417eb35633fdf0e8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b21e12acb24c79f5eb4688a39d637b9"><td class="memItemLeft" align="right" valign="top"><a id="a6b21e12acb24c79f5eb4688a39d637b9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classlibzerocoin_1_1_public_coin.html">PublicCoin</a> &amp;rhs) const</td></tr>
+<tr class="memitem:a6b21e12acb24c79f5eb4688a39d637b9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a6b21e12acb24c79f5eb4688a39d637b9">operator!=</a> (const <a class="el" href="classlibzerocoin_1_1_public_coin.html">PublicCoin</a> &amp;rhs) const</td></tr>
 <tr class="separator:a6b21e12acb24c79f5eb4688a39d637b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99e0a8bd9dcbb1ff210ea88595787d40"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a99e0a8bd9dcbb1ff210ea88595787d40">validate</a> () const</td></tr>
+<tr class="memdesc:a99e0a8bd9dcbb1ff210ea88595787d40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks that coin is prime and in the appropriate range given the parameters.  <a href="#a99e0a8bd9dcbb1ff210ea88595787d40">More...</a><br /></td></tr>
 <tr class="separator:a99e0a8bd9dcbb1ff210ea88595787d40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a122053f2a790814df042d8fd3eb4af2f"><td class="memTemplParams" colspan="2"><a id="a122053f2a790814df042d8fd3eb4af2f"></a>
-template&lt;typename Stream , typename Operation &gt; </td></tr>
-<tr class="memitem:a122053f2a790814df042d8fd3eb4af2f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SerializationOp</b> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
+<tr class="memitem:a122053f2a790814df042d8fd3eb4af2f"><td class="memTemplParams" colspan="2">template&lt;typename Stream , typename Operation &gt; </td></tr>
+<tr class="memitem:a122053f2a790814df042d8fd3eb4af2f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a122053f2a790814df042d8fd3eb4af2f">SerializationOp</a> (Stream &amp;s, Operation ser_action, int nType, int nVersion)</td></tr>
 <tr class="separator:a122053f2a790814df042d8fd3eb4af2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a68f14ce9969f6299301eed4d77082066"><td class="memItemLeft" align="right" valign="top"><a id="a68f14ce9969f6299301eed4d77082066"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ADD_SERIALIZE_METHODS</b></td></tr>
+<tr class="memitem:a68f14ce9969f6299301eed4d77082066"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a68f14ce9969f6299301eed4d77082066">ADD_SERIALIZE_METHODS</a></td></tr>
 <tr class="separator:a68f14ce9969f6299301eed4d77082066"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a6e54fae37356c20908d67205b6d3e287"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a6e54fae37356c20908d67205b6d3e287">params</a></td></tr>
+<tr class="separator:a6e54fae37356c20908d67205b6d3e287"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a843928ff3df4e5c0039691fc8ef61345"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_big_num.html">CBigNum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#a843928ff3df4e5c0039691fc8ef61345">value</a></td></tr>
+<tr class="separator:a843928ff3df4e5c0039691fc8ef61345"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedf938fea2b92e458c4c72a385e22d31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacelibzerocoin.html#a5ce9030ca9170bbb2d8f319b53ad1302">CoinDenomination</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlibzerocoin_1_1_public_coin.html#aedf938fea2b92e458c4c72a385e22d31">denomination</a></td></tr>
+<tr class="separator:aedf938fea2b92e458c4c72a385e22d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A Public coin is the part of a coin that is published to the network and what is handled by other clients. It contains only the value of commitment to a serial number and the denomination of the coin. </p>
+<div class="textblock"><p>A Public coin is the part of a coin that is published to the network and what is handled by other clients. </p>
+<p>It contains only the value of commitment to a serial number and the denomination of the coin. </p>
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00029">29</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ad4544eb813805545f3cb16e75a110415"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4544eb813805545f3cb16e75a110415">&#9670;&nbsp;</a></span>PublicCoin() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">libzerocoin::PublicCoin::PublicCoin </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a> *&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>strm</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00033">33</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+
+</div>
+</div>
+<a id="a3d4568ae75e82a14be9d2b1e9e11b17f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d4568ae75e82a14be9d2b1e9e11b17f">&#9670;&nbsp;</a></span>PublicCoin() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">libzerocoin::PublicCoin::PublicCoin </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a> *&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8cpp_source.html#l00023">23</a> of file <a class="el" href="_coin_8cpp_source.html">Coin.cpp</a>.</p>
+
+</div>
+</div>
 <a id="a514aa6588149238148c7cbae15181b1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a514aa6588149238148c7cbae15181b1c">&#9670;&nbsp;</a></span>PublicCoin()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a514aa6588149238148c7cbae15181b1c">&#9670;&nbsp;</a></span>PublicCoin() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -136,7 +215,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const CoinDenomination&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacelibzerocoin.html#a5ce9030ca9170bbb2d8f319b53ad1302">CoinDenomination</a>&#160;</td>
           <td class="paramname"><em>d</em>&#160;</td>
         </tr>
         <tr>
@@ -146,7 +225,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Generates a public coin</p>
+
+<p>Generates a public coin. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">p</td><td>cryptographic paramters </td></tr>
@@ -156,9 +236,185 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
+<p class="definition">Definition at line <a class="el" href="_coin_8cpp_source.html#l00032">32</a> of file <a class="el" href="_coin_8cpp_source.html">Coin.cpp</a>.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a150f84ac8998d73e223c74a311d48891"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a150f84ac8998d73e223c74a311d48891">&#9670;&nbsp;</a></span>getDenomination()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacelibzerocoin.html#a5ce9030ca9170bbb2d8f319b53ad1302">CoinDenomination</a> libzerocoin::PublicCoin::getDenomination </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00049">49</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="abf335a1f7458e510bf46a73611200b3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf335a1f7458e510bf46a73611200b3b">&#9670;&nbsp;</a></span>getValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_c_big_num.html">CBigNum</a>&amp; libzerocoin::PublicCoin::getValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00047">47</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6b21e12acb24c79f5eb4688a39d637b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b21e12acb24c79f5eb4688a39d637b9">&#9670;&nbsp;</a></span>operator!=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool libzerocoin::PublicCoin::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classlibzerocoin_1_1_public_coin.html">PublicCoin</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00054">54</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+
+</div>
+</div>
+<a id="a29c59b2fd71163c417eb35633fdf0e8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29c59b2fd71163c417eb35633fdf0e8c">&#9670;&nbsp;</a></span>operator==()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool libzerocoin::PublicCoin::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classlibzerocoin_1_1_public_coin.html">PublicCoin</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00050">50</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+
+</div>
+</div>
+<a id="a122053f2a790814df042d8fd3eb4af2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a122053f2a790814df042d8fd3eb4af2f">&#9670;&nbsp;</a></span>SerializationOp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Stream , typename Operation &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void libzerocoin::PublicCoin::SerializationOp </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Operation&#160;</td>
+          <td class="paramname"><em>ser_action</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00064">64</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+
+</div>
+</div>
 <a id="a99e0a8bd9dcbb1ff210ea88595787d40"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a99e0a8bd9dcbb1ff210ea88595787d40">&#9670;&nbsp;</a></span>validate()</h2>
 
@@ -181,18 +437,123 @@ Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Checks that coin is prime and in the appropriate range given the parameters </p><dl class="section return"><dt>Returns</dt><dd>true if valid </dd></dl>
+
+<p>Checks that coin is prime and in the appropriate range given the parameters. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if valid </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00058">58</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a68f14ce9969f6299301eed4d77082066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68f14ce9969f6299301eed4d77082066">&#9670;&nbsp;</a></span>ADD_SERIALIZE_METHODS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">libzerocoin::PublicCoin::ADD_SERIALIZE_METHODS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00062">62</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+
+</div>
+</div>
+<a id="aedf938fea2b92e458c4c72a385e22d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedf938fea2b92e458c4c72a385e22d31">&#9670;&nbsp;</a></span>denomination</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacelibzerocoin.html#a5ce9030ca9170bbb2d8f319b53ad1302">CoinDenomination</a> libzerocoin::PublicCoin::denomination</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00073">73</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+
+</div>
+</div>
+<a id="a6e54fae37356c20908d67205b6d3e287"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e54fae37356c20908d67205b6d3e287">&#9670;&nbsp;</a></span>params</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classlibzerocoin_1_1_zerocoin_params.html">ZerocoinParams</a>* libzerocoin::PublicCoin::params</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00071">71</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
+
+</div>
+</div>
+<a id="a843928ff3df4e5c0039691fc8ef61345"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a843928ff3df4e5c0039691fc8ef61345">&#9670;&nbsp;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_big_num.html">CBigNum</a> libzerocoin::PublicCoin::value</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_coin_8h_source.html#l00072">72</a> of file <a class="el" href="_coin_8h_source.html">Coin.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/libzerocoin/<a class="el" href="_coin_8h_source.html">Coin.h</a></li>
-<li>PIVX/src/libzerocoin/<a class="el" href="_coin_8cpp.html">Coin.cpp</a></li>
+<li>src/libzerocoin/<a class="el" href="_coin_8h_source.html">Coin.h</a></li>
+<li>src/libzerocoin/<a class="el" href="_coin_8cpp_source.html">Coin.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:29 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

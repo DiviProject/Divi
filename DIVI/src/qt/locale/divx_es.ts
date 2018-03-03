@@ -4230,7 +4230,7 @@ Por favor tenga paciencia...</translation>
     </message>
 </context>
 <context>
-    <name>ZPivControlDialog</name>
+    <name>ZDivControlDialog</name>
     <message>
         <source>Select zDiv to Spend</source>
         <translation>Seleccione zDiv a Gastar</translation>

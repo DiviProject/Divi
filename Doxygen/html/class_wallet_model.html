@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: WalletModel Class Reference</title>
+<title>DIVX: WalletModel Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -67,21 +70,30 @@ $(function() {
 <a href="#pub-slots">Public Slots</a> &#124;
 <a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_wallet_model-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">WalletModel Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>Interface to Bitcoin wallet from Qt view code.  
+ <a href="class_wallet_model.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for WalletModel:</div>
 <div class="dyncontent">
- <div class="center">
-  <img src="class_wallet_model.png" usemap="#WalletModel_map" alt=""/>
-  <map id="WalletModel_map" name="WalletModel_map">
-</map>
- </div></div>
+<div class="center"><!-- SVG 0 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for WalletModel:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -92,222 +104,2938 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:afb93f64411320dce4692c2190b7d35cc"><td class="memItemLeft" align="right" valign="top"><a id="afb93f64411320dce4692c2190b7d35cc"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>StatusCode</b> { <br />
-&#160;&#160;<b>OK</b>, 
-<b>InvalidAmount</b>, 
-<b>InvalidAddress</b>, 
-<b>AmountExceedsBalance</b>, 
+<tr class="memitem:afb93f64411320dce4692c2190b7d35cc"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35cc">StatusCode</a> { <br />
+&#160;&#160;<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35ccae8b83ccd04b2460f6ec5797b92776968">OK</a>, 
+<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35ccaaf7eb8f25529cc4d6b93a4a3440fc6c8">InvalidAmount</a>, 
+<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35cca449b63ba5da98abf17fab342d8b95fa2">InvalidAddress</a>, 
+<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35ccabdabf0af6ddd309de3aef879b2709404">AmountExceedsBalance</a>, 
 <br />
-&#160;&#160;<b>AmountWithFeeExceedsBalance</b>, 
-<b>DuplicateAddress</b>, 
-<b>TransactionCreationFailed</b>, 
-<b>TransactionCommitFailed</b>, 
+&#160;&#160;<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35cca1f91d49761f7c83d4a07a3755c48c04b">AmountWithFeeExceedsBalance</a>, 
+<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35ccac4b89d8f7cde6aa46fed5c881acd969e">DuplicateAddress</a>, 
+<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35cca56229944b246c4f5be6bea4ebfd8d0a4">TransactionCreationFailed</a>, 
+<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35ccad324cb5701b48fde6cfd00e6655e5025">TransactionCommitFailed</a>, 
 <br />
-&#160;&#160;<b>AnonymizeOnlyUnlocked</b>, 
-<b>InsaneFee</b>
+&#160;&#160;<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35ccaf665502b41b2622a55edf1addfc0edc1">AnonymizeOnlyUnlocked</a>, 
+<a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35cca5739212115015f9b4f6f1dce6cb93cc4">InsaneFee</a>
 <br />
  }</td></tr>
 <tr class="separator:afb93f64411320dce4692c2190b7d35cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58f6f0bb5a7b8b4e4d0812185ccc0616"><td class="memItemLeft" align="right" valign="top"><a id="a58f6f0bb5a7b8b4e4d0812185ccc0616"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>EncryptionStatus</b> { <b>Unencrypted</b>, 
-<b>Locked</b>, 
-<b>Unlocked</b>, 
-<b>UnlockedForAnonymizationOnly</b>
+<tr class="memitem:a58f6f0bb5a7b8b4e4d0812185ccc0616"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616">EncryptionStatus</a> { <a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616aab8ddcb74c78f880c81f610e327bdcd7">Unencrypted</a>, 
+<a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616a6f5de415aa862da098e05432b4ff2716">Locked</a>, 
+<a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616a60d7f605079e8e1738ba66d543467a3c">Unlocked</a>, 
+<a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616a57c50569d016aa2c2ecb2dd91f0054f7">UnlockedForAnonymizationOnly</a>
  }</td></tr>
 <tr class="separator:a58f6f0bb5a7b8b4e4d0812185ccc0616"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-slots"></a>
 Public Slots</h2></td></tr>
-<tr class="memitem:a89180a13e5b0c2ca7732164b9dec3806"><td class="memItemLeft" align="right" valign="top"><a id="a89180a13e5b0c2ca7732164b9dec3806"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateStatus</b> ()</td></tr>
+<tr class="memitem:a89180a13e5b0c2ca7732164b9dec3806"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a89180a13e5b0c2ca7732164b9dec3806">updateStatus</a> ()</td></tr>
 <tr class="separator:a89180a13e5b0c2ca7732164b9dec3806"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf4f77d87e8b96a704c79b1d6cb53701"><td class="memItemLeft" align="right" valign="top"><a id="acf4f77d87e8b96a704c79b1d6cb53701"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateTransaction</b> ()</td></tr>
+<tr class="memitem:acf4f77d87e8b96a704c79b1d6cb53701"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#acf4f77d87e8b96a704c79b1d6cb53701">updateTransaction</a> ()</td></tr>
 <tr class="separator:acf4f77d87e8b96a704c79b1d6cb53701"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad70ea697efb4d5bdc4a834b538b4d535"><td class="memItemLeft" align="right" valign="top"><a id="ad70ea697efb4d5bdc4a834b538b4d535"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateAddressBook</b> (const QString &amp;address, const QString &amp;label, bool isMine, const QString &amp;purpose, int status)</td></tr>
+<tr class="memitem:ad70ea697efb4d5bdc4a834b538b4d535"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ad70ea697efb4d5bdc4a834b538b4d535">updateAddressBook</a> (const QString &amp;address, const QString &amp;label, bool <a class="el" href="class_wallet_model.html#a67d21a04d6cb5b3e21e8aab75871ee57">isMine</a>, const QString &amp;purpose, int status)</td></tr>
 <tr class="separator:ad70ea697efb4d5bdc4a834b538b4d535"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79a1fadfcf09ffd4a6cc1396c753f49e"><td class="memItemLeft" align="right" valign="top"><a id="a79a1fadfcf09ffd4a6cc1396c753f49e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateAddressBook</b> (const QString &amp;pubCoin, const QString &amp;isUsed, int status)</td></tr>
+<tr class="memitem:a79a1fadfcf09ffd4a6cc1396c753f49e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a79a1fadfcf09ffd4a6cc1396c753f49e">updateAddressBook</a> (const QString &amp;pubCoin, const QString &amp;isUsed, int status)</td></tr>
 <tr class="separator:a79a1fadfcf09ffd4a6cc1396c753f49e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add90646b2ed03348dc2d6b415fa02a4e"><td class="memItemLeft" align="right" valign="top"><a id="add90646b2ed03348dc2d6b415fa02a4e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateWatchOnlyFlag</b> (bool fHaveWatchonly)</td></tr>
+<tr class="memitem:add90646b2ed03348dc2d6b415fa02a4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#add90646b2ed03348dc2d6b415fa02a4e">updateWatchOnlyFlag</a> (bool fHaveWatchonly)</td></tr>
 <tr class="separator:add90646b2ed03348dc2d6b415fa02a4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6082bb403560a4bfb88d3a42e7132ab4"><td class="memItemLeft" align="right" valign="top"><a id="a6082bb403560a4bfb88d3a42e7132ab4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateMultiSigFlag</b> (bool fHaveMultiSig)</td></tr>
+<tr class="memitem:a6082bb403560a4bfb88d3a42e7132ab4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a6082bb403560a4bfb88d3a42e7132ab4">updateMultiSigFlag</a> (bool <a class="el" href="class_wallet_model.html#a569c27f9a5ff551d237edcbb878207c8">fHaveMultiSig</a>)</td></tr>
 <tr class="separator:a6082bb403560a4bfb88d3a42e7132ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51469b2d95cfd4bc0a14ee456fca7b95"><td class="memItemLeft" align="right" valign="top"><a id="a51469b2d95cfd4bc0a14ee456fca7b95"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pollBalanceChanged</b> ()</td></tr>
+<tr class="memitem:a51469b2d95cfd4bc0a14ee456fca7b95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a51469b2d95cfd4bc0a14ee456fca7b95">pollBalanceChanged</a> ()</td></tr>
 <tr class="separator:a51469b2d95cfd4bc0a14ee456fca7b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
 Signals</h2></td></tr>
-<tr class="memitem:a06ef447cd32a737f77df483812b48f5c"><td class="memItemLeft" align="right" valign="top"><a id="a06ef447cd32a737f77df483812b48f5c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>balanceChanged</b> (const CAmount &amp;balance, const CAmount &amp;unconfirmedBalance, const CAmount &amp;immatureBalance, const CAmount &amp;zerocoinBalance, const CAmount &amp;unconfirmedZerocoinBalance, const CAmount &amp;immatureZerocoinBalance, const CAmount &amp;watchOnlyBalance, const CAmount &amp;watchUnconfBalance, const CAmount &amp;watchImmatureBalance)</td></tr>
+<tr class="memitem:a06ef447cd32a737f77df483812b48f5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a06ef447cd32a737f77df483812b48f5c">balanceChanged</a> (const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;balance, const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;unconfirmedBalance, const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;immatureBalance, const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;zerocoinBalance, const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;unconfirmedZerocoinBalance, const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;immatureZerocoinBalance, const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;watchOnlyBalance, const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;watchUnconfBalance, const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;watchImmatureBalance)</td></tr>
 <tr class="separator:a06ef447cd32a737f77df483812b48f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fc1b30b795f66ebed3e48db3a489876"><td class="memItemLeft" align="right" valign="top"><a id="a4fc1b30b795f66ebed3e48db3a489876"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>encryptionStatusChanged</b> (int status)</td></tr>
+<tr class="memitem:a4fc1b30b795f66ebed3e48db3a489876"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a4fc1b30b795f66ebed3e48db3a489876">encryptionStatusChanged</a> (int status)</td></tr>
 <tr class="separator:a4fc1b30b795f66ebed3e48db3a489876"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc639a99e4aa34f32110f6b2bdef2393"><td class="memItemLeft" align="right" valign="top"><a id="acc639a99e4aa34f32110f6b2bdef2393"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>requireUnlock</b> ()</td></tr>
+<tr class="memitem:acc639a99e4aa34f32110f6b2bdef2393"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#acc639a99e4aa34f32110f6b2bdef2393">requireUnlock</a> ()</td></tr>
 <tr class="separator:acc639a99e4aa34f32110f6b2bdef2393"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fc133a1c8712722db6607d067b58c6d"><td class="memItemLeft" align="right" valign="top"><a id="a6fc133a1c8712722db6607d067b58c6d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>message</b> (const QString &amp;title, const QString &amp;message, unsigned int style)</td></tr>
+<tr class="memitem:a6fc133a1c8712722db6607d067b58c6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a6fc133a1c8712722db6607d067b58c6d">message</a> (const QString &amp;title, const QString &amp;message, unsigned int style)</td></tr>
 <tr class="separator:a6fc133a1c8712722db6607d067b58c6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad625ad874bc4155e9300c222040eef66"><td class="memItemLeft" align="right" valign="top"><a id="ad625ad874bc4155e9300c222040eef66"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>coinsSent</b> (<a class="el" href="class_c_wallet.html">CWallet</a> *wallet, <a class="el" href="class_send_coins_recipient.html">SendCoinsRecipient</a> recipient, QByteArray transaction)</td></tr>
+<tr class="memitem:ad625ad874bc4155e9300c222040eef66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ad625ad874bc4155e9300c222040eef66">coinsSent</a> (<a class="el" href="class_c_wallet.html">CWallet</a> *<a class="el" href="class_wallet_model.html#abad281324f53ab4be68ba83cfb162bf3">wallet</a>, <a class="el" href="class_send_coins_recipient.html">SendCoinsRecipient</a> recipient, QByteArray transaction)</td></tr>
 <tr class="separator:ad625ad874bc4155e9300c222040eef66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c445e6ea25889e14542762e54ced44f"><td class="memItemLeft" align="right" valign="top"><a id="a6c445e6ea25889e14542762e54ced44f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>showProgress</b> (const QString &amp;title, int nProgress)</td></tr>
+<tr class="memitem:a6c445e6ea25889e14542762e54ced44f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a6c445e6ea25889e14542762e54ced44f">showProgress</a> (const QString &amp;title, int nProgress)</td></tr>
 <tr class="separator:a6c445e6ea25889e14542762e54ced44f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6568a470db58549d57c0ccf5d6b0d997"><td class="memItemLeft" align="right" valign="top"><a id="a6568a470db58549d57c0ccf5d6b0d997"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyWatchonlyChanged</b> (bool fHaveWatchonly)</td></tr>
+<tr class="memitem:a6568a470db58549d57c0ccf5d6b0d997"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a6568a470db58549d57c0ccf5d6b0d997">notifyWatchonlyChanged</a> (bool fHaveWatchonly)</td></tr>
 <tr class="separator:a6568a470db58549d57c0ccf5d6b0d997"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73065e2e6871f0207a107ffec6382ce5"><td class="memItemLeft" align="right" valign="top"><a id="a73065e2e6871f0207a107ffec6382ce5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyMultiSigChanged</b> (bool fHaveMultiSig)</td></tr>
+<tr class="memitem:a73065e2e6871f0207a107ffec6382ce5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a73065e2e6871f0207a107ffec6382ce5">notifyMultiSigChanged</a> (bool <a class="el" href="class_wallet_model.html#a569c27f9a5ff551d237edcbb878207c8">fHaveMultiSig</a>)</td></tr>
 <tr class="separator:a73065e2e6871f0207a107ffec6382ce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af50d9654d2f20e4e4f0789dcb64ad6b1"><td class="memItemLeft" align="right" valign="top"><a id="af50d9654d2f20e4e4f0789dcb64ad6b1"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>WalletModel</b> (<a class="el" href="class_c_wallet.html">CWallet</a> *wallet, <a class="el" href="class_options_model.html">OptionsModel</a> *optionsModel, QObject *parent=0)</td></tr>
+<tr class="memitem:af50d9654d2f20e4e4f0789dcb64ad6b1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1">WalletModel</a> (<a class="el" href="class_c_wallet.html">CWallet</a> *<a class="el" href="class_wallet_model.html#abad281324f53ab4be68ba83cfb162bf3">wallet</a>, <a class="el" href="class_options_model.html">OptionsModel</a> *<a class="el" href="class_wallet_model.html#a01d9aba010d85b79d46fe427919dbdc1">optionsModel</a>, QObject *parent=0)</td></tr>
 <tr class="separator:af50d9654d2f20e4e4f0789dcb64ad6b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96d53e56b3f8f07537ea2523f7a7d300"><td class="memItemLeft" align="right" valign="top"><a id="a96d53e56b3f8f07537ea2523f7a7d300"></a>
-<a class="el" href="class_options_model.html">OptionsModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getOptionsModel</b> ()</td></tr>
+<tr class="memitem:a592c6cf71f62981c2925bbb19e83df8a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a592c6cf71f62981c2925bbb19e83df8a">~WalletModel</a> ()</td></tr>
+<tr class="separator:a592c6cf71f62981c2925bbb19e83df8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96d53e56b3f8f07537ea2523f7a7d300"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_options_model.html">OptionsModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a96d53e56b3f8f07537ea2523f7a7d300">getOptionsModel</a> ()</td></tr>
 <tr class="separator:a96d53e56b3f8f07537ea2523f7a7d300"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89ed202e2dbc04aaa70d72872b95b351"><td class="memItemLeft" align="right" valign="top"><a id="a89ed202e2dbc04aaa70d72872b95b351"></a>
-<a class="el" href="class_address_table_model.html">AddressTableModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getAddressTableModel</b> ()</td></tr>
+<tr class="memitem:a89ed202e2dbc04aaa70d72872b95b351"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_address_table_model.html">AddressTableModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a89ed202e2dbc04aaa70d72872b95b351">getAddressTableModel</a> ()</td></tr>
 <tr class="separator:a89ed202e2dbc04aaa70d72872b95b351"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe9f7d149f1e8335033c69dab1dc277d"><td class="memItemLeft" align="right" valign="top"><a id="afe9f7d149f1e8335033c69dab1dc277d"></a>
-<a class="el" href="class_transaction_table_model.html">TransactionTableModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getTransactionTableModel</b> ()</td></tr>
+<tr class="memitem:afe9f7d149f1e8335033c69dab1dc277d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_transaction_table_model.html">TransactionTableModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#afe9f7d149f1e8335033c69dab1dc277d">getTransactionTableModel</a> ()</td></tr>
 <tr class="separator:afe9f7d149f1e8335033c69dab1dc277d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab13ca64220a1652d63e1e042d3be578f"><td class="memItemLeft" align="right" valign="top"><a id="ab13ca64220a1652d63e1e042d3be578f"></a>
-<a class="el" href="class_recent_requests_table_model.html">RecentRequestsTableModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getRecentRequestsTableModel</b> ()</td></tr>
+<tr class="memitem:ab13ca64220a1652d63e1e042d3be578f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_recent_requests_table_model.html">RecentRequestsTableModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ab13ca64220a1652d63e1e042d3be578f">getRecentRequestsTableModel</a> ()</td></tr>
 <tr class="separator:ab13ca64220a1652d63e1e042d3be578f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d2cb225a19b89c64f4b5d81faf89beb"><td class="memItemLeft" align="right" valign="top"><a id="a4d2cb225a19b89c64f4b5d81faf89beb"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getBalance</b> (const <a class="el" href="class_c_coin_control.html">CCoinControl</a> *coinControl=NULL) const</td></tr>
+<tr class="memitem:a4d2cb225a19b89c64f4b5d81faf89beb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a4d2cb225a19b89c64f4b5d81faf89beb">getBalance</a> (const <a class="el" href="class_c_coin_control.html">CCoinControl</a> *coinControl=NULL) const</td></tr>
 <tr class="separator:a4d2cb225a19b89c64f4b5d81faf89beb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5028f20a33e0d17942abeea537916736"><td class="memItemLeft" align="right" valign="top"><a id="a5028f20a33e0d17942abeea537916736"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getUnconfirmedBalance</b> () const</td></tr>
+<tr class="memitem:a5028f20a33e0d17942abeea537916736"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a5028f20a33e0d17942abeea537916736">getUnconfirmedBalance</a> () const</td></tr>
 <tr class="separator:a5028f20a33e0d17942abeea537916736"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5dbbc28b2c8ecd2e00fb45c6a2cb6f8"><td class="memItemLeft" align="right" valign="top"><a id="ac5dbbc28b2c8ecd2e00fb45c6a2cb6f8"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getImmatureBalance</b> () const</td></tr>
+<tr class="memitem:ac5dbbc28b2c8ecd2e00fb45c6a2cb6f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ac5dbbc28b2c8ecd2e00fb45c6a2cb6f8">getImmatureBalance</a> () const</td></tr>
 <tr class="separator:ac5dbbc28b2c8ecd2e00fb45c6a2cb6f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fccd88511bce41f226c1c41604347c3"><td class="memItemLeft" align="right" valign="top"><a id="a0fccd88511bce41f226c1c41604347c3"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getLockedBalance</b> () const</td></tr>
+<tr class="memitem:a0fccd88511bce41f226c1c41604347c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a0fccd88511bce41f226c1c41604347c3">getLockedBalance</a> () const</td></tr>
 <tr class="separator:a0fccd88511bce41f226c1c41604347c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f75dd612381206f905a74de2c5be93a"><td class="memItemLeft" align="right" valign="top"><a id="a9f75dd612381206f905a74de2c5be93a"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getZerocoinBalance</b> () const</td></tr>
+<tr class="memitem:a9f75dd612381206f905a74de2c5be93a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a9f75dd612381206f905a74de2c5be93a">getZerocoinBalance</a> () const</td></tr>
 <tr class="separator:a9f75dd612381206f905a74de2c5be93a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33e712aa6733a7bc8bb1a62973ce980a"><td class="memItemLeft" align="right" valign="top"><a id="a33e712aa6733a7bc8bb1a62973ce980a"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getUnconfirmedZerocoinBalance</b> () const</td></tr>
+<tr class="memitem:a33e712aa6733a7bc8bb1a62973ce980a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a33e712aa6733a7bc8bb1a62973ce980a">getUnconfirmedZerocoinBalance</a> () const</td></tr>
 <tr class="separator:a33e712aa6733a7bc8bb1a62973ce980a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a223e93e413b0c79315e844bee6b8e25c"><td class="memItemLeft" align="right" valign="top"><a id="a223e93e413b0c79315e844bee6b8e25c"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getImmatureZerocoinBalance</b> () const</td></tr>
+<tr class="memitem:a223e93e413b0c79315e844bee6b8e25c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a223e93e413b0c79315e844bee6b8e25c">getImmatureZerocoinBalance</a> () const</td></tr>
 <tr class="separator:a223e93e413b0c79315e844bee6b8e25c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5e8e946e9ac3ddc9dc6a203e61968e2"><td class="memItemLeft" align="right" valign="top"><a id="ab5e8e946e9ac3ddc9dc6a203e61968e2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>haveWatchOnly</b> () const</td></tr>
+<tr class="memitem:ab5e8e946e9ac3ddc9dc6a203e61968e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ab5e8e946e9ac3ddc9dc6a203e61968e2">haveWatchOnly</a> () const</td></tr>
 <tr class="separator:ab5e8e946e9ac3ddc9dc6a203e61968e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d9050286d99bccb4a28a8d88f0ca5f8"><td class="memItemLeft" align="right" valign="top"><a id="a6d9050286d99bccb4a28a8d88f0ca5f8"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getWatchBalance</b> () const</td></tr>
+<tr class="memitem:a6d9050286d99bccb4a28a8d88f0ca5f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a6d9050286d99bccb4a28a8d88f0ca5f8">getWatchBalance</a> () const</td></tr>
 <tr class="separator:a6d9050286d99bccb4a28a8d88f0ca5f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a691b35afd9aff056e1398fd057691ff1"><td class="memItemLeft" align="right" valign="top"><a id="a691b35afd9aff056e1398fd057691ff1"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getWatchUnconfirmedBalance</b> () const</td></tr>
+<tr class="memitem:a691b35afd9aff056e1398fd057691ff1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a691b35afd9aff056e1398fd057691ff1">getWatchUnconfirmedBalance</a> () const</td></tr>
 <tr class="separator:a691b35afd9aff056e1398fd057691ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9da743fbe881d4928eeafc48f50ef3d5"><td class="memItemLeft" align="right" valign="top"><a id="a9da743fbe881d4928eeafc48f50ef3d5"></a>
-CAmount&#160;</td><td class="memItemRight" valign="bottom"><b>getWatchImmatureBalance</b> () const</td></tr>
+<tr class="memitem:a9da743fbe881d4928eeafc48f50ef3d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a9da743fbe881d4928eeafc48f50ef3d5">getWatchImmatureBalance</a> () const</td></tr>
 <tr class="separator:a9da743fbe881d4928eeafc48f50ef3d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa89632d2019414f2ab85674cd4d01398"><td class="memItemLeft" align="right" valign="top"><a id="aa89632d2019414f2ab85674cd4d01398"></a>
-EncryptionStatus&#160;</td><td class="memItemRight" valign="bottom"><b>getEncryptionStatus</b> () const</td></tr>
+<tr class="memitem:aa89632d2019414f2ab85674cd4d01398"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616">EncryptionStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#aa89632d2019414f2ab85674cd4d01398">getEncryptionStatus</a> () const</td></tr>
 <tr class="separator:aa89632d2019414f2ab85674cd4d01398"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4de6fd94203fb5dac370a0b1618d9bdc"><td class="memItemLeft" align="right" valign="top"><a id="a4de6fd94203fb5dac370a0b1618d9bdc"></a>
-<a class="el" href="class_c_key.html">CKey</a>&#160;</td><td class="memItemRight" valign="bottom"><b>generateNewKey</b> () const</td></tr>
+<tr class="memitem:a4de6fd94203fb5dac370a0b1618d9bdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_key.html">CKey</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a4de6fd94203fb5dac370a0b1618d9bdc">generateNewKey</a> () const</td></tr>
 <tr class="separator:a4de6fd94203fb5dac370a0b1618d9bdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a64730ca8256dd5ec569e26ac758719"><td class="memItemLeft" align="right" valign="top"><a id="a6a64730ca8256dd5ec569e26ac758719"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>setAddressBook</b> (const CTxDestination &amp;address, const string &amp;strName, const string &amp;strPurpose)</td></tr>
+<tr class="memitem:a6a64730ca8256dd5ec569e26ac758719"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a6a64730ca8256dd5ec569e26ac758719">setAddressBook</a> (const <a class="el" href="standard_8h.html#a50f712c3d9a0d2f85ae464497dd9cff8">CTxDestination</a> &amp;address, const string &amp;strName, const string &amp;strPurpose)</td></tr>
 <tr class="separator:a6a64730ca8256dd5ec569e26ac758719"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7d271d5ef11c1ce3b9166f4c8db30db"><td class="memItemLeft" align="right" valign="top"><a id="ad7d271d5ef11c1ce3b9166f4c8db30db"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>encryptKey</b> (const <a class="el" href="class_c_key.html">CKey</a> key, const std::string &amp;pwd, const std::string &amp;slt, std::vector&lt; unsigned char &gt; &amp;crypted)</td></tr>
+<tr class="memitem:ad7d271d5ef11c1ce3b9166f4c8db30db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ad7d271d5ef11c1ce3b9166f4c8db30db">encryptKey</a> (const <a class="el" href="class_c_key.html">CKey</a> <a class="el" href="bip38tooldialog_8cpp.html#a8d350ff361690ac2a2db267f5ea63dc9">key</a>, const std::string &amp;pwd, const std::string &amp;slt, std::vector&lt; unsigned char &gt; &amp;crypted)</td></tr>
 <tr class="separator:ad7d271d5ef11c1ce3b9166f4c8db30db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a444a7fc1635b32af3e366ea3cfab516d"><td class="memItemLeft" align="right" valign="top"><a id="a444a7fc1635b32af3e366ea3cfab516d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>decryptKey</b> (const std::vector&lt; unsigned char &gt; &amp;crypted, const std::string &amp;slt, const std::string &amp;pwd, <a class="el" href="class_c_key.html">CKey</a> &amp;key)</td></tr>
+<tr class="memitem:a444a7fc1635b32af3e366ea3cfab516d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a444a7fc1635b32af3e366ea3cfab516d">decryptKey</a> (const std::vector&lt; unsigned char &gt; &amp;crypted, const std::string &amp;slt, const std::string &amp;pwd, <a class="el" href="class_c_key.html">CKey</a> &amp;<a class="el" href="bip38tooldialog_8cpp.html#a8d350ff361690ac2a2db267f5ea63dc9">key</a>)</td></tr>
 <tr class="separator:a444a7fc1635b32af3e366ea3cfab516d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7796e14738d2187e2f98def3359b3141"><td class="memItemLeft" align="right" valign="top"><a id="a7796e14738d2187e2f98def3359b3141"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>emitBalanceChanged</b> ()</td></tr>
+<tr class="memitem:a7796e14738d2187e2f98def3359b3141"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a7796e14738d2187e2f98def3359b3141">emitBalanceChanged</a> ()</td></tr>
 <tr class="separator:a7796e14738d2187e2f98def3359b3141"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04604615253aeaae1253b1412a70a1f7"><td class="memItemLeft" align="right" valign="top"><a id="a04604615253aeaae1253b1412a70a1f7"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>validateAddress</b> (const QString &amp;address)</td></tr>
+<tr class="memitem:a04604615253aeaae1253b1412a70a1f7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a04604615253aeaae1253b1412a70a1f7">validateAddress</a> (const QString &amp;address)</td></tr>
 <tr class="separator:a04604615253aeaae1253b1412a70a1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8abc851901c7c7343ebfb5a8e5fc0154"><td class="memItemLeft" align="right" valign="top"><a id="a8abc851901c7c7343ebfb5a8e5fc0154"></a>
-<a class="el" href="struct_wallet_model_1_1_send_coins_return.html">SendCoinsReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><b>prepareTransaction</b> (<a class="el" href="class_wallet_model_transaction.html">WalletModelTransaction</a> &amp;transaction, const <a class="el" href="class_c_coin_control.html">CCoinControl</a> *coinControl=NULL)</td></tr>
+<tr class="memitem:a8abc851901c7c7343ebfb5a8e5fc0154"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_wallet_model_1_1_send_coins_return.html">SendCoinsReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a8abc851901c7c7343ebfb5a8e5fc0154">prepareTransaction</a> (<a class="el" href="class_wallet_model_transaction.html">WalletModelTransaction</a> &amp;transaction, const <a class="el" href="class_c_coin_control.html">CCoinControl</a> *coinControl=NULL)</td></tr>
 <tr class="separator:a8abc851901c7c7343ebfb5a8e5fc0154"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53443aca544c824550f21e5f87e4ec39"><td class="memItemLeft" align="right" valign="top"><a id="a53443aca544c824550f21e5f87e4ec39"></a>
-<a class="el" href="struct_wallet_model_1_1_send_coins_return.html">SendCoinsReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sendCoins</b> (<a class="el" href="class_wallet_model_transaction.html">WalletModelTransaction</a> &amp;transaction)</td></tr>
+<tr class="memitem:a53443aca544c824550f21e5f87e4ec39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_wallet_model_1_1_send_coins_return.html">SendCoinsReturn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a53443aca544c824550f21e5f87e4ec39">sendCoins</a> (<a class="el" href="class_wallet_model_transaction.html">WalletModelTransaction</a> &amp;transaction)</td></tr>
 <tr class="separator:a53443aca544c824550f21e5f87e4ec39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a444340830badcd48e3a4dd6b03d9c4d7"><td class="memItemLeft" align="right" valign="top"><a id="a444340830badcd48e3a4dd6b03d9c4d7"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>setWalletEncrypted</b> (bool encrypted, const SecureString &amp;passphrase)</td></tr>
+<tr class="memitem:a444340830badcd48e3a4dd6b03d9c4d7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a444340830badcd48e3a4dd6b03d9c4d7">setWalletEncrypted</a> (bool encrypted, const <a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a> &amp;passphrase)</td></tr>
 <tr class="separator:a444340830badcd48e3a4dd6b03d9c4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a8b65bfaecb0813d64c733f4f34f090"><td class="memItemLeft" align="right" valign="top"><a id="a5a8b65bfaecb0813d64c733f4f34f090"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>setWalletLocked</b> (bool locked, const SecureString &amp;passPhrase=SecureString(), bool anonymizeOnly=false)</td></tr>
+<tr class="memitem:a5a8b65bfaecb0813d64c733f4f34f090"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a5a8b65bfaecb0813d64c733f4f34f090">setWalletLocked</a> (bool locked, const <a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a> &amp;passPhrase=<a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a>(), bool anonymizeOnly=false)</td></tr>
 <tr class="separator:a5a8b65bfaecb0813d64c733f4f34f090"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67ebff3f267b5c9973c0465184c085a4"><td class="memItemLeft" align="right" valign="top"><a id="a67ebff3f267b5c9973c0465184c085a4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>changePassphrase</b> (const SecureString &amp;oldPass, const SecureString &amp;newPass)</td></tr>
+<tr class="memitem:a67ebff3f267b5c9973c0465184c085a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a67ebff3f267b5c9973c0465184c085a4">changePassphrase</a> (const <a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a> &amp;oldPass, const <a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a> &amp;newPass)</td></tr>
 <tr class="separator:a67ebff3f267b5c9973c0465184c085a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad170da7fccb70726a4527d67c8f26340"><td class="memItemLeft" align="right" valign="top"><a id="ad170da7fccb70726a4527d67c8f26340"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isAnonymizeOnlyUnlocked</b> ()</td></tr>
+<tr class="memitem:ad170da7fccb70726a4527d67c8f26340"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ad170da7fccb70726a4527d67c8f26340">isAnonymizeOnlyUnlocked</a> ()</td></tr>
 <tr class="separator:ad170da7fccb70726a4527d67c8f26340"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa316c19ef41f26ea89f194ab253d3206"><td class="memItemLeft" align="right" valign="top"><a id="aa316c19ef41f26ea89f194ab253d3206"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>backupWallet</b> (const QString &amp;filename)</td></tr>
+<tr class="memitem:aa316c19ef41f26ea89f194ab253d3206"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#aa316c19ef41f26ea89f194ab253d3206">backupWallet</a> (const QString &amp;filename)</td></tr>
 <tr class="separator:aa316c19ef41f26ea89f194ab253d3206"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ad552f7942cd22f7a1cd0803b179f06"><td class="memItemLeft" align="right" valign="top"><a id="a9ad552f7942cd22f7a1cd0803b179f06"></a>
-<a class="el" href="class_wallet_model_1_1_unlock_context.html">UnlockContext</a>&#160;</td><td class="memItemRight" valign="bottom"><b>requestUnlock</b> (bool relock=false)</td></tr>
+<tr class="memitem:a9ad552f7942cd22f7a1cd0803b179f06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_wallet_model_1_1_unlock_context.html">UnlockContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a9ad552f7942cd22f7a1cd0803b179f06">requestUnlock</a> (bool relock=false)</td></tr>
 <tr class="separator:a9ad552f7942cd22f7a1cd0803b179f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe0b4462654768f301d1f758f7907ca2"><td class="memItemLeft" align="right" valign="top"><a id="abe0b4462654768f301d1f758f7907ca2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>getPubKey</b> (const <a class="el" href="class_c_key_i_d.html">CKeyID</a> &amp;address, <a class="el" href="class_c_pub_key.html">CPubKey</a> &amp;vchPubKeyOut) const</td></tr>
+<tr class="memitem:abe0b4462654768f301d1f758f7907ca2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#abe0b4462654768f301d1f758f7907ca2">getPubKey</a> (const <a class="el" href="class_c_key_i_d.html">CKeyID</a> &amp;address, <a class="el" href="class_c_pub_key.html">CPubKey</a> &amp;vchPubKeyOut) const</td></tr>
 <tr class="separator:abe0b4462654768f301d1f758f7907ca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67d21a04d6cb5b3e21e8aab75871ee57"><td class="memItemLeft" align="right" valign="top"><a id="a67d21a04d6cb5b3e21e8aab75871ee57"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isMine</b> (<a class="el" href="class_c_bitcoin_address.html">CBitcoinAddress</a> address)</td></tr>
+<tr class="memitem:a67d21a04d6cb5b3e21e8aab75871ee57"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a67d21a04d6cb5b3e21e8aab75871ee57">isMine</a> (<a class="el" href="class_c_bitcoin_address.html">CBitcoinAddress</a> address)</td></tr>
 <tr class="separator:a67d21a04d6cb5b3e21e8aab75871ee57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5237ea4d9724807a05e2944e5ce6f181"><td class="memItemLeft" align="right" valign="top"><a id="a5237ea4d9724807a05e2944e5ce6f181"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>getOutputs</b> (const std::vector&lt; <a class="el" href="class_c_out_point.html">COutPoint</a> &gt; &amp;vOutpoints, std::vector&lt; <a class="el" href="class_c_output.html">COutput</a> &gt; &amp;vOutputs)</td></tr>
+<tr class="memitem:a5237ea4d9724807a05e2944e5ce6f181"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a5237ea4d9724807a05e2944e5ce6f181">getOutputs</a> (const std::vector&lt; <a class="el" href="class_c_out_point.html">COutPoint</a> &gt; &amp;vOutpoints, std::vector&lt; <a class="el" href="class_c_output.html">COutput</a> &gt; &amp;vOutputs)</td></tr>
 <tr class="separator:a5237ea4d9724807a05e2944e5ce6f181"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb24dd4388e6daef526667fb365a57b1"><td class="memItemLeft" align="right" valign="top"><a id="acb24dd4388e6daef526667fb365a57b1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSpent</b> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;outpoint) const</td></tr>
+<tr class="memitem:acb24dd4388e6daef526667fb365a57b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#acb24dd4388e6daef526667fb365a57b1">isSpent</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;outpoint) const</td></tr>
 <tr class="separator:acb24dd4388e6daef526667fb365a57b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5ce26bba42701b45de766ef11cc9a47"><td class="memItemLeft" align="right" valign="top"><a id="ae5ce26bba42701b45de766ef11cc9a47"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>listCoins</b> (std::map&lt; QString, std::vector&lt; <a class="el" href="class_c_output.html">COutput</a> &gt; &gt; &amp;mapCoins) const</td></tr>
+<tr class="memitem:ae5ce26bba42701b45de766ef11cc9a47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ae5ce26bba42701b45de766ef11cc9a47">listCoins</a> (std::map&lt; QString, std::vector&lt; <a class="el" href="class_c_output.html">COutput</a> &gt; &gt; &amp;mapCoins) const</td></tr>
 <tr class="separator:ae5ce26bba42701b45de766ef11cc9a47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abeea7ae42ec38ace2786b2e3d340f5a2"><td class="memItemLeft" align="right" valign="top"><a id="abeea7ae42ec38ace2786b2e3d340f5a2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isLockedCoin</b> (<a class="el" href="classuint256.html">uint256</a> hash, unsigned int n) const</td></tr>
+<tr class="memitem:abeea7ae42ec38ace2786b2e3d340f5a2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#abeea7ae42ec38ace2786b2e3d340f5a2">isLockedCoin</a> (<a class="el" href="classuint256.html">uint256</a> hash, unsigned int n) const</td></tr>
 <tr class="separator:abeea7ae42ec38ace2786b2e3d340f5a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9bb6c954dc3cf27e25ced65375fa02f0"><td class="memItemLeft" align="right" valign="top"><a id="a9bb6c954dc3cf27e25ced65375fa02f0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lockCoin</b> (<a class="el" href="class_c_out_point.html">COutPoint</a> &amp;output)</td></tr>
+<tr class="memitem:a9bb6c954dc3cf27e25ced65375fa02f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a9bb6c954dc3cf27e25ced65375fa02f0">lockCoin</a> (<a class="el" href="class_c_out_point.html">COutPoint</a> &amp;output)</td></tr>
 <tr class="separator:a9bb6c954dc3cf27e25ced65375fa02f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a5514bd400327df0f7d63341d8fabf4"><td class="memItemLeft" align="right" valign="top"><a id="a0a5514bd400327df0f7d63341d8fabf4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>unlockCoin</b> (<a class="el" href="class_c_out_point.html">COutPoint</a> &amp;output)</td></tr>
+<tr class="memitem:a0a5514bd400327df0f7d63341d8fabf4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a0a5514bd400327df0f7d63341d8fabf4">unlockCoin</a> (<a class="el" href="class_c_out_point.html">COutPoint</a> &amp;output)</td></tr>
 <tr class="separator:a0a5514bd400327df0f7d63341d8fabf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a367977352d1ef183ec2cb6b508a85bc2"><td class="memItemLeft" align="right" valign="top"><a id="a367977352d1ef183ec2cb6b508a85bc2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>listLockedCoins</b> (std::vector&lt; <a class="el" href="class_c_out_point.html">COutPoint</a> &gt; &amp;vOutpts)</td></tr>
+<tr class="memitem:a367977352d1ef183ec2cb6b508a85bc2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a367977352d1ef183ec2cb6b508a85bc2">listLockedCoins</a> (std::vector&lt; <a class="el" href="class_c_out_point.html">COutPoint</a> &gt; &amp;vOutpts)</td></tr>
 <tr class="separator:a367977352d1ef183ec2cb6b508a85bc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a901e0b3c32c39bd3301d90f05255f442"><td class="memItemLeft" align="right" valign="top"><a id="a901e0b3c32c39bd3301d90f05255f442"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>listZerocoinMints</b> (std::list&lt; <a class="el" href="class_c_zerocoin_mint.html">CZerocoinMint</a> &gt; &amp;listMints, bool fUnusedOnly=false, bool fMaturedOnly=false, bool fUpdateStatus=false)</td></tr>
+<tr class="memitem:a901e0b3c32c39bd3301d90f05255f442"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a901e0b3c32c39bd3301d90f05255f442">listZerocoinMints</a> (std::list&lt; <a class="el" href="class_c_zerocoin_mint.html">CZerocoinMint</a> &gt; &amp;listMints, bool fUnusedOnly=false, bool fMaturedOnly=false, bool fUpdateStatus=false)</td></tr>
 <tr class="separator:a901e0b3c32c39bd3301d90f05255f442"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ec10fbe74317b1949ac4ae63451d115"><td class="memItemLeft" align="right" valign="top"><a id="a0ec10fbe74317b1949ac4ae63451d115"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>loadReceiveRequests</b> (std::vector&lt; std::string &gt; &amp;vReceiveRequests)</td></tr>
+<tr class="memitem:a0ec10fbe74317b1949ac4ae63451d115"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a0ec10fbe74317b1949ac4ae63451d115">loadReceiveRequests</a> (std::vector&lt; std::string &gt; &amp;vReceiveRequests)</td></tr>
 <tr class="separator:a0ec10fbe74317b1949ac4ae63451d115"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88d44bc0994c1701386f63b1f266637f"><td class="memItemLeft" align="right" valign="top"><a id="a88d44bc0994c1701386f63b1f266637f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>saveReceiveRequest</b> (const std::string &amp;sAddress, const int64_t nId, const std::string &amp;sRequest)</td></tr>
+<tr class="memitem:a88d44bc0994c1701386f63b1f266637f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a88d44bc0994c1701386f63b1f266637f">saveReceiveRequest</a> (const std::string &amp;sAddress, const int64_t nId, const std::string &amp;sRequest)</td></tr>
 <tr class="separator:a88d44bc0994c1701386f63b1f266637f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:afc875c7d3b1ca788f2b4ed842607bac0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#afc875c7d3b1ca788f2b4ed842607bac0">subscribeToCoreSignals</a> ()</td></tr>
+<tr class="separator:afc875c7d3b1ca788f2b4ed842607bac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb20c3e5c1a83ce0ed7f300c3cddee73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#acb20c3e5c1a83ce0ed7f300c3cddee73">unsubscribeFromCoreSignals</a> ()</td></tr>
+<tr class="separator:acb20c3e5c1a83ce0ed7f300c3cddee73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcc4eb8cd71cb4de223621866bb7fb7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#adcc4eb8cd71cb4de223621866bb7fb7d">checkBalanceChanged</a> ()</td></tr>
+<tr class="separator:adcc4eb8cd71cb4de223621866bb7fb7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:abad281324f53ab4be68ba83cfb162bf3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_wallet.html">CWallet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#abad281324f53ab4be68ba83cfb162bf3">wallet</a></td></tr>
+<tr class="separator:abad281324f53ab4be68ba83cfb162bf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada7a868b3da256492ea1f19e28374495"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ada7a868b3da256492ea1f19e28374495">fHaveWatchOnly</a></td></tr>
+<tr class="separator:ada7a868b3da256492ea1f19e28374495"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a569c27f9a5ff551d237edcbb878207c8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a569c27f9a5ff551d237edcbb878207c8">fHaveMultiSig</a></td></tr>
+<tr class="separator:a569c27f9a5ff551d237edcbb878207c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab381f2e96b734b7728b9fb2f44364a3a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ab381f2e96b734b7728b9fb2f44364a3a">fForceCheckBalanceChanged</a></td></tr>
+<tr class="separator:ab381f2e96b734b7728b9fb2f44364a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01d9aba010d85b79d46fe427919dbdc1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_options_model.html">OptionsModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a01d9aba010d85b79d46fe427919dbdc1">optionsModel</a></td></tr>
+<tr class="separator:a01d9aba010d85b79d46fe427919dbdc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0712446f247952866e7b5252564e5e17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_address_table_model.html">AddressTableModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a0712446f247952866e7b5252564e5e17">addressTableModel</a></td></tr>
+<tr class="separator:a0712446f247952866e7b5252564e5e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c5fd9073f578f151ce48ec46b8beacd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_transaction_table_model.html">TransactionTableModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a5c5fd9073f578f151ce48ec46b8beacd">transactionTableModel</a></td></tr>
+<tr class="separator:a5c5fd9073f578f151ce48ec46b8beacd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ae09d5a1e85dabcef5ab19e5b210230"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_recent_requests_table_model.html">RecentRequestsTableModel</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a5ae09d5a1e85dabcef5ab19e5b210230">recentRequestsTableModel</a></td></tr>
+<tr class="separator:a5ae09d5a1e85dabcef5ab19e5b210230"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3048be003bad5ce370c06b9bea1c9f08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a3048be003bad5ce370c06b9bea1c9f08">cachedBalance</a></td></tr>
+<tr class="separator:a3048be003bad5ce370c06b9bea1c9f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ff4ad3fa01a7f9c5644fa6067418322"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a8ff4ad3fa01a7f9c5644fa6067418322">cachedUnconfirmedBalance</a></td></tr>
+<tr class="separator:a8ff4ad3fa01a7f9c5644fa6067418322"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0130f3a7857611866985e62ea73a8d8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a0130f3a7857611866985e62ea73a8d8a">cachedImmatureBalance</a></td></tr>
+<tr class="separator:a0130f3a7857611866985e62ea73a8d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b5be2c9ae7d314f64af2ead4c89baea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a8b5be2c9ae7d314f64af2ead4c89baea">cachedZerocoinBalance</a></td></tr>
+<tr class="separator:a8b5be2c9ae7d314f64af2ead4c89baea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63e606e0d5a8cdae8e80707a62c532fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a63e606e0d5a8cdae8e80707a62c532fb">cachedUnconfirmedZerocoinBalance</a></td></tr>
+<tr class="separator:a63e606e0d5a8cdae8e80707a62c532fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28a84906aafa3af65653d289e17adbd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a28a84906aafa3af65653d289e17adbd0">cachedImmatureZerocoinBalance</a></td></tr>
+<tr class="separator:a28a84906aafa3af65653d289e17adbd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8748c67ca736748406629f5fa0102437"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a8748c67ca736748406629f5fa0102437">cachedWatchOnlyBalance</a></td></tr>
+<tr class="separator:a8748c67ca736748406629f5fa0102437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0082b810eb6a95784c095ebaf0105bd4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a0082b810eb6a95784c095ebaf0105bd4">cachedWatchUnconfBalance</a></td></tr>
+<tr class="separator:a0082b810eb6a95784c095ebaf0105bd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c0ea020fc2bd73eaa747b6daf74f998"><td class="memItemLeft" align="right" valign="top"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a6c0ea020fc2bd73eaa747b6daf74f998">cachedWatchImmatureBalance</a></td></tr>
+<tr class="separator:a6c0ea020fc2bd73eaa747b6daf74f998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1583c7546397a480525bd32a1bb964a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616">EncryptionStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a1583c7546397a480525bd32a1bb964a6">cachedEncryptionStatus</a></td></tr>
+<tr class="separator:a1583c7546397a480525bd32a1bb964a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea5c2fe717ff4d3b066d12f97d77f909"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#aea5c2fe717ff4d3b066d12f97d77f909">cachedNumBlocks</a></td></tr>
+<tr class="separator:aea5c2fe717ff4d3b066d12f97d77f909"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5db6dce80bb02b8eff3c7f49a9b4958"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#af5db6dce80bb02b8eff3c7f49a9b4958">cachedTxLocks</a></td></tr>
+<tr class="separator:af5db6dce80bb02b8eff3c7f49a9b4958"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92709c501bdb44e1ab6b8d087caff855"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#a92709c501bdb44e1ab6b8d087caff855">cachedZeromintPercentage</a></td></tr>
+<tr class="separator:a92709c501bdb44e1ab6b8d087caff855"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac63eaed9f2ebd426cc6455812ddf518e"><td class="memItemLeft" align="right" valign="top">QTimer *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_wallet_model.html#ac63eaed9f2ebd426cc6455812ddf518e">pollTimer</a></td></tr>
+<tr class="separator:ac63eaed9f2ebd426cc6455812ddf518e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface to Bitcoin wallet from Qt view code. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>PIVX/src/qt/<a class="el" href="walletmodel_8h_source.html">walletmodel.h</a></li>
-<li>PIVX/src/qt/walletmodel.cpp</li>
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00099">99</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a58f6f0bb5a7b8b4e4d0812185ccc0616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58f6f0bb5a7b8b4e4d0812185ccc0616">&#9670;&nbsp;</a></span>EncryptionStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616">WalletModel::EncryptionStatus</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a58f6f0bb5a7b8b4e4d0812185ccc0616aab8ddcb74c78f880c81f610e327bdcd7"></a>Unencrypted&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a58f6f0bb5a7b8b4e4d0812185ccc0616a6f5de415aa862da098e05432b4ff2716"></a>Locked&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a58f6f0bb5a7b8b4e4d0812185ccc0616a60d7f605079e8e1738ba66d543467a3c"></a>Unlocked&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a58f6f0bb5a7b8b4e4d0812185ccc0616a57c50569d016aa2c2ecb2dd91f0054f7"></a>UnlockedForAnonymizationOnly&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00121">121</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="afb93f64411320dce4692c2190b7d35cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb93f64411320dce4692c2190b7d35cc">&#9670;&nbsp;</a></span>StatusCode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="class_wallet_model.html#afb93f64411320dce4692c2190b7d35cc">WalletModel::StatusCode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35ccae8b83ccd04b2460f6ec5797b92776968"></a>OK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35ccaaf7eb8f25529cc4d6b93a4a3440fc6c8"></a>InvalidAmount&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35cca449b63ba5da98abf17fab342d8b95fa2"></a>InvalidAddress&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35ccabdabf0af6ddd309de3aef879b2709404"></a>AmountExceedsBalance&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35cca1f91d49761f7c83d4a07a3755c48c04b"></a>AmountWithFeeExceedsBalance&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35ccac4b89d8f7cde6aa46fed5c881acd969e"></a>DuplicateAddress&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35cca56229944b246c4f5be6bea4ebfd8d0a4"></a>TransactionCreationFailed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35ccad324cb5701b48fde6cfd00e6655e5025"></a>TransactionCommitFailed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35ccaf665502b41b2622a55edf1addfc0edc1"></a>AnonymizeOnlyUnlocked&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afb93f64411320dce4692c2190b7d35cca5739212115015f9b4f6f1dce6cb93cc4"></a>InsaneFee&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00107">107</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af50d9654d2f20e4e4f0789dcb64ad6b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af50d9654d2f20e4e4f0789dcb64ad6b1">&#9670;&nbsp;</a></span>WalletModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">WalletModel::WalletModel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_wallet.html">CWallet</a> *&#160;</td>
+          <td class="paramname"><em>wallet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_options_model.html">OptionsModel</a> *&#160;</td>
+          <td class="paramname"><em>optionsModel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QObject *&#160;</td>
+          <td class="paramname"><em>parent</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00031">31</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 2 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a592c6cf71f62981c2925bbb19e83df8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a592c6cf71f62981c2925bbb19e83df8a">&#9670;&nbsp;</a></span>~WalletModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">WalletModel::~WalletModel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00055">55</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 3 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aa316c19ef41f26ea89f194ab253d3206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa316c19ef41f26ea89f194ab253d3206">&#9670;&nbsp;</a></span>backupWallet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::backupWallet </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00488">488</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 4 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 5 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a06ef447cd32a737f77df483812b48f5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06ef447cd32a737f77df483812b48f5c">&#9670;&nbsp;</a></span>balanceChanged</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::balanceChanged </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>balance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>unconfirmedBalance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>immatureBalance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>zerocoinBalance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>unconfirmedZerocoinBalance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>immatureZerocoinBalance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>watchOnlyBalance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>watchUnconfBalance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> &amp;&#160;</td>
+          <td class="paramname"><em>watchImmatureBalance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 6 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a67ebff3f267b5c9973c0465184c085a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67ebff3f267b5c9973c0465184c085a4">&#9670;&nbsp;</a></span>changePassphrase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::changePassphrase </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a> &amp;&#160;</td>
+          <td class="paramname"><em>oldPass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a> &amp;&#160;</td>
+          <td class="paramname"><em>newPass</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00477">477</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 7 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="adcc4eb8cd71cb4de223621866bb7fb7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcc4eb8cd71cb4de223621866bb7fb7d">&#9670;&nbsp;</a></span>checkBalanceChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::checkBalanceChanged </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00169">169</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 8 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 9 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad625ad874bc4155e9300c222040eef66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad625ad874bc4155e9300c222040eef66">&#9670;&nbsp;</a></span>coinsSent</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::coinsSent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_wallet.html">CWallet</a> *&#160;</td>
+          <td class="paramname"><em>wallet</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_send_coins_recipient.html">SendCoinsRecipient</a>&#160;</td>
+          <td class="paramname"><em>recipient</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QByteArray&#160;</td>
+          <td class="paramname"><em>transaction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a444a7fc1635b32af3e366ea3cfab516d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a444a7fc1635b32af3e366ea3cfab516d">&#9670;&nbsp;</a></span>decryptKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::decryptKey </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; unsigned char &gt; &amp;&#160;</td>
+          <td class="paramname"><em>crypted</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>slt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>pwd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_c_key.html">CKey</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7796e14738d2187e2f98def3359b3141"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7796e14738d2187e2f98def3359b3141">&#9670;&nbsp;</a></span>emitBalanceChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::emitBalanceChanged </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00161">161</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 10 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4fc1b30b795f66ebed3e48db3a489876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fc1b30b795f66ebed3e48db3a489876">&#9670;&nbsp;</a></span>encryptionStatusChanged</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::encryptionStatusChanged </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>status</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 11 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad7d271d5ef11c1ce3b9166f4c8db30db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7d271d5ef11c1ce3b9166f4c8db30db">&#9670;&nbsp;</a></span>encryptKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::encryptKey </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_key.html">CKey</a>&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>pwd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>slt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; unsigned char &gt; &amp;&#160;</td>
+          <td class="paramname"><em>crypted</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4de6fd94203fb5dac370a0b1618d9bdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4de6fd94203fb5dac370a0b1618d9bdc">&#9670;&nbsp;</a></span>generateNewKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_key.html">CKey</a> WalletModel::generateNewKey </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a89ed202e2dbc04aaa70d72872b95b351"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ed202e2dbc04aaa70d72872b95b351">&#9670;&nbsp;</a></span>getAddressTableModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_address_table_model.html">AddressTableModel</a> * WalletModel::getAddressTableModel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00420">420</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 12 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4d2cb225a19b89c64f4b5d81faf89beb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d2cb225a19b89c64f4b5d81faf89beb">&#9670;&nbsp;</a></span>getBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getBalance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_coin_control.html">CCoinControl</a> *&#160;</td>
+          <td class="paramname"><em>coinControl</em> = <code>NULL</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00060">60</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 13 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 14 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="aa89632d2019414f2ab85674cd4d01398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa89632d2019414f2ab85674cd4d01398">&#9670;&nbsp;</a></span>getEncryptionStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616">WalletModel::EncryptionStatus</a> WalletModel::getEncryptionStatus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00435">435</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 15 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 16 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac5dbbc28b2c8ecd2e00fb45c6a2cb6f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5dbbc28b2c8ecd2e00fb45c6a2cb6f8">&#9670;&nbsp;</a></span>getImmatureBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getImmatureBalance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00081">81</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 17 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 18 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a223e93e413b0c79315e844bee6b8e25c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a223e93e413b0c79315e844bee6b8e25c">&#9670;&nbsp;</a></span>getImmatureZerocoinBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getImmatureZerocoinBalance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00101">101</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 19 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 20 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a0fccd88511bce41f226c1c41604347c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fccd88511bce41f226c1c41604347c3">&#9670;&nbsp;</a></span>getLockedBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getLockedBalance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00086">86</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 21 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a96d53e56b3f8f07537ea2523f7a7d300"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96d53e56b3f8f07537ea2523f7a7d300">&#9670;&nbsp;</a></span>getOptionsModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_options_model.html">OptionsModel</a> * WalletModel::getOptionsModel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00415">415</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 22 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a5237ea4d9724807a05e2944e5ce6f181"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5237ea4d9724807a05e2944e5ce6f181">&#9670;&nbsp;</a></span>getOutputs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::getOutputs </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="class_c_out_point.html">COutPoint</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vOutpoints</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="class_c_output.html">COutput</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vOutputs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00637">637</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 23 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="abe0b4462654768f301d1f758f7907ca2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe0b4462654768f301d1f758f7907ca2">&#9670;&nbsp;</a></span>getPubKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::getPubKey </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_key_i_d.html">CKeyID</a> &amp;&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_c_pub_key.html">CPubKey</a> &amp;&#160;</td>
+          <td class="paramname"><em>vchPubKeyOut</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00631">631</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 24 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 25 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ab13ca64220a1652d63e1e042d3be578f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab13ca64220a1652d63e1e042d3be578f">&#9670;&nbsp;</a></span>getRecentRequestsTableModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_recent_requests_table_model.html">RecentRequestsTableModel</a> * WalletModel::getRecentRequestsTableModel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00430">430</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 26 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="afe9f7d149f1e8335033c69dab1dc277d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe9f7d149f1e8335033c69dab1dc277d">&#9670;&nbsp;</a></span>getTransactionTableModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_transaction_table_model.html">TransactionTableModel</a> * WalletModel::getTransactionTableModel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00425">425</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 27 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a5028f20a33e0d17942abeea537916736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5028f20a33e0d17942abeea537916736">&#9670;&nbsp;</a></span>getUnconfirmedBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getUnconfirmedBalance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00076">76</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 28 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 29 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a33e712aa6733a7bc8bb1a62973ce980a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33e712aa6733a7bc8bb1a62973ce980a">&#9670;&nbsp;</a></span>getUnconfirmedZerocoinBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getUnconfirmedZerocoinBalance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00096">96</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 30 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 31 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6d9050286d99bccb4a28a8d88f0ca5f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d9050286d99bccb4a28a8d88f0ca5f8">&#9670;&nbsp;</a></span>getWatchBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getWatchBalance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00112">112</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 32 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 33 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9da743fbe881d4928eeafc48f50ef3d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9da743fbe881d4928eeafc48f50ef3d5">&#9670;&nbsp;</a></span>getWatchImmatureBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getWatchImmatureBalance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00122">122</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 34 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 35 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a691b35afd9aff056e1398fd057691ff1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a691b35afd9aff056e1398fd057691ff1">&#9670;&nbsp;</a></span>getWatchUnconfirmedBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getWatchUnconfirmedBalance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00117">117</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 36 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 37 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9f75dd612381206f905a74de2c5be93a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f75dd612381206f905a74de2c5be93a">&#9670;&nbsp;</a></span>getZerocoinBalance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::getZerocoinBalance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00091">91</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 38 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 39 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ab5e8e946e9ac3ddc9dc6a203e61968e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5e8e946e9ac3ddc9dc6a203e61968e2">&#9670;&nbsp;</a></span>haveWatchOnly()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::haveWatchOnly </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00107">107</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 40 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad170da7fccb70726a4527d67c8f26340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad170da7fccb70726a4527d67c8f26340">&#9670;&nbsp;</a></span>isAnonymizeOnlyUnlocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::isAnonymizeOnlyUnlocked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00472">472</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 41 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="abeea7ae42ec38ace2786b2e3d340f5a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abeea7ae42ec38ace2786b2e3d340f5a2">&#9670;&nbsp;</a></span>isLockedCoin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::isLockedCoin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classuint256.html">uint256</a>&#160;</td>
+          <td class="paramname"><em>hash</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00690">690</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 42 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 43 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a67d21a04d6cb5b3e21e8aab75871ee57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67d21a04d6cb5b3e21e8aab75871ee57">&#9670;&nbsp;</a></span>isMine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::isMine </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_bitcoin_address.html">CBitcoinAddress</a>&#160;</td>
+          <td class="paramname"><em>address</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00746">746</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 44 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 45 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="acb24dd4388e6daef526667fb365a57b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb24dd4388e6daef526667fb365a57b1">&#9670;&nbsp;</a></span>isSpent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::isSpent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>outpoint</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00649">649</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 46 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 47 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae5ce26bba42701b45de766ef11cc9a47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5ce26bba42701b45de766ef11cc9a47">&#9670;&nbsp;</a></span>listCoins()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::listCoins </td>
+          <td>(</td>
+          <td class="paramtype">std::map&lt; QString, std::vector&lt; <a class="el" href="class_c_output.html">COutput</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>mapCoins</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00656">656</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 48 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 49 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a367977352d1ef183ec2cb6b508a85bc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a367977352d1ef183ec2cb6b508a85bc2">&#9670;&nbsp;</a></span>listLockedCoins()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::listLockedCoins </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="class_c_out_point.html">COutPoint</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vOutpts</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00708">708</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 50 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 51 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a901e0b3c32c39bd3301d90f05255f442"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a901e0b3c32c39bd3301d90f05255f442">&#9670;&nbsp;</a></span>listZerocoinMints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::listZerocoinMints </td>
+          <td>(</td>
+          <td class="paramtype">std::list&lt; <a class="el" href="class_c_zerocoin_mint.html">CZerocoinMint</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>listMints</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fUnusedOnly</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fMaturedOnly</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fUpdateStatus</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00715">715</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 52 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 53 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a0ec10fbe74317b1949ac4ae63451d115"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ec10fbe74317b1949ac4ae63451d115">&#9670;&nbsp;</a></span>loadReceiveRequests()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::loadReceiveRequests </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vReceiveRequests</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00722">722</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 54 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9bb6c954dc3cf27e25ced65375fa02f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bb6c954dc3cf27e25ced65375fa02f0">&#9670;&nbsp;</a></span>lockCoin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::lockCoin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00696">696</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 55 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 56 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6fc133a1c8712722db6607d067b58c6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fc133a1c8712722db6607d067b58c6d">&#9670;&nbsp;</a></span>message</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::message </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>style</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a73065e2e6871f0207a107ffec6382ce5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73065e2e6871f0207a107ffec6382ce5">&#9670;&nbsp;</a></span>notifyMultiSigChanged</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::notifyMultiSigChanged </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fHaveMultiSig</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 57 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6568a470db58549d57c0ccf5d6b0d997"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6568a470db58549d57c0ccf5d6b0d997">&#9670;&nbsp;</a></span>notifyWatchonlyChanged</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::notifyWatchonlyChanged </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fHaveWatchonly</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 58 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a51469b2d95cfd4bc0a14ee456fca7b95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51469b2d95cfd4bc0a14ee456fca7b95">&#9670;&nbsp;</a></span>pollBalanceChanged</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::pollBalanceChanged </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00135">135</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 59 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 60 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a8abc851901c7c7343ebfb5a8e5fc0154"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8abc851901c7c7343ebfb5a8e5fc0154">&#9670;&nbsp;</a></span>prepareTransaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_wallet_model_1_1_send_coins_return.html">WalletModel::SendCoinsReturn</a> WalletModel::prepareTransaction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_wallet_model_transaction.html">WalletModelTransaction</a> &amp;&#160;</td>
+          <td class="paramname"><em>transaction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_coin_control.html">CCoinControl</a> *&#160;</td>
+          <td class="paramname"><em>coinControl</em> = <code>NULL</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00245">245</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 61 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 62 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9ad552f7942cd22f7a1cd0803b179f06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ad552f7942cd22f7a1cd0803b179f06">&#9670;&nbsp;</a></span>requestUnlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_wallet_model_1_1_unlock_context.html">WalletModel::UnlockContext</a> WalletModel::requestUnlock </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>relock</em> = <code>false</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00590">590</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 63 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 64 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="acc639a99e4aa34f32110f6b2bdef2393"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc639a99e4aa34f32110f6b2bdef2393">&#9670;&nbsp;</a></span>requireUnlock</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::requireUnlock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 65 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a88d44bc0994c1701386f63b1f266637f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88d44bc0994c1701386f63b1f266637f">&#9670;&nbsp;</a></span>saveReceiveRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::saveReceiveRequest </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sAddress</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int64_t&#160;</td>
+          <td class="paramname"><em>nId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sRequest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00731">731</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 66 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a53443aca544c824550f21e5f87e4ec39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53443aca544c824550f21e5f87e4ec39">&#9670;&nbsp;</a></span>sendCoins()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_wallet_model_1_1_send_coins_return.html">WalletModel::SendCoinsReturn</a> WalletModel::sendCoins </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_wallet_model_transaction.html">WalletModelTransaction</a> &amp;&#160;</td>
+          <td class="paramname"><em>transaction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00348">348</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 67 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6a64730ca8256dd5ec569e26ac758719"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a64730ca8256dd5ec569e26ac758719">&#9670;&nbsp;</a></span>setAddressBook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::setAddressBook </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="standard_8h.html#a50f712c3d9a0d2f85ae464497dd9cff8">CTxDestination</a> &amp;&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const string &amp;&#160;</td>
+          <td class="paramname"><em>strName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const string &amp;&#160;</td>
+          <td class="paramname"><em>strPurpose</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a444340830badcd48e3a4dd6b03d9c4d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a444340830badcd48e3a4dd6b03d9c4d7">&#9670;&nbsp;</a></span>setWalletEncrypted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::setWalletEncrypted </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>encrypted</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a> &amp;&#160;</td>
+          <td class="paramname"><em>passphrase</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00449">449</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 68 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a5a8b65bfaecb0813d64c733f4f34f090"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a8b65bfaecb0813d64c733f4f34f090">&#9670;&nbsp;</a></span>setWalletLocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::setWalletLocked </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>locked</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a> &amp;&#160;</td>
+          <td class="paramname"><em>passPhrase</em> = <code><a class="el" href="allocators_8h.html#a396ed773a5ac24aec28c8f7dc413c7ac">SecureString</a>()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>anonymizeOnly</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00460">460</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 69 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 70 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6c445e6ea25889e14542762e54ced44f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c445e6ea25889e14542762e54ced44f">&#9670;&nbsp;</a></span>showProgress</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::showProgress </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nProgress</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc875c7d3b1ca788f2b4ed842607bac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc875c7d3b1ca788f2b4ed842607bac0">&#9670;&nbsp;</a></span>subscribeToCoreSignals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::subscribeToCoreSignals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00565">565</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a0a5514bd400327df0f7d63341d8fabf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a5514bd400327df0f7d63341d8fabf4">&#9670;&nbsp;</a></span>unlockCoin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::unlockCoin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_c_out_point.html">COutPoint</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00702">702</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 71 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 72 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="acb20c3e5c1a83ce0ed7f300c3cddee73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb20c3e5c1a83ce0ed7f300c3cddee73">&#9670;&nbsp;</a></span>unsubscribeFromCoreSignals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::unsubscribeFromCoreSignals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00577">577</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 73 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad70ea697efb4d5bdc4a834b538b4d535"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad70ea697efb4d5bdc4a834b538b4d535">&#9670;&nbsp;</a></span>updateAddressBook <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::updateAddressBook </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isMine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>purpose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00215">215</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 74 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a79a1fadfcf09ffd4a6cc1396c753f49e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79a1fadfcf09ffd4a6cc1396c753f49e">&#9670;&nbsp;</a></span>updateAddressBook <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::updateAddressBook </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>pubCoin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>isUsed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00220">220</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 75 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a6082bb403560a4bfb88d3a42e7132ab4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6082bb403560a4bfb88d3a42e7132ab4">&#9670;&nbsp;</a></span>updateMultiSigFlag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::updateMultiSigFlag </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fHaveMultiSig</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00233">233</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a89180a13e5b0c2ca7732164b9dec3806"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89180a13e5b0c2ca7732164b9dec3806">&#9670;&nbsp;</a></span>updateStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::updateStatus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00127">127</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 76 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="acf4f77d87e8b96a704c79b1d6cb53701"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf4f77d87e8b96a704c79b1d6cb53701">&#9670;&nbsp;</a></span>updateTransaction</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::updateTransaction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00209">209</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="add90646b2ed03348dc2d6b415fa02a4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add90646b2ed03348dc2d6b415fa02a4e">&#9670;&nbsp;</a></span>updateWatchOnlyFlag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void WalletModel::updateWatchOnlyFlag </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fHaveWatchonly</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00227">227</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a04604615253aeaae1253b1412a70a1f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04604615253aeaae1253b1412a70a1f7">&#9670;&nbsp;</a></span>validateAddress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::validateAddress </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>address</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8cpp_source.html#l00239">239</a> of file <a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 77 -->
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 78 -->
+</div>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a0712446f247952866e7b5252564e5e17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0712446f247952866e7b5252564e5e17">&#9670;&nbsp;</a></span>addressTableModel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_address_table_model.html">AddressTableModel</a>* WalletModel::addressTableModel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00228">228</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a3048be003bad5ce370c06b9bea1c9f08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3048be003bad5ce370c06b9bea1c9f08">&#9670;&nbsp;</a></span>cachedBalance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::cachedBalance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00233">233</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a1583c7546397a480525bd32a1bb964a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1583c7546397a480525bd32a1bb964a6">&#9670;&nbsp;</a></span>cachedEncryptionStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_wallet_model.html#a58f6f0bb5a7b8b4e4d0812185ccc0616">EncryptionStatus</a> WalletModel::cachedEncryptionStatus</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00242">242</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a0130f3a7857611866985e62ea73a8d8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0130f3a7857611866985e62ea73a8d8a">&#9670;&nbsp;</a></span>cachedImmatureBalance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::cachedImmatureBalance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00235">235</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a28a84906aafa3af65653d289e17adbd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28a84906aafa3af65653d289e17adbd0">&#9670;&nbsp;</a></span>cachedImmatureZerocoinBalance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::cachedImmatureZerocoinBalance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00238">238</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="aea5c2fe717ff4d3b066d12f97d77f909"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea5c2fe717ff4d3b066d12f97d77f909">&#9670;&nbsp;</a></span>cachedNumBlocks</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int WalletModel::cachedNumBlocks</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00243">243</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="af5db6dce80bb02b8eff3c7f49a9b4958"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5db6dce80bb02b8eff3c7f49a9b4958">&#9670;&nbsp;</a></span>cachedTxLocks</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int WalletModel::cachedTxLocks</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00244">244</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a8ff4ad3fa01a7f9c5644fa6067418322"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ff4ad3fa01a7f9c5644fa6067418322">&#9670;&nbsp;</a></span>cachedUnconfirmedBalance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::cachedUnconfirmedBalance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00234">234</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a63e606e0d5a8cdae8e80707a62c532fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63e606e0d5a8cdae8e80707a62c532fb">&#9670;&nbsp;</a></span>cachedUnconfirmedZerocoinBalance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::cachedUnconfirmedZerocoinBalance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00237">237</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a6c0ea020fc2bd73eaa747b6daf74f998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c0ea020fc2bd73eaa747b6daf74f998">&#9670;&nbsp;</a></span>cachedWatchImmatureBalance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::cachedWatchImmatureBalance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00241">241</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a8748c67ca736748406629f5fa0102437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8748c67ca736748406629f5fa0102437">&#9670;&nbsp;</a></span>cachedWatchOnlyBalance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::cachedWatchOnlyBalance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00239">239</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a0082b810eb6a95784c095ebaf0105bd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0082b810eb6a95784c095ebaf0105bd4">&#9670;&nbsp;</a></span>cachedWatchUnconfBalance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::cachedWatchUnconfBalance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00240">240</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a8b5be2c9ae7d314f64af2ead4c89baea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b5be2c9ae7d314f64af2ead4c89baea">&#9670;&nbsp;</a></span>cachedZerocoinBalance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="amount_8h.html#a4eaf3a5239714d8c45b851527f7cb564">CAmount</a> WalletModel::cachedZerocoinBalance</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00236">236</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a92709c501bdb44e1ab6b8d087caff855"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92709c501bdb44e1ab6b8d087caff855">&#9670;&nbsp;</a></span>cachedZeromintPercentage</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int WalletModel::cachedZeromintPercentage</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00245">245</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="ab381f2e96b734b7728b9fb2f44364a3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab381f2e96b734b7728b9fb2f44364a3a">&#9670;&nbsp;</a></span>fForceCheckBalanceChanged</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::fForceCheckBalanceChanged</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00222">222</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a569c27f9a5ff551d237edcbb878207c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a569c27f9a5ff551d237edcbb878207c8">&#9670;&nbsp;</a></span>fHaveMultiSig</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::fHaveMultiSig</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00221">221</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="ada7a868b3da256492ea1f19e28374495"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada7a868b3da256492ea1f19e28374495">&#9670;&nbsp;</a></span>fHaveWatchOnly</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool WalletModel::fHaveWatchOnly</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00220">220</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a01d9aba010d85b79d46fe427919dbdc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01d9aba010d85b79d46fe427919dbdc1">&#9670;&nbsp;</a></span>optionsModel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_options_model.html">OptionsModel</a>* WalletModel::optionsModel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00226">226</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="ac63eaed9f2ebd426cc6455812ddf518e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac63eaed9f2ebd426cc6455812ddf518e">&#9670;&nbsp;</a></span>pollTimer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QTimer* WalletModel::pollTimer</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00247">247</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a5ae09d5a1e85dabcef5ab19e5b210230"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ae09d5a1e85dabcef5ab19e5b210230">&#9670;&nbsp;</a></span>recentRequestsTableModel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_recent_requests_table_model.html">RecentRequestsTableModel</a>* WalletModel::recentRequestsTableModel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00230">230</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="a5c5fd9073f578f151ce48ec46b8beacd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c5fd9073f578f151ce48ec46b8beacd">&#9670;&nbsp;</a></span>transactionTableModel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_transaction_table_model.html">TransactionTableModel</a>* WalletModel::transactionTableModel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00229">229</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<a id="abad281324f53ab4be68ba83cfb162bf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abad281324f53ab4be68ba83cfb162bf3">&#9670;&nbsp;</a></span>wallet</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_c_wallet.html">CWallet</a>* WalletModel::wallet</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="walletmodel_8h_source.html#l00219">219</a> of file <a class="el" href="walletmodel_8h_source.html">walletmodel.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>src/qt/<a class="el" href="walletmodel_8h_source.html">walletmodel.h</a></li>
+<li>src/qt/<a class="el" href="walletmodel_8cpp_source.html">walletmodel.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:29 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

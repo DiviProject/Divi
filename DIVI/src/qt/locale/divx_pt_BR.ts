@@ -3716,7 +3716,7 @@ https://www.transifex.com/divx-project/divx-project-translations</translation>
     </message>
 </context>
 <context>
-    <name>ZPivControlDialog</name>
+    <name>ZDivControlDialog</name>
     <message>
         <source>Quantity</source>
         <translation>Quantia</translation>

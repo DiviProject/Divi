@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: Member List</title>
+<title>DIVX: Member List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -68,15 +71,43 @@ $(function() {
 
 <p>This is the complete list of members for <a class="el" href="class_multisig_dialog.html">MultisigDialog</a>, including all inherited members.</p>
 <table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>MultisigDialog</b>(QWidget *parent) (defined in <a class="el" href="class_multisig_dialog.html">MultisigDialog</a>)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>setModel</b>(WalletModel *model) (defined in <a class="el" href="class_multisig_dialog.html">MultisigDialog</a>)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>showTab</b>(int index) (defined in <a class="el" href="class_multisig_dialog.html">MultisigDialog</a>)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>updateCoinControl</b>(CAmount nAmount, unsigned int nQuantity) (defined in <a class="el" href="class_multisig_dialog.html">MultisigDialog</a>)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>~MultisigDialog</b>() (defined in <a class="el" href="class_multisig_dialog.html">MultisigDialog</a>)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#adca581d515dbed70f4a27efe0e1b49a8">addMultisig</a>(int m, std::vector&lt; std::string &gt; keys)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#a9eff449f2cb8951c5cdd62342e44b14d">addressBookButtonReceiving</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#a3992213f912c0335428a38138df096b7">buildMultisigTxStatusString</a>(bool fComplete, const CMutableTransaction &amp;tx)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#a65a786c9d63972aeeac2b68220d2fdd7">coinControl</a></td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#a4b8f46adc64493a801bffb464b7c09ea">commitMultisigTx</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#afedd4bf8d1421dc87fe8b0470578f062">createAddress</a>(int labelNumber)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#afe87be83a5400a97a1de1a8972157abe">createInput</a>(int labelNumber)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#aef15617d396337a9ebdd9516f825ac4a">createMultisigTransaction</a>(std::vector&lt; CTxIn &gt; vUserIn, std::vector&lt; CTxOut &gt; vUserOut, string &amp;feeStringRet, string &amp;errorRet)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#a855bc7e7c77ab68f0cb5f9f62f4abf90">createRedeemScript</a>(int m, std::vector&lt; std::string &gt; keys, CScript &amp;redeemRet, std::string &amp;errorRet)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#a2c6519864a64e8180fab099f5a25d12e">deleteFrame</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#a5d4d879731c8b423401a9b1724a20eab">getInputsCoinsViewCache</a>(const std::vector&lt; CTxIn &gt; &amp;vin)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#a828aaa687c569613f32b831663e810af">isFirstPrivKey</a></td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#a9794ecaefacbe132d846bfba4d4cf3df">isFirstRawTx</a></td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#a3e11d93578e92591af343b003b817dfe">isFullyVerified</a>(CMutableTransaction &amp;txToVerify)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#af1aa40b615d77918bdcb9245c8f73574">model</a></td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#af8ff2a9f6dc05a9468d955cb428c6474">MultisigDialog</a>(QWidget *parent)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#ad33bac0b47af537ee8d10b57b3340ad5">multisigTx</a></td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#a8f26906e6f4d25273e15c95d90cc14fa">on_addAddressButton_clicked</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#a09ccfdb42e70bd8c480f39f2b01a6de8">on_addDestinationButton_clicked</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#ade82771bf434da5e2747601c84cd9125">on_addInputButton_clicked</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#a6674d42511cedc0cd5b52dee9071acd5">on_addMultisigButton_clicked</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#acc869f9b2fe08ab9e40d63876b5c9781">on_addPrivKeyButton_clicked</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#aa92668e885635152734edf805c021590">on_createButton_clicked</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#acd1dfe3a52a5a91b31f8042a119c7618">on_importAddressButton_clicked</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#a3d21b360d294040f947ce6cc685dfdfa">on_pushButtonCoinControl_clicked</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#a5fdc6c2578e0f4e2f7900a3723d223ae">on_signButton_clicked</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#aaa50f82544e15a0b8cb083c0b933404e">pasteText</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#ae2709a2ffd629acafa4c90811402c64a">setModel</a>(WalletModel *model)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#a2fc79dce0675edaa3e25caf8969a77b5">showTab</a>(int index)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">slot</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#accd639f522281361bdf409e88909eb98">signMultisigTx</a>(CMutableTransaction &amp;txToSign, std::string &amp;errorMessageRet, QVBoxLayout *keyList=nullptr)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#af18d6c7148385c9b61afcddc253b75fd">ui</a></td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_multisig_dialog.html#ad0e2804a0a618393be5ea6b4752052e2">updateCoinControl</a>(CAmount nAmount, unsigned int nQuantity)</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_multisig_dialog.html#ab6d61f1b8c5b92a81fb8b4f4bcd919c7">~MultisigDialog</a>()</td><td class="entry"><a class="el" href="class_multisig_dialog.html">MultisigDialog</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

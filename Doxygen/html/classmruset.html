@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PIVX Project: mruset&lt; T &gt; Class Template Reference</title>
+<title>DIVX: mruset&lt; T &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -20,9 +20,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">PIVX Project
+   <div id="projectname">DIVX
+   &#160;<span id="projectnumber">1.0.0</span>
    </div>
+   <div id="projectbrief">P2P Digital Currency</div>
   </td>
  </tr>
  </tbody>
@@ -71,81 +74,62 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>STL-like set container that only keeps the most recent N elements.  
+ <a href="classmruset.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="mruset_8h_source.html">mruset.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a282941ee7f0438b0c09274b10c78cda0"><td class="memItemLeft" align="right" valign="top"><a id="a282941ee7f0438b0c09274b10c78cda0"></a>
-typedef T&#160;</td><td class="memItemRight" valign="bottom"><b>key_type</b></td></tr>
+<tr class="memitem:a282941ee7f0438b0c09274b10c78cda0"><td class="memItemLeft" align="right" valign="top">typedef T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a282941ee7f0438b0c09274b10c78cda0">key_type</a></td></tr>
 <tr class="separator:a282941ee7f0438b0c09274b10c78cda0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a834c3e7f8e9cf615ebe27752443f9a3a"><td class="memItemLeft" align="right" valign="top"><a id="a834c3e7f8e9cf615ebe27752443f9a3a"></a>
-typedef T&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b></td></tr>
+<tr class="memitem:a834c3e7f8e9cf615ebe27752443f9a3a"><td class="memItemLeft" align="right" valign="top">typedef T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a834c3e7f8e9cf615ebe27752443f9a3a">value_type</a></td></tr>
 <tr class="separator:a834c3e7f8e9cf615ebe27752443f9a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a246172eda1afff45be47a013c14b1ad6"><td class="memItemLeft" align="right" valign="top"><a id="a246172eda1afff45be47a013c14b1ad6"></a>
-typedef std::set&lt; T &gt;::iterator&#160;</td><td class="memItemRight" valign="bottom"><b>iterator</b></td></tr>
+<tr class="memitem:a246172eda1afff45be47a013c14b1ad6"><td class="memItemLeft" align="right" valign="top">typedef std::set&lt; T &gt;::<a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a></td></tr>
 <tr class="separator:a246172eda1afff45be47a013c14b1ad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74c77f7642e8e4db7cc79991c4345692"><td class="memItemLeft" align="right" valign="top"><a id="a74c77f7642e8e4db7cc79991c4345692"></a>
-typedef std::set&lt; T &gt;::const_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b></td></tr>
+<tr class="memitem:a74c77f7642e8e4db7cc79991c4345692"><td class="memItemLeft" align="right" valign="top">typedef std::set&lt; T &gt;::<a class="el" href="classmruset.html#a74c77f7642e8e4db7cc79991c4345692">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a74c77f7642e8e4db7cc79991c4345692">const_iterator</a></td></tr>
 <tr class="separator:a74c77f7642e8e4db7cc79991c4345692"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaee46af18d8a5bdc503e9570e499a335"><td class="memItemLeft" align="right" valign="top"><a id="aaee46af18d8a5bdc503e9570e499a335"></a>
-typedef std::set&lt; T &gt;::size_type&#160;</td><td class="memItemRight" valign="bottom"><b>size_type</b></td></tr>
+<tr class="memitem:aaee46af18d8a5bdc503e9570e499a335"><td class="memItemLeft" align="right" valign="top">typedef std::set&lt; T &gt;::<a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a></td></tr>
 <tr class="separator:aaee46af18d8a5bdc503e9570e499a335"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a708b11a33448c283f6f4c8e18fd3098f"><td class="memItemLeft" align="right" valign="top"><a id="a708b11a33448c283f6f4c8e18fd3098f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>mruset</b> (size_type nMaxSizeIn=0)</td></tr>
+<tr class="memitem:a708b11a33448c283f6f4c8e18fd3098f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a708b11a33448c283f6f4c8e18fd3098f">mruset</a> (<a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a> nMaxSizeIn=0)</td></tr>
 <tr class="separator:a708b11a33448c283f6f4c8e18fd3098f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a778f8d3dc53ce8e76abb2f88ab42b3ad"><td class="memItemLeft" align="right" valign="top"><a id="a778f8d3dc53ce8e76abb2f88ab42b3ad"></a>
-iterator&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const</td></tr>
+<tr class="memitem:a778f8d3dc53ce8e76abb2f88ab42b3ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a778f8d3dc53ce8e76abb2f88ab42b3ad">begin</a> () const</td></tr>
 <tr class="separator:a778f8d3dc53ce8e76abb2f88ab42b3ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac93f008bbc701f8c9512f6f1d8ae1d24"><td class="memItemLeft" align="right" valign="top"><a id="ac93f008bbc701f8c9512f6f1d8ae1d24"></a>
-iterator&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const</td></tr>
+<tr class="memitem:ac93f008bbc701f8c9512f6f1d8ae1d24"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#ac93f008bbc701f8c9512f6f1d8ae1d24">end</a> () const</td></tr>
 <tr class="separator:ac93f008bbc701f8c9512f6f1d8ae1d24"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b1cd4454d0399085c4ec9ddb8611011"><td class="memItemLeft" align="right" valign="top"><a id="a9b1cd4454d0399085c4ec9ddb8611011"></a>
-size_type&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td></tr>
+<tr class="memitem:a9b1cd4454d0399085c4ec9ddb8611011"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a9b1cd4454d0399085c4ec9ddb8611011">size</a> () const</td></tr>
 <tr class="separator:a9b1cd4454d0399085c4ec9ddb8611011"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94f290b3990c91c3606ab11935cee849"><td class="memItemLeft" align="right" valign="top"><a id="a94f290b3990c91c3606ab11935cee849"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>empty</b> () const</td></tr>
+<tr class="memitem:a94f290b3990c91c3606ab11935cee849"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a94f290b3990c91c3606ab11935cee849">empty</a> () const</td></tr>
 <tr class="separator:a94f290b3990c91c3606ab11935cee849"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe8cc5d73bc6efad0bdaf4fa51bcc362"><td class="memItemLeft" align="right" valign="top"><a id="abe8cc5d73bc6efad0bdaf4fa51bcc362"></a>
-iterator&#160;</td><td class="memItemRight" valign="bottom"><b>find</b> (const key_type &amp;k) const</td></tr>
+<tr class="memitem:abe8cc5d73bc6efad0bdaf4fa51bcc362"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#abe8cc5d73bc6efad0bdaf4fa51bcc362">find</a> (const <a class="el" href="classmruset.html#a282941ee7f0438b0c09274b10c78cda0">key_type</a> &amp;k) const</td></tr>
 <tr class="separator:abe8cc5d73bc6efad0bdaf4fa51bcc362"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff65b732aed809fb84542e1136321a24"><td class="memItemLeft" align="right" valign="top"><a id="aff65b732aed809fb84542e1136321a24"></a>
-size_type&#160;</td><td class="memItemRight" valign="bottom"><b>count</b> (const key_type &amp;k) const</td></tr>
+<tr class="memitem:aff65b732aed809fb84542e1136321a24"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#aff65b732aed809fb84542e1136321a24">count</a> (const <a class="el" href="classmruset.html#a282941ee7f0438b0c09274b10c78cda0">key_type</a> &amp;k) const</td></tr>
 <tr class="separator:aff65b732aed809fb84542e1136321a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7a85b54646e9d9d1962ce7f30b2a1fc"><td class="memItemLeft" align="right" valign="top"><a id="ac7a85b54646e9d9d1962ce7f30b2a1fc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
+<tr class="memitem:ac7a85b54646e9d9d1962ce7f30b2a1fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#ac7a85b54646e9d9d1962ce7f30b2a1fc">clear</a> ()</td></tr>
 <tr class="separator:ac7a85b54646e9d9d1962ce7f30b2a1fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aced009504f86176bd82426aa24a38e37"><td class="memItemLeft" align="right" valign="top"><a id="aced009504f86176bd82426aa24a38e37"></a>
-bool friend&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;a, const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;b)</td></tr>
+<tr class="memitem:aced009504f86176bd82426aa24a38e37"><td class="memItemLeft" align="right" valign="top">bool friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#aced009504f86176bd82426aa24a38e37">operator==</a> (const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;a, const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;<a class="el" href="field__5x52__asm__impl_8h.html#a3918a949ba563f8dbca32d694798b56a">b</a>)</td></tr>
 <tr class="separator:aced009504f86176bd82426aa24a38e37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d7231441276ef8a6c0fa3edf9712f5c"><td class="memItemLeft" align="right" valign="top"><a id="a4d7231441276ef8a6c0fa3edf9712f5c"></a>
-bool friend&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;a, const std::set&lt; T &gt; &amp;b)</td></tr>
+<tr class="memitem:a4d7231441276ef8a6c0fa3edf9712f5c"><td class="memItemLeft" align="right" valign="top">bool friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a4d7231441276ef8a6c0fa3edf9712f5c">operator==</a> (const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;a, const std::set&lt; T &gt; &amp;<a class="el" href="field__5x52__asm__impl_8h.html#a3918a949ba563f8dbca32d694798b56a">b</a>)</td></tr>
 <tr class="separator:a4d7231441276ef8a6c0fa3edf9712f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a95239f76da8ba675ba748baf1f07c8"><td class="memItemLeft" align="right" valign="top"><a id="a5a95239f76da8ba675ba748baf1f07c8"></a>
-bool friend&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;a, const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;b)</td></tr>
+<tr class="memitem:a5a95239f76da8ba675ba748baf1f07c8"><td class="memItemLeft" align="right" valign="top">bool friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a5a95239f76da8ba675ba748baf1f07c8">operator&lt;</a> (const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;a, const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;<a class="el" href="field__5x52__asm__impl_8h.html#a3918a949ba563f8dbca32d694798b56a">b</a>)</td></tr>
 <tr class="separator:a5a95239f76da8ba675ba748baf1f07c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2e0dfe9d8b029bde78457797cdc42a9"><td class="memItemLeft" align="right" valign="top"><a id="af2e0dfe9d8b029bde78457797cdc42a9"></a>
-std::pair&lt; iterator, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>insert</b> (const key_type &amp;x)</td></tr>
+<tr class="memitem:af2e0dfe9d8b029bde78457797cdc42a9"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a>, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#af2e0dfe9d8b029bde78457797cdc42a9">insert</a> (const <a class="el" href="classmruset.html#a282941ee7f0438b0c09274b10c78cda0">key_type</a> &amp;x)</td></tr>
 <tr class="separator:af2e0dfe9d8b029bde78457797cdc42a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af33f9531e47639e4dc6a42c123797292"><td class="memItemLeft" align="right" valign="top"><a id="af33f9531e47639e4dc6a42c123797292"></a>
-size_type&#160;</td><td class="memItemRight" valign="bottom"><b>max_size</b> () const</td></tr>
+<tr class="memitem:af33f9531e47639e4dc6a42c123797292"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#af33f9531e47639e4dc6a42c123797292">max_size</a> () const</td></tr>
 <tr class="separator:af33f9531e47639e4dc6a42c123797292"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a030aa4599dfb54074183e2cdfbe2373f"><td class="memItemLeft" align="right" valign="top"><a id="a030aa4599dfb54074183e2cdfbe2373f"></a>
-size_type&#160;</td><td class="memItemRight" valign="bottom"><b>max_size</b> (size_type s)</td></tr>
+<tr class="memitem:a030aa4599dfb54074183e2cdfbe2373f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a030aa4599dfb54074183e2cdfbe2373f">max_size</a> (<a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a> s)</td></tr>
 <tr class="separator:a030aa4599dfb54074183e2cdfbe2373f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a4981fc3556b61600418b2ddad98cc685"><td class="memItemLeft" align="right" valign="top"><a id="a4981fc3556b61600418b2ddad98cc685"></a>
-std::set&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>set</b></td></tr>
+<tr class="memitem:a4981fc3556b61600418b2ddad98cc685"><td class="memItemLeft" align="right" valign="top">std::set&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a4981fc3556b61600418b2ddad98cc685">set</a></td></tr>
 <tr class="separator:a4981fc3556b61600418b2ddad98cc685"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6be1fe81dc472e25e160911288373663"><td class="memItemLeft" align="right" valign="top"><a id="a6be1fe81dc472e25e160911288373663"></a>
-std::deque&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>queue</b></td></tr>
+<tr class="memitem:a6be1fe81dc472e25e160911288373663"><td class="memItemLeft" align="right" valign="top">std::deque&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a6be1fe81dc472e25e160911288373663">queue</a></td></tr>
 <tr class="separator:a6be1fe81dc472e25e160911288373663"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d3d6963e3ca5689e846b12a29dd09ab"><td class="memItemLeft" align="right" valign="top"><a id="a6d3d6963e3ca5689e846b12a29dd09ab"></a>
-size_type&#160;</td><td class="memItemRight" valign="bottom"><b>nMaxSize</b></td></tr>
+<tr class="memitem:a6d3d6963e3ca5689e846b12a29dd09ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmruset.html#a6d3d6963e3ca5689e846b12a29dd09ab">nMaxSize</a></td></tr>
 <tr class="separator:a6d3d6963e3ca5689e846b12a29dd09ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -153,13 +137,643 @@ size_type&#160;</td><td class="memItemRight" valign="bottom"><b>nMaxSize</b></td
 class mruset&lt; T &gt;</h3>
 
 <p>STL-like set container that only keeps the most recent N elements. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>PIVX/src/<a class="el" href="mruset_8h_source.html">mruset.h</a></li>
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00014">14</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a74c77f7642e8e4db7cc79991c4345692"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74c77f7642e8e4db7cc79991c4345692">&#9670;&nbsp;</a></span>const_iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::set&lt;T&gt;::<a class="el" href="classmruset.html#a74c77f7642e8e4db7cc79991c4345692">const_iterator</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::<a class="el" href="classmruset.html#a74c77f7642e8e4db7cc79991c4345692">const_iterator</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00020">20</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="a246172eda1afff45be47a013c14b1ad6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a246172eda1afff45be47a013c14b1ad6">&#9670;&nbsp;</a></span>iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::set&lt;T&gt;::<a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::<a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00019">19</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="a282941ee7f0438b0c09274b10c78cda0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a282941ee7f0438b0c09274b10c78cda0">&#9670;&nbsp;</a></span>key_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef T <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::<a class="el" href="classmruset.html#a282941ee7f0438b0c09274b10c78cda0">key_type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00017">17</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="aaee46af18d8a5bdc503e9570e499a335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaee46af18d8a5bdc503e9570e499a335">&#9670;&nbsp;</a></span>size_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::set&lt;T&gt;::<a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::<a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00021">21</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="a834c3e7f8e9cf615ebe27752443f9a3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a834c3e7f8e9cf615ebe27752443f9a3a">&#9670;&nbsp;</a></span>value_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef T <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::<a class="el" href="classmruset.html#a834c3e7f8e9cf615ebe27752443f9a3a">value_type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00018">18</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a708b11a33448c283f6f4c8e18fd3098f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a708b11a33448c283f6f4c8e18fd3098f">&#9670;&nbsp;</a></span>mruset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::<a class="el" href="classmruset.html">mruset</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a>&#160;</td>
+          <td class="paramname"><em>nMaxSizeIn</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00029">29</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a778f8d3dc53ce8e76abb2f88ab42b3ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a778f8d3dc53ce8e76abb2f88ab42b3ad">&#9670;&nbsp;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::begin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00030">30</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="ac7a85b54646e9d9d1962ce7f30b2a1fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7a85b54646e9d9d1962ce7f30b2a1fc">&#9670;&nbsp;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00036">36</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="aff65b732aed809fb84542e1136321a24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff65b732aed809fb84542e1136321a24">&#9670;&nbsp;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::count </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmruset.html#a282941ee7f0438b0c09274b10c78cda0">key_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>k</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00035">35</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 0 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="a94f290b3990c91c3606ab11935cee849"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94f290b3990c91c3606ab11935cee849">&#9670;&nbsp;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00033">33</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="ac93f008bbc701f8c9512f6f1d8ae1d24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac93f008bbc701f8c9512f6f1d8ae1d24">&#9670;&nbsp;</a></span>end()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::end </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00031">31</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="abe8cc5d73bc6efad0bdaf4fa51bcc362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe8cc5d73bc6efad0bdaf4fa51bcc362">&#9670;&nbsp;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::find </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmruset.html#a282941ee7f0438b0c09274b10c78cda0">key_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>k</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00034">34</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="af2e0dfe9d8b029bde78457797cdc42a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2e0dfe9d8b029bde78457797cdc42a9">&#9670;&nbsp;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt;<a class="el" href="classmruset.html#a246172eda1afff45be47a013c14b1ad6">iterator</a>, bool&gt; <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::insert </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmruset.html#a282941ee7f0438b0c09274b10c78cda0">key_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00044">44</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><!-- SVG 1 -->
+</div>
+</div>
+
+</div>
+</div>
+<a id="af33f9531e47639e4dc6a42c123797292"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af33f9531e47639e4dc6a42c123797292">&#9670;&nbsp;</a></span>max_size() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::max_size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00056">56</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="a030aa4599dfb54074183e2cdfbe2373f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a030aa4599dfb54074183e2cdfbe2373f">&#9670;&nbsp;</a></span>max_size() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::max_size </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a>&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00057">57</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="a5a95239f76da8ba675ba748baf1f07c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a95239f76da8ba675ba748baf1f07c8">&#9670;&nbsp;</a></span>operator&lt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool friend <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::operator&lt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00043">43</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="aced009504f86176bd82426aa24a38e37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aced009504f86176bd82426aa24a38e37">&#9670;&nbsp;</a></span>operator==() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool friend <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00041">41</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="a4d7231441276ef8a6c0fa3edf9712f5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d7231441276ef8a6c0fa3edf9712f5c">&#9670;&nbsp;</a></span>operator==() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool friend <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmruset.html">mruset</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::set&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00042">42</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="a9b1cd4454d0399085c4ec9ddb8611011"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b1cd4454d0399085c4ec9ddb8611011">&#9670;&nbsp;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00032">32</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a6d3d6963e3ca5689e846b12a29dd09ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d3d6963e3ca5689e846b12a29dd09ab">&#9670;&nbsp;</a></span>nMaxSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmruset.html#aaee46af18d8a5bdc503e9570e499a335">size_type</a> <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::nMaxSize</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00026">26</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="a6be1fe81dc472e25e160911288373663"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6be1fe81dc472e25e160911288373663">&#9670;&nbsp;</a></span>queue</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::deque&lt;T&gt; <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::queue</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00025">25</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<a id="a4981fc3556b61600418b2ddad98cc685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4981fc3556b61600418b2ddad98cc685">&#9670;&nbsp;</a></span>set</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt;T&gt; <a class="el" href="classmruset.html">mruset</a>&lt; T &gt;::set</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="mruset_8h_source.html#l00024">24</a> of file <a class="el" href="mruset_8h_source.html">mruset.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>src/<a class="el" href="mruset_8h_source.html">mruset.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 1 2018 15:20:28 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

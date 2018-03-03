@@ -15,11 +15,7 @@ var searchData=
   ['amountspinbox',['AmountSpinBox',['../class_amount_spin_box.html',1,'']]],
   ['annotatedmixin',['AnnotatedMixin',['../class_annotated_mixin.html',1,'']]],
   ['annotatedmixin_3c_20boost_3a_3arecursive_5fmutex_20_3e',['AnnotatedMixin&lt; boost::recursive_mutex &gt;',['../class_annotated_mixin.html',1,'']]],
-  ['arena',['Arena',['../classleveldb_1_1_arena.html',1,'leveldb']]],
-  ['arenatest',['ArenaTest',['../classleveldb_1_1_arena_test.html',1,'leveldb']]],
   ['arith_5fuint256',['arith_uint256',['../classarith__uint256.html',1,'']]],
   ['arith_5fuint512',['arith_uint512',['../classarith__uint512.html',1,'']]],
-  ['askpassphrasedialog',['AskPassphraseDialog',['../class_ask_passphrase_dialog.html',1,'']]],
-  ['atomicpointer',['AtomicPointer',['../classleveldb_1_1port_1_1_atomic_pointer.html',1,'leveldb::port']]],
-  ['autocompacttest',['AutoCompactTest',['../classleveldb_1_1_auto_compact_test.html',1,'leveldb']]]
+  ['askpassphrasedialog',['AskPassphraseDialog',['../class_ask_passphrase_dialog.html',1,'']]]
 ];

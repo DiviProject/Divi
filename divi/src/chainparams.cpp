@@ -390,7 +390,7 @@ public:
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12347;
         
-        
+        /*
         hashGenesisBlock = uint256("0x01");
         if (true && genesis.GetHash() != hashGenesisBlock)
         {
@@ -403,12 +403,12 @@ public:
             printf("new regtest genesis nonce: %d\n", genesis.nNonce);
             printf("new regtest genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        
+        */
         
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
         
-        assert(hashGenesisBlock == uint256("0x79ba0d9d15d36edee8d07cc300379ec65ab7e12765acd883e870aa618dbcc1a8"));
+        assert(hashGenesisBlock == uint256("0x0eddf3476f5a5fc8404a7ec38a8dab5bd7e7cf6c6e057f7e38ec02ac45ae1b31"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

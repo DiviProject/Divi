@@ -187,9 +187,9 @@ public:
         genesis.nVersion = 1;
         genesis.nTime = 1520007171;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 414485914;
+        genesis.nNonce = 416509442;
         
-        
+        /*
         hashGenesisBlock = uint256("0x01");
         if (true && genesis.GetHash() != hashGenesisBlock)
         {   
@@ -203,10 +203,11 @@ public:
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
+		*/
         
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
-        assert(genesis.hashMerkleRoot == uint256("0x9360d505560e5b26470a658878d9469d89a191442aaa6bcf48a21fcfbb5c4738"));
+        assert(hashGenesisBlock == uint256("0x000008ae5cfd29b6680b53c7061840fdeea45259bd5320322a541a0e4305728a"));
+        assert(genesis.hashMerkleRoot == uint256("0xb68f3b6cefa827045e8bac505203050c9d247c10d7fe2a951575924427a51052"));
 
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divx.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divx.seed2.fuzzbawls.pw"));    // Secondary DNS Seeder from Fuzzbawls

@@ -188,7 +188,7 @@ public:
         genesis.nTime = 1520007171;
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 416509442;
-		genesis.payee = txNew.vout[0].scriptPubKey
+		genesis.payee = txNew.vout[0].scriptPubKey;
 
         /*
         hashGenesisBlock = uint256("0x01");

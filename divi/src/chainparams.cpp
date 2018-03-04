@@ -188,7 +188,7 @@ public:
         genesis.nTime = 1520007171;
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 416509442;
-		genesis.payee = CScript() << ParseHex("04bcc3ef3417ba00ab55e3de807a776ade43cbd634a7e2cff383fecc6920cf918b2ad427f6b0a3f8d38f5a41d5dcbf35b394521bd08fcb5f40749df5bfe7d42fe2") << OP_CHECKSIG;
+		genesis.payee = txNew.vout[0].scriptPubKey
 
         /*
         hashGenesisBlock = uint256("0x01");

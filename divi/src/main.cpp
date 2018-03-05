@@ -1460,8 +1460,8 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
     // Check for negative or overflow output values
     CAmount nValueOut = 0;
     int nZCSpendCount = 0;
-    txout.nValue = 1000;
     BOOST_FOREACH (const CTxOut& txout, tx.vout) {
+        LogPrintf("CheckTransaction(): txout.nValue = %s\n", txout.nValue);
         if (txout.IsEmpty() && !tx.IsCoinBase() && !tx.IsCoinStake())
             return state.DoS(100, error("CheckTransaction(): txout empty for user transaction"));
 

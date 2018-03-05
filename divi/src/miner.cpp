@@ -391,8 +391,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
         }
 
-        LogPrintf("CreateNewBlock(): total size %s\n", pblock->toString());
-        LogPrintf("CreateNewBlock(): total size %s\n", pblock->SerializeToString());  
+        LogPrintf("CreateNewBlock(): block tostring %s\n", pblock.ToString();
+        //LogPrintf("CreateNewBlock(): block transaction tostring %s\n", pblock->vtx.ToString();
 
         if (!fProofOfStake) {
             //Masternode and general budget payments

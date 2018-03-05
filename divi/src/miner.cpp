@@ -101,7 +101,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     if (!pblocktemplate.get())
         return NULL;
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
-
+    
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios
     if (Params().MineBlocksOnDemand())
@@ -390,6 +390,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 }
             }
         }
+
+        LogPrintf("CreateNewBlock(): total size %s\n", pblock.toString());
+        LogPrintf("CreateNewBlock(): total size %s\n", pblock.SerializeToString());  
 
         if (!fProofOfStake) {
             //Masternode and general budget payments

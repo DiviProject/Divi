@@ -1461,6 +1461,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
     CAmount nValueOut = 0;
     int nZCSpendCount = 0;
     BOOST_FOREACH (const CTxOut& txout, tx.vout) {
+        LogPrintf("CheckTransaction(): txout.nValue = %s\n", txout.nValue);
         if (txout.IsEmpty() && !tx.IsCoinBase() && !tx.IsCoinStake())
             return state.DoS(100, error("CheckTransaction(): txout empty for user transaction"));
 
@@ -1515,9 +1516,9 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
     }
 
     if (tx.IsCoinBase()) {
-        //if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 150)
-            //return state.DoS(100, error("CheckTransaction() : coinbase script size=%d", tx.vin[0].scriptSig.size()),
-                //REJECT_INVALID, "bad-cb-length");
+        if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 150)
+            return state.DoS(100, error("CheckTransaction() : coinbase script size=%d", tx.vin[0].scriptSig.size()),
+                REJECT_INVALID, "bad-cb-length");
     } else if (fZerocoinActive && tx.IsZerocoinSpend()) {
         if(tx.vin.size() < 1 || static_cast<int>(tx.vin.size()) > Params().Zerocoin_MaxSpendsPerTransaction())
             return state.DoS(10, error("CheckTransaction() : Zerocoin Spend has more than allowed txin's"), REJECT_INVALID, "bad-zerocoinspend");

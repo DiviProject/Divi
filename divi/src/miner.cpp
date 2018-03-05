@@ -391,9 +391,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
         }
 
-        LogPrintf("CreateNewBlock(): block tostring %s\n", pblock->ToString());
-        //LogPrintf("CreateNewBlock(): block transaction tostring %s\n", pblock->vtx.ToString());
-
         if (!fProofOfStake) {
             //Masternode and general budget payments
             FillBlockPayee(txNew, nFees, fProofOfStake);
@@ -427,6 +424,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         }
         pblock->nAccumulatorCheckpoint = nCheckpoint;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
+
+        LogPrintf("CreateNewBlock(): block tostring %s\n", pblock->ToString());
 
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {

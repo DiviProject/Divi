@@ -391,7 +391,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
         }
 
-        LogPrintf("CreateNewBlock(): block tostring %s\n", pblock.ToString());
+        LogPrintf("CreateNewBlock(): block tostring %s\n", pblock->ToString());
         //LogPrintf("CreateNewBlock(): block transaction tostring %s\n", pblock->vtx.ToString());
 
         if (!fProofOfStake) {

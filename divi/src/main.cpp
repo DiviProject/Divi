@@ -1462,7 +1462,6 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
     int nZCSpendCount = 0;
     BOOST_FOREACH (const CTxOut& txout, tx.vout) {
         LogPrintf("CheckTransaction(): txout.nValue = %s\n", txout.nValue);
-        /*
         if (txout.IsEmpty() && !tx.IsCoinBase() && !tx.IsCoinStake())
             return state.DoS(100, error("CheckTransaction(): txout empty for user transaction"));
         if (txout.nValue < 0)
@@ -1481,7 +1480,6 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
         }
         if (fZerocoinActive && txout.scriptPubKey.IsZerocoinSpend())
             nZCSpendCount++;
-        */
     }
 
     if (fZerocoinActive) {

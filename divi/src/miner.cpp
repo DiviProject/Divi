@@ -412,6 +412,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             //byrdcode
             txNew.vout[0].nValue = GetBlockValue(nHeight);
             txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+            //endbyrdcode
             pblock->vtx[0] = txNew;
             pblocktemplate->vTxFees[0] = -nFees;
         }
@@ -563,17 +564,25 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         //
         // Create new block
         //
+
         unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
         CBlockIndex* pindexPrev = chainActive.Tip();
         if (!pindexPrev)
             continue;
+        LogPrintf("BitcoinMiner(): chainActive.Tip %s\n", chainActive.Tip());
 
         unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));
         if (!pblocktemplate.get())
             continue;
+        LogPrintf("BitcoinMiner(): pblocktemplate.get %s\n", "");
+
 
         CBlock* pblock = &pblocktemplate->block;
+        LogPrintf("BitcoinMiner(): block created. %s\n", "");
+
         IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+        LogPrintf("BitcoinMiner(): nonce incremented. %s\n", "");
+
 
         //Stake miner main
         if (fProofOfStake) {

@@ -126,7 +126,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 
     //byrd transaction printout
-    pblock->vtx.ToString();
+    LogPrintf("CreateNewBlock(): transaction tostring %s\n", pblock->vtx->ToString());
+
 
 
     // ppcoin: if coinstake available add coinstake tx
@@ -431,7 +432,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
         //byrd transaction printout
-        pblock->vtx.ToString();
+        LogPrintf("CreateNewBlock(): transaction tostring %s\n", pblock->vtx->ToString());
         LogPrintf("CreateNewBlock(): block tostring %s\n", pblock->ToString());
 
         CValidationState state;

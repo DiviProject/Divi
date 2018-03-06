@@ -433,12 +433,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         //byrd transaction printout
         LogPrintf("CreateNewBlock(): block tostring %s\n", pblock->ToString());
 
-        //CValidationState state;
-        //if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
-        //    LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
-        //    mempool.clear();
-        //    return NULL;
-        //}
+        CValidationState state;
+        if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
+            LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
+            mempool.clear();
+            return NULL;
+        }
         LogPrintf("CreateNewBlock(): validation passed %s\n", "");
     }
     LogPrintf("CreateNewBlock(): releasing template %s\n", "");

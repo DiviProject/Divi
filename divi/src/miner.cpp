@@ -122,8 +122,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
     
     pblock->vtx.push_back(txNew);
-    pblocktemplate->vTxFees.push_back(0);   // updated at end
-    pblocktemplate->vTxSigOps.push_back(0); // updated at end
+    pblocktemplate->vTxFees.push_back(-1);   // updated at end
+    pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 
     // ppcoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
@@ -409,6 +409,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         // Compute final coinbase transaction.
         pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
         if (!fProofOfStake) {
+            //byrdcode
+            txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
+            txNew.vin[0].scriptsig = CScript() << nHeight << OP_0;
             pblock->vtx[0] = txNew;
             pblocktemplate->vTxFees[0] = -nFees;
         }

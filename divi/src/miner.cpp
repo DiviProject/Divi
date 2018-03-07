@@ -394,7 +394,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
         if (!fProofOfStake) {
             //Masternode and general budget payments
-            //FillBlockPayee(txNew, nFees, fProofOfStake);
+            FillBlockPayee(txNew, nFees, fProofOfStake);
 
             //Make payee
             if (txNew.vout.size() > 1) {
@@ -410,8 +410,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
         if (!fProofOfStake) {
             //byrdcode
-            //txNew.vout[0].nValue = GetBlockValue(nHeight);
-            //txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+            txNew.vout[0].nValue = GetBlockValue(nHeight);
+            txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
             //endbyrdcode
             pblock->vtx[0] = txNew;
             pblocktemplate->vTxFees[0] = -nFees;
@@ -439,8 +439,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             mempool.clear();
             return NULL;
         }
+        LogPrintf("CreateNewBlock(): validation passed %s\n", "");
     }
-
+    LogPrintf("CreateNewBlock(): releasing template %s\n", "");
     return pblocktemplate.release();
 }
 
@@ -572,6 +573,8 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         LogPrintf("BitcoinMiner(): chainActive.Tip %s\n", chainActive.Tip());
 
         unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));
+        LogPrintf("BitcoinMiner(): pblocktemplate created %s\n", "");
+
         if (!pblocktemplate.get())
             continue;
             

@@ -4496,7 +4496,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     // masternode payments / budgets
     CBlockIndex* pindexPrev = chainActive.Tip();
-    int nHeight = 0;
+    /*int nHeight = 0;
     if (pindexPrev != NULL) {
         if (pindexPrev->GetBlockHash() == block.hashPrevBlock) {
             nHeight = pindexPrev->nHeight + 1;
@@ -4512,7 +4512,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         // but issue an initial reject message.
         // The case also exists that the sending peer could not have enough data to see
         // that this block is invalid, so don't issue an outright ban.
-        /*if (nHeight != 0 && !IsInitialBlockDownload()) {
+        if (nHeight != 0 && !IsInitialBlockDownload()) {
             if (!IsBlockPayeeValid(block, nHeight)) {
                 mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
                 return state.DoS(0, error("CheckBlock() : Couldn't find masternode/budget payment"),
@@ -4521,8 +4521,8 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         } else {
             if (fDebug)
                 LogPrintf("CheckBlock(): Masternode payment check skipped on sync - skipping IsBlockPayeeValid()\n");
-        }*/
-    }
+        }
+    }*/
 
     // Check transactions
     bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();

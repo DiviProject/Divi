@@ -172,16 +172,16 @@
         <translation>Confirmar criptografia de carteira</translation>
     </message>
     <message>
-        <source>DIVI will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
-        <translation>DIVI vai fechar agora para finalizar o processo de criptografia. Lembre-se que encriptar sua carteira não pode proteger totalmente suas PIVs de serem roubadas por malwares infectando seu computador.</translation>
+        <source>DIVI will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your DIVs from being stolen by malware infecting your computer.</source>
+        <translation>DIVI vai fechar agora para finalizar o processo de criptografia. Lembre-se que encriptar sua carteira não pode proteger totalmente suas DIVs de serem roubadas por malwares infectando seu computador.</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
         <translation>Você tem certeza que deseja criptografar sua carteira?</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PIV&lt;/b&gt;!</source>
-        <translation>Aviso: se você criptografar sua carteira e perder sua senha você &lt;b&gt;PERDERÁ TODAS AS SUAS PIV&lt;b&gt;!</translation>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR DIV&lt;/b&gt;!</source>
+        <translation>Aviso: se você criptografar sua carteira e perder sua senha você &lt;b&gt;PERDERÁ TODAS AS SUAS DIV&lt;b&gt;!</translation>
     </message>
     <message>
         <source>Wallet encrypted</source>
@@ -418,8 +418,8 @@
         <translation>Olhar histórico de transação</translation>
     </message>
     <message>
-        <source>Privacy Actions for zPIV</source>
-        <translation>Ações privadas para zPIV</translation>
+        <source>Privacy Actions for zDIV</source>
+        <translation>Ações privadas para zDIV</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
@@ -1559,32 +1559,32 @@ Favor verificar o endereço e tente novamente.</translation>
         <translation>Favor selecionar o nível de privacidade.</translation>
     </message>
     <message>
-        <source>Use 2 separate masternodes to mix funds up to 10000 PIV</source>
-        <translation>Use 2 masternodes separados para embaralhar fundos até 10000 PIV</translation>
+        <source>Use 2 separate masternodes to mix funds up to 10000 DIV</source>
+        <translation>Use 2 masternodes separados para embaralhar fundos até 10000 DIV</translation>
     </message>
     <message>
-        <source>Use 8 separate masternodes to mix funds up to 10000 PIV</source>
-        <translation>Use 8 masternodes separados para embaralhar fundos até 10000 PIV</translation>
+        <source>Use 8 separate masternodes to mix funds up to 10000 DIV</source>
+        <translation>Use 8 masternodes separados para embaralhar fundos até 10000 DIV</translation>
     </message>
     <message>
         <source>Use 16 separate masternodes</source>
         <translation>Use 16 masternodes separados</translation>
     </message>
     <message>
-        <source>This option is the quickest and will cost about ~0.025 PIV to anonymize 10000 PIV</source>
-        <translation>Está opção é a mais rápida e vai custar em torno de ~0.025 PIV para anonimizar 10000 PIV</translation>
+        <source>This option is the quickest and will cost about ~0.025 DIV to anonymize 10000 DIV</source>
+        <translation>Está opção é a mais rápida e vai custar em torno de ~0.025 DIV para anonimizar 10000 DIV</translation>
     </message>
     <message>
-        <source>This option is moderately fast and will cost about 0.05 PIV to anonymize 10000 PIV</source>
-        <translation>Está opção moderamente rápida e vai custar em torno de ~0.05 PIV para anonimizar 10000 PIV</translation>
+        <source>This option is moderately fast and will cost about 0.05 DIV to anonymize 10000 DIV</source>
+        <translation>Está opção moderamente rápida e vai custar em torno de ~0.05 DIV para anonimizar 10000 DIV</translation>
     </message>
     <message>
         <source>This is the slowest and most secure option. Using maximum anonymity will cost</source>
         <translation>Esta é a opção mais lenta e mais segura. Usando a anonimização máxima vai custar</translation>
     </message>
     <message>
-        <source>0.1 PIV per 10000 PIV you anonymize.</source>
-        <translation>0.1 PIV por 10000 PIV que deixar anônima.</translation>
+        <source>0.1 DIV per 10000 DIV you anonymize.</source>
+        <translation>0.1 DIV por 10000 DIV que deixar anônima.</translation>
     </message>
     <message>
         <source>Obfuscation Configuration</source>
@@ -1822,8 +1822,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Formulário</translation>
     </message>
     <message>
-        <source>PIV Balances</source>
-        <translation>Balanços PIV</translation>
+        <source>DIV Balances</source>
+        <translation>Balanços DIV</translation>
     </message>
     <message>
         <source>Available:</source>
@@ -1874,20 +1874,20 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Disponível:</translation>
     </message>
     <message>
-        <source>PIV:</source>
-        <translation>PIV:</translation>
+        <source>DIV:</source>
+        <translation>DIV:</translation>
     </message>
     <message>
-        <source>zPIV:</source>
-        <translation>zPIV:</translation>
+        <source>zDIV:</source>
+        <translation>zDIV:</translation>
     </message>
     <message>
         <source>0 %</source>
         <translation>0 %</translation>
     </message>
     <message>
-        <source>0.000 000 00 PIV</source>
-        <translation>0.000 000 00 PIV</translation>
+        <source>0.000 000 00 DIV</source>
+        <translation>0.000 000 00 DIV</translation>
     </message>
     <message>
         <source>Locked:</source>
@@ -1967,12 +1967,12 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
 <context>
     <name>PrivacyDialog</name>
     <message>
-        <source>PIV which were anonymized via Zerocin Protocol</source>
-        <translation>PIV que foram anonimizadas via protocolo Zerocoin</translation>
+        <source>DIV which were anonymized via Zerocin Protocol</source>
+        <translation>DIV que foram anonimizadas via protocolo Zerocoin</translation>
     </message>
     <message>
-        <source>Zerocoin PIV (zPIV)</source>
-        <translation>Zerocoin PIV (zPIV)</translation>
+        <source>Zerocoin DIV (zDIV)</source>
+        <translation>Zerocoin DIV (zDIV)</translation>
     </message>
     <message>
         <source>Zerocoin Actions:</source>
@@ -1991,12 +1991,12 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>0</translation>
     </message>
     <message>
-        <source>zPIV</source>
-        <translation>zPIV</translation>
+        <source>zDIV</source>
+        <translation>zDIV</translation>
     </message>
     <message>
-        <source>0.000 000 00 PIV</source>
-        <translation>0.000 000 00 PIV</translation>
+        <source>0.000 000 00 DIV</source>
+        <translation>0.000 000 00 DIV</translation>
     </message>
     <message>
         <source>Reset</source>
@@ -2059,8 +2059,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Estatísticas zerocoin:</translation>
     </message>
     <message>
-        <source>Total Balance including unconfirmed and immature zPIV</source>
-        <translation>Balanço Total incluindo não confirmadas e imaturas zPIV</translation>
+        <source>Total Balance including unconfirmed and immature zDIV</source>
+        <translation>Balanço Total incluindo não confirmadas e imaturas zDIV</translation>
     </message>
     <message>
         <source>Total Zerocoin  Balance:</source>
@@ -2696,8 +2696,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Tamanho UTXO:</translation>
     </message>
     <message>
-        <source>0 PIV</source>
-        <translation>0 PIV</translation>
+        <source>0 DIV</source>
+        <translation>0 DIV</translation>
     </message>
     <message>
         <source>Transaction Fee:</source>
@@ -2740,8 +2740,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Tempo de confirmação:</translation>
     </message>
     <message>
-        <source>If the custom fee is set to 1000 uPIVs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uPIVs in fee,&lt;br /&gt;while "at least" pays 1000 uPIVs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
-        <translation>Se a taxa padrão estiver definida para 1000 uPIVs e a transação for somente de 250 bytes, então "por kilobyte" pagará somente 250 uPIVs em taxa,&lt;br /&gt; pagará pelo menos 1000 uPIVs. Para transações maiores que um kilobyte ambas pagam por kilobyte.</translation>
+        <source>If the custom fee is set to 1000 uDIVs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uDIVs in fee,&lt;br /&gt;while "at least" pays 1000 uDIVs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
+        <translation>Se a taxa padrão estiver definida para 1000 uDIVs e a transação for somente de 250 bytes, então "por kilobyte" pagará somente 250 uDIVs em taxa,&lt;br /&gt; pagará pelo menos 1000 uDIVs. Para transações maiores que um kilobyte ambas pagam por kilobyte.</translation>
     </message>
     <message>
         <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for DIVI transactions than the network can process.</source>
@@ -2788,8 +2788,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Adicionar &amp;Recipiente</translation>
     </message>
     <message>
-        <source>Anonymized PIV</source>
-        <translation>PIV anonimizadas</translation>
+        <source>Anonymized DIV</source>
+        <translation>DIV anonimizadas</translation>
     </message>
     <message>
         <source>Balance:</source>
@@ -3749,12 +3749,12 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Executar o comando quando uma transação da carteira mudar (%s no cmd será substituído pela TxID)</translation>
     </message>
     <message>
-        <source>Fees (in PIV/Kb) smaller than this are considered zero fee for relaying (default: %s)</source>
-        <translation>Taxas (em PIV/Kb) menores que isso serão consideradas taxa zero para propagação (padrão: %s)</translation>
+        <source>Fees (in DIV/Kb) smaller than this are considered zero fee for relaying (default: %s)</source>
+        <translation>Taxas (em DIV/Kb) menores que isso serão consideradas taxa zero para propagação (padrão: %s)</translation>
     </message>
     <message>
-        <source>Fees (in PIV/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</source>
-        <translation>Taxas (em PIV/Kb) menores que isso serão consideradas taxa zero para a criação da transação (padrão: %s)</translation>
+        <source>Fees (in DIV/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</source>
+        <translation>Taxas (em DIV/Kb) menores que isso serão consideradas taxa zero para a criação da transação (padrão: %s)</translation>
     </message>
     <message>
         <source>In this mode -genproclimit controls how many blocks are generated immediately.</source>
@@ -3773,8 +3773,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Define o tamanho máximo de transações de alta prioridade/taxa baixa em bytes (padrão: %d)</translation>
     </message>
     <message>
-        <source>Unable to locate enough funds for this transaction that are not equal 10000 PIV.</source>
-        <translation>Incapaz de localizar fundos para esta transação que não são iguais a 10000 PIV.</translation>
+        <source>Unable to locate enough funds for this transaction that are not equal 10000 DIV.</source>
+        <translation>Incapaz de localizar fundos para esta transação que não são iguais a 10000 DIV.</translation>
     </message>
     <message>
         <source>Use separate SOCKS5 proxy to reach peers via Tor hidden services (default: %s)</source>
@@ -3969,8 +3969,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Falhou em ler o bloco</translation>
     </message>
     <message>
-        <source>Fee (in PIV/kB) to add to transactions you send (default: %s)</source>
-        <translation>Taxa (em PIV/kB) a adicionar em transações que você enviar (padrão: %s)</translation>
+        <source>Fee (in DIV/kB) to add to transactions you send (default: %s)</source>
+        <translation>Taxa (em DIV/kB) a adicionar em transações que você enviar (padrão: %s)</translation>
     </message>
     <message>
         <source>Finalizing transaction.</source>

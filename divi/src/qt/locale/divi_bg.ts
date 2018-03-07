@@ -176,7 +176,7 @@
         <translation>Потвърдете шифрирането на портфейла</translation>
     </message>
     <message>
-        <source>DIVI will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
+        <source>DIVI will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your DIVs from being stolen by malware infecting your computer.</source>
         <translation>DIVI сега ще се затвори, за да довърши процеса по шифриране. Запомнете, че шифрирането на вашия портфейл не може напълно да защити вашия DIVI от това, да бъде откраднат чрез злонамерен софутуер, инфектирал вашия компютър.</translation>
     </message>
     <message>
@@ -184,8 +184,8 @@
         <translation>Сигурни ли сте, че искате да шифрирате вашия портфейл?</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PIV&lt;/b&gt;!</source>
-        <translation>&lt;b&gt;Внимание: Ако шифрирате вашия портфейл и загубите вашата парола, вие ще ЗАГУБИТЕ ВСИЧКИТЕ ВИ PIV&lt;/b&gt;!</translation>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR DIV&lt;/b&gt;!</source>
+        <translation>&lt;b&gt;Внимание: Ако шифрирате вашия портфейл и загубите вашата парола, вие ще ЗАГУБИТЕ ВСИЧКИТЕ ВИ DIV&lt;/b&gt;!</translation>
     </message>
     <message>
         <source>Wallet encrypted</source>
@@ -1559,32 +1559,32 @@ Please check the address and try again.</source>
         <translation>Изберете ниво на поверителност.</translation>
     </message>
     <message>
-        <source>Use 2 separate masternodes to mix funds up to 10000 PIV</source>
-        <translation>Използвай 2 различни мастърноуда за смесване на средства над 10000 PIV</translation>
+        <source>Use 2 separate masternodes to mix funds up to 10000 DIV</source>
+        <translation>Използвай 2 различни мастърноуда за смесване на средства над 10000 DIV</translation>
     </message>
     <message>
-        <source>Use 8 separate masternodes to mix funds up to 10000 PIV</source>
-        <translation>Използвай 8 различни мастърноуда за да смесите средства до 10000 PIV</translation>
+        <source>Use 8 separate masternodes to mix funds up to 10000 DIV</source>
+        <translation>Използвай 8 различни мастърноуда за да смесите средства до 10000 DIV</translation>
     </message>
     <message>
         <source>Use 16 separate masternodes</source>
         <translation>Използвай 16 различни мастърноуда</translation>
     </message>
     <message>
-        <source>This option is the quickest and will cost about ~0.025 PIV to anonymize 10000 PIV</source>
-        <translation>Това е най-бързия метод и ще струва около 0.025 PIV за да скриете 10000 PIV</translation>
+        <source>This option is the quickest and will cost about ~0.025 DIV to anonymize 10000 DIV</source>
+        <translation>Това е най-бързия метод и ще струва около 0.025 DIV за да скриете 10000 DIV</translation>
     </message>
     <message>
-        <source>This option is moderately fast and will cost about 0.05 PIV to anonymize 10000 PIV</source>
-        <translation>Тази опция е сравнително бърза и ще струва около 0.05 PIV за да скриете 10000 PIV</translation>
+        <source>This option is moderately fast and will cost about 0.05 DIV to anonymize 10000 DIV</source>
+        <translation>Тази опция е сравнително бърза и ще струва около 0.05 DIV за да скриете 10000 DIV</translation>
     </message>
     <message>
         <source>This is the slowest and most secure option. Using maximum anonymity will cost</source>
-        <translation>Това е най-бавния и най-сигурен вариант за скриване на PIV. Използването й ще струва</translation>
+        <translation>Това е най-бавния и най-сигурен вариант за скриване на DIV. Използването й ще струва</translation>
     </message>
     <message>
-        <source>0.1 PIV per 10000 PIV you anonymize.</source>
-        <translation>0.1 PIV за 10000 скрити PIV</translation>
+        <source>0.1 DIV per 10000 DIV you anonymize.</source>
+        <translation>0.1 DIV за 10000 скрити DIV</translation>
     </message>
     <message>
         <source>Obfuscation Configuration</source>
@@ -1723,20 +1723,20 @@ https://www.transifex.com/divi-project/divi-project-translations</source>
 https://www.transifex.com/divi-project/divi-project-translations</translation>
     </message>
     <message>
-        <source>Percentage of incoming PIV which get automatically converted to zPIV via Zerocoin Protocol (min: 10%)</source>
-        <translation>Процент от входящите PIV, който автоматично да се конвертира в zPIV посредтвом Zerocoin Протокола (мин: 10%)</translation>
+        <source>Percentage of incoming DIV which get automatically converted to zDIV via Zerocoin Protocol (min: 10%)</source>
+        <translation>Процент от входящите DIV, който автоматично да се конвертира в zDIV посредтвом Zerocoin Протокола (мин: 10%)</translation>
     </message>
     <message>
-        <source>Percentage of autominted zPIV</source>
-        <translation>Процент автоматично сечени zPIV</translation>
+        <source>Percentage of autominted zDIV</source>
+        <translation>Процент автоматично сечени zDIV</translation>
     </message>
     <message>
-        <source>Wait with automatic conversion to Zerocoin until enough PIV for this denomination is available</source>
-        <translation>Не бързай с автоматичното конвертиране в zPIV докато не се съберат достатъчно PIV за тази деноминация</translation>
+        <source>Wait with automatic conversion to Zerocoin until enough DIV for this denomination is available</source>
+        <translation>Не бързай с автоматичното конвертиране в zDIV докато не се съберат достатъчно DIV за тази деноминация</translation>
     </message>
     <message>
-        <source>Preferred Automint zPIV Denomination</source>
-        <translation>Предпочитани деноминации, в които да се сече автоматичен zPIV</translation>
+        <source>Preferred Automint zDIV Denomination</source>
+        <translation>Предпочитани деноминации, в които да се сече автоматичен zDIV</translation>
     </message>
     <message>
         <source>Connect to the DIVI network through a SOCKS5 proxy.</source>
@@ -1870,8 +1870,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>От</translation>
     </message>
     <message>
-        <source>PIV Balances</source>
-        <translation>PIV Баланс</translation>
+        <source>DIV Balances</source>
+        <translation>DIV Баланс</translation>
     </message>
     <message>
         <source>Available:</source>
@@ -1934,20 +1934,20 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Налични за харчене:</translation>
     </message>
     <message>
-        <source>PIV:</source>
-        <translation>PIV:</translation>
+        <source>DIV:</source>
+        <translation>DIV:</translation>
     </message>
     <message>
-        <source>zPIV:</source>
-        <translation>zPIV:</translation>
+        <source>zDIV:</source>
+        <translation>zDIV:</translation>
     </message>
     <message>
         <source>0 %</source>
         <translation>0 %</translation>
     </message>
     <message>
-        <source>0.000 000 00 PIV</source>
-        <translation>0.000 000 00 PIV</translation>
+        <source>0.000 000 00 DIV</source>
+        <translation>0.000 000 00 DIV</translation>
     </message>
     <message>
         <source>Zerocoin Balance</source>
@@ -2071,12 +2071,12 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
 <context>
     <name>PrivacyDialog</name>
     <message>
-        <source>PIV which were anonymized via Zerocin Protocol</source>
-        <translation>PIV скрити посредством Зерокойн протокола</translation>
+        <source>DIV which were anonymized via Zerocin Protocol</source>
+        <translation>DIV скрити посредством Зерокойн протокола</translation>
     </message>
     <message>
-        <source>Zerocoin PIV (zPIV)</source>
-        <translation>Zerocoin PIV (zPIV)</translation>
+        <source>Zerocoin DIV (zDIV)</source>
+        <translation>Zerocoin DIV (zDIV)</translation>
     </message>
     <message>
         <source>Zerocoin Actions:</source>
@@ -2088,7 +2088,7 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
     </message>
     <message>
         <source>Enter an amount of Div to convert to zDiv</source>
-        <translation>Въведете колко PIV  да се конвертират в zPIV</translation>
+        <translation>Въведете колко DIV  да се конвертират в zDIV</translation>
     </message>
     <message>
         <source>Mint Zerocoin</source>
@@ -2099,16 +2099,16 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>0</translation>
     </message>
     <message>
-        <source>zPIV</source>
-        <translation>zPIV</translation>
+        <source>zDIV</source>
+        <translation>zDIV</translation>
     </message>
     <message>
         <source>Available for Minting:</source>
         <translation>Налични за сечене:</translation>
     </message>
     <message>
-        <source>0.000 000 00 PIV</source>
-        <translation>0.000 000 00 PIV</translation>
+        <source>0.000 000 00 DIV</source>
+        <translation>0.000 000 00 DIV</translation>
     </message>
     <message>
         <source>Reset Zerocoin Wallet DB. Deletes transactions that did not make it into the blockchain.</source>
@@ -2144,11 +2144,11 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
     </message>
     <message>
         <source>zDiv Control</source>
-        <translation>zPIV Контрол</translation>
+        <translation>zDIV Контрол</translation>
     </message>
     <message>
         <source>zDiv Selected:</source>
-        <translation>Избрани zPIV:</translation>
+        <translation>Избрани zDIV:</translation>
     </message>
     <message>
         <source>Quantity Selected:</source>
@@ -2167,8 +2167,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Налични:</translation>
     </message>
     <message>
-        <source>0 zPIV</source>
-        <translation>0 zPIV</translation>
+        <source>0 zDIV</source>
+        <translation>0 zDIV</translation>
     </message>
     <message>
         <source>Security Level for Zerocoin Transactions. More is better, but needs more time and resources.</source>
@@ -2220,7 +2220,7 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
     </message>
     <message>
         <source>Convert Change to Zerocoin (might cost additional fees)</source>
-        <translation>Изсечи zPIV от рестото (ще струва допълнително заради таксите)</translation>
+        <translation>Изсечи zDIV от рестото (ще струва допълнително заради таксите)</translation>
     </message>
     <message>
         <source>If checked, the wallet tries to minimize the returning change instead of minimizing the number of spent denominations.</source>
@@ -2395,8 +2395,8 @@ https://www.transifex.com/divi-project/divi-project-translations</translation>
         <translation>Успешно изсечени</translation>
     </message>
     <message>
-        <source> zPIV in </source>
-        <translation>zPIV в</translation>
+        <source> zDIV in </source>
+        <translation>zDIV в</translation>
     </message>
     <message>
         <source> sec. Used denominations:
@@ -2470,7 +2470,7 @@ Please be patient...</source>
     </message>
     <message>
         <source>zDiv Spend #: </source>
-        <translation>zPIV Похарчени #:</translation>
+        <translation>zDIV Похарчени #:</translation>
     </message>
     <message>
         <source>denomination: </source>
@@ -2494,7 +2494,7 @@ Please be patient...</source>
     </message>
     <message>
         <source>zDiv Mint</source>
-        <translation>Сечене на zPIV</translation>
+        <translation>Сечене на zDIV</translation>
     </message>
     <message>
         <source>Sending successful, return code: </source>
@@ -3122,8 +3122,8 @@ Please be patient...</source>
         <translation>Размер на UTXO:</translation>
     </message>
     <message>
-        <source>0 PIV</source>
-        <translation>0 PIV</translation>
+        <source>0 DIV</source>
+        <translation>0 DIV</translation>
     </message>
     <message>
         <source>Transaction Fee:</source>
@@ -3174,12 +3174,12 @@ Please be patient...</source>
         <translation>Автоматично избрани монети</translation>
     </message>
     <message>
-        <source>If the custom fee is set to 1000 uPIVs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uPIVs in fee,&lt;br /&gt;while "at least" pays 1000 uPIVs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
-        <translation>Ако собствената такса е настроена на 1000 uPIV и превода е само 250 байта, то тогава "за килобайт" само плаща 250 uPIV входяща такса, &lt;br /&gt;докато "минимална сума" плаща 1000 uPIV. За транзакции по-големи от килобайт, и двете плащат за килобайт.</translation>
+        <source>If the custom fee is set to 1000 uDIVs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uDIVs in fee,&lt;br /&gt;while "at least" pays 1000 uDIVs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
+        <translation>Ако собствената такса е настроена на 1000 uDIV и превода е само 250 байта, то тогава "за килобайт" само плаща 250 uDIV входяща такса, &lt;br /&gt;докато "минимална сума" плаща 1000 uDIV. За транзакции по-големи от килобайт, и двете плащат за килобайт.</translation>
     </message>
     <message>
-        <source>If the custom fee is set to 1000 uPIVs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uPIVs in fee,&lt;br /&gt;while "total at least" pays 1000 uPIVs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
-        <translation>Ако собствената такса е настроена на 1000 uPIV и превода е само 250 байта, то тогава "за килобайт" само плаща 250 uPIV входяща такса,&lt;br /&gt; докато "минимална сума" плаща 1000 uPIV. За транзакции по-големи от килобайт, и двете плащат за килобайт.</translation>
+        <source>If the custom fee is set to 1000 uDIVs and the transaction is only 250 bytes, then "per kilobyte" only pays 250 uDIVs in fee,&lt;br /&gt;while "total at least" pays 1000 uDIVs. For transactions bigger than a kilobyte both pay by kilobyte.</source>
+        <translation>Ако собствената такса е настроена на 1000 uDIV и превода е само 250 байта, то тогава "за килобайт" само плаща 250 uDIV входяща такса,&lt;br /&gt; докато "минимална сума" плаща 1000 uDIV. За транзакции по-големи от килобайт, и двете плащат за килобайт.</translation>
     </message>
     <message>
         <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for DIVI transactions than the network can process.</source>
@@ -3230,8 +3230,8 @@ Please be patient...</source>
         <translation>Добави Получател</translation>
     </message>
     <message>
-        <source>Anonymized PIV</source>
-        <translation>Анонимизиран PIV</translation>
+        <source>Anonymized DIV</source>
+        <translation>Анонимизиран DIV</translation>
     </message>
     <message>
         <source>Balance:</source>
@@ -3287,7 +3287,7 @@ Please be patient...</source>
     </message>
     <message>
         <source>Warning: Invalid DIVI address</source>
-        <translation>Предупреждение: Невалиден PIV адрес</translation>
+        <translation>Предупреждение: Невалиден DIV адрес</translation>
     </message>
     <message>
         <source>any available funds (not recommended)</source>
@@ -3911,23 +3911,23 @@ Please be patient...</source>
     </message>
     <message>
         <source>Converted Div to zDiv</source>
-        <translation>Конвертиран PIV във zPIV</translation>
+        <translation>Конвертиран DIV във zDIV</translation>
     </message>
     <message>
         <source>Spent zDiv</source>
-        <translation>Похарчени zPIV</translation>
+        <translation>Похарчени zDIV</translation>
     </message>
     <message>
         <source>Received Div from zDiv</source>
-        <translation>Получен PIV от zPIV</translation>
+        <translation>Получен DIV от zDIV</translation>
     </message>
     <message>
         <source>Minted Change as zDiv from zDiv Spend</source>
-        <translation>Исечено ресто като zPIV от похарчените zPIV</translation>
+        <translation>Исечено ресто като zDIV от похарчените zDIV</translation>
     </message>
     <message>
         <source>Converted zDiv to Div</source>
-        <translation>Конвертирани zPIV в PIV</translation>
+        <translation>Конвертирани zDIV в DIV</translation>
     </message>
     <message>
         <source>watch-only</source>
@@ -3935,7 +3935,7 @@ Please be patient...</source>
     </message>
     <message>
         <source>zDiv Accumulator</source>
-        <translation>zPIV Акумулатор</translation>
+        <translation>zDIV Акумулатор</translation>
     </message>
     <message>
         <source>(n/a)</source>
@@ -4042,7 +4042,7 @@ Please be patient...</source>
     </message>
     <message>
         <source>Received Div from zDiv</source>
-        <translation>Получен PIV от zPIV</translation>
+        <translation>Получен DIV от zDIV</translation>
     </message>
     <message>
         <source>Zerocoin Mint</source>
@@ -4054,7 +4054,7 @@ Please be patient...</source>
     </message>
     <message>
         <source>Zerocoin Spend, Change in zDiv</source>
-        <translation>Харчене на Zerocoin, Ресто в zPIV</translation>
+        <translation>Харчене на Zerocoin, Ресто в zDIV</translation>
     </message>
     <message>
         <source>Zerocoin Spend to Self</source>
@@ -4213,7 +4213,7 @@ Please be patient...</source>
     <name>ZDivControlDialog</name>
     <message>
         <source>Select zDiv to Spend</source>
-        <translation>Изберете zPIV за Изпращане</translation>
+        <translation>Изберете zDIV за Изпращане</translation>
     </message>
     <message>
         <source>Quantity</source>
@@ -4225,7 +4225,7 @@ Please be patient...</source>
     </message>
     <message>
         <source>zDiv</source>
-        <translation>zPIV</translation>
+        <translation>zDIV</translation>
     </message>
     <message>
         <source>Select/Deselect All</source>
@@ -4287,12 +4287,12 @@ Please be patient...</source>
         <translation>Командата влиза в сила, когато най-добрия блок се промени (%s в cmd се замества от хаш на блока)</translation>
     </message>
     <message>
-        <source>Fees (in PIV/Kb) smaller than this are considered zero fee for relaying (default: %s)</source>
-        <translation>Такси (в PIV/Кб) по-малки от това се считат за нулеви при препращане (default: %s)</translation>
+        <source>Fees (in DIV/Kb) smaller than this are considered zero fee for relaying (default: %s)</source>
+        <translation>Такси (в DIV/Кб) по-малки от това се считат за нулеви при препращане (default: %s)</translation>
     </message>
     <message>
-        <source>Fees (in PIV/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</source>
-        <translation>Такси (в PIV/Кб) по-малки от това се считат за нулеви при създаване на предовда (default: %s)</translation>
+        <source>Fees (in DIV/Kb) smaller than this are considered zero fee for transaction creation (default: %s)</source>
+        <translation>Такси (в DIV/Кб) по-малки от това се считат за нулеви при създаване на предовда (default: %s)</translation>
     </message>
     <message>
         <source>Flush database activity from memory pool to disk log every &lt;n&gt; megabytes (default: %u)</source>

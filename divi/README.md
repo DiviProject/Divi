@@ -1,16 +1,16 @@
-DIVX Core integration/staging repository
+DIVI Core integration/staging repository
 =====================================
 
-[![Build Status](https://travis-ci.org/Divi-Project/Divi.svg?branch=master)](https://travis-ci.org/Divi-Project/Divi) [![GitHub version](https://badge.fury.io/gh/Divi-Project%2FDIVX.svg)](https://badge.fury.io/gh/Divi-Project%2FDIVX)
+[![Build Status](https://travis-ci.org/Divi-Project/Divi.svg?branch=master)](https://travis-ci.org/Divi-Project/Divi) [![GitHub version](https://badge.fury.io/gh/Divi-Project%2FDIVI.svg)](https://badge.fury.io/gh/Divi-Project%2FDIVI)
 
-DIVX is a cutting edge cryptocurrency, with many features not available in most other cryptocurrencies.
+DIVI is a cutting edge cryptocurrency, with many features not available in most other cryptocurrencies.
 - Anonymized transactions using coin mixing technology, we call it _Obfuscation_.
 - Fast transactions featuring guaranteed zero confirmation transactions, we call it _SwiftTX_.
 - Decentralized blockchain voting providing for consensus based advancement of the current Masternode
   technology used to secure the network and provide the above features, each Masternode is secured
   with a collateral of 10K PIV.
 
-More information at [divx.org](http://www.divx.org) Visit our ANN thread at [BitcoinTalk](http://www.bitcointalk.org/index.php?topic=1262920)
+More information at [divi.org](http://www.divi.org) Visit our ANN thread at [BitcoinTalk](http://www.bitcointalk.org/index.php?topic=1262920)
 
 ### Coin Specs
 <table>
@@ -22,7 +22,7 @@ More information at [divx.org](http://www.divx.org) Visit our ANN thread at [Bit
 <tr><td>Premine</td><td>60,000 PIV*</td></tr>
 </table>
 
-*60,000 PIV Premine was burned in block [279917](http://www.presstab.pw/phpexplorer/DIVX/block.php?blockhash=206d9cfe859798a0b0898ab00d7300be94de0f5469bb446cecb41c3e173a57e0)
+*60,000 PIV Premine was burned in block [279917](http://www.presstab.pw/phpexplorer/DIVI/block.php?blockhash=206d9cfe859798a0b0898ab00d7300be94de0f5469bb446cecb41c3e173a57e0)
 
 ### Reward Distribution
 

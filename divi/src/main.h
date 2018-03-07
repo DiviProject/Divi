@@ -9,7 +9,7 @@
 #define BITCOIN_MAIN_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/divx-config.h"
+#include "config/divi-config.h"
 #endif
 
 #include "amount.h"

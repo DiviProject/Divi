@@ -473,8 +473,8 @@ void BlockExplorer::showEvent(QShowEvent*)
         updateNavButtons();
 
         if (!GetBoolArg("-txindex", false)) {
-            QString Warning = tr("Not all transactions will be shown. To view all transactions you need to set txindex=1 in the configuration file (divx.conf).");
-            QMessageBox::warning(this, "DIVX Core Blockchain Explorer", Warning, QMessageBox::Ok);
+            QString Warning = tr("Not all transactions will be shown. To view all transactions you need to set txindex=1 in the configuration file (divi.conf).");
+            QMessageBox::warning(this, "DIVI Core Blockchain Explorer", Warning, QMessageBox::Ok);
         }
     }
 }

@@ -1,0 +1,26 @@
+[Unit]
+Description=DIVI's distributed currency daemon
+After=network.target
+
+[Service]
+User=divi
+Group=divi
+
+Type=forking
+PIDFile=/var/lib/divid/divid.pid
+
+ExecStart=/usr/bin/divid -daemon -pid=/var/lib/divid/divid.pid \
+          -conf=/etc/divi/divi.conf -datadir=/var/lib/divid
+
+ExecStop=-/usr/bin/divi-cli -conf=/etc/divi/divi.conf \
+         -datadir=/var/lib/divid stop
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

@@ -365,8 +365,8 @@ bitcoin (0.3.19~dfsg-5) unstable; urgency=low
 bitcoin (0.3.19~dfsg-4) unstable; urgency=low
 
   [ Micah Anderson ]
-  * Provide example divx.conf.
-  * Add bitcoind(1) and divx.conf(5) man pages.
+  * Provide example divi.conf.
+  * Add bitcoind(1) and divi.conf(5) man pages.
 
   [ Jonas Smedegaard ]
   * Ease backporting:

@@ -7,7 +7,7 @@
 #define BITCOIN_COMPAT_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/divx-config.h"
+#include "config/divi-config.h"
 #endif
 
 #ifdef WIN32

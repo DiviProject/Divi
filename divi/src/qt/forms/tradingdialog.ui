@@ -445,7 +445,7 @@
       <string>Buy PIV</string>
      </property>
      <property name="icon">
-      <iconset resource="../divx.qrc">
+      <iconset resource="../divi.qrc">
        <normaloff>:/icons/bitcoin</normaloff>:/icons/bitcoin</iconset>
      </property>
     </widget>
@@ -1754,7 +1754,7 @@
       <string>Sell PIV</string>
      </property>
      <property name="icon">
-      <iconset resource="../divx">
+      <iconset resource="../divi">
        <normaloff>:/icons/bitcoin</normaloff>:/icons/bitcoin</iconset>
      </property>
     </widget>
@@ -2941,10 +2941,10 @@
       </rect>
      </property>
      <property name="text">
-      <string>Generate Divx Deposit Address</string>
+      <string>Generate Divi Deposit Address</string>
      </property>
      <property name="icon">
-      <iconset resource="../divx.qrc">
+      <iconset resource="../divi.qrc">
        <normaloff>:/icons/bitcoin</normaloff>:/icons/bitcoin</iconset>
      </property>
     </widget>
@@ -3155,7 +3155,7 @@
        <string notr="true">border: 1px solid #61696c;margin-left:4px;</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnConvertDivx">
+     <widget class="QPushButton" name="btnConvertDivi">
       <property name="geometry">
        <rect>
         <x>260</x>
@@ -3206,7 +3206,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap resource="../divx.qrc">:/icons/transaction_1</pixmap>
+       <pixmap resource="../divi.qrc">:/icons/transaction_1</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -3253,7 +3253,7 @@
       <string>Update API Keys</string>
      </property>
      <property name="icon">
-      <iconset resource="../divx.qrc">
+      <iconset resource="../divi.qrc">
        <normaloff>:/icons/bitcoin</normaloff>:/icons/bitcoin</iconset>
      </property>
     </widget>
@@ -3408,7 +3408,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="../divx.qrc"/>
+  <include location="../divi.qrc"/>
  </resources>
  <connections/>
 </ui>

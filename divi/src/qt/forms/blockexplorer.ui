@@ -168,7 +168,7 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="../divx.qrc"/>
+  <include location="../divi.qrc"/>
  </resources>
  <connections/>
 </ui>

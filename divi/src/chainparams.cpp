@@ -179,7 +179,7 @@ public:
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CScriptNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 250 * COIN;
+        txNew.vout[0].nValue = 8000250 * COIN;
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("04bcc3ef3417ba00ab55e3de807a776ade43cbd634a7e2cff383fecc6920cf918b2ad427f6b0a3f8d38f5a41d5dcbf35b394521bd08fcb5f40749df5bfe7d42fe2") << OP_CHECKSIG;
         genesis.vtx.push_back(txNew);
         genesis.hashPrevBlock = 0;
@@ -187,8 +187,9 @@ public:
         genesis.nVersion = 1;
         genesis.nTime = 1520007171;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 414485914;
-        
+        genesis.nNonce = 416509442;
+		genesis.payee = txNew.vout[0].scriptPubKey;
+
         /*
         hashGenesisBlock = uint256("0x01");
         if (true && genesis.GetHash() != hashGenesisBlock)
@@ -203,10 +204,11 @@ public:
             printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
             printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
         }
-        */
+		*/
+        
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
-        assert(genesis.hashMerkleRoot == uint256("0x9360d505560e5b26470a658878d9469d89a191442aaa6bcf48a21fcfbb5c4738"));
+        assert(hashGenesisBlock == uint256("0x000008ae5cfd29b6680b53c7061840fdeea45259bd5320322a541a0e4305728a"));
+        assert(genesis.hashMerkleRoot == uint256("0xb68f3b6cefa827045e8bac505203050c9d247c10d7fe2a951575924427a51052"));
 
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divx.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divx.seed2.fuzzbawls.pw"));    // Secondary DNS Seeder from Fuzzbawls
@@ -232,7 +234,7 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
-        fSkipProofOfWorkCheck = false;
+        fSkipProofOfWorkCheck = true;
         fTestnetToBeDeprecatedFieldRPC = false;
         fHeadersFirstSyncingActive = false;
 
@@ -301,7 +303,7 @@ public:
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1520007171;
-        genesis.nNonce = 414485914;
+        genesis.nNonce = 416509442;
         
         /*
         hashGenesisBlock = uint256("0x01");
@@ -319,7 +321,7 @@ public:
         */
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
+        assert(hashGenesisBlock == uint256("0x000008ae5cfd29b6680b53c7061840fdeea45259bd5320322a541a0e4305728a"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -407,7 +409,7 @@ public:
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
         
-        assert(hashGenesisBlock == uint256("0x79ba0d9d15d36edee8d07cc300379ec65ab7e12765acd883e870aa618dbcc1a8"));
+        assert(hashGenesisBlock == uint256("0x0eddf3476f5a5fc8404a7ec38a8dab5bd7e7cf6c6e057f7e38ec02ac45ae1b31"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

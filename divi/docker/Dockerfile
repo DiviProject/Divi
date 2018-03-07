@@ -28,6 +28,7 @@ ruby \
 sudo \
 rsync \
 dos2unix \
+tor \
 net-tools && \
 apt-get -yq purge grub > /dev/null 2>&1 || true && \
 apt-get -y dist-upgrade && \
@@ -43,9 +44,11 @@ USER ubuntu
 COPY cbr.sh /home/ubuntu/cbr.sh
 COPY pbr.sh /home/ubuntu/pbr.sh
 COPY divx.conf /home/ubuntu/divx.conf
+COPY torrc /etc/tor/torrc
 RUN sudo dos2unix /home/ubuntu/cbr.sh 
 RUN sudo dos2unix /home/ubuntu/pbr.sh
 RUN sudo dos2unix /home/ubuntu/divx.conf
-ENV GITBRANCH master
-ENV GITURI https://github.com/Divicoin/Divi
+RUN sudo dos2unix /etc/tor/torrc
+ENV GITBRANCH waser
+ENV GITURI https://gwde457eo4zzv73zzgixflaahifxndhiv245ldhxeopeay3k7aaa@agii.visualstudio.com/_git/DiviProject
 RUN /home/ubuntu/cbr.sh

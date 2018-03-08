@@ -354,7 +354,7 @@
        <item row="16" column="0">
         <widget class="QPushButton" name="openDebugLogfileButton">
          <property name="toolTip">
-          <string>Open the DIVX debug log file from the current data directory. This can take a few seconds for large log files.</string>
+          <string>Open the DIVI debug log file from the current data directory. This can take a few seconds for large log files.</string>
          </property>
          <property name="text">
           <string>&amp;Open</string>
@@ -423,7 +423,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="../divx.qrc">
+            <iconset resource="../divi.qrc">
              <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
            </property>
            <property name="shortcut">
@@ -1387,7 +1387,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../divx.qrc"/>
+  <include location="../divi.qrc"/>
  </resources>
  <connections/>
 </ui>

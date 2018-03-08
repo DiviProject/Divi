@@ -9,8 +9,8 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between divx-cli and divxd)
- * of a given instance of the Divx system.
+ * CBaseChainParams defines the base parameters (shared between divi-cli and divid)
+ * of a given instance of the Divi system.
  */
 class CBaseChainParams
 {

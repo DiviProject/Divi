@@ -43,11 +43,11 @@ chown -R ubuntu.ubuntu /home/ubuntu
 USER ubuntu
 COPY cbr.sh /home/ubuntu/cbr.sh
 COPY pbr.sh /home/ubuntu/pbr.sh
-COPY divx.conf /home/ubuntu/divx.conf
+COPY divi.conf /home/ubuntu/divi.conf
 COPY torrc /etc/tor/torrc
 RUN sudo dos2unix /home/ubuntu/cbr.sh 
 RUN sudo dos2unix /home/ubuntu/pbr.sh
-RUN sudo dos2unix /home/ubuntu/divx.conf
+RUN sudo dos2unix /home/ubuntu/divi.conf
 RUN sudo dos2unix /etc/tor/torrc
 ENV GITBRANCH waser
 ENV GITURI https://gwde457eo4zzv73zzgixflaahifxndhiv245ldhxeopeay3k7aaa@agii.visualstudio.com/_git/DiviProject

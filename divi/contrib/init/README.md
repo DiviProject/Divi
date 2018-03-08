@@ -1,10 +1,10 @@
 Sample configuration files for:
 
-SystemD: divxd.service
-Upstart: divxd.conf
-OpenRC:  divxd.openrc
-         divxd.openrcconf
-CentOS:  divxd.init
+SystemD: divid.service
+Upstart: divid.conf
+OpenRC:  divid.openrc
+         divid.openrcconf
+CentOS:  divid.init
 
 have been made available to assist packagers in creating node packages here.
 

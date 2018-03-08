@@ -1,8 +1,8 @@
 // Copyright (c) 2017 The PIVX Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef DIVX_ACCUMULATORMAP_H
-#define DIVX_ACCUMULATORMAP_H
+#ifndef DIVI_ACCUMULATORMAP_H
+#define DIVI_ACCUMULATORMAP_H
 
 #include "libzerocoin/Accumulator.h"
 #include "libzerocoin/Coin.h"
@@ -20,4 +20,4 @@ public:
     uint256 GetCheckpoint();
     void Reset();
 };
-#endif //DIVX_ACCUMULATORMAP_H
+#endif //DIVI_ACCUMULATORMAP_H

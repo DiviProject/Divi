@@ -14,7 +14,7 @@
 - (NSString *)__bundleIdentifier
 {
     if (self == [NSBundle mainBundle]) {
-        return @"io.divx.Divx-Qt";
+        return @"io.divi.Divi-Qt";
     } else {
         return [self __bundleIdentifier];
     }

@@ -1,4 +1,4 @@
-Building DIVX
+Building DIVI
 
 Use the autogen script to prepare the build environment.
 
@@ -8,6 +8,6 @@ Use the autogen script to prepare the build environment.
 
 Always verify the signatures and checksums.
 
-See doc/build-*.md for instructions on building divxd,
+See doc/build-*.md for instructions on building divid,
 the intended-for-services, no-graphical-interface, reference
-implementation of DIVX.
+implementation of DIVI.

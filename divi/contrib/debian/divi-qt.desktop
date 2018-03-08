@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Divi
+Comment=Divi P2P Cryptocurrency
+Comment[fr]=Divi, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Divi, eşten eşe kriptografik sanal para birimi
+Exec=divi-qt %u
+Terminal=false
+Type=Application
+Icon=divi128
+MimeType=x-scheme-handler/divi;
+Categories=Office;Finance;

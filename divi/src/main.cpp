@@ -2532,6 +2532,7 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
 // Requires cs_main.
 void Misbehaving(NodeId pnode, int howmuch)
 {
+    return;//byrd line to prevent nodes from disconnecting form each other
     if (howmuch == 0)
         return;
 

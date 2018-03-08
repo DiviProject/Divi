@@ -1,0 +1,39 @@
+digraph "RecalculateDIVSupply"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1331 [label="RecalculateDIVSupply",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1331 -> Node1332 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1332 [label="CChain::Height",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain.html#ad4758bc8872ce065a9579f77c3171d40",tooltip="Return the maximal height in the chain. "];
+  Node1331 -> Node1333 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1333 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
+  Node1331 -> Node1334 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1334 [label="CChainParams::Zerocoin\l_StartHeight",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html#a5c3b62573db5b5a6cdaee67d608353e0"];
+  Node1331 -> Node1335 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1335 [label="ReadBlockFromDisk",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a2dc350346749b7da7f4b40c114ee5147"];
+  Node1335 -> Node1336 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1336 [label="CBlock::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block.html#a0410d7ba8d60679c4cf364b82ffffea5"];
+  Node1336 -> Node1337 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1337 [label="CBlockHeader::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_block_header.html#ae39c04a4357417d98954a51f53beb78a"];
+  Node1337 -> Node1338 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1338 [label="base_uint::SetNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classbase__uint.html#ab7f832a0d48a7da00296497c820ae775"];
+  Node1335 -> Node1339 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1339 [label="OpenBlockFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a0d81388930a4ccb6a69b9abdd1ef5097",tooltip="Open a block file (blk?????.dat) "];
+  Node1339 -> Node1340 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1340 [label="OpenDiskFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#ab15fc61f1d9596ad0aca703ff2c74635"];
+  Node1340 -> Node1341 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1341 [label="CDiskBlockPos::IsNull",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct_c_disk_block_pos.html#a7dd98fe3f5372d358df61db31899b0af"];
+  Node1340 -> Node1342 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1342 [label="GetBlockPosFilename",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#a2f26f074aac584c3398de1dcdac59de9",tooltip="Translation to a filesystem path. "];
+  Node1342 -> Node1343 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1343 [label="GetDataDir",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#ab83866a054745d4b30a3948a1b44beba"];
+  Node1331 -> Node1344 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1344 [label="CTransaction::IsCoinBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a96256e8ac1bf79ad9c057e48c41132dd"];
+  Node1344 -> Node1345 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1345 [label="CTransaction::ContainsZerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a613051e8e5651a7500cb455f37dd1116"];
+  Node1345 -> Node1346 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1346 [label="CTransaction::IsZerocoin\lSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#a4cda5603795c5f9179d4c8bd43f809cd"];
+  Node1345 -> Node1347 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1347 [label="CTransaction::IsZerocoinMint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_transaction.html#ab91efb1c2312e6feeecfbbfff11abbb1"];
+}

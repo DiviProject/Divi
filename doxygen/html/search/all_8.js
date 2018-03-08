@@ -63,7 +63,7 @@ var searchData=
   ['helpexamplecli',['HelpExampleCli',['../rpcserver_8cpp.html#ac01ac6eab5467567ed0da106814e04ec',1,'HelpExampleCli(string methodname, string args):&#160;rpcserver.cpp'],['../rpcserver_8h.html#a84ebddbf2129e9a9497c75b0aabe2585',1,'HelpExampleCli(std::string methodname, std::string args):&#160;rpcserver.h']]],
   ['helpexamplerpc',['HelpExampleRpc',['../rpcserver_8cpp.html#a06ea60e24e5a1053a14a11b1009bf9ef',1,'HelpExampleRpc(string methodname, string args):&#160;rpcserver.cpp'],['../rpcserver_8h.html#add973df458429ce9e8f55b966a45dbea',1,'HelpExampleRpc(std::string methodname, std::string args):&#160;rpcserver.h']]],
   ['helpmessage',['HelpMessage',['../init_8cpp.html#a514083d1b88bf8cf314f27ee3dc966c1',1,'HelpMessage(HelpMessageMode mode):&#160;init.cpp'],['../init_8h.html#a514083d1b88bf8cf314f27ee3dc966c1',1,'HelpMessage(HelpMessageMode mode):&#160;init.cpp']]],
-  ['helpmessagecli',['HelpMessageCli',['../divx-cli_8cpp.html#a1132a90be0b486a0c670ea50e2bf4c17',1,'divx-cli.cpp']]],
+  ['helpmessagecli',['HelpMessageCli',['../divi-cli_8cpp.html#a1132a90be0b486a0c670ea50e2bf4c17',1,'divi-cli.cpp']]],
   ['helpmessagedialog',['HelpMessageDialog',['../class_help_message_dialog.html',1,'HelpMessageDialog'],['../class_help_message_dialog.html#a776ac4235e2a407223c7729d7d4af6a9',1,'HelpMessageDialog::HelpMessageDialog()']]],
   ['helpmessagegroup',['HelpMessageGroup',['../util_8cpp.html#aae6ceac1cd94a0e700783c733e60e970',1,'HelpMessageGroup(const std::string &amp;message):&#160;util.cpp'],['../util_8h.html#aae6ceac1cd94a0e700783c733e60e970',1,'HelpMessageGroup(const std::string &amp;message):&#160;util.cpp']]],
   ['helpmessagemode',['HelpMessageMode',['../init_8h.html#a1c8f8e4f16a572c4e86bfaae5a977e28',1,'init.h']]],

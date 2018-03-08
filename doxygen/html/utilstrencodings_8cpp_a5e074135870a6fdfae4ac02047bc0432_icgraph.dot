@@ -5,9 +5,9 @@ digraph "EncodeBase64"
   rankdir="LR";
   Node97 [label="EncodeBase64",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
   Node97 -> Node98 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node98 [label="CallRPC",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-cli_8cpp.html#ae0b4394f271db49671cf894dbe94c484"];
+  Node98 [label="CallRPC",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-cli_8cpp.html#ae0b4394f271db49671cf894dbe94c484"];
   Node98 -> Node99 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node99 [label="CommandLineRPC",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-cli_8cpp.html#a4ee23259648a971c9c05aeff8b545a6d"];
+  Node99 [label="CommandLineRPC",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-cli_8cpp.html#a4ee23259648a971c9c05aeff8b545a6d"];
   Node97 -> Node100 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node100 [label="SignVerifyMessageDialog\l::on_signMessageButton\l_SM_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_sign_verify_message_dialog.html#a2ef91b4ace68d63ab1c1d3cc6c13b5f9"];
   Node97 -> Node101 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

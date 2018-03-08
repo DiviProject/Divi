@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DIVX: src/coins.cpp Source File</title>
+<title>DIVI: src/coins.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">DIVX
+   <div id="projectname">DIVI
    &#160;<span id="projectnumber">1.0.0</span>
    </div>
    <div id="projectbrief">P2P Digital Currency</div>
@@ -92,7 +92,7 @@ $(function() {
 <div class="ttc" id="class_c_coins_view_html_ad7dc37396ca4fac7014cea06fec7178e"><div class="ttname"><a href="class_c_coins_view.html#ad7dc37396ca4fac7014cea06fec7178e">CCoinsView::BatchWrite</a></div><div class="ttdeci">virtual bool BatchWrite(CCoinsMap &amp;mapCoins, const uint256 &amp;hashBlock)</div><div class="ttdoc">Do a bulk modification (multiple CCoins changes + BestBlock change). </div><div class="ttdef"><b>Definition:</b> <a href="coins_8cpp_source.html#l00065">coins.cpp:65</a></div></div>
 <div class="ttc" id="coins_8h_html_a2886ba2fd0428bae777e1cbcabc02834"><div class="ttname"><a href="coins_8h.html#a2886ba2fd0428bae777e1cbcabc02834">CCoinsMap</a></div><div class="ttdeci">boost::unordered_map&lt; uint256, CCoinsCacheEntry, CCoinsKeyHasher &gt; CCoinsMap</div><div class="ttdef"><b>Definition:</b> <a href="coins_8h_source.html#l00319">coins.h:319</a></div></div>
 <div class="ttc" id="class_c_coins_view_cache_html_a7d385628b7d821d2d5b6c5aaf1734616"><div class="ttname"><a href="class_c_coins_view_cache.html#a7d385628b7d821d2d5b6c5aaf1734616">CCoinsViewCache::FetchCoins</a></div><div class="ttdeci">CCoinsMap::iterator FetchCoins(const uint256 &amp;txid)</div></div>
-<div class="ttc" id="class_c_coins_html"><div class="ttname"><a href="class_c_coins.html">CCoins</a></div><div class="ttdoc">Note - for DIVX we added fCoinStake to the 2nd bit. </div><div class="ttdef"><b>Definition:</b> <a href="coins_8h_source.html#l00074">coins.h:74</a></div></div>
+<div class="ttc" id="class_c_coins_html"><div class="ttname"><a href="class_c_coins.html">CCoins</a></div><div class="ttdoc">Note - for DIVI we added fCoinStake to the 2nd bit. </div><div class="ttdef"><b>Definition:</b> <a href="coins_8h_source.html#l00074">coins.h:74</a></div></div>
 <div class="ttc" id="class_c_coins_view_backed_html_a39bca41ae922d0ce7f40e8aeab289280"><div class="ttname"><a href="class_c_coins_view_backed.html#a39bca41ae922d0ce7f40e8aeab289280">CCoinsViewBacked::GetBestBlock</a></div><div class="ttdeci">uint256 GetBestBlock() const</div><div class="ttdoc">Retrieve the block hash whose state this CCoinsView currently represents. </div><div class="ttdef"><b>Definition:</b> <a href="coins_8cpp_source.html#l00072">coins.cpp:72</a></div></div>
 <div class="ttc" id="class_c_coins_view_cache_html_a5b1abd71c95dc7be2523b9c28839ec29"><div class="ttname"><a href="class_c_coins_view_cache.html#a5b1abd71c95dc7be2523b9c28839ec29">CCoinsViewCache::HaveInputs</a></div><div class="ttdeci">bool HaveInputs(const CTransaction &amp;tx) const</div><div class="ttdoc">Check whether all prevouts of the transaction are present in the UTXO set represented by this view...</div><div class="ttdef"><b>Definition:</b> <a href="coins_8cpp_source.html#l00237">coins.cpp:237</a></div></div>
 <div class="ttc" id="class_c_coins_modifier_html_a0c524598ef4c00f3eb958946c620683a"><div class="ttname"><a href="class_c_coins_modifier.html#a0c524598ef4c00f3eb958946c620683a">CCoinsModifier::it</a></div><div class="ttdeci">CCoinsMap::iterator it</div><div class="ttdef"><b>Definition:</b> <a href="coins_8h_source.html#l00400">coins.h:400</a></div></div>
@@ -136,7 +136,7 @@ $(function() {
 <div class="ttc" id="class_c_tx_in_undo_html_a59d196d060b8241e8e95640144de6155"><div class="ttname"><a href="class_c_tx_in_undo.html#a59d196d060b8241e8e95640144de6155">CTxInUndo::fCoinStake</a></div><div class="ttdeci">bool fCoinStake</div><div class="ttdef"><b>Definition:</b> <a href="undo_8h_source.html#l00024">undo.h:24</a></div></div>
 <div class="ttc" id="class_c_coins_view_backed_html_ad49041658bdec807d556e080476e6543"><div class="ttname"><a href="class_c_coins_view_backed.html#ad49041658bdec807d556e080476e6543">CCoinsViewBacked::HaveCoins</a></div><div class="ttdeci">bool HaveCoins(const uint256 &amp;txid) const</div><div class="ttdoc">Just check whether we have data for a given txid. </div><div class="ttdef"><b>Definition:</b> <a href="coins_8cpp_source.html#l00071">coins.cpp:71</a></div></div>
 <div class="ttc" id="class_c_coins_view_html_af81f2907d360a2548d59a61388e5e5cb"><div class="ttname"><a href="class_c_coins_view.html#af81f2907d360a2548d59a61388e5e5cb">CCoinsView::GetBestBlock</a></div><div class="ttdeci">virtual uint256 GetBestBlock() const</div><div class="ttdoc">Retrieve the block hash whose state this CCoinsView currently represents. </div><div class="ttdef"><b>Definition:</b> <a href="coins_8cpp_source.html#l00064">coins.cpp:64</a></div></div>
-<div class="ttc" id="class_c_coins_view_cache_html_a1a8cd6069fba96939ffcb1bd36ffb921"><div class="ttname"><a href="class_c_coins_view_cache.html#a1a8cd6069fba96939ffcb1bd36ffb921">CCoinsViewCache::GetValueIn</a></div><div class="ttdeci">CAmount GetValueIn(const CTransaction &amp;tx) const</div><div class="ttdoc">Amount of divx coming in to a transaction Note that lightweight clients may not know anything besides...</div><div class="ttdef"><b>Definition:</b> <a href="coins_8cpp_source.html#l00221">coins.cpp:221</a></div></div>
+<div class="ttc" id="class_c_coins_view_cache_html_a1a8cd6069fba96939ffcb1bd36ffb921"><div class="ttname"><a href="class_c_coins_view_cache.html#a1a8cd6069fba96939ffcb1bd36ffb921">CCoinsViewCache::GetValueIn</a></div><div class="ttdeci">CAmount GetValueIn(const CTransaction &amp;tx) const</div><div class="ttdoc">Amount of divi coming in to a transaction Note that lightweight clients may not know anything besides...</div><div class="ttdef"><b>Definition:</b> <a href="coins_8cpp_source.html#l00221">coins.cpp:221</a></div></div>
 <div class="ttc" id="class_c_coins_view_html_a67d865358127bef1f0011a23d5158a9f"><div class="ttname"><a href="class_c_coins_view.html#a67d865358127bef1f0011a23d5158a9f">CCoinsView::GetCoins</a></div><div class="ttdeci">virtual bool GetCoins(const uint256 &amp;txid, CCoins &amp;coins) const</div><div class="ttdoc">Retrieve the CCoins (unspent transaction outputs) for a given txid. </div><div class="ttdef"><b>Definition:</b> <a href="coins_8cpp_source.html#l00062">coins.cpp:62</a></div></div>
 <div class="ttc" id="class_c_coins_modifier_html"><div class="ttname"><a href="class_c_coins_modifier.html">CCoinsModifier</a></div><div class="ttdoc">A reference to a mutable cache entry. </div><div class="ttdef"><b>Definition:</b> <a href="coins_8h_source.html#l00396">coins.h:396</a></div></div>
 <div class="ttc" id="struct_c_coins_cache_entry_html_a343585f1fcb810f9c21fc25ae42a1eba"><div class="ttname"><a href="struct_c_coins_cache_entry.html#a343585f1fcb810f9c21fc25ae42a1eba">CCoinsCacheEntry::coins</a></div><div class="ttdeci">CCoins coins</div><div class="ttdef"><b>Definition:</b> <a href="coins_8h_source.html#l00308">coins.h:308</a></div></div>
@@ -160,7 +160,7 @@ $(function() {
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 1 2018 15:20:19 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 8 2018 10:15:38 for DIVI by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

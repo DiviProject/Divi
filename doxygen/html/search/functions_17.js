@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['wait',['wait',['../class_c_semaphore.html#a1c108bd981fe68527ec8ef5e7b0d116c',1,'CSemaphore::wait()'],['../class_c_check_queue.html#a4ff3e0e8241491efa1803eeb3a53e7fa',1,'CCheckQueue::Wait()'],['../class_c_check_queue_control.html#ab31d809a76b876d21608c0c5d0e3baf0',1,'CCheckQueueControl::Wait()']]],
+  ['wait',['Wait',['../class_c_check_queue.html#a4ff3e0e8241491efa1803eeb3a53e7fa',1,'CCheckQueue::Wait()'],['../class_c_check_queue_control.html#ab31d809a76b876d21608c0c5d0e3baf0',1,'CCheckQueueControl::Wait()'],['../class_c_semaphore.html#a1c108bd981fe68527ec8ef5e7b0d116c',1,'CSemaphore::wait()']]],
   ['walletframe',['WalletFrame',['../class_wallet_frame.html#aa31b1844a2d17e4ad297e6b0cbe57c48',1,'WalletFrame']]],
   ['walletlock',['walletlock',['../rpcserver_8h.html#a4432c3d6ef0d23716d55793499565c12',1,'walletlock(const json_spirit::Array &amp;params, bool fHelp):&#160;rpcserver.h'],['../rpcwallet_8cpp.html#a387555bfc9c8d51759001ec4e3be3e83',1,'walletlock(const Array &amp;params, bool fHelp):&#160;rpcwallet.cpp']]],
   ['walletmodel',['WalletModel',['../class_wallet_model.html#af50d9654d2f20e4e4f0789dcb64ad6b1',1,'WalletModel']]],

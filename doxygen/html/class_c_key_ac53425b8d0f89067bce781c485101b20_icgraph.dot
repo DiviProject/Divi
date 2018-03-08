@@ -9,7 +9,7 @@ digraph "CKey::VerifyPubKey"
   Node783 -> Node785 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node785 [label="ECC_InitSanityCheck",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$key_8h.html#a55cc40f04bf887c1000667caccb0684a",tooltip="Check that required EC support is available at runtime. "];
   Node785 -> Node786 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node786 [label="InitSanityCheck",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a878797b40fb8eb0d7f330a41d7742d11",tooltip="Sanity checks Ensure that DIVX is running in a usable environment with all necessary library support..."];
+  Node786 [label="InitSanityCheck",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a878797b40fb8eb0d7f330a41d7742d11",tooltip="Sanity checks Ensure that DIVI is running in a usable environment with all necessary library support..."];
   Node783 -> Node787 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node787 [label="importprivkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcdump_8cpp.html#a3a6fdb974fce01220a895393d444e981"];
   Node783 -> Node788 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

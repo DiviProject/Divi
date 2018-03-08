@@ -6,7 +6,7 @@ digraph "src/utilmoneystr.h"
   Node17 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node18 [label="src/core_write.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__write_8cpp.html"];
   Node17 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node19 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node19 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node17 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node20 [label="src/init.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html"];
   Node17 -> Node21 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

@@ -81,7 +81,7 @@ var searchData=
   ['ptx',['ptx',['../class_c_orphan.html#a6bc886fad47f30a4c1cc80dc764e4095',1,'COrphan::ptx()'],['../class_c_in_point.html#a76bf1c9b14d4ba95ff3e260cd47a9ce4',1,'CInPoint::ptx()']]],
   ['ptxhash',['ptxHash',['../classlibzerocoin_1_1_coin_spend.html#a5bdef3bffb40eaeb3be3e0746cfe55a3',1,'libzerocoin::CoinSpend']]],
   ['ptxto',['ptxTo',['../class_c_script_check.html#ac22505a5889791918c2271fd2692e32a',1,'CScriptCheck']]],
-  ['pubcoin',['pubCoin',['../class_c_zerocoin_spend.html#af00473d78186159bfb26e9a65ad481c1',1,'CZerocoinSpend::pubCoin()'],['../struct_address_table_entry.html#a4853d255deca7286e7454fcd09b41ea3',1,'AddressTableEntry::pubcoin()']]],
+  ['pubcoin',['pubcoin',['../struct_address_table_entry.html#a4853d255deca7286e7454fcd09b41ea3',1,'AddressTableEntry::pubcoin()'],['../class_c_zerocoin_spend.html#af00473d78186159bfb26e9a65ad481c1',1,'CZerocoinSpend::pubCoin()']]],
   ['pubkey',['pubkey',['../struct_c_ext_pub_key.html#ab18c8520919d20bbfd068565ae566ea8',1,'CExtPubKey']]],
   ['pubkeycollateraladdress',['pubKeyCollateralAddress',['../class_c_masternode.html#ada049bf0e9f9e43b7ac1fd3e9af27a0d',1,'CMasternode']]],
   ['pubkeycollateraladdress1',['pubKeyCollateralAddress1',['../class_c_masternode.html#aee6ec3d20cc4e7b130ce73a72cd1e8a1',1,'CMasternode']]],

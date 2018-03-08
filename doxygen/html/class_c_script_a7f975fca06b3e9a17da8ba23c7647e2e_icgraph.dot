@@ -13,7 +13,7 @@ digraph "CScript::DecodeOP_N"
   Node55 -> Node56 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node56 [label="CActiveMasternode::\lGetVinFromOutput",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#abc2ae1e24001f80ace4bbea2b6453944"];
   Node56 -> Node57 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node57 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node57 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 DIV input that can be used for the Masternode. "];
   Node55 -> Node62 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node62 [label="PopulateInvalidOutPointMap",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae7d38ec9b36061a4216d318d34dde6e2"];
   Node55 -> Node63 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

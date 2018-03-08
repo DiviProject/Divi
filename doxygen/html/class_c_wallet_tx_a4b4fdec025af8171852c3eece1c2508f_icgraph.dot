@@ -108,7 +108,7 @@ digraph "CWalletTx::IsFromMe"
   Node481 -> Node482 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node482 [label="CActiveMasternode::\lSelectCoinsMasternode",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#ac4fc5fb1681bf0a0f3d30e706fb0577a"];
   Node482 -> Node483 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node483 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node483 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 DIV input that can be used for the Masternode. "];
   Node481 -> Node453 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node481 -> Node489 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node489 [label="WalletModel::listCoins",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_wallet_model.html#ae5ce26bba42701b45de766ef11cc9a47"];

@@ -11,9 +11,9 @@ digraph "GetTimeMillis"
   Node329 -> Node330 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node330 [label="Shutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8h.html#ac5f038c2b480cf9ef5e19e3eba8dbaf9",tooltip="Shutdown is split into 2 parts: Part 1: shut down everything but the main wallet instance (done in Pr..."];
   Node330 -> Node331 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node331 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#ac59316b767e6984e1285f0531275286b"];
+  Node331 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#ac59316b767e6984e1285f0531275286b"];
   Node331 -> Node332 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node332 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
+  Node332 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
   Node330 -> Node333 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node333 [label="BitcoinCore::shutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_core.html#a94f3f4622ba698e321f3a2e0e686129f"];
   Node329 -> Node334 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

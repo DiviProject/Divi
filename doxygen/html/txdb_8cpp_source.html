@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DIVX: src/txdb.cpp Source File</title>
+<title>DIVI: src/txdb.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">DIVX
+   <div id="projectname">DIVI
    &#160;<span id="projectnumber">1.0.0</span>
    </div>
    <div id="projectbrief">P2P Digital Currency</div>
@@ -103,7 +103,7 @@ $(function() {
 <div class="ttc" id="class_c_data_stream_html"><div class="ttname"><a href="class_c_data_stream.html">CDataStream</a></div><div class="ttdoc">Double ended buffer combining vector and stream-like interfaces. </div><div class="ttdef"><b>Definition:</b> <a href="streams_8h_source.html#l00029">streams.h:29</a></div></div>
 <div class="ttc" id="class_c_block_index_html_a3653cb1e1bc3fa3fcdf1ed50ff93b50a"><div class="ttname"><a href="class_c_block_index.html#a3653cb1e1bc3fa3fcdf1ed50ff93b50a">CBlockIndex::nFile</a></div><div class="ttdeci">int nFile</div><div class="ttdoc">Which # file this block is stored in (blk?????.dat) </div><div class="ttdef"><b>Definition:</b> <a href="chain_8h_source.html#l00130">chain.h:130</a></div></div>
 <div class="ttc" id="class_c_level_d_b_batch_html_ab459da1abafa27e834de9a4cc25b6f2d"><div class="ttname"><a href="class_c_level_d_b_batch.html#ab459da1abafa27e834de9a4cc25b6f2d">CLevelDBBatch::Write</a></div><div class="ttdeci">void Write(const K &amp;key, const V &amp;value)</div><div class="ttdef"><b>Definition:</b> <a href="leveldbwrapper_8h_source.html#l00037">leveldbwrapper.h:37</a></div></div>
-<div class="ttc" id="class_c_coins_html"><div class="ttname"><a href="class_c_coins.html">CCoins</a></div><div class="ttdoc">Note - for DIVX we added fCoinStake to the 2nd bit. </div><div class="ttdef"><b>Definition:</b> <a href="coins_8h_source.html#l00074">coins.h:74</a></div></div>
+<div class="ttc" id="class_c_coins_html"><div class="ttname"><a href="class_c_coins.html">CCoins</a></div><div class="ttdoc">Note - for DIVI we added fCoinStake to the 2nd bit. </div><div class="ttdef"><b>Definition:</b> <a href="coins_8h_source.html#l00074">coins.h:74</a></div></div>
 <div class="ttc" id="class_c_coins_view_d_b_html_af55f35faadeb74b5406559fe3ed20114"><div class="ttname"><a href="class_c_coins_view_d_b.html#af55f35faadeb74b5406559fe3ed20114">CCoinsViewDB::HaveCoins</a></div><div class="ttdeci">bool HaveCoins(const uint256 &amp;txid) const</div><div class="ttdoc">Just check whether we have data for a given txid. </div><div class="ttdef"><b>Definition:</b> <a href="txdb_8cpp_source.html#l00043">txdb.cpp:43</a></div></div>
 <div class="ttc" id="pow_8h_html"><div class="ttname"><a href="pow_8h.html">pow.h</a></div></div>
 <div class="ttc" id="class_c_block_tree_d_b_html_a12be19bb1d7253eeb40e1aa88b032346"><div class="ttname"><a href="class_c_block_tree_d_b.html#a12be19bb1d7253eeb40e1aa88b032346">CBlockTreeDB::LoadBlockIndexGuts</a></div><div class="ttdeci">bool LoadBlockIndexGuts()</div><div class="ttdef"><b>Definition:</b> <a href="txdb_8cpp_source.html#l00211">txdb.cpp:211</a></div></div>
@@ -145,7 +145,7 @@ $(function() {
 <div class="ttc" id="class_c_block_tree_d_b_html_a52fd1b1dc02c2a4e977099e2c2c50424"><div class="ttname"><a href="class_c_block_tree_d_b.html#a52fd1b1dc02c2a4e977099e2c2c50424">CBlockTreeDB::CBlockTreeDB</a></div><div class="ttdeci">CBlockTreeDB(size_t nCacheSize, bool fMemory=false, bool fWipe=false)</div><div class="ttdef"><b>Definition:</b> <a href="txdb_8cpp_source.html#l00077">txdb.cpp:77</a></div></div>
 <div class="ttc" id="class_c_block_tree_d_b_html_a6f951198dc53fbe9194626ff82638656"><div class="ttname"><a href="class_c_block_tree_d_b.html#a6f951198dc53fbe9194626ff82638656">CBlockTreeDB::ReadBlockFileInfo</a></div><div class="ttdeci">bool ReadBlockFileInfo(int nFile, CBlockFileInfo &amp;fileinfo)</div><div class="ttdef"><b>Definition:</b> <a href="txdb_8cpp_source.html#l00091">txdb.cpp:91</a></div></div>
 <div class="ttc" id="class_c_coins_view_d_b_html_ac9c513a34b9e58d942fdbeafd9e5bbce"><div class="ttname"><a href="class_c_coins_view_d_b.html#ac9c513a34b9e58d942fdbeafd9e5bbce">CCoinsViewDB::GetBestBlock</a></div><div class="ttdeci">uint256 GetBestBlock() const</div><div class="ttdoc">Retrieve the block hash whose state this CCoinsView currently represents. </div><div class="ttdef"><b>Definition:</b> <a href="txdb_8cpp_source.html#l00048">txdb.cpp:48</a></div></div>
-<div class="ttc" id="main_8cpp_html_af3adfd64a90ee443bfa5fe16321aa2d7"><div class="ttname"><a href="main_8cpp.html#af3adfd64a90ee443bfa5fe16321aa2d7">InsertBlockIndex</a></div><div class="ttdeci">CBlockIndex * InsertBlockIndex(uint256 hash)</div><div class="ttdoc">Create a new block index entry for a given block hash. </div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l05055">main.cpp:5055</a></div></div>
+<div class="ttc" id="main_8cpp_html_af3adfd64a90ee443bfa5fe16321aa2d7"><div class="ttname"><a href="main_8cpp.html#af3adfd64a90ee443bfa5fe16321aa2d7">InsertBlockIndex</a></div><div class="ttdeci">CBlockIndex * InsertBlockIndex(uint256 hash)</div><div class="ttdoc">Create a new block index entry for a given block hash. </div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l05033">main.cpp:5033</a></div></div>
 <div class="ttc" id="class_c_block_tree_d_b_html_a74383427266d627e84c2d0c8e21e03c7"><div class="ttname"><a href="class_c_block_tree_d_b.html#a74383427266d627e84c2d0c8e21e03c7">CBlockTreeDB::ReadTxIndex</a></div><div class="ttdeci">bool ReadTxIndex(const uint256 &amp;txid, CDiskTxPos &amp;pos)</div><div class="ttdef"><b>Definition:</b> <a href="txdb_8cpp_source.html#l00174">txdb.cpp:174</a></div></div>
 <div class="ttc" id="class_c_block_index_html_a45126301a0a6e26010527a7bbfc1ef58"><div class="ttname"><a href="class_c_block_index.html#a45126301a0a6e26010527a7bbfc1ef58">CBlockIndex::nVersion</a></div><div class="ttdeci">int nVersion</div><div class="ttdoc">block header </div><div class="ttdef"><b>Definition:</b> <a href="chain_8h_source.html#l00171">chain.h:171</a></div></div>
 <div class="ttc" id="class_c_coins_view_d_b_html_a209841b241febcccb2ec584b886ad374"><div class="ttname"><a href="class_c_coins_view_d_b.html#a209841b241febcccb2ec584b886ad374">CCoinsViewDB::CCoinsViewDB</a></div><div class="ttdeci">CCoinsViewDB(size_t nCacheSize, bool fMemory=false, bool fWipe=false)</div><div class="ttdef"><b>Definition:</b> <a href="txdb_8cpp_source.html#l00034">txdb.cpp:34</a></div></div>
@@ -160,7 +160,7 @@ $(function() {
 <div class="ttc" id="class_c_level_d_b_wrapper_html_a820484c9e427f9e3400396e750acf4b8"><div class="ttname"><a href="class_c_level_d_b_wrapper.html#a820484c9e427f9e3400396e750acf4b8">CLevelDBWrapper::WriteBatch</a></div><div class="ttdeci">bool WriteBatch(CLevelDBBatch &amp;batch, bool fSync=false)</div><div class="ttdef"><b>Definition:</b> <a href="leveldbwrapper_8cpp_source.html#l00083">leveldbwrapper.cpp:83</a></div></div>
 <div class="ttc" id="uint256_8h_html"><div class="ttname"><a href="uint256_8h.html">uint256.h</a></div></div>
 <div class="ttc" id="class_c_block_index_html"><div class="ttname"><a href="class_c_block_index.html">CBlockIndex</a></div><div class="ttdoc">The block chain is a tree shaped structure starting with the genesis block at the root...</div><div class="ttdef"><b>Definition:</b> <a href="chain_8h_source.html#l00108">chain.h:108</a></div></div>
-<div class="ttc" id="chainparams_8cpp_html_ace5c5b706d71a324a417dd2db394fd4a"><div class="ttname"><a href="chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a">Params</a></div><div class="ttdeci">const CChainParams &amp; Params()</div><div class="ttdoc">Return the currently selected parameters. </div><div class="ttdef"><b>Definition:</b> <a href="chainparams_8cpp_source.html#l00478">chainparams.cpp:478</a></div></div>
+<div class="ttc" id="chainparams_8cpp_html_ace5c5b706d71a324a417dd2db394fd4a"><div class="ttname"><a href="chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a">Params</a></div><div class="ttdeci">const CChainParams &amp; Params()</div><div class="ttdoc">Return the currently selected parameters. </div><div class="ttdef"><b>Definition:</b> <a href="chainparams_8cpp_source.html#l00480">chainparams.cpp:480</a></div></div>
 <div class="ttc" id="class_c_zerocoin_d_b_html_acdef7b13610bd8f4ad5f4a3d5b314e33"><div class="ttname"><a href="class_c_zerocoin_d_b.html#acdef7b13610bd8f4ad5f4a3d5b314e33">CZerocoinDB::EraseCoinMint</a></div><div class="ttdeci">bool EraseCoinMint(const CBigNum &amp;bnPubcoin)</div><div class="ttdef"><b>Definition:</b> <a href="txdb_8cpp_source.html#l00316">txdb.cpp:316</a></div></div>
 <div class="ttc" id="class_c_block_index_html_a0a25aebf3adf907ea8847e7a108d8225"><div class="ttname"><a href="class_c_block_index.html#a0a25aebf3adf907ea8847e7a108d8225">CBlockIndex::mapZerocoinSupply</a></div><div class="ttdeci">std::map&lt; libzerocoin::CoinDenomination, int64_t &gt; mapZerocoinSupply</div><div class="ttdoc">zerocoin specific fields </div><div class="ttdef"><b>Definition:</b> <a href="chain_8h_source.html#l00182">chain.h:182</a></div></div>
 <div class="ttc" id="class_c_zerocoin_d_b_html_a5ab8298648ee5017ae01d054eaebae0a"><div class="ttname"><a href="class_c_zerocoin_d_b.html#a5ab8298648ee5017ae01d054eaebae0a">CZerocoinDB::EraseAccumulatorValue</a></div><div class="ttdeci">bool EraseAccumulatorValue(const uint32_t &amp;nChecksum)</div><div class="ttdef"><b>Definition:</b> <a href="txdb_8cpp_source.html#l00363">txdb.cpp:363</a></div></div>
@@ -195,7 +195,7 @@ $(function() {
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 1 2018 15:20:22 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 8 2018 10:15:41 for DIVI by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

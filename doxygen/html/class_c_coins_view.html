@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DIVX: CCoinsView Class Reference</title>
+<title>DIVI: CCoinsView Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">DIVX
+   <div id="projectname">DIVI
    &#160;<span id="projectnumber">1.0.0</span>
    </div>
    <div id="projectbrief">P2P Digital Currency</div>
@@ -86,7 +86,7 @@ Inheritance diagram for CCoinsView:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a67d865358127bef1f0011a23d5158a9f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#a67d865358127bef1f0011a23d5158a9f">GetCoins</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;txid, <a class="el" href="class_c_coins.html">CCoins</a> &amp;coins) const</td></tr>
-<tr class="memdesc:a67d865358127bef1f0011a23d5158a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> (unspent transaction outputs) for a given txid.  <a href="#a67d865358127bef1f0011a23d5158a9f">More...</a><br /></td></tr>
+<tr class="memdesc:a67d865358127bef1f0011a23d5158a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the <a class="el" href="class_c_coins.html" title="Note - for DIVI we added fCoinStake to the 2nd bit. ">CCoins</a> (unspent transaction outputs) for a given txid.  <a href="#a67d865358127bef1f0011a23d5158a9f">More...</a><br /></td></tr>
 <tr class="separator:a67d865358127bef1f0011a23d5158a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade3a65fc3f1b02baf7bebce630e4eba3"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#ade3a65fc3f1b02baf7bebce630e4eba3">HaveCoins</a> (const <a class="el" href="classuint256.html">uint256</a> &amp;txid) const</td></tr>
 <tr class="memdesc:ade3a65fc3f1b02baf7bebce630e4eba3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Just check whether we have data for a given txid.  <a href="#ade3a65fc3f1b02baf7bebce630e4eba3">More...</a><br /></td></tr>
@@ -95,7 +95,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:af81f2907d360a2548d59a61388e5e5cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the block hash whose state this <a class="el" href="class_c_coins_view.html" title="Abstract view on the open txout dataset. ">CCoinsView</a> currently represents.  <a href="#af81f2907d360a2548d59a61388e5e5cb">More...</a><br /></td></tr>
 <tr class="separator:af81f2907d360a2548d59a61388e5e5cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7dc37396ca4fac7014cea06fec7178e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#ad7dc37396ca4fac7014cea06fec7178e">BatchWrite</a> (<a class="el" href="coins_8h.html#a2886ba2fd0428bae777e1cbcabc02834">CCoinsMap</a> &amp;mapCoins, const <a class="el" href="classuint256.html">uint256</a> &amp;hashBlock)</td></tr>
-<tr class="memdesc:ad7dc37396ca4fac7014cea06fec7178e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do a bulk modification (multiple <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> changes + BestBlock change).  <a href="#ad7dc37396ca4fac7014cea06fec7178e">More...</a><br /></td></tr>
+<tr class="memdesc:ad7dc37396ca4fac7014cea06fec7178e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do a bulk modification (multiple <a class="el" href="class_c_coins.html" title="Note - for DIVI we added fCoinStake to the 2nd bit. ">CCoins</a> changes + BestBlock change).  <a href="#ad7dc37396ca4fac7014cea06fec7178e">More...</a><br /></td></tr>
 <tr class="separator:ad7dc37396ca4fac7014cea06fec7178e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbd7f73ba071c6e441dd88d95b8f2c0d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_coins_view.html#adbd7f73ba071c6e441dd88d95b8f2c0d">GetStats</a> (<a class="el" href="struct_c_coins_stats.html">CCoinsStats</a> &amp;stats) const</td></tr>
 <tr class="memdesc:adbd7f73ba071c6e441dd88d95b8f2c0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate statistics about the unspent transaction output set.  <a href="#adbd7f73ba071c6e441dd88d95b8f2c0d">More...</a><br /></td></tr>
@@ -173,7 +173,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Do a bulk modification (multiple <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> changes + BestBlock change). </p>
+<p>Do a bulk modification (multiple <a class="el" href="class_c_coins.html" title="Note - for DIVI we added fCoinStake to the 2nd bit. ">CCoins</a> changes + BestBlock change). </p>
 <p>The passed mapCoins can be modified. </p>
 
 <p>Reimplemented in <a class="el" href="class_c_coins_view_cache.html#a561bb7c6c97701b12c48fbbb563d0a91">CCoinsViewCache</a>, <a class="el" href="class_c_coins_view_backed.html#ace15da3934c9d7a9cb9c7a787f92f764">CCoinsViewBacked</a>, and <a class="el" href="class_c_coins_view_d_b.html#a33f98ec9323ce48e1704327bc8a2a002">CCoinsViewDB</a>.</p>
@@ -259,7 +259,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Retrieve the <a class="el" href="class_c_coins.html" title="Note - for DIVX we added fCoinStake to the 2nd bit. ">CCoins</a> (unspent transaction outputs) for a given txid. </p>
+<p>Retrieve the <a class="el" href="class_c_coins.html" title="Note - for DIVI we added fCoinStake to the 2nd bit. ">CCoins</a> (unspent transaction outputs) for a given txid. </p>
 
 <p>Reimplemented in <a class="el" href="class_c_coins_view_cache.html#a1b62444593fdb580bfa4bd6fab41fafa">CCoinsViewCache</a>, <a class="el" href="class_c_coins_view_backed.html#a456f9e85817556329a959c120998df5b">CCoinsViewBacked</a>, <a class="el" href="class_c_coins_view_mem_pool.html#a1a4a556821b1680ff4b73758c8a1e471">CCoinsViewMemPool</a>, <a class="el" href="class_c_coins_view_error_catcher.html#a909f7b9e364b6f06bfea955209aa015d">CCoinsViewErrorCatcher</a>, and <a class="el" href="class_c_coins_view_d_b.html#ac35a80d1115ec697101d382e71db5b31">CCoinsViewDB</a>.</p>
 
@@ -357,7 +357,7 @@ Here is the caller graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 1 2018 15:20:26 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 8 2018 10:15:46 for DIVI by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

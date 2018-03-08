@@ -41,7 +41,7 @@ digraph "OverviewPage::setWalletModel"
   Node122 -> Node92 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node92 [label="Params",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$chainparams_8cpp.html#ace5c5b706d71a324a417dd2db394fd4a",tooltip="Return the currently selected parameters. "];
   Node84 -> Node129 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node129 [label="OverviewPage::getPercentage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_overview_page.html#a8ca42fc06839ff11a84e924a1a5afc64"];
+  Node129 [label="OverviewPage::getPercentage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_overview_page.html#aee7905831abd818179fca619243f1ef1"];
   Node84 -> Node130 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node130 [label="GetBoolArg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a64d956f1dda7f9a80ab5d594532b906d",tooltip="Return boolean argument or default value. "];
   Node84 -> Node131 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

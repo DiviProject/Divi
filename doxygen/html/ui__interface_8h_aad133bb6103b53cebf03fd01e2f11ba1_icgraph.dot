@@ -5,9 +5,9 @@ digraph "_"
   rankdir="LR";
   Node1 [label="_",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
   Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node2 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#ac59316b767e6984e1285f0531275286b"];
+  Node2 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#ac59316b767e6984e1285f0531275286b"];
   Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node3 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
+  Node3 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
   Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node4 [label="CCoinsViewErrorCatcher\l::GetCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_error_catcher.html#a909f7b9e364b6f06bfea955209aa015d",tooltip="Retrieve the CCoins (unspent transaction outputs) for a given txid. "];
   Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

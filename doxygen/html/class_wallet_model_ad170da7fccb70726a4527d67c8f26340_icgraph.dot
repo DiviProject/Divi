@@ -41,9 +41,9 @@ digraph "WalletModel::isAnonymizeOnlyUnlocked"
   Node901 -> Node902 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node902 [label="MultisigDialog::on\l_signButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a5fdc6c2578e0f4e2f7900a3723d223ae"];
   Node889 -> Node903 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node903 [label="PrivacyDialog::on_pushButton\lMintzPIV_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a63fdbe413a827feb91e6c2f4bdaf4282"];
+  Node903 [label="PrivacyDialog::on_pushButton\lMintzDIV_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#aa6bb4499ed540ba38114032bffc40249"];
   Node889 -> Node904 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node904 [label="PrivacyDialog::on_pushButton\lSpendzPIV_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a7b95ee43dfe2453d43df01a7fae3cc55"];
+  Node904 [label="PrivacyDialog::on_pushButton\lSpendzDIV_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#accc35c0dac26d3f1bb94c83ae75e317b"];
   Node889 -> Node887 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node889 -> Node905 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node905 [label="SendCoinsDialog::process\lSendCoinsReturn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_send_coins_dialog.html#a1b9b188bbf5ed580f8f1041afb5d3fd5"];

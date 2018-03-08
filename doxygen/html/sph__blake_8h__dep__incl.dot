@@ -70,7 +70,7 @@ digraph "src/crypto/sph_blake.h"
   Node13 [label="src/qt/blockexplorer.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$blockexplorer_8cpp.html"];
   Node7 -> Node82 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node7 -> Node101 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node101 [label="src/qt/divx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx_8cpp.html"];
+  Node101 [label="src/qt/divi.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi_8cpp.html"];
   Node7 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node15 [label="src/qt/optionsmodel.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$optionsmodel_8cpp.html"];
   Node7 -> Node104 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

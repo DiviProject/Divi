@@ -52,9 +52,9 @@ digraph "src/allocators.h"
   Node132 [label="src/crypto/scrypt.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$scrypt_8cpp.html"];
   Node128 -> Node122 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node128 -> Node133 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node133 [label="src/divx-cli.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-cli_8cpp.html"];
+  Node133 [label="src/divi-cli.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-cli_8cpp.html"];
   Node128 -> Node134 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node134 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node134 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node128 -> Node135 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node135 [label="src/merkleblock.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$merkleblock_8cpp.html"];
   Node128 -> Node136 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

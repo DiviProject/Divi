@@ -80,7 +80,7 @@ digraph "GetScriptForDestination"
   Node158 -> Node204 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node204 [label="CObfuscationPool::Create\lDenominated",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#a95e6023ca617da294132311b30179c55"];
   Node158 -> Node205 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node205 [label="CObfuScationSigner\l::IsVinAssociatedWithPubkey",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_obfu_scation_signer.html#ae52356535949db63ac24a3815c0ca117",tooltip="Is the inputs associated with this public key? (and there is 10000 PIV - checking if valid masternode..."];
+  Node205 [label="CObfuScationSigner\l::IsVinAssociatedWithPubkey",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_obfu_scation_signer.html#ae52356535949db63ac24a3815c0ca117",tooltip="Is the inputs associated with this public key? (and there is 10000 DIV - checking if valid masternode..."];
   Node158 -> Node207 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node207 [label="GUIUtil::isDust",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#af72fd9408f5cc4f11f6adb4dd533aa40"];
   Node158 -> Node210 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

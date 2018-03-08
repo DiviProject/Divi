@@ -5,9 +5,9 @@ digraph "LicenseInfo"
   rankdir="LR";
   Node45 [label="LicenseInfo",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
   Node45 -> Node46 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node46 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#ac59316b767e6984e1285f0531275286b"];
+  Node46 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#ac59316b767e6984e1285f0531275286b"];
   Node46 -> Node47 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node47 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
+  Node47 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
   Node45 -> Node48 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node48 [label="HelpMessageDialog::\lHelpMessageDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_help_message_dialog.html#a776ac4235e2a407223c7729d7d4af6a9",tooltip="\"Help message\" or \"About\" dialog box "];
 }

@@ -124,7 +124,7 @@ digraph "src/base58.h"
   Node79 -> Node160 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node160 [label="src/core_write.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__write_8cpp.html"];
   Node79 -> Node161 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node161 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node161 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node79 -> Node150 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node79 -> Node88 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node79 -> Node162 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

@@ -66,7 +66,7 @@ digraph "src/primitives/transaction.h"
   Node43 -> Node129 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node129 [label="src/checkpoints.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$checkpoints_8cpp.html"];
   Node43 -> Node130 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node130 [label="src/divxd.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html"];
+  Node130 [label="src/divid.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html"];
   Node43 -> Node47 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node43 -> Node119 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node43 -> Node103 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -96,7 +96,7 @@ digraph "src/primitives/transaction.h"
   Node41 -> Node163 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node163 [label="src/core_read.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__read_8cpp.html"];
   Node41 -> Node153 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node153 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node153 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node41 -> Node164 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node164 [label="src/merkleblock.h",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$merkleblock_8h.html"];
   Node164 -> Node165 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

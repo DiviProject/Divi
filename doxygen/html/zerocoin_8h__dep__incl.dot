@@ -120,7 +120,7 @@ digraph "src/primitives/zerocoin.h"
   Node33 -> Node112 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node112 [label="src/checkpoints.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$checkpoints_8cpp.html"];
   Node33 -> Node113 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node113 [label="src/divxd.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html"];
+  Node113 [label="src/divid.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html"];
   Node33 -> Node28 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node33 -> Node102 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node33 -> Node29 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -142,7 +142,7 @@ digraph "src/primitives/zerocoin.h"
   Node33 -> Node101 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node33 -> Node51 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node33 -> Node120 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node120 [label="src/qt/divx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx_8cpp.html"];
+  Node120 [label="src/qt/divi.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi_8cpp.html"];
   Node33 -> Node55 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node55 [label="src/qt/guiutil.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$guiutil_8cpp.html"];
   Node33 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

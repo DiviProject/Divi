@@ -51,7 +51,7 @@ digraph "AddressBookPage"
   Node7 -> Node20 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" wallet" ,fontname="Helvetica"];
   Node4 -> Node18 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" addressTableModel" ,fontname="Helvetica"];
   Node22 -> Node18 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" recentRequestsTableModel" ,fontname="Helvetica"];
-  Node22 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divx: URIs. "];
+  Node22 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divi: URIs. "];
   Node5 -> Node22 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node18 -> Node22 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" walletModel" ,fontname="Helvetica"];
   Node23 -> Node18 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" optionsModel" ,fontname="Helvetica"];

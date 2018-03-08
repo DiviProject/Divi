@@ -11,9 +11,9 @@ digraph "MapPort"
   Node221 -> Node222 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node222 [label="Shutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8h.html#ac5f038c2b480cf9ef5e19e3eba8dbaf9",tooltip="Shutdown is split into 2 parts: Part 1: shut down everything but the main wallet instance (done in Pr..."];
   Node222 -> Node223 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node223 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#ac59316b767e6984e1285f0531275286b"];
+  Node223 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#ac59316b767e6984e1285f0531275286b"];
   Node223 -> Node224 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node224 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
+  Node224 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
   Node222 -> Node225 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node225 [label="BitcoinCore::shutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_core.html#a94f3f4622ba698e321f3a2e0e686129f"];
   Node221 -> Node226 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

@@ -9,7 +9,7 @@ digraph "Graphical Class Hierarchy"
   Node142 -> Node144 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node144 [label="PeerTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_peer_table_model.html",tooltip="Qt model providing information about connected peers, similar to the \"getpeerinfo\" RPC call..."];
   Node142 -> Node145 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node145 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divx: URIs. "];
+  Node145 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divi: URIs. "];
   Node142 -> Node146 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node146 [label="TransactionTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_transaction_table_model.html",tooltip="UI model for the transaction table of a wallet. "];
 }

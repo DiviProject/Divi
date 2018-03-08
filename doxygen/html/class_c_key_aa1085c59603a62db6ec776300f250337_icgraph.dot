@@ -7,11 +7,11 @@ digraph "CKey::GetPubKey"
   Node357 -> Node358 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node358 [label="CActiveMasternode::\lGetVinFromOutput",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#abc2ae1e24001f80ace4bbea2b6453944"];
   Node358 -> Node359 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node359 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node359 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 DIV input that can be used for the Masternode. "];
   Node359 -> Node360 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node360 [label="CActiveMasternode::\lRegister",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#a99e26870efec1ea98738cda1a5a85702",tooltip="Register remote Masternode. "];
   Node359 -> Node361 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node361 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#af9f32ec3d13b161d6a89839dab17b154",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node361 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#af9f32ec3d13b161d6a89839dab17b154",tooltip="Get 10000 DIV input that can be used for the Masternode. "];
   Node359 -> Node362 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node362 [label="masternodedebug",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a8522c187a75142b1b267edca0734238c"];
   Node357 -> Node364 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -38,7 +38,7 @@ digraph "CKey::GetPubKey"
   Node357 -> Node402 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node402 [label="ECC_InitSanityCheck",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$key_8h.html#a55cc40f04bf887c1000667caccb0684a",tooltip="Check that required EC support is available at runtime. "];
   Node402 -> Node403 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node403 [label="InitSanityCheck",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a878797b40fb8eb0d7f330a41d7742d11",tooltip="Sanity checks Ensure that DIVX is running in a usable environment with all necessary library support..."];
+  Node403 [label="InitSanityCheck",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a878797b40fb8eb0d7f330a41d7742d11",tooltip="Sanity checks Ensure that DIVI is running in a usable environment with all necessary library support..."];
   Node357 -> Node404 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node404 [label="CKeyStore::GetPubKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_key_store.html#ab83687ea4c9df138b21f6ec3e9809f42"];
   Node404 -> Node405 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

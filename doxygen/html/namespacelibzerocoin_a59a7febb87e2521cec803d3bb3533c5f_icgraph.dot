@@ -11,7 +11,7 @@ digraph "libzerocoin::IntToZerocoinDenomination"
   Node164 -> Node167 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node167 [label="ZerocoinSpendListFromBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a79d886b5a0e7d08dc7308749b7aed9d7"];
   Node167 -> Node168 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node168 [label="RecalculateZPIVSpent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ab76a54f954d7ae3a7b89bccd76a8592d"];
+  Node168 [label="RecalculateZDIVSpent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a161774bfe6fd9f0422f56db71f98071b"];
   Node164 -> Node169 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node169 [label="exportzerocoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcwallet_8cpp.html#ac377e836e53711d05eef61a2613e5945"];
   Node164 -> Node170 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

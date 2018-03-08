@@ -23,7 +23,7 @@ digraph "CPubKey::IsCompressed"
   Node880 -> Node881 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node881 [label="CActiveMasternode::\lGetVinFromOutput",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#abc2ae1e24001f80ace4bbea2b6453944"];
   Node881 -> Node882 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node882 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node882 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 DIV input that can be used for the Masternode. "];
   Node880 -> Node858 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node858 [label="Bip38ToolDialog::on\l_encryptKeyButton_ENC\l_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bip38_tool_dialog.html#a31cdc41e507628f2cd413e9df57c5770"];
   Node880 -> Node871 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -41,7 +41,7 @@ digraph "CPubKey::IsCompressed"
   Node890 -> Node892 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node892 [label="ECC_InitSanityCheck",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$key_8h.html#a55cc40f04bf887c1000667caccb0684a",tooltip="Check that required EC support is available at runtime. "];
   Node892 -> Node893 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node893 [label="InitSanityCheck",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a878797b40fb8eb0d7f330a41d7742d11",tooltip="Sanity checks Ensure that DIVX is running in a usable environment with all necessary library support..."];
+  Node893 [label="InitSanityCheck",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a878797b40fb8eb0d7f330a41d7742d11",tooltip="Sanity checks Ensure that DIVI is running in a usable environment with all necessary library support..."];
   Node890 -> Node894 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node894 [label="importprivkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcdump_8cpp.html#a3a6fdb974fce01220a895393d444e981"];
   Node890 -> Node895 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

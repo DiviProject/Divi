@@ -10,6 +10,6 @@ var searchData=
   ['amountexceedsbalance',['AmountExceedsBalance',['../class_wallet_model.html#afb93f64411320dce4692c2190b7d35ccabdabf0af6ddd309de3aef879b2709404',1,'WalletModel']]],
   ['amountrole',['AmountRole',['../class_transaction_table_model.html#a4b248508c36df598476affbf9871d1e6ace07f7f11257526cef9d6613c23cfff4',1,'TransactionTableModel']]],
   ['amountwithfeeexceedsbalance',['AmountWithFeeExceedsBalance',['../class_wallet_model.html#afb93f64411320dce4692c2190b7d35cca1f91d49761f7c83d4a07a3755c48c04b',1,'WalletModel']]],
-  ['anonymizedivxamount',['AnonymizeDivxAmount',['../class_options_model.html#a5c6c9ca8a01aca9f53e91f118e4878d2a0be0fa2adc9151a07cc9f7b91a32942d',1,'OptionsModel']]],
+  ['anonymizediviamount',['AnonymizeDiviAmount',['../class_options_model.html#a5c6c9ca8a01aca9f53e91f118e4878d2a46d28177a1ad598fd161de1a516afd22',1,'OptionsModel']]],
   ['anonymizeonlyunlocked',['AnonymizeOnlyUnlocked',['../class_wallet_model.html#afb93f64411320dce4692c2190b7d35ccaf665502b41b2622a55edf1addfc0edc1',1,'WalletModel']]]
 ];

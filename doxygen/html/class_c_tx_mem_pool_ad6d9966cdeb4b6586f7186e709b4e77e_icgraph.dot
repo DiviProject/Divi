@@ -36,7 +36,7 @@ digraph "CTxMemPool::lookup"
   Node218 -> Node232 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node232 [label="CObfuscationPool::IsCollateral\lValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#a821ebbd4ae62c5ad7e80e24a3038bdec",tooltip="If the collateral is valid given by a client. "];
   Node218 -> Node233 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node233 [label="CObfuScationSigner\l::IsVinAssociatedWithPubkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfu_scation_signer.html#ae52356535949db63ac24a3815c0ca117",tooltip="Is the inputs associated with this public key? (and there is 10000 PIV - checking if valid masternode..."];
+  Node233 [label="CObfuScationSigner\l::IsVinAssociatedWithPubkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfu_scation_signer.html#ae52356535949db63ac24a3815c0ca117",tooltip="Is the inputs associated with this public key? (and there is 10000 DIV - checking if valid masternode..."];
   Node233 -> Node234 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node234 [label="CMasternodeMan::ProcessMessage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_man.html#ae3e5d263cebdcd932eca49caeadce9aa"];
   Node218 -> Node235 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

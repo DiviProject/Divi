@@ -87,7 +87,7 @@ digraph "src/key.h"
   Node23 -> Node104 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node104 [label="src/core_write.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__write_8cpp.html"];
   Node23 -> Node105 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node105 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node105 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node23 -> Node94 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node23 -> Node32 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node23 -> Node106 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

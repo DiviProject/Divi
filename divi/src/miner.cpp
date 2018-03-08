@@ -32,7 +32,7 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// DIVXMiner
+// DIVIMiner
 //
 
 //
@@ -101,7 +101,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     if (!pblocktemplate.get())
         return NULL;
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
-
+    
     // -regtest only: allow overriding block.nVersion with
     // -blockversion=N to test forking scenarios
     if (Params().MineBlocksOnDemand())
@@ -112,7 +112,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     if (fZerocoinActive)
         pblock->nVersion = 4;
     else
-        pblock->nVersion = 3;
+        pblock->nVersion = 1;
 
     // Create coinbase tx
     CMutableTransaction txNew;
@@ -120,6 +120,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     txNew.vin[0].prevout.SetNull();
     txNew.vout.resize(1);
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+    
     pblock->vtx.push_back(txNew);
     pblocktemplate->vTxFees.push_back(-1);   // updated at end
     pblocktemplate->vTxSigOps.push_back(-1); // updated at end
@@ -408,6 +409,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         // Compute final coinbase transaction.
         pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
         if (!fProofOfStake) {
+            //byrdcode
+            txNew.vout[0].nValue = GetBlockValue(nHeight);
+            txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+            //endbyrdcode
             pblock->vtx[0] = txNew;
             pblocktemplate->vTxFees[0] = -nFees;
         }
@@ -425,14 +430,18 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         pblock->nAccumulatorCheckpoint = nCheckpoint;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
+        //byrd transaction printout
+        LogPrintf("CreateNewBlock(): block tostring %s\n", pblock->ToString());
+
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
             LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
             mempool.clear();
             return NULL;
         }
+        LogPrintf("CreateNewBlock(): validation passed %s\n", "");
     }
-
+    LogPrintf("CreateNewBlock(): releasing template %s\n", "");
     return pblocktemplate.release();
 }
 
@@ -481,7 +490,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     {
         LOCK(cs_main);
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            return error("DIVXMiner : generated block is stale");
+            return error("DIVIMiner : generated block is stale");
     }
 
     // Remove key from key pool
@@ -496,7 +505,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     // Process this block the same as if we had received it from another node
     CValidationState state;
     if (!ProcessNewBlock(state, NULL, pblock))
-        return error("DIVXMiner : ProcessNewBlock, block not accepted");
+        return error("DIVIMiner : ProcessNewBlock, block not accepted");
 
     for (CNode* node : vNodes) {
         node->PushInventory(CInv(MSG_BLOCK, pblock->GetHash()));
@@ -511,9 +520,9 @@ bool fGenerateBitcoins = false;
 
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
-    LogPrintf("DIVXMiner started\n");
+    LogPrintf("DIVIMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-    RenameThread("divx-miner");
+    RenameThread("divi-miner");
 
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
@@ -556,17 +565,28 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         //
         // Create new block
         //
+
         unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
         CBlockIndex* pindexPrev = chainActive.Tip();
         if (!pindexPrev)
             continue;
+        LogPrintf("BitcoinMiner(): chainActive.Tip %s\n", chainActive.Tip());
 
         unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));
+        LogPrintf("BitcoinMiner(): pblocktemplate created %s\n", "");
+
         if (!pblocktemplate.get())
             continue;
+            
+        LogPrintf("BitcoinMiner(): pblocktemplate.get %s\n", "");
+
 
         CBlock* pblock = &pblocktemplate->block;
+        LogPrintf("BitcoinMiner(): block created. %s\n", "");
+
         IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+        LogPrintf("BitcoinMiner(): nonce incremented. %s\n", "");
+
 
         //Stake miner main
         if (fProofOfStake) {
@@ -585,7 +605,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
             continue;
         }
 
-        LogPrintf("Running DIVXMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+        LogPrintf("Running DIVIMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
             ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
         //

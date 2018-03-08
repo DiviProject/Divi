@@ -96,7 +96,7 @@ public:
 };
 
 /**
- * DIVX RPC command dispatcher.
+ * DIVI RPC command dispatcher.
  */
 class CRPCTable
 {

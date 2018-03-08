@@ -15,7 +15,7 @@ digraph "CScript::IsZerocoinMint"
   Node654 -> Node656 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node656 [label="CWallet::ResetMintZerocoin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_wallet.html#a48b81fb27683fe4693a7385909dcd391"];
   Node653 -> Node658 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node658 [label="RecalculateZPIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae5605fe0b5412051837b1d11fc0bece0"];
+  Node658 [label="RecalculateZDIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a4143f85b263bcd3fc3915dbc19009495"];
   Node651 -> Node659 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node659 [label="BlockToMintValueVector",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a9a05ff47060060936db4e35eed620d3f"];
   Node651 -> Node660 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

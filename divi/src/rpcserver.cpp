@@ -237,10 +237,10 @@ Value stop(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "stop\n"
-            "\nStop DIVX server.");
+            "\nStop DIVI server.");
     // Shutdown will take long enough that the response should get back
     StartShutdown();
-    return "DIVX server stopping";
+    return "DIVI server stopping";
 }
 
 
@@ -318,36 +318,36 @@ static const CRPCCommand vRPCCommands[] =
         {"hidden", "reconsiderblock", &reconsiderblock, true, true, false},
         {"hidden", "setmocktime", &setmocktime, true, false, false},
 
-        /* Divx features */
-        {"divx", "masternode", &masternode, true, true, false},
-        {"divx", "listmasternodes", &listmasternodes, true, true, false},
-        {"divx", "getmasternodecount", &getmasternodecount, true, true, false},
-        {"divx", "masternodeconnect", &masternodeconnect, true, true, false},
-        {"divx", "masternodecurrent", &masternodecurrent, true, true, false},
-        {"divx", "masternodedebug", &masternodedebug, true, true, false},
-        {"divx", "startmasternode", &startmasternode, true, true, false},
-        {"divx", "createmasternodekey", &createmasternodekey, true, true, false},
-        {"divx", "getmasternodeoutputs", &getmasternodeoutputs, true, true, false},
-        {"divx", "listmasternodeconf", &listmasternodeconf, true, true, false},
-        {"divx", "getmasternodestatus", &getmasternodestatus, true, true, false},
-        {"divx", "getmasternodewinners", &getmasternodewinners, true, true, false},
-        {"divx", "getmasternodescores", &getmasternodescores, true, true, false},
-        {"divx", "mnbudget", &mnbudget, true, true, false},
-        {"divx", "preparebudget", &preparebudget, true, true, false},
-        {"divx", "submitbudget", &submitbudget, true, true, false},
-        {"divx", "mnbudgetvote", &mnbudgetvote, true, true, false},
-        {"divx", "getbudgetvotes", &getbudgetvotes, true, true, false},
-        {"divx", "getnextsuperblock", &getnextsuperblock, true, true, false},
-        {"divx", "getbudgetprojection", &getbudgetprojection, true, true, false},
-        {"divx", "getbudgetinfo", &getbudgetinfo, true, true, false},
-        {"divx", "mnbudgetrawvote", &mnbudgetrawvote, true, true, false},
-        {"divx", "mnfinalbudget", &mnfinalbudget, true, true, false},
-        {"divx", "checkbudgets", &checkbudgets, true, true, false},
-        {"divx", "mnsync", &mnsync, true, true, false},
-        {"divx", "spork", &spork, true, true, false},
-        {"divx", "getpoolinfo", &getpoolinfo, true, true, false},
+        /* Divi features */
+        {"divi", "masternode", &masternode, true, true, false},
+        {"divi", "listmasternodes", &listmasternodes, true, true, false},
+        {"divi", "getmasternodecount", &getmasternodecount, true, true, false},
+        {"divi", "masternodeconnect", &masternodeconnect, true, true, false},
+        {"divi", "masternodecurrent", &masternodecurrent, true, true, false},
+        {"divi", "masternodedebug", &masternodedebug, true, true, false},
+        {"divi", "startmasternode", &startmasternode, true, true, false},
+        {"divi", "createmasternodekey", &createmasternodekey, true, true, false},
+        {"divi", "getmasternodeoutputs", &getmasternodeoutputs, true, true, false},
+        {"divi", "listmasternodeconf", &listmasternodeconf, true, true, false},
+        {"divi", "getmasternodestatus", &getmasternodestatus, true, true, false},
+        {"divi", "getmasternodewinners", &getmasternodewinners, true, true, false},
+        {"divi", "getmasternodescores", &getmasternodescores, true, true, false},
+        {"divi", "mnbudget", &mnbudget, true, true, false},
+        {"divi", "preparebudget", &preparebudget, true, true, false},
+        {"divi", "submitbudget", &submitbudget, true, true, false},
+        {"divi", "mnbudgetvote", &mnbudgetvote, true, true, false},
+        {"divi", "getbudgetvotes", &getbudgetvotes, true, true, false},
+        {"divi", "getnextsuperblock", &getnextsuperblock, true, true, false},
+        {"divi", "getbudgetprojection", &getbudgetprojection, true, true, false},
+        {"divi", "getbudgetinfo", &getbudgetinfo, true, true, false},
+        {"divi", "mnbudgetrawvote", &mnbudgetrawvote, true, true, false},
+        {"divi", "mnfinalbudget", &mnfinalbudget, true, true, false},
+        {"divi", "checkbudgets", &checkbudgets, true, true, false},
+        {"divi", "mnsync", &mnsync, true, true, false},
+        {"divi", "spork", &spork, true, true, false},
+        {"divi", "getpoolinfo", &getpoolinfo, true, true, false},
 #ifdef ENABLE_WALLET
-        {"divx", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
+        {"divi", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
 
         /* Wallet */
         {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true},
@@ -627,16 +627,16 @@ void StartRPCThreads()
         unsigned char rand_pwd[32];
         GetRandBytes(rand_pwd, 32);
         uiInterface.ThreadSafeMessageBox(strprintf(
-                                             _("To use divxd, or the -server option to divx-qt, you must set an rpcpassword in the configuration file:\n"
+                                             _("To use divid, or the -server option to divi-qt, you must set an rpcpassword in the configuration file:\n"
                                                "%s\n"
                                                "It is recommended you use the following random password:\n"
-                                               "rpcuser=divxrpc\n"
+                                               "rpcuser=divirpc\n"
                                                "rpcpassword=%s\n"
                                                "(you do not need to remember this password)\n"
                                                "The username and password MUST NOT be the same.\n"
                                                "If the file does not exist, create it with owner-readable-only file permissions.\n"
                                                "It is also recommended to set alertnotify so you are notified of problems;\n"
-                                               "for example: alertnotify=echo %%s | mail -s \"DIVX Alert\" admin@foo.com\n"),
+                                               "for example: alertnotify=echo %%s | mail -s \"DIVI Alert\" admin@foo.com\n"),
                                              GetConfigFile().string(),
                                              EncodeBase58(&rand_pwd[0], &rand_pwd[0] + 32)),
             "", CClientUIInterface::MSG_ERROR | CClientUIInterface::SECURE);
@@ -1087,7 +1087,7 @@ std::vector<std::string> CRPCTable::listCommands() const
 
 std::string HelpExampleCli(string methodname, string args)
 {
-    return "> divx-cli " + methodname + " " + args + "\n";
+    return "> divi-cli " + methodname + " " + args + "\n";
 }
 
 std::string HelpExampleRpc(string methodname, string args)

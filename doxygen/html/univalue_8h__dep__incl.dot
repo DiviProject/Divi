@@ -8,7 +8,7 @@ digraph "src/univalue/univalue.h"
   Node6 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node8 [label="src/core_write.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__write_8cpp.html"];
   Node6 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node9 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node9 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node6 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node10 [label="src/univalue/gen.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$gen_8cpp.html"];
   Node6 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

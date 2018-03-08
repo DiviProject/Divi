@@ -11,7 +11,7 @@ digraph "GUIUtil::boostPathToQString"
   Node37 -> Node40 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node40 [label="GUIUtil::openConfigfile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a995fae29ee632b8b0810b840d3d06bf1"];
   Node40 -> Node41 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node41 [label="RPCConsole::showConfEditor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#ab7e647de183fc0d139bac81ed0492667",tooltip="Open external (default) editor with divx.conf. "];
+  Node41 [label="RPCConsole::showConfEditor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#ab7e647de183fc0d139bac81ed0492667",tooltip="Open external (default) editor with divi.conf. "];
   Node37 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node42 [label="GUIUtil::openMNConfigfile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a17cced42f0ebd5fb923eba61015308a8"];
   Node42 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

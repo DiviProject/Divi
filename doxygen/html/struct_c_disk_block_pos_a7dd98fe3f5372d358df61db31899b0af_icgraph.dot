@@ -36,7 +36,7 @@ digraph "CDiskBlockPos::IsNull"
   Node11 -> Node25 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node25 [label="CObfuscationPool::IsCollateral\lValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#a821ebbd4ae62c5ad7e80e24a3038bdec",tooltip="If the collateral is valid given by a client. "];
   Node11 -> Node26 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node26 [label="CObfuScationSigner\l::IsVinAssociatedWithPubkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfu_scation_signer.html#ae52356535949db63ac24a3815c0ca117",tooltip="Is the inputs associated with this public key? (and there is 10000 PIV - checking if valid masternode..."];
+  Node26 [label="CObfuScationSigner\l::IsVinAssociatedWithPubkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfu_scation_signer.html#ae52356535949db63ac24a3815c0ca117",tooltip="Is the inputs associated with this public key? (and there is 10000 DIV - checking if valid masternode..."];
   Node26 -> Node27 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node27 [label="CMasternodeMan::ProcessMessage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_man.html#ae3e5d263cebdcd932eca49caeadce9aa"];
   Node11 -> Node28 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -86,11 +86,11 @@ digraph "CDiskBlockPos::IsNull"
   Node49 -> Node53 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node53 [label="PopulateInvalidOutPointMap",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae7d38ec9b36061a4216d318d34dde6e2"];
   Node49 -> Node54 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node54 [label="RecalculateZPIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae5605fe0b5412051837b1d11fc0bece0"];
+  Node54 [label="RecalculateZDIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a4143f85b263bcd3fc3915dbc19009495"];
   Node49 -> Node55 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node55 [label="RecalculateZPIVSpent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ab76a54f954d7ae3a7b89bccd76a8592d"];
+  Node55 [label="RecalculateZDIVSpent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a161774bfe6fd9f0422f56db71f98071b"];
   Node49 -> Node56 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node56 [label="RecalculatePIVSupply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a4bf981fb0a1da46e5ad6b803846c2ca0"];
+  Node56 [label="RecalculateDIVSupply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#aebdec7b14f50bbafc5aafe72f08c716d"];
   Node49 -> Node57 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node57 [label="DisconnectBlockAndInputs",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#acc33d7f850152cbbb9d00f7c71d99704"];
   Node49 -> Node58 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

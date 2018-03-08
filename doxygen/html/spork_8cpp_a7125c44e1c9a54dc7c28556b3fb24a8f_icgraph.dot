@@ -17,9 +17,9 @@ digraph "GetSporkValue"
   Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node7 [label="PrivacyDialog::PrivacyDialog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#ab7308b7ed5782dfa26fb1f216385207c"];
   Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node8 [label="PrivacyDialog::on_pushButton\lMintzPIV_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a63fdbe413a827feb91e6c2f4bdaf4282"];
+  Node8 [label="PrivacyDialog::on_pushButton\lMintzDIV_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#aa6bb4499ed540ba38114032bffc40249"];
   Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node9 [label="PrivacyDialog::on_pushButton\lSpendzPIV_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a7b95ee43dfe2453d43df01a7fae3cc55"];
+  Node9 [label="PrivacyDialog::on_pushButton\lSpendzDIV_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#accc35c0dac26d3f1bb94c83ae75e317b"];
   Node1 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node10 [label="WalletModel::prepareTransaction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_model.html#a8abc851901c7c7343ebfb5a8e5fc0154"];
   Node10 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

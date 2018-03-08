@@ -5,7 +5,7 @@ digraph "BitcoinCore::initialize"
   rankdir="LR";
   Node8 [label="BitcoinCore::initialize",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
   Node8 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node9 [label="AppInit2",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3",tooltip="Initialize divx. "];
+  Node9 [label="AppInit2",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8cpp.html#a1a4c1bfbf6ba1db77e988b89b9cadfd3",tooltip="Initialize divi. "];
   Node8 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node10 [label="StartDummyRPCThread",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcserver_8cpp.html#abbdd9938022ac36af7f0a436038d700d",tooltip="Alternative to StartRPCThreads for the GUI, when no server is used. "];
   Node8 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

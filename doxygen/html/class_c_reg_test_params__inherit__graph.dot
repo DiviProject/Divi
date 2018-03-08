@@ -8,5 +8,5 @@ digraph "CRegTestParams"
   Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node2 [label="CMainParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_main_params.html"];
   Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node3 [label="CChainParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html",tooltip="CChainParams defines various tweakable parameters of a given instance of the DIVX system..."];
+  Node3 [label="CChainParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html",tooltip="CChainParams defines various tweakable parameters of a given instance of the DIVI system..."];
 }

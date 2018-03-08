@@ -1,18 +1,18 @@
-DIVX Core version 2.2.1 is now available from:
+DIVI Core version 2.2.1 is now available from:
 
-  <https://github.com/divx-project/divx/releases>
+  <https://github.com/divi-project/divi/releases>
 
 This is a new minor version release, including various bug fixes and
 performance improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/divx-project/divx/issues>
+  <https://github.com/divi-project/divi/issues>
 
 Compatibility
 ==============
 
-DIVX Core is extensively tested on multiple operating systems using
+DIVI Core is extensively tested on multiple operating systems using
 the Linux kernel, macOS 10.8+, and Windows Vista and later.
 
 Microsoft ended support for Windows XP on [April 8th, 2014](https://www.microsoft.com/en-us/WindowsForBusiness/end-of-xp-support),
@@ -20,7 +20,7 @@ No attempt is made to prevent installing or running the software on Windows XP, 
 can still do so at your own risk but be aware that there are known instabilities and issues.
 Please do not report issues about Windows XP to the issue tracker.
 
-DIVX Core should also work on most other Unix-like systems but is not
+DIVI Core should also work on most other Unix-like systems but is not
 frequently tested on them.
 
 Notable Changes
@@ -45,7 +45,7 @@ blockchain.
 Additional progress has been made to prevent the wallet crashes that are causing
 the corrupted databases, for example removing the Trading Window (explained below)
 and fixing several other minor memory leaks that were inherited from the version
-of Bitcoin that DIVX was forked from.
+of Bitcoin that DIVI was forked from.
 
 RPC Changes
 -----------
@@ -118,4 +118,4 @@ Thanks to everyone who directly contributed to this release:
 - Spock
 - presstab
 
-As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/divx-project-translations/).
+As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/divi-project-translations/).

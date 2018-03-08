@@ -4,5 +4,5 @@ digraph "CCoinsCacheEntry"
   node [fontname="Helvetica",fontsize="10",shape=record];
   Node1 [label="CCoinsCacheEntry",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
   Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" coins" ,fontname="Helvetica"];
-  Node2 [label="CCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html",tooltip="Note - for DIVX we added fCoinStake to the 2nd bit. "];
+  Node2 [label="CCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins.html",tooltip="Note - for DIVI we added fCoinStake to the 2nd bit. "];
 }

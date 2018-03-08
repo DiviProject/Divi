@@ -7,9 +7,9 @@ digraph "GetDataDir"
   Node170 -> Node171 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node171 [label="CDB::CDB",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_d_b.html#aa5f2317ab28c6424bfebdaa969aa2b2c"];
   Node170 -> Node172 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node172 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#ac59316b767e6984e1285f0531275286b"];
+  Node172 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#ac59316b767e6984e1285f0531275286b"];
   Node172 -> Node173 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node173 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
+  Node173 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
   Node170 -> Node174 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node174 [label="PrepareShutdown",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8h.html#a5cb3db83cb0ba2e421f651a1ee1f2cfe",tooltip="Preparing steps before shutting down or restarting the wallet. "];
   Node174 -> Node175 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -73,13 +73,13 @@ digraph "GetDataDir"
   Node170 -> Node256 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node256 [label="GetConfigFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8h.html#a7d86fadf98dfaba55f80b9be0ab0f978"];
   Node256 -> Node257 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node257 [label="CallRPC",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-cli_8cpp.html#ae0b4394f271db49671cf894dbe94c484"];
+  Node257 [label="CallRPC",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-cli_8cpp.html#ae0b4394f271db49671cf894dbe94c484"];
   Node257 -> Node258 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node258 [label="CommandLineRPC",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-cli_8cpp.html#a4ee23259648a971c9c05aeff8b545a6d"];
+  Node258 [label="CommandLineRPC",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-cli_8cpp.html#a4ee23259648a971c9c05aeff8b545a6d"];
   Node256 -> Node259 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node259 [label="GUIUtil::openConfigfile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespace_g_u_i_util.html#a995fae29ee632b8b0810b840d3d06bf1"];
   Node259 -> Node260 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node260 [label="RPCConsole::showConfEditor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#ab7e647de183fc0d139bac81ed0492667",tooltip="Open external (default) editor with divx.conf. "];
+  Node260 [label="RPCConsole::showConfEditor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_r_p_c_console.html#ab7e647de183fc0d139bac81ed0492667",tooltip="Open external (default) editor with divi.conf. "];
   Node256 -> Node261 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node261 [label="ReadConfigFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$util_8cpp.html#a27ba417174a3ee63cb8ee1abb279a668"];
   Node261 -> Node172 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

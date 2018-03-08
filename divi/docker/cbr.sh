@@ -8,9 +8,9 @@ if [ ! -d /shared/divi ] ; then
   		./configure --disable-zerocoin --without-gui --enable-debug
   		make
   		sudo make install
-  		mkdir /home/ubuntu/.divx
-  		cp /home/ubuntu/divx.conf /home/ubuntu/.divx/divx.conf
-  		divxd -debug
+  		mkdir /home/ubuntu/.divi
+  		cp /home/ubuntu/divi.conf /home/ubuntu/.divi/divi.conf
+  		divid -debug
   		cd $PRESENTDIR
 	else
   		echo "There was a problem with the clone"

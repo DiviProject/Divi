@@ -25,7 +25,7 @@ digraph "CMasternodeMan::ProcessMessage"
   Node322 -> Node331 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node331 [label="CNode::GetId",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#a157903f7830c0dfbf6a93852066f0b8f"];
   Node322 -> Node332 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node332 [label="CObfuScationSigner\l::IsVinAssociatedWithPubkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfu_scation_signer.html#ae52356535949db63ac24a3815c0ca117",tooltip="Is the inputs associated with this public key? (and there is 10000 PIV - checking if valid masternode..."];
+  Node332 [label="CObfuScationSigner\l::IsVinAssociatedWithPubkey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfu_scation_signer.html#ae52356535949db63ac24a3815c0ca117",tooltip="Is the inputs associated with this public key? (and there is 10000 DIV - checking if valid masternode..."];
   Node332 -> Node333 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node333 [label="GetScriptForDestination",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$standard_8cpp.html#ae40f28d3b46c21033f6ee1f1200d0321"];
   Node332 -> Node334 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

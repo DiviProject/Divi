@@ -11,7 +11,7 @@ digraph "OverviewPage"
   Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node5 [label="QSortFilterProxyModel",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
   Node6 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" clientModel" ,fontname="Helvetica"];
-  Node6 [label="ClientModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_client_model.html",tooltip="Model for DIVX network client. "];
+  Node6 [label="ClientModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_client_model.html",tooltip="Model for DIVI network client. "];
   Node7 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node7 [label="QObject",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
   Node8 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" peerTableModel" ,fontname="Helvetica"];
@@ -69,7 +69,7 @@ digraph "OverviewPage"
   Node13 -> Node27 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" walletModel" ,fontname="Helvetica"];
   Node16 -> Node27 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" wallet" ,fontname="Helvetica"];
   Node29 -> Node13 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" recentRequestsTableModel" ,fontname="Helvetica"];
-  Node29 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divx: URIs. "];
+  Node29 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divi: URIs. "];
   Node9 -> Node29 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node13 -> Node29 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" walletModel" ,fontname="Helvetica"];
   Node11 -> Node13 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" optionsModel" ,fontname="Helvetica"];

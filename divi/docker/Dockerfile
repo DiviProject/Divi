@@ -49,6 +49,7 @@ RUN sudo dos2unix /home/ubuntu/cbr.sh
 RUN sudo dos2unix /home/ubuntu/pbr.sh
 RUN sudo dos2unix /home/ubuntu/divi.conf
 RUN sudo dos2unix /etc/tor/torrc
-ENV GITBRANCH waser
-ENV GITURI https://gwde457eo4zzv73zzgixflaahifxndhiv245ldhxeopeay3k7aaa@agii.visualstudio.com/_git/DiviProject
+RUN sudo /etc/init.d/tor start
+ENV GITBRANCH master
+ENV GITURI https://github.com/Divicoin/Divi
 RUN /home/ubuntu/cbr.sh

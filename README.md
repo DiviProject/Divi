@@ -10,14 +10,14 @@ The advent of lightweight, cross-platform containers make it, not just possible 
 To build divi:
 1.  Ensure docker is installed on your machine (https://store.docker.com/search?type=edition&offering=community)
 2.  Create a directory and copy the divi/docker directory into it
-3.  docker build -t <your tag name> .
+3.  docker build -t [your tag name] .
 
 If you don't want to build divi
 1.  Ensure docker is installed on your machine (https://store.docker.com/search?type=edition&offering=community)
 2.  docker pull caldwellsw/divi:base
 
 To run divi and connect to the testnet
-1.  docker run -it -p51472:51472 <your tag name or caldwellsw/divi:base>
+1.  docker run -it -p51472:51472 [your tag name or caldwellsw/divi:base]
 2.  divid -debug
 3.  divi-cli addnode dt01.westus.cloudapp.azure.com add
 4.  divi-cli addnode dt02.westus.cloudapp.azure.com add

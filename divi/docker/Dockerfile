@@ -41,15 +41,18 @@ chown root.root /etc/sudoers.d/ubuntu && \
 chmod 0400 /etc/sudoers.d/ubuntu && \
 chown -R ubuntu.ubuntu /home/ubuntu
 USER ubuntu
-COPY cbr.sh /home/ubuntu/cbr.sh
+COPY cb.sh /home/ubuntu/cb.sh
 COPY pbr.sh /home/ubuntu/pbr.sh
 COPY divi.conf /home/ubuntu/divi.conf
 COPY torrc /etc/tor/torrc
-RUN sudo dos2unix /home/ubuntu/cbr.sh 
+COPY init.sh /usr/local/bin/
+RUN sudo dos2unix /home/ubuntu/cb.sh 
 RUN sudo dos2unix /home/ubuntu/pbr.sh
 RUN sudo dos2unix /home/ubuntu/divi.conf
 RUN sudo dos2unix /etc/tor/torrc
-RUN sudo /etc/init.d/tor start
+RUN sudo dos2unix /usr/local/bin/init.sh
+RUN sudo chmod u+x /usr/local/bin/init.sh
 ENV GITBRANCH master
 ENV GITURI https://github.com/Divicoin/Divi
-RUN /home/ubuntu/cbr.sh
+RUN /home/ubuntu/cb.sh
+#ENTRYPOINT ["init.sh"]

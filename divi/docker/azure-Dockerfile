@@ -25,7 +25,6 @@ autotools-dev \
 bsdmainutils \
 vim \
 ruby \
-sudo \
 rsync \
 dos2unix \
 tor \
@@ -33,25 +32,31 @@ net-tools && \
 apt-get -yq purge grub > /dev/null 2>&1 || true && \
 apt-get -y dist-upgrade && \
 locale-gen en_US.UTF-8 && \
-update-locale LANG=en_US.UTF-8 && \
-useradd -d /home/ubuntu -m -s /bin/bash ubuntu && echo "ubuntu:ubuntu" | chpasswd  && adduser ubuntu sudo && \
-chown -R ubuntu.ubuntu /shared/ && \
-echo 'ubuntu ALL=(root) NOPASSWD: ALL' > /etc/sudoers.d/ubuntu && \
-chown root.root /etc/sudoers.d/ubuntu && \
-chmod 0400 /etc/sudoers.d/ubuntu && \
-chown -R ubuntu.ubuntu /home/ubuntu
-USER ubuntu
-COPY cb.sh /home/ubuntu/cb.sh
-COPY pbr.sh /home/ubuntu/pbr.sh
-COPY divi.conf /home/ubuntu/divi.conf
+update-locale LANG=en_US.UTF-8
+
+ENV SSH_PASSWD "root:Docker!"
+RUN apt-get update \
+        && apt-get install -y --no-install-recommends dialog \
+        && apt-get update \
+  && apt-get install -y --no-install-recommends openssh-server \
+  && echo "$SSH_PASSWD" | chpasswd
+
+COPY azure-cb.sh /root/cb.sh
+COPY azure-divi.conf /root/divi.conf
 COPY torrc /etc/tor/torrc
-COPY init.sh /usr/local/bin/
-RUN sudo dos2unix /home/ubuntu/cb.sh 
-RUN sudo dos2unix /home/ubuntu/pbr.sh
-RUN sudo dos2unix /home/ubuntu/divi.conf
-RUN sudo dos2unix /etc/tor/torrc
-RUN sudo dos2unix /usr/local/bin/init.sh
+COPY sshd_config /etc/ssh/sshd_config
+RUN dos2unix /root/cb.sh 
+RUN dos2unix /root/divi.conf
+RUN dos2unix /etc/tor/torrc
+RUN dos2unix /etc/ssh/sshd_config
+
 ENV GITBRANCH master
 ENV GITURI https://github.com/Divicoin/Divi
-RUN /home/ubuntu/cb.sh
-ENTRYPOINT ["init.sh"]
+RUN /root/cb.sh
+
+COPY azure-init.sh /usr/local/bin/
+RUN chmod u+x /usr/local/bin/azure-init.sh
+RUN dos2unix /usr/local/bin/azure-init.sh
+EXPOSE 80 2222
+ENTRYPOINT ["azure-init.sh"]
+

@@ -55,8 +55,8 @@ ENV GITURI https://github.com/Divicoin/Divi
 RUN /root/cb.sh
 
 COPY azure-init.sh /usr/local/bin/
-RUN chmod u+x /usr/local/bin/azure-init.sh
 RUN dos2unix /usr/local/bin/azure-init.sh
+RUN chmod u+x /usr/local/bin/azure-init.sh
 EXPOSE 80 2222
 ENTRYPOINT ["azure-init.sh"]
 

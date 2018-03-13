@@ -51,6 +51,7 @@ RUN sudo dos2unix /home/ubuntu/pbr.sh
 RUN sudo dos2unix /home/ubuntu/divi.conf
 RUN sudo dos2unix /etc/tor/torrc
 RUN sudo dos2unix /usr/local/bin/init.sh
+RUN sudo chmod u+x /usr/local/bin/init.sh
 ENV GITBRANCH master
 ENV GITURI https://github.com/Divicoin/Divi
 RUN /home/ubuntu/cb.sh

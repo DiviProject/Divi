@@ -17,11 +17,10 @@ If you don't want to build divi
 2.  docker pull caldwellsw/divi:base
 
 To run divi and connect to the testnet
-1.  docker build -t <your tag name or caldwellsw/divi:base> . 
-2.  docker run -it -p51472:51472 <your tag name or caldwellsw/divi:base>
-3.  divid -debug
-4.  divi-cli addnode dt01.westus.cloudapp.azure.com add
-5.  divi-cli addnode dt02.westus.cloudapp.azure.com add
+1.  docker run -it -p51472:51472 <your tag name or caldwellsw/divi:base>
+2.  divid -debug
+3.  divi-cli addnode dt01.westus.cloudapp.azure.com add
+4.  divi-cli addnode dt02.westus.cloudapp.azure.com add
 
 
 

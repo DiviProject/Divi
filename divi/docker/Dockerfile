@@ -55,4 +55,4 @@ RUN sudo chmod u+x /usr/local/bin/init.sh
 ENV GITBRANCH master
 ENV GITURI https://github.com/Divicoin/Divi
 RUN /home/ubuntu/cb.sh
-ENTRYPOINT ["init.sh"]
+#ENTRYPOINT ["init.sh"]

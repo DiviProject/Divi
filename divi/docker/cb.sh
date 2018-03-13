@@ -10,7 +10,6 @@ if [ ! -d /shared/divi ] ; then
   		sudo make install
   		mkdir /home/ubuntu/.divi
   		cp /home/ubuntu/divi.conf /home/ubuntu/.divi/divi.conf
-  		divid -debug
   		cd $PRESENTDIR
 	else
   		echo "There was a problem with the clone"

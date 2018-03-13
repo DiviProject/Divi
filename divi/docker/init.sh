@@ -2,4 +2,4 @@
 
 echo "Starting tor ..."
 tor
-divi -daemon
+divid -daemon

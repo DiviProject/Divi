@@ -17,7 +17,6 @@ More information at [diviproject.org](http://www.diviproject.org)
 <tr><td>Block Time</td><td>60 Seconds</td></tr>
 <tr><td>Total Supply</td><td>6,171,606 DIV</td></tr>
 <tr><td>Currently Circulating</td><td>5,143,207 DIV</td></tr>
-<tr><td>Premine</td><td>60,000 DIV*</td></tr>
 </table>
 
 ### 2MB Block Size/Height

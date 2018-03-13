@@ -1,8 +1,6 @@
 Source: divi
 Section: utils
 Priority: optional
-Maintainer: Jonas Smedegaard <dr@jones.dk> ***TODO***
-Uploaders: Micah Anderson <micah@debian.org> ***TODO***
 Build-Depends: debhelper,
  devscripts,
  automake,
@@ -22,9 +20,9 @@ Build-Depends: debhelper,
  libqrencode-dev,
  libprotobuf-dev, protobuf-compiler
 Standards-Version: 3.9.2
-Homepage: http://www.divi.org
-Vcs-Git: git://github.com/Divi-Project/Divi.git
-Vcs-Browser: http://github.com/Divi-Project/Divi
+Homepage: http://www.diviproject.org
+Vcs-Git: https://github.com/Divicoin/Divi.git
+Vcs-Browser: https://github.com/Divicoin/Divi
 
 Package: divid
 Architecture: any

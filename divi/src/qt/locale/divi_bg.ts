@@ -1718,9 +1718,9 @@ Please check the address and try again.</source>
     </message>
     <message>
         <source>Language missing or translation incomplete? Help contributing translations here:
-https://www.transifex.com/divi-project/divi-project-translations</source>
+https://www.transifex.com/divicoin/divicoin-translations</source>
         <translation>Липсващ език или непълен превод? Помогнете с преводите тук:
-https://www.transifex.com/divi-project/divi-project-translations</translation>
+https://www.transifex.com/divicoin/divicoin-translations</translation>
     </message>
     <message>
         <source>Percentage of incoming DIV which get automatically converted to zDIV via Zerocoin Protocol (min: 10%)</source>

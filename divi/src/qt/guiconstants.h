@@ -49,7 +49,7 @@ static const int MAX_URI_LENGTH = 255;
 #define SPINNER_FRAMES 35
 
 #define QAPP_ORG_NAME "DIVI"
-#define QAPP_ORG_DOMAIN "divi.org"
+#define QAPP_ORG_DOMAIN "diviproject.org"
 #define QAPP_APP_NAME_DEFAULT "DIVI-Qt"
 #define QAPP_APP_NAME_TESTNET "DIVI-Qt-testnet"
 

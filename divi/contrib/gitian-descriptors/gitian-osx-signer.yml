@@ -7,7 +7,7 @@ architectures:
 packages:
 - "faketime"
 remotes:
-- "url": "https://github.com/divi-project/divi-detached-sigs.git"
+- "url": "https://github.com/divicoin/divi-detached-sigs.git"
   "dir": "signature"
 files:
 - "divi-osx-unsigned.tar.gz"

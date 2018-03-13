@@ -21,6 +21,7 @@ To run divi and connect to the testnet
 2.  divid -debug
 3.  divi-cli addnode dt01.westus.cloudapp.azure.com add
 4.  divi-cli addnode dt02.westus.cloudapp.azure.com add
-
+5.  divi-cli getpeerinfo
+  It may take some time before you see other nodes in the testnet.
 
 

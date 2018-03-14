@@ -42,7 +42,9 @@ chmod 0400 /etc/sudoers.d/ubuntu && \
 chown -R ubuntu.ubuntu /home/ubuntu
 USER ubuntu
 COPY cb.sh /home/ubuntu/cb.sh
+RUN sudo chmod +x /home/ubuntu/cb.sh
 COPY pbr.sh /home/ubuntu/pbr.sh
+RUN sudo chmod +x /home/ubuntu/pbr.sh
 COPY divi.conf /home/ubuntu/divi.conf
 COPY torrc /etc/tor/torrc
 COPY init.sh /usr/local/bin/

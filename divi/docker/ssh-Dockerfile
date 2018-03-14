@@ -41,8 +41,8 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends openssh-server \
   && echo "$SSH_PASSWD" | chpasswd
 
-COPY azure-cb.sh /root/cb.sh
-COPY azure-divi.conf /root/divi.conf
+COPY ssh-cb.sh /root/cb.sh
+COPY ssh-divi.conf /root/divi.conf
 COPY torrc /etc/tor/torrc
 COPY sshd_config /etc/ssh/sshd_config
 RUN dos2unix /root/cb.sh 
@@ -54,9 +54,9 @@ ENV GITBRANCH master
 ENV GITURI https://github.com/Divicoin/Divi
 RUN /root/cb.sh
 
-COPY azure-init.sh /usr/local/bin/
-RUN dos2unix /usr/local/bin/azure-init.sh
-RUN chmod u+x /usr/local/bin/azure-init.sh
+COPY ssh-init.sh /usr/local/bin/
+RUN dos2unix /usr/local/bin/ssh-init.sh
+RUN chmod u+x /usr/local/bin/ssh-init.sh
 EXPOSE 80 2222
-ENTRYPOINT ["azure-init.sh"]
+ENTRYPOINT ["ssh-init.sh"]
 

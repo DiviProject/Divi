@@ -23,7 +23,7 @@ Additional information can be found at [diviproject.org](http://www.diviproject.
 
 <p>
 <h2>60 second blocks (10,080 per week)</h2>
-<t<ul>
+<ul>
   <li>12 ½ coins minted per block first 2 years</li>
   <li>10 ½ coins for 2 years</li>
   <li>8 ½ coins for 2 years</li>

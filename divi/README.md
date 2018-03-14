@@ -1,4 +1,4 @@
-DIVI Core integration/staging repository
+DIVI Core Integration and Staging Repository
 =====================================
 
 [![Build Status](https://travis-ci.org/divicoin/divi.svg?branch=master)](https://travis-ci.org/divicoin/divi) [![GitHub version](https://badge.fury.io/gh/divicoin%2FDIVI.svg)](https://badge.fury.io/gh/divicoin%2FDIVI)

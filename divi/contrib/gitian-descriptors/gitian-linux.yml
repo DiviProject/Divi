@@ -1,5 +1,5 @@
 ---
-name: "divi-linux-3.0"
+name: "divi-linux-1.0"
 enable_cache: true
 suites:
 - "trusty"
@@ -35,7 +35,7 @@ files: []
 script: |
 
   WRAP_DIR=$HOME/wrapped
-  HOSTS="i686-pc-linux-gnu x86_64-linux-gnu arm-linux-gnueabihf"
+  HOSTS="x86_64-linux-gnu"
   CONFIGFLAGS="--enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests"
   FAKETIME_HOST_PROGS=""
   FAKETIME_PROGS="date ar ranlib nm"
@@ -48,6 +48,7 @@ script: |
   export TAR_OPTIONS="--mtime="$REFERENCE_DATE\\\ $REFERENCE_TIME""
   export TZ="UTC"
   export BUILD_DIR=`pwd`
+  echo "BUILD_DIR = $BUILD_DIR"
   mkdir -p ${WRAP_DIR}
   if test -n "$GBUILD_CACHE_ENABLED"; then
     export SOURCES_PATH=${GBUILD_COMMON_CACHE}

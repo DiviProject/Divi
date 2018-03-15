@@ -1,15 +1,14 @@
-DIVI Core integration/staging repository
+DIVI Core Integration and Staging Repository
 =====================================
 
 [![Build Status](https://travis-ci.org/divicoin/divi.svg?branch=master)](https://travis-ci.org/divicoin/divi) [![GitHub version](https://badge.fury.io/gh/divicoin%2FDIVI.svg)](https://badge.fury.io/gh/divicoin%2FDIVI)
 
-DIVI is a cutting edge cryptocurrency, with many features not available in most other cryptocurrencies.
-- Fast transactions featuring guaranteed zero confirmation transactions, we call it _SwiftTX_.
-- Decentralized blockchain voting providing for consensus based advancement of the current Masternode
-  technology used to secure the network and provide the above features, each Masternode is secured
-  with a collateral DIV based on which of the 5-Tier levels the masternode will be.
+DIVI is a new cutting edge cryptocurrency which includes several key features that are not available in most other cryptocurrencies. Some of these features are as follows:
+- Our _SwiftTX_ functionality allows for fast transaction execution, resulting in guaranteed zero confirmation transactions.
+- Decentralized blockchain voting provides consensus based advancement of the current Masternode technology used to secure the network and provide additional feature functionality.
+- Each of the 5-Tier level Masternodes are secured with a collateral DIV.
 
-More information at [diviproject.org](http://www.diviproject.org) 
+Additional information can be found at [diviproject.org](http://www.diviproject.org) 
 
 ### Coin Specs
 <table>
@@ -24,7 +23,7 @@ More information at [diviproject.org](http://www.diviproject.org)
 
 <p>
 <h2>60 second blocks (10,080 per week)</h2>
-<t<ul>
+<ul>
   <li>12 ½ coins minted per block first 2 years</li>
   <li>10 ½ coins for 2 years</li>
   <li>8 ½ coins for 2 years</li>

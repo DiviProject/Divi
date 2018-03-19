@@ -2,7 +2,7 @@
 name: "divi-linux-1.0"
 enable_cache: true
 suites:
-- "trusty"
+- "xenial"
 architectures:
 - "amd64"
 packages:
@@ -11,10 +11,6 @@ packages:
 - "g++-4.8-aarch64-linux-gnu"
 - "gcc-4.8-aarch64-linux-gnu"
 - "binutils-aarch64-linux-gnu"
-- "g++-arm-linux-gnueabihf"
-- "g++-4.8-arm-linux-gnueabihf"
-- "gcc-4.8-arm-linux-gnueabihf"
-- "binutils-arm-linux-gnueabihf"
 - "g++-4.8-multilib"
 - "gcc-4.8-multilib"
 - "binutils-gold"
@@ -27,7 +23,7 @@ packages:
 - "bsdmainutils"
 - "ca-certificates"
 - "python"
-reference_datetime: "2015-06-01 00:00:00"
+reference_datetime: "2018-03-20 00:00:00"
 remotes:
 - "url": "https://github.com/divicoin/divi.git"
   "dir": "divi"
@@ -48,7 +44,6 @@ script: |
   export TAR_OPTIONS="--mtime="$REFERENCE_DATE\\\ $REFERENCE_TIME""
   export TZ="UTC"
   export BUILD_DIR=`pwd`
-  echo "BUILD_DIR = $BUILD_DIR"
   mkdir -p ${WRAP_DIR}
   if test -n "$GBUILD_CACHE_ENABLED"; then
     export SOURCES_PATH=${GBUILD_COMMON_CACHE}

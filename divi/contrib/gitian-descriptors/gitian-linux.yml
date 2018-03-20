@@ -27,7 +27,7 @@ packages:
 - "bsdmainutils"
 - "ca-certificates"
 - "python"
-reference_datetime: "2015-06-01 00:00:00"
+reference_datetime: "2018-03-20 00:00:00"
 remotes:
 - "url": "https://github.com/divicoin/divi.git"
   "dir": "divi"
@@ -114,7 +114,7 @@ script: |
   chmod +x ${WRAP_DIR}/${prog}
   done
 
-  cd divi
+  cd divi\divi
   BASEPREFIX=`pwd`/depends
   # Build dependencies for each host
   for i in $HOSTS; do

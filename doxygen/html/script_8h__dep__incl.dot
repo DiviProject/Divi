@@ -75,7 +75,7 @@ digraph "src/script/script.h"
   Node39 -> Node161 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node161 [label="src/core_read.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$core__read_8cpp.html"];
   Node39 -> Node151 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node151 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node151 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node39 -> Node101 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node39 -> Node130 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node39 -> Node136 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

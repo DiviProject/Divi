@@ -17,7 +17,7 @@ digraph "TxOutToPublicCoin"
   Node1272 -> Node1273 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node1273 [label="PrivacyDialog::on_pushButton\lMintReset_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_privacy_dialog.html#a1a50924516087ce5810b2b2831567a31"];
   Node1269 -> Node1274 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node1274 [label="RecalculateZPIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae5605fe0b5412051837b1d11fc0bece0"];
+  Node1274 [label="RecalculateZDIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a4143f85b263bcd3fc3915dbc19009495"];
   Node1267 -> Node1275 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node1275 [label="BlockToMintValueVector",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a9a05ff47060060936db4e35eed620d3f"];
   Node1267 -> Node1276 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

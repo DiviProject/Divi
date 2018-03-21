@@ -5,11 +5,11 @@ digraph "CActiveMasternode::SelectCoinsMasternode"
   rankdir="LR";
   Node501 [label="CActiveMasternode::\lSelectCoinsMasternode",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
   Node501 -> Node502 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node502 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node502 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 DIV input that can be used for the Masternode. "];
   Node502 -> Node503 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node503 [label="CActiveMasternode::\lRegister",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#a99e26870efec1ea98738cda1a5a85702",tooltip="Register remote Masternode. "];
   Node502 -> Node504 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node504 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#af9f32ec3d13b161d6a89839dab17b154",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node504 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#af9f32ec3d13b161d6a89839dab17b154",tooltip="Get 10000 DIV input that can be used for the Masternode. "];
   Node502 -> Node505 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node505 [label="masternodedebug",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#a8522c187a75142b1b267edca0734238c"];
   Node505 -> Node506 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

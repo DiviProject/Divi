@@ -15,7 +15,7 @@ digraph "CTransaction::IsZerocoinMint"
   Node642 -> Node644 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node644 [label="CWallet::ResetMintZerocoin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_wallet.html#a48b81fb27683fe4693a7385909dcd391"];
   Node641 -> Node646 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node646 [label="RecalculateZPIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae5605fe0b5412051837b1d11fc0bece0"];
+  Node646 [label="RecalculateZDIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a4143f85b263bcd3fc3915dbc19009495"];
   Node639 -> Node647 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node647 [label="BlockToMintValueVector",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a9a05ff47060060936db4e35eed620d3f"];
   Node639 -> Node648 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -41,7 +41,7 @@ digraph "CTransaction::IsZerocoinMint"
   Node648 -> Node659 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node659 [label="CTransaction::IsCoinBase",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_transaction.html#a96256e8ac1bf79ad9c057e48c41132dd"];
   Node659 -> Node660 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node660 [label="CCoinsViewCache::GetValueIn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a1a8cd6069fba96939ffcb1bd36ffb921",tooltip="Amount of divx coming in to a transaction Note that lightweight clients may not know anything besides..."];
+  Node660 [label="CCoinsViewCache::GetValueIn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a1a8cd6069fba96939ffcb1bd36ffb921",tooltip="Amount of divi coming in to a transaction Note that lightweight clients may not know anything besides..."];
   Node659 -> Node661 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node661 [label="CCoinsViewCache::HaveInputs",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a5b1abd71c95dc7be2523b9c28839ec29",tooltip="Check whether all prevouts of the transaction are present in the UTXO set represented by this view..."];
   Node661 -> Node662 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -60,7 +60,7 @@ digraph "CTransaction::IsZerocoinMint"
   Node669 [label="UpdateCoins",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#acb54672aa2ce74f5068a5cf660432b67",tooltip="Apply the effects of this transaction on the UTXO set represented by view. "];
   Node659 -> Node662 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node659 -> Node670 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node670 [label="RecalculatePIVSupply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a4bf981fb0a1da46e5ad6b803846c2ca0"];
+  Node670 [label="RecalculateDIVSupply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#aebdec7b14f50bbafc5aafe72f08c716d"];
   Node659 -> Node671 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node671 [label="DisconnectBlockAndInputs",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html#acc33d7f850152cbbb9d00f7c71d99704"];
   Node659 -> Node672 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

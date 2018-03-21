@@ -90,7 +90,7 @@ digraph "src/threadsafety.h"
   Node10 [label="src/qt/blockexplorer.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$blockexplorer_8cpp.html"];
   Node4 -> Node79 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node4 -> Node98 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node98 [label="src/qt/divx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx_8cpp.html"];
+  Node98 [label="src/qt/divi.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi_8cpp.html"];
   Node4 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node12 [label="src/qt/optionsmodel.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$optionsmodel_8cpp.html"];
   Node4 -> Node55 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

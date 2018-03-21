@@ -77,7 +77,7 @@ digraph "src/script/script_error.h"
   Node5 -> Node91 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node91 [label="src/checkpoints.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$checkpoints_8cpp.html"];
   Node5 -> Node92 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node92 [label="src/divxd.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html"];
+  Node92 [label="src/divid.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html"];
   Node5 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node5 -> Node81 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node5 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -94,7 +94,7 @@ digraph "src/script/script_error.h"
   Node4 -> Node110 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node110 [label="src/coins.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$coins_8cpp.html"];
   Node4 -> Node111 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node111 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node111 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node4 -> Node29 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node29 [label="src/qt/multisigdialog.h",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$multisigdialog_8h.html"];
   Node29 -> Node30 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

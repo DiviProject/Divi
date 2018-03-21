@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DIVX: src/main.h File Reference</title>
+<title>DIVI: src/main.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="diviLogo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">DIVX
+   <div id="projectname">DIVI
    &#160;<span id="projectnumber">1.0.0</span>
    </div>
    <div id="projectbrief">P2P Digital Currency</div>
@@ -269,7 +269,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a312fadbeec896d49437733e986f3df04"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#a312fadbeec896d49437733e986f3df04">GetP2SHSigOpCount</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, const <a class="el" href="class_c_coins_view_cache.html">CCoinsViewCache</a> &amp;mapInputs)</td></tr>
 <tr class="memdesc:a312fadbeec896d49437733e986f3df04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count ECDSA signature operations in pay-to-script-hash inputs.  <a href="#a312fadbeec896d49437733e986f3df04">More...</a><br /></td></tr>
 <tr class="separator:a312fadbeec896d49437733e986f3df04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec29d3e8abda6a014ca910e7c73b4df7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#aec29d3e8abda6a014ca910e7c73b4df7">CheckInputs</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, <a class="el" href="class_c_validation_state.html">CValidationState</a> &amp;state, const <a class="el" href="class_c_coins_view_cache.html">CCoinsViewCache</a> &amp;view, bool fScriptChecks, unsigned int <a class="el" href="divx-tx_8cpp.html#ac8bf36fe0577cba66bccda3a6f7e80a4">flags</a>, bool cacheStore, std::vector&lt; <a class="el" href="class_c_script_check.html">CScriptCheck</a> &gt; *pvChecks=NULL)</td></tr>
+<tr class="memitem:aec29d3e8abda6a014ca910e7c73b4df7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#aec29d3e8abda6a014ca910e7c73b4df7">CheckInputs</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, <a class="el" href="class_c_validation_state.html">CValidationState</a> &amp;state, const <a class="el" href="class_c_coins_view_cache.html">CCoinsViewCache</a> &amp;view, bool fScriptChecks, unsigned int <a class="el" href="divi-tx_8cpp.html#ac8bf36fe0577cba66bccda3a6f7e80a4">flags</a>, bool cacheStore, std::vector&lt; <a class="el" href="class_c_script_check.html">CScriptCheck</a> &gt; *pvChecks=NULL)</td></tr>
 <tr class="memdesc:aec29d3e8abda6a014ca910e7c73b4df7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether all inputs of this transaction are valid (no double spends, scripts &amp; sigs, amounts) This does not modify the UTXO set.  <a href="#aec29d3e8abda6a014ca910e7c73b4df7">More...</a><br /></td></tr>
 <tr class="separator:aec29d3e8abda6a014ca910e7c73b4df7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb54672aa2ce74f5068a5cf660432b67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#acb54672aa2ce74f5068a5cf660432b67">UpdateCoins</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, <a class="el" href="class_c_validation_state.html">CValidationState</a> &amp;state, <a class="el" href="class_c_coins_view_cache.html">CCoinsViewCache</a> &amp;inputs, <a class="el" href="class_c_tx_undo.html">CTxUndo</a> &amp;txundo, int nHeight)</td></tr>
@@ -314,15 +314,15 @@ Functions</h2></td></tr>
 <tr class="separator:ae7d38ec9b36061a4216d318d34dde6e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f3b001e1c5c988c6a14f6367cffb6a7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#a1f3b001e1c5c988c6a14f6367cffb6a7">ValidOutPoint</a> (const <a class="el" href="class_c_out_point.html">COutPoint</a> out, int nHeight)</td></tr>
 <tr class="separator:a1f3b001e1c5c988c6a14f6367cffb6a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab76a54f954d7ae3a7b89bccd76a8592d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#ab76a54f954d7ae3a7b89bccd76a8592d">RecalculateZPIVSpent</a> ()</td></tr>
-<tr class="separator:ab76a54f954d7ae3a7b89bccd76a8592d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5605fe0b5412051837b1d11fc0bece0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#ae5605fe0b5412051837b1d11fc0bece0">RecalculateZPIVMinted</a> ()</td></tr>
-<tr class="separator:ae5605fe0b5412051837b1d11fc0bece0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bf981fb0a1da46e5ad6b803846c2ca0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#a4bf981fb0a1da46e5ad6b803846c2ca0">RecalculatePIVSupply</a> (int nHeightStart)</td></tr>
-<tr class="separator:a4bf981fb0a1da46e5ad6b803846c2ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a161774bfe6fd9f0422f56db71f98071b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#a161774bfe6fd9f0422f56db71f98071b">RecalculateZDIVSpent</a> ()</td></tr>
+<tr class="separator:a161774bfe6fd9f0422f56db71f98071b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4143f85b263bcd3fc3915dbc19009495"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#a4143f85b263bcd3fc3915dbc19009495">RecalculateZDIVMinted</a> ()</td></tr>
+<tr class="separator:a4143f85b263bcd3fc3915dbc19009495"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebdec7b14f50bbafc5aafe72f08c716d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#aebdec7b14f50bbafc5aafe72f08c716d">RecalculateDIVSupply</a> (int nHeightStart)</td></tr>
+<tr class="separator:aebdec7b14f50bbafc5aafe72f08c716d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a74b45eb12b8c115906e305e109c5d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#a4a74b45eb12b8c115906e305e109c5d9">ReindexAccumulators</a> (list&lt; <a class="el" href="classuint256.html">uint256</a> &gt; &amp;listMissingCheckpoints, string &amp;strError)</td></tr>
 <tr class="separator:a4a74b45eb12b8c115906e305e109c5d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cb9692522ea533161204264849df858"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#a6cb9692522ea533161204264849df858">CheckFinalTx</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, int <a class="el" href="divx-tx_8cpp.html#ac8bf36fe0577cba66bccda3a6f7e80a4">flags</a>=-1)</td></tr>
+<tr class="memitem:a6cb9692522ea533161204264849df858"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#a6cb9692522ea533161204264849df858">CheckFinalTx</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, int <a class="el" href="divi-tx_8cpp.html#ac8bf36fe0577cba66bccda3a6f7e80a4">flags</a>=-1)</td></tr>
 <tr class="memdesc:a6cb9692522ea533161204264849df858"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if transaction will be final in the next block to be created.  <a href="#a6cb9692522ea533161204264849df858">More...</a><br /></td></tr>
 <tr class="separator:a6cb9692522ea533161204264849df858"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74832d5d658916e73adb139fd60e2354"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8h.html#a74832d5d658916e73adb139fd60e2354">IsStandardTx</a> (const <a class="el" href="class_c_transaction.html">CTransaction</a> &amp;tx, std::string &amp;reason)</td></tr>
@@ -505,7 +505,7 @@ Variables</h2></td></tr>
 
 <p>Abort with a message. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04995">4995</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04976">4976</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -577,7 +577,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l01828">1828</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l01827">1827</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -634,7 +634,7 @@ Here is the call graph for this function:</div>
 <p>Store block on disk. </p>
 <p>If dbp is provided, the file is known to already reside on disk </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04750">4750</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04729">4729</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -736,7 +736,7 @@ Here is the call graph for this function:</div>
 
 <p>(try to) add transaction to memory pool </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l01593">1593</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l01592">1592</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -787,7 +787,7 @@ Here is the caller graph for this function:</div>
 <p>Make the best chain active, in multiple steps. </p>
 <p>The result is either failure or an activated best chain. pblock is either NULL or a pointer to a block that is already loaded (to avoid loading it again from disk). </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04073">4073</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04052">4052</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -820,7 +820,7 @@ Here is the caller graph for this function:</div>
 
 <p>See whether the protocol update is enforced for connected nodes. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l06828">6828</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l06809">6809</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1062,7 +1062,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04412">4412</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04391">4391</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1112,7 +1112,7 @@ Here is the caller graph for this function:</div>
 
 <p>Context-independent validity checks. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04391">4391</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04370">4370</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1146,7 +1146,7 @@ Here is the caller graph for this function:</div>
 
 <p>Check whether enough disk space is available for an incoming block. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05006">5006</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04987">4987</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1192,7 +1192,7 @@ Here is the caller graph for this function:</div>
 <p>Calls <a class="el" href="main_8h.html#aa7ca31ac11bff224c6b0ac27fccce7b5">IsFinalTx()</a> with current block height and appropriate block time.</p>
 <p>See consensus/consensus.h for flag definitions. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l01534">1534</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l01533">1533</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1267,7 +1267,7 @@ Here is the caller graph for this function:</div>
 <p>Check whether all inputs of this transaction are valid (no double spends, scripts &amp; sigs, amounts) This does not modify the UTXO set. </p>
 <p>If pvChecks is not NULL, script checks are pushed onto it instead of being performed inline. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02806">2806</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02783">2783</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1397,7 +1397,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04561">4561</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04540">4540</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -1543,7 +1543,7 @@ Here is the call graph for this function:</div>
 
 <p>Apply the effects of this block (with given index) on the UTXO set represented by coins. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03262">3262</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03239">3239</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1591,7 +1591,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04665">4665</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04644">4644</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1641,7 +1641,7 @@ Here is the caller graph for this function:</div>
 
 <p>Context-dependent validity checks. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04596">4596</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04575">4575</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1673,7 +1673,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02155">2155</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02154">2154</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -1723,9 +1723,9 @@ Here is the caller graph for this function:</div>
 
 <p>Functions for validating blocks and updating the block tree. </p>
 <p>Undo the effects of this block (with given index) on the UTXO set represented by coins. In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean will be true if no problems were found. Otherwise, the return value will be false in case of problems. Note that in any case, coins may be modified. </p>
-<p>UNDO ZEROCOIN DATABASING note we only undo zerocoin databasing in the following statement, value to and from DIVX addresses should still be handled by the typical bitcoin based undo code</p>
+<p>UNDO ZEROCOIN DATABASING note we only undo zerocoin databasing in the following statement, value to and from DIVI addresses should still be handled by the typical bitcoin based undo code</p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02906">2906</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02883">2883</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1755,7 +1755,7 @@ Here is the call graph for this function:</div>
 <p>Reprocess a number of blocks to try and get on the correct chain again.</p>
 <p>Find the best known block, and make it the tip of the block chain. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03841">3841</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03820">3820</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1874,7 +1874,7 @@ Here is the caller graph for this function:</div>
 
 <p>Flush all state, indexes and buffers to disk. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03667">3667</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03646">3646</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1918,7 +1918,7 @@ Here is the caller graph for this function:</div>
 
 <p>Translation to a filesystem path. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05050">5050</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05031">5031</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1950,7 +1950,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02174">2174</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02173">2173</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2164,7 +2164,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02217">2217</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02193">2193</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2212,7 +2212,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l01564">1564</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l01563">1563</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2387,7 +2387,7 @@ Here is the call graph for this function:</div>
 <p>Retrieve a transaction (from memory pool, or from disk, if possible) </p>
 <p>Retrieve a transaction (from memory pool, or from disk, if possible) </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02027">2027</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02026">2026</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -2501,7 +2501,7 @@ Here is the caller graph for this function:</div>
 
 <p>Initialize a new block tree database + block data on disk. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05356">5356</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05337">5337</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2535,7 +2535,7 @@ Here is the caller graph for this function:</div>
 
 <p>Create a new block index entry for a given block hash. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05055">5055</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05036">5036</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2573,7 +2573,7 @@ Here is the call graph for this function:</div>
 
 <p>Mark a block as invalid. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04128">4128</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04107">4107</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2605,7 +2605,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04645">4645</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04624">4624</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2686,7 +2686,7 @@ Here is the caller graph for this function:</div>
 
 <p>Check whether we are doing an initial block download (synchronizing from disk or network) </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02470">2470</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02446">2446</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2833,7 +2833,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04653">4653</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04632">4632</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2891,7 +2891,7 @@ Here is the call graph for this function:</div>
 
 <p>Import blocks from an external file. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05396">5396</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05377">5377</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2935,7 +2935,7 @@ Here is the caller graph for this function:</div>
 
 <p>Increase a node's misbehavior score. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02559">2559</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02535">2535</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3011,7 +3011,7 @@ Here is the caller graph for this function:</div>
 
 <p>Open a block file (blk?????.dat) </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05040">5040</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05021">5021</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3055,7 +3055,7 @@ Here is the caller graph for this function:</div>
 
 <p>Open an undo file (rev?????.dat) </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05045">5045</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05026">5026</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3086,7 +3086,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02690">2690</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02667">2667</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3114,7 +3114,7 @@ Here is the call graph for this function:</div>
 
 <p>Process protocol messages received from a given node. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l06847">6847</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l06828">6828</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -3175,7 +3175,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if state.IsValid() </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04882">4882</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04861">4861</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3217,7 +3217,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02118">2118</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02117">2117</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3259,7 +3259,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02143">2143</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02142">2142</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3269,14 +3269,14 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a4bf981fb0a1da46e5ad6b803846c2ca0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4bf981fb0a1da46e5ad6b803846c2ca0">&#9670;&nbsp;</a></span>RecalculatePIVSupply()</h2>
+<a id="aebdec7b14f50bbafc5aafe72f08c716d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebdec7b14f50bbafc5aafe72f08c716d">&#9670;&nbsp;</a></span>RecalculateDIVSupply()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool RecalculatePIVSupply </td>
+          <td class="memname">bool RecalculateDIVSupply </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>nHeightStart</em></td><td>)</td>
@@ -3285,7 +3285,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03132">3132</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03109">3109</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3295,14 +3295,14 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="ae5605fe0b5412051837b1d11fc0bece0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae5605fe0b5412051837b1d11fc0bece0">&#9670;&nbsp;</a></span>RecalculateZPIVMinted()</h2>
+<a id="a4143f85b263bcd3fc3915dbc19009495"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4143f85b263bcd3fc3915dbc19009495">&#9670;&nbsp;</a></span>RecalculateZDIVMinted()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void RecalculateZPIVMinted </td>
+          <td class="memname">void RecalculateZDIVMinted </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -3310,7 +3310,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03069">3069</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03046">3046</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3320,14 +3320,14 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="ab76a54f954d7ae3a7b89bccd76a8592d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab76a54f954d7ae3a7b89bccd76a8592d">&#9670;&nbsp;</a></span>RecalculateZPIVSpent()</h2>
+<a id="a161774bfe6fd9f0422f56db71f98071b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a161774bfe6fd9f0422f56db71f98071b">&#9670;&nbsp;</a></span>RecalculateZDIVSpent()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void RecalculateZPIVSpent </td>
+          <td class="memname">void RecalculateZDIVSpent </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -3335,7 +3335,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03096">3096</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03073">3073</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3373,7 +3373,7 @@ Here is the call graph for this function:</div>
 
 <p>Remove invalidity status from a block and its descendants. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04163">4163</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04142">4142</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3465,7 +3465,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03203">3203</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03180">3180</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3542,7 +3542,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l06956">6956</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l06937">6937</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -3630,7 +3630,7 @@ Here is the caller graph for this function:</div>
 
 <p>Check a block is completely valid from start to finish (only works on top of our current best block, with cs_main held) </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04970">4970</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l04949">4949</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3663,7 +3663,7 @@ Here is the caller graph for this function:</div>
 
 <p>Run an instance of the script checking thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03063">3063</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l03040">3040</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3764,7 +3764,7 @@ Here is the caller graph for this function:</div>
 
 <p>Unload database information. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05339">5339</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l05320">5320</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3897,7 +3897,7 @@ Here is the caller graph for this function:</div>
 
 <p>Apply the effects of this transaction on the UTXO set represented by view. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02612">2612</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02589">2589</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3933,7 +3933,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02782">2782</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02759">2759</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3977,7 +3977,7 @@ Here is the caller graph for this function:</div>
 
 <p>Functions for disk access for blocks. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02097">2097</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02096">2096</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -4186,7 +4186,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02485">2485</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02461">2461</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -4202,7 +4202,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02486">2486</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02462">2462</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -4298,7 +4298,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02640">2640</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02617">2617</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -4314,7 +4314,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02641">2641</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l02618">2618</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -4633,7 +4633,7 @@ Here is the caller graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 1 2018 15:20:23 for DIVX by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Mar 13 2018 10:25:48 for DIVI by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

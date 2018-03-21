@@ -65,9 +65,9 @@ digraph "CChain::Height"
   Node152 -> Node257 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node257 [label="PopulateInvalidOutPointMap",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae7d38ec9b36061a4216d318d34dde6e2"];
   Node152 -> Node258 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node258 [label="RecalculateZPIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#ae5605fe0b5412051837b1d11fc0bece0"];
+  Node258 [label="RecalculateZDIVMinted",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a4143f85b263bcd3fc3915dbc19009495"];
   Node152 -> Node259 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node259 [label="RecalculatePIVSupply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a4bf981fb0a1da46e5ad6b803846c2ca0"];
+  Node259 [label="RecalculateDIVSupply",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#aebdec7b14f50bbafc5aafe72f08c716d"];
   Node152 -> Node155 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node152 -> Node260 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node260 [label="ContextualCheckBlockHeader",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$main_8h.html#a0a37117b7eeff320e9b274af636703df",tooltip="Context-dependent validity checks. "];

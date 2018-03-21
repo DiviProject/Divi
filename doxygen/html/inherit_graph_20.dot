@@ -5,7 +5,7 @@ digraph "Graphical Class Hierarchy"
   rankdir="LR";
   Node149 [label="QAbstractListModel",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
   Node149 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node0 [label="BitcoinUnits",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html",tooltip="DIVX unit definitions. "];
+  Node0 [label="BitcoinUnits",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_units.html",tooltip="DIVI unit definitions. "];
   Node149 -> Node151 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node151 [label="OptionsModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_options_model.html",tooltip="Interface from Qt to configuration data structure for Bitcoin client. "];
 }

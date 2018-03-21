@@ -59,7 +59,7 @@ digraph "TransactionView"
   Node8 -> Node23 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" walletModel" ,fontname="Helvetica"];
   Node12 -> Node23 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" wallet" ,fontname="Helvetica"];
   Node25 -> Node8 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" recentRequestsTableModel" ,fontname="Helvetica"];
-  Node25 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divx: URIs. "];
+  Node25 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divi: URIs. "];
   Node10 -> Node25 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node8 -> Node25 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" walletModel" ,fontname="Helvetica"];
   Node26 -> Node8 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" optionsModel" ,fontname="Helvetica"];

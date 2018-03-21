@@ -28,7 +28,7 @@ packages:
 - "python-setuptools"
 - "fonts-tuffy"
 remotes:
-- "url": "https://github.com/divi-project/divi.git"
+- "url": "https://github.com/divicoin/divi.git"
   "dir": "divi"
 files:
 - "MacOSX10.11.sdk.tar.gz"

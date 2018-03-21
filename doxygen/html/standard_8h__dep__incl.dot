@@ -88,7 +88,7 @@ digraph "src/script/standard.h"
   Node46 -> Node132 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node132 [label="src/checkpoints.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$checkpoints_8cpp.html"];
   Node46 -> Node133 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node133 [label="src/divxd.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html"];
+  Node133 [label="src/divid.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html"];
   Node46 -> Node50 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node46 -> Node122 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node46 -> Node51 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -118,7 +118,7 @@ digraph "src/script/standard.h"
   Node45 -> Node151 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node151 [label="src/coins.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$coins_8cpp.html"];
   Node45 -> Node152 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node152 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node152 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node45 -> Node70 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node70 [label="src/qt/multisigdialog.h",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$multisigdialog_8h.html"];
   Node70 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

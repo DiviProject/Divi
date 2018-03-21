@@ -25,7 +25,7 @@ packages:
 - "python"
 reference_datetime: "2015-06-01 00:00:00"
 remotes:
-- "url": "https://github.com/divi-project/divi.git"
+- "url": "https://github.com/divicoin/divi.git"
   "dir": "divi"
 files: []
 script: |

@@ -47,7 +47,7 @@ digraph "CActiveMasternode::Register"
   Node341 [label="CPubKey::IsValid",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_pub_key.html#a4fa94293cf8577fd039b9a133f6c7f30"];
   Node341 -> Node339 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node311 -> Node342 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node342 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node342 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 DIV input that can be used for the Masternode. "];
   Node342 -> Node343 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node343 [label="CActiveMasternode::\lSelectCoinsMasternode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#ac4fc5fb1681bf0a0f3d30e706fb0577a"];
   Node343 -> Node344 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

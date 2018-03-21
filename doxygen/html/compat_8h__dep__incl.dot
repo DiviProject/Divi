@@ -97,11 +97,11 @@ digraph "src/compat.h"
   Node14 -> Node146 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node146 [label="src/denomination_functions.h",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$denomination__functions_8h.html"];
   Node14 -> Node148 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node148 [label="src/divx-cli.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-cli_8cpp.html"];
+  Node148 [label="src/divi-cli.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-cli_8cpp.html"];
   Node14 -> Node149 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node149 [label="src/divx-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx-tx_8cpp.html"];
+  Node149 [label="src/divi-tx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi-tx_8cpp.html"];
   Node14 -> Node107 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node107 [label="src/divxd.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html"];
+  Node107 [label="src/divid.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html"];
   Node14 -> Node96 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node14 -> Node21 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node14 -> Node105 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -135,7 +135,7 @@ digraph "src/compat.h"
   Node29 [label="src/qt/blockexplorer.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$blockexplorer_8cpp.html"];
   Node14 -> Node95 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node14 -> Node114 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node114 [label="src/qt/divx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx_8cpp.html"];
+  Node114 [label="src/qt/divi.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi_8cpp.html"];
   Node14 -> Node49 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node49 [label="src/qt/guiutil.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$guiutil_8cpp.html"];
   Node13 -> Node172 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

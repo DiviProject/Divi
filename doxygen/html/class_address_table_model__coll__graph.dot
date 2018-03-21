@@ -47,7 +47,7 @@ digraph "AddressTableModel"
   Node5 -> Node18 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" wallet" ,fontname="Helvetica"];
   Node2 -> Node16 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" addressTableModel" ,fontname="Helvetica"];
   Node20 -> Node16 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" recentRequestsTableModel" ,fontname="Helvetica"];
-  Node20 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divx: URIs. "];
+  Node20 [label="RecentRequestsTableModel",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_recent_requests_table_model.html",tooltip="Model for list of recently generated payment requests / divi: URIs. "];
   Node3 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node16 -> Node20 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" walletModel" ,fontname="Helvetica"];
   Node21 -> Node16 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" optionsModel" ,fontname="Helvetica"];

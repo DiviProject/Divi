@@ -97,7 +97,7 @@ digraph "CWallet::GetWalletTx"
   Node464 -> Node465 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node465 [label="CActiveMasternode::\lSelectCoinsMasternode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#ac4fc5fb1681bf0a0f3d30e706fb0577a"];
   Node465 -> Node466 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node466 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 PIV input that can be used for the Masternode. "];
+  Node466 [label="CActiveMasternode::\lGetMasterNodeVin",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$class_c_active_masternode.html#adc93036b86ee9ef6abe5e0b783a51283",tooltip="Get 10000 DIV input that can be used for the Masternode. "];
   Node465 -> Node471 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node471 [label="getmasternodeoutputs",height=0.2,width=0.4,color="red", fillcolor="white", style="filled",URL="$rpcmasternode_8cpp.html#ab5b7e62bb3fb0e2a7a325520273f3bf5"];
   Node464 -> Node436 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

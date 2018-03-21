@@ -7,7 +7,7 @@ digraph "CCoins::IsAvailable"
   Node59 -> Node60 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node60 [label="CCoinsViewCache::GetOutputFor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a54a0de51586fa92d83cfa321fb8936c5"];
   Node60 -> Node61 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node61 [label="CCoinsViewCache::GetValueIn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a1a8cd6069fba96939ffcb1bd36ffb921",tooltip="Amount of divx coming in to a transaction Note that lightweight clients may not know anything besides..."];
+  Node61 [label="CCoinsViewCache::GetValueIn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_coins_view_cache.html#a1a8cd6069fba96939ffcb1bd36ffb921",tooltip="Amount of divi coming in to a transaction Note that lightweight clients may not know anything besides..."];
   Node60 -> Node62 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node62 [label="AreInputsStandard",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8h.html#a791e33e18bea9861e449e6ebcfce8890",tooltip="Check transaction inputs, and make sure any pay-to-script-hash transactions are evaluating IsStandard..."];
   Node60 -> Node63 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

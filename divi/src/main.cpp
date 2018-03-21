@@ -2179,11 +2179,19 @@ int64_t GetBlockValue(int nHeight)
             return 250000 * COIN;
     }
 
+<<<<<<< HEAD
     if (nHeight == 0) {
         nSubsidy = 50 * COIN;
     }else if(nHeight == 1){
         nSubsidy = 8000250 * COIN;
     } else {
+=======
+	if (nHeight == 0) {
+		nSubsidy = 50 * COIN;
+	} else if (nHeight == 1) {
+		nSubsidy = 8000000 * COIN;
+	} else {
+>>>>>>> d2d93565c4fdffac0bd96d08d63b990b234bf288
         nSubsidy = 50 * COIN;
     }
 
@@ -2534,8 +2542,13 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
 // Requires cs_main.
 void Misbehaving(NodeId pnode, int howmuch)
 {
+<<<<<<< HEAD
     howmuch = 0;//byrd line to prevent nodes from disconnecting form each other
     if (howmuch == 0)
+=======
+	howmuch = 0; //byrd line to prevent nodes from disconnecting form each other 
+	if (howmuch == 0)
+>>>>>>> d2d93565c4fdffac0bd96d08d63b990b234bf288
         return;
 
     CNodeState* state = State(pnode);

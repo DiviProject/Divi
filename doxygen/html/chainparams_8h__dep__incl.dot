@@ -104,7 +104,7 @@ digraph "src/chainparams.h"
   Node76 -> Node162 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node162 [label="src/checkpoints.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$checkpoints_8cpp.html"];
   Node76 -> Node163 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node163 [label="src/divxd.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html"];
+  Node163 [label="src/divid.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html"];
   Node76 -> Node80 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node76 -> Node152 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node76 -> Node81 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
@@ -126,7 +126,7 @@ digraph "src/chainparams.h"
   Node76 -> Node151 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node76 -> Node99 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node76 -> Node170 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node170 [label="src/qt/divx.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divx_8cpp.html"];
+  Node170 [label="src/qt/divi.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divi_8cpp.html"];
   Node76 -> Node103 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node103 [label="src/qt/guiutil.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$guiutil_8cpp.html"];
   Node76 -> Node83 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

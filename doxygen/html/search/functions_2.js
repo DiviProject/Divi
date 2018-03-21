@@ -20,7 +20,7 @@ var searchData=
   ['bip38decrypt',['bip38decrypt',['../rpcdump_8cpp.html#a64a0e2e87f6d741efd662ac94080159d',1,'bip38decrypt(const Array &amp;params, bool fHelp):&#160;rpcdump.cpp'],['../rpcserver_8h.html#aaff3adbcfc4a98fe34829ae0c1e39270',1,'bip38decrypt(const json_spirit::Array &amp;params, bool fHelp):&#160;rpcserver.h']]],
   ['bip38encrypt',['bip38encrypt',['../rpcdump_8cpp.html#a303f255a7509999ce1e535d5e7bb220d',1,'bip38encrypt(const Array &amp;params, bool fHelp):&#160;rpcdump.cpp'],['../rpcserver_8h.html#a612b77ed3ee5b06b99b594b59c0e2fc8',1,'bip38encrypt(const json_spirit::Array &amp;params, bool fHelp):&#160;rpcserver.h']]],
   ['bip38tooldialog',['Bip38ToolDialog',['../class_bip38_tool_dialog.html#ae253c496add5b5cc99bf9fec7b5dc654',1,'Bip38ToolDialog']]],
-  ['bitcoin_5fipc_5fprefix',['BITCOIN_IPC_PREFIX',['../paymentserver_8cpp.html#a73b436062018fcf45ba3b85fc563560a',1,'paymentserver.cpp']]],
+  ['bitcoin_5fipc_5fprefix',['BITCOIN_IPC_PREFIX',['../paymentserver_8cpp.html#ac4ba1fa64ae47db7e3a921a8fec86e1e',1,'paymentserver.cpp']]],
   ['bitcoinaddresscheckvalidator',['BitcoinAddressCheckValidator',['../class_bitcoin_address_check_validator.html#ad546bb34a6980e73f9896f89cdfe6699',1,'BitcoinAddressCheckValidator']]],
   ['bitcoinaddressentryvalidator',['BitcoinAddressEntryValidator',['../class_bitcoin_address_entry_validator.html#ab1098be26569477a372790674841afe9',1,'BitcoinAddressEntryValidator']]],
   ['bitcoinaddressfont',['bitcoinAddressFont',['../namespace_g_u_i_util.html#a6630c77d0f51ac2a1acdc5fe06c75283',1,'GUIUtil']]],

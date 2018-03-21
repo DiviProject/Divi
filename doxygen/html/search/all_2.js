@@ -67,7 +67,7 @@ var searchData=
   ['bit_5fcount_5fhigh',['bit_count_high',['../structsph__bmw__small__context.html#a97ea70c252613bc1c1b41a862c8368ac',1,'sph_bmw_small_context']]],
   ['bit_5fcount_5flow',['bit_count_low',['../structsph__bmw__small__context.html#a1f4f38d96781dea1579d0e3320fa8968',1,'sph_bmw_small_context']]],
   ['bitcoin_5fipc_5fconnect_5ftimeout',['BITCOIN_IPC_CONNECT_TIMEOUT',['../paymentserver_8cpp.html#a5ed09c108cbabac0b92338993ce290e0',1,'paymentserver.cpp']]],
-  ['bitcoin_5fipc_5fprefix',['BITCOIN_IPC_PREFIX',['../paymentserver_8cpp.html#a73b436062018fcf45ba3b85fc563560a',1,'paymentserver.cpp']]],
+  ['bitcoin_5fipc_5fprefix',['BITCOIN_IPC_PREFIX',['../paymentserver_8cpp.html#ac4ba1fa64ae47db7e3a921a8fec86e1e',1,'paymentserver.cpp']]],
   ['bitcoinaddresscheckvalidator',['BitcoinAddressCheckValidator',['../class_bitcoin_address_check_validator.html',1,'BitcoinAddressCheckValidator'],['../class_bitcoin_address_check_validator.html#ad546bb34a6980e73f9896f89cdfe6699',1,'BitcoinAddressCheckValidator::BitcoinAddressCheckValidator()']]],
   ['bitcoinaddressentryvalidator',['BitcoinAddressEntryValidator',['../class_bitcoin_address_entry_validator.html',1,'BitcoinAddressEntryValidator'],['../class_bitcoin_address_entry_validator.html#ab1098be26569477a372790674841afe9',1,'BitcoinAddressEntryValidator::BitcoinAddressEntryValidator()']]],
   ['bitcoinaddressfont',['bitcoinAddressFont',['../namespace_g_u_i_util.html#a6630c77d0f51ac2a1acdc5fe06c75283',1,'GUIUtil']]],

@@ -18,6 +18,7 @@ var searchData=
   ['digits',['Digits',['../class_options_model.html#a5c6c9ca8a01aca9f53e91f118e4878d2a453e367783e1846f13a46808d11fd685',1,'OptionsModel']]],
   ['dirty',['DIRTY',['../struct_c_coins_cache_entry.html#a1d5ac74da0f6ff5ab056e47ce79753c7ac8cbd1b21d937e8618f9fecdf2c7223e',1,'CCoinsCacheEntry']]],
   ['displayunit',['DisplayUnit',['../class_options_model.html#a5c6c9ca8a01aca9f53e91f118e4878d2a1cdf6f58a7333e1c224b5eaccd5d17b9',1,'OptionsModel']]],
+  ['div',['DIV',['../class_bitcoin_units.html#ae41018ba530b4c8bdc74fd163709fb9da5b910e0627569bbf76a0f9ddf9f38562',1,'BitcoinUnits']]],
   ['duplicate_5faddress',['DUPLICATE_ADDRESS',['../class_address_table_model.html#a3d502b85fc09461e779dae4589c29956af9cc220dea0573d7819eebfa84c1691f',1,'AddressTableModel']]],
   ['duplicateaddress',['DuplicateAddress',['../class_wallet_model.html#afb93f64411320dce4692c2190b7d35ccac4b89d8f7cde6aa46fed5c881acd969e',1,'WalletModel']]]
 ];

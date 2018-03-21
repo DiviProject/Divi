@@ -5,9 +5,9 @@ digraph "AppInit2"
   rankdir="LR";
   Node1 [label="AppInit2",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
   Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node2 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#ac59316b767e6984e1285f0531275286b"];
+  Node2 [label="AppInit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#ac59316b767e6984e1285f0531275286b"];
   Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node3 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divxd_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
+  Node3 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$divid_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97"];
   Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node4 [label="BitcoinCore::initialize",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bitcoin_core.html#af34ca069cda1d4362dcc109b4397fb62"];
 }

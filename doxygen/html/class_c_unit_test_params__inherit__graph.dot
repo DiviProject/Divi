@@ -6,7 +6,7 @@ digraph "CUnitTestParams"
   Node1 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node1 [label="CMainParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_main_params.html"];
   Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node2 [label="CChainParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html",tooltip="CChainParams defines various tweakable parameters of a given instance of the DIVX system..."];
+  Node2 [label="CChainParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_chain_params.html",tooltip="CChainParams defines various tweakable parameters of a given instance of the DIVI system..."];
   Node3 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node3 [label="CModifiableParams",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_modifiable_params.html",tooltip="Modifiable parameters interface is used by test cases to adapt the parameters in order to test specif..."];
 }

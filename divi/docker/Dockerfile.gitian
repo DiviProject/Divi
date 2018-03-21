@@ -35,4 +35,4 @@ RUN chmod +x /home/ubuntu/runit.sh
 # docker build -f Dockerfile.gitian -t [tagname] .
 # docker run -it [tagname]
 # # in the docker container shell run this:
-# /home/ubuntu/runit.sh master https://github.com/Divicoin/Divi  ../divi/divi/contrib/gitian-descriptors/gitian-linux.yml
+# /home/ubuntu/runit.sh master https://github.com/Divicoin/Divi.git  ../divi/divi/contrib/gitian-descriptors/gitian-linux.yml

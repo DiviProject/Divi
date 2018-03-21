@@ -31,7 +31,8 @@ cd /shared/gitian-builder; \
 ./bin/gbuild --skip-image --commit divi=\$1 --url divi=\$2 \$3" > /home/ubuntu/runit.sh
 RUN chmod +x /home/ubuntu/runit.sh
 
-# CMD ["master","https://github.com/Divicoin/Divi","../divi/divi/contrib/gitian-descriptors/gitian-linux.yml"]
-# ENTRYPOINT ["/bin/bash", "/home/ubuntu/runit.sh"]
-
-# RUN /home/ubuntu/runit.sh master https://github.com/Divicoin/Divi  ../divi/divi/contrib/gitian-descriptors/gitian-linux.yml 
+# # Run these commands in terminal on the host.
+# docker build -f Dockerfile.gitian -t [tagname] .
+# docker run -it [tagname]
+# # in the docker container shell run this:
+# /home/ubuntu/runit.sh master https://github.com/Divicoin/Divi.git  ../divi/divi/contrib/gitian-descriptors/gitian-linux.yml

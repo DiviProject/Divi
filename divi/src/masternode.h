@@ -108,7 +108,7 @@ class CMasternodeTier {
 public:
 	std::string name;
 	CAmount collateral;
-	int seesawBasis
+	int seesawBasis;
 };
 
 const CMasternodeTier Diamond{ "diamond", 100000 * COIN, 2000 };

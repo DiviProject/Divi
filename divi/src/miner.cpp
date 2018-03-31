@@ -392,7 +392,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
         }
 
-        if (!fProofOfStake) {
+        //byrdcode - if condition: after last proof of work block masternodes need to start getting a piece of the pie.
+        if (!fProofOfStake && chainActive.Tip()->nHeight > Params().LAST_POW_BLOCK()) {
             //Masternode and general budget payments
             FillBlockPayee(txNew, nFees, fProofOfStake);
 
@@ -401,7 +402,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 pblock->payee = txNew.vout[1].scriptPubKey;
             }
         }
-
+        
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
@@ -409,9 +410,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         // Compute final coinbase transaction.
         pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
         if (!fProofOfStake) {
-            //byrdcode
-            txNew.vout[0].nValue = GetBlockValue(nHeight);
-            txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+
+            //byrdcode - before last proof of work block allow mining
+            if(chainActive.Tip()->nHeight <= Params().LAST_POW_BLOCK()){
+                txNew.vout[0].nValue = GetBlockValue(nHeight);
+                txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+            }
             //endbyrdcode
             pblock->vtx[0] = txNew;
             pblocktemplate->vTxFees[0] = -nFees;
@@ -570,22 +574,22 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         CBlockIndex* pindexPrev = chainActive.Tip();
         if (!pindexPrev)
             continue;
-        LogPrintf("BitcoinMiner(): chainActive.Tip %s\n", chainActive.Tip());
+        //LogPrintf("BitcoinMiner(): chainActive.Tip %s\n", chainActive.Tip());
 
         unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));
-        LogPrintf("BitcoinMiner(): pblocktemplate created %s\n", "");
+        //LogPrintf("BitcoinMiner(): pblocktemplate created %s\n", "");
 
         if (!pblocktemplate.get())
             continue;
             
-        LogPrintf("BitcoinMiner(): pblocktemplate.get %s\n", "");
+        //LogPrintf("BitcoinMiner(): pblocktemplate.get %s\n", "");
 
 
         CBlock* pblock = &pblocktemplate->block;
-        LogPrintf("BitcoinMiner(): block created. %s\n", "");
+        //LogPrintf("BitcoinMiner(): block created. %s\n", "");
 
         IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
-        LogPrintf("BitcoinMiner(): nonce incremented. %s\n", "");
+        //LogPrintf("BitcoinMiner(): nonce incremented. %s\n", "");
 
 
         //Stake miner main

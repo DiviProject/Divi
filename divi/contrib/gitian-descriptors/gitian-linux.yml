@@ -1,5 +1,5 @@
 ---
-name: "divi-linux-3.0"
+name: "divi-linux-1.0"
 enable_cache: true
 suites:
 - "trusty"
@@ -11,10 +11,6 @@ packages:
 - "g++-4.8-aarch64-linux-gnu"
 - "gcc-4.8-aarch64-linux-gnu"
 - "binutils-aarch64-linux-gnu"
-- "g++-arm-linux-gnueabihf"
-- "g++-4.8-arm-linux-gnueabihf"
-- "gcc-4.8-arm-linux-gnueabihf"
-- "binutils-arm-linux-gnueabihf"
 - "g++-4.8-multilib"
 - "gcc-4.8-multilib"
 - "binutils-gold"

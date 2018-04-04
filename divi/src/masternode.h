@@ -103,6 +103,28 @@ public:
 // The Masternode Class. For managing the Obfuscation process. It contains the input of the 10000 DIV, signature to prove
 // it's the one who own that ip address and code for calculating the payment election.
 //
+
+class CMasternodeTier {
+public:
+	std::string name;
+	CAmount collateral;
+	int seesawBasis;
+};
+
+const CMasternodeTier Diamond{ "diamond", 100000 * COIN, 2000 };
+const CMasternodeTier Platinum{ "platinum", 30000 * COIN, 2000 };
+const CMasternodeTier Gold{ "gold", 10000 * COIN, 2000 };
+const CMasternodeTier Silver{ "silver", 3000 * COIN, 2000 };
+const CMasternodeTier Copper{ "copper", 1000 * COIN, 2000 };
+
+class CMnFunding
+{
+	CTxIn vin;
+	CPubKey pubKeyVin;
+	CPubKey payWallet;		// null if same as funding wallet
+	CPubKey voteWallet;		// null if same as funding wallet
+};
+
 class CMasternode
 {
 private:

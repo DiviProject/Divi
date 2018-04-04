@@ -5,8 +5,9 @@ docker ps
 docker exec -it [containerid] /bin/bash 
 
 # now you can run commands like pulling the git and rebuilding the project.
-# open ModXterm and press the button: "Start Local Terminal" 
+sudo service ssh start
 
+# open ModXterm and press the button: "Start Local Terminal" 
 ssh -X -v ubuntu@127.0.0.1
 
 # password is 'ubuntu' as set in the Dockerfile.

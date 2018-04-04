@@ -77,8 +77,8 @@ RUN sudo dos2unix /etc/ssh/ssh_config
 COPY guisshd_config /etc/ssh/sshd_config
 RUN sudo dos2unix /etc/ssh/sshd_config
 
-ENV GITBRANCH caldwell
-ENV GITURI https://raropw5qsohn7txdy3aug3wmgjwvbyxgdsckh3asjym6u5nzwjhq@agii.visualstudio.com/_git/DiviProject
+ENV GITBRANCH master
+ENV GITURI https://github.com/Divicoin/Divi
 
 # docker run -p 51472:51472 -p 22:22 --detach -it dcaldwellsw/divi:guidebugger
 # docker exec -it [containerid] /bin/bash 

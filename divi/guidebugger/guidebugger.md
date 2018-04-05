@@ -1,3 +1,7 @@
+# Microsoft Windows users will need to Install MobaXterm.
+# Commercial use is 69$ but ease of use makes it worth it.
+https://mobaxterm.mobatek.net/download.html
+
 docker pull dcaldwellsw/divi:guidebugger
 docker run -p 51472:51472 -p 22:22 --detach -it dcaldwellsw/divi:guidebugger
 docker ps

@@ -250,7 +250,7 @@ public:
         return n;
     }
 
-    void Check(bool forceCheck = false);
+    void Check(bool forceCheck = false, CAmount = 10000 * COIN);
 
     bool IsBroadcastedWithin(int seconds)
     {

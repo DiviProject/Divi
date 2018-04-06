@@ -186,7 +186,7 @@ uint256 CMasternode::CalculateScore(int mod, int64_t nBlockHeight)
     return r;
 }
 
-void CMasternode::Check(bool forceCheck)
+void CMasternode::Check(bool forceCheck, CAmount funding)
 {
     if (ShutdownRequested()) return;
 
@@ -211,7 +211,7 @@ void CMasternode::Check(bool forceCheck)
     if (!unitTest) {
         CValidationState state;
         CMutableTransaction tx = CMutableTransaction();
-        CTxOut vout = CTxOut(9999.99 * COIN, obfuScationPool.collateralPubKey);
+        CTxOut vout = CTxOut(funding - 1000000, obfuScationPool.collateralPubKey);
         tx.vin.push_back(vin);
         tx.vout.push_back(vout);
 

@@ -1,0 +1,84 @@
+How to start a masternode:
+
+Requirements:
+A machine running a wallet.  This will be referred to as the wallet.
+Another machine that is publicly reachable by the entire network it will be added to.  This will be referred to as the masternode.
+
+Step 1:  On the wallet make sure funds are available
+divi-cli getbalance
+
+If funds are not available on this wallet create an account and send funds to it from a wallet with the collateral.
+divi-cli getaccountaddress masternodes
+DBmD4hcu8mYhRhvjm7BDXzUSQcdpL9HZwf
+
+From the wallet with the collateral...
+divi-cli sendtoaddress DBmD4hcu8mYhRhvjm7BDXzUSQcdpL9HZwf 50000
+972910fc4ad6ff93e41eefeca0bd5e2593d316450fe85fb755cf89c758792b12
+divi-cli gettransaction 972910fc4ad6ff93e41eefeca0bd5e2593d316450fe85fb755cf89c758792b12
+#wait for confirmations...
+
+Back to the wallet machine...
+divi-cli masternode genkey
+87JoBcPp9JWhGxf9NaND6Jp8MRzB1U8A4BmeLgqjNdwog4RgoDr
+divi-cli getaccountaddress mn1
+DR4z3m44R6pCqCgmpFjYBmgvzHGDGvzukj
+
+If you have a specific wallet address with the funds, for example an account named 'masternodes'
+divi-cli sendfrom masternodes DR4z3m44R6pCqCgmpFjYBmgvzHGDGvzukj 10000
+If the funds are in the default account use...
+divi-cli sendtoaddress DR4z3m44R6pCqCgmpFjYBmgvzHGDGvzukj 10000
+3f83abbd591214ab8f185ca4942623daa81f0ffdb7094a1e4666ea1944a6eca7
+divi-cli gettransaction 3f83abbd591214ab8f185ca4942623daa81f0ffdb7094a1e4666ea1944a6eca7
+wait for confirmations...
+
+Then you should be able see the masternode output.
+divi-cli masternode outputs
+[
+    {
+        "txhash" : "3f83abbd591214ab8f185ca4942623daa81f0ffdb7094a1e4666ea1944a6eca7",
+        "outputidx" : 0
+    }
+]
+
+In the wallet data directory, edit masternodes.conf.  The usual path is ~/.divi/masternode.conf
+Add the line below, with your information.  There are example lines at the top that tell you which thing goes where.  Mine looks like this...
+mn1 10.27.199.2:51472 87JoBcPp9JWhGxf9NaND6Jp8MRzB1U8A4BmeLgqjNdwog4RgoDr 3f83abbd591214ab8f185ca4942623daa81f0ffdb7094a1e4666ea1944a6eca7 0
+
+Now you are ready to set up your masternode.  Go to the data directory of your masternode, and edit divi.conf.  It should look something like this...
+
+addnode=10.27.199.4:51472
+rpcuser=byrdisword
+rpcpassword=byrdiswordbyrdiswordbyrdisword
+rpcallowip=127.0.0.1
+listen=0
+server=1
+daemon=1
+logtimestamps=1
+maxconnections=256
+masternode=1
+externalip=10.27.199.2
+bind=10.27.199.2
+masternodeaddr=10.27.199.2:51472
+masternodeprivkey=87JoBcPp9JWhGxf9NaND6Jp8MRzB1U8A4BmeLgqjNdwog4RgoDr
+
+Now you are ready to restart your wallet and masternode.  
+Stop them both using divi-cli stop (if they are running.)  
+Start them both using divid
+Run on your wallet...
+divi-cli startmasternode alias false mn1
+{
+    "overall" : "Successfully started 1 masternodes, failed to start 0, total 1",
+    "detail" : [
+        {
+            "alias" : "mn1",
+            "result" : "successful",
+            "error" : ""
+        }
+    ]
+}
+
+Run on your masternode...
+divi-cli startmasternode local false
+Masternode successfully started
+
+Common problems include not syncing the masternode machine with the rest of the network, and not allowing collateral transactions to collect enough confirmations, and other various network issues.  If you have issues, refer to end of your debug.log on both the wallet and masternode to look for clues.

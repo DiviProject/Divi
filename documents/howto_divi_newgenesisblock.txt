@@ -1,0 +1,57 @@
+﻿CREATING A NEW GENESIS BLOCK
+
+
+In chainparams.cpp, Edit The Checkpoints
+Get your favorite programming editor, go to the newcoin/src/ directory, and open up chainparams.cpp.
+Search for the string ‘mapCheckpoints’ and it will take you immediately to line 55, which sets a static variable named mapCheckpoints to a list of pairs – the first member of each pair is the block height, and the second is the hash of that block. The Bitcoin client uses these as it verifies the Bitcoin block chain. So if you leave those in, the newcoin client will be looking for blocks that don’t exist in the newcoin block chain. So get rid of ’em, and put a place holder for your genesis block in instead. This place holder will be wrong, but we can’t fix it until after we mine a genesis block. After your edit, it should look like this:
+
+
+static Checkpoints::MapCheckpoints mapCheckpoints =
+boost::assign::map_list_of
+( 0, uint256("0x001"));
+
+Zero is the block height of the genesis block, and uint256(“0x001″) is a wildly wrong guess about what the hash is going to be.
+Make the same edit at the locations where it sets ‘mapCheckpointsTestnet’ and ‘mapCheckpointsRegtest’.
+
+
+Edit The Checkpoint Data
+Right under each of these edited checkpoint lists, there are blocks that initialize a corresponding variable. These variables are named data (for the main network), dataTestnet (for the test network), and dataRegtest (for regression testing). Go to the command line and type
+date +%s
+
+to find out what the current unix epoch date is, then overwrite the first number in each of these blocks with the current date. You’ll have to do this again (and mine new genesis blocks) right before launch. The second number in each block is a transaction count as of the most recent checkpoint; it should be replaced by zero, because there are no transactions before the genesis block. The third number is the number of transactions per day you expect after the last checkpoint. It doesn’t matter as much, but for now I suggest 500 for the main network, 250 for the test network, and zero for the regtest. Updating these numbers as the amount of traffic on your coin’s block chain changes is one of the things you do as dev, if you want your clients to make accurate estimates of their progress as they reindex or verify the block chain.
+
+
+Edit The Timestamp String
+Now we skip down to the famous timestamp string, at the line
+const char* pszTimestamp = "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks";
+
+It’s traditional to pick a newspaper headline for the day of launch, but you don’t have to. Whatever you use, keep it short. If it’s over 90 characters or so the block will fail a length check that’s supposed to prevent denial-of-service attacks from people attaching big data to transactions.
+
+
+Set the Genesis Time
+Going down a little more, change the line in the CMainParams block that sets genesis.nTime so that it sets it to the same Unix epoch date you got using the ‘date’ command above. Repeat that edit in the CTestNetParams block.
+
+
+Add Code To Mine A Genesis Block
+Uncomment the genesis block mining code in chainparams.cpp.  Also comment out the two asserts just below the generator code.   It should be around like 194 for mainnet.
+
+
+Now Mine Your Genesis Blocks
+Now run a wallet or daemon.
+Then Nothing will happen for a minute or two.
+Here’s what’s going on. The program set the nonce, hashed the genesis block, noticed that the new hash didn’t match 0x01, and is now living in that tight little empty for loop, incrementing the nonce, hashing the block, and checking to see whether the new hash is low enough to meet proof-of-work requirements.
+After a while, it will die. Meaning, it found a nonce that gave the genesis block a hash low enough to pass proof-of-work, got out of the for loop, logged the new hash and nonce and the Merkle tree value, and then hit the assert that still insists on the hash value being Bitcoin’s genesis block hash value. You need the new values it logged. Type
+tail ~/.divi/debug.log
+
+and you’ll see the last few lines of logfile output.
+Now you have a nonce and a hash and a Merkle root so go change the necessary lines in the CMainNet initializer.
+In the code you pasted in, you’ve initialized hashGenesisBlock to be uint256(“0x01″). Replace the string value with the new genesis hash.
+Right above the code you pasted in, you’ll see a line that sets a value for genesis.nNonce. Change it to your new nonce value.
+Right below the code you pasted in, you’ll find assert() statements that check the value of the Merkle root and the hash. Change those to assert your new Merkle root and genesis Hash values.
+Near the top of the file, there’s your mapCheckpoints list, claiming that the hash of the genesis block is 0x01. Change that to your new hash value.
+Once you’ve made these edits, recompile and run it again. The same thing will happen all over again, but this time for testnet. And you change the same things in the CTestNetParams initializer, etc, that you changed in the CMainParams initializer.
+Recompile and run it again, and it will trip on the regtest values. Fortunately these won’t take any time because the regtest proof-of-work is much easier. Change the same things in the CRegTestParams initializer.
+
+
+Now STOP Mining Genesis Blocks
+Recomment out the genesis block mining code.  Having replaced the genesis hash and merkle root, uncomment the assert lines.  Recompile and start the miner.  It should recognize the genesis block and start adding new blocks on top of it.

@@ -23,7 +23,7 @@ Value debug(const Array& params, bool fHelp)
 {
 	Object obj;
 
-	obj.push_back(Pair("pubKey", pubkey.GetHash().GetHex()));
+	// obj.push_back(Pair("pubKey", pubkey.GetHash().GetHex()));
 
 	return obj;
 }

@@ -65,7 +65,7 @@ Instructions: Error Messages
 		
 		brew install boost@1.57
 		
-	Make sure boost@1.57 is linked
+#	Make sure boost@1.57 is linked
 		
 		brew link boost@1.57 --force
 

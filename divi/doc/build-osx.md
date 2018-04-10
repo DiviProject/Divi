@@ -5,7 +5,7 @@ This guide will show you how to build divid (headless client) for OSX.
 Notes
 -----
 
-* Tested on OS X 10.7 through 10.10 on 64-bit Intel processors only.
+* Tested on OS X 10.13.
 
 * All of the commands should be executed in a Terminal application. The
 built-in one is located in `/Applications/Utilities`.
@@ -13,19 +13,10 @@ built-in one is located in `/Applications/Utilities`.
 Preparation
 -----------
 
-You need to install XCode with all the options checked so that the compiler
-and everything is available in /usr not just /Developer. XCode should be
-available on your OS X installation media, but if not, you can get the
-current version from https://developer.apple.com/xcode/. If you install
-Xcode 4.3 or later, you'll need to install its command line tools. This can
-be done in `Xcode > Preferences > Downloads > Components` and generally must
-be re-done or updated every time Xcode is updated.
+Install XCode 9.x
 
-There's also an assumption that you already have `git` installed. If
-not, it's the path of least resistance to install [Github for Mac](https://mac.github.com/)
-(OS X 10.7+) or
-[Git for OS X](https://code.google.com/p/git-osx-installer/). It is also
-available via Homebrew.
+You can install XCode via the AppStore, you may also want to get a Developer's 
+licence from Apple if you want to gain access to the forums, and support tools
 
 You will also need to install [Homebrew](http://brew.sh) in order to install library
 dependencies.
@@ -36,21 +27,21 @@ sections below.
 Instructions: Homebrew
 ----------------------
 
-#### Install dependencies using Homebrew
+#### Install dependencies using Homebrew add 'git' if you don't want 
 
-        brew install autoconf automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf qt5 libzmq
+        brew install git autoconf automake berkeley-db4 libtool boost@1.57 miniupnpc openssl pkg-config protobuf qt5 libzmq
 
 ### Building `divid`
 
 1. Clone the github tree to get the source code and go into the directory.
 
         git clone https://github.com/divicoin/divi.git
-        cd DIVI
+        cd divi
 
 2.  Build divid:
 
         ./autogen.sh
-        ./configure --with-gui=qt5
+        ./configure LDFLAGS='-L/usr/local/opt/openssl/lib' CPPFLAGS='-I/usr/local/opt/openssl/include' PKG_CONFIG_PATH='/usr/local/opt/openssl/lib/pkgconfig' --with-gui=qt5
         make
 
 3.  It is also a good idea to build and run the unit tests:
@@ -60,6 +51,25 @@ Instructions: Homebrew
 4.  (Optional) You can also install divid to your path:
 
         make install
+
+
+Instructions: Error Messages
+----------------------------
+### If you get an error message about XCode being installed or configured incorrectly:
+
+		sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+		
+### You may already have a NEWER version of boost installed on your Mac, and get errors when compiling QT.
+		
+		brew uninstall boost
+		
+		brew install boost@1.57
+		
+	Make sure boost@1.57 is linked
+		
+		brew link boost@1.57 --force
+
+
 
 Use Qt Creator as IDE
 ------------------------

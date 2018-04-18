@@ -39,21 +39,21 @@ bool GetBlockHash(uint256& hash, int nBlockHeight);
 class CMasternodePing
 {
 public:
-    CPubKey pubKey;
+    CTxIn vin;
     uint256 blockHash;
     int64_t sigTime; //mnb message times
     std::vector<unsigned char> vchSig;
     //removed stop
 
     CMasternodePing();
-    CMasternodePing(CPubKey& newPubKey);
+    CMasternodePing(CTxIn& newVin);
 
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
-        READWRITE(pubKey);
+        READWRITE(vin);
         READWRITE(blockHash);
         READWRITE(sigTime);
         READWRITE(vchSig);
@@ -66,7 +66,7 @@ public:
     uint256 GetHash()
     {
         CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-        ss << pubKey;
+        ss << vin;
         ss << sigTime;
         return ss.GetHash();
     }
@@ -78,7 +78,7 @@ public:
 
         // by swapping the members of two classes,
         // the two classes are effectively swapped
-        swap(first.pubKey, second.pubKey);
+        swap(first.vin, second.vin);
         swap(first.blockHash, second.blockHash);
         swap(first.sigTime, second.sigTime);
         swap(first.vchSig, second.vchSig);
@@ -91,7 +91,7 @@ public:
     }
     friend bool operator==(const CMasternodePing& a, const CMasternodePing& b)
     {
-        return a.pubKey == b.pubKey && a.blockHash == b.blockHash;
+        return a.vin == b.vin && a.blockHash == b.blockHash;
     }
     friend bool operator!=(const CMasternodePing& a, const CMasternodePing& b)
     {
@@ -104,51 +104,25 @@ public:
 // it's the one who own that ip address and code for calculating the payment election.
 //
 
-class CMnTier {
+class CMasternodeTier {
 public:
 	std::string name;
 	CAmount collateral;
 	int seesawBasis;
-
-	ADD_SERIALIZE_METHODS;
-
-	template <typename Stream, typename Operation>
-	inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-	{
-		READWRITE(name);
-		READWRITE(collateral);
-		READWRITE(seesawBasis);
-	}
 };
 
-const CMnTier Diamond{ "diamond", 100000 * COIN, 2000 };
-const CMnTier Platinum{ "platinum", 30000 * COIN, 2000 };
-const CMnTier Gold{ "gold", 10000 * COIN, 2000 };
-const CMnTier Silver{ "silver", 3000 * COIN, 2000 };
-const CMnTier Copper{ "copper", 1000 * COIN, 2000 };
+const CMasternodeTier Diamond{ "diamond", 100000 * COIN, 2000 };
+const CMasternodeTier Platinum{ "platinum", 30000 * COIN, 2000 };
+const CMasternodeTier Gold{ "gold", 10000 * COIN, 2000 };
+const CMasternodeTier Silver{ "silver", 3000 * COIN, 2000 };
+const CMasternodeTier Copper{ "copper", 1000 * COIN, 2000 };
 
 class CMnFunding
 {
-public:
-	CAmount amount;
 	CTxIn vin;
-	std::string payAddress;
-	std::string voteAddress;
-	std::vector<unsigned char> sig;
-
-	ADD_SERIALIZE_METHODS;
-
-	template <typename Stream, typename Operation>
-	inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-	{
-		READWRITE(amount);
-		READWRITE(vin);
-		READWRITE(payAddress);
-		READWRITE(voteAddress);
-		READWRITE(sig);
-	}
-
-	bool CheckVin();
+	CPubKey pubKeyVin;
+	CPubKey payWallet;		// null if same as funding wallet
+	CPubKey voteWallet;		// null if same as funding wallet
 };
 
 class CMasternode
@@ -160,24 +134,23 @@ private:
 
 public:
     enum state {
-		MASTERNODE_SYNC_IN_PROCESS,
-		MASTERNODE_INPUT_TOO_NEW,
-		MASTERNODE_NOT_CAPABLE,
-		MASTERNODE_INSUFFICIENT_FUNDS,
-		MASTERNODE_VIN_SPENT,
-		MASTERNODE_ENABLED,
+        MASTERNODE_PRE_ENABLED,
+        MASTERNODE_ENABLED,
         MASTERNODE_EXPIRED,
+        MASTERNODE_OUTPOINT_SPENT,
         MASTERNODE_REMOVE,
         MASTERNODE_WATCHDOG_EXPIRED,
         MASTERNODE_POSE_BAN,
+        MASTERNODE_VIN_SPENT,
         MASTERNODE_POS_ERROR
     };
 
-	CKey keyMasternode;
-	CPubKey pubKeyMasternode;
-	CMnTier tier;
-	std::vector<CMnFunding> funding;
-	CService addr;
+    CTxIn vin;
+    CService addr;
+    CPubKey pubKeyCollateralAddress;
+    CPubKey pubKeyMasternode;
+    CPubKey pubKeyCollateralAddress1;
+    CPubKey pubKeyMasternode1;
     std::vector<unsigned char> sig;
     int activeState;
     int64_t sigTime; //mnb message time
@@ -192,6 +165,9 @@ public:
     int nLastScanningErrorBlockHeight;
     CMasternodePing lastPing;
 
+    int64_t nLastDsee;  // temporary, do not save. Remove after migration to v12
+    int64_t nLastDseep; // temporary, do not save. Remove after migration to v12
+
     CMasternode();
     CMasternode(const CMasternode& other);
     CMasternode(const CMasternodeBroadcast& mnb);
@@ -204,10 +180,10 @@ public:
 
         // by swapping the members of two classes,
         // the two classes are effectively swapped
-		swap(first.pubKeyMasternode, second.pubKeyMasternode);
-		swap(first.tier, second.tier);
-		swap(first.funding, second.funding);
-		swap(first.addr, second.addr);
+        swap(first.vin, second.vin);
+        swap(first.addr, second.addr);
+        swap(first.pubKeyCollateralAddress, second.pubKeyCollateralAddress);
+        swap(first.pubKeyMasternode, second.pubKeyMasternode);
         swap(first.sig, second.sig);
         swap(first.activeState, second.activeState);
         swap(first.sigTime, second.sigTime);
@@ -229,11 +205,11 @@ public:
     }
     friend bool operator==(const CMasternode& a, const CMasternode& b)
     {
-        return a.pubKeyMasternode == b.pubKeyMasternode;
+        return a.vin == b.vin;
     }
     friend bool operator!=(const CMasternode& a, const CMasternode& b)
     {
-        return !(a.pubKeyMasternode == b.pubKeyMasternode);
+        return !(a.vin == b.vin);
     }
 
     uint256 CalculateScore(int mod = 1, int64_t nBlockHeight = 0);
@@ -245,10 +221,10 @@ public:
     {
         LOCK(cs);
 
-		READWRITE(pubKeyMasternode);
-		READWRITE(tier);
-		READWRITE(funding);
-		READWRITE(addr);
+        READWRITE(vin);
+        READWRITE(addr);
+        READWRITE(pubKeyCollateralAddress);
+        READWRITE(pubKeyMasternode);
         READWRITE(sig);
         READWRITE(sigTime);
         READWRITE(protocolVersion);
@@ -274,8 +250,7 @@ public:
         return n;
     }
 
-	bool VerifyFunding();
-    void Check(bool forceCheck = false);
+    void Check(bool forceCheck = false, CAmount = 10000 * COIN);
 
     bool IsBroadcastedWithin(int seconds)
     {
@@ -300,17 +275,17 @@ public:
         return activeState == MASTERNODE_ENABLED;
     }
 
-    //int GetMasternodeInputAge()
-    //{
-    //    if (chainActive.Tip() == NULL) return 0;
+    int GetMasternodeInputAge()
+    {
+        if (chainActive.Tip() == NULL) return 0;
 
-    //    if (cacheInputAge == 0) {
-    //        cacheInputAge = GetInputAge(vin);
-    //        cacheInputAgeBlock = chainActive.Tip()->nHeight;
-    //    }
+        if (cacheInputAge == 0) {
+            cacheInputAge = GetInputAge(vin);
+            cacheInputAgeBlock = chainActive.Tip()->nHeight;
+        }
 
-    //    return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
-    //}
+        return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
+    }
 
     std::string GetStatus();
 
@@ -340,12 +315,12 @@ class CMasternodeBroadcast : public CMasternode
 {
 public:
     CMasternodeBroadcast();
-    CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey newPubkey, int protocolVersionIn);
+    CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey newPubkey, CPubKey newPubkey2, int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
     bool CheckAndUpdate(int& nDoS);
     bool CheckInputsAndAdd(int& nDos);
-    bool Sign(CKey& keyMasternode);
+    bool Sign(CKey& keyCollateralAddress);
     void Relay();
 
     ADD_SERIALIZE_METHODS;
@@ -353,10 +328,10 @@ public:
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
-		READWRITE(pubKeyMasternode);
-		READWRITE(tier);
-		READWRITE(funding);
-		READWRITE(addr);
+        READWRITE(vin);
+        READWRITE(addr);
+        READWRITE(pubKeyCollateralAddress);
+        READWRITE(pubKeyMasternode);
         READWRITE(sig);
         READWRITE(sigTime);
         READWRITE(protocolVersion);
@@ -368,12 +343,12 @@ public:
     {
         CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
         ss << sigTime;
-        ss << pubKeyMasternode;
+        ss << pubKeyCollateralAddress;
         return ss.GetHash();
     }
 
     /// Create Masternode broadcast, needs to be relayed manually after that
-    static bool Create(CTxIn vin, CService service, CKey keyMasternodeNew, CPubKey pubKeyMasternodeNew, std::string& strErrorRet, CMasternodeBroadcast& mnbRet);
+    static bool Create(CTxIn vin, CService service, CKey keyCollateralAddressNew, CPubKey pubKeyCollateralAddressNew, CKey keyMasternodeNew, CPubKey pubKeyMasternodeNew, std::string& strErrorRet, CMasternodeBroadcast& mnbRet);
     static bool Create(std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& strErrorRet, CMasternodeBroadcast& mnbRet, bool fOffline = false);
 };
 

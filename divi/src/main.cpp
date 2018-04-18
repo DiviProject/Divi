@@ -5936,7 +5936,7 @@ void static ProcessGetData(CNode* pfrom)
                     if (mapObfuscationBroadcastTxes.count(inv.hash)) {
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
-                        ss << mapObfuscationBroadcastTxes[inv.hash].tx << mapObfuscationBroadcastTxes[inv.hash].pubKey << mapObfuscationBroadcastTxes[inv.hash].vchSig << mapObfuscationBroadcastTxes[inv.hash].sigTime;
+                        ss << mapObfuscationBroadcastTxes[inv.hash].tx << mapObfuscationBroadcastTxes[inv.hash].vin << mapObfuscationBroadcastTxes[inv.hash].vchSig << mapObfuscationBroadcastTxes[inv.hash].sigTime;
 
                         pfrom->PushMessage("dstx", ss);
                         pushed = true;
@@ -6323,7 +6323,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         //masternode signed transaction
         bool ignoreFees = false;
-        CPubKey pubKey;
+        CTxIn vin;
         vector<unsigned char> vchSig;
         int64_t sigTime;
 
@@ -6331,9 +6331,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             vRecv >> tx;
         } else if (strCommand == "dstx") {
             //these allow masternodes to publish a limited amount of free transactions
-            vRecv >> tx >> pubKey >> vchSig >> sigTime;
+            vRecv >> tx >> vin >> vchSig >> sigTime;
 
-            CMasternode* pmn = mnodeman.Find(pubKey);
+            CMasternode* pmn = mnodeman.Find(vin);
             if (pmn != NULL) {
                 if (!pmn->allowFreeTx) {
                     //multiple peers can send us a valid masternode transaction
@@ -6345,7 +6345,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 std::string errorMessage = "";
                 if (!obfuScationSigner.VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
-                    LogPrintf("dstx: Got bad masternode address signature %s \n", pubKey.GetHex());
+                    LogPrintf("dstx: Got bad masternode address signature %s \n", vin.ToString());
                     //pfrom->Misbehaving(20);
                     return false;
                 }
@@ -6358,7 +6358,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 if (!mapObfuscationBroadcastTxes.count(tx.GetHash())) {
                     CObfuscationBroadcastTx dstx;
                     dstx.tx = tx;
-                    dstx.pubKey = pubKey;
+                    dstx.vin = vin;
                     dstx.vchSig = vchSig;
                     dstx.sigTime = sigTime;
 

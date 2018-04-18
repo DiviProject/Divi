@@ -459,7 +459,42 @@ void CWallet::AddToSpends(const uint256& wtxid)
         AddToSpends(txin.prevout, wtxid);
 }
 
-bool CWallet::GetVinAndKeysFromOutput(COutput out, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet) 
+bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash, std::string strOutputIndex)
+{
+    // wait for reindex and/or import to finish
+    if (fImporting || fReindex) return false;
+
+    // Find possible candidates
+    std::vector<COutput> vPossibleCoins;
+    AvailableCoins(vPossibleCoins, true, NULL, false, ONLY_10000);
+    if (vPossibleCoins.empty()) {
+        LogPrintf("CWallet::GetMasternodeVinAndKeys -- Could not locate any valid masternode vin\n");
+        return false;
+    }
+
+    if (strTxHash.empty()) // No output specified, select the first one
+        return GetVinAndKeysFromOutput(vPossibleCoins[0], txinRet, pubKeyRet, keyRet);
+
+    // Find specific vin
+    uint256 txHash = uint256S(strTxHash);
+
+    int nOutputIndex;
+    try {
+        nOutputIndex = std::stoi(strOutputIndex.c_str());
+    } catch (const std::exception& e) {
+        LogPrintf("%s: %s on strOutputIndex\n", __func__, e.what());
+        return false;
+    }
+
+    BOOST_FOREACH (COutput& out, vPossibleCoins)
+        if (out.tx->GetHash() == txHash && out.i == nOutputIndex) // found it!
+            return GetVinAndKeysFromOutput(out, txinRet, pubKeyRet, keyRet);
+
+    LogPrintf("CWallet::GetMasternodeVinAndKeys -- Could not locate specified masternode vin\n");
+    return false;
+}
+
+bool CWallet::GetVinAndKeysFromOutput(COutput out, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet)
 {
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;

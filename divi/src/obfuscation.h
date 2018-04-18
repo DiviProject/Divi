@@ -162,7 +162,7 @@ public:
 class CObfuscationQueue
 {
 public:
-    CTxIn vin;
+	CPubKey pubKey;
     int64_t time;
     int nDenom;
     bool ready; //ready for submit
@@ -171,7 +171,7 @@ public:
     CObfuscationQueue()
     {
         nDenom = 0;
-        vin = CTxIn();
+        pubKey = CPubKey();
         time = 0;
         vchSig.clear();
         ready = false;
@@ -183,7 +183,7 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
         READWRITE(nDenom);
-        READWRITE(vin);
+        READWRITE(pubKey);
         READWRITE(time);
         READWRITE(ready);
         READWRITE(vchSig);
@@ -191,7 +191,7 @@ public:
 
     bool GetAddress(CService& addr)
     {
-        CMasternode* pmn = mnodeman.Find(vin);
+        CMasternode* pmn = mnodeman.Find(pubKey);
         if (pmn != NULL) {
             addr = pmn->addr;
             return true;
@@ -202,7 +202,7 @@ public:
     /// Get the protocol version
     bool GetProtocolVersion(int& protocolVersion)
     {
-        CMasternode* pmn = mnodeman.Find(vin);
+        CMasternode* pmn = mnodeman.Find(pubKey);
         if (pmn != NULL) {
             protocolVersion = pmn->protocolVersion;
             return true;
@@ -237,7 +237,7 @@ class CObfuscationBroadcastTx
 {
 public:
     CTransaction tx;
-    CTxIn vin;
+    CPubKey pubKey;
     vector<unsigned char> vchSig;
     int64_t sigTime;
 };

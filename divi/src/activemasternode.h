@@ -14,59 +14,33 @@
 #include "sync.h"
 #include "wallet.h"
 
-#define ACTIVE_MASTERNODE_INITIAL 0 // initial state
-#define ACTIVE_MASTERNODE_SYNC_IN_PROCESS 1
-#define ACTIVE_MASTERNODE_INPUT_TOO_NEW 2
-#define ACTIVE_MASTERNODE_NOT_CAPABLE 3
-#define ACTIVE_MASTERNODE_STARTED 4
-
 // Responsible for activating the Masternode and pinging the network
 class CActiveMasternode
 {
 private:
-    // critical section to protect the inner data structures
-    mutable CCriticalSection cs;
+	// critical section to protect the inner data structures
+	mutable CCriticalSection cs;
 
-    /// Ping Masternode
-    bool SendMasternodePing(std::string& errorMessage);
+	/// Ping Masternode
+	bool SendMasternodePing(std::string& errorMessage);
 
-    /// Register any Masternode
-    bool Register(CTxIn vin, CService service, CKey key, CPubKey pubKey, CKey keyMasternode, CPubKey pubKeyMasternode, std::string& errorMessage);
-
-    /// Get 10000 DIV input that can be used for the Masternode
-    bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex);
-    bool GetVinFromOutput(COutput out, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
+	/// Register any Masternode
+	bool Register(CTxIn vin, CService service, CKey keyMasternode, CPubKey pubKeyMasternode, std::string& errorMessage);
 
 public:
-    // Initialized by init.cpp
-    // Keys for the main Masternode
-    CPubKey pubKeyMasternode;
+	CMasternode me;
 
-    // Initialized while registering Masternode
-    CTxIn vin;
-    CService service;
+	CActiveMasternode()
+	{
+		me = CMasternode();
+	}
 
-    int status;
-    std::string notCapableReason;
+	/// Manage status of main Masternode
+	void ManageStatus();
+	std::string GetStatus();
 
-    CActiveMasternode()
-    {
-        status = ACTIVE_MASTERNODE_INITIAL;
-    }
-
-    /// Manage status of main Masternode
-    void ManageStatus();
-    std::string GetStatus();
-
-    /// Register remote Masternode
-    bool Register(std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage);
-
-    /// Get 10000 DIV input that can be used for the Masternode
-    bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
-    vector<COutput> SelectCoinsMasternode();
-
-    /// Enable cold wallet mode (run a Masternode with no funds)
-    bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);
+	/// Register remote Masternode
+	bool Register(std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage);
 };
 
 #endif

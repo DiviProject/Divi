@@ -64,7 +64,7 @@ private:
     // who we asked for the Masternode list and the last time
     std::map<CNetAddr, int64_t> mWeAskedForMasternodeList;
     // which Masternodes we've asked for
-    std::map<COutPoint, int64_t> mWeAskedForMasternodeListEntry;
+    std::map<CPubKey, int64_t> mWeAskedForMasternodeListEntry;
 
 public:
     // Keep track of all broadcasts I've seen
@@ -98,7 +98,7 @@ public:
     bool Add(CMasternode& mn);
 
     /// Ask (source) node for mnb
-    void AskForMN(CNode* pnode, CTxIn& vin);
+    void AskForMN(CNode* pnode, CPubKey& pubKey);
 
     /// Check all Masternodes
     void Check();
@@ -116,8 +116,6 @@ public:
     void DsegUpdate(CNode* pnode);
 
     /// Find an entry
-    CMasternode* Find(const CScript& payee);
-    CMasternode* Find(const CTxIn& vin);
     CMasternode* Find(const CPubKey& pubKeyMasternode);
 
     /// Find an entry in the masternode list that is next to be paid
@@ -151,7 +149,7 @@ public:
 
     std::string ToString() const;
 
-    void Remove(CTxIn vin);
+    void Remove(CPubKey pubKey);
 
     /// Update masternode list and maps using provided CMasternodeBroadcast
     void UpdateMasternodeList(CMasternodeBroadcast mnb);

@@ -65,57 +65,43 @@ Value fundmasternode(const Array& params, bool fHelp)
 			"3. masternode		(string, required) public key of masternode.\n"
 			"4. amount			(numeric, required) amount of divi funded.\n"
 			"5. pay wallet		(string, optional) public key of pay wallet (if different from funding wallet).\n"
-			"6. voting wallet	(string, optional) public key of voting wallet (if different from pay wallet).\n"
+			"6. voting wallet	(string, optional) public key of voting wallet (if different from funding wallet).\n"
 			"(use an empty string for the pay wallet if the same as the funding wallet and you wish to assign a different voting wallet).\n"
 
 			"\nResult:\n"
-			"\"your lock config\"		(string) funding transaction details for locking (in your 'masternode configuration file').\n"
-			"\"masternode config\"		(string) details and signature proving that you authorized this to give to master node.\n");
+			"\"vin\"			(string) funding transactions details for masternode configuration file.\n"
+			"\"sig\"			(string) signature proving that you authorized this.\n");
 
-	// locate the funding transaction
 	uint256 txHash = uint256(params[1].get_str());
-	CMnFunding fn = CMnFunding();
-	fn.amount = AmountFromValue(params[3]);
+	std::string mnKey = params[2].get_str();
+	CAmount nAmount = AmountFromValue(params[3]);
+	std::string pWallet, vWallet;
+	if (params.size() < 5) pWallet = ""; else pWallet = params[4].get_str();
+	if (params.size() < 6) vWallet = ""; else vWallet = params[5].get_str();
+
 	vector<COutput> vCoins;
 	pwalletMain->AvailableCoins(vCoins);
 	const COutput* selectedOutput;
 	bool found = false;
 	BOOST_FOREACH(const COutput& out, vCoins) {
-		if (out.tx->GetHash() == txHash && out.tx->vout[out.i].nValue == fn.amount) {
+		if (out.tx->GetHash() == txHash && out.tx->vout[out.i].nValue == nAmount) {
 			selectedOutput = &out;
 			found = true;
 			break;
 		}
 	}
-	if (!found) throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't find transaction with that funding amount");
+	
+	if (!found)
+		throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction");
 
-	// grab te vin and keys and ensure that the transaction hasn't been spent
-	CPubKey pubKey;
-	CKey key;
-	pwalletMain->GetVinAndKeysFromOutput(out, fn.vin, pubKey, key);
-	if (!fn.CheckVin()) throw JSONRPCError(RPC_VERIFY_ERROR, "Transaction spent");
-
-	// assemble the first return
+	CMasternode mn = CMasternode();
+	mn.vin = CTxIn(txHash, selectedOutput->i);
+	mn.lastPing.vin = mn.vin;
+	mn.lastPing.sigTime = GetAdjustedTime();
+	mn.Check(true, nAmount);
+	
 	Object obj;
-	std::string vinStr = params[1].get_str() + " " + std::to_string(selectedOutput->i);
-	std::string fConfig = params[0].get_str() + " 0.0.0.0:51472 UNUSED " + vinStr;
-	obj.push_back(Pair("your lock config", fConfig));
-
-	// start assembling the second return
-	std::string payAddress, voteAddress;
-	if (params.size() < 5) payAddress = ""; else payAddress = params[4].get_str();
-	if (payAddress == "") payAddress = pubKey.GetHash().GetHex();
-	if (params.size() < 6) voteAddress = ""; else voteAddress = params[5].get_str();
-	if (voteAddress == "") voteAddress = payAddress;
-	std::string mnConfig = params[3].get_str() + " " + vinStr + " " + payAddress + " " + voteAddress;
-	std::string strMessage = params[2].get_str() + " " + mnConfig;
-
-	// create and verify the signature before adding it to the second return
-	std::string errorMessage;
-	std::vector<unsigned char> sig;
-	if (!obfuScationSigner.SignMessage(strMessage, errorMessage, sig, key)) throw JSONRPCError(RPC_VERIFY_ERROR, "Can't sign message");
-	if (!obfuScationSigner.VerifyMessage(pubKey, sig, strMessage, errorMessage))  throw JSONRPCError(RPC_VERIFY_ERROR, "Can't verify message");
-	obj.push_back(Pair("masternode config", mnConfig + " " + EncodeBase64(&sig[0], sig.size())));
+	obj.push_back(Pair("vin status", mn.activeState));
 	return obj;
 }
 
@@ -143,6 +129,114 @@ Value getpoolinfo(const Array& params, bool fHelp)
 	obj.push_back(Pair("entries", obfuScationPool.GetEntriesCount()));
 	obj.push_back(Pair("entries_accepted", obfuScationPool.GetCountEntriesAccepted()));
 	return obj;
+}
+
+// This command is retained for backwards compatibility, but is depreciated.
+// Future removal of this command is planned to keep things clean.
+Value masternode(const Array& params, bool fHelp)
+{
+	string strCommand;
+	if (params.size() >= 1)
+		strCommand = params[0].get_str();
+
+	if (fHelp ||
+		(strCommand != "start" && strCommand != "start-alias" && strCommand != "start-many" && strCommand != "start-all" && strCommand != "start-missing" &&
+			strCommand != "start-disabled" && strCommand != "list" && strCommand != "list-conf" && strCommand != "count" && strCommand != "enforce" &&
+			strCommand != "debug" && strCommand != "current" && strCommand != "winners" && strCommand != "genkey" && strCommand != "connect" &&
+			strCommand != "outputs" && strCommand != "status" && strCommand != "calcscore"))
+		throw runtime_error(
+			"masternode \"command\"...\n"
+			"\nSet of commands to execute masternode related actions\n"
+			"This command is depreciated, please see individual command documentation for future reference\n\n"
+
+			"\nArguments:\n"
+			"1. \"command\"        (string or set of strings, required) The command to execute\n"
+
+			"\nAvailable commands:\n"
+			"  count        - Print count information of all known masternodes\n"
+			"  current      - Print info on current masternode winner\n"
+			"  debug        - Print masternode status\n"
+			"  genkey       - Generate new masternodeprivkey\n"
+			"  outputs      - Print masternode compatible outputs\n"
+			"  start        - Start masternode configured in divi.conf\n"
+			"  start-alias  - Start single masternode by assigned alias configured in masternode.conf\n"
+			"  start-<mode> - Start masternodes configured in masternode.conf (<mode>: 'all', 'missing', 'disabled')\n"
+			"  status       - Print masternode status information\n"
+			"  list         - Print list of all known masternodes (see masternodelist for more info)\n"
+			"  list-conf    - Print masternode.conf in JSON format\n"
+			"  winners      - Print list of masternode winners\n");
+
+	if (strCommand == "list") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return listmasternodes(newParams, fHelp);
+	}
+
+	if (strCommand == "connect") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return masternodeconnect(newParams, fHelp);
+	}
+
+	if (strCommand == "count") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return getmasternodecount(newParams, fHelp);
+	}
+
+	if (strCommand == "current") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return masternodecurrent(newParams, fHelp);
+	}
+
+	if (strCommand == "debug") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return masternodedebug(newParams, fHelp);
+	}
+
+	if (strCommand == "start" || strCommand == "start-alias" || strCommand == "start-many" || strCommand == "start-all" || strCommand == "start-missing" || strCommand == "start-disabled") {
+		return startmasternode(params, fHelp);
+	}
+
+	if (strCommand == "genkey") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return createmasternodekey(newParams, fHelp);
+	}
+
+	if (strCommand == "list-conf") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return listmasternodeconf(newParams, fHelp);
+	}
+
+	if (strCommand == "outputs") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return getmasternodeoutputs(newParams, fHelp);
+	}
+
+	if (strCommand == "status") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return getmasternodestatus(newParams, fHelp);
+	}
+
+	if (strCommand == "winners") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return getmasternodewinners(newParams, fHelp);
+	}
+
+	if (strCommand == "calcscore") {
+		Array newParams(params.size() - 1);
+		std::copy(params.begin() + 1, params.end(), newParams.begin());
+		return getmasternodescores(newParams, fHelp);
+	}
+
+	return Value::null;
 }
 
 Value listmasternodes(const Array& params, bool fHelp)
@@ -197,7 +291,7 @@ Value listmasternodes(const Array& params, bool fHelp)
 		if (mn != NULL) {
 			if (strFilter != "" && strTxHash.find(strFilter) == string::npos &&
 				mn->Status().find(strFilter) == string::npos &&
-				CBitcoinAddress(mn->pubKeyMasternode.GetID()).ToString().find(strFilter) == string::npos) continue;
+				CBitcoinAddress(mn->pubKeyCollateralAddress.GetID()).ToString().find(strFilter) == string::npos) continue;
 
 			std::string strStatus = mn->Status();
 			std::string strHost;
@@ -211,7 +305,7 @@ Value listmasternodes(const Array& params, bool fHelp)
 			obj.push_back(Pair("txhash", strTxHash));
 			obj.push_back(Pair("outidx", (uint64_t)oIdx));
 			obj.push_back(Pair("status", strStatus));
-			obj.push_back(Pair("addr", CBitcoinAddress(mn->pubKeyMasternode.GetID()).ToString()));
+			obj.push_back(Pair("addr", CBitcoinAddress(mn->pubKeyCollateralAddress.GetID()).ToString()));
 			obj.push_back(Pair("version", mn->protocolVersion));
 			obj.push_back(Pair("lastseen", (int64_t)mn->lastPing.sigTime));
 			obj.push_back(Pair("activetime", (int64_t)(mn->lastPing.sigTime - mn->sigTime)));
@@ -314,7 +408,7 @@ Value masternodecurrent(const Array& params, bool fHelp)
 
 		obj.push_back(Pair("protocol", (int64_t)winner->protocolVersion));
 		obj.push_back(Pair("txhash", winner->vin.prevout.hash.ToString()));
-		obj.push_back(Pair("pubkey", CBitcoinAddress(winner->pubKeyMasternode.GetID()).ToString()));
+		obj.push_back(Pair("pubkey", CBitcoinAddress(winner->pubKeyCollateralAddress.GetID()).ToString()));
 		obj.push_back(Pair("lastseen", (winner->lastPing == CMasternodePing()) ? winner->sigTime : (int64_t)winner->lastPing.sigTime));
 		obj.push_back(Pair("activeseconds", (winner->lastPing == CMasternodePing()) ? 0 : (int64_t)(winner->lastPing.sigTime - winner->sigTime)));
 		return obj;
@@ -335,33 +429,192 @@ Value masternodedebug(const Array& params, bool fHelp)
 			"\nExamples:\n" +
 			HelpExampleCli("masternodedebug", "") + HelpExampleRpc("masternodedebug", ""));
 
-	return activeMasternode.GetStatus();
+	if (activeMasternode.status != ACTIVE_MASTERNODE_INITIAL || !masternodeSync.IsSynced())
+		return activeMasternode.GetStatus();
+
+	CTxIn vin = CTxIn();
+	CPubKey pubkey = CScript();
+	CKey key;
+	if (!activeMasternode.GetMasterNodeVin(vin, pubkey, key))
+		throw runtime_error("Missing masternode input, please look at the documentation for instructions on masternode creation\n");
+	else
+		return activeMasternode.GetStatus();
 }
 
 Value startmasternode(const Array& params, bool fHelp)
 {
-	if (fHelp || params.size() > 1)
-		throw runtime_error(
-			"startmasternode lockwallet\n"
-			"\nAttempts to start one or more masternode(s)\n"
-			"\nArguments:\n"
-			"1. lockwallet  (boolean, required) Lock wallet after completion.\n"
-			"\nResult:\n"
-			"\"status\"     (string) Masternode status message\n"
-			"\nExamples:\n" +
-			HelpExampleCli("startmasternode", "\"0\"") + HelpExampleRpc("startmasternode", "\"0\""));
+	std::string strCommand;
+	if (params.size() >= 1) {
+		strCommand = params[0].get_str();
 
-	if (!fMasterNode) throw JSONRPCError(RPC_MISC_ERROR, "Error: You must set masternode=1 in the configuration.");
-
-	//	bool result = activeMasternode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
-	if (pwalletMain->IsLocked()) throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
-
-	if (activeMasternode.status != ACTIVE_MASTERNODE_STARTED) {
-		activeMasternode.ManageStatus();
-		if (params[0].get_str() == "true") pwalletMain->Lock();
+		// Backwards compatibility with legacy 'masternode' super-command forwarder
+		if (strCommand == "start") strCommand = "local";
+		if (strCommand == "start-alias") strCommand = "alias";
+		if (strCommand == "start-all") strCommand = "all";
+		if (strCommand == "start-many") strCommand = "many";
+		if (strCommand == "start-missing") strCommand = "missing";
+		if (strCommand == "start-disabled") strCommand = "disabled";
 	}
 
-	return activeMasternode.GetStatus();
+	if (fHelp || params.size() < 2 || params.size() > 3 ||
+		(params.size() == 2 && (strCommand != "local" && strCommand != "all" && strCommand != "many" && strCommand != "missing" && strCommand != "disabled")) ||
+		(params.size() == 3 && strCommand != "alias"))
+		throw runtime_error(
+			"startmasternode \"local|all|many|missing|disabled|alias\" lockwallet ( \"alias\" )\n"
+			"\nAttempts to start one or more masternode(s)\n"
+
+			"\nArguments:\n"
+			"1. set         (string, required) Specify which set of masternode(s) to start.\n"
+			"2. lockwallet  (boolean, required) Lock wallet after completion.\n"
+			"3. alias       (string) Masternode alias. Required if using 'alias' as the set.\n"
+
+			"\nResult: (for 'local' set):\n"
+			"\"status\"     (string) Masternode status message\n"
+
+			"\nResult: (for other sets):\n"
+			"{\n"
+			"  \"overall\": \"xxxx\",     (string) Overall status message\n"
+			"  \"detail\": [\n"
+			"    {\n"
+			"      \"node\": \"xxxx\",    (string) Node name or alias\n"
+			"      \"result\": \"xxxx\",  (string) 'success' or 'failed'\n"
+			"      \"error\": \"xxxx\"    (string) Error message, if failed\n"
+			"    }\n"
+			"    ,...\n"
+			"  ]\n"
+			"}\n"
+			"\nExamples:\n" +
+			HelpExampleCli("startmasternode", "\"alias\" \"0\" \"my_mn\"") + HelpExampleRpc("startmasternode", "\"alias\" \"0\" \"my_mn\""));
+
+	bool fLock = (params[1].get_str() == "true" ? true : false);
+
+	if (strCommand == "local") {
+		if (!fMasterNode) throw runtime_error("you must set masternode=1 in the configuration\n");
+
+		if (pwalletMain->IsLocked())
+			throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
+		if (activeMasternode.status != ACTIVE_MASTERNODE_STARTED) {
+			activeMasternode.status = ACTIVE_MASTERNODE_INITIAL; // TODO: consider better way
+			activeMasternode.ManageStatus();
+			if (fLock)
+				pwalletMain->Lock();
+		}
+
+		return activeMasternode.GetStatus();
+	}
+
+	if (strCommand == "all" || strCommand == "many" || strCommand == "missing" || strCommand == "disabled") {
+		if (pwalletMain->IsLocked())
+			throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
+		if ((strCommand == "missing" || strCommand == "disabled") &&
+			(masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST ||
+				masternodeSync.RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED)) {
+			throw runtime_error("You can't use this command until masternode list is synced\n");
+		}
+
+		std::vector<CMasternodeConfig::CMasternodeEntry> mnEntries;
+		mnEntries = masternodeConfig.getEntries();
+
+		int successful = 0;
+		int failed = 0;
+
+		Array resultsObj;
+
+		BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+			std::string errorMessage;
+			int nIndex;
+			if (!mne.castOutputIndex(nIndex))
+				continue;
+			CTxIn vin = CTxIn(uint256(mne.getTxHash()), uint32_t(nIndex));
+			CMasternode* pmn = mnodeman.Find(vin);
+
+			if (pmn != NULL) {
+				if (strCommand == "missing") continue;
+				if (strCommand == "disabled" && pmn->IsEnabled()) continue;
+			}
+
+			bool result = activeMasternode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
+
+			Object statusObj;
+			statusObj.push_back(Pair("alias", mne.getAlias()));
+			statusObj.push_back(Pair("result", result ? "success" : "failed"));
+
+			if (result) {
+				successful++;
+				statusObj.push_back(Pair("error", ""));
+			}
+			else {
+				failed++;
+				statusObj.push_back(Pair("error", errorMessage));
+			}
+
+			resultsObj.push_back(statusObj);
+		}
+		if (fLock)
+			pwalletMain->Lock();
+
+		Object returnObj;
+		returnObj.push_back(Pair("overall", strprintf("Successfully started %d masternodes, failed to start %d, total %d", successful, failed, successful + failed)));
+		returnObj.push_back(Pair("detail", resultsObj));
+
+		return returnObj;
+	}
+
+	if (strCommand == "alias") {
+		std::string alias = params[2].get_str();
+
+		if (pwalletMain->IsLocked())
+			throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
+		bool found = false;
+		int successful = 0;
+		int failed = 0;
+
+		Array resultsObj;
+		Object statusObj;
+		statusObj.push_back(Pair("alias", alias));
+
+		BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+			if (mne.getAlias() == alias) {
+				found = true;
+				std::string errorMessage;
+
+				bool result = activeMasternode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
+
+				statusObj.push_back(Pair("result", result ? "successful" : "failed"));
+
+				if (result) {
+					successful++;
+					statusObj.push_back(Pair("error", ""));
+				}
+				else {
+					failed++;
+					statusObj.push_back(Pair("error", errorMessage));
+				}
+				break;
+			}
+		}
+
+		if (!found) {
+			failed++;
+			statusObj.push_back(Pair("result", "failed"));
+			statusObj.push_back(Pair("error", "could not find alias in config. Verify with list-conf."));
+		}
+
+		resultsObj.push_back(statusObj);
+
+		if (fLock)
+			pwalletMain->Lock();
+
+		Object returnObj;
+		returnObj.push_back(Pair("overall", strprintf("Successfully started %d masternodes, failed to start %d, total %d", successful, failed, successful + failed)));
+		returnObj.push_back(Pair("detail", resultsObj));
+
+		return returnObj;
+	}
+	return Value::null;
 }
 
 Value createmasternodekey(const Array& params, bool fHelp)
@@ -384,7 +637,35 @@ Value createmasternodekey(const Array& params, bool fHelp)
 
 Value getmasternodeoutputs(const Array& params, bool fHelp)
 {
-	throw runtime_error("getmasternodeoutputs is no longer used!");
+	if (fHelp || (params.size() != 0))
+		throw runtime_error(
+			"getmasternodeoutputs\n"
+			"\nPrint all masternode transaction outputs\n"
+
+			"\nResult:\n"
+			"[\n"
+			"  {\n"
+			"    \"txhash\": \"xxxx\",    (string) output transaction hash\n"
+			"    \"outputidx\": n       (numeric) output index number\n"
+			"  }\n"
+			"  ,...\n"
+			"]\n"
+
+			"\nExamples:\n" +
+			HelpExampleCli("getmasternodeoutputs", "") + HelpExampleRpc("getmasternodeoutputs", ""));
+
+	// Find possible candidates
+	vector<COutput> possibleCoins = activeMasternode.SelectCoinsMasternode();
+
+	Array ret;
+	BOOST_FOREACH(COutput& out, possibleCoins) {
+		Object obj;
+		obj.push_back(Pair("txhash", out.tx->GetHash().ToString()));
+		obj.push_back(Pair("outputidx", out.i));
+		ret.push_back(obj);
+	}
+
+	return ret;
 }
 
 Value listmasternodeconf(const Array& params, bool fHelp)
@@ -478,7 +759,7 @@ Value getmasternodestatus(const Array& params, bool fHelp)
 		mnObj.push_back(Pair("txhash", activeMasternode.vin.prevout.hash.ToString()));
 		mnObj.push_back(Pair("outputidx", (uint64_t)activeMasternode.vin.prevout.n));
 		mnObj.push_back(Pair("netaddr", activeMasternode.service.ToString()));
-		mnObj.push_back(Pair("addr", CBitcoinAddress(pmn->pubKeyMasternode.GetID()).ToString()));
+		mnObj.push_back(Pair("addr", CBitcoinAddress(pmn->pubKeyCollateralAddress.GetID()).ToString()));
 		mnObj.push_back(Pair("status", activeMasternode.status));
 		mnObj.push_back(Pair("message", activeMasternode.GetStatus()));
 		return mnObj;

@@ -113,7 +113,7 @@ Value getnewaddress(const Array& params, bool fHelp)
 }
 
 
-CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
+CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew)
 {
     CWalletDB walletdb(pwalletMain->strWalletFile);
 
@@ -290,7 +290,7 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
     return ret;
 }
 
-void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false)
+void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX)
 {
     // Check amount
     if (nValue <= 0)

@@ -319,8 +319,11 @@ static const CRPCCommand vRPCCommands[] =
         {"hidden", "setmocktime", &setmocktime, true, false, false},
 
         /* Divi features */
-        {"divi", "masternode", &masternode, true, true, false},
-        {"divi", "listmasternodes", &listmasternodes, true, true, false},
+		{ "divi", "debug", &debug, true, true, false },
+		{ "divi", "masternode", &masternode, true, true, false },
+		{ "divi", "allocatefunds", &allocatefunds, true, true, false },
+		{ "divi", "fundmasternode", &fundmasternode, true, true, false },
+		{"divi", "listmasternodes", &listmasternodes, true, true, false},
         {"divi", "getmasternodecount", &getmasternodecount, true, true, false},
         {"divi", "masternodeconnect", &masternodeconnect, true, true, false},
         {"divi", "masternodecurrent", &masternodecurrent, true, true, false},
@@ -347,7 +350,6 @@ static const CRPCCommand vRPCCommands[] =
         {"divi", "spork", &spork, true, true, false},
         {"divi", "getpoolinfo", &getpoolinfo, true, true, false},
 #ifdef ENABLE_WALLET
-        {"divi", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
 
         /* Wallet */
         {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true},
@@ -397,20 +399,6 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "walletlock", &walletlock, true, false, true},
         {"wallet", "walletpassphrasechange", &walletpassphrasechange, true, false, true},
         {"wallet", "walletpassphrase", &walletpassphrase, true, false, true},
-
-        {"zerocoin", "getzerocoinbalance", &getzerocoinbalance, false, false, true},
-        {"zerocoin", "listmintedzerocoins", &listmintedzerocoins, false, false, true},
-        {"zerocoin", "listspentzerocoins", &listspentzerocoins, false, false, true},
-        {"zerocoin", "listzerocoinamounts", &listzerocoinamounts, false, false, true},
-        {"zerocoin", "mintzerocoin", &mintzerocoin, false, false, true},
-        {"zerocoin", "spendzerocoin", &spendzerocoin, false, false, true},
-        {"zerocoin", "resetmintzerocoin", &resetmintzerocoin, false, false, true},
-        {"zerocoin", "resetspentzerocoin", &resetspentzerocoin, false, false, true},
-        {"zerocoin", "getarchivedzerocoin", &getarchivedzerocoin, false, false, true},
-        {"zerocoin", "importzerocoins", &importzerocoins, false, false, true},
-        {"zerocoin", "exportzerocoins", &exportzerocoins, false, false, true},
-        {"zerocoin", "reconsiderzerocoins", &reconsiderzerocoins, false, false, true},
-        {"zerocoin", "getspentzerocoinamount", &getspentzerocoinamount, false, false, false}
 
 #endif // ENABLE_WALLET
 };

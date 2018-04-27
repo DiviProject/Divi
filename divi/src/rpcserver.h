@@ -7,7 +7,7 @@
 #ifndef BITCOIN_RPCSERVER_H
 #define BITCOIN_RPCSERVER_H
 
-#include "amount.h"
+#include "wallet.h"
 #include "rpcprotocol.h"
 #include "uint256.h"
 
@@ -176,6 +176,8 @@ extern json_spirit::Value submitblock(const json_spirit::Array& params, bool fHe
 extern json_spirit::Value estimatefee(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value estimatepriority(const json_spirit::Array& params, bool fHelp);
 
+extern CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false);
+extern void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false);
 extern json_spirit::Value getnewaddress(const json_spirit::Array& params, bool fHelp); // in rpcwallet.cpp
 extern json_spirit::Value getaccountaddress(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getrawchangeaddress(const json_spirit::Array& params, bool fHelp);
@@ -255,6 +257,9 @@ extern json_spirit::Value invalidateblock(const json_spirit::Array& params, bool
 extern json_spirit::Value reconsiderblock(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getinvalid(const json_spirit::Array& params, bool fHelp);
 
+extern json_spirit::Value debug(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value allocatefunds(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value fundmasternode(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value obfuscation(const json_spirit::Array& params, bool fHelp); // in rpcmasternode.cpp
 extern json_spirit::Value getpoolinfo(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value masternode(const json_spirit::Array& params, bool fHelp);

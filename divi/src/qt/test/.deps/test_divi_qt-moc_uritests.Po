@@ -1,0 +1,927 @@
+qt/test/test_divi_qt-moc_uritests.o: qt/test/moc_uritests.cpp \
+  qt/test/uritests.h /usr/local/Cellar/qt/5.10.1/include/QtCore/QObject \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qobject.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qobjectdefs.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qnamespace.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qglobal.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/type_traits \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__config \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstddef \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/stddef.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/__stddef_max_align_t.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__nullptr \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/utility \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__tuple \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/initializer_list \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__debug \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stddef.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qconfig.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qtcore-config.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qsystemdetection.h \
+  /usr/include/TargetConditionals.h /usr/include/Availability.h \
+  /usr/include/AvailabilityInternal.h /usr/include/AvailabilityMacros.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qprocessordetection.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qcompilerdetection.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/algorithm \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstring \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/string.h \
+  /usr/include/string.h /usr/include/_types.h /usr/include/sys/_types.h \
+  /usr/include/sys/cdefs.h /usr/include/sys/_symbol_aliasing.h \
+  /usr/include/sys/_posix_availability.h /usr/include/machine/_types.h \
+  /usr/include/i386/_types.h /usr/include/sys/_pthread/_pthread_types.h \
+  /usr/include/sys/_types/_size_t.h /usr/include/sys/_types/_null.h \
+  /usr/include/sys/_types/_ssize_t.h /usr/include/machine/types.h \
+  /usr/include/i386/types.h /usr/include/sys/_types/_int8_t.h \
+  /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
+  /usr/include/sys/_types/_int64_t.h /usr/include/sys/_types/_u_int8_t.h \
+  /usr/include/sys/_types/_u_int16_t.h \
+  /usr/include/sys/_types/_u_int32_t.h \
+  /usr/include/sys/_types/_u_int64_t.h \
+  /usr/include/sys/_types/_intptr_t.h \
+  /usr/include/sys/_types/_uintptr_t.h /usr/include/strings.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/memory \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/typeinfo \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/exception \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstdlib \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stdlib.h \
+  /usr/include/stdlib.h /usr/include/sys/wait.h \
+  /usr/include/sys/_types/_pid_t.h /usr/include/sys/_types/_id_t.h \
+  /usr/include/sys/signal.h /usr/include/sys/appleapiopts.h \
+  /usr/include/machine/signal.h /usr/include/i386/signal.h \
+  /usr/include/machine/_mcontext.h /usr/include/i386/_mcontext.h \
+  /usr/include/mach/machine/_structs.h /usr/include/mach/i386/_structs.h \
+  /usr/include/sys/_pthread/_pthread_attr_t.h \
+  /usr/include/sys/_types/_sigaltstack.h \
+  /usr/include/sys/_types/_ucontext.h \
+  /usr/include/sys/_types/_sigset_t.h /usr/include/sys/_types/_uid_t.h \
+  /usr/include/sys/resource.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stdint.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/stdint.h \
+  /usr/include/stdint.h /usr/include/_types/_uint8_t.h \
+  /usr/include/_types/_uint16_t.h /usr/include/_types/_uint32_t.h \
+  /usr/include/_types/_uint64_t.h /usr/include/_types/_intmax_t.h \
+  /usr/include/_types/_uintmax_t.h /usr/include/sys/_types/_timeval.h \
+  /usr/include/machine/endian.h /usr/include/i386/endian.h \
+  /usr/include/sys/_endian.h /usr/include/libkern/_OSByteOrder.h \
+  /usr/include/libkern/i386/_OSByteOrder.h /usr/include/alloca.h \
+  /usr/include/sys/_types/_ct_rune_t.h /usr/include/sys/_types/_rune_t.h \
+  /usr/include/sys/_types/_wchar_t.h /usr/include/sys/_types/_dev_t.h \
+  /usr/include/sys/_types/_mode_t.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstdint \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/new \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/limits \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__undef_min_max \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/iterator \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/iosfwd \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/wchar.h \
+  /usr/include/wchar.h /usr/include/sys/_types/_mbstate_t.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/stdarg.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stdio.h \
+  /usr/include/stdio.h /usr/include/sys/_types/_va_list.h \
+  /usr/include/sys/stdio.h /usr/include/sys/_types/_off_t.h \
+  /usr/include/time.h /usr/include/sys/_types/_clock_t.h \
+  /usr/include/sys/_types/_time_t.h /usr/include/sys/_types/_timespec.h \
+  /usr/include/_wctype.h /usr/include/sys/_types/_wint_t.h \
+  /usr/include/_types/_wctype_t.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/ctype.h \
+  /usr/include/ctype.h /usr/include/runetype.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__functional_base \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/tuple \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stdexcept \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/atomic \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qtypeinfo.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qsysinfo.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qlogging.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qflags.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qatomic.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qbasicatomic.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qatomic_cxx11.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qgenericatomic.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qglobalstatic.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qmutex.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/chrono \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/ctime \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/ratio \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/climits \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/limits.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/limits.h \
+  /usr/include/limits.h /usr/include/machine/limits.h \
+  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
+  /usr/include/sys/syslimits.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qnumeric.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qversiontagging.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qobjectdefs_impl.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qstring.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qchar.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qbytearray.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qrefcount.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qarraydata.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/string \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/string_view \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__string \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstdio \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cwchar \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cwctype \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cctype \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/wctype.h \
+  /usr/include/wctype.h /usr/include/_types/_wctrans_t.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qstringliteral.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qstringalgorithms.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qstringview.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qlist.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qalgorithms.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qiterator.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qhashfunctions.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qpair.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/numeric \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/list \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qbytearraylist.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qstringlist.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qregexp.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qstringmatcher.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qscopedpointer.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qmetatype.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qvarlengtharray.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qcontainerfwd.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/vector \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__bit_reference \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__split_buffer \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/map \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__tree \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/functional \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qobject_impl.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/QTest \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtest.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtest_global.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtestcase.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qmetaobject.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qvariant.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qmap.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qhash.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qsharedpointer.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qshareddata.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qsharedpointer_impl.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qtemporarydir.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qdir.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qfileinfo.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qfile.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qfiledevice.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qiodevice.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QScopedPointer \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtestdata.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qbenchmark.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qbenchmarkmetric.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qdatetime.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qurl.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/quuid.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qpoint.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qsize.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qrect.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qmargins.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtestsystem.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qcoreapplication.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qcoreevent.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qeventloop.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qdeadlinetimer.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qelapsedtimer.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/QWindow \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qwindow.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qtguiglobal.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qtgui-config.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QEvent \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QMargins \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QRect \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qsurface.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qsurfaceformat.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qwindowdefs.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qicon.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qpixmap.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qpaintdevice.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qcolor.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qrgb.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qrgba64.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qimage.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qpixelformat.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qtransform.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qmatrix.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qpolygon.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qvector.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qregion.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qdatastream.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qline.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qpainterpath.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qcursor.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtWidgets/QWidget \
+  /usr/local/Cellar/qt/5.10.1/include/QtWidgets/qwidget.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtWidgets/qtwidgetsglobal.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtWidgets/qtwidgets-config.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qpalette.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qbrush.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qfont.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qfontmetrics.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qfontinfo.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtWidgets/qsizepolicy.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qkeysequence.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/set \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtest_network.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/QHostAddress \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qhostaddress.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qtnetworkglobal.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qtnetwork-config.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qabstractsocket.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qdebug.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qtextstream.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qlocale.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qset.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qcontiguouscache.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/QNetworkCookie \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qnetworkcookie.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QSharedDataPointer \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QList \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QMetaType \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/QNetworkReply \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qnetworkreply.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QIODevice \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QString \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QVariant \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/QNetworkRequest \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qnetworkrequest.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QUrl \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/QNetworkAccessManager \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qnetworkaccessmanager.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QVector \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/QSslConfiguration \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslconfiguration.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslsocket.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qtcpsocket.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslerror.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslcertificate.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qcryptographichash.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qssl.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QFlags \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+  /usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtest_widgets.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtest_gui.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtestassert.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtestevent.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtestkeyboard.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtestspontaneevent.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/qpointer.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qguiapplication.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qinputmethod.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qevent.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qvector2d.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qtouchdevice.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtWidgets/qapplication.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtestmouse.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QDebug \
+  /usr/local/Cellar/qt/5.10.1/include/QtTest/qtesttouch.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qvector3d.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtGui/qvector4d.h \
+  /usr/local/Cellar/qt/5.10.1/include/QtWidgets/QSizePolicy \
+  /usr/local/Cellar/qt/5.10.1/include/QtCore/QMetaEnum
+
+qt/test/uritests.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QObject:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qobject.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qobjectdefs.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qnamespace.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qglobal.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/type_traits:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__config:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstddef:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/stddef.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/__stddef_max_align_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__nullptr:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/utility:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__tuple:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/initializer_list:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__debug:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stddef.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qconfig.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qtcore-config.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qsystemdetection.h:
+
+/usr/include/TargetConditionals.h:
+
+/usr/include/Availability.h:
+
+/usr/include/AvailabilityInternal.h:
+
+/usr/include/AvailabilityMacros.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qprocessordetection.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qcompilerdetection.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/algorithm:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstring:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/string.h:
+
+/usr/include/string.h:
+
+/usr/include/_types.h:
+
+/usr/include/sys/_types.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/sys/_symbol_aliasing.h:
+
+/usr/include/sys/_posix_availability.h:
+
+/usr/include/machine/_types.h:
+
+/usr/include/i386/_types.h:
+
+/usr/include/sys/_pthread/_pthread_types.h:
+
+/usr/include/sys/_types/_size_t.h:
+
+/usr/include/sys/_types/_null.h:
+
+/usr/include/sys/_types/_ssize_t.h:
+
+/usr/include/machine/types.h:
+
+/usr/include/i386/types.h:
+
+/usr/include/sys/_types/_int8_t.h:
+
+/usr/include/sys/_types/_int16_t.h:
+
+/usr/include/sys/_types/_int32_t.h:
+
+/usr/include/sys/_types/_int64_t.h:
+
+/usr/include/sys/_types/_u_int8_t.h:
+
+/usr/include/sys/_types/_u_int16_t.h:
+
+/usr/include/sys/_types/_u_int32_t.h:
+
+/usr/include/sys/_types/_u_int64_t.h:
+
+/usr/include/sys/_types/_intptr_t.h:
+
+/usr/include/sys/_types/_uintptr_t.h:
+
+/usr/include/strings.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/memory:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/typeinfo:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/exception:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstdlib:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stdlib.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/sys/wait.h:
+
+/usr/include/sys/_types/_pid_t.h:
+
+/usr/include/sys/_types/_id_t.h:
+
+/usr/include/sys/signal.h:
+
+/usr/include/sys/appleapiopts.h:
+
+/usr/include/machine/signal.h:
+
+/usr/include/i386/signal.h:
+
+/usr/include/machine/_mcontext.h:
+
+/usr/include/i386/_mcontext.h:
+
+/usr/include/mach/machine/_structs.h:
+
+/usr/include/mach/i386/_structs.h:
+
+/usr/include/sys/_pthread/_pthread_attr_t.h:
+
+/usr/include/sys/_types/_sigaltstack.h:
+
+/usr/include/sys/_types/_ucontext.h:
+
+/usr/include/sys/_types/_sigset_t.h:
+
+/usr/include/sys/_types/_uid_t.h:
+
+/usr/include/sys/resource.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stdint.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/_types/_uint8_t.h:
+
+/usr/include/_types/_uint16_t.h:
+
+/usr/include/_types/_uint32_t.h:
+
+/usr/include/_types/_uint64_t.h:
+
+/usr/include/_types/_intmax_t.h:
+
+/usr/include/_types/_uintmax_t.h:
+
+/usr/include/sys/_types/_timeval.h:
+
+/usr/include/machine/endian.h:
+
+/usr/include/i386/endian.h:
+
+/usr/include/sys/_endian.h:
+
+/usr/include/libkern/_OSByteOrder.h:
+
+/usr/include/libkern/i386/_OSByteOrder.h:
+
+/usr/include/alloca.h:
+
+/usr/include/sys/_types/_ct_rune_t.h:
+
+/usr/include/sys/_types/_rune_t.h:
+
+/usr/include/sys/_types/_wchar_t.h:
+
+/usr/include/sys/_types/_dev_t.h:
+
+/usr/include/sys/_types/_mode_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstdint:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/new:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/limits:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__undef_min_max:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/iterator:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/iosfwd:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/wchar.h:
+
+/usr/include/wchar.h:
+
+/usr/include/sys/_types/_mbstate_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/stdarg.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stdio.h:
+
+/usr/include/stdio.h:
+
+/usr/include/sys/_types/_va_list.h:
+
+/usr/include/sys/stdio.h:
+
+/usr/include/sys/_types/_off_t.h:
+
+/usr/include/time.h:
+
+/usr/include/sys/_types/_clock_t.h:
+
+/usr/include/sys/_types/_time_t.h:
+
+/usr/include/sys/_types/_timespec.h:
+
+/usr/include/_wctype.h:
+
+/usr/include/sys/_types/_wint_t.h:
+
+/usr/include/_types/_wctype_t.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/ctype.h:
+
+/usr/include/ctype.h:
+
+/usr/include/runetype.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__functional_base:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/tuple:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/stdexcept:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/atomic:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qtypeinfo.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qsysinfo.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qlogging.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qflags.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qatomic.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qbasicatomic.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qatomic_cxx11.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qgenericatomic.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qglobalstatic.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qmutex.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/chrono:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/ctime:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/ratio:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/climits:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/limits.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/limits.h:
+
+/usr/include/limits.h:
+
+/usr/include/machine/limits.h:
+
+/usr/include/i386/limits.h:
+
+/usr/include/i386/_limits.h:
+
+/usr/include/sys/syslimits.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qnumeric.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qversiontagging.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qobjectdefs_impl.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qstring.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qchar.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qbytearray.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qrefcount.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qarraydata.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/string:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/string_view:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__string:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cstdio:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cwchar:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cwctype:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/cctype:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/wctype.h:
+
+/usr/include/wctype.h:
+
+/usr/include/_types/_wctrans_t.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qstringliteral.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qstringalgorithms.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qstringview.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qlist.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qalgorithms.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qiterator.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qhashfunctions.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qpair.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/numeric:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/list:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qbytearraylist.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qstringlist.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qregexp.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qstringmatcher.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qscopedpointer.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qmetatype.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qvarlengtharray.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qcontainerfwd.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/vector:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__bit_reference:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__split_buffer:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/map:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/__tree:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/functional:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qobject_impl.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/QTest:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtest.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtest_global.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtestcase.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qmetaobject.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qvariant.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qmap.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qhash.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qsharedpointer.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qshareddata.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qsharedpointer_impl.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qtemporarydir.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qdir.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qfileinfo.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qfile.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qfiledevice.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qiodevice.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QScopedPointer:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtestdata.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qbenchmark.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qbenchmarkmetric.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qdatetime.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qurl.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/quuid.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qpoint.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qsize.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qrect.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qmargins.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtestsystem.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qcoreapplication.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qcoreevent.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qeventloop.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qdeadlinetimer.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qelapsedtimer.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/QWindow:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qwindow.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qtguiglobal.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qtgui-config.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QEvent:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QMargins:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QRect:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qsurface.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qsurfaceformat.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qwindowdefs.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qicon.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qpixmap.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qpaintdevice.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qcolor.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qrgb.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qrgba64.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qimage.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qpixelformat.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qtransform.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qmatrix.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qpolygon.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qvector.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qregion.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qdatastream.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qline.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qpainterpath.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qcursor.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtWidgets/QWidget:
+
+/usr/local/Cellar/qt/5.10.1/include/QtWidgets/qwidget.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtWidgets/qtwidgetsglobal.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtWidgets/qtwidgets-config.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qpalette.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qbrush.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qfont.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qfontmetrics.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qfontinfo.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtWidgets/qsizepolicy.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qkeysequence.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/set:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtest_network.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/QHostAddress:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qhostaddress.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qtnetworkglobal.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qtnetwork-config.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qabstractsocket.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qdebug.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qtextstream.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qlocale.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qset.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qcontiguouscache.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/QNetworkCookie:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qnetworkcookie.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QSharedDataPointer:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QList:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QMetaType:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/QNetworkReply:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qnetworkreply.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QIODevice:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QString:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QVariant:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/QNetworkRequest:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qnetworkrequest.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QUrl:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/QNetworkAccessManager:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qnetworkaccessmanager.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QVector:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/QSslConfiguration:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslconfiguration.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslsocket.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qtcpsocket.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslerror.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslcertificate.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qcryptographichash.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qssl.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QFlags:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/QSslPreSharedKeyAuthenticator:
+
+/usr/local/Cellar/qt/5.10.1/include/QtNetwork/qsslpresharedkeyauthenticator.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtest_widgets.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtest_gui.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtestassert.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtestevent.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtestkeyboard.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtestspontaneevent.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/qpointer.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qguiapplication.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qinputmethod.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qevent.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qvector2d.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qtouchdevice.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtWidgets/qapplication.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtestmouse.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QDebug:
+
+/usr/local/Cellar/qt/5.10.1/include/QtTest/qtesttouch.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qvector3d.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtGui/qvector4d.h:
+
+/usr/local/Cellar/qt/5.10.1/include/QtWidgets/QSizePolicy:
+
+/usr/local/Cellar/qt/5.10.1/include/QtCore/QMetaEnum:

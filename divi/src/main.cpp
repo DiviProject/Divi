@@ -4474,7 +4474,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     }
 
     // masternode payments / budgets
-    /*CBlockIndex* pindexPrev = chainActive.Tip();
+    CBlockIndex* pindexPrev = chainActive.Tip();
     int nHeight = 0;
     if (pindexPrev != NULL) {
         if (pindexPrev->GetBlockHash() == block.hashPrevBlock) {
@@ -4502,7 +4502,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                 LogPrintf("CheckBlock(): Masternode payment check skipped on sync - skipping IsBlockPayeeValid()\n");
         }
     }
-    */
+    
     // Check transactions
     bool fZerocoinActive = false;
     vector<CBigNum> vBlockSerials;

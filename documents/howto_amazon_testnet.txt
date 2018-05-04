@@ -1,0 +1,130 @@
+Start 7 small instances and assign security groups and a key.
+
+divi1 - 18.188.13.2 genesis
+divi2 - 18.218.15.44 cw1
+divi3 - 18.221.251.124 cw2
+divi4 - 18.222.97.46 cw3
+divi5 - 18.219.91.35 mn1
+divi6 - 18.188.81.109 mn2
+divi7 - 189.219.45.113 mn3
+
+
+Run a putty for all of them using the key to ssh login as ec2-user.  Run 
+
+sudo yum update -y
+sudo yum install -y docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+audo docker info
+
+sudo docker run -dit --network host --name divi_docker cbyrdsw/pivxdocker:base /bin/bash
+sudo docker exec -it divi_docker bash
+
+Add to top of the divi.conf files to network nodes together...
+addnode=18.188.13.2:51472
+addnode=18.218.15.44:51472
+addnode=18.221.251.124:51472
+addnode=18.222.97.46:51472
+addnode=18.219.91.35:51472
+addnode=18.188.81.109:51472
+addnode= 18.219.45.113:51472
+
+Make sure data directory is clear and rebuild all machines with the new divi.conf file.
+
+Start mining on node one till you get a block. Keep mining to build up confirmations for funding masternodes.
+
+Send 20000 to each of the non genesis node masternode control wallets.
+Send 10000 for the masternode transaction.  Properly setup the control wallet and masternodes using the masternode notes.
+
+Wait for the last pow block.  Then restart the control wallets one at a time, and make sure all the masternodes are synced.  Staking and masternode payments should begin if everything went well.
+Here is a list of commands used to set up the amazon test net masternodes..…
+
+divi-cli getaccountaddress masternodes
+DNphZeYfhDMdpXZWTfT9hPMcoa8ZRrNA2u
+DNyz8bf7XoQSRRtKZjm45g1aTB5q3oZFLA
+DPTyAbsTLi8N9ovxhZpFEuNpFbjQxN4PQz
+
+divi-cli sendtoaddress DNphZeYfhDMdpXZWTfT9hPMcoa8ZRrNA2u 50000
+890828463afa6cfedf94ba9597b2a4777d0bc13c570fc00f3568efc86c01f84e
+divi-cli sendtoaddress DNyz8bf7XoQSRRtKZjm45g1aTB5q3oZFLA 50000
+3b80a339ffe5d98c3120a1adafd05c2875b4d81941c393d9b1bf9a8499e84e70
+divi-cli sendtoaddress DPTyAbsTLi8N9ovxhZpFEuNpFbjQxN4PQz 50000
+2962a35716df95fa99b8f0e02de8afa81b6a8ac50eadf81e8721bee5cc3d3322
+
+divi-cli masternode genkey
+88ZeSxw98x45o6eiiQZ6irU7Qa3rVFpKt3ffZ9CmuLNNfUoy8Ep
+88bXEhVHDRJcnAAo1aUZApctdKi67t3jaAXi2zoVsB49gnxBxut
+88V9g3gVzy13Y8iBHZc9iT73rjZUqkfXe6mzgPm7xE6QTTedaFx
+
+divi-cli getaccountaddress mn1
+DHwhRVBbygQUvVBznQ13hJmq6AmcDXm5Y4
+divi-cli getaccountaddress mn2
+DFoCp33VkVu5i6Z3YGNdYUQmC1W1wrZ1MH
+divi-cli getaccountaddress mn3
+DGCcutB3pSTVCFx273qXYg42GepdxQmX8e
+
+divi-cli sendfrom masternodes DHwhRVBbygQUvVBznQ13hJmq6AmcDXm5Y4 10000
+57a0903b6725b61124b6ed6b4e6b12773e79495daea3322e49b8c7b2396ed57e
+divi-cli sendfrom masternodes DFoCp33VkVu5i6Z3YGNdYUQmC1W1wrZ1MH 10000
+32bfee299377f490c9234a6a4e2ae874be4da2b4848e9163384e1428b48d735d
+divi-cli sendfrom masternodes DGCcutB3pSTVCFx273qXYg42GepdxQmX8e 10000
+d9386a60eaa77d953b0d250044ced6fd74c78f25ae73649a5e675df1e73207a9
+
+divi-cli masternode outputs
+[
+    {
+        "txhash" : "57a0903b6725b61124b6ed6b4e6b12773e79495daea3322e49b8c7b2396ed57e",
+        "outputidx" : 1
+    }
+]
+
+divi-cli masternode outputs
+[
+    {
+        "txhash" : "32bfee299377f490c9234a6a4e2ae874be4da2b4848e9163384e1428b48d735d",
+        "outputidx" : 1
+    }
+]
+divi-cli masternode outputs
+[
+    {
+        "txhash" : "d9386a60eaa77d953b0d250044ced6fd74c78f25ae73649a5e675df1e73207a9",
+        "outputidx" : 0
+    }
+]
+
+
+divi-cli gettransaction 5cf782e077bdb44569e68e1e17938ce8f096ad0c98e757c0ff18eeb627e3d497
+Add the private keys and correct ip addresses to the correct masternodes.  make sure to add the host control wallet node.
+Edit masternode files for the control wallets.
+mn1 18.219.91.35:51472 88ZeSxw98x45o6eiiQZ6irU7Qa3rVFpKt3ffZ9CmuLNNfUoy8Ep 57a0903b6725b61124b6ed6b4e6b12773e79495daea3322e49b8c7b2396ed57e 1
+mn2 18.188.81.109:51472 88bXEhVHDRJcnAAo1aUZApctdKi67t3jaAXi2zoVsB49gnxBxut 32bfee299377f490c9234a6a4e2ae874be4da2b4848e9163384e1428b48d735d 1
+mn3 18.219.45.113:51472 88V9g3gVzy13Y8iBHZc9iT73rjZUqkfXe6mzgPm7xE6QTTedaFx d9386a60eaa77d953b0d250044ced6fd74c78f25ae73649a5e675df1e73207a9 0
+
+divi-cli gettransaction d9386a60eaa77d953b0d250044ced6fd74c78f25ae73649a5e675df1e73207a9 should have at least 15 confirms...
+
+divi-cli startmasternode alias false mn1
+divi-cli startmasternode alias false mn2
+divi-cli startmasternode alias false mn3
+
+on the masternodes...
+
+divi-cli startmasternode local false
+Masternode successfully started
+divi-cli startmasternode local false
+Masternode successfully started
+divi-cli startmasternode local false
+Masternode successfully started
+
+You may have to start/stop the masternodes and rerun the activation command if they keep thinking they are hot nodes...
+Once you have all the masternodes up, you should be able to call divi-cli masternode list and it should list all 3 nodes.
+You should alse be able to run divi-cli getblockchaininfo and they should all be on the same block.
+Eventually mnsync should be true if you run divi-cli getstakingstatus on the wallets.
+
+Now wait till block 200... estimate time by a block per minute so total setup time should take a little over 3 hours...
+
+At 200, make sure all miners are stopped and restart genesis wallet.
+
+Then, one at a time, stop control wallet and masternode pairs and bring them back online, starting the control wallets first and running divi-cli startmasternode local false on the masternodes after they come back up.
+
+

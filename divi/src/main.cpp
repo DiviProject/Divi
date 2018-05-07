@@ -1473,14 +1473,16 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
         if (!MoneyRange(nValueOut))
             return state.DoS(100, error("CheckTransaction() : txout total out of range"),
                 REJECT_INVALID, "bad-txns-txouttotal-toolarge");
+        /* Byrd -marked for removal
         if (fZerocoinActive && txout.IsZerocoinMint()) {
             if(!CheckZerocoinMint(tx.GetHash(), txout, state, false))
                 return state.DoS(100, error("CheckTransaction() : invalid zerocoin mint"));
         }
         if (fZerocoinActive && txout.scriptPubKey.IsZerocoinSpend())
             nZCSpendCount++;
+        */
     }
-
+    /* Byrd -marked for removal
     if (fZerocoinActive) {
         if (nZCSpendCount > Params().Zerocoin_MaxSpendsPerTransaction())
             return state.DoS(100, error("CheckTransaction() : there are more zerocoin spends than are allowed in one transaction"));
@@ -1499,7 +1501,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                 return state.DoS(100, error("CheckTransaction() : invalid zerocoin spend"));
         }
     }
-
+    */
     // Check for duplicate inputs
     set<COutPoint> vInOutPoints;
     set<CBigNum> vZerocoinSpendSerials;
@@ -4474,7 +4476,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     }
 
     // masternode payments / budgets
-    /*CBlockIndex* pindexPrev = chainActive.Tip();
+    CBlockIndex* pindexPrev = chainActive.Tip();
     int nHeight = 0;
     if (pindexPrev != NULL) {
         if (pindexPrev->GetBlockHash() == block.hashPrevBlock) {
@@ -4502,7 +4504,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                 LogPrintf("CheckBlock(): Masternode payment check skipped on sync - skipping IsBlockPayeeValid()\n");
         }
     }
-    */
+    
     // Check transactions
     bool fZerocoinActive = false;
     vector<CBigNum> vBlockSerials;

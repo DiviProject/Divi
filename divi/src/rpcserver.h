@@ -267,7 +267,7 @@ extern json_spirit::Value listmasternodes(const json_spirit::Array& params, bool
 extern json_spirit::Value getmasternodecount(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value masternodeconnect(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value masternodecurrent(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value masternodedebug(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value masternodedebug(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value startmasternode(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value createmasternodekey(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getmasternodeoutputs(const json_spirit::Array& params, bool fHelp);
@@ -276,17 +276,17 @@ extern json_spirit::Value getmasternodestatus(const json_spirit::Array& params, 
 extern json_spirit::Value getmasternodewinners(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getmasternodescores(const json_spirit::Array& params, bool fHelp);
 
-extern json_spirit::Value mnbudget(const json_spirit::Array& params, bool fHelp); // in rpcmasternode-budget.cpp
-extern json_spirit::Value preparebudget(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value submitbudget(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value mnbudgetvote(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getbudgetvotes(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getnextsuperblock(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getbudgetprojection(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value getbudgetinfo(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value mnbudgetrawvote(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value mnfinalbudget(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value checkbudgets(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value mnbudget(const json_spirit::Array& params, bool fHelp); // in rpcmasternode-budget.cpp
+//extern json_spirit::Value preparebudget(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value submitbudget(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value mnbudgetvote(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value getbudgetvotes(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value getnextsuperblock(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value getbudgetprojection(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value getbudgetinfo(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value mnbudgetrawvote(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value mnfinalbudget(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value checkbudgets(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value getinfo(const json_spirit::Array& params, bool fHelp); // in rpcmisc.cpp
 extern json_spirit::Value mnsync(const json_spirit::Array& params, bool fHelp);

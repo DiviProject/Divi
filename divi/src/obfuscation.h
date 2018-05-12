@@ -20,7 +20,7 @@ class CMasterNodeVote;
 class CBitcoinAddress;
 class CObfuscationQueue;
 class CObfuscationBroadcastTx;
-class CActiveMasternode;
+// class CActiveMasternode;
 
 // pool states for mixing
 #define POOL_STATUS_UNKNOWN 0              // waiting for update
@@ -54,7 +54,7 @@ extern CObfuScationSigner obfuScationSigner;
 extern std::vector<CObfuscationQueue> vecObfuscationQueue;
 extern std::string strMasterNodePrivKey;
 extern map<uint256, CObfuscationBroadcastTx> mapObfuscationBroadcastTxes;
-extern CActiveMasternode activeMasternode;
+// extern CActiveMasternode activeMasternode;
 
 /** Holds an Obfuscation input
  */
@@ -163,6 +163,7 @@ class CObfuscationQueue
 {
 public:
     CTxIn vin;
+	string address;
     int64_t time;
     int nDenom;
     bool ready; //ready for submit
@@ -191,9 +192,9 @@ public:
 
     bool GetAddress(CService& addr)
     {
-        CMasternode* pmn = mnodeman.Find(vin);
+		CMasternode* pmn = mnodeman.Find("address");
         if (pmn != NULL) {
-            addr = pmn->addr;
+            addr = pmn->service;
             return true;
         }
         return false;
@@ -202,7 +203,7 @@ public:
     /// Get the protocol version
     bool GetProtocolVersion(int& protocolVersion)
     {
-        CMasternode* pmn = mnodeman.Find(vin);
+        CMasternode* pmn = mnodeman.Find("address");
         if (pmn != NULL) {
             protocolVersion = pmn->protocolVersion;
             return true;

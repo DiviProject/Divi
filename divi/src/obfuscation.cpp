@@ -35,7 +35,7 @@ std::vector<CTxIn> vecMasternodesUsed;
 // Keep track of the scanning errors I've seen
 map<uint256, CObfuscationBroadcastTx> mapObfuscationBroadcastTxes;
 // Keep track of the active Masternode
-CActiveMasternode activeMasternode;
+// CActiveMasternode activeMasternode;
 
 /* *** BEGIN OBFUSCATION MAGIC - DIV **********
     Copyright (c) 2014-2015, Dash Developers
@@ -45,335 +45,336 @@ CActiveMasternode activeMasternode;
 
 void CObfuscationPool::ProcessMessageObfuscation(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
-    if (!masternodeSync.IsBlockchainSynced()) return;
+	throw runtime_error("Should never reach CObfuscationPool::ProcessMessageObfuscation");
+    //if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
+    //if (!masternodeSync.IsBlockchainSynced()) return;
 
-    if (strCommand == "dsa") { //Obfuscation Accept Into Pool
+    //if (strCommand == "dsa") { //Obfuscation Accept Into Pool
 
-        int errorID;
+    //    int errorID;
 
-        if (pfrom->nVersion < ActiveProtocol()) {
-            errorID = ERR_VERSION;
-            LogPrintf("dsa -- incompatible version! \n");
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //    if (pfrom->nVersion < ActiveProtocol()) {
+    //        errorID = ERR_VERSION;
+    //        LogPrintf("dsa -- incompatible version! \n");
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
 
-            return;
-        }
+    //        return;
+    //    }
 
-        if (!fMasterNode) {
-            errorID = ERR_NOT_A_MN;
-            LogPrintf("dsa -- not a Masternode! \n");
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //    if (!fMasterNode) {
+    //        errorID = ERR_NOT_A_MN;
+    //        LogPrintf("dsa -- not a Masternode! \n");
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
 
-            return;
-        }
+    //        return;
+    //    }
 
-        int nDenom;
-        CTransaction txCollateral;
-        vRecv >> nDenom >> txCollateral;
+    //    int nDenom;
+    //    CTransaction txCollateral;
+    //    vRecv >> nDenom >> txCollateral;
 
-        CMasternode* pmn = mnodeman.Find(activeMasternode.vin);
-        if (pmn == NULL) {
-            errorID = ERR_MN_LIST;
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-            return;
-        }
+    //    CMasternode* pmn = mnodeman.Find(activeMasternode.vin);
+    //    if (pmn == NULL) {
+    //        errorID = ERR_MN_LIST;
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //        return;
+    //    }
 
-        if (sessionUsers == 0) {
-            if (pmn->nLastDsq != 0 &&
-                pmn->nLastDsq + mnodeman.CountEnabled(ActiveProtocol()) / 5 > mnodeman.nDsqCount) {
-                LogPrintf("dsa -- last dsq too recent, must wait. %s \n", pfrom->addr.ToString());
-                errorID = ERR_RECENT;
-                pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-                return;
-            }
-        }
+    //    if (sessionUsers == 0) {
+    //        if (pmn->nLastDsq != 0 &&
+    //            pmn->nLastDsq + mnodeman.CountEnabled(ActiveProtocol()) / 5 > mnodeman.nDsqCount) {
+    //            LogPrintf("dsa -- last dsq too recent, must wait. %s \n", pfrom->addr.ToString());
+    //            errorID = ERR_RECENT;
+    //            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //            return;
+    //        }
+    //    }
 
-        if (!IsCompatibleWithSession(nDenom, txCollateral, errorID)) {
-            LogPrintf("dsa -- not compatible with existing transactions! \n");
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-            return;
-        } else {
-            LogPrintf("dsa -- is compatible, please submit! \n");
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_ACCEPTED, errorID);
-            return;
-        }
+    //    if (!IsCompatibleWithSession(nDenom, txCollateral, errorID)) {
+    //        LogPrintf("dsa -- not compatible with existing transactions! \n");
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //        return;
+    //    } else {
+    //        LogPrintf("dsa -- is compatible, please submit! \n");
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_ACCEPTED, errorID);
+    //        return;
+    //    }
 
-    } else if (strCommand == "dsq") { //Obfuscation Queue
-        TRY_LOCK(cs_obfuscation, lockRecv);
-        if (!lockRecv) return;
+    //} else if (strCommand == "dsq") { //Obfuscation Queue
+    //    TRY_LOCK(cs_obfuscation, lockRecv);
+    //    if (!lockRecv) return;
 
-        if (pfrom->nVersion < ActiveProtocol()) {
-            return;
-        }
+    //    if (pfrom->nVersion < ActiveProtocol()) {
+    //        return;
+    //    }
 
-        CObfuscationQueue dsq;
-        vRecv >> dsq;
+    //    CObfuscationQueue dsq;
+    //    vRecv >> dsq;
 
-        CService addr;
-        if (!dsq.GetAddress(addr)) return;
-        if (!dsq.CheckSignature()) return;
+    //    CService addr;
+    //    if (!dsq.GetAddress(addr)) return;
+    //    if (!dsq.CheckSignature()) return;
 
-        if (dsq.IsExpired()) return;
+    //    if (dsq.IsExpired()) return;
 
-        CMasternode* pmn = mnodeman.Find(dsq.vin);
-        if (pmn == NULL) return;
+    //    CMasternode* pmn = mnodeman.Find(dsq.vin);
+    //    if (pmn == NULL) return;
 
-        // if the queue is ready, submit if we can
-        if (dsq.ready) {
-            if (!pSubmittedToMasternode) return;
-            if ((CNetAddr)pSubmittedToMasternode->addr != (CNetAddr)addr) {
-                LogPrintf("dsq - message doesn't match current Masternode - %s != %s\n", pSubmittedToMasternode->addr.ToString(), addr.ToString());
-                return;
-            }
+    //    // if the queue is ready, submit if we can
+    //    if (dsq.ready) {
+    //        if (!pSubmittedToMasternode) return;
+    //        if ((CNetAddr)pSubmittedToMasternode->addr != (CNetAddr)addr) {
+    //            LogPrintf("dsq - message doesn't match current Masternode - %s != %s\n", pSubmittedToMasternode->addr.ToString(), addr.ToString());
+    //            return;
+    //        }
 
-            if (state == POOL_STATUS_QUEUE) {
-                LogPrint("obfuscation", "Obfuscation queue is ready - %s\n", addr.ToString());
-                PrepareObfuscationDenominate();
-            }
-        } else {
-            BOOST_FOREACH (CObfuscationQueue q, vecObfuscationQueue) {
-                if (q.vin == dsq.vin) return;
-            }
+    //        if (state == POOL_STATUS_QUEUE) {
+    //            LogPrint("obfuscation", "Obfuscation queue is ready - %s\n", addr.ToString());
+    //            PrepareObfuscationDenominate();
+    //        }
+    //    } else {
+    //        BOOST_FOREACH (CObfuscationQueue q, vecObfuscationQueue) {
+    //            if (q.vin == dsq.vin) return;
+    //        }
 
-            LogPrint("obfuscation", "dsq last %d last2 %d count %d\n", pmn->nLastDsq, pmn->nLastDsq + mnodeman.size() / 5, mnodeman.nDsqCount);
-            //don't allow a few nodes to dominate the queuing process
-            if (pmn->nLastDsq != 0 &&
-                pmn->nLastDsq + mnodeman.CountEnabled(ActiveProtocol()) / 5 > mnodeman.nDsqCount) {
-                LogPrint("obfuscation", "dsq -- Masternode sending too many dsq messages. %s \n", pmn->addr.ToString());
-                return;
-            }
-            mnodeman.nDsqCount++;
-            pmn->nLastDsq = mnodeman.nDsqCount;
-            pmn->allowFreeTx = true;
+    //        LogPrint("obfuscation", "dsq last %d last2 %d count %d\n", pmn->nLastDsq, pmn->nLastDsq + mnodeman.size() / 5, mnodeman.nDsqCount);
+    //        //don't allow a few nodes to dominate the queuing process
+    //        if (pmn->nLastDsq != 0 &&
+    //            pmn->nLastDsq + mnodeman.CountEnabled(ActiveProtocol()) / 5 > mnodeman.nDsqCount) {
+    //            LogPrint("obfuscation", "dsq -- Masternode sending too many dsq messages. %s \n", pmn->addr.ToString());
+    //            return;
+    //        }
+    //        mnodeman.nDsqCount++;
+    //        pmn->nLastDsq = mnodeman.nDsqCount;
+    //        pmn->allowFreeTx = true;
 
-            LogPrint("obfuscation", "dsq - new Obfuscation queue object - %s\n", addr.ToString());
-            vecObfuscationQueue.push_back(dsq);
-            dsq.Relay();
-            dsq.time = GetTime();
-        }
+    //        LogPrint("obfuscation", "dsq - new Obfuscation queue object - %s\n", addr.ToString());
+    //        vecObfuscationQueue.push_back(dsq);
+    //        dsq.Relay();
+    //        dsq.time = GetTime();
+    //    }
 
-    } else if (strCommand == "dsi") { //ObfuScation vIn
-        int errorID;
+    //} else if (strCommand == "dsi") { //ObfuScation vIn
+    //    int errorID;
 
-        if (pfrom->nVersion < ActiveProtocol()) {
-            LogPrintf("dsi -- incompatible version! \n");
-            errorID = ERR_VERSION;
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //    if (pfrom->nVersion < ActiveProtocol()) {
+    //        LogPrintf("dsi -- incompatible version! \n");
+    //        errorID = ERR_VERSION;
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
 
-            return;
-        }
+    //        return;
+    //    }
 
-        if (!fMasterNode) {
-            LogPrintf("dsi -- not a Masternode! \n");
-            errorID = ERR_NOT_A_MN;
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //    if (!fMasterNode) {
+    //        LogPrintf("dsi -- not a Masternode! \n");
+    //        errorID = ERR_NOT_A_MN;
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
 
-            return;
-        }
+    //        return;
+    //    }
 
-        std::vector<CTxIn> in;
-        CAmount nAmount;
-        CTransaction txCollateral;
-        std::vector<CTxOut> out;
-        vRecv >> in >> nAmount >> txCollateral >> out;
+    //    std::vector<CTxIn> in;
+    //    CAmount nAmount;
+    //    CTransaction txCollateral;
+    //    std::vector<CTxOut> out;
+    //    vRecv >> in >> nAmount >> txCollateral >> out;
 
-        //do we have enough users in the current session?
-        if (!IsSessionReady()) {
-            LogPrintf("dsi -- session not complete! \n");
-            errorID = ERR_SESSION;
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-            return;
-        }
+    //    //do we have enough users in the current session?
+    //    if (!IsSessionReady()) {
+    //        LogPrintf("dsi -- session not complete! \n");
+    //        errorID = ERR_SESSION;
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //        return;
+    //    }
 
-        //do we have the same denominations as the current session?
-        if (!IsCompatibleWithEntries(out)) {
-            LogPrintf("dsi -- not compatible with existing transactions! \n");
-            errorID = ERR_EXISTING_TX;
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-            return;
-        }
+    //    //do we have the same denominations as the current session?
+    //    if (!IsCompatibleWithEntries(out)) {
+    //        LogPrintf("dsi -- not compatible with existing transactions! \n");
+    //        errorID = ERR_EXISTING_TX;
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //        return;
+    //    }
 
-        //check it like a transaction
-        {
-            CAmount nValueIn = 0;
-            CAmount nValueOut = 0;
-            bool missingTx = false;
+    //    //check it like a transaction
+    //    {
+    //        CAmount nValueIn = 0;
+    //        CAmount nValueOut = 0;
+    //        bool missingTx = false;
 
-            CValidationState state;
-            CMutableTransaction tx;
+    //        CValidationState state;
+    //        CMutableTransaction tx;
 
-            BOOST_FOREACH (const CTxOut o, out) {
-                nValueOut += o.nValue;
-                tx.vout.push_back(o);
+    //        BOOST_FOREACH (const CTxOut o, out) {
+    //            nValueOut += o.nValue;
+    //            tx.vout.push_back(o);
 
-                if (o.scriptPubKey.size() != 25) {
-                    LogPrintf("dsi - non-standard pubkey detected! %s\n", o.scriptPubKey.ToString());
-                    errorID = ERR_NON_STANDARD_PUBKEY;
-                    pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-                    return;
-                }
-                if (!o.scriptPubKey.IsNormalPaymentScript()) {
-                    LogPrintf("dsi - invalid script! %s\n", o.scriptPubKey.ToString());
-                    errorID = ERR_INVALID_SCRIPT;
-                    pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-                    return;
-                }
-            }
+    //            if (o.scriptPubKey.size() != 25) {
+    //                LogPrintf("dsi - non-standard pubkey detected! %s\n", o.scriptPubKey.ToString());
+    //                errorID = ERR_NON_STANDARD_PUBKEY;
+    //                pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //                return;
+    //            }
+    //            if (!o.scriptPubKey.IsNormalPaymentScript()) {
+    //                LogPrintf("dsi - invalid script! %s\n", o.scriptPubKey.ToString());
+    //                errorID = ERR_INVALID_SCRIPT;
+    //                pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //                return;
+    //            }
+    //        }
 
-            BOOST_FOREACH (const CTxIn i, in) {
-                tx.vin.push_back(i);
+    //        BOOST_FOREACH (const CTxIn i, in) {
+    //            tx.vin.push_back(i);
 
-                LogPrint("obfuscation", "dsi -- tx in %s\n", i.ToString());
+    //            LogPrint("obfuscation", "dsi -- tx in %s\n", i.ToString());
 
-                CTransaction tx2;
-                uint256 hash;
-                if (GetTransaction(i.prevout.hash, tx2, hash, true)) {
-                    if (tx2.vout.size() > i.prevout.n) {
-                        nValueIn += tx2.vout[i.prevout.n].nValue;
-                    }
-                } else {
-                    missingTx = true;
-                }
-            }
+    //            CTransaction tx2;
+    //            uint256 hash;
+    //            if (GetTransaction(i.prevout.hash, tx2, hash, true)) {
+    //                if (tx2.vout.size() > i.prevout.n) {
+    //                    nValueIn += tx2.vout[i.prevout.n].nValue;
+    //                }
+    //            } else {
+    //                missingTx = true;
+    //            }
+    //        }
 
-            if (nValueIn > OBFUSCATION_POOL_MAX) {
-                LogPrintf("dsi -- more than Obfuscation pool max! %s\n", tx.ToString());
-                errorID = ERR_MAXIMUM;
-                pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-                return;
-            }
+    //        if (nValueIn > OBFUSCATION_POOL_MAX) {
+    //            LogPrintf("dsi -- more than Obfuscation pool max! %s\n", tx.ToString());
+    //            errorID = ERR_MAXIMUM;
+    //            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //            return;
+    //        }
 
-            if (!missingTx) {
-                if (nValueIn - nValueOut > nValueIn * .01) {
-                    LogPrintf("dsi -- fees are too high! %s\n", tx.ToString());
-                    errorID = ERR_FEES;
-                    pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-                    return;
-                }
-            } else {
-                LogPrintf("dsi -- missing input tx! %s\n", tx.ToString());
-                errorID = ERR_MISSING_TX;
-                pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-                return;
-            }
+    //        if (!missingTx) {
+    //            if (nValueIn - nValueOut > nValueIn * .01) {
+    //                LogPrintf("dsi -- fees are too high! %s\n", tx.ToString());
+    //                errorID = ERR_FEES;
+    //                pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //                return;
+    //            }
+    //        } else {
+    //            LogPrintf("dsi -- missing input tx! %s\n", tx.ToString());
+    //            errorID = ERR_MISSING_TX;
+    //            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //            return;
+    //        }
 
-            {
-                LOCK(cs_main);
-                if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL, false, true)) {
-                    LogPrintf("dsi -- transaction not valid! \n");
-                    errorID = ERR_INVALID_TX;
-                    pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-                    return;
-                }
-            }
-        }
+    //        {
+    //            LOCK(cs_main);
+    //            if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL, false, true)) {
+    //                LogPrintf("dsi -- transaction not valid! \n");
+    //                errorID = ERR_INVALID_TX;
+    //                pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //                return;
+    //            }
+    //        }
+    //    }
 
-        if (AddEntry(in, nAmount, txCollateral, out, errorID)) {
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_ACCEPTED, errorID);
-            Check();
+    //    if (AddEntry(in, nAmount, txCollateral, out, errorID)) {
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_ACCEPTED, errorID);
+    //        Check();
 
-            RelayStatus(sessionID, GetState(), GetEntriesCount(), MASTERNODE_RESET);
-        } else {
-            pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
-        }
+    //        RelayStatus(sessionID, GetState(), GetEntriesCount(), MASTERNODE_RESET);
+    //    } else {
+    //        pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
+    //    }
 
-    } else if (strCommand == "dssu") { //Obfuscation status update
-        if (pfrom->nVersion < ActiveProtocol()) {
-            return;
-        }
+    //} else if (strCommand == "dssu") { //Obfuscation status update
+    //    if (pfrom->nVersion < ActiveProtocol()) {
+    //        return;
+    //    }
 
-        if (!pSubmittedToMasternode) return;
-        if ((CNetAddr)pSubmittedToMasternode->addr != (CNetAddr)pfrom->addr) {
-            //LogPrintf("dssu - message doesn't match current Masternode - %s != %s\n", pSubmittedToMasternode->addr.ToString(), pfrom->addr.ToString());
-            return;
-        }
+    //    if (!pSubmittedToMasternode) return;
+    //    if ((CNetAddr)pSubmittedToMasternode->addr != (CNetAddr)pfrom->addr) {
+    //        //LogPrintf("dssu - message doesn't match current Masternode - %s != %s\n", pSubmittedToMasternode->addr.ToString(), pfrom->addr.ToString());
+    //        return;
+    //    }
 
-        int sessionIDMessage;
-        int state;
-        int entriesCount;
-        int accepted;
-        int errorID;
-        vRecv >> sessionIDMessage >> state >> entriesCount >> accepted >> errorID;
+    //    int sessionIDMessage;
+    //    int state;
+    //    int entriesCount;
+    //    int accepted;
+    //    int errorID;
+    //    vRecv >> sessionIDMessage >> state >> entriesCount >> accepted >> errorID;
 
-        LogPrint("obfuscation", "dssu - state: %i entriesCount: %i accepted: %i error: %s \n", state, entriesCount, accepted, GetMessageByID(errorID));
+    //    LogPrint("obfuscation", "dssu - state: %i entriesCount: %i accepted: %i error: %s \n", state, entriesCount, accepted, GetMessageByID(errorID));
 
-        if ((accepted != 1 && accepted != 0) && sessionID != sessionIDMessage) {
-            LogPrintf("dssu - message doesn't match current Obfuscation session %d %d\n", sessionID, sessionIDMessage);
-            return;
-        }
+    //    if ((accepted != 1 && accepted != 0) && sessionID != sessionIDMessage) {
+    //        LogPrintf("dssu - message doesn't match current Obfuscation session %d %d\n", sessionID, sessionIDMessage);
+    //        return;
+    //    }
 
-        StatusUpdate(state, entriesCount, accepted, errorID, sessionIDMessage);
+    //    StatusUpdate(state, entriesCount, accepted, errorID, sessionIDMessage);
 
-    } else if (strCommand == "dss") { //Obfuscation Sign Final Tx
+    //} else if (strCommand == "dss") { //Obfuscation Sign Final Tx
 
-        if (pfrom->nVersion < ActiveProtocol()) {
-            return;
-        }
+    //    if (pfrom->nVersion < ActiveProtocol()) {
+    //        return;
+    //    }
 
-        vector<CTxIn> sigs;
-        vRecv >> sigs;
+    //    vector<CTxIn> sigs;
+    //    vRecv >> sigs;
 
-        bool success = false;
-        int count = 0;
+    //    bool success = false;
+    //    int count = 0;
 
-        BOOST_FOREACH (const CTxIn item, sigs) {
-            if (AddScriptSig(item)) success = true;
-            LogPrint("obfuscation", " -- sigs count %d %d\n", (int)sigs.size(), count);
-            count++;
-        }
+    //    BOOST_FOREACH (const CTxIn item, sigs) {
+    //        if (AddScriptSig(item)) success = true;
+    //        LogPrint("obfuscation", " -- sigs count %d %d\n", (int)sigs.size(), count);
+    //        count++;
+    //    }
 
-        if (success) {
-            obfuScationPool.Check();
-            RelayStatus(obfuScationPool.sessionID, obfuScationPool.GetState(), obfuScationPool.GetEntriesCount(), MASTERNODE_RESET);
-        }
-    } else if (strCommand == "dsf") { //Obfuscation Final tx
-        if (pfrom->nVersion < ActiveProtocol()) {
-            return;
-        }
+    //    if (success) {
+    //        obfuScationPool.Check();
+    //        RelayStatus(obfuScationPool.sessionID, obfuScationPool.GetState(), obfuScationPool.GetEntriesCount(), MASTERNODE_RESET);
+    //    }
+    //} else if (strCommand == "dsf") { //Obfuscation Final tx
+    //    if (pfrom->nVersion < ActiveProtocol()) {
+    //        return;
+    //    }
 
-        if (!pSubmittedToMasternode) return;
-        if ((CNetAddr)pSubmittedToMasternode->addr != (CNetAddr)pfrom->addr) {
-            //LogPrintf("dsc - message doesn't match current Masternode - %s != %s\n", pSubmittedToMasternode->addr.ToString(), pfrom->addr.ToString());
-            return;
-        }
+    //    if (!pSubmittedToMasternode) return;
+    //    if ((CNetAddr)pSubmittedToMasternode->addr != (CNetAddr)pfrom->addr) {
+    //        //LogPrintf("dsc - message doesn't match current Masternode - %s != %s\n", pSubmittedToMasternode->addr.ToString(), pfrom->addr.ToString());
+    //        return;
+    //    }
 
-        int sessionIDMessage;
-        CTransaction txNew;
-        vRecv >> sessionIDMessage >> txNew;
+    //    int sessionIDMessage;
+    //    CTransaction txNew;
+    //    vRecv >> sessionIDMessage >> txNew;
 
-        if (sessionID != sessionIDMessage) {
-            LogPrint("obfuscation", "dsf - message doesn't match current Obfuscation session %d %d\n", sessionID, sessionIDMessage);
-            return;
-        }
+    //    if (sessionID != sessionIDMessage) {
+    //        LogPrint("obfuscation", "dsf - message doesn't match current Obfuscation session %d %d\n", sessionID, sessionIDMessage);
+    //        return;
+    //    }
 
-        //check to see if input is spent already? (and probably not confirmed)
-        SignFinalTransaction(txNew, pfrom);
+    //    //check to see if input is spent already? (and probably not confirmed)
+    //    SignFinalTransaction(txNew, pfrom);
 
-    } else if (strCommand == "dsc") { //Obfuscation Complete
+    //} else if (strCommand == "dsc") { //Obfuscation Complete
 
-        if (pfrom->nVersion < ActiveProtocol()) {
-            return;
-        }
+    //    if (pfrom->nVersion < ActiveProtocol()) {
+    //        return;
+    //    }
 
-        if (!pSubmittedToMasternode) return;
-        if ((CNetAddr)pSubmittedToMasternode->addr != (CNetAddr)pfrom->addr) {
-            //LogPrintf("dsc - message doesn't match current Masternode - %s != %s\n", pSubmittedToMasternode->addr.ToString(), pfrom->addr.ToString());
-            return;
-        }
+    //    if (!pSubmittedToMasternode) return;
+    //    if ((CNetAddr)pSubmittedToMasternode->addr != (CNetAddr)pfrom->addr) {
+    //        //LogPrintf("dsc - message doesn't match current Masternode - %s != %s\n", pSubmittedToMasternode->addr.ToString(), pfrom->addr.ToString());
+    //        return;
+    //    }
 
-        int sessionIDMessage;
-        bool error;
-        int errorID;
-        vRecv >> sessionIDMessage >> error >> errorID;
+    //    int sessionIDMessage;
+    //    bool error;
+    //    int errorID;
+    //    vRecv >> sessionIDMessage >> error >> errorID;
 
-        if (sessionID != sessionIDMessage) {
-            LogPrint("obfuscation", "dsc - message doesn't match current Obfuscation session %d %d\n", obfuScationPool.sessionID, sessionIDMessage);
-            return;
-        }
+    //    if (sessionID != sessionIDMessage) {
+    //        LogPrint("obfuscation", "dsc - message doesn't match current Obfuscation session %d %d\n", obfuScationPool.sessionID, sessionIDMessage);
+    //        return;
+    //    }
 
-        obfuScationPool.CompletedTransaction(error, errorID);
-    }
+    //    obfuScationPool.CompletedTransaction(error, errorID);
+    //}
 }
 
 int randomizeList(int i) { return std::rand() % i; }
@@ -626,7 +627,7 @@ void CObfuscationPool::CheckFinalTransaction()
         if (!mapObfuscationBroadcastTxes.count(txNew.GetHash())) {
             CObfuscationBroadcastTx dstx;
             dstx.tx = txNew;
-            dstx.vin = activeMasternode.vin;
+            // dstx.vin = activeMasternode.vin;
             dstx.vchSig = vchSig;
             dstx.sigTime = sigTime;
 
@@ -899,7 +900,7 @@ void CObfuscationPool::CheckForCompleteQueue()
 
         CObfuscationQueue dsq;
         dsq.nDenom = sessionDenom;
-        dsq.vin = activeMasternode.vin;
+        // dsq.vin = activeMasternode.vin;
         dsq.time = GetTime();
         dsq.ready = true;
         dsq.Sign();
@@ -1382,265 +1383,265 @@ bool CObfuscationPool::DoAutomaticDenominating(bool fDryRun)
 {
     return false;  // Disabled until Obfuscation is completely removed
 
-    if (!fEnableZeromint) return false;
-    if (fMasterNode) return false;
-    if (state == POOL_STATUS_ERROR || state == POOL_STATUS_SUCCESS) return false;
-    if (GetEntriesCount() > 0) {
-        strAutoDenomResult = _("Mixing in progress...");
-        return false;
-    }
+    //if (!fEnableZeromint) return false;
+    //if (fMasterNode) return false;
+    //if (state == POOL_STATUS_ERROR || state == POOL_STATUS_SUCCESS) return false;
+    //if (GetEntriesCount() > 0) {
+    //    strAutoDenomResult = _("Mixing in progress...");
+    //    return false;
+    //}
 
-    TRY_LOCK(cs_obfuscation, lockDS);
-    if (!lockDS) {
-        strAutoDenomResult = _("Lock is already in place.");
-        return false;
-    }
+    //TRY_LOCK(cs_obfuscation, lockDS);
+    //if (!lockDS) {
+    //    strAutoDenomResult = _("Lock is already in place.");
+    //    return false;
+    //}
 
-    if (!masternodeSync.IsBlockchainSynced()) {
-        strAutoDenomResult = _("Can't mix while sync in progress.");
-        return false;
-    }
+    //if (!masternodeSync.IsBlockchainSynced()) {
+    //    strAutoDenomResult = _("Can't mix while sync in progress.");
+    //    return false;
+    //}
 
-    if (!fDryRun && pwalletMain->IsLocked()) {
-        strAutoDenomResult = _("Wallet is locked.");
-        return false;
-    }
+    //if (!fDryRun && pwalletMain->IsLocked()) {
+    //    strAutoDenomResult = _("Wallet is locked.");
+    //    return false;
+    //}
 
-    if (chainActive.Tip()->nHeight - cachedLastSuccess < minBlockSpacing) {
-        LogPrintf("CObfuscationPool::DoAutomaticDenominating - Last successful Obfuscation action was too recent\n");
-        strAutoDenomResult = _("Last successful Obfuscation action was too recent.");
-        return false;
-    }
+    //if (chainActive.Tip()->nHeight - cachedLastSuccess < minBlockSpacing) {
+    //    LogPrintf("CObfuscationPool::DoAutomaticDenominating - Last successful Obfuscation action was too recent\n");
+    //    strAutoDenomResult = _("Last successful Obfuscation action was too recent.");
+    //    return false;
+    //}
 
-    if (mnodeman.size() == 0) {
-        LogPrint("obfuscation", "CObfuscationPool::DoAutomaticDenominating - No Masternodes detected\n");
-        strAutoDenomResult = _("No Masternodes detected.");
-        return false;
-    }
+    //if (mnodeman.mMasternodes.size() == 0) {
+    //    LogPrint("obfuscation", "CObfuscationPool::DoAutomaticDenominating - No Masternodes detected\n");
+    //    strAutoDenomResult = _("No Masternodes detected.");
+    //    return false;
+    //}
 
-    // ** find the coins we'll use
-    std::vector<CTxIn> vCoins;
-    CAmount nValueMin = CENT;
-    CAmount nValueIn = 0;
+    //// ** find the coins we'll use
+    //std::vector<CTxIn> vCoins;
+    //CAmount nValueMin = CENT;
+    //CAmount nValueIn = 0;
 
-    CAmount nOnlyDenominatedBalance;
-    CAmount nBalanceNeedsDenominated;
+    //CAmount nOnlyDenominatedBalance;
+    //CAmount nBalanceNeedsDenominated;
 
-    // should not be less than fees in OBFUSCATION_COLLATERAL + few (lets say 5) smallest denoms
-    CAmount nLowestDenom = OBFUSCATION_COLLATERAL + obfuScationDenominations[obfuScationDenominations.size() - 1] * 5;
+    //// should not be less than fees in OBFUSCATION_COLLATERAL + few (lets say 5) smallest denoms
+    //CAmount nLowestDenom = OBFUSCATION_COLLATERAL + obfuScationDenominations[obfuScationDenominations.size() - 1] * 5;
 
-    // if there are no OBF collateral inputs yet
-    if (!pwalletMain->HasCollateralInputs())
-        // should have some additional amount for them
-        nLowestDenom += OBFUSCATION_COLLATERAL * 4;
+    //// if there are no OBF collateral inputs yet
+    //if (!pwalletMain->HasCollateralInputs())
+    //    // should have some additional amount for them
+    //    nLowestDenom += OBFUSCATION_COLLATERAL * 4;
 
-    CAmount nBalanceNeedsAnonymized = nAnonymizeDiviAmount * COIN - pwalletMain->GetAnonymizedBalance();
+    //CAmount nBalanceNeedsAnonymized = nAnonymizeDiviAmount * COIN - pwalletMain->GetAnonymizedBalance();
 
-    // if balanceNeedsAnonymized is more than pool max, take the pool max
-    if (nBalanceNeedsAnonymized > OBFUSCATION_POOL_MAX) nBalanceNeedsAnonymized = OBFUSCATION_POOL_MAX;
+    //// if balanceNeedsAnonymized is more than pool max, take the pool max
+    //if (nBalanceNeedsAnonymized > OBFUSCATION_POOL_MAX) nBalanceNeedsAnonymized = OBFUSCATION_POOL_MAX;
 
-    // if balanceNeedsAnonymized is more than non-anonymized, take non-anonymized
-    CAmount nAnonymizableBalance = pwalletMain->GetAnonymizableBalance();
-    if (nBalanceNeedsAnonymized > nAnonymizableBalance) nBalanceNeedsAnonymized = nAnonymizableBalance;
+    //// if balanceNeedsAnonymized is more than non-anonymized, take non-anonymized
+    //CAmount nAnonymizableBalance = pwalletMain->GetAnonymizableBalance();
+    //if (nBalanceNeedsAnonymized > nAnonymizableBalance) nBalanceNeedsAnonymized = nAnonymizableBalance;
 
-    if (nBalanceNeedsAnonymized < nLowestDenom) {
-        LogPrintf("DoAutomaticDenominating : No funds detected in need of denominating \n");
-        strAutoDenomResult = _("No funds detected in need of denominating.");
-        return false;
-    }
+    //if (nBalanceNeedsAnonymized < nLowestDenom) {
+    //    LogPrintf("DoAutomaticDenominating : No funds detected in need of denominating \n");
+    //    strAutoDenomResult = _("No funds detected in need of denominating.");
+    //    return false;
+    //}
 
-    LogPrint("obfuscation", "DoAutomaticDenominating : nLowestDenom=%d, nBalanceNeedsAnonymized=%d\n", nLowestDenom, nBalanceNeedsAnonymized);
+    //LogPrint("obfuscation", "DoAutomaticDenominating : nLowestDenom=%d, nBalanceNeedsAnonymized=%d\n", nLowestDenom, nBalanceNeedsAnonymized);
 
-    // select coins that should be given to the pool
-    if (!pwalletMain->SelectCoinsDark(nValueMin, nBalanceNeedsAnonymized, vCoins, nValueIn, 0, nZeromintPercentage)) {
-        nValueIn = 0;
-        vCoins.clear();
+    //// select coins that should be given to the pool
+    //if (!pwalletMain->SelectCoinsDark(nValueMin, nBalanceNeedsAnonymized, vCoins, nValueIn, 0, nZeromintPercentage)) {
+    //    nValueIn = 0;
+    //    vCoins.clear();
 
-        if (pwalletMain->SelectCoinsDark(nValueMin, 9999999 * COIN, vCoins, nValueIn, -2, 0)) {
-            nOnlyDenominatedBalance = pwalletMain->GetDenominatedBalance(true) + pwalletMain->GetDenominatedBalance() - pwalletMain->GetAnonymizedBalance();
-            nBalanceNeedsDenominated = nBalanceNeedsAnonymized - nOnlyDenominatedBalance;
+    //    if (pwalletMain->SelectCoinsDark(nValueMin, 9999999 * COIN, vCoins, nValueIn, -2, 0)) {
+    //        nOnlyDenominatedBalance = pwalletMain->GetDenominatedBalance(true) + pwalletMain->GetDenominatedBalance() - pwalletMain->GetAnonymizedBalance();
+    //        nBalanceNeedsDenominated = nBalanceNeedsAnonymized - nOnlyDenominatedBalance;
 
-            if (nBalanceNeedsDenominated > nValueIn) nBalanceNeedsDenominated = nValueIn;
+    //        if (nBalanceNeedsDenominated > nValueIn) nBalanceNeedsDenominated = nValueIn;
 
-            if (nBalanceNeedsDenominated < nLowestDenom) return false; // most likely we just waiting for denoms to confirm
-            if (!fDryRun) return CreateDenominated(nBalanceNeedsDenominated);
+    //        if (nBalanceNeedsDenominated < nLowestDenom) return false; // most likely we just waiting for denoms to confirm
+    //        if (!fDryRun) return CreateDenominated(nBalanceNeedsDenominated);
 
-            return true;
-        } else {
-            LogPrintf("DoAutomaticDenominating : Can't denominate - no compatible inputs left\n");
-            strAutoDenomResult = _("Can't denominate: no compatible inputs left.");
-            return false;
-        }
-    }
+    //        return true;
+    //    } else {
+    //        LogPrintf("DoAutomaticDenominating : Can't denominate - no compatible inputs left\n");
+    //        strAutoDenomResult = _("Can't denominate: no compatible inputs left.");
+    //        return false;
+    //    }
+    //}
 
-    if (fDryRun) return true;
+    //if (fDryRun) return true;
 
-    nOnlyDenominatedBalance = pwalletMain->GetDenominatedBalance(true) + pwalletMain->GetDenominatedBalance() - pwalletMain->GetAnonymizedBalance();
-    nBalanceNeedsDenominated = nBalanceNeedsAnonymized - nOnlyDenominatedBalance;
+    //nOnlyDenominatedBalance = pwalletMain->GetDenominatedBalance(true) + pwalletMain->GetDenominatedBalance() - pwalletMain->GetAnonymizedBalance();
+    //nBalanceNeedsDenominated = nBalanceNeedsAnonymized - nOnlyDenominatedBalance;
 
-    //check if we have should create more denominated inputs
-    if (nBalanceNeedsDenominated > nOnlyDenominatedBalance) return CreateDenominated(nBalanceNeedsDenominated);
+    ////check if we have should create more denominated inputs
+    //if (nBalanceNeedsDenominated > nOnlyDenominatedBalance) return CreateDenominated(nBalanceNeedsDenominated);
 
-    //check if we have the collateral sized inputs
-    if (!pwalletMain->HasCollateralInputs()) return !pwalletMain->HasCollateralInputs(false) && MakeCollateralAmounts();
+    ////check if we have the collateral sized inputs
+    //if (!pwalletMain->HasCollateralInputs()) return !pwalletMain->HasCollateralInputs(false) && MakeCollateralAmounts();
 
-    std::vector<CTxOut> vOut;
+    //std::vector<CTxOut> vOut;
 
-    // initial phase, find a Masternode
-    if (!sessionFoundMasternode) {
-        // Clean if there is anything left from previous session
-        UnlockCoins();
-        SetNull();
+    //// initial phase, find a Masternode
+    //if (!sessionFoundMasternode) {
+    //    // Clean if there is anything left from previous session
+    //    UnlockCoins();
+    //    SetNull();
 
-        int nUseQueue = rand() % 100;
-        UpdateState(POOL_STATUS_ACCEPTING_ENTRIES);
+    //    int nUseQueue = rand() % 100;
+    //    UpdateState(POOL_STATUS_ACCEPTING_ENTRIES);
 
-        if (pwalletMain->GetDenominatedBalance(true) > 0) { //get denominated unconfirmed inputs
-            LogPrintf("DoAutomaticDenominating -- Found unconfirmed denominated outputs, will wait till they confirm to continue.\n");
-            strAutoDenomResult = _("Found unconfirmed denominated outputs, will wait till they confirm to continue.");
-            return false;
-        }
+    //    if (pwalletMain->GetDenominatedBalance(true) > 0) { //get denominated unconfirmed inputs
+    //        LogPrintf("DoAutomaticDenominating -- Found unconfirmed denominated outputs, will wait till they confirm to continue.\n");
+    //        strAutoDenomResult = _("Found unconfirmed denominated outputs, will wait till they confirm to continue.");
+    //        return false;
+    //    }
 
-        //check our collateral nad create new if needed
-        std::string strReason;
-        CValidationState state;
-        if (txCollateral == CMutableTransaction()) {
-            if (!pwalletMain->CreateCollateralTransaction(txCollateral, strReason)) {
-                LogPrintf("% -- create collateral error:%s\n", __func__, strReason);
-                return false;
-            }
-        } else {
-            if (!IsCollateralValid(txCollateral)) {
-                LogPrintf("%s -- invalid collateral, recreating...\n", __func__);
-                if (!pwalletMain->CreateCollateralTransaction(txCollateral, strReason)) {
-                    LogPrintf("%s -- create collateral error: %s\n", __func__, strReason);
-                    return false;
-                }
-            }
-        }
+    //    //check our collateral nad create new if needed
+    //    std::string strReason;
+    //    CValidationState state;
+    //    if (txCollateral == CMutableTransaction()) {
+    //        if (!pwalletMain->CreateCollateralTransaction(txCollateral, strReason)) {
+    //            LogPrintf("% -- create collateral error:%s\n", __func__, strReason);
+    //            return false;
+    //        }
+    //    } else {
+    //        if (!IsCollateralValid(txCollateral)) {
+    //            LogPrintf("%s -- invalid collateral, recreating...\n", __func__);
+    //            if (!pwalletMain->CreateCollateralTransaction(txCollateral, strReason)) {
+    //                LogPrintf("%s -- create collateral error: %s\n", __func__, strReason);
+    //                return false;
+    //            }
+    //        }
+    //    }
 
-        //if we've used 90% of the Masternode list then drop all the oldest first
-        int nThreshold = (int)(mnodeman.CountEnabled(ActiveProtocol()) * 0.9);
-        LogPrint("obfuscation", "Checking vecMasternodesUsed size %d threshold %d\n", (int)vecMasternodesUsed.size(), nThreshold);
-        while ((int)vecMasternodesUsed.size() > nThreshold) {
-            vecMasternodesUsed.erase(vecMasternodesUsed.begin());
-            LogPrint("obfuscation", "  vecMasternodesUsed size %d threshold %d\n", (int)vecMasternodesUsed.size(), nThreshold);
-        }
+    //    //if we've used 90% of the Masternode list then drop all the oldest first
+    //    int nThreshold = (int)(mnodeman.mMasternodes.size() * 0.9);
+    //    LogPrint("obfuscation", "Checking vecMasternodesUsed size %d threshold %d\n", (int)vecMasternodesUsed.size(), nThreshold);
+    //    while ((int)vecMasternodesUsed.size() > nThreshold) {
+    //        vecMasternodesUsed.erase(vecMasternodesUsed.begin());
+    //        LogPrint("obfuscation", "  vecMasternodesUsed size %d threshold %d\n", (int)vecMasternodesUsed.size(), nThreshold);
+    //    }
 
-        //don't use the queues all of the time for mixing
-        if (nUseQueue > 33) {
-            // Look through the queues and see if anything matches
-            BOOST_FOREACH (CObfuscationQueue& dsq, vecObfuscationQueue) {
-                CService addr;
-                if (dsq.time == 0) continue;
+    //    //don't use the queues all of the time for mixing
+    //    if (nUseQueue > 33) {
+    //        // Look through the queues and see if anything matches
+    //        BOOST_FOREACH (CObfuscationQueue& dsq, vecObfuscationQueue) {
+    //            CService addr;
+    //            if (dsq.time == 0) continue;
 
-                if (!dsq.GetAddress(addr)) continue;
-                if (dsq.IsExpired()) continue;
+    //            if (!dsq.GetAddress(addr)) continue;
+    //            if (dsq.IsExpired()) continue;
 
-                int protocolVersion;
-                if (!dsq.GetProtocolVersion(protocolVersion)) continue;
-                if (protocolVersion < ActiveProtocol()) continue;
+    //            int protocolVersion;
+    //            if (!dsq.GetProtocolVersion(protocolVersion)) continue;
+    //            if (protocolVersion < ActiveProtocol()) continue;
 
-                //non-denom's are incompatible
-                if ((dsq.nDenom & (1 << 4))) continue;
+    //            //non-denom's are incompatible
+    //            if ((dsq.nDenom & (1 << 4))) continue;
 
-                bool fUsed = false;
-                //don't reuse Masternodes
-                BOOST_FOREACH (CTxIn usedVin, vecMasternodesUsed) {
-                    if (dsq.vin == usedVin) {
-                        fUsed = true;
-                        break;
-                    }
-                }
-                if (fUsed) continue;
+    //            bool fUsed = false;
+    //            //don't reuse Masternodes
+    //            BOOST_FOREACH (CTxIn usedVin, vecMasternodesUsed) {
+    //                if (dsq.vin == usedVin) {
+    //                    fUsed = true;
+    //                    break;
+    //                }
+    //            }
+    //            if (fUsed) continue;
 
-                std::vector<CTxIn> vTempCoins;
-                std::vector<COutput> vTempCoins2;
-                // Try to match their denominations if possible
-                if (!pwalletMain->SelectCoinsByDenominations(dsq.nDenom, nValueMin, nBalanceNeedsAnonymized, vTempCoins, vTempCoins2, nValueIn, 0, nZeromintPercentage)) {
-                    LogPrintf("DoAutomaticDenominating --- Couldn't match denominations %d\n", dsq.nDenom);
-                    continue;
-                }
+    //            std::vector<CTxIn> vTempCoins;
+    //            std::vector<COutput> vTempCoins2;
+    //            // Try to match their denominations if possible
+    //            if (!pwalletMain->SelectCoinsByDenominations(dsq.nDenom, nValueMin, nBalanceNeedsAnonymized, vTempCoins, vTempCoins2, nValueIn, 0, nZeromintPercentage)) {
+    //                LogPrintf("DoAutomaticDenominating --- Couldn't match denominations %d\n", dsq.nDenom);
+    //                continue;
+    //            }
 
-                CMasternode* pmn = mnodeman.Find(dsq.vin);
-                if (pmn == NULL) {
-                    LogPrintf("DoAutomaticDenominating --- dsq vin %s is not in masternode list!", dsq.vin.ToString());
-                    continue;
-                }
+    //            CMasternode* pmn = mnodeman.Find(dsq.vin);
+    //            if (pmn == NULL) {
+    //                LogPrintf("DoAutomaticDenominating --- dsq vin %s is not in masternode list!", dsq.vin.ToString());
+    //                continue;
+    //            }
 
-                LogPrintf("DoAutomaticDenominating --- attempt to connect to masternode from queue %s\n", pmn->addr.ToString());
-                lastTimeChanged = GetTimeMillis();
+    //            LogPrintf("DoAutomaticDenominating --- attempt to connect to masternode from queue %s\n", pmn->addr.ToString());
+    //            lastTimeChanged = GetTimeMillis();
 
-                // connect to Masternode and submit the queue request
-                CNode* pnode = ConnectNode((CAddress)addr, NULL, true);
-                if (pnode != NULL) {
-                    pSubmittedToMasternode = pmn;
-                    vecMasternodesUsed.push_back(dsq.vin);
-                    sessionDenom = dsq.nDenom;
+    //            // connect to Masternode and submit the queue request
+    //            CNode* pnode = ConnectNode((CAddress)addr, NULL, true);
+    //            if (pnode != NULL) {
+    //                pSubmittedToMasternode = pmn;
+    //                vecMasternodesUsed.push_back(dsq.vin);
+    //                sessionDenom = dsq.nDenom;
 
-                    pnode->PushMessage("dsa", sessionDenom, txCollateral);
-                    LogPrintf("DoAutomaticDenominating --- connected (from queue), sending dsa for %d - %s\n", sessionDenom, pnode->addr.ToString());
-                    strAutoDenomResult = _("Mixing in progress...");
-                    dsq.time = 0; //remove node
-                    return true;
-                } else {
-                    LogPrintf("DoAutomaticDenominating --- error connecting \n");
-                    strAutoDenomResult = _("Error connecting to Masternode.");
-                    dsq.time = 0; //remove node
-                    continue;
-                }
-            }
-        }
+    //                pnode->PushMessage("dsa", sessionDenom, txCollateral);
+    //                LogPrintf("DoAutomaticDenominating --- connected (from queue), sending dsa for %d - %s\n", sessionDenom, pnode->addr.ToString());
+    //                strAutoDenomResult = _("Mixing in progress...");
+    //                dsq.time = 0; //remove node
+    //                return true;
+    //            } else {
+    //                LogPrintf("DoAutomaticDenominating --- error connecting \n");
+    //                strAutoDenomResult = _("Error connecting to Masternode.");
+    //                dsq.time = 0; //remove node
+    //                continue;
+    //            }
+    //        }
+    //    }
 
-        // do not initiate queue if we are a liquidity proveder to avoid useless inter-mixing
-        if (nLiquidityProvider) return false;
+    //    // do not initiate queue if we are a liquidity proveder to avoid useless inter-mixing
+    //    if (nLiquidityProvider) return false;
 
-        int i = 0;
+    //    int i = 0;
 
-        // otherwise, try one randomly
-        while (i < 10) {
-            CMasternode* pmn = mnodeman.FindRandomNotInVec(vecMasternodesUsed, ActiveProtocol());
-            if (pmn == NULL) {
-                LogPrintf("DoAutomaticDenominating --- Can't find random masternode!\n");
-                strAutoDenomResult = _("Can't find random Masternode.");
-                return false;
-            }
+    //    // otherwise, try one randomly
+    //    while (i < 10) {
+    //        CMasternode* pmn = mnodeman.FindRandomNotInVec(vecMasternodesUsed, ActiveProtocol());
+    //        if (pmn == NULL) {
+    //            LogPrintf("DoAutomaticDenominating --- Can't find random masternode!\n");
+    //            strAutoDenomResult = _("Can't find random Masternode.");
+    //            return false;
+    //        }
 
-            if (pmn->nLastDsq != 0 &&
-                pmn->nLastDsq + mnodeman.CountEnabled(ActiveProtocol()) / 5 > mnodeman.nDsqCount) {
-                i++;
-                continue;
-            }
+    //        if (pmn->nLastDsq != 0 &&
+    //            pmn->nLastDsq + mnodeman.CountEnabled(ActiveProtocol()) / 5 > mnodeman.nDsqCount) {
+    //            i++;
+    //            continue;
+    //        }
 
-            lastTimeChanged = GetTimeMillis();
-            LogPrintf("DoAutomaticDenominating --- attempt %d connection to Masternode %s\n", i, pmn->addr.ToString());
-            CNode* pnode = ConnectNode((CAddress)pmn->addr, NULL, true);
-            if (pnode != NULL) {
-                pSubmittedToMasternode = pmn;
-                vecMasternodesUsed.push_back(pmn->vin);
+    //        lastTimeChanged = GetTimeMillis();
+    //        LogPrintf("DoAutomaticDenominating --- attempt %d connection to Masternode %s\n", i, pmn->addr.ToString());
+    //        CNode* pnode = ConnectNode((CAddress)pmn->addr, NULL, true);
+    //        if (pnode != NULL) {
+    //            pSubmittedToMasternode = pmn;
+    //            vecMasternodesUsed.push_back(pmn->vin);
 
-                std::vector<CAmount> vecAmounts;
-                pwalletMain->ConvertList(vCoins, vecAmounts);
-                // try to get a single random denom out of vecAmounts
-                while (sessionDenom == 0)
-                    sessionDenom = GetDenominationsByAmounts(vecAmounts);
+    //            std::vector<CAmount> vecAmounts;
+    //            pwalletMain->ConvertList(vCoins, vecAmounts);
+    //            // try to get a single random denom out of vecAmounts
+    //            while (sessionDenom == 0)
+    //                sessionDenom = GetDenominationsByAmounts(vecAmounts);
 
-                pnode->PushMessage("dsa", sessionDenom, txCollateral);
-                LogPrintf("DoAutomaticDenominating --- connected, sending dsa for %d\n", sessionDenom);
-                strAutoDenomResult = _("Mixing in progress...");
-                return true;
-            } else {
-                vecMasternodesUsed.push_back(pmn->vin); // postpone MN we wasn't able to connect to
-                i++;
-                continue;
-            }
-        }
+    //            pnode->PushMessage("dsa", sessionDenom, txCollateral);
+    //            LogPrintf("DoAutomaticDenominating --- connected, sending dsa for %d\n", sessionDenom);
+    //            strAutoDenomResult = _("Mixing in progress...");
+    //            return true;
+    //        } else {
+    //            vecMasternodesUsed.push_back(pmn->vin); // postpone MN we wasn't able to connect to
+    //            i++;
+    //            continue;
+    //        }
+    //    }
 
-        strAutoDenomResult = _("No compatible Masternode found.");
-        return false;
-    }
+    //    strAutoDenomResult = _("No compatible Masternode found.");
+    //    return false;
+    //}
 
-    strAutoDenomResult = _("Mixing in progress...");
+    //strAutoDenomResult = _("Mixing in progress...");
     return false;
 }
 
@@ -1880,7 +1881,7 @@ bool CObfuscationPool::IsCompatibleWithSession(int64_t nDenom, CTransaction txCo
             //broadcast that I'm accepting entries, only if it's the first entry through
             CObfuscationQueue dsq;
             dsq.nDenom = nDenom;
-            dsq.vin = activeMasternode.vin;
+            // dsq.vin = activeMasternode.vin;
             dsq.time = GetTime();
             dsq.Sign();
             dsq.Relay();
@@ -2221,18 +2222,19 @@ bool CObfuscationQueue::Relay()
 
 bool CObfuscationQueue::CheckSignature()
 {
-    CMasternode* pmn = mnodeman.Find(vin);
+	throw runtime_error("Should never reach CObfuscationQueue::CheckSignature()");
+    //CMasternode* pmn = mnodeman.Find(vin);
 
-    if (pmn != NULL) {
-        std::string strMessage = vin.ToString() + boost::lexical_cast<std::string>(nDenom) + boost::lexical_cast<std::string>(time) + boost::lexical_cast<std::string>(ready);
+    //if (pmn != NULL) {
+    //    std::string strMessage = vin.ToString() + boost::lexical_cast<std::string>(nDenom) + boost::lexical_cast<std::string>(time) + boost::lexical_cast<std::string>(ready);
 
-        std::string errorMessage = "";
-        if (!obfuScationSigner.VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
-            return error("CObfuscationQueue::CheckSignature() - Got bad Masternode address signature %s \n", vin.ToString().c_str());
-        }
+    //    std::string errorMessage = "";
+    //    if (!obfuScationSigner.VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+    //        return error("CObfuscationQueue::CheckSignature() - Got bad Masternode address signature %s \n", vin.ToString().c_str());
+    //    }
 
-        return true;
-    }
+    //    return true;
+    //}
 
     return false;
 }
@@ -2259,7 +2261,7 @@ void CObfuscationPool::RelayIn(const std::vector<CTxDSIn>& vin, const int64_t& n
     BOOST_FOREACH (CTxDSOut out, vout)
         vout2.push_back(out);
 
-    CNode* pnode = FindNode(pSubmittedToMasternode->addr);
+    CNode* pnode = FindNode(pSubmittedToMasternode->service);
     if (pnode != NULL) {
         LogPrintf("RelayIn - found master, relaying message - %s \n", pnode->addr.ToString());
         pnode->PushMessage("dsi", vin2, nAmount, txCollateral, vout2);
@@ -2285,40 +2287,40 @@ void ThreadCheckObfuScationPool()
 {
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
 
-    // Make this thread recognisable as the wallet flushing thread
-    RenameThread("divi-obfuscation");
+    //// Make this thread recognisable as the wallet flushing thread
+    //RenameThread("divi-obfuscation");
 
-    unsigned int c = 0;
+    //unsigned int c = 0;
 
-    while (true) {
-        MilliSleep(1000);
-        //LogPrintf("ThreadCheckObfuScationPool::check timeout\n");
+    //while (true) {
+    //    MilliSleep(1000);
+    //    //LogPrintf("ThreadCheckObfuScationPool::check timeout\n");
 
-        // try to sync from all available nodes, one step at a time
-        masternodeSync.Process();
+    //    // try to sync from all available nodes, one step at a time
+    //    masternodeSync.Process();
 
-        if (masternodeSync.IsBlockchainSynced()) {
-            c++;
+    //    if (masternodeSync.IsBlockchainSynced()) {
+    //        c++;
 
-            // check if we should activate or ping every few minutes,
-            // start right after sync is considered to be done
-            if (c % MASTERNODE_PING_SECONDS == 1) activeMasternode.ManageStatus();
+    //        // check if we should activate or ping every few minutes,
+    //        // start right after sync is considered to be done
+    //        if (c % MASTERNODE_PING_SECONDS == 1) activeMasternode.ManageStatus();
 
-            if (c % 60 == 0) {
-                mnodeman.CheckAndRemove();
-                mnodeman.ProcessMasternodeConnections();
-                masternodePayments.CleanPaymentList();
-                CleanTransactionLocksList();
-            }
+    //        if (c % 60 == 0) {
+    //            mnodeman.CheckAndRemove();
+    //            mnodeman.ProcessMasternodeConnections();
+    //            masternodePayments.CleanPaymentList();
+    //            CleanTransactionLocksList();
+    //        }
 
-            //if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
+    //        //if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
 
-            obfuScationPool.CheckTimeout();
-            obfuScationPool.CheckForCompleteQueue();
+    //        obfuScationPool.CheckTimeout();
+    //        obfuScationPool.CheckForCompleteQueue();
 
-            if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
-                obfuScationPool.DoAutomaticDenominating();
-            }
-        }
-    }
+    //        if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
+    //            obfuScationPool.DoAutomaticDenominating();
+    //        }
+    //    }
+    //}
 }

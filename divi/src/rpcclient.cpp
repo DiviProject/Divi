@@ -105,7 +105,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"submitbudget", 3},
         {"submitbudget", 5},
         {"submitbudget", 7},
-		{"allocatefunds", 1 },
+		// {"allocatefunds", 1 },
 		{"fundmasternode", 3 },
 		{"mnvoteraw", 1},
         {"mnvoteraw", 4},

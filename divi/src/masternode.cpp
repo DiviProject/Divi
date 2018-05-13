@@ -115,9 +115,10 @@ string CMasternode::ReadDBs() {
 	return str1 + "/n" + str2;
 }
 
-string CMasternode::SignMsg(string msg, vector<unsigned char>& vchSig)
+string CMasternode::SignMsg(string address, string msg, vector<unsigned char>& vchSig)
 {
 	CBitcoinAddress address2(address);
+	// if (address2.IsValid()) fprintf(stderr, "good address"); else fprintf(stderr, "bad address");
 	CKeyID keyID;
 	address2.GetKeyID(keyID);
 	CKey key;

@@ -45,6 +45,8 @@ map<uint256, CObfuscationBroadcastTx> mapObfuscationBroadcastTxes;
 
 void CObfuscationPool::ProcessMessageObfuscation(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
+	return;
+
 	throw runtime_error("Should never reach CObfuscationPool::ProcessMessageObfuscation");
     //if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
     //if (!masternodeSync.IsBlockchainSynced()) return;

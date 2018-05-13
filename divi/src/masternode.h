@@ -62,6 +62,7 @@ class CMnTier {
 public:
 	string name;
 	CAmount collateral;
+	int premium;
 	int seesawBasis;
 
 	ADD_SERIALIZE_METHODS;
@@ -71,17 +72,18 @@ public:
 	{
 		READWRITE(name);
 		READWRITE(collateral);
+		READWRITE(premium);
 		READWRITE(seesawBasis);
 	}
 
 	string ToString() { return name + to_string(collateral) + to_string(seesawBasis); }
 };
 
-const CMnTier Diamond{ "diamond", 100000 * COIN, 2000 };
-const CMnTier Platinum{ "platinum", 30000 * COIN, 2000 };
-const CMnTier Gold{ "gold", 10000 * COIN, 2000 };
-const CMnTier Silver{ "silver", 3000 * COIN, 2000 };
-const CMnTier Copper{ "copper", 1000 * COIN, 2000 };
+const CMnTier Diamond{ "diamond", 10000000 * COIN, 120, 2000 };
+const CMnTier Platinum{ "platinum", 3000000 * COIN, 115, 2000 };
+const CMnTier Gold{ "gold", 1000000 * COIN, 110, 2000 };
+const CMnTier Silver{ "silver", 300000 * COIN, 105, 2000 };
+const CMnTier Copper{ "copper", 100000 * COIN, 100, 2000 };
 
 class CMnFunding
 {
@@ -114,7 +116,7 @@ private:
 	int64_t lastTimeChecked;
 
 public:
-	string address;							// used as the masternode ID
+	string address = "uninitialized";		// used as the masternode ID
 	int protocolVersion;
 	CMnTier tier;
 	vector<CMnFunding> funding;
@@ -162,7 +164,8 @@ public:
 
 	bool IsEnabled();
 	string ReadDBs();
-	string SignMsg(string msg, vector<unsigned char>& vchSig);
+	string SignMsg(string msg, vector<unsigned char>& vchSig) { return(SignMsg(address, msg, vchSig)); }
+	string SignMsg(string address, string msg, vector<unsigned char>& vchSig);
 	string StartUp();
 	string VerifyFunding();
 	string VerifyMsg(string strAddress, string msg, vector<unsigned char>& vchSig);

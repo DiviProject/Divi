@@ -13,6 +13,7 @@
 #include "masternodeman.h"
 #include "rpcserver.h"
 #include "utilmoneystr.h"
+#include "script/standard.h"
 
 #include <boost/tokenizer.hpp>
 
@@ -56,8 +57,6 @@ Value allocatefunds(const Array& params, bool fHelp)
 	// else if (strAmt.find_first_not_of( "0123456789" ) == string::npos) nAmount = AmountFromValue(params[2]);
 	else throw runtime_error("invalid amount");
 
-	throw runtime_error("BOOM!");
-
 	CWalletTx wtx;
 	SendMoney(acctAddr.Get(), nAmount, wtx);
 
@@ -70,28 +69,34 @@ Value fundmasternode(const Array& params, bool fHelp)
 {
 	if (fHelp || params.size() < 3 || params.size() > 6)
 		throw runtime_error(
-			"fundmasternode masternode amount ( \"pay wallet\" ( \"voting wallet\" ) )\n"
-			"\nEscrows funds for a masternode and returns necessary info for it's configuration file.\n"
+			"fundmasternode alias amount TxID masternode ( \"pay wallet\" ( \"voting wallet\" ) )\n"
+			"\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
 			"\nArguments:\n"
 			"1. alias			(string, required) helpful identifier to recognize this allocation later.\n"
-			"2. funding			(string, required) funding transaction id .\n"
-			"3. masternode		(string, required) address of masternode.\n"
-			"4. amount			(numeric, required) amount of divi funded.\n"
+			"2. amount			(diamond, platinum, gold, silver, copper) tier of masternode. \n"
+			"      <future>     (numeric, required) amount of divi funded will also be accepted for partially funding master nodes and other purposes.\n"
+			"3. TxID			(string, required) funding transaction id .\n"
+			"4. masternode		(string, required) address of masternode.\n"
 			"5. pay wallet		(string, optional) public key of pay wallet (if different from funding wallet).\n"
-			"6. voting wallet	(string, optional) public key of voting wallet (if different from funding wallet).\n"
+			"6. voting wallet	(string, optional) public key of voting wallet (if different from pay wallet).\n"
 			"(use an empty string for the pay wallet if the same as the funding wallet and you wish to assign a different voting wallet).\n"
 
 			"\nResult:\n"
-			"\"vin\"			(string) funding transactions details for masternode configuration file.\n"
-			"\"sig\"			(string) signature proving that you authorized this.\n");
+			"\"config line\"	(string) the above details for the masternode & wallet config files & cryptographic signature proving that you authorized this.\n");
 
-	uint256 txHash = uint256(params[1].get_str());
-	std::string mnAddress = params[2].get_str();
-	CAmount nAmount = AmountFromValue(params[3]);
-	std::string pWallet, vWallet;
-	if (params.size() < 5) pWallet = ""; else pWallet = params[4].get_str();
-	if (params.size() < 6) vWallet = ""; else vWallet = params[5].get_str();
+	string strAmt = params[1].get_str();
+	CAmount nAmount;
+	if (strAmt == "diamond") { nAmount = Diamond.collateral; }
+	else if (strAmt == "platinum") { nAmount = Platinum.collateral; }
+	else if (strAmt == "gold") { nAmount = Gold.collateral; }
+	else if (strAmt == "silver") { nAmount = Silver.collateral; }
+	else if (strAmt == "copper") { nAmount = Copper.collateral; }
+	// else if (strAmt.find_first_not_of( "0123456789" ) == string::npos) nAmount = AmountFromValue(params[2]);
+	else throw runtime_error("invalid amount");
+
+	uint256 txHash = uint256(params[2].get_str());
+	std::string mnAddress = params[3].get_str();
 
 	vector<COutput> vCoins;
 	pwalletMain->AvailableCoins(vCoins);
@@ -105,14 +110,27 @@ Value fundmasternode(const Array& params, bool fHelp)
 		}
 	}
 
-	if (!found)
-		throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction");
+	if (!found) throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction");
 
 	CMnFunding funds = CMnFunding({ nAmount, CTxIn(txHash, selectedOutput->i) });
+	if (!funds.CheckVin(mnAddress)) throw JSONRPCError(RPC_VERIFY_ERROR, "Transaction is not valid");
 
+	std::string pWallet, vWallet;
+	if (params.size() < 5) pWallet = GetAccountAddress("", false).ToString(); else pWallet = params[4].get_str();
+	if (params.size() < 6) vWallet = pWallet; else vWallet = params[5].get_str();
+
+	string config = params[0].get_str() + " " + params[1].get_str() + " " + params[2].get_str() + " " + to_string(selectedOutput->i) + " " + mnAddress;
+	config += " " + pWallet + " " + vWallet;
+
+	vector<unsigned char> vchSig;
+	CTxDestination address1;
+	ExtractDestination(selectedOutput->tx->vout[selectedOutput->i].scriptPubKey, address1);
+	CBitcoinAddress address2(address1);
+	mnodeman.my->SignMsg(address2.ToString(), config, vchSig);
+	config += " " + EncodeBase64(&vchSig[0], vchSig.size());
 
 	Object obj;
-	obj.push_back(Pair("vin status", funds.CheckVin(mnAddress)));
+	obj.push_back(Pair("config line", config));
 	return obj;
 }
 

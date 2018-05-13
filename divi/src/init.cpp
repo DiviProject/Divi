@@ -1640,6 +1640,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     //        LogPrintf("file format is unknown or invalid, please fix it manually\n");
     //}
 
+	mnodeman.my = new CMasternode();
     fMasterNode = GetBoolArg("-masternode", false);
 
     if ((fMasterNode || masternodeConfig.getCount() > -1) && fTxIndex == false) {

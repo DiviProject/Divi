@@ -86,6 +86,11 @@ string MnObject<T>::Write(T& mnObject, string strFile)	// allows dumping of mnod
 }
 
 bool CMnFunding::CheckVin(string address) {
+	// TODO: check signature
+	CTransaction vTx;
+	uint256 hashBlock;
+	if (!GetTransaction(vin.prevout.hash, vTx, hashBlock, false)) fprintf(stderr, "Can't get TX");
+	
 	CValidationState state;
 	CMutableTransaction tx = CMutableTransaction();
 

@@ -2185,9 +2185,11 @@ int64_t GetBlockValue(int nHeight)
 		nSubsidy = 50 * COIN;
 	} else if (nHeight == 1) {
 		nSubsidy = 534320700 * COIN;
-	} else {
+	} else if (nHeight < Params().LAST_POW_BLOCK()) {
         nSubsidy = 1 * COIN;
-    }
+	} else {
+		nSubsidy = 600 * COIN;
+	}
 
     return nSubsidy;
 }
@@ -2195,6 +2197,8 @@ int64_t GetBlockValue(int nHeight)
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)
 {
     int64_t ret = 0;
+
+	return ret;			// All masternode payments are disabled for beta until ready to test
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) { if (nHeight < 200) return 0; }
 

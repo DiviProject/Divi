@@ -98,6 +98,23 @@ Value fundmasternode(const Array& params, bool fHelp)
 	uint256 txHash = uint256(params[2].get_str());
 	std::string mnAddress = params[3].get_str();
 
+	// Temporary unlock MN coins from masternode.conf
+	vector<COutPoint> confLockedCoins;
+	if (GetBoolArg("-mnconflock", true)) {
+		uint256 mnTxHash;
+		BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+			mnTxHash.SetHex(mne.getTxHash());
+
+			int nIndex;
+			if (!mne.castOutputIndex(nIndex))
+				continue;
+
+			COutPoint outpoint = COutPoint(mnTxHash, nIndex);
+			confLockedCoins.push_back(outpoint);
+			pwalletMain->UnlockCoin(outpoint);
+		}
+	}
+
 	vector<COutput> vCoins;
 	pwalletMain->AvailableCoins(vCoins);
 	const COutput* selectedOutput;
@@ -115,19 +132,25 @@ Value fundmasternode(const Array& params, bool fHelp)
 	CMnFunding funds = CMnFunding({ nAmount, CTxIn(txHash, selectedOutput->i) });
 	if (!funds.CheckVin(mnAddress)) throw JSONRPCError(RPC_VERIFY_ERROR, "Transaction is not valid");
 
+	// Lock MN coins from masternode.conf back if they where temporary unlocked
+	if (!confLockedCoins.empty()) {
+		BOOST_FOREACH(COutPoint outpoint, confLockedCoins)
+			pwalletMain->LockCoin(outpoint);
+	}
+
 	std::string pWallet, vWallet;
 	if (params.size() < 5) pWallet = GetAccountAddress("", false).ToString(); else pWallet = params[4].get_str();
 	if (params.size() < 6) vWallet = pWallet; else vWallet = params[5].get_str();
 
-	string config = params[0].get_str() + " " + params[1].get_str() + " " + params[2].get_str() + " " + to_string(selectedOutput->i) + " " + mnAddress;
-	config += " " + pWallet + " " + vWallet;
+	string config = params[1].get_str() + " " + params[2].get_str() + " " + to_string(selectedOutput->i) + " " + mnAddress + " " + pWallet + " " + vWallet;
 
 	vector<unsigned char> vchSig;
 	CTxDestination address1;
 	ExtractDestination(selectedOutput->tx->vout[selectedOutput->i].scriptPubKey, address1);
 	CBitcoinAddress address2(address1);
 	mnodeman.my->SignMsg(address2.ToString(), config, vchSig);
-	config += " " + EncodeBase64(&vchSig[0], vchSig.size());
+
+	config = params[0].get_str() + " " + config + " " + EncodeBase64(&vchSig[0], vchSig.size());
 
 	Object obj;
 	obj.push_back(Pair("config line", config));

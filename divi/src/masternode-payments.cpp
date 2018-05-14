@@ -30,6 +30,8 @@ bool CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFees, bool fProofOfStake)
 {
+	return;				// All masternode payments are disabled for beta until ready to test			
+
 	string payee = mVotes[mnodeman.currHeight + 1].MostVotes();			// IMPORTANT! Does not require 6 as PIVX does.  Need to revisit this!
 	if (payee == "") payee = mnodeman.vCurrScores[0].second;
 	CScript scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
@@ -54,6 +56,8 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
 bool CMasternodePayments::IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 {
+	return true;		// All masternode payments are disabled for beta until ready to test			
+
 	CTransaction txNew = (nBlockHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
 	// require at least MNPAYMENTS_SIGNATURES_REQUIRED votes or approve *anything*

@@ -58,6 +58,9 @@ public:
 	void Update(CMasternode* mn);
 	void UpdatePing(CMasternodePing* mnp);
 
+	void CountNetworks(int protocolVersion, int& ipv4, int& ipv6, int& onion) { ipv4 = ipv6 = onion = 0; }
+	int size() { return mMasternodes.size(); }
+
 	void AskForMN(CNode* pnode, string& address);
 	void DsegUpdate(CNode* pnode);
 	void ProcessBlock();

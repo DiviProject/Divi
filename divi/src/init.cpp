@@ -19,6 +19,7 @@
 #include "compat/sanity.h"
 #include "key.h"
 #include "main.h"
+#include "masternode.h"
 #include "masternode-budget.h"
 #include "masternode-payments.h"
 #include "masternodeconfig.h"
@@ -1591,7 +1592,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 10: setup ObfuScation
 
-    uiInterface.InitMessage(_("Loading masternode cache..."));
+	uiInterface.InitMessage(_("Loading masternode cache..."));
 	mnodeman.my->ReadDBs();
     //CMasternodeDB mndb;
     //CMasternodeDB::ReadResult readResult = mndb.Read(mnodeman);
@@ -1640,7 +1641,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     //        LogPrintf("file format is unknown or invalid, please fix it manually\n");
     //}
 
-	mnodeman.my = new CMasternode();
     fMasterNode = GetBoolArg("-masternode", false);
 
     if ((fMasterNode || masternodeConfig.getCount() > -1) && fTxIndex == false) {
@@ -1649,40 +1649,24 @@ bool AppInit2(boost::thread_group& threadGroup)
     }
 
     if (fMasterNode) {
-        LogPrintf("IS MASTER NODE\n");
-        strMasterNodeAddr = GetArg("-masternodeaddr", "");
+		LogPrintf("IS MASTER NODE\n");
 
-        LogPrintf(" addr %s\n", strMasterNodeAddr.c_str());
+		string ipAddress = GetArg("-externalip", "");
+		// fprintf(stderr, " ip addr %s\n", ipAddress.c_str());
 
-        if (!strMasterNodeAddr.empty()) {
-            CService addrTest = CService(strMasterNodeAddr);
+        if (!ipAddress.empty()) {
+            CService addrTest = CService(ipAddress);
             if (!addrTest.IsValid()) {
-                return InitError("Invalid -masternodeaddr address: " + strMasterNodeAddr);
+                return InitError("Invalid -masternodeaddr address: " + ipAddress);
             }
-        }
+        } else return InitError("ERROR: divi.conf contains no externalip");
 
-        strMasterNodePrivKey = GetArg("-masternodeprivkey", "");
-        if (!strMasterNodePrivKey.empty()) {
-            std::string errorMessage;
+        strMasterNodePrivKey = GetArg("-mndiviaddress", "");
 
-            CKey key;
-            CPubKey pubkey;
-
-            if (!obfuScationSigner.SetKey(strMasterNodePrivKey, errorMessage, key, pubkey)) {
-                return InitError(_("Invalid masternodeprivkey. Please see documenation."));
-            }
-
-            // activeMasternode.pubKeyMasternode = pubkey;
-
-        } else {
-            return InitError(_("You must specify a masternodeprivkey in the configuration. Please see documentation for help."));
-        }
-    }
-
-    //get the mode of budget voting for this masternode
-    strBudgetMode = GetArg("-budgetvotemode", "auto");
-
-    if (GetBoolArg("-mnconflock", true) && pwalletMain) {
+		for (vector<CMnFunding>::iterator it = mnodeman.my->funding.begin(); it != mnodeman.my->funding.end(); it++) {
+			if (!(*it).CheckVin(strMasterNodePrivKey)) return InitError("funding failed validity check!\n");
+		}
+	} else if (GetBoolArg("-mnconflock", true) && pwalletMain) {
         LOCK(pwalletMain->cs_wallet);
         LogPrintf("Locking Masternodes:\n");
         uint256 mnTxHash;

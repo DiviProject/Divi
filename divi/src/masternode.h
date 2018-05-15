@@ -92,7 +92,7 @@ public:
 	CTxIn vin;
 	string payAddress;
 	string voteAddress;
-	vector<unsigned char> sig;
+	string sig;
 
 	ADD_SERIALIZE_METHODS;
 
@@ -107,6 +107,7 @@ public:
 	}
 
 	bool CheckVin(string address);
+	bool CheckSig(vector<unsigned char> sig);
 	string ToString() { return to_string(amount) + vin.ToString() + payAddress + voteAddress; }
 };
 

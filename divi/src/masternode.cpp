@@ -108,7 +108,7 @@ bool CMasternode::IsEnabled()
 {
 	if (GetAdjustedTime() - lastTimeChecked < MASTERNODE_CHECK_SECONDS) return true;
 	lastTimeChecked = GetAdjustedTime();
-	if (lastPing.sigTime + MASTERNODE_EXPIRATION_SECONDS < lastTimeChecked) { return false; }
+ 	if (lastPing.sigTime + MASTERNODE_EXPIRATION_SECONDS < lastTimeChecked) { return false; }
 	return (VerifyFunding() == "");
 }
 
@@ -141,13 +141,19 @@ string CMasternode::StartUp()
 	string errorMsg;
 	if (!fMasterNode) return "Not a masternode";
 	if (pwalletMain->IsLocked()) return "Cannot start - Wallet is locked.";
-	if (strMasterNodeAddr.empty()) return "Cannot start -  No external address";
-	CNode* pnode = ConnectNode((CAddress)CService(strMasterNodeAddr), NULL, false);
-	if (!pnode) return "Cannot start - Could not connect to " + service.ToString();
-	pnode->Release();
+	//if (strMasterNodeAddr.empty()) return "Cannot start -  No external address";
+	//CNode* pnode = ConnectNode((CAddress)CService(strMasterNodeAddr), NULL, false);
+	//if (!pnode) return "Cannot start - Could not connect to " + service.ToString()
+	//pnode->Release();
+	protocolVersion = 1;
+	sigTime = GetAdjustedTime();
 	if ((errorMsg = VerifyFunding()) != "") return "Cannot start - Funding verification failed!  " + errorMsg;
+	LogPrintStr("\nbefore = " + EncodeBase64(&vchSig[0], vchSig.size()));
 	if ((errorMsg = SignMsg(ToString(), vchSig)) != "") return "Bad mnb signature " + errorMsg;
-	if ((errorMsg = SignMsg(lastPing.ToString(), lastPing.vchSig)) != "") return "Bad ping signature " + errorMsg;
+	LogPrintStr("\nafter = " + EncodeBase64(&vchSig[0], vchSig.size()));
+	lastPing.address = address;
+	lastPing.sigTime = GetAdjustedTime();
+	// if ((errorMsg = SignMsg(lastPing.ToString(), lastPing.vchSig)) != "") return "Bad ping signature " + errorMsg;
 
 	addrman.Add(CAddress(service), CNetAddr("127.0.0.1"), 2 * 60 * 60);
 	mnodeman.Add(mnodeman.my);
@@ -165,17 +171,17 @@ string CMasternode::VerifyMsg(string strAddress, string msg, vector<unsigned cha
 	ss << strMessageMagic << msg << sigTime;
 
 	CPubKey pubkey;
-	if (!pubkey.RecoverCompact(ss.GetHash(), vchSig)) return "Bad signature!";
-	if (pubkey.GetID() == keyID) return "Bad signature!"; else return "";
+	if (!pubkey.RecoverCompact(ss.GetHash(), vchSig)) return "Error recovering public key!";
+	if (pubkey.GetID() != keyID) return "Keys don't match!"; else return "";
 }
 
 string CMasternode::VerifyFunding() {
 	CAmount totalFunding = 0;
 	for (vector<CMnFunding>::iterator it = funding.begin(); it != funding.end(); it++) {
 		int ageOfFunds = GetInputAge((*it).vin);
-		if (ageOfFunds < MASTERNODE_MIN_CONFIRMATIONS) return "Fundng needs more confirmations";
-		if (sigTime < ageOfFunds) return "Misbehaving masternode";
-		if ((*it).CheckVin(address)) return "Funds have been spent";
+		if (ageOfFunds < MASTERNODE_MIN_CONFIRMATIONS) return "Funding needs more confirmations";
+		// if (sigTime < GetAdjustedTime() - ageOfFunds) return "Misbehaving masternode";
+		if (!(*it).CheckVin(address)) return "Funds have been spent";
 		totalFunding += (*it).amount;
 	}
 	if (totalFunding < tier.collateral) return "Insufficient funds"; else return "";

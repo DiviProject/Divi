@@ -178,14 +178,15 @@ string nodeHelp(string indent = "")
 	return ret;
 }
 
-void nodeStatus(Object obj, CMasternode* mn)
+void nodeStatus(Object* obj, CMasternode* mn)
 {
-	obj.push_back(Pair("address", mn->address));
-	obj.push_back(Pair("protocol", mn->protocolVersion));
-	obj.push_back(Pair("netaddr", mn->service.ToString()));
-	obj.push_back(Pair("lastseen", GetAdjustedTime() - mn->lastPing.sigTime));
-	obj.push_back(Pair("activetime", mn->lastPing.sigTime - mn->sigTime));
-	obj.push_back(Pair("lastpaid", GetAdjustedTime() - mn->lastPaid));
+	obj->push_back(Pair("address", mn->address));
+	obj->push_back(Pair("tier", mn->tier.name));
+	obj->push_back(Pair("protocol", mn->protocolVersion));
+	obj->push_back(Pair("netaddr", mn->service.ToString()));
+	obj->push_back(Pair("lastseen", GetAdjustedTime() - mn->lastPing.sigTime));
+	obj->push_back(Pair("activetime", mn->lastPing.sigTime - mn->sigTime));
+	// obj->push_back(Pair("lastpaid", GetAdjustedTime() - mn->lastPaid));
 }
 
 Value listmasternodes(const Array& params, bool fHelp)
@@ -215,12 +216,24 @@ Value listmasternodes(const Array& params, bool fHelp)
 
 	Object ret;
 	int i = 1;
-	for (vector<pair<uint256, string>>::iterator it = mnodeman.vCurrScores.begin(); it != mnodeman.vCurrScores.end(); it++, i++) {
+	//if (mnodeman.vCurrScores.size() == 0) {
+	if (mnodeman.mMasternodes.size() > 0) {
+		ret.push_back(Pair("Warning:", "Masternode selection process currently in process so list is *unranked*"));
+		ret.push_back(Pair("mnodeman.mMasternodes.size:", to_string(mnodeman.mMasternodes.size())));
+		for (map<uint256, CMasternode>::iterator it = mnodeman.mMasternodes.begin(); it != mnodeman.mMasternodes.end(); it++, i++) {
+			Object obj;
+			CMasternode mn = (*it).second;
+			if (strFilter != "" && mn.address.find(strFilter) == string::npos && mn.service.ToString().find(strFilter) == string::npos) continue;
+			nodeStatus(&obj, &mn);
+			ret.push_back(Pair("Result:", obj));
+		}
+	}
+	else for (vector<pair<uint256, string>>::iterator it = mnodeman.vCurrScores.begin(); it != mnodeman.vCurrScores.end(); it++, i++) {
 		Object obj;
 		CMasternode* mn = mnodeman.Find((*it).second);
 		if (strFilter != "" && mn->address.find(strFilter) == string::npos && mn->service.ToString().find(strFilter) == string::npos) continue;
 		obj.push_back(Pair("rank", i));
-		nodeStatus(obj, mn);
+		nodeStatus(&obj, mn);
 		ret.push_back(Pair("Result:", obj));
 	}
 	return ret;
@@ -289,13 +302,14 @@ Value masternodecurrent(const Array& params, bool fHelp)
 			HelpExampleCli("masternodecurrent", "") + HelpExampleRpc("masternodecurrent", ""));
 
 	Object obj;
-	nodeStatus(obj, mnodeman.Find(mnodeman.vCurrScores[0].second));
+	if (mnodeman.vCurrScores.size() == 0) { obj.push_back(Pair("Warning:", "Current masternode selection still in process")); return obj; }
+	nodeStatus(&obj, mnodeman.Find(mnodeman.vCurrScores[0].second));
 	return obj;
 }
 
 Value startmasternode(const Array& params, bool fHelp)
 {
-	throw runtime_error("startmasternode is deprecated!  Master nodes now automatically sart themselves");
+	throw runtime_error("startmasternode is deprecated!  Master nodes now automatically start themselves");
 }
 
 Value createmasternodekey(const Array& params, bool fHelp)
@@ -330,7 +344,7 @@ Value getmasternodestatus(const Array& params, bool fHelp)
 	if (!fMasterNode) throw runtime_error("This is not a masternode");
 
 	Object obj;
-	nodeStatus(obj, mnodeman.my);
+	nodeStatus(&obj, mnodeman.Find(mnodeman.my->address));
 	return obj;
 }
 

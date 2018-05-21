@@ -21,10 +21,12 @@ struct CompareScores { bool operator()(const pair<uint256, string>& t1, const pa
 
 void CMasternodeMan::Add(CMasternode* mn)
 {
+	LogPrintf("Add STARTED!\n");
 	LOCK(cs);
 	mMasternodes[mn->GetHash()] = *mn;
 	mAddress2MnHash[mn->address] = mn->GetHash();
 	mn->Relay();
+	LogPrintf("Add DONE!\n");
 }
 
 void CMasternodeMan::Remove(CMasternode* mn)
@@ -104,10 +106,11 @@ void CMasternodeMan::ProcessBlock()
 
 	if (!chainActive.Tip()) return;
 	CBlockIndex* currBlock = chainActive.Tip();
-	if (currHeight <= currBlock->nHeight) return;
+	if (currHeight >= currBlock->nHeight) return;
 	int currHeight = currBlock->nHeight;
 
-	if (my->lastPing.sigTime + MASTERNODE_PING_SECONDS > GetAdjustedTime()) {
+	if (my->lastPing.sigTime + MASTERNODE_PING_SECONDS < GetAdjustedTime()) {
+		LogPrintStr("\n\n\n\n SENDING PING!!!\n\n\n\n");
 		my->lastPing.blockHeight = currHeight;
 		my->lastPing.blockHash = currBlock->GetBlockHash();
 		my->lastPing.sigTime = GetAdjustedTime();
@@ -125,8 +128,8 @@ void CMasternodeMan::ProcessBlock()
 	LOCK(cs);
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
 		CMasternode mn = (*it).second;
-		if (!mn.IsEnabled()) { mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
-		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) continue;
+		if (!mn.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
+		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) { it++;  continue; }
 		stableSize++;
 		/* calculate scores */
 		uint256 currHashM = DoubleHash(currHash, mn.address);
@@ -164,6 +167,7 @@ void CMasternodeMan::ProcessBlock()
 	for (map<CNetAddr, int64_t>::iterator it = mAskedUs4List.begin(); it != mAskedUs4List.end(); ) if ((*it).second < GetTime()) mAskedUs4List.erase(it++); else ++it;
 	for (map<CNetAddr, int64_t>::iterator it = mWeAsked4List.begin(); it != mWeAsked4List.end(); ) if ((*it).second < GetTime()) mWeAsked4List.erase(it++); else ++it;
 	for (map<string, int64_t>::iterator it = mWeAsked4Entry.begin(); it != mWeAsked4Entry.end(); ) if ((*it).second < GetTime()) mWeAsked4Entry.erase(it++); else ++it;
+	LogPrintf("masternodeman.ProcessBlock END\n");
 }
 
 void CMasternodeMan::ProcessMasternodeConnectionsX()
@@ -190,10 +194,13 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
 	LOCK(cs_process_message);
 
+	LogPrintStr("\n\n\n\n\ masternodeman.ProcessMessage START\n");
+	LogPrintStr(strCommand);
 	if (strCommand == "mnb") { //Masternode Broadcast
+		LogPrintf("masternodeman.ProcessMessage mnb START\n");
 		CMasternode mnb;
 		vRecv >> mnb;
-		if (mMasternodes.count(mnb.GetHash())) return;		// entirely redundant
+		if (mMasternodes.count(mnb.GetHash())) { LogPrintf("masternodeman.ProcessMessage mnb already seen \n"); return; }		// entirely redundant
 
 		CMasternode* pmn = Find(mnb.address);
 		if (pmn && pmn->sigTime > mnb.sigTime) { LogPrint("masternode", "Obsolete Masternode %s\n", mnb.address); return; }	// should never happen, but . . . 
@@ -202,8 +209,10 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		if ((errorMsg = my->VerifyMsg(mnb.address, mnb.ToString(), mnb.vchSig)) != "") { LogPrint("masternode", "Bad signature %s\n", mnb.address); return; }
 		if ((errorMsg = mnb.VerifyFunding()) != "") { LogPrint("masternode", "Masternode %s - %s\n", mnb.address, errorMsg); return; }
 		if (!Find(mnb.address)) Add(&mnb); else Update(&mnb);
+		LogPrintf("masternodeman.ProcessMessage mnb END\n");
 	}
 	else if (strCommand == "mnp") { //Masternode Ping
+		LogPrintf("masternodeman.ProcessMessage mnp START\n");
 		CMasternodePing mnp;
 		vRecv >> mnp;
 		if (mSeenPings.count(mnp.GetHash())) return;		// entirely redundant
@@ -221,6 +230,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		if (now < mn->lastPing.sigTime + MASTERNODE_PING_SECONDS - 60) { LogPrint("masternode", "CMasternodePing - Ping too early %s\n", mnp.address); return; }
 		if ((errorMsg = my->VerifyMsg(mnp.address, mnp.ToString(), mnp.vchSig)) != "") { LogPrint("masternode", "Bad Ping Sig %s\n", mnp.address); return; }
 		UpdatePing(&mnp);
+		LogPrintf("masternodeman.ProcessMessage mnp END\n");
 	}
 	else if (strCommand == "dseg") { //Get Masternode list or specific entry
 		string address;

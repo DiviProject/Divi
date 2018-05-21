@@ -63,13 +63,14 @@ bool CMasternodeConfig::read(std::string& strErr)
 		// fprintf(stderr, "%s %s %s %s", alias.c_str(), tier.c_str(), txHash.c_str(), outputIndex.c_str());
         add(alias, tier, mnAddress, txHash, outputIndex);
 		CAmount nAmount;
-		if (tier == "diamond") { nAmount = Diamond.collateral; }
-		else if (tier == "platinum") { nAmount = Platinum.collateral; }
-		else if (tier == "gold") { nAmount = Gold.collateral; }
-		else if (tier == "silver") { nAmount = Silver.collateral; }
-		else if (tier == "copper") { nAmount = Copper.collateral; }
+		if (tier == "diamond") { nAmount = Diamond.collateral; mnodeman.my->tier = Diamond; }
+		else if (tier == "platinum") { nAmount = Platinum.collateral; mnodeman.my->tier = Platinum; }
+		else if (tier == "gold") { nAmount = Gold.collateral; mnodeman.my->tier = Gold; }
+		else if (tier == "silver") { nAmount = Silver.collateral; mnodeman.my->tier = Silver; }
+		else if (tier == "copper") { nAmount = Copper.collateral; mnodeman.my->tier = Copper; }
 		CTxIn vin = *(new CTxIn(uint256(txHash), atoi(outputIndex)));
 		mnodeman.my->funding.push_back(*(new CMnFunding({ nAmount, vin, payAddress, voteAddress, signature })));
+		
     }
 
     streamConfig.close();

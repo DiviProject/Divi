@@ -40,6 +40,7 @@ void CMasternodeMan::Remove(CMasternode* mn)
 void CMasternodeMan::Update(CMasternode* mn)
 {
 	CMasternode* current = Find(mn->address);
+	if (current->GetHash() == mn->GetHash()) { LogPrintStr("\n\n\n\n\n ERROR: Matching mnb Hashes \n\n\n\n\n"); return; }
 	mWeAsked4Entry.erase(mn->address);
 	mMasternodes[mn->GetHash()] = *mn;
 	mAddress2MnHash[mn->address] = mn->GetHash();;
@@ -50,6 +51,7 @@ void CMasternodeMan::Update(CMasternode* mn)
 void CMasternodeMan::UpdatePing(CMasternodePing* mnp)
 {
 	CMasternode* current = Find(mnp->address);
+	if (current->lastPing.GetHash() == mnp->GetHash()) { LogPrintStr("\n\n\n\n\n ERROR: Matching mnping Hashes \n\n\n\n\n"); return; }
 	mSeenPings.erase(current->lastPing.GetHash());
 	mSeenPings.insert(make_pair(mnp->GetHash(), *mnp));
 	current->lastPing.blockHeight = mnp->blockHeight;
@@ -110,12 +112,12 @@ void CMasternodeMan::ProcessBlock()
 	int currHeight = currBlock->nHeight;
 
 	if (my->lastPing.sigTime + MASTERNODE_PING_SECONDS < GetAdjustedTime()) {
-		LogPrintStr("\n\n\n\n SENDING PING!!!\n\n\n\n");
+		LogPrintStr("SENDING PING!!!\n");
 		my->lastPing.blockHeight = currHeight;
 		my->lastPing.blockHash = currBlock->GetBlockHash();
 		my->lastPing.sigTime = GetAdjustedTime();
 		my->SignMsg(my->lastPing.ToString(), my->lastPing.vchSig);
-		my->lastPing.Relay();
+		UpdatePing(&my->lastPing);
 	}
 
 	uint256 currHash = currBlock->GetBlockHash();
@@ -125,6 +127,7 @@ void CMasternodeMan::ProcessBlock()
 	uint256 voteHash2 = DoubleHash(voteHash);
 
 	stableSize = 0;
+	vCurrScores.clear();
 	LOCK(cs);
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
 		CMasternode mn = (*it).second;
@@ -176,7 +179,7 @@ void CMasternodeMan::ProcessMasternodeConnectionsX()
 	if (Params().NetworkID() == CBaseChainParams::REGTEST) return;
 
 	LOCK(cs_vNodes);
-	for (vector<CNode *>::iterator it = vNodes.begin(); it != vNodes.end(); it++ ) {
+	for (vector<CNode *>::iterator it = vNodes.begin(); it != vNodes.end(); it++) {
 		if ((*it)->fObfuScationMaster) {
 			if (obfuScationPool.pSubmittedToMasternode != NULL && (*it)->addr == obfuScationPool.pSubmittedToMasternode->service) continue;
 			LogPrint("masternode", "Closing Masternode connection peer=%i \n", (*it)->GetId());
@@ -194,7 +197,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
 	LOCK(cs_process_message);
 
-	LogPrintStr("\n\n\n\n\ masternodeman.ProcessMessage START\n");
+	LogPrintStr("\n\n\n\n masternodeman.ProcessMessage START\n");
 	LogPrintStr(strCommand);
 	if (strCommand == "mnb") { //Masternode Broadcast
 		LogPrintf("masternodeman.ProcessMessage mnb START\n");
@@ -206,7 +209,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		if (pmn && pmn->sigTime > mnb.sigTime) { LogPrint("masternode", "Obsolete Masternode %s\n", mnb.address); return; }	// should never happen, but . . . 
 		if (mnb.protocolVersion < MIN_PEER_PROTO_VERSION) { LogPrint("masternode", "Outdated protocol, Masternode %s\n", mnb.address); return; }
 		if (mnb.sigTime > GetAdjustedTime()) { LogPrint("masternode", "Future Signature rejected, Masternode %s\n", mnb.address); return; }
-		if ((errorMsg = my->VerifyMsg(mnb.address, mnb.ToString(), mnb.vchSig)) != "") { LogPrint("masternode", "Bad signature %s\n", mnb.address); return; }
+		// if ((errorMsg = my->VerifyMsg(mnb.address, mnb.ToString(), mnb.vchSig)) != "") { LogPrint("masternode", "Bad signature %s - %s\n", mnb.address, errorMsg); return; }
 		if ((errorMsg = mnb.VerifyFunding()) != "") { LogPrint("masternode", "Masternode %s - %s\n", mnb.address, errorMsg); return; }
 		if (!Find(mnb.address)) Add(&mnb); else Update(&mnb);
 		LogPrintf("masternodeman.ProcessMessage mnb END\n");
@@ -215,7 +218,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		LogPrintf("masternodeman.ProcessMessage mnp START\n");
 		CMasternodePing mnp;
 		vRecv >> mnp;
-		if (mSeenPings.count(mnp.GetHash())) return;		// entirely redundant
+		if (mSeenPings.count(mnp.GetHash())) { LogPrintf("masternodeman.ProcessMessage mnping already seen \n"); return; }		// entirely redundant
 
 		int64_t now = GetAdjustedTime();
 		if (mnp.sigTime > now) { LogPrint("masternode", "CMasternodePing - Future signature rejected %s\n", mnp.address); return; }
@@ -233,6 +236,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		LogPrintf("masternodeman.ProcessMessage mnp END\n");
 	}
 	else if (strCommand == "dseg") { //Get Masternode list or specific entry
+		LogPrintf("masternodeman.ProcessMessage dseg START\n");
 		string address;
 		vRecv >> address;
 
@@ -256,6 +260,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 			pfrom->PushMessage("ssc", MASTERNODE_SYNC_LIST, nInvCount);
 			LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, pfrom->GetId());
 		}
+		LogPrintf("masternodeman.ProcessMessage dseg END\n");
 	}
 }
 

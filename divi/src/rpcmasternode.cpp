@@ -186,7 +186,7 @@ void nodeStatus(Object* obj, CMasternode* mn)
 	obj->push_back(Pair("netaddr", mn->service.ToString()));
 	obj->push_back(Pair("lastseen", GetAdjustedTime() - mn->lastPing.sigTime));
 	obj->push_back(Pair("activetime", mn->lastPing.sigTime - mn->sigTime));
-	obj->push_back(Pair("lastpaid", GetAdjustedTime() - mn->lastPaid));
+	// obj->push_back(Pair("lastpaid", GetAdjustedTime() - mn->lastPaid));
 }
 
 Value listmasternodes(const Array& params, bool fHelp)
@@ -216,7 +216,8 @@ Value listmasternodes(const Array& params, bool fHelp)
 
 	Object ret;
 	int i = 1;
-	if (mnodeman.vCurrScores.size() == 0) {
+	//if (mnodeman.vCurrScores.size() == 0) {
+	if (mnodeman.mMasternodes.size() > 0) {
 		ret.push_back(Pair("Warning:", "Masternode selection process currently in process so list is *unranked*"));
 		ret.push_back(Pair("mnodeman.mMasternodes.size:", to_string(mnodeman.mMasternodes.size())));
 		for (map<uint256, CMasternode>::iterator it = mnodeman.mMasternodes.begin(); it != mnodeman.mMasternodes.end(); it++, i++) {
@@ -343,7 +344,7 @@ Value getmasternodestatus(const Array& params, bool fHelp)
 	if (!fMasterNode) throw runtime_error("This is not a masternode");
 
 	Object obj;
-	nodeStatus(&obj, mnodeman.my);
+	nodeStatus(&obj, mnodeman.Find(mnodeman.my->address));
 	return obj;
 }
 

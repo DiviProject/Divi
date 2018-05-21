@@ -5705,8 +5705,10 @@ void static ProcessGetData(CNode* pfrom)
                 }
 
                 if (!pushed && inv.type == MSG_MASTERNODE_PING) {
+					LogPrintStr("MSG_MASTERNODE_PING looking for hash");
                     if (mnodeman.mSeenPings.count(inv.hash)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+						LogPrintStr("MSG_MASTERNODE_PING FOUND hash!!!");
+						CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << mnodeman.mSeenPings[inv.hash];
                         pfrom->PushMessage("mnp", ss);

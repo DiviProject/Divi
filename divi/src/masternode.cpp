@@ -108,11 +108,7 @@ bool CMasternode::IsEnabled()
 {
 	if (GetAdjustedTime() - lastTimeChecked < MASTERNODE_CHECK_SECONDS) return true;
 	lastTimeChecked = GetAdjustedTime();
-	LogPrintStr("/n/n/n/n/nIsEnabled");
-	string str = "lastPing.sigTime = " + to_string(lastPing.sigTime) + "; lastTimeChecked = " + to_string(lastTimeChecked) + "\n\n\n\n\n\n\n\n";
-	LogPrintStr(str);
  	if (lastPing.sigTime + MASTERNODE_EXPIRATION_SECONDS < lastTimeChecked) { return false; }
-	LogPrintStr("\n verifyfunding = " + VerifyFunding() + "\n");
 	return (VerifyFunding() == "");
 }
 
@@ -147,12 +143,14 @@ string CMasternode::StartUp()
 	if (pwalletMain->IsLocked()) return "Cannot start - Wallet is locked.";
 	//if (strMasterNodeAddr.empty()) return "Cannot start -  No external address";
 	//CNode* pnode = ConnectNode((CAddress)CService(strMasterNodeAddr), NULL, false);
-	//if (!pnode) return "Cannot start - Could not connect to " + service.ToString();
+	//if (!pnode) return "Cannot start - Could not connect to " + service.ToString()
 	//pnode->Release();
 	protocolVersion = 1;
 	sigTime = GetAdjustedTime();
 	if ((errorMsg = VerifyFunding()) != "") return "Cannot start - Funding verification failed!  " + errorMsg;
+	LogPrintStr("\nbefore = " + EncodeBase64(&vchSig[0], vchSig.size()));
 	if ((errorMsg = SignMsg(ToString(), vchSig)) != "") return "Bad mnb signature " + errorMsg;
+	LogPrintStr("\nafter = " + EncodeBase64(&vchSig[0], vchSig.size()));
 	lastPing.address = address;
 	lastPing.sigTime = GetAdjustedTime();
 	// if ((errorMsg = SignMsg(lastPing.ToString(), lastPing.vchSig)) != "") return "Bad ping signature " + errorMsg;
@@ -182,7 +180,7 @@ string CMasternode::VerifyFunding() {
 	for (vector<CMnFunding>::iterator it = funding.begin(); it != funding.end(); it++) {
 		int ageOfFunds = GetInputAge((*it).vin);
 		if (ageOfFunds < MASTERNODE_MIN_CONFIRMATIONS) return "Funding needs more confirmations";
-		if (sigTime < GetAdjustedTime() - ageOfFunds) return "Misbehaving masternode";
+		// if (sigTime < GetAdjustedTime() - ageOfFunds) return "Misbehaving masternode";
 		if (!(*it).CheckVin(address)) return "Funds have been spent";
 		totalFunding += (*it).amount;
 	}

@@ -1661,15 +1661,14 @@ bool AppInit2(boost::thread_group& threadGroup)
 	//        LogPrintf("file format is unknown or invalid, please fix it manually\n");
 	//}
 
-	fMasterNode =((mnodeman.my->address = GetArg("-mndiviaddress", "")) != "");
 	// fMasterNode = GetBoolArg("-masternode", false);
 
-	if ((fMasterNode || masternodeConfig.getCount() > -1) && fTxIndex == false) {
+	if (((mnodeman.my->address = GetArg("-mndiviaddress", "")) != "" || masternodeConfig.getCount() > -1) && fTxIndex == false) {
 		return InitError("Enabling Masternode support requires turning on transaction indexing."
 			"Please add txindex=1 to your configuration and start with -reindex");
 	}
 
-	if (fMasterNode) {
+	if (mnodeman.my->address != "") {
 		LogPrintf("IS MASTER NODE\n");
 
 		// string ipAddress = GetArg("-externalip", "");
@@ -1691,6 +1690,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
 		if ((errorMsg = mnodeman.my->StartUp()) != "") InitError(errorMsg.c_str());
 		LogPrintf("MASTER NODE STARTED!\n");
+		fMasterNode = true;
 	}
 	else if (GetBoolArg("-mnconflock", true) && pwalletMain) {
 		LOCK(pwalletMain->cs_wallet);

@@ -139,7 +139,7 @@ string CMasternode::SignMsg(string address, string msg, vector<unsigned char>& v
 string CMasternode::StartUp()
 {
 	string errorMsg;
-	if (!fMasterNode) return "Not a masternode";
+	// if (!fMasterNode) return "Not a masternode";
 	if (pwalletMain->IsLocked()) return "Cannot start - Wallet is locked.";
 	//if (strMasterNodeAddr.empty()) return "Cannot start -  No external address";
 	//CNode* pnode = ConnectNode((CAddress)CService(strMasterNodeAddr), NULL, false);

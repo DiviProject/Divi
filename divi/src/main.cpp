@@ -4705,7 +4705,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     if (!ActivateBestChain(state, pblock, checked))
         return error("%s : ActivateBestChain failed", __func__);
 
-    if (!fLiteMode) {
+    if (fMasterNode && !fLiteMode) {
         //if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
 //            obfuScationPool.NewBlock();
             mnodeman.ProcessBlock();

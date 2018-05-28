@@ -5846,7 +5846,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 					LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
                     pfrom->PushAddress(addr);
                 }
-				if (CService(addr.ToString()).ToString() != mnodeman.my->service.ToString()) {		// update dynamic ip
+				if (fMasterNode && CService(addr.ToString()).ToString() != mnodeman.my->service.ToString()) {		// update dynamic ip
 					mnodeman.my->service = CService(addr.ToString());
 					mnodeman.Update(mnodeman.my);
 				}

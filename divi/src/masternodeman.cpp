@@ -103,8 +103,8 @@ uint256 DoubleHash(uint256 hash, string address = string()) {
 void CMasternodeMan::ProcessBlock()
 {
 	vector<pair<uint256, string>> vVoteScores;
-	vector<pair<int64_t, pair<uint256, string>>> vLastPaid;
-	vector<pair<int64_t, pair<uint256, string>>> vLastPaid2;
+	vector<pair<int64_t, pair<uint256, string>>> vLastPaid[NUM_TIERS];
+	vector<pair<int64_t, pair<uint256, string>>> vLastPaid2[NUM_TIERS];
 
 	if (!chainActive.Tip()) return;
 	CBlockIndex* currBlock = chainActive.Tip();
@@ -127,41 +127,44 @@ void CMasternodeMan::ProcessBlock()
 	uint256 voteHash2 = DoubleHash(voteHash);
 
 	stableSize = 0;
-	vCurrScores.clear();
+	for (int i = 0; i < NUM_TIERS; i++) { tierCount[currHeight % 15][i] = 0; vCurrScores[i].clear(); }
 	LOCK(cs);
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
 		CMasternode mn = (*it).second;
-		if (!mn.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
+		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
 		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) { it++;  continue; }
 		stableSize++;
+		tierCount[currHeight % 15][mn.tier.ordinal]++;
 		/* calculate scores */
 		uint256 currHashM = DoubleHash(currHash, mn.address);
-		vCurrScores.push_back(make_pair((currHash2 > currHashM ? currHash2 - currHashM : currHashM - currHash2), mn.address));
+		vCurrScores[mn.tier.ordinal].push_back(make_pair((currHash2 > currHashM ? currHash2 - currHashM : currHashM - currHash2), mn.address));
 		uint256 voteHashM = DoubleHash(voteHash, mn.address);
 		uint256 voteScore = (voteHash2 > voteHashM ? voteHash2 - voteHashM : voteHashM - voteHash2);
-		vVoteScores.push_back(make_pair(voteScore, mn.address));
+		if (mn.tier.name == "diamond" || mn.tier.name == "platinum") vVoteScores.push_back(make_pair(voteScore, mn.address));
 		// generate payment list
 		if (mn.lastFunded + nodeCount <= currHeight && !mnPayments.IsScheduled(mn.address)) {
-			if (mn.sigTime + (nodeCount * 2.6 * 60) < GetAdjustedTime()) vLastPaid.push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
-			else vLastPaid2.push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
+			if (mn.sigTime + (nodeCount * 2.6 * 60) < GetAdjustedTime()) vLastPaid[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
+			else vLastPaid2[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
 		}
 		++it;
 	}
 	nodeCount = mMasternodes.size();
-	sort(vCurrScores.begin(), vCurrScores.end(), CompareScores());
+	sort(vCurrScores[0].begin(), vCurrScores[0].end(), CompareScores());
 	sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
-	map<string, int> topSigs;
+	topSigs[currHeight % 15].clear();
 	int rank = 0;
 	for (vector<pair<uint256, string>>::iterator it = vVoteScores.begin(); it != vVoteScores.end() && rank++ < 2 * MNPAYMENTS_SIGNATURES_TOTAL; it++)
-		topSigs[(*it).second] = rank;
-	if (topSigs.count(my->address) && topSigs[my->address] <= MNPAYMENTS_SIGNATURES_TOTAL) {	// we are top-ranked group & get to vote 
-		if (vLastPaid.size() < nodeCount / 3) vLastPaid.insert(vLastPaid.end(), vLastPaid2.begin(), vLastPaid2.end()); // append recently restarted nodes during upgrades  
-		sort(vLastPaid.begin(), vLastPaid.end(), CompareTimes());
-		int topTenth = vLastPaid.size() / 10;
-		vVoteScores.clear();
-		rank = 0;
-		for (vector<pair<int64_t, pair<uint256, string>>>::iterator it = vLastPaid.begin(); rank < topTenth; rank++) vVoteScores.push_back((*it).second);
-		sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
+		topSigs[currHeight % 15][(*it).second] = rank;
+	if (topSigs[currHeight % 15].count(my->address) && topSigs[currHeight % 15][my->address] <= MNPAYMENTS_SIGNATURES_TOTAL) {	// we are top-ranked group & get to vote 
+		for (int tier = 0; tier < NUM_TIERS; tier++) {
+			if (vLastPaid[tier].size() < tierCount[currHeight % 15][tier] / 3) vLastPaid[tier].insert(vLastPaid[tier].end(), vLastPaid2[tier].begin(), vLastPaid2[tier].end()); // append recently restarted nodes during upgrades  
+			sort(vLastPaid[tier].begin(), vLastPaid[tier].end(), CompareTimes());
+			int topTenth = vLastPaid[tier].size() / 10;
+			vVoteScores.clear();
+			rank = 0;
+			for (vector<pair<int64_t, pair<uint256, string>>>::iterator it = vLastPaid[tier].begin(); rank < topTenth; rank++) vVoteScores.push_back((*it).second);
+			sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
+		}
 		CPaymentVote myVote = CPaymentVote({ my->address, currHeight, vVoteScores[0].second });
 		my->SignMsg(myVote.ToString(), myVote.vchSig);
 		mnPayments.AddPaymentVote(myVote);

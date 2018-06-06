@@ -228,14 +228,14 @@ Value listmasternodes(const Array& params, bool fHelp)
 			ret.push_back(Pair("Result:", obj));
 		}
 	}
-	else for (vector<pair<uint256, string>>::iterator it = mnodeman.vCurrScores.begin(); it != mnodeman.vCurrScores.end(); it++, i++) {
+	/*else for (vector<pair<uint256, string>>::iterator it = mnodeman.vCurrScores.begin(); it != mnodeman.vCurrScores.end(); it++, i++) {
 		Object obj;
 		CMasternode* mn = mnodeman.Find((*it).second);
 		if (strFilter != "" && mn->address.find(strFilter) == string::npos && mn->service.ToString().find(strFilter) == string::npos) continue;
 		obj.push_back(Pair("rank", i));
 		nodeStatus(&obj, mn);
 		ret.push_back(Pair("Result:", obj));
-	}
+	}*/
 	return ret;
 }
 
@@ -302,8 +302,8 @@ Value masternodecurrent(const Array& params, bool fHelp)
 			HelpExampleCli("masternodecurrent", "") + HelpExampleRpc("masternodecurrent", ""));
 
 	Object obj;
-	if (mnodeman.vCurrScores.size() == 0) { obj.push_back(Pair("Warning:", "Current masternode selection still in process")); return obj; }
-	nodeStatus(&obj, mnodeman.Find(mnodeman.vCurrScores[0].second));
+	if (mnodeman.vCurrScores[0].size() == 0) { obj.push_back(Pair("Warning:", "Current masternode selection still in process")); return obj; }
+	nodeStatus(&obj, mnodeman.Find(mnodeman.vCurrScores[0][0].second));
 	return obj;
 }
 

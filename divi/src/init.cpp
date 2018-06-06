@@ -1684,6 +1684,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
 		//strMasterNodePrivKey = GetArg("-mndiviaddress", "");
 
+		if (mnodeman.my->funding.size() == 0) return InitError("funding not found in masternode.config!\n");
 		for (vector<CMnFunding>::iterator it = mnodeman.my->funding.begin(); it != mnodeman.my->funding.end(); it++) {
 			if (!(*it).CheckVin(strMasterNodePrivKey)) return InitError("funding failed validity check!\n");
 		}

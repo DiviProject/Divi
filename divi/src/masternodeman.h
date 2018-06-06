@@ -37,9 +37,11 @@ public:
 	map<string, uint256> mAddress2MnHash;					// maps divi address key to masternode hashes
 	map<uint256, CMasternode> mMasternodes;					// Keep track of all *current* masternodes by hash
 	map<uint256, CMasternodePing> mSeenPings;				// Keep track of all *current* pings by hash
-	vector<pair<uint256, string>> vCurrScores;				// ranked masternodes (score to divi address) sorted by lowest-best score ascending
+	vector<pair<uint256, string>> vCurrScores[NUM_TIERS];	// ranked masternodes (score to divi address) sorted by lowest-best score ascending
 	map<int, uint256> blockHashes;
 	int currHeight = 0, nodeCount = 0, stableSize = 0;
+	int tierCount[15][NUM_TIERS];
+	map<string, int> topSigs[15];
 	CMasternode* my;
 
     ADD_SERIALIZE_METHODS;

@@ -1,9 +1,0 @@
-digraph "OverviewPage::handleTransactionClicked"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node14 [label="OverviewPage::handleTransaction\lClicked",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node14 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node15 [label="OverviewPage::OverviewPage",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_overview_page.html#a18c1a29cab6b745b25e701b20f234932"];
-}

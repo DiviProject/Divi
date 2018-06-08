@@ -1,7 +1,0 @@
-digraph "Graphical Class Hierarchy"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node0 [label="sph_bmw_small_context",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsph__bmw__small__context.html",tooltip="This structure is a context for BMW-224 and BMW-256 computations: it contains the intermediate values..."];
-}

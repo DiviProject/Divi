@@ -1,9 +1,0 @@
-digraph "CSporkDB::SporkExists"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node74 [label="CSporkDB::SporkExists",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node74 -> Node75 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node75 [label="CLevelDBWrapper::Exists",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_level_d_b_wrapper.html#a43c427da8e32af87a09d3cb60353ef0e"];
-}

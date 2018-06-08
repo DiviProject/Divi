@@ -1,9 +1,0 @@
-digraph "GUIUtil::getOpenFileName"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node167 [label="GUIUtil::getOpenFileName",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node167 -> Node168 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node168 [label="OpenURIDialog::on_select\lFileButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_open_u_r_i_dialog.html#a5eefa601b5e05fbb965f3af999858963"];
-}

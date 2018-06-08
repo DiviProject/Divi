@@ -1,9 +1,0 @@
-digraph "CTxMemPool::pruneSpent"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node265 [label="CTxMemPool::pruneSpent",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node265 -> Node266 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node266 [label="gettxout",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcblockchain_8cpp.html#a1982f7877ed6e83102671c67c4ec6450"];
-}

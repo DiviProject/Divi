@@ -151,7 +151,7 @@ public:
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
         nMaturity = 1; //byrdset from 100
         nMasternodeCountDrift = 20;
-        nMaxMoneyOut = 21000000 * COIN;
+        nMaxMoneyOut = 2534320700 * COIN;
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 2000000;

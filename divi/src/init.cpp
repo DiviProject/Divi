@@ -1645,12 +1645,10 @@ bool AppInit2(boost::thread_group& threadGroup)
 	mnodeman.my->address = GetArg("-mndiviaddress", "");
 
 	if (((mnodeman.my->address = GetArg("-mndiviaddress", "")) != "" || masternodeConfig.getCount() > -1) && fTxIndex == false) {
-		uiInterface.InitMessage(_("3 here!"));
 		return InitError("Enabling Masternode support requires turning on transaction indexing."
                          "Please add txindex=1 to your configuration and start with -reindex");
     }
 
-	uiInterface.InitMessage(_("here!"));
 	if (mnodeman.my->address != "") {
 		LogPrintf("IS MASTER NODE\n");
 		if (mnodeman.my->funding.size() == 0) return InitError("funding not found in masternode.config!\n");
@@ -1669,36 +1667,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 			pwalletMain->LockCoin(outpoint);
 		}
 	}
-	uiInterface.InitMessage(_("there!"));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    fEnableZeromint = false;	//1696
+	fEnableZeromint = false;	//1696
 
     nZeromintPercentage = GetArg("-zeromintpercentage", 10);
     if (nZeromintPercentage > 100) nZeromintPercentage = 100;

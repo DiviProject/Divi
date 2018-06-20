@@ -5481,30 +5481,30 @@ bool static AlreadyHave(const CInv& inv)
             return true;
         }
         return false;
-    case MSG_BUDGET_VOTE:
-        if (budget.mapSeenMasternodeBudgetVotes.count(inv.hash)) {
-            masternodeSync.AddedBudgetItem(inv.hash);
-            return true;
-        }
-        return false;
-    case MSG_BUDGET_PROPOSAL:
-        if (budget.mapSeenMasternodeBudgetProposals.count(inv.hash)) {
-            masternodeSync.AddedBudgetItem(inv.hash);
-            return true;
-        }
-        return false;
-    case MSG_BUDGET_FINALIZED_VOTE:
-        if (budget.mapSeenFinalizedBudgetVotes.count(inv.hash)) {
-            masternodeSync.AddedBudgetItem(inv.hash);
-            return true;
-        }
-        return false;
-    case MSG_BUDGET_FINALIZED:
-        if (budget.mapSeenFinalizedBudgets.count(inv.hash)) {
-            masternodeSync.AddedBudgetItem(inv.hash);
-            return true;
-        }
-        return false;
+    //case MSG_BUDGET_VOTE:
+    //    if (budget.mapSeenMasternodeBudgetVotes.count(inv.hash)) {
+    //        masternodeSync.AddedBudgetItem(inv.hash);
+    //        return true;
+    //    }
+    //    return false;
+    //case MSG_BUDGET_PROPOSAL:
+    //    if (budget.mapSeenMasternodeBudgetProposals.count(inv.hash)) {
+    //        masternodeSync.AddedBudgetItem(inv.hash);
+    //        return true;
+    //    }
+    //    return false;
+    //case MSG_BUDGET_FINALIZED_VOTE:
+    //    if (budget.mapSeenFinalizedBudgetVotes.count(inv.hash)) {
+    //        masternodeSync.AddedBudgetItem(inv.hash);
+    //        return true;
+    //    }
+    //    return false;
+    //case MSG_BUDGET_FINALIZED:
+    //    if (budget.mapSeenFinalizedBudgets.count(inv.hash)) {
+    //        masternodeSync.AddedBudgetItem(inv.hash);
+    //        return true;
+    //    }
+    //    return false;
     case MSG_MASTERNODE_ANNOUNCE:
         if (mnodeman.mMasternodes.count(inv.hash)) {
             masternodeSync.AddedMasternodeList(inv.hash);
@@ -5652,45 +5652,45 @@ void static ProcessGetData(CNode* pfrom)
                         pushed = true;
                     }
                 }
-                if (!pushed && inv.type == MSG_BUDGET_VOTE) {
-                    if (budget.mapSeenMasternodeBudgetVotes.count(inv.hash)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << budget.mapSeenMasternodeBudgetVotes[inv.hash];
-                        pfrom->PushMessage("mvote", ss);
-                        pushed = true;
-                    }
-                }
+                //if (!pushed && inv.type == MSG_BUDGET_VOTE) {
+                //    if (budget.mapSeenMasternodeBudgetVotes.count(inv.hash)) {
+                //        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                //        ss.reserve(1000);
+                //        ss << budget.mapSeenMasternodeBudgetVotes[inv.hash];
+                //        pfrom->PushMessage("mvote", ss);
+                //        pushed = true;
+                //    }
+                //}
 
-                if (!pushed && inv.type == MSG_BUDGET_PROPOSAL) {
-                    if (budget.mapSeenMasternodeBudgetProposals.count(inv.hash)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << budget.mapSeenMasternodeBudgetProposals[inv.hash];
-                        pfrom->PushMessage("mprop", ss);
-                        pushed = true;
-                    }
-                }
+                //if (!pushed && inv.type == MSG_BUDGET_PROPOSAL) {
+                //    if (budget.mapSeenMasternodeBudgetProposals.count(inv.hash)) {
+                //        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                //        ss.reserve(1000);
+                //        ss << budget.mapSeenMasternodeBudgetProposals[inv.hash];
+                //        pfrom->PushMessage("mprop", ss);
+                //        pushed = true;
+                //    }
+                //}
 
-                if (!pushed && inv.type == MSG_BUDGET_FINALIZED_VOTE) {
-                    if (budget.mapSeenFinalizedBudgetVotes.count(inv.hash)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << budget.mapSeenFinalizedBudgetVotes[inv.hash];
-                        pfrom->PushMessage("fbvote", ss);
-                        pushed = true;
-                    }
-                }
+                //if (!pushed && inv.type == MSG_BUDGET_FINALIZED_VOTE) {
+                //    if (budget.mapSeenFinalizedBudgetVotes.count(inv.hash)) {
+                //        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                //        ss.reserve(1000);
+                //        ss << budget.mapSeenFinalizedBudgetVotes[inv.hash];
+                //        pfrom->PushMessage("fbvote", ss);
+                //        pushed = true;
+                //    }
+                //}
 
-                if (!pushed && inv.type == MSG_BUDGET_FINALIZED) {
-                    if (budget.mapSeenFinalizedBudgets.count(inv.hash)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << budget.mapSeenFinalizedBudgets[inv.hash];
-                        pfrom->PushMessage("fbs", ss);
-                        pushed = true;
-                    }
-                }
+                //if (!pushed && inv.type == MSG_BUDGET_FINALIZED) {
+                //    if (budget.mapSeenFinalizedBudgets.count(inv.hash)) {
+                //        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                //        ss.reserve(1000);
+                //        ss << budget.mapSeenFinalizedBudgets[inv.hash];
+                //        pfrom->PushMessage("fbs", ss);
+                //        pushed = true;
+                //    }
+                //}
 
                 if (!pushed && inv.type == MSG_MASTERNODE_ANNOUNCE) {
                     if (mnodeman.mMasternodes.count(inv.hash)) {
@@ -6571,9 +6571,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         //probably one the extensions
         // obfuScationPool.ProcessMessageObfuscation(pfrom, strCommand, vRecv);
         mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
-        budget.ProcessMessage(pfrom, strCommand, vRecv);
+        // budget.ProcessMessage(pfrom, strCommand, vRecv);
 		mnPayments.ProcessMsgPayments(pfrom, strCommand, vRecv);
-        ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
+        // ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
         ProcessSpork(pfrom, strCommand, vRecv);
         masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
     }

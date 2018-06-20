@@ -3,13 +3,13 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-// clang-format off
+#include "base58.h"
 #include "net.h"
+#include "masternode.h"
 #include "masternodeconfig.h"
+#include "masternodeman.h"
 #include "util.h"
 #include "ui_interface.h"
-#include <base58.h>
-// clang-format on
 
 CMasternodeConfig masternodeConfig;
 
@@ -21,7 +21,8 @@ void CMasternodeConfig::add(std::string alias, std::string ip, std::string privK
 
 bool CMasternodeConfig::read(std::string& strErr)
 {
-    int linenumber = 1;
+	mnodeman.my = new CMasternode();
+	int linenumber = 1;
     boost::filesystem::path pathMasternodeConfigFile = GetMasternodeConfigFile();
     boost::filesystem::ifstream streamConfig(pathMasternodeConfigFile);
 

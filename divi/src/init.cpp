@@ -1641,12 +1641,8 @@ bool AppInit2(boost::thread_group& threadGroup)
  //           LogPrintf("file format is unknown or invalid, please fix it manually\n");
  //   }
 
-	uiInterface.InitMessage(_("1 here!"));
 	fMasterNode = GetBoolArg("-masternode", false);
-	uiInterface.InitMessage(_("2 here!"));
 	mnodeman.my->address = GetArg("-mndiviaddress", "");
-	uiInterface.InitMessage(_("x here!"));
-	uiInterface.InitMessage(_("y here!"));
 
 	if (((mnodeman.my->address = GetArg("-mndiviaddress", "")) != "" || masternodeConfig.getCount() > -1) && fTxIndex == false) {
 		uiInterface.InitMessage(_("3 here!"));

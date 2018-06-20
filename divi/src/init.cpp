@@ -1648,6 +1648,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                          "Please add txindex=1 to your configuration and start with -reindex");
     }
 
+	uiInterface.InitMessage(_("here!"));
 	if (mnodeman.my->address != "") {
 		LogPrintf("IS MASTER NODE\n");
 		if (mnodeman.my->funding.size() == 0) return InitError("funding not found in masternode.config!\n");
@@ -1666,6 +1667,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 			pwalletMain->LockCoin(outpoint);
 		}
 	}
+	uiInterface.InitMessage(_("there!"));
 
 
 

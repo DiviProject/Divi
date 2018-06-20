@@ -1644,7 +1644,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 	uiInterface.InitMessage(_("1 here!"));
 	fMasterNode = GetBoolArg("-masternode", false);
 	uiInterface.InitMessage(_("2 here!"));
-	if (masternodeConfig.getCount() > -2) 
+	if (GetArg("-mndiviaddress", "")) != "")
 		uiInterface.InitMessage(_("x here!"));
 	uiInterface.InitMessage(_("y here!"));
 

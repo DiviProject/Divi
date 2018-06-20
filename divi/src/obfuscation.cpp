@@ -578,10 +578,10 @@ void CObfuscationPool::Check()
 
 void CObfuscationPool::CheckFinalTransaction()
 {
-    if (!fMasterNode) return; // check and relay final tx only on masternode
+	throw runtime_error("Should never reach CObfuscationPool::CheckFinalTransaction");
+	if (!fMasterNode) return; // check and relay final tx only on masternode
 
     CWalletTx txNew = CWalletTx(pwalletMain, finalTransaction);
-
     LOCK2(cs_main, pwalletMain->cs_wallet);
     {
         LogPrint("obfuscation", "Transaction 2: %s\n", txNew.ToString());
@@ -626,7 +626,7 @@ void CObfuscationPool::CheckFinalTransaction()
         if (!mapObfuscationBroadcastTxes.count(txNew.GetHash())) {
             CObfuscationBroadcastTx dstx;
             dstx.tx = txNew;
-            dstx.vin = activeMasternode.vin;
+            // dstx.vin = activeMasternode.vin;
             dstx.vchSig = vchSig;
             dstx.sigTime = sigTime;
 
@@ -887,7 +887,8 @@ void CObfuscationPool::CheckTimeout()
 //
 void CObfuscationPool::CheckForCompleteQueue()
 {
-    if (!fEnableZeromint && !fMasterNode) return;
+	throw runtime_error("Should never reach CObfuscationPool::CheckForCompleteQueue");
+	if (!fEnableZeromint && !fMasterNode) return;
 
     /* Check to see if we're ready for submissions from clients */
     //
@@ -899,7 +900,7 @@ void CObfuscationPool::CheckForCompleteQueue()
 
         CObfuscationQueue dsq;
         dsq.nDenom = sessionDenom;
-        dsq.vin = activeMasternode.vin;
+        //dsq.vin = activeMasternode.vin;
         dsq.time = GetTime();
         dsq.ready = true;
         dsq.Sign();
@@ -1858,7 +1859,8 @@ bool CObfuscationPool::IsCompatibleWithEntries(std::vector<CTxOut>& vout)
 
 bool CObfuscationPool::IsCompatibleWithSession(int64_t nDenom, CTransaction txCollateral, int& errorID)
 {
-    if (nDenom == 0) return false;
+	throw runtime_error("Should never reach CObfuscationPool::IsCompatibleWithSession");
+	if (nDenom == 0) return false;
 
     LogPrintf("CObfuscationPool::IsCompatibleWithSession - sessionDenom %d sessionUsers %d\n", sessionDenom, sessionUsers);
 
@@ -1880,7 +1882,7 @@ bool CObfuscationPool::IsCompatibleWithSession(int64_t nDenom, CTransaction txCo
             //broadcast that I'm accepting entries, only if it's the first entry through
             CObfuscationQueue dsq;
             dsq.nDenom = nDenom;
-            dsq.vin = activeMasternode.vin;
+            // dsq.vin = activeMasternode.vin;
             dsq.time = GetTime();
             dsq.Sign();
             dsq.Relay();

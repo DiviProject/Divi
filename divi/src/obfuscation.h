@@ -20,7 +20,7 @@ class CMasterNodeVote;
 class CBitcoinAddress;
 class CObfuscationQueue;
 class CObfuscationBroadcastTx;
-class CActiveMasternode;
+// class CActiveMasternode;
 
 // pool states for mixing
 #define POOL_STATUS_UNKNOWN 0              // waiting for update

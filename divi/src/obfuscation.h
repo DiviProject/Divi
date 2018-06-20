@@ -193,7 +193,7 @@ public:
     {
         // CMasternode* pmn = mnodeman.Find(vin);
         if (mnodeman.my != NULL) {
-            addr = mnodeman.my->addr;
+            addr = mnodeman.my->service;
             return true;
         }
         return false;
@@ -202,9 +202,9 @@ public:
     /// Get the protocol version
     bool GetProtocolVersion(int& protocolVersion)
     {
-        CMasternode* pmn = mnodeman.Find(vin);
-        if (pmn != NULL) {
-            protocolVersion = pmn->protocolVersion;
+        // CMasternode* pmn = mnodeman.Find(vin);
+        if (mnodeman.my != NULL) {
+            protocolVersion = mnodeman.my->protocolVersion;
             return true;
         }
         return false;

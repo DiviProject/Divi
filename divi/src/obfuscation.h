@@ -191,9 +191,9 @@ public:
 
     bool GetAddress(CService& addr)
     {
-        CMasternode* pmn = mnodeman.Find(vin);
-        if (pmn != NULL) {
-            addr = pmn->addr;
+        // CMasternode* pmn = mnodeman.Find(vin);
+        if (mnodeman.my != NULL) {
+            addr = mnodeman.my->addr;
             return true;
         }
         return false;

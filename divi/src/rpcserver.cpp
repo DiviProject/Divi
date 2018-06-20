@@ -324,7 +324,7 @@ static const CRPCCommand vRPCCommands[] =
         {"divi", "getmasternodecount", &getmasternodecount, true, true, false},
         {"divi", "masternodeconnect", &masternodeconnect, true, true, false},
         {"divi", "masternodecurrent", &masternodecurrent, true, true, false},
-        {"divi", "masternodedebug", &masternodedebug, true, true, false},
+        // {"divi", "masternodedebug", &masternodedebug, true, true, false},
         {"divi", "startmasternode", &startmasternode, true, true, false},
         {"divi", "createmasternodekey", &createmasternodekey, true, true, false},
         {"divi", "getmasternodeoutputs", &getmasternodeoutputs, true, true, false},
@@ -347,7 +347,7 @@ static const CRPCCommand vRPCCommands[] =
         {"divi", "spork", &spork, true, true, false},
         {"divi", "getpoolinfo", &getpoolinfo, true, true, false},
 #ifdef ENABLE_WALLET
-        {"divi", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
+        // {"divi", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
 
         /* Wallet */
         {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true},

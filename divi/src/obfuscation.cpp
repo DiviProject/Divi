@@ -887,7 +887,7 @@ void CObfuscationPool::CheckTimeout()
 //
 void CObfuscationPool::CheckForCompleteQueue()
 {
-	throw runtime_error("Should never reach CObfuscationPool::CheckForCompleteQueue");
+	return;
 	if (!fEnableZeromint && !fMasterNode) return;
 
     /* Check to see if we're ready for submissions from clients */

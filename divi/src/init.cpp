@@ -1593,6 +1593,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     uiInterface.InitMessage(_("Loading masternode cache..."));
 	mnodeman.my->ReadDBs();
+	uiInterface.InitMessage(_("Loaded!"));
 	//CMasternodeDB mndb;
  //   CMasternodeDB::ReadResult readResult = mndb.Read(mnodeman);
  //   if (readResult == CMasternodeDB::FileError)

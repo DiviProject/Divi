@@ -319,8 +319,11 @@ static const CRPCCommand vRPCCommands[] =
         {"hidden", "setmocktime", &setmocktime, true, false, false},
 
         /* Divi features */
-        {"divi", "masternode", &masternode, true, true, false},
-        {"divi", "listmasternodes", &listmasternodes, true, true, false},
+		{ "divi", "debug", &debug, true, true, false },
+		{ "divi", "masternode", &masternode, true, true, false },
+		{ "divi", "allocatefunds", &allocatefunds, true, true, false },
+		{ "divi", "fundmasternode", &fundmasternode, true, true, false },
+		{"divi", "listmasternodes", &listmasternodes, true, true, false},
         {"divi", "getmasternodecount", &getmasternodecount, true, true, false},
         {"divi", "masternodeconnect", &masternodeconnect, true, true, false},
         {"divi", "masternodecurrent", &masternodecurrent, true, true, false},

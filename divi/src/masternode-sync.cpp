@@ -85,7 +85,7 @@ void CMasternodeSync::Reset()
 
 void CMasternodeSync::AddedMasternodeList(uint256 hash)
 {
-    if (mnodeman.mapSeenMasternodeBroadcast.count(hash)) {
+    if (mnodeman.mMasternodes.count(hash)) {
         if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
             lastMasternodeList = GetTime();
             mapSeenSyncMNB[hash]++;
@@ -98,7 +98,7 @@ void CMasternodeSync::AddedMasternodeList(uint256 hash)
 
 void CMasternodeSync::AddedMasternodeWinner(uint256 hash)
 {
-    if (masternodePayments.mapMasternodePayeeVotes.count(hash)) {
+    if (mnPayments.mapSeenPaymentVote.count(hash)) {
         if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
             lastMasternodeWinner = GetTime();
             mapSeenSyncMNW[hash]++;
@@ -111,16 +111,16 @@ void CMasternodeSync::AddedMasternodeWinner(uint256 hash)
 
 void CMasternodeSync::AddedBudgetItem(uint256 hash)
 {
-    if (budget.mapSeenMasternodeBudgetProposals.count(hash) || budget.mapSeenMasternodeBudgetVotes.count(hash) ||
-        budget.mapSeenFinalizedBudgets.count(hash) || budget.mapSeenFinalizedBudgetVotes.count(hash)) {
-        if (mapSeenSyncBudget[hash] < MASTERNODE_SYNC_THRESHOLD) {
-            lastBudgetItem = GetTime();
-            mapSeenSyncBudget[hash]++;
-        }
-    } else {
-        lastBudgetItem = GetTime();
-        mapSeenSyncBudget.insert(make_pair(hash, 1));
-    }
+    //if (budget.mapSeenMasternodeBudgetProposals.count(hash) || budget.mapSeenMasternodeBudgetVotes.count(hash) ||
+    //    budget.mapSeenFinalizedBudgets.count(hash) || budget.mapSeenFinalizedBudgetVotes.count(hash)) {
+    //    if (mapSeenSyncBudget[hash] < MASTERNODE_SYNC_THRESHOLD) {
+    //        lastBudgetItem = GetTime();
+    //        mapSeenSyncBudget[hash]++;
+    //    }
+    //} else {
+    //    lastBudgetItem = GetTime();
+    //    mapSeenSyncBudget.insert(make_pair(hash, 1));
+    //}
 }
 
 bool CMasternodeSync::IsBudgetPropEmpty()
@@ -240,7 +240,7 @@ void CMasternodeSync::Process()
         /* 
             Resync if we lose all masternodes from sleep/wake or failure to sync originally
         */
-        if (mnodeman.CountEnabled() == 0) {
+        if (mnodeman.mMasternodes.size() < 2) {
             Reset();
         } else
             return;
@@ -271,7 +271,7 @@ void CMasternodeSync::Process()
             } else if (RequestedMasternodeAttempt < 4) {
                 mnodeman.DsegUpdate(pnode);
             } else if (RequestedMasternodeAttempt < 6) {
-                int nMnCount = mnodeman.CountEnabled();
+                int nMnCount = mnodeman.mMasternodes.size();
                 pnode->PushMessage("mnget", nMnCount); //sync payees
                 uint256 n = 0;
                 pnode->PushMessage("mnvs", n); //sync masternode votes
@@ -294,7 +294,7 @@ void CMasternodeSync::Process()
             return;
         }
 
-        if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {
+        // if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {
             if (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST) {
                 LogPrint("masternode", "CMasternodeSync::Process() - lastMasternodeList %lld (GetTime() - MASTERNODE_SYNC_TIMEOUT) %lld\n", lastMasternodeList, GetTime() - MASTERNODE_SYNC_TIMEOUT);
                 if (lastMasternodeList > 0 && lastMasternodeList < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
@@ -356,49 +356,49 @@ void CMasternodeSync::Process()
                 CBlockIndex* pindexPrev = chainActive.Tip();
                 if (pindexPrev == NULL) return;
 
-                int nMnCount = mnodeman.CountEnabled();
+                int nMnCount = mnodeman.mMasternodes.size();
                 pnode->PushMessage("mnget", nMnCount); //sync payees
                 RequestedMasternodeAttempt++;
 
                 return;
-            }
+            // }
         }
 
-        if (pnode->nVersion >= ActiveProtocol()) {
-            if (RequestedMasternodeAssets == MASTERNODE_SYNC_BUDGET) {
-                
-                // We'll start rejecting votes if we accidentally get set as synced too soon
-                if (lastBudgetItem > 0 && lastBudgetItem < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { 
-                    
-                    // Hasn't received a new item in the last five seconds, so we'll move to the
-                    GetNextAsset();
+        //if (pnode->nVersion >= ActiveProtocol()) {
+        //    if (RequestedMasternodeAssets == MASTERNODE_SYNC_BUDGET) {
+        //        
+        //        // We'll start rejecting votes if we accidentally get set as synced too soon
+        //        if (lastBudgetItem > 0 && lastBudgetItem < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { 
+        //            
+        //            // Hasn't received a new item in the last five seconds, so we'll move to the
+        //            GetNextAsset();
 
-                    // Try to activate our masternode if possible
-                    activeMasternode.ManageStatus();
+        //            // Try to activate our masternode if possible
+        //            activeMasternode.ManageStatus();
 
-                    return;
-                }
+        //            return;
+        //        }
 
-                // timeout
-                if (lastBudgetItem == 0 &&
-                    (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
-                    // maybe there is no budgets at all, so just finish syncing
-                    GetNextAsset();
-                    activeMasternode.ManageStatus();
-                    return;
-                }
+        //        // timeout
+        //        if (lastBudgetItem == 0 &&
+        //            (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
+        //            // maybe there is no budgets at all, so just finish syncing
+        //            GetNextAsset();
+        //            activeMasternode.ManageStatus();
+        //            return;
+        //        }
 
-                if (pnode->HasFulfilledRequest("busync")) continue;
-                pnode->FulfilledRequest("busync");
+        //        if (pnode->HasFulfilledRequest("busync")) continue;
+        //        pnode->FulfilledRequest("busync");
 
-                if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
+        //        if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
 
-                uint256 n = 0;
-                pnode->PushMessage("mnvs", n); //sync masternode votes
-                RequestedMasternodeAttempt++;
+        //        uint256 n = 0;
+        //        pnode->PushMessage("mnvs", n); //sync masternode votes
+        //        RequestedMasternodeAttempt++;
 
-                return;
-            }
-        }
+        //        return;
+        //    }
+        //}
     }
 }

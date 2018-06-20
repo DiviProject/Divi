@@ -42,7 +42,7 @@ bool CMasternodeConfig::read(std::string& strErr)
         if (line.empty()) continue;
 
         std::istringstream iss(line);
-        std::string comment, alias, ip, privKey, txHash, outputIndex;
+        std::string comment, alias, tier, txHash, outputIndex, mnAddress, payAddress, voteAddress, signature;
 
         if (iss >> comment) {
             if (comment.at(0) == '#') continue;
@@ -50,35 +50,27 @@ bool CMasternodeConfig::read(std::string& strErr)
             iss.clear();
         }
 
-        if (!(iss >> alias >> ip >> privKey >> txHash >> outputIndex)) {
+        if (!(iss >> alias >> tier >> txHash >> outputIndex >> mnAddress >> payAddress >> voteAddress >> signature)) {
             iss.str(line);
             iss.clear();
-            if (!(iss >> alias >> ip >> privKey >> txHash >> outputIndex)) {
-                strErr = _("Could not parse masternode.conf") + "\n" +
-                         strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"";
+            if (!(iss >> alias >> tier >> txHash >> outputIndex >> mnAddress >> payAddress >> voteAddress >> signature)) {
+                strErr = _("Could not parse masternode.conf") + "\n" + strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"";
                 streamConfig.close();
                 return false;
             }
         }
 
-        if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            if (CService(ip).GetPort() != 51472) {
-                strErr = _("Invalid port detected in masternode.conf") + "\n" +
-                         strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
-                         _("(must be 51472 for mainnet)");
-                streamConfig.close();
-                return false;
-            }
-        } else if (CService(ip).GetPort() == 51472) {
-            strErr = _("Invalid port detected in masternode.conf") + "\n" +
-                     strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
-                     _("(51472 could be used only on mainnet)");
-            streamConfig.close();
-            return false;
-        }
-
-
-        add(alias, ip, privKey, txHash, outputIndex);
+		// fprintf(stderr, "%s %s %s %s", alias.c_str(), tier.c_str(), txHash.c_str(), outputIndex.c_str());
+        add(alias, tier, mnAddress, txHash, outputIndex);
+		CAmount nAmount;
+		if (tier == "diamond") { nAmount = Diamond.collateral; mnodeman.my->tier = Diamond; }
+		else if (tier == "platinum") { nAmount = Platinum.collateral; mnodeman.my->tier = Platinum; }
+		else if (tier == "gold") { nAmount = Gold.collateral; mnodeman.my->tier = Gold; }
+		else if (tier == "silver") { nAmount = Silver.collateral; mnodeman.my->tier = Silver; }
+		else if (tier == "copper") { nAmount = Copper.collateral; mnodeman.my->tier = Copper; }
+		CTxIn vin = *(new CTxIn(uint256(txHash), atoi(outputIndex)));
+		mnodeman.my->funding.push_back(*(new CMnFunding({ nAmount, vin, payAddress, voteAddress, signature })));
+		
     }
 
     streamConfig.close();

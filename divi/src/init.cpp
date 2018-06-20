@@ -1641,10 +1641,13 @@ bool AppInit2(boost::thread_group& threadGroup)
  //           LogPrintf("file format is unknown or invalid, please fix it manually\n");
  //   }
 
-    fMasterNode = GetBoolArg("-masternode", false);
+	uiInterface.InitMessage(_("1 here!"));
+	fMasterNode = GetBoolArg("-masternode", false);
+	uiInterface.InitMessage(_("2 here!"));
 
 	if (((mnodeman.my->address = GetArg("-mndiviaddress", "")) != "" || masternodeConfig.getCount() > -1) && fTxIndex == false) {
-        return InitError("Enabling Masternode support requires turning on transaction indexing."
+		uiInterface.InitMessage(_("3 here!"));
+		return InitError("Enabling Masternode support requires turning on transaction indexing."
                          "Please add txindex=1 to your configuration and start with -reindex");
     }
 

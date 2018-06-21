@@ -88,7 +88,7 @@ void CMasternodeMan::DsegUpdate(CNode* pnode)
 		}
 	}
 
-	pnode->PushMessage("dseg", "*");
+//	pnode->PushMessage("dseg", "*");
 	int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
 	mWeAsked4List[pnode->addr] = askAgain;
 }

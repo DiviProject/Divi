@@ -110,7 +110,7 @@ void CMasternodeMan::ProcessBlock()
 	if (!chainActive.Tip()) return;
 	CBlockIndex* currBlock = chainActive.Tip();
 	if (currHeight >= currBlock->nHeight) return;
-	int currHeight = currBlock->nHeight;
+	currHeight = currBlock->nHeight;
 
 	uint256 currHash = currBlock->GetBlockHash();
 	uint256 currHash2 = DoubleHash(currHash);

@@ -88,7 +88,7 @@ void CMasternodeMan::DsegUpdate(CNode* pnode)
 		}
 	}
 
-	pnode->PushMessage("dseg", CTxIn());
+	pnode->PushMessage("dseg", "*");
 	int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
 	mWeAsked4List[pnode->addr] = askAgain;
 }
@@ -110,15 +110,6 @@ void CMasternodeMan::ProcessBlock()
 	CBlockIndex* currBlock = chainActive.Tip();
 	if (currHeight >= currBlock->nHeight) return;
 	int currHeight = currBlock->nHeight;
-
-	if (my->lastPing.sigTime + MASTERNODE_PING_SECONDS < GetAdjustedTime()) {
-		LogPrintStr("SENDING PING!!!\n");
-		my->lastPing.blockHeight = currHeight;
-		my->lastPing.blockHash = currBlock->GetBlockHash();
-		my->lastPing.sigTime = GetAdjustedTime();
-		my->SignMsg(my->lastPing.ToString(), my->lastPing.vchSig);
-		UpdatePing(&my->lastPing);
-	}
 
 	uint256 currHash = currBlock->GetBlockHash();
 	uint256 currHash2 = DoubleHash(currHash);
@@ -200,8 +191,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
 	LOCK(cs_process_message);
 
-	LogPrintStr("\n\n\n\n masternodeman.ProcessMessage START\n");
-	LogPrintStr(strCommand);
+	LogPrintStr("\n\n\n\n MESSAGE " + strCommand + " START\n");
 	if (strCommand == "mnb") { //Masternode Broadcast
 		LogPrintf("masternodeman.ProcessMessage mnb START\n");
 		CMasternode mnb;
@@ -239,7 +229,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		LogPrintf("masternodeman.ProcessMessage mnp END\n");
 	}
 	else if (strCommand == "dseg") { //Get Masternode list or specific entry
-		LogPrintf("masternodeman.ProcessMessage dseg START\n");
+		LogPrintf("masternodeman.ProcessMessage dseg reply START\n");
 		string address;
 		vRecv >> address;
 

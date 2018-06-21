@@ -95,6 +95,7 @@ void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strComma
 	if (!masternodeSync.IsBlockchainSynced()) return;
 
 	if (strCommand == "mnget") { //Masternode Payments Request Sync
+		LogPrintf("ProcessMsgPayments mnget reply START\n");
 		int nCountNeeded;
 		vRecv >> nCountNeeded;
 
@@ -111,19 +112,27 @@ void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strComma
 		LogPrint("mnpayments", "mnget - Sent Masternode winners to peer %i\n", pfrom->GetId());
 	}
 	else if (strCommand == "mnw") { // Masternode Payment Vote 
+		LogPrintf("ProcessMsgPayments mnw START\n");
 		CPaymentVote winner;
 		vRecv >> winner;
 		if (mapSeenPaymentVote.count(winner.GetHash())) return;																	// seen before
+		LogPrintf("ProcessMsgPayments mnw not seen before\n");
 		if (winner.nBlockHeight > mnodeman.currHeight + 12) return;																// too far in future
+		LogPrintf("ProcessMsgPayments mnw not too far in future\n");
 		if (!mnodeman.Find(winner.addressVoter)) { mnodeman.AskForMN(pfrom, winner.addressVoter);  return; }					// unknown masternode; ask for it
+		LogPrintf("ProcessMsgPayments mnw known masternode\n");
 		CMasternode* voter = mnodeman.Find(winner.addressVoter);
 		if (voter->voteRank[mnodeman.currHeight % 15] > MNPAYMENTS_SIGNATURES_TOTAL) {											// not in top 10 
+			LogPrintf("ProcessMsgPayments ERROR: NOT IN TOP 10 \n");
 			if (voter->voteRank[mnodeman.currHeight % 15] > MNPAYMENTS_SIGNATURES_TOTAL * 2) Misbehaving(pfrom->GetId(), 20);
 			return;
 		}
 		if (voter->lastVoted >= mnodeman.currHeight) { Misbehaving(pfrom->GetId(), 20); return; }								// already voted differently
+		LogPrintf("ProcessMsgPayments mnw not changed vote\n");
 		if (mnodeman.my->VerifyMsg(winner.addressVoter, winner.ToString(), winner.vchSig) != "") return;						// bad vote signature
+		LogPrintf("ProcessMsgPayments mnw Good sig soo VOTING!!!!\n");
 		AddPaymentVote(winner);
+		LogPrintf("ProcessMsgPayments mnw SUCCESS\n");
 	}
 }
 

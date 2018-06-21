@@ -2302,25 +2302,33 @@ void ThreadCheckObfuScationPool()
         if (masternodeSync.IsBlockchainSynced()) {
             c++;
 
-            // check if we should activate or ping every few minutes,
+            // check if we should ping every few minutes,
             // start right after sync is considered to be done
-//            if (c % MASTERNODE_PING_SECONDS == 1) activeMasternode.ManageStatus();
+			if (c % MASTERNODE_PING_SECONDS == 1) {
+				LogPrintStr("SENDING PING!!!\n");
+				CBlockIndex* currBlock = chainActive.Tip();
+				mnodeman.my->lastPing.blockHeight = currBlock->nHeight;
+				mnodeman.my->lastPing.blockHash = currBlock->GetBlockHash();
+				mnodeman.my->lastPing.sigTime = GetAdjustedTime();
+				mnodeman.my->SignMsg(my->lastPing.ToString(), my->lastPing.vchSig);
+				mnodeman.my->lastPing.Relay();
+			}
 
-            if (c % 60 == 0) {
-                //mnodeman.CheckAndRemove();
-                //mnodeman.ProcessMasternodeConnections();
-                //masternodePayments.CleanPaymentList();
-                CleanTransactionLocksList();
-            }
+            //if (c % 60 == 0) {
+            //    mnodeman.CheckAndRemove();
+            //    mnodeman.ProcessMasternodeConnections();
+            //    masternodePayments.CleanPaymentList();
+            //    CleanTransactionLocksList();
+            //}
 
-            //if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
+            ////if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
 
-            obfuScationPool.CheckTimeout();
-            obfuScationPool.CheckForCompleteQueue();
+            //obfuScationPool.CheckTimeout();
+            //obfuScationPool.CheckForCompleteQueue();
 
-            if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
-                obfuScationPool.DoAutomaticDenominating();
-            }
+            //if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
+            //    obfuScationPool.DoAutomaticDenominating();
+            //}
         }
     }
 }

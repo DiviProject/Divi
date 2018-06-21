@@ -2310,7 +2310,7 @@ void ThreadCheckObfuScationPool()
 				mnodeman.my->lastPing.blockHeight = currBlock->nHeight;
 				mnodeman.my->lastPing.blockHash = currBlock->GetBlockHash();
 				mnodeman.my->lastPing.sigTime = GetAdjustedTime();
-				mnodeman.my->SignMsg(my->lastPing.ToString(), my->lastPing.vchSig);
+				mnodeman.my->SignMsg(mnodeman.my->lastPing.ToString(), mnodeman.my->lastPing.vchSig);
 				mnodeman.my->lastPing.Relay();
 			}
 

@@ -64,10 +64,11 @@ void CMasternodeMan::UpdatePing(CMasternodePing* mnp)
 
 void CMasternodeMan::AskForMN(CNode* pnode, string& address)
 {
+	LogPrint("masternode", "CMasternodeMan::AskForMN - Thinking of asking node for missing entry %s\n", address);
 	if (mWeAsked4Entry.count(address)) {
 		if (mWeAsked4Entry[address] > GetAdjustedTime()) return;
 	}
-	LogPrint("masternode", "CMasternodeMan::AskForMN - Asking node for missing entry %s\n", address);
+	LogPrint("masternode", "CMasternodeMan::AskForMN - Actually asking node for missing entry %s\n", address);
 	pnode->PushMessage("dseg", address);
 	mWeAsked4Entry[address] = GetAdjustedTime() + MASTERNODE_MIN_MNB_SECONDS;
 }

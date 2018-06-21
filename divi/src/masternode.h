@@ -71,6 +71,7 @@ public:
 	template <typename Stream, typename Operation>
 	inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
 	{
+		READWRITE(ordinal);
 		READWRITE(name);
 		READWRITE(collateral);
 		READWRITE(premium);

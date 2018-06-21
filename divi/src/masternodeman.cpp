@@ -136,6 +136,7 @@ void CMasternodeMan::ProcessBlock()
 		LogPrintStr("4\n");
 		LogPrintStr(to_string(currHeight % 15) + "\n");
 		LogPrintStr(to_string(mn.tier.ordinal) + "\n");
+		LogPrintStr(mn.tier.name + "\n");
 		LogPrintStr("4a\n");
 		tierCount[currHeight % 15][mn.tier.ordinal]++;
 		LogPrintStr("4b\n");

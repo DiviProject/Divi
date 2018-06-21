@@ -127,18 +127,27 @@ void CMasternodeMan::ProcessBlock()
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
 		LogPrintStr("c\n");
 		CMasternode mn = (*it).second;
+		LogPrintStr("1\n");
 		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
+		LogPrintStr("2\n");
 		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) { it++;  continue; }
+		LogPrintStr("3\n");
 		stableSize++;
+		LogPrintStr("4\n");
 		tierCount[currHeight % 15][mn.tier.ordinal]++;
 		/* calculate scores */
 		uint256 currHashM = DoubleHash(currHash, mn.address);
+		LogPrintStr("5\n");
 		vCurrScores[mn.tier.ordinal].push_back(make_pair((currHash2 > currHashM ? currHash2 - currHashM : currHashM - currHash2), mn.address));
+		LogPrintStr("6\n");
 		uint256 voteHashM = DoubleHash(voteHash, mn.address);
+		LogPrintStr("7\n");
 		uint256 voteScore = (voteHash2 > voteHashM ? voteHash2 - voteHashM : voteHashM - voteHash2);
+		LogPrintStr("8\n");
 		if (mn.tier.name == "diamond" || mn.tier.name == "platinum") vVoteScores.push_back(make_pair(voteScore, mn.address));
 		// generate payment list
 		if (mn.lastFunded + nodeCount <= currHeight && !mnPayments.IsScheduled(mn.address)) {
+			LogPrintStr("9\n");
 			if (mn.sigTime + (nodeCount * 2.6 * 60) < GetAdjustedTime()) vLastPaid[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
 			else vLastPaid2[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
 		}

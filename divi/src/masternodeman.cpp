@@ -134,7 +134,9 @@ void CMasternodeMan::ProcessBlock()
 		LogPrintStr("3\n");
 		stableSize++;
 		LogPrintStr("4\n");
+		LogPrintStr("4a\n");
 		tierCount[currHeight % 15][mn.tier.ordinal]++;
+		LogPrintStr("4b\n");
 		/* calculate scores */
 		uint256 currHashM = DoubleHash(currHash, mn.address);
 		LogPrintStr("5\n");
@@ -225,6 +227,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		// if ((errorMsg = my->VerifyMsg(mnb.address, mnb.ToString(), mnb.vchSig)) != "") { LogPrint("masternode", "Bad signature %s - %s\n", mnb.address, errorMsg); return; }
 		if ((errorMsg = mnb.VerifyFunding()) != "") { LogPrint("masternode", "Masternode %s - %s\n", mnb.address, errorMsg); return; }
 		if (!Find(mnb.address)) Add(&mnb); else Update(&mnb);
+		masternodeSync.AddedMasternodeList(mnb.GetHash());
 		LogPrintf("masternodeman.ProcessMessage mnb END\n");
 	}
 	else if (strCommand == "mnp") { //Masternode Ping

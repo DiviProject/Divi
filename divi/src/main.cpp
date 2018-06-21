@@ -4704,11 +4704,11 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         return error("%s : ActivateBestChain failed", __func__);
 
     if (fMasterNode && !fLiteMode) {
-        if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
+        // if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
             // obfuScationPool.NewBlock();
 			mnodeman.ProcessBlock();
 			// budget.NewBlock();
-        }
+        // }
     }
 
     if (pwalletMain) {

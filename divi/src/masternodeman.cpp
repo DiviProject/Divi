@@ -104,7 +104,6 @@ uint256 DoubleHash(uint256 hash, string address = string()) {
 void CMasternodeMan::ProcessBlock()
 {
 	LogPrintStr("masternodeman.ProcessBlock BEGIN\n");
-	LogPrintf("masternodeman.ProcessBlock BEGIN\n");
 	vector<pair<uint256, string>> vVoteScores;
 	vector<pair<int64_t, pair<uint256, string>>> vLastPaid[NUM_TIERS];
 	vector<pair<int64_t, pair<uint256, string>>> vLastPaid2[NUM_TIERS];
@@ -113,17 +112,20 @@ void CMasternodeMan::ProcessBlock()
 	CBlockIndex* currBlock = chainActive.Tip();
 	if (currHeight >= currBlock->nHeight) return;
 	currHeight = currBlock->nHeight;
+	LogPrintStr("a\n");
 
 	uint256 currHash = currBlock->GetBlockHash();
 	uint256 currHash2 = DoubleHash(currHash);
 	for (int i = 0; i < 90 && currBlock->pprev != NULL; i++) { blockHashes[currBlock->nHeight] = currBlock->GetBlockHash();  currBlock = currBlock->pprev; }
 	uint256 voteHash = currBlock->GetBlockHash();
 	uint256 voteHash2 = DoubleHash(voteHash);
+	LogPrintStr("b\n");
 
 	stableSize = 0;
 	for (int i = 0; i < NUM_TIERS; i++) { tierCount[currHeight % 15][i] = 0; vCurrScores[i].clear(); }
 	LOCK(cs);
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
+		LogPrintStr("c\n");
 		CMasternode mn = (*it).second;
 		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
 		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) { it++;  continue; }
@@ -142,13 +144,16 @@ void CMasternodeMan::ProcessBlock()
 		}
 		++it;
 	}
+	LogPrintStr("d\n");
 	nodeCount = mMasternodes.size();
 	sort(vCurrScores[0].begin(), vCurrScores[0].end(), CompareScores());
 	sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
 	topSigs[currHeight % 15].clear();
 	int rank = 0;
+	LogPrintStr("e\n");
 	for (vector<pair<uint256, string>>::iterator it = vVoteScores.begin(); it != vVoteScores.end() && rank++ < 2 * MNPAYMENTS_SIGNATURES_TOTAL; it++)
 		topSigs[currHeight % 15][(*it).second] = rank;
+	LogPrintStr("f\n");
 	if (topSigs[currHeight % 15].count(my->address) && topSigs[currHeight % 15][my->address] <= MNPAYMENTS_SIGNATURES_TOTAL) {	// we are top-ranked group & get to vote 
 		for (int tier = 0; tier < NUM_TIERS; tier++) {
 			if (vLastPaid[tier].size() < tierCount[currHeight % 15][tier] / 3) vLastPaid[tier].insert(vLastPaid[tier].end(), vLastPaid2[tier].begin(), vLastPaid2[tier].end()); // append recently restarted nodes during upgrades  
@@ -164,6 +169,7 @@ void CMasternodeMan::ProcessBlock()
 		mnPayments.AddPaymentVote(myVote);
 	}
 
+	LogPrintStr("g\n");
 	for (map<CNetAddr, int64_t>::iterator it = mAskedUs4List.begin(); it != mAskedUs4List.end(); ) if ((*it).second < GetTime()) mAskedUs4List.erase(it++); else ++it;
 	for (map<CNetAddr, int64_t>::iterator it = mWeAsked4List.begin(); it != mWeAsked4List.end(); ) if ((*it).second < GetTime()) mWeAsked4List.erase(it++); else ++it;
 	for (map<string, int64_t>::iterator it = mWeAsked4Entry.begin(); it != mWeAsked4Entry.end(); ) if ((*it).second < GetTime()) mWeAsked4Entry.erase(it++); else ++it;

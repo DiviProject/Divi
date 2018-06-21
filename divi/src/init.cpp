@@ -1591,6 +1591,9 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 10: setup ObfuScation
 
+	for (int i = 0; i < 15; i++)
+		for (int j = 0; j < NUM_TIERS; j++)
+			mnodeman.tierCount[i][j] = 0;
     uiInterface.InitMessage(_("Loading masternode cache..."));
 	mnodeman.my->ReadDBs();
 	uiInterface.InitMessage(_("Loaded!"));

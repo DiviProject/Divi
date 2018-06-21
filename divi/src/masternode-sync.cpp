@@ -303,8 +303,6 @@ void CMasternodeSync::Process()
                 }
 
                 if (pnode->HasFulfilledRequest("mnsync")) continue;
-				string address = "all";
-				pnode->PushMessage("dseg", address);
 				pnode->FulfilledRequest("mnsync");
 
                 // timeout

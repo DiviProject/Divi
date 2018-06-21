@@ -103,6 +103,7 @@ uint256 DoubleHash(uint256 hash, string address = string()) {
 
 void CMasternodeMan::ProcessBlock()
 {
+	LogPrintf("masternodeman.ProcessBlock BEGIN\n");
 	vector<pair<uint256, string>> vVoteScores;
 	vector<pair<int64_t, pair<uint256, string>>> vLastPaid[NUM_TIERS];
 	vector<pair<int64_t, pair<uint256, string>>> vLastPaid2[NUM_TIERS];
@@ -166,6 +167,8 @@ void CMasternodeMan::ProcessBlock()
 	for (map<CNetAddr, int64_t>::iterator it = mWeAsked4List.begin(); it != mWeAsked4List.end(); ) if ((*it).second < GetTime()) mWeAsked4List.erase(it++); else ++it;
 	for (map<string, int64_t>::iterator it = mWeAsked4Entry.begin(); it != mWeAsked4Entry.end(); ) if ((*it).second < GetTime()) mWeAsked4Entry.erase(it++); else ++it;
 	LogPrintf("masternodeman.ProcessBlock END\n");
+	LogPrintStr(to_string(currHeight));
+	LogPrintStr(to_string(mnodeman.currHeight));
 }
 
 void CMasternodeMan::ProcessMasternodeConnectionsX()

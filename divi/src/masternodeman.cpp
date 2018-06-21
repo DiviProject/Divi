@@ -103,6 +103,7 @@ uint256 DoubleHash(uint256 hash, string address = string()) {
 
 void CMasternodeMan::ProcessBlock()
 {
+	LogPrintStr("masternodeman.ProcessBlock BEGIN\n");
 	LogPrintf("masternodeman.ProcessBlock BEGIN\n");
 	vector<pair<uint256, string>> vVoteScores;
 	vector<pair<int64_t, pair<uint256, string>>> vLastPaid[NUM_TIERS];

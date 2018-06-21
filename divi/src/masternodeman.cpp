@@ -88,7 +88,7 @@ void CMasternodeMan::DsegUpdate(CNode* pnode)
 		}
 	}
 
-//	pnode->PushMessage("dseg", "*");
+	pnode->PushMessage("dseg", "all");
 	int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
 	mWeAsked4List[pnode->addr] = askAgain;
 }
@@ -233,7 +233,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		string address;
 		vRecv >> address;
 
-		if (address == "*") { // should only ask for list rarely
+		if (address == "all") { // should only ask for list rarely
 			std::map<CNetAddr, int64_t>::iterator i = mAskedUs4List.find(pfrom->addr);
 			if (i != mAskedUs4List.end())
 				if (GetAdjustedTime() < (*i).second) { Misbehaving(pfrom->GetId(), 34); LogPrint("masternode", "dseg - peer already asked me for the list\n"); return; }
@@ -243,13 +243,13 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		int nInvCount = 0;
 		for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); it++) {
 			LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", (*it).second.address);
-			if (address == "*" || address == (*it).second.address) {
+			if (address == "all" || address == (*it).second.address) {
 				pfrom->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, (*it).second.GetHash()));
 				nInvCount++;
 				if (address == (*it).second.address) { LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId()); return; }
 			}
 		}
-		if (address == "*") {
+		if (address == "all") {
 			pfrom->PushMessage("ssc", MASTERNODE_SYNC_LIST, nInvCount);
 			LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, pfrom->GetId());
 		}

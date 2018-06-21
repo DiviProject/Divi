@@ -117,6 +117,7 @@ void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strComma
 		vRecv >> winner;
 		if (mapSeenPaymentVote.count(winner.GetHash())) return;																	// seen before
 		LogPrintf("ProcessMsgPayments mnw not seen before\n");
+		LogPrintStr(to_string(winner.nBlockHeight) + " - " + to_string(mnodeman.currHeight));
 		if (winner.nBlockHeight > mnodeman.currHeight + 12) return;																// too far in future
 		LogPrintf("ProcessMsgPayments mnw not too far in future\n");
 		if (!mnodeman.Find(winner.addressVoter)) { mnodeman.AskForMN(pfrom, winner.addressVoter);  return; }					// unknown masternode; ask for it

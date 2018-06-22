@@ -53,11 +53,11 @@ void CMasternodeMan::UpdatePing(CMasternodePing* mnp)
 	CMasternode* current = Find(mnp->address);
 	if (current->lastPing.GetHash() == mnp->GetHash()) { LogPrintStr("\n\n\n\n\n ERROR: Matching mnping Hashes \n\n\n\n\n"); return; }
 	mSeenPings.erase(current->lastPing.GetHash());
-	mSeenPings.insert(make_pair(mnp->GetHash(), *mnp));
 	current->lastPing.blockHeight = mnp->blockHeight;
 	current->lastPing.blockHash = mnp->blockHash;
 	current->lastPing.sigTime = mnp->sigTime;
 	current->lastPing.vchSig = mnp->vchSig;
+	mSeenPings[mnp->GetHash()] = *mnp;
 	mnp->Relay();
 }
 
@@ -113,62 +113,42 @@ void CMasternodeMan::ProcessBlock()
 	CBlockIndex* currBlock = chainActive.Tip();
 	if (currHeight >= currBlock->nHeight) return;
 	currHeight = currBlock->nHeight;
-	LogPrintStr("a\n");
 
 	uint256 currHash = currBlock->GetBlockHash();
 	uint256 currHash2 = DoubleHash(currHash);
 	for (int i = 0; i < 90 && currBlock->pprev != NULL; i++) { blockHashes[currBlock->nHeight] = currBlock->GetBlockHash();  currBlock = currBlock->pprev; }
 	uint256 voteHash = currBlock->GetBlockHash();
 	uint256 voteHash2 = DoubleHash(voteHash);
-	LogPrintStr("b\n");
 
 	stableSize = 0;
 	for (int i = 0; i < NUM_TIERS; i++) { tierCount[currHeight % 15][i] = 0; vCurrScores[i].clear(); }
 	LOCK(cs);
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
-		LogPrintStr("c\n");
 		CMasternode mn = (*it).second;
-		LogPrintStr("1\n");
 		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
-		LogPrintStr("2\n");
 		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) { it++;  continue; }
-		LogPrintStr("3\n");
 		stableSize++;
-		LogPrintStr("4\n");
-		LogPrintStr(to_string(currHeight % 15) + "\n");
-		LogPrintStr(to_string(mn.tier.ordinal) + "\n");
-		LogPrintStr(mn.tier.name + "\n");
-		LogPrintStr("4a\n");
 		tierCount[currHeight % 15][mn.tier.ordinal]++;
-		LogPrintStr("4b\n");
 		/* calculate scores */
 		uint256 currHashM = DoubleHash(currHash, mn.address);
-		LogPrintStr("5\n");
 		vCurrScores[mn.tier.ordinal].push_back(make_pair((currHash2 > currHashM ? currHash2 - currHashM : currHashM - currHash2), mn.address));
-		LogPrintStr("6\n");
 		uint256 voteHashM = DoubleHash(voteHash, mn.address);
-		LogPrintStr("7\n");
 		uint256 voteScore = (voteHash2 > voteHashM ? voteHash2 - voteHashM : voteHashM - voteHash2);
-		LogPrintStr("8\n");
 		if (mn.tier.name == "diamond" || mn.tier.name == "platinum") vVoteScores.push_back(make_pair(voteScore, mn.address));
 		// generate payment list
 		if (mn.lastFunded + nodeCount <= currHeight && !mnPayments.IsScheduled(mn.address)) {
-			LogPrintStr("9\n");
 			if (mn.sigTime + (nodeCount * 2.6 * 60) < GetAdjustedTime()) vLastPaid[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
 			else vLastPaid2[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
 		}
 		++it;
 	}
-	LogPrintStr("d\n");
 	nodeCount = mMasternodes.size();
 	sort(vCurrScores[0].begin(), vCurrScores[0].end(), CompareScores());
 	sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
 	topSigs[currHeight % 15].clear();
 	int rank = 0;
-	LogPrintStr("e\n");
 	for (vector<pair<uint256, string>>::iterator it = vVoteScores.begin(); it != vVoteScores.end() && rank++ < 2 * MNPAYMENTS_SIGNATURES_TOTAL; it++)
 		topSigs[currHeight % 15][(*it).second] = rank;
-	LogPrintStr("f\n");
 	if (topSigs[currHeight % 15].count(my->address) && topSigs[currHeight % 15][my->address] <= MNPAYMENTS_SIGNATURES_TOTAL) {	// we are top-ranked group & get to vote 
 		for (int tier = 0; tier < NUM_TIERS; tier++) {
 			if (vLastPaid[tier].size() < tierCount[currHeight % 15][tier] / 3) vLastPaid[tier].insert(vLastPaid[tier].end(), vLastPaid2[tier].begin(), vLastPaid2[tier].end()); // append recently restarted nodes during upgrades  
@@ -184,13 +164,10 @@ void CMasternodeMan::ProcessBlock()
 		mnPayments.AddPaymentVote(myVote);
 	}
 
-	LogPrintStr("g\n");
 	for (map<CNetAddr, int64_t>::iterator it = mAskedUs4List.begin(); it != mAskedUs4List.end(); ) if ((*it).second < GetTime()) mAskedUs4List.erase(it++); else ++it;
 	for (map<CNetAddr, int64_t>::iterator it = mWeAsked4List.begin(); it != mWeAsked4List.end(); ) if ((*it).second < GetTime()) mWeAsked4List.erase(it++); else ++it;
 	for (map<string, int64_t>::iterator it = mWeAsked4Entry.begin(); it != mWeAsked4Entry.end(); ) if ((*it).second < GetTime()) mWeAsked4Entry.erase(it++); else ++it;
 	LogPrintf("masternodeman.ProcessBlock END\n");
-	LogPrintStr(to_string(currHeight));
-	LogPrintStr(to_string(mnodeman.currHeight));
 }
 
 void CMasternodeMan::ProcessMasternodeConnectionsX()

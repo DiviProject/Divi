@@ -2307,10 +2307,12 @@ void ThreadCheckObfuScationPool()
 			if (c % MASTERNODE_PING_SECONDS == 1) {
 				LogPrintStr("SENDING PING!!!\n");
 				CBlockIndex* currBlock = chainActive.Tip();
+				mnodeman.mSeenPings.erase(mnodeman.my->lastPing.GetHash());
 				mnodeman.my->lastPing.blockHeight = currBlock->nHeight;
 				mnodeman.my->lastPing.blockHash = currBlock->GetBlockHash();
 				mnodeman.my->lastPing.sigTime = GetAdjustedTime();
 				mnodeman.my->SignMsg(mnodeman.my->lastPing.ToString(), mnodeman.my->lastPing.vchSig);
+				mnodeman.mSeenPings[mnodeman.my->lastPing.GetHash()] = mnodeman.my->lastPing;
 				mnodeman.my->lastPing.Relay();
 			}
 

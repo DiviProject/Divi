@@ -124,7 +124,6 @@ string CMasternode::SignMsg(string address, string msg, vector<unsigned char>& v
 {
 	LogPrintStr("\n\n\n SIGNING " + address + "\n\n\n");
 	CBitcoinAddress address2(address);
-	// if (address2.IsValid()) fprintf(stderr, "good address"); else fprintf(stderr, "bad address");
 	CKeyID keyID;
 	address2.GetKeyID(keyID);
 	CKey key;
@@ -132,7 +131,7 @@ string CMasternode::SignMsg(string address, string msg, vector<unsigned char>& v
 
 	sigTime = GetAdjustedTime();
 	CHashWriter ss(SER_GETHASH, 0);
-	ss << strMessageMagic << msg << sigTime;
+	ss << strMessageMagic << msg;
 	key.SignCompact(ss.GetHash(), vchSig);
 	return(VerifyMsg(address, msg, vchSig));
 }

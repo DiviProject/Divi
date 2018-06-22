@@ -24,7 +24,7 @@ bool CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 	}
 	if (!mMnVotes.count(winner.nBlockHeight)) mMnVotes[winner.nBlockHeight] = set<uint256>{ { winner.GetHash() } };		// local (for better garbage collection)
 	else mMnVotes[winner.nBlockHeight].insert(winner.GetHash());
-	mapSeenPaymentVote.insert(make_pair(winner.GetHash(), winner));														// standard
+	mapSeenPaymentVote[winner.GetHash()] = winner;																		// standard
 	winner.Relay();
 }
 
@@ -133,6 +133,7 @@ void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strComma
 		if (mnodeman.my->VerifyMsg(winner.addressVoter, winner.ToString(), winner.vchSig) != "") return;						// bad vote signature
 		LogPrintf("ProcessMsgPayments mnw Good sig soo VOTING!!!!\n");
 		AddPaymentVote(winner);
+		masternodeSync.AddedMasternodeWinner(winner.GetHash());
 		LogPrintf("ProcessMsgPayments mnw SUCCESS\n");
 	}
 }

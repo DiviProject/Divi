@@ -1459,7 +1459,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
 
     // Check for negative or overflow output values
     CAmount nValueOut = 0;
-    // int nZCSpendCount = 0;
+    int nZCSpendCount = 0;
     BOOST_FOREACH (const CTxOut& txout, tx.vout) {
         if (txout.IsEmpty() && !tx.IsCoinBase() && !tx.IsCoinStake())
             return state.DoS(100, error("CheckTransaction(): txout empty for user transaction"));
@@ -1473,16 +1473,14 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
         if (!MoneyRange(nValueOut))
             return state.DoS(100, error("CheckTransaction() : txout total out of range"),
                 REJECT_INVALID, "bad-txns-txouttotal-toolarge");
-        /* Byrd -marked for removal
         if (fZerocoinActive && txout.IsZerocoinMint()) {
             if(!CheckZerocoinMint(tx.GetHash(), txout, state, false))
                 return state.DoS(100, error("CheckTransaction() : invalid zerocoin mint"));
         }
         if (fZerocoinActive && txout.scriptPubKey.IsZerocoinSpend())
             nZCSpendCount++;
-        */
     }
-    /* Byrd -marked for removal
+
     if (fZerocoinActive) {
         if (nZCSpendCount > Params().Zerocoin_MaxSpendsPerTransaction())
             return state.DoS(100, error("CheckTransaction() : there are more zerocoin spends than are allowed in one transaction"));
@@ -1501,7 +1499,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                 return state.DoS(100, error("CheckTransaction() : invalid zerocoin spend"));
         }
     }
-    */
+
     // Check for duplicate inputs
     set<COutPoint> vInOutPoints;
     set<CBigNum> vZerocoinSpendSerials;
@@ -2181,33 +2179,31 @@ int64_t GetBlockValue(int nHeight)
             return 250000 * COIN;
     }
 
-	if (nHeight == 0) {
-		nSubsidy = 50 * COIN;
-	} else if (nHeight == 1) {
-		nSubsidy = 2534320700 * COIN;
-	} else if (nHeight < Params().LAST_POW_BLOCK()) {
-        nSubsidy = 1 * COIN;
-	} else {
-		nSubsidy = 600 * COIN;
-	}
+	if (nHeight == 0) { nSubsidy = 50 * COIN; }
+	else if (nHeight == 1) { nSubsidy = 2534320700 * COIN; }
+	else if (nHeight < Params().LAST_POW_BLOCK()) { nSubsidy = 1 * COIN; }
+	else { nSubsidy = 1075 * COIN; }
 
     return nSubsidy;
 }
 
-int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)
+
+
+
+int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)	// 2193
 {
-    int64_t ret = 0;
+	int64_t ret = 0;
 
 	return ret;			// All masternode payments are disabled for beta until ready to test
 
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) { if (nHeight < 200) return 0; }
+	if (Params().NetworkID() == CBaseChainParams::TESTNET) { if (nHeight < 200) return 0; }
 
 	if (nHeight < Params().LAST_POW_BLOCK()) return 0;
 	else {
-        int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+		int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
 
 		//	Determine masternode money supply is now determined from from mnodeman.mMasternodes.  Previous code was
-        //		int64_t mNodeCoins = nMasternodeCount * 10000 * COIN;
+		//		int64_t mNodeCoins = nMasternodeCount * 10000 * COIN;
 
 		//	Masternode share of funds (vs. staking wallets) mnShare = 1075 * nMoneySupply/(mNodeCoins * 4)
 		//	When the masternodes are half the pool, they get 537.5/block
@@ -2221,11 +2217,13 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCou
 		//	Note that any variances are compounded by the fact that the share is split among the popuation of the tier
 		//		So when the population is smaller, it gets a greater share more often & when the population is larger, they get a smaller, less frequent reward
 
-    }
-    return ret;
+	}
+	return ret;
 }
 
-bool IsInitialBlockDownload()
+
+
+bool IsInitialBlockDownload()	//2446
 {
     LOCK(cs_main);
     if (fImporting || fReindex || fVerifyingBlocks || chainActive.Height() < Checkpoints::GetTotalBlocksEstimate())
@@ -2316,7 +2314,7 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
 // Requires cs_main.
 void Misbehaving(NodeId pnode, int howmuch)
 {
-	//howmuch = 0; //byrd line to prevent nodes from disconnecting form each other 
+	howmuch = 0; //byrd line to prevent nodes from disconnecting form each other 
 	if (howmuch == 0)
         return;
 
@@ -3257,14 +3255,15 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
-    CAmount nExpectedMint = GetBlockValue(pindex->nHeight);
+//	CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight);
+	CAmount nExpectedMint = GetBlockValue(pindex->nHeight);
     if (block.IsProofOfWork())
         nExpectedMint += nFees;
 
     if (!mnPayments.IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
         return state.DoS(100,
-            error("ConnectBlock() : reward pays too much (height=%s actual=%s vs limit=%s)",
-                pindex->nHeight, FormatMoney(pindex->nMint), FormatMoney(nExpectedMint)),
+            error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
+                FormatMoney(pindex->nMint), FormatMoney(nExpectedMint)),
             REJECT_INVALID, "bad-cb-amount");
     }
 
@@ -4256,7 +4255,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     }
 
     // masternode payments / budgets
-    CBlockIndex* pindexPrev = chainActive.Tip();
+    /*CBlockIndex* pindexPrev = chainActive.Tip();
     int nHeight = 0;
     if (pindexPrev != NULL) {
         if (pindexPrev->GetBlockHash() == block.hashPrevBlock) {
@@ -4274,7 +4273,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         // The case also exists that the sending peer could not have enough data to see
         // that this block is invalid, so don't issue an outright ban.
         if (nHeight != 0 && !IsInitialBlockDownload()) {
-            if (!mnPayments.IsBlockPayeeValid(block, nHeight)) {
+            if (!IsBlockPayeeValid(block, nHeight)) {
                 mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
                 return state.DoS(0, error("CheckBlock() : Couldn't find masternode/budget payment"),
                         REJECT_INVALID, "bad-cb-payee");
@@ -4284,9 +4283,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                 LogPrintf("CheckBlock(): Masternode payment check skipped on sync - skipping IsBlockPayeeValid()\n");
         }
     }
-    
+    */
     // Check transactions
-    bool fZerocoinActive = false;
+    bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
     vector<CBigNum> vBlockSerials;
     for (const CTransaction& tx : block.vtx) {
         if (!CheckTransaction(tx, fZerocoinActive, chainActive.Height() + 1 >= Params().Zerocoin_Block_EnforceSerialRange(), state))
@@ -4642,8 +4641,7 @@ void CBlockIndex::BuildSkip()
 
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
-	LogPrintf("main.ProcessNewBlock START\n");
-	// Preliminary checks
+    // Preliminary checks
     int64_t nStartTime = GetTimeMillis();
     bool checked = CheckBlock(*pblock, state);
 
@@ -4706,11 +4704,11 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         return error("%s : ActivateBestChain failed", __func__);
 
     if (fMasterNode && !fLiteMode) {
-        //if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
-//            obfuScationPool.NewBlock();
-            mnodeman.ProcessBlock();
-//            budget.NewBlock();
-        //}
+        // if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
+            // obfuScationPool.NewBlock();
+			mnodeman.ProcessBlock();
+			// budget.NewBlock();
+        // }
     }
 
     if (pwalletMain) {
@@ -4726,8 +4724,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,
               pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));
 
-	LogPrintf("main.ProcessNewBlock END\n");
-	return true;
+    return true;
 }
 
 bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex* const pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot)
@@ -5481,6 +5478,7 @@ bool static AlreadyHave(const CInv& inv)
         return mapSporks.count(inv.hash);
     case MSG_MASTERNODE_WINNER:
         if (mnPayments.mapSeenPaymentVote.count(inv.hash)) {
+            masternodeSync.AddedMasternodeWinner(inv.hash);
             return true;
         }
         return false;
@@ -5510,6 +5508,7 @@ bool static AlreadyHave(const CInv& inv)
     //    return false;
     case MSG_MASTERNODE_ANNOUNCE:
         if (mnodeman.mMasternodes.count(inv.hash)) {
+            masternodeSync.AddedMasternodeList(inv.hash);
             return true;
         }
         return false;
@@ -5705,10 +5704,8 @@ void static ProcessGetData(CNode* pfrom)
                 }
 
                 if (!pushed && inv.type == MSG_MASTERNODE_PING) {
-					LogPrintStr("MSG_MASTERNODE_PING looking for hash");
                     if (mnodeman.mSeenPings.count(inv.hash)) {
-						LogPrintStr("MSG_MASTERNODE_PING FOUND hash!!!");
-						CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
                         ss << mnodeman.mSeenPings[inv.hash];
                         pfrom->PushMessage("mnp", ss);
@@ -5839,18 +5836,18 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             if (fListen && !IsInitialBlockDownload()) {
                 CAddress addr = GetLocalAddress(&pfrom->addr);
                 if (addr.IsRoutable()) {
-					LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
+                    LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
                     pfrom->PushAddress(addr);
                 } else if (IsPeerAddrLocalGood(pfrom)) {
                     addr.SetIP(pfrom->addrLocal);
-					LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
+                    LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
                     pfrom->PushAddress(addr);
                 }
 				if (fMasterNode && CService(addr.ToString()).ToString() != mnodeman.my->service.ToString()) {		// update dynamic ip
 					mnodeman.my->service = CService(addr.ToString());
 					mnodeman.Update(mnodeman.my);
 				}
-            }
+			}
 
             // Get recent addresses
             if (pfrom->fOneShot || pfrom->nVersion >= CADDR_TIME_VERSION || addrman.size() < 1000) {
@@ -6153,7 +6150,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         //            mapObfuscationBroadcastTxes.insert(make_pair(tx.GetHash(), dstx));
         //        }
         //    }
-        }
+        }	
 
         CInv inv(MSG_TX, tx.GetHash());
         pfrom->AddInventoryKnown(inv);
@@ -6577,11 +6574,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
     } else {
         //probably one the extensions
-        obfuScationPool.ProcessMessageObfuscation(pfrom, strCommand, vRecv);
+        // obfuScationPool.ProcessMessageObfuscation(pfrom, strCommand, vRecv);
         mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
-        //budget.ProcessMessage(pfrom, strCommand, vRecv);
+        // budget.ProcessMessage(pfrom, strCommand, vRecv);
 		mnPayments.ProcessMsgPayments(pfrom, strCommand, vRecv);
-        ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
+        // ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
         ProcessSpork(pfrom, strCommand, vRecv);
         masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
     }

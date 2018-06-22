@@ -52,7 +52,7 @@ public:
 		return ss.GetHash();
 	}
 	void Relay() { CInv inv(MSG_MASTERNODE_PING, GetHash()); RelayInv(inv); }
-	string ToString() { return address + to_string(blockHeight) + blockHash.ToString(); }
+	string ToString() { return address + to_string(blockHeight) + blockHash.ToString() + to_string(sigTime); }
 
 	friend bool operator==(const CMasternodePing& a, const CMasternodePing& b) { return a.GetHash() == b.GetHash(); }
 	friend bool operator!=(const CMasternodePing& a, const CMasternodePing& b) { return !(a.GetHash() == b.GetHash()); }
@@ -60,7 +60,8 @@ public:
 
 class CMnTier {
 public:
-	string name;
+	int ordinal;				// For array convenience only!  Do NOT assume that the ordering of nodes means ANYTHING!  That may appear true now but will change.
+	string name;				// ALWAYS use names when selecting tiers. (Yes, enums could have been used.  We *chose* to avoid the long-term/maintenance issues.) 
 	CAmount collateral;
 	int premium;
 	int seesawBasis;
@@ -70,6 +71,7 @@ public:
 	template <typename Stream, typename Operation>
 	inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
 	{
+		READWRITE(ordinal);
 		READWRITE(name);
 		READWRITE(collateral);
 		READWRITE(premium);
@@ -79,11 +81,14 @@ public:
 	string ToString() { return name + to_string(collateral) + to_string(seesawBasis); }
 };
 
-const CMnTier Diamond{ "diamond", 10000000 * COIN, 120, 2000 };
-const CMnTier Platinum{ "platinum", 3000000 * COIN, 115, 2000 };
-const CMnTier Gold{ "gold", 1000000 * COIN, 110, 2000 };
-const CMnTier Silver{ "silver", 300000 * COIN, 105, 2000 };
-const CMnTier Copper{ "copper", 100000 * COIN, 100, 2000 };
+#define NUM_TIERS 5
+
+const CMnTier Diamond{ 0, "diamond", 10000000 * COIN, 120, 2400 };
+const CMnTier Platinum{ 1, "platinum", 3000000 * COIN, 115, 2400 };
+const CMnTier Gold{ 2, "gold", 1000000 * COIN, 110, 2400 };
+const CMnTier Silver{ 3, "silver", 300000 * COIN, 105, 1600 };
+const CMnTier Copper{ 4, "copper", 100000 * COIN, 100, 1200 };
+const CMnTier Tiers[NUM_TIERS] = { Diamond, Platinum, Gold, Silver, Copper };
 
 class CMnFunding
 {
@@ -131,7 +136,7 @@ public:
 	int64_t lastFunded;						// updated on add or update
 	int64_t lastPaid;						// updated on add or payment
 	int lastVoted;
-	vector<int> voteRank;					// stores most recent payment vote ranks for payment vote validity checking
+	int voteRank[15];						// stores most recent payment vote ranks for payment vote validity checking
 
 	ADD_SERIALIZE_METHODS;
 

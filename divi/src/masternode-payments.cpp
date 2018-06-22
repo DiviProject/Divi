@@ -18,40 +18,51 @@ CMasternodePayments mnPayments;
 
 bool CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 {
-	if (!mVotes.count(winner.nBlockHeight)) mVotes[winner.nBlockHeight] = CBlockVotes();
-	mVotes[winner.nBlockHeight].AddVote(winner.addressPayee);
-
+	for (int tier = 0; tier < NUM_TIERS; tier++) {
+		if (!mVotes.count(winner.nBlockHeight)) mVotes[winner.nBlockHeight] = CBlockVotes();
+		mVotes[winner.nBlockHeight].AddVote(tier, winner.addressPayee[tier]);
+	}
 	if (!mMnVotes.count(winner.nBlockHeight)) mMnVotes[winner.nBlockHeight] = set<uint256>{ { winner.GetHash() } };		// local (for better garbage collection)
 	else mMnVotes[winner.nBlockHeight].insert(winner.GetHash());
-	mapSeenPaymentVote.insert(make_pair(winner.GetHash(), winner));														// standard
-
+	mapSeenPaymentVote[winner.GetHash()] = winner;																		// standard
 	winner.Relay();
 }
 
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFees, bool fProofOfStake)
 {
-	return;				// All masternode payments are disabled for beta until ready to test			
+	return;				// All masternode payments are disabled for beta until ready to test	
 
-	string payee = mVotes[mnodeman.currHeight + 1].MostVotes();			// IMPORTANT! Does not require 6 as PIVX does.  Need to revisit this!
-	if (payee == "") payee = mnodeman.vCurrScores[0].second;
-	CScript scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
-
-	CAmount blockValue = GetBlockValue(mnodeman.currHeight + 1);
-	CAmount masternodePayment = GetMasternodePayment(mnodeman.currHeight + 1, blockValue);
-
+	int divi[NUM_TIERS], mNodeCoins = 0;
+	for (int tier = 0; tier < NUM_TIERS; tier++) {
+		divi[tier] = mnodeman.tierCount[(mnodeman.currHeight + 1) % 15][tier] * Tiers[tier].collateral;
+		mNodeCoins += divi[tier];
+	}
+	int raw[NUM_TIERS], rawTotal = 0;
+	for (int tier = 0; tier < NUM_TIERS; tier++) {
+		raw[tier] = mNodeCoins * Tiers[tier].seesawBasis * Tiers[tier].premium / divi[tier];
+		rawTotal += raw[tier];
+	}
+	CAmount blockValue = 1075;
+	CAmount nMoneySupply = chainActive.Tip()->nMoneySupply;
+	CAmount masternodePayment = blockValue * nMoneySupply / (mNodeCoins * 4);
+		
 	if (fProofOfStake) {
 		unsigned int i = txNew.vout.size();
-		txNew.vout.resize(i + 1);
-		txNew.vout[i].scriptPubKey = scriptPubKey;
-		txNew.vout[i].nValue = masternodePayment;
+		txNew.vout.resize(i + NUM_TIERS);
+		for (int tier = 0; tier < NUM_TIERS; tier++) {
+			string payee = mVotes[mnodeman.currHeight + 1].MostVotes(tier);
+			if (payee == "") continue;
+			txNew.vout[i + tier].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
+			txNew.vout[i + tier].nValue = masternodePayment * raw[tier]/rawTotal;
+		}
 		txNew.vout[i - 1].nValue -= masternodePayment;
 	}
-	else {
-		txNew.vout.resize(2);
-		txNew.vout[1].scriptPubKey = scriptPubKey;
-		txNew.vout[1].nValue = masternodePayment;
-		txNew.vout[0].nValue = blockValue - masternodePayment;
-	}
+	//else {
+	//	txNew.vout.resize(2);
+	//	txNew.vout[1].scriptPubKey = scriptPubKey;
+	//	txNew.vout[1].nValue = masternodePayment;
+	//	txNew.vout[0].nValue = blockValue - masternodePayment;
+	//}
 }
 
 bool CMasternodePayments::IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
@@ -60,19 +71,22 @@ bool CMasternodePayments::IsBlockPayeeValid(const CBlock& block, int nBlockHeigh
 
 	CTransaction txNew = (nBlockHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
-	// require at least MNPAYMENTS_SIGNATURES_REQUIRED votes or approve *anything*
-	if (mVotes.count(mnodeman.currHeight + 1) == 0) return true;
-	string payee = mVotes[mnodeman.currHeight + 1].Winner();
-	if (payee == "") return true;
+	for (int tier = 0; tier < NUM_TIERS; tier++) {
+		// require at least MNPAYMENTS_SIGNATURES_REQUIRED votes or approve *anything*
+		if (mVotes.count(mnodeman.currHeight + 1) == 0) return true;
+		string payee = mVotes[mnodeman.currHeight + 1].Winner(tier);
+		if (payee == "") return true;
 
-	CScript scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
-	CAmount nReward = GetBlockValue(mnodeman.currHeight);
-	CAmount requiredMasternodePayment = GetMasternodePayment(mnodeman.currHeight, nReward);
+		CScript scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
+		CAmount nReward = GetBlockValue(mnodeman.currHeight);
+		CAmount requiredMasternodePayment = GetMasternodePayment(mnodeman.currHeight, nReward);
 
-	for (vector<CTxOut>::iterator it = txNew.vout.begin(); it != txNew.vout.end(); it++)
-		if ((*it).scriptPubKey == scriptPubKey && (*it).nValue >= requiredMasternodePayment) return true;
-	LogPrint("masternode", "Invalid mn payment detected %s\n", txNew.ToString().c_str());
-	return false;
+		bool found = false;
+		for (vector<CTxOut>::iterator it = txNew.vout.begin(); !found && it != txNew.vout.end(); it++)
+			if ((*it).scriptPubKey == scriptPubKey && (*it).nValue >= requiredMasternodePayment) found = true;
+		if (!found) { LogPrint("masternode", "Invalid mn payment detected %s\n", txNew.ToString().c_str()); return false; }
+	}
+	return true;
 }
 
 
@@ -81,6 +95,7 @@ void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strComma
 	if (!masternodeSync.IsBlockchainSynced()) return;
 
 	if (strCommand == "mnget") { //Masternode Payments Request Sync
+		LogPrintf("ProcessMsgPayments mnget reply START\n");
 		int nCountNeeded;
 		vRecv >> nCountNeeded;
 
@@ -97,26 +112,29 @@ void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strComma
 		LogPrint("mnpayments", "mnget - Sent Masternode winners to peer %i\n", pfrom->GetId());
 	}
 	else if (strCommand == "mnw") { // Masternode Payment Vote 
+		LogPrintf("ProcessMsgPayments mnw START\n");
 		CPaymentVote winner;
 		vRecv >> winner;
 		if (mapSeenPaymentVote.count(winner.GetHash())) return;																	// seen before
 		if (winner.nBlockHeight > mnodeman.currHeight + 12) return;																// too far in future
 		if (!mnodeman.Find(winner.addressVoter)) { mnodeman.AskForMN(pfrom, winner.addressVoter);  return; }					// unknown masternode; ask for it
 		CMasternode* voter = mnodeman.Find(winner.addressVoter);
-		if (voter->voteRank[mnodeman.currHeight % 12] > MNPAYMENTS_SIGNATURES_TOTAL) {											// not in top 10 
-			if (voter->voteRank[mnodeman.currHeight % 12] > MNPAYMENTS_SIGNATURES_TOTAL * 2) Misbehaving(pfrom->GetId(), 20);
+		if (voter->voteRank[mnodeman.currHeight % 15] > MNPAYMENTS_SIGNATURES_TOTAL) {											// not in top 10 
+			if (voter->voteRank[mnodeman.currHeight % 15] > MNPAYMENTS_SIGNATURES_TOTAL * 2) Misbehaving(pfrom->GetId(), 20);
 			return;
 		}
 		if (voter->lastVoted >= mnodeman.currHeight) { Misbehaving(pfrom->GetId(), 20); return; }								// already voted differently
 		if (mnodeman.my->VerifyMsg(winner.addressVoter, winner.ToString(), winner.vchSig) != "") return;						// bad vote signature
 		AddPaymentVote(winner);
+		masternodeSync.AddedMasternodeWinner(winner.GetHash());
+		LogPrintf("ProcessMsgPayments mnw SUCCESS\n");
 	}
 }
 
 bool CMasternodePayments::IsScheduled(string address)
 {
 	for (int i = 0; mVotes.count(mnodeman.currHeight + i) > 0; i++)
-		if (mVotes[mnodeman.currHeight + i].MostVotes() == address) return true;
+		if (mVotes[mnodeman.currHeight + i].MostVotes(mnodeman.Find(address)->tier.ordinal) == address) return true;
 	return false;
 }
 

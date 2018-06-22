@@ -267,7 +267,7 @@ extern json_spirit::Value listmasternodes(const json_spirit::Array& params, bool
 extern json_spirit::Value getmasternodecount(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value masternodeconnect(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value masternodecurrent(const json_spirit::Array& params, bool fHelp);
-//extern json_spirit::Value masternodedebug(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value masternodedebug(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value startmasternode(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value createmasternodekey(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getmasternodeoutputs(const json_spirit::Array& params, bool fHelp);

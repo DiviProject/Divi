@@ -163,7 +163,6 @@ class CObfuscationQueue
 {
 public:
     CTxIn vin;
-	string address;
     int64_t time;
     int nDenom;
     bool ready; //ready for submit
@@ -192,9 +191,9 @@ public:
 
     bool GetAddress(CService& addr)
     {
-		CMasternode* pmn = mnodeman.Find("address");
-        if (pmn != NULL) {
-            addr = pmn->service;
+        // CMasternode* pmn = mnodeman.Find(vin);
+        if (mnodeman.my != NULL) {
+            addr = mnodeman.my->service;
             return true;
         }
         return false;
@@ -203,9 +202,9 @@ public:
     /// Get the protocol version
     bool GetProtocolVersion(int& protocolVersion)
     {
-        CMasternode* pmn = mnodeman.Find("address");
-        if (pmn != NULL) {
-            protocolVersion = pmn->protocolVersion;
+        // CMasternode* pmn = mnodeman.Find(vin);
+        if (mnodeman.my != NULL) {
+            protocolVersion = mnodeman.my->protocolVersion;
             return true;
         }
         return false;

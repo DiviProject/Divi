@@ -19,19 +19,24 @@ using namespace std;
 class CBlockVotes
 {
 public:
-	map<string, int> mBVotes;
-	void AddVote(string address, int votes = 1) { if (!mBVotes.count(address)) mBVotes[address] = votes; else mBVotes[address] += votes; }
-	int GetVotes(string address) { if (!mBVotes.count(address)) return 0; return mBVotes[address]; }
-	string MostVotes() { int maxVotes = 0; string payee = "";
-		for (map<string, int>::iterator it = mBVotes.begin(); it != mBVotes.end(); it++)
+	map<string, int> mBVotes[NUM_TIERS];
+	void AddVote(int tier, string address, int votes = 1) { if (!mBVotes[tier].count(address)) mBVotes[tier][address] = votes; else mBVotes[tier][address] += votes; }
+	int GetVotes(int tier, string address) { if (!mBVotes[tier].count(address)) return 0; return mBVotes[tier][address]; }
+	string MostVotes(int tier) {
+		int maxVotes = 0; string payee = "";
+		for (map<string, int>::iterator it = mBVotes[tier].begin(); it != mBVotes[tier].end(); it++)
 			if (maxVotes < (*it).second) { payee = (*it).first;  maxVotes = (*it).second; };
 		return (payee);
 	}
-	string Winner() { string best = MostVotes(); if (GetVotes(best) >= MNPAYMENTS_SIGNATURES_REQUIRED) return best; else return ""; }
-	uint256 GetHash() { CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION); ss << mBVotes; return ss.GetHash(); }
+	string Winner(int tier) { string best = MostVotes(tier); if (GetVotes(tier, best) >= MNPAYMENTS_SIGNATURES_REQUIRED) return best; else return ""; }
+	uint256 GetHash() {
+		CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+		for (int tier = 0; tier < NUM_TIERS; tier++) ss << mBVotes[tier];
+		return ss.GetHash();
+	}
 	ADD_SERIALIZE_METHODS;
 	template <typename Stream, typename Operation>
-	inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) { READWRITE(mBVotes); }
+	inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) { for (int tier = 0; tier < NUM_TIERS; tier++) READWRITE(mBVotes[tier]); }
 };
 
 class CPaymentVote						// relayed data structure
@@ -39,13 +44,14 @@ class CPaymentVote						// relayed data structure
 public:
 	string addressVoter;
 	int nBlockHeight;
-	string addressPayee;
+	string addressPayee[NUM_TIERS];
 	vector<unsigned char> vchSig;
 
 	uint256 GetHash()
 	{
 		CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-		ss << addressVoter << nBlockHeight << addressPayee;
+		ss << addressVoter << nBlockHeight;
+		for (int i = 0; i < NUM_TIERS; i++) ss << addressPayee[i];
 		return ss.GetHash();
 	}
 
@@ -58,11 +64,15 @@ public:
 	{
 		READWRITE(addressVoter);
 		READWRITE(nBlockHeight);
-		READWRITE(addressPayee);
+		for (int i = 0; i < NUM_TIERS; i++) READWRITE(addressPayee[i]);
 		READWRITE(vchSig);
 	}
 
-	string ToString() { return addressVoter + to_string(nBlockHeight) + addressPayee; }
+	string ToString() {
+		string ret = addressVoter + to_string(nBlockHeight);
+		for (int i = 0; i < NUM_TIERS; i++) ret += addressPayee[i];
+		return ret;
+	}
 };
 
 class CMasternodePayments

@@ -18,7 +18,7 @@
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 #define MASTERNODES_DUMP_SECONDS (15 * 60)
 #define MASTERNODE_MIN_MNB_SECONDS (5 * 60)
-#define MN_WINNER_MINIMUM_AGE 8000							// Age in seconds, currently ~ 2.25 hours, should be > MASTERNODE_EXPIRATION_SECONDS
+#define MN_WINNER_MINIMUM_AGE 80							// Age in seconds, currently ~ 2.25 hours, should be > MASTERNODE_EXPIRATION_SECONDS
 #define MIN_PEER_PROTO_VERSION 0
 
 using namespace std;
@@ -37,9 +37,11 @@ public:
 	map<string, uint256> mAddress2MnHash;					// maps divi address key to masternode hashes
 	map<uint256, CMasternode> mMasternodes;					// Keep track of all *current* masternodes by hash
 	map<uint256, CMasternodePing> mSeenPings;				// Keep track of all *current* pings by hash
-	vector<pair<uint256, string>> vCurrScores;				// ranked masternodes (score to divi address) sorted by lowest-best score ascending
+	vector<pair<uint256, string>> vCurrScores[NUM_TIERS];	// ranked masternodes (score to divi address) sorted by lowest-best score ascending
 	map<int, uint256> blockHashes;
 	int currHeight = 0, nodeCount = 0, stableSize = 0;
+	int tierCount[15][NUM_TIERS];
+	map<string, int> topSigs[15];
 	CMasternode* my;
 
     ADD_SERIALIZE_METHODS;

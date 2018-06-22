@@ -2685,7 +2685,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     }
 
     //Masternode payment
-    mnPayments.FillBlockPayee(txNew, nMinFee, true);
+	mnPayments.FillBlockPayee(txNew, nMinFee, true);
 
     // Sign
     int nIn = 0;

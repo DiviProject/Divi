@@ -53,21 +53,22 @@ void CMasternodeMan::UpdatePing(CMasternodePing* mnp)
 	CMasternode* current = Find(mnp->address);
 	if (current->lastPing.GetHash() == mnp->GetHash()) { LogPrintStr("\n\n\n\n\n ERROR: Matching mnping Hashes \n\n\n\n\n"); return; }
 	mSeenPings.erase(current->lastPing.GetHash());
-	mSeenPings.insert(make_pair(mnp->GetHash(), *mnp));
 	current->lastPing.blockHeight = mnp->blockHeight;
 	current->lastPing.blockHash = mnp->blockHash;
 	current->lastPing.sigTime = mnp->sigTime;
 	current->lastPing.vchSig = mnp->vchSig;
+	mSeenPings[mnp->GetHash()] = *mnp;
 	mnp->Relay();
 }
 
 
 void CMasternodeMan::AskForMN(CNode* pnode, string& address)
 {
+	LogPrint("masternode", "CMasternodeMan::AskForMN - Thinking of asking node for missing entry %s\n", address);
 	if (mWeAsked4Entry.count(address)) {
 		if (mWeAsked4Entry[address] > GetAdjustedTime()) return;
 	}
-	LogPrint("masternode", "CMasternodeMan::AskForMN - Asking node for missing entry %s\n", address);
+	LogPrint("masternode", "CMasternodeMan::AskForMN - Actually asking node for missing entry %s\n", address);
 	pnode->PushMessage("dseg", address);
 	mWeAsked4Entry[address] = GetAdjustedTime() + MASTERNODE_MIN_MNB_SECONDS;
 }
@@ -88,7 +89,8 @@ void CMasternodeMan::DsegUpdate(CNode* pnode)
 		}
 	}
 
-	pnode->PushMessage("dseg", CTxIn());
+	string address = "all";
+	pnode->PushMessage("dseg", address);
 	int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
 	mWeAsked4List[pnode->addr] = askAgain;
 }
@@ -102,23 +104,15 @@ uint256 DoubleHash(uint256 hash, string address = string()) {
 
 void CMasternodeMan::ProcessBlock()
 {
+	LogPrintStr("masternodeman.ProcessBlock BEGIN\n");
 	vector<pair<uint256, string>> vVoteScores;
-	vector<pair<int64_t, pair<uint256, string>>> vLastPaid;
-	vector<pair<int64_t, pair<uint256, string>>> vLastPaid2;
+	vector<pair<int64_t, pair<uint256, string>>> vLastPaid[NUM_TIERS];
+	vector<pair<int64_t, pair<uint256, string>>> vLastPaid2[NUM_TIERS];
 
 	if (!chainActive.Tip()) return;
 	CBlockIndex* currBlock = chainActive.Tip();
 	if (currHeight >= currBlock->nHeight) return;
-	int currHeight = currBlock->nHeight;
-
-	if (my->lastPing.sigTime + MASTERNODE_PING_SECONDS < GetAdjustedTime()) {
-		LogPrintStr("SENDING PING!!!\n");
-		my->lastPing.blockHeight = currHeight;
-		my->lastPing.blockHash = currBlock->GetBlockHash();
-		my->lastPing.sigTime = GetAdjustedTime();
-		my->SignMsg(my->lastPing.ToString(), my->lastPing.vchSig);
-		UpdatePing(&my->lastPing);
-	}
+	currHeight = currBlock->nHeight;
 
 	uint256 currHash = currBlock->GetBlockHash();
 	uint256 currHash2 = DoubleHash(currHash);
@@ -127,41 +121,44 @@ void CMasternodeMan::ProcessBlock()
 	uint256 voteHash2 = DoubleHash(voteHash);
 
 	stableSize = 0;
-	vCurrScores.clear();
+	for (int i = 0; i < NUM_TIERS; i++) { tierCount[currHeight % 15][i] = 0; vCurrScores[i].clear(); }
 	LOCK(cs);
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
 		CMasternode mn = (*it).second;
-		if (!mn.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
+		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
 		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) { it++;  continue; }
 		stableSize++;
+		tierCount[currHeight % 15][mn.tier.ordinal]++;
 		/* calculate scores */
 		uint256 currHashM = DoubleHash(currHash, mn.address);
-		vCurrScores.push_back(make_pair((currHash2 > currHashM ? currHash2 - currHashM : currHashM - currHash2), mn.address));
+		vCurrScores[mn.tier.ordinal].push_back(make_pair((currHash2 > currHashM ? currHash2 - currHashM : currHashM - currHash2), mn.address));
 		uint256 voteHashM = DoubleHash(voteHash, mn.address);
 		uint256 voteScore = (voteHash2 > voteHashM ? voteHash2 - voteHashM : voteHashM - voteHash2);
-		vVoteScores.push_back(make_pair(voteScore, mn.address));
+		if (mn.tier.name == "diamond" || mn.tier.name == "platinum") vVoteScores.push_back(make_pair(voteScore, mn.address));
 		// generate payment list
 		if (mn.lastFunded + nodeCount <= currHeight && !mnPayments.IsScheduled(mn.address)) {
-			if (mn.sigTime + (nodeCount * 2.6 * 60) < GetAdjustedTime()) vLastPaid.push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
-			else vLastPaid2.push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
+			if (mn.sigTime + (nodeCount * 2.6 * 60) < GetAdjustedTime()) vLastPaid[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
+			else vLastPaid2[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
 		}
 		++it;
 	}
 	nodeCount = mMasternodes.size();
-	sort(vCurrScores.begin(), vCurrScores.end(), CompareScores());
+	sort(vCurrScores[0].begin(), vCurrScores[0].end(), CompareScores());
 	sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
-	map<string, int> topSigs;
+	topSigs[currHeight % 15].clear();
 	int rank = 0;
 	for (vector<pair<uint256, string>>::iterator it = vVoteScores.begin(); it != vVoteScores.end() && rank++ < 2 * MNPAYMENTS_SIGNATURES_TOTAL; it++)
-		topSigs[(*it).second] = rank;
-	if (topSigs.count(my->address) && topSigs[my->address] <= MNPAYMENTS_SIGNATURES_TOTAL) {	// we are top-ranked group & get to vote 
-		if (vLastPaid.size() < nodeCount / 3) vLastPaid.insert(vLastPaid.end(), vLastPaid2.begin(), vLastPaid2.end()); // append recently restarted nodes during upgrades  
-		sort(vLastPaid.begin(), vLastPaid.end(), CompareTimes());
-		int topTenth = vLastPaid.size() / 10;
-		vVoteScores.clear();
-		rank = 0;
-		for (vector<pair<int64_t, pair<uint256, string>>>::iterator it = vLastPaid.begin(); rank < topTenth; rank++) vVoteScores.push_back((*it).second);
-		sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
+		topSigs[currHeight % 15][(*it).second] = rank;
+	if (topSigs[currHeight % 15].count(my->address) && topSigs[currHeight % 15][my->address] <= MNPAYMENTS_SIGNATURES_TOTAL) {	// we are top-ranked group & get to vote 
+		for (int tier = 0; tier < NUM_TIERS; tier++) {
+			if (vLastPaid[tier].size() < tierCount[currHeight % 15][tier] / 3) vLastPaid[tier].insert(vLastPaid[tier].end(), vLastPaid2[tier].begin(), vLastPaid2[tier].end()); // append recently restarted nodes during upgrades  
+			sort(vLastPaid[tier].begin(), vLastPaid[tier].end(), CompareTimes());
+			int topTenth = vLastPaid[tier].size() / 10;
+			vVoteScores.clear();
+			rank = 0;
+			for (vector<pair<int64_t, pair<uint256, string>>>::iterator it = vLastPaid[tier].begin(); rank < topTenth; rank++) vVoteScores.push_back((*it).second);
+			sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
+		}
 		CPaymentVote myVote = CPaymentVote({ my->address, currHeight, vVoteScores[0].second });
 		my->SignMsg(myVote.ToString(), myVote.vchSig);
 		mnPayments.AddPaymentVote(myVote);
@@ -196,9 +193,6 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 	string errorMsg;
 
 	LOCK(cs_process_message);
-
-	LogPrintStr("\n\n\n\n masternodeman.ProcessMessage START\n");
-	LogPrintStr(strCommand);
 	if (strCommand == "mnb") { //Masternode Broadcast
 		LogPrintf("masternodeman.ProcessMessage mnb START\n");
 		CMasternode mnb;
@@ -212,6 +206,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		// if ((errorMsg = my->VerifyMsg(mnb.address, mnb.ToString(), mnb.vchSig)) != "") { LogPrint("masternode", "Bad signature %s - %s\n", mnb.address, errorMsg); return; }
 		if ((errorMsg = mnb.VerifyFunding()) != "") { LogPrint("masternode", "Masternode %s - %s\n", mnb.address, errorMsg); return; }
 		if (!Find(mnb.address)) Add(&mnb); else Update(&mnb);
+		masternodeSync.AddedMasternodeList(mnb.GetHash());
 		LogPrintf("masternodeman.ProcessMessage mnb END\n");
 	}
 	else if (strCommand == "mnp") { //Masternode Ping
@@ -221,10 +216,10 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		if (mSeenPings.count(mnp.GetHash())) { LogPrintf("masternodeman.ProcessMessage mnping already seen \n"); return; }		// entirely redundant
 
 		int64_t now = GetAdjustedTime();
-		if (mnp.sigTime > now) { LogPrint("masternode", "CMasternodePing - Future signature rejected %s\n", mnp.address); return; }
+		if (mnp.sigTime > now + 5) { LogPrint("masternode", "CMasternodePing - Future signature rejected %s\n", mnp.address); return; }
 		if (mnp.sigTime <= now - 60 * 60) { LogPrint("masternode", "CMasternodePing - Signature over an hour old %s\n", mnp.address); return; }
 		if (mnp.blockHeight < chainActive.Height() - 24) { LogPrint("masternode", "CMasternodePing - Block height is too old %s\n", mnp.address); return; }
-		if (blockHashes[mnp.blockHeight] != mnp.blockHash) { LogPrint("masternode", "CMasternodePing - Block hash is incorrect %s\n", mnp.address); return; }
+		// if (blockHashes[mnp.blockHeight] != mnp.blockHash) { LogPrint("masternode", "CMasternodePing - Block hash is incorrect %s\n", mnp.address); return; }
 		LogPrint("masternode", "New Ping - %s - %lli\n", mnp.address, mnp.sigTime);
 
 		CMasternode* mn = Find(mnp.address);
@@ -236,11 +231,11 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		LogPrintf("masternodeman.ProcessMessage mnp END\n");
 	}
 	else if (strCommand == "dseg") { //Get Masternode list or specific entry
-		LogPrintf("masternodeman.ProcessMessage dseg START\n");
+		LogPrintf("masternodeman.ProcessMessage dseg reply START\n");
 		string address;
 		vRecv >> address;
 
-		if (address == "*") { // should only ask for list rarely
+		if (address == "all") { // should only ask for list rarely
 			std::map<CNetAddr, int64_t>::iterator i = mAskedUs4List.find(pfrom->addr);
 			if (i != mAskedUs4List.end())
 				if (GetAdjustedTime() < (*i).second) { Misbehaving(pfrom->GetId(), 34); LogPrint("masternode", "dseg - peer already asked me for the list\n"); return; }
@@ -250,13 +245,13 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		int nInvCount = 0;
 		for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); it++) {
 			LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", (*it).second.address);
-			if (address == "*" || address == (*it).second.address) {
+			if (address == "all" || address == (*it).second.address) {
 				pfrom->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, (*it).second.GetHash()));
 				nInvCount++;
 				if (address == (*it).second.address) { LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId()); return; }
 			}
 		}
-		if (address == "*") {
+		if (address == "all") {
 			pfrom->PushMessage("ssc", MASTERNODE_SYNC_LIST, nInvCount);
 			LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, pfrom->GetId());
 		}

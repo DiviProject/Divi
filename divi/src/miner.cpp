@@ -108,7 +108,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
 
     // Make sure to create the correct block version after zerocoin is enabled
-    bool fZerocoinActive = false;
+    bool fZerocoinActive = GetAdjustedTime() >= Params().Zerocoin_StartTime();
     if (fZerocoinActive)
         pblock->nVersion = 4;
     else
@@ -395,7 +395,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         //byrdcode - if condition: after last proof of work block masternodes need to start getting a piece of the pie.
         if (!fProofOfStake && chainActive.Tip()->nHeight > Params().LAST_POW_BLOCK()) {
             //Masternode and general budget payments
-            mnPayments.FillBlockPayee(txNew, nFees, fProofOfStake);
+			mnPayments.FillBlockPayee(txNew, nFees, fProofOfStake);
 
             //Make payee
             if (txNew.vout.size() > 1) {

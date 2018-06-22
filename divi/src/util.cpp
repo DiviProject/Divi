@@ -259,9 +259,11 @@ bool LogAcceptCategory(const char* category)
 
 int LogPrintStr(const std::string& str)
 {
-	if (fDebug) fprintf(stderr, str.c_str());
-	
 	int ret = 0; // Returns total number of characters written
+	ret = fwrite(str.data(), 1, str.size(), stdout);
+	fflush(stdout);
+
+	
     if (fPrintToConsole) {
         // print to console
         ret = fwrite(str.data(), 1, str.size(), stdout);

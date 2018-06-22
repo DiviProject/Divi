@@ -5838,14 +5838,16 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 if (addr.IsRoutable()) {
                     LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
                     pfrom->PushAddress(addr);
-					if (fMasterNode) mnodeman.my->address = addr.ToString();
                 } else if (IsPeerAddrLocalGood(pfrom)) {
                     addr.SetIP(pfrom->addrLocal);
                     LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
                     pfrom->PushAddress(addr);
-					if (fMasterNode) mnodeman.my->address = addr.ToString();
+                }
+				if (fMasterNode && CService(addr.ToString()).ToString() != mnodeman.my->service.ToString()) {		// update dynamic ip
+					mnodeman.my->service = CService(addr.ToString());
+					mnodeman.Update(mnodeman.my);
 				}
-            }
+			}
 
             // Get recent addresses
             if (pfrom->fOneShot || pfrom->nVersion >= CADDR_TIME_VERSION || addrman.size() < 1000) {

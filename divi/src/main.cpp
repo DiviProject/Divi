@@ -5838,11 +5838,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 if (addr.IsRoutable()) {
                     LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
                     pfrom->PushAddress(addr);
+					if (fMasterNode) mnodeman.my->address = addr.ToString();
                 } else if (IsPeerAddrLocalGood(pfrom)) {
                     addr.SetIP(pfrom->addrLocal);
                     LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
                     pfrom->PushAddress(addr);
-                }
+					if (fMasterNode) mnodeman.my->address = addr.ToString();
+				}
             }
 
             // Get recent addresses

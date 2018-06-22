@@ -122,7 +122,6 @@ string CMasternode::ReadDBs() {
 
 string CMasternode::SignMsg(string address, string msg, vector<unsigned char>& vchSig)
 {
-	LogPrintStr("\n\n\n SIGNING " + address + "\n\n\n");
 	CBitcoinAddress address2(address);
 	CKeyID keyID;
 	address2.GetKeyID(keyID);
@@ -153,7 +152,7 @@ string CMasternode::StartUp()
 	LogPrintStr("\nafter = " + EncodeBase64(&vchSig[0], vchSig.size()));
 	lastPing.address = address;
 	lastPing.sigTime = GetAdjustedTime();
-	// if ((errorMsg = SignMsg(lastPing.ToString(), lastPing.vchSig)) != "") return "Bad ping signature " + errorMsg;
+	if ((errorMsg = SignMsg(lastPing.ToString(), lastPing.vchSig)) != "") return "Bad ping signature " + errorMsg;
 
 	addrman.Add(CAddress(service), CNetAddr("127.0.0.1"), 2 * 60 * 60);
 	mnodeman.Add(mnodeman.my);
@@ -162,12 +161,6 @@ string CMasternode::StartUp()
 
 string CMasternode::VerifyMsg(string strAddress, string msg, vector<unsigned char>& vchSig)
 {
-	LogPrintf("\n\n\n VerifyMsg START\n");
-	LogPrintStr(strAddress + "\n");
-	LogPrintStr(msg + "\n");
-	for (vector<unsigned char>::iterator it = vchSig.begin(); it != vchSig.end(); it++) LogPrintStr(to_string(*it));
-	LogPrintStr("\n");
-
 	CBitcoinAddress addr(strAddress);
 	if (!addr.IsValid()) return "Invalid address";
 	CKeyID keyID;
@@ -178,8 +171,6 @@ string CMasternode::VerifyMsg(string strAddress, string msg, vector<unsigned cha
 
 	CPubKey pubkey;
 	if (!pubkey.RecoverCompact(ss.GetHash(), vchSig)) return "Error recovering public key!";
-	LogPrintStr(pubkey.GetID().ToString() + " - " + keyID.ToString() + "\n");
-	if (pubkey.GetID() != keyID) LogPrintf("BAD KEY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 	if (pubkey.GetID() != keyID) return "Keys don't match!"; else return "";
 }
 

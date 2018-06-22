@@ -193,8 +193,6 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 	string errorMsg;
 
 	LOCK(cs_process_message);
-
-	LogPrintStr("\n\n\n\n MESSAGE " + strCommand + " START\n");
 	if (strCommand == "mnb") { //Masternode Broadcast
 		LogPrintf("masternodeman.ProcessMessage mnb START\n");
 		CMasternode mnb;

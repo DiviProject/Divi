@@ -164,6 +164,8 @@ string CMasternode::StartUp()
 string CMasternode::VerifyMsg(string strAddress, string msg, vector<unsigned char>& vchSig)
 {
 	LogPrintf("\n\n\n VerifyMsg START\n");
+	LogPrintStr(strAddress + "\n");
+	LogPrintStr(msg + "\n");
 	CBitcoinAddress addr(strAddress);
 	if (!addr.IsValid()) return "Invalid address";
 	CKeyID keyID;

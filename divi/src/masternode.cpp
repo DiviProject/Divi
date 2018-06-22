@@ -122,6 +122,7 @@ string CMasternode::ReadDBs() {
 
 string CMasternode::SignMsg(string address, string msg, vector<unsigned char>& vchSig)
 {
+	LogPrintStr("\n\n\n SIGNING " + address + "\n\n\n");
 	CBitcoinAddress address2(address);
 	// if (address2.IsValid()) fprintf(stderr, "good address"); else fprintf(stderr, "bad address");
 	CKeyID keyID;
@@ -165,18 +166,16 @@ string CMasternode::VerifyMsg(string strAddress, string msg, vector<unsigned cha
 	LogPrintf("\n\n\n VerifyMsg START\n");
 	CBitcoinAddress addr(strAddress);
 	if (!addr.IsValid()) return "Invalid address";
-	LogPrintf("VerifyMsg: valid address\n");
 	CKeyID keyID;
 	if (!addr.GetKeyID(keyID)) return "Address does not refer to key";
-	LogPrintf("VerifyMsg: address refers to key\n");
 
 	CHashWriter ss(SER_GETHASH, 0);
 	ss << strMessageMagic << msg << sigTime;
 
 	CPubKey pubkey;
 	if (!pubkey.RecoverCompact(ss.GetHash(), vchSig)) return "Error recovering public key!";
-	LogPrintf("VerifyMsg: recovered key\n");
-	LogPrintStr(pubkey.GetID().ToString() + " - " + keyID.ToString());
+	LogPrintStr(pubkey.GetID().ToString() + " - " + keyID.ToString() + "\n");
+	if (pubkey.GetID() != keyID) LogPrintf("BAD KEY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 	if (pubkey.GetID() != keyID) return "Keys don't match!"; else return "";
 }
 

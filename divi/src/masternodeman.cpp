@@ -218,10 +218,10 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		if (mSeenPings.count(mnp.GetHash())) { LogPrintf("masternodeman.ProcessMessage mnping already seen \n"); return; }		// entirely redundant
 
 		int64_t now = GetAdjustedTime();
-		if (mnp.sigTime > now) { LogPrint("masternode", "CMasternodePing - Future signature rejected %s\n", mnp.address); return; }
+		if (mnp.sigTime > now + 5) { LogPrint("masternode", "CMasternodePing - Future signature rejected %s\n", mnp.address); return; }
 		if (mnp.sigTime <= now - 60 * 60) { LogPrint("masternode", "CMasternodePing - Signature over an hour old %s\n", mnp.address); return; }
 		if (mnp.blockHeight < chainActive.Height() - 24) { LogPrint("masternode", "CMasternodePing - Block height is too old %s\n", mnp.address); return; }
-		if (blockHashes[mnp.blockHeight] != mnp.blockHash) { LogPrint("masternode", "CMasternodePing - Block hash is incorrect %s\n", mnp.address); return; }
+		// if (blockHashes[mnp.blockHeight] != mnp.blockHash) { LogPrint("masternode", "CMasternodePing - Block hash is incorrect %s\n", mnp.address); return; }
 		LogPrint("masternode", "New Ping - %s - %lli\n", mnp.address, mnp.sigTime);
 
 		CMasternode* mn = Find(mnp.address);

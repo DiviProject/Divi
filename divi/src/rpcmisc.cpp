@@ -642,7 +642,6 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
 Value getaddressdeltas(const Array& params, bool fHelp)
 {
-    // if (fHelp || params.size() != 1 || !params[0].isObject())
     if (fHelp || params.size() != 1 || params[0].type() != obj_type)
         throw runtime_error(
             "getaddressdeltas {addresses:...}\n"
@@ -678,7 +677,6 @@ Value getaddressdeltas(const Array& params, bool fHelp)
 
     Value chainInfo = find_value(params[0].get_obj(), "chainInfo");
     bool includeChainInfo = false;
-    // if (chainInfo.isBool()) {
     if (chainInfo.type() == bool_type) {
         includeChainInfo = chainInfo.get_bool();
     }
@@ -686,7 +684,6 @@ Value getaddressdeltas(const Array& params, bool fHelp)
     int start = 0;
     int end = 0;
 
-    // if (startValue.isNum() && endValue.isNum()) {
     if (startValue.type() == int_type && endValue.type() == int_type) {
         start = startValue.get_int();
         end = endValue.get_int();
@@ -718,7 +715,6 @@ Value getaddressdeltas(const Array& params, bool fHelp)
         }
     }
 
-    // UniValue deltas(UniValue::VARR);
     Array deltas;
 
     for (std::vector<std::pair<CAddressIndexKey, CAmount> >::const_iterator it=addressIndex.begin(); it!=addressIndex.end(); it++) {
@@ -727,7 +723,6 @@ Value getaddressdeltas(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unknown address type");
         }
 
-        // UniValue delta(UniValue::VOBJ);
         Object delta;
         delta.push_back(Pair("satoshis", it->second));
         delta.push_back(Pair("txid", it->first.txhash.GetHex()));
@@ -738,7 +733,6 @@ Value getaddressdeltas(const Array& params, bool fHelp)
         deltas.push_back(delta);
     }
 
-    // UniValue result(UniValue::VOBJ);
     Object result;
 
     if (includeChainInfo && start > 0 && end > 0) {
@@ -751,8 +745,6 @@ Value getaddressdeltas(const Array& params, bool fHelp)
         CBlockIndex* startIndex = chainActive[start];
         CBlockIndex* endIndex = chainActive[end];
 
-        // UniValue startInfo(UniValue::VOBJ);
-        // UniValue endInfo(UniValue::VOBJ);
         Object startInfo;
         Object endInfo;
 
@@ -770,6 +762,62 @@ Value getaddressdeltas(const Array& params, bool fHelp)
     } else {
         return deltas;
     }
+}
+
+Value getaddressbalance(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1 || params[0].type() != obj_type)
+        throw runtime_error(
+            "getaddressbalance {addresses:...}\n"
+            "\nReturns the balance for an address(es) (requires addressindex to be enabled).\n"
+            "\nArguments:\n"
+            "{\n"
+            "  \"addresses\"\n"
+            "    [\n"
+            "      \"address\"  (string) The base58check encoded address\n"
+            "      ,...\n"
+            "    ]\n"
+            "}\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"balance\"  (string) The current balance in satoshis\n"
+            "  \"received\"  (string) The total number of satoshis received (including change)\n"
+            "}\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getaddressbalance", "'{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}'")
+            + HelpExampleRpc("getaddressbalance", "{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}")
+        );
+
+    std::vector<std::pair<uint160, int> > addresses;
+
+    if (!getAddressesFromParams(params, addresses)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+    }
+
+    std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
+
+    for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
+        if (!GetAddressIndex((*it).first, (*it).second, addressIndex)) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
+        }
+    }
+
+    CAmount balance = 0;
+    CAmount received = 0;
+
+    for (std::vector<std::pair<CAddressIndexKey, CAmount> >::const_iterator it=addressIndex.begin(); it!=addressIndex.end(); it++) {
+        if (it->second > 0) {
+            received += it->second;
+        }
+        balance += it->second;
+    }
+
+    Object result;
+    result.push_back(Pair("balance", balance));
+    result.push_back(Pair("received", received));
+
+    return result;
+
 }
 
 #ifdef ENABLE_WALLET

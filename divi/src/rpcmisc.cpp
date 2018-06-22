@@ -820,6 +820,82 @@ Value getaddressbalance(const Array& params, bool fHelp)
 
 }
 
+bool timestampSort(std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> a,
+                   std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> b) {
+    return a.second.time < b.second.time;
+}
+
+Value getaddressmempool(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1 || params[0].type() != obj_type)
+        throw runtime_error(
+            "getaddressmempool {addresses:...}\n"
+            "\nReturns all mempool deltas for an address (requires addressindex to be enabled).\n"
+            "\nArguments:\n"
+            "{\n"
+            "  \"addresses\"\n"
+            "    [\n"
+            "      \"address\"  (string) The base58check encoded address\n"
+            "      ,...\n"
+            "    ]\n"
+            "}\n"
+            "\nResult:\n"
+            "[\n"
+            "  {\n"
+            "    \"address\"  (string) The base58check encoded address\n"
+            "    \"txid\"  (string) The related txid\n"
+            "    \"index\"  (number) The related input or output index\n"
+            "    \"satoshis\"  (number) The difference of satoshis\n"
+            "    \"timestamp\"  (number) The time the transaction entered the mempool (seconds)\n"
+            "    \"prevtxid\"  (string) The previous txid (if spending)\n"
+            "    \"prevout\"  (string) The previous transaction output index (if spending)\n"
+            "  }\n"
+            "]\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getaddressmempool", "'{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}'")
+            + HelpExampleRpc("getaddressmempool", "{\"addresses\": [\"12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX\"]}")
+        );
+
+    std::vector<std::pair<uint160, int> > addresses;
+
+    if (!getAddressesFromParams(params, addresses)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+    }
+
+    std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> > indexes;
+
+    if (!mempool.getAddressIndex(addresses, indexes)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
+    }
+
+    std::sort(indexes.begin(), indexes.end(), timestampSort);
+
+    Array result;
+
+    for (std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> >::iterator it = indexes.begin();
+         it != indexes.end(); it++) {
+
+        std::string address;
+        if (!getAddressFromIndex(it->first.type, it->first.addressBytes, address)) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unknown address type");
+        }
+
+        Object delta;
+        delta.push_back(Pair("address", address));
+        delta.push_back(Pair("txid", it->first.txhash.GetHex()));
+        delta.push_back(Pair("index", (int)it->first.index));
+        delta.push_back(Pair("satoshis", it->second.amount));
+        delta.push_back(Pair("timestamp", it->second.time));
+        if (it->second.amount < 0) {
+            delta.push_back(Pair("prevtxid", it->second.prevhash.GetHex()));
+            delta.push_back(Pair("prevout", (int)it->second.prevout));
+        }
+        result.push_back(delta);
+    }
+
+    return result;
+}
+
 #ifdef ENABLE_WALLET
 Value getstakingstatus(const Array& params, bool fHelp)
 {

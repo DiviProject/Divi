@@ -296,7 +296,9 @@ extern json_spirit::Value createmultisig(const json_spirit::Array& params, bool 
 extern json_spirit::Value verifymessage(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value setmocktime(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getstakingstatus(const json_spirit::Array& params, bool fHelp);
+
 extern json_spirit::Value getaddresstxids(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressdeltas(const json_spirit::Array& params, bool fHelp);
 
 // in rest.cpp
 extern bool HTTPReq_REST(AcceptedConnection* conn,

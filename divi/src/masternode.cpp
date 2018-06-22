@@ -168,13 +168,14 @@ string CMasternode::VerifyMsg(string strAddress, string msg, vector<unsigned cha
 	LogPrintStr(msg + "\n");
 	for (vector<unsigned char>::iterator it = vchSig.begin(); it != vchSig.end(); it++) LogPrintStr(to_string(*it));
 	LogPrintStr("\n");
+
 	CBitcoinAddress addr(strAddress);
 	if (!addr.IsValid()) return "Invalid address";
 	CKeyID keyID;
 	if (!addr.GetKeyID(keyID)) return "Address does not refer to key";
 
 	CHashWriter ss(SER_GETHASH, 0);
-	ss << strMessageMagic << msg << sigTime;
+	ss << strMessageMagic << msg;
 
 	CPubKey pubkey;
 	if (!pubkey.RecoverCompact(ss.GetHash(), vchSig)) return "Error recovering public key!";

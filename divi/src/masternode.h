@@ -52,7 +52,7 @@ public:
 		return ss.GetHash();
 	}
 	void Relay() { CInv inv(MSG_MASTERNODE_PING, GetHash()); RelayInv(inv); }
-	string ToString() { return address + to_string(blockHeight) + blockHash.ToString(); }
+	string ToString() { return address + to_string(blockHeight) + blockHash.ToString() + to_string(sigTime); }
 
 	friend bool operator==(const CMasternodePing& a, const CMasternodePing& b) { return a.GetHash() == b.GetHash(); }
 	friend bool operator!=(const CMasternodePing& a, const CMasternodePing& b) { return !(a.GetHash() == b.GetHash()); }

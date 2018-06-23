@@ -102,12 +102,17 @@ Value fundmasternode(const Array& params, bool fHelp)
 	vector<COutPoint> confLockedCoins;
 	if (GetBoolArg("-mnconflock", true)) {
 		uint256 mnTxHash;
-		BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
-			mnTxHash.SetHex(mne.getTxHash());
+		BOOST_FOREACH(CMasternodeEntry mne, masternodeConfig.entries) {
+			mnTxHash.SetHex(mne.txHash);
 
 			int nIndex;
-			if (!mne.castOutputIndex(nIndex))
+			try {
+				nIndex = std::stoi(mne.outputIndex);
+			}
+			catch (const std::exception e) {
+				LogPrintf("%s: %s on getOutputIndex\n", __func__, e.what());
 				continue;
+			}
 
 			COutPoint outpoint = COutPoint(mnTxHash, nIndex);
 			confLockedCoins.push_back(outpoint);

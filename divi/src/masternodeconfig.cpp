@@ -10,13 +10,12 @@
 #include "masternodeman.h"
 #include "util.h"
 #include "ui_interface.h"
-using namespace std;
 
 CMasternodeConfig masternodeConfig;
 
-void CMasternodeConfig::add(string alias, string tier, string mnAddress, string txHash, string outputIndex, string payAddress, string voteAddress, string signature)
+void CMasternodeConfig::add(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex)
 {
-	CMasternodeEntry cme ({ alias, tier, mnAddress, txHash, outputIndex, payAddress, voteAddress, signature });
+    CMasternodeEntry cme(alias, ip, privKey, txHash, outputIndex);
     entries.push_back(cme);
 }
 
@@ -62,7 +61,7 @@ bool CMasternodeConfig::read(std::string& strErr)
         }
 
 		// fprintf(stderr, "%s %s %s %s", alias.c_str(), tier.c_str(), txHash.c_str(), outputIndex.c_str());
-        add(alias, tier, mnAddress, txHash, outputIndex, payAddress, voteAddress, signature);
+        add(alias, tier, mnAddress, txHash, outputIndex);
 		CAmount nAmount;
 		if (tier == "diamond") { nAmount = Diamond.collateral; mnodeman.my->tier = Diamond; }
 		else if (tier == "platinum") { nAmount = Platinum.collateral; mnodeman.my->tier = Platinum; }

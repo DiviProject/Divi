@@ -176,7 +176,6 @@ string CMasternode::VerifyMsg(string strAddress, string msg, vector<unsigned cha
 
 string CMasternode::VerifyFunding() {
 	CAmount totalFunding = 0;
-	if (funding[0].payAddress == "DJ2fYZXocM7uWXBNXffyF7QKWfBP4xYQ2b") return "";			// backbone node
 	for (vector<CMnFunding>::iterator it = funding.begin(); it != funding.end(); it++) {
 		int ageOfFunds = GetInputAge((*it).vin);
 		if (ageOfFunds < MASTERNODE_MIN_CONFIRMATIONS) return "Funding needs more confirmations";

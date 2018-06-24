@@ -263,7 +263,9 @@ int LogPrintStr(const std::string& str)
 	//ret = fwrite(str.data(), 1, str.size(), stdout);
 	//fflush(stdout);
 
-	
+	ret = fwrite(str.data(), 1, str.size(), stdout);
+	fflush(stdout);
+
     if (fPrintToConsole) {
         // print to console
         ret = fwrite(str.data(), 1, str.size(), stdout);

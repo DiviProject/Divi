@@ -139,7 +139,7 @@ public:
         pchMessageStart[1] = 0xa0;
         pchMessageStart[2] = 0x8d;
         if(fPchMessageStart != ""){
-            pchMessageStart[3] = boost::lexical_cast<int>("0x" + fPchMessageStart);
+            pchMessageStart[3] = std::stoul("0x" + fPchMessageStart, nullptr, 16);
         }else{
 		    pchMessageStart[3] = 0x8a;
         }

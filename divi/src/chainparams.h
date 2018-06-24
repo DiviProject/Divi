@@ -50,7 +50,7 @@ public:
     std::string fPchMessageStart = GetArg("-pchMessageStart", "");
     const MessageStartChars& MessageStart() const { 
         if(fPchMessageStart != ""){
-            pchMessageStart[3] = lexical_cast<int>("0x" + fPchMessageStart);
+            pchMessageStart[3] = boost::lexical_cast<int>("0x" + fPchMessageStart);
         }
         return pchMessageStart; 
     }

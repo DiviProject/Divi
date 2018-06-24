@@ -48,16 +48,11 @@ public:
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     const MessageStartChars& MessageStart() const { 
         if(fPchMessageStart != ""){
-            MessageStartChars temp;
-            temp[0] = pchMessageStart[0];
-            temp[1] = pchMessageStart[1];
-            temp[2] = pchMessageStart[2];
-            temp[3] = "0x" + fPchMessageStart;
-            return temp;
-        }else{
-            return pchMessageStart; 
+            pchMessageStart[3] = "0x" + fPchMessageStart;
         }
+        return pchMessageStart; 
     }
+    
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
     const uint256& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }

@@ -31,22 +31,38 @@ void CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFees, bool fProofOfStake)
 {
-	return;				// All masternode payments are disabled for beta until ready to test	
-
+	LogPrintStr("CMasternodePayments::FillBlockPayee");
 	int divi[NUM_TIERS], mNodeCoins = 0;
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
-		divi[tier] = mnodeman.tierCount[(mnodeman.currHeight + 1) % 15][tier] * Tiers[tier].collateral;
+		LogPrintStr("b");
+		divi[tier] = mnodeman.tierCount[(mnodeman.currHeight) % 15][tier] * Tiers[tier].collateral;
 		mNodeCoins += divi[tier];
+		LogPrintStr(to_string(mNodeCoins) + "mnodecoins \n");
 	}
 	int raw[NUM_TIERS], rawTotal = 0;
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
-		raw[tier] = mNodeCoins * Tiers[tier].seesawBasis * Tiers[tier].premium / divi[tier];
-		rawTotal += raw[tier];
+		LogPrintStr("c");
+		try {
+			raw[tier] = mNodeCoins * Tiers[tier].seesawBasis * Tiers[tier].premium / divi[tier];
+		}
+		catch (exception& e) {
+			LogPrintStr("1");
+		}
+		try {
+			rawTotal += raw[tier];
+		}
+		catch (exception& e) {
+			LogPrintStr("2");
+		}
 	}
+	LogPrintStr("d");
 	CAmount blockValue = 1075;
 	CAmount nMoneySupply = chainActive.Tip()->nMoneySupply;
 	CAmount masternodePayment = blockValue * nMoneySupply / (mNodeCoins * 4);
-		
+	LogPrintStr("\n\n\n\n\n\n NMoneySupply = " + to_string(nMoneySupply) + "; masternodePayment = " + to_string(masternodePayment) + "\n\n\n\n\n\n");
+
+	return;				// All masternode payments are disabled for beta until ready to test	
+
 	if (fProofOfStake) {
 		unsigned int i = txNew.vout.size();
 		txNew.vout.resize(i + NUM_TIERS);
@@ -54,7 +70,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 			string payee = mVotes[mnodeman.currHeight + 1].MostVotes(tier);
 			if (payee == "") continue;
 			txNew.vout[i + tier].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
-			txNew.vout[i + tier].nValue = masternodePayment * raw[tier]/rawTotal;
+			txNew.vout[i + tier].nValue = masternodePayment * raw[tier] / rawTotal;
 		}
 		txNew.vout[i - 1].nValue -= masternodePayment;
 	}
@@ -68,6 +84,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
 bool CMasternodePayments::IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 {
+	LogPrintStr("CMasternodePayments::IsBlockPayeeValid");
 	return true;		// All masternode payments are disabled for beta until ready to test			
 
 	CTransaction txNew = (nBlockHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);

@@ -21,8 +21,9 @@ struct CompareScores { bool operator()(const pair<uint256, string>& t1, const pa
 
 void CMasternodeMan::Add(CMasternode* mn)
 {
-	LogPrintf("Add STARTED!\n");
+	LogPrintStr("Add STARTED " + mn->address + "!\n");
 	LOCK(cs);
+	mn->lastPaid = GetAdjustedTime();
 	mMasternodes[mn->GetHash()] = *mn;
 	mAddress2MnHash[mn->address] = mn->GetHash();
 	mn->Relay();
@@ -31,21 +32,26 @@ void CMasternodeMan::Add(CMasternode* mn)
 
 void CMasternodeMan::Remove(CMasternode* mn)
 {
+	LogPrintStr("MASTERNODE REMOVE STARTED " + mn->address + "!\n");
 	LOCK(cs);
 	mWeAsked4Entry.erase(mn->address);
 	mAddress2MnHash.erase(mn->address);
 	mMasternodes.erase(mn->GetHash());
+	LogPrintf("REMOVE DONE!\n");
 }
 
 void CMasternodeMan::Update(CMasternode* mn)
 {
+	LogPrintStr("Update STARTED " + mn->address + "!\n");
 	CMasternode* current = Find(mn->address);
 	if (current->GetHash() == mn->GetHash()) { LogPrintStr("\n\n\n\n\n ERROR: Matching mnb Hashes \n\n\n\n\n"); return; }
 	mWeAsked4Entry.erase(mn->address);
+	mn->sigTime = current->sigTime;
+	mMasternodes.erase(current->GetHash());
 	mMasternodes[mn->GetHash()] = *mn;
 	mAddress2MnHash[mn->address] = mn->GetHash();;
-	mMasternodes.erase(current->GetHash());
 	mn->Relay();
+	LogPrintf("UPDATE DONE!\n");
 }
 
 void CMasternodeMan::UpdatePing(CMasternodePing* mnp)
@@ -125,7 +131,7 @@ void CMasternodeMan::ProcessBlock()
 	LOCK(cs);
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
 		CMasternode mn = (*it).second;
-		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mAddress2MnHash.erase(mn.address); mMasternodes.erase(it++); continue; }
+		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mMasternodes.erase(mAddress2MnHash[mn.address]); mAddress2MnHash.erase(mn.address); it++; continue; }
 		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) { it++;  continue; }
 		stableSize++;
 		tierCount[currHeight % 15][mn.tier.ordinal]++;
@@ -134,34 +140,43 @@ void CMasternodeMan::ProcessBlock()
 		vCurrScores[mn.tier.ordinal].push_back(make_pair((currHash2 > currHashM ? currHash2 - currHashM : currHashM - currHash2), mn.address));
 		uint256 voteHashM = DoubleHash(voteHash, mn.address);
 		uint256 voteScore = (voteHash2 > voteHashM ? voteHash2 - voteHashM : voteHashM - voteHash2);
-		if (mn.tier.name == "diamond" || mn.tier.name == "platinum") vVoteScores.push_back(make_pair(voteScore, mn.address));
+		if (mn.tier.name == "diamond" || mn.tier.name == "platinum") { vVoteScores.push_back(make_pair(voteScore, mn.address)); }
 		// generate payment list
-		if (mn.lastFunded + nodeCount <= currHeight && !mnPayments.IsScheduled(mn.address)) {
-			if (mn.sigTime + (nodeCount * 2.6 * 60) < GetAdjustedTime()) vLastPaid[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
-			else vLastPaid2[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
-		}
+		//if (mn.lastFunded + nodeCount <= currHeight && !mnPayments.IsScheduled(mn.address)) {
+		//	if (mn.sigTime + (nodeCount * 2.6 * 60) < GetAdjustedTime()) vLastPaid[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
+		//	else vLastPaid2[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
+		//}
+		vLastPaid[mn.tier.ordinal].push_back(make_pair(mn.lastPaid, make_pair(voteScore, mn.address)));
 		++it;
 	}
 	nodeCount = mMasternodes.size();
-	sort(vCurrScores[0].begin(), vCurrScores[0].end(), CompareScores());
-	sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
-	topSigs[currHeight % 15].clear();
-	int rank = 0;
-	for (vector<pair<uint256, string>>::iterator it = vVoteScores.begin(); it != vVoteScores.end() && rank++ < 2 * MNPAYMENTS_SIGNATURES_TOTAL; it++)
-		topSigs[currHeight % 15][(*it).second] = rank;
-	if (topSigs[currHeight % 15].count(my->address) && topSigs[currHeight % 15][my->address] <= MNPAYMENTS_SIGNATURES_TOTAL) {	// we are top-ranked group & get to vote 
-		for (int tier = 0; tier < NUM_TIERS; tier++) {
-			if (vLastPaid[tier].size() < tierCount[currHeight % 15][tier] / 3) vLastPaid[tier].insert(vLastPaid[tier].end(), vLastPaid2[tier].begin(), vLastPaid2[tier].end()); // append recently restarted nodes during upgrades  
-			sort(vLastPaid[tier].begin(), vLastPaid[tier].end(), CompareTimes());
-			int topTenth = vLastPaid[tier].size() / 10;
-			vVoteScores.clear();
-			rank = 0;
-			for (vector<pair<int64_t, pair<uint256, string>>>::iterator it = vLastPaid[tier].begin(); rank < topTenth; rank++) vVoteScores.push_back((*it).second);
-			sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
+
+	if (my->tier.name == "diamond" || my->tier.name == "platinum") {
+		sort(vCurrScores[0].begin(), vCurrScores[0].end(), CompareScores());
+		sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
+		topSigs[currHeight % 15].clear();
+		int rank = 0;
+		for (vector<pair<uint256, string>>::iterator it = vVoteScores.begin(); it != vVoteScores.end() && rank++ < 2 * MNPAYMENTS_SIGNATURES_TOTAL; it++)
+			topSigs[currHeight % 15][(*it).second] = rank;
+		if (true || (topSigs[currHeight % 15].count(my->address) && topSigs[currHeight % 15][my->address] <= MNPAYMENTS_SIGNATURES_TOTAL)) {	// we are top-ranked group & get to vote 
+			CPaymentVote myVote = CPaymentVote({ my->address, currHeight + 10 });
+			for (int tier = 0; tier < NUM_TIERS; tier++) {
+				if (vLastPaid[tier].size() < tierCount[currHeight % 15][tier] / 3) vLastPaid[tier].insert(vLastPaid[tier].end(), vLastPaid2[tier].begin(), vLastPaid2[tier].end()); // append recently restarted nodes during upgrades  
+				sort(vLastPaid[tier].begin(), vLastPaid[tier].end(), CompareTimes());
+				if (vLastPaid[tier].size() == 0) continue;
+				int topTenth = vLastPaid[tier].size() / 10;
+				if (topTenth == 0) topTenth++;
+				vVoteScores.clear();
+				rank = 0;
+				for (vector<pair<int64_t, pair<uint256, string>>>::iterator it = vLastPaid[tier].begin(); rank < topTenth; rank++) vVoteScores.push_back((*it).second);
+				sort(vVoteScores.begin(), vVoteScores.end(), CompareScores());
+				myVote.addressPayee[tier] = vVoteScores[0].second;
+				LogPrintStr("myVote.addressPayee[tier] " + vVoteScores[0].second + "\n");
+			}
+			LogPrintStr("\n");
+			my->SignMsg(myVote.ToString(), myVote.vchSig);
+			mnPayments.AddPaymentVote(myVote);
 		}
-		CPaymentVote myVote = CPaymentVote({ my->address, currHeight, vVoteScores[0].second });
-		my->SignMsg(myVote.ToString(), myVote.vchSig);
-		mnPayments.AddPaymentVote(myVote);
 	}
 
 	for (map<CNetAddr, int64_t>::iterator it = mAskedUs4List.begin(); it != mAskedUs4List.end(); ) if ((*it).second < GetTime()) mAskedUs4List.erase(it++); else ++it;
@@ -198,14 +213,21 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 		CMasternode mnb;
 		vRecv >> mnb;
 		if (mMasternodes.count(mnb.GetHash())) { LogPrintf("masternodeman.ProcessMessage mnb already seen \n"); return; }		// entirely redundant
+		LogPrintf("a\n");
 
-		CMasternode* pmn = Find(mnb.address);
-		if (pmn && pmn->sigTime > mnb.sigTime) { LogPrint("masternode", "Obsolete Masternode %s\n", mnb.address); return; }	// should never happen, but . . . 
+		// CMasternode* pmn = Find(mnb.address);
+		LogPrintf("b\n");
+		// if (pmn && pmn->sigTime > mnb.sigTime) { LogPrint("masternode", "Obsolete Masternode %s\n", mnb.address); return; }	// should never happen, but . . . 
+		LogPrintf("c\n");
 		if (mnb.protocolVersion < MIN_PEER_PROTO_VERSION) { LogPrint("masternode", "Outdated protocol, Masternode %s\n", mnb.address); return; }
+		LogPrintf("d\n");
 		if (mnb.sigTime > GetAdjustedTime()) { LogPrint("masternode", "Future Signature rejected, Masternode %s\n", mnb.address); return; }
+		LogPrintf("e\n");
 		// if ((errorMsg = my->VerifyMsg(mnb.address, mnb.ToString(), mnb.vchSig)) != "") { LogPrint("masternode", "Bad signature %s - %s\n", mnb.address, errorMsg); return; }
 		if ((errorMsg = mnb.VerifyFunding()) != "") { LogPrint("masternode", "Masternode %s - %s\n", mnb.address, errorMsg); return; }
+		LogPrintf("f\n");
 		if (!Find(mnb.address)) Add(&mnb); else Update(&mnb);
+		LogPrintf("g\n");
 		masternodeSync.AddedMasternodeList(mnb.GetHash());
 		LogPrintf("masternodeman.ProcessMessage mnb END\n");
 	}

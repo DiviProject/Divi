@@ -223,7 +223,7 @@ Value listmasternodes(const Array& params, bool fHelp)
 	int i = 1;
 	//if (mnodeman.vCurrScores.size() == 0) {
 	if (mnodeman.mMasternodes.size() > 0) {
-		ret.push_back(Pair("Warning:", "Masternode selection process currently in process so list is *unranked*"));
+		// ret.push_back(Pair("Warning:", "Masternode selection process currently in process so list is *unranked*"));
 		ret.push_back(Pair("mnodeman.mMasternodes.size:", to_string(mnodeman.mMasternodes.size())));
 		for (map<uint256, CMasternode>::iterator it = mnodeman.mMasternodes.begin(); it != mnodeman.mMasternodes.end(); it++, i++) {
 			Object obj;
@@ -294,22 +294,7 @@ Value getmasternodecount(const Array& params, bool fHelp)
 
 Value masternodecurrent(const Array& params, bool fHelp)
 {
-	if (fHelp || (params.size() != 0))
-		throw runtime_error(
-			"masternodecurrent\n"
-			"\nGet current masternode winner\n"
-
-			"\nResult:\n"
-			"{\n" +
-			nodeHelp("  ") +
-			"}\n"
-			"\nExamples:\n" +
-			HelpExampleCli("masternodecurrent", "") + HelpExampleRpc("masternodecurrent", ""));
-
-	Object obj;
-	if (mnodeman.vCurrScores[0].size() == 0) { obj.push_back(Pair("Warning:", "Current masternode selection still in process")); return obj; }
-	nodeStatus(&obj, mnodeman.Find(mnodeman.vCurrScores[0][0].second));
-	return obj;
+	throw runtime_error("masternodecurrent is deprecated!  masternode payments always rely upon votes");
 }
 
 Value startmasternode(const Array& params, bool fHelp)
@@ -355,7 +340,50 @@ Value getmasternodestatus(const Array& params, bool fHelp)
 
 Value getmasternodewinners(const Array& params, bool fHelp)
 {
-	throw runtime_error("getmasternodewinners is a work in progress!  Check back soon.");
+	if (fHelp || params.size() > 0)
+		throw runtime_error(
+			"getmasternodewinners \n"
+			"\nPrint the masternode winners for the last 5 and next 12 blocks\n"
+
+			"\nResult:\n"
+			"[\n"
+			"  {\n"
+			"    \"nHeight\": n,           (numeric) block height\n"
+			"    \"winner\": [\n"
+			"      {\n"
+			"        \"address\": \"xxxx\",  (string) DIVI MN Address\n"
+			"        \"nVotes\": n,        (numeric) Number of votes for winner\n"
+			"      }\n"
+			"      ,...\n"
+			"    ]\n"
+			"  }\n"
+			"  ,...\n"
+			"]\n"
+			"\nExamples:\n" +
+			HelpExampleCli("getmasternodewinners", "") + HelpExampleRpc("getmasternodewinners", ""));
+
+	int nHeight;
+	{
+		LOCK(cs_main);
+		CBlockIndex* pindex = chainActive.Tip();
+		if (!pindex) return 0;
+		nHeight = pindex->nHeight;
+	}
+
+	Array ret;
+
+	for (int i = nHeight - 5; i < nHeight + 12; i++) {
+		Object obj;
+		obj.push_back(Pair("nHeight", i));
+		obj.push_back(Pair("Diamond", mnPayments.mVotes[i].MostVotes(0)));
+		obj.push_back(Pair("Platinum", mnPayments.mVotes[i].MostVotes(1)));
+		obj.push_back(Pair("Gold", mnPayments.mVotes[i].MostVotes(2)));
+		obj.push_back(Pair("Silver", mnPayments.mVotes[i].MostVotes(3)));
+		obj.push_back(Pair("Copper", mnPayments.mVotes[i].MostVotes(4)));
+		ret.push_back(obj);
+	}
+	return ret;
+
 	/*
 	if (fHelp || params.size() > 3)
 		throw runtime_error(
@@ -457,57 +485,9 @@ Value getmasternodewinners(const Array& params, bool fHelp)
 
 	return ret;
 	*/
-	return 0;
 }
 
 Value getmasternodescores(const Array& params, bool fHelp)
 {
-	throw runtime_error("getmasternodewinners is a work in progress!  Check back soon.");
-	/*
-	if (fHelp || params.size() > 1)
-		throw runtime_error(
-			"getmasternodescores ( blocks )\n"
-			"\nPrint list of winning masternode by score\n"
-
-			"\nArguments:\n"
-			"1. blocks      (numeric, optional) Show the last n blocks (default 10)\n"
-
-			"\nResult:\n"
-			"{\n"
-			"  xxxx: \"xxxx\"   (numeric : string) Block height : Masternode hash\n"
-			"  ,...\n"
-			"}\n"
-			"\nExamples:\n" +
-			HelpExampleCli("getmasternodescores", "") + HelpExampleRpc("getmasternodescores", ""));
-
-	int nLast = 10;
-
-	if (params.size() == 1) {
-		try {
-			nLast = std::stoi(params[0].get_str());
-		}
-		catch (const boost::bad_lexical_cast &) {
-			throw runtime_error("Exception on param 2");
-		}
-	}
-	Object obj;
-
-	std::vector<CMasternode> vMasternodes = mnodeman.GetFullMasternodeVector();
-	for (int nHeight = chainActive.Tip()->nHeight - nLast; nHeight < chainActive.Tip()->nHeight + 20; nHeight++) {
-		uint256 nHigh = 0;
-		CMasternode* pBestMasternode = NULL;
-		BOOST_FOREACH(CMasternode& mn, vMasternodes) {
-			uint256 n = mn.CalculateScore(1, nHeight - 100);
-			if (n > nHigh) {
-				nHigh = n;
-				pBestMasternode = &mn;
-			}
-		}
-		if (pBestMasternode)
-			obj.push_back(Pair(strprintf("%d", nHeight), pBestMasternode->vin.prevout.hash.ToString().c_str()));
-	}
-
-	return obj;
-	*/
-	return 0;
+	throw runtime_error("getmasternodescores is deprecated!  masternode payments always rely upon votes not current scores");
 }

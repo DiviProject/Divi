@@ -2181,7 +2181,8 @@ int64_t GetBlockValue(int nHeight)
 
 	if (nHeight == 0) { nSubsidy = 50 * COIN; }
 	else if (nHeight == 1) { nSubsidy = 2534320700 * COIN; }
-	else if (nHeight < Params().LAST_POW_BLOCK()) { nSubsidy = 1 * COIN; }
+	else if (nHeight < Params().LAST_POW_BLOCK()) { nSubsidy = 1075 * COIN; }
+	else if (nHeight % 10000 == 1) { nSubsidy = 501075 * COIN; }					// LOTTERY BLOCK!!!!!
 	else { nSubsidy = 1075 * COIN; }
 
     return nSubsidy;
@@ -4703,7 +4704,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     if (!ActivateBestChain(state, pblock, checked))
         return error("%s : ActivateBestChain failed", __func__);
 
-    if (fMasterNode && !fLiteMode) {
+    if (!fLiteMode) {
         // if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
             // obfuScationPool.NewBlock();
 			mnodeman.ProcessBlock();

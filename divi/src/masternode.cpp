@@ -108,7 +108,10 @@ bool CMasternode::IsEnabled()
 {
 	if (GetAdjustedTime() - lastTimeChecked < MASTERNODE_CHECK_SECONDS) return true;
 	lastTimeChecked = GetAdjustedTime();
- 	if (lastPing.sigTime + MASTERNODE_EXPIRATION_SECONDS < lastTimeChecked) { return false; }
+	if (lastPing.sigTime + MASTERNODE_EXPIRATION_SECONDS < lastTimeChecked)
+		LogPrintStr(address + " EXPIRED!");
+	else LogPrintStr(address + " NOT EXPIRED!");
+	if (lastPing.sigTime + MASTERNODE_EXPIRATION_SECONDS < lastTimeChecked) { return false; }
 	return (VerifyFunding() == "");
 }
 

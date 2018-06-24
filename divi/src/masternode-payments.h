@@ -79,12 +79,12 @@ class CMasternodePayments
 {
 private:
 	map<int, set<uint256>> mMnVotes;						// block numbers to sets of votes, enables easy garbage collection of mapSeenPaymentVotes
-	map<int, CBlockVotes> mVotes;							// block numbers to the actual votes <payee, vote count>
 
 public:
 	map<uint256, CPaymentVote> mapSeenPaymentVote;			// Keep track of all masternode broadcasts I've seen
+	map<int, CBlockVotes> mVotes;							// block numbers to the actual votes <payee, vote count>
 
-	bool AddPaymentVote(CPaymentVote& winner);									// adds vote to mapMasterNodeBlocks, called from both self-voting & message processing
+	void AddPaymentVote(CPaymentVote& winner);									// adds vote to mapMasterNodeBlocks, called from both self-voting & message processing
 	void FillBlockPayee(CMutableTransaction& txNew, int64_t Fees, bool PoS);
 	bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted) { return nMinted <= nExpectedValue; }
 	bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight);

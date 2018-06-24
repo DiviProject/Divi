@@ -16,7 +16,7 @@ using namespace std;
 
 CMasternodePayments mnPayments;
 
-bool CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
+void CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 {
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
 		if (!mVotes.count(winner.nBlockHeight)) mVotes[winner.nBlockHeight] = CBlockVotes();
@@ -25,6 +25,7 @@ bool CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 	if (!mMnVotes.count(winner.nBlockHeight)) mMnVotes[winner.nBlockHeight] = set<uint256>{ { winner.GetHash() } };		// local (for better garbage collection)
 	else mMnVotes[winner.nBlockHeight].insert(winner.GetHash());
 	mapSeenPaymentVote[winner.GetHash()] = winner;																		// standard
+	masternodeSync.AddedMasternodeWinner(winner.GetHash());
 	winner.Relay();
 }
 
@@ -115,19 +116,19 @@ void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strComma
 		LogPrintf("ProcessMsgPayments mnw START\n");
 		CPaymentVote winner;
 		vRecv >> winner;
-		if (mapSeenPaymentVote.count(winner.GetHash())) return;																	// seen before
-		if (winner.nBlockHeight > mnodeman.currHeight + 12) return;																// too far in future
+		if (mapSeenPaymentVote.count(winner.GetHash())) { LogPrintStr("mnw - seen before"); return; }							// seen before
+		if (winner.nBlockHeight > mnodeman.currHeight + 12) { LogPrintStr("mnw - too far in future"); return; }					// too far in future
 		if (!mnodeman.Find(winner.addressVoter)) { mnodeman.AskForMN(pfrom, winner.addressVoter);  return; }					// unknown masternode; ask for it
 		CMasternode* voter = mnodeman.Find(winner.addressVoter);
 		if (voter->voteRank[mnodeman.currHeight % 15] > MNPAYMENTS_SIGNATURES_TOTAL) {											// not in top 10 
+			LogPrintStr("ProcessMsgPayments mnw NOT IN TOP 10!!!!!!!!! \n");
 			if (voter->voteRank[mnodeman.currHeight % 15] > MNPAYMENTS_SIGNATURES_TOTAL * 2) Misbehaving(pfrom->GetId(), 20);
-			return;
+			// return;
 		}
 		if (voter->lastVoted >= mnodeman.currHeight) { Misbehaving(pfrom->GetId(), 20); return; }								// already voted differently
 		if (mnodeman.my->VerifyMsg(winner.addressVoter, winner.ToString(), winner.vchSig) != "") return;						// bad vote signature
 		AddPaymentVote(winner);
-		masternodeSync.AddedMasternodeWinner(winner.GetHash());
-		LogPrintf("ProcessMsgPayments mnw SUCCESS\n");
+		LogPrintf("\n ProcessMsgPayments mnw SUCCESS\n");
 	}
 }
 

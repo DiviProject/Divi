@@ -18,7 +18,7 @@
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 #define MASTERNODES_DUMP_SECONDS (15 * 60)
 #define MASTERNODE_MIN_MNB_SECONDS (5 * 60)
-#define MN_WINNER_MINIMUM_AGE 80							// Age in seconds, currently ~ 2.25 hours, should be > MASTERNODE_EXPIRATION_SECONDS
+#define MN_WINNER_MINIMUM_AGE 8							// Age in seconds, currently 8000 ~ 2.25 hours, should be > MASTERNODE_EXPIRATION_SECONDS
 #define MIN_PEER_PROTO_VERSION 0
 
 using namespace std;

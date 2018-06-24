@@ -1645,7 +1645,6 @@ bool AppInit2(boost::thread_group& threadGroup)
  //   }
 
 	fMasterNode = GetBoolArg("-masternode", false);
-    fPchMessageStart = GetArg("-pchMessageStart", "");
 	mnodeman.my->address = GetArg("-mndiviaddress", "");
 
 	if (((mnodeman.my->address = GetArg("-mndiviaddress", "")) != "" || masternodeConfig.getCount() > -1) && fTxIndex == false) {

@@ -128,7 +128,7 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 boost::filesystem::path GetTempPath();
 void ShrinkDebugFile();
 void runCommand(std::string strCommand);
-
+fPchMessageStart = GetArg("-pchMessageStart", "");
 inline bool IsSwitchChar(char c)
 {
 #ifdef WIN32

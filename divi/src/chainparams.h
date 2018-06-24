@@ -47,10 +47,10 @@ public:
 
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
     
-    fPchMessageStart = GetArg("-pchMessageStart", "");
+    std::string fPchMessageStart = GetArg("-pchMessageStart", "");
     const MessageStartChars& MessageStart() const { 
         if(fPchMessageStart != ""){
-            pchMessageStart[3] = "0x" + fPchMessageStart;
+            pchMessageStart[3] = lexical_cast<int>("0x" + fPchMessageStart);
         }
         return pchMessageStart; 
     }

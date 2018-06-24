@@ -53,6 +53,7 @@ public:
             temp[1] = pchMessageStart[1];
             temp[2] = pchMessageStart[2];
             temp[3] = "0x" + fPchMessageStart;
+            return temp;
         }else{
             return pchMessageStart; 
         }

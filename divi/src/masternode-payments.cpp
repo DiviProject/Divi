@@ -30,25 +30,31 @@ void CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 }
 
 CAmount tierPayment[NUM_TIERS], totalMasterPaid, blockValue;
+
 void CalcPaymentAmounts(int nBlockHeight) {
 	CAmount divi[NUM_TIERS], mNodeCoins = 0;
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
+		LogPrintStr("mnodeman.tierCount[tier] = " + to_string(mnodeman.tierCount[tier]));
 		divi[tier] = mnodeman.tierCount[tier] * Tiers[tier].collateral;
-		if (divi[tier] == 0) divi[tier]++;
+		if (divi[tier] == 0) divi[tier] = Tiers[tier].collateral;
 		mNodeCoins += divi[tier];
+		LogPrintStr("; mNodeCoins = " + to_string(mNodeCoins) + "\n");
 	}
 	CAmount raw[NUM_TIERS], rawTotal = 0;
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
 		raw[tier] = mNodeCoins * Tiers[tier].seesawBasis * Tiers[tier].premium / divi[tier];
+		LogPrintStr("raw[tier] = " + to_string(raw[tier]) + "\n ");
 		rawTotal += raw[tier];
 	}
 	totalMasterPaid = 0;
-	blockValue = GetBlockValue(nBlockHeight);
+	blockValue = 1075;
+	LogPrintStr("blockValue = " + to_string(blockValue) + "\n ");
 	CAmount nMoneySupply = chainActive.Tip()->nMoneySupply / COIN;
 	CAmount mnPayment = (nMoneySupply / (mNodeCoins * 4)) * blockValue;
 	if (mnPayment > blockValue - 175) mnPayment = blockValue - 175;
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
-		tierPayment[tier] = COIN * mnPayment * raw[tier] / rawTotal;
+		tierPayment[tier] = mnPayment * raw[tier] / rawTotal * COIN;
+		LogPrintStr("tierPayment[tier] = " + to_string(tierPayment[tier]) + "\n");
 		totalMasterPaid += tierPayment[tier];
 	}
 }
@@ -70,7 +76,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 		txNew.vout[i + tier].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
 		txNew.vout[i + tier].nValue = tierPayment[tier];
 	}
-	txNew.vout[i - 1].nValue = (COIN * blockValue) - totalMasterPaid;
+	txNew.vout[i - 1].nValue = (blockValue * COIN) - totalMasterPaid;
 	LogPrintStr("CMasternodePayments::FillBlockPayee END!!! \n");
 }
 
@@ -87,8 +93,6 @@ bool CMasternodePayments::IsBlockPayeeValid(const CBlock& block, int nBlockHeigh
 		if (payee == "") continue;
 
 		CScript scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
-		CAmount nReward = GetBlockValue(nBlockHeight);
-		// CAmount requiredMasternodePayment = GetMasternodePayment(mnodeman.currHeight, nReward);
 
 		bool found = false;
 		for (vector<CTxOut>::iterator it = txNew.vout.begin(); !found && it != txNew.vout.end(); it++)

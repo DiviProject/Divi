@@ -83,11 +83,11 @@ public:
 
 #define NUM_TIERS 5
 
-const CMnTier Diamond{ 0, "diamond", 10000000 * COIN, 120, 2400 };
-const CMnTier Platinum{ 1, "platinum", 3000000 * COIN, 115, 2400 };
-const CMnTier Gold{ 2, "gold", 1000000 * COIN, 110, 2400 };
-const CMnTier Silver{ 3, "silver", 300000 * COIN, 105, 1600 };
-const CMnTier Copper{ 4, "copper", 100000 * COIN, 100, 1200 };
+const CMnTier Diamond{ 0, "diamond", 10000000, 120, 2400 };
+const CMnTier Platinum{ 1, "platinum", 3000000, 115, 2400 };
+const CMnTier Gold{ 2, "gold", 1000000, 110, 2400 };
+const CMnTier Silver{ 3, "silver", 300000, 105, 1600 };
+const CMnTier Copper{ 4, "copper", 100000, 100, 1200 };
 const CMnTier Tiers[NUM_TIERS] = { Diamond, Platinum, Gold, Silver, Copper };
 
 class CMnFunding

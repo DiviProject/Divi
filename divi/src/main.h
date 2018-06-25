@@ -29,6 +29,7 @@
 #include "txmempool.h"
 #include "uint256.h"
 #include "undo.h"
+#include "spentindex.h"
 
 #include <algorithm>
 #include <exception>
@@ -794,6 +795,7 @@ struct CAddressIndexIteratorHeightKey {
 bool GetAddressIndex(uint160 addressHash, int type,
                      std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
                      int start = 0, int end = 0);
+bool GetSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
 
 /*
 class CValidationInterface

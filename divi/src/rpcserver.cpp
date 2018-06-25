@@ -356,6 +356,9 @@ static const CRPCCommand vRPCCommands[] =
         { "addressindex", "getaddressbalance", &getaddressbalance, false, false },
         // { "addressindex", "getaddressutxos", &getaddressutxos, false, false },
         { "addressindex", "getaddressmempool", &getaddressmempool, true, false },
+
+        { "blockchain", "getspentinfo", &getspentinfo, false },
+
 #ifdef ENABLE_WALLET
         // {"divi", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
 

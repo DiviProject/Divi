@@ -22,6 +22,7 @@ class uint256;
 struct CAddressIndexKey;
 struct CAddressIndexIteratorKey;
 struct CAddressIndexIteratorHeightKey;
+struct CSpentIndexKey;
 
 //! -dbcache default (MiB)
 static const int64_t nDefaultDbCache = 100;
@@ -71,6 +72,8 @@ public:
     bool ReadAddressIndex(uint160 addressHash, int type,
                           std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
                           int start = 0, int end = 0);
+    bool ReadSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
+    bool UpdateSpentIndex(const std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> >&vect);
     bool WriteFlag(const std::string& name, bool fValue);
     bool ReadFlag(const std::string& name, bool& fValue);
     bool WriteInt(const std::string& name, int nValue);

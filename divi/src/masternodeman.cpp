@@ -127,14 +127,14 @@ void CMasternodeMan::ProcessBlock()
 	uint256 voteHash2 = DoubleHash(voteHash);
 
 	stableSize = 0;
-	for (int i = 0; i < NUM_TIERS; i++) { tierCount[currHeight % 15][i] = 0; vCurrScores[i].clear(); }
+	for (int i = 0; i < NUM_TIERS; i++) { tierCount[i] = 0; vCurrScores[i].clear(); }
 	LOCK(cs);
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
 		CMasternode mn = (*it).second;
 		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mMasternodes.erase(mAddress2MnHash[mn.address]); mAddress2MnHash.erase(mn.address); it++; continue; }
 		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) { it++;  continue; }
 		stableSize++;
-		tierCount[currHeight % 15][mn.tier.ordinal]++;
+		tierCount[mn.tier.ordinal]++;
 		/* calculate scores */
 		uint256 currHashM = DoubleHash(currHash, mn.address);
 		vCurrScores[mn.tier.ordinal].push_back(make_pair((currHash2 > currHashM ? currHash2 - currHashM : currHashM - currHash2), mn.address));
@@ -161,7 +161,7 @@ void CMasternodeMan::ProcessBlock()
 		if (true || (topSigs[currHeight % 15].count(my->address) && topSigs[currHeight % 15][my->address] <= MNPAYMENTS_SIGNATURES_TOTAL)) {	// we are top-ranked group & get to vote 
 			CPaymentVote myVote = CPaymentVote({ my->address, currHeight + 10 });
 			for (int tier = 0; tier < NUM_TIERS; tier++) {
-				if (vLastPaid[tier].size() < tierCount[currHeight % 15][tier] / 3) vLastPaid[tier].insert(vLastPaid[tier].end(), vLastPaid2[tier].begin(), vLastPaid2[tier].end()); // append recently restarted nodes during upgrades  
+				if (vLastPaid[tier].size() < tierCount[tier] / 3) vLastPaid[tier].insert(vLastPaid[tier].end(), vLastPaid2[tier].begin(), vLastPaid2[tier].end()); // append recently restarted nodes during upgrades  
 				sort(vLastPaid[tier].begin(), vLastPaid[tier].end(), CompareTimes());
 				if (vLastPaid[tier].size() == 0) continue;
 				int topTenth = vLastPaid[tier].size() / 10;

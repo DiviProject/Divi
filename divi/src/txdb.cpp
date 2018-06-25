@@ -20,6 +20,7 @@ using namespace libzerocoin;
 
 static const char DB_ADDRESSINDEX = 'a';
 static const char DB_SPENTINDEX = 'p';
+static const char DB_ADDRESSUNSPENTINDEX = 'u';
 
 void static BatchWriteCoins(CLevelDBBatch& batch, const uint256& hash, const CCoins& coins)
 {
@@ -293,6 +294,68 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
     return true;
 }
 
+bool CBlockTreeDB::UpdateAddressUnspentIndex(const std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue > >&vect) {
+    CLevelDBBatch batch;
+    for (std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >::const_iterator it=vect.begin(); it!=vect.end(); it++) {
+        if (it->second.IsNull()) {
+            batch.Erase(make_pair(DB_ADDRESSUNSPENTINDEX, it->first));
+        } else {
+            batch.Write(make_pair(DB_ADDRESSUNSPENTINDEX, it->first), it->second);
+        }
+    }
+    return WriteBatch(batch);
+}
+
+template<typename K> bool GetKey(leveldb::Slice slKey, K& key) {
+    try {
+        CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
+        ssKey >> key;
+    } catch (const std::exception&) {
+        return false;
+    }
+    return true;
+}
+
+bool CBlockTreeDB::ReadAddressUnspentIndex(uint160 addressHash, int type,
+                                           std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &unspentOutputs) {
+
+    boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
+
+    // pcursor->Seek(make_pair(DB_ADDRESSUNSPENTINDEX, CAddressIndexIteratorKey(type, addressHash)));
+    CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+    pair<char, CAddressIndexIteratorKey> key = make_pair(DB_ADDRESSUNSPENTINDEX, CAddressIndexIteratorKey(type, addressHash));
+    ssKey.reserve(ssKey.GetSerializeSize(key));
+    ssKey << key;
+
+    leveldb::Slice slKey(&ssKey[0], ssKey.size());
+    pcursor->Seek(slKey);
+
+    while (pcursor->Valid()) {
+        boost::this_thread::interruption_point();
+        std::pair<char,CAddressUnspentKey> key;
+        // if (pcursor->GetKey(key) && key.first == DB_ADDRESSUNSPENTINDEX && key.second.hashBytes == addressHash) {
+        if (GetKey(pcursor->key(), key) && key.first == DB_ADDRESSUNSPENTINDEX && key.second.hashBytes == addressHash) {
+            // CAddressUnspentValue nValue;
+            //if (pcursor->GetValue(nValue)) {
+            try {
+                leveldb::Slice slValue = pcursor->value();
+                CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
+                CAddressUnspentValue nValue;
+                ssValue >> nValue;
+
+                unspentOutputs.push_back(make_pair(key.second, nValue));
+                pcursor->Next();
+            } catch (const std::exception&) {
+                return error("failed to get address unspent value");
+            }
+        } else {
+            break;
+        }
+    }
+
+    return true;
+}
+
 bool CBlockTreeDB::WriteAddressIndex(const std::vector<std::pair<CAddressIndexKey, CAmount > >&vect) {
     CLevelDBBatch batch;
     for (std::vector<std::pair<CAddressIndexKey, CAmount> >::const_iterator it=vect.begin(); it!=vect.end(); it++)
@@ -305,16 +368,6 @@ bool CBlockTreeDB::EraseAddressIndex(const std::vector<std::pair<CAddressIndexKe
     for (std::vector<std::pair<CAddressIndexKey, CAmount> >::const_iterator it=vect.begin(); it!=vect.end(); it++)
         batch.Erase(make_pair(DB_ADDRESSINDEX, it->first));
     return WriteBatch(batch);
-}
-
-template<typename K> bool GetKey(leveldb::Slice slKey, K& key) {
-    try {
-        CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
-        ssKey >> key;
-    } catch (const std::exception&) {
-        return false;
-    }
-    return true;
 }
 
 bool CBlockTreeDB::ReadAddressIndex(uint160 addressHash, int type,

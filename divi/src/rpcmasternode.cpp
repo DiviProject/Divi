@@ -176,7 +176,7 @@ string nodeHelp(string indent = "")
 {
 	string ret = indent + "\"address\": \"address\",    (string) Masternode DIVI address\n";
 	ret += indent + "\"protocol\": xxxx,        (numeric) Protocol version\n";
-	ret += indent + "\"netaddr\": \"xxxx\",       (string) Masternode network address\n";;
+//	ret += indent + "\"netaddr\": \"xxxx\",       (string) Masternode network address\n";;
 	ret += indent + "\"lastseen\": ttt,			(numeric) The time in seconds since last seen\n";
 	ret += indent + "\"activetime\": ttt,		(numeric) The time in seconds masternode has been active\n";
 	ret += indent + "\"lastpaid\": ttt,			(numeric) The time in seconds since masternode was last paid\n";
@@ -188,7 +188,7 @@ void nodeStatus(Object* obj, CMasternode* mn)
 	obj->push_back(Pair("address", mn->address));
 	obj->push_back(Pair("tier", mn->tier.name));
 	obj->push_back(Pair("protocol", mn->protocolVersion));
-	obj->push_back(Pair("netaddr", mn->service.ToString()));
+//	obj->push_back(Pair("netaddr", mn->service.ToString()));
 	obj->push_back(Pair("lastseen", GetAdjustedTime() - mn->lastPing.sigTime));
 	obj->push_back(Pair("activetime", mn->lastPing.sigTime - mn->sigTime));
 	// obj->push_back(Pair("lastpaid", GetAdjustedTime() - mn->lastPaid));

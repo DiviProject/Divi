@@ -29,9 +29,8 @@ void CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 	winner.Relay();
 }
 
-void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFees, bool fProofOfStake)
-{
-	LogPrintStr("CMasternodePayments::FillBlockPayee \n");
+CAmount tierPayment[NUM_TIERS], totalMasterPaid, blockValue;
+void CalcPaymentAmounts(int nBlockHeight) {
 	CAmount divi[NUM_TIERS], mNodeCoins = 0;
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
 		divi[tier] = mnodeman.tierCount[tier] * Tiers[tier].collateral;
@@ -43,16 +42,25 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 		raw[tier] = mNodeCoins * Tiers[tier].seesawBasis * Tiers[tier].premium / divi[tier];
 		rawTotal += raw[tier];
 	}
-	CAmount blockValue = 1075;
+	totalMasterPaid = 0;
+	blockValue = GetBlockValue(nBlockHeight);
 	CAmount nMoneySupply = chainActive.Tip()->nMoneySupply / COIN;
-	CAmount masternodePayment = (nMoneySupply / (mNodeCoins * 4)) * blockValue;
-	if (masternodePayment > 1075) masternodePayment = 1000;
+	CAmount mnPayment = (nMoneySupply / (mNodeCoins * 4)) * blockValue;
+	if (mnPayment > blockValue - 175) mnPayment = blockValue - 175;
+	for (int tier = 0; tier < NUM_TIERS; tier++) {
+		tierPayment[tier] = COIN * mnPayment * raw[tier] / rawTotal;
+		totalMasterPaid += tierPayment[tier];
+	}
+}
+
+void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFees, bool fProofOfStake)
+{
+	LogPrintStr("CMasternodePayments::FillBlockPayee \n");
+	CalcPaymentAmounts(mnodeman.currHeight + 1);
 
 	string mnwinner, payee;
 	unsigned int i = txNew.vout.size();
-	if (!fProofOfStake) i = 1;
 	txNew.vout.resize(i + NUM_TIERS);
-	CAmount totalMasterPaid = 0;
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
 		if (mVotes.count(mnodeman.currHeight + 1)) {
 			mnwinner = mVotes[mnodeman.currHeight + 1].MostVotes(tier);
@@ -60,34 +68,32 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 		}
 		if (payee == "") payee = "DJ2fYZXocM7uWXBNXffyF7QKWfBP4xYQ2b";
 		txNew.vout[i + tier].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
-		txNew.vout[i + tier].nValue = COIN * masternodePayment * raw[tier] / rawTotal;
-		totalMasterPaid += txNew.vout[i + tier].nValue;
+		txNew.vout[i + tier].nValue = tierPayment[tier];
 	}
-	txNew.vout[i - 1].nValue = (COIN * 1075) - totalMasterPaid;
+	txNew.vout[i - 1].nValue = (COIN * blockValue) - totalMasterPaid;
 	LogPrintStr("CMasternodePayments::FillBlockPayee END!!! \n");
 }
 
 bool CMasternodePayments::IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 {
 	LogPrintStr("CMasternodePayments::IsBlockPayeeValid");
+	if (nBlockHeight <= Params().LAST_POW_BLOCK()) return true;
 
-	CTransaction txNew = (nBlockHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
-
-	// if we don't have at least 6 signatures on a payee, approve whichever is the longest chain
-	if (mVotes.count(mnodeman.currHeight + 1) < MNPAYMENTS_SIGNATURES_REQUIRED) return true;
+	CTransaction txNew = block.vtx[1];
+	CalcPaymentAmounts(nBlockHeight);
 
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
-		string payee = mVotes[mnodeman.currHeight + 1].Winner(tier);
+		string payee = mVotes[nBlockHeight].Winner(tier);
 		if (payee == "") continue;
 
 		CScript scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
-		CAmount nReward = GetBlockValue(mnodeman.currHeight);
-		CAmount requiredMasternodePayment = GetMasternodePayment(mnodeman.currHeight, nReward);
+		CAmount nReward = GetBlockValue(nBlockHeight);
+		// CAmount requiredMasternodePayment = GetMasternodePayment(mnodeman.currHeight, nReward);
 
 		bool found = false;
 		for (vector<CTxOut>::iterator it = txNew.vout.begin(); !found && it != txNew.vout.end(); it++)
-			if ((*it).scriptPubKey == scriptPubKey && (*it).nValue >= requiredMasternodePayment) found = true;
-		if (!found) { LogPrint("masternode", "Invalid mn payment detected %s\n", txNew.ToString().c_str()); return false; }
+			if ((*it).scriptPubKey == scriptPubKey && (*it).nValue >= tierPayment[tier] - 5 * COIN) found = true;
+		if (!found) { LogPrint("masternode", "Missing payment for tier %s in %s\n", to_string(tier),txNew.ToString().c_str()); return false; }
 	}
 	return true;
 }

@@ -158,6 +158,7 @@ string CMasternode::StartUp()
 	if ((errorMsg = SignMsg(lastPing.ToString(), lastPing.vchSig)) != "") return "Bad ping signature " + errorMsg;
 
 	addrman.Add(CAddress(service), CNetAddr("127.0.0.1"), 2 * 60 * 60);
+	MilliSleep(1000);
 	mnodeman.Add(mnodeman.my);
 	return "";
 }

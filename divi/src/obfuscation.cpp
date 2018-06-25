@@ -2299,7 +2299,7 @@ void ThreadCheckObfuScationPool()
         // try to sync from all available nodes, one step at a time
         masternodeSync.Process();
 
-        if (masternodeSync.IsBlockchainSynced()) {
+//        if (masternodeSync.IsBlockchainSynced()) {
             c++;
 
             // check if we should ping every few minutes,
@@ -2332,6 +2332,6 @@ void ThreadCheckObfuScationPool()
             //if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
             //    obfuScationPool.DoAutomaticDenominating();
             //}
-        }
+//        }
     }
 }

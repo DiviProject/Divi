@@ -1,9 +1,0 @@
-digraph "MultisigDialog::signMultisigTx"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node595 [label="MultisigDialog::signMultisigTx",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node595 -> Node596 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node596 [label="MultisigDialog::on\l_signButton_clicked",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_multisig_dialog.html#a5fdc6c2578e0f4e2f7900a3723d223ae"];
-}

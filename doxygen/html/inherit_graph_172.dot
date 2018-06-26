@@ -1,9 +1,0 @@
-digraph "Graphical Class Hierarchy"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node0 [label="CUnsignedAlert",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_unsigned_alert.html",tooltip="Alerts are for notifying old versions if they become too obsolete and need to upgrade. "];
-  Node0 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node1 [label="CAlert",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_alert.html",tooltip="An alert is a combination of a serialized CUnsignedAlert and a signature. "];
-}

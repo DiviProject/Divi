@@ -1,9 +1,0 @@
-digraph "libzerocoin::CoinSpend::CalculateValidSerial"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node14 [label="libzerocoin::CoinSpend\l::CalculateValidSerial",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node14 -> Node15 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node15 [label="CBigNum::mul_mod",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_big_num.html#abf7973e872561306532d90386d325875",tooltip="modular multiplication: (this * b) mod m "];
-}

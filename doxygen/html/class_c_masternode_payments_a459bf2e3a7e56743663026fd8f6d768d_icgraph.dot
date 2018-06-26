@@ -1,9 +1,0 @@
-digraph "CMasternodePayments::FillBlockPayee"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node47 [label="CMasternodePayments\l::FillBlockPayee",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node47 -> Node48 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node48 [label="FillBlockPayee",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$masternode-payments_8h.html#a2bd3aae33d7ebbea97792d1f1abfff03"];
-}

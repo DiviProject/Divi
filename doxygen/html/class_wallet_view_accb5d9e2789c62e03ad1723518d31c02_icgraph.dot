@@ -1,9 +1,0 @@
-digraph "WalletView::usedReceivingAddresses"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node631 [label="WalletView::usedReceiving\lAddresses",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node631 -> Node632 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node632 [label="WalletFrame::usedReceiving\lAddresses",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_wallet_frame.html#a9273a0b98cf7ec9fc344658c38a4a0a3",tooltip="Show used receiving addresses. "];
-}

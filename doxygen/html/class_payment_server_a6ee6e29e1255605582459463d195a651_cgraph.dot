@@ -1,9 +1,0 @@
-digraph "PaymentServer::handleURIConnection"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node71 [label="PaymentServer::handleURIConnection",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node71 -> Node72 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node72 [label="PaymentServer::handleURIOrFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_payment_server.html#adf4f844b3ce7f053690fd9260210640d"];
-}

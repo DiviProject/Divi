@@ -1,9 +1,0 @@
-digraph "CBudgetManager::SubmitFinalBudget"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node230 [label="CBudgetManager::SubmitFinal\lBudget",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node230 -> Node231 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node231 [label="CBudgetManager::NewBlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_budget_manager.html#a9c62c8f18b6f101465415952349ce203"];
-}

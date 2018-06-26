@@ -2299,12 +2299,12 @@ void ThreadCheckObfuScationPool()
         // try to sync from all available nodes, one step at a time
         masternodeSync.Process();
 
-        if (masternodeSync.IsBlockchainSynced()) {
+//        if (masternodeSync.IsBlockchainSynced()) {
             c++;
 
             // check if we should ping every few minutes,
             // start right after sync is considered to be done
-			if (c % MASTERNODE_PING_SECONDS == 1) {
+			if (fMasterNode && c % MASTERNODE_PING_SECONDS == 0) {
 				LogPrintStr("SENDING PING!!!\n");
 				CBlockIndex* currBlock = chainActive.Tip();
 				mnodeman.mSeenPings.erase(mnodeman.my->lastPing.GetHash());
@@ -2313,6 +2313,7 @@ void ThreadCheckObfuScationPool()
 				mnodeman.my->lastPing.sigTime = GetAdjustedTime();
 				mnodeman.my->SignMsg(mnodeman.my->lastPing.ToString(), mnodeman.my->lastPing.vchSig);
 				mnodeman.mSeenPings[mnodeman.my->lastPing.GetHash()] = mnodeman.my->lastPing;
+				mnodeman.Find(mnodeman.my->address)->lastPing.sigTime = GetAdjustedTime();
 				mnodeman.my->lastPing.Relay();
 			}
 
@@ -2331,6 +2332,6 @@ void ThreadCheckObfuScationPool()
             //if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
             //    obfuScationPool.DoAutomaticDenominating();
             //}
-        }
+//        }
     }
 }

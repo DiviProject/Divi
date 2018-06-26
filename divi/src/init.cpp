@@ -1591,9 +1591,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 10: setup ObfuScation
 
-	for (int i = 0; i < 15; i++)
-		for (int j = 0; j < NUM_TIERS; j++)
-			mnodeman.tierCount[i][j] = 0;
+	for (int i = 0; i < NUM_TIERS; i++)
+		mnodeman.tierCount[i] = 0;
     uiInterface.InitMessage(_("Loading masternode cache..."));
 	mnodeman.my->ReadDBs();
 	uiInterface.InitMessage(_("Loaded!"));
@@ -1663,10 +1662,10 @@ bool AppInit2(boost::thread_group& threadGroup)
 		LOCK(pwalletMain->cs_wallet);
 		LogPrintf("Locking Masternodes:\n");
 		uint256 mnTxHash;
-		BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
-			LogPrintf("  %s %s\n", mne.getTxHash(), mne.getOutputIndex());
-			mnTxHash.SetHex(mne.getTxHash());
-			COutPoint outpoint = COutPoint(mnTxHash, boost::lexical_cast<unsigned int>(mne.getOutputIndex()));
+		BOOST_FOREACH(CMasternodeEntry mne, masternodeConfig.entries) {
+			LogPrintf("  %s %s\n", mne.alias, mne.tier);
+			mnTxHash.SetHex(mne.txHash);
+			COutPoint outpoint = COutPoint(mnTxHash, boost::lexical_cast<unsigned int>(mne.outputIndex));
 			pwalletMain->LockCoin(outpoint);
 		}
 	}

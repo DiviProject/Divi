@@ -18,7 +18,7 @@
 #include "wallet.h"
 
 #define MASTERNODE_CHECK_SECONDS 5
-#define MASTERNODE_EXPIRATION_SECONDS (120 * 60)
+#define MASTERNODE_EXPIRATION_SECONDS (12 * 60)
 #define MASTERNODE_MIN_CONFIRMATIONS 15
 #define MASTERNODE_PING_SECONDS (5 * 60)
 
@@ -82,12 +82,12 @@ public:
 };
 
 #define NUM_TIERS 5
-
-const CMnTier Diamond{ 0, "diamond", 10000000 * COIN, 120, 2400 };
-const CMnTier Platinum{ 1, "platinum", 3000000 * COIN, 115, 2400 };
-const CMnTier Gold{ 2, "gold", 1000000 * COIN, 110, 2400 };
-const CMnTier Silver{ 3, "silver", 300000 * COIN, 105, 1600 };
-const CMnTier Copper{ 4, "copper", 100000 * COIN, 100, 1200 };
+// 2400, 2400, 2400, 1600, 1200
+const CMnTier Diamond{ 0, "diamond", 10000000, 120, 6800 };
+const CMnTier Platinum{ 1, "platinum", 3000000, 115, 2200 };
+const CMnTier Gold{ 2, "gold", 1000000, 110, 680 };
+const CMnTier Silver{ 3, "silver", 300000, 105, 220 };
+const CMnTier Copper{ 4, "copper", 100000, 100, 100 };
 const CMnTier Tiers[NUM_TIERS] = { Diamond, Platinum, Gold, Silver, Copper };
 
 class CMnFunding

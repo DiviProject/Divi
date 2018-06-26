@@ -392,17 +392,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
         }
 
-        //byrdcode - if condition: after last proof of work block masternodes need to start getting a piece of the pie.
-        if (!fProofOfStake && chainActive.Tip()->nHeight > Params().LAST_POW_BLOCK()) {
-            //Masternode and general budget payments
-			mnPayments.FillBlockPayee(txNew, nFees, fProofOfStake);
-
-            //Make payee
-            if (txNew.vout.size() > 1) {
-                pblock->payee = txNew.vout[1].scriptPubKey;
-            }
-        }
-        
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
@@ -410,13 +399,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         // Compute final coinbase transaction.
         pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
         if (!fProofOfStake) {
-
-            //byrdcode - before last proof of work block allow mining
-            if(chainActive.Tip()->nHeight <= Params().LAST_POW_BLOCK()){
-                txNew.vout[0].nValue = GetBlockValue(nHeight);
-                txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
-            }
-            //endbyrdcode
+            txNew.vout[0].nValue = GetBlockValue(nHeight);
+            txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
             pblock->vtx[0] = txNew;
             pblocktemplate->vTxFees[0] = -nFees;
         }

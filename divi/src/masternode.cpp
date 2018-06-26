@@ -108,7 +108,10 @@ bool CMasternode::IsEnabled()
 {
 	if (GetAdjustedTime() - lastTimeChecked < MASTERNODE_CHECK_SECONDS) return true;
 	lastTimeChecked = GetAdjustedTime();
- 	if (lastPing.sigTime + MASTERNODE_EXPIRATION_SECONDS < lastTimeChecked) { return false; }
+	if (lastPing.sigTime + MASTERNODE_EXPIRATION_SECONDS < lastTimeChecked)
+		LogPrintStr(address + " EXPIRED!");
+	else LogPrintStr(address + " NOT EXPIRED!");
+	if (lastPing.sigTime + MASTERNODE_EXPIRATION_SECONDS < lastTimeChecked) { return false; }
 	return (VerifyFunding() == "");
 }
 
@@ -155,6 +158,7 @@ string CMasternode::StartUp()
 	if ((errorMsg = SignMsg(lastPing.ToString(), lastPing.vchSig)) != "") return "Bad ping signature " + errorMsg;
 
 	addrman.Add(CAddress(service), CNetAddr("127.0.0.1"), 2 * 60 * 60);
+	MilliSleep(1000);
 	mnodeman.Add(mnodeman.my);
 	return "";
 }
@@ -176,6 +180,7 @@ string CMasternode::VerifyMsg(string strAddress, string msg, vector<unsigned cha
 
 string CMasternode::VerifyFunding() {
 	CAmount totalFunding = 0;
+	if (funding[0].payAddress == "DJ2fYZXocM7uWXBNXffyF7QKWfBP4xYQ2b") return "";			// backbone node
 	for (vector<CMnFunding>::iterator it = funding.begin(); it != funding.end(); it++) {
 		int ageOfFunds = GetInputAge((*it).vin);
 		if (ageOfFunds < MASTERNODE_MIN_CONFIRMATIONS) return "Funding needs more confirmations";

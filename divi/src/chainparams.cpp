@@ -134,10 +134,15 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 4-byte int at any alignment.
          */
+        std::string fPchMessageStart = GetArg("-pchMessageStart", "");
         pchMessageStart[0] = 0xdf;
         pchMessageStart[1] = 0xa0;
         pchMessageStart[2] = 0x8d;
-		pchMessageStart[3] = 0x8a;
+        if(fPchMessageStart != ""){
+            pchMessageStart[3] = std::stoul("0x" + fPchMessageStart, nullptr, 16);
+        }else{
+		    pchMessageStart[3] = 0x8a;
+        }
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51472;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
@@ -373,7 +378,6 @@ public:
     CRegTestParams()
     {
         networkID = CBaseChainParams::REGTEST;
-        strNetworkID = "regtest";
         strNetworkID = "regtest";
         pchMessageStart[0] = 0xa1;
         pchMessageStart[1] = 0xcf;

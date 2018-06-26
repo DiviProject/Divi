@@ -287,7 +287,7 @@ Value getrawtransaction(const Array& params, bool fHelp)
 
     Object result;
     result.push_back(Pair("hex", strHex));
-    TxToJSONExpanded(tx, hashBlock, result);
+    TxToJSONExpanded(tx, hashBlock, result, nHeight, nConfirmations, nBlockTime);
     return result;
 }
 

@@ -131,7 +131,7 @@ void CMasternodeMan::ProcessBlock()
 	LOCK(cs);
 	for (map<uint256, CMasternode>::iterator it = mMasternodes.begin(); it != mMasternodes.end(); ) {
 		CMasternode mn = (*it).second;
-		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\nDELETING!!!\n\n\n\n"); mWeAsked4Entry.erase(mn.address); mMasternodes.erase(mAddress2MnHash[mn.address]); mAddress2MnHash.erase(mn.address); it++; continue; }
+		if (!(*it).second.IsEnabled()) { LogPrintStr("\n\n\n\n NOT DELETING!!! \n\n\n\n"); it++; continue; }
 		if (GetAdjustedTime() < mn.sigTime + MN_WINNER_MINIMUM_AGE) { it++;  continue; }
 		stableSize++;
 		tierCount[mn.tier.ordinal]++;

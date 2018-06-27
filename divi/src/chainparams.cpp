@@ -134,11 +134,13 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 4-byte int at any alignment.
          */
-        pchMessageStart[0] = 0xdf;
+
+		pchMessageStart[0] = 0xdf;
         pchMessageStart[1] = 0xa0;
         pchMessageStart[2] = 0x8d;
-        pchMessageStart[3] = 0x78; 
-        vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
+	    pchMessageStart[3] = 0x8b;
+
+		vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51472;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 210000;
@@ -151,10 +153,10 @@ public:
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
         nMaturity = 1; //byrdset from 100
         nMasternodeCountDrift = 20;
-        nMaxMoneyOut = 2535000000 * COIN;
+        nMaxMoneyOut = 2534320700 * COIN;
 
         /** Height or Time Based Activations **/
-        nLastPOWBlock = 2000000;
+        nLastPOWBlock = 150;
         nModifierUpdateBlock = 615800;
         nZerocoinStartHeight = 863787;
         nZerocoinStartTime = 1533945600; // October 17, 2017 4:30:00 AM
@@ -163,6 +165,39 @@ public:
         nBlockFirstFraudulent = 891737; //First block that bad serials emerged
         nBlockLastGoodCheckpoint = 891730; //Last valid accumulator checkpoint
         nBlockEnforceInvalidUTXO = 902850; //Start enforcing the invalid UTXO's
+
+		/* REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+		pchMessageStart[0] = 0xdf; 
+		pchMessageStart[1] = 0xa0;
+		pchMessageStart[2] = 0x8d;
+		pchMessageStart[3] = 0x78;
+		vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
+		nDefaultPort = 51472;
+		bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
+		nSubsidyHalvingInterval = 210000;
+		nMaxReorganizationDepth = 100;
+		nEnforceBlockUpgradeMajority = 750;
+		nRejectBlockOutdatedMajority = 950;
+		nToCheckBlockUpgradeMajority = 1000;
+		nMinerThreads = 0;
+		nTargetTimespan = 1 * 60; // DIVI: 1 day
+		nTargetSpacing = 1 * 60;  // DIVI: 1 minute
+		nMaturity = 1; //byrdset from 100
+		nMasternodeCountDrift = 20;
+		nMaxMoneyOut = 2535000000 * COIN;
+
+		/** Height or Time Based Activations **/
+		nLastPOWBlock = 2000000;
+		nModifierUpdateBlock = 615800;
+		nZerocoinStartHeight = 863787;
+		nZerocoinStartTime = 1533945600; // October 17, 2017 4:30:00 AM
+		nBlockEnforceSerialRange = 895400; //Enforce serial range starting this block
+		nBlockRecalculateAccumulators = 908000; //Trigger a recalculation of accumulators
+		nBlockFirstFraudulent = 891737; //First block that bad serials emerged
+		nBlockLastGoodCheckpoint = 891730; //Last valid accumulator checkpoint
+		nBlockEnforceInvalidUTXO = 902850; //Start enforcing the invalid UTXO's 
+
+
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -276,11 +311,11 @@ public:
     {
         networkID = CBaseChainParams::TESTNET;
         strNetworkID = "test";
-        pchMessageStart[0] = 0xda;
-        pchMessageStart[1] = 0x80;
-        pchMessageStart[2] = 0x9d;
-        pchMessageStart[3] = 0x93;
-        vAlertPubKey = ParseHex("04b6f1de3a2f94bfc70917cd7e14a948e78c1638b30524370ac40d3a0fa298e10bbaf7f5c564279c3fddf3f9f785cf3ac4e2031a5e6451f455e5aa60d1e536b379");
+		pchMessageStart[0] = 0xdf;
+		pchMessageStart[1] = 0xa0;
+		pchMessageStart[2] = 0x8d;
+		pchMessageStart[3] = 0x8b;
+		vAlertPubKey = ParseHex("04b6f1de3a2f94bfc70917cd7e14a948e78c1638b30524370ac40d3a0fa298e10bbaf7f5c564279c3fddf3f9f785cf3ac4e2031a5e6451f455e5aa60d1e536b379");
         nDefaultPort = 51474;
         nEnforceBlockUpgradeMajority = 51;
         nRejectBlockOutdatedMajority = 75;
@@ -288,7 +323,7 @@ public:
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // DIVI: 1 day
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
-        nLastPOWBlock = 200000;
+        nLastPOWBlock = 56250;
         nMaturity = 15;
         nMasternodeCountDrift = 4;
         nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
@@ -305,7 +340,36 @@ public:
         genesis.nTime = 1520007171;
         genesis.nNonce = 416509442;
         
-        /*
+		pchMessageStart[0] = 0xdf;
+		pchMessageStart[1] = 0xa0;
+		pchMessageStart[2] = 0x8d;
+		pchMessageStart[3] = 0x78;
+		vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
+		nDefaultPort = 51472;
+		bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
+		nSubsidyHalvingInterval = 210000;
+		nMaxReorganizationDepth = 100;
+		nEnforceBlockUpgradeMajority = 750;
+		nRejectBlockOutdatedMajority = 950;
+		nToCheckBlockUpgradeMajority = 1000;
+		nMinerThreads = 0;
+		nTargetTimespan = 1 * 60; // DIVI: 1 day
+		nTargetSpacing = 1 * 60;  // DIVI: 1 minute
+		nMaturity = 1; //byrdset from 100
+		nMasternodeCountDrift = 20;
+		nMaxMoneyOut = 2535000000 * COIN;
+
+		/** Height or Time Based Activations **/
+		nLastPOWBlock = 2000000;
+		nModifierUpdateBlock = 615800;
+		nZerocoinStartHeight = 863787;
+		nZerocoinStartTime = 1533945600; // October 17, 2017 4:30:00 AM
+		nBlockEnforceSerialRange = 895400; //Enforce serial range starting this block
+		nBlockRecalculateAccumulators = 908000; //Trigger a recalculation of accumulators
+		nBlockFirstFraudulent = 891737; //First block that bad serials emerged
+		nBlockLastGoodCheckpoint = 891730; //Last valid accumulator checkpoint
+		nBlockEnforceInvalidUTXO = 902850; //Start enforcing the invalid UTXO's 
+										   /*
         hashGenesisBlock = uint256("0x01");
        if (true && genesis.GetHash() != hashGenesisBlock)
         {
@@ -373,7 +437,6 @@ public:
     CRegTestParams()
     {
         networkID = CBaseChainParams::REGTEST;
-        strNetworkID = "regtest";
         strNetworkID = "regtest";
         pchMessageStart[0] = 0xa1;
         pchMessageStart[1] = 0xcf;

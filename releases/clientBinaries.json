@@ -1,0 +1,75 @@
+{
+  "clients": {
+    "divid": {
+      "version": "-dirty",
+      "platforms": {
+        "linux": {
+          "x64": {
+            "download": {
+              "url": "https://github.com/Divicoin/Divi/raw/master/releases/divi_ubuntu.zip",
+              "type": "zip",
+              "sha256": "84B82ED02E6C7699C7CB6DA2394E38202B101D71E7FF95E74E4456BEC2B3FFF1",
+              "bin": "divi_ubuntu/divid"
+            },
+            "bin": "divid",
+            "commands": {
+              "sanity": {
+                "args": [
+                  "-version"
+                ],
+                "output": [
+                  "Divi Core Daemon",
+                  "-dirty"
+                ]
+              }
+            }
+          }
+        },
+        "mac": {
+          "x64": {
+            "download": {
+              "url": "https://github.com/Divicoin/Divi/raw/master/releases/divi_osx.zip",
+              "type": "zip",
+              "sha256": "509640425289a12ea820e18e2082534e80959b261fd7c734c536ba7114bb7377",
+              "bin": "divi_osx/divid"
+            },
+            "bin": "divid",
+            "commands": {
+              "sanity": {
+                "args": [
+                  "-version"
+                ],
+                "output": [
+                  "Divi Core Daemon",
+                  "-dirty"
+                ]
+              }
+            }
+          }
+        },
+        "win": {
+          "x64": {
+            "download": {
+              "url": "https://github.com/Divicoin/Divi/raw/master/releases/divi_win_64.zip",
+              "type": "zip",
+              "sha256": "831FD2134366F270D29EC67C81208F26AE153447AAD6835E75BC4476409AD046",
+              "bin": "divi_win_64/divid.exe"
+            },
+            "bin": "divid.exe",
+            "commands": {
+              "sanity": {
+                "args": [
+                  "-version"
+                ],
+                "output": [
+                  "Divi Core Daemon",
+                  "-dirty"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

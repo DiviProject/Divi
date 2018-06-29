@@ -1,0 +1,4 @@
+4.0.0.0
+
+1.  The -testnet argument when calling divid now connects the daemon tothe testnet instead of the mainnet.
+2.  Relase numbering and release notes.

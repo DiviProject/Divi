@@ -20,7 +20,7 @@ public:
         TESTNET,
         REGTEST,
         UNITTEST,
-
+		BETATEST,
         MAX_NETWORK_TYPES
     };
 

@@ -14,18 +14,32 @@
 using namespace boost::assign;
 
 /**
- * Main network
- */
+* Main network
+*/
 class CBaseMainParams : public CBaseChainParams
 {
 public:
-    CBaseMainParams()
-    {
-        networkID = CBaseChainParams::MAIN;
-        nRPCPort = 51473;
-    }
+	CBaseMainParams()
+	{
+		networkID = CBaseChainParams::MAIN;
+		nRPCPort = 51473;
+	}
 };
 static CBaseMainParams mainParams;
+
+/**
+* Beta network
+*/
+class CBaseBetaParams : public CBaseChainParams
+{
+public:
+	CBaseBetaParams()
+	{
+		networkID = CBaseChainParams::BETATEST;
+		nRPCPort = 51473;
+	}
+};
+static CBaseMainParams betaParams;
 
 /**
  * Testnet (v3)
@@ -82,7 +96,7 @@ void SelectBaseParams(CBaseChainParams::Network network)
 {
     switch (network) {
     case CBaseChainParams::MAIN:
-        pCurrentBaseParams = &mainParams;
+		pCurrentBaseParams = &mainParams;
         break;
     case CBaseChainParams::TESTNET:
         pCurrentBaseParams = &testNetParams;
@@ -90,10 +104,13 @@ void SelectBaseParams(CBaseChainParams::Network network)
     case CBaseChainParams::REGTEST:
         pCurrentBaseParams = &regTestParams;
         break;
-    case CBaseChainParams::UNITTEST:
-        pCurrentBaseParams = &unitTestParams;
-        break;
-    default:
+	case CBaseChainParams::UNITTEST:
+		pCurrentBaseParams = &mainParams;
+		break;
+	case CBaseChainParams::BETATEST:
+		pCurrentBaseParams = &betaParams;
+		break;
+	default:
         assert(false && "Unimplemented network");
         return;
     }
@@ -111,12 +128,14 @@ CBaseChainParams::Network NetworkIdFromCommandLine()
         return CBaseChainParams::REGTEST;
     if (fTestNet)
         return CBaseChainParams::TESTNET;
+	if (GetBoolArg("-testnet", false))
+		return CBaseChainParams::BETATEST;
     return CBaseChainParams::MAIN;
 }
 
 bool SelectBaseParamsFromCommandLine()
 {
-    CBaseChainParams::Network network = NetworkIdFromCommandLine();
+	CBaseChainParams::Network network = NetworkIdFromCommandLine();
     if (network == CBaseChainParams::MAX_NETWORK_TYPES)
         return false;
 

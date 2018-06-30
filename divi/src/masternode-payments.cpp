@@ -66,7 +66,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
 	string mnwinner, payee;
 	unsigned int i = txNew.vout.size();
-	txNew.vout.resize(i + NUM_TIERS);
+	txNew.vout.resize(i + NUM_TIERS + 2);
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
 		if (mVotes.count(mnodeman.currHeight + 1)) {
 			mnwinner = mVotes[mnodeman.currHeight + 1].MostVotes(tier);
@@ -76,6 +76,12 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 		txNew.vout[i + tier].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
 		txNew.vout[i + tier].nValue = tierPayment[tier];
 	}
+
+	string dev = "DTh8UsMac7UkrbcQU6uYZEKMtMQZvKBxYz", lottery = "D6q1G8LWJeDqd97qC1su8mc1PhiiD6muZn";
+	txNew.vout[i + NUM_TIERS].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());		// Dev wallet
+	txNew.vout[i + NUM_TIERS].nValue = 1250;
+	txNew.vout[i + NUM_TIERS].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());		// Lottery wallet
+	txNew.vout[i + NUM_TIERS].nValue = 50;
 	txNew.vout[i - 1].nValue = (blockValue * COIN) - totalMasterPaid;
 	LogPrintStr("CMasternodePayments::FillBlockPayee END!!! \n");
 }

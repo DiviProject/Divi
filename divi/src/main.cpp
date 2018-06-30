@@ -2182,8 +2182,8 @@ int64_t GetBlockValue(int nHeight)
 	if (nHeight == 0) { nSubsidy = 50 * COIN; }
 	else if (nHeight == 1) { nSubsidy = Params().premineAmt * COIN; }
 	else if (nHeight < Params().LAST_POW_BLOCK()) { nSubsidy = 1075 * COIN; }
-	else if (nHeight % 10000 == 1) { nSubsidy = 501075 * COIN; }					// LOTTERY BLOCK!!!!!
-	else { nSubsidy = 1075 * COIN; }
+	else if (nHeight < 6050) { nSubsidy = 1075 * COIN; }							// Pre-dev and lottery
+	else { nSubsidy = 1250 * COIN; }
 
     return nSubsidy;
 }

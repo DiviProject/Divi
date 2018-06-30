@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 MAINTAINER Mark Waser <mark@artificialgeneralintelligenceinc.com>
 ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /shared

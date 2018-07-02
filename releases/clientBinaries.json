@@ -8,7 +8,7 @@
             "download": {
               "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.0.1/releases/divi_ubuntu.zip",
               "type": "zip",
-              "sha256": "57a69029e0f7900cf66412a69467a05a9ccc855d58f542961299e29ea2751a43",
+              "sha256": "CB0BD2D451552ED98BA8BB462E32572B9FAED58824501E202384F896EEB0568F",
               "bin": "divi_ubuntu/divid"
             },
             "bin": "divid",
@@ -52,7 +52,7 @@
             "download": {
               "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.0.1/releases/divi_win_64.zip",
               "type": "zip",
-              "sha256": "57adc8a644ebd6d4b6952983dbc1a7d12d54a6d0910c06aabbd91090a6b5f5fa",
+              "sha256": "11C13412B775D5C83363695674A32444B869CE49D2D6D0BB4BCA803091316153",
               "bin": "divi_win_64/divid.exe"
             },
             "bin": "divid.exe",

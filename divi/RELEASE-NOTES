@@ -1,4 +1,10 @@
-4.0.0.0
+4.0.1
+New Features
+1.  Every block pays out to dev & lottery wallets
+Bugs Fixed 
+1.  Arnold's mystery transactions
 
-1.  The -testnet argument when calling divid now connects the daemon tothe testnet instead of the mainnet.
-2.  Relase numbering and release notes.
+4.0.0
+New Features
+1.  The -testnet argument when calling divid now connects the daemon to the beta testnet instead of the mainnet.
+2.  Release numbering and release notes.

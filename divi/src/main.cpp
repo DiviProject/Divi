@@ -82,6 +82,7 @@ unsigned int nCoinCacheSize = 5000;
 bool fAlerts = DEFAULT_ALERTS;
 
 unsigned int nStakeMinAge = 60 * 60;
+// unsigned int nStakeMinAge = 60;
 int64_t nReserveBalance = 0;
 
 /** Fees smaller than this (in duffs) are considered zero fee (for relaying and mining)
@@ -2227,8 +2228,8 @@ int64_t GetBlockValue(int nHeight)
 	if (nHeight == 0) { nSubsidy = 50 * COIN; }
 	else if (nHeight == 1) { nSubsidy = Params().premineAmt * COIN; }
 	else if (nHeight < Params().LAST_POW_BLOCK()) { nSubsidy = 1075 * COIN; }
-	else if (nHeight % 10000 == 1) { nSubsidy = 501075 * COIN; }					// LOTTERY BLOCK!!!!!
-	else { nSubsidy = 1075 * COIN; }
+	else if (nHeight < 6050) { nSubsidy = 1075 * COIN; }							// Pre-dev and lottery
+	else { nSubsidy = 1250 * COIN; }
 
     return nSubsidy;
 }
@@ -4495,7 +4496,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     }
     */
     // Check transactions
-    bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
+    bool fZerocoinActive = false;
     vector<CBigNum> vBlockSerials;
     for (const CTransaction& tx : block.vtx) {
         if (!CheckTransaction(tx, fZerocoinActive, chainActive.Height() + 1 >= Params().Zerocoin_Block_EnforceSerialRange(), state))

@@ -43,12 +43,10 @@ void CalcPaymentAmounts(int nBlockHeight) {
 	CAmount raw[NUM_TIERS], rawTotal = 0;
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
 		raw[tier] = mNodeCoins * Tiers[tier].seesawBasis * Tiers[tier].premium / divi[tier];
-		LogPrintStr("raw[tier] = " + to_string(raw[tier]) + "\n ");
 		rawTotal += raw[tier];
 	}
 	totalMasterPaid = 0;
 	blockValue = 1075;
-	LogPrintStr("blockValue = " + to_string(blockValue) + "\n ");
 	CAmount nMoneySupply = chainActive.Tip()->nMoneySupply / COIN;
 	CAmount mnPayment = (nMoneySupply / (mNodeCoins * 4)) * blockValue;
 	if (mnPayment > blockValue - 175) mnPayment = blockValue - 175;
@@ -59,6 +57,41 @@ void CalcPaymentAmounts(int nBlockHeight) {
 	}
 }
 
+string GetMyAddress(string strAccount = "", bool bForceNew = false)
+{
+	CWalletDB walletdb(pwalletMain->strWalletFile);
+
+	CAccount account;
+	walletdb.ReadAccount(strAccount, account);
+
+	bool bKeyUsed = false;
+
+	// Check if the current key has been used
+	if (account.vchPubKey.IsValid()) {
+		CScript scriptPubKey = GetScriptForDestination(account.vchPubKey.GetID());
+		for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin();
+			it != pwalletMain->mapWallet.end() && account.vchPubKey.IsValid();
+			++it) {
+			const CWalletTx& wtx = (*it).second;
+			BOOST_FOREACH(const CTxOut& txout, wtx.vout)
+				if (txout.scriptPubKey == scriptPubKey)
+					bKeyUsed = true;
+		}
+	}
+
+	// Generate a new key
+	if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed) {
+		if (!pwalletMain->GetKeyFromPool(account.vchPubKey)) {
+			pwalletMain->TopUpKeyPool(100);
+			pwalletMain->GetKeyFromPool(account.vchPubKey);
+		}
+		pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount, "receive");
+		walletdb.WriteAccount(strAccount, account);
+	}
+
+	return CBitcoinAddress(account.vchPubKey.GetID()).ToString();
+}
+
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFees, bool fProofOfStake)
 {
 	LogPrintStr("CMasternodePayments::FillBlockPayee \n");
@@ -66,7 +99,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
 	string mnwinner, payee;
 	unsigned int i = txNew.vout.size();
-	txNew.vout.resize(i + NUM_TIERS + 2);
+	txNew.vout.resize(i + NUM_TIERS + 3);
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
 		if (mVotes.count(mnodeman.currHeight + 1)) {
 			mnwinner = mVotes[mnodeman.currHeight + 1].MostVotes(tier);
@@ -76,13 +109,19 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 		txNew.vout[i + tier].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
 		txNew.vout[i + tier].nValue = tierPayment[tier];
 	}
-
-	string dev = "DTh8UsMac7UkrbcQU6uYZEKMtMQZvKBxYz", lottery = "D6q1G8LWJeDqd97qC1su8mc1PhiiD6muZn";
-	txNew.vout[i + NUM_TIERS].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());		// Dev wallet
-	txNew.vout[i + NUM_TIERS].nValue = 1250;
-	txNew.vout[i + NUM_TIERS].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());		// Lottery wallet
-	txNew.vout[i + NUM_TIERS].nValue = 50;
-	txNew.vout[i - 1].nValue = (blockValue * COIN) - totalMasterPaid;
+	LogPrintStr("1\n");
+	string dev = "DTh8UsMac7UkrbcQU6uYZEKMtMQZvKBxYz", lottery = "D6q1G8LWJeDqd97qC1su8mc1PhiiD6muZn", xlnt = "DF3nJSLTTVE1THa8bnFc8VuMiYB64eB17G";
+	txNew.vout[i + NUM_TIERS].scriptPubKey = GetScriptForDestination(CBitcoinAddress(dev).Get());			// Dev wallet
+	txNew.vout[i + NUM_TIERS].nValue = 125 * COIN;
+	LogPrintStr("2\n");
+	txNew.vout[i + NUM_TIERS + 1].scriptPubKey = GetScriptForDestination(CBitcoinAddress(lottery).Get());		// Lottery wallet
+	txNew.vout[i + NUM_TIERS + 1].nValue = 50 * COIN;
+	LogPrintStr("3\n");
+	LogPrintStr(GetMyAddress() + "\n");
+	txNew.vout[i + NUM_TIERS + 2].scriptPubKey = GetScriptForDestination(CBitcoinAddress(GetMyAddress()).Get());
+	txNew.vout[i + NUM_TIERS + 2].nValue = (blockValue * COIN) - totalMasterPaid;
+	LogPrintStr("4\n");
+	txNew.vout[i - 1].nValue = COIN;
 	LogPrintStr("CMasternodePayments::FillBlockPayee END!!! \n");
 }
 

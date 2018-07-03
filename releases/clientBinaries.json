@@ -28,9 +28,9 @@
         "mac": {
           "x64": {
             "download": {
-              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.0.1/releases/divi_osx.zip",
+              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.2.0/releases/divi_osx.zip",
               "type": "zip",
-              "sha256": "417fb1f8b8544bed37a71f3b05afcddb548a02a3f5edeaeb86f1237b4969ab6b",
+              "sha256": "7fb239ed1594c12c5b190d36d9ab95996ba61790e0978a675fa72d216bf16f3a",
               "bin": "divi_osx/divid"
             },
             "bin": "divid",
@@ -73,3 +73,4 @@
     }
   }
 }
+

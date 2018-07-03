@@ -8,7 +8,7 @@
             "download": {
               "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.0.1/releases/divi_ubuntu.zip",
               "type": "zip",
-              "sha256": "57a69029e0f7900cf66412a69467a05a9ccc855d58f542961299e29ea2751a43",
+              "sha256": "3FF93358B303EF3B5F5B090799131A8C69D09CB4ADF7C39EDF02DC3A84F52F27",
               "bin": "divi_ubuntu/divid"
             },
             "bin": "divid",

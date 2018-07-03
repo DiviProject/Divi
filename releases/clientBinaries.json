@@ -6,7 +6,7 @@
         "linux": {
           "x64": {
             "download": {
-              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.0.1/releases/divi_ubuntu.zip",
+              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.2.0/releases/divi_ubuntu.zip",
               "type": "zip",
               "sha256": "3FF93358B303EF3B5F5B090799131A8C69D09CB4ADF7C39EDF02DC3A84F52F27",
               "bin": "divi_ubuntu/divid"

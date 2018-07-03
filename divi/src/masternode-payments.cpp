@@ -109,20 +109,15 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 		txNew.vout[i + tier].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
 		txNew.vout[i + tier].nValue = tierPayment[tier];
 	}
-	LogPrintStr("1\n");
-	string dev = "DTh8UsMac7UkrbcQU6uYZEKMtMQZvKBxYz", lottery = "D6q1G8LWJeDqd97qC1su8mc1PhiiD6muZn", xlnt = "DF3nJSLTTVE1THa8bnFc8VuMiYB64eB17G";
+	string dev = "DTh8UsMac7UkrbcQU6uYZEKMtMQZvKBxYz", lottery = "D6q1G8LWJeDqd97qC1su8mc1PhiiD6muZn";
 	txNew.vout[i + NUM_TIERS].scriptPubKey = GetScriptForDestination(CBitcoinAddress(dev).Get());			// Dev wallet
 	txNew.vout[i + NUM_TIERS].nValue = 125 * COIN;
-	LogPrintStr("2\n");
 	txNew.vout[i + NUM_TIERS + 1].scriptPubKey = GetScriptForDestination(CBitcoinAddress(lottery).Get());		// Lottery wallet
 	txNew.vout[i + NUM_TIERS + 1].nValue = 50 * COIN;
-	LogPrintStr("3\n");
-	LogPrintStr(GetMyAddress() + "\n");
 	txNew.vout[i + NUM_TIERS + 2].scriptPubKey = GetScriptForDestination(CBitcoinAddress(GetMyAddress()).Get());
 	txNew.vout[i + NUM_TIERS + 2].nValue = (blockValue * COIN) - totalMasterPaid;
-	LogPrintStr("4\n");
 	txNew.vout[i - 1].nValue = COIN;
-	LogPrintStr("CMasternodePayments::FillBlockPayee END!!! \n");
+	LogPrintStr("CMasternodePayments::FillBlockPayee END!!! \n\n\n\n\n\n\n");
 }
 
 bool CMasternodePayments::IsBlockPayeeValid(const CBlock& block, int nBlockHeight)

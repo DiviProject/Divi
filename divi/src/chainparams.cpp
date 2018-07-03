@@ -125,7 +125,7 @@ libzerocoin::ZerocoinParams* CChainParams::Zerocoin_Params() const
 class CMainParams : public CChainParams
 {
 public:
-	CMainParams()
+	CMainParams() 
 	{
 		networkID = CBaseChainParams::MAIN;
 		strNetworkID = "main";
@@ -138,7 +138,7 @@ public:
 		pchMessageStart[0] = 0xdf;
 		pchMessageStart[1] = 0xa0;
 		pchMessageStart[2] = 0x8d;
-		pchMessageStart[3] = 0x8a;
+		pchMessageStart[3] = 0x8f;
 		premineAmt = 620000000;
 
 		vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");

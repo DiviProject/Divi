@@ -5,6 +5,9 @@
 #ifndef BITCOIN_CLIENTVERSION_H
 #define BITCOIN_CLIENTVERSION_H
 
+#include "tinyformat.h"
+#include <string>
+
 #if defined(HAVE_CONFIG_H)
 #include "config/divi-config.h"
 #else
@@ -15,9 +18,9 @@
 
 //! These need to be macros, as clientversion.cpp's and divi*-res.rc's voodoo requires it
 #define CLIENT_VERSION_MAJOR 4
-#define CLIENT_VERSION_MINOR 0
-#define CLIENT_VERSION_REVISION 0
-#define CLIENT_VERSION_BUILD 0
+#define CLIENT_VERSION_MINOR 00
+#define CLIENT_VERSION_REVISION 03 
+#define CLIENT_VERSION_BUILD 00 
 
 //! Set to true for release, false for prerelease or test build
 #define CLIENT_VERSION_IS_RELEASE true
@@ -26,7 +29,7 @@
  * Copyright year (2009-this)
  * Todo: update this when changing our copyright comments in the source
  */
-#define COPYRIGHT_YEAR 2017
+#define COPYRIGHT_YEAR 2018
 
 #endif //HAVE_CONFIG_H
 

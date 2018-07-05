@@ -98,8 +98,8 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 	CalcPaymentAmounts(mnodeman.currHeight + 1);
 
 	string mnwinner, payee;
-	unsigned int i = txNew.vout.size();
-	txNew.vout.resize(i + NUM_TIERS + 3);
+	unsigned int i = 2;
+	txNew.vout.resize(i + NUM_TIERS + 2);
 	for (int tier = 0; tier < NUM_TIERS; tier++) {
 		if (mVotes.count(mnodeman.currHeight + 1)) {
 			mnwinner = mVotes[mnodeman.currHeight + 1].MostVotes(tier);
@@ -114,9 +114,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 	txNew.vout[i + NUM_TIERS].nValue = 125 * COIN;
 	txNew.vout[i + NUM_TIERS + 1].scriptPubKey = GetScriptForDestination(CBitcoinAddress(lottery).Get());		// Lottery wallet
 	txNew.vout[i + NUM_TIERS + 1].nValue = 50 * COIN;
-	txNew.vout[i + NUM_TIERS + 2].scriptPubKey = GetScriptForDestination(CBitcoinAddress(GetMyAddress()).Get());
-	txNew.vout[i + NUM_TIERS + 2].nValue = (blockValue * COIN) - totalMasterPaid;
-	txNew.vout[i - 1].nValue = COIN;
+	txNew.vout[i - 1].nValue = (blockValue * COIN) - totalMasterPaid;
 	LogPrintStr("CMasternodePayments::FillBlockPayee END!!! \n\n\n\n\n\n\n");
 }
 
@@ -146,6 +144,14 @@ bool CMasternodePayments::IsBlockPayeeValid(const CBlock& block, int nBlockHeigh
 void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
 	if (!masternodeSync.IsBlockchainSynced()) return;
+
+	if (strCommand == "vshl") { //
+		LogPrintf("\n\n\n\n\n ProcessMsgPayments vshl START \n\n");
+		string value;
+		vRecv >> value;
+
+		LogPrintStr("Value: " + value + "\n\n\n");
+	}
 
 	if (strCommand == "mnget") { //Masternode Payments Request Sync
 		LogPrintf("ProcessMsgPayments mnget reply START\n");

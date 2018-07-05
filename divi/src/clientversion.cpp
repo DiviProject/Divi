@@ -78,17 +78,18 @@ const std::string CLIENT_NAME("DIVI Core");
 const std::string CLIENT_BUILD(BUILD_DESC CLIENT_VERSION_SUFFIX);
 const std::string CLIENT_DATE(BUILD_DATE);
 
-static std::string FormatVersion(int nVersion)
-{
-    if (nVersion % 100 == 0)
-        return strprintf("%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100);
-    else
-        return strprintf("%d.%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100, nVersion % 100);
-}
-
 std::string FormatFullVersion()
 {
     return CLIENT_BUILD;
+}
+
+std::string FormatVersionX(int nVersion = 4000300) {
+	{
+		if (nVersion % 100 == 0)
+			return strprintf("%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100);
+		else
+			return strprintf("%d.%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100, nVersion % 100);
+	}
 }
 
 /** 
@@ -97,8 +98,8 @@ std::string FormatFullVersion()
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments)
 {
     std::ostringstream ss;
-    ss << "/";
-    ss << name << ":" << FormatVersion(nClientVersion);
+    // ss << "/";
+    ss << name << ":" << FormatVersionX();
     if (!comments.empty()) {
         std::vector<std::string>::const_iterator it(comments.begin());
         ss << "(" << *it;
@@ -106,6 +107,6 @@ std::string FormatSubVersion(const std::string& name, int nClientVersion, const 
             ss << "; " << *it;
         ss << ")";
     }
-    ss << "/";
+    // ss << "/";
     return ss.str();
 }

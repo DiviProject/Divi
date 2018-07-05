@@ -297,6 +297,13 @@ extern json_spirit::Value verifymessage(const json_spirit::Array& params, bool f
 extern json_spirit::Value setmocktime(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getstakingstatus(const json_spirit::Array& params, bool fHelp);
 
+extern json_spirit::Value getaddresstxids(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressdeltas(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressbalance(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressutxos(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressmempool(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getspentinfo(const json_spirit::Array& params, bool fHelp);
+
 // in rest.cpp
 extern bool HTTPReq_REST(AcceptedConnection* conn,
     std::string& strURI,

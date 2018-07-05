@@ -349,6 +349,16 @@ static const CRPCCommand vRPCCommands[] =
         {"divi", "mnsync", &mnsync, true, true, false},
         {"divi", "spork", &spork, true, true, false},
         {"divi", "getpoolinfo", &getpoolinfo, true, true, false},
+
+        /* address index */
+        { "addressindex", "getaddresstxids", &getaddresstxids, false, false, false },
+        { "addressindex", "getaddressdeltas", &getaddressdeltas, false, false, false },
+        { "addressindex", "getaddressbalance", &getaddressbalance, false, false, false },
+        { "addressindex", "getaddressutxos", &getaddressutxos, false, false, false },
+        { "addressindex", "getaddressmempool", &getaddressmempool, true, false, false },
+
+        { "blockchain", "getspentinfo", &getspentinfo, false, false, false },
+
 #ifdef ENABLE_WALLET
         // {"divi", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
 

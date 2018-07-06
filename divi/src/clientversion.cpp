@@ -9,13 +9,6 @@
 #include <string>
 
 /**
- * Name of client reported in the 'version' message. Report the same name
- * for both divid and divi-qt, to make it harder for attackers to
- * target servers or GUI users specifically.
- */
-const std::string CLIENT_NAME("DIVI Core");
-
-/**
  * Client version number
  */
 #define CLIENT_VERSION_SUFFIX ""
@@ -83,7 +76,7 @@ std::string FormatFullVersion()
     return CLIENT_BUILD;
 }
 
-std::string FormatVersionX(int nVersion = 4000300) {
+std::string FormatVersionX(int nVersion = 4000400) {
 	{
 		if (nVersion % 100 == 0)
 			return strprintf("%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100);

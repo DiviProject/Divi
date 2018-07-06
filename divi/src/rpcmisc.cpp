@@ -46,7 +46,7 @@ using namespace std;
  * Or alternatively, create a specific query method for the information.
  **/
 
-std::string FormatVersionX1(int nVersion = 4000300) {
+std::string FormatVersionX1(int nVersion = 4000400) {
 	{
 		if (nVersion % 100 == 0)
 			return strprintf("%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100);

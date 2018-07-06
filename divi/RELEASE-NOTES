@@ -1,6 +1,10 @@
+4.0.4
+Bugs Fixed
+1. Balance errors due to missing vouts in coin staking 
+
 4.0.3
 Bugs Fixed
-1. Balance errors due to coin staking 
+1. Balance errors due to misaligned vouts in coin staking 
 2. Release numbering override in clientversion.cpp
 
 4.0.2

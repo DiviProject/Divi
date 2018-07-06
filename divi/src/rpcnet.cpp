@@ -23,7 +23,7 @@
 using namespace json_spirit;
 using namespace std;
 
-std::string FormatVersionX2(int nVersion = 4000300) {
+std::string FormatVersionX2(int nVersion = 4000400) {
 	{
 		if (nVersion % 100 == 0)
 			return strprintf("%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100);

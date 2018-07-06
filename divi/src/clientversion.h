@@ -19,7 +19,7 @@
 //! These need to be macros, as clientversion.cpp's and divi*-res.rc's voodoo requires it
 #define CLIENT_VERSION_MAJOR 4
 #define CLIENT_VERSION_MINOR 00
-#define CLIENT_VERSION_REVISION 03 
+#define CLIENT_VERSION_REVISION 04 
 #define CLIENT_VERSION_BUILD 00 
 
 //! Set to true for release, false for prerelease or test build
@@ -54,13 +54,16 @@
 #include <string>
 #include <vector>
 
-static const int CLIENT_VERSION =
-    1000000 * CLIENT_VERSION_MAJOR  ///
-    + 10000 * CLIENT_VERSION_MINOR  ///
-    + 100 * CLIENT_VERSION_REVISION ///
-    + 1 * CLIENT_VERSION_BUILD;
+const int CLIENT_VERSION = 1000000 * CLIENT_VERSION_MAJOR + 10000 * CLIENT_VERSION_MINOR + 100 * CLIENT_VERSION_REVISION + 1 * CLIENT_VERSION_BUILD;
+const int CLIENT_VERSION4 = 1000000 * CLIENT_VERSION_MAJOR + 10000 * CLIENT_VERSION_MINOR + 100 * CLIENT_VERSION_REVISION + 1 * CLIENT_VERSION_BUILD;
 
-extern const std::string CLIENT_NAME;
+/**
+* Name of client reported in the 'version' message. Report the same name
+* for both divid and divi-qt, to make it harder for attackers to
+* target servers or GUI users specifically.
+*/
+const std::string CLIENT_NAME("DIVI Core");
+
 extern const std::string CLIENT_BUILD;
 extern const std::string CLIENT_DATE;
 

@@ -6,9 +6,9 @@
         "linux": {
           "x64": {
             "download": {
-              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.3.0/releases/divi_ubuntu.zip",
+              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.5.0/releases/divi_ubuntu.zip",
               "type": "zip",
-              "sha256": "B4E7FFA0BA3467CB005BECE90CEE1D2626AC582F855CF45C133773FDDB7DEC3B",
+              "sha256": "835E86E7E85B98C4A4D9D958F0E3DD63EFC36B34E8BC92B1298F7D9884ABD94E",
               "bin": "divi_ubuntu/divid"
             },
             "bin": "divid",
@@ -28,9 +28,9 @@
         "mac": {
           "x64": {
             "download": {
-              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.3.0/releases/divi_osx.zip",
+              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.5.0/releases/divi_osx.zip",
               "type": "zip",
-              "sha256": "87F0B56D4D9EC4DF49F24C372089A1AE35E9C2B853D0E5E4EC47068BCFDBDF57",
+              "sha256": "DCAC1EB18CFA9267F0351BEF41BFF04657E0262BAD2BE364B5ACC0D0E09927F5",
               "bin": "divi_osx/divid"
             },
             "bin": "divid",
@@ -50,9 +50,9 @@
         "win": {
           "x64": {
             "download": {
-              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.3.0/releases/divi_win_64.zip",
+              "url": "https://github.com/Divicoin/Divi/raw/Release-4.0.5.0/releases/divi_win_64.zip",
               "type": "zip",
-              "sha256": "F5CD1A04A2DEB0D91DB1472F4141647182EE71BC99EFC50A922E02819D21CF4C",
+              "sha256": "9C84BB4FD754A6CB08F56FF0897D63E12E7B683A3B34A676E479789E7C610C4A",
               "bin": "divi_win_64/divid.exe"
             },
             "bin": "divid.exe",

@@ -143,29 +143,32 @@ public:
 
 		vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
 		nDefaultPort = 51472;
-		bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
+		bnProofOfWorkLimit = ~uint256(0) >> 20;			// DIVI starting difficulty is 1 / 2^12
 		nSubsidyHalvingInterval = 210000;
 		nMaxReorganizationDepth = 100;
 		nEnforceBlockUpgradeMajority = 750;
 		nRejectBlockOutdatedMajority = 950;
 		nToCheckBlockUpgradeMajority = 1000;
 		nMinerThreads = 0;
-		nTargetTimespan = 1 * 60; // DIVI: 1 day
-		nTargetSpacing = 1 * 60;  // DIVI: 1 minute
-		nMaturity = 1; //byrdset from 100
+		nTargetTimespan = 1 * 60;						// DIVI: 1 day
+		nTargetSpacing = 1 * 60;						// DIVI: 1 minute
+		nMaturity = 1;
 		nMasternodeCountDrift = 20;
 		nMaxMoneyOut = 2534320700 * COIN;
 
 		/** Height or Time Based Activations **/
 		nLastPOWBlock = 150;
-		nModifierUpdateBlock = 615800;
-		nZerocoinStartHeight = 863787;
-		nZerocoinStartTime = 1533945600; // October 17, 2017 4:30:00 AM
-		nBlockEnforceSerialRange = 895400; //Enforce serial range starting this block
-		nBlockRecalculateAccumulators = 908000; //Trigger a recalculation of accumulators
-		nBlockFirstFraudulent = 891737; //First block that bad serials emerged
-		nBlockLastGoodCheckpoint = 891730; //Last valid accumulator checkpoint
-		nBlockEnforceInvalidUTXO = 902850; //Start enforcing the invalid UTXO's
+		
+		nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
+		
+		nZerocoinStartHeight = 99999999;				// this and following five are all Zerocoin and thus irrelevant to Divi
+		nZerocoinStartTime = 9999999999; 
+		nBlockEnforceSerialRange = 99999999;
+		nBlockRecalculateAccumulators = 99999999;
+		nBlockFirstFraudulent = 99999999; 
+		nBlockLastGoodCheckpoint = 99999999;
+
+		nBlockEnforceInvalidUTXO = 99999999;			// Start enforcing the invalid UTXO's; may be worth implementing in the future
 
 		/**
 		* Build the genesis block. Note that the output of the genesis coinbase cannot

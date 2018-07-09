@@ -3145,12 +3145,24 @@ static int64_t nTimeIndex = 0;
 static int64_t nTimeCallbacks = 0;
 static int64_t nTimeTotal = 0;
 
+string ValueFromCAmount(const CAmount& amount)
+{
+	bool sign = amount < 0;
+	int64_t n_abs = (sign ? -amount : amount);
+	int64_t quotient = n_abs / COIN;
+	int64_t remainder = n_abs % COIN;
+	return strprintf("%s%d.%08d", sign ? "-" : "", quotient, remainder);
+}
+
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
 {
-    AssertLockHeld(cs_main);
-    // Check it again in case a previous version let a bad block in
-    if (!fAlreadyChecked && !CheckBlock(block, state, !fJustCheck, !fJustCheck))
-        return false;
+	AssertLockHeld(cs_main);
+	// Check it again in case a previous version let a bad block in
+	if (!fAlreadyChecked && !CheckBlock(block, state, !fJustCheck, !fJustCheck))
+		return false;
+	LogPrintStr("block " + to_string(pindex->nHeight));
+	LogPrintStr("; time = " + to_string(pindex->nTime));
+	if (pwalletMain) LogPrintStr("; balance = " + ValueFromCAmount(pwalletMain->GetBalance()) + "\n"); else LogPrintStr("no wallet\n");
 
     // verify that the view's current state corresponds to the previous block
     uint256 hashPrevBlock = pindex->pprev == NULL ? uint256(0) : pindex->pprev->GetBlockHash();

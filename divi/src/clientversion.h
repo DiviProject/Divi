@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2018 The Divi developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,27 +12,18 @@
 #if defined(HAVE_CONFIG_H)
 #include "config/divi-config.h"
 #else
-
-/**
- * client versioning and copyright year
- */
-
 //! These need to be macros, as clientversion.cpp's and divi*-res.rc's voodoo requires it
 #define CLIENT_VERSION_MAJOR 4
 #define CLIENT_VERSION_MINOR 00
-#define CLIENT_VERSION_REVISION 04 
+#define CLIENT_VERSION_REVISION 05 
 #define CLIENT_VERSION_BUILD 00 
 
-//! Set to true for release, false for prerelease or test build
-#define CLIENT_VERSION_IS_RELEASE true
-
-/**
- * Copyright year (2009-this)
- * Todo: update this when changing our copyright comments in the source
- */
-#define COPYRIGHT_YEAR 2018
-
+#define CLIENT_VERSION_IS_RELEASE true		// Todo: !! Set to true for release, false for prerelease or test build
+#define COPYRIGHT_YEAR 2018					// Todo: update this when changing our copyright comments in the source
 #endif //HAVE_CONFIG_H
+
+const std::string CLIENT_NAME_STR("DIVI Core");
+const std::string CLIENT_VERSION_STR("4.0.5.0");
 
 /**
  * Converts the parameter X to a string after macro replacement on X has been performed.
@@ -55,21 +47,20 @@
 #include <vector>
 
 const int CLIENT_VERSION = 1000000 * CLIENT_VERSION_MAJOR + 10000 * CLIENT_VERSION_MINOR + 100 * CLIENT_VERSION_REVISION + 1 * CLIENT_VERSION_BUILD;
-const int CLIENT_VERSION4 = 1000000 * CLIENT_VERSION_MAJOR + 10000 * CLIENT_VERSION_MINOR + 100 * CLIENT_VERSION_REVISION + 1 * CLIENT_VERSION_BUILD;
+
 
 /**
 * Name of client reported in the 'version' message. Report the same name
 * for both divid and divi-qt, to make it harder for attackers to
 * target servers or GUI users specifically.
 */
-const std::string CLIENT_NAME("DIVI Core");
 
 extern const std::string CLIENT_BUILD;
 extern const std::string CLIENT_DATE;
 
 
 std::string FormatFullVersion();
-std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments);
+std::string FormatSubVersion(const std::vector<std::string>& comments);
 
 #endif // WINDRES_PREPROC
 

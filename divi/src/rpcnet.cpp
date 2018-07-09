@@ -23,15 +23,6 @@
 using namespace json_spirit;
 using namespace std;
 
-std::string FormatVersionX2(int nVersion = 4000400) {
-	{
-		if (nVersion % 100 == 0)
-			return strprintf("%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100);
-		else
-			return strprintf("%d.%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100, nVersion % 100);
-	}
-}
-
 Value getconnectioncount(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -391,9 +382,9 @@ Value getnetworkinfo(const Array& params, bool fHelp)
             HelpExampleCli("getnetworkinfo", "") + HelpExampleRpc("getnetworkinfo", ""));
 
     Object obj;
-    obj.push_back(Pair("version", FormatVersionX2()));
+    obj.push_back(Pair("version", CLIENT_VERSION_STR));
     obj.push_back(Pair("subversion",
-        FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>())));
+        FormatSubVersion(std::vector<string>())));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
     obj.push_back(Pair("localservices", strprintf("%016x", nLocalServices)));
     obj.push_back(Pair("timeoffset", GetTimeOffset()));

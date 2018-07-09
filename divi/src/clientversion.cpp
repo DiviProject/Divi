@@ -76,23 +76,14 @@ std::string FormatFullVersion()
     return CLIENT_BUILD;
 }
 
-std::string FormatVersionX(int nVersion = 4000400) {
-	{
-		if (nVersion % 100 == 0)
-			return strprintf("%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100);
-		else
-			return strprintf("%d.%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100, nVersion % 100);
-	}
-}
-
 /** 
  * Format the subversion field according to BIP 14 spec (https://github.com/bitcoin/bips/blob/master/bip-0014.mediawiki) 
  */
-std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments)
+std::string FormatSubVersion(const std::vector<std::string>& comments)
 {
     std::ostringstream ss;
     // ss << "/";
-    ss << name << ":" << FormatVersionX();
+    ss << CLIENT_NAME_STR << ": " << CLIENT_VERSION_STR;
     if (!comments.empty()) {
         std::vector<std::string>::const_iterator it(comments.begin());
         ss << "(" << *it;

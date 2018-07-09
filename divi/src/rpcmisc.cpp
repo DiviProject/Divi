@@ -46,15 +46,6 @@ using namespace std;
  * Or alternatively, create a specific query method for the information.
  **/
 
-std::string FormatVersionX1(int nVersion = 4000400) {
-	{
-		if (nVersion % 100 == 0)
-			return strprintf("%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100);
-		else
-			return strprintf("%d.%d.%d.%d", nVersion / 1000000, (nVersion / 10000) % 100, (nVersion / 100) % 100, nVersion % 100);
-	}
-}
-
 Value getinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -102,7 +93,7 @@ Value getinfo(const Array& params, bool fHelp)
     GetProxy(NET_IPV4, proxy);
 
     Object obj;
-    obj.push_back(Pair("version", FormatVersionX1()));
+    obj.push_back(Pair("version", CLIENT_VERSION_STR));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
 #ifdef ENABLE_WALLET
     if (pwalletMain) {

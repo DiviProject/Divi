@@ -2657,6 +2657,14 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     nReward = GetBlockValue(pIndex0->nHeight);
     nCredit += nReward;
 
+    // Set output amount
+    if (txNew.vout.size() == 3) {
+        txNew.vout[1].nValue = nCredit / 2;
+        txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
+    } else {
+        txNew.vout[1].nValue = nCredit;
+    }
+
 
 #if 0
     //Masternode payment

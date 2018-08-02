@@ -231,7 +231,7 @@ bool ClientModel::isReleaseVersion() const
 
 QString ClientModel::clientName() const
 {
-    return QString::fromStdString(CLIENT_NAME);
+    return QString::fromStdString(CLIENT_NAME_STR);
 }
 
 QString ClientModel::formatClientStartupTime() const

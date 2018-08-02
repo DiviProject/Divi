@@ -2741,9 +2741,12 @@ Value importzerocoins(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, d must be positive");
 
         libzerocoin::CoinDenomination denom = libzerocoin::IntToZerocoinDenomination(d);
-        CBigNum bnValue = CBigNum(find_value(o, "p").get_str());
-        CBigNum bnSerial = CBigNum(find_value(o, "s").get_str());
-        CBigNum bnRandom = CBigNum(find_value(o, "r").get_str());
+        CBigNum bnValue = 0;
+        bnValue.SetHex(find_value(o, "p").get_str());
+        CBigNum bnSerial = 0;
+        bnSerial.SetHex(find_value(o, "s").get_str());
+        CBigNum bnRandom = 0;
+        bnRandom.SetHex(find_value(o, "r").get_str());
         uint256 txid(find_value(o, "t").get_str());
 
         int nHeight = ParseInt(o, "h");

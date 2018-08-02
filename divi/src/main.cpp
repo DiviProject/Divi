@@ -2221,7 +2221,7 @@ double ConvertBitsToDouble(unsigned int nBits)
     return dDiff;
 }
 
-int64_t GetBlockValue(int nHeight)
+int64_t GetBlockValue(int nHeight, bool fLotteryBlock)
 {
     int64_t nSubsidy = 0;
 
@@ -2230,11 +2230,28 @@ int64_t GetBlockValue(int nHeight)
             return 250000 * COIN;
     }
 
-	if (nHeight == 0) { nSubsidy = 50 * COIN; }
-	else if (nHeight == 1) { nSubsidy = Params().premineAmt * COIN; }
-	else if (nHeight < Params().LAST_POW_BLOCK()) { nSubsidy = 1075 * COIN; }
-	else if (nHeight < 6050) { nSubsidy = 1075 * COIN; }							// Pre-dev and lottery
-	else { nSubsidy = 1250 * COIN; }
+    if (nHeight == 0)
+    {
+        nSubsidy = 50 * COIN;
+    }
+    else if (nHeight == 1)
+    {
+        nSubsidy = Params().premineAmt;
+    }
+    else if(nHeight < 1051200) // first two years, 60 * 24 * 365 * 2
+    {
+        nSubsidy = 1200 * COIN;
+    }
+    else if(nHeight < 2102400) // next two years, 60 * 24 * 365 * 4
+    {
+        nSubsidy = 800 * COIN;
+    }
+    else
+    {
+        nSubsidy = 600 * COIN;
+    }
+
+//    if(fLotteryBlock) // here we will handle lottery block, will generate proper amount for 10k blocks
 
     return nSubsidy;
 }
@@ -2244,9 +2261,9 @@ int64_t GetBlockValue(int nHeight)
 
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)	// 2193
 {
-	int64_t ret = 0;
+    int64_t ret = 0;
 
-	return ret;			// All masternode payments are disabled for beta until ready to test
+    return blockValue / 2; // for know use simply 50 % of block
 
 	if (Params().NetworkID() == CBaseChainParams::TESTNET) { if (nHeight < 200) return 0; }
 
@@ -2366,8 +2383,7 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
 // Requires cs_main.
 void Misbehaving(NodeId pnode, int howmuch)
 {
-	howmuch = 0; //byrd line to prevent nodes from disconnecting form each other 
-	if (howmuch == 0)
+    if (howmuch == 0)
         return;
 
     CNodeState* state = State(pnode);
@@ -3173,7 +3189,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)
     if (block.GetHash() == Params().HashGenesisBlock()) {
-        view.SetBestBlock(pindex->GetBlockHash());
+        if(!fJustCheck)
+            view.SetBestBlock(pindex->GetBlockHash());
         return true;
     }
 
@@ -3362,7 +3379,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             nValueIn += view.GetValueIn(tx);
 
             std::vector<CScriptCheck> vChecks;
-            if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : NULL))
+            if (!CheckInputs(tx, state, view, fScriptChecks, flags, fJustCheck, nScriptCheckThreads ? &vChecks : NULL))
                 return false;
             control.Add(vChecks);
         }
@@ -3460,9 +3477,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 //    LogPrintf("XX69----------> ConnectBlock(): nValueOut: %s, nValueIn: %s, nFees: %s, nMint: %s zDivSpent: %s\n",
 //              FormatMoney(nValueOut), FormatMoney(nValueIn),
 //              FormatMoney(nFees), FormatMoney(pindex->nMint), FormatMoney(nAmountZerocoinSpent));
-
-    if (!pblocktree->WriteBlockIndex(CDiskBlockIndex(pindex)))
-        return error("Connect() : WriteBlockIndex for pindex failed");
 
     int64_t nTime1 = GetTimeMicros();
     nTimeConnect += nTime1 - nTimeStart;

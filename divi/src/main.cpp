@@ -2221,7 +2221,7 @@ double ConvertBitsToDouble(unsigned int nBits)
     return dDiff;
 }
 
-int64_t GetBlockValue(int nHeight)
+int64_t GetBlockValue(int nHeight, bool fLotteryBlock)
 {
     int64_t nSubsidy = 0;
 
@@ -2230,11 +2230,28 @@ int64_t GetBlockValue(int nHeight)
             return 250000 * COIN;
     }
 
-	if (nHeight == 0) { nSubsidy = 50 * COIN; }
-	else if (nHeight == 1) { nSubsidy = Params().premineAmt * COIN; }
-	else if (nHeight < Params().LAST_POW_BLOCK()) { nSubsidy = 1075 * COIN; }
-	else if (nHeight < 6050) { nSubsidy = 1075 * COIN; }							// Pre-dev and lottery
-	else { nSubsidy = 1250 * COIN; }
+    if (nHeight == 0)
+    {
+        nSubsidy = 50 * COIN;
+    }
+    else if (nHeight == 1)
+    {
+        nSubsidy = Params().premineAmt * COIN;
+    }
+    else if(nHeight < 1051200) // first two years, 60 * 24 * 365 * 2
+    {
+        nSubsidy = 1200 * COIN;
+    }
+    else if(nHeight < 2102400) // next two years, 60 * 24 * 365 * 4
+    {
+        nSubsidy = 800 * COIN;
+    }
+    else
+    {
+        nSubsidy = 600 * COIN;
+    }
+
+//    if(fLotteryBlock) // here we will handle lottery block, will generate proper amount for 10k blocks
 
     return nSubsidy;
 }
@@ -2366,8 +2383,7 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
 // Requires cs_main.
 void Misbehaving(NodeId pnode, int howmuch)
 {
-	howmuch = 0; //byrd line to prevent nodes from disconnecting form each other 
-	if (howmuch == 0)
+    if (howmuch == 0)
         return;
 
     CNodeState* state = State(pnode);

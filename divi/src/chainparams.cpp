@@ -157,7 +157,7 @@ public:
         nMaxMoneyOut = 2534320700 * COIN;
 
         /** Height or Time Based Activations **/
-        nLastPOWBlock = 150;
+        nLastPOWBlock = 100;
 
         nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
 

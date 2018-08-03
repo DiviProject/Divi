@@ -258,7 +258,11 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     while (nStakeModifierTime < pindexFrom->GetBlockTime() + nStakeModifierSelectionInterval) {
         if (!pindexNext) {
             // Should never happen
-            return error("Null pindexNext\n");
+            nStakeModifierHeight = pindexFrom->nHeight;
+            nStakeModifierTime = pindexFrom->GetBlockTime();
+            if(pindex->GeneratedStakeModifier())
+                nStakeModifier = pindex->nStakeModifier;
+            return true;
         }
 
         pindex = pindexNext;

@@ -154,6 +154,7 @@ extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
 
 extern unsigned int nStakeMinAge;
+extern unsigned int nStakeMaxAge;
 extern int64_t nLastCoinStakeSearchInterval;
 extern int64_t nLastCoinStakeSearchTime;
 extern int64_t nReserveBalance;

@@ -205,7 +205,7 @@ void CMasternodeMan::ProcessMasternodeConnectionsX()
 void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
 	if (fLiteMode) return; //disable all Masternode-related functionality
-	// if (!masternodeSync.IsBlockchainSynced()) return;
+     if (!masternodeSync.IsBlockchainSynced()) return;
 	string errorMsg;
 
 	LOCK(cs_process_message);

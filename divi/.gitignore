@@ -121,7 +121,7 @@ qa/pull-tester/test.*/*
 
 .cproject
 .project
-/doc/doxygen/
+doxygen/*
 /nbproject/
 
 .idea

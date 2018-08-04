@@ -1,9 +1,0 @@
-digraph "StopNode"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node377 [label="StopNode",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node377 -> Node378 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node378 [label="MapPort",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$net_8cpp.html#a93e4e6fbe288b6e882e697918695f88e"];
-}

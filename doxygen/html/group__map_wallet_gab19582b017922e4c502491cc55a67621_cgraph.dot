@@ -1,9 +1,0 @@
-digraph "CWallet::AddMultiSig"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node61 [label="CWallet::AddMultiSig",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node61 -> Node62 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node62 [label="CBasicKeyStore::AddMultiSig",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_basic_key_store.html#aabf67b3fe93f6d3520e1a6d133827f31",tooltip="Support for MultiSig addresses. "];
-}

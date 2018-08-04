@@ -1,9 +1,0 @@
-digraph "sph_keccak512_close"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node35 [label="sph_keccak512_close",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node35 -> Node36 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node36 [label="sph_keccak512_addbits\l_and_close",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$keccak_8c.html#a9b1cadf5ab3346f0b056aa4b6871708b",tooltip="Add a few additional bits (0 to 7) to the current computation, then terminate it and output the resul..."];
-}

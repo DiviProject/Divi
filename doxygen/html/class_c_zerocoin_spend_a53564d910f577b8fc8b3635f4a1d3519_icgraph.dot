@@ -1,9 +1,0 @@
-digraph "CZerocoinSpend::SetNull"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node25 [label="CZerocoinSpend::SetNull",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node25 -> Node26 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node26 [label="CZerocoinSpend::CZerocoin\lSpend",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_zerocoin_spend.html#a749a43886cacda2db6a454659ab5ea3c"];
-}

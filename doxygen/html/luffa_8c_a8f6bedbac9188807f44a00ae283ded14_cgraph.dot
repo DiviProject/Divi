@@ -1,9 +1,0 @@
-digraph "sph_luffa512_close"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node41 [label="sph_luffa512_close",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node41 -> Node42 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node42 [label="sph_luffa512_addbits\l_and_close",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$luffa_8c.html#ae90ba5d9f84893d81432ad353930bd2f",tooltip="Add a few additional bits (0 to 7) to the current computation, then terminate it and output the resul..."];
-}

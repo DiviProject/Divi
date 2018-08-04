@@ -1,9 +1,0 @@
-digraph "IsBlockPayeeValid"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node88 [label="IsBlockPayeeValid",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node88 -> Node89 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node89 [label="CMasternodeSync::IsSynced",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_sync.html#ab1f58bda356a30a15ae1733e238f188f"];
-}

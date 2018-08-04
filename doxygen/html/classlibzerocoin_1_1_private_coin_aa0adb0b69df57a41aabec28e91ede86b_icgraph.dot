@@ -1,9 +1,0 @@
-digraph "libzerocoin::PrivateCoin::getSerialNumber"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node20 [label="libzerocoin::PrivateCoin\l::getSerialNumber",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node20 -> Node21 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node21 [label="libzerocoin::SerialNumber\lSignatureOfKnowledge::SerialNumber\lSignatureOfKnowledge",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlibzerocoin_1_1_serial_number_signature_of_knowledge.html#adb04da379098298cad6e05c930d6483f",tooltip="Creates a Signature of knowledge object that a commitment to a coin contains a coin with serial numbe..."];
-}

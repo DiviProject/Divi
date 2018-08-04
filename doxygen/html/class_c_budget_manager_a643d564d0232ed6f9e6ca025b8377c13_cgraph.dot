@@ -1,9 +1,0 @@
-digraph "CBudgetManager::UpdateProposal"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node252 [label="CBudgetManager::UpdateProposal",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node252 -> Node253 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node253 [label="CMasternodeSync::IsSynced",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_masternode_sync.html#ab1f58bda356a30a15ae1733e238f188f"];
-}

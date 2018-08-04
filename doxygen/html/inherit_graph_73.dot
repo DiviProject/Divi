@@ -1,7 +1,0 @@
-digraph "Graphical Class Hierarchy"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node0 [label="CHash160",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_hash160.html",tooltip="A hasher class for Bitcoin&#39;s 160-bit hash (SHA-256 + RIPEMD-160). "];
-}

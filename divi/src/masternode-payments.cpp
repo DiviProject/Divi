@@ -157,6 +157,7 @@ void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strComma
 
 	if (strCommand == "mnget") { //Masternode Payments Request Sync
 		LogPrintf("ProcessMsgPayments mnget reply START\n");
+
 		int nCountNeeded;
 		vRecv >> nCountNeeded;
 
@@ -176,9 +177,27 @@ void CMasternodePayments::ProcessMsgPayments(CNode* pfrom, std::string& strComma
 		LogPrintf("ProcessMsgPayments mnw START\n");
 		CPaymentVote winner;
 		vRecv >> winner;
-		if (mapSeenPaymentVote.count(winner.GetHash())) { LogPrintStr("mnw - seen before"); return; }							// seen before
-		if (winner.nBlockHeight > mnodeman.currHeight + 12) { LogPrintStr("mnw - too far in future"); return; }					// too far in future
-		if (!mnodeman.Find(winner.addressVoter)) { mnodeman.AskForMN(pfrom, winner.addressVoter);  return; }					// unknown masternode; ask for it
+        if (mapSeenPaymentVote.count(winner.GetHash()))
+        {
+            // seen before
+            LogPrintStr("mnw - seen before");
+            return;
+        }
+
+        if (winner.nBlockHeight > mnodeman.currHeight + 12)
+        {
+            // too far in future
+            LogPrintStr("mnw - too far in future");
+            return;
+        }
+
+        if (!mnodeman.Find(winner.addressVoter))
+        {
+            // unknown masternode; ask for it
+            mnodeman.AskForMN(pfrom, winner.addressVoter);
+            return;
+        }
+
 		CMasternode* voter = mnodeman.Find(winner.addressVoter);
 		if (voter->voteRank[mnodeman.currHeight % 15] > MNPAYMENTS_SIGNATURES_TOTAL) {											// not in top 10 
 			LogPrintStr("ProcessMsgPayments mnw NOT IN TOP 10!!!!!!!!! \n");

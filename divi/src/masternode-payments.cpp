@@ -32,7 +32,7 @@ void CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 static std::vector<CAmount> CalcPaymentAmounts(int nBlockHeight)
 {
 	CAmount divi[NUM_TIERS], mNodeCoins = 0;
-    std::vector<CAmount> tierPayment[NUM_TIERS];
+    std::vector<CAmount> tierPayment(NUM_TIERS);
     for (int tier = 0; tier < NUM_TIERS; tier++)
     {
 		LogPrintStr("mnodeman.tierCount[tier] = " + to_string(mnodeman.tierCount[tier]));
@@ -122,14 +122,14 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
             continue;
         }
 		txNew.vout[i + tier].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
-		txNew.vout[i + tier].nValue = tierPayment[tier];
+//		txNew.vout[i + tier].nValue = tierPayment[tier];
 	}
 	string dev = "DTh8UsMac7UkrbcQU6uYZEKMtMQZvKBxYz", lottery = "D6q1G8LWJeDqd97qC1su8mc1PhiiD6muZn";
 	txNew.vout[i + NUM_TIERS].scriptPubKey = GetScriptForDestination(CBitcoinAddress(dev).Get());					// Dev wallet
 	txNew.vout[i + NUM_TIERS].nValue = 125 * COIN;
 	txNew.vout[i + NUM_TIERS + 1].scriptPubKey = GetScriptForDestination(CBitcoinAddress(lottery).Get());			// Lottery wallet
 	txNew.vout[i + NUM_TIERS + 1].nValue = 50 * COIN;
-	txNew.vout[i - 1].nValue -= totalMasterPaid;
+//	txNew.vout[i - 1].nValue -= totalMasterPaid;
 	LogPrintStr("CMasternodePayments::FillBlockPayee END!!! \n\n\n\n\n\n\n");
 }
 

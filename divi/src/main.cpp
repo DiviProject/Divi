@@ -2263,6 +2263,10 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCou
 {
     int64_t ret = 0;
 
+    // no seesaw for time being
+    //CAmount nMoneySupply = chainActive.Tip()->nMoneySupply / COIN;
+    //CAmount mnPayment = (nMoneySupply / (mNodeCoins * 4)) * blockValue;
+
     return blockValue / 2; // for know use simply 50 % of block
 
 	if (Params().NetworkID() == CBaseChainParams::TESTNET) { if (nHeight < 200) return 0; }

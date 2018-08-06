@@ -29,33 +29,38 @@ void CMasternodePayments::AddPaymentVote(CPaymentVote& winner)
 	winner.Relay();
 }
 
-CAmount tierPayment[NUM_TIERS], totalMasterPaid, blockValue;
-
-void CalcPaymentAmounts(int nBlockHeight) {
+static std::vector<CAmount> CalcPaymentAmounts(int nBlockHeight)
+{
 	CAmount divi[NUM_TIERS], mNodeCoins = 0;
-	for (int tier = 0; tier < NUM_TIERS; tier++) {
+    std::vector<CAmount> tierPayment[NUM_TIERS];
+    for (int tier = 0; tier < NUM_TIERS; tier++)
+    {
 		LogPrintStr("mnodeman.tierCount[tier] = " + to_string(mnodeman.tierCount[tier]));
 		divi[tier] = mnodeman.tierCount[tier] * Tiers[tier].collateral;
-		if (divi[tier] == 0) divi[tier] = Tiers[tier].collateral;
+        if (divi[tier] == 0)
+            divi[tier] = Tiers[tier].collateral;
+
 		mNodeCoins += divi[tier];
 		LogPrintStr("; mNodeCoins = " + to_string(mNodeCoins) + "\n");
 	}
 	CAmount raw[NUM_TIERS], rawTotal = 0;
-	for (int tier = 0; tier < NUM_TIERS; tier++) {
+    for (int tier = 0; tier < NUM_TIERS; tier++)
+    {
 		raw[tier] = mNodeCoins * Tiers[tier].seesawBasis * Tiers[tier].premium / divi[tier];
 		rawTotal += raw[tier];
 	}
-	totalMasterPaid = 175 * COIN;		// dev & lottery payments
-	blockValue = 1250;
-	CAmount nMoneySupply = chainActive.Tip()->nMoneySupply / COIN;
-	CAmount mnPayment = (nMoneySupply / (mNodeCoins * 4)) * blockValue;
-	if (mnPayment > blockValue - 350) mnPayment = blockValue - 350;
-	for (int tier = 0; tier < NUM_TIERS; tier++) {
+
+    auto blockValue = GetBlockValue(nBlockHeight, false);
+    auto mnPayment = GetMasternodePayment(nBlockHeight, blockValue);
+
+    for (int tier = 0; tier < NUM_TIERS; tier++)
+    {
 		tierPayment[tier] = mnPayment * raw[tier] / rawTotal * COIN;
 		LogPrintStr("tierPayment[tier] = " + to_string(tierPayment[tier]) + "\n");
-		totalMasterPaid += tierPayment[tier];
 	}
 	LogPrintStr("Wallet balance = " + to_string(pwalletMain->GetBalance()) + "\n");
+
+    return tierPayment;
 }
 
 string GetMyAddress(string strAccount = "", bool bForceNew = false)
@@ -102,12 +107,20 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 	string mnwinner, payee;
 	unsigned int i = txNew.vout.size();
 	txNew.vout.resize(i + NUM_TIERS + 2);
-	for (int tier = 0; tier < NUM_TIERS; tier++) {
-		if (mVotes.count(mnodeman.currHeight + 1)) {
+    for (int tier = 0; tier < NUM_TIERS; tier++)
+    {
+        if (mVotes.count(mnodeman.currHeight + 1))
+        {
 			mnwinner = mVotes[mnodeman.currHeight + 1].MostVotes(tier);
-			if (mnwinner != "") payee = mnodeman.Find(mnwinner)->funding[0].payAddress; else continue;
+            if (mnwinner != "")
+                payee = mnodeman.Find(mnwinner)->funding[0].payAddress;
+            else
+                continue;
 		}
-		else continue;
+        else
+        {
+            continue;
+        }
 		txNew.vout[i + tier].scriptPubKey = GetScriptForDestination(CBitcoinAddress(payee).Get());
 		txNew.vout[i + tier].nValue = tierPayment[tier];
 	}

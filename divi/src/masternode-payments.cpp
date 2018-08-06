@@ -149,7 +149,7 @@ bool CMasternodePayments::IsBlockPayeeValid(const CBlock& block, int nBlockHeigh
 
 		bool found = false;
 		for (vector<CTxOut>::iterator it = txNew.vout.begin(); !found && it != txNew.vout.end(); it++)
-			if ((*it).scriptPubKey == scriptPubKey && (*it).nValue >= tierPayment[tier] - 5 * COIN) found = true;
+//			if ((*it).scriptPubKey == scriptPubKey && (*it).nValue >= tierPayment[tier] - 5 * COIN) found = true;
 		if (!found) { LogPrint("masternode", "Missing payment for tier %s in %s\n", to_string(tier), txNew.ToString().c_str()); return false; }
 	}
 	return true;

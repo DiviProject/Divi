@@ -45,7 +45,8 @@ Value allocatefunds(const Array& params, bool fHelp)
 			"\nResult:\n"
 			"\"vin\"			(string) funding transaction id necessary for next step.\n");
 
-	if (params[0].get_str() != "masternode") throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
+    if (params[0].get_str() != "masternode")
+        throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
 	CBitcoinAddress acctAddr = GetAccountAddress("alloc->" + params[1].get_str());
 	string strAmt = params[2].get_str();
 	CAmount nAmount;
@@ -58,10 +59,10 @@ Value allocatefunds(const Array& params, bool fHelp)
 	else throw runtime_error("invalid amount");
 
 	CWalletTx wtx;
-	SendMoney(acctAddr.Get(), nAmount, wtx);
+    SendMoney(acctAddr.Get(), nAmount * COIN, wtx);
 
 	Object obj;
-	obj.push_back(Pair("txhash", wtx.GetHash().GetHex()));
+    obj.push_back(Pair("txhash", wtx.GetHash().GetHex()));
 	return obj;
 }
 

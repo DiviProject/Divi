@@ -1,0 +1,26 @@
+# /etc/conf.d/divid: config file for /etc/init.d/divid
+
+# Config file location
+#BITCOIND_CONFIGFILE="/etc/divi/divi.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCOIND_USER)
+#BITCOIND_PIDDIR="/var/run/divid"
+
+# What filename to give the pidfile
+#BITCOIND_PIDFILE="${BITCOIND_PIDDIR}/divid.pid"
+
+# Where to write divid data (be mindful that the blockchain is large)
+#BITCOIND_DATADIR="/var/lib/divid"
+
+# User and group to own divid process
+#BITCOIND_USER="divi"
+#BITCOIND_GROUP="divi"
+
+# Path to divid executable
+#BITCOIND_BIN="/usr/bin/divid"
+
+# Nice value to run divid under
+#BITCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+BITCOIND_OPTS=""

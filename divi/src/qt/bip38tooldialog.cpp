@@ -151,7 +151,9 @@ void Bip38ToolDialog::on_encryptKeyButton_ENC_clicked()
         return;
     }
 
-    std::string encryptedKey = BIP38_Encrypt(addr.ToString(), qstrPassphrase.toStdString(), key.GetPrivKey_256(), key.IsCompressed());
+#if 0 // TODO: check this
+#endif
+    std::string encryptedKey;// = BIP38_Encrypt(addr.ToString(), qstrPassphrase.toStdString(), key.GetPrivKey_256(), key.IsCompressed());
     ui->encryptedKeyOut_ENC->setText(QString::fromStdString(encryptedKey));
 }
 

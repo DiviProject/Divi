@@ -85,6 +85,8 @@ BITCOIN_CORE_H = \
   amount.h \
   base58.h \
   bip38.h \
+  bip39.h \
+  bip39_english.h \
   bloom.h \
   chain.h \
   chainparams.h \
@@ -110,6 +112,7 @@ BITCOIN_CORE_H = \
   eccryptoverify.h \
   ecwrapper.h \
   hash.h \
+  hdchain.h \
   init.h \
   kernel.h \
   swifttx.h \
@@ -226,8 +229,6 @@ libbitcoin_server_a_SOURCES = \
   $(BITCOIN_CORE_H)
 
 if ENABLE_ZMQ
-LIBBITCOIN_ZMQ=libbitcoin_zmq.a
-
 libbitcoin_zmq_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(ZMQ_CFLAGS)
 libbitcoin_zmq_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_zmq_a_SOURCES = \
@@ -269,6 +270,8 @@ libbitcoin_wallet_a_SOURCES = \
 crypto_libbitcoin_crypto_a_CFLAGS = -fPIC
 crypto_libbitcoin_crypto_a_CPPFLAGS = $(BITCOIN_CONFIG_INCLUDES)
 crypto_libbitcoin_crypto_a_SOURCES = \
+  crypto/aes.cpp \
+  crypto/aes.h \
   crypto/sha1.cpp \
   crypto/sha256.cpp \
   crypto/sha512.cpp \
@@ -299,7 +302,9 @@ crypto_libbitcoin_crypto_a_SOURCES = \
   crypto/sph_jh.h \
   crypto/sph_keccak.h \
   crypto/sph_skein.h \
-  crypto/sph_types.h
+  crypto/sph_types.h \
+  crypto/sha512.cpp \
+  crypto/sha512.h
 
 # univalue JSON library
 univalue_libbitcoin_univalue_a_SOURCES = \
@@ -341,6 +346,7 @@ libbitcoin_common_a_SOURCES = \
   amount.cpp \
   base58.cpp \
   bip38.cpp \
+  bip39.cpp \
   chainparams.cpp \
   coins.cpp \
   compressor.cpp \
@@ -352,6 +358,7 @@ libbitcoin_common_a_SOURCES = \
   eccryptoverify.cpp \
   ecwrapper.cpp \
   hash.cpp \
+  hdchain.cpp \
   key.cpp \
   keystore.cpp \
   netbase.cpp \
@@ -418,7 +425,8 @@ divid_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
 endif
 
 if ENABLE_WALLET
-divid_LDADD += libbitcoin_wallet.a
+divid_LDADD += libbitcoin_wallet.a \
+  $(LIBBITCOIN_CRYPTO)
 endif
 divid_SOURCES = divid.cpp
 #
@@ -495,11 +503,8 @@ if GLIBC_BACK_COMPAT
 endif
 
 libbitcoinconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)
-libbitcoinconsensus_la_LIBADD = $(CRYPTO_LIBS) $(BOOST_LIBS)
+libbitcoinconsensus_la_LIBADD = $(CRYPTO_LIBS) $(LIBSECP256K1) $(BOOST_LIBS)
 libbitcoinconsensus_la_CPPFLAGS = $(CRYPTO_CFLAGS) -I$(builddir)/obj -DBUILD_BITCOIN_INTERNAL
-if USE_LIBSECP256K1
-libbitcoinconsensus_la_LIBADD += secp256k1/libsecp256k1.la
-endif
 endif
 
 CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a

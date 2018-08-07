@@ -805,3 +805,8 @@ void SetThreadPriority(int nPriority)
 #endif // PRIO_THREAD
 #endif // WIN32
 }
+
+void ForceRemoveArg(const string &strArg)
+{
+    mapArgs.erase(strArg);
+}

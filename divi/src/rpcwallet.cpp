@@ -103,7 +103,7 @@ Value getnewaddress(const Array& params, bool fHelp)
 
     // Generate a new key that is added to wallet
     CPubKey newKey;
-    if (!pwalletMain->GetKeyFromPool(newKey))
+    if (!pwalletMain->GetKeyFromPool(newKey, false))
         throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
     CKeyID keyID = newKey.GetID();
 
@@ -137,7 +137,7 @@ CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew)
 
     // Generate a new key
     if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed) {
-        if (!pwalletMain->GetKeyFromPool(account.vchPubKey))
+        if (!pwalletMain->GetKeyFromPool(account.vchPubKey, false))
             throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
 
         pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount, "receive");
@@ -188,7 +188,7 @@ Value getrawchangeaddress(const Array& params, bool fHelp)
 
     CReserveKey reservekey(pwalletMain);
     CPubKey vchPubKey;
-    if (!reservekey.GetReservedKey(vchPubKey))
+    if (!reservekey.GetReservedKey(vchPubKey, true))
         throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
 
     reservekey.KeepKey();
@@ -1920,6 +1920,8 @@ Value getwalletinfo(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getwalletinfo", "") + HelpExampleRpc("getwalletinfo", ""));
 
+    CHDChain hdChainCurrent;
+    bool fHDEnabled = pwalletMain->GetHDChain(hdChainCurrent);
     Object obj;
     obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
     obj.push_back(Pair("balance", ValueFromAmount(pwalletMain->GetBalance())));
@@ -1928,6 +1930,26 @@ Value getwalletinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
     if (pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
+
+    if (fHDEnabled) {
+        obj.push_back(Pair("hdchainid", hdChainCurrent.GetID().GetHex()));
+        obj.push_back(Pair("hdaccountcount", (int64_t)hdChainCurrent.CountAccounts()));
+        Array accounts;
+        for (size_t i = 0; i < hdChainCurrent.CountAccounts(); ++i)
+        {
+            CHDAccount acc;
+            Object account;
+            account.push_back(Pair("hdaccountindex", (int64_t)i));
+            if(hdChainCurrent.GetAccount(i, acc)) {
+                account.push_back(Pair("hdexternalkeyindex", (int64_t)acc.nExternalChainCounter));
+                account.push_back(Pair("hdinternalkeyindex", (int64_t)acc.nInternalChainCounter));
+            } else {
+                account.push_back(Pair("error", strprintf("account %d is missing", i)));
+            }
+            accounts.push_back(account);
+        }
+        obj.push_back(Pair("hdaccounts", accounts));
+    }
     return obj;
 }
 

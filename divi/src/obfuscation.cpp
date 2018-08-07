@@ -1680,7 +1680,7 @@ bool CObfuscationPool::SendRandomPaymentToSelf()
 
     CScript scriptChange;
     CPubKey vchPubKey;
-    assert(reservekey.GetReservedKey(vchPubKey)); // should never fail, as we just unlocked
+    assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
     scriptChange = GetScriptForDestination(vchPubKey.GetID());
 
     CWalletTx wtx;
@@ -1722,7 +1722,7 @@ bool CObfuscationPool::MakeCollateralAmounts()
 
     CScript scriptCollateral;
     CPubKey vchPubKey;
-    assert(reservekeyCollateral.GetReservedKey(vchPubKey)); // should never fail, as we just unlocked
+    assert(reservekeyCollateral.GetReservedKey(vchPubKey, false)); // should never fail, as we just unlocked
     scriptCollateral = GetScriptForDestination(vchPubKey.GetID());
 
     vecSend.push_back(make_pair(scriptCollateral, OBFUSCATION_COLLATERAL * 4));
@@ -1777,7 +1777,7 @@ bool CObfuscationPool::CreateDenominated(CAmount nTotalValue)
 
     CScript scriptCollateral;
     CPubKey vchPubKey;
-    assert(reservekeyCollateral.GetReservedKey(vchPubKey)); // should never fail, as we just unlocked
+    assert(reservekeyCollateral.GetReservedKey(vchPubKey, false)); // should never fail, as we just unlocked
     scriptCollateral = GetScriptForDestination(vchPubKey.GetID());
 
     // ****** Add collateral outputs ************ /
@@ -1795,7 +1795,7 @@ bool CObfuscationPool::CreateDenominated(CAmount nTotalValue)
             CScript scriptDenom;
             CPubKey vchPubKey;
             //use a unique change address
-            assert(reservekeyDenom.GetReservedKey(vchPubKey)); // should never fail, as we just unlocked
+            assert(reservekeyDenom.GetReservedKey(vchPubKey, false)); // should never fail, as we just unlocked
             scriptDenom = GetScriptForDestination(vchPubKey.GetID());
             // TODO: do not keep reservekeyDenom here
             reservekeyDenom.KeepKey();

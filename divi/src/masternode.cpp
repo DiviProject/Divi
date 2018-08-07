@@ -183,9 +183,13 @@ string CMasternode::VerifyFunding() {
 	if (funding[0].payAddress == "DJ2fYZXocM7uWXBNXffyF7QKWfBP4xYQ2b") return "";			// backbone node
 	for (vector<CMnFunding>::iterator it = funding.begin(); it != funding.end(); it++) {
 		int ageOfFunds = GetInputAge((*it).vin);
-		if (ageOfFunds < MASTERNODE_MIN_CONFIRMATIONS) return "Funding needs more confirmations";
+        if (ageOfFunds < MASTERNODE_MIN_CONFIRMATIONS)
+            return "Funding needs more confirmations";
+
 		// if (sigTime < GetAdjustedTime() - ageOfFunds) return "Misbehaving masternode";
-		if (!(*it).CheckVin(address)) return "Funds have been spent";
+        if (!(*it).CheckVin(address))
+            return "Funds have been spent";
+
 		totalFunding += (*it).amount;
 	}
 	if (totalFunding < tier.collateral) return "Insufficient funds"; else return "";

@@ -1,0 +1,8 @@
+obj/pbkdf2.o: pbkdf2.cpp \
+  /Users/chuch/Downloads/GirlsToken-2.0-master/src/pbkdf2.h \
+  /opt/local/include/openssl/sha.h /opt/local/include/openssl/e_os2.h \
+  /opt/local/include/openssl/opensslconf.h
+pbkdf2.cpp :
+  /Users/chuch/Downloads/GirlsToken-2.0-master/src/pbkdf2.h :
+  /opt/local/include/openssl/sha.h /opt/local/include/openssl/e_os2.h :
+  /opt/local/include/openssl/opensslconf.h :

@@ -1,39 +1,23 @@
-// Copyright (c) 2011-2014 The Bitcoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
-#ifndef BITCOIN_QT_RPCCONSOLE_H
-#define BITCOIN_QT_RPCCONSOLE_H
-
-#include "guiutil.h"
-#include "peertablemodel.h"
-
-#include "net.h"
+#ifndef RPCCONSOLE_H
+#define RPCCONSOLE_H
 
 #include <QDialog>
-#include <QCompleter>
 
+namespace Ui {
+    class RPCConsole;
+}
 class ClientModel;
 
-namespace Ui
-{
-class RPCConsole;
-}
-
-QT_BEGIN_NAMESPACE
-class QItemSelection;
-QT_END_NAMESPACE
-
 /** Local Bitcoin RPC console. */
-class RPCConsole : public QDialog
+class RPCConsole: public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit RPCConsole(QWidget* parent);
+    explicit RPCConsole(QWidget *parent = 0);
     ~RPCConsole();
 
-    void setClientModel(ClientModel* model);
+    void setClientModel(ClientModel *model);
 
     enum MessageClass {
         MC_ERROR,
@@ -44,94 +28,39 @@ public:
     };
 
 protected:
-    virtual bool eventFilter(QObject* obj, QEvent* event);
+    virtual bool eventFilter(QObject* obj, QEvent *event);
 
 private slots:
     void on_lineEdit_returnPressed();
     void on_tabWidget_currentChanged(int index);
     /** open the debug.log from the current datadir */
     void on_openDebugLogfileButton_clicked();
-    /** change the time range of the network traffic graph */
-    void on_sldGraphRange_valueChanged(int value);
-    /** update traffic statistics */
-    void updateTrafficStats(quint64 totalBytesIn, quint64 totalBytesOut);
-    void resizeEvent(QResizeEvent* event);
-    void showEvent(QShowEvent* event);
-    void hideEvent(QHideEvent* event);
+    /** display messagebox with program parameters (same as bitcoin-qt --help) */
+    void on_showCLOptionsButton_clicked();
 
 public slots:
     void clear();
-
-    /** Wallet repair options */
-    void walletSalvage();
-    void walletRescan();
-    void walletZaptxes1();
-    void walletZaptxes2();
-    void walletUpgrade();
-    void walletReindex();
-    void walletResync();
-
-    void reject();
-    void message(int category, const QString& message, bool html = false);
+    void message(int category, const QString &message, bool html = false);
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
     /** Set number of blocks shown in the UI */
-    void setNumBlocks(int count);
-    /** Set number of masternodes shown in the UI */
-    void setMasternodeCount(const QString& strMasternodes);
+    void setNumBlocks(int count, int countOfPeers);
     /** Go forward or back in history */
     void browseHistory(int offset);
     /** Scroll console view to end */
     void scrollToEnd();
-    /** Switch to info tab and show */
-    void showInfo();
-    /** Switch to console tab and show */
-    void showConsole();
-    /** Switch to network tab and show */
-    void showNetwork();
-    /** Switch to peers tab and show */
-    void showPeers();
-    /** Switch to wallet-repair tab and show */
-    void showRepair();
-    /** Open external (default) editor with divi.conf */
-    void showConfEditor();
-    /** Open external (default) editor with masternode.conf */
-    void showMNConfEditor();
-    /** Handle selection of peer in peers list */
-    void peerSelected(const QItemSelection& selected, const QItemSelection& deselected);
-    /** Handle updated peer information */
-    void peerLayoutChanged();
-    /** Show folder with wallet backups in default browser */
-    void showBackups();
-
 signals:
     // For RPC command executor
     void stopExecutor();
-    void cmdRequest(const QString& command);
-    /** Get restart command-line parameters and handle restart */
-    void handleRestart(QStringList args);
+    void cmdRequest(const QString &command);
 
 private:
-    static QString FormatBytes(quint64 bytes);
-    void startExecutor();
-    void setTrafficGraphRange(int mins);
-    /** Build parameter list for restart */
-    void buildParameterlist(QString arg);
-    /** show detailed information on ui about selected node */
-    void updateNodeDetail(const CNodeCombinedStats* stats);
-
-    enum ColumnWidths {
-        ADDRESS_COLUMN_WIDTH = 170,
-        SUBVERSION_COLUMN_WIDTH = 140,
-        PING_COLUMN_WIDTH = 80
-    };
-
-    Ui::RPCConsole* ui;
-    ClientModel* clientModel;
+    Ui::RPCConsole *ui;
+    ClientModel *clientModel;
     QStringList history;
     int historyPtr;
-    NodeId cachedNodeid;
-    QCompleter *autoCompleter;
+
+    void startExecutor();
 };
 
-#endif // BITCOIN_QT_RPCCONSOLE_H
+#endif // RPCCONSOLE_H

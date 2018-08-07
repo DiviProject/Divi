@@ -521,11 +521,12 @@ namespace json_spirit
      
         const spirit_namespace::parse_info< Iter_type > info = 
                             spirit_namespace::parse( begin, end, 
-                                                    Json_grammer< Value_type, Iter_type >( semantic_actions ) >> spirit_namespace::end_p,
+                                                    Json_grammer< Value_type, Iter_type >( semantic_actions ), 
                                                     spirit_namespace::space_p );
 
         if( !info.hit )
         {
+            assert( false ); // in theory exception should already have been thrown
             throw_error( info.stop, "error" );
         }
 
@@ -569,8 +570,7 @@ namespace json_spirit
     {
         typename String_type::const_iterator begin = s.begin();
 
-        bool success = read_range( begin, s.end(), value );
-        return success && begin == s.end();
+        return read_range( begin, s.end(), value );
     }
 
     template< class Istream_type >

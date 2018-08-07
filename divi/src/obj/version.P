@@ -1,0 +1,8 @@
+obj/version.o: version.cpp \
+  /Users/chuch/Downloads/GirlsToken-2.0-master/src/version.h \
+  /Users/chuch/Downloads/GirlsToken-2.0-master/src/clientversion.h \
+  /Users/chuch/Downloads/GirlsToken-2.0-master/src/obj/build.h
+version.cpp :
+  /Users/chuch/Downloads/GirlsToken-2.0-master/src/version.h :
+  /Users/chuch/Downloads/GirlsToken-2.0-master/src/clientversion.h :
+  /Users/chuch/Downloads/GirlsToken-2.0-master/src/obj/build.h :

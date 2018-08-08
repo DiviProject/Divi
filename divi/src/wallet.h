@@ -55,6 +55,9 @@ static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWa
 //! Largest (in bytes) free transaction we're willing to create
 static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
 
+//! if set, all keys will be derived by using BIP39/BIP44
+static const bool DEFAULT_USE_HD_WALLET = true;
+
 // Zerocoin denomination which creates exactly one of each denominations:
 // 6666 = 1*5000 + 1*1000 + 1*500 + 1*100 + 1*50 + 1*10 + 1*5 + 1
 static const int ZQ_6666 = 6666;
@@ -65,6 +68,7 @@ class COutput;
 class CReserveKey;
 class CScript;
 class CWalletTx;
+class CHDChain;
 
 /** (client) version numbers for particular wallet features */
 enum WalletFeature {
@@ -72,6 +76,7 @@ enum WalletFeature {
 
     FEATURE_WALLETCRYPT = 40000, // wallet encryption
     FEATURE_COMPRPUBKEY = 60000, // compressed public keys
+    FEATURE_HD = 120200,
 
     FEATURE_LATEST = 61000
 };
@@ -121,9 +126,10 @@ class CKeyPool
 public:
     int64_t nTime;
     CPubKey vchPubKey;
+    bool fInternal; // for change outputs
 
     CKeyPool();
-    CKeyPool(const CPubKey& vchPubKeyIn);
+    CKeyPool(const CPubKey& vchPubKeyIn, bool fInternalIn);
 
     ADD_SERIALIZE_METHODS;
 
@@ -134,6 +140,19 @@ public:
             READWRITE(nVersion);
         READWRITE(nTime);
         READWRITE(vchPubKey);
+        if (ser_action.ForRead()) {
+            try {
+                READWRITE(fInternal);
+            }
+            catch (std::ios_base::failure&) {
+                /* flag as external address if we can't read the internal boolean
+                   (this will be the case for any wallet before the HD chain split version) */
+                fInternal = false;
+            }
+        }
+        else {
+            READWRITE(fInternal);
+        }
     }
 };
 
@@ -173,6 +192,12 @@ private:
 
     int64_t nNextResend;
     int64_t nLastResend;
+
+    void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
+
+    std::set<int64_t> setInternalKeyPool;
+    std::set<int64_t> setExternalKeyPool;
+
 
     /**
      * Used to keep track of spent outpoints, and
@@ -227,7 +252,8 @@ public:
     std::string strWalletFile;
     bool fBackupMints;
 
-    std::set<int64_t> setKeyPool;
+    void LoadKeyPool(int nIndex, const CKeyPool &keypool);
+
     std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
 
     typedef std::map<unsigned int, CMasterKey> MasterKeyMap;
@@ -339,6 +365,8 @@ public:
 
     int64_t nTimeFirstKey;
 
+    std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
+
     const CWalletTx* GetWalletTx(const uint256& hash) const;
 
     //! check whether we are allowed to upgrade (or already support) to the named feature
@@ -360,16 +388,24 @@ public:
     bool IsSpent(const uint256& hash, unsigned int n) const;
 
     bool IsLockedCoin(uint256 hash, unsigned int n) const;
-    void LockCoin(COutPoint& output);
-    void UnlockCoin(COutPoint& output);
+    void LockCoin(const COutPoint& output);
+    void UnlockCoin(const COutPoint& output);
     void UnlockAllCoins();
     void ListLockedCoins(std::vector<COutPoint>& vOutpts);
     CAmount GetTotalValue(std::vector<CTxIn> vCoins);
 
     //  keystore implementation
     // Generate a new key
-    CPubKey GenerateNewKey();
-
+    CPubKey GenerateNewKey(uint32_t nAccountIndex, bool fInternal);
+    bool HaveKey(const CKeyID &address) const override;
+    //! GetPubKey implementation that also checks the mapHdPubKeys
+    bool GetPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const override;
+    //! GetKey implementation that can derive a HD private key on the fly
+    bool GetKey(const CKeyID &address, CKey& keyOut) const override;
+    //! Adds a HDPubKey into the wallet(database)
+    bool AddHDPubKey(const CExtPubKey &extPubKey, bool fInternal);
+    //! loads a HDPubKey into the wallets memory
+    bool LoadHDPubKey(const CHDPubKey &hdPubKey);
     //! Adds a key to the store, and saves it to disk.
     bool AddKeyPubKey(const CKey& key, const CPubKey& pubkey);
     //! Adds a key to the store, without saving it to disk (used by LoadWallet)
@@ -377,13 +413,8 @@ public:
     //! Load metadata (used by LoadWallet)
     bool LoadKeyMetadata(const CPubKey& pubkey, const CKeyMetadata& metadata);
 
-    bool LoadMinVersion(int nVersion)
-    {
-        AssertLockHeld(cs_wallet);
-        nWalletVersion = nVersion;
-        nWalletMaxVersion = std::max(nWalletMaxVersion, nVersion);
-        return true;
-    }
+    bool LoadMinVersion(int nVersion);
+    void UpdateTimeFirstKey(int64_t nCreateTime);
 
     //! Adds an encrypted key to the store, and saves it to disk.
     bool AddCryptedKey(const CPubKey& vchPubKey, const std::vector<unsigned char>& vchCryptedSecret);
@@ -486,12 +517,25 @@ public:
 
     bool NewKeyPool();
     bool TopUpKeyPool(unsigned int kpSize = 0);
-    void ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool);
+    void ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool, bool fInternal);
     void KeepKey(int64_t nIndex);
-    void ReturnKey(int64_t nIndex);
-    bool GetKeyFromPool(CPubKey& key);
+    void ReturnKey(int64_t nIndex, bool fInternal);
+    bool GetKeyFromPool(CPubKey& key, bool fInternal);
     int64_t GetOldestKeyPoolTime();
     void GetAllReserveKeys(std::set<CKeyID>& setAddress) const;
+
+    /**
+     * HD Wallet Functions
+     */
+
+    /* Returns true if HD is enabled */
+    bool IsHDEnabled();
+    /* Generates a new HD chain */
+    void GenerateNewHDChain();
+    /* Set the HD chain model (chain child index counters) */
+    bool SetHDChain(const CHDChain& chain, bool memonly);
+    bool SetCryptedHDChain(const CHDChain& chain, bool memonly);
+    bool GetDecryptedHDChain(CHDChain& hdChainRet);
 
     std::set<std::set<CTxDestination> > GetAddressGroupings();
     std::map<CTxDestination, CAmount> GetAddressBalances();
@@ -594,11 +638,7 @@ public:
         }
     }
 
-    unsigned int GetKeyPoolSize()
-    {
-        AssertLockHeld(cs_wallet); // setKeyPool
-        return setKeyPool.size();
-    }
+    unsigned int GetKeyPoolSize() const;
 
     bool SetDefaultKey(const CPubKey& vchPubKey);
 
@@ -648,12 +688,13 @@ protected:
     CWallet* pwallet;
     int64_t nIndex;
     CPubKey vchPubKey;
-
+    bool fInternal;
 public:
     CReserveKey(CWallet* pwalletIn)
     {
         nIndex = -1;
         pwallet = pwalletIn;
+        fInternal = false;
     }
 
     ~CReserveKey()
@@ -662,10 +703,10 @@ public:
     }
 
     void ReturnKey();
-    bool GetReservedKey(CPubKey& pubkey);
+    bool GetReservedKey(CPubKey &pubkey, bool fInternalIn);
     void KeepKey();
+    void KeepScript() { KeepKey(); }
 };
-
 
 typedef std::map<std::string, std::string> mapValue_t;
 

@@ -148,6 +148,14 @@ public:
     static bool Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys);
     static bool Recover(CDBEnv& dbenv, std::string filename);
 
+    //! write the hdchain model (external chain child index counter)
+    bool WriteHDChain(const CHDChain& chain);
+    bool WriteCryptedHDChain(const CHDChain& chain);
+    bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta);
+
+    static void IncrementUpdateCounter();
+    static unsigned int GetUpdateCounter();
+
     bool WriteZerocoinMint(const CZerocoinMint& zerocoinMint);
     bool EraseZerocoinMint(const CZerocoinMint& zerocoinMint);
     bool ReadZerocoinMint(const CBigNum &bnSerial, CZerocoinMint& zerocoinMint);

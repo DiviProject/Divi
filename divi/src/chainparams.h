@@ -122,6 +122,8 @@ public:
     int Zerocoin_StartTime() const { return nZerocoinStartTime; }
     int Block_Enforce_Invalid() const { return nBlockEnforceInvalidUTXO; }
 
+    int ExtCoinType() const { return nExtCoinType; }
+
 	int64_t premineAmt;
 
 protected:
@@ -181,6 +183,7 @@ protected:
     int nBlockFirstFraudulent;
     int nBlockLastGoodCheckpoint;
     int nBlockEnforceInvalidUTXO;
+    int nExtCoinType;
 };
 
 /**

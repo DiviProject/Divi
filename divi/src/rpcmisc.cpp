@@ -328,6 +328,10 @@ Value validateaddress(const Array& params, bool fHelp)
         CTxDestination dest = address.Get();
         string currentAddress = address.ToString();
         ret.push_back(Pair("address", currentAddress));
+
+        CScript scriptPubKey = GetScriptForDestination(dest);
+        ret.push_back(Pair("scriptPubKey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
+
 #ifdef ENABLE_WALLET
         isminetype mine = pwalletMain ? IsMine(*pwalletMain, dest) : ISMINE_NO;
         ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
@@ -338,6 +342,25 @@ Value validateaddress(const Array& params, bool fHelp)
         }
         if (pwalletMain && pwalletMain->mapAddressBook.count(dest))
             ret.push_back(Pair("account", pwalletMain->mapAddressBook[dest].name));
+
+
+        CKeyID keyID;
+        if (pwalletMain) {
+            const auto& meta = pwalletMain->mapKeyMetadata;
+            auto it = address.GetKeyID(keyID) ? meta.find(keyID) : meta.end();
+            if (it == meta.end()) {
+                it = meta.find(CScriptID(scriptPubKey));
+            }
+            if (it != meta.end()) {
+                ret.push_back(Pair("timestamp", it->second.nCreateTime));
+            }
+
+            CHDChain hdChainCurrent;
+            if (!keyID.IsNull() && pwalletMain->mapHdPubKeys.count(keyID) && pwalletMain->GetHDChain(hdChainCurrent)) {
+                ret.push_back(Pair("hdkeypath", pwalletMain->mapHdPubKeys[keyID].GetKeyPath()));
+                ret.push_back(Pair("hdchainid", hdChainCurrent.GetID().GetHex()));
+            }
+        }
 #endif
     }
     return ret;

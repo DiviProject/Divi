@@ -71,6 +71,7 @@ int nWalletBackups = 10;
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
+static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -394,6 +395,10 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-salvagewallet", _("Attempt to recover private keys from a corrupt wallet.dat") + " " + _("on startup"));
     strUsage += HelpMessageOpt("-sendfreetransactions", strprintf(_("Send transactions as zero-fee transactions if possible (default: %u)"), 0));
     strUsage += HelpMessageOpt("-spendzeroconfchange", strprintf(_("Spend unconfirmed change when sending transactions (default: %u)"), 1));
+    strUsage += HelpMessageOpt("-usehd", _("Use hierarchical deterministic key generation (HD) after BIP39/BIP44. Only has effect during wallet creation/first start") + " " + strprintf(_("(default: %u)"), DEFAULT_USE_HD_WALLET));
+    strUsage += HelpMessageOpt("-mnemonic", _("User defined mnemonic for HD wallet (bip39). Only has effect during wallet creation/first start (default: randomly generated)"));
+    strUsage += HelpMessageOpt("-mnemonicpassphrase", _("User defined mnemonic passphrase for HD wallet (BIP39). Only has effect during wallet creation/first start (default: empty string)"));
+    strUsage += HelpMessageOpt("-hdseed", _("User defined seed for HD wallet (should be in hex). Only has effect during wallet creation/first start (default: randomly generated)"));
     strUsage += HelpMessageOpt("-disablesystemnotifications", strprintf(_("Disable OS notifications for incoming transactions (default: %u)"), 0));
     strUsage += HelpMessageOpt("-txconfirmtarget=<n>", strprintf(_("If paytxfee is not set, include enough fee so transactions begin confirmation on average within n blocks (default: %u)"), 1));
     strUsage += HelpMessageOpt("-maxtxfee=<amt>", strprintf(_("Maximum total fees to use in a single wallet transaction, setting too low may abort large transactions (default: %s)"),
@@ -624,6 +629,7 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
     }
 }
 
+
 /** Sanity checks
  *  Ensure that DIVI is running in a usable environment with all
  *  necessary library support.
@@ -641,6 +647,21 @@ bool InitSanityCheck(void)
     return true;
 }
 
+bool AppInitSanityChecks()
+{
+    // ********************************************************* Step 4: sanity checks
+
+    // Initialize elliptic curve code
+    ECC_Start();
+    globalVerifyHandle.reset(new ECCVerifyHandle());
+
+    // Sanity check
+    if (!InitSanityCheck())
+        return InitError(strprintf(_("Initialization sanity check failed. %s is shutting down."), _(PACKAGE_NAME)));
+
+    // Probe the data directory lock to give an early error message, if possible
+    return true;
+}
 
 /** Initialize divi.
  *  @pre Parameters should be parsed and config file should be read.
@@ -916,7 +937,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
     // Sanity check
-    if (!InitSanityCheck())
+    if (!AppInitSanityChecks())
         return InitError(_("Initialization sanity check failed. DIVI Core is shutting down."));
 
     std::string strDataDir = GetDataDir().string();
@@ -1243,6 +1264,12 @@ bool AppInit2(boost::thread_group& threadGroup)
     BOOST_FOREACH (string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
 
+    if (mapArgs.count("-hdseed") && IsHex(GetArg("-hdseed", "not hex")) && (mapArgs.count("-mnemonic") || mapArgs.count("-mnemonicpassphrase"))) {
+        ForceRemoveArg("-mnemonic");
+        ForceRemoveArg("-mnemonicpassphrase");
+        LogPrintf("%s: parameter interaction: can't use -hdseed and -mnemonic/-mnemonicpassphrase together, will prefer -seed\n", __func__);
+    }
+
 #if ENABLE_ZMQ
     pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(mapArgs);
 
@@ -1501,18 +1528,65 @@ bool AppInit2(boost::thread_group& threadGroup)
             pwalletMain->SetMaxVersion(nMaxVersion);
         }
 
-        if (fFirstRun) {
+        if (fFirstRun)
+        {
             // Create new keyUser and set as default key
-            RandAddSeedPerfmon();
+            if (GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled()) {
+                if (GetArg("-mnemonicpassphrase", "").size() > 256) {
+                    InitError(_("Mnemonic passphrase is too long, must be at most 256 characters"));
+                    return NULL;
+                }
+                // generate a new master key
+                pwalletMain->GenerateNewHDChain();
+
+                // ensure this wallet.dat can only be opened by clients supporting HD
+                pwalletMain->SetMinVersion(FEATURE_HD);
+            }
 
             CPubKey newDefaultKey;
-            if (pwalletMain->GetKeyFromPool(newDefaultKey)) {
+            if (pwalletMain->GetKeyFromPool(newDefaultKey, false)) {
                 pwalletMain->SetDefaultKey(newDefaultKey);
-                if (!pwalletMain->SetAddressBook(pwalletMain->vchDefaultKey.GetID(), "", "receive"))
-                    strErrors << _("Cannot write default address") << "\n";
+                if (!pwalletMain->SetAddressBook(pwalletMain->vchDefaultKey.GetID(), "", "receive")) {
+                    InitError(_("Cannot write default address") += "\n");
+                    return NULL;
+                }
             }
 
             pwalletMain->SetBestChain(chainActive.GetLocator());
+
+            // Try to create wallet backup right after new wallet was created
+            std::string strBackupWarning;
+            std::string strBackupError;
+#if 0 // TODO: check this
+            if(!AutoBackupWallet(pwalletMain, "", strBackupWarning, strBackupError)) {
+                if (!strBackupWarning.empty()) {
+                    InitWarning(strBackupWarning);
+                }
+                if (!strBackupError.empty()) {
+                    InitError(strBackupError);
+                    return NULL;
+                }
+            }
+#endif
+
+        }
+        else if (mapArgs.count("-usehd")) {
+            bool useHD = GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
+            if (pwalletMain->IsHDEnabled() && !useHD) {
+                InitError(strprintf(_("Error loading %s: You can't disable HD on a already existing HD wallet"),
+                                    pwalletMain->strWalletFile));
+                return NULL;
+            }
+            if (!pwalletMain->IsHDEnabled() && useHD) {
+                InitError(strprintf(_("Error loading %s: You can't enable HD on a already existing non-HD wallet"),
+                                    pwalletMain->strWalletFile));
+                return NULL;
+            }
+        }
+
+        // Warn user every time he starts non-encrypted HD wallet
+        if (GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked()) {
+            InitWarning(_("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
         }
 
         LogPrintf("%s", strErrors.str());
@@ -1745,13 +1819,11 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (!strErrors.str().empty())
         return InitError(strErrors.str());
 
-    RandAddSeedPerfmon();
-
     //// debug print
     LogPrintf("mapBlockIndex.size() = %u\n", mapBlockIndex.size());
     LogPrintf("chainActive.Height() = %d\n", chainActive.Height());
 #ifdef ENABLE_WALLET
-    LogPrintf("setKeyPool.size() = %u\n", pwalletMain ? pwalletMain->setKeyPool.size() : 0);
+    LogPrintf("setKeyPool.size() = %u\n", pwalletMain ? pwalletMain->GetKeyPoolSize() : 0);
     LogPrintf("mapWallet.size() = %u\n", pwalletMain ? pwalletMain->mapWallet.size() : 0);
     LogPrintf("mapAddressBook.size() = %u\n", pwalletMain ? pwalletMain->mapAddressBook.size() : 0);
 #endif

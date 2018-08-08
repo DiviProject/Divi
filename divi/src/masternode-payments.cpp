@@ -87,9 +87,9 @@ string GetMyAddress(string strAccount = "", bool bForceNew = false)
 
 	// Generate a new key
 	if (!account.vchPubKey.IsValid() || bForceNew || bKeyUsed) {
-		if (!pwalletMain->GetKeyFromPool(account.vchPubKey)) {
+        if (!pwalletMain->GetKeyFromPool(account.vchPubKey, false)) {
 			pwalletMain->TopUpKeyPool(100);
-			pwalletMain->GetKeyFromPool(account.vchPubKey);
+            pwalletMain->GetKeyFromPool(account.vchPubKey, false);
 		}
 		pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount, "receive");
 		walletdb.WriteAccount(strAccount, account);

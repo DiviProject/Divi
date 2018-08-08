@@ -198,6 +198,8 @@ public:
         genesis.nNonce = 416509442;
         genesis.payee = txNew.vout[0].scriptPubKey;
 
+        nExtCoinType = 5;
+
         /*
         hashGenesisBlock = uint256("0x01");
         if (true && genesis.GetHash() != hashGenesisBlock)
@@ -345,6 +347,8 @@ public:
         genesis.nNonce = 416509442;
         genesis.payee = txNew.vout[0].scriptPubKey;
 
+        nExtCoinType = 1;
+
         /*
         hashGenesisBlock = uint256("0x01");
         if (true && genesis.GetHash() != hashGenesisBlock)
@@ -455,6 +459,8 @@ public:
         nBlockFirstFraudulent = 9891737; //First block that bad serials emerged
         nBlockLastGoodCheckpoint = 9891730; //Last valid accumulator checkpoint
         nBlockEnforceInvalidUTXO = 9902850; //Start enforcing the invalid UTXO's
+
+        nExtCoinType = 1;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1520007171;
@@ -573,6 +579,8 @@ public:
         genesis.nTime = 1520007171;
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12347;
+
+        nExtCoinType = 1;
         
         /*
         hashGenesisBlock = uint256("0x01");

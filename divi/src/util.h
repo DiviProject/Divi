@@ -183,6 +183,8 @@ bool SoftSetArg(const std::string& strArg, const std::string& strValue);
  */
 bool SoftSetBoolArg(const std::string& strArg, bool fValue);
 
+void ForceRemoveArg(const std::string& strArg);
+
 /**
  * Format a string to be used as group of options in help messages
  *

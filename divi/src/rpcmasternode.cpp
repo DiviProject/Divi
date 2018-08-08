@@ -45,7 +45,8 @@ Value allocatefunds(const Array& params, bool fHelp)
 			"\nResult:\n"
 			"\"vin\"			(string) funding transaction id necessary for next step.\n");
 
-	if (params[0].get_str() != "masternode") throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
+    if (params[0].get_str() != "masternode")
+        throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
 	CBitcoinAddress acctAddr = GetAccountAddress("alloc->" + params[1].get_str());
 	string strAmt = params[2].get_str();
 	CAmount nAmount;
@@ -58,10 +59,10 @@ Value allocatefunds(const Array& params, bool fHelp)
 	else throw runtime_error("invalid amount");
 
 	CWalletTx wtx;
-	SendMoney(acctAddr.Get(), nAmount, wtx);
+    SendMoney(acctAddr.Get(), nAmount * COIN, wtx);
 
 	Object obj;
-	obj.push_back(Pair("txhash", wtx.GetHash().GetHex()));
+    obj.push_back(Pair("txhash", wtx.GetHash().GetHex()));
 	return obj;
 }
 
@@ -93,7 +94,10 @@ Value fundmasternode(const Array& params, bool fHelp)
 	else if (strAmt == "silver") { nAmount = Silver.collateral; }
 	else if (strAmt == "copper") { nAmount = Copper.collateral; }
 	// else if (strAmt.find_first_not_of( "0123456789" ) == string::npos) nAmount = AmountFromValue(params[2]);
-	else throw runtime_error("invalid amount");
+    else
+        throw runtime_error("invalid amount");
+
+    nAmount *= COIN;
 
 	uint256 txHash = uint256(params[2].get_str());
 	std::string mnAddress = params[3].get_str();
@@ -124,18 +128,27 @@ Value fundmasternode(const Array& params, bool fHelp)
 	pwalletMain->AvailableCoins(vCoins);
 	const COutput* selectedOutput;
 	bool found = false;
-	for (vector<COutput>::iterator it = vCoins.begin(); it != vCoins.end(); it++) {
-		if ((*it).tx->GetHash() == txHash && (*it).tx->vout[(*it).i].nValue == nAmount) {
-			selectedOutput = &(*it);
-			found = true;
-			break;
-		}
-	}
 
-	if (!found) throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction");
+    if(auto wtx = pwalletMain->GetWalletTx(txHash))
+    {
+        for(size_t i = 0; i < wtx->vout.size(); ++i)
+        {
+            if(wtx->vout[i].nValue == nAmount && !pwalletMain->IsSpent(txHash, i))
+            {
+                found = true;
+                break;
+            }
+        }
+    }
+
+    if (!found) {
+        throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction");
+    }
 
 	CMnFunding funds = CMnFunding({ nAmount, CTxIn(txHash, selectedOutput->i) });
-	if (!funds.CheckVin(mnAddress)) throw JSONRPCError(RPC_VERIFY_ERROR, "Transaction is not valid");
+    if (!funds.CheckVin(mnAddress)) {
+        throw JSONRPCError(RPC_VERIFY_ERROR, "Transaction is not valid");
+    }
 
 	// Lock MN coins from masternode.conf back if they where temporary unlocked
 	if (!confLockedCoins.empty()) {
@@ -144,8 +157,19 @@ Value fundmasternode(const Array& params, bool fHelp)
 	}
 
 	std::string pWallet, vWallet;
-	if (params.size() < 5) pWallet = GetAccountAddress("", false).ToString(); else pWallet = params[4].get_str();
-	if (params.size() < 6) vWallet = pWallet; else vWallet = params[5].get_str();
+    if (params.size() < 5) {
+        pWallet = GetAccountAddress("", false).ToString();
+    }
+    else {
+        pWallet = params[4].get_str();
+    }
+
+    if (params.size() < 6) {
+        vWallet = pWallet;
+    }
+    else {
+        vWallet = params[5].get_str();
+    }
 
 	string config = params[1].get_str() + " " + params[2].get_str() + " " + to_string(selectedOutput->i) + " " + mnAddress + " " + pWallet + " " + vWallet;
 

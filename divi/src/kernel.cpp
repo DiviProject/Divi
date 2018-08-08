@@ -284,10 +284,9 @@ uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutInde
 }
 
 //test hash vs target
-bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, uint256 bnTargetPerCoinDay)
+bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, uint256 bnTargetPerCoinDay, int64_t nTimeWeight)
 {
-    //get the stake weight - weight is equal to coin amount
-    uint256 bnCoinDayWeight = uint256(nValueIn) / 100;
+    uint256 bnCoinDayWeight = uint256(nValueIn) * nTimeWeight / COIN / 400;
 
     // Now check if proof-of-stake hash meets target protocol
     return (uint256(hashProofOfStake) < bnCoinDayWeight * bnTargetPerCoinDay);
@@ -323,28 +322,30 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
     CDataStream ss(SER_GETHASH, 0);
     ss << nStakeModifier;
 
+    //get the stake weight - weight is equal to coin amount
+    int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, nStakeMaxAge - nStakeMinAge);
+
     //if wallet is simply checking to make sure a hash is valid
     if (fCheck) {
         hashProofOfStake = stakeHash(nTimeTx, ss, prevout.n, prevout.hash, nTimeBlockFrom);
-        return stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay);
+        return stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight);
     }
 
     bool fSuccess = false;
     unsigned int nTryTime = 0;
-    unsigned int i;
     int nHeightStart = chainActive.Height();
-    for (i = 0; i < (nHashDrift); i++) //iterate the hashing
+    for (unsigned int i = 0; i < nHashDrift; i++) //iterate the hashing
     {
         //new block came in, move on
         if (chainActive.Height() != nHeightStart)
             break;
 
         //hash this iteration
-        nTryTime = nTimeTx + nHashDrift - i;
+        nTryTime = nTimeTx - i;
         hashProofOfStake = stakeHash(nTryTime, ss, prevout.n, prevout.hash, nTimeBlockFrom);
 
         // if stake hash does not meet the target then continue to next iteration
-        if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay))
+        if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight))
             continue;
 
         fSuccess = true; // if we make it this far then we have successfully created a stake hash

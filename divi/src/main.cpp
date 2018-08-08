@@ -81,8 +81,8 @@ bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
 bool fAlerts = DEFAULT_ALERTS;
 
-// unsigned int nStakeMinAge = 60 * 60;
-unsigned int nStakeMinAge = 60;
+unsigned int nStakeMinAge = 60 * 60;
+unsigned int nStakeMaxAge = 60 * 60 * 24;
 int64_t nReserveBalance = 0;
 
 /** Fees smaller than this (in duffs) are considered zero fee (for relaying and mining)
@@ -2262,6 +2262,10 @@ int64_t GetBlockValue(int nHeight, bool fLotteryBlock)
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)	// 2193
 {
     int64_t ret = 0;
+
+    // no seesaw for time being
+    //CAmount nMoneySupply = chainActive.Tip()->nMoneySupply / COIN;
+    //CAmount mnPayment = (nMoneySupply / (mNodeCoins * 4)) * blockValue;
 
     return blockValue / 2; // for know use simply 50 % of block
 

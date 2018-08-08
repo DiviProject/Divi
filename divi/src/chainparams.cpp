@@ -374,7 +374,6 @@ public:
         //vSeeds.push_back(CDNSSeedData("coin-server.com", "coin-server.com"));         // Single node address
         //vSeeds.push_back(CDNSSeedData("s3v3nh4cks.ddns.net", "s3v3nh4cks.ddns.net")); // Single node address
         //vSeeds.push_back(CDNSSeedData("178.254.23.111", "178.254.23.111"));           // Single node address
-        vFixedSeeds.clear();
         vSeeds.clear();
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 30);
@@ -386,6 +385,7 @@ public:
         base58Prefixes[EXT_COIN_TYPE] = boost::assign::list_of(0x80)(0x00)(0x00)(0x77).convert_to_container<std::vector<unsigned char> >();
 
         convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
+        vFixedSeeds.clear();
 
         fRequireRPCPassword = true;
         fMiningRequiresPeers = true;

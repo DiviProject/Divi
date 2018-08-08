@@ -6,24 +6,18 @@
 #ifndef BITCOIN_CLIENTVERSION_H
 #define BITCOIN_CLIENTVERSION_H
 
-#include "tinyformat.h"
-#include <string>
-
 #if defined(HAVE_CONFIG_H)
 #include "config/divi-config.h"
 #else
 //! These need to be macros, as clientversion.cpp's and divi*-res.rc's voodoo requires it
 #define CLIENT_VERSION_MAJOR 4
 #define CLIENT_VERSION_MINOR 00
-#define CLIENT_VERSION_REVISION 05 
+#define CLIENT_VERSION_REVISION 06 
 #define CLIENT_VERSION_BUILD 00 
 
 #define CLIENT_VERSION_IS_RELEASE true		// Todo: !! Set to true for release, false for prerelease or test build
 #define COPYRIGHT_YEAR 2018					// Todo: update this when changing our copyright comments in the source
 #endif //HAVE_CONFIG_H
-
-const std::string CLIENT_NAME_STR("DIVI Core");
-const std::string CLIENT_VERSION_STR("4.0.5.0");
 
 /**
  * Converts the parameter X to a string after macro replacement on X has been performed.
@@ -57,6 +51,9 @@ const int CLIENT_VERSION = 1000000 * CLIENT_VERSION_MAJOR + 10000 * CLIENT_VERSI
 
 extern const std::string CLIENT_BUILD;
 extern const std::string CLIENT_DATE;
+
+const std::string CLIENT_NAME_STR("DIVI Core");
+const std::string CLIENT_VERSION_STR("4.0.5.0");
 
 
 std::string FormatFullVersion();

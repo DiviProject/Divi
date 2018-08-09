@@ -181,7 +181,7 @@ bool CSporkManager::CheckSignature(CSporkMessage& spork)
     std::string strMessage = boost::lexical_cast<std::string>(spork.nSporkID) + boost::lexical_cast<std::string>(spork.nValue) + boost::lexical_cast<std::string>(spork.nTimeSigned);
     CPubKey pubkeynew(ParseHex(Params().SporkKey()));
     std::string errorMessage = "";
-    if (obfuScationSigner.VerifyMessage(pubkeynew, spork.vchSig, strMessage, errorMessage)) {
+    if (CObfuScationSigner::VerifyMessage(pubkeynew, spork.vchSig, strMessage, errorMessage)) {
         return true;
     }
 
@@ -196,17 +196,17 @@ bool CSporkManager::Sign(CSporkMessage& spork)
     CPubKey pubkey2;
     std::string errorMessage = "";
 
-    if (!obfuScationSigner.SetKey(strMasterPrivKey, errorMessage, key2, pubkey2)) {
+    if (!CObfuScationSigner::SetKey(strMasterPrivKey, errorMessage, key2, pubkey2)) {
         LogPrintf("CMasternodePayments::Sign - ERROR: Invalid masternodeprivkey: '%s'\n", errorMessage);
         return false;
     }
 
-    if (!obfuScationSigner.SignMessage(strMessage, errorMessage, spork.vchSig, key2)) {
+    if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, spork.vchSig, key2)) {
         LogPrintf("CMasternodePayments::Sign - Sign message failed");
         return false;
     }
 
-    if (!obfuScationSigner.VerifyMessage(pubkey2, spork.vchSig, strMessage, errorMessage)) {
+    if (!CObfuScationSigner::VerifyMessage(pubkey2, spork.vchSig, strMessage, errorMessage)) {
         LogPrintf("CMasternodePayments::Sign - Verify message failed");
         return false;
     }

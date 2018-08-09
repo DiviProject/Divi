@@ -85,7 +85,7 @@ void CMasternodeSync::Reset()
 
 void CMasternodeSync::AddedMasternodeList(uint256 hash)
 {
-    if (mnodeman.mMasternodes.count(hash)) {
+    if (mnodeman.mapSeenMasternodeBroadcast.count(hash)) {
         if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
             lastMasternodeList = GetTime();
             mapSeenSyncMNB[hash]++;
@@ -98,7 +98,7 @@ void CMasternodeSync::AddedMasternodeList(uint256 hash)
 
 void CMasternodeSync::AddedMasternodeWinner(uint256 hash)
 {
-    if (mnPayments.mapSeenPaymentVote.count(hash)) {
+    if (masternodePayments.mapMasternodePayeeVotes.count(hash)) {
         if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
             lastMasternodeWinner = GetTime();
             mapSeenSyncMNW[hash]++;
@@ -242,7 +242,7 @@ void CMasternodeSync::Process()
         /* 
             Resync if we lose all masternodes from sleep/wake or failure to sync originally
         */
-        if (mnodeman.mMasternodes.size() < 2) {
+        if (mnodeman.size() < 2) {
             Reset();
         } else
             return;
@@ -273,7 +273,7 @@ void CMasternodeSync::Process()
             } else if (RequestedMasternodeAttempt < 4) {
                 mnodeman.DsegUpdate(pnode);
             } else if (RequestedMasternodeAttempt < 6) {
-                int nMnCount = mnodeman.mMasternodes.size();
+                int nMnCount = mnodeman.size();
                 pnode->PushMessage("mnget", nMnCount); //sync payees
                 uint256 n = 0;
                 pnode->PushMessage("mnvs", n); //sync masternode votes
@@ -358,7 +358,7 @@ void CMasternodeSync::Process()
                 CBlockIndex* pindexPrev = chainActive.Tip();
                 if (pindexPrev == NULL) return;
 
-                int nMnCount = mnodeman.mMasternodes.size();
+                int nMnCount = mnodeman.size();
                 pnode->PushMessage("mnget", nMnCount); //sync payees
                 RequestedMasternodeAttempt++;
 

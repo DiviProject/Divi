@@ -74,7 +74,7 @@ void OptionsModel::Init()
 
     if (!settings.contains("nPreferredDenom"))
         settings.setValue("nPreferredDenom", 0);
-    nPreferredDenom = settings.value("nPreferredDenom", "0").toLongLong();
+
     if (!settings.contains("nZeromintPercentage"))
         settings.setValue("nZeromintPercentage", 10);
     nZeromintPercentage = settings.value("nZeromintPercentage").toLongLong();
@@ -232,8 +232,6 @@ QVariant OptionsModel::data(const QModelIndex& index, int role) const
             return settings.value("nThreadsScriptVerif");
         case ZeromintPercentage:
             return QVariant(nZeromintPercentage);
-        case ZeromintPrefDenom:
-            return QVariant(nPreferredDenom);
         case AnonymizeDiviAmount:
             return QVariant(nAnonymizeDiviAmount);
         case Listen:
@@ -344,12 +342,6 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
             settings.setValue("nZeromintPercentage", nZeromintPercentage);
             emit zeromintPercentageChanged(nZeromintPercentage);
             break;
-        case ZeromintPrefDenom:
-            nPreferredDenom = value.toInt();
-            settings.setValue("nPreferredDenom", nPreferredDenom);
-            emit preferredDenomChanged(nPreferredDenom);
-            break;
-
         case AnonymizeDiviAmount:
             nAnonymizeDiviAmount = value.toInt();
             settings.setValue("nAnonymizeDiviAmount", nAnonymizeDiviAmount);

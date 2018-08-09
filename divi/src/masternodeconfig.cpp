@@ -1,29 +1,27 @@
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2017 The PIVX Developers
+// Copyright (c) 2015-2017 The PIVX developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "base58.h"
+// clang-format off
 #include "net.h"
-#include "masternode.h"
 #include "masternodeconfig.h"
-#include "masternodeman.h"
 #include "util.h"
 #include "ui_interface.h"
-using namespace std;
+#include <base58.h>
+// clang-format on
 
 CMasternodeConfig masternodeConfig;
 
-void CMasternodeConfig::add(string alias, string tier, string mnAddress, string txHash, string outputIndex, string payAddress, string voteAddress, string signature)
+void CMasternodeConfig::add(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex)
 {
-	CMasternodeEntry cme ({ alias, tier, mnAddress, txHash, outputIndex, payAddress, voteAddress, signature });
+    CMasternodeEntry cme(alias, ip, privKey, txHash, outputIndex);
     entries.push_back(cme);
 }
 
 bool CMasternodeConfig::read(std::string& strErr)
 {
-	mnodeman.my = new CMasternode();
-	int linenumber = 1;
+    int linenumber = 1;
     boost::filesystem::path pathMasternodeConfigFile = GetMasternodeConfigFile();
     boost::filesystem::ifstream streamConfig(pathMasternodeConfigFile);
 
@@ -43,7 +41,7 @@ bool CMasternodeConfig::read(std::string& strErr)
         if (line.empty()) continue;
 
         std::istringstream iss(line);
-        std::string comment, alias, tier, txHash, outputIndex, mnAddress, payAddress, voteAddress, signature;
+        std::string comment, alias, ip, privKey, txHash, outputIndex;
 
         if (iss >> comment) {
             if (comment.at(0) == '#') continue;
@@ -51,29 +49,49 @@ bool CMasternodeConfig::read(std::string& strErr)
             iss.clear();
         }
 
-        if (!(iss >> alias >> tier >> txHash >> outputIndex >> mnAddress >> payAddress >> voteAddress >> signature)) {
+        if (!(iss >> alias >> ip >> privKey >> txHash >> outputIndex)) {
             iss.str(line);
             iss.clear();
-            if (!(iss >> alias >> tier >> txHash >> outputIndex >> mnAddress >> payAddress >> voteAddress >> signature)) {
-                strErr = _("Could not parse masternode.conf") + "\n" + strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"";
+            if (!(iss >> alias >> ip >> privKey >> txHash >> outputIndex)) {
+                strErr = _("Could not parse masternode.conf") + "\n" +
+                         strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"";
                 streamConfig.close();
                 return false;
             }
         }
 
-		// fprintf(stderr, "%s %s %s %s", alias.c_str(), tier.c_str(), txHash.c_str(), outputIndex.c_str());
-        add(alias, tier, mnAddress, txHash, outputIndex, payAddress, voteAddress, signature);
-		CAmount nAmount;
-		if (tier == "diamond") { nAmount = Diamond.collateral; mnodeman.my->tier = Diamond; }
-		else if (tier == "platinum") { nAmount = Platinum.collateral; mnodeman.my->tier = Platinum; }
-		else if (tier == "gold") { nAmount = Gold.collateral; mnodeman.my->tier = Gold; }
-		else if (tier == "silver") { nAmount = Silver.collateral; mnodeman.my->tier = Silver; }
-		else if (tier == "copper") { nAmount = Copper.collateral; mnodeman.my->tier = Copper; }
-		CTxIn vin = *(new CTxIn(uint256(txHash), atoi(outputIndex)));
-		mnodeman.my->funding.push_back(*(new CMnFunding({ nAmount, vin, payAddress, voteAddress, signature })));
-		
+        if (Params().NetworkID() == CBaseChainParams::MAIN) {
+            if (CService(ip).GetPort() != 51472) {
+                strErr = _("Invalid port detected in masternode.conf") + "\n" +
+                         strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
+                         _("(must be 51472 for mainnet)");
+                streamConfig.close();
+                return false;
+            }
+        } else if (CService(ip).GetPort() == 51472) {
+            strErr = _("Invalid port detected in masternode.conf") + "\n" +
+                     strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
+                     _("(51472 could be used only on mainnet)");
+            streamConfig.close();
+            return false;
+        }
+
+
+        add(alias, ip, privKey, txHash, outputIndex);
     }
 
     streamConfig.close();
+    return true;
+}
+
+bool CMasternodeConfig::CMasternodeEntry::castOutputIndex(int &n)
+{
+    try {
+        n = std::stoi(outputIndex);
+    } catch (const std::exception e) {
+        LogPrintf("%s: %s on getOutputIndex\n", __func__, e.what());
+        return false;
+    }
+
     return true;
 }

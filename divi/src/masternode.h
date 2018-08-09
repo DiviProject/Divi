@@ -127,7 +127,8 @@ public:
         MASTERNODE_TIER_SILVER,
         MASTERNODE_TIER_GOLD,
         MASTERNODE_TIER_PLATINUM,
-        MASTERNODE_TIER_DIAMOND
+        MASTERNODE_TIER_DIAMOND,
+        MASTERNODE_TIER_INVALID
     };
 
     CTxIn vin;
@@ -145,6 +146,7 @@ public:
     int nActiveState;
     int nScanningErrorCount;
     int nLastScanningErrorBlockHeight;
+    Tier nTier;
     CMasternodePing lastPing;
 
     CMasternode();
@@ -174,6 +176,7 @@ public:
         swap(first.protocolVersion, second.protocolVersion);
         swap(first.nScanningErrorCount, second.nScanningErrorCount);
         swap(first.nLastScanningErrorBlockHeight, second.nLastScanningErrorBlockHeight);
+        swap(first.nTier, second.nTier);
     }
 
     CMasternode& operator=(CMasternode from)
@@ -214,6 +217,7 @@ public:
         READWRITE(allowFreeTx);
         READWRITE(nScanningErrorCount);
         READWRITE(nLastScanningErrorBlockHeight);
+        READWRITE(nTier);
     }
 
     int64_t SecondsSincePayment();
@@ -264,7 +268,9 @@ public:
         return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
     }
 
-    static CAmount GetTierCollateral(Tier level);
+    static CAmount GetTierCollateralAmount(Tier tier);
+    static Tier GetTierByCollateralAmount(CAmount nCollateral);
+    static bool IsTierValid(Tier tier);
 
     std::string GetStatus();
 
@@ -294,7 +300,7 @@ class CMasternodeBroadcast : public CMasternode
 {
 public:
     CMasternodeBroadcast();
-    CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey newPubkey, CPubKey newPubkey2, int protocolVersionIn);
+    CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey newPubkey, CPubKey newPubkey2, Tier nMasternodeTier, int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
     bool CheckAndUpdate(int& nDoS);
@@ -315,6 +321,7 @@ public:
         READWRITE(sigTime);
         READWRITE(protocolVersion);
         READWRITE(lastPing);
+        READWRITE(nTier);
     }
 
     uint256 GetHash()

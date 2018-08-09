@@ -16,6 +16,13 @@ map<uint256, int> mapSeenMasternodeScanningErrors;
 // cache block hashes as we calculate them
 std::map<int64_t, uint256> mapCacheBlockHashes;
 
+
+const int TIER_COPPER_BASE_COLLATERAL   = 1000;
+const int TIER_SILVER_BASE_COLLATERAL   = 3000;
+const int TIER_GOLD_BASE_COLLATERAL     = 10000;
+const int TIER_PLATINUM_BASE_COLLATERAL = 30000;
+const int TIER_DIAMOND_BASE_COLLATERAL  = 100000;
+
 //Get the last hash that matches the modulus given. Processed in reverse order
 bool GetBlockHash(uint256& hash, int nBlockHeight)
 {
@@ -73,7 +80,7 @@ CMasternode::CMasternode()
     unitTest = false;
     allowFreeTx = true;
     nActiveState = MASTERNODE_ENABLED,
-    protocolVersion = PROTOCOL_VERSION;
+            protocolVersion = PROTOCOL_VERSION;
     nScanningErrorCount = 0;
     nLastScanningErrorBlockHeight = 0;
     lastTimeChecked = 0;
@@ -95,7 +102,7 @@ CMasternode::CMasternode(const CMasternode& other)
     unitTest = other.unitTest;
     allowFreeTx = other.allowFreeTx;
     nActiveState = MASTERNODE_ENABLED,
-    protocolVersion = other.protocolVersion;
+            protocolVersion = other.protocolVersion;
     nScanningErrorCount = other.nScanningErrorCount;
     nLastScanningErrorBlockHeight = other.nLastScanningErrorBlockHeight;
     lastTimeChecked = 0;
@@ -117,7 +124,7 @@ CMasternode::CMasternode(const CMasternodeBroadcast& mnb)
     unitTest = false;
     allowFreeTx = true;
     nActiveState = MASTERNODE_ENABLED,
-    protocolVersion = mnb.protocolVersion;
+            protocolVersion = mnb.protocolVersion;
     nScanningErrorCount = 0;
     nLastScanningErrorBlockHeight = 0;
     lastTimeChecked = 0;
@@ -220,18 +227,51 @@ void CMasternode::Check(bool forceCheck)
     activeState = MASTERNODE_ENABLED; // OK
 }
 
-CAmount CMasternode::GetTierCollateral(CMasternode::Tier level)
+CAmount CMasternode::GetTierCollateralAmount(CMasternode::Tier tier)
 {
-    switch(level)
+    switch(tier)
     {
-        case MASTERNODE_TIER_COPPER:   return 1000 * COIN;
-        case MASTERNODE_TIER_SILVER:   return 3000 * COIN;
-        case MASTERNODE_TIER_GOLD:     return 10000 * COIN;
-        case MASTERNODE_TIER_PLATINUM: return 30000 * COIN;
-        case MASTERNODE_TIER_DIAMOND:  return 100000 * COIN;
+    case MASTERNODE_TIER_COPPER:   return TIER_COPPER_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_SILVER:   return TIER_SILVER_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_GOLD:     return TIER_GOLD_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_PLATINUM: return TIER_PLATINUM_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_DIAMOND:  return TIER_DIAMOND_BASE_COLLATERAL * COIN;
     }
 
     return 0;
+}
+
+CMasternode::Tier CMasternode::GetTierByCollateralAmount(CAmount nCollateral)
+{
+    if(TIER_COPPER_BASE_COLLATERAL * COIN == nCollateral) {
+        return MASTERNODE_TIER_COPPER;
+    }
+    else if(TIER_SILVER_BASE_COLLATERAL * COIN == nCollateral) {
+        return MASTERNODE_TIER_SILVER;
+    }
+    else if(TIER_GOLD_BASE_COLLATERAL * COIN == nCollateral) {
+        return MASTERNODE_TIER_GOLD;
+    }
+    else if(TIER_PLATINUM_BASE_COLLATERAL * COIN == nCollateral) {
+        return MASTERNODE_TIER_PLATINUM;
+    }
+    else if(TIER_DIAMOND_BASE_COLLATERAL * COIN == nCollateral) {
+        return MASTERNODE_TIER_DIAMOND;
+    }
+}
+
+bool CMasternode::IsTierValid(CMasternode::Tier tier)
+{
+    switch(tier)
+    {
+    case MASTERNODE_TIER_COPPER:
+    case MASTERNODE_TIER_SILVER:
+    case MASTERNODE_TIER_GOLD:
+    case MASTERNODE_TIER_PLATINUM:
+    case MASTERNODE_TIER_DIAMOND: return true;
+    }
+
+    return false;
 }
 
 int64_t CMasternode::SecondsSincePayment()
@@ -282,7 +322,7 @@ int64_t CMasternode::GetLastPaid()
 
         if (masternodePayments.mapMasternodeBlocks.count(BlockReading->nHeight)) {
             /*
-                Search for this payee, with at least 2 votes. This will aid in consensus allowing the network 
+                Search for this payee, with at least 2 votes. This will aid in consensus allowing the network
                 to converge on the same payees quickly, then keep the same schedule.
             */
             if (masternodePayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 2)) {
@@ -327,7 +367,7 @@ bool CMasternode::IsValidNetAddr()
     // TODO: regtest is fine with any addresses for now,
     // should probably be a bit smarter if one day we start to implement tests for this
     return Params().NetworkID() == CBaseChainParams::REGTEST ||
-           (IsReachable(addr) && addr.IsRoutable());
+            (IsReachable(addr) && addr.IsRoutable());
 }
 
 CMasternodeBroadcast::CMasternodeBroadcast()
@@ -346,9 +386,10 @@ CMasternodeBroadcast::CMasternodeBroadcast()
     protocolVersion = PROTOCOL_VERSION;
     nScanningErrorCount = 0;
     nLastScanningErrorBlockHeight = 0;
+    nTier = MASTERNODE_TIER_INVALID;
 }
 
-CMasternodeBroadcast::CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey pubKeyCollateralAddressNew, CPubKey pubKeyMasternodeNew, int protocolVersionIn)
+CMasternodeBroadcast::CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey pubKeyCollateralAddressNew, CPubKey pubKeyMasternodeNew, Tier nMasternodeTier, int protocolVersionIn)
 {
     vin = newVin;
     addr = newAddr;
@@ -365,6 +406,7 @@ CMasternodeBroadcast::CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubK
     protocolVersion = protocolVersionIn;
     nScanningErrorCount = 0;
     nLastScanningErrorBlockHeight = 0;
+    nTier = nMasternodeTier;
 }
 
 CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
@@ -384,6 +426,7 @@ CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
     protocolVersion = mn.protocolVersion;
     nScanningErrorCount = mn.nScanningErrorCount;
     nLastScanningErrorBlockHeight = mn.nLastScanningErrorBlockHeight;
+    nTier = mn.nTier;
 }
 
 bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMasternode, std::string strTxHash, std::string strOutputIndex, std::string& strErrorRet, CMasternodeBroadcast& mnbRet, bool fOffline)
@@ -413,6 +456,8 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
         return false;
     }
 
+
+
     CService service = CService(strService);
     int mainnetDefaultPort = Params(CBaseChainParams::MAIN).GetDefaultPort();
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
@@ -436,8 +481,8 @@ bool CMasternodeBroadcast::Create(CTxIn txin, CService service, CKey keyCollater
     if (fImporting || fReindex) return false;
 
     LogPrint("masternode", "CMasternodeBroadcast::Create -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
-        CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
-        pubKeyMasternodeNew.GetID().ToString());
+             CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
+             pubKeyMasternodeNew.GetID().ToString());
 
     CMasternodePing mnp(txin);
     if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) {
@@ -530,7 +575,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
         // this broadcast older than we have, it's bad.
         if (pmn->sigTime > sigTime) {
             LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (existing broadcast is at %d)\n",
-                sigTime, vin.prevout.hash.ToString(), pmn->sigTime);
+                     sigTime, vin.prevout.hash.ToString(), pmn->sigTime);
             return false;
         }
         // masternode is not enabled yet/already, nothing to update
@@ -613,7 +658,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
         CBlockIndex* pConfIndex = chainActive[pMNIndex->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1]; // block where tx got MASTERNODE_MIN_CONFIRMATIONS
         if (pConfIndex->GetBlockTime() > sigTime) {
             LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (%i conf block is at %d)\n",
-                sigTime, vin.prevout.hash.ToString(), MASTERNODE_MIN_CONFIRMATIONS, pConfIndex->GetBlockTime());
+                     sigTime, vin.prevout.hash.ToString(), MASTERNODE_MIN_CONFIRMATIONS, pConfIndex->GetBlockTime());
             return false;
         }
     }

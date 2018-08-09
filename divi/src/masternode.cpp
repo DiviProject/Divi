@@ -79,11 +79,12 @@ CMasternode::CMasternode()
     cacheInputAgeBlock = 0;
     unitTest = false;
     allowFreeTx = true;
-    nActiveState = MASTERNODE_ENABLED,
-            protocolVersion = PROTOCOL_VERSION;
+    nActiveState = MASTERNODE_ENABLED;
+    protocolVersion = PROTOCOL_VERSION;
     nScanningErrorCount = 0;
     nLastScanningErrorBlockHeight = 0;
     lastTimeChecked = 0;
+    nTier = MASTERNODE_TIER_INVALID;
 }
 
 CMasternode::CMasternode(const CMasternode& other)
@@ -101,11 +102,12 @@ CMasternode::CMasternode(const CMasternode& other)
     cacheInputAgeBlock = other.cacheInputAgeBlock;
     unitTest = other.unitTest;
     allowFreeTx = other.allowFreeTx;
-    nActiveState = MASTERNODE_ENABLED,
-            protocolVersion = other.protocolVersion;
+    nActiveState = MASTERNODE_ENABLED;
+    protocolVersion = other.protocolVersion;
     nScanningErrorCount = other.nScanningErrorCount;
     nLastScanningErrorBlockHeight = other.nLastScanningErrorBlockHeight;
     lastTimeChecked = 0;
+    nTier = other.nTier;
 }
 
 CMasternode::CMasternode(const CMasternodeBroadcast& mnb)
@@ -123,11 +125,12 @@ CMasternode::CMasternode(const CMasternodeBroadcast& mnb)
     cacheInputAgeBlock = 0;
     unitTest = false;
     allowFreeTx = true;
-    nActiveState = MASTERNODE_ENABLED,
-            protocolVersion = mnb.protocolVersion;
+    nActiveState = MASTERNODE_ENABLED;
+    protocolVersion = mnb.protocolVersion;
     nScanningErrorCount = 0;
     nLastScanningErrorBlockHeight = 0;
     lastTimeChecked = 0;
+    nTier = mnb.nTier;
 }
 
 //

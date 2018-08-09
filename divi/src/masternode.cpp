@@ -456,6 +456,24 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
         return false;
     }
 
+    Tier nMasternodeTier = Tier::MASTERNODE_TIER_INVALID;
+    if(auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash))
+    {
+        auto collateralAmount = walletTx->vout.at(txin.prevout.n);
+        nMasternodeTier = GetTierByCollateralAmount(collateralAmount);
+        if(!IsTierValid(tier))
+        {
+            strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", strService, collateralAmount);
+            LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+            return false;
+        }
+    }
+    else
+    {
+        strErrorRet = strprintf("Could not allocate txin %s:%s for masternode %s", strTxHash, strOutputIndex, strService);
+        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        return false;
+    }
 
 
     CService service = CService(strService);
@@ -472,10 +490,10 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
         return false;
     }
 
-    return Create(txin, CService(strService), keyCollateralAddressNew, pubKeyCollateralAddressNew, keyMasternodeNew, pubKeyMasternodeNew, strErrorRet, mnbRet);
+    return Create(txin, CService(strService), keyCollateralAddressNew, pubKeyCollateralAddressNew, keyMasternodeNew, pubKeyMasternodeNew, nMasternodeTier, strErrorRet, mnbRet);
 }
 
-bool CMasternodeBroadcast::Create(CTxIn txin, CService service, CKey keyCollateralAddressNew, CPubKey pubKeyCollateralAddressNew, CKey keyMasternodeNew, CPubKey pubKeyMasternodeNew, std::string& strErrorRet, CMasternodeBroadcast& mnbRet)
+bool CMasternodeBroadcast::Create(CTxIn txin, CService service, CKey keyCollateralAddressNew, CPubKey pubKeyCollateralAddressNew, CKey keyMasternodeNew, CPubKey pubKeyMasternodeNew, Tier nMasternodeTier, std::string& strErrorRet, CMasternodeBroadcast& mnbRet)
 {
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;
@@ -492,7 +510,7 @@ bool CMasternodeBroadcast::Create(CTxIn txin, CService service, CKey keyCollater
         return false;
     }
 
-    mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, PROTOCOL_VERSION);
+    mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
 
     if (!mnbRet.IsValidNetAddr()) {
         strErrorRet = strprintf("Invalid IP address %s, masternode=%s", mnbRet.addr.ToStringIP (), txin.prevout.hash.ToString());

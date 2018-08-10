@@ -21,16 +21,17 @@
 #include <boost/assign/list_of.hpp>
 #include <openssl/rand.h>
 
-bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey)
+bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, CMasternode::Tier nMasternodeTier)
 {
     CScript payee2;
     payee2 = GetScriptForDestination(pubkey.GetID());
 
     CTransaction txVin;
     uint256 hash;
+    auto nCollateral = CMasternode::GetTierCollateralAmount(nMasternodeTier);
     if (GetTransaction(vin.prevout.hash, txVin, hash, true)) {
         BOOST_FOREACH (CTxOut out, txVin.vout) {
-            if (out.nValue == 10000 * COIN) {
+            if (out.nValue == nCollateral) {
                 if (out.scriptPubKey == payee2) return true;
             }
         }

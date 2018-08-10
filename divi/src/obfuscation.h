@@ -41,7 +41,7 @@ extern std::string strMasterNodePrivKey;
 struct CObfuScationSigner
 {
     /// Is the inputs associated with this public key? (and there is 10000 PIV - checking if valid masternode)
-    static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey);
+    static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, Tier nMasternodeTier);
     /// Set the private/public key values, returns true if successful
     static bool GetKeysFromSecret(std::string strSecret, CKey& keyRet, CPubKey& pubkeyRet);
     /// Set the private/public key values, returns true if successful

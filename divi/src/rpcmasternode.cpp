@@ -17,9 +17,32 @@
 #include "script/standard.h"
 
 #include <boost/tokenizer.hpp>
-
+#include <boost/algorithm/string.hpp>
 #include <fstream>
 using namespace json_spirit;
+
+static CMasternode::Tier GetMasternodeTierFromString(std::string str)
+{
+    boost::algorithm::to_lower(str); // modifies str
+
+    if(str == "copper") {
+        return CMasternode::MASTERNODE_TIER_COPPER;
+    }
+    else if(str == "silver") {
+        return CMasternode::MASTERNODE_TIER_SILVER;
+    }
+    else if(str == "gold") {
+        return CMasternode::MASTERNODE_TIER_GOLD;
+    }
+    else if(str == "platinum") {
+        return CMasternode::MASTERNODE_TIER_PLATINUM;
+    }
+    else if(str == "diamond") {
+        return CMasternode::MASTERNODE_TIER_DIAMOND;
+    }
+
+    return CMasternode::MASTERNODE_TIER_INVALID;
+}
 
 Value debug(const Array& params, bool fHelp)
 {
@@ -51,18 +74,13 @@ Value allocatefunds(const Array& params, bool fHelp)
 	CBitcoinAddress acctAddr = GetAccountAddress("alloc->" + params[1].get_str());
 	string strAmt = params[2].get_str();
 	CAmount nAmount;
-#if 0
-    if (strAmt == "diamond") { nAmount = Diamond.collateral; }
-    else if (strAmt == "platinum") { nAmount = Platinum.collateral; }
-    else if (strAmt == "gold") { nAmount = Gold.collateral; }
-    else if (strAmt == "silver") { nAmount = Silver.collateral; }
-    else if (strAmt == "copper") { nAmount = Copper.collateral; }
-	// else if (strAmt.find_first_not_of( "0123456789" ) == string::npos) nAmount = AmountFromValue(params[2]);
-	else throw runtime_error("invalid amount");
-#endif
+
+    auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
+    if(!CMasternode::IsTierValid(nMasternodeTier))
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
 
 	CWalletTx wtx;
-    SendMoney(acctAddr.Get(), nAmount * COIN, wtx);
+    SendMoney(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), wtx);
 
 	Object obj;
     obj.push_back(Pair("txhash", wtx.GetHash().GetHex()));

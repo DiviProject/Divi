@@ -462,9 +462,9 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
     Tier nMasternodeTier = Tier::MASTERNODE_TIER_INVALID;
     if(auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash))
     {
-        auto collateralAmount = walletTx->vout.at(txin.prevout.n);
+        auto collateralAmount = walletTx->vout.at(txin.prevout.n).nValue;
         nMasternodeTier = GetTierByCollateralAmount(collateralAmount);
-        if(!IsTierValid(tier))
+        if(!IsTierValid(nMasternodeTier))
         {
             strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", strService, collateralAmount);
             LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);

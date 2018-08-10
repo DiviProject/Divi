@@ -270,6 +270,8 @@ CMasternode::Tier CMasternode::GetTierByCollateralAmount(CAmount nCollateral)
     else if(TIER_DIAMOND_BASE_COLLATERAL * COIN == nCollateral) {
         return MASTERNODE_TIER_DIAMOND;
     }
+
+    return MASTERNODE_TIER_INVALID;
 }
 
 bool CMasternode::IsTierValid(CMasternode::Tier tier)

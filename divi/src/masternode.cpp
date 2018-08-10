@@ -23,6 +23,14 @@ const int TIER_GOLD_BASE_COLLATERAL     = 10000;
 const int TIER_PLATINUM_BASE_COLLATERAL = 30000;
 const int TIER_DIAMOND_BASE_COLLATERAL  = 100000;
 
+static bool GetUTXOCoins(const uint256& txhash, CCoins& coins)
+{
+    LOCK(cs_main);
+    if (!pcoinsTip->GetCoins(txhash, coins))
+        return false;
+    return true;
+}
+
 static bool IsCoinSpent(const COutPoint &outpoint)
 {
     CCoins coins;
@@ -34,13 +42,6 @@ static bool IsCoinSpent(const COutPoint &outpoint)
     return true;
 }
 
-static bool GetUTXOCoins(const uint256& txhash, CCoins& coins)
-{
-    LOCK(cs_main);
-    if (!pcoinsTip->GetCoins(txhash, coins))
-        return false;
-    return true;
-}
 
 //Get the last hash that matches the modulus given. Processed in reverse order
 bool GetBlockHash(uint256& hash, int nBlockHeight)

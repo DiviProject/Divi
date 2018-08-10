@@ -101,7 +101,7 @@ public:
     int CountSignatures();
     void AddSignature(CConsensusVote& cv);
 
-    uint256 GetHash()
+    uint256 GetHash() const
     {
         return txHash;
     }

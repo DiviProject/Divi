@@ -109,7 +109,7 @@ Value fundmasternode(const Array& params, bool fHelp)
 
 	string strAmt = params[1].get_str();
 	CAmount nAmount;
-    #if 0
+#if 0
 	if (strAmt == "diamond") { nAmount = Diamond.collateral; }
 	else if (strAmt == "platinum") { nAmount = Platinum.collateral; }
 	else if (strAmt == "gold") { nAmount = Gold.collateral; }
@@ -382,7 +382,44 @@ Value masternodecurrent(const Array& params, bool fHelp)
 
 Value startmasternode(const Array& params, bool fHelp)
 {
-	throw runtime_error("startmasternode is deprecated!  Master nodes now automatically start themselves");
+    if (fHelp || params.size() < 1)
+        throw runtime_error(
+            "startmasternode alias\n"
+            "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
+
+            "\nArguments:\n"
+            "1. alias			(string, required) helpful identifier to recognize this allocation later.\n"
+            "\nResult:\n"
+            "\"status\"	(string) status of masternode\n");
+
+    auto alias = params.at(0).get_str();
+
+    Object result;
+    bool fFound = false;
+    for(auto &&configEntry : masternodeConfig.getEntries())
+    {
+        if(configEntry.getAlias() == alias)
+        {
+            fFound = true;
+            std::string strError;
+            if(CActiveMasternode::Register(configEntry.getIp(), configEntry.getPrivKey(), configEntry.getTxHash(), configEntry.getOutputIndex(), strError))
+            {
+                result.push_back(Pair("status", "success"));
+            }
+            else
+            {
+                result.push_back(Pair("status", "failed"));
+                result.push_back(Pair("error", strError));
+            }
+
+            break;
+        }
+    }
+
+    if(!fFound)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid alias, couldn't find MN. Check your masternode.conf file");
+
+    return result;
 }
 
 Value createmasternodekey(const Array& params, bool fHelp)

@@ -82,7 +82,7 @@ public:
     int64_t nValue;
     int64_t nTimeSigned;
 
-    uint256 GetHash()
+    uint256 GetHash() const
     {
         uint256 n = HashQuark(BEGIN(nSporkID), END(nTimeSigned));
         return n;

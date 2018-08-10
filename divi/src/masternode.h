@@ -62,7 +62,7 @@ public:
     bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
     void Relay();
 
-    uint256 GetHash()
+    uint256 GetHash() const
     {
         CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
         ss << vin;
@@ -146,7 +146,7 @@ public:
     int nActiveState;
     int nScanningErrorCount;
     int nLastScanningErrorBlockHeight;
-    Tier nTier;
+    int nTier;
     CMasternodePing lastPing;
 
     CMasternode();
@@ -222,7 +222,7 @@ public:
 
     int64_t SecondsSincePayment();
 
-    bool UpdateFromNewBroadcast(CMasternodeBroadcast& mnb);
+    bool UpdateFromNewBroadcast(CMasternodeBroadcast &mnb);
 
     inline uint64_t SliceHash(uint256& hash, int slice)
     {
@@ -306,7 +306,7 @@ public:
     bool CheckAndUpdate(int& nDoS);
     bool CheckInputsAndAdd(int& nDos);
     bool Sign(CKey& keyCollateralAddress);
-    void Relay();
+    void Relay() const;
 
     ADD_SERIALIZE_METHODS;
 
@@ -324,7 +324,7 @@ public:
         READWRITE(nTier);
     }
 
-    uint256 GetHash()
+    uint256 GetHash() const
     {
         CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
         ss << sigTime;

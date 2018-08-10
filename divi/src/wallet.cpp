@@ -659,7 +659,7 @@ bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& 
             return false;
         }
 
-        return GetVinAndKeysFromOutput(walletTx->vout[nOutputIndex], txinRet, pubKeyRet, keyRet);
+        return GetVinAndKeysFromOutput(COutput(walletTx, nOutputIndex, walletTx->GetDepthInMainChain(), true), txinRet, pubKeyRet, keyRet);
     }
     else
     {
@@ -1993,8 +1993,6 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type, useIX)) {
                     if (coin_type == ALL_COINS) {
                         strFailReason = _("Insufficient funds.");
-                    } else if (coin_type == ONLY_NOT10000IFMN) {
-                        strFailReason = _("Unable to locate enough funds for this transaction that are not equal 10000 DIV.");
                     } else {
                         strFailReason = _("Unable to locate enough Obfuscation denominated funds for this transaction.");
                         strFailReason += " " + _("Obfuscation uses exact denominated amounts to send funds, you might simply need to anonymize some more coins.");

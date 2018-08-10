@@ -36,7 +36,7 @@ static bool IsCoinSpent(const COutPoint &outpoint)
     CCoins coins;
     if(GetUTXOCoins(outpoint.hash, coins))
     {
-        return coins.IsAvailable(outpoint.n);
+        return !coins.IsAvailable(outpoint.n);
     }
 
     return true;
@@ -648,6 +648,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
     }
 
     if (IsCoinSpent(vin.prevout)) {
+        LogPrintf("mnb - coin is already spent\n");
         return false;
     }
 

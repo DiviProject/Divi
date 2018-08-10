@@ -2255,8 +2255,6 @@ int64_t GetBlockValue(int nHeight, bool fLotteryBlock)
 }
 
 
-
-
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)	// 2193
 {
     int64_t ret = 0;

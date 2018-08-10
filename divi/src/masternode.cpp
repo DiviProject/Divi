@@ -23,6 +23,25 @@ const int TIER_GOLD_BASE_COLLATERAL     = 10000;
 const int TIER_PLATINUM_BASE_COLLATERAL = 30000;
 const int TIER_DIAMOND_BASE_COLLATERAL  = 100000;
 
+static bool IsCoinSpent(const COutPoint &outpoint)
+{
+    CCoins coins;
+    if(GetUTXOCoins(outpoint.hash, coins))
+    {
+        return coins.IsAvailable(outpoint.n);
+    }
+
+    return true;
+}
+
+static bool GetUTXOCoins(const uint256& txhash, CCoins& coins)
+{
+    LOCK(cs_main);
+    if (!pcoinsTip->GetCoins(txhash, coins))
+        return false;
+    return true;
+}
+
 //Get the last hash that matches the modulus given. Processed in reverse order
 bool GetBlockHash(uint256& hash, int nBlockHeight)
 {
@@ -210,20 +229,9 @@ void CMasternode::Check(bool forceCheck)
     }
 
     if (!unitTest) {
-        CValidationState state;
-        CMutableTransaction tx = CMutableTransaction();
-        CTxOut vout = CTxOut(9999.99 * COIN, GetScriptForDestination(pubKeyCollateralAddress.GetID()));
-        tx.vin.push_back(vin);
-        tx.vout.push_back(vout);
-
-        {
-            TRY_LOCK(cs_main, lockMain);
-            if (!lockMain) return;
-
-            if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL)) {
-                activeState = MASTERNODE_VIN_SPENT;
-                return;
-            }
+        if (IsCoinSpent(vin.prevout)) {
+            activeState = MASTERNODE_VIN_SPENT;
+            return;
         }
     }
 
@@ -636,27 +644,10 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
             mnodeman.Remove(pmn->vin);
     }
 
-    CValidationState state;
-    CMutableTransaction tx = CMutableTransaction();
-    CTxOut vout = CTxOut(9999.99 * COIN, GetScriptForDestination(pubKeyCollateralAddress.GetID()));
-    tx.vin.push_back(vin);
-    tx.vout.push_back(vout);
-
-    {
-        TRY_LOCK(cs_main, lockMain);
-        if (!lockMain) {
-            // not mnb fault, let it to be checked again later
-            mnodeman.mapSeenMasternodeBroadcast.erase(GetHash());
-            masternodeSync.mapSeenSyncMNB.erase(GetHash());
-            return false;
-        }
-
-        if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL)) {
-            //set nDos
-            state.IsInvalid(nDoS);
-            return false;
-        }
+    if (IsCoinSpent(vin.prevout)) {
+        return false;
     }
+
 
     LogPrint("masternode", "mnb - Accepted Masternode entry\n");
 

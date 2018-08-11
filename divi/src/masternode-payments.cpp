@@ -23,13 +23,8 @@ CCriticalSection cs_vecPayments;
 CCriticalSection cs_mapMasternodeBlocks;
 CCriticalSection cs_mapMasternodePayeeVotes;
 
-
-
-￼
-//D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4
-￼
-//YV913LV5Sa15w3k8JYDWTSEuQE53Yiw9MakTMRaoNxRw1SHEqJXw
-
+// D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4
+// YV913LV5Sa15w3k8JYDWTSEuQE53Yiw9MakTMRaoNxRw1SHEqJXw
 
 const std::string devPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
 

@@ -100,6 +100,10 @@ public:
     int64_t StartMasternodePayments() const { return nStartMasternodePayments; }
     int64_t Budget_Fee_Confirmations() const { return nBudget_Fee_Confirmations; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
+    int GetLotteryBlockStartBlock() const { return nLotteryBlockStartBlock; }
+    int GetLotteryBlockCycle() const { return nLotteryBlockCycle; }
+    int GetTreasuryPaymentsStartBlock() const { return nTreasuryPaymentsStartBlock; }
+    int GetTreasuryPaymentsCycle() const { return nTreasuryPaymentsCycle; }
 
     /** Zerocoin **/
     std::string Zerocoin_Modulus() const { return zerocoinModulus; }
@@ -184,6 +188,11 @@ protected:
     int nBlockLastGoodCheckpoint;
     int nBlockEnforceInvalidUTXO;
     int nExtCoinType;
+
+    int nLotteryBlockStartBlock;
+    int nLotteryBlockCycle;
+    int nTreasuryPaymentsStartBlock;
+    int nTreasuryPaymentsCycle;
 };
 
 /**

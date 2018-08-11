@@ -2219,9 +2219,11 @@ double ConvertBitsToDouble(unsigned int nBits)
     return dDiff;
 }
 
-int64_t GetBlockValue(int nHeight, bool fLotteryBlock)
+CAmount GetBlockValue(int nHeight, bool fTreasuryPaymentOnly, bool fLotteryPaymentOnly)
 {
     int64_t nSubsidy = 0;
+
+    assert(!(fTreasuryPaymentOnly && fLotteryPaymentOnly));
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         if (nHeight < 200 && nHeight > 0)
@@ -2238,20 +2240,30 @@ int64_t GetBlockValue(int nHeight, bool fLotteryBlock)
     }
     else if(nHeight < 1051200) // first two years, 60 * 24 * 365 * 2
     {
-        nSubsidy = 1200 * COIN;
+        nSubsidy = 1250 * COIN;
     }
     else if(nHeight < 2102400) // next two years, 60 * 24 * 365 * 4
     {
-        nSubsidy = 800 * COIN;
+        nSubsidy = 850 * COIN;
     }
     else
     {
-        nSubsidy = 600 * COIN;
+        nSubsidy = 650 * COIN;
     }
 
-//    if(fLotteryBlock) // here we will handle lottery block, will generate proper amount for 10k blocks
+    CAmount nTreasuryPart = (nHeight > Params().GetTreasuryPaymentsStartBlock()) ? nSubsidy / 12.5 : 0; // 8 % of the block goes to treasury
+    CAmount nLotteryPart = (nHeight > Params().GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
 
-    return nSubsidy;
+    if(fTreasuryPaymentOnly) {
+        return nTreasuryPart;
+    }
+    else if(fLotteryPaymentOnly) {
+        return nLotteryPart;
+    }
+    else
+    {
+        return nSubsidy - nTreasuryPart - nLotteryPart;
+    }
 }
 
 
@@ -3487,11 +3499,19 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     if (block.IsProofOfWork())
         nExpectedMint += nFees;
 
+    const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
+
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
         return state.DoS(100,
             error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
                 FormatMoney(pindex->nMint), FormatMoney(nExpectedMint)),
             REJECT_INVALID, "bad-cb-amount");
+    }
+
+    if (!IsBlockPayeeValid(coinbaseTx, pindex->nHeight)) {
+        mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
+        return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
+                         REJECT_INVALID, "bad-cb-payee");
     }
 
     // zerocoin accumulator: if a new accumulator checkpoint was generated, check that it is the correct value

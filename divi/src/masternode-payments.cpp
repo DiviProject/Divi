@@ -23,6 +23,85 @@ CCriticalSection cs_vecPayments;
 CCriticalSection cs_mapMasternodeBlocks;
 CCriticalSection cs_mapMasternodePayeeVotes;
 
+
+
+￼
+//D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4
+￼
+//YV913LV5Sa15w3k8JYDWTSEuQE53Yiw9MakTMRaoNxRw1SHEqJXw
+
+
+const std::string devPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
+
+static bool IsValidLotteryBlockHeight(int nBlockHeight)
+{
+    return nBlockHeight >= Params().GetLotteryBlockCycle() &&
+            ((nBlockHeight % Params().GetLotteryBlockCycle()) == 0);
+}
+
+static bool IsValidTreasuryBlockHeight(int nBlockHeight)
+{
+    return nBlockHeight >= Params().GetTreasuryPaymentsStartBlock() &&
+            ((nBlockHeight % Params().GetTreasuryPaymentsCycle()) == 0);
+}
+
+static int64_t GetTreasuryReward(int nHeight)
+{
+    return GetBlockValue(nHeight - 1, true) * Params().GetTreasuryPaymentsCycle()  ;
+}
+
+static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
+{
+    auto nTreasuryReward = GetTreasuryReward(nHeight);
+    tx.vout.emplace_back(nTreasuryReward, GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get()));
+}
+
+static int64_t GetLotteryReward()
+{
+    // 50 coins every block for lottery
+    return Params().GetLotteryBlockCycle() * 50 * COIN;
+}
+
+static void FillLotteryPayment(CMutableTransaction &tx, int nHeight)
+{
+    tx.vout.emplace_back(GetLotteryReward(), GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get())); // pay to dev address for testing
+}
+
+static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight)
+{
+    CScript scriptPayment = GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get());
+    auto nPaymentAmount = GetLotteryReward();
+    CTxOut outPayment(nPaymentAmount, scriptPayment);
+    auto it = std::find(std::begin(tx.vout), std::end(tx.vout), outPayment);
+
+    bool fFound = it != std::end(tx.vout);
+
+    if(!fFound)
+    {
+        LogPrintf("masternode", "Expecting lottery payment, no payment address detected, rejecting\n");
+    }
+
+    return fFound;
+}
+
+static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
+{
+    CScript scriptPayment = GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get());
+    auto nPaymentAmount = GetTreasuryReward(nHeight);
+    CTxOut outPayment(nPaymentAmount, scriptPayment);
+    auto it = std::find(std::begin(tx.vout), std::end(tx.vout), outPayment);
+
+    bool fFound = it != std::end(tx.vout);
+
+    if(!fFound)
+    {
+        LogPrintf("masternode", "Expecting lottery payment, no payment address detected, rejecting\n");
+    }
+
+    return fFound;
+}
+
+
 //
 // CMasternodePaymentDB
 //
@@ -193,47 +272,27 @@ bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMin
 
     //LogPrintf("XX69----------> IsBlockValueValid(): nMinted: %d, nExpectedValue: %d\n", FormatMoney(nMinted), FormatMoney(nExpectedValue));
 
-    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything
-        //super blocks will always be on these blocks, max 100 per budgeting
-#if 0
-        if (nHeight % GetBudgetPaymentCycleBlocks() < 100) {
-            return true;
-        } else {
-#endif
-            if (nMinted > nExpectedValue) {
-                return false;
-            }
-//        }
-    } else { // we're synced and have data so check the budget schedule
+    // here we expect treasury block payment
+    if(IsValidTreasuryBlockHeight(nHeight)) {
+        nExpectedValue += GetTreasuryReward(nHeight);
+    }
+    else if(IsValidLotteryBlockHeight(nHeight)) {
+        nExpectedValue += GetLotteryReward();
+    }
 
-        //are these blocks even enabled
-        if (!IsSporkActive(SPORK_13_ENABLE_SUPERBLOCKS)) {
-            return nMinted <= nExpectedValue;
-        }
-
-#if 0
-        if (budget.IsBudgetPaymentBlock(nHeight)) {
-            //the value of the block is evaluated in CheckBlock
-            return true;
-        } else {
-#endif
-            if (nMinted > nExpectedValue) {
-                return false;
-            }
-//        }
+    if (nMinted > nExpectedValue) {
+        return false;
     }
 
     return true;
 }
 
-bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
+bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight)
 {
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
         LogPrint("mnpayments", "Client not synced, skipping block payee checks\n");
         return true;
     }
-
-    const CTransaction& txNew = (nBlockHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
 #if 0
     //check if it's a budget block
@@ -251,6 +310,14 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
         }
     }
 #endif
+
+    if(IsValidTreasuryBlockHeight(nBlockHeight)) {
+        return IsValidTreasuryPayment(txNew, nBlockHeight);
+    }
+
+    if(IsValidLotteryBlockHeight(nBlockHeight)) {
+        return IsValidLotteryPayment(txNew, nBlockHeight);
+    }
 
     //check for masternode payee
     if (masternodePayments.IsTransactionValid(txNew, nBlockHeight))
@@ -270,13 +337,15 @@ void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStak
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return;
 
-#if 0
-    if (IsSporkActive(SPORK_13_ENABLE_SUPERBLOCKS) && budget.IsBudgetPaymentBlock(pindexPrev->nHeight + 1)) {
-        budget.FillBlockPayee(txNew, nFees, fProofOfStake);
-    } else {
-#endif
+    if (IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
+        FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
+    }
+    else if(IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
+        FillLotteryPayment(txNew, pindexPrev->nHeight + 1);
+    }
+    else {
         masternodePayments.FillBlockPayee(txNew, nFees, fProofOfStake);
-//    }
+    }
 }
 
 std::string GetRequiredPaymentsString(int nBlockHeight)

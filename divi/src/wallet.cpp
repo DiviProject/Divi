@@ -2275,7 +2275,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         txNew.vout[1].nValue = nCredit;
     }
 
-
     //Masternode payment
     FillBlockPayee(txNew, 0, true);
 

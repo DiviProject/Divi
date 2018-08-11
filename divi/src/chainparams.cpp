@@ -161,6 +161,12 @@ public:
         /** Height or Time Based Activations **/
         nLastPOWBlock = 100;
 
+        nLotteryBlockStartBlock = 2;
+//        nLotteryBlockCycle = 60 * 24 * 7; // one week
+        nLotteryBlockCycle = 100;
+        nTreasuryPaymentsStartBlock = 100;
+        nTreasuryPaymentsCycle = 10;
+
         nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
 
         nZerocoinStartHeight = 99999999;				// this and following five are all Zerocoin and thus irrelevant to Divi
@@ -309,6 +315,11 @@ public:
         nMaturity = 1; //byrdset from 100
         nMasternodeCountDrift = 20;
         nMaxMoneyOut = 2535000000 * COIN;
+
+        nLotteryBlockStartBlock = 100;
+        nLotteryBlockCycle = 60 * 24 * 7; // one week
+        nTreasuryPaymentsStartBlock = 100;
+        nTreasuryPaymentsCycle = 50;
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 56700;
@@ -460,6 +471,11 @@ public:
         nBlockLastGoodCheckpoint = 9891730; //Last valid accumulator checkpoint
         nBlockEnforceInvalidUTXO = 9902850; //Start enforcing the invalid UTXO's
 
+        nLotteryBlockStartBlock = 100;
+        nLotteryBlockCycle = 60 * 24 * 7; // one week
+        nTreasuryPaymentsStartBlock = 600;
+        nTreasuryPaymentsCycle = 50;
+
         nExtCoinType = 1;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
@@ -579,6 +595,11 @@ public:
         genesis.nTime = 1520007171;
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12347;
+
+        nLotteryBlockStartBlock = 100;
+        nLotteryBlockCycle = 10; // one week
+        nTreasuryPaymentsStartBlock = 100;
+        nTreasuryPaymentsCycle = 50;
 
         nExtCoinType = 1;
         

@@ -51,21 +51,21 @@ static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
     tx.vout.emplace_back(nTreasuryReward, GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get()));
 }
 
-static int64_t GetLotteryReward()
+static int64_t GetLotteryReward(int nHeight)
 {
     // 50 coins every block for lottery
-    return Params().GetLotteryBlockCycle() * 50 * COIN;
+    return Params().GetLotteryBlockCycle() * GetBlockValue(nHeight, false, true);
 }
 
 static void FillLotteryPayment(CMutableTransaction &tx, int nHeight)
 {
-    tx.vout.emplace_back(GetLotteryReward(), GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get())); // pay to dev address for testing
+    tx.vout.emplace_back(GetLotteryReward(nHeight), GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get())); // pay to dev address for testing
 }
 
 static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight)
 {
     CScript scriptPayment = GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get());
-    auto nPaymentAmount = GetLotteryReward();
+    auto nPaymentAmount = GetLotteryReward(nHeight);
     CTxOut outPayment(nPaymentAmount, scriptPayment);
     auto it = std::find(std::begin(tx.vout), std::end(tx.vout), outPayment);
 
@@ -272,7 +272,7 @@ bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMin
         nExpectedValue += GetTreasuryReward(nHeight);
     }
     else if(IsValidLotteryBlockHeight(nHeight)) {
-        nExpectedValue += GetLotteryReward();
+        nExpectedValue += GetLotteryReward(nHeight);
     }
 
     if (nMinted > nExpectedValue) {

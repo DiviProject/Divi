@@ -923,3 +923,32 @@ int CMasternodePayments::GetNewestBlock()
 
     return nNewestBlock;
 }
+
+uint256 CalculateLotteryScore(const CBlock &block, int nHeight)
+{
+    const auto& coinbaseTx = (nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
+    // Deterministically calculate a "score" for a Masternode based on any given (block)hash
+
+    int nLastLotteryHeight = std::max(Params().GetLotteryBlockStartBlock(), Params().GetLotteryBlockCycle() * ((nHeight - 1) / Params().GetLotteryBlockCycle()));
+
+    if(nHeight <= nLastLotteryHeight) {
+        return uint256();
+    }
+
+    CBlockIndex* pblockindex = chainActive[nLastLotteryHeight];
+    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+    ss << coinbaseTx.GetHash() << pblockindex->GetBlockHash();
+    return ss.GetHash();
+}
+
+uint256 CalculateLotteryWinner(const CBlock &block, CBlockIndex *prevBlockIndex, int nHeight)
+{
+    // if that's a block when lottery happens, reset score for whole cycle
+    if(IsValidLotteryBlockHeight(nHeight))
+        return uint256();
+
+    if(!prevBlockIndex)
+        return uint256();
+
+   return std::max(prevBlockIndex->nBestLotteryWinner, CalculateLotteryScore(block, nHeight));
+}

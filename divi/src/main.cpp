@@ -4275,6 +4275,8 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
     if (pindexNew->nHeight)
         pindexNew->pprev->pnext = pindexNew;
 
+    pindexNew->nBestLotteryWinner = CalculateLotteryWinner(block, pindexNew->pprev, pindexNew->nHeight);
+
     setDirtyBlockIndex.insert(pindexNew);
 
     return pindexNew;

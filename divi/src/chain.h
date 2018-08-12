@@ -181,6 +181,8 @@ public:
     //! zerocoin specific fields
     std::map<libzerocoin::CoinDenomination, int64_t> mapZerocoinSupply;
     std::vector<libzerocoin::CoinDenomination> vMintDenominationsInBlock;
+
+    uint256 nBestLotteryWinner;
     
     void SetNull()
     {
@@ -216,6 +218,7 @@ public:
             mapZerocoinSupply.insert(make_pair(denom, 0));
         }
         vMintDenominationsInBlock.clear();
+        nBestLotteryWinner.SetNull();
     }
 
     CBlockIndex()
@@ -252,6 +255,8 @@ public:
             prevoutStake.SetNull();
             nStakeTime = 0;
         }
+
+        nBestLotteryWinner = uint256();
     }
     
 

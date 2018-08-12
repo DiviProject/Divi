@@ -30,7 +30,7 @@ const std::string devPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
 
 static bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
-    return nBlockHeight >= Params().GetLotteryBlockCycle() &&
+    return nBlockHeight >= Params().GetLotteryBlockStartBlock() &&
             ((nBlockHeight % Params().GetLotteryBlockCycle()) == 0);
 }
 

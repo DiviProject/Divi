@@ -73,7 +73,6 @@ Value allocatefunds(const Array& params, bool fHelp)
         throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
 	CBitcoinAddress acctAddr = GetAccountAddress("alloc->" + params[1].get_str());
 	string strAmt = params[2].get_str();
-	CAmount nAmount;
 
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
     if(!CMasternode::IsTierValid(nMasternodeTier))
@@ -89,7 +88,7 @@ Value allocatefunds(const Array& params, bool fHelp)
 
 Value fundmasternode(const Array& params, bool fHelp)
 {
-	if (fHelp || params.size() < 3 || params.size() > 6)
+    if (fHelp || params.size() != 4)
 		throw runtime_error(
 			"fundmasternode alias amount TxID masternode ( \"pay wallet\" ( \"voting wallet\" ) )\n"
 			"\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
@@ -99,59 +98,24 @@ Value fundmasternode(const Array& params, bool fHelp)
 			"2. amount			(diamond, platinum, gold, silver, copper) tier of masternode. \n"
 			"      <future>     (numeric, required) amount of divi funded will also be accepted for partially funding master nodes and other purposes.\n"
 			"3. TxID			(string, required) funding transaction id .\n"
-			"4. masternode		(string, required) address of masternode.\n"
-			"5. pay wallet		(string, optional) public key of pay wallet (if different from funding wallet).\n"
-			"6. voting wallet	(string, optional) public key of voting wallet (if different from pay wallet).\n"
+            "4. masternode		(string, required) ip address of masternode.\n"
 			"(use an empty string for the pay wallet if the same as the funding wallet and you wish to assign a different voting wallet).\n"
 
 			"\nResult:\n"
 			"\"config line\"	(string) the above details for the masternode & wallet config files & cryptographic signature proving that you authorized this.\n");
 
-	string strAmt = params[1].get_str();
-	CAmount nAmount;
-#if 0
-	if (strAmt == "diamond") { nAmount = Diamond.collateral; }
-	else if (strAmt == "platinum") { nAmount = Platinum.collateral; }
-	else if (strAmt == "gold") { nAmount = Gold.collateral; }
-	else if (strAmt == "silver") { nAmount = Silver.collateral; }
-	else if (strAmt == "copper") { nAmount = Copper.collateral; }
-	// else if (strAmt.find_first_not_of( "0123456789" ) == string::npos) nAmount = AmountFromValue(params[2]);
-    else
-        throw runtime_error("invalid amount");
-#endif
+    auto alias = params[0].get_str();
+    auto nMasternodeTier = GetMasternodeTierFromString(params[1].get_str());
 
-    nAmount *= COIN;
+    if(!CMasternode::IsTierValid(nMasternodeTier))
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
 
 	uint256 txHash = uint256(params[2].get_str());
 	std::string mnAddress = params[3].get_str();
 
-	// Temporary unlock MN coins from masternode.conf
-	vector<COutPoint> confLockedCoins;
-//	if (GetBoolArg("-mnconflock", true)) {
-//		uint256 mnTxHash;
-//		BOOST_FOREACH(CMasternodeEntry mne, masternodeConfig.entries) {
-//			mnTxHash.SetHex(mne.txHash);
-
-//			int nIndex;
-//			try {
-//				nIndex = std::stoi(mne.outputIndex);
-//			}
-//			catch (const std::exception e) {
-//				LogPrintf("%s: %s on getOutputIndex\n", __func__, e.what());
-//				continue;
-//			}
-
-//			COutPoint outpoint = COutPoint(mnTxHash, nIndex);
-//			confLockedCoins.push_back(outpoint);
-//			pwalletMain->UnlockCoin(outpoint);
-//		}
-//	}
-
-	vector<COutput> vCoins;
-	pwalletMain->AvailableCoins(vCoins);
-	const COutput* selectedOutput;
 	bool found = false;
-
+    auto nAmount = CMasternode::GetTierCollateralAmount(nMasternodeTier);
+    bool outputIndex = -1;
     if(auto wtx = pwalletMain->GetWalletTx(txHash))
     {
         for(size_t i = 0; i < wtx->vout.size(); ++i)
@@ -159,6 +123,7 @@ Value fundmasternode(const Array& params, bool fHelp)
             if(wtx->vout[i].nValue == nAmount && !pwalletMain->IsSpent(txHash, i))
             {
                 found = true;
+                outputIndex = i;
                 break;
             }
         }
@@ -168,44 +133,15 @@ Value fundmasternode(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction");
     }
 
-//	CMnFunding funds = CMnFunding({ nAmount, CTxIn(txHash, selectedOutput->i) });
-//    if (!funds.CheckVin(mnAddress)) {
-//        throw JSONRPCError(RPC_VERIFY_ERROR, "Transaction is not valid");
-//    }
-
-	// Lock MN coins from masternode.conf back if they where temporary unlocked
-	if (!confLockedCoins.empty()) {
-		BOOST_FOREACH(COutPoint outpoint, confLockedCoins)
-			pwalletMain->LockCoin(outpoint);
-	}
-
-	std::string pWallet, vWallet;
-    if (params.size() < 5) {
-        pWallet = GetAccountAddress("", false).ToString();
-    }
-    else {
-        pWallet = params[4].get_str();
-    }
-
-    if (params.size() < 6) {
-        vWallet = pWallet;
-    }
-    else {
-        vWallet = params[5].get_str();
-    }
-
-	string config = params[1].get_str() + " " + params[2].get_str() + " " + to_string(selectedOutput->i) + " " + mnAddress + " " + pWallet + " " + vWallet;
-
-	vector<unsigned char> vchSig;
-	CTxDestination address1;
-	ExtractDestination(selectedOutput->tx->vout[selectedOutput->i].scriptPubKey, address1);
-	CBitcoinAddress address2(address1);
-//	mnodeman.my->SignMsg(address2.ToString(), config, vchSig);
-
-	config = params[0].get_str() + " " + config + " " + EncodeBase64(&vchSig[0], vchSig.size());
+    auto tokens = {
+        alias,
+        mnAddress + ":" + std::to_string(Params().GetDefaultPort()),
+        txHash.ToString(),
+        std::to_string(outputIndex)
+    };
 
 	Object obj;
-	obj.push_back(Pair("config line", config));
+    obj.push_back(Pair("config line", boost::algorithm::join(tokens, " ")));
 	return obj;
 }
 

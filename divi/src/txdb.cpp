@@ -265,8 +265,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nStakeTime = diskindex.nStakeTime;
                 pindexNew->hashProofOfStake = diskindex.hashProofOfStake;
 
-                pindexNew->hashLotteryBestScore = diskindex.hashLotteryBestScore;
-                pindexNew->hashLotteryWinnerCoinstake = diskindex.hashLotteryWinnerCoinstake;
+                pindexNew->vLotteryWinnersCoinstakes = diskindex.vLotteryWinnersCoinstakes;
 
                 if (pindexNew->nHeight <= Params().LAST_POW_BLOCK()) {
                     if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits))

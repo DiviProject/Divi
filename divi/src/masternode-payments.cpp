@@ -73,30 +73,48 @@ static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
 
 static void FillLotteryPayment(CMutableTransaction &tx, int nHeight, const CBlockIndex *currentBlockIndex)
 {
-    LogPrintf("%s : Paying lottery reward to: %s\n", __func__, currentBlockIndex->hashLotteryWinnerCoinstake.ToString());
-    auto scriptLotteryWinner = GetScriptForLotteryPayment(currentBlockIndex->hashLotteryWinnerCoinstake);
-    tx.vout.emplace_back(GetLotteryReward(nHeight), scriptLotteryWinner); // pay to dev address for testing
+    auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
+    // when we call this we need to have exactly 11 winners
+
+    auto nLotteryReward = GetLotteryReward(nHeight);
+    auto nBigReward = nLotteryReward / 2;
+    auto nSmallReward = nBigReward / 10;
+
+    LogPrintf("%s : Paying lottery reward\n", __func__);
+    for(size_t i = 0; i < lotteryWinners.size(); ++i) {
+        CAmount reward = i == 0 ? nBigReward : nSmallReward;
+        const auto &winner = lotteryWinners[i];
+        LogPrintf("%s: Winner: %s\n", __func__, winner.ToString());
+        auto scriptLotteryWinner = GetScriptForLotteryPayment(winner);
+        tx.vout.emplace_back(reward, scriptLotteryWinner); // pay winners
+    }
 }
 
-static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const uint256 &hashLotteryWinnerCoinstake)
+static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std::vector<WinnerCoinStake> vRequiredWinnersCoinstake)
 {
-    if(hashLotteryWinnerCoinstake.IsNull()) {
+    if(vRequiredWinnersCoinstake.empty()) {
         return false;
     }
 
-    CScript scriptPayment = GetScriptForLotteryPayment(hashLotteryWinnerCoinstake);
-    auto nPaymentAmount = GetLotteryReward(nHeight);
-    CTxOut outPayment(nPaymentAmount, scriptPayment);
-    auto it = std::find(std::begin(tx.vout), std::end(tx.vout), outPayment);
+    auto verifyPayment = [&tx](CScript scriptPayment, CAmount amount) {
+        CTxOut outPayment(amount, scriptPayment);
+        return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
+    };
 
-    bool fFound = it != std::end(tx.vout);
+    auto nLotteryReward = GetLotteryReward(nHeight);
+    auto nBigReward = nLotteryReward / 2;
+    auto nSmallReward = nBigReward / 10;
 
-    if(!fFound)
-    {
-        LogPrintf("masternode", "Expecting lottery payment, no payment address detected, rejecting\n");
+    for(size_t i = 0; i < vRequiredWinnersCoinstake.size(); ++i) {
+        CScript scriptPayment = GetScriptForLotteryPayment(vRequiredWinnersCoinstake[i]);
+        CAmount reward = i == 0 ? nBigReward : nSmallReward;
+        if(!verifyPayment(scriptPayment, reward)) {
+            LogPrintf("%s: No payment for winner: %s\n", vRequiredWinnersCoinstake[i].ToString());
+            return false;
+        }
     }
 
-    return fFound;
+    return true;
 }
 
 static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
@@ -110,7 +128,6 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
         CScript scriptPayment = GetScriptForDestination(address.Get());
         CTxOut outPayment(amount, scriptPayment);
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
-
     };
 
     if(!verifyPayment(treasuryPaymentAddress, treasuryPart))
@@ -340,7 +357,7 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
     }
 
     if(IsValidLotteryBlockHeight(nBlockHeight)) {
-        return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex ? prevIndex->hashLotteryWinnerCoinstake : uint256());
+        return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes);
     }
 
     //check for masternode payee
@@ -950,38 +967,75 @@ int CMasternodePayments::GetNewestBlock()
     return nNewestBlock;
 }
 
-static std::pair<WinnerBestScore, WinnerCoinStake> CalculateLotteryScore(const CBlock &block, int nHeight)
+static uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock)
 {
-    const auto& coinbaseTx = (nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
     // Deterministically calculate a "score" for a Masternode based on any given (block)hash
+    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+    ss << hashCoinbaseTx << hashLastLotteryBlock;
+    return ss.GetHash();
+}
+
+static bool IsCoinstakeValidForLottery(const CTransaction &tx)
+{
+    CAmount nAmount = 0;
+    if(tx.IsCoinBase()) {
+        nAmount = tx.vout[0].nValue;
+    }
+    else {
+        auto payee = tx.vout[1].scriptPubKey;
+        nAmount = std::accumulate(std::begin(tx.vout), std::end(tx.vout), CAmount(0), [payee](CAmount accum, const CTxOut &out) {
+            return out.scriptPubKey == payee ? accum + out.nValue : accum;
+        });
+    }
+
+    return nAmount > 10000 * COIN; // only if stake is more than 10k
+}
+
+std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
+{
+    std::vector<WinnerCoinStake> result;
+    // if that's a block when lottery happens, reset score for whole cycle
+    if(IsValidLotteryBlockHeight(nHeight))
+        return result;
+
+    if(!prevBlockIndex)
+        return result;
 
     int nLastLotteryHeight = std::max(Params().GetLotteryBlockStartBlock(), Params().GetLotteryBlockCycle() * ((nHeight - 1) / Params().GetLotteryBlockCycle()));
 
     if(nHeight <= nLastLotteryHeight) {
-        return { uint256(), uint256() };
+        return result;
+    }
+
+    const auto& coinbaseTx = (nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
+
+    if(!IsCoinstakeValidForLottery(coinbaseTx)) {
+        return prevBlockIndex->vLotteryWinnersCoinstakes; // return last if we have no lotter participant in this block
     }
 
     CBlockIndex* pblockindex = chainActive[nLastLotteryHeight];
-    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-    ss << coinbaseTx.GetHash() << pblockindex->GetBlockHash();
-    return { ss.GetHash(), coinbaseTx.GetHash() };
-}
-
-std::pair<WinnerBestScore, WinnerCoinStake> CalculateLotteryWinner(const CBlock &block, CBlockIndex *prevBlockIndex, int nHeight)
-{
-    // if that's a block when lottery happens, reset score for whole cycle
-    if(IsValidLotteryBlockHeight(nHeight))
-        return { uint256(), uint256() };
-
-    if(!prevBlockIndex)
-        return { uint256(), uint256() };
-
-
-    auto newWinner = CalculateLotteryScore(block, nHeight);
-
-    if(newWinner.first > prevBlockIndex->hashLotteryBestScore) {
-        return newWinner;
+    auto hashLastLotteryBlock = pblockindex->GetBlockHash();
+    // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
+    using LotteryScore = uint256;
+    std::vector<std::pair<LotteryScore, WinnerCoinStake>> scores;
+    for(auto &&hashCoinstake : prevBlockIndex->vLotteryWinnersCoinstakes) {
+        scores.emplace_back(CalculateLotteryScore(hashCoinstake, hashLastLotteryBlock), hashCoinstake);
     }
 
-    return { prevBlockIndex->hashLotteryBestScore, prevBlockIndex->hashLotteryWinnerCoinstake };
+    auto newScore = CalculateLotteryScore(coinbaseTx.GetHash(), hashLastLotteryBlock);
+    scores.emplace_back(newScore, coinbaseTx.GetHash());
+
+    // biggest entry at the begining
+    std::sort(std::begin(scores), std::end(scores), [](const std::pair<LotteryScore, WinnerCoinStake> &lhs, const std::pair<LotteryScore, WinnerCoinStake> &rhs) {
+        return lhs.first > rhs.second;
+    });
+
+    scores.resize(std::min(scores.size(), 11ul)); // don't go over 11 entries, since we will have only 11 winners
+
+    // prepare new coinstakes vector
+    for(auto &&score : scores) {
+        result.push_back(score.second);
+    }
+
+    return result;
 }

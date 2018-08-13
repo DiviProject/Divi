@@ -32,9 +32,8 @@ std::string GetRequiredPaymentsString(int nBlockHeight);
 bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted);
 void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStake);
 
-using WinnerBestScore = uint256;
 using WinnerCoinStake = uint256;
-std::pair<WinnerBestScore, WinnerCoinStake> CalculateLotteryWinner(const CBlock& block, CBlockIndex *prevBlockIndex, int nHeight);
+std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
 
 void DumpMasternodePayments();
 

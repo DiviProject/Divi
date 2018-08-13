@@ -15,6 +15,7 @@
 #include "utilmoneystr.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include <algorithm>
 
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;

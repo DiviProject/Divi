@@ -569,6 +569,12 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
         return false;
     }
 
+    if(!CMasternode::IsTierValid(static_cast<CMasternode::Tier>(nTier))) {
+        LogPrint("masternode", "mnb - Invalid tier: %d\n", nTier);
+        nDos = 20;
+        return false;
+    }
+
     std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
     std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
     std::string strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);

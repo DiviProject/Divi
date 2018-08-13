@@ -27,12 +27,14 @@ extern CMasternodePayments masternodePayments;
 #define MNPAYMENTS_SIGNATURES_TOTAL 10
 
 void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
-bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight);
+bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);
 std::string GetRequiredPaymentsString(int nBlockHeight);
 bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted);
 void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStake);
-uint256 CalculateLotteryScore(const CBlock& block, int nHeight);
-uint256 CalculateLotteryWinner(const CBlock& block, CBlockIndex *prevBlockIndex, int nHeight);
+
+using WinnerBestScore = uint256;
+using WinnerCoinStake = uint256;
+std::pair<WinnerBestScore, WinnerCoinStake> CalculateLotteryWinner(const CBlock& block, CBlockIndex *prevBlockIndex, int nHeight);
 
 void DumpMasternodePayments();
 

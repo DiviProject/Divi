@@ -3508,7 +3508,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             REJECT_INVALID, "bad-cb-amount");
     }
 
-    if (!IsBlockPayeeValid(coinbaseTx, pindex->nHeight)) {
+    if (!IsBlockPayeeValid(coinbaseTx, pindex->nHeight, pindex->pprev)) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
                          REJECT_INVALID, "bad-cb-payee");
@@ -4275,7 +4275,9 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
     if (pindexNew->nHeight)
         pindexNew->pprev->pnext = pindexNew;
 
-    pindexNew->nBestLotteryWinner = CalculateLotteryWinner(block, pindexNew->pprev, pindexNew->nHeight);
+    auto lotteryWinner = CalculateLotteryWinner(block, pindexNew->pprev, pindexNew->nHeight);
+    pindexNew->hashLotteryBestScore = lotteryWinner.first;
+    pindexNew->hashLotteryWinnerCoinstake = lotteryWinner.second;
 
     setDirtyBlockIndex.insert(pindexNew);
 

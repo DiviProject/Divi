@@ -26,7 +26,8 @@ CCriticalSection cs_mapMasternodePayeeVotes;
 // D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4
 // YV913LV5Sa15w3k8JYDWTSEuQE53Yiw9MakTMRaoNxRw1SHEqJXw
 
-const std::string devPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
+const std::string treasuryPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
+const std::string charityPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
 
 static bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
@@ -48,7 +49,10 @@ static int64_t GetTreasuryReward(int nHeight)
 static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
     auto nTreasuryReward = GetTreasuryReward(nHeight);
-    tx.vout.emplace_back(nTreasuryReward, GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get()));
+    auto charityPart = nTreasuryReward / 5; // 20 % goes to charity
+    auto treasuryPart = nTreasuryReward - charityPart; // 80 % goes to treasury
+    tx.vout.emplace_back(treasuryPart, GetScriptForDestination(CBitcoinAddress(treasuryPaymentAddress).Get()));
+    tx.vout.emplace_back(charityPart, GetScriptForDestination(CBitcoinAddress(charityPaymentAddress).Get()));
 }
 
 static int64_t GetLotteryReward(int nHeight)
@@ -59,12 +63,12 @@ static int64_t GetLotteryReward(int nHeight)
 
 static void FillLotteryPayment(CMutableTransaction &tx, int nHeight)
 {
-    tx.vout.emplace_back(GetLotteryReward(nHeight), GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get())); // pay to dev address for testing
+    tx.vout.emplace_back(GetLotteryReward(nHeight), GetScriptForDestination(CBitcoinAddress(treasuryPaymentAddress).Get())); // pay to dev address for testing
 }
 
 static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight)
 {
-    CScript scriptPayment = GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get());
+    CScript scriptPayment = GetScriptForDestination(CBitcoinAddress(treasuryPaymentAddress).Get());
     auto nPaymentAmount = GetLotteryReward(nHeight);
     CTxOut outPayment(nPaymentAmount, scriptPayment);
     auto it = std::find(std::begin(tx.vout), std::end(tx.vout), outPayment);
@@ -81,19 +85,31 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight)
 
 static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 {
-    CScript scriptPayment = GetScriptForDestination(CBitcoinAddress(devPaymentAddress).Get());
-    auto nPaymentAmount = GetTreasuryReward(nHeight);
-    CTxOut outPayment(nPaymentAmount, scriptPayment);
-    auto it = std::find(std::begin(tx.vout), std::end(tx.vout), outPayment);
+    auto nTreasuryReward = GetTreasuryReward(nHeight);
+    auto charityPart = nTreasuryReward / 5; // 20 % goes to charity
+    auto treasuryPart = nTreasuryReward - charityPart; // 80 % goes to treasury
 
-    bool fFound = it != std::end(tx.vout);
+    auto verifyPayment = [&tx](CBitcoinAddress address, CAmount amount) {
 
-    if(!fFound)
+        CScript scriptPayment = GetScriptForDestination(address.Get());
+        CTxOut outPayment(amount, scriptPayment);
+        return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
+
+    };
+
+    if(!verifyPayment(treasuryPaymentAddress, treasuryPart))
     {
-        LogPrintf("masternode", "Expecting lottery payment, no payment address detected, rejecting\n");
+        LogPrintf("masternode", "Expecting treasury payment, no payment address detected, rejecting\n");
+        return false;
     }
 
-    return fFound;
+    if(!verifyPayment(charityPaymentAddress, charityPart))
+    {
+        LogPrintf("masternode", "Expecting charity payment, no payment address detected, rejecting\n");
+        return false;
+    }
+
+    return true;
 }
 
 static CAmount GetTierMasternodePayment(CAmount maxReward, CMasternode::Tier tier)
@@ -374,7 +390,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
     CMasternode::Tier nPayeeTier = CMasternode::MASTERNODE_TIER_INVALID;
     if (!masternodePayments.GetBlockPayee(pindexPrev->nHeight + 1, payee, nPayeeTier)) {
         //no masternode detected
-         CMasternode* winningNode = mnodeman.GetCurrentMasterNode(1);
+        CMasternode* winningNode = mnodeman.GetCurrentMasterNode(1);
         if (winningNode) {
             payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
             nPayeeTier = static_cast<CMasternode::Tier>(winningNode->nTier);

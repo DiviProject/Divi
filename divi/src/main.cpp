@@ -2251,7 +2251,7 @@ CAmount GetBlockValue(int nHeight, bool fTreasuryPaymentOnly, bool fLotteryPayme
         nSubsidy = 650 * COIN;
     }
 
-    CAmount nTreasuryPart = (nHeight >= Params().GetTreasuryPaymentsStartBlock()) ? nSubsidy / 12.5 : 0; // 8 % of the block goes to treasury
+    CAmount nTreasuryPart = (nHeight >= Params().GetTreasuryPaymentsStartBlock()) ? nSubsidy / 10 : 0; // 8 % of the block goes to treasury
     CAmount nLotteryPart = (nHeight >= Params().GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
 
     if(fTreasuryPaymentOnly) {

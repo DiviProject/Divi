@@ -293,9 +293,9 @@ std::string CMasternode::TierToString(CMasternode::Tier tier)
     switch(tier)
     {
     case MASTERNODE_TIER_COPPER: return "COPPER";
-    case MASTERNODE_TIER_SILVER: "SILVER";
-    case MASTERNODE_TIER_GOLD: "GOLD";
-    case MASTERNODE_TIER_PLATINUM: "PLATINUM";
+    case MASTERNODE_TIER_SILVER: return "SILVER";
+    case MASTERNODE_TIER_GOLD: return "GOLD";
+    case MASTERNODE_TIER_PLATINUM: return "PLATINUM";
     case MASTERNODE_TIER_DIAMOND: return "DIAMOND";
     }
 

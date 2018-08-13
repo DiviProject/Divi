@@ -288,6 +288,20 @@ bool CMasternode::IsTierValid(CMasternode::Tier tier)
     return false;
 }
 
+std::string CMasternode::TierToString(CMasternode::Tier tier)
+{
+    switch(tier)
+    {
+    case MASTERNODE_TIER_COPPER: return "COPPER";
+    case MASTERNODE_TIER_SILVER: "SILVER";
+    case MASTERNODE_TIER_GOLD: "GOLD";
+    case MASTERNODE_TIER_PLATINUM: "PLATINUM";
+    case MASTERNODE_TIER_DIAMOND: return "DIAMOND";
+    }
+
+    return "INVALID";
+}
+
 int64_t CMasternode::SecondsSincePayment()
 {
     CScript pubkeyScript;

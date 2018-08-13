@@ -65,17 +65,20 @@ class CMasternodePayee
 public:
     CScript scriptPubKey;
     int nVotes;
+    int nPayeeTier;
 
     CMasternodePayee()
     {
         scriptPubKey = CScript();
         nVotes = 0;
+        nPayeeTier = CMasternode::MASTERNODE_TIER_INVALID;
     }
 
-    CMasternodePayee(CScript payee, int nVotesIn)
+    CMasternodePayee(CScript payee, int nVotesIn, int nPayeeTierIn)
     {
         scriptPubKey = payee;
         nVotes = nVotesIn;
+        nPayeeTier = nPayeeTierIn;
     }
 
     ADD_SERIALIZE_METHODS;
@@ -85,6 +88,7 @@ public:
     {
         READWRITE(scriptPubKey);
         READWRITE(nVotes);
+        READWRITE(nPayeeTier);
     }
 };
 
@@ -106,7 +110,7 @@ public:
         vecPayments.clear();
     }
 
-    void AddPayee(CScript payeeIn, int nIncrement)
+    void AddPayee(CScript payeeIn, int nIncrement, int nPayeeTierIn)
     {
         LOCK(cs_vecPayments);
 
@@ -117,11 +121,11 @@ public:
             }
         }
 
-        CMasternodePayee c(payeeIn, nIncrement);
+        CMasternodePayee c(payeeIn, nIncrement, nPayeeTierIn);
         vecPayments.push_back(c);
     }
 
-    bool GetPayee(CScript& payee)
+    bool GetPayee(CScript& payee, CMasternode::Tier& nPayeeTier)
     {
         LOCK(cs_vecPayments);
 
@@ -130,6 +134,7 @@ public:
             if (p.nVotes > nVotes) {
                 payee = p.scriptPubKey;
                 nVotes = p.nVotes;
+                nPayeeTier = static_cast<CMasternode::Tier>(p.nPayeeTier);
             }
         }
 
@@ -168,6 +173,7 @@ public:
 
     int nBlockHeight;
     CScript payee;
+    int nPayeeTier;
     std::vector<unsigned char> vchSig;
 
     CMasternodePaymentWinner()
@@ -175,6 +181,7 @@ public:
         nBlockHeight = 0;
         vinMasternode = CTxIn();
         payee = CScript();
+        nPayeeTier = CMasternode::MASTERNODE_TIER_INVALID;
     }
 
     CMasternodePaymentWinner(CTxIn vinIn)
@@ -182,6 +189,7 @@ public:
         nBlockHeight = 0;
         vinMasternode = vinIn;
         payee = CScript();
+        nPayeeTier = CMasternode::MASTERNODE_TIER_INVALID;
     }
 
     uint256 GetHash() const
@@ -190,6 +198,7 @@ public:
         ss << payee;
         ss << nBlockHeight;
         ss << vinMasternode.prevout;
+        ss << nPayeeTier;
 
         return ss.GetHash();
     }
@@ -199,9 +208,10 @@ public:
     bool SignatureValid();
     void Relay();
 
-    void AddPayee(CScript payeeIn)
+    void AddPayee(CScript payeeIn, CMasternode::Tier nPayeeTierIn)
     {
         payee = payeeIn;
+        nPayeeTier = nPayeeTierIn;
     }
 
 
@@ -214,6 +224,7 @@ public:
         READWRITE(nBlockHeight);
         READWRITE(payee);
         READWRITE(vchSig);
+        READWRITE(nPayeeTier);
     }
 
     std::string ToString()
@@ -223,6 +234,7 @@ public:
         ret += ", " + boost::lexical_cast<std::string>(nBlockHeight);
         ret += ", " + payee.ToString();
         ret += ", " + boost::lexical_cast<std::string>((int)vchSig.size());
+        ret += ", " + CMasternode::TierToString(static_cast<CMasternode::Tier>(nPayeeTier));
         return ret;
     }
 };
@@ -263,7 +275,7 @@ public:
     void CleanPaymentList();
     int LastPayment(CMasternode& mn);
 
-    bool GetBlockPayee(int nBlockHeight, CScript& payee);
+    bool GetBlockPayee(int nBlockHeight, CScript& payee, CMasternode::Tier &nPayeeTier);
     bool IsTransactionValid(const CTransaction& txNew, int nBlockHeight);
     bool IsScheduled(CMasternode& mn, int nNotBlockHeight);
 

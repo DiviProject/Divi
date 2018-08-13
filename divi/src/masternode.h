@@ -271,6 +271,7 @@ public:
     static CAmount GetTierCollateralAmount(Tier tier);
     static Tier GetTierByCollateralAmount(CAmount nCollateral);
     static bool IsTierValid(Tier tier);
+    static string TierToString(Tier tier);
 
     std::string GetStatus();
 

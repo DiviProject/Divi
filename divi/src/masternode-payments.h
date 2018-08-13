@@ -269,7 +269,7 @@ public:
         mapMasternodePayeeVotes.clear();
     }
 
-    bool AddWinningMasternode(CMasternodePaymentWinner& winner);
+    bool AddWinningMasternode(const CMasternodePaymentWinner &winner);
     bool ProcessBlock(int nBlockHeight);
 
     void Sync(CNode* node, int nCountNeeded);

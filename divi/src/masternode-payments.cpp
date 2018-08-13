@@ -604,7 +604,7 @@ bool CMasternodePayments::IsScheduled(CMasternode& mn, int nNotBlockHeight)
     return false;
 }
 
-bool CMasternodePayments::AddWinningMasternode(CMasternodePaymentWinner& winnerIn)
+bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& winnerIn)
 {
     uint256 blockHash = 0;
     if (!GetBlockHash(blockHash, winnerIn.nBlockHeight - 100)) {
@@ -833,7 +833,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
         newWinner.nBlockHeight = nBlockHeight;
 
         CScript payee = GetScriptForDestination(pmn->pubKeyCollateralAddress.GetID());
-        newWinner.AddPayee(payee, static_cast<CMasternode::Tier>(newWinner.nPayeeTier));
+        newWinner.AddPayee(payee, static_cast<CMasternode::Tier>(pmn->nTier));
 
         CTxDestination address1;
         ExtractDestination(payee, address1);

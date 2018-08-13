@@ -16,6 +16,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
+#include <numeric>
 
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;

@@ -82,6 +82,7 @@ BITCOIN_CORE_H = \
   addrman.h \
   alert.h \
   allocators.h \
+  addressindex.h \
   amount.h \
   base58.h \
   bip38.h \

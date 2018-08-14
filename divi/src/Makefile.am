@@ -151,6 +151,7 @@ BITCOIN_CORE_H = \
   serialize.h \
   spork.h \
   sporkdb.h \
+  spentindex.h \
   streams.h \
   sync.h \
   threadsafety.h \

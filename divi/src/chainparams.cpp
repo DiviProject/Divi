@@ -196,7 +196,7 @@ public:
 //        nLotteryBlockCycle = 60 * 24 * 7; // one week
         nLotteryBlockCycle = 50;
         nTreasuryPaymentsStartBlock = 51;
-        nTreasuryPaymentsCycle = 100;
+        nTreasuryPaymentsCycle = 101;
 
         nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
 

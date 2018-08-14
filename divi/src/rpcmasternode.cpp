@@ -133,9 +133,24 @@ Value fundmasternode(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction");
     }
 
+    if (!pwalletMain->IsLocked())
+        pwalletMain->TopUpKeyPool();
+
+    // Generate a new key that is added to wallet
+    CBitcoinAddress address = GetAccountAddress("reserved->" + alias);
+
+    CKeyID keyID;
+    if (!address.GetKeyID(keyID))
+        throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
+
+    CKey vchSecret;
+    if (!pwalletMain->GetKey(keyID, vchSecret))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + CBitcoinAddress(keyID).ToString() + " is not known");
+
     auto tokens = {
         alias,
         mnAddress + ":" + std::to_string(Params().GetDefaultPort()),
+        CBitcoinSecret(vchSecret).ToString(),
         txHash.ToString(),
         std::to_string(outputIndex)
     };

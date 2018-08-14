@@ -12,7 +12,7 @@
 //! These need to be macros, as clientversion.cpp's and divi*-res.rc's voodoo requires it
 #define CLIENT_VERSION_MAJOR 4
 #define CLIENT_VERSION_MINOR 00
-#define CLIENT_VERSION_REVISION 06 
+#define CLIENT_VERSION_REVISION 07
 #define CLIENT_VERSION_BUILD 00 
 
 #define CLIENT_VERSION_IS_RELEASE true		// Todo: !! Set to true for release, false for prerelease or test build

@@ -1032,7 +1032,7 @@ std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const 
         return lhs.first > rhs.second;
     });
 
-    scores.resize(std::min(scores.size(), 11ul)); // don't go over 11 entries, since we will have only 11 winners
+    scores.resize(std::min<size_t>(scores.size(), 11)); // don't go over 11 entries, since we will have only 11 winners
 
     // prepare new coinstakes vector
     for(auto &&score : scores) {

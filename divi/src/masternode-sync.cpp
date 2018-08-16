@@ -184,15 +184,15 @@ void CMasternodeSync::Process()
 
     if (tick++ % MASTERNODE_SYNC_TIMEOUT != 0) return;
 
-    if (IsSynced()) {
-        /* 
-            Resync if we lose all masternodes from sleep/wake or failure to sync originally
-        */
-        if (mnodeman.size() < 2) {
-            Reset();
-        } else
-            return;
+    // reset the sync process if the last call to this function was more than 60 minutes ago (client was in sleep mode)
+    static int64_t nTimeLastProcess = GetTime();
+    if(GetTime() - nTimeLastProcess > 60 * 60) {
+        LogPrintf("CMasternodeSync::ProcessTick -- WARNING: no actions for too long, restarting sync...\n");
+        Reset();
+        nTimeLastProcess = GetTime();
+        return;
     }
+    nTimeLastProcess = GetTime();
 
     //try syncing again
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED && lastFailure + (1 * 60) < GetTime()) {

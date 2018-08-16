@@ -567,13 +567,13 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
 {
     // make sure signature isn't in the future (past is OK)
     if (sigTime > GetAdjustedTime() + 60 * 60) {
-        LogPrint("masternode","mnb - Signature rejected, too far into the future %s\n", vin.prevout.hash.ToString());
+        LogPrintf("%s : mnb - Signature rejected, too far into the future %s\n", __func__, vin.prevout.hash.ToString());
         nDos = 1;
         return false;
     }
 
     if(!CMasternode::IsTierValid(static_cast<CMasternode::Tier>(nTier))) {
-        LogPrint("masternode", "mnb - Invalid tier: %d\n", nTier);
+        LogPrintf("%s : mnb - Invalid tier: %d\n", __func__, nTier);
         nDos = 20;
         return false;
     }
@@ -591,7 +591,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
     pubkeyScript = GetScriptForDestination(pubKeyCollateralAddress.GetID());
 
     if (pubkeyScript.size() != 25) {
-        LogPrint("masternode","mnb - pubkey the wrong size\n");
+        LogPrintf("%s : mnb - pubkey the wrong size\n", __func__);
         nDos = 100;
         return false;
     }
@@ -600,7 +600,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
     pubkeyScript2 = GetScriptForDestination(pubKeyMasternode.GetID());
 
     if (pubkeyScript2.size() != 25) {
-        LogPrint("masternode","mnb - pubkey2 the wrong size\n");
+        LogPrintf("%s : mnb - pubkey2 the wrong size\n", __func__);
         nDos = 100;
         return false;
     }
@@ -612,7 +612,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
 
     std::string errorMessage = "";
     if (!CObfuScationSigner::VerifyMessage(pubKeyCollateralAddress, sig, strMessage, errorMessage)) {
-        LogPrint("masternode","mnb - Got bad Masternode address signature\n");
+        LogPrintf("%s : - Got bad Masternode address signature\n", __func__);
         nDos = 100;
         return false;
     }

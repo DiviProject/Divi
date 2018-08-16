@@ -304,8 +304,8 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
 int CMasternodePayments::GetMinMasternodePaymentsProto()
 {
-    if (IsSporkActive(SPORK_10_MASTERNODE_PAY_UPDATED_NODES))
-        return ActiveProtocol();                          // Allow only updated peers
+//    if (IsSporkActive(SPORK_10_MASTERNODE_PAY_UPDATED_NODES))
+    return ActiveProtocol();                          // Allow only updated peers
 }
 
 void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
@@ -323,7 +323,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::st
 
         if (Params().NetworkID() == CBaseChainParams::MAIN) {
             if (netfulfilledman.HasFulfilledRequest(pfrom->addr, "mnget")) {
-                LogPrint("masternode","mnget - peer already asked me for the list\n");
+                LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
                 Misbehaving(pfrom->GetId(), 20);
                 return;
             }
@@ -370,7 +370,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::st
         }
 
         if (!winner.SignatureValid()) {
-            // LogPrint("masternode","mnw - invalid signature\n");
+            LogPrintf("%s : - invalid signature\n", __func__);
             if (masternodeSync.IsSynced()) Misbehaving(pfrom->GetId(), 20);
             // it could just be a non-synced masternode
             mnodeman.AskForMN(pfrom, winner.vinMasternode);

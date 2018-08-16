@@ -594,7 +594,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         // make sure the vout that was signed is related to the transaction that spawned the Masternode
         //  - this is expensive, so it's only done once per Masternode
         if (!CObfuScationSigner::IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<CMasternode::Tier>(mnb.nTier))) {
-            LogPrint("masternode","mnb - Got mismatched pubkey and vin\n");
+            LogPrintf("%s : mnb - Got mismatched pubkey and vin\n", __func__);
             Misbehaving(pfrom->GetId(), 33);
             return;
         }
@@ -606,7 +606,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
             addrman.Add(CAddress(mnb.addr), pfrom->addr, 2 * 60 * 60);
             masternodeSync.AddedMasternodeList(mnb.GetHash());
         } else {
-            LogPrint("masternode","mnb - Rejected Masternode entry %s\n", mnb.vin.prevout.hash.ToString());
+            LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());
 
             if (nDoS > 0)
                 Misbehaving(pfrom->GetId(), nDoS);
@@ -654,7 +654,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
                     int64_t t = (*i).second;
                     if (GetTime() < t) {
                         Misbehaving(pfrom->GetId(), 34);
-                        LogPrint("masternode","dseg - peer already asked me for the list\n");
+                        LogPrintf("%s : dseg - peer already asked me for the list\n", __func__);
                         return;
                     }
                 }

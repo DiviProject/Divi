@@ -151,9 +151,6 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
         int nCount;
         vRecv >> nItemID >> nCount;
 
-        if(nCount == 0) {
-            lastMasternodeList = GetTime();
-        }
 
         if (RequestedMasternodeAssets >= MASTERNODE_SYNC_FINISHED) return;
 
@@ -161,11 +158,17 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
         switch (nItemID) {
         case (MASTERNODE_SYNC_LIST):
             if (nItemID != RequestedMasternodeAssets) return;
+            if(nCount == 0) {
+                lastMasternodeList = GetTime();
+            }
             sumMasternodeList += nCount;
             countMasternodeList++;
             break;
         case (MASTERNODE_SYNC_MNW):
             if (nItemID != RequestedMasternodeAssets) return;
+            if(nCount == 0) {
+                lastMasternodeWinner = GetTime();
+            }
             sumMasternodeWinner += nCount;
             countMasternodeWinner++;
             break;

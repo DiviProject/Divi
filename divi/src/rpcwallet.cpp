@@ -2427,7 +2427,7 @@ Value mintzerocoin(const Array& params, bool fHelp)
 
     int64_t nTime = GetTimeMillis();
 
-    if(GetAdjustedTime() > GetSporkValue(SPORK_16_ZEROCOIN_MAINTENANCE_MODE))
+    if(true /*GetAdjustedTime() > GetSporkValue(SPORK_16_ZEROCOIN_MAINTENANCE_MODE)*/)
         throw JSONRPCError(RPC_WALLET_ERROR, "zDIV is currently disabled due to maintenance.");
 
     if (pwalletMain->IsLocked())
@@ -2473,7 +2473,7 @@ Value spendzerocoin(const Array& params, bool fHelp)
                     "an address is required"
             + HelpRequiringPassphrase());
 
-    if(GetAdjustedTime() > GetSporkValue(SPORK_16_ZEROCOIN_MAINTENANCE_MODE))
+    if(true/*GetAdjustedTime() > GetSporkValue(SPORK_16_ZEROCOIN_MAINTENANCE_MODE)*/)
         throw JSONRPCError(RPC_WALLET_ERROR, "zDIV is currently disabled due to maintenance.");
 
     int64_t nTimeStart = GetTimeMillis();

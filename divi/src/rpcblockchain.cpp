@@ -95,7 +95,6 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
         zdivObj.push_back(Pair(to_string(denom), ValueFromAmount(blockindex->mapZerocoinSupply.at(denom) * (denom*COIN))));
     }
     zdivObj.emplace_back(Pair("total", ValueFromAmount(blockindex->GetZerocoinSupply())));
-    result.emplace_back(Pair("zDIVsupply", zdivObj));
 
     return result;
 }
@@ -278,18 +277,6 @@ Value getblock(const Array& params, bool fHelp)
             "  \"previousblockhash\" : \"hash\",  (string) The hash of the previous block\n"
             "  \"nextblockhash\" : \"hash\"       (string) The hash of the next block\n"
             "  \"moneysupply\" : \"supply\"       (numeric) The money supply when this block was added to the blockchain\n"
-            "  \"zDIVsupply\" :\n"
-            "  {\n"
-            "     \"1\" : n,            (numeric) supply of 1 zDIV denomination\n"
-            "     \"5\" : n,            (numeric) supply of 5 zDIV denomination\n"
-            "     \"10\" : n,           (numeric) supply of 10 zDIV denomination\n"
-            "     \"50\" : n,           (numeric) supply of 50 zDIV denomination\n"
-            "     \"100\" : n,          (numeric) supply of 100 zDIV denomination\n"
-            "     \"500\" : n,          (numeric) supply of 500 zDIV denomination\n"
-            "     \"1000\" : n,         (numeric) supply of 1000 zDIV denomination\n"
-            "     \"5000\" : n,         (numeric) supply of 5000 zDIV denomination\n"
-            "     \"total\" : n,        (numeric) The total supply of all zDIV denominations\n"
-            "  }\n"
             "}\n"
             "\nResult (for verbose=false):\n"
             "\"data\"             (string) A string that is serialized, hex-encoded data for block 'hash'.\n"

@@ -127,6 +127,7 @@ public:
     int Block_Enforce_Invalid() const { return nBlockEnforceInvalidUTXO; }
 
     int ExtCoinType() const { return nExtCoinType; }
+    int FulfilledRequestExpireTime() const { return nFulfilledRequestExpireTime; }
 
 	int64_t premineAmt;
 
@@ -193,6 +194,8 @@ protected:
     int nLotteryBlockCycle;
     int nTreasuryPaymentsStartBlock;
     int nTreasuryPaymentsCycle;
+
+    int nFulfilledRequestExpireTime;
 };
 
 /**

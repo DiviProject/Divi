@@ -272,6 +272,7 @@ public:
         fHeadersFirstSyncingActive = false;
 
         nPoolMaxTransactions = 3;
+        nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
         strSporkKey = "029d4bf088596e0c4821c2f961f5c3855f93ce7d654a793b2bf358c601322d436f";
         strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
@@ -412,6 +413,7 @@ public:
         fHeadersFirstSyncingActive = false;
 
         nPoolMaxTransactions = 3;
+        nFulfilledRequestExpireTime = 60 * 60; // fulfilled requests expire in 1 hour
         strSporkKey = "04B433E6598390C992F4F022F20D3B4CBBE691652EE7C48243B81701CBDB7CC7D7BF0EE09E154E6FCBF2043D65AF4E9E97B89B5DBAF830D83B9B7F469A6C45A717";
         strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
@@ -539,6 +541,7 @@ public:
 
         convertSeed6(vFixedSeeds, pnSeed6_test, ARRAYLEN(pnSeed6_test));
 
+        nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
         fRequireRPCPassword = true;
         fMiningRequiresPeers = true;
         fAllowMinDifficultyBlocks = true;
@@ -598,7 +601,8 @@ public:
 
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
-        
+        nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
+
         assert(hashGenesisBlock == uint256("0x00000112d782e21829fb2710f32766be2891173fcabecaf91140cd8bc96ff348"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.

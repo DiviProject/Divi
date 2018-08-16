@@ -274,8 +274,6 @@ protected:
     static std::map<CNetAddr, int64_t> setBanned;
     static CCriticalSection cs_setBanned;
 
-    std::vector<std::string> vecRequestsFulfilled; //keep track of what client has asked for
-
     // Whitelisted ranges. Any node connecting from these is automatically
     // whitelisted (as well as those connecting to whitelisted binds).
     static std::vector<CSubNet> vWhitelistedRange;
@@ -584,32 +582,6 @@ public:
             AbortMessage();
             throw;
         }
-    }
-
-    bool HasFulfilledRequest(std::string strRequest)
-    {
-        BOOST_FOREACH (std::string& type, vecRequestsFulfilled) {
-            if (type == strRequest) return true;
-        }
-        return false;
-    }
-
-    void ClearFulfilledRequest(std::string strRequest)
-    {
-        std::vector<std::string>::iterator it = vecRequestsFulfilled.begin();
-        while (it != vecRequestsFulfilled.end()) {
-            if ((*it) == strRequest) {
-                vecRequestsFulfilled.erase(it);
-                return;
-            }
-            ++it;
-        }
-    }
-
-    void FulfilledRequest(std::string strRequest)
-    {
-        if (HasFulfilledRequest(strRequest)) return;
-        vecRequestsFulfilled.push_back(strRequest);
     }
 
     bool IsSubscribed(unsigned int nChannel);

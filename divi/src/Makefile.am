@@ -114,6 +114,7 @@ BITCOIN_CORE_H = \
   db.h \
   eccryptoverify.h \
   ecwrapper.h \
+  flat-database.h \
   hash.h \
   hdchain.h \
   init.h \
@@ -134,6 +135,7 @@ BITCOIN_CORE_H = \
   miner.h \
   mruset.h \
   netbase.h \
+  netfulfilledman.h \
   net.h \
   noui.h \
   pow.h \
@@ -211,6 +213,7 @@ libbitcoin_server_a_SOURCES = \
   merkleblock.cpp \
   miner.cpp \
   net.cpp \
+  netfulfilledman.cpp \
   noui.cpp \
   pow.cpp \
   rest.cpp \
@@ -263,6 +266,7 @@ libbitcoin_wallet_a_SOURCES = \
   masternode-sync.cpp \
   masternodeconfig.cpp \
   masternodeman.cpp \
+  netfulfilledman.cpp \
   rpcdump.cpp \
   primitives/zerocoin.cpp \
   rpcwallet.cpp \

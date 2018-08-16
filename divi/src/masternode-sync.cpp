@@ -14,6 +14,7 @@
 #include "spork.h"
 #include "util.h"
 #include "addrman.h"
+#include "netfulfilledman.h"
 // clang-format on
 
 class CMasternodeSync;
@@ -138,7 +139,6 @@ void CMasternodeSync::GetNextAsset()
     switch (RequestedMasternodeAssets) {
     case (MASTERNODE_SYNC_INITIAL):
     case (MASTERNODE_SYNC_FAILED): // should never be used here actually, use Reset() instead
-        ClearFulfilledRequest();
         RequestedMasternodeAssets = MASTERNODE_SYNC_SPORKS;
         break;
     case (MASTERNODE_SYNC_SPORKS):
@@ -219,19 +219,6 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
     }
 }
 
-void CMasternodeSync::ClearFulfilledRequest()
-{
-    TRY_LOCK(cs_vNodes, lockRecv);
-    if (!lockRecv) return;
-
-    BOOST_FOREACH (CNode* pnode, vNodes) {
-        pnode->ClearFulfilledRequest("getspork");
-        pnode->ClearFulfilledRequest("mnsync");
-        pnode->ClearFulfilledRequest("mnwsync");
-        pnode->ClearFulfilledRequest("busync");
-    }
-}
-
 void CMasternodeSync::Process()
 {
     static int tick = 0;
@@ -286,8 +273,8 @@ void CMasternodeSync::Process()
 
         //set to synced
         if (RequestedMasternodeAssets == MASTERNODE_SYNC_SPORKS) {
-            if (pnode->HasFulfilledRequest("getspork")) continue;
-            pnode->FulfilledRequest("getspork");
+            if (netfulfilledman.HasFulfilledRequest(pnode->addr, "getspork")) continue;
+            netfulfilledman.AddFulfilledRequest(pnode->addr, "getspork");
 
             pnode->PushMessage("getsporks"); //get current network sporks
             if (RequestedMasternodeAttempt >= 2) GetNextAsset();
@@ -304,8 +291,8 @@ void CMasternodeSync::Process()
                     return;
                 }
 
-                if (pnode->HasFulfilledRequest("mnsync")) continue;
-				pnode->FulfilledRequest("mnsync");
+                if (netfulfilledman.HasFulfilledRequest(pnode->addr, "mnsync")) continue;
+                netfulfilledman.AddFulfilledRequest(pnode->addr, "mnsync");
 
                 // timeout
                 if (lastMasternodeList == 0 &&
@@ -335,8 +322,8 @@ void CMasternodeSync::Process()
                     return;
                 }
 
-                if (pnode->HasFulfilledRequest("mnwsync")) continue;
-                pnode->FulfilledRequest("mnwsync");
+                if (netfulfilledman.HasFulfilledRequest(pnode->addr, "mnwsync")) continue;
+                netfulfilledman.AddFulfilledRequest(pnode->addr, "mnwsync");
 
                 // timeout
                 if (lastMasternodeWinner == 0 &&
@@ -390,8 +377,8 @@ void CMasternodeSync::Process()
         //            return;
         //        }
 
-        //        if (pnode->HasFulfilledRequest("busync")) continue;
-        //        pnode->FulfilledRequest("busync");
+        //        if (netfulfilledman.HasFulfilledRequest("busync")) continue;
+        //        netfulfilledman.AddFulfilledRequest("busync");
 
         //        if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
 

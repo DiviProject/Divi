@@ -25,6 +25,8 @@
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "activemasternode.h"
+#include "flat-database.h"
+#include "netfulfilledman.h"
 #include "miner.h"
 #include "net.h"
 #include "rpcserver.h"
@@ -191,8 +193,18 @@ void PrepareShutdown()
     StopNode();
     InterruptTorControl();
     StopTorControl();
-    DumpMasternodes();
-    DumpMasternodePayments();
+
+    // STORE DATA CACHES INTO SERIALIZED DAT FILES
+    if (!fLiteMode) {
+        CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
+        flatdb1.Dump(mnodeman);
+        CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
+        flatdb2.Dump(masternodePayments);
+        CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
+        flatdb4.Dump(netfulfilledman);
+    }
+
+
     UnregisterNodeSignals(GetNodeSignals());
 
     if (fFeeEstimatesInitialized) {
@@ -1668,32 +1680,36 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 10: setup ObfuScation
 
 
-    CMasternodeDB mndb;
-    CMasternodeDB::ReadResult readResult = mndb.Read(mnodeman);
-    if (readResult == CMasternodeDB::FileError)
-        LogPrintf("Missing masternode cache file - mncache.dat, will try to recreate\n");
-    else if (readResult != CMasternodeDB::Ok) {
-        LogPrintf("Error reading mncache.dat: ");
-        if (readResult == CMasternodeDB::IncorrectFormat)
-            LogPrintf("magic is ok but data has invalid format, will try to recreate\n");
-        else
-            LogPrintf("file format is unknown or invalid, please fix it manually\n");
+    if (!fLiteMode) {
+        boost::filesystem::path pathDB = GetDataDir();
+        std::string strDBName;
+
+        strDBName = "mncache.dat";
+        uiInterface.InitMessage(_("Loading masternode cache..."));
+        CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
+        if(!flatdb1.Load(mnodeman)) {
+            return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
+        }
+
+        if(mnodeman.size()) {
+            strDBName = "mnpayments.dat";
+            uiInterface.InitMessage(_("Loading masternode payment cache..."));
+            CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
+            if(!flatdb2.Load(masternodePayments)) {
+                return InitError(_("Failed to load masternode payments cache from") + "\n" + (pathDB / strDBName).string());
+            }
+        } else {
+            uiInterface.InitMessage(_("Masternode cache is empty, skipping payments and governance cache..."));
+        }
+
+        strDBName = "netfulfilled.dat";
+        uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
+        CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
+        if(!flatdb4.Load(netfulfilledman)) {
+            return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
+        }
     }
 
-    uiInterface.InitMessage(_("Loading masternode payment cache..."));
-
-    CMasternodePaymentDB mnpayments;
-    CMasternodePaymentDB::ReadResult readResult3 = mnpayments.Read(masternodePayments);
-
-    if (readResult3 == CMasternodePaymentDB::FileError)
-        LogPrintf("Missing masternode payment cache - mnpayments.dat, will try to recreate\n");
-    else if (readResult3 != CMasternodePaymentDB::Ok) {
-        LogPrintf("Error reading mnpayments.dat: ");
-        if (readResult3 == CMasternodePaymentDB::IncorrectFormat)
-            LogPrintf("magic is ok but data has invalid format, will try to recreate\n");
-        else
-            LogPrintf("file format is unknown or invalid, please fix it manually\n");
-    }
 
     fMasterNode = GetBoolArg("-masternode", false);
 

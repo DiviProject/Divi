@@ -248,6 +248,7 @@ CAmount CMasternode::GetTierCollateralAmount(CMasternode::Tier tier)
     case MASTERNODE_TIER_GOLD:     return TIER_GOLD_BASE_COLLATERAL * COIN;
     case MASTERNODE_TIER_PLATINUM: return TIER_PLATINUM_BASE_COLLATERAL * COIN;
     case MASTERNODE_TIER_DIAMOND:  return TIER_DIAMOND_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_INVALID: break;
     }
 
     return 0;
@@ -283,6 +284,7 @@ bool CMasternode::IsTierValid(CMasternode::Tier tier)
     case MASTERNODE_TIER_GOLD:
     case MASTERNODE_TIER_PLATINUM:
     case MASTERNODE_TIER_DIAMOND: return true;
+    case MASTERNODE_TIER_INVALID: break;
     }
 
     return false;
@@ -297,6 +299,7 @@ std::string CMasternode::TierToString(CMasternode::Tier tier)
     case MASTERNODE_TIER_GOLD: return "GOLD";
     case MASTERNODE_TIER_PLATINUM: return "PLATINUM";
     case MASTERNODE_TIER_DIAMOND: return "DIAMOND";
+    case MASTERNODE_TIER_INVALID: break;
     }
 
     return "INVALID";

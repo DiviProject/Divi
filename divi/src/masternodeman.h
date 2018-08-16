@@ -22,31 +22,6 @@ using namespace std;
 class CMasternodeMan;
 
 extern CMasternodeMan mnodeman;
-void DumpMasternodes();
-
-/** Access to the MN database (mncache.dat)
- */
-class CMasternodeDB
-{
-private:
-    boost::filesystem::path pathMN;
-    std::string strMagicMessage;
-
-public:
-    enum ReadResult {
-        Ok,
-        FileError,
-        HashReadError,
-        IncorrectHash,
-        IncorrectMagicMessage,
-        IncorrectMagicNumber,
-        IncorrectFormat
-    };
-
-    CMasternodeDB();
-    bool Write(const CMasternodeMan& mnodemanToSave);
-    ReadResult Read(CMasternodeMan& mnodemanToLoad, bool fDryRun = false);
-};
 
 class CMasternodeMan
 {

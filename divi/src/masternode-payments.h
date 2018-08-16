@@ -35,32 +35,6 @@ void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStak
 using WinnerCoinStake = uint256;
 std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
 
-void DumpMasternodePayments();
-
-/** Save Masternode Payment Data (mnpayments.dat)
- */
-class CMasternodePaymentDB
-{
-private:
-    boost::filesystem::path pathDB;
-    std::string strMagicMessage;
-
-public:
-    enum ReadResult {
-        Ok,
-        FileError,
-        HashReadError,
-        IncorrectHash,
-        IncorrectMagicMessage,
-        IncorrectMagicNumber,
-        IncorrectFormat
-    };
-
-    CMasternodePaymentDB();
-    bool Write(const CMasternodePayments& objToSave);
-    ReadResult Read(CMasternodePayments& objToLoad, bool fDryRun = false);
-};
-
 class CMasternodePayee
 {
 public:
@@ -273,7 +247,7 @@ public:
     bool ProcessBlock(int nBlockHeight);
 
     void Sync(CNode* node, int nCountNeeded);
-    void CleanPaymentList();
+    void CheckAndRemove();
     int LastPayment(CMasternode& mn);
 
     bool GetBlockPayee(int nBlockHeight, CScript& payee, CMasternode::Tier &nPayeeTier);

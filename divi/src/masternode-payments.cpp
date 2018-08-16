@@ -71,10 +71,10 @@ static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
     assert(coinbaseTx.IsCoinBase() || coinbaseTx.IsCoinStake());
 
     return coinbaseTx.IsCoinBase() ? coinbaseTx.vout[0].scriptPubKey : coinbaseTx.vout[1].scriptPubKey;
-}
+    }
 
-static void FillLotteryPayment(CMutableTransaction &tx, int nHeight, const CBlockIndex *currentBlockIndex)
-{
+    static void FillLotteryPayment(CMutableTransaction &tx, int nHeight, const CBlockIndex *currentBlockIndex)
+    {
     auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
     // when we call this we need to have exactly 11 winners
 
@@ -986,8 +986,8 @@ static bool IsCoinstakeValidForLottery(const CTransaction &tx)
     else {
         auto payee = tx.vout[1].scriptPubKey;
         nAmount = std::accumulate(std::begin(tx.vout), std::end(tx.vout), CAmount(0), [payee](CAmount accum, const CTxOut &out) {
-            return out.scriptPubKey == payee ? accum + out.nValue : accum;
-        });
+                return out.scriptPubKey == payee ? accum + out.nValue : accum;
+    });
     }
 
     return nAmount > 10000 * COIN; // only if stake is more than 10k
@@ -1028,9 +1028,12 @@ std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const 
     scores.emplace_back(newScore, coinbaseTx.GetHash());
 
     // biggest entry at the begining
-    std::sort(std::begin(scores), std::end(scores), [](const std::pair<LotteryScore, WinnerCoinStake> &lhs, const std::pair<LotteryScore, WinnerCoinStake> &rhs) {
-        return lhs.first > rhs.second;
-    });
+    if(scores.size() > 1)
+    {
+        std::sort(std::begin(scores), std::end(scores), [](const std::pair<LotteryScore, WinnerCoinStake> &lhs, const std::pair<LotteryScore, WinnerCoinStake> &rhs) {
+            return lhs.first > rhs.first;
+        });
+    }
 
     scores.resize(std::min<size_t>(scores.size(), 11)); // don't go over 11 entries, since we will have only 11 winners
 

@@ -5754,30 +5754,6 @@ bool static AlreadyHave(const CInv& inv)
             return true;
         }
         return false;
-    //case MSG_BUDGET_VOTE:
-    //    if (budget.mapSeenMasternodeBudgetVotes.count(inv.hash)) {
-    //        masternodeSync.AddedBudgetItem(inv.hash);
-    //        return true;
-    //    }
-    //    return false;
-    //case MSG_BUDGET_PROPOSAL:
-    //    if (budget.mapSeenMasternodeBudgetProposals.count(inv.hash)) {
-    //        masternodeSync.AddedBudgetItem(inv.hash);
-    //        return true;
-    //    }
-    //    return false;
-    //case MSG_BUDGET_FINALIZED_VOTE:
-    //    if (budget.mapSeenFinalizedBudgetVotes.count(inv.hash)) {
-    //        masternodeSync.AddedBudgetItem(inv.hash);
-    //        return true;
-    //    }
-    //    return false;
-    //case MSG_BUDGET_FINALIZED:
-    //    if (budget.mapSeenFinalizedBudgets.count(inv.hash)) {
-    //        masternodeSync.AddedBudgetItem(inv.hash);
-    //        return true;
-    //    }
-    //    return false;
     case MSG_MASTERNODE_ANNOUNCE:
         if (mnodeman.mapSeenMasternodeBroadcast.count(inv.hash)) {
             masternodeSync.AddedMasternodeList(inv.hash);

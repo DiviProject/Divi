@@ -65,7 +65,6 @@ void CMasternodeSync::Reset()
 {
     lastMasternodeList = 0;
     lastMasternodeWinner = 0;
-    lastBudgetItem = 0;
     mapSeenSyncMNB.clear();
     mapSeenSyncMNW.clear();
     nCountFailures = 0;
@@ -102,20 +101,6 @@ void CMasternodeSync::AddedMasternodeWinner(uint256 hash)
         lastMasternodeWinner = GetTime();
         mapSeenSyncMNW.insert(make_pair(hash, 1));
     }
-}
-
-void CMasternodeSync::AddedBudgetItem(uint256 hash)
-{
-    //if (budget.mapSeenMasternodeBudgetProposals.count(hash) || budget.mapSeenMasternodeBudgetVotes.count(hash) ||
-    //    budget.mapSeenFinalizedBudgets.count(hash) || budget.mapSeenFinalizedBudgetVotes.count(hash)) {
-    //    if (mapSeenSyncBudget[hash] < MASTERNODE_SYNC_THRESHOLD) {
-    //        lastBudgetItem = GetTime();
-    //        mapSeenSyncBudget[hash]++;
-    //    }
-    //} else {
-    //    lastBudgetItem = GetTime();
-    //    mapSeenSyncBudget.insert(make_pair(hash, 1));
-    //}
 }
 
 void CMasternodeSync::GetNextAsset()

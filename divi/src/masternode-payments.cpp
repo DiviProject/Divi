@@ -96,7 +96,7 @@ static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
 static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std::vector<WinnerCoinStake> vRequiredWinnersCoinstake)
 {
     if(vRequiredWinnersCoinstake.empty()) {
-        return false;
+        return true;
     }
 
     auto verifyPayment = [&tx](CScript scriptPayment, CAmount amount) {
@@ -201,7 +201,7 @@ bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMin
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex)
 {
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
-        LogPrint("mnpayments", "Client not synced, skipping block payee checks\n");
+        LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
         return true;
     }
 
@@ -216,11 +216,11 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
     //check for masternode payee
     if (masternodePayments.IsTransactionValid(txNew, nBlockHeight))
         return true;
-    LogPrint("masternode","Invalid mn payment detected %s\n", txNew.ToString().c_str());
+    LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew.ToString().c_str());
 
     if (IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT))
         return false;
-    LogPrint("masternode","Masternode payment enforcement is disabled, accepting block\n");
+    LogPrintf("%s : Masternode payment enforcement is disabled, accepting block\n", __func__);
 
     return true;
 }

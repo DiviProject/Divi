@@ -2281,7 +2281,7 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCou
 
 	if (nHeight < Params().LAST_POW_BLOCK()) return 0;
 	else {
-		int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+        //  int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
 
 		//	Determine masternode money supply is now determined from from mnodeman.mMasternodes.  Previous code was
 		//		int64_t mNodeCoins = nMasternodeCount * 10000 * COIN;

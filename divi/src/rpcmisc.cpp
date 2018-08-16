@@ -102,7 +102,6 @@ Value getinfo(const Array& params, bool fHelp)
         zdivObj.push_back(Pair(to_string(denom), ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * (denom*COIN))));
     }
     zdivObj.emplace_back(Pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
-    obj.emplace_back(Pair("zDIVsupply", zdivObj));
     
 #ifdef ENABLE_WALLET
     if (pwalletMain) {

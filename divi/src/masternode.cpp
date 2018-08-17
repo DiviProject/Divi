@@ -17,11 +17,11 @@ map<uint256, int> mapSeenMasternodeScanningErrors;
 std::map<int64_t, uint256> mapCacheBlockHashes;
 
 
-const int TIER_COPPER_BASE_COLLATERAL   = 1000000;
-const int TIER_SILVER_BASE_COLLATERAL   = 3000000;
-const int TIER_GOLD_BASE_COLLATERAL     = 10000000;
-const int TIER_PLATINUM_BASE_COLLATERAL = 30000000;
-const int TIER_DIAMOND_BASE_COLLATERAL  = 100000000;
+const int TIER_COPPER_BASE_COLLATERAL   = 100000;
+const int TIER_SILVER_BASE_COLLATERAL   = 300000;
+const int TIER_GOLD_BASE_COLLATERAL     = 1000000;
+const int TIER_PLATINUM_BASE_COLLATERAL = 3000000;
+const int TIER_DIAMOND_BASE_COLLATERAL  = 10000000;
 
 static bool GetUTXOCoins(const uint256& txhash, CCoins& coins)
 {

@@ -125,7 +125,7 @@ void ThreadCheckObfuScationPool()
             if (c % MASTERNODE_PING_SECONDS == 1) activeMasternode.ManageStatus();
 
             if (c % 60 == 0) {
-                mnodeman.CheckAndRemove();
+                mnodeman.CheckAndRemoveInnactive();
                 mnodeman.ProcessMasternodeConnections();
                 masternodePayments.CheckAndRemove();
                 CleanTransactionLocksList();

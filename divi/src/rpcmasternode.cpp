@@ -221,14 +221,13 @@ Value listmasternodes(const Array& params, bool fHelp)
         if(!pindex) return 0;
         nHeight = pindex->nHeight;
     }
-    std::vector<pair<int, CMasternode> > vMasternodeRanks = mnodeman.GetMasternodeRanks(nHeight);
-    BOOST_FOREACH (PAIRTYPE(int, CMasternode) & s, vMasternodeRanks) {
+    for(auto &&entry : mnodeman.GetFullMasternodeVector()) {
         Object obj;
-        std::string strVin = s.second.vin.prevout.ToStringShort();
-        std::string strTxHash = s.second.vin.prevout.hash.ToString();
-        uint32_t oIdx = s.second.vin.prevout.n;
+        std::string strVin = entry.vin.prevout.ToStringShort();
+        std::string strTxHash = entry.vin.prevout.hash.ToString();
+        uint32_t oIdx = entry.vin.prevout.n;
 
-        CMasternode* mn = mnodeman.Find(s.second.vin);
+        CMasternode* mn = mnodeman.Find(entry.vin);
 
         if (mn != NULL) {
             if (strFilter != "" && strTxHash.find(strFilter) == string::npos &&
@@ -242,7 +241,6 @@ Value listmasternodes(const Array& params, bool fHelp)
             CNetAddr node = CNetAddr(strHost, false);
             std::string strNetwork = GetNetworkName(node.GetNetwork());
 
-            obj.push_back(Pair("rank", (strStatus == "ENABLED" ? s.first : 0)));
             obj.push_back(Pair("network", strNetwork));
             obj.push_back(Pair("txhash", strTxHash));
             obj.push_back(Pair("outidx", (uint64_t)oIdx));

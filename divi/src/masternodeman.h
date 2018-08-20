@@ -79,7 +79,8 @@ public:
     void Check();
 
     /// Check all Masternodes and remove inactive
-    void CheckAndRemove(bool forceExpiredRemoval = false);
+    void CheckAndRemoveInnactive(bool forceExpiredRemoval = false);
+    void CheckAndRemove() {} // dummy overload for loading/storing from db cache
 
     /// Clear Masternode vector
     void Clear();
@@ -104,9 +105,8 @@ public:
     /// Get the current winner for this block
     CMasternode* GetCurrentMasterNode(int mod = 1, int64_t nBlockHeight = 0, int minProtocol = 0);
 
-    std::vector<CMasternode> GetFullMasternodeVector()
+    std::vector<CMasternode> GetFullMasternodeVector() const
     {
-        Check();
         return vMasternodes;
     }
 

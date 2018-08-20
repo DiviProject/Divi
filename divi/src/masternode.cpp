@@ -28,6 +28,7 @@ static bool GetUTXOCoins(const uint256& txhash, CCoins& coins)
     LOCK(cs_main);
     if (!pcoinsTip->GetCoins(txhash, coins))
         return false;
+
     return true;
 }
 
@@ -36,7 +37,13 @@ static bool IsCoinSpent(const COutPoint &outpoint)
     CCoins coins;
     if(GetUTXOCoins(outpoint.hash, coins))
     {
-        return !coins.IsAvailable(outpoint.n);
+        int n = outpoint.n;
+        if (n < 0 || (unsigned int)n >= coins.vout.size() || coins.vout[n].IsNull()) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     return true;

@@ -92,7 +92,7 @@ void CMasternodeMan::Check()
     }
 }
 
-void CMasternodeMan::CheckAndRemove(bool forceExpiredRemoval)
+void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
 {
     Check();
 
@@ -233,7 +233,6 @@ int CMasternodeMan::CountEnabled(int protocolVersion)
     protocolVersion = protocolVersion == -1 ? masternodePayments.GetMinMasternodePaymentsProto() : protocolVersion;
 
     BOOST_FOREACH (CMasternode& mn, vMasternodes) {
-        mn.Check();
         if (mn.protocolVersion < protocolVersion || !mn.IsEnabled()) continue;
         i++;
     }
@@ -492,6 +491,9 @@ int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, in
 
 std::vector<pair<int, CMasternode> > CMasternodeMan::GetMasternodeRanks(int64_t nBlockHeight, int minProtocol)
 {
+    if (!masternodeSync.IsMasternodeListSynced())
+        return std::vector<pair<int, CMasternode>>();
+
     std::vector<pair<int64_t, CMasternode> > vecMasternodeScores;
     std::vector<pair<int, CMasternode> > vecMasternodeRanks;
 

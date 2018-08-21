@@ -1902,6 +1902,24 @@ Value settxfee(const Array& params, bool fHelp)
     return true;
 }
 
+static std::string DescribeEncryptionStatus(CWallet *wallet)
+{
+    if(wallet->IsCrypted())
+    {
+        if(wallet->fWalletUnlockAnonymizeOnly) {
+            return "locked-anonymization";
+        }
+        else if(wallet->IsLocked()) {
+            return "locked";
+        }
+        else {
+            return "unlocked";
+        }
+    }
+
+    return "unencrypted";
+}
+
 Value getwalletinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -1916,6 +1934,7 @@ Value getwalletinfo(const Array& params, bool fHelp)
             "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
             "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"
             "  \"unlocked_until\": ttt,      (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
+            "  \"encryption_status\": status (string) encryption status, possible values: unencrypted/unlocked/locked/locked-anonymization"
             "}\n"
             "\nExamples:\n" +
             HelpExampleCli("getwalletinfo", "") + HelpExampleRpc("getwalletinfo", ""));
@@ -1930,6 +1949,8 @@ Value getwalletinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
     if (pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
+
+    obj.push_back(Pair("encryption_status", DescribeEncryptionStatus(pwalletMain)));
 
     if (fHDEnabled) {
         obj.push_back(Pair("hdchainid", hdChainCurrent.GetID().GetHex()));

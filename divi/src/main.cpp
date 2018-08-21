@@ -2244,6 +2244,10 @@ CAmount GetBlockValue(int nHeight, bool fTreasuryPaymentOnly, bool fLotteryPayme
     }
     else if(nHeight < 2102400) // next two years, 60 * 24 * 365 * 4
     {
+        nSubsidy = 1050 * COIN;
+    }
+    else if(nHeight < 4204800) // after two years, next two years, 60 * 24 * 365 * 8
+    {
         nSubsidy = 850 * COIN;
     }
     else

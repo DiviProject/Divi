@@ -678,6 +678,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
 
     if (pmn != NULL) {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");
+        LogPrint("masternode","CMasternodePayments::ProcessBlock() Next MN to pay: %s, tier: %d\n", pmn->vin.prevout.ToString(), pmn->nTier);;
 
         newWinner.nBlockHeight = nBlockHeight;
 
@@ -737,7 +738,7 @@ bool CMasternodePaymentWinner::SignatureValid()
         }
 
         if(!CMasternode::IsTierValid(static_cast<CMasternode::Tier>(nPayeeTier)) || pmn->nTier != nPayeeTier) {
-            return error("CMasternodePaymentWinner MN tier is not valid for this payment, expected: %d, actual: %d\n", pmn->nTier, nPayeeTier);
+            return error("CMasternodePaymentWinner MN tier is not valid for this payment, expected: %d, actual: %d %s\n", pmn->nTier, nPayeeTier, vinMasternode.prevout.ToString());
         }
 
         return true;

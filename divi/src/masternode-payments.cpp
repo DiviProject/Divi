@@ -678,12 +678,14 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
 
     if (pmn != NULL) {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");
-        LogPrint("masternode","CMasternodePayments::ProcessBlock() Next MN to pay: %s, tier: %d\n", pmn->vin.prevout.ToString(), pmn->nTier);;
+        LogPrint("masternode","CMasternodePayments::ProcessBlock() Next MN to pay: %s, tier: %d\n", pmn->vin.prevout.ToString(), pmn->nTier);
 
         newWinner.nBlockHeight = nBlockHeight;
 
         CScript payee = GetScriptForDestination(pmn->pubKeyCollateralAddress.GetID());
         newWinner.AddPayee(payee, static_cast<CMasternode::Tier>(pmn->nTier));
+
+        LogPrint("masternode","CMasternodePayments::ProcessBlock() Sending winner: %s %d\n", newWinner.ToString(), newWinner.nPayeeTier);
 
         CTxDestination address1;
         ExtractDestination(payee, address1);

@@ -148,8 +148,8 @@ public:
 
     int nBlockHeight;
     CScript payee;
-    int nPayeeTier;
     std::vector<unsigned char> vchSig;
+    int nPayeeTier;
 
     CMasternodePaymentWinner()
     {
@@ -183,7 +183,7 @@ public:
     bool SignatureValid();
     void Relay();
 
-    void AddPayee(CScript payeeIn, CMasternode::Tier nPayeeTierIn)
+    void AddPayee(CScript payeeIn, int nPayeeTierIn)
     {
         payee = payeeIn;
         nPayeeTier = nPayeeTierIn;

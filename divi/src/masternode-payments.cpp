@@ -397,7 +397,8 @@ bool CMasternodePaymentWinner::Sign(CKey& keyMasternode, CPubKey& pubKeyMasterno
 
     std::string strMessage = vinMasternode.prevout.ToStringShort() +
             boost::lexical_cast<std::string>(nBlockHeight) +
-            payee.ToString();
+            payee.ToString() +
+            CMasternode::TierToString(static_cast<CMasternode::Tier>(nPayeeTier));
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
         LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage.c_str());
@@ -678,14 +679,11 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
 
     if (pmn != NULL) {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");
-        LogPrint("masternode","CMasternodePayments::ProcessBlock() Next MN to pay: %s, tier: %d\n", pmn->vin.prevout.ToString(), pmn->nTier);
 
         newWinner.nBlockHeight = nBlockHeight;
 
         CScript payee = GetScriptForDestination(pmn->pubKeyCollateralAddress.GetID());
-        newWinner.AddPayee(payee, static_cast<CMasternode::Tier>(pmn->nTier));
-
-        LogPrint("masternode","CMasternodePayments::ProcessBlock() Sending winner: %s %d\n", newWinner.ToString(), newWinner.nPayeeTier);
+        newWinner.AddPayee(payee, pmn->nTier);
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
@@ -732,7 +730,8 @@ bool CMasternodePaymentWinner::SignatureValid()
     if (pmn != NULL) {
         std::string strMessage = vinMasternode.prevout.ToStringShort() +
                 boost::lexical_cast<std::string>(nBlockHeight) +
-                payee.ToString();
+                payee.ToString() +
+                CMasternode::TierToString(static_cast<CMasternode::Tier>(nPayeeTier));
 
         std::string errorMessage = "";
         if (!CObfuScationSigner::VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
@@ -740,7 +739,7 @@ bool CMasternodePaymentWinner::SignatureValid()
         }
 
         if(!CMasternode::IsTierValid(static_cast<CMasternode::Tier>(nPayeeTier)) || pmn->nTier != nPayeeTier) {
-            return error("CMasternodePaymentWinner MN tier is not valid for this payment, expected: %d, actual: %d %s\n", pmn->nTier, nPayeeTier, vinMasternode.prevout.ToString());
+            return error("CMasternodePaymentWinner MN tier is not valid for this payment, expected: %d, actual: %d\n", pmn->nTier, nPayeeTier);
         }
 
         return true;

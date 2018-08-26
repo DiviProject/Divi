@@ -17,6 +17,8 @@
 #include "netfulfilledman.h"
 // clang-format on
 
+#include <algorithm>
+
 class CMasternodeSync;
 CMasternodeSync masternodeSync;
 
@@ -212,7 +214,18 @@ void CMasternodeSync::Process()
     TRY_LOCK(cs_vNodes, lockRecv);
     if (!lockRecv) return;
 
-    BOOST_FOREACH (CNode* pnode, vNodes) {
+    std::vector<CNode*> vSporkSyncedNodes;
+
+    std::copy_if(std::begin(vNodes), std::end(vNodes), std::back_inserter(vSporkSyncedNodes), [](const CNode *node) {
+        return node->AreSporksSynced();
+    });
+
+    // don't event attemp to sync if we don't have 3 synced nodes
+    if(vSporkSyncedNodes.size() < 3) {
+        return;
+    }
+
+    BOOST_FOREACH (CNode* pnode, vSporkSyncedNodes) {
         if (Params().NetworkID() == CBaseChainParams::REGTEST) {
             if (RequestedMasternodeAttempt <= 2) {
                 pnode->PushMessage("getsporks"); //get current network sporks
@@ -232,10 +245,7 @@ void CMasternodeSync::Process()
 
         //set to synced
         if (RequestedMasternodeAssets == MASTERNODE_SYNC_SPORKS) {
-            if (netfulfilledman.HasFulfilledRequest(pnode->addr, "getspork")) continue;
-            netfulfilledman.AddFulfilledRequest(pnode->addr, "getspork");
-
-            pnode->PushMessage("getsporks"); //get current network sporks
+            // this has to be safe to do, because we will get here only if we have 3 peers
             if (RequestedMasternodeAttempt >= 2) GetNextAsset();
             RequestedMasternodeAttempt++;
 

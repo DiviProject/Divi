@@ -149,6 +149,7 @@ void CSporkManager::ExecuteSpork(int nSporkID, string strValue)
 {
     //correct fork via spork technology
     if(nSporkID == SPORK_12_RECONSIDER_BLOCKS && strValue > 0) {
+
         // allow to reprocess 24h of blocks max, which should be enough to resolve any issues
         int64_t nMaxBlocks = 576;
         // this potentially can be a heavy operation, so only allow this to be executed once per 10 minutes
@@ -179,7 +180,7 @@ bool CSporkManager::UpdateSpork(int nSporkID, string strValue)
 
     CSporkMessage spork = CSporkMessage(nSporkID, strValue, GetAdjustedTime());
 
-    if(spork.Sign(sporkPrivKey)) {
+    if(spork.Sign(sporkPrivKey, sporkPubKey)) {
         spork.Relay();
         mapSporks[spork.GetHash()] = spork;
         mapSporksActive[nSporkID] = spork;
@@ -211,7 +212,7 @@ bool CSporkManager::IsSporkActive(int nSporkID)
 string CSporkManager::GetSporkValue(int nSporkID) const
 {
     if (mapSporksActive.count(nSporkID))
-        return mapSporksActive[nSporkID].strValue;
+        return mapSporksActive.at(nSporkID).strValue;
 
     if (mapSporkDefaults.count(nSporkID)) {
         return mapSporkDefaults[nSporkID];
@@ -278,7 +279,7 @@ bool CSporkManager::SetPrivKey(const std::string& strPrivKey)
     }
 
     CSporkMessage spork;
-    if (spork.Sign(key)) {
+    if (spork.Sign(key, sporkPubKey)) {
         // Test signing successful, proceed
         LogPrintf("CSporkManager::SetPrivKey -- Successfully initialized as spork signer\n");
 
@@ -300,24 +301,23 @@ uint256 CSporkMessage::GetSignatureHash() const
     return GetHash();
 }
 
-bool CSporkMessage::Sign(const CKey& key)
+bool CSporkMessage::Sign(const CKey& key, const CPubKey &sporkPubKey)
 {
     if (!key.IsValid()) {
         LogPrintf("CSporkMessage::Sign -- signing key is not valid\n");
         return false;
     }
 
-    CPubKey pubKey = key.GetPubKey();
     std::string strError = "";
 
-    std::string strMessage = boost::lexical_cast<std::string>(nSporkID) + boost::lexical_cast<std::string>(strValue) + boost::lexical_cast<std::string>(nTimeSigned);
+    std::string strMessage = boost::lexical_cast<std::string>(nSporkID) + strValue + boost::lexical_cast<std::string>(nTimeSigned);
 
     if(!CObfuScationSigner::SignMessage(strMessage, strError, vchSig, key)) {
         LogPrintf("CSporkMessage::Sign -- SignMessage() failed\n");
         return false;
     }
 
-    if(!CObfuScationSigner::VerifyMessage(pubKey, vchSig, strMessage, strError)) {
+    if(!CObfuScationSigner::VerifyMessage(sporkPubKey, vchSig, strMessage, strError)) {
         LogPrintf("CSporkMessage::Sign -- VerifyMessage() failed, error: %s\n", strError);
         return false;
     }

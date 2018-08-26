@@ -82,7 +82,7 @@ public:
     uint256 GetHash() const;
     uint256 GetSignatureHash() const;
 
-    bool Sign(const CKey& key);
+    bool Sign(const CKey& key, const CPubKey &sporkPubKey);
     bool CheckSignature(const CPubKey &pubKey) const;
     void Relay();
 };

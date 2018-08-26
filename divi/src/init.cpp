@@ -994,6 +994,8 @@ bool AppInit2(boost::thread_group& threadGroup)
             threadGroup.create_thread(&ThreadScriptCheck);
     }
 
+    sporkManager.SetSporkAddress(Params().SporkKey());
+
     if (mapArgs.count("-sporkkey")) // spork priv key
     {
         if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
@@ -1364,8 +1366,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 
                 // DIVI: load previous sessions sporks if we have them.
                 uiInterface.InitMessage(_("Loading sporks..."));
-                sporkManager.SetSporkAddress(Params().SporkKey());
-                sporkManager.LoadSporksFromDB();
+
+//                sporkManager.LoadSporksFromDB();
 
                 uiInterface.InitMessage(_("Loading block index..."));
                 string strBlockIndexError = "";

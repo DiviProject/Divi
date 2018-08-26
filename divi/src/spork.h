@@ -129,6 +129,7 @@ public:
     void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     void ExecuteSpork(int nSporkID, std::string strValue);
     bool UpdateSpork(int nSporkID, std::string strValue);
+    int GetActiveSporkCount() const;
 
     bool IsSporkActive(int nSporkID);
     std::vector<std::string> GetMultiValueSporkValues(int nSporkID) const;

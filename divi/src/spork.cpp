@@ -43,14 +43,17 @@ static bool IsMultiValueSpork(int nSporkID)
     return false;
 }
 
-// DIVI: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::AddActiveSpork(const CSporkMessage &spork)
 {
+    auto &sporks = mapSporksActive[spork.nSporkID];
     if(IsMultiValueSpork(spork.nSporkID)) {
-        mapSporksActive[spork.nSporkID].push_back(spork);
+        sporks.push_back(spork);
+        std::sort(std::begin(sporks), std::end(sporks), [](const CSporkMessage &lhs, const CSporkMessage &rhs) {
+            return lhs.nTimeSigned < rhs.nTimeSigned;
+        });
     }
     else {
-        mapSporksActive[spork.nSporkID] = { spork };
+        sporks = { spork };
     }
 }
 
@@ -67,6 +70,7 @@ bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
     return false;
 }
 
+// DIVI: on startup load spork values from previous session if they exist in the sporkDB
 void CSporkManager::LoadSporksFromDB()
 {
     for (int i = SPORK_START; i <= SPORK_END; ++i) {
@@ -117,8 +121,9 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
 
         if(IsNewerSpork(spork)) {
             LogPrintf("%s new\n", strLogMsg);
-        } else {
+        } else if(!IsMultiValueSpork(spork.nSporkID)) {
             LogPrint("spork", "%s seen\n", strLogMsg);
+            pfrom->nSporksSynced++;
             return;
         }
 
@@ -129,6 +134,8 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
             return;
         }
 
+        pfrom->nSporksSynced++;
+
         mapSporks[hash] = spork;
         AddActiveSpork(spork);
         spork.Relay();
@@ -138,12 +145,17 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
 
     } else if (strCommand == "getsporks") {
 
-        std::map<int, CSporkMessage>::iterator it = mapSporksActive.begin();
-
-        while(it != mapSporksActive.end()) {
-            pfrom->PushMessage("spork", it->second);
-            it++;
+        for(auto &&entry : mapSporksActive) {
+            for(auto &&spork : entry.second) {
+                pfrom->PushMessage("spork", spork);
+            }
         }
+
+    } else if(strCommand == "sporkcount") {
+        int nSporkCount = 0;
+        vRecv >> nSporkCount;
+        pfrom->SetSporkCount(nSporkCount);
+        pfrom->PushMessage("getsporks");
     }
 
 }
@@ -238,6 +250,13 @@ bool CSporkManager::UpdateSpork(int nSporkID, string strValue)
     }
 
     return false;
+}
+
+int CSporkManager::GetActiveSporkCount() const
+{
+    return std::accumulate(std::begin(mapSporksActive), std::end(mapSporksActive),  0, [](int accum, const std::pair<int, std::vector<CSporkMessage>> &item) {
+        return accum + item.second.size();
+    });
 }
 
 // grab the spork, otherwise say it's off

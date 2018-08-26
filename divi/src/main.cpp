@@ -6060,6 +6060,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         // Change version
         pfrom->PushMessage("verack");
         pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
+        pfrom->PushMessage("sporkcount", sporkManager.GetActiveSporkCount());
 
         if (!pfrom->fInbound) {
             // Advertise our address
@@ -6896,6 +6897,10 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
     {
         // Don't send anything until we get their version message
         if (pto->nVersion == 0)
+            return true;
+
+        // Don't send anything until we get sporks from peer
+        if(!pto->AreSporksSynced())
             return true;
 
         //

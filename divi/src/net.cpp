@@ -483,9 +483,23 @@ void CNode::PushVersion()
     else
         LogPrint("net", "send version message: version %d, blocks=%d, us=%s, peer=%d\n", PROTOCOL_VERSION, nBestHeight, addrMe.ToString(), id);
     PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
-        nLocalHostNonce, FormatSubVersion(std::vector<string>()), nBestHeight, true);
+                nLocalHostNonce, FormatSubVersion(std::vector<string>()), nBestHeight, true);
 }
 
+void CNode::SetSporkCount(int nSporkCountIn)
+{
+    if(nSporkCountIn > 0) {
+        nSporksCount = nSporkCountIn;
+    }
+    else {
+        nSporksCount = 0;
+    }
+}
+
+bool CNode::AreSporksSynced() const
+{
+    return nSporksCount == nSporksSynced;
+}
 
 std::map<CNetAddr, int64_t> CNode::setBanned;
 CCriticalSection CNode::cs_setBanned;

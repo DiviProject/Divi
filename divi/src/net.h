@@ -268,6 +268,8 @@ public:
     int nRefCount;
     NodeId id;
 
+    int nSporksCount = -1;
+
 protected:
     // Denial-of-service detection/prevention
     // Key is IP address, value is banned-until-time
@@ -308,6 +310,8 @@ public:
     int64_t nPingUsecTime;
     // Whether a ping is requested.
     bool fPingQueued;
+
+    int nSporksSynced = 0;
 
     CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn = false);
     ~CNode();
@@ -415,7 +419,8 @@ public:
     void EndMessage() UNLOCK_FUNCTION(cs_vSend);
 
     void PushVersion();
-
+    void SetSporkCount(int nSporkCountIn);
+    bool AreSporksSynced() const;
 
     void PushMessage(const char* pszCommand)
     {

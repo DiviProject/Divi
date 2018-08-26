@@ -31,9 +31,11 @@ static const int SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT             = 10007;
 static const int SPORK_9_SUPERBLOCKS_ENABLED                        = 10008;
 static const int SPORK_10_MASTERNODE_PAY_UPDATED_NODES              = 10009;
 static const int SPORK_12_RECONSIDER_BLOCKS                         = 10011;
+static const int SPORK_13_BLOCK_PAYMENTS                            = 10012;
+static const int SPORK_14_TX_FEE                                    = 10013;
 
 static const int SPORK_START                                            = SPORK_2_SWIFTTX_ENABLED;
-static const int SPORK_END                                              = SPORK_12_RECONSIDER_BLOCKS;
+static const int SPORK_END                                              = SPORK_14_TX_FEE;
 
 extern std::map<uint256, CSporkMessage> mapSporks;
 extern CSporkManager sporkManager;
@@ -87,15 +89,37 @@ public:
     void Relay();
 };
 
+struct BlockPayment {
+    BlockPayment();
+    BlockPayment(int nStakeRewardIn, int nMasternodeRewardIn, int nTreasuryRewardIn,
+                 int nProposalsRewardIn, int nCharityRewardIn, int nActivationBlockHeightIn);
+
+    static BlockPayment FromString(std::string strData);
+
+    bool IsValid() const;
+    std::string ToString() const;
+
+    const int nStakeReward;
+    const int nMasternodeReward;
+    const int nTreasuryReward;
+    const int nProposalsReward;
+    const int nCharityReward;
+    const int nActivationBlockHeight;
+};
 
 class CSporkManager
 {
 private:
     std::vector<unsigned char> vchSig;
-    std::map<int, CSporkMessage> mapSporksActive;
+    // Some sporks require to have history, we will use sorted vector for this approach.
+    std::map<int, std::vector<CSporkMessage>> mapSporksActive;
 
     CPubKey sporkPubKey;
     CKey sporkPrivKey;
+
+private:
+    void AddActiveSpork(const CSporkMessage &spork);
+    bool IsNewerSpork(const CSporkMessage &spork) const;
 
 public:
 
@@ -107,6 +131,7 @@ public:
     bool UpdateSpork(int nSporkID, std::string strValue);
 
     bool IsSporkActive(int nSporkID);
+    std::vector<std::string> GetMultiValueSporkValues(int nSporkID) const;
     std::string GetSporkValue(int nSporkID) const;
     int GetSporkIDByName(const std::string& strName);
     std::string GetSporkNameByID(int nSporkID);

@@ -13,6 +13,11 @@
 #include "sync.h"
 #include "sporkdb.h"
 #include "util.h"
+
+#include <numeric>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 
 CSporkManager sporkManager;
@@ -28,7 +33,40 @@ static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_12_RECONSIDER_BLOCKS,             "0"},             // 0 BLOCKS
 };
 
+static bool IsMultiValueSpork(int nSporkID)
+{
+    if(SPORK_13_BLOCK_PAYMENTS == nSporkID ||
+            SPORK_14_TX_FEE == nSporkID) {
+        return true;
+    }
+
+    return false;
+}
+
 // DIVI: on startup load spork values from previous session if they exist in the sporkDB
+void CSporkManager::AddActiveSpork(const CSporkMessage &spork)
+{
+    if(IsMultiValueSpork(spork.nSporkID)) {
+        mapSporksActive[spork.nSporkID].push_back(spork);
+    }
+    else {
+        mapSporksActive[spork.nSporkID] = { spork };
+    }
+}
+
+bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
+{
+
+    if(mapSporksActive.count(spork.nSporkID)) {
+        const auto &sporks = mapSporksActive.at(spork.nSporkID);
+        // at this place items have to be sorted
+        if (sporks.back().nTimeSigned < spork.nTimeSigned)
+            return true;
+    }
+
+    return false;
+}
+
 void CSporkManager::LoadSporksFromDB()
 {
     for (int i = SPORK_START; i <= SPORK_END; ++i) {
@@ -45,17 +83,17 @@ void CSporkManager::LoadSporksFromDB()
 
         // add spork to memory
         mapSporks[spork.GetHash()] = spork;
-        mapSporksActive[spork.nSporkID] = spork;
-//        std::time_t result = spork.strValue;
+        //        mapSporksActive[spork.nSporkID] = spork;
+        //        std::time_t result = spork.strValue;
         // If SPORK Value is greater than 1,000,000 assume it's actually a Date and then convert to a more readable format
-//        if (spork.strValue > 1000000) {
-//            LogPrintf("%s : loaded spork %s with value %d : %s", __func__,
-//                      sporkManager.GetSporkNameByID(spork.nSporkID), spork.strValue,
-//                      std::ctime(&result));
-//        } else {
-            LogPrintf("%s : loaded spork %s with value %d\n", __func__,
-                      sporkManager.GetSporkNameByID(spork.nSporkID), spork.strValue);
-//        }
+        //        if (spork.strValue > 1000000) {
+        //            LogPrintf("%s : loaded spork %s with value %d : %s", __func__,
+        //                      sporkManager.GetSporkNameByID(spork.nSporkID), spork.strValue,
+        //                      std::ctime(&result));
+        //        } else {
+        LogPrintf("%s : loaded spork %s with value %d\n", __func__,
+                  sporkManager.GetSporkNameByID(spork.nSporkID), spork.strValue);
+        //        }
     }
 }
 
@@ -77,15 +115,11 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
             strLogMsg = strprintf("SPORK -- hash: %s id: %d value: %10d bestHeight: %d peer=%d", hash.ToString(), spork.nSporkID, spork.strValue, chainActive.Height(), pfrom->id);
         }
 
-        if(mapSporksActive.count(spork.nSporkID)) {
-            if (mapSporksActive[spork.nSporkID].nTimeSigned >= spork.nTimeSigned) {
-                LogPrint("spork", "%s seen\n", strLogMsg);
-                return;
-            } else {
-                LogPrintf("%s updated\n", strLogMsg);
-            }
-        } else {
+        if(IsNewerSpork(spork)) {
             LogPrintf("%s new\n", strLogMsg);
+        } else {
+            LogPrint("spork", "%s seen\n", strLogMsg);
+            return;
         }
 
         if(!spork.CheckSignature(sporkPubKey)) {
@@ -96,7 +130,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         }
 
         mapSporks[hash] = spork;
-        mapSporksActive[spork.nSporkID] = spork;
+        AddActiveSpork(spork);
         spork.Relay();
 
         //does a task if needed
@@ -148,7 +182,20 @@ void ReprocessBlocks(int nBlocks)
 void CSporkManager::ExecuteSpork(int nSporkID, string strValue)
 {
     //correct fork via spork technology
-    if(nSporkID == SPORK_12_RECONSIDER_BLOCKS && strValue > 0) {
+    if(nSporkID == SPORK_12_RECONSIDER_BLOCKS) {
+
+        int64_t nValue = 0;
+        try
+        {
+            nValue = boost::lexical_cast<int64_t>(strValue);
+        }
+        catch(boost::bad_lexical_cast &)
+        {
+        }
+
+        if(nValue <= 0) {
+            return;
+        }
 
         // allow to reprocess 24h of blocks max, which should be enough to resolve any issues
         int64_t nMaxBlocks = 576;
@@ -162,15 +209,15 @@ void CSporkManager::ExecuteSpork(int nSporkID, string strValue)
             return;
         }
 
-        if(strValue > nMaxBlocks) {
+        if(nValue > nMaxBlocks) {
             LogPrintf("CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider too many blocks %d/%d\n", strValue, nMaxBlocks);
             return;
         }
 
 
-        LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", strValue);
+        LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
 
-        ReprocessBlocks(strValue);
+        ReprocessBlocks(nValue);
         nTimeExecuted = GetTime();
     }
 }
@@ -180,10 +227,13 @@ bool CSporkManager::UpdateSpork(int nSporkID, string strValue)
 
     CSporkMessage spork = CSporkMessage(nSporkID, strValue, GetAdjustedTime());
 
+    if(!IsNewerSpork(spork))
+        return false;
+
     if(spork.Sign(sporkPrivKey, sporkPubKey)) {
         spork.Relay();
         mapSporks[spork.GetHash()] = spork;
-        mapSporksActive[nSporkID] = spork;
+        AddActiveSpork(spork);
         return true;
     }
 
@@ -193,26 +243,52 @@ bool CSporkManager::UpdateSpork(int nSporkID, string strValue)
 // grab the spork, otherwise say it's off
 bool CSporkManager::IsSporkActive(int nSporkID)
 {
-    int64_t r = GetSporkValue<int64_t>(nSporkID);
+    // Multi value sporks cannot be active, but they can store value
+    bool fMultiValue = IsMultiValueSpork(nSporkID);
+
+    if(fMultiValue) {
+        return mapSporksActive.count(nSporkID);
+    }
+
+    std::string r;
 
     if(mapSporksActive.count(nSporkID)){
-        r = mapSporksActive[nSporkID].strValue;
+        r = mapSporksActive[nSporkID].front().strValue; // always one value
     } else if (mapSporkDefaults.count(nSporkID)) {
         r = mapSporkDefaults[nSporkID];
     } else {
         LogPrint("spork", "CSporkManager::IsSporkActive -- Unknown Spork ID %d\n", nSporkID);
-        r = 4070908800ULL; // 2099-1-1 i.e. off by default
+        r = "4070908800"; // 2099-1-1 i.e. off by default
     }
 
-    return r < GetAdjustedTime();
+    return boost::lexical_cast<int64_t>(r) < GetAdjustedTime();
 }
 
+std::vector<string> CSporkManager::GetMultiValueSporkValues(int nSporkID) const
+{
+    std::vector<std::string> result;
+    if (IsMultiValueSpork(nSporkID) && mapSporksActive.count(nSporkID)) {
+
+        for(auto &&spork : mapSporksActive.at(nSporkID)) {
+            result.push_back(spork.strValue);
+        }
+
+        return result;
+    }
+
+    return result;
+}
 
 // grab the value of the spork on the network, or the default
 string CSporkManager::GetSporkValue(int nSporkID) const
 {
-    if (mapSporksActive.count(nSporkID))
-        return mapSporksActive.at(nSporkID).strValue;
+    if(IsMultiValueSpork(nSporkID)) {
+        return std::string();
+    }
+
+    if (mapSporksActive.count(nSporkID)) {
+        return mapSporksActive.at(nSporkID).front().strValue;
+    }
 
     if (mapSporkDefaults.count(nSporkID)) {
         return mapSporkDefaults[nSporkID];
@@ -344,4 +420,85 @@ void CSporkMessage::Relay()
 {
     CInv inv(MSG_SPORK, GetHash());
     RelayInv(inv);
+}
+
+BlockPayment::BlockPayment() :
+    nStakeReward(0),
+    nMasternodeReward(0),
+    nTreasuryReward(0),
+    nProposalsReward(0),
+    nCharityReward(0),
+    nActivationBlockHeight(0)
+{
+}
+
+BlockPayment::BlockPayment(int nStakeRewardIn, int nMasternodeRewardIn, int nTreasuryRewardIn,
+                           int nProposalsRewardIn, int nCharityRewardIn, int nActivationBlockHeightIn) :
+    nStakeReward(nStakeRewardIn),
+    nMasternodeReward(nMasternodeRewardIn),
+    nTreasuryReward(nTreasuryRewardIn),
+    nProposalsReward(nProposalsRewardIn),
+    nCharityReward(nCharityRewardIn),
+    nActivationBlockHeight(nActivationBlockHeightIn)
+{
+
+}
+
+BlockPayment BlockPayment::FromString(string strData)
+{
+    std::vector<std::string> vecTokens;
+    boost::algorithm::split(vecTokens, strData, boost::is_any_of(";"));
+    std::vector<int> vecParsedValues;
+
+    try
+    {
+        for(auto &&token : vecTokens) {
+            vecParsedValues.emplace_back(boost::lexical_cast<int>(token));
+        }
+    }
+    catch(boost::bad_lexical_cast &)
+    {
+
+    }
+
+    if(vecParsedValues.size() != 6) {
+        return BlockPayment();
+    }
+
+    return BlockPayment(vecParsedValues.at(0), vecParsedValues.at(1), vecParsedValues.at(2),
+                        vecParsedValues.at(3), vecParsedValues.at(4), vecParsedValues.at(5));
+}
+
+bool BlockPayment::IsValid() const
+{
+    auto values = {
+        nStakeReward,
+        nMasternodeReward,
+        nTreasuryReward,
+        nProposalsReward,
+        nCharityReward
+    };
+
+    return nActivationBlockHeight > 0 &&
+            std::accumulate(std::begin(values), std::end(values), 0) == 100;
+}
+
+string BlockPayment::ToString() const
+{
+    auto values = {
+        nStakeReward,
+        nMasternodeReward,
+        nTreasuryReward,
+        nProposalsReward,
+        nCharityReward,
+        nActivationBlockHeight
+    };
+
+    std::vector<std::string> strValues;
+
+    std::transform(std::begin(values), std::end(values), std::back_inserter(strValues), [](int value) {
+        return boost::lexical_cast<std::string>(value);
+    });
+
+    return boost::algorithm::join(strValues, ";");
 }

@@ -6059,8 +6059,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         // Change version
         pfrom->PushMessage("verack");
+
+        if(pfrom->fInbound) {
+            pfrom->PushMessage("sporkcount", sporkManager.GetActiveSporkCount());
+        }
+
         pfrom->ssSend.SetVersion(min(pfrom->nVersion, PROTOCOL_VERSION));
-        pfrom->PushMessage("sporkcount", sporkManager.GetActiveSporkCount());
 
         if (!pfrom->fInbound) {
             // Advertise our address

@@ -74,8 +74,16 @@ bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
 CSporkManager::CSporkManager()
 {
     CSporkMessage spork(SPORK_9_SUPERBLOCKS_ENABLED, "Zalypka", GetAdjustedTime());
-    mapSporks[spork.GetHash()] = spork;
-    AddActiveSpork(spork);
+    CSporkMessage sporkSubsidity(SPORK_15_BLOCK_VALUE, "1000;10", GetAdjustedTime());
+    CSporkMessage sporkSubsidity2(SPORK_15_BLOCK_VALUE, "500;20", GetAdjustedTime() + 10);
+    auto helper = [this](CSporkMessage spork) {
+        mapSporks[spork.GetHash()] = spork;
+        AddActiveSpork(spork);
+    };
+
+    helper(spork);
+    helper(sporkSubsidity);
+    helper(sporkSubsidity2);
 }
 
 // DIVI: on startup load spork values from previous session if they exist in the sporkDB

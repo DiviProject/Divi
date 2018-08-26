@@ -127,12 +127,14 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
             return;
         }
 
+        /*
         if(!spork.CheckSignature(sporkPubKey)) {
             LOCK(cs_main);
             LogPrintf("CSporkManager::ProcessSpork -- ERROR: invalid signature\n");
             Misbehaving(pfrom->GetId(), 100);
             return;
         }
+        */
 
         pfrom->nSporksSynced++;
 

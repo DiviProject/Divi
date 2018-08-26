@@ -224,8 +224,8 @@ uint256 CMasternode::CalculateScore(int mod, int64_t nBlockHeight)
     int nHashRounds = GetHashRoundsForTierMasternodes(nTier);
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-    ss2 << hash;
-    ss2 << aux;
+    ss << hash;
+    ss << aux;
 
     uint256 r;
 

@@ -20,9 +20,9 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 
+std::map<uint256, CSporkMessage> mapSporks;
 CSporkManager sporkManager;
 
-std::map<uint256, CSporkMessage> mapSporks;
 static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_2_SWIFTTX_ENABLED,                "0"},             // ON
     {SPORK_3_SWIFTTX_BLOCK_FILTERING,        "0"},             // ON

@@ -123,7 +123,7 @@ private:
 
 public:
 
-    CSporkManager() {}
+    CSporkManager();
 
     void LoadSporksFromDB();
     void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);

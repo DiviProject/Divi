@@ -353,7 +353,7 @@ CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight
         //make sure it has as many confirmations as there are masternodes
         if (mn.GetMasternodeInputAge() < nMnCount) continue;
 
-        vecMasternodeLastPaid.push_back(make_pair(mn.SecondsSincePayment(), mn.vin));
+        vecMasternodeLastPaid.push_back(std::make_pair(mn.SecondsSincePayment(), mn.vin));
     }
 
     nCount = (int)vecMasternodeLastPaid.size();
@@ -368,8 +368,8 @@ CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight
     //  -- This doesn't look at who is being paid in the +8-10 blocks, allowing for double payments very rarely
     //  -- 1/100 payments should be a double payment on mainnet - (1/(3000/10))*2
     //  -- (chance per block * chances before IsScheduled will fire)
-    int nTenthNetwork = CountEnabled() / 10;
-    int nCountTenth = 0;
+//    int nTenthNetwork = CountEnabled() / 10;
+//    int nCountTenth = 0;
     uint256 nHigh = 0;
     BOOST_FOREACH (PAIRTYPE(int64_t, CTxIn) & s, vecMasternodeLastPaid) {
         CMasternode* pmn = Find(s.second);
@@ -380,8 +380,8 @@ CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight
             nHigh = n;
             pBestMasternode = pmn;
         }
-        nCountTenth++;
-        if (nCountTenth >= nTenthNetwork) break;
+//        nCountTenth++;
+//        if (nCountTenth >= nTenthNetwork) break;
     }
     return pBestMasternode;
 }

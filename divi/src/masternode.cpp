@@ -23,6 +23,21 @@ const int TIER_GOLD_BASE_COLLATERAL     = 1000000;
 const int TIER_PLATINUM_BASE_COLLATERAL = 3000000;
 const int TIER_DIAMOND_BASE_COLLATERAL  = 10000000;
 
+static int GetHashRoundsForTierMasternodes(CMasternode::Tier tier)
+{
+    switch(tier)
+    {
+    case CMasternode::MASTERNODE_TIER_COPPER:   return 20;
+    case CMasternode::MASTERNODE_TIER_SILVER:   return 63;
+    case CMasternode::MASTERNODE_TIER_GOLD:     return 220;
+    case CMasternode::MASTERNODE_TIER_PLATINUM: return 690;
+    case CMasternode::MASTERNODE_TIER_DIAMOND:  return 2400;
+    case CMasternode::MASTERNODE_TIER_INVALID: break;
+    }
+
+    return 0;
+}
+
 static bool GetUTXOCoins(const uint256& txhash, CCoins& coins)
 {
     LOCK(cs_main);
@@ -183,6 +198,12 @@ bool CMasternode::UpdateFromNewBroadcast(CMasternodeBroadcast& mnb)
     return false;
 }
 
+static uint256 CalculateScoreHelper(CHashWriter hashWritter, int round)
+{
+    hashWritter << round;
+    return hashWritter.GetHash();
+}
+
 //
 // Deterministically calculate a given "score" for a Masternode depending on how close it's hash is to
 // the proof of work for that block. The further away they are the better, the furthest will win the election
@@ -200,16 +221,17 @@ uint256 CMasternode::CalculateScore(int mod, int64_t nBlockHeight)
         return 0;
     }
 
-    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-    ss << hash;
-    uint256 hash2 = ss.GetHash();
+    int nHashRounds = GetHashRoundsForTierMasternodes(nTier);
 
-    CHashWriter ss2(SER_GETHASH, PROTOCOL_VERSION);
+    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
     ss2 << hash;
     ss2 << aux;
-    uint256 hash3 = ss2.GetHash();
 
-    uint256 r = (hash3 > hash2 ? hash3 - hash2 : hash2 - hash3);
+    uint256 r;
+
+    for(size_t i = 0; i < nHashRounds; ++i) {
+        r = std::max(CalculateScoreHelper(ss, i), r);
+    }
 
     return r;
 }

@@ -221,7 +221,7 @@ uint256 CMasternode::CalculateScore(int mod, int64_t nBlockHeight)
         return 0;
     }
 
-    int nHashRounds = GetHashRoundsForTierMasternodes(nTier);
+    int nHashRounds = GetHashRoundsForTierMasternodes(static_cast<CMasternode::Tier>(nTier));
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
     ss << hash;

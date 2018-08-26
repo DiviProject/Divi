@@ -23,7 +23,7 @@ const int TIER_GOLD_BASE_COLLATERAL     = 1000000;
 const int TIER_PLATINUM_BASE_COLLATERAL = 3000000;
 const int TIER_DIAMOND_BASE_COLLATERAL  = 10000000;
 
-static int GetHashRoundsForTierMasternodes(CMasternode::Tier tier)
+static size_t GetHashRoundsForTierMasternodes(CMasternode::Tier tier)
 {
     switch(tier)
     {
@@ -221,7 +221,7 @@ uint256 CMasternode::CalculateScore(int mod, int64_t nBlockHeight)
         return 0;
     }
 
-    int nHashRounds = GetHashRoundsForTierMasternodes(static_cast<CMasternode::Tier>(nTier));
+    size_t nHashRounds = GetHashRoundsForTierMasternodes(static_cast<CMasternode::Tier>(nTier));
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
     ss << hash;

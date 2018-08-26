@@ -49,7 +49,7 @@ struct CObfuScationSigner
     /// Sign the message, returns true if successful
     static bool SignMessage(std::string strMessage, std::string& errorMessage, std::vector<unsigned char>& vchSig, CKey key);
     /// Verify the message, returns true if succcessful
-    static bool VerifyMessage(CPubKey pubkey, std::vector<unsigned char>& vchSig, std::string strMessage, std::string& errorMessage);
+    static bool VerifyMessage(CPubKey pubkey, const std::vector<unsigned char>& vchSig, std::string strMessage, std::string& errorMessage);
 };
 
 void ThreadCheckObfuScationPool();

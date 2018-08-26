@@ -36,7 +36,8 @@ static std::map<int, std::string> mapSporkDefaults = {
 static bool IsMultiValueSpork(int nSporkID)
 {
     if(SPORK_13_BLOCK_PAYMENTS == nSporkID ||
-            SPORK_14_TX_FEE == nSporkID) {
+            SPORK_14_TX_FEE == nSporkID ||
+            SPORK_15_BLOCK_VALUE == nSporkID) {
         return true;
     }
 
@@ -335,6 +336,7 @@ int CSporkManager::GetSporkIDByName(const std::string& strName)
     if (strName == "SPORK_9_SUPERBLOCKS_ENABLED")               return SPORK_9_SUPERBLOCKS_ENABLED;
     if (strName == "SPORK_10_MASTERNODE_PAY_UPDATED_NODES")     return SPORK_10_MASTERNODE_PAY_UPDATED_NODES;
     if (strName == "SPORK_12_RECONSIDER_BLOCKS")                return SPORK_12_RECONSIDER_BLOCKS;
+    if (strName == "SPORK_15_BLOCK_VALUE")                      return SPORK_15_BLOCK_VALUE;
 
     LogPrint("spork", "CSporkManager::GetSporkIDByName -- Unknown Spork name '%s'\n", strName);
     return -1;
@@ -350,6 +352,7 @@ std::string CSporkManager::GetSporkNameByID(int nSporkID)
     case SPORK_9_SUPERBLOCKS_ENABLED:               return "SPORK_9_SUPERBLOCKS_ENABLED";
     case SPORK_10_MASTERNODE_PAY_UPDATED_NODES:     return "SPORK_10_MASTERNODE_PAY_UPDATED_NODES";
     case SPORK_12_RECONSIDER_BLOCKS:                return "SPORK_12_RECONSIDER_BLOCKS";
+    case SPORK_15_BLOCK_VALUE:                      return "SPORK_15_BLOCK_VALUE";
     default:
         LogPrint("spork", "CSporkManager::GetSporkNameByID -- Unknown Spork ID %d\n", nSporkID);
         return "Unknown";
@@ -450,32 +453,22 @@ void CSporkMessage::Relay()
     RelayInv(inv);
 }
 
-BlockPayment::BlockPayment() :
-    nStakeReward(0),
-    nMasternodeReward(0),
-    nTreasuryReward(0),
-    nProposalsReward(0),
-    nCharityReward(0),
-    nActivationBlockHeight(0)
+template <class T>
+static std::string BuildDataPayload(T values)
 {
+    std::vector<std::string> strValues;
+
+    std::transform(std::begin(values), std::end(values), std::back_inserter(strValues), [](int value) {
+        return boost::lexical_cast<std::string>(value);
+    });
+
+    return boost::algorithm::join(strValues, ";");
 }
 
-BlockPayment::BlockPayment(int nStakeRewardIn, int nMasternodeRewardIn, int nTreasuryRewardIn,
-                           int nProposalsRewardIn, int nCharityRewardIn, int nActivationBlockHeightIn) :
-    nStakeReward(nStakeRewardIn),
-    nMasternodeReward(nMasternodeRewardIn),
-    nTreasuryReward(nTreasuryRewardIn),
-    nProposalsReward(nProposalsRewardIn),
-    nCharityReward(nCharityRewardIn),
-    nActivationBlockHeight(nActivationBlockHeightIn)
-{
-
-}
-
-BlockPayment BlockPayment::FromString(string strData)
+static std::vector<int> ParseDataPayload(std::string strDataPayload)
 {
     std::vector<std::string> vecTokens;
-    boost::algorithm::split(vecTokens, strData, boost::is_any_of(";"));
+    boost::algorithm::split(vecTokens, strDataPayload, boost::is_any_of(";"));
     std::vector<int> vecParsedValues;
 
     try
@@ -489,15 +482,44 @@ BlockPayment BlockPayment::FromString(string strData)
 
     }
 
+    return vecParsedValues;
+}
+
+BlockPaymentSporkValue::BlockPaymentSporkValue() :
+    SporkMultiValue(),
+    nStakeReward(0),
+    nMasternodeReward(0),
+    nTreasuryReward(0),
+    nProposalsReward(0),
+    nCharityReward(0)
+{
+}
+
+BlockPaymentSporkValue::BlockPaymentSporkValue(int nStakeRewardIn, int nMasternodeRewardIn, int nTreasuryRewardIn,
+                           int nProposalsRewardIn, int nCharityRewardIn, int nActivationBlockHeightIn) :
+    SporkMultiValue(nActivationBlockHeightIn),
+    nStakeReward(nStakeRewardIn),
+    nMasternodeReward(nMasternodeRewardIn),
+    nTreasuryReward(nTreasuryRewardIn),
+    nProposalsReward(nProposalsRewardIn),
+    nCharityReward(nCharityRewardIn)
+{
+
+}
+
+BlockPaymentSporkValue BlockPaymentSporkValue::FromString(string strData)
+{
+    std::vector<int> vecParsedValues = ParseDataPayload(strData);
+
     if(vecParsedValues.size() != 6) {
-        return BlockPayment();
+        return BlockPaymentSporkValue();
     }
 
-    return BlockPayment(vecParsedValues.at(0), vecParsedValues.at(1), vecParsedValues.at(2),
+    return BlockPaymentSporkValue(vecParsedValues.at(0), vecParsedValues.at(1), vecParsedValues.at(2),
                         vecParsedValues.at(3), vecParsedValues.at(4), vecParsedValues.at(5));
 }
 
-bool BlockPayment::IsValid() const
+bool BlockPaymentSporkValue::IsValid() const
 {
     auto values = {
         nStakeReward,
@@ -507,11 +529,11 @@ bool BlockPayment::IsValid() const
         nCharityReward
     };
 
-    return nActivationBlockHeight > 0 &&
+    return SporkMultiValue::IsValid() &&
             std::accumulate(std::begin(values), std::end(values), 0) == 100;
 }
 
-string BlockPayment::ToString() const
+string BlockPaymentSporkValue::ToString() const
 {
     auto values = {
         nStakeReward,
@@ -522,11 +544,52 @@ string BlockPayment::ToString() const
         nActivationBlockHeight
     };
 
-    std::vector<std::string> strValues;
+    return BuildDataPayload(values);
+}
 
-    std::transform(std::begin(values), std::end(values), std::back_inserter(strValues), [](int value) {
-        return boost::lexical_cast<std::string>(value);
-    });
+BlockSubsiditySporkValue::BlockSubsiditySporkValue() :
+    SporkMultiValue(),
+    nBlockSubsidity(-1)
 
-    return boost::algorithm::join(strValues, ";");
+{
+
+}
+
+BlockSubsiditySporkValue::BlockSubsiditySporkValue(int nBlockSubsidityIn, int nActivationBlockHeightIn) :
+    SporkMultiValue(nActivationBlockHeightIn),
+    nBlockSubsidity(nBlockSubsidityIn)
+{
+
+}
+
+BlockSubsiditySporkValue BlockSubsiditySporkValue::FromString(string strData)
+{
+    std::vector<int> vecParsedValues = ParseDataPayload(strData);
+
+    if(vecParsedValues.size() != 2) {
+        return BlockSubsiditySporkValue();
+    }
+
+    return BlockSubsiditySporkValue(vecParsedValues.at(0), vecParsedValues.at(1));
+}
+
+bool BlockSubsiditySporkValue::IsValid() const
+{
+    return SporkMultiValue::IsValid() && nBlockSubsidity >= 0;
+}
+
+string BlockSubsiditySporkValue::ToString() const
+{
+    return BuildDataPayload(std::vector<int> { nBlockSubsidity, nActivationBlockHeight });
+}
+
+SporkMultiValue::SporkMultiValue(int nActivationBlockHeightIn) :
+    nActivationBlockHeight(nActivationBlockHeightIn)
+{
+
+}
+
+bool SporkMultiValue::IsValid() const
+{
+    return nActivationBlockHeight > 0;
 }

@@ -33,9 +33,10 @@ static const int SPORK_10_MASTERNODE_PAY_UPDATED_NODES              = 10009;
 static const int SPORK_12_RECONSIDER_BLOCKS                         = 10011;
 static const int SPORK_13_BLOCK_PAYMENTS                            = 10012;
 static const int SPORK_14_TX_FEE                                    = 10013;
+static const int SPORK_15_BLOCK_VALUE                               = 10014;
 
 static const int SPORK_START                                            = SPORK_2_SWIFTTX_ENABLED;
-static const int SPORK_END                                              = SPORK_14_TX_FEE;
+static const int SPORK_END                                              = SPORK_15_BLOCK_VALUE;
 
 extern std::map<uint256, CSporkMessage> mapSporks;
 extern CSporkManager sporkManager;
@@ -89,22 +90,42 @@ public:
     void Relay();
 };
 
-struct BlockPayment {
-    BlockPayment();
-    BlockPayment(int nStakeRewardIn, int nMasternodeRewardIn, int nTreasuryRewardIn,
-                 int nProposalsRewardIn, int nCharityRewardIn, int nActivationBlockHeightIn);
+struct SporkMultiValue {
+    SporkMultiValue(int nActivationBlockHeightIn = 0);
 
-    static BlockPayment FromString(std::string strData);
+    virtual bool IsValid() const;
+    virtual std::string ToString() const = 0;
 
-    bool IsValid() const;
-    std::string ToString() const;
+    const int nActivationBlockHeight;
+};
+
+struct BlockPaymentSporkValue : public SporkMultiValue {
+    BlockPaymentSporkValue();
+    BlockPaymentSporkValue(int nStakeRewardIn, int nMasternodeRewardIn,
+                           int nTreasuryRewardIn, int nProposalsRewardIn, int nCharityRewardIn, int nActivationBlockHeightIn);
+
+    static BlockPaymentSporkValue FromString(std::string strData);
+
+    bool IsValid() const override;
+    std::string ToString() const override;
 
     const int nStakeReward;
     const int nMasternodeReward;
     const int nTreasuryReward;
     const int nProposalsReward;
     const int nCharityReward;
-    const int nActivationBlockHeight;
+};
+
+struct BlockSubsiditySporkValue : public SporkMultiValue {
+    BlockSubsiditySporkValue();
+    BlockSubsiditySporkValue(int nBlockSubsidityIn, int nActivationBlockHeightIn);
+
+    static BlockSubsiditySporkValue FromString(std::string strData);
+
+    bool IsValid() const override;
+    std::string ToString() const override;
+
+    const int nBlockSubsidity;
 };
 
 class CSporkManager
@@ -133,6 +154,31 @@ public:
 
     bool IsSporkActive(int nSporkID);
     std::vector<std::string> GetMultiValueSporkValues(int nSporkID) const;
+
+    template <class T>
+    static void ConvertMultiValueSporkVector(const std::vector<std::string> &vStrValues, std::vector<T> &vResult)
+    {
+        std::vector<T> result;
+        for(auto &&strValue : vStrValues) {
+            result.emplace_back(T::FromString(strValue));
+        }
+
+        vResult.swap(result);
+    }
+
+    template <class T>
+    static T GetActiveMultiValueSpork(const std::vector<T> &vSporks, int nHeight)
+    {
+        int nIndex = -1;
+        for(size_t i = 0; i < vSporks.size(); ++i) {
+            if(nHeight >= vSporks.at(i).nActivationBlockHeight) {
+                nIndex = i;
+            }
+        }
+
+        return nIndex >= 0 ? vSporks.at(nIndex) : T();
+    }
+
     std::string GetSporkValue(int nSporkID) const;
     int GetSporkIDByName(const std::string& strName);
     std::string GetSporkNameByID(int nSporkID);

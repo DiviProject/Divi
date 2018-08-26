@@ -63,11 +63,11 @@ bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
     if(mapSporksActive.count(spork.nSporkID)) {
         const auto &sporks = mapSporksActive.at(spork.nSporkID);
         // at this place items have to be sorted
-        if (sporks.back().nTimeSigned < spork.nTimeSigned)
-            return true;
+        if (sporks.back().nTimeSigned >= spork.nTimeSigned)
+            return false;
     }
 
-    return false;
+    return true;
 }
 
 CSporkManager::CSporkManager()

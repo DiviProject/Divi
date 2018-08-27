@@ -6907,7 +6907,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             return true;
 
         // Don't send anything until we get sporks from peer
-        if(!pto->AreSporksSynced())
+        if(!pto->fInbound && !pto->AreSporksSynced())
             return true;
 
         //

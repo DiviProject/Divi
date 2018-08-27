@@ -2264,7 +2264,20 @@ CAmount GetBlockValue(int nHeight, bool fTreasuryPaymentOnly, bool fLotteryPayme
 
     nSubsidy -= nLotteryPart;
 
-    CAmount nTreasuryPart = (nHeight >= Params().GetTreasuryPaymentsStartBlock()) ? nSubsidy / 10 : 0; // 8 % of the block goes to treasury
+    int nTreasuryPercentage = 10;
+
+    if(sporkManager.IsSporkActive(SPORK_13_BLOCK_PAYMENTS)) {
+        std::vector<BlockPaymentSporkValue> vBlockPaymentsValues;
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSporkValues(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);
+        BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight);
+
+        if(activeSpork.IsValid()) {
+            // we expect that this value is in coins, not in satoshis
+            nTreasuryPercentage = activeSpork.nProposalsReward + activeSpork.nTreasuryReward + activeSpork.nCharityReward;
+        }
+    }
+
+    CAmount nTreasuryPart = (nHeight >= Params().GetTreasuryPaymentsStartBlock()) ? (nSubsidy * nTreasuryPercentage) / 100 : 0; // 8 % of the block goes to treasury
 
     if(fTreasuryPaymentOnly) {
         return nTreasuryPart;

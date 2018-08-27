@@ -34,9 +34,10 @@ static const int SPORK_12_RECONSIDER_BLOCKS                         = 10011;
 static const int SPORK_13_BLOCK_PAYMENTS                            = 10012;
 static const int SPORK_14_TX_FEE                                    = 10013;
 static const int SPORK_15_BLOCK_VALUE                               = 10014;
+static const int SPORK_16_LOTTERY_TICKET_MIN_VALUE                  = 10015;
 
 static const int SPORK_START                                            = SPORK_2_SWIFTTX_ENABLED;
-static const int SPORK_END                                              = SPORK_15_BLOCK_VALUE;
+static const int SPORK_END                                              = SPORK_16_LOTTERY_TICKET_MIN_VALUE;
 
 extern std::map<uint256, CSporkMessage> mapSporks;
 extern CSporkManager sporkManager;
@@ -126,6 +127,34 @@ struct BlockSubsiditySporkValue : public SporkMultiValue {
     std::string ToString() const override;
 
     const int nBlockSubsidity;
+};
+
+struct LotteryTicketMinValueSporkValue : public SporkMultiValue {
+    LotteryTicketMinValueSporkValue();
+    LotteryTicketMinValueSporkValue(int nEntryTicketValueIn, int nActivationBlockHeight);
+
+    static LotteryTicketMinValueSporkValue FromString(std::string strData);
+
+    bool IsValid() const override;
+    std::string ToString() const override;
+
+    const int nEntryTicketValue;
+};
+
+struct TxFeeSporkValue : public SporkMultiValue {
+    TxFeeSporkValue();
+    TxFeeSporkValue(int nTxValueMultiplierIn, int nTxSizeMultiplierIn, int nMaxFeeIn,
+                    int nMinFeeIn, int nActivationBlockHeightIn);
+
+    static TxFeeSporkValue FromString(std::string strData);
+
+    bool IsValid() const override;
+    std::string ToString() const override;
+
+    const int nTxValueMultiplier;
+    const int nTxSizeMultiplier;
+    const int nMaxFee;
+    const int nMinFee;
 };
 
 class CSporkManager

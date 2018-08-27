@@ -2234,7 +2234,8 @@ static CAmount GetFullBlockValue(int nHeight)
         BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight);
 
         if(activeSpork.IsValid()) {
-            return activeSpork.nBlockSubsidity;
+            // we expect that this value is in coins, not in satoshis
+            return activeSpork.nBlockSubsidity * COIN;
         }
     }
 
@@ -2244,7 +2245,7 @@ static CAmount GetFullBlockValue(int nHeight)
         nSubsidy -= 200;
     }
 
-    return std::max<CAmount>(nSubsidy, 0);
+    return std::max<CAmount>(nSubsidy, 0) * COIN;
 }
 
 CAmount GetBlockValue(int nHeight, bool fTreasuryPaymentOnly, bool fLotteryPaymentOnly)

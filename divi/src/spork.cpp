@@ -344,7 +344,10 @@ int CSporkManager::GetSporkIDByName(const std::string& strName)
     if (strName == "SPORK_9_SUPERBLOCKS_ENABLED")               return SPORK_9_SUPERBLOCKS_ENABLED;
     if (strName == "SPORK_10_MASTERNODE_PAY_UPDATED_NODES")     return SPORK_10_MASTERNODE_PAY_UPDATED_NODES;
     if (strName == "SPORK_12_RECONSIDER_BLOCKS")                return SPORK_12_RECONSIDER_BLOCKS;
+    if (strName == "SPORK_13_BLOCK_PAYMENTS")                   return SPORK_13_BLOCK_PAYMENTS;
+    if (strName == "SPORK_14_TX_FEE")                           return SPORK_14_TX_FEE;
     if (strName == "SPORK_15_BLOCK_VALUE")                      return SPORK_15_BLOCK_VALUE;
+    if (strName == "SPORK_16_LOTTERY_TICKET_MIN_VALUE")         return SPORK_16_LOTTERY_TICKET_MIN_VALUE;
 
     LogPrint("spork", "CSporkManager::GetSporkIDByName -- Unknown Spork name '%s'\n", strName);
     return -1;
@@ -360,7 +363,10 @@ std::string CSporkManager::GetSporkNameByID(int nSporkID)
     case SPORK_9_SUPERBLOCKS_ENABLED:               return "SPORK_9_SUPERBLOCKS_ENABLED";
     case SPORK_10_MASTERNODE_PAY_UPDATED_NODES:     return "SPORK_10_MASTERNODE_PAY_UPDATED_NODES";
     case SPORK_12_RECONSIDER_BLOCKS:                return "SPORK_12_RECONSIDER_BLOCKS";
+    case SPORK_13_BLOCK_PAYMENTS:                   return "SPORK_13_BLOCK_PAYMENTS";
+    case SPORK_14_TX_FEE:                           return "SPORK_14_TX_FEE";
     case SPORK_15_BLOCK_VALUE:                      return "SPORK_15_BLOCK_VALUE";
+    case SPORK_16_LOTTERY_TICKET_MIN_VALUE:         return "SPORK_16_LOTTERY_TICKET_MIN_VALUE";
     default:
         LogPrint("spork", "CSporkManager::GetSporkNameByID -- Unknown Spork ID %d\n", nSporkID);
         return "Unknown";
@@ -600,4 +606,93 @@ SporkMultiValue::SporkMultiValue(int nActivationBlockHeightIn) :
 bool SporkMultiValue::IsValid() const
 {
     return nActivationBlockHeight > 0;
+}
+
+LotteryTicketMinValueSporkValue::LotteryTicketMinValueSporkValue() :
+    SporkMultiValue(),
+    nEntryTicketValue(0)
+{
+
+}
+
+LotteryTicketMinValueSporkValue::LotteryTicketMinValueSporkValue(int nEntryTicketValueIn, int nActivationBlockHeight) :
+    SporkMultiValue(nActivationBlockHeight),
+    nEntryTicketValue(nEntryTicketValueIn)
+{
+
+}
+
+LotteryTicketMinValueSporkValue LotteryTicketMinValueSporkValue::FromString(string strData)
+{
+    std::vector<int> vecParsedValues = ParseDataPayload(strData);
+
+    if(vecParsedValues.size() != 2) {
+        return LotteryTicketMinValueSporkValue();
+    }
+
+    return LotteryTicketMinValueSporkValue(vecParsedValues.at(0), vecParsedValues.at(1));
+}
+
+bool LotteryTicketMinValueSporkValue::IsValid() const
+{
+    return SporkMultiValue::IsValid() && nEntryTicketValue > 0;
+}
+
+string LotteryTicketMinValueSporkValue::ToString() const
+{
+    return BuildDataPayload(std::vector<int> { nEntryTicketValue, nActivationBlockHeight });
+}
+
+TxFeeSporkValue::TxFeeSporkValue() :
+    SporkMultiValue(),
+    nTxValueMultiplier(-1),
+    nTxSizeMultiplier(-1),
+    nMaxFee(-1),
+    nMinFee(-1)
+{
+
+}
+
+TxFeeSporkValue::TxFeeSporkValue(int nTxValueMultiplierIn, int nTxSizeMultiplierIn, int nMaxFeeIn,
+                                 int nMinFeeIn, int nActivationBlockHeightIn) :
+    SporkMultiValue(nActivationBlockHeightIn),
+    nTxValueMultiplier(nTxValueMultiplierIn),
+    nTxSizeMultiplier(nTxSizeMultiplierIn),
+    nMaxFee(nMaxFeeIn),
+    nMinFee(nMinFeeIn)
+
+{
+
+}
+
+TxFeeSporkValue TxFeeSporkValue::FromString(string strData)
+{
+    std::vector<int> vecParsedValues = ParseDataPayload(strData);
+
+    if(vecParsedValues.size() != 6) {
+        return TxFeeSporkValue();
+    }
+
+    return TxFeeSporkValue(vecParsedValues.at(0), vecParsedValues.at(1), vecParsedValues.at(2),
+                           vecParsedValues.at(3), vecParsedValues.at(4));
+}
+
+bool TxFeeSporkValue::IsValid() const
+{
+    return SporkMultiValue::IsValid() &&
+            nTxValueMultiplier > 0 && nTxSizeMultiplier > 0 &&
+            nMaxFee > 0 && nMinFee > 0;
+}
+
+string TxFeeSporkValue::ToString() const
+{
+    auto values = {
+        nTxValueMultiplier,
+        nTxSizeMultiplier,
+        nMaxFee,
+        nMinFee,
+        nActivationBlockHeight
+    };
+
+    return BuildDataPayload(values);
 }

@@ -2257,6 +2257,10 @@ CBlockRewards GetBlockSubsidity(int nHeight)
 
     CAmount nSubsidy = GetFullBlockValue(nHeight);
 
+    if(nHeight <= Params().LAST_POW_BLOCK()) {
+        return CBlockRewards(nSubsidy, 0, 0, 0, 0, 0);
+    }
+
     CAmount nLotteryPart = (nHeight >= Params().GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
 
     nSubsidy -= nLotteryPart;

@@ -2245,7 +2245,7 @@ static CAmount GetFullBlockValue(int nHeight)
         nSubsidy -= 200;
     }
 
-    return std::max<CAmount>(nSubsidy, 50) * COIN;
+    return std::max<CAmount>(nSubsidy, 100) * COIN;
 }
 
 CBlockRewards GetBlockSubsidity(int nHeight)

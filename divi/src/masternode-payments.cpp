@@ -44,24 +44,27 @@ static bool IsValidTreasuryBlockHeight(int nBlockHeight)
             ((nBlockHeight % Params().GetTreasuryPaymentsCycle()) == 0);
 }
 
-static int64_t GetTreasuryReward(int nHeight)
+static int64_t GetTreasuryReward(const CBlockRewards &rewards)
 {
-    return GetBlockValue(nHeight - 1, true) * Params().GetTreasuryPaymentsCycle()  ;
+    return rewards.nTreasuryReward * Params().GetTreasuryPaymentsCycle();
+}
+
+static int64_t GetCharityReward(const CBlockRewards &rewards)
+{
+    return rewards.nCharityReward * Params().GetTreasuryPaymentsCycle();
 }
 
 static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
-    auto nTreasuryReward = GetTreasuryReward(nHeight);
-    auto charityPart = nTreasuryReward / 5; // 20 % goes to charity
-    auto treasuryPart = nTreasuryReward - charityPart; // 80 % goes to treasury
-    tx.vout.emplace_back(treasuryPart, GetScriptForDestination(CBitcoinAddress(treasuryPaymentAddress).Get()));
-    tx.vout.emplace_back(charityPart, GetScriptForDestination(CBitcoinAddress(charityPaymentAddress).Get()));
+    auto rewards = GetBlockSubsidity(nHeight - 1);
+    tx.vout.emplace_back(GetTreasuryReward(rewards), GetScriptForDestination(CBitcoinAddress(treasuryPaymentAddress).Get()));
+    tx.vout.emplace_back(GetCharityReward(rewards), GetScriptForDestination(CBitcoinAddress(charityPaymentAddress).Get()));
 }
 
-static int64_t GetLotteryReward(int nHeight)
+static int64_t GetLotteryReward(const CBlockRewards &rewards)
 {
     // 50 coins every block for lottery
-    return Params().GetLotteryBlockCycle() * GetBlockValue(nHeight, false, true);
+    return Params().GetLotteryBlockCycle() * rewards.nLotteryReward;
 }
 
 static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
@@ -72,14 +75,14 @@ static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
     assert(coinbaseTx.IsCoinBase() || coinbaseTx.IsCoinStake());
 
     return coinbaseTx.IsCoinBase() ? coinbaseTx.vout[0].scriptPubKey : coinbaseTx.vout[1].scriptPubKey;
-    }
+}
 
-    static void FillLotteryPayment(CMutableTransaction &tx, int nHeight, const CBlockIndex *currentBlockIndex)
-    {
+static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
+{
     auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
     // when we call this we need to have exactly 11 winners
 
-    auto nLotteryReward = GetLotteryReward(nHeight);
+    auto nLotteryReward = GetLotteryReward(rewards);
     auto nBigReward = nLotteryReward / 2;
     auto nSmallReward = nBigReward / 10;
 
@@ -104,7 +107,7 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
     };
 
-    auto nLotteryReward = GetLotteryReward(nHeight);
+    auto nLotteryReward = GetLotteryReward(GetBlockSubsidity(nHeight));
     auto nBigReward = nLotteryReward / 2;
     auto nSmallReward = nBigReward / 10;
 
@@ -122,7 +125,8 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
 
 static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 {
-    auto nTreasuryReward = GetTreasuryReward(nHeight);
+    auto rewards = GetBlockSubsidity(nHeight);
+    auto nTreasuryReward = GetTreasuryReward(rewards);
     auto charityPart = nTreasuryReward / 5; // 20 % goes to charity
     auto treasuryPart = nTreasuryReward - charityPart; // 80 % goes to treasury
 
@@ -163,7 +167,7 @@ static CAmount GetTierMasternodePayment(CAmount maxReward, CMasternode::Tier tie
     return CAmount(0);
 }
 
-bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted)
+bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (pindexPrev == NULL) return true;
@@ -183,15 +187,17 @@ bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMin
 
     //LogPrintf("XX69----------> IsBlockValueValid(): nMinted: %d, nExpectedValue: %d\n", FormatMoney(nMinted), FormatMoney(nExpectedValue));
 
+    auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;
+
     // here we expect treasury block payment
     if(IsValidTreasuryBlockHeight(nHeight)) {
-        nExpectedValue += GetTreasuryReward(nHeight);
+        nExpectedMintCombined += (GetTreasuryReward(nExpectedValue) + GetCharityReward(nExpectedValue));
     }
     else if(IsValidLotteryBlockHeight(nHeight)) {
-        nExpectedValue += GetLotteryReward(nHeight);
+        nExpectedMintCombined += GetLotteryReward(nExpectedValue);
     }
 
-    if (nMinted > nExpectedValue) {
+    if (nMinted > nExpectedMintCombined) {
         return false;
     }
 
@@ -226,7 +232,7 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
 }
 
 
-void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStake)
+void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return;
@@ -235,10 +241,10 @@ void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStak
         FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
     }
     else if(IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
-        FillLotteryPayment(txNew, pindexPrev->nHeight + 1, pindexPrev);
+        FillLotteryPayment(txNew, payments, pindexPrev);
     }
     else {
-        masternodePayments.FillBlockPayee(txNew, nFees, fProofOfStake);
+        masternodePayments.FillBlockPayee(txNew, payments, fProofOfStake);
     }
 }
 
@@ -247,7 +253,7 @@ std::string GetRequiredPaymentsString(int nBlockHeight)
     return masternodePayments.GetRequiredPaymentsString(nBlockHeight);
 }
 
-void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFees, bool fProofOfStake)
+void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return;
@@ -269,30 +275,9 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
         }
     }
 
-    CAmount blockValue = GetBlockValue(pindexPrev->nHeight + 1);
-    CAmount maxMasternodePayment = GetMasternodePayment(pindexPrev->nHeight + 1, blockValue);
-    CAmount masternodePayment = GetTierMasternodePayment(maxMasternodePayment, nPayeeTier);
-
     if (hasPayment) {
-        if (fProofOfStake) {
-            /**For Proof Of Stake vout[0] must be null
-                                                     * Stake reward can be split into many different outputs, so we must
-                                                     * use vout.size() to align with several different cases.
-                                                     * An additional output is appended as the masternode payment
-                                                     */
-            unsigned int i = txNew.vout.size();
-            txNew.vout.resize(i + 1);
-            txNew.vout[i].scriptPubKey = payee;
-            txNew.vout[i].nValue = masternodePayment;
-
-            //subtract mn payment from the stake reward
-            txNew.vout[i - 1].nValue -= masternodePayment;
-        } else {
-            txNew.vout.resize(2);
-            txNew.vout[1].scriptPubKey = payee;
-            txNew.vout[1].nValue = masternodePayment;
-            txNew.vout[0].nValue = blockValue - masternodePayment;
-        }
+        CAmount masternodePayment = rewards.nMasternodeReward;
+        txNew.vout.emplace_back(masternodePayment, payee);
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
@@ -304,7 +289,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
 int CMasternodePayments::GetMinMasternodePaymentsProto()
 {
-//    if (IsSporkActive(SPORK_10_MASTERNODE_PAY_UPDATED_NODES))
+    //    if (IsSporkActive(SPORK_10_MASTERNODE_PAY_UPDATED_NODES))
     return ActiveProtocol();                          // Allow only updated peers
 }
 
@@ -490,7 +475,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 
     std::string strPayeesPossible = "";
 
-    CAmount nReward = GetBlockValue(nBlockHeight);
+    auto rewards = GetBlockSubsidity(nBlockHeight);
 
     if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
         // Get a stable number of masternodes by ignoring newly activated (< 8000 sec old) masternodes
@@ -503,7 +488,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
         nMasternode_Drift_Count = mnodeman.size() + Params().MasternodeCountDrift();
     }
 
-    CAmount maxAllowedMasternodePayment = GetMasternodePayment(nBlockHeight, nReward, nMasternode_Drift_Count);
+    CAmount maxAllowedMasternodePayment = rewards.nMasternodeReward;
 
     //require at least 6 signatures
     BOOST_FOREACH (CMasternodePayee& payee, vecPayments)
@@ -828,7 +813,7 @@ static uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint25
     return ss.GetHash();
 }
 
-static bool IsCoinstakeValidForLottery(const CTransaction &tx)
+static bool IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight)
 {
     CAmount nAmount = 0;
     if(tx.IsCoinBase()) {
@@ -841,7 +826,20 @@ static bool IsCoinstakeValidForLottery(const CTransaction &tx)
     });
     }
 
-    return nAmount > 10000 * COIN; // only if stake is more than 10k
+    int nMinStakeValue = 10000; // default is 10k
+
+    if(sporkManager.IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
+        std::vector<LotteryTicketMinValueSporkValue> vValues;
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSporkValues(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
+        LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight);
+
+        if(activeSpork.IsValid()) {
+            // we expect that this value is in coins, not in satoshis
+            nMinStakeValue = activeSpork.nEntryTicketValue;
+        }
+    }
+
+    return nAmount > nMinStakeValue * COIN; // only if stake is more than 10k
 }
 
 std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
@@ -862,7 +860,7 @@ std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const 
 
     const auto& coinbaseTx = (nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
-    if(!IsCoinstakeValidForLottery(coinbaseTx)) {
+    if(!IsCoinstakeValidForLottery(coinbaseTx, nHeight)) {
         return prevBlockIndex->vLotteryWinnersCoinstakes; // return last if we have no lotter participant in this block
     }
 

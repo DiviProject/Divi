@@ -2248,23 +2248,27 @@ static CAmount GetFullBlockValue(int nHeight)
     return std::max<CAmount>(nSubsidy, 0) * COIN;
 }
 
-CAmount GetBlockValue(int nHeight, bool fTreasuryPaymentOnly, bool fLotteryPaymentOnly)
+CBlockRewards GetBlockSubsidity(int nHeight)
 {
-
-    assert(!(fTreasuryPaymentOnly && fLotteryPaymentOnly));
-
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         if (nHeight < 200 && nHeight > 0)
-            return 250000 * COIN;
+            return CBlockRewards(250000 * COIN, 0, 0, 0, 0, 0);
     }
 
-    int64_t nSubsidy = GetFullBlockValue(nHeight);
+    CAmount nSubsidy = GetFullBlockValue(nHeight);
 
     CAmount nLotteryPart = (nHeight >= Params().GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
 
     nSubsidy -= nLotteryPart;
 
-    int nTreasuryPercentage = 10;
+    auto helper = [nSubsidy](int nStakePercentage, int nMasternodePercentage, int nTreasuryPercentage, int nProposalsPercentage, int nCharityPercentage) {
+        auto helper = [nSubsidy](int percentage) {
+            return (nSubsidy * percentage) / 100;
+        };
+
+        return CBlockRewards(helper(nStakePercentage), helper(nMasternodePercentage), helper(nTreasuryPercentage), helper(nCharityPercentage), 50 * COIN, helper(nProposalsPercentage));
+    };
+
 
     if(sporkManager.IsSporkActive(SPORK_13_BLOCK_PAYMENTS)) {
         std::vector<BlockPaymentSporkValue> vBlockPaymentsValues;
@@ -2273,60 +2277,13 @@ CAmount GetBlockValue(int nHeight, bool fTreasuryPaymentOnly, bool fLotteryPayme
 
         if(activeSpork.IsValid()) {
             // we expect that this value is in coins, not in satoshis
-            nTreasuryPercentage = activeSpork.nProposalsReward + activeSpork.nTreasuryReward + activeSpork.nCharityReward;
+            return helper(activeSpork.nStakeReward, activeSpork.nMasternodeReward,
+                          activeSpork.nTreasuryReward, activeSpork.nProposalsReward, activeSpork.nCharityReward);
         }
     }
 
-    CAmount nTreasuryPart = (nHeight >= Params().GetTreasuryPaymentsStartBlock()) ? (nSubsidy * nTreasuryPercentage) / 100 : 0; // 8 % of the block goes to treasury
-
-    if(fTreasuryPaymentOnly) {
-        return nTreasuryPart;
-    }
-    else if(fLotteryPaymentOnly) {
-        return nLotteryPart;
-    }
-    else
-    {
-        return nSubsidy - nTreasuryPart;
-    }
+    return helper(45, 45, 8, 0, 2);
 }
-
-int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCount)	// 2193
-{
-    int64_t ret = 0;
-
-    // no seesaw for time being
-    //CAmount nMoneySupply = chainActive.Tip()->nMoneySupply / COIN;
-    //CAmount mnPayment = (nMoneySupply / (mNodeCoins * 4)) * blockValue;
-
-    return blockValue / 2; // for know use simply 50 % of block
-
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) { if (nHeight < 200) return 0; }
-
-    if (nHeight < Params().LAST_POW_BLOCK()) return 0;
-    else {
-        //  int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
-
-        //	Determine masternode money supply is now determined from from mnodeman.mMasternodes.  Previous code was
-        //		int64_t mNodeCoins = nMasternodeCount * 10000 * COIN;
-
-        //	Masternode share of funds (vs. staking wallets) mnShare = 1075 * nMoneySupply/(mNodeCoins * 4)
-        //	When the masternodes are half the pool, they get 537.5/block
-
-        //	Previous seesaw code was a huge gnarly if-else rather than a nice compact formula
-        //		if (mNodeCoins <= (nMoneySupply * .05) && mNodeCoins > 0) { ret = blockValue * .85; }
-        //		else if (mNodeCoins <= (nMoneySupply * .1) && mNodeCoins > (nMoneySupply * .05)) { ret = blockValue * .8; }
-        //		else . . . .
-
-        //	Each tier's portion is tShare = mnShare * tierSeesawBasis/(tierPopulationPercentage * 5)
-        //	Note that any variances are compounded by the fact that the share is split among the popuation of the tier
-        //		So when the population is smaller, it gets a greater share more often & when the population is larger, they get a smaller, less frequent reward
-
-    }
-    return ret;
-}
-
-
 
 bool IsInitialBlockDownload()	//2446
 {
@@ -3519,16 +3476,16 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
-    CAmount nExpectedMint = GetBlockValue(pindex->nHeight);
-    if (block.IsProofOfWork())
-        nExpectedMint += nFees;
+    CBlockRewards nBaseExpectedMint = GetBlockSubsidity(pindex->nHeight);
+    CBlockRewards nPoWExpectedMint(nBaseExpectedMint.nStakeReward + nFees, 0, 0, 0, 0, 0);
+    const CBlockRewards &nExpectedMint = block.IsProofOfWork() ? nPoWExpectedMint : nBaseExpectedMint;
 
     const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
         return state.DoS(100,
                          error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
-                               FormatMoney(pindex->nMint), FormatMoney(nExpectedMint)),
+                               FormatMoney(pindex->nMint), nExpectedMint.ToString()),
                          REJECT_INVALID, "bad-cb-amount");
     }
 
@@ -7220,3 +7177,10 @@ public:
         mapOrphanTransactionsByPrev.clear();
     }
 } instance_of_cmaincleanup;
+
+string CBlockRewards::ToString() const
+{
+    return strprintf("BlockRewards(nStakeReward=%s, nMasternodeReward=%s, nTreasuryReward=%s, nCharityReward=%s, nLotteryReward=%s, nProposalsReward=%s)",
+                     FormatMoney(nStakeReward), FormatMoney(nMasternodeReward), FormatMoney(nTreasuryReward),
+                     FormatMoney(nCharityReward), FormatMoney(nLotteryReward), FormatMoney(nProposalsReward));
+}

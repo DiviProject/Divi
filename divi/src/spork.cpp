@@ -81,9 +81,9 @@ CSporkManager::CSporkManager()
         AddActiveSpork(spork);
     };
 
-    helper(spork);
-    helper(sporkSubsidity);
-    helper(sporkSubsidity2);
+//    helper(spork);
+//    helper(sporkSubsidity);
+//    helper(sporkSubsidity2);
 }
 
 // DIVI: on startup load spork values from previous session if they exist in the sporkDB

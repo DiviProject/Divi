@@ -320,7 +320,8 @@ std::vector<string> CSporkManager::GetMultiValueSporkValues(int nSporkID) const
 string CSporkManager::GetSporkValue(int nSporkID) const
 {
     if(IsMultiValueSpork(nSporkID)) {
-        return std::string();
+        auto values = GetMultiValueSporkValues(nSporkID);
+        return values.empty() ? std::string() : values.back();
     }
 
     if (mapSporksActive.count(nSporkID)) {
@@ -337,8 +338,8 @@ string CSporkManager::GetSporkValue(int nSporkID) const
 
 int CSporkManager::GetSporkIDByName(const std::string& strName)
 {
-    if (strName == "SPORK_2_SWIFTTX_ENABLED")               return SPORK_2_SWIFTTX_ENABLED;
-    if (strName == "SPORK_3_SWIFTTX_BLOCK_FILTERING")       return SPORK_3_SWIFTTX_BLOCK_FILTERING;
+    if (strName == "SPORK_2_SWIFTTX_ENABLED")                   return SPORK_2_SWIFTTX_ENABLED;
+    if (strName == "SPORK_3_SWIFTTX_BLOCK_FILTERING")           return SPORK_3_SWIFTTX_BLOCK_FILTERING;
     if (strName == "SPORK_5_INSTANTSEND_MAX_VALUE")             return SPORK_5_INSTANTSEND_MAX_VALUE;
     if (strName == "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT")    return SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT;
     if (strName == "SPORK_9_SUPERBLOCKS_ENABLED")               return SPORK_9_SUPERBLOCKS_ENABLED;

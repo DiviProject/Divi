@@ -498,7 +498,7 @@ void CNode::SetSporkCount(int nSporkCountIn)
 
 bool CNode::AreSporksSynced() const
 {
-    return nSporksCount == nSporksSynced;
+    return nSporksCount >= 0 && nSporksCount <= nSporksSynced;
 }
 
 std::map<CNetAddr, int64_t> CNode::setBanned;

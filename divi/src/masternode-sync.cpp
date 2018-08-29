@@ -217,7 +217,7 @@ void CMasternodeSync::Process()
     std::vector<CNode*> vSporkSyncedNodes;
 
     std::copy_if(std::begin(vNodes), std::end(vNodes), std::back_inserter(vSporkSyncedNodes), [](const CNode *node) {
-        return node->AreSporksSynced();
+        return node->fInbound || node->AreSporksSynced();
     });
 
     // don't event attemp to sync if we don't have 3 synced nodes

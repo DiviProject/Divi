@@ -829,9 +829,10 @@ static bool IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight)
     int nMinStakeValue = 10000; // default is 10k
 
     if(sporkManager.IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
-        std::vector<LotteryTicketMinValueSporkValue> vValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSporkValues(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
-        LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight);
+        MultiValueSporkList<LotteryTicketMinValueSporkValue> vValues;
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
+        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight, nBlockTime);
 
         if(activeSpork.IsValid()) {
             // we expect that this value is in coins, not in satoshis

@@ -2229,9 +2229,10 @@ static CAmount GetFullBlockValue(int nHeight)
     }
 
     if(sporkManager.IsSporkActive(SPORK_15_BLOCK_VALUE)) {
-        std::vector<BlockSubsiditySporkValue> vBlockSubsiditySporkValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSporkValues(SPORK_15_BLOCK_VALUE), vBlockSubsiditySporkValues);
-        BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight);
+        MultiValueSporkList<BlockSubsiditySporkValue> vBlockSubsiditySporkValues;
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_15_BLOCK_VALUE), vBlockSubsiditySporkValues);
+        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight, nBlockTime);
 
         if(activeSpork.IsValid()) {
             // we expect that this value is in coins, not in satoshis
@@ -2275,9 +2276,10 @@ CBlockRewards GetBlockSubsidity(int nHeight)
 
 
     if(sporkManager.IsSporkActive(SPORK_13_BLOCK_PAYMENTS)) {
-        std::vector<BlockPaymentSporkValue> vBlockPaymentsValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSporkValues(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);
-        BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight);
+        MultiValueSporkList<BlockPaymentSporkValue> vBlockPaymentsValues;
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);
+        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight, nBlockTime);
 
         if(activeSpork.IsValid()) {
             // we expect that this value is in coins, not in satoshis

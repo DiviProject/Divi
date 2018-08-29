@@ -37,7 +37,8 @@ static bool IsMultiValueSpork(int nSporkID)
 {
     if(SPORK_13_BLOCK_PAYMENTS == nSporkID ||
             SPORK_14_TX_FEE == nSporkID ||
-            SPORK_15_BLOCK_VALUE == nSporkID) {
+            SPORK_15_BLOCK_VALUE == nSporkID ||
+            SPORK_16_LOTTERY_TICKET_MIN_VALUE == nSporkID) {
         return true;
     }
 
@@ -103,17 +104,8 @@ void CSporkManager::LoadSporksFromDB()
 
         // add spork to memory
         mapSporks[spork.GetHash()] = spork;
-        //        mapSporksActive[spork.nSporkID] = spork;
-        //        std::time_t result = spork.strValue;
-        // If SPORK Value is greater than 1,000,000 assume it's actually a Date and then convert to a more readable format
-        //        if (spork.strValue > 1000000) {
-        //            LogPrintf("%s : loaded spork %s with value %d : %s", __func__,
-        //                      sporkManager.GetSporkNameByID(spork.nSporkID), spork.strValue,
-        //                      std::ctime(&result));
-        //        } else {
-        LogPrintf("%s : loaded spork %s with value %d\n", __func__,
-                  sporkManager.GetSporkNameByID(spork.nSporkID), spork.strValue);
-        //        }
+        AddActiveSpork(spork);
+        LogPrintf("%s : loaded spork %s with value %d\n", __func__, sporkManager.GetSporkNameByID(spork.nSporkID), spork.strValue);
     }
 }
 
@@ -143,19 +135,20 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
             return;
         }
 
-        /*
         if(!spork.CheckSignature(sporkPubKey)) {
             LOCK(cs_main);
             LogPrintf("CSporkManager::ProcessSpork -- ERROR: invalid signature\n");
             Misbehaving(pfrom->GetId(), 100);
             return;
         }
-        */
 
         pfrom->nSporksSynced++;
 
         mapSporks[hash] = spork;
         AddActiveSpork(spork);
+
+        pSporkDB->WriteSpork(spork.nSporkID, spork);
+
         spork.Relay();
 
         //does a task if needed
@@ -301,27 +294,21 @@ bool CSporkManager::IsSporkActive(int nSporkID)
     return boost::lexical_cast<int64_t>(r) < GetAdjustedTime();
 }
 
-std::vector<string> CSporkManager::GetMultiValueSporkValues(int nSporkID) const
+std::vector<CSporkMessage> CSporkManager::GetMultiValueSpork(int nSporkID) const
 {
-    std::vector<std::string> result;
     if (IsMultiValueSpork(nSporkID) && mapSporksActive.count(nSporkID)) {
-
-        for(auto &&spork : mapSporksActive.at(nSporkID)) {
-            result.push_back(spork.strValue);
-        }
-
-        return result;
+        return mapSporksActive.at(nSporkID);
     }
 
-    return result;
+    return std::vector<CSporkMessage>();
 }
 
 // grab the value of the spork on the network, or the default
 string CSporkManager::GetSporkValue(int nSporkID) const
 {
     if(IsMultiValueSpork(nSporkID)) {
-        auto values = GetMultiValueSporkValues(nSporkID);
-        return values.empty() ? std::string() : values.back();
+        auto values = GetMultiValueSpork(nSporkID);
+        return values.empty() ? std::string() : values.back().strValue;
     }
 
     if (mapSporksActive.count(nSporkID)) {
@@ -357,8 +344,8 @@ int CSporkManager::GetSporkIDByName(const std::string& strName)
 std::string CSporkManager::GetSporkNameByID(int nSporkID)
 {
     switch (nSporkID) {
-    case SPORK_2_SWIFTTX_ENABLED:               return "SPORK_2_SWIFTTX_ENABLED";
-    case SPORK_3_SWIFTTX_BLOCK_FILTERING:       return "SPORK_3_SWIFTTX_BLOCK_FILTERING";
+    case SPORK_2_SWIFTTX_ENABLED:                   return "SPORK_2_SWIFTTX_ENABLED";
+    case SPORK_3_SWIFTTX_BLOCK_FILTERING:           return "SPORK_3_SWIFTTX_BLOCK_FILTERING";
     case SPORK_5_INSTANTSEND_MAX_VALUE:             return "SPORK_5_INSTANTSEND_MAX_VALUE";
     case SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT:    return "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT";
     case SPORK_9_SUPERBLOCKS_ENABLED:               return "SPORK_9_SUPERBLOCKS_ENABLED";

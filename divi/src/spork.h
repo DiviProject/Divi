@@ -47,6 +47,9 @@ extern CSporkManager sporkManager;
 // Keep track of all of the network spork settings
 //
 
+template <class T>
+using MultiValueSporkList = std::vector<std::pair<T, int64_t>>;
+
 class CSporkMessage
 {
 private:
@@ -182,30 +185,31 @@ public:
     int GetActiveSporkCount() const;
 
     bool IsSporkActive(int nSporkID);
-    std::vector<std::string> GetMultiValueSporkValues(int nSporkID) const;
+    std::vector<CSporkMessage> GetMultiValueSpork(int nSporkID) const;
 
     template <class T>
-    static void ConvertMultiValueSporkVector(const std::vector<std::string> &vStrValues, std::vector<T> &vResult)
+    static void ConvertMultiValueSporkVector(const std::vector<CSporkMessage> &vMultiValueSprok, MultiValueSporkList<T> &vResult)
     {
-        std::vector<T> result;
-        for(auto &&strValue : vStrValues) {
-            result.emplace_back(T::FromString(strValue));
+        MultiValueSporkList<T> result;
+        for(auto &&spork : vMultiValueSprok) {
+            result.emplace_back(T::FromString(spork.strValue), spork.nTimeSigned);
         }
 
         vResult.swap(result);
     }
 
     template <class T>
-    static T GetActiveMultiValueSpork(const std::vector<T> &vSporks, int nHeight)
+    static T GetActiveMultiValueSpork(const MultiValueSporkList<T> &vSporks, int nHeight, int nBlockTime)
     {
         int nIndex = -1;
         for(size_t i = 0; i < vSporks.size(); ++i) {
-            if(nHeight >= vSporks.at(i).nActivationBlockHeight) {
+            auto sporkEntry = vSporks.at(i);
+            if(nHeight >= sporkEntry.first.nActivationBlockHeight && sporkEntry.second < nBlockTime) {
                 nIndex = i;
             }
         }
 
-        return nIndex >= 0 ? vSporks.at(nIndex) : T();
+        return nIndex >= 0 ? vSporks.at(nIndex).first : T();
     }
 
     std::string GetSporkValue(int nSporkID) const;

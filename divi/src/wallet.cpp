@@ -2268,6 +2268,38 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     CAmount nReward = blockSubsidity.nStakeReward;
     nCredit += nReward;
 
+//    if(txNew.vout.size() == 2)
+//    {
+//        BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
+//        {
+//            // Attempt to add more inputs
+//            // Only add coins of the same key/address as kernel
+//            if (((pcoin.first->vout[pcoin.second].scriptPubKey == scriptPubKeyKernel || pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey))
+//                && pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
+//            {
+//                // Stop adding more inputs if already too many inputs
+//                if (txNew.vin.size() >= 100)
+//                    break;
+//                // Stop adding more inputs if value is already pretty significant
+//                if (nCredit > nCombineThreshold)
+//                    break;
+//                // Stop adding inputs if reached reserve limit
+//                if (nCredit + pcoin.first->vout[pcoin.second].nValue > nBalance - nReserveBalance)
+//                    break;
+//                // Do not add additional significant input
+//                if (pcoin.first->vout[pcoin.second].nValue > nCombineThreshold)
+//                    continue;
+//                // Do not add input that is still too young
+//                if (pcoin.first->nTime + nStakeMinAge > txNew.nTime)
+//                    continue;
+
+//                txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
+//                nCredit += pcoin.first->vout[pcoin.second].nValue;
+//                vwtxPrev.push_back(pcoin.first);
+//            }
+//        }
+//    }
+
     // Set output amount
     if (txNew.vout.size() == 3) {
         txNew.vout[1].nValue = nCredit / 2;

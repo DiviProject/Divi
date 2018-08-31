@@ -1,7 +1,0 @@
-digraph "Graphical Class Hierarchy"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node0 [label="CAccountingEntry",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_accounting_entry.html",tooltip="Internal transfers. "];
-}

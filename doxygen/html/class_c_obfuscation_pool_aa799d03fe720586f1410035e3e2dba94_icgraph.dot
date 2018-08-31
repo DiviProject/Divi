@@ -1,9 +1,0 @@
-digraph "CObfuscationPool::SetCollateralAddress"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node497 [label="CObfuscationPool::SetCollateral\lAddress",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node497 -> Node498 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node498 [label="CObfuscationPool::InitCollateral\lAddress",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#aa040695f32a21d3abc6ceaa9d8805779"];
-}

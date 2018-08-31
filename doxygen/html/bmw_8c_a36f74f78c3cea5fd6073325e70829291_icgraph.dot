@@ -1,9 +1,0 @@
-digraph "sph_bmw224_addbits_and_close"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node3 [label="sph_bmw224_addbits\l_and_close",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node4 [label="sph_bmw224_close",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$sph__bmw_8h.html#a19ee0254d9408c22e4d6a92c1cecf72b",tooltip="Terminate the current BMW-224 computation and output the result into the provided buffer..."];
-}

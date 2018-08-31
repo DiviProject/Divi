@@ -1,9 +1,0 @@
-digraph "ClientModel::getTotalBytesSent"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node173 [label="ClientModel::getTotalBytesSent",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node173 -> Node174 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node174 [label="CNode::GetTotalBytesSent",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_node.html#af318a64e7ddad50d1e1b6fc123a5f0b9"];
-}

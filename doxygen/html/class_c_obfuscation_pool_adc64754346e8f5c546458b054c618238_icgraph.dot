@@ -1,9 +1,0 @@
-digraph "CObfuscationPool::GetMaxPoolTransactions"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node219 [label="CObfuscationPool::GetMax\lPoolTransactions",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node219 -> Node220 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node220 [label="CObfuscationPool::IsSession\lReady",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_obfuscation_pool.html#abb8ce0f1c6e52ecb23434c09f64ea273",tooltip="Do we have enough users to take entries? "];
-}

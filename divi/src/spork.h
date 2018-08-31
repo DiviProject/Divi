@@ -173,6 +173,8 @@ private:
 private:
     void AddActiveSpork(const CSporkMessage &spork);
     bool IsNewerSpork(const CSporkMessage &spork) const;
+    void ExecuteSpork(int nSporkID);
+    void ExecuteMultiValueSpork(int nSporkID);
 
 public:
 
@@ -180,7 +182,6 @@ public:
 
     void LoadSporksFromDB();
     void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
-    void ExecuteSpork(int nSporkID, std::string strValue);
     bool UpdateSpork(int nSporkID, std::string strValue);
     int GetActiveSporkCount() const;
 

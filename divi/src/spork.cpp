@@ -82,9 +82,9 @@ CSporkManager::CSporkManager()
         AddActiveSpork(spork);
     };
 
-//    helper(spork);
-//    helper(sporkSubsidity);
-//    helper(sporkSubsidity2);
+    //    helper(spork);
+    //    helper(sporkSubsidity);
+    //    helper(sporkSubsidity2);
 }
 
 // DIVI: on startup load spork values from previous session if they exist in the sporkDB
@@ -152,7 +152,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         spork.Relay();
 
         //does a task if needed
-        ExecuteSpork(spork.nSporkID, spork.strValue);
+        ExecuteSpork(spork.nSporkID);
 
     } else if (strCommand == "getsporks") {
 
@@ -202,46 +202,68 @@ void ReprocessBlocks(int nBlocks)
     }
 }
 
-void CSporkManager::ExecuteSpork(int nSporkID, string strValue)
+void CSporkManager::ExecuteSpork(int nSporkID)
 {
-    //correct fork via spork technology
-    if(nSporkID == SPORK_12_RECONSIDER_BLOCKS) {
 
-        int64_t nValue = 0;
-        try
-        {
-            nValue = boost::lexical_cast<int64_t>(strValue);
+    if(IsMultiValueSpork(nSporkID)) {
+        ExecuteMultiValueSpork(nSporkID);
+    }
+    else
+    {
+        auto strValue = mapSporksActive.at(nSporkID).front().strValue;
+        //correct fork via spork technology
+        if(nSporkID == SPORK_12_RECONSIDER_BLOCKS) {
+
+            int64_t nValue = 0;
+            try
+            {
+                nValue = boost::lexical_cast<int64_t>(strValue);
+            }
+            catch(boost::bad_lexical_cast &)
+            {
+            }
+
+            if(nValue <= 0) {
+                return;
+            }
+
+            // allow to reprocess 24h of blocks max, which should be enough to resolve any issues
+            int64_t nMaxBlocks = 576;
+            // this potentially can be a heavy operation, so only allow this to be executed once per 10 minutes
+            int64_t nTimeout = 10 * 60;
+
+            static int64_t nTimeExecuted = 0; // i.e. it was never executed before
+
+            if(GetTime() - nTimeExecuted < nTimeout) {
+                LogPrint("spork", "CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider blocks, too soon - %d/%d\n", GetTime() - nTimeExecuted, nTimeout);
+                return;
+            }
+
+            if(nValue > nMaxBlocks) {
+                LogPrintf("CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider too many blocks %d/%d\n", strValue, nMaxBlocks);
+                return;
+            }
+
+
+            LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
+
+            ReprocessBlocks(nValue);
+            nTimeExecuted = GetTime();
         }
-        catch(boost::bad_lexical_cast &)
-        {
-        }
+    }
+}
 
-        if(nValue <= 0) {
-            return;
-        }
+void CSporkManager::ExecuteMultiValueSpork(int nSporkID)
+{
+    if(nSporkID == SPORK_14_TX_FEE)
+    {
+        auto chainTip = chainActive.Tip();
+        MultiValueSporkList<TxFeeSporkValue> vValues;
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_14_TX_FEE), vValues);
+        TxFeeSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, chainTip->nHeight, chainTip->nTime);
 
-        // allow to reprocess 24h of blocks max, which should be enough to resolve any issues
-        int64_t nMaxBlocks = 576;
-        // this potentially can be a heavy operation, so only allow this to be executed once per 10 minutes
-        int64_t nTimeout = 10 * 60;
-
-        static int64_t nTimeExecuted = 0; // i.e. it was never executed before
-
-        if(GetTime() - nTimeExecuted < nTimeout) {
-            LogPrint("spork", "CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider blocks, too soon - %d/%d\n", GetTime() - nTimeExecuted, nTimeout);
-            return;
-        }
-
-        if(nValue > nMaxBlocks) {
-            LogPrintf("CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider too many blocks %d/%d\n", strValue, nMaxBlocks);
-            return;
-        }
-
-
-        LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
-
-        ReprocessBlocks(nValue);
-        nTimeExecuted = GetTime();
+        minRelayTxFee = CFeeRate(activeSpork.nMinFee);
+        maxTxFee = activeSpork.nMaxFee;
     }
 }
 
@@ -498,7 +520,7 @@ BlockPaymentSporkValue::BlockPaymentSporkValue() :
 }
 
 BlockPaymentSporkValue::BlockPaymentSporkValue(int nStakeRewardIn, int nMasternodeRewardIn, int nTreasuryRewardIn,
-                           int nProposalsRewardIn, int nCharityRewardIn, int nActivationBlockHeightIn) :
+                                               int nProposalsRewardIn, int nCharityRewardIn, int nActivationBlockHeightIn) :
     SporkMultiValue(nActivationBlockHeightIn),
     nStakeReward(nStakeRewardIn),
     nMasternodeReward(nMasternodeRewardIn),
@@ -518,7 +540,7 @@ BlockPaymentSporkValue BlockPaymentSporkValue::FromString(string strData)
     }
 
     return BlockPaymentSporkValue(vecParsedValues.at(0), vecParsedValues.at(1), vecParsedValues.at(2),
-                        vecParsedValues.at(3), vecParsedValues.at(4), vecParsedValues.at(5));
+                                  vecParsedValues.at(3), vecParsedValues.at(4), vecParsedValues.at(5));
 }
 
 bool BlockPaymentSporkValue::IsValid() const

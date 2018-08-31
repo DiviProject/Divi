@@ -1,0 +1,72 @@
+This document contains description of features that were implemented/changed in Divi blockchain.
+
+---- HD Wallet ----
+
+Now wallet supports generation keys using BIP32, BIP38.
+What it means in practice, that all private keys are derived from master private key which is generated from wallet HD chain seed. 
+
+RPC calls:
+- dumphdinfo - shows information about HD chain
+- getwalletinfo - contains extra info about HD chain
+- validateaddress - has extra fields for HD generated addresses
+
+Startup arguments:
+- -usehd=0/1 - default is 1, create wallet using HD chain
+- -hdseed=hex_data - restore wallet from seed
+- -mnemonic=str - restore wallet from mnemonic
+- -mnemonicpassphrase=str - use user defined mnemonic
+
+---- Masternodes ---- 
+
+Masternodes are revisited and implemented in different way that it was before. Currently masternodes are a mix of PIVX, Dash and Divi code. 
+
+RPC calls: 
+- listmasternodes - list of all masternodes that this node is aware of
+- startmasternode - start masternode with given alias
+- getmasternodestatus - prints status of current MN
+- getmasternodewinners - prints next MN winners
+- allocatefunds - allocates funds to masternode with given tier, result is hash of funding tx
+- fundmasternode - verifies that allocation is correct + prepares a config entry
+
+Startup arguments:
+- -masternode=0/1 - if this node is a masternode
+
+---- Block Rewards ----
+
+Full block rewards:
+
+617 222 416 - nHeight == 1 // premine
+1250 - nHeight < 1051200 // first two years, 60 * 24 * 365 * 2
+850 - nHeight < 2102400 // next two years, 60 * 24 * 365 * 4
+650 - nHeight >= 2102400
+
+Lottery payments take 50 coins every block
+Treasury payments take 10 % of every block
+So actually rewards will be:
+
+1250 - 125 - 50 = 1075 - nHeight < 1051200
+850 - 85 - 50 = 715 - nHeight < 2102400
+650 - 65 - 50 = 535 - nHeight >= 2102400
+
+Maximum 50% of this reward can be sent to masternode.
+			Staker		Masternode
+Copper		 70 %          30 %
+Silver       65 %          35 %
+Gold         60 %          40 %
+Platinum     55 %          45 %
+Diamond	     50 %		   50 %
+
+---- Lottery ---- 
+
+Each N blocks(for testing purpose it's 50, for mainnet it will be 7 * 60 * 24), instead of MN payment happens a lottery.
+During lottery cycle(N blocks), every staker that has staked > 10k provides hash of his coinstake that will take part in lottery, 11 participants who have biggest scores will win lottery and get a payment.
+Lottery score is calculated as Hash256(hash_of_last_lottery_block, hash_of_coinstake). 
+
+In payment block coinstake will have 11 extra outputs, 1 output will contain 50 % of the lottery pool, other 50 % are distributed between another 10 winners.
+
+---- Treasury ----
+
+Every N block(for testing purpose it's 101, for mainnet it will be 7 * 60 * 24 + 1), instead of MN payment happens a treasury payment.
+10 % from every block is saved as treasury payment, those coins will be paid to developer address and to charity address(8 and 2 percents respectively) in payment block.
+
+In payment block coinstake will have 2 extra outputs, first one will be treasury address, another one will charity address. 

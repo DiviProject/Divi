@@ -13,25 +13,24 @@
 #include <arpa/inet.h>
 #endif
 
-static const char* ppszTypeName[] =
-    {
-        "ERROR",
-        "tx",
-        "block",
-        "filtered block",
-        "tx lock request",
-        "tx lock vote",
-        "spork",
-        "mn winner",
-        "mn scan error",
-        "mn budget vote",
-        "mn budget proposal",
-        "mn budget finalized",
-        "mn budget finalized vote",
-        "mn quorum",
-        "mn announce",
-        "mn ping",
-        "dstx"};
+static const char* ppszTypeName[] = {
+    "ERROR",
+    "tx",
+    "block",
+    "filtered block",
+    "tx lock request",
+    "tx lock vote",
+    "spork",
+    "mn winner",
+    "mn scan error",
+    "mn budget vote",
+    "mn budget proposal",
+    "mn budget finalized",
+    "mn budget finalized vote",
+    "mn quorum",
+    "mn announce",
+    "mn ping"
+};
 
 CMessageHeader::CMessageHeader()
 {
@@ -137,7 +136,7 @@ bool CInv::IsKnownType() const
 }
 
 bool CInv::IsMasterNodeType() const{
- 	return (type >= 6);
+    return (type >= 6);
 }
 
 const char* CInv::GetCommand() const

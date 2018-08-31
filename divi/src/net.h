@@ -268,13 +268,13 @@ public:
     int nRefCount;
     NodeId id;
 
+    int nSporksCount = -1;
+
 protected:
     // Denial-of-service detection/prevention
     // Key is IP address, value is banned-until-time
     static std::map<CNetAddr, int64_t> setBanned;
     static CCriticalSection cs_setBanned;
-
-    std::vector<std::string> vecRequestsFulfilled; //keep track of what client has asked for
 
     // Whitelisted ranges. Any node connecting from these is automatically
     // whitelisted (as well as those connecting to whitelisted binds).
@@ -310,6 +310,8 @@ public:
     int64_t nPingUsecTime;
     // Whether a ping is requested.
     bool fPingQueued;
+
+    int nSporksSynced = 0;
 
     CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn = false);
     ~CNode();
@@ -417,7 +419,8 @@ public:
     void EndMessage() UNLOCK_FUNCTION(cs_vSend);
 
     void PushVersion();
-
+    void SetSporkCount(int nSporkCountIn);
+    bool AreSporksSynced() const;
 
     void PushMessage(const char* pszCommand)
     {
@@ -584,32 +587,6 @@ public:
             AbortMessage();
             throw;
         }
-    }
-
-    bool HasFulfilledRequest(std::string strRequest)
-    {
-        BOOST_FOREACH (std::string& type, vecRequestsFulfilled) {
-            if (type == strRequest) return true;
-        }
-        return false;
-    }
-
-    void ClearFulfilledRequest(std::string strRequest)
-    {
-        std::vector<std::string>::iterator it = vecRequestsFulfilled.begin();
-        while (it != vecRequestsFulfilled.end()) {
-            if ((*it) == strRequest) {
-                vecRequestsFulfilled.erase(it);
-                return;
-            }
-            ++it;
-        }
-    }
-
-    void FulfilledRequest(std::string strRequest)
-    {
-        if (HasFulfilledRequest(strRequest)) return;
-        vecRequestsFulfilled.push_back(strRequest);
     }
 
     bool IsSubscribed(unsigned int nChannel);

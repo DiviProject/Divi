@@ -91,6 +91,8 @@ net.cpp
 net.h
 netbase.cpp
 netbase.h
+netfulfilledman.cpp
+netfulfilledman.h
 noui.cpp
 noui.h
 obfuscation-relay.cpp

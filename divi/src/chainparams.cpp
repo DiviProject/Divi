@@ -91,17 +91,48 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
 //(908000, uint256("202708f8c289b676fceb832a079ff6b308a28608339acbf7584de533619d014d"));
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1520007171, // * UNIX timestamp of last checkpoint block
+    1534246227, // * UNIX timestamp of last checkpoint block
     0,    // * total number of transactions between genesis and last checkpoint
     //   (the tx=... number in the SetBestChain debug.log lines)
     2000        // * estimated number of transactions per day after checkpoint
 };
 
+
+void MineGenesis(CBlock genesis)
+{
+    printf("Searching for genesis block...\n");
+    // This will figure out a valid hash and Nonce if you're
+    // creating a different genesis block:
+    uint256 hashTarget = ~uint256(0) >> 20;
+    uint256 thash;
+    while(true)
+    {
+        thash = genesis.GetHash();
+        if (thash <= hashTarget)
+            break;
+        if ((genesis.nNonce & 0xFFF) == 0)
+        {
+            printf("nonce %08X: hash = %s (target = %s)\n", genesis.nNonce, thash.ToString().c_str(), hashTarget.ToString().c_str());
+        }
+        ++genesis.nNonce;
+        if (genesis.nNonce == 0)
+        {
+            printf("NONCE WRAPPED, incrementing time\n");
+            ++genesis.nTime;
+        }
+    }
+    printf("block.nTime = %u \n", genesis.nTime);
+    printf("block.nNonce = %u \n", genesis.nNonce);
+    printf("block.GetHash = %s\n", genesis.GetHash().ToString().c_str());
+    printf("block.merkle = %s\n", genesis.hashMerkleRoot.ToString().c_str());
+    std::fflush(stdout);
+}
+
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of(0, uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
 static const Checkpoints::CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
-    1520007171,
+    1534246227,
     0,
     250};
 
@@ -143,10 +174,10 @@ public:
         pchMessageStart[3] = 0x8f;
         premineAmt = 617222416 * COIN;
 
-        vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
+        vAlertPubKey = ParseHex("0241a96bff16a5bc72c1e62603080dd1c9e9a522dc7ae05dca48ee97a8ec01cb28");
         nDefaultPort = 51472;
         bnProofOfWorkLimit = ~uint256(0) >> 20;			// DIVI starting difficulty is 1 / 2^12
-        nSubsidyHalvingInterval = 210000;
+        nSubsidyHalvingInterval = 60 * 24 * 365 * 2;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
@@ -160,6 +191,12 @@ public:
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 100;
+
+        nLotteryBlockStartBlock = 102;
+//        nLotteryBlockCycle = 60 * 24 * 7; // one week
+        nLotteryBlockCycle = 100;
+        nTreasuryPaymentsStartBlock = 102;
+        nTreasuryPaymentsCycle = 101;
 
         nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
 
@@ -193,31 +230,17 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1520007171;
+        genesis.nTime = 1534246227;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 416509442;
+        genesis.nNonce = 562071;
         genesis.payee = txNew.vout[0].scriptPubKey;
 
         nExtCoinType = 5;
 
-        /*
-        hashGenesisBlock = uint256("0x01");
-        if (true && genesis.GetHash() != hashGenesisBlock)
-        {
-        //genesis.nNonce = 1000000;
-        printf("recalculating params for mainnet.\n");
-        printf("old mainnet genesis nonce: %d\n", genesis.nNonce);
-        printf("old mainnet genesis hash:  %s\n", hashGenesisBlock.ToString().c_str());
-        // deliberately empty for loop finds nonce value.
-        for(genesis.nNonce == 0; !CheckProofOfWorkGen(genesis.GetHash(),genesis.nBits); genesis.nNonce++){ }
-        printf("new mainnet genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
-        printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
-        printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
-        }
-        */
+//        MineGenesis(genesis);
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x000008ae5cfd29b6680b53c7061840fdeea45259bd5320322a541a0e4305728a"));
+        assert(hashGenesisBlock == uint256("0x00000b3013f0e9ce32a8824c62067a18bbe074ea9424c57ed50be43fba26ad9f"));
         assert(genesis.hashMerkleRoot == uint256("0xb68f3b6cefa827045e8bac505203050c9d247c10d7fe2a951575924427a51052"));
 
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
@@ -249,7 +272,8 @@ public:
         fHeadersFirstSyncingActive = false;
 
         nPoolMaxTransactions = 3;
-        strSporkKey = "04B433E6598390C992F4F022F20D3B4CBBE691652EE7C48243B81701CBDB7CC7D7BF0EE09E154E6FCBF2043D65AF4E9E97B89B5DBAF830D83B9B7F469A6C45A717";
+        nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
+        strSporkKey = "029d4bf088596e0c4821c2f961f5c3855f93ce7d654a793b2bf358c601322d436f";
         strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 
@@ -298,7 +322,7 @@ public:
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51472;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
-        nSubsidyHalvingInterval = 210000;
+        nSubsidyHalvingInterval = 1000;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
@@ -309,6 +333,11 @@ public:
         nMaturity = 1; //byrdset from 100
         nMasternodeCountDrift = 20;
         nMaxMoneyOut = 2535000000 * COIN;
+
+        nLotteryBlockStartBlock = 100;
+        nLotteryBlockCycle = 60 * 24 * 7; // one week
+        nTreasuryPaymentsStartBlock = 100;
+        nTreasuryPaymentsCycle = 50;
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 56700;
@@ -342,31 +371,17 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1520007171;
+        genesis.nTime = 1534246227;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 416509442;
+        genesis.nNonce = 418811856;
         genesis.payee = txNew.vout[0].scriptPubKey;
 
         nExtCoinType = 1;
 
-        /*
-        hashGenesisBlock = uint256("0x01");
-        if (true && genesis.GetHash() != hashGenesisBlock)
-        {
-        //genesis.nNonce = 1000000;
-        printf("recalculating params for mainnet.\n");
-        printf("old mainnet genesis nonce: %d\n", genesis.nNonce);
-        printf("old mainnet genesis hash:  %s\n", hashGenesisBlock.ToString().c_str());
-        // deliberately empty for loop finds nonce value.
-        for(genesis.nNonce == 0; !CheckProofOfWorkGen(genesis.GetHash(),genesis.nBits); genesis.nNonce++){ }
-        printf("new mainnet genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
-        printf("new mainnet genesis nonce: %d\n", genesis.nNonce);
-        printf("new mainnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
-        }
-        */
+//        MineGenesis(genesis);
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x000008ae5cfd29b6680b53c7061840fdeea45259bd5320322a541a0e4305728a"));
+        assert(hashGenesisBlock == uint256("0x00000856707e71e89983c489e4de5fcad141ae293e20caab2bddc949b8dd1b17"));
         assert(genesis.hashMerkleRoot == uint256("0xb68f3b6cefa827045e8bac505203050c9d247c10d7fe2a951575924427a51052"));
 
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
@@ -398,6 +413,7 @@ public:
         fHeadersFirstSyncingActive = false;
 
         nPoolMaxTransactions = 3;
+        nFulfilledRequestExpireTime = 60 * 60; // fulfilled requests expire in 1 hour
         strSporkKey = "04B433E6598390C992F4F022F20D3B4CBBE691652EE7C48243B81701CBDB7CC7D7BF0EE09E154E6FCBF2043D65AF4E9E97B89B5DBAF830D83B9B7F469A6C45A717";
         strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
@@ -460,11 +476,16 @@ public:
         nBlockLastGoodCheckpoint = 9891730; //Last valid accumulator checkpoint
         nBlockEnforceInvalidUTXO = 9902850; //Start enforcing the invalid UTXO's
 
+        nLotteryBlockStartBlock = 100;
+        nLotteryBlockCycle = 60 * 24 * 7; // one week
+        nTreasuryPaymentsStartBlock = 600;
+        nTreasuryPaymentsCycle = 50;
+
         nExtCoinType = 1;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1520007171;
-        genesis.nNonce = 416509442;
+        genesis.nTime = 1534246227;
+        genesis.nNonce = 562071;
         
         pchMessageStart[0] = 0xdf;
         pchMessageStart[1] = 0xa0;
@@ -473,7 +494,7 @@ public:
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51472;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
-        nSubsidyHalvingInterval = 210000;
+        nSubsidyHalvingInterval = 1000;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
@@ -495,23 +516,11 @@ public:
         nBlockFirstFraudulent = 891737; //First block that bad serials emerged
         nBlockLastGoodCheckpoint = 891730; //Last valid accumulator checkpoint
         nBlockEnforceInvalidUTXO = 902850; //Start enforcing the invalid UTXO's
-        /*
-        hashGenesisBlock = uint256("0x01");
-       if (true && genesis.GetHash() != hashGenesisBlock)
-        {
-            printf("recalculating params for testnet.\n");
-            printf("old testnet genesis nonce: %d\n", genesis.nNonce);
-            printf("old testnet genesis hash:  %s\n", hashGenesisBlock.ToString().c_str());
-            // deliberately empty for loop finds nonce value.
-            for(genesis.nNonce == 0; genesis.GetHash() > bnProofOfWorkLimit; genesis.nNonce++){ }
-            printf("new testnet genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
-            printf("new testnet genesis nonce: %d\n", genesis.nNonce);
-            printf("new testnet genesis hash: %s\n", genesis.GetHash().ToString().c_str());
-        }
-        */
+
+//        MineGenesis(genesis);
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x000008ae5cfd29b6680b53c7061840fdeea45259bd5320322a541a0e4305728a"));
+        assert(hashGenesisBlock == uint256("0x00000b3013f0e9ce32a8824c62067a18bbe074ea9424c57ed50be43fba26ad9f"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -532,6 +541,7 @@ public:
 
         convertSeed6(vFixedSeeds, pnSeed6_test, ARRAYLEN(pnSeed6_test));
 
+        nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
         fRequireRPCPassword = true;
         fMiningRequiresPeers = true;
         fAllowMinDifficultyBlocks = true;
@@ -568,7 +578,7 @@ public:
         pchMessageStart[1] = 0xcf;
         pchMessageStart[2] = 0x7e;
         pchMessageStart[3] = 0xac;
-        nSubsidyHalvingInterval = 150;
+        nSubsidyHalvingInterval = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
@@ -576,31 +586,24 @@ public:
         nTargetTimespan = 24 * 60 * 60; // Divi: 1 day
         nTargetSpacing = 1 * 60;        // Divi: 1 minutes
         bnProofOfWorkLimit = ~uint256(0) >> 1;
-        genesis.nTime = 1520007171;
+        genesis.nTime = 1534246227;
         genesis.nBits = 0x207fffff;
-        genesis.nNonce = 12347;
+        genesis.nNonce = 909826;
+
+        nLotteryBlockStartBlock = 100;
+        nLotteryBlockCycle = 10; // one week
+        nTreasuryPaymentsStartBlock = 100;
+        nTreasuryPaymentsCycle = 50;
 
         nExtCoinType = 1;
-        
-        /*
-        hashGenesisBlock = uint256("0x01");
-        if (true && genesis.GetHash() != hashGenesisBlock)
-        {
-            printf("recalculating params for regtest.\n");
-            printf("old regtest genesis nonce: %d\n", genesis.nNonce);
-            printf("old regtest genesis hash:  %s\n", hashGenesisBlock.ToString().c_str());
-            // deliberately empty for loop finds nonce value.
-            for(genesis.nNonce == 0; genesis.GetHash() > bnProofOfWorkLimit; genesis.nNonce++){ }
-            printf("new regtest genesis merkle root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
-            printf("new regtest genesis nonce: %d\n", genesis.nNonce);
-            printf("new regtest genesis hash: %s\n", genesis.GetHash().ToString().c_str());
-        }
-        */
-        
+
+//        MineGenesis(genesis);
+
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
-        
-        assert(hashGenesisBlock == uint256("0x0eddf3476f5a5fc8404a7ec38a8dab5bd7e7cf6c6e057f7e38ec02ac45ae1b31"));
+        nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
+
+        assert(hashGenesisBlock == uint256("0x00000112d782e21829fb2710f32766be2891173fcabecaf91140cd8bc96ff348"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

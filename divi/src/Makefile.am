@@ -82,6 +82,7 @@ BITCOIN_CORE_H = \
   addrman.h \
   alert.h \
   allocators.h \
+  addressindex.h \
   amount.h \
   base58.h \
   bip38.h \
@@ -98,6 +99,8 @@ BITCOIN_CORE_H = \
   coincontrol.h \
   coins.h \
   compat.h \
+  compat/endian.h \
+  compat/byteswap.h \
   compat/sanity.h \
   compressor.h \
   primitives/block.h \
@@ -111,6 +114,7 @@ BITCOIN_CORE_H = \
   db.h \
   eccryptoverify.h \
   ecwrapper.h \
+  flat-database.h \
   hash.h \
   hdchain.h \
   init.h \
@@ -131,6 +135,7 @@ BITCOIN_CORE_H = \
   miner.h \
   mruset.h \
   netbase.h \
+  netfulfilledman.h \
   net.h \
   noui.h \
   pow.h \
@@ -150,6 +155,7 @@ BITCOIN_CORE_H = \
   serialize.h \
   spork.h \
   sporkdb.h \
+  spentindex.h \
   streams.h \
   sync.h \
   threadsafety.h \
@@ -207,6 +213,7 @@ libbitcoin_server_a_SOURCES = \
   merkleblock.cpp \
   miner.cpp \
   net.cpp \
+  netfulfilledman.cpp \
   noui.cpp \
   pow.cpp \
   rest.cpp \
@@ -259,6 +266,7 @@ libbitcoin_wallet_a_SOURCES = \
   masternode-sync.cpp \
   masternodeconfig.cpp \
   masternodeman.cpp \
+  netfulfilledman.cpp \
   rpcdump.cpp \
   primitives/zerocoin.cpp \
   rpcwallet.cpp \
@@ -274,6 +282,8 @@ crypto_libbitcoin_crypto_a_CPPFLAGS = $(BITCOIN_CONFIG_INCLUDES)
 crypto_libbitcoin_crypto_a_SOURCES = \
   crypto/aes.cpp \
   crypto/aes.h \
+  crypto/ctaes/ctaes.h \
+  crypto/ctaes/ctaes.c \
   crypto/sha1.cpp \
   crypto/sha256.cpp \
   crypto/sha512.cpp \

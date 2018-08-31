@@ -181,6 +181,8 @@ public:
     //! zerocoin specific fields
     std::map<libzerocoin::CoinDenomination, int64_t> mapZerocoinSupply;
     std::vector<libzerocoin::CoinDenomination> vMintDenominationsInBlock;
+
+    std::vector<uint256> vLotteryWinnersCoinstakes;
     
     void SetNull()
     {
@@ -216,6 +218,7 @@ public:
             mapZerocoinSupply.insert(make_pair(denom, 0));
         }
         vMintDenominationsInBlock.clear();
+        vLotteryWinnersCoinstakes.clear();
     }
 
     CBlockIndex()
@@ -252,6 +255,8 @@ public:
             prevoutStake.SetNull();
             nStakeTime = 0;
         }
+
+        vLotteryWinnersCoinstakes.clear();
     }
     
 
@@ -469,6 +474,8 @@ public:
             const_cast<CDiskBlockIndex*>(this)->nStakeTime = 0;
             const_cast<CDiskBlockIndex*>(this)->hashProofOfStake = uint256();
         }
+
+        READWRITE(vLotteryWinnersCoinstakes);
 
         // block header
         READWRITE(this->nVersion);

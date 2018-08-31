@@ -1,0 +1,8 @@
+- Changed how masternode winners algorithm. Now next winner will be choosen randomly using deterministic score which is based on masternode tier.
+- Changed how rewards are paid to stakers and masternodes. Now if there is now masternode staker won't get more.
+- Changed sporks implementation, now it is possible to store multiple sporks that have activation height, for instance for changing block rewards.
+- Introduced 4 new sporks. Block value, Block rewards, Tx Fee, Minimum value for lottery.
+- Changed the way sporks are synced, now sporks are a part of first layer. When node creates an outbond connection, it must receive all sporks before syncing, right after receiveing "verack".
+- Set stakesplitthreadshold to 100k
+- Updated how masternodes are synced becuase of changes to spork manager.
+- Changed mininum block reward to 100 coins, added halving inverval for block rewards.

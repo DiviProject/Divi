@@ -126,9 +126,8 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
 static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 {
     auto rewards = GetBlockSubsidity(nHeight);
-    auto nTreasuryReward = GetTreasuryReward(rewards);
-    auto charityPart = nTreasuryReward / 5; // 20 % goes to charity
-    auto treasuryPart = nTreasuryReward - charityPart; // 80 % goes to treasury
+    auto charityPart = GetCharityReward(rewards);
+    auto treasuryPart = GetTreasuryReward(rewards);
 
     auto verifyPayment = [&tx](CBitcoinAddress address, CAmount amount) {
 
@@ -139,13 +138,13 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 
     if(!verifyPayment(treasuryPaymentAddress, treasuryPart))
     {
-        LogPrintf("masternode", "Expecting treasury payment, no payment address detected, rejecting\n");
+        LogPrint("masternode", "Expecting treasury payment, no payment address detected, rejecting\n");
         return false;
     }
 
     if(!verifyPayment(charityPaymentAddress, charityPart))
     {
-        LogPrintf("masternode", "Expecting charity payment, no payment address detected, rejecting\n");
+        LogPrint("masternode", "Expecting charity payment, no payment address detected, rejecting\n");
         return false;
     }
 

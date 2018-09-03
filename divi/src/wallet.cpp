@@ -2250,7 +2250,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             uint64_t nTotalSize = pcoin.first->vout[pcoin.second].nValue + blockSubsidity.nStakeReward;
 
             //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values asigned further down)
-            if (nTotalSize / 2 > nStakeSplitThreshold * COIN)
+            if (nTotalSize > nStakeSplitThreshold * COIN)
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
 
             if (fDebug && GetBoolArg("-printcoinstake", false))
@@ -2268,37 +2268,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     CAmount nReward = blockSubsidity.nStakeReward;
     nCredit += nReward;
 
-//    if(txNew.vout.size() == 2)
-//    {
-//        BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
-//        {
-//            // Attempt to add more inputs
-//            // Only add coins of the same key/address as kernel
-//            if (((pcoin.first->vout[pcoin.second].scriptPubKey == scriptPubKeyKernel || pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey))
-//                && pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
-//            {
-//                // Stop adding more inputs if already too many inputs
-//                if (txNew.vin.size() >= 100)
-//                    break;
-//                // Stop adding more inputs if value is already pretty significant
-//                if (nCredit > nCombineThreshold)
-//                    break;
-//                // Stop adding inputs if reached reserve limit
-//                if (nCredit + pcoin.first->vout[pcoin.second].nValue > nBalance - nReserveBalance)
-//                    break;
-//                // Do not add additional significant input
-//                if (pcoin.first->vout[pcoin.second].nValue > nCombineThreshold)
-//                    continue;
-//                // Do not add input that is still too young
-//                if (pcoin.first->nTime + nStakeMinAge > txNew.nTime)
-//                    continue;
-
-//                txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
-//                nCredit += pcoin.first->vout[pcoin.second].nValue;
-//                vwtxPrev.push_back(pcoin.first);
-//            }
-//        }
-//    }
 
     // Set output amount
     if (txNew.vout.size() == 3) {
@@ -2306,6 +2275,56 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
     } else {
         txNew.vout[1].nValue = nCredit;
+    }
+
+    if(txNew.vout.size() == 2)
+    {
+        const int nCombineThreshold = nStakeSplitThreshold / 2;
+        using Entry = std::pair<const CWalletTx*, unsigned int>;
+        std::vector<Entry> vCombineCandidates;
+        for(auto &&pcoin : setStakeCoins)
+        {
+            // Attempt to add more inputs
+            // Only add coins of the same key/address as kernel
+            if (((pcoin.first->vout[pcoin.second].scriptPubKey == scriptPubKeyKernel || pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey))
+                && pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
+            {
+                // Stop adding more inputs if already too many inputs
+                if (txNew.vin.size() >= 100)
+                    break;
+                // Do not add additional significant input
+                if (pcoin.first->vout[pcoin.second].nValue + nCredit > nCombineThreshold)
+                    continue;
+                // Do not add input that is still too young
+                if (pcoin.first->GetTxTime() + nStakeMinAge > nTxNewTime)
+                    continue;
+
+                vCombineCandidates.push_back(pcoin);
+            }
+        }
+
+        std::sort(std::begin(vCombineCandidates), std::end(vCombineCandidates), [](const Entry &left, const Entry &right) {
+            return left.first->vout[left.second].nValue < right.first->vout[right.second].nValue;
+        });
+
+        for(auto &&pcoin : vCombineCandidates)
+        {
+            // Stop adding more inputs if value is already pretty significant
+            if (nCredit > nCombineThreshold)
+                break;
+
+            // Stop adding inputs if reached reserve limit
+            if (nCredit + pcoin.first->vout[pcoin.second].nValue > nBalance - nReserveBalance)
+                break;
+
+            // Can't add anymore, cause vector is sorted
+            if (nCredit + pcoin.first->vout[pcoin.second].nValue > nCombineThreshold)
+                break;
+
+            txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
+            nCredit += pcoin.first->vout[pcoin.second].nValue;
+            vwtxPrev.push_back(pcoin.first);
+        }
     }
 
     //Masternode payment

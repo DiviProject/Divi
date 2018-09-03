@@ -38,6 +38,8 @@ using namespace std;
  */
 CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
+CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
+int nTransactionSizeMultiplier = 300;
 unsigned int nTxConfirmTarget = 1;
 bool bSpendZeroConfChange = true;
 bool bdisableSystemnotifications = false; // Those bubbles can be annoying and slow down the UI when you get lots of trx
@@ -2100,7 +2102,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                         break;
                 }
 
-                CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(nBytes, nTxConfirmTarget, mempool));
+                CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(nValue, nBytes, nTxConfirmTarget, mempool));
 
                 // If we made it here and we aren't even able to meet the relay fee on the next pass, give up
                 // because we must be at the maximum allowed fee.
@@ -2395,13 +2397,16 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
     return true;
 }
 
-CAmount CWallet::GetMinimumFee(unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool)
+CAmount CWallet::GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool)
 {
-    // payTxFee is user-set "I want to pay this much"
-    CAmount nFeeNeeded = payTxFee.GetFee(nTxBytes);
-    // user selected total at least (default=true)
-    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
-        nFeeNeeded = payTxFee.GetFeePerK();
+//    // payTxFee is user-set "I want to pay this much"
+//    CAmount nFeeNeeded = payTxFee.GetFee(nTxBytes);
+//    // user selected total at least (default=true)
+//    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
+//        nFeeNeeded = payTxFee.GetFeePerK();
+
+    CAmount nFeeNeeded = (nTransactionValue / nTransactionValueMultiplier) * (nTxBytes / nTransactionSizeMultiplier);
+
     // User didn't set: use -txconfirmtarget to estimate...
     if (nFeeNeeded == 0)
         nFeeNeeded = pool.estimateFee(nConfirmTarget).GetFee(nTxBytes);

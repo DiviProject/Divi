@@ -147,7 +147,7 @@ struct LotteryTicketMinValueSporkValue : public SporkMultiValue {
 struct TxFeeSporkValue : public SporkMultiValue {
     TxFeeSporkValue();
     TxFeeSporkValue(int nTxValueMultiplierIn, int nTxSizeMultiplierIn, int nMaxFeeIn,
-                    int nMinFeeIn, int nActivationBlockHeightIn);
+                    int nMinFeePerKbIn, int nActivationBlockHeightIn);
 
     static TxFeeSporkValue FromString(std::string strData);
 
@@ -157,7 +157,7 @@ struct TxFeeSporkValue : public SporkMultiValue {
     const int nTxValueMultiplier;
     const int nTxSizeMultiplier;
     const int nMaxFee;
-    const int nMinFee;
+    const int nMinFeePerKb;
 };
 
 class CSporkManager

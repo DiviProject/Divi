@@ -262,8 +262,12 @@ void CSporkManager::ExecuteMultiValueSpork(int nSporkID)
         CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_14_TX_FEE), vValues);
         TxFeeSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, chainTip->nHeight, chainTip->nTime);
 
-        minRelayTxFee = CFeeRate(activeSpork.nMinFee);
+        minRelayTxFee = CFeeRate(activeSpork.nMinFeePerKb);
         maxTxFee = activeSpork.nMaxFee;
+#ifdef ENABLE_WALLET
+        nTransactionSizeMultiplier = activeSpork.nTxSizeMultiplier;
+        nTransactionValueMultiplier = activeSpork.nTxValueMultiplier;
+#endif
     }
 }
 
@@ -658,18 +662,18 @@ TxFeeSporkValue::TxFeeSporkValue() :
     nTxValueMultiplier(-1),
     nTxSizeMultiplier(-1),
     nMaxFee(-1),
-    nMinFee(-1)
+    nMinFeePerKb(-1)
 {
 
 }
 
 TxFeeSporkValue::TxFeeSporkValue(int nTxValueMultiplierIn, int nTxSizeMultiplierIn, int nMaxFeeIn,
-                                 int nMinFeeIn, int nActivationBlockHeightIn) :
+                                 int nMinFeePerKbIn, int nActivationBlockHeightIn) :
     SporkMultiValue(nActivationBlockHeightIn),
     nTxValueMultiplier(nTxValueMultiplierIn),
     nTxSizeMultiplier(nTxSizeMultiplierIn),
     nMaxFee(nMaxFeeIn),
-    nMinFee(nMinFeeIn)
+    nMinFeePerKb(nMinFeePerKbIn)
 
 {
 
@@ -691,7 +695,7 @@ bool TxFeeSporkValue::IsValid() const
 {
     return SporkMultiValue::IsValid() &&
             nTxValueMultiplier > 0 && nTxSizeMultiplier > 0 &&
-            nMaxFee > 0 && nMinFee > 0;
+            nMaxFee > 0 && nMinFeePerKb > 0;
 }
 
 string TxFeeSporkValue::ToString() const
@@ -700,7 +704,7 @@ string TxFeeSporkValue::ToString() const
         nTxValueMultiplier,
         nTxSizeMultiplier,
         nMaxFee,
-        nMinFee,
+        nMinFeePerKb,
         nActivationBlockHeight
     };
 

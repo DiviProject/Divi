@@ -2269,7 +2269,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     if(txNew.vout.size() == 2)
     {
-        const int nCombineThreshold = nStakeSplitThreshold * COIN / 2;
+        const CAmount nCombineThreshold = (nStakeSplitThreshold / 2) * COIN;
         using Entry = std::pair<const CWalletTx*, unsigned int>;
         std::vector<Entry> vCombineCandidates;
         for(auto &&pcoin : setStakeCoins)

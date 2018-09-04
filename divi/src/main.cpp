@@ -90,6 +90,7 @@ int64_t nReserveBalance = 0;
  * so it's still 10 times lower comparing to bitcoin.
  */
 CFeeRate minRelayTxFee = CFeeRate(10000);
+CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 
 CTxMemPool mempool(::minRelayTxFee);
 
@@ -1792,10 +1793,10 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             }
         }
 
-        if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee(nSize) * 10000)
+        if (fRejectInsaneFee && nFees > maxTxFee)
             return error("AcceptToMemoryPool: : insane fees %s, %d > %d",
                          hash.ToString(),
-                         nFees, ::minRelayTxFee.GetFee(nSize) * 10000);
+                         nFees, maxTxFee);
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
@@ -1998,10 +1999,10 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
             }
         }
 
-        if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee(nSize) * 10000)
+        if (fRejectInsaneFee && nFees > maxTxFee)
             return error("AcceptableInputs: : insane fees %s, %d > %d",
                          hash.ToString(),
-                         nFees, ::minRelayTxFee.GetFee(nSize) * 10000);
+                         nFees, maxTxFee);
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.

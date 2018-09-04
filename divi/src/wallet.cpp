@@ -37,7 +37,6 @@ using namespace std;
  * Settings
  */
 CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
-CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
 int nTransactionSizeMultiplier = 300;
 unsigned int nTxConfirmTarget = 1;

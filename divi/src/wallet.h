@@ -37,7 +37,6 @@
  * Settings
  */
 extern CFeeRate payTxFee;
-extern CAmount maxTxFee;
 extern CAmount nTransactionValueMultiplier;
 extern int nTransactionSizeMultiplier;
 extern unsigned int nTxConfirmTarget;
@@ -50,8 +49,6 @@ extern bool fPayAtLeastCustomFee;
 static const CAmount DEFAULT_TRANSACTION_FEE = 0;
 //! -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
 static const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
-//! -maxtxfee default
-static const CAmount DEFAULT_TRANSACTION_MAXFEE = 100 * COIN;
 //! -maxtxfee will warn if called with a higher fee than this amount (in satoshis)
 static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
 //! Largest (in bytes) free transaction we're willing to create

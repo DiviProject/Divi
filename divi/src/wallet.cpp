@@ -2287,17 +2287,14 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         {
             // Attempt to add more inputs
             // Only add coins of the same key/address as kernel
-            if (((pcoin.first->vout[pcoin.second].scriptPubKey == scriptPubKeyKernel || pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey))
-                && pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
+            if (pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey &&
+                    pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
             {
                 // Stop adding more inputs if already too many inputs
                 if (txNew.vin.size() >= 100)
                     break;
                 // Do not add additional significant input
                 if (pcoin.first->vout[pcoin.second].nValue + nCredit > nCombineThreshold)
-                    continue;
-                // Do not add input that is still too young
-                if (pcoin.first->GetTxTime() + nStakeMinAge > nTxNewTime)
                     continue;
 
                 vCombineCandidates.push_back(pcoin);

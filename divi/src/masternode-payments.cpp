@@ -75,10 +75,10 @@ static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
     assert(coinbaseTx.IsCoinBase() || coinbaseTx.IsCoinStake());
 
     return coinbaseTx.IsCoinBase() ? coinbaseTx.vout[0].scriptPubKey : coinbaseTx.vout[1].scriptPubKey;
-}
+    }
 
-static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
-{
+    static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
+    {
     auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
     // when we call this we need to have exactly 11 winners
 
@@ -216,6 +216,27 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
 
     if(IsValidLotteryBlockHeight(nBlockHeight)) {
         return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes);
+    }
+
+    if(txNew.IsCoinStake()) {
+        bool hasMnPayment = false;
+        {
+            LOCK(cs_mapMasternodeBlocks);
+            hasMnPayment = masternodePayments.mapMasternodeBlocks.count(nBlockHeight);
+        }
+
+
+        auto scriptKernel = txNew.vout[1].scriptPubKey;
+        auto isTxOutValid = [&txNew, hasMnPayment](size_t index) {
+            return hasMnPayment && index == (txNew.vout.size() - 1);
+        };
+
+        for(size_t i = 1; i < txNew.vout.size(); ++i) {
+            const auto &txOut = txNew.vout[i];
+            if(txOut.scriptPubKey != scriptKernel && !isTxOutValid(i)) { // only last one can't be not equal to scriptKernel, because it can be a MN payment
+                return error("IsBlockPayeeValid(): Invalid output in position: %d, %s", i, txOut.ToString());
+            }
+        }
     }
 
     //check for masternode payee

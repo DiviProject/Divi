@@ -2289,7 +2289,7 @@ CBlockRewards GetBlockSubsidity(int nHeight)
         }
     }
 
-    return helper(45, 45, 8, 0, 2);
+    return helper(38, 45, 16, 0, 1);
 }
 
 bool IsInitialBlockDownload()	//2446

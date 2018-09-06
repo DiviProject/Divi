@@ -2259,13 +2259,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     nCredit += nReward;
 
 
-    // Set output amount
-    if (txNew.vout.size() == 3) {
-        txNew.vout[1].nValue = nCredit / 2;
-        txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
-    } else {
-        txNew.vout[1].nValue = nCredit;
-    }
 
     if(txNew.vout.size() == 2)
     {
@@ -2280,7 +2273,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
             {
                 // Stop adding more inputs if already too many inputs
-                if (txNew.vin.size() >= 100)
+                if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS)
                     break;
                 // Do not add additional significant input
                 if (pcoin.first->vout[pcoin.second].nValue + nCredit > nCombineThreshold)
@@ -2312,6 +2305,14 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             nCredit += pcoin.first->vout[pcoin.second].nValue;
             vwtxPrev.push_back(pcoin.first);
         }
+    }
+
+    // Set output amount
+    if (txNew.vout.size() == 3) {
+        txNew.vout[1].nValue = nCredit / 2;
+        txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
+    } else {
+        txNew.vout[1].nValue = nCredit;
     }
 
     // Masternode payment

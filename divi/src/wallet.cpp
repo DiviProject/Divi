@@ -2272,9 +2272,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             if (pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey &&
                     pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
             {
-                // Stop adding more inputs if already too many inputs
-                if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS)
-                    break;
                 // Do not add additional significant input
                 if (pcoin.first->vout[pcoin.second].nValue + nCredit > nCombineThreshold)
                     continue;
@@ -2289,6 +2286,10 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
         for(auto &&pcoin : vCombineCandidates)
         {
+            // Stop adding more inputs if already too many inputs
+            if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS)
+                break;
+
             // Stop adding more inputs if value is already pretty significant
             if (nCredit > nCombineThreshold)
                 break;

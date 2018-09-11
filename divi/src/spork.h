@@ -200,13 +200,13 @@ public:
     }
 
     template <class T>
-    static T GetActiveMultiValueSpork(const MultiValueSporkList<T> &vSporks, int nHeight, int nBlockTime)
+    static T GetActiveMultiValueSpork(const MultiValueSporkList<T> &vSporks, int nHeight, int64_t nBlockTime)
     {
         int nIndex = -1;
         for(size_t i = 0; i < vSporks.size(); ++i) {
             auto sporkEntry = vSporks.at(i);
             if(nHeight >= sporkEntry.first.nActivationBlockHeight && sporkEntry.second < nBlockTime) {
-                nIndex = i;
+                nIndex = static_cast<int>(i);
             }
         }
 

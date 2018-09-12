@@ -147,7 +147,7 @@ struct LotteryTicketMinValueSporkValue : public SporkMultiValue {
 struct TxFeeSporkValue : public SporkMultiValue {
     TxFeeSporkValue();
     TxFeeSporkValue(int nTxValueMultiplierIn, int nTxSizeMultiplierIn, int nMaxFeeIn,
-                    int nMinFeeIn, int nActivationBlockHeightIn);
+                    int nMinFeePerKbIn, int nActivationBlockHeightIn);
 
     static TxFeeSporkValue FromString(std::string strData);
 
@@ -157,7 +157,7 @@ struct TxFeeSporkValue : public SporkMultiValue {
     const int nTxValueMultiplier;
     const int nTxSizeMultiplier;
     const int nMaxFee;
-    const int nMinFee;
+    const int nMinFeePerKb;
 };
 
 class CSporkManager
@@ -173,6 +173,8 @@ private:
 private:
     void AddActiveSpork(const CSporkMessage &spork);
     bool IsNewerSpork(const CSporkMessage &spork) const;
+    void ExecuteSpork(int nSporkID);
+    void ExecuteMultiValueSpork(int nSporkID);
 
 public:
 
@@ -180,7 +182,6 @@ public:
 
     void LoadSporksFromDB();
     void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
-    void ExecuteSpork(int nSporkID, std::string strValue);
     bool UpdateSpork(int nSporkID, std::string strValue);
     int GetActiveSporkCount() const;
 
@@ -199,13 +200,13 @@ public:
     }
 
     template <class T>
-    static T GetActiveMultiValueSpork(const MultiValueSporkList<T> &vSporks, int nHeight, int nBlockTime)
+    static T GetActiveMultiValueSpork(const MultiValueSporkList<T> &vSporks, int nHeight, int64_t nBlockTime)
     {
         int nIndex = -1;
         for(size_t i = 0; i < vSporks.size(); ++i) {
             auto sporkEntry = vSporks.at(i);
             if(nHeight >= sporkEntry.first.nActivationBlockHeight && sporkEntry.second < nBlockTime) {
-                nIndex = i;
+                nIndex = static_cast<int>(i);
             }
         }
 

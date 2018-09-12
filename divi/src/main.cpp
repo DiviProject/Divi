@@ -90,6 +90,7 @@ int64_t nReserveBalance = 0;
  * so it's still 10 times lower comparing to bitcoin.
  */
 CFeeRate minRelayTxFee = CFeeRate(10000);
+CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 
 CTxMemPool mempool(::minRelayTxFee);
 
@@ -1792,10 +1793,10 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             }
         }
 
-        if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee(nSize) * 10000)
+        if (fRejectInsaneFee && nFees > maxTxFee)
             return error("AcceptToMemoryPool: : insane fees %s, %d > %d",
                          hash.ToString(),
-                         nFees, ::minRelayTxFee.GetFee(nSize) * 10000);
+                         nFees, maxTxFee);
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
@@ -1998,10 +1999,10 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
             }
         }
 
-        if (fRejectInsaneFee && nFees > ::minRelayTxFee.GetFee(nSize) * 10000)
+        if (fRejectInsaneFee && nFees > maxTxFee)
             return error("AcceptableInputs: : insane fees %s, %d > %d",
                          hash.ToString(),
-                         nFees, ::minRelayTxFee.GetFee(nSize) * 10000);
+                         nFees, maxTxFee);
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
@@ -2288,7 +2289,7 @@ CBlockRewards GetBlockSubsidity(int nHeight)
         }
     }
 
-    return helper(45, 45, 8, 0, 2);
+    return helper(38, 45, 16, 0, 1);
 }
 
 bool IsInitialBlockDownload()	//2446
@@ -3272,48 +3273,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (true /*block.nTime > GetSporkValue(SPORK_16_ZEROCOIN_MAINTENANCE_MODE)*/ && !IsInitialBlockDownload() && tx.ContainsZerocoins())
             return state.DoS(100, error("ConnectBlock() : zerocoin transactions are currently in maintenance mode"));
 
-        if (tx.IsZerocoinSpend()) {
-            int nHeightTx = 0;
-            if (IsTransactionInChain(tx.GetHash(), nHeightTx)) {
-                //when verifying blocks on init, the blocks are scanned without being disconnected - prevent that from causing an error
-                if (!fVerifyingBlocks || (fVerifyingBlocks && pindex->nHeight > nHeightTx))
-                    return state.DoS(100, error("%s : txid %s already exists in block %d , trying to include it again in block %d", __func__,
-                                                tx.GetHash().GetHex(), nHeightTx, pindex->nHeight),
-                                     REJECT_INVALID, "bad-txns-inputs-missingorspent");
-            }
 
-            //Check for double spending of serial #'s
-            for (const CTxIn& txIn : tx.vin) {
-                if (!txIn.scriptSig.IsZerocoinSpend())
-                    continue;
-                CoinSpend spend = TxInToZerocoinSpend(txIn);
-                nValueIn += spend.getDenomination() * COIN;
-
-                // Make sure that the serial number is in valid range
-                if (!spend.HasValidSerial(Params().Zerocoin_Params())) {
-                    string strError = strprintf("%s : txid=%s in block %d contains invalid serial %s\n", __func__, tx.GetHash().GetHex(), pindex->nHeight, spend.getCoinSerialNumber());
-                    if (pindex->nHeight >= Params().Zerocoin_Block_EnforceSerialRange())
-                        return state.DoS(100, error(strError.c_str()));
-                    strError = "NOT ENFORCING : " + strError;
-                    LogPrintf(strError.c_str());
-                }
-
-                //Is the serial already in the blockchain?
-                uint256 hashTxFromDB;
-                int nHeightTxSpend = 0;
-                if (zerocoinDB->ReadCoinSpend(spend.getCoinSerialNumber(), hashTxFromDB)) {
-                    if(IsSerialInBlockchain(spend.getCoinSerialNumber(), nHeightTxSpend)) {
-                        if(!fVerifyingBlocks || (fVerifyingBlocks && pindex->nHeight > nHeightTxSpend))
-                            return state.DoS(100, error("%s : zDiv with serial %s is already in the block %d\n",
-                                                        __func__, spend.getCoinSerialNumber().GetHex(), nHeightTxSpend));
-                    }
-                }
-
-                //record spend to database
-                if (!zerocoinDB->WriteCoinSpend(spend.getCoinSerialNumber(), tx.GetHash()))
-                    return error("%s : failed to record coin serial to database");
-            }
-        } else if (!tx.IsCoinBase()) {
+        if (!tx.IsCoinBase()) {
             if (!view.HaveInputs(tx))
                 return state.DoS(100, error("ConnectBlock() : inputs missing/spent"),
                                  REJECT_INVALID, "bad-txns-inputs-missingorspent");
@@ -3422,44 +3383,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
         vPos.push_back(std::make_pair(tx.GetHash(), pos));
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
-    }
-
-    std::list<CZerocoinMint> listMints;
-    bool fFilterInvalid = pindex->nHeight >= Params().Zerocoin_Block_RecalculateAccumulators();
-    BlockToZerocoinMintList(block, listMints, fFilterInvalid);
-    std::list<libzerocoin::CoinDenomination> listSpends = ZerocoinSpendListFromBlock(block, fFilterInvalid);
-
-    if (pindex->nHeight == Params().Zerocoin_Block_RecalculateAccumulators() + 1) {
-        RecalculateZDIVMinted();
-        RecalculateZDIVSpent();
-        RecalculateDIVSupply(Params().Zerocoin_StartHeight());
-    }
-
-    // Initialize zerocoin supply to the supply from previous block
-    if (pindex->pprev && pindex->pprev->GetBlockHeader().nVersion > 3) {
-        for (auto& denom : zerocoinDenomList) {
-            pindex->mapZerocoinSupply.at(denom) = pindex->pprev->mapZerocoinSupply.at(denom);
-        }
-    }
-
-    // Track zerocoin money supply
-    CAmount nAmountZerocoinSpent = 0;
-    pindex->vMintDenominationsInBlock.clear();
-    if (pindex->pprev) {
-        for (auto& m : listMints) {
-            libzerocoin::CoinDenomination denom = m.GetDenomination();
-            pindex->vMintDenominationsInBlock.push_back(m.GetDenomination());
-            pindex->mapZerocoinSupply.at(denom)++;
-        }
-
-        for (auto& denom : listSpends) {
-            pindex->mapZerocoinSupply.at(denom)--;
-            nAmountZerocoinSpent += libzerocoin::ZerocoinDenominationToAmount(denom);
-
-            // zerocoin failsafe
-            if (pindex->mapZerocoinSupply.at(denom) < 0)
-                return state.DoS(100, error("Block contains zerocoins that spend more than are in the available supply to spend"));
-        }
     }
 
     //DC-start: commented for error in Genesis Block/Coins minting.

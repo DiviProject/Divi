@@ -37,7 +37,8 @@ using namespace std;
  * Settings
  */
 CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
-CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
+CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
+int nTransactionSizeMultiplier = 300;
 unsigned int nTxConfirmTarget = 1;
 bool bSpendZeroConfChange = true;
 bool bdisableSystemnotifications = false; // Those bubbles can be annoying and slow down the UI when you get lots of trx
@@ -1261,7 +1262,7 @@ void CWallet::ReacceptWalletTransactions()
 
         int nDepth = wtx.GetDepthInMainChain();
 
-        if (!wtx.IsCoinBase() && nDepth < 0) {
+        if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0) {
             // Try to add to memory pool
             LOCK(mempool.cs);
             wtx.AcceptToMemoryPool(false);
@@ -2100,7 +2101,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                         break;
                 }
 
-                CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(nBytes, nTxConfirmTarget, mempool));
+                CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(nValue, nBytes, nTxConfirmTarget, mempool));
 
                 // If we made it here and we aren't even able to meet the relay fee on the next pass, give up
                 // because we must be at the maximum allowed fee.
@@ -2227,19 +2228,8 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                     LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
                 break; // only support pay to public key and pay to address
             }
-            if (whichType == TX_PUBKEYHASH) // pay to address type
-            {
-                //convert to pay to public key type
-                CKey key;
-                if (!keystore.GetKey(uint160(vSolutions[0]), key)) {
-                    if (fDebug && GetBoolArg("-printcoinstake", false))
-                        LogPrintf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
-                    break; // unable to find corresponding public key
-                }
 
-                scriptPubKeyOut << key.GetPubKey() << OP_CHECKSIG;
-            } else
-                scriptPubKeyOut = scriptPubKeyKernel;
+            scriptPubKeyOut = scriptPubKeyKernel;
 
             txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
             nCredit += pcoin.first->vout[pcoin.second].nValue;
@@ -2250,7 +2240,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             uint64_t nTotalSize = pcoin.first->vout[pcoin.second].nValue + blockSubsidity.nStakeReward;
 
             //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values asigned further down)
-            if (nTotalSize / 2 > nStakeSplitThreshold * COIN)
+            if (nTotalSize > nStakeSplitThreshold * COIN)
                 txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
 
             if (fDebug && GetBoolArg("-printcoinstake", false))
@@ -2268,37 +2258,55 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     CAmount nReward = blockSubsidity.nStakeReward;
     nCredit += nReward;
 
-//    if(txNew.vout.size() == 2)
-//    {
-//        BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
-//        {
-//            // Attempt to add more inputs
-//            // Only add coins of the same key/address as kernel
-//            if (((pcoin.first->vout[pcoin.second].scriptPubKey == scriptPubKeyKernel || pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey))
-//                && pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
-//            {
-//                // Stop adding more inputs if already too many inputs
-//                if (txNew.vin.size() >= 100)
-//                    break;
-//                // Stop adding more inputs if value is already pretty significant
-//                if (nCredit > nCombineThreshold)
-//                    break;
-//                // Stop adding inputs if reached reserve limit
-//                if (nCredit + pcoin.first->vout[pcoin.second].nValue > nBalance - nReserveBalance)
-//                    break;
-//                // Do not add additional significant input
-//                if (pcoin.first->vout[pcoin.second].nValue > nCombineThreshold)
-//                    continue;
-//                // Do not add input that is still too young
-//                if (pcoin.first->nTime + nStakeMinAge > txNew.nTime)
-//                    continue;
 
-//                txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
-//                nCredit += pcoin.first->vout[pcoin.second].nValue;
-//                vwtxPrev.push_back(pcoin.first);
-//            }
-//        }
-//    }
+
+    if(txNew.vout.size() == 2)
+    {
+        const CAmount nCombineThreshold = (nStakeSplitThreshold / 2) * COIN;
+        using Entry = std::pair<const CWalletTx*, unsigned int>;
+        std::vector<Entry> vCombineCandidates;
+        for(auto &&pcoin : setStakeCoins)
+        {
+            // Attempt to add more inputs
+            // Only add coins of the same key/address as kernel
+            if (pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey &&
+                    pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
+            {
+                // Do not add additional significant input
+                if (pcoin.first->vout[pcoin.second].nValue + nCredit > nCombineThreshold)
+                    continue;
+
+                vCombineCandidates.push_back(pcoin);
+            }
+        }
+
+        std::sort(std::begin(vCombineCandidates), std::end(vCombineCandidates), [](const Entry &left, const Entry &right) {
+            return left.first->vout[left.second].nValue < right.first->vout[right.second].nValue;
+        });
+
+        for(auto &&pcoin : vCombineCandidates)
+        {
+            // Stop adding more inputs if already too many inputs
+            if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS)
+                break;
+
+            // Stop adding more inputs if value is already pretty significant
+            if (nCredit > nCombineThreshold)
+                break;
+
+            // Stop adding inputs if reached reserve limit
+            if (nCredit + pcoin.first->vout[pcoin.second].nValue > nBalance - nReserveBalance)
+                break;
+
+            // Can't add anymore, cause vector is sorted
+            if (nCredit + pcoin.first->vout[pcoin.second].nValue > nCombineThreshold)
+                break;
+
+            txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
+            nCredit += pcoin.first->vout[pcoin.second].nValue;
+            vwtxPrev.push_back(pcoin.first);
+        }
+    }
 
     // Set output amount
     if (txNew.vout.size() == 3) {
@@ -2308,7 +2316,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         txNew.vout[1].nValue = nCredit;
     }
 
-    //Masternode payment
+    // Masternode payment
     FillBlockPayee(txNew, blockSubsidity, true);
 
     // Sign
@@ -2376,13 +2384,16 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
     return true;
 }
 
-CAmount CWallet::GetMinimumFee(unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool)
+CAmount CWallet::GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool)
 {
-    // payTxFee is user-set "I want to pay this much"
-    CAmount nFeeNeeded = payTxFee.GetFee(nTxBytes);
-    // user selected total at least (default=true)
-    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
-        nFeeNeeded = payTxFee.GetFeePerK();
+//    // payTxFee is user-set "I want to pay this much"
+//    CAmount nFeeNeeded = payTxFee.GetFee(nTxBytes);
+//    // user selected total at least (default=true)
+//    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
+//        nFeeNeeded = payTxFee.GetFeePerK();
+
+    CAmount nFeeNeeded = (nTransactionValue / nTransactionValueMultiplier) * (nTxBytes / nTransactionSizeMultiplier);
+
     // User didn't set: use -txconfirmtarget to estimate...
     if (nFeeNeeded == 0)
         nFeeNeeded = pool.estimateFee(nConfirmTarget).GetFee(nTxBytes);

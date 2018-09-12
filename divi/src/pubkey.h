@@ -30,7 +30,7 @@ class CKeyID : public uint160
 {
 public:
     CKeyID() : uint160(0) {}
-    CKeyID(const uint160& in) : uint160(in) {}
+    explicit CKeyID(const uint160& in) : uint160(in) {}
 };
 
 typedef uint256 ChainCode;

@@ -167,7 +167,7 @@ bool CBlock::SignBlock(const CKeyStore& keystore)
                     return false;
 
                 //vector<unsigned char> vchSig;
-                if (!key.Sign(GetHash(), vchBlockSig))
+                if (!key.SignCompact(GetHash(), vchBlockSig))
                      return false;
 
                 return true;
@@ -192,7 +192,7 @@ bool CBlock::SignBlock(const CKeyStore& keystore)
                 return false;
 
             //vector<unsigned char> vchSig;
-            if (!key.Sign(GetHash(), vchBlockSig))
+            if (!key.SignCompact(GetHash(), vchBlockSig))
                  return false;
 
             return true;
@@ -246,18 +246,17 @@ bool CBlock::CheckBlockSignature() const
     else if(whichType == TX_PUBKEYHASH)
     {
         valtype& vchPubKey = vSolutions[0];
-        CKeyID keyID;
-        keyID = CKeyID(uint160(vchPubKey));
-        CPubKey pubkey(vchPubKey);
-
-        if (!pubkey.IsValid())
-          return false;
+        CKeyID keyID = CKeyID(uint160(vchPubKey));
+        CPubKey pubkeyFromSig;
 
         if (vchBlockSig.empty())
             return false;
 
-        return pubkey.Verify(GetHash(), vchBlockSig);
+        if(!pubkeyFromSig.RecoverCompact(GetHash(), vchBlockSig)) {
+            return false;
+        }
 
+        return keyID == pubkeyFromSig.GetID();
     }
 
     return false;

@@ -31,7 +31,7 @@ unsigned int getIntervalVersion(bool fTestNet)
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
-    boost::assign::map_list_of(0, 0xfd11f4e7u);
+        boost::assign::map_list_of(0, 0xfd11f4e7u);
 
 // Get time weight
 int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd)
@@ -75,11 +75,11 @@ static int64_t GetStakeModifierSelectionInterval()
 // already selected blocks in vSelectedBlocks, and with timestamp up to
 // nSelectionIntervalStop.
 static bool SelectBlockFromCandidates(
-    vector<pair<int64_t, uint256> >& vSortedByTimestamp,
-    map<uint256, const CBlockIndex*>& mapSelectedBlocks,
-    int64_t nSelectionIntervalStop,
-    uint64_t nStakeModifierPrev,
-    const CBlockIndex** pindexSelected)
+        vector<pair<int64_t, uint256> >& vSortedByTimestamp,
+        map<uint256, const CBlockIndex*>& mapSelectedBlocks,
+        int64_t nSelectionIntervalStop,
+        uint64_t nStakeModifierPrev,
+        const CBlockIndex** pindexSelected)
 {
     bool fModifierV2 = false;
     bool fFirstRun = true;
@@ -209,7 +209,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
         mapSelectedBlocks.insert(make_pair(pindex->GetBlockHash(), pindex));
         if (fDebug || GetBoolArg("-printstakemodifier", false))
             LogPrintf("ComputeNextStakeModifier: selected round %d stop=%s height=%d bit=%d\n",
-                nRound, DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nSelectionIntervalStop).c_str(), pindex->nHeight, pindex->GetStakeEntropyBit());
+                      nRound, DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nSelectionIntervalStop).c_str(), pindex->nHeight, pindex->GetStakeEntropyBit());
     }
 
     // Print selection map for visualization of the selected blocks
@@ -353,15 +353,15 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
 
         if (fDebug || fPrintProofOfStake) {
             LogPrintf("CheckStakeKernelHash() : using modifier %s at height=%d timestamp=%s for block from height=%d timestamp=%s\n",
-                boost::lexical_cast<std::string>(nStakeModifier).c_str(), nStakeModifierHeight,
-                DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nStakeModifierTime).c_str(),
-                mapBlockIndex[blockFrom.GetHash()]->nHeight,
-                DateTimeStrFormat("%Y-%m-%d %H:%M:%S", blockFrom.GetBlockTime()).c_str());
+                      boost::lexical_cast<std::string>(nStakeModifier).c_str(), nStakeModifierHeight,
+                      DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nStakeModifierTime).c_str(),
+                      mapBlockIndex[blockFrom.GetHash()]->nHeight,
+                    DateTimeStrFormat("%Y-%m-%d %H:%M:%S", blockFrom.GetBlockTime()).c_str());
             LogPrintf("CheckStakeKernelHash() : pass protocol=%s modifier=%s nTimeBlockFrom=%u prevoutHash=%s nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s\n",
-                "0.3",
-                boost::lexical_cast<std::string>(nStakeModifier).c_str(),
-                nTimeBlockFrom, prevout.hash.ToString().c_str(), nTimeBlockFrom, prevout.n, nTryTime,
-                hashProofOfStake.ToString().c_str());
+                      "0.3",
+                      boost::lexical_cast<std::string>(nStakeModifier).c_str(),
+                      nTimeBlockFrom, prevout.hash.ToString().c_str(), nTimeBlockFrom, prevout.n, nTryTime,
+                      hashProofOfStake.ToString().c_str());
         }
         break;
     }
@@ -378,6 +378,10 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
     if (!tx.IsCoinStake())
         return error("CheckProofOfStake() : called on non-coinstake %s", tx.GetHash().ToString().c_str());
 
+    if(tx.vin.size() > MAX_KERNEL_COMBINED_INPUTS) {
+        return error("CheckProofOfStake() : invalid amount of stake inputs, current: %d, max: %d", tx.vin.size(), MAX_KERNEL_COMBINED_INPUTS);
+    }
+
     // Kernel (input 0) must match the stake hash target per coin age (nBits)
     const CTxIn& txin = tx.vin[0];
 
@@ -386,6 +390,22 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
     CTransaction txPrev;
     if (!GetTransaction(txin.prevout.hash, txPrev, hashBlock, true))
         return error("CheckProofOfStake() : INFO: read txPrev failed");
+
+    const CScript &kernelScript = txPrev.vout[txin.prevout.n].scriptPubKey;
+
+    auto nValidInputs = std::count_if(std::begin(tx.vin), std::end(tx.vin), [&kernelScript](const CTxIn &txIn) {
+        CTransaction txPrev;
+        uint256 hashBlock;
+        if(GetTransaction(txIn.prevout.hash, txPrev, hashBlock)) {
+            return txPrev.vout[txIn.prevout.n].scriptPubKey == kernelScript;
+        }
+
+        return false;
+    });
+
+    if(nValidInputs != tx.vin.size()) {
+        return error("CheckProofOfStake() : Invalid inputs for stake total inputs: %d vs valid inputs %d", tx.vin.size(), nValidInputs);
+    }
 
     //verify signature and script
     if (!VerifyScript(txin.scriptSig, txPrev.vout[txin.prevout.n].scriptPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&tx, 0)))

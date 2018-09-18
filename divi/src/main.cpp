@@ -763,9 +763,9 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
         }
     }
 
-    // only one OP_RETURN txout is permitted
+    // only one OP_META txout is permitted
     if (nDataOut > 1) {
-        reason = "multi-op-return";
+        reason = "multi-op-meta";
         return false;
     }
 

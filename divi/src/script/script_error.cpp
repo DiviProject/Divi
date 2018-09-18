@@ -43,8 +43,8 @@ const char* ScriptErrorString(const ScriptError serror)
             return "Operation not valid with the current stack size";
         case SCRIPT_ERR_INVALID_ALTSTACK_OPERATION:
             return "Operation not valid with the current altstack size";
-        case SCRIPT_ERR_OP_RETURN:
-            return "OP_RETURN was encountered";
+        case SCRIPT_ERR_OP_META:
+            return "OP_META was encountered";
         case SCRIPT_ERR_UNBALANCED_CONDITIONAL:
             return "Invalid OP_IF construction";
         case SCRIPT_ERR_SIG_HASHTYPE:

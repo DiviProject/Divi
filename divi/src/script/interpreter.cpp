@@ -394,9 +394,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 }
                 break;
 
-                case OP_RETURN:
+                case OP_META:
                 {
-                    return set_error(serror, SCRIPT_ERR_OP_RETURN);
+                    return set_error(serror, SCRIPT_ERR_OP_META);
                 }
                 break;
 

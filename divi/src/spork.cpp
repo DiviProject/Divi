@@ -271,6 +271,29 @@ void CSporkManager::ExecuteMultiValueSpork(int nSporkID)
     }
 }
 
+static int GetActivationHeightHelper(int nSporkID, const std::string strValue)
+{
+    int nActivationTime = 0;
+
+    if(nSporkID == SPORK_13_BLOCK_PAYMENTS) {
+        nActivationTime = BlockPaymentSporkValue::FromString(strValue).nActivationBlockHeight;
+    }
+    else if(nSporkID == SPORK_14_TX_FEE) {
+        nActivationTime = TxFeeSporkValue::FromString(strValue).nActivationBlockHeight;
+    }
+    else if(nSporkID == SPORK_15_BLOCK_VALUE) {
+        nActivationTime = BlockSubsiditySporkValue::FromString(strValue).nActivationBlockHeight;
+    }
+    else if(nSporkID == SPORK_16_LOTTERY_TICKET_MIN_VALUE) {
+        nActivationTime = LotteryTicketMinValueSporkValue::FromString(strValue).nActivationBlockHeight;
+    }
+    else {
+        return nActivationTime;
+    }
+
+    return nActivationTime;
+}
+
 bool CSporkManager::UpdateSpork(int nSporkID, string strValue)
 {
 
@@ -278,6 +301,12 @@ bool CSporkManager::UpdateSpork(int nSporkID, string strValue)
 
     if(!IsNewerSpork(spork))
         return false;
+
+    if(IsMultiValueSpork(nSporkID)) {
+        if(GetActivationHeightHelper(nSporkID, strValue) < chainActive.Height() + 10) {
+            return false;
+        }
+    }
 
     if(spork.Sign(sporkPrivKey, sporkPubKey)) {
         spork.Relay();
@@ -613,6 +642,11 @@ string BlockSubsiditySporkValue::ToString() const
 
 SporkMultiValue::SporkMultiValue(int nActivationBlockHeightIn) :
     nActivationBlockHeight(nActivationBlockHeightIn)
+{
+
+}
+
+SporkMultiValue::~SporkMultiValue()
 {
 
 }

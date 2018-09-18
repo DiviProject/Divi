@@ -96,6 +96,7 @@ public:
 
 struct SporkMultiValue {
     SporkMultiValue(int nActivationBlockHeightIn = 0);
+    virtual ~SporkMultiValue();
 
     virtual bool IsValid() const;
     virtual std::string ToString() const = 0;

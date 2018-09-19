@@ -44,7 +44,7 @@ static uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint25
 When new block is generated we calculate score for this block, compare it with 11(or less) scores that are already saved and add it to the list in case it's bigger then minimum score. New winners list is saved in `vLotteryWinnersCoinstakes` in `CBlockIndex`
 
 ## Lottery participation 
-To participate in lottery all you need is to stake with UTXO that is > 10000 Divi. This value is configred by multivalue spork. 
+To participate in lottery all you need is to stake with UTXO that is > 10000 Divi. This value is configured by multivalue spork. 
 
 ## Lottery winners
 Current model supports 11 winners, biggest hash gets half of the pool, and other half is distributed by other 10 winners in even manner. 

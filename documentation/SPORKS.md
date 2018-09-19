@@ -1,10 +1,10 @@
 ## Definition
 Sporks are a feature that was implemented by Dash, it allows to execute a change to consensus protocol in centralized manner. 
-Dash and PIVX support very simple sproks that work as binary switches. They are defined in next way:
+Dash and PIVX support very simple sporks that work as binary switches. They are defined in next way:
 
 Spork is defined as `SPORK_ID` and `SPORK_VALUE` so spork is actually a pair.
 
-Usualy `SPORK_VALUE` is spork activation time. It is used in code in next way: 
+Usually `SPORK_VALUE` is spork activation time. It is used in code in next way: 
 ```
 bool SporkManager::IsSporkActive(int sporkID)
 {
@@ -33,9 +33,9 @@ Also value can be any integer, like block height or some other constant.
 Divi has a need to make changes to the blockchain in more complex way comparing to binary switches.
 ### Motivation
 We need to be able to save all previous values that were used with this spork. Why? 
-Let's take a look on example, we need to be able to change block value to arbitrary one. We can't achive it with binary switches, because for binary switches we need to have all options compiled into code. We can only switch between two 'branches'.
+Let's take a look on example, we need to be able to change block value to arbitrary one. We can't achieve it with binary switches, because for binary switches we need to have all options compiled into code. We can only switch between two 'branches'.
 ### Chained spork or Multivalue spork or Spork with history
-Multivalue spork is an extended spork which is `SPORK_ID` and `[SPORK_DATA, SPORK_DATA, ...]`. It is used to change consensus with arbitary values starting from some block height.
+Multivalue spork is an extended spork which is `SPORK_ID` and `[SPORK_DATA, SPORK_DATA, ...]`. It is used to change consensus with arbitrary values starting from some block height.
 It contains all historic values that were applied to this spork. 
 ### Format of Multivalue spork
 Let's take a look on `SPORK_15_BLOCK_VALUE`, it's a spork that changes block value
@@ -63,7 +63,7 @@ Use RPC call `spork show` to see current state of sporks.
 
 ## Changes to P2P protocol for new spork system
 
-In Dash or PIVX sporks are synced as part of second layer(Masternodes), before syncing masternodes and masternode-payments client requests sporks from his peers and then proceedes with masternode sync. 
+In Dash or PIVX sporks are synced as part of second layer(Masternodes), before syncing masternodes and masternode-payments client requests sporks from his peers and then proceeded with masternode sync. 
 
 Divi supports different model, since we need to know about all sporks before syncing to properly react to any consensus changes. 
 

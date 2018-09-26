@@ -156,7 +156,7 @@ public:
         */
 
         pchMessageStart[0] = 0xdf;
-        pchMessageStart[1] = 0xa0;autoseeds.diviseed.diviproject.org
+        pchMessageStart[1] = 0xa0;
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x8f;
         premineAmt = 617222416 * COIN;

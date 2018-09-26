@@ -259,7 +259,7 @@ public:
 
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
-        strSporkKey = "029d4bf088596e0c4821c2f961f5c3855f93ce7d654a793b2bf358c601322d436f";
+        strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
         strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 

@@ -161,7 +161,7 @@ public:
         pchMessageStart[3] = 0x8f;
         premineAmt = 617222416 * COIN;
 
-        vAlertPubKey = ParseHex("0241a96bff16a5bc72c1e62603080dd1c9e9a522dc7ae05dca48ee97a8ec01cb28");
+        vAlertPubKey = ParseHex("0231c07d17c2d69facd84908434dc402b5a9b9e25e5062d1e65163acc7afd0e3ef");
         nDefaultPort = 51472;
         bnProofOfWorkLimit = ~uint256(0) >> 20;			// DIVI starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 60 * 24 * 365;

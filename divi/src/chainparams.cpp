@@ -68,36 +68,6 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
     }
 }
 
-//   What makes a good checkpoint block?
-// + Is surrounded by blocks with reasonable timestamps
-//   (no blocks before with a timestamp after, none after with
-//    timestamp before)
-// + Contains no strange transactions
-static Checkpoints::MapCheckpoints mapCheckpoints =
-        boost::assign::map_list_of
-        (0, uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
-//(424998, uint256("f31e381eedb0ed3ed65fcc98cc71f36012bee32e8efd017c4f9fb0620fd35f6b"))
-//(616764, uint256("29dd0bd1c59484f290896687b4ffb6a49afa5c498caf61967c69a541f8191557")) //first block to use modifierV2
-//(623933, uint256("c7aafa648a0f1450157dc93bd4d7448913a85b7448f803b4ab970d91fc2a7da7"))
-//(791150, uint256("8e76f462e4e82d1bd21cb72e1ce1567d4ddda2390f26074ffd1f5d9c270e5e50"))
-//(795000, uint256("4423cceeb9fd574137a18733416275a70fdf95283cc79ad976ca399aa424a443"))
-//(863787, uint256("5b2482eca24caf2a46bb22e0545db7b7037282733faa3a42ec20542509999a64"))
-//(863795, uint256("2ad866818c4866e0d555181daccc628056216c0db431f88a825e84ed4f469067"))
-//(863805, uint256("a755bd9a22b63c70d3db474f4b2b61a1f86c835b290a081bb3ec1ba2103eb4cb"))
-//(867733, uint256("03b26296bf693de5782c76843d2fb649cb66d4b05550c6a79c047ff7e1c3ae15"))
-//(879650, uint256("227e1d2b738b6cd83c46d1d64617934ec899d77cee34336a56e61b71acd10bb2"))
-//(895400, uint256("7796a0274a608fac12d400198174e50beda992c1d522e52e5b95b884bc1beac6"))//block that serial# range is enforced
-//(895991, uint256("d53013ed7ea5c325b9696c95e07667d6858f8ff7ee13fecfa90827bf3c9ae316"))//network split here
-//(908000, uint256("202708f8c289b676fceb832a079ff6b308a28608339acbf7584de533619d014d"));
-static const Checkpoints::CCheckpointData data = {
-    &mapCheckpoints,
-    1534246227, // * UNIX timestamp of last checkpoint block
-    0,    // * total number of transactions between genesis and last checkpoint
-    //   (the tx=... number in the SetBestChain debug.log lines)
-    2000        // * estimated number of transactions per day after checkpoint
-};
-
-
 void MineGenesis(CBlock genesis)
 {
     printf("Searching for genesis block...\n");
@@ -128,11 +98,28 @@ void MineGenesis(CBlock genesis)
     std::fflush(stdout);
 }
 
+//   What makes a good checkpoint block?
+// + Is surrounded by blocks with reasonable timestamps
+//   (no blocks before with a timestamp after, none after with
+//    timestamp before)
+// + Contains no strange transactions
+static Checkpoints::MapCheckpoints mapCheckpoints =
+        boost::assign::map_list_of
+        (0, uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
+
+static const Checkpoints::CCheckpointData data = {
+    &mapCheckpoints,
+    1537971708, // * UNIX timestamp of last checkpoint block
+    0,    // * total number of transactions between genesis and last checkpoint
+    //   (the tx=... number in the SetBestChain debug.log lines)
+    2000        // * estimated number of transactions per day after checkpoint
+};
+
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of(0, uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
 static const Checkpoints::CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
-    1534246227,
+    1537971708,
     0,
     250};
 
@@ -219,7 +206,7 @@ public:
         *     CTxOut(nValue=50.00000000, scriptPubKey=0xA9037BAC7050C479B121CF)
         *   vMerkleTree: e0028e
         */
-        const char* pszTimestamp = "March 2, 2018 - East And West, Both Coasts Brace For Major Winter Storms";
+        const char* pszTimestamp = "September 26, 2018 - US-Iran: Trump set to chair key UN Security Council session";
         CMutableTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -230,9 +217,9 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1534246227;
+        genesis.nTime = 1537971708;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 562071;
+        genesis.nNonce = 749845;
         genesis.payee = txNew.vout[0].scriptPubKey;
 
         nExtCoinType = 301;
@@ -240,8 +227,8 @@ public:
 //        MineGenesis(genesis);
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x00000b3013f0e9ce32a8824c62067a18bbe074ea9424c57ed50be43fba26ad9f"));
-        assert(genesis.hashMerkleRoot == uint256("0xb68f3b6cefa827045e8bac505203050c9d247c10d7fe2a951575924427a51052"));
+        assert(hashGenesisBlock == uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
+        assert(genesis.hashMerkleRoot == uint256("0xec803cc6b5e68728ec0117cb1154b6d2893152f89d61319647db106908888bd6"));
 
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed2.fuzzbawls.pw"));    // Secondary DNS Seeder from Fuzzbawls
@@ -371,17 +358,15 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1534246227;
+        genesis.nTime = 1537971708;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 418811856;
+        genesis.nNonce = 418873053;
         genesis.payee = txNew.vout[0].scriptPubKey;
 
         nExtCoinType = 1;
 
-//        MineGenesis(genesis);
-
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x00000856707e71e89983c489e4de5fcad141ae293e20caab2bddc949b8dd1b17"));
+        assert(hashGenesisBlock == uint256("0x0000050d77a86f7a3aa38dfac9c23821ed2c5d3002c2e02f9626c7521cd8ced5"));
         assert(genesis.hashMerkleRoot == uint256("0xb68f3b6cefa827045e8bac505203050c9d247c10d7fe2a951575924427a51052"));
 
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
@@ -484,8 +469,8 @@ public:
         nExtCoinType = 1;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1534246227;
-        genesis.nNonce = 562071;
+        genesis.nTime = 1537971708;
+        genesis.nNonce = 749845;
         
         pchMessageStart[0] = 0xdf;
         pchMessageStart[1] = 0xa0;
@@ -517,10 +502,8 @@ public:
         nBlockLastGoodCheckpoint = 891730; //Last valid accumulator checkpoint
         nBlockEnforceInvalidUTXO = 902850; //Start enforcing the invalid UTXO's
 
-//        MineGenesis(genesis);
-
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x00000b3013f0e9ce32a8824c62067a18bbe074ea9424c57ed50be43fba26ad9f"));
+        assert(hashGenesisBlock == uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -586,9 +569,9 @@ public:
         nTargetTimespan = 24 * 60 * 60; // Divi: 1 day
         nTargetSpacing = 1 * 60;        // Divi: 1 minutes
         bnProofOfWorkLimit = ~uint256(0) >> 1;
-        genesis.nTime = 1534246227;
+        genesis.nTime = 1537971708;
         genesis.nBits = 0x207fffff;
-        genesis.nNonce = 909826;
+        genesis.nNonce = 984952;
 
         nLotteryBlockStartBlock = 100;
         nLotteryBlockCycle = 10; // one week
@@ -597,13 +580,11 @@ public:
 
         nExtCoinType = 1;
 
-//        MineGenesis(genesis);
-
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
 
-        assert(hashGenesisBlock == uint256("0x00000112d782e21829fb2710f32766be2891173fcabecaf91140cd8bc96ff348"));
+        assert(hashGenesisBlock == uint256("0x0000000b3f9980dcf71f5f52d69e30d3b02f807e0a77b91b6091701e4ae51a6f"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

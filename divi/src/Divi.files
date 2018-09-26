@@ -57,6 +57,8 @@ ecwrapper.cpp
 ecwrapper.h
 hash.cpp
 hash.h
+hdchain.cpp
+hdchain.h
 init.cpp
 init.h
 kernel.cpp

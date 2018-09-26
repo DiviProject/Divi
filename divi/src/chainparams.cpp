@@ -179,11 +179,10 @@ public:
         /** Height or Time Based Activations **/
         nLastPOWBlock = 100;
 
-        nLotteryBlockStartBlock = 102;
-//        nLotteryBlockCycle = 60 * 24 * 7; // one week
-        nLotteryBlockCycle = 100;
-        nTreasuryPaymentsStartBlock = 102;
-        nTreasuryPaymentsCycle = 101;
+        nLotteryBlockStartBlock = 101;
+        nLotteryBlockCycle = 60 * 24 * 7; // one week
+        nTreasuryPaymentsStartBlock = 101;
+        nTreasuryPaymentsCycle = 60 * 24 * 7 + 1;
 
         nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
 

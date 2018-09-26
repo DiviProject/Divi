@@ -156,7 +156,7 @@ public:
         */
 
         pchMessageStart[0] = 0xdf;
-        pchMessageStart[1] = 0xa0;
+        pchMessageStart[1] = 0xa0;autoseeds.diviseed.diviproject.org
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x8f;
         premineAmt = 617222416 * COIN;
@@ -229,11 +229,7 @@ public:
         assert(hashGenesisBlock == uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
         assert(genesis.hashMerkleRoot == uint256("0xec803cc6b5e68728ec0117cb1154b6d2893152f89d61319647db106908888bd6"));
 
-        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
-        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed2.fuzzbawls.pw"));    // Secondary DNS Seeder from Fuzzbawls
-        //vSeeds.push_back(CDNSSeedData("coin-server.com", "coin-server.com"));         // Single node address
-        //vSeeds.push_back(CDNSSeedData("s3v3nh4cks.ddns.net", "s3v3nh4cks.ddns.net")); // Single node address
-        //vSeeds.push_back(CDNSSeedData("178.254.23.111", "178.254.23.111"));           // Single node address
+        vSeeds.push_back(CDNSSeedData("autoseeds.diviseed.diviproject.org", "autoseeds.diviseed.diviproject.org"));     // Primary DNS Seeder from Fuzzbawls
         vFixedSeeds.clear();
         vSeeds.clear();
 

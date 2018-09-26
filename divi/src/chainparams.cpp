@@ -235,7 +235,7 @@ public:
         genesis.nNonce = 562071;
         genesis.payee = txNew.vout[0].scriptPubKey;
 
-        nExtCoinType = 5;
+        nExtCoinType = 301;
 
 //        MineGenesis(genesis);
 

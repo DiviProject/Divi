@@ -164,7 +164,7 @@ public:
         vAlertPubKey = ParseHex("0241a96bff16a5bc72c1e62603080dd1c9e9a522dc7ae05dca48ee97a8ec01cb28");
         nDefaultPort = 51472;
         bnProofOfWorkLimit = ~uint256(0) >> 20;			// DIVI starting difficulty is 1 / 2^12
-        nSubsidyHalvingInterval = 60 * 24 * 365 * 2;
+        nSubsidyHalvingInterval = 60 * 24 * 365;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;

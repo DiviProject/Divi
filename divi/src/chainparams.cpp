@@ -105,12 +105,13 @@ void MineGenesis(CBlock genesis)
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
-        (0, uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
+        (0, uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"))
+        (100, uint256("0x000000275b2b4a8af2c93ebdfd36ef8dd8c8ec710072bcc388ecbf5d0c8d3f9d"));
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1537971708, // * UNIX timestamp of last checkpoint block
-    0,    // * total number of transactions between genesis and last checkpoint
+    1538069980, // * UNIX timestamp of last checkpoint block
+    100,    // * total number of transactions between genesis and last checkpoint
     //   (the tx=... number in the SetBestChain debug.log lines)
     2000        // * estimated number of transactions per day after checkpoint
 };

@@ -45,10 +45,20 @@ static bool IsMultiValueSpork(int nSporkID)
     return false;
 }
 
-void CSporkManager::AddActiveSpork(const CSporkMessage &spork)
+bool CSporkManager::AddActiveSpork(const CSporkMessage &spork)
 {
     auto &sporks = mapSporksActive[spork.nSporkID];
     if(IsMultiValueSpork(spork.nSporkID)) {
+
+        auto sporkHash = spork.GetHash();
+        auto it = std::find_if(std::begin(sporks), std::end(sporks), [sporkHash](const CSporkMessage &spork) {
+            return sporkHash == spork.GetHash();
+        });
+
+        if(it != std::end(sporks)) {
+            return false;
+        }
+
         sporks.push_back(spork);
         std::sort(std::begin(sporks), std::end(sporks), [](const CSporkMessage &lhs, const CSporkMessage &rhs) {
             return lhs.nTimeSigned < rhs.nTimeSigned;
@@ -57,6 +67,8 @@ void CSporkManager::AddActiveSpork(const CSporkMessage &spork)
     else {
         sporks = { spork };
     }
+
+    return true;
 }
 
 bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
@@ -134,14 +146,15 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         pfrom->nSporksSynced++;
 
         mapSporks[hash] = spork;
-        AddActiveSpork(spork);
 
-        pSporkDB->WriteSpork(spork.nSporkID, spork);
+        if(AddActiveSpork(spork)) {
+            pSporkDB->WriteSpork(spork.nSporkID, spork);
+
+            //does a task if needed
+            ExecuteSpork(spork.nSporkID);
+        }
 
         spork.Relay();
-
-        //does a task if needed
-        ExecuteSpork(spork.nSporkID);
 
     } else if (strCommand == "getsporks") {
 

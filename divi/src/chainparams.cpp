@@ -228,6 +228,9 @@ public:
         assert(genesis.hashMerkleRoot == uint256("0xec803cc6b5e68728ec0117cb1154b6d2893152f89d61319647db106908888bd6"));
 
         vSeeds.push_back(CDNSSeedData("autoseeds.diviseed.diviproject.org", "autoseeds.diviseed.diviproject.org"));     // Primary DNS Seeder from Fuzzbawls
+        vSeeds.push_back(CDNSSeedData("178.62.195.16", "178.62.195.16"));
+        vSeeds.push_back(CDNSSeedData("178.62.221.33", "178.62.221.33"));
+        vSeeds.push_back(CDNSSeedData("178.128.251.20", "178.128.251.20"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 30);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 13);

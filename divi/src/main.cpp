@@ -2243,11 +2243,12 @@ static CAmount GetFullBlockValue(int nHeight)
 
     CAmount nSubsidy = 1250;
     auto nSubsidyHalvingInterval = Params().SubsidyHalvingInterval();
-    for (int i = nSubsidyHalvingInterval; i <= nHeight; i += nSubsidyHalvingInterval) {
-        nSubsidy -= 200;
+    // first two intervals == two years, same amount 1250
+    for (int i = nSubsidyHalvingInterval * 2; i <= nHeight; i += nSubsidyHalvingInterval) {
+        nSubsidy -= 100;
     }
 
-    return std::max<CAmount>(nSubsidy, 100) * COIN;
+    return std::max<CAmount>(nSubsidy, 250) * COIN;
 }
 
 CBlockRewards GetBlockSubsidity(int nHeight)

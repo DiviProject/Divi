@@ -26,11 +26,8 @@ CCriticalSection cs_vecPayments;
 CCriticalSection cs_mapMasternodeBlocks;
 CCriticalSection cs_mapMasternodePayeeVotes;
 
-// D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4
-// YV913LV5Sa15w3k8JYDWTSEuQE53Yiw9MakTMRaoNxRw1SHEqJXw
-
-const std::string treasuryPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
-const std::string charityPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
+const std::string treasuryPaymentAddress("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");
+const std::string charityPaymentAddress("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
 
 static bool IsValidLotteryBlockHeight(int nBlockHeight)
 {

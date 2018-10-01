@@ -27,7 +27,7 @@ static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_2_SWIFTTX_ENABLED,                "0"},             // ON
     {SPORK_3_SWIFTTX_BLOCK_FILTERING,        "0"},             // ON
     {SPORK_5_INSTANTSEND_MAX_VALUE,          "1000"},          // 1000 PIVX
-    {SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT, "4070908800"},    // OFF
+    {SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT, "1537971708"},    // ON
     {SPORK_9_SUPERBLOCKS_ENABLED,            "4070908800"},    // OFF
     {SPORK_10_MASTERNODE_PAY_UPDATED_NODES,  "4070908800"},    // OFF
     {SPORK_12_RECONSIDER_BLOCKS,             "0"},             // 0 BLOCKS
@@ -45,10 +45,20 @@ static bool IsMultiValueSpork(int nSporkID)
     return false;
 }
 
-void CSporkManager::AddActiveSpork(const CSporkMessage &spork)
+bool CSporkManager::AddActiveSpork(const CSporkMessage &spork)
 {
     auto &sporks = mapSporksActive[spork.nSporkID];
     if(IsMultiValueSpork(spork.nSporkID)) {
+
+        auto sporkHash = spork.GetHash();
+        auto it = std::find_if(std::begin(sporks), std::end(sporks), [sporkHash](const CSporkMessage &spork) {
+            return sporkHash == spork.GetHash();
+        });
+
+        if(it != std::end(sporks)) {
+            return false;
+        }
+
         sporks.push_back(spork);
         std::sort(std::begin(sporks), std::end(sporks), [](const CSporkMessage &lhs, const CSporkMessage &rhs) {
             return lhs.nTimeSigned < rhs.nTimeSigned;
@@ -57,6 +67,8 @@ void CSporkManager::AddActiveSpork(const CSporkMessage &spork)
     else {
         sporks = { spork };
     }
+
+    return true;
 }
 
 bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
@@ -74,17 +86,6 @@ bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
 
 CSporkManager::CSporkManager()
 {
-    CSporkMessage spork(SPORK_9_SUPERBLOCKS_ENABLED, "Zalypka", GetAdjustedTime());
-    CSporkMessage sporkSubsidity(SPORK_15_BLOCK_VALUE, "1000;10", GetAdjustedTime());
-    CSporkMessage sporkSubsidity2(SPORK_15_BLOCK_VALUE, "500;20", GetAdjustedTime() + 10);
-    auto helper = [this](CSporkMessage spork) {
-        mapSporks[spork.GetHash()] = spork;
-        AddActiveSpork(spork);
-    };
-
-    //    helper(spork);
-    //    helper(sporkSubsidity);
-    //    helper(sporkSubsidity2);
 }
 
 // DIVI: on startup load spork values from previous session if they exist in the sporkDB
@@ -145,14 +146,15 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         pfrom->nSporksSynced++;
 
         mapSporks[hash] = spork;
-        AddActiveSpork(spork);
 
-        pSporkDB->WriteSpork(spork.nSporkID, spork);
+        if(AddActiveSpork(spork)) {
+            pSporkDB->WriteSpork(spork.nSporkID, spork);
+
+            //does a task if needed
+            ExecuteSpork(spork.nSporkID);
+        }
 
         spork.Relay();
-
-        //does a task if needed
-        ExecuteSpork(spork.nSporkID);
 
     } else if (strCommand == "getsporks") {
 

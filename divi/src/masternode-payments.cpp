@@ -148,13 +148,13 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
     };
 
-    if(!verifyPayment(TREASURY_PAYMENT_ADDRESS, treasuryPart))
+    if(!verifyPayment(TreasuryPaymentAddress(), treasuryPart))
     {
         LogPrint("masternode", "Expecting treasury payment, no payment address detected, rejecting\n");
         return false;
     }
 
-    if(!verifyPayment(CHARITY_PAYMENT_ADDRESS, charityPart))
+    if(!verifyPayment(CharityPaymentAddress(), charityPart))
     {
         LogPrint("masternode", "Expecting charity payment, no payment address detected, rejecting\n");
         return false;

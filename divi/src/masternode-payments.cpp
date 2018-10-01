@@ -26,8 +26,11 @@ CCriticalSection cs_vecPayments;
 CCriticalSection cs_mapMasternodeBlocks;
 CCriticalSection cs_mapMasternodePayeeVotes;
 
-const std::string treasuryPaymentAddress("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");
-const std::string charityPaymentAddress("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
+const std::string TreasuryPaymentAddress("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");
+const std::string CharityPaymentAddress("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
+
+const std::string TreasuryPaymentAddressTestnet("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
+const std::string CharityPaymentAddressTestnet("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
 
 static bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
@@ -54,8 +57,8 @@ static int64_t GetCharityReward(const CBlockRewards &rewards)
 static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
     auto rewards = GetBlockSubsidity(nHeight - 1);
-    tx.vout.emplace_back(GetTreasuryReward(rewards), GetScriptForDestination(CBitcoinAddress(treasuryPaymentAddress).Get()));
-    tx.vout.emplace_back(GetCharityReward(rewards), GetScriptForDestination(CBitcoinAddress(charityPaymentAddress).Get()));
+    tx.vout.emplace_back(GetTreasuryReward(rewards), GetScriptForDestination(CBitcoinAddress(TreasuryPaymentAddress).Get()));
+    tx.vout.emplace_back(GetCharityReward(rewards), GetScriptForDestination(CBitcoinAddress(CharityPaymentAddress).Get()));
 }
 
 static int64_t GetLotteryReward(const CBlockRewards &rewards)
@@ -133,13 +136,13 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
     };
 
-    if(!verifyPayment(treasuryPaymentAddress, treasuryPart))
+    if(!verifyPayment(TreasuryPaymentAddress, treasuryPart))
     {
         LogPrint("masternode", "Expecting treasury payment, no payment address detected, rejecting\n");
         return false;
     }
 
-    if(!verifyPayment(charityPaymentAddress, charityPart))
+    if(!verifyPayment(CharityPaymentAddress, charityPart))
     {
         LogPrint("masternode", "Expecting charity payment, no payment address detected, rejecting\n");
         return false;

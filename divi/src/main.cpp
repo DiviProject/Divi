@@ -2253,11 +2253,6 @@ static CAmount GetFullBlockValue(int nHeight)
 
 CBlockRewards GetBlockSubsidity(int nHeight)
 {
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        if (nHeight < 200 && nHeight > 0)
-            return CBlockRewards(250000 * COIN, 0, 0, 0, 0, 0);
-    }
-
     CAmount nSubsidy = GetFullBlockValue(nHeight);
 
     if(nHeight <= Params().LAST_POW_BLOCK()) {

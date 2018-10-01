@@ -6,6 +6,7 @@
 #include "masternode-payments.h"
 #include "addrman.h"
 #include "masternode-budget.h"
+#include "chainparamsbase.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"
 #include "obfuscation.h"
@@ -26,11 +27,11 @@ CCriticalSection cs_vecPayments;
 CCriticalSection cs_mapMasternodeBlocks;
 CCriticalSection cs_mapMasternodePayeeVotes;
 
-// D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4
-// YV913LV5Sa15w3k8JYDWTSEuQE53Yiw9MakTMRaoNxRw1SHEqJXw
+const std::string TREASURY_PAYMENT_ADDRESS("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");
+const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
 
-const std::string treasuryPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
-const std::string charityPaymentAddress("D9J7BZTYyfZ4cVyTMqhhASa7QUwaTgHRf4");
+const std::string TREASURY_PAYMENT_ADDRESS_TESTNET("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
+const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
 
 static bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
@@ -54,11 +55,22 @@ static int64_t GetCharityReward(const CBlockRewards &rewards)
     return rewards.nCharityReward * Params().GetTreasuryPaymentsCycle();
 }
 
+static CBitcoinAddress TreasuryPaymentAddress()
+{
+    return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET);
+}
+
+static CBitcoinAddress CharityPaymentAddress()
+{
+    return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
+}
+
+
 static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
     auto rewards = GetBlockSubsidity(nHeight - 1);
-    tx.vout.emplace_back(GetTreasuryReward(rewards), GetScriptForDestination(CBitcoinAddress(treasuryPaymentAddress).Get()));
-    tx.vout.emplace_back(GetCharityReward(rewards), GetScriptForDestination(CBitcoinAddress(charityPaymentAddress).Get()));
+    tx.vout.emplace_back(GetTreasuryReward(rewards), GetScriptForDestination(TreasuryPaymentAddress().Get()));
+    tx.vout.emplace_back(GetCharityReward(rewards), GetScriptForDestination(CharityPaymentAddress().Get()));
 }
 
 static int64_t GetLotteryReward(const CBlockRewards &rewards)
@@ -136,13 +148,13 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
     };
 
-    if(!verifyPayment(treasuryPaymentAddress, treasuryPart))
+    if(!verifyPayment(TreasuryPaymentAddress(), treasuryPart))
     {
         LogPrint("masternode", "Expecting treasury payment, no payment address detected, rejecting\n");
         return false;
     }
 
-    if(!verifyPayment(charityPaymentAddress, charityPart))
+    if(!verifyPayment(CharityPaymentAddress(), charityPart))
     {
         LogPrint("masternode", "Expecting charity payment, no payment address detected, rejecting\n");
         return false;

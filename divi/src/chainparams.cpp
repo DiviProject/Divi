@@ -68,36 +68,6 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
     }
 }
 
-//   What makes a good checkpoint block?
-// + Is surrounded by blocks with reasonable timestamps
-//   (no blocks before with a timestamp after, none after with
-//    timestamp before)
-// + Contains no strange transactions
-static Checkpoints::MapCheckpoints mapCheckpoints =
-        boost::assign::map_list_of
-        (0, uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
-//(424998, uint256("f31e381eedb0ed3ed65fcc98cc71f36012bee32e8efd017c4f9fb0620fd35f6b"))
-//(616764, uint256("29dd0bd1c59484f290896687b4ffb6a49afa5c498caf61967c69a541f8191557")) //first block to use modifierV2
-//(623933, uint256("c7aafa648a0f1450157dc93bd4d7448913a85b7448f803b4ab970d91fc2a7da7"))
-//(791150, uint256("8e76f462e4e82d1bd21cb72e1ce1567d4ddda2390f26074ffd1f5d9c270e5e50"))
-//(795000, uint256("4423cceeb9fd574137a18733416275a70fdf95283cc79ad976ca399aa424a443"))
-//(863787, uint256("5b2482eca24caf2a46bb22e0545db7b7037282733faa3a42ec20542509999a64"))
-//(863795, uint256("2ad866818c4866e0d555181daccc628056216c0db431f88a825e84ed4f469067"))
-//(863805, uint256("a755bd9a22b63c70d3db474f4b2b61a1f86c835b290a081bb3ec1ba2103eb4cb"))
-//(867733, uint256("03b26296bf693de5782c76843d2fb649cb66d4b05550c6a79c047ff7e1c3ae15"))
-//(879650, uint256("227e1d2b738b6cd83c46d1d64617934ec899d77cee34336a56e61b71acd10bb2"))
-//(895400, uint256("7796a0274a608fac12d400198174e50beda992c1d522e52e5b95b884bc1beac6"))//block that serial# range is enforced
-//(895991, uint256("d53013ed7ea5c325b9696c95e07667d6858f8ff7ee13fecfa90827bf3c9ae316"))//network split here
-//(908000, uint256("202708f8c289b676fceb832a079ff6b308a28608339acbf7584de533619d014d"));
-static const Checkpoints::CCheckpointData data = {
-    &mapCheckpoints,
-    1534246227, // * UNIX timestamp of last checkpoint block
-    0,    // * total number of transactions between genesis and last checkpoint
-    //   (the tx=... number in the SetBestChain debug.log lines)
-    2000        // * estimated number of transactions per day after checkpoint
-};
-
-
 void MineGenesis(CBlock genesis)
 {
     printf("Searching for genesis block...\n");
@@ -128,11 +98,29 @@ void MineGenesis(CBlock genesis)
     std::fflush(stdout);
 }
 
+//   What makes a good checkpoint block?
+// + Is surrounded by blocks with reasonable timestamps
+//   (no blocks before with a timestamp after, none after with
+//    timestamp before)
+// + Contains no strange transactions
+static Checkpoints::MapCheckpoints mapCheckpoints =
+        boost::assign::map_list_of
+        (0, uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"))
+        (100, uint256("0x000000275b2b4a8af2c93ebdfd36ef8dd8c8ec710072bcc388ecbf5d0c8d3f9d"));
+
+static const Checkpoints::CCheckpointData data = {
+    &mapCheckpoints,
+    1538069980, // * UNIX timestamp of last checkpoint block
+    100,    // * total number of transactions between genesis and last checkpoint
+    //   (the tx=... number in the SetBestChain debug.log lines)
+    2000        // * estimated number of transactions per day after checkpoint
+};
+
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of(0, uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
 static const Checkpoints::CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
-    1534246227,
+    1537971708,
     0,
     250};
 
@@ -174,10 +162,10 @@ public:
         pchMessageStart[3] = 0x8f;
         premineAmt = 617222416 * COIN;
 
-        vAlertPubKey = ParseHex("0241a96bff16a5bc72c1e62603080dd1c9e9a522dc7ae05dca48ee97a8ec01cb28");
+        vAlertPubKey = ParseHex("0231c07d17c2d69facd84908434dc402b5a9b9e25e5062d1e65163acc7afd0e3ef");
         nDefaultPort = 51472;
         bnProofOfWorkLimit = ~uint256(0) >> 20;			// DIVI starting difficulty is 1 / 2^12
-        nSubsidyHalvingInterval = 60 * 24 * 365 * 2;
+        nSubsidyHalvingInterval = 60 * 24 * 365;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
@@ -192,11 +180,10 @@ public:
         /** Height or Time Based Activations **/
         nLastPOWBlock = 100;
 
-        nLotteryBlockStartBlock = 102;
-//        nLotteryBlockCycle = 60 * 24 * 7; // one week
-        nLotteryBlockCycle = 100;
-        nTreasuryPaymentsStartBlock = 102;
-        nTreasuryPaymentsCycle = 101;
+        nLotteryBlockStartBlock = 101;
+        nLotteryBlockCycle = 60 * 24 * 7; // one week
+        nTreasuryPaymentsStartBlock = 101;
+        nTreasuryPaymentsCycle = 60 * 24 * 7 + 1;
 
         nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
 
@@ -219,37 +206,32 @@ public:
         *     CTxOut(nValue=50.00000000, scriptPubKey=0xA9037BAC7050C479B121CF)
         *   vMerkleTree: e0028e
         */
-        const char* pszTimestamp = "March 2, 2018 - East And West, Both Coasts Brace For Major Winter Storms";
+        const char* pszTimestamp = "September 26, 2018 - US-Iran: Trump set to chair key UN Security Council session";
         CMutableTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CScriptNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 8000250 * COIN;
+        txNew.vout[0].nValue = 50 * COIN;
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("04bcc3ef3417ba00ab55e3de807a776ade43cbd634a7e2cff383fecc6920cf918b2ad427f6b0a3f8d38f5a41d5dcbf35b394521bd08fcb5f40749df5bfe7d42fe2") << OP_CHECKSIG;
         genesis.vtx.push_back(txNew);
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1534246227;
+        genesis.nTime = 1537971708;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 562071;
+        genesis.nNonce = 749845;
         genesis.payee = txNew.vout[0].scriptPubKey;
 
-        nExtCoinType = 5;
-
-//        MineGenesis(genesis);
+        nExtCoinType = 301;
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x00000b3013f0e9ce32a8824c62067a18bbe074ea9424c57ed50be43fba26ad9f"));
-        assert(genesis.hashMerkleRoot == uint256("0xb68f3b6cefa827045e8bac505203050c9d247c10d7fe2a951575924427a51052"));
+        assert(hashGenesisBlock == uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
+        assert(genesis.hashMerkleRoot == uint256("0xec803cc6b5e68728ec0117cb1154b6d2893152f89d61319647db106908888bd6"));
 
-        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
-        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed2.fuzzbawls.pw"));    // Secondary DNS Seeder from Fuzzbawls
-        //vSeeds.push_back(CDNSSeedData("coin-server.com", "coin-server.com"));         // Single node address
-        //vSeeds.push_back(CDNSSeedData("s3v3nh4cks.ddns.net", "s3v3nh4cks.ddns.net")); // Single node address
-        //vSeeds.push_back(CDNSSeedData("178.254.23.111", "178.254.23.111"));           // Single node address
-        vFixedSeeds.clear();
-        vSeeds.clear();
+        vSeeds.push_back(CDNSSeedData("autoseeds.diviseed.diviproject.org", "autoseeds.diviseed.diviproject.org"));     // Primary DNS Seeder from Fuzzbawls
+        vSeeds.push_back(CDNSSeedData("178.62.195.16", "178.62.195.16"));
+        vSeeds.push_back(CDNSSeedData("178.62.221.33", "178.62.221.33"));
+        vSeeds.push_back(CDNSSeedData("178.128.251.20", "178.128.251.20"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 30);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 13);
@@ -273,7 +255,7 @@ public:
 
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
-        strSporkKey = "029d4bf088596e0c4821c2f961f5c3855f93ce7d654a793b2bf358c601322d436f";
+        strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
         strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 
@@ -371,17 +353,15 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1534246227;
+        genesis.nTime = 1537971708;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 418811856;
+        genesis.nNonce = 418873053;
         genesis.payee = txNew.vout[0].scriptPubKey;
 
         nExtCoinType = 1;
 
-//        MineGenesis(genesis);
-
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x00000856707e71e89983c489e4de5fcad141ae293e20caab2bddc949b8dd1b17"));
+        assert(hashGenesisBlock == uint256("0x0000050d77a86f7a3aa38dfac9c23821ed2c5d3002c2e02f9626c7521cd8ced5"));
         assert(genesis.hashMerkleRoot == uint256("0xb68f3b6cefa827045e8bac505203050c9d247c10d7fe2a951575924427a51052"));
 
         //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi.seed.fuzzbawls.pw"));     // Primary DNS Seeder from Fuzzbawls
@@ -456,43 +436,48 @@ public:
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x8b;
         vAlertPubKey = ParseHex("04b6f1de3a2f94bfc70917cd7e14a948e78c1638b30524370ac40d3a0fa298e10bbaf7f5c564279c3fddf3f9f785cf3ac4e2031a5e6451f455e5aa60d1e536b379");
-        nDefaultPort = 51474;
+        nDefaultPort = 51476;
         nEnforceBlockUpgradeMajority = 51;
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // DIVI: 1 day
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
-        nLastPOWBlock = 56250;
         nMaturity = 15;
         nMasternodeCountDrift = 4;
-        nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
-        nMaxMoneyOut = 43199500 * COIN;
-        nZerocoinStartHeight = 201576;
-        nZerocoinStartTime = 1501776000;
-        nBlockEnforceSerialRange = 1; //Enforce serial range starting this block
-        nBlockRecalculateAccumulators = 9908000; //Trigger a recalculation of accumulators
-        nBlockFirstFraudulent = 9891737; //First block that bad serials emerged
-        nBlockLastGoodCheckpoint = 9891730; //Last valid accumulator checkpoint
-        nBlockEnforceInvalidUTXO = 9902850; //Start enforcing the invalid UTXO's
+        nModifierUpdateBlock = 99999999;
+        nMaxMoneyOut = 2534320700 * COIN;
+        premineAmt = 617222416 * COIN;
 
-        nLotteryBlockStartBlock = 100;
-        nLotteryBlockCycle = 60 * 24 * 7; // one week
-        nTreasuryPaymentsStartBlock = 600;
-        nTreasuryPaymentsCycle = 50;
+        nZerocoinStartHeight = 99999999;				// this and following five are all Zerocoin and thus irrelevant to Divi
+        nZerocoinStartTime = 9999999999;
+        nBlockEnforceSerialRange = 99999999;
+        nBlockRecalculateAccumulators = 99999999;
+        nBlockFirstFraudulent = 99999999;
+        nBlockLastGoodCheckpoint = 99999999;
+
+        nBlockEnforceInvalidUTXO = 99999999;
+
+        /** Height or Time Based Activations **/
+        nLastPOWBlock = 100;
+
+        nLotteryBlockStartBlock = 101;
+        nLotteryBlockCycle = 100; // one week
+        nTreasuryPaymentsStartBlock = 102;
+        nTreasuryPaymentsCycle = 101;
 
         nExtCoinType = 1;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1534246227;
-        genesis.nNonce = 562071;
+        genesis.nTime = 1537971708;
+        genesis.nNonce = 749845;
         
         pchMessageStart[0] = 0xdf;
         pchMessageStart[1] = 0xa0;
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x78;
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
-        nDefaultPort = 51472;
+        nDefaultPort = 51474;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 1000;
         nMaxReorganizationDepth = 100;
@@ -506,8 +491,6 @@ public:
         nMasternodeCountDrift = 20;
         nMaxMoneyOut = 2535000000 * COIN;
 
-        /** Height or Time Based Activations **/
-        nLastPOWBlock = 2000000;
         nModifierUpdateBlock = 615800;
         nZerocoinStartHeight = 863787;
         nZerocoinStartTime = 1533945600; // October 17, 2017 4:30:00 AM
@@ -517,17 +500,11 @@ public:
         nBlockLastGoodCheckpoint = 891730; //Last valid accumulator checkpoint
         nBlockEnforceInvalidUTXO = 902850; //Start enforcing the invalid UTXO's
 
-//        MineGenesis(genesis);
-
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x00000b3013f0e9ce32a8824c62067a18bbe074ea9424c57ed50be43fba26ad9f"));
+        assert(hashGenesisBlock == uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi-testnet.seed.fuzzbawls.pw"));
-        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi-testnet.seed2.fuzzbawls.pw"));
-        //vSeeds.push_back(CDNSSeedData("s3v3nh4cks.ddns.net", "s3v3nh4cks.ddns.net"));
-        //vSeeds.push_back(CDNSSeedData("88.198.192.110", "88.198.192.110"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 139); // Testnet divi addresses start with 'x' or 'y'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 19);  // Testnet divi script addresses start with '8' or '9'
@@ -551,7 +528,7 @@ public:
         fTestnetToBeDeprecatedFieldRPC = true;
 
         nPoolMaxTransactions = 2;
-        strSporkKey = "04348C2F50F90267E64FACC65BFDC9D0EB147D090872FB97ABAE92E9A36E6CA60983E28E741F8E7277B11A7479B626AC115BA31463AC48178A5075C5A9319D4A38";
+        strSporkKey = "034ffa41e5cffdd009f3b34a3e1482ec82b514bb218b7648948b5858cc5c035adb";
         strObfuscationPoolDummyAddress = "y57cqfGRkekRyDRNeJiLtYVEbvhXrNbmox";
         nStartMasternodePayments = 1533945600; //Fri, 09 Jan 2015 21:05:58 GMT
         nBudget_Fee_Confirmations = 3; // Number of confirmations for the finalization fee. We have to make this very short
@@ -586,9 +563,9 @@ public:
         nTargetTimespan = 24 * 60 * 60; // Divi: 1 day
         nTargetSpacing = 1 * 60;        // Divi: 1 minutes
         bnProofOfWorkLimit = ~uint256(0) >> 1;
-        genesis.nTime = 1534246227;
+        genesis.nTime = 1537971708;
         genesis.nBits = 0x207fffff;
-        genesis.nNonce = 909826;
+        genesis.nNonce = 984952;
 
         nLotteryBlockStartBlock = 100;
         nLotteryBlockCycle = 10; // one week
@@ -597,13 +574,11 @@ public:
 
         nExtCoinType = 1;
 
-//        MineGenesis(genesis);
-
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
 
-        assert(hashGenesisBlock == uint256("0x00000112d782e21829fb2710f32766be2891173fcabecaf91140cd8bc96ff348"));
+        assert(hashGenesisBlock == uint256("0x0000000b3f9980dcf71f5f52d69e30d3b02f807e0a77b91b6091701e4ae51a6f"));
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

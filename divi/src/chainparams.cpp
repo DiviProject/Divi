@@ -463,7 +463,7 @@ public:
 
         nLotteryBlockStartBlock = 101;
         nLotteryBlockCycle = 100; // one week
-        nTreasuryPaymentsStartBlock = 101;
+        nTreasuryPaymentsStartBlock = 102;
         nTreasuryPaymentsCycle = 101;
 
         nExtCoinType = 1;

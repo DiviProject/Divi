@@ -436,30 +436,35 @@ public:
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x8b;
         vAlertPubKey = ParseHex("04b6f1de3a2f94bfc70917cd7e14a948e78c1638b30524370ac40d3a0fa298e10bbaf7f5c564279c3fddf3f9f785cf3ac4e2031a5e6451f455e5aa60d1e536b379");
-        nDefaultPort = 51474;
+        nDefaultPort = 51476;
         nEnforceBlockUpgradeMajority = 51;
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // DIVI: 1 day
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
-        nLastPOWBlock = 56250;
         nMaturity = 15;
         nMasternodeCountDrift = 4;
-        nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
-        nMaxMoneyOut = 43199500 * COIN;
-        nZerocoinStartHeight = 201576;
-        nZerocoinStartTime = 1501776000;
-        nBlockEnforceSerialRange = 1; //Enforce serial range starting this block
-        nBlockRecalculateAccumulators = 9908000; //Trigger a recalculation of accumulators
-        nBlockFirstFraudulent = 9891737; //First block that bad serials emerged
-        nBlockLastGoodCheckpoint = 9891730; //Last valid accumulator checkpoint
-        nBlockEnforceInvalidUTXO = 9902850; //Start enforcing the invalid UTXO's
+        nModifierUpdateBlock = 99999999;
+        nMaxMoneyOut = 2534320700 * COIN;
+        premineAmt = 617222416 * COIN;
 
-        nLotteryBlockStartBlock = 100;
-        nLotteryBlockCycle = 60 * 24 * 7; // one week
-        nTreasuryPaymentsStartBlock = 600;
-        nTreasuryPaymentsCycle = 50;
+        nZerocoinStartHeight = 99999999;				// this and following five are all Zerocoin and thus irrelevant to Divi
+        nZerocoinStartTime = 9999999999;
+        nBlockEnforceSerialRange = 99999999;
+        nBlockRecalculateAccumulators = 99999999;
+        nBlockFirstFraudulent = 99999999;
+        nBlockLastGoodCheckpoint = 99999999;
+
+        nBlockEnforceInvalidUTXO = 99999999;
+
+        /** Height or Time Based Activations **/
+        nLastPOWBlock = 100;
+
+        nLotteryBlockStartBlock = 101;
+        nLotteryBlockCycle = 100; // one week
+        nTreasuryPaymentsStartBlock = 102;
+        nTreasuryPaymentsCycle = 101;
 
         nExtCoinType = 1;
 
@@ -472,7 +477,7 @@ public:
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x78;
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
-        nDefaultPort = 51472;
+        nDefaultPort = 51474;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 1000;
         nMaxReorganizationDepth = 100;
@@ -486,8 +491,6 @@ public:
         nMasternodeCountDrift = 20;
         nMaxMoneyOut = 2535000000 * COIN;
 
-        /** Height or Time Based Activations **/
-        nLastPOWBlock = 2000000;
         nModifierUpdateBlock = 615800;
         nZerocoinStartHeight = 863787;
         nZerocoinStartTime = 1533945600; // October 17, 2017 4:30:00 AM
@@ -502,10 +505,6 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi-testnet.seed.fuzzbawls.pw"));
-        //vSeeds.push_back(CDNSSeedData("fuzzbawls.pw", "divi-testnet.seed2.fuzzbawls.pw"));
-        //vSeeds.push_back(CDNSSeedData("s3v3nh4cks.ddns.net", "s3v3nh4cks.ddns.net"));
-        //vSeeds.push_back(CDNSSeedData("88.198.192.110", "88.198.192.110"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 139); // Testnet divi addresses start with 'x' or 'y'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 19);  // Testnet divi script addresses start with '8' or '9'
@@ -529,7 +528,7 @@ public:
         fTestnetToBeDeprecatedFieldRPC = true;
 
         nPoolMaxTransactions = 2;
-        strSporkKey = "04348C2F50F90267E64FACC65BFDC9D0EB147D090872FB97ABAE92E9A36E6CA60983E28E741F8E7277B11A7479B626AC115BA31463AC48178A5075C5A9319D4A38";
+        strSporkKey = "034ffa41e5cffdd009f3b34a3e1482ec82b514bb218b7648948b5858cc5c035adb";
         strObfuscationPoolDummyAddress = "y57cqfGRkekRyDRNeJiLtYVEbvhXrNbmox";
         nStartMasternodePayments = 1533945600; //Fri, 09 Jan 2015 21:05:58 GMT
         nBudget_Fee_Confirmations = 3; // Number of confirmations for the finalization fee. We have to make this very short

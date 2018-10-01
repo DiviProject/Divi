@@ -134,6 +134,8 @@ void TxToJSONExpanded(const CTransaction& tx, const uint256 hashBlock, Object& e
         }
     }
 
+    entry.push_back(Pair("size", tx.GetSerializeSize(SER_NETWORK, CTransaction::CURRENT_VERSION)));
+
 }
 
 void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry)

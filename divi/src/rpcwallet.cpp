@@ -17,6 +17,7 @@
 #include "utilmoneystr.h"
 #include "wallet.h"
 #include "walletdb.h"
+#include "masternode-payments.h"
 
 #include <stdint.h>
 
@@ -1128,12 +1129,24 @@ static void MaybePushAddress(Object& entry, const CTxDestination& dest)
         entry.push_back(Pair("address", addr.ToString()));
 }
 
+static std::string GetAccountAddress(const CTxDestination &dest)
+{
+    map<CTxDestination, CAddressBookData>::iterator mi = pwalletMain->mapAddressBook.find(dest);
+    if (mi != pwalletMain->mapAddressBook.end() && !(*mi).second.name.empty())
+    {
+        return (*mi).second.name;
+    }
+
+    return std::string();
+}
+
 void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter& filter)
 {
     CAmount nFee;
     string strSentAccount;
     list<COutputEntry> listReceived;
     list<COutputEntry> listSent;
+    bool fAllAccounts = (strAccount == string("*"));
 
     if (wtx.IsCoinStake()) {
         int64_t nTime = wtx.GetComputedTxTime();
@@ -1142,26 +1155,48 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
         CAmount nNet = nCredit - nDebit;
 
         CTxDestination address;
-        Object entry;
-        entry.push_back(Pair("account", strAccount));
         if (ExtractDestination(wtx.vout[1].scriptPubKey, address)) {
 
             if (!IsMine(*pwalletMain, address)) {
-                //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
-                for (unsigned int i = 1; i < wtx.vout.size(); i++) {
-                    CTxDestination outAddress;
-                    if (ExtractDestination(wtx.vout[i].scriptPubKey, outAddress)) {
-                        if (IsMine(*pwalletMain, outAddress)) {
-                            isminetype mine = pwalletMain->IsMine(wtx.vout[i]);
-                            entry.push_back(Pair("involvesWatchonly", mine & ISMINE_WATCH_ONLY));
-                            entry.push_back(Pair("address", CBitcoinAddress(outAddress).ToString()));
-                            entry.push_back(Pair("amount", ValueFromAmount(wtx.vout[i].nValue)));
-                            entry.push_back(Pair("vout", static_cast<int>(i)));
-                            entry.push_back(Pair("category", "mn_reward"));
+                const CBlockIndex *index = nullptr;
+                if(wtx.GetDepthInMainChain(index, true) > 0 && index)
+                {
+                    bool isLotteryPayment = IsValidLotteryBlockHeight(index->nHeight);
+                    //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
+                    for (unsigned int i = 1; i < wtx.vout.size(); i++) {
+                        CTxDestination outAddress;
+                        if (ExtractDestination(wtx.vout[i].scriptPubKey, outAddress)) {
+                            if (IsMine(*pwalletMain, outAddress)) {
+
+                                auto strAccountForAddress = GetAccountAddress(outAddress);
+
+                                if(!fAllAccounts && strAccount != strAccountForAddress)
+                                    continue;
+
+
+                                Object entry;
+                                isminetype mine = pwalletMain->IsMine(wtx.vout[i]);
+                                entry.push_back(Pair("involvesWatchonly", mine & ISMINE_WATCH_ONLY));
+                                entry.push_back(Pair("address", CBitcoinAddress(outAddress).ToString()));
+                                entry.push_back(Pair("amount", ValueFromAmount(wtx.vout[i].nValue)));
+                                entry.push_back(Pair("vout", static_cast<int>(i)));
+                                entry.push_back(Pair("category", isLotteryPayment ? "lottery" : "mn_reward"));
+                                entry.push_back(Pair("account", strAccountForAddress));
+
+                                if (fLong)
+                                    WalletTxToJSON(wtx, entry);
+
+                                ret.push_back(entry);
+                            }
                         }
                     }
                 }
             } else {
+
+                if(!fAllAccounts && strAccount != wtx.strFromAccount)
+                    return;
+
+                Object entry;
                 //stake reward
                 isminetype mine = pwalletMain->IsMine(wtx.vout[1]);
                 entry.push_back(Pair("involvesWatchonly", mine & ISMINE_WATCH_ONLY));
@@ -1169,20 +1204,19 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
                 entry.push_back(Pair("amount", ValueFromAmount(nNet)));
                 entry.push_back(Pair("vout", 1));
                 entry.push_back(Pair("category", "stake_reward"));
+                entry.push_back(Pair("account", wtx.strFromAccount));
+
+                if (fLong)
+                    WalletTxToJSON(wtx, entry);
+
+                ret.push_back(entry);
             }
-
-
-            if (fLong)
-                WalletTxToJSON(wtx, entry);
-
-            ret.push_back(entry);
         }
     }
     else {
 
         wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, filter);
 
-        bool fAllAccounts = (strAccount == string("*"));
         bool involvesWatchonly = wtx.IsFromMe(ISMINE_WATCH_ONLY);
 
         // Sent

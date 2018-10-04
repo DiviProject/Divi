@@ -33,7 +33,7 @@ const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
 const std::string TREASURY_PAYMENT_ADDRESS_TESTNET("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
 const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
 
-static bool IsValidLotteryBlockHeight(int nBlockHeight)
+bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
     return nBlockHeight >= Params().GetLotteryBlockStartBlock() &&
             ((nBlockHeight % Params().GetLotteryBlockCycle()) == 0);

@@ -38,7 +38,7 @@ using namespace std;
  */
 CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
-int nTransactionSizeMultiplier = 300;
+unsigned int nTransactionSizeMultiplier = 300;
 unsigned int nTxConfirmTarget = 1;
 bool bSpendZeroConfChange = true;
 bool bdisableSystemnotifications = false; // Those bubbles can be annoying and slow down the UI when you get lots of trx
@@ -2392,7 +2392,7 @@ CAmount CWallet::GetMinimumFee(const CAmount &nTransactionValue, unsigned int nT
 //    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
 //        nFeeNeeded = payTxFee.GetFeePerK();
 
-    CAmount nFeeNeeded = (nTransactionValue / nTransactionValueMultiplier) * (nTxBytes / nTransactionSizeMultiplier);
+    CAmount nFeeNeeded = (nTransactionValue / nTransactionValueMultiplier) * std::max(nTxBytes / nTransactionSizeMultiplier, 1u);
 
     // User didn't set: use -txconfirmtarget to estimate...
     if (nFeeNeeded == 0)

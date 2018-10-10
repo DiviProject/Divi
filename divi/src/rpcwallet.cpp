@@ -1791,6 +1791,8 @@ Value walletlock(const Array& params, bool fHelp)
     if (!pwalletMain->IsCrypted())
         throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but walletlock was called.");
 
+    RPCDiscardRunLater("lockwallet");
+
     {
         LOCK(cs_nWalletUnlockTime);
         pwalletMain->Lock();

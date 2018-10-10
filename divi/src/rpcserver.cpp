@@ -1098,3 +1098,13 @@ std::string HelpExampleRpc(string methodname, string args)
 }
 
 const CRPCTable tableRPC;
+
+void RPCDiscardRunLater(const string &name)
+{
+    auto it = deadlineTimers.find(name);
+
+    if(it != std::end(deadlineTimers)) {
+        it->second->cancel();
+        deadlineTimers.erase(it);
+    }
+}

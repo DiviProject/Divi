@@ -79,6 +79,8 @@ void RPCTypeCheck(const json_spirit::Object& o,
  */
 void RPCRunLater(const std::string& name, boost::function<void(void)> func, int64_t nSeconds);
 
+void RPCDiscardRunLater(const std::string &name);
+
 //! Convert boost::asio address to CNetAddr
 extern CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address);
 
@@ -208,6 +210,7 @@ extern json_spirit::Value keypoolrefill(const json_spirit::Array& params, bool f
 extern json_spirit::Value walletpassphrase(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value walletpassphrasechange(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value walletlock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value walletverify(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value encryptwallet(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getwalletinfo(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getblockchaininfo(const json_spirit::Array& params, bool fHelp);

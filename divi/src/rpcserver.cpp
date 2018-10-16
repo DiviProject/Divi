@@ -411,6 +411,7 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "walletlock", &walletlock, true, false, true},
         {"wallet", "walletpassphrasechange", &walletpassphrasechange, true, false, true},
         {"wallet", "walletpassphrase", &walletpassphrase, true, false, true},
+        {"wallet", "walletverify", &walletverify, true, false, true}
 
 #endif // ENABLE_WALLET
 };
@@ -1098,3 +1099,13 @@ std::string HelpExampleRpc(string methodname, string args)
 }
 
 const CRPCTable tableRPC;
+
+void RPCDiscardRunLater(const string &name)
+{
+    auto it = deadlineTimers.find(name);
+
+    if(it != std::end(deadlineTimers)) {
+        it->second->cancel();
+        deadlineTimers.erase(it);
+    }
+}

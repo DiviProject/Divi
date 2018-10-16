@@ -38,7 +38,7 @@
  */
 extern CFeeRate payTxFee;
 extern CAmount nTransactionValueMultiplier;
-extern int nTransactionSizeMultiplier;
+extern unsigned int nTransactionSizeMultiplier;
 extern unsigned int nTxConfirmTarget;
 extern bool bSpendZeroConfChange;
 extern bool bdisableSystemnotifications;

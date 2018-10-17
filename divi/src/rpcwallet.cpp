@@ -1214,57 +1214,110 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
         }
     }
     else {
+        bool involvesWatchonly = false;
+        isminetype fAllFromMe = ISMINE_SPENDABLE;
+        isminetype fAllForMe = ISMINE_SPENDABLE;
+        bool fMatchesSentAccount = false;
+        for (const CTxIn& txin : wtx.vin) {
+            isminetype mine = pwalletMain->IsMine(txin);
+            if (mine & ISMINE_WATCH_ONLY) involvesWatchonly = true;
+            if (fAllFromMe > mine) fAllFromMe = mine;
 
-        wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, filter);
-
-        bool involvesWatchonly = wtx.IsFromMe(ISMINE_WATCH_ONLY);
-
-        // Sent
-        if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
-            BOOST_FOREACH (const COutputEntry& s, listSent) {
-                Object entry;
-                if (involvesWatchonly || (::IsMine(*pwalletMain, s.destination) & ISMINE_WATCH_ONLY))
-                    entry.push_back(Pair("involvesWatchonly", true));
-                entry.push_back(Pair("account", strSentAccount));
-                MaybePushAddress(entry, s.destination);
-                std::map<std::string, std::string>::const_iterator it = wtx.mapValue.find("DS");
-                entry.push_back(Pair("category", (it != wtx.mapValue.end() && it->second == "1") ? "darksent" : "send"));
-                entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
-                entry.push_back(Pair("vout", s.vout));
-                entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
-                if (fLong)
-                    WalletTxToJSON(wtx, entry);
-                ret.push_back(entry);
-            }
         }
 
-        // Received
-        if (listReceived.size() > 0 && wtx.GetDepthInMainChain() >= nMinDepth) {
-            BOOST_FOREACH (const COutputEntry& r, listReceived) {
-                string account;
-                if (pwalletMain->mapAddressBook.count(r.destination))
-                    account = pwalletMain->mapAddressBook[r.destination].name;
-                if (fAllAccounts || (account == strAccount)) {
+        bool fMatchesReceiveAccount = false;
+        std::vector<CBitcoinAddress> sendAddresses;
+        for (const CTxOut& txout : wtx.vout) {
+            isminetype mine = pwalletMain->IsMine(txout);
+            if (fAllForMe > mine) fAllForMe = mine;
+
+            CTxDestination dest;
+            ExtractDestination(txout.scriptPubKey, dest);
+
+            string account;
+            if (pwalletMain->mapAddressBook.count(dest)) {
+                account = pwalletMain->mapAddressBook[dest].name;
+                sendAddresses.push_back(CBitcoinAddress(dest));
+            }
+
+            fMatchesReceiveAccount |= fAllAccounts || (account == strAccount);
+        }
+
+        if(fAllForMe && fAllFromMe)
+        {
+            Object entry;
+            if (involvesWatchonly)
+                entry.push_back(Pair("involvesWatchonly", true));
+            entry.push_back(Pair("account", strSentAccount));
+            std::map<std::string, std::string>::const_iterator it = wtx.mapValue.find("DS");
+            entry.push_back(Pair("category", "move"));
+            auto ismine = involvesWatchonly ? ISMINE_ALL : ISMINE_SPENDABLE;
+            auto nFee = wtx.GetDebit(ismine) - wtx.GetCredit(ismine);
+            entry.push_back(Pair("amount", ValueFromAmount(wtx.GetDebit(ismine) - wtx.GetChange() - nFee)));
+            entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
+
+            Array addresses;
+            for(auto &&sendingAddress : sendAddresses) {
+                addresses.push_back(sendingAddress.ToString());
+            }
+
+            entry.push_back(Pair("addresses", addresses));
+
+            if (fLong)
+                WalletTxToJSON(wtx, entry);
+            ret.push_back(entry);
+        }
+        else
+        {
+            wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, filter);
+
+            // Sent
+            if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
+                BOOST_FOREACH (const COutputEntry& s, listSent) {
                     Object entry;
-                    if (involvesWatchonly || (::IsMine(*pwalletMain, r.destination) & ISMINE_WATCH_ONLY))
+                    if (involvesWatchonly || (::IsMine(*pwalletMain, s.destination) & ISMINE_WATCH_ONLY))
                         entry.push_back(Pair("involvesWatchonly", true));
-                    entry.push_back(Pair("account", account));
-                    MaybePushAddress(entry, r.destination);
-                    if (wtx.IsCoinBase()) {
-                        if (wtx.GetDepthInMainChain() < 1)
-                            entry.push_back(Pair("category", "orphan"));
-                        else if (wtx.GetBlocksToMaturity() > 0)
-                            entry.push_back(Pair("category", "immature"));
-                        else
-                            entry.push_back(Pair("category", "generate"));
-                    } else {
-                        entry.push_back(Pair("category", "receive"));
-                    }
-                    entry.push_back(Pair("amount", ValueFromAmount(r.amount)));
-                    entry.push_back(Pair("vout", r.vout));
+                    entry.push_back(Pair("account", strSentAccount));
+                    MaybePushAddress(entry, s.destination);
+                    std::map<std::string, std::string>::const_iterator it = wtx.mapValue.find("DS");
+                    entry.push_back(Pair("category", (it != wtx.mapValue.end() && it->second == "1") ? "darksent" : "send"));
+                    entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
+                    entry.push_back(Pair("vout", s.vout));
+                    entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
                     if (fLong)
                         WalletTxToJSON(wtx, entry);
                     ret.push_back(entry);
+                }
+            }
+
+            // Received
+            if (listReceived.size() > 0 && wtx.GetDepthInMainChain() >= nMinDepth) {
+                BOOST_FOREACH (const COutputEntry& r, listReceived) {
+                    string account;
+                    if (pwalletMain->mapAddressBook.count(r.destination))
+                        account = pwalletMain->mapAddressBook[r.destination].name;
+                    if (fAllAccounts || (account == strAccount)) {
+                        Object entry;
+                        if (involvesWatchonly || (::IsMine(*pwalletMain, r.destination) & ISMINE_WATCH_ONLY))
+                            entry.push_back(Pair("involvesWatchonly", true));
+                        entry.push_back(Pair("account", account));
+                        MaybePushAddress(entry, r.destination);
+                        if (wtx.IsCoinBase()) {
+                            if (wtx.GetDepthInMainChain() < 1)
+                                entry.push_back(Pair("category", "orphan"));
+                            else if (wtx.GetBlocksToMaturity() > 0)
+                                entry.push_back(Pair("category", "immature"));
+                            else
+                                entry.push_back(Pair("category", "generate"));
+                        } else {
+                            entry.push_back(Pair("category", "receive"));
+                        }
+                        entry.push_back(Pair("amount", ValueFromAmount(r.amount)));
+                        entry.push_back(Pair("vout", r.vout));
+                        if (fLong)
+                            WalletTxToJSON(wtx, entry);
+                        ret.push_back(entry);
+                    }
                 }
             }
         }

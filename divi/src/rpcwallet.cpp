@@ -1215,21 +1215,18 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
     }
     else {
         bool involvesWatchonly = false;
-        isminetype fAllFromMe = ISMINE_SPENDABLE;
-        isminetype fAllForMe = ISMINE_SPENDABLE;
-        bool fMatchesSentAccount = false;
+        bool fAllFromMe = true;
+        bool fAllForMe = true;
         for (const CTxIn& txin : wtx.vin) {
             isminetype mine = pwalletMain->IsMine(txin);
-            if (mine & ISMINE_WATCH_ONLY) involvesWatchonly = true;
-            if (fAllFromMe > mine) fAllFromMe = mine;
-
+            fAllFromMe &= static_cast<bool>(mine & ISMINE_SPENDABLE);
         }
 
         bool fMatchesReceiveAccount = false;
-        std::vector<CBitcoinAddress> sendAddresses;
+        std::vector<std::pair<CBitcoinAddress, std::string>> sendAddresses;
         for (const CTxOut& txout : wtx.vout) {
             isminetype mine = pwalletMain->IsMine(txout);
-            if (fAllForMe > mine) fAllForMe = mine;
+            fAllForMe &= static_cast<bool>(mine & ISMINE_SPENDABLE);
 
             CTxDestination dest;
             ExtractDestination(txout.scriptPubKey, dest);
@@ -1237,28 +1234,25 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
             string account;
             if (pwalletMain->mapAddressBook.count(dest)) {
                 account = pwalletMain->mapAddressBook[dest].name;
-                sendAddresses.push_back(CBitcoinAddress(dest));
             }
-
+            sendAddresses.emplace_back(CBitcoinAddress(dest), account);
             fMatchesReceiveAccount |= fAllAccounts || (account == strAccount);
         }
 
-        if(fAllForMe && fAllFromMe)
+        if(fAllForMe && fMatchesReceiveAccount && fAllFromMe)
         {
             Object entry;
-            if (involvesWatchonly)
-                entry.push_back(Pair("involvesWatchonly", true));
-            entry.push_back(Pair("account", strSentAccount));
-            std::map<std::string, std::string>::const_iterator it = wtx.mapValue.find("DS");
             entry.push_back(Pair("category", "move"));
-            auto ismine = involvesWatchonly ? ISMINE_ALL : ISMINE_SPENDABLE;
-            auto nFee = wtx.GetDebit(ismine) - wtx.GetCredit(ismine);
-            entry.push_back(Pair("amount", ValueFromAmount(wtx.GetDebit(ismine) - wtx.GetChange() - nFee)));
+            auto nFee = wtx.GetDebit(ISMINE_SPENDABLE) - wtx.GetCredit(ISMINE_SPENDABLE);
+            entry.push_back(Pair("amount", ValueFromAmount(wtx.GetDebit(ISMINE_SPENDABLE) - wtx.GetChange() - nFee)));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
 
             Array addresses;
             for(auto &&sendingAddress : sendAddresses) {
-                addresses.push_back(sendingAddress.ToString());
+                Object obj;
+                obj.push_back(Pair("address", sendingAddress.first.ToString()));
+                obj.push_back(Pair("account", sendingAddress.second));
+                addresses.push_back(obj);
             }
 
             entry.push_back(Pair("addresses", addresses));

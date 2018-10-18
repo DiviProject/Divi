@@ -27,6 +27,7 @@ extern CMasternodePayments masternodePayments;
 #define MNPAYMENTS_SIGNATURES_TOTAL 10
 
 void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+bool IsValidLotteryBlockHeight(int nBlockHeight);
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);
 std::string GetRequiredPaymentsString(int nBlockHeight);
 bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted);

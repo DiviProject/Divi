@@ -10,9 +10,9 @@
 #include "config/divi-config.h"
 #else
 //! These need to be macros, as clientversion.cpp's and divi*-res.rc's voodoo requires it
-#define CLIENT_VERSION_MAJOR 4
+#define CLIENT_VERSION_MAJOR 1
 #define CLIENT_VERSION_MINOR 00
-#define CLIENT_VERSION_REVISION 10
+#define CLIENT_VERSION_REVISION 4
 #define CLIENT_VERSION_BUILD 00 
 
 #define CLIENT_VERSION_IS_RELEASE true		// Todo: !! Set to true for release, false for prerelease or test build
@@ -27,7 +27,7 @@
 #define DO_STRINGIZE(X) #X
 
 //! Copyright string used in Windows .rc files
-#define COPYRIGHT_STR "2009-" STRINGIZE(COPYRIGHT_YEAR) " The Bitcoin Core Developers, 2014-" STRINGIZE(COPYRIGHT_YEAR) " The Dash Core Developers, 2015-" STRINGIZE(COPYRIGHT_YEAR) " The DIVI Core Developers"
+#define COPYRIGHT_STR "2009-" STRINGIZE(COPYRIGHT_YEAR) " The Bitcoin Core Developers, 2014-" STRINGIZE(COPYRIGHT_YEAR) " The Dash Core Developers, 2015-" STRINGIZE(COPYRIGHT_YEAR) " The PIVX Developers, 2015-" STRINGIZE(COPYRIGHT_YEAR) " The DIVI Core Developers"
 
 /**
  * divid-res.rc includes this file, but it cannot cope with real c++ code.
@@ -53,7 +53,7 @@ extern const std::string CLIENT_BUILD;
 extern const std::string CLIENT_DATE;
 
 const std::string CLIENT_NAME_STR("DIVI Core");
-const std::string CLIENT_VERSION_STR("4.0.10.0");
+const std::string CLIENT_VERSION_STR("1.0.4.0");
 
 
 std::string FormatFullVersion();

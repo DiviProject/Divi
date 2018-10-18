@@ -172,7 +172,7 @@ private:
     CKey sporkPrivKey;
 
 private:
-    void AddActiveSpork(const CSporkMessage &spork);
+    bool AddActiveSpork(const CSporkMessage &spork);
     bool IsNewerSpork(const CSporkMessage &spork) const;
     void ExecuteSpork(int nSporkID);
     void ExecuteMultiValueSpork(int nSporkID);

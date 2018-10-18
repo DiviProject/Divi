@@ -70,7 +70,7 @@ using namespace std;
 
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
-int nWalletBackups = 10;
+int nWalletBackups = 100;
 #endif
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
@@ -1142,14 +1142,15 @@ bool AppInit2(boost::thread_group& threadGroup)
             }
         }
 
-        if (GetBoolArg("-salvagewallet", false)) {
-            // Recover readable keypairs:
-            if (!CWalletDB::Recover(bitdb, strWalletFile, true))
-                return false;
-        }
+// Won't salvage, too risky
+//        if (GetBoolArg("-salvagewallet", false)) {
+//            // Recover readable keypairs:
+//            if (!CWalletDB::Recover(bitdb, strWalletFile, true))
+//                return false;
+//        }
 
         if (filesystem::exists(GetDataDir() / strWalletFile)) {
-            CDBEnv::VerifyResult r = bitdb.Verify(strWalletFile, CWalletDB::Recover);
+            CDBEnv::VerifyResult r = bitdb.Verify(strWalletFile, NULL);
             if (r == CDBEnv::RECOVER_OK) {
                 string msg = strprintf(_("Warning: wallet.dat corrupt, data salvaged!"
                                          " Original wallet.dat saved as wallet.{timestamp}.bak in %s; if"

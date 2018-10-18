@@ -2243,20 +2243,16 @@ static CAmount GetFullBlockValue(int nHeight)
 
     CAmount nSubsidy = 1250;
     auto nSubsidyHalvingInterval = Params().SubsidyHalvingInterval();
-    for (int i = nSubsidyHalvingInterval; i <= nHeight; i += nSubsidyHalvingInterval) {
-        nSubsidy -= 200;
+    // first two intervals == two years, same amount 1250
+    for (int i = nSubsidyHalvingInterval * 2; i <= nHeight; i += nSubsidyHalvingInterval) {
+        nSubsidy -= 100;
     }
 
-    return std::max<CAmount>(nSubsidy, 100) * COIN;
+    return std::max<CAmount>(nSubsidy, 250) * COIN;
 }
 
 CBlockRewards GetBlockSubsidity(int nHeight)
 {
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        if (nHeight < 200 && nHeight > 0)
-            return CBlockRewards(250000 * COIN, 0, 0, 0, 0, 0);
-    }
-
     CAmount nSubsidy = GetFullBlockValue(nHeight);
 
     if(nHeight <= Params().LAST_POW_BLOCK()) {

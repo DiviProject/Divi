@@ -38,7 +38,7 @@ using namespace std;
  */
 CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
-int nTransactionSizeMultiplier = 300;
+unsigned int nTransactionSizeMultiplier = 300;
 unsigned int nTxConfirmTarget = 1;
 bool bSpendZeroConfChange = true;
 bool bdisableSystemnotifications = false; // Those bubbles can be annoying and slow down the UI when you get lots of trx
@@ -1061,8 +1061,14 @@ bool CWallet::IsChange(const CTxOut& txout) const
             return true;
 
         LOCK(cs_wallet);
-        if (!mapAddressBook.count(address))
-            return true;
+//        if (!mapAddressBook.count(address))
+//            return true;
+        if(txout.scriptPubKey.IsPayToPublicKeyHash()) {
+            auto keyID = boost::get<CKeyID>(address);
+            if(mapHdPubKeys.count(keyID)) {
+                return mapHdPubKeys.at(keyID).nChangeIndex > 0;
+            }
+        }
     }
     return false;
 }
@@ -2392,7 +2398,7 @@ CAmount CWallet::GetMinimumFee(const CAmount &nTransactionValue, unsigned int nT
 //    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
 //        nFeeNeeded = payTxFee.GetFeePerK();
 
-    CAmount nFeeNeeded = (nTransactionValue / nTransactionValueMultiplier) * (nTxBytes / nTransactionSizeMultiplier);
+    CAmount nFeeNeeded = (nTransactionValue / nTransactionValueMultiplier) * std::max(nTxBytes / nTransactionSizeMultiplier, 1u);
 
     // User didn't set: use -txconfirmtarget to estimate...
     if (nFeeNeeded == 0)
@@ -3149,7 +3155,7 @@ void CWallet::AutoCombineDust()
         CAmount nTotalRewardsValue = 0;
         BOOST_FOREACH (const COutput& out, vCoins) {
             //no coins should get this far if they dont have proper maturity, this is double checking
-            if (out.tx->IsCoinStake() && out.tx->GetDepthInMainChain() < COINBASE_MATURITY + 1)
+            if (out.tx->IsCoinStake() && out.tx->GetDepthInMainChain() < Params().COINBASE_MATURITY() + 1)
                 continue;
 
             if (out.Value() > nAutoCombineThreshold * COIN)
@@ -3217,7 +3223,7 @@ bool CWallet::MultiSend()
     int mnSent = 0;
     BOOST_FOREACH (const COutput& out, vCoins) {
         //need output with precise confirm count - this is how we identify which is the output to send
-        if (out.tx->GetDepthInMainChain() != COINBASE_MATURITY + 1)
+        if (out.tx->GetDepthInMainChain() != Params().COINBASE_MATURITY() + 1)
             continue;
 
         COutPoint outpoint(out.tx->GetHash(), out.i);

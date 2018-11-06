@@ -25,14 +25,14 @@ packages:
 - "python"
 reference_datetime: "2018-03-20 00:00:00"
 remotes:
-- "url": "https://github.com/divicoin/divi.git"
+- "url": "https://github.com/Divicoin/Divi.git"
   "dir": "divi"
 files: []
 script: |
 
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-linux-gnu"
-  CONFIGFLAGS="--without-gui --disable-zerocoin --enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests"
+  CONFIGFLAGS="--without-gui --disable-tests --disable-zerocoin --enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests"
   FAKETIME_HOST_PROGS=""
   FAKETIME_PROGS="date ar ranlib nm"
   HOST_CFLAGS="-O2 -g"

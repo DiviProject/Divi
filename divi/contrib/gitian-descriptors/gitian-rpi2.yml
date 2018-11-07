@@ -1,5 +1,5 @@
 ---
-name: "divi-raspberry-0.12"
+name: "divi-raspberry-0.1"
 enable_cache: true
 suites:
 - "precise"
@@ -23,13 +23,15 @@ files:
 - "raspberrypi-tools.tar.gz"
 script: |
   WRAP_DIR=$HOME/wrapped
+  export BUILD_DIR=`pwd`
   HOSTS="arm-linux-gnueabihf"
   CONFIGFLAGS="--enable-upnp-default --without-gui --disable-tests --disable-zerocoin --enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests"
   FAKETIME_HOST_PROGS=""
   FAKETIME_PROGS="date ar ranlib nm strip"
   
-  tar --warning=no-timestamp -xzf raspberrypi-tools.tar.gz
-  export TOOLCHAIN_BIN=$(pwd)/raspberrypi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
+  mkdir -p ${BUILD_DIR}/toolchain 
+  tar -C ${BUILD_DIR}/toolchain -xf ${BUILD_DIR}/raspberrypi-tools.tar.gz
+  export TOOLCHAIN_BIN=${BUILD_DIR}/toolchain/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin
   export PATH=$PATH:$TOOLCHAIN_BIN
 
   export QT_RCC_TEST=1
@@ -67,7 +69,7 @@ script: |
   done
   export PATH=${WRAP_DIR}:${PATH}
 
-  cd divi
+  cd divi/divi
   BASEPREFIX=`pwd`/depends
   # Build dependencies for each host
   for i in $HOSTS; do

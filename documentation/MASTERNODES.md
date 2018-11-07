@@ -1,19 +1,3 @@
-# Masternodes
-
-The Divi Project is the inventor of several new technologies that are part of our masternode program.  Besides having five different types, we have added one-click install processes (home or cloud), dynamic IP functionality, single-computer setup, and “Lottery Blocks.”
-
-**Masternode System with Five Options**
-
-Democratizing Participation Through Affordability:  The Divi Project offers five types of masternodes, according to the following list:
-
-* **Copper:** 100,000 DIVI
-* **Silver:**  300,000 DIVI	(+5%)
-* **Gold:**  1,000,000 DIVI	(+10% )
-* **Platinum:**  3,000,000 DIVI	(+15%)
-* **Diamond:**  10,000,000 DIVI	(+20%)
- 
-Participants choose the masternode(s) that they're able to afford, and commit to support Divi's network.  More expensive masternodes may also require more commitment of resources, and may do more to support the network, especially as the Divi ecosystem evolves and new features are added.
-
 ## Definitions
 
 __Masternodes__ are computers that run a divi wallet and perform utility functions for network such as storing metadata and processing special transactions.

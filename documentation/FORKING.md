@@ -42,3 +42,4 @@ Refer to this table to get relation of byte value to final symbol https://en.bit
 P2P network port can be changed in chainparams.cpp in `CMainParams` class at line `nDefaultPort = 51472;`
 
 RPC port can be changed in chainparamsbase.cpp in `CBaseMainParams` class at line `nRPCPort = 51473;`
+

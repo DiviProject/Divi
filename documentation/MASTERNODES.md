@@ -34,7 +34,7 @@ __Score__ is a double SHA256 of the funding transaction hash and ticket index fo
 
 __Ticket__ is a number that represents one try to create a score. 
 
-Whoever gets maximum hash wins the selection process. Each masternode tries to produce a maximum allowed score(hash) based on their masternode level. On practice it means that it will try several times to hash in order to maximize chances of winning.  
+Whoever gets maximum hash - wins the selection process. Each masternode tries to produce a maximum allowed score(hash) based on their masternode level. On practice it means that it will try several times to hash in order to maximize chances of winning.  
 
 We build a pool of tickets for every masternode and select masternode with closest numeric hash value to block hash.
 

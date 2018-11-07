@@ -1,6 +1,8 @@
+# Data Directory
+
 ## Definition
 
-__Data dir__ is a special folder that holds all information regarding blockchain and p2p network.
+__Data dir__ is a special folder that holds all information regarding the blockchain and p2p network.
 
 ## Location
 
@@ -8,7 +10,7 @@ Data dir is located in platform specific folder, currently 3 systems are support
 
 - Windows: %AppData%/Roaming/DIVI
 - Linux: ~/.divi
-- OSX: 
+- OSX: ~/Library/Application\ Support/DIVI
 
 Data dir location can be changed on startup using `-datadir=path/to/dir` startup argument
 
@@ -25,6 +27,6 @@ Data dir location can be changed on startup using `-datadir=path/to/dir` startup
 - `mnpayments.dat`: database that stores information about masternode payments. Used to verify & confirm that masternode payment is valid.
 - `netfulfilled.dat`: local cache of completed network requests. 
 - `peers.dat`: database that stores information about peers in p2p network. Used by client to quikly connect to well known peers.
-- `sporks`: folder that contains database of sports that were synced from p2p network. 
+- `sporks`: folder that contains database of sporks that were synced from p2p network. 
 - `testnet3`: optional folder that contains same folder structure as mainnet folder but has data for testnet. 
 - `wallet.dat`: the most important file. Stores private keys for your addresses. Losing this automatically means losing access to all of yours divi coins.

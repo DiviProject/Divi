@@ -92,7 +92,7 @@ After creating the VM, we need to configure it.
 
 - Click `Ok` twice to save.
 
-Get the [Debian 8.x net installer](http://cdimage.debian.org/mirror/cdimage/archive/8.5.0-live/amd64/iso-hybrid/debian-live-8.5.0-amd64-gnome-desktop.iso) (a more recent minor version should also work, see also [Debian Network installation](https://www.debian.org/CD/netinst/)).
+Get the [Debian 8.x net installer](http://ftp.riken.go.jp/Linux/debian/debian-cdimage/archive/8.5.0/amd64/iso-cd/debian-8.5.0-amd64-netinst.iso) (a more recent minor version should also work, see also [Debian Network installation](https://www.debian.org/CD/netinst/)).
 This DVD image can be [validated](https://www.debian.org/CD/verify) using a SHA256 hashing tool, for example on
 Unixy OSes by entering the following in a terminal:
 
@@ -274,6 +274,7 @@ echo 'exit 0' >> /etc/rc.local
 # make sure that USE_LXC is always set when logging in as debian,
 # and configure LXC IP addresses
 echo 'export USE_LXC=1' >> /home/debian/.profile
+echo 'export LXC_BRIDGE=lxcbr0' >> /home/debian/.profile
 echo 'export GITIAN_HOST_IP=10.0.3.2' >> /home/debian/.profile
 echo 'export LXC_GUEST_IP=10.0.3.5' >> /home/debian/.profile
 reboot
@@ -351,13 +352,20 @@ offline.
 Building Divi Core
 ----------------
 
-To build Divi Core (for Linux, OS X and Windows) just execute next command:
+To build Divi Core (for Linux, OS X and Windows):
 
-./bin/gbuild --commit divi=${COMMIT} ../Divi/divi/contrib/gitian-descriptors/gitian-linux.yml
-./bin/gbuild --commit divi=${COMMIT} ../Divi/divi/contrib/gitian-descriptors/gitian-osx.yml
-./bin/gbuild --commit divi=${COMMIT} ../Divi/divi/contrib/gitian-descriptors/gitian-win.yml
+First update
 
-instead of ${COMMIT} you can specify any branch or tag, master for instance.
+`sudo apt-get update`
+`sudo apt-get upgrade`
+
+Then run the following command to compile for the OS in question:
+
+`./bin/gbuild --commit divi=${COMMIT} ../Divi/divi/contrib/gitian-descriptors/gitian-linux.yml`
+`./bin/gbuild --commit divi=${COMMIT} ../Divi/divi/contrib/gitian-descriptors/gitian-osx.yml`
+`./bin/gbuild --commit divi=${COMMIT} ../Divi/divi/contrib/gitian-descriptors/gitian-win.yml`
+
+instead of `${COMMIT}` you can specify any branch or tag, for instance: `divi=master`
 
 This may take some time as it will build all the dependencies needed for each descriptor.
 These dependencies will be cached after a successful build to avoid rebuilding them when possible.

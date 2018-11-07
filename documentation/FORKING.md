@@ -20,7 +20,7 @@ Code has many mentions of Divi, everything related to names(except license info)
 
 ### Address format
 
-chainparams.cpp contains code that configures format of P2PKH, P2SH, private key, ext pub/priv keys. 
+`chainparams.cpp` contains code that configures format of P2PKH, P2SH, private key, ext pub/priv keys. 
 
 ```
 base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 30);
@@ -39,7 +39,38 @@ Refer to this table to get relation of byte value to final symbol https://en.bit
 
 ### P2P and RPC ports
 
-P2P network port can be changed in chainparams.cpp in `CMainParams` class at line `nDefaultPort = 51472;`
+P2P network port can be changed in `chainparams.cpp` in `CMainParams` class at line `nDefaultPort = 51472;`
 
-RPC port can be changed in chainparamsbase.cpp in `CBaseMainParams` class at line `nRPCPort = 51473;`
+RPC port can be changed in `chainparamsbase.cpp` in `CBaseMainParams` class at line `nRPCPort = 51473;`
+
+### Fixed seeds
+
+### Genesis block
+
+To start new chain we need to create new genesis block, complete instructions are provided in separate article.
+
+### PoW -> PoS transition
+
+Initially chain starts as PoW and transitions to PoS at block height which is set in `chainparams.cpp` at line `nLastPOWBlock = 100;`. 
+
+To start PoW we need to have at least one connected peer and run `setgenerate true`
+
+To transition to PoS we need to have stakable balance(aged for 1 hour), wallet has to be unlocked and we need to have at least 3 connected peers for masternode network sync. One thing to mention is that if `mnsync status` doesn't change, it remains in some fixed state then you will need to stop daemon, clean `netfulfilled.dat` and `mncache.dat` and start again with 3 peers. 
+
+### DNS seeding
+
+### HD Wallet configuration
+
+Divi wallet supports BIP44 to correctly support it we need to provide coin type which is registered here: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+
+Value in code needs to be changed in `chainparams.cpp` at line `nExtCoinType = 301;`
+
+### Wallet version
+
+Wallet version is set in few places:
+
+1. `configure.ac`
+2. `clientversion.h` 
+
+Changing values in those files is sufficient 
 

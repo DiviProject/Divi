@@ -43,3 +43,11 @@ Default is:
 * `-conf=/etc/divi/divi.conf`
 
 Using our unit file won't place `datadir` and `divi.conf` under `~/.divi`. If you want to change those locations, you will need to modify unit file. 
+
+### Daemon configuration
+
+If you want fluid support of auto-start it might be useful to add `reindex=1` into `divi.conf`. Motivation for this is that when daemon crashes database might corrupt, `reindex=1` will slow things a lot on restarts but will provide automatic robust experience.
+
+It makes sense to setup strong `rpcpassword`, `rpcuser` and `rpcallowip` in `divi.conf` to secure a bit this client.
+
+If wallet contains any funds, it needs to be encrypted with strong passphrase. 

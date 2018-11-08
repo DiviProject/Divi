@@ -17,12 +17,14 @@ To Build
 
 ```bash
 ./autogen.sh
-./configure
+./configure --disable-tests --without-gui
 make
 make install # optional
 ```
 
-This will build divi-qt as well if the dependencies are met.
+If you are using Ubuntu 18 or newer, run `./configure --disable-tests --without-gui --with-unsupported-ssl` to build with system OpenSSL which is required for Ubuntu > 16.10
+
+This will build divid, building divi-qt is deprecated and shouldn't be used.
 
 Dependencies
 ---------------------
@@ -80,7 +82,7 @@ Optional:
 
 	sudo apt-get install libminiupnpc-dev (see --with-miniupnpc and --enable-upnp-default)
 
-Dependencies for the GUI: Ubuntu & Debian
+Dependencies for the GUI: Ubuntu & Debian (Deprecated)
 -----------------------------------------
 
 If you want to build DIVI-Qt, make sure that the required packages for Qt development

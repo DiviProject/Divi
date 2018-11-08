@@ -45,6 +45,8 @@ RPC port can be changed in `chainparamsbase.cpp` in `CBaseMainParams` class at l
 
 ### Fixed seeds
 
+Fixed seeds can be added in `chainparams.cpp` at line `vSeeds.push_back(CDNSSeedData("178.62.195.16", "178.62.195.16"));`
+
 ### Genesis block
 
 To start new chain we need to create new genesis block, complete instructions are provided in separate article.
@@ -55,9 +57,13 @@ Initially chain starts as PoW and transitions to PoS at block height which is se
 
 To start PoW we need to have at least one connected peer and run `setgenerate true`
 
-To transition to PoS we need to have stakable balance(aged for 1 hour), wallet has to be unlocked and we need to have at least 3 connected peers for masternode network sync. One thing to mention is that if `mnsync status` doesn't change, it remains in some fixed state then you will need to stop daemon, clean `netfulfilled.dat` and `mncache.dat` and start again with 3 peers. 
+For PoS transition we need to have stakeable balance(aged for 1 hour), wallet has to be unlocked and we need to have at least 3 connected peers for masternode network sync. One thing to mention is that if `mnsync status` doesn't change, it remains in some fixed state then you will need to stop daemon, clean `netfulfilled.dat` and `mncache.dat` and start again with 3 peers. Status of staking can be checked using `getstakingstatus`.
 
 ### DNS seeding
+
+Seeder itself is located under this repo: https://github.com/Divicoin/divi-seeder, it needs to be forked and core parameters has to be changed, sample of those changes can be checked at github history. 
+
+Address for seeder needs to be hardcoded in `chainparams.cpp` at line `vSeeds.push_back(CDNSSeedData("autoseeds.diviseed.diviproject.org", "autoseeds.diviseed.diviproject.org"));`
 
 ### HD Wallet configuration
 
@@ -72,5 +78,5 @@ Wallet version is set in few places:
 1. `configure.ac`
 2. `clientversion.h` 
 
-Changing values in those files is sufficient 
+Changing values in those files is sufficient to get new version. 
 

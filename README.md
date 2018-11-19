@@ -3,26 +3,62 @@
 DIVI Core integration/staging repository
 =====================================
 
-We wish to make it as easy to participate in Divi development as possible.  Open source software typically has very high but hidden barriers to entry to each project due to the massive and normally undocumented state space of potential operating systems, pre-loaded packages and other development environment details.  Further, regression testing turns into a nightmare if developers have used even slightly different versions of the same operating system or one of the normally numerous packages – much less different packages or a different operating system.   Life has gotten better with the Gitian builds used to ensure identical certified release packages to combat malware but setting up a Gitian build is still a dark art. 
+https://diviproject.org
 
-The advent of lightweight, cross-platform containers make it, not just possible but, easy to develop and run the exact same software across all non-mobile platforms – including both major and minor cloud providers.  DIVI is built and run inside a Docker container so  *anyone* can install the free community version of Docker on their Windows, Mac or Linux machine and immediately build and run the DIVI software.  Development for the iPhone and Android wallets is unfortunately far more difficult due to an ongoing lack of a unified standard – but that is something that we will look at in the future with the increasing availability and sophistication of environments like Ionic or Xamarin. 
+## What is Divi?
+---
 
-To build divi:
-1.  Ensure docker is installed on your machine (https://store.docker.com/search?type=edition&offering=community)
-2.  Create a directory and copy the divi/docker directory into it
-3.  docker build -t [your tag name] .
+Divi is a next-generation blockchain protocol that enables any user to begin earning, sending, and spending cryptocurrency easily, without the need for advanced technical knowledge. Divi uses a state-of-the-art Proof of Stake consensus mechanism that offers opportunities for users to stake their coins or allocate their coins to Masternodes, which secure the network and verify transactions.
 
-If you don't want to build divi
-1.  Ensure docker is installed on your machine (https://store.docker.com/search?type=edition&offering=community)
-2.  docker pull caldwellsw/divi:base
+For more information, as well as an immediately usable version of the Divi Project software, visit our website's [download page](https://diviproject.org/downloads), or read our [whitepaper](https://wiki.diviproject.org/#whitepaper).
 
-To run divi and connect to the testnet
-1.  docker run -it -p51472:51472 [your tag name or caldwellsw/divi:base]
-2.  divid -debug
-3.  divi-cli addnode dt01.westus.cloudapp.azure.com add
-4.  divi-cli addnode dt02.westus.cloudapp.azure.com add
-5.  divi-cli getpeerinfo
+## License 
+---
 
-* It may take some time before you see other nodes in the testnet.
+Divi Core is released under the terms of the MIT license. See https://opensource.org/licenses/MIT for more information.
 
+## Developing
+---
+
+The `master0` branch is regularly built and tested by Divi's core development team, and is typically the most stable version of the software, but this cannot be guaranteed at any given time.
+
+## Building
+---
+
+To build from source on UNIX systems, follow these instructions.
+
+### System requirements
+
+C++ compilers are memory-hungry. It is recommended to have at least 1 GB of
+memory available when compiling DIVI Core. With 512MB of memory or less
+compilation will take much longer due to swap thrashing.
+
+### Dependencies
+
+These dependencies are required:
+
+ Library     | Purpose          | Description
+ ------------|------------------|----------------------
+ libssl      | SSL Support      | Secure communications
+ libboost    | Boost            | C++ Library
+
+Optional dependencies:
+
+ Library     | Purpose          | Description
+ ------------|------------------|----------------------
+ miniupnpc   | UPnP Support     | Firewall-jumping support
+ libdb4.8    | Berkeley DB      | Wallet storage (only needed when wallet enabled)
+ qt          | GUI              | GUI toolkit (only needed when GUI enabled)
+ protobuf    | Payments in GUI  | Data interchange format used for payment protocol (only needed when GUI enabled)
+ libqrencode | QR codes in GUI  | Optional for generating QR codes (only needed when GUI enabled)
+
+For the versions used in the release, see [release-process.md](./divi/doc/release-process.md) under *Fetch and build inputs*.
+
+For additional information about dependencies see [build-unix.md](./divi/doc/build-unix.md)
+```
+./autogen.sh
+./configure --disable-tests --without-gui
+make
+make install # optional
+```
 

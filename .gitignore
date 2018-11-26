@@ -2,5 +2,7 @@
 .vs
 .vscode/
 *.creator.user
+doxygen/*
+developer_stuff
+documents/*
 doxygen/
-developer_stuff/

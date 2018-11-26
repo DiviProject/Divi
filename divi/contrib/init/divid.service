@@ -3,9 +3,6 @@ Description=DIVI's distributed currency daemon
 After=network.target
 
 [Service]
-User=divi
-Group=divi
-
 Type=forking
 PIDFile=/var/lib/divid/divid.pid
 

@@ -22,13 +22,13 @@ packages:
 - "ca-certificates"
 - "python"
 remotes:
-- "url": "https://github.com/divicoin/divi.git"
+- "url": "https://github.com/Divicoin/Divi.git"
   "dir": "divi"
 files: []
 script: |
   WRAP_DIR=$HOME/wrapped
   HOSTS="i686-w64-mingw32 x86_64-w64-mingw32"
-  CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests"
+  CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests --disable-tests --without-gui"
   FAKETIME_HOST_PROGS="g++ ar ranlib nm windres strip objcopy"
   FAKETIME_PROGS="date makensis zip"
   HOST_CFLAGS="-O2 -g"

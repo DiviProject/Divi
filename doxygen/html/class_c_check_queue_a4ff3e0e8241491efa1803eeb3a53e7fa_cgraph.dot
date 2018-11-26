@@ -1,9 +1,0 @@
-digraph "CCheckQueue::Wait"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node15 [label="CCheckQueue::Wait",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node15 -> Node16 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node16 [label="CCheckQueue::Loop",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_check_queue.html#a20cdd097d93da6deeca6e5721a758165",tooltip="Internal function that does bulk of the verification work. "];
-}

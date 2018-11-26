@@ -1,9 +1,0 @@
-digraph "MultiSendDialog::on_viewButton_clicked"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node34 [label="MultiSendDialog::on\l_viewButton_clicked",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node34 -> Node35 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node35 [label="CWallet::isMultiSendEnabled",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_wallet.html#aea9ec908c62d5d1bdb71e2eb7309c0eb"];
-}

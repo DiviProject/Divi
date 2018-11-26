@@ -1,9 +1,0 @@
-digraph "CDataStream::in_avail"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node159 [label="CDataStream::in_avail",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node159 -> Node160 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node160 [label="CDataStream::size",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_data_stream.html#add30f866dd928fc28c47fe79a0a6723a"];
-}

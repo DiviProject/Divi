@@ -1,9 +1,0 @@
-digraph "TorControlReply::TorControlReply"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node0 [label="TorControlReply::TorControl\lReply",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node0 -> Node1 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node1 [label="TorControlReply::Clear",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_tor_control_reply.html#a94cbd96ffa94322e84ea47daa8ca62bb"];
-}

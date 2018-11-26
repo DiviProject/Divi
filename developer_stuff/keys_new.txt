@@ -1,6 +1,0 @@
-sporkkey_private = YPof64ZQz29erENXxnomanE2Am4JzwM2N3KVrZ4JwDJxgQRnaPaJ
-sporkkey_public = 029d4bf088596e0c4821c2f961f5c3855f93ce7d654a793b2bf358c601322d436f
-
-
-alertkey_private = YSvpJnVTiJXg4wXftPXQ5HU13Fdht7G6gQfYxqbifJEfH3xeQDWj
-alertkey_public = 0241a96bff16a5bc72c1e62603080dd1c9e9a522dc7ae05dca48ee97a8ec01cb28

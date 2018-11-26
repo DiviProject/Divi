@@ -1,9 +1,0 @@
-digraph "InvalidateBlock"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node779 [label="InvalidateBlock",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node779 -> Node780 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node780 [label="invalidateblock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rpcblockchain_8cpp.html#aad7d6af4efa7bf90262450c0dd5998da"];
-}

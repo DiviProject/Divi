@@ -1,9 +1,0 @@
-digraph "CTransaction::UpdateHash"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node960 [label="CTransaction::UpdateHash",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node960 -> Node961 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node961 [label="SerializeHash",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$hash_8h.html#a6de694e43f17c62025c6883965b65e63",tooltip="Compute the 256-bit hash of an object&#39;s serialization. "];
-}

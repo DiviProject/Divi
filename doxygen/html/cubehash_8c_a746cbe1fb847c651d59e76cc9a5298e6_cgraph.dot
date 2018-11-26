@@ -1,9 +1,0 @@
-digraph "sph_cubehash256_close"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node15 [label="sph_cubehash256_close",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
-  Node15 -> Node16 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node16 [label="sph_cubehash256_addbits\l_and_close",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$cubehash_8c.html#a2d91a4e83be2dd3aae8c3ef0e763c35f",tooltip="Add a few additional bits (0 to 7) to the current computation, then terminate it and output the resul..."];
-}

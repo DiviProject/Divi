@@ -14,7 +14,7 @@ bool noui_ThreadSafeQuestion(const std::string& /* ignored interactive message *
 /** Non-GUI handler, which only logs a message. */
 void noui_InitMessage(const std::string& message);
 
-/** Connect all bitcoind signal handlers */
+/** Connect all divid signal handlers */
 void noui_connect();
 
 #endif // BITCOIN_NOUI_H

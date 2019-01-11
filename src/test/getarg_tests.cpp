@@ -4,7 +4,7 @@
 
 #include <util/strencodings.h>
 #include <util/system.h>
-#include <test/test_bitcoin.h>
+#include <test/test_divi.h>
 
 #include <string>
 #include <vector>
@@ -21,7 +21,7 @@ static void ResetArgs(const std::string& strArg)
       boost::split(vecArg, strArg, IsSpace, boost::token_compress_on);
 
     // Insert dummy executable name:
-    vecArg.insert(vecArg.begin(), "testbitcoin");
+    vecArg.insert(vecArg.begin(), "testdivi");
 
     // Convert to char*:
     std::vector<const char*> vecChar;

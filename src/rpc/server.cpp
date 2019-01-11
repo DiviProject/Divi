@@ -226,7 +226,7 @@ UniValue stop(const JSONRPCRequest& jsonRequest)
     if (jsonRequest.fHelp || jsonRequest.params.size() > 1)
         throw std::runtime_error(
             RPCHelpMan{"stop",
-                "\nStop Bitcoin server.", {}}
+                "\nStop Divi server.", {}}
                 .ToString());
     // Event loop will exit after current HTTP requests have been handled, so
     // this reply will get back to the client.
@@ -234,7 +234,7 @@ UniValue stop(const JSONRPCRequest& jsonRequest)
     if (jsonRequest.params[0].isNum()) {
         MilliSleep(jsonRequest.params[0].get_int());
     }
-    return "Bitcoin server stopping";
+    return "Divi server stopping";
 }
 
 static UniValue uptime(const JSONRPCRequest& jsonRequest)
@@ -509,7 +509,7 @@ std::vector<std::string> CRPCTable::listCommands() const
 
 std::string HelpExampleCli(const std::string& methodname, const std::string& args)
 {
-    return "> bitcoin-cli " + methodname + " " + args + "\n";
+    return "> divi-cli " + methodname + " " + args + "\n";
 }
 
 std::string HelpExampleRpc(const std::string& methodname, const std::string& args)

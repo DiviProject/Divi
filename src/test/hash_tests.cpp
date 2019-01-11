@@ -5,7 +5,7 @@
 #include <crypto/siphash.h>
 #include <hash.h>
 #include <util/strencodings.h>
-#include <test/test_bitcoin.h>
+#include <test/test_divi.h>
 
 #include <vector>
 
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(murmurhash3)
 
     // Test MurmurHash3 with various inputs. Of course this is retested in the
     // bloom filter tests - they would fail if MurmurHash3() had any problems -
-    // but is useful for those trying to implement Bitcoin libraries as a
+    // but is useful for those trying to implement Divi libraries as a
     // source of test data for their MurmurHash3() primitive during
     // development.
     //

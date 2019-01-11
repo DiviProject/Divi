@@ -138,7 +138,7 @@ public:
 };
 
 /**
- * Bitcoin RPC command dispatcher.
+ * Divi RPC command dispatcher.
  */
 class CRPCTable
 {

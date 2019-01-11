@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2018 The Bitcoin Core developers
+# Copyright (c) 2018 The Divi Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #
@@ -16,9 +16,9 @@ EXPECTED_CIRCULAR_DEPENDENCIES=(
     "policy/policy -> validation -> policy/policy"
     "qt/addresstablemodel -> qt/walletmodel -> qt/addresstablemodel"
     "qt/bantablemodel -> qt/clientmodel -> qt/bantablemodel"
-    "qt/bitcoingui -> qt/utilitydialog -> qt/bitcoingui"
-    "qt/bitcoingui -> qt/walletframe -> qt/bitcoingui"
-    "qt/bitcoingui -> qt/walletview -> qt/bitcoingui"
+    "qt/divigui -> qt/utilitydialog -> qt/divigui"
+    "qt/divigui -> qt/walletframe -> qt/divigui"
+    "qt/divigui -> qt/walletview -> qt/divigui"
     "qt/clientmodel -> qt/peertablemodel -> qt/clientmodel"
     "qt/paymentserver -> qt/walletmodel -> qt/paymentserver"
     "qt/recentrequeststablemodel -> qt/walletmodel -> qt/recentrequeststablemodel"
@@ -32,13 +32,13 @@ EXPECTED_CIRCULAR_DEPENDENCIES=(
     "wallet/wallet -> wallet/walletdb -> wallet/wallet"
     "policy/fees -> policy/policy -> validation -> policy/fees"
     "policy/rbf -> txmempool -> validation -> policy/rbf"
-    "qt/addressbookpage -> qt/bitcoingui -> qt/walletview -> qt/addressbookpage"
+    "qt/addressbookpage -> qt/divigui -> qt/walletview -> qt/addressbookpage"
     "qt/guiutil -> qt/walletmodel -> qt/optionsmodel -> qt/guiutil"
     "txmempool -> validation -> validationinterface -> txmempool"
-    "qt/addressbookpage -> qt/bitcoingui -> qt/walletview -> qt/receivecoinsdialog -> qt/addressbookpage"
-    "qt/addressbookpage -> qt/bitcoingui -> qt/walletview -> qt/signverifymessagedialog -> qt/addressbookpage"
+    "qt/addressbookpage -> qt/divigui -> qt/walletview -> qt/receivecoinsdialog -> qt/addressbookpage"
+    "qt/addressbookpage -> qt/divigui -> qt/walletview -> qt/signverifymessagedialog -> qt/addressbookpage"
     "qt/guiutil -> qt/walletmodel -> qt/optionsmodel -> qt/intro -> qt/guiutil"
-    "qt/addressbookpage -> qt/bitcoingui -> qt/walletview -> qt/sendcoinsdialog -> qt/sendcoinsentry -> qt/addressbookpage"
+    "qt/addressbookpage -> qt/divigui -> qt/walletview -> qt/sendcoinsdialog -> qt/sendcoinsentry -> qt/addressbookpage"
 )
 
 EXIT_CODE=0

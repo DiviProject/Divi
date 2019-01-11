@@ -29,7 +29,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{0667528C-D734-4009-ADF9-C0D6C4A5A5A6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>libbitcoin_cli</RootNamespace>
+    <RootNamespace>libdivi_cli</RootNamespace>
     <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
     <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>

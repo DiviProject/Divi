@@ -29,7 +29,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{792D487F-F14C-49FC-A9DE-3FC150F31C3F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>libbitcoin_zmq</RootNamespace>
+    <RootNamespace>libdivi_zmq</RootNamespace>
     <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
     <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>

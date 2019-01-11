@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2015-2018 The Bitcoin Core developers
+# Copyright (c) 2015-2018 The Divi Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test node responses to invalid network messages."""
@@ -8,7 +8,7 @@ import struct
 
 from test_framework import messages
 from test_framework.mininode import P2PDataStore
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import DiviTestFramework
 
 
 class msg_unrecognized:
@@ -31,7 +31,7 @@ class msg_nametoolong(msg_unrecognized):
     command = b'thisnameiswayyyyyyyyytoolong'
 
 
-class InvalidMessagesTest(BitcoinTestFramework):
+class InvalidMessagesTest(DiviTestFramework):
 
     def set_test_params(self):
         self.num_nodes = 1

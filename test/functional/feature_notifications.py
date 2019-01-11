@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2018 The Bitcoin Core developers
+# Copyright (c) 2014-2018 The Divi Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the -alertnotify, -blocknotify and -walletnotify options."""
 import os
 
 from test_framework.address import ADDRESS_BCRT1_UNSPENDABLE
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import DiviTestFramework
 from test_framework.util import assert_equal, wait_until, connect_nodes_bi
 
 
-class NotificationsTest(BitcoinTestFramework):
+class NotificationsTest(DiviTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.setup_clean_chain = True
@@ -71,7 +71,7 @@ class NotificationsTest(BitcoinTestFramework):
         self.nodes[1].generatetoaddress(41, ADDRESS_BCRT1_UNSPENDABLE)
         self.sync_all()
 
-        # Give bitcoind 10 seconds to write the alert notification
+        # Give divid 10 seconds to write the alert notification
         wait_until(lambda: len(os.listdir(self.alertnotify_dir)), timeout=10)
 
         for notify_file in os.listdir(self.alertnotify_dir):

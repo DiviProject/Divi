@@ -23,7 +23,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{460FEE33-1FE1-483F-B3BF-931FF8E969A5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>libbitcoin_server</RootNamespace>
+    <RootNamespace>libdivi_server</RootNamespace>
     <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
     <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>

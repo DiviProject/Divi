@@ -75,6 +75,16 @@ struct Params {
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
+    int nMaturity;
+    int nLastPOWBlock;
+    int nLotteryBlockStartBlock;
+    int nLotteryBlockCycle;
+    int nTreasuryPaymentsStartBlock;
+    int nTreasuryPaymentsCycle;
+    int nExtCoinType;
+    int nFulfilledRequestExpireTime;
+    int64_t nStartMasternodePayments;
+    std::string strSporkKey;
 };
 } // namespace Consensus
 

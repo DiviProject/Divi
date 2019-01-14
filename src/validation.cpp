@@ -3117,6 +3117,34 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         if (block.vtx[i]->IsCoinBase())
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-multiple", false, "more than one coinbase");
 
+    if (block.IsProofOfStake()) {
+        // Second transaction must be coinstake, the rest must not be
+        if (block.vtx.empty() || !block.vtx[1]->IsCoinStake())
+            return state.DoS(100, error("CheckBlock() : second tx is not coinstake"));
+        for (unsigned int i = 2; i < block.vtx.size(); i++)
+            if (block.vtx[i]->IsCoinStake())
+                return state.DoS(100, error("CheckBlock() : more than one coinstake"));
+
+        uint256 hashProofOfStake;
+        uint256 hash = block.GetHash();
+
+        CBlock blockTmp = block;
+
+        CBlockSigner signer(blockTmp, nullptr);
+
+        if(!signer.CheckBlockSignature()) {
+            return state.DoS(100, error("CheckBlock(): block signature invalid"),
+                             REJECT_INVALID, "bad-block-signature");
+        }
+
+        if(!CheckProofOfStake(block, hashProofOfStake)) {
+            return state.DoS(100, error("CheckBlock(): check proof-of-stake failed for block %s\n", hash.ToString().c_str()));
+        }
+
+        if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
+            mapProofOfStake.insert(std::make_pair(hash, hashProofOfStake));
+    }
+
     // Check transactions
     for (const auto& tx : block.vtx)
         if (!CheckTransaction(*tx, state, true))

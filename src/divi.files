@@ -10,6 +10,8 @@ base58.cpp
 base58.h
 bech32.cpp
 bech32.h
+consensus/kernel.cpp
+consensus/kernel.h
 divi-cli.cpp
 divi-tx.cpp
 divid.cpp

@@ -244,6 +244,8 @@ CBlockPolicyEstimator feeEstimator;
 CTxMemPool mempool(&feeEstimator);
 std::atomic_bool g_is_mempool_loaded{false};
 
+std::map<unsigned int, unsigned int> mapHashedBlocks;
+
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 

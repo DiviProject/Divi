@@ -405,7 +405,7 @@ public:
 
     unsigned int GetStakeEntropyBit() const
     {
-        unsigned int nEntropyBit = ((GetBlockHash().GetUint64(0)) & 1);
+        unsigned int nEntropyBit = (UintToArith256(GetBlockHash()).GetLow64() & 1);
         if (gArgs.GetBoolArg("-printstakemodifier", false))
             LogPrintf("%s: nHeight=%u hashBlock=%s nEntropyBit=%u\n", __func__, nHeight, GetBlockHash().ToString().c_str(), nEntropyBit);
 

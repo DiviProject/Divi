@@ -84,9 +84,9 @@ static const MapSporkHandlers &GetMapGetDataHandlers()
                         }
                         return {};
                     });
-        ADD_HANDLER(MSG_MASTERNODE_PAYMENT_VOTE, {
-                        if(mnpayments.HasVerifiedPaymentVote(hash)) {
-                            return msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, mnpayments.mapMasternodePaymentVotes[hash]);
+        ADD_HANDLER(MSG_MASTERNODE_WINNER, {
+                        if(masternodePayments.mapMasternodePayeeVotes.count(hash)) {
+                            return msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, masternodePayments.mapMasternodePayeeVotes[hash]);
                         }
                         return {};
                     });
@@ -96,53 +96,9 @@ static const MapSporkHandlers &GetMapGetDataHandlers()
                         }
                         return {};
                     });
-        ADD_HANDLER(MSG_MERCHANTNODE_ANNOUNCE, {
-                        if(merchantnodeman.mapSeenMerchantnodeBroadcast.count(hash)){
-                            return msgMaker.Make(NetMsgType::MERCHANTNODEANNOUNCE, merchantnodeman.mapSeenMerchantnodeBroadcast[hash].second);
-                        }
-                        return {};
-                    });
         ADD_HANDLER(MSG_MASTERNODE_PING, {
                         if(mnodeman.mapSeenMasternodePing.count(hash)) {
                             return msgMaker.Make(NetMsgType::MNPING, mnodeman.mapSeenMasternodePing[hash]);
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_MERCHANTNODE_PING, {
-                        if(merchantnodeman.mapSeenMerchantnodePing.count(hash)) {
-                            return msgMaker.Make(NetMsgType::MERCHANTNODEPING, merchantnodeman.mapSeenMerchantnodePing[hash]);
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_GOVERNANCE_OBJECT, {
-                        if(governance.HaveObjectForHash(hash)) {
-                            CGovernanceObject obj;
-                            if(governance.SerializeObjectForHash(hash, obj)) {
-                                return msgMaker.Make(NetMsgType::MNGOVERNANCEOBJECT, obj);
-                            }
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_GOVERNANCE_OBJECT_VOTE, {
-                        if(governance.HaveVoteForHash(hash)) {
-                            CGovernanceVote vote;
-                            if(governance.SerializeVoteForHash(hash, vote)) {
-                                return msgMaker.Make(NetMsgType::MNGOVERNANCEOBJECTVOTE, vote);
-
-                            }
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_MASTERNODE_VERIFY, {
-                        if(mnodeman.mapSeenMasternodeVerification.count(hash)) {
-                            return msgMaker.Make(NetMsgType::MNVERIFY, mnodeman.mapSeenMasternodeVerification[hash]);
-
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_MERCHANTNODE_VERIFY, {
-                        if(merchantnodeman.mapSeenMerchantnodeVerification.count(hash)) {
-                            return msgMaker.Make(NetMsgType::MERCHANTNODEVERIFY, merchantnodeman.mapSeenMerchantnodeVerification[hash]);
                         }
                         return {};
                     });
@@ -151,7 +107,7 @@ static const MapSporkHandlers &GetMapGetDataHandlers()
     return sporkHandlers;
 }
 
-bool net_processing_xsn::ProcessGetData(CNode *pfrom, const Consensus::Params &consensusParams, CConnman *connman, const CInv &inv)
+bool net_processing_divi::ProcessGetData(CNode *pfrom, const Consensus::Params &consensusParams, CConnman *connman, const CInv &inv)
 {
     const auto &handlersMap = GetMapGetDataHandlers();
     auto it = handlersMap.find(inv.type);
@@ -169,7 +125,7 @@ bool net_processing_xsn::ProcessGetData(CNode *pfrom, const Consensus::Params &c
     return false;
 }
 
-void net_processing_xsn::ProcessExtension(CNode *pfrom, const std::string &strCommand, CDataStream &vRecv, CConnman *connman)
+void net_processing_divi::ProcessExtension(CNode *pfrom, const std::string &strCommand, CDataStream &vRecv, CConnman *connman)
 {
     mnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
     mnpayments.ProcessMessage(pfrom, strCommand, vRecv, *connman);
@@ -181,7 +137,7 @@ void net_processing_xsn::ProcessExtension(CNode *pfrom, const std::string &strCo
     governance.ProcessMessage(pfrom, strCommand, vRecv, *connman);
 }
 
-void net_processing_xsn::ThreadProcessExtensions(CConnman *pConnman)
+void net_processing_divi::ThreadProcessExtensions(CConnman *pConnman)
 {
     if(fLiteMode) return; // disable all XSN specific functionality
 
@@ -251,7 +207,7 @@ void net_processing_xsn::ThreadProcessExtensions(CConnman *pConnman)
 }
 
 
-bool net_processing_xsn::AlreadyHave(const CInv &inv)
+bool net_processing_divi::AlreadyHave(const CInv &inv)
 {
     switch(inv.type)
     {
@@ -316,17 +272,9 @@ static int MapLegacyToCurrent(int nLegacyType)
     case LegacyInvMsg::MSG_TXLOCK_REQUEST: return MSG_TXLOCK_REQUEST;
     case LegacyInvMsg::MSG_TXLOCK_VOTE: return MSG_TXLOCK_VOTE;
     case LegacyInvMsg::MSG_SPORK: return MSG_SPORK;
-    case LegacyInvMsg::MSG_MASTERNODE_PAYMENT_VOTE: return MSG_MASTERNODE_PAYMENT_VOTE;
-    case LegacyInvMsg::MSG_MASTERNODE_PAYMENT_BLOCK: return MSG_MASTERNODE_PAYMENT_BLOCK;
+    case LegacyInvMsg::MSG_MASTERNODE_WINNER: return MSG_MASTERNODE_WINNER;
     case LegacyInvMsg::MSG_MASTERNODE_ANNOUNCE: return MSG_MASTERNODE_ANNOUNCE;
     case LegacyInvMsg::MSG_MASTERNODE_PING: return MSG_MASTERNODE_PING;
-    case LegacyInvMsg::MSG_DSTX: return MSG_DSTX;
-    case LegacyInvMsg::MSG_GOVERNANCE_OBJECT: return MSG_GOVERNANCE_OBJECT;
-    case LegacyInvMsg::MSG_GOVERNANCE_OBJECT_VOTE: return MSG_GOVERNANCE_OBJECT_VOTE;
-    case LegacyInvMsg::MSG_MASTERNODE_VERIFY: return MSG_MASTERNODE_VERIFY;
-    case LegacyInvMsg::MSG_MERCHANTNODE_VERIFY: return MSG_MERCHANTNODE_VERIFY;
-    case LegacyInvMsg::MSG_MERCHANTNODE_ANNOUNCE: return MSG_MERCHANTNODE_ANNOUNCE;
-    case LegacyInvMsg::MSG_MERCHANTNODE_PING: return MSG_MERCHANTNODE_PING;
     }
 
     return nLegacyType;
@@ -339,23 +287,15 @@ static int MapCurrentToLegacy(int nCurrentType)
     case MSG_TXLOCK_REQUEST: return LegacyInvMsg::MSG_TXLOCK_REQUEST;
     case MSG_TXLOCK_VOTE: return LegacyInvMsg::MSG_TXLOCK_VOTE;
     case MSG_SPORK: return LegacyInvMsg::MSG_SPORK;
-    case MSG_MASTERNODE_PAYMENT_VOTE: return LegacyInvMsg::MSG_MASTERNODE_PAYMENT_VOTE;
-    case MSG_MASTERNODE_PAYMENT_BLOCK: return LegacyInvMsg::MSG_MASTERNODE_PAYMENT_BLOCK;
     case MSG_MASTERNODE_ANNOUNCE: return LegacyInvMsg::MSG_MASTERNODE_ANNOUNCE;
     case MSG_MASTERNODE_PING: return LegacyInvMsg::MSG_MASTERNODE_PING;
-    case MSG_DSTX: return LegacyInvMsg::MSG_DSTX;
-    case MSG_GOVERNANCE_OBJECT: return LegacyInvMsg::MSG_GOVERNANCE_OBJECT;
-    case MSG_GOVERNANCE_OBJECT_VOTE: return LegacyInvMsg::MSG_GOVERNANCE_OBJECT_VOTE;
-    case MSG_MASTERNODE_VERIFY: return LegacyInvMsg::MSG_MASTERNODE_VERIFY;
-    case MSG_MERCHANTNODE_VERIFY: return LegacyInvMsg::MSG_MERCHANTNODE_VERIFY;
-    case MSG_MERCHANTNODE_ANNOUNCE: return LegacyInvMsg::MSG_MERCHANTNODE_ANNOUNCE;
-    case MSG_MERCHANTNODE_PING: return LegacyInvMsg::MSG_MERCHANTNODE_PING;
+    case MSG_MASTERNODE_WINNER: return LegacyInvMsg::MSG_MASTERNODE_WINNER;
     }
 
     return nCurrentType;
 }
 
-bool net_processing_xsn::TransformInvForLegacyVersion(CInv &inv, CNode *pfrom, bool fForSending)
+bool net_processing_divi::TransformInvForLegacyVersion(CInv &inv, CNode *pfrom, bool fForSending)
 {
 
     if(pfrom->GetSendVersion() == PRESEGWIT_PROTO_VERSION)

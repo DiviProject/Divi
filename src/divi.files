@@ -101,6 +101,8 @@ net.cpp
 net.h
 net_processing.cpp
 net_processing.h
+net_processing_divi.cpp
+net_processing_divi.h
 netaddress.cpp
 netaddress.h
 netbase.cpp

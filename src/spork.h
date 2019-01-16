@@ -10,7 +10,6 @@
 #include <key.h>
 #include <net.h>
 #include <sync.h>
-#include <util.h>
 
 #include <protocol.h>
 #include <boost/lexical_cast.hpp>

@@ -17,6 +17,7 @@
 #include <compat/sanity.h>
 #include <consensus/validation.h>
 #include <fs.h>
+#include <flat-database.h>
 #include <httpserver.h>
 #include <httprpc.h>
 #include <interfaces/chain.h>
@@ -51,6 +52,7 @@
 #include <walletinitinterface.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <netfulfilledman.h>
 
 #ifndef WIN32
 #include <signal.h>
@@ -174,6 +176,7 @@ static bool LoadExtensionsDataCaches()
         boost::filesystem::remove((pathDB / strDBName).string(), ec);
     }
 
+#if 0
     CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
     if(!flatdb1.Load(mnodeman)) {
         return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
@@ -189,6 +192,7 @@ static bool LoadExtensionsDataCaches()
     } else {
         uiInterface.InitMessage(_("Masternode cache is empty, skipping payments and governance cache..."));
     }
+#endif
 
     strDBName = "netfulfilled.dat";
     uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
@@ -203,10 +207,12 @@ static bool LoadExtensionsDataCaches()
 static void StoreExtensionsDataCaches()
 {
     // STORE DATA CACHES INTO SERIALIZED DAT FILES
+#if 0
     CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
     flatdb1.Dump(mnodeman);
     CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
     flatdb2.Dump(mnpayments);
+#endif
     CFlatDB<CNetFulfilledRequestManager> flatdb3("netfulfilled.dat", "magicFulfilledCache");
     flatdb3.Dump(netfulfilledman);
 }

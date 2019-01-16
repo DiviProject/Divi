@@ -6,6 +6,7 @@
 #include <validation.h>
 
 #include <arith_uint256.h>
+#include <blocksigner.h>
 #include <chain.h>
 #include <chainparams.h>
 #include <checkpoints.h>
@@ -14,6 +15,7 @@
 #include <consensus/merkle.h>
 #include <consensus/tx_verify.h>
 #include <consensus/validation.h>
+#include <consensus/kernel.h>
 #include <cuckoocache.h>
 #include <hash.h>
 #include <index/txindex.h>
@@ -1154,13 +1156,13 @@ bool ReadRawBlockFromDisk(std::vector<uint8_t>& block, const CBlockIndex* pindex
     return ReadRawBlockFromDisk(block, block_pos, message_start);
 }
 
-static CAmount GetFullBlockValue(int nHeight)
+static CAmount GetFullBlockValue(int nHeight, const Consensus::Params &consensus)
 {
 
     if(nHeight == 0) {
         return 50 * COIN;
     } else if (nHeight == 1) {
-        return Params().premineAmt;
+        return consensus.premineAmt;
     }
 
     if(sporkManager.IsSporkActive(SPORK_15_BLOCK_VALUE)) {
@@ -1176,7 +1178,7 @@ static CAmount GetFullBlockValue(int nHeight)
     }
 
     CAmount nSubsidy = 1250;
-    auto nSubsidyHalvingInterval = Params().SubsidyHalvingInterval();
+    auto nSubsidyHalvingInterval = consensus.nSubsidyHalvingInterval;
     // first two intervals == two years, same amount 1250
     for (int i = nSubsidyHalvingInterval * 2; i <= nHeight; i += nSubsidyHalvingInterval) {
         nSubsidy -= 100;
@@ -1185,15 +1187,15 @@ static CAmount GetFullBlockValue(int nHeight)
     return std::max<CAmount>(nSubsidy, 250) * COIN;
 }
 
-CBlockRewards GetBlockSubsidity(int nHeight)
+CBlockRewards GetBlockSubsidity(int nHeight, const Consensus::Params &consensus)
 {
-    CAmount nSubsidy = GetFullBlockValue(nHeight);
+    CAmount nSubsidy = GetFullBlockValue(nHeight, consensus);
 
-    if(nHeight <= Params().LAST_POW_BLOCK()) {
+    if(nHeight <= consensus.nLastPOWBlock) {
         return CBlockRewards(nSubsidy, 0, 0, 0, 0, 0);
     }
 
-    CAmount nLotteryPart = (nHeight >= Params().GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
+    CAmount nLotteryPart = (nHeight >= consensus.nLotteryBlockStartBlock) ? (50 * COIN) : 0;
 
     nSubsidy -= nLotteryPart;
 
@@ -2037,6 +2039,8 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     blockundo.vtxundo.reserve(block.vtx.size() - 1);
     std::vector<PrecomputedTransactionData> txdata;
     txdata.reserve(block.vtx.size()); // Required so that pointers to individual PrecomputedTransactionData don't get invalidated
+    CAmount nValueOut = 0;
+    CAmount nValueIn = 0;
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
         const CTransaction &tx = *(block.vtx[i]);
@@ -2081,6 +2085,11 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         txdata.emplace_back(tx);
         if (!tx.IsCoinBase())
         {
+
+            if (!tx.IsCoinStake())
+                nFees += view.GetValueIn(tx) - tx.GetValueOut();
+            nValueIn += view.GetValueIn(tx);
+
             std::vector<CScriptCheck> vChecks;
             bool fCacheResults = fJustCheck; /* Don't cache results if we're actually connecting blocks (still consult the cache, though) */
             if (!CheckInputs(tx, state, view, fScriptChecks, flags, fCacheResults, fCacheResults, txdata[i], nScriptCheckThreads ? &vChecks : nullptr))
@@ -2088,6 +2097,8 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                     tx.GetHash().ToString(), FormatStateMessage(state));
             control.Add(vChecks);
         }
+
+        nValueOut += tx.GetValueOut();
 
         CTxUndo undoDummy;
         if (i > 0) {
@@ -2106,12 +2117,13 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
-    CBlockRewards nBaseExpectedMint = GetBlockSubsidity(pindex->nHeight);
+    CBlockRewards nBaseExpectedMint = GetBlockSubsidity(pindex->nHeight, chainparams.GetConsensus());
     CBlockRewards nPoWExpectedMint(nBaseExpectedMint.nStakeReward + nFees, 0, 0, 0, 0, 0);
     const CBlockRewards &nExpectedMint = block.IsProofOfWork() ? nPoWExpectedMint : nBaseExpectedMint;
 
-    const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
+    const auto& coinbaseTx = (pindex->nHeight > chainparams.GetConsensus().nLastPOWBlock ? block.vtx[1] : block.vtx[0]);
 
+#if 0
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
         return state.DoS(100,
                          error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
@@ -2124,6 +2136,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
                          REJECT_INVALID, "bad-cb-payee");
     }
+#endif
 
     if (!control.Wait())
         return state.DoS(100, error("%s: CheckQueue failed", __func__), REJECT_INVALID, "block-validation-failed");
@@ -2179,7 +2192,7 @@ bool static FlushStateToDisk(const CChainParams& chainparams, CValidationState &
             if (nManualPruneHeight > 0) {
                 FindFilesToPruneManual(setFilesToPrune, nManualPruneHeight);
             } else {
-                FindFilesToPrune(setFilesToPrune, chainparams.PruneAfterHeight());
+//                FindFilesToPrune(setFilesToPrune, chainparams.PruneAfterHeight());
                 fCheckForPruning = false;
             }
             if (!setFilesToPrune.empty()) {
@@ -2989,7 +3002,7 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
     //        pindexNew->pprev->pnext = pindexNew;
 
     // ppcoin: compute chain trust score
-    pindexNew->bnChainTrust = (pindexNew->pprev ? pindexNew->pprev->bnChainTrust : ArithToUint256(0 + pindexNew->GetBlockTrust()));
+    pindexNew->bnChainTrust = (pindexNew->pprev ? pindexNew->pprev->bnChainTrust : ArithToUint256(0 + UintToArith256(pindexNew->GetBlockTrust())));
 
     // ppcoin: compute stake entropy bit for stake modifier
     if (!pindexNew->SetStakeEntropyBit(pindexNew->GetStakeEntropyBit()))
@@ -3014,7 +3027,9 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
     if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
         LogPrintf("AcceptProofOfStakeBlock() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, std::to_string(nStakeModifier));
 
+#if 0
     pindexNew->vLotteryWinnersCoinstakes = CalculateLotteryWinners(block, pindexNew->pprev, pindexNew->nHeight);
+#endif
 
     setDirtyBlockIndex.insert(pindexNew);
 }

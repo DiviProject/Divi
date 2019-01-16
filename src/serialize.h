@@ -23,6 +23,7 @@
 
 #include <prevector.h>
 #include <span.h>
+#include <Denominations.h>
 
 static const unsigned int MAX_SIZE = 0x02000000;
 
@@ -597,7 +598,21 @@ inline void Unserialize(Stream& is, T&& a)
     a.Unserialize(is);
 }
 
+inline unsigned int GetSerializeSize(libzerocoin::CoinDenomination a) { return sizeof(libzerocoin::CoinDenomination); }
+template <typename Stream>
+inline void Serialize(Stream& s, libzerocoin::CoinDenomination a)
+{
+    int f = libzerocoin::ZerocoinDenominationToInt(a);
+    Serialize(s, f);
+}
 
+template <typename Stream>
+inline void Unserialize(Stream& s, libzerocoin::CoinDenomination& a)
+{
+    int f=0;
+    Unserialize(s, f);
+    a = libzerocoin::IntToZerocoinDenomination(f);
+}
 
 
 

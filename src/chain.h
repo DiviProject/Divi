@@ -12,6 +12,7 @@
 #include <tinyformat.h>
 #include <uint256.h>
 #include <util/system.h>
+#include <Denominations.h>
 
 #include <vector>
 
@@ -286,7 +287,7 @@ public:
         SetNull();
     }
 
-    explicit CBlockIndex(const CBlockHeader& block)
+    explicit CBlockIndex(const CBlock& block)
     {
         SetNull();
 
@@ -307,7 +308,7 @@ public:
 
         if (block.IsProofOfStake()) {
             SetProofOfStake();
-            prevoutStake = block.vtx[1].vin[0].prevout;
+            prevoutStake = block.vtx[1]->vin[0].prevout;
             nStakeTime = block.nTime;
         } else {
             prevoutStake.SetNull();

@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <bitset>
 
 #include <unordered_map>
 
@@ -34,6 +35,8 @@ public:
 
     //! whether containing transaction was a coinbase
     unsigned int fCoinBase : 1;
+    //! whether containing transaction was a coinstake
+    unsigned int fCoinStake : 1;
 
     //! at which height this containing transaction was included in the active block chain
     uint32_t nHeight : 30;

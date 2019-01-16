@@ -78,6 +78,7 @@ public:
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016 // TODO
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing // TODO
 
+        consensus.premineAmt = 617222416 * COIN;
         consensus.nMaturity = 20;
 
         consensus.nLastPOWBlock = 100;
@@ -214,7 +215,6 @@ public:
         pchMessageStart[2] = 0x09;
         pchMessageStart[3] = 0x07;
         nDefaultPort = 18333;
-        nPruneAfterHeight = 1000;
 
         genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -303,7 +303,6 @@ public:
         pchMessageStart[2] = 0xb5;
         pchMessageStart[3] = 0xda;
         nDefaultPort = 18444;
-        nPruneAfterHeight = 1000;
 
         UpdateVersionBitsParametersFromArgs(args);
 

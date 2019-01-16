@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-ta// Copyright (c) 2009-2018 The Bitcoin Core developers
+// Copyright (c) 2009-2018 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -28,6 +28,7 @@ ta// Copyright (c) 2009-2018 The Bitcoin Core developers
 #include <util/system.h>
 #include <util/moneystr.h>
 #include <util/strencodings.h>
+#include <net_processing_divi.h>
 
 #include <memory>
 
@@ -72,6 +73,8 @@ struct COrphanTx {
 };
 CCriticalSection g_cs_orphans;
 std::map<uint256, COrphanTx> mapOrphanTransactions GUARDED_BY(g_cs_orphans);
+
+static std::map<uint256, std::shared_ptr<CBlock>> mapBlocksUnknownParent;
 
 void EraseOrphansFor(NodeId peer);
 
@@ -1279,7 +1282,7 @@ void static ProcessGetData(CNode* pfrom, const CChainParams& chainparams, CConnm
             if (pfrom->fPauseSend)
                 break;
 
-            const CInv &inv = *it;
+            CInv &inv = *it;
             it++;
 
             net_processing_divi::TransformInvForLegacyVersion(inv, pfrom, false);
@@ -1309,7 +1312,7 @@ void static ProcessGetData(CNode* pfrom, const CChainParams& chainparams, CConnm
             }
             else
             {
-                push = net_processing_divi::ProcessGetData(pfrom, consensusParams, connman, inv);
+                push = net_processing_divi::ProcessGetData(pfrom, chainparams.GetConsensus(), connman, inv);
             }
 
             if (!push) {

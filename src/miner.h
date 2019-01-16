@@ -17,11 +17,13 @@
 
 class CBlockIndex;
 class CChainParams;
+class CWallet;
 class CScript;
 
 namespace Consensus { struct Params; };
 
 static const bool DEFAULT_PRINTPRIORITY = false;
+extern int64_t nLastCoinStakeSearchInterval;
 
 struct CBlockTemplate
 {
@@ -146,6 +148,9 @@ private:
     int64_t nLockTimeCutoff;
     const CChainParams& chainparams;
 
+    // Stake info
+    int64_t nLastCoinStakeSearchTime = 0;
+
 public:
     struct Options {
         Options();
@@ -196,5 +201,9 @@ private:
 /** Modify the extranonce in a block */
 void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev);
+
+/** Run the miner threads */
+void GenerateDivis(bool fGenerate, int nThreads, const CChainParams& chainparams, CConnman &connman);
+void ThreadStakeMinter(const CChainParams& chainparams, CConnman &connman, CWallet *pwallet);
 
 #endif // BITCOIN_MINER_H

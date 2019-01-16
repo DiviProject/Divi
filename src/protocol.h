@@ -238,6 +238,12 @@ extern const char *GETBLOCKTXN;
  * @since protocol version 70014 as described by BIP 152
  */
 extern const char *BLOCKTXN;
+
+extern const char *TXLOCKREQUEST;
+extern const char *TXLOCKVOTE;
+extern const char *SPORK;
+extern const char *GETSPORKS;
+extern const char *SPORKCOUNT;
 };
 
 /* Get a vector of all valid message types (see above) */

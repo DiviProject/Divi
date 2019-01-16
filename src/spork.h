@@ -6,13 +6,13 @@
 #ifndef SPORK_H
 #define SPORK_H
 
-#include "base58.h"
-#include "key.h"
-#include "net.h"
-#include "sync.h"
-#include "util.h"
+#include <base58.h>
+#include <key.h>
+#include <net.h>
+#include <sync.h>
+#include <util.h>
 
-#include "protocol.h"
+#include <protocol.h>
 #include <boost/lexical_cast.hpp>
 
 class CSporkMessage;
@@ -180,7 +180,7 @@ public:
     CSporkManager();
 
     void LoadSporksFromDB();
-    void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
+    void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman *connman);
     bool UpdateSpork(int nSporkID, std::string strValue);
     int GetActiveSporkCount() const;
 

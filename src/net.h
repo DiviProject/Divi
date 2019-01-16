@@ -699,6 +699,8 @@ public:
     std::atomic_bool fPauseRecv;
     std::atomic_bool fPauseSend;
 
+    int nSporksCount = -1;
+
 protected:
     mapMsgCmdSize mapSendBytesPerMsgCmd;
     mapMsgCmdSize mapRecvBytesPerMsgCmd GUARDED_BY(cs_vRecv);
@@ -874,6 +876,9 @@ public:
     }
 
     void AskFor(const CInv& inv);
+
+    void SetSporkCount(int nSporkCountIn);
+    bool AreSporksSynced() const;
 
     void CloseSocketDisconnect();
 

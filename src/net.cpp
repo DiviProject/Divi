@@ -2906,6 +2906,21 @@ void CNode::AskFor(const CInv& inv)
     mapAskFor.insert(std::make_pair(nRequestTime, inv));
 }
 
+void CNode::SetSporkCount(int nSporkCountIn)
+{
+    if(nSporkCountIn > 0) {
+        nSporksCount = nSporkCountIn;
+    }
+    else {
+        nSporksCount = 0;
+    }
+}
+
+bool CNode::AreSporksSynced() const
+{
+    return nSporksCount >= 0 && nSporksCount <= nSporksSynced;
+}
+
 bool CConnman::NodeFullyConnected(const CNode* pnode)
 {
     return pnode && pnode->fSuccessfullyConnected && !pnode->fDisconnect;

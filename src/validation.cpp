@@ -40,6 +40,7 @@
 #include <util/strencodings.h>
 #include <validationinterface.h>
 #include <warnings.h>
+#include <spork.h>
 
 #include <future>
 #include <sstream>
@@ -1153,17 +1154,72 @@ bool ReadRawBlockFromDisk(std::vector<uint8_t>& block, const CBlockIndex* pindex
     return ReadRawBlockFromDisk(block, block_pos, message_start);
 }
 
-CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
+static CAmount GetFullBlockValue(int nHeight)
 {
-    int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
-    // Force block reward to zero when right shift is undefined.
-    if (halvings >= 64)
-        return 0;
 
-    CAmount nSubsidy = 50 * COIN;
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
-    nSubsidy >>= halvings;
-    return nSubsidy;
+    if(nHeight == 0) {
+        return 50 * COIN;
+    } else if (nHeight == 1) {
+        return Params().premineAmt;
+    }
+
+    if(sporkManager.IsSporkActive(SPORK_15_BLOCK_VALUE)) {
+        MultiValueSporkList<BlockSubsiditySporkValue> vBlockSubsiditySporkValues;
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_15_BLOCK_VALUE), vBlockSubsiditySporkValues);
+        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight, nBlockTime);
+
+        if(activeSpork.IsValid()) {
+            // we expect that this value is in coins, not in satoshis
+            return activeSpork.nBlockSubsidity * COIN;
+        }
+    }
+
+    CAmount nSubsidy = 1250;
+    auto nSubsidyHalvingInterval = Params().SubsidyHalvingInterval();
+    // first two intervals == two years, same amount 1250
+    for (int i = nSubsidyHalvingInterval * 2; i <= nHeight; i += nSubsidyHalvingInterval) {
+        nSubsidy -= 100;
+    }
+
+    return std::max<CAmount>(nSubsidy, 250) * COIN;
+}
+
+CBlockRewards GetBlockSubsidity(int nHeight)
+{
+    CAmount nSubsidy = GetFullBlockValue(nHeight);
+
+    if(nHeight <= Params().LAST_POW_BLOCK()) {
+        return CBlockRewards(nSubsidy, 0, 0, 0, 0, 0);
+    }
+
+    CAmount nLotteryPart = (nHeight >= Params().GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
+
+    nSubsidy -= nLotteryPart;
+
+    auto helper = [nSubsidy](int nStakePercentage, int nMasternodePercentage, int nTreasuryPercentage, int nProposalsPercentage, int nCharityPercentage) {
+        auto helper = [nSubsidy](int percentage) {
+            return (nSubsidy * percentage) / 100;
+        };
+
+        return CBlockRewards(helper(nStakePercentage), helper(nMasternodePercentage), helper(nTreasuryPercentage), helper(nCharityPercentage), 50 * COIN, helper(nProposalsPercentage));
+    };
+
+
+    if(sporkManager.IsSporkActive(SPORK_13_BLOCK_PAYMENTS)) {
+        MultiValueSporkList<BlockPaymentSporkValue> vBlockPaymentsValues;
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);
+        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight, nBlockTime);
+
+        if(activeSpork.IsValid()) {
+            // we expect that this value is in coins, not in satoshis
+            return helper(activeSpork.nStakeReward, activeSpork.nMasternodeReward,
+                          activeSpork.nTreasuryReward, activeSpork.nProposalsReward, activeSpork.nCharityReward);
+        }
+    }
+
+    return helper(38, 45, 16, 0, 1);
 }
 
 bool IsInitialBlockDownload()
@@ -2039,15 +2095,35 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         }
         UpdateCoins(tx, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
     }
+
+
+    // track money supply and mint amount info
+    CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
+    pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
+    pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
+
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
     LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
-    CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
-    if (block.vtx[0]->GetValueOut() > blockReward)
+    //PoW phase redistributed fees to miner. PoS stage destroys fees.
+    CBlockRewards nBaseExpectedMint = GetBlockSubsidity(pindex->nHeight);
+    CBlockRewards nPoWExpectedMint(nBaseExpectedMint.nStakeReward + nFees, 0, 0, 0, 0, 0);
+    const CBlockRewards &nExpectedMint = block.IsProofOfWork() ? nPoWExpectedMint : nBaseExpectedMint;
+
+    const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
+
+    if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
         return state.DoS(100,
-                         error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
-                               block.vtx[0]->GetValueOut(), blockReward),
-                               REJECT_INVALID, "bad-cb-amount");
+                         error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
+                               FormatMoney(pindex->nMint), nExpectedMint.ToString()),
+                         REJECT_INVALID, "bad-cb-amount");
+    }
+
+    if (!IsBlockPayeeValid(coinbaseTx, pindex->nHeight, pindex->pprev)) {
+//        mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
+        return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
+                         REJECT_INVALID, "bad-cb-payee");
+    }
 
     if (!control.Wait())
         return state.DoS(100, error("%s: CheckQueue failed", __func__), REJECT_INVALID, "block-validation-failed");

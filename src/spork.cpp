@@ -110,14 +110,16 @@ void CSporkManager::LoadSporksFromDB()
     }
 }
 
-void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
+void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman *connman)
 {
-    if (strCommand == "spork") {
+    const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
+    if (strCommand == NetMsgType::SPORK) {
 
         CSporkMessage spork;
         vRecv >> spork;
 
         uint256 hash = spork.GetHash();
+
 
         std::string strLogMsg;
         {
@@ -154,19 +156,20 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
 
         spork.Relay();
 
-    } else if (strCommand == "getsporks") {
+    } else if (strCommand == NetMsgType::GETSPORKS) {
 
         for(auto &&entry : mapSporksActive) {
             for(auto &&spork : entry.second) {
-                pfrom->PushMessage("spork", spork);
+                connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::SPORK, spork));
+
             }
         }
 
-    } else if(strCommand == "sporkcount") {
+    } else if(strCommand == NetMsgType::SPORKCOUNT) {
         int nSporkCount = 0;
         vRecv >> nSporkCount;
         pfrom->SetSporkCount(nSporkCount);
-        pfrom->PushMessage("getsporks");
+        connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::GETSPORKS, {}));
     }
 
 }

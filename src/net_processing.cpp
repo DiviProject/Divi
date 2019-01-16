@@ -3322,6 +3322,10 @@ bool PeerLogicValidation::SendMessages(CNode* pto)
         if (!pto->fSuccessfullyConnected || pto->fDisconnect)
             return true;
 
+        // Don't send anything until we get sporks from peer
+        if(!pto->fInbound && !pto->AreSporksSynced())
+            return true;
+
         // If we get here, the outgoing message serialization version is set and can't change.
         const CNetMsgMaker msgMaker(pto->GetSendVersion());
 

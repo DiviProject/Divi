@@ -27,6 +27,7 @@
 #include <netbase.h>
 #include <net.h>
 #include <net_processing.h>
+#include <net_processing_divi.h>
 #include <policy/feerate.h>
 #include <policy/fees.h>
 #include <policy/policy.h>
@@ -158,6 +159,58 @@ void Interrupt()
     }
 }
 
+static bool LoadExtensionsDataCaches()
+{
+    // LOAD SERIALIZED DAT FILES INTO DATA CACHES FOR INTERNAL USE
+
+    boost::filesystem::path pathDB = GetDataDir();
+    std::string strDBName;
+
+    strDBName = "mncache.dat";
+    uiInterface.InitMessage(_("Loading masternode cache..."));
+    if(gArgs.GetBoolArg("-clearmncache", false))
+    {
+        boost::system::error_code ec;
+        boost::filesystem::remove((pathDB / strDBName).string(), ec);
+    }
+
+    CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
+    if(!flatdb1.Load(mnodeman)) {
+        return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
+    }
+
+    if(mnodeman.size()) {
+        strDBName = "mnpayments.dat";
+        uiInterface.InitMessage(_("Loading masternode payment cache..."));
+        CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
+        if(!flatdb2.Load(mnpayments)) {
+            return InitError(_("Failed to load masternode payments cache from") + "\n" + (pathDB / strDBName).string());
+        }
+    } else {
+        uiInterface.InitMessage(_("Masternode cache is empty, skipping payments and governance cache..."));
+    }
+
+    strDBName = "netfulfilled.dat";
+    uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
+    CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
+    if(!flatdb4.Load(netfulfilledman)) {
+        return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
+    }
+
+    return true;
+}
+
+static void StoreExtensionsDataCaches()
+{
+    // STORE DATA CACHES INTO SERIALIZED DAT FILES
+    CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
+    flatdb1.Dump(mnodeman);
+    CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
+    flatdb2.Dump(mnpayments);
+    CFlatDB<CNetFulfilledRequestManager> flatdb3("netfulfilled.dat", "magicFulfilledCache");
+    flatdb3.Dump(netfulfilledman);
+}
+
 void Shutdown(InitInterfaces& interfaces)
 {
     LogPrintf("%s: In progress...\n", __func__);
@@ -187,6 +240,8 @@ void Shutdown(InitInterfaces& interfaces)
     if (peerLogic) UnregisterValidationInterface(peerLogic.get());
     if (g_connman) g_connman->Stop();
     if (g_txindex) g_txindex->Stop();
+
+    StoreExtensionsDataCaches();
 
     StopTorControl();
 
@@ -1673,6 +1728,14 @@ bool AppInitMain(InitInterfaces& interfaces)
     if (ShutdownRequested()) {
         return false;
     }
+
+    // ********************************************************* Step 11b: Load cache data
+
+    LoadExtensionsDataCaches();
+
+    // ********************************************************* Step 11c: start thread for divi extensions
+
+    threadGroup.create_thread(boost::bind(net_processing_divi::ThreadProcessExtensions, g_connman.get()));
 
     // ********************************************************* Step 12: start node
 

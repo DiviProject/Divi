@@ -55,53 +55,53 @@ static const MapSporkHandlers &GetMapGetDataHandlers()
                         }
                         return {};
                     });
-        ADD_HANDLER(MSG_TXLOCK_REQUEST, {
-                        CTxLockRequestRef txLockRequest;
-                        if(instantsend.GetTxLockRequest(hash, txLockRequest)) {
-                            return msgMaker.Make(NetMsgType::TXLOCKREQUEST, *txLockRequest);
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_TXLOCK_VOTE, {
-                        CTxLockVote vote;
-                        if(instantsend.GetTxLockVote(hash, vote)) {
-                            return msgMaker.Make(NetMsgType::TXLOCKVOTE, vote);
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_MASTERNODE_PAYMENT_BLOCK, {
-                        BlockMap::iterator mi = mapBlockIndex.find(hash);
-                        LOCK(cs_mapMasternodeBlocks);
-                        if (mi != mapBlockIndex.end() && mnpayments.mapMasternodeBlocks.count(mi->second->nHeight)) {
-                            for(const CMasternodePayee& payee : mnpayments.mapMasternodeBlocks[mi->second->nHeight].vecPayees) {
-                                std::vector<uint256> vecVoteHashes = payee.GetVoteHashes();
-                                for(const uint256& hash : vecVoteHashes) {
-                                    if(mnpayments.HasVerifiedPaymentVote(hash)) {
-                                        return msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, mnpayments.mapMasternodePaymentVotes[hash]);
-                                    }
-                                }
-                            }
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_MASTERNODE_WINNER, {
-                        if(masternodePayments.mapMasternodePayeeVotes.count(hash)) {
-                            return msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, masternodePayments.mapMasternodePayeeVotes[hash]);
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_MASTERNODE_ANNOUNCE, {
-                        if(mnodeman.mapSeenMasternodeBroadcast.count(hash)) {
-                            return msgMaker.Make(NetMsgType::MNANNOUNCE, mnodeman.mapSeenMasternodeBroadcast[hash].second);
-                        }
-                        return {};
-                    });
-        ADD_HANDLER(MSG_MASTERNODE_PING, {
-                        if(mnodeman.mapSeenMasternodePing.count(hash)) {
-                            return msgMaker.Make(NetMsgType::MNPING, mnodeman.mapSeenMasternodePing[hash]);
-                        }
-                        return {};
-                    });
+//        ADD_HANDLER(MSG_TXLOCK_REQUEST, {
+//                        CTxLockRequestRef txLockRequest;
+//                        if(instantsend.GetTxLockRequest(hash, txLockRequest)) {
+//                            return msgMaker.Make(NetMsgType::TXLOCKREQUEST, *txLockRequest);
+//                        }
+//                        return {};
+//                    });
+//        ADD_HANDLER(MSG_TXLOCK_VOTE, {
+//                        CTxLockVote vote;
+//                        if(instantsend.GetTxLockVote(hash, vote)) {
+//                            return msgMaker.Make(NetMsgType::TXLOCKVOTE, vote);
+//                        }
+//                        return {};
+//                    });
+//        ADD_HANDLER(MSG_MASTERNODE_PAYMENT_BLOCK, {
+//                        BlockMap::iterator mi = mapBlockIndex.find(hash);
+//                        LOCK(cs_mapMasternodeBlocks);
+//                        if (mi != mapBlockIndex.end() && mnpayments.mapMasternodeBlocks.count(mi->second->nHeight)) {
+//                            for(const CMasternodePayee& payee : mnpayments.mapMasternodeBlocks[mi->second->nHeight].vecPayees) {
+//                                std::vector<uint256> vecVoteHashes = payee.GetVoteHashes();
+//                                for(const uint256& hash : vecVoteHashes) {
+//                                    if(mnpayments.HasVerifiedPaymentVote(hash)) {
+//                                        return msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, mnpayments.mapMasternodePaymentVotes[hash]);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        return {};
+//                    });
+//        ADD_HANDLER(MSG_MASTERNODE_WINNER, {
+//                        if(masternodePayments.mapMasternodePayeeVotes.count(hash)) {
+//                            return msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, masternodePayments.mapMasternodePayeeVotes[hash]);
+//                        }
+//                        return {};
+//                    });
+//        ADD_HANDLER(MSG_MASTERNODE_ANNOUNCE, {
+//                        if(mnodeman.mapSeenMasternodeBroadcast.count(hash)) {
+//                            return msgMaker.Make(NetMsgType::MNANNOUNCE, mnodeman.mapSeenMasternodeBroadcast[hash].second);
+//                        }
+//                        return {};
+//                    });
+//        ADD_HANDLER(MSG_MASTERNODE_PING, {
+//                        if(mnodeman.mapSeenMasternodePing.count(hash)) {
+//                            return msgMaker.Make(NetMsgType::MNPING, mnodeman.mapSeenMasternodePing[hash]);
+//                        }
+//                        return {};
+//                    });
     }
 
     return sporkHandlers;
@@ -127,19 +127,19 @@ bool net_processing_divi::ProcessGetData(CNode *pfrom, const Consensus::Params &
 
 void net_processing_divi::ProcessExtension(CNode *pfrom, const std::string &strCommand, CDataStream &vRecv, CConnman *connman)
 {
-    mnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
-    mnpayments.ProcessMessage(pfrom, strCommand, vRecv, *connman);
-    merchantnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
-    instantsend.ProcessMessage(pfrom, strCommand, vRecv, *connman);
+//    mnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
+//    mnpayments.ProcessMessage(pfrom, strCommand, vRecv, *connman);
+//    merchantnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
+//    instantsend.ProcessMessage(pfrom, strCommand, vRecv, *connman);
     sporkManager.ProcessSpork(pfrom, strCommand, vRecv, connman);
-    masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
-    merchantnodeSync.ProcessMessage(pfrom, strCommand, vRecv);
-    governance.ProcessMessage(pfrom, strCommand, vRecv, *connman);
+//    masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
+//    merchantnodeSync.ProcessMessage(pfrom, strCommand, vRecv);
+//    governance.ProcessMessage(pfrom, strCommand, vRecv, *connman);
 }
 
 void net_processing_divi::ThreadProcessExtensions(CConnman *pConnman)
 {
-    if(fLiteMode) return; // disable all XSN specific functionality
+#if 0
 
     static bool fOneThread;
     if(fOneThread) return;
@@ -204,6 +204,7 @@ void net_processing_divi::ThreadProcessExtensions(CConnman *pConnman)
             }
         }
     }
+#endif
 }
 
 
@@ -212,7 +213,7 @@ bool net_processing_divi::AlreadyHave(const CInv &inv)
     switch(inv.type)
     {
     /*
-    XSN Related Inventory Messages
+    Divi Related Inventory Messages
 
     --
 
@@ -220,47 +221,31 @@ bool net_processing_divi::AlreadyHave(const CInv &inv)
     We're going to be asking many nodes upfront for the full inventory list, so we'll get duplicates of these.
     We want to only update the time on new hits, so that we can time out appropriately if needed.
     */
-    case MSG_TXLOCK_REQUEST:
-        return instantsend.AlreadyHave(inv.hash);
+//    case MSG_TXLOCK_REQUEST:
+//        return instantsend.AlreadyHave(inv.hash);
 
-    case MSG_TXLOCK_VOTE:
-        return instantsend.AlreadyHave(inv.hash);
+//    case MSG_TXLOCK_VOTE:
+//        return instantsend.AlreadyHave(inv.hash);
 
     case MSG_SPORK:
         return mapSporks.count(inv.hash);
 
-    case MSG_MASTERNODE_PAYMENT_VOTE:
-        return mnpayments.mapMasternodePaymentVotes.count(inv.hash);
+//    case MSG_MASTERNODE_PAYMENT_VOTE:
+//        return mnpayments.mapMasternodePaymentVotes.count(inv.hash);
 
-    case MSG_MASTERNODE_PAYMENT_BLOCK:
-    {
-        BlockMap::iterator mi = mapBlockIndex.find(inv.hash);
-        return mi != mapBlockIndex.end() && mnpayments.mapMasternodeBlocks.find(mi->second->nHeight) != mnpayments.mapMasternodeBlocks.end();
-    }
+//    case MSG_MASTERNODE_PAYMENT_BLOCK:
+//    {
+//        BlockMap::iterator mi = mapBlockIndex.find(inv.hash);
+//        return mi != mapBlockIndex.end() && mnpayments.mapMasternodeBlocks.find(mi->second->nHeight) != mnpayments.mapMasternodeBlocks.end();
+//    }
 
-    case MSG_MASTERNODE_ANNOUNCE:
-        return mnodeman.mapSeenMasternodeBroadcast.count(inv.hash) && !mnodeman.IsMnbRecoveryRequested(inv.hash);
-    case MSG_MERCHANTNODE_ANNOUNCE:
-        return merchantnodeman.mapSeenMerchantnodeBroadcast.count(inv.hash) && !merchantnodeman.IsMnbRecoveryRequested(inv.hash);
+//    case MSG_MASTERNODE_ANNOUNCE:
+//        return mnodeman.mapSeenMasternodeBroadcast.count(inv.hash) && !mnodeman.IsMnbRecoveryRequested(inv.hash);
+//    case MSG_MERCHANTNODE_ANNOUNCE:
+//        return merchantnodeman.mapSeenMerchantnodeBroadcast.count(inv.hash) && !merchantnodeman.IsMnbRecoveryRequested(inv.hash);
 
-    case MSG_MASTERNODE_PING:
-        return mnodeman.mapSeenMasternodePing.count(inv.hash);
-    case MSG_MERCHANTNODE_PING:
-        return merchantnodeman.mapSeenMerchantnodePing.count(inv.hash);
-
-    case MSG_DSTX: {
-        //        return static_cast<bool>(CPrivateSend::GetDSTX(inv.hash));
-        return true;
-    }
-
-    case MSG_GOVERNANCE_OBJECT:
-    case MSG_GOVERNANCE_OBJECT_VOTE:
-        return !governance.ConfirmInventoryRequest(inv);
-
-    case MSG_MASTERNODE_VERIFY:
-        return mnodeman.mapSeenMasternodeVerification.count(inv.hash);
-    case MSG_MERCHANTNODE_VERIFY:
-        return merchantnodeman.mapSeenMerchantnodeVerification.count(inv.hash);
+//    case MSG_MASTERNODE_PING:
+//        return mnodeman.mapSeenMasternodePing.count(inv.hash);
     }
     return true;
 }

@@ -177,6 +177,10 @@ serialize.h
 shutdown.cpp
 shutdown.h
 span.h
+spork.cpp
+spork.h
+sporkdb.cpp
+sporkdb.h
 streams.h
 support/allocators/secure.h
 support/allocators/zeroafterfree.h

@@ -43,6 +43,7 @@
 #include <validationinterface.h>
 #include <warnings.h>
 #include <spork.h>
+#include <sporkdb.h>
 
 #include <future>
 #include <sstream>
@@ -178,6 +179,8 @@ public:
     // Block disconnection on our pcoinsTip:
     bool DisconnectTip(CValidationState& state, const CChainParams& chainparams, DisconnectedBlockTransactions *disconnectpool);
 
+    bool DisconnectBlocks(int blocks);
+
     // Manual block validity manipulation:
     bool PreciousBlock(CValidationState& state, const CChainParams& params, CBlockIndex* pindex) LOCKS_EXCLUDED(cs_main);
     bool InvalidateBlock(CValidationState& state, const CChainParams& chainparams, CBlockIndex* pindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
@@ -249,11 +252,12 @@ std::atomic_bool g_is_mempool_loaded{false};
 
 std::map<unsigned int, unsigned int> mapHashedBlocks;
 static std::map<uint256, uint256> mapProofOfStake;
+std::unique_ptr<CSporkDB> pSporkDB;
 
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
-const std::string strMessageMagic = "Divi Signed Message:\n";
+const std::string strMessageMagic = "DarkNet Signed Message:\n";
 
 // Internal stuff
 namespace {
@@ -581,6 +585,12 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
     // Coinbase is only valid in a block, not as a loose transaction
     if (tx.IsCoinBase())
         return state.DoS(100, false, REJECT_INVALID, "coinbase");
+
+    //Coinstake is also only valid in a block, not as a loose transaction
+    if (tx.IsCoinStake())
+        return state.DoS(100, error("AcceptToMemoryPoolWorker: coinstake as individual tx"),
+                         REJECT_INVALID, "coinstake");
+
 
     // Rather not work on nonstandard transactions (unless -testnet/-regtest)
     std::string reason;
@@ -1088,7 +1098,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
     }
 
     // Check the header
-    if (!CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
+    if (block.IsProofOfWork() && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
         return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
 
     return true;
@@ -1412,7 +1422,19 @@ void InitScriptExecutionCache() {
     size_t nMaxCacheSize = std::min(std::max((int64_t)0, gArgs.GetArg("-maxsigcachesize", DEFAULT_MAX_SIG_CACHE_SIZE) / 2), MAX_MAX_SIG_CACHE_SIZE) * ((size_t) 1 << 20);
     size_t nElems = scriptExecutionCache.setup_bytes(nMaxCacheSize);
     LogPrintf("Using %zu MiB out of %zu/2 requested for script execution cache, able to store %zu elements\n",
-            (nElems*sizeof(uint256)) >>20, (nMaxCacheSize*2)>>20, nElems);
+              (nElems*sizeof(uint256)) >>20, (nMaxCacheSize*2)>>20, nElems);
+}
+
+
+
+void ReprocessBlocks(int nBlocks)
+{
+    {
+        LOCK(cs_main);
+        g_chainstate.DisconnectBlocks(nBlocks);
+    }
+    CValidationState state;
+    ActivateBestChain(state, Params());
 }
 
 /**
@@ -2423,6 +2445,23 @@ bool CChainState::DisconnectTip(CValidationState& state, const CChainParams& cha
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
     GetMainSignals().BlockDisconnected(pblock);
+    return true;
+}
+
+bool CChainState::DisconnectBlocks(int blocks)
+{
+    LOCK(cs_main);
+
+    CValidationState state;
+    const CChainParams& chainparams = Params();
+
+    LogPrintf("DisconnectBlocks -- Got command to replay %d blocks\n", blocks);
+    for(int i = 0; i < blocks; i++) {
+        if(!DisconnectTip(state, chainparams, nullptr) || !state.IsValid()) {
+            return false;
+        }
+    }
+
     return true;
 }
 

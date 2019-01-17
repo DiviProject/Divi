@@ -177,6 +177,8 @@ BITCOIN_CORE_H = \
   support/events.h \
   support/lockedpool.h \
   sync.h \
+  spork.h \
+  sporkdb.h \
   threadsafety.h \
   threadinterrupt.h \
   timedata.h \
@@ -260,6 +262,8 @@ libbitcoin_server_a_SOURCES = \
   rpc/util.cpp \
   script/sigcache.cpp \
   shutdown.cpp \
+  spork.cpp \
+  sporkdb.cpp \
   timedata.cpp \
   torcontrol.cpp \
   txdb.cpp \

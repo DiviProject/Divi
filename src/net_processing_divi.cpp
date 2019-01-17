@@ -125,13 +125,13 @@ bool net_processing_divi::ProcessGetData(CNode *pfrom, const Consensus::Params &
     return false;
 }
 
-void net_processing_divi::ProcessExtension(CNode *pfrom, const std::string &strCommand, CDataStream &vRecv, CConnman *connman)
+void net_processing_divi::ProcessExtension(CNode *pfrom, CValidationState &state, const std::string &strCommand, CDataStream &vRecv, CConnman *connman)
 {
 //    mnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
 //    mnpayments.ProcessMessage(pfrom, strCommand, vRecv, *connman);
 //    merchantnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
 //    instantsend.ProcessMessage(pfrom, strCommand, vRecv, *connman);
-    sporkManager.ProcessSpork(pfrom, strCommand, vRecv, connman);
+    sporkManager.ProcessSpork(pfrom, state, strCommand, vRecv, connman);
 //    masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
 //    merchantnodeSync.ProcessMessage(pfrom, strCommand, vRecv);
 //    governance.ProcessMessage(pfrom, strCommand, vRecv, *connman);

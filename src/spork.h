@@ -16,6 +16,7 @@
 
 class CSporkMessage;
 class CSporkManager;
+class CValidationState;
 
 /*
     Don't ever reuse these IDs for other sporks
@@ -73,12 +74,12 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
         READWRITE(nSporkID);
         READWRITE(strValue);
         READWRITE(nTimeSigned);
-        if (!(nType & SER_GETHASH)) {
+        if (!(s.GetType() & SER_GETHASH)) {
             READWRITE(vchSig);
         }
     }
@@ -88,7 +89,7 @@ public:
 
     bool Sign(const CKey& key, const CPubKey &sporkPubKey);
     bool CheckSignature(const CPubKey &pubKey) const;
-    void Relay();
+    void Relay(CConnman *connman);
 };
 
 struct SporkMultiValue {
@@ -179,8 +180,8 @@ public:
     CSporkManager();
 
     void LoadSporksFromDB();
-    void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman *connman);
-    bool UpdateSpork(int nSporkID, std::string strValue);
+    void ProcessSpork(CNode* pfrom, CValidationState &state, const std::string& strCommand, CDataStream& vRecv, CConnman *connman);
+    bool UpdateSpork(int nSporkID, std::string strValue, CConnman *connman);
     int GetActiveSporkCount() const;
 
     bool IsSporkActive(int nSporkID);

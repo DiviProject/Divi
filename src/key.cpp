@@ -229,7 +229,7 @@ bool CKey::VerifyPubKey(const CPubKey& pubkey) const {
         return false;
     }
     unsigned char rnd[8];
-    std::string str = "Divi key verification\n";
+    std::string str = "Bitcoin key verification\n";
     GetRandBytes(rnd, sizeof(rnd));
     uint256 hash;
     CHash256().Write((unsigned char*)str.data(), str.size()).Write(rnd, sizeof(rnd)).Finalize(hash.begin());
@@ -238,7 +238,7 @@ bool CKey::VerifyPubKey(const CPubKey& pubkey) const {
     return pubkey.Verify(hash, vchSig);
 }
 
-bool CKey::SignCompact(const uint256 &hash, std::vector<unsigned char>& vchSig) const {
+bool CKey::SignCompact(const uint256 &hash, std::vector<unsigned char>& vchSig, CPubKey::InputScriptType scriptType) const {
     if (!fValid)
         return false;
     vchSig.resize(CPubKey::COMPACT_SIGNATURE_SIZE);
@@ -249,7 +249,15 @@ bool CKey::SignCompact(const uint256 &hash, std::vector<unsigned char>& vchSig) 
     secp256k1_ecdsa_recoverable_signature_serialize_compact(secp256k1_context_sign, &vchSig[1], &rec, &sig);
     assert(ret);
     assert(rec != -1);
-    vchSig[0] = 27 + rec + (fCompressed ? 4 : 0);
+
+    switch(scriptType) {
+    case CPubKey::InputScriptType::SPENDP2SHWITNESS: vchSig[0] = 31 + rec + (fCompressed ? 4 : 0); break;
+    case CPubKey::InputScriptType::SPENDWITNESS: vchSig[0] = 35 + rec + (fCompressed ? 4 : 0); break;
+    case CPubKey::InputScriptType::SPENDP2PKH: vchSig[0] = 27 + rec + (fCompressed ? 4 : 0); break;
+    default:
+        return false;
+    }
+
     return true;
 }
 

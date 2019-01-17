@@ -8,6 +8,7 @@ class CInv;
 class CConnman;
 class CNetMsgMaker;
 class CDataStream;
+class CValidationState;
 
 namespace net_processing_divi
 {
@@ -15,7 +16,7 @@ namespace net_processing_divi
 bool ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParams, CConnman* connman,
                     const CInv &inv);
 
-void ProcessExtension(CNode* pfrom, const std::string &strCommand, CDataStream& vRecv, CConnman *connman);
+void ProcessExtension(CNode* pfrom, CValidationState &state, const std::string &strCommand, CDataStream& vRecv, CConnman *connman);
 
 bool AlreadyHave(const CInv &inv);
 

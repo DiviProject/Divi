@@ -2997,7 +2997,13 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         const auto &allMessages = getAllNetMessageTypes();
         if(std::find(std::begin(allMessages), std::end(allMessages), strCommand) != std::end(allMessages))
         {
-            net_processing_divi::ProcessExtension(pfrom, strCommand, vRecv, connman);
+            CValidationState state;
+            net_processing_divi::ProcessExtension(pfrom, state, strCommand, vRecv, connman);
+            int nDoS;
+            if(state.IsInvalid(nDoS))
+            {
+                Misbehaving(pfrom->GetId(), nDoS, state.GetRejectReason());
+            }
         }
         else
         {

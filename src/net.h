@@ -231,6 +231,8 @@ public:
         post();
     };
 
+    void RelayInv(const CInv& inv);
+
     // Addrman functions
     size_t GetAddressCount() const;
     void SetServices(const CService &addr, ServiceFlags nServices);

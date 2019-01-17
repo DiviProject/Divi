@@ -6,13 +6,14 @@
 #include "spork.h"
 #include "base58.h"
 #include "key.h"
-#include "main.h"
-#include "masternode-budget.h"
-#include "net.h"
-#include "protocol.h"
-#include "sync.h"
-#include "sporkdb.h"
-#include "util.h"
+#include <validation.h>
+#include <messagesigner.h>
+#include <net.h>
+#include <protocol.h>
+#include <sync.h>
+#include <sporkdb.h>
+#include <netmessagemaker.h>
+#include <consensus/validation.h>
 
 #include <numeric>
 #include <boost/algorithm/string/join.hpp>
@@ -110,7 +111,7 @@ void CSporkManager::LoadSporksFromDB()
     }
 }
 
-void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman *connman)
+void CSporkManager::ProcessSpork(CNode* pfrom, CValidationState &state, const std::string& strCommand, CDataStream& vRecv, CConnman *connman)
 {
     const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
     if (strCommand == NetMsgType::SPORK) {
@@ -125,13 +126,13 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         {
             LOCK(cs_main);
             if(!chainActive.Tip()) return;
-            strLogMsg = strprintf("SPORK -- hash: %s id: %d value: %10d bestHeight: %d peer=%d", hash.ToString(), spork.nSporkID, spork.strValue, chainActive.Height(), pfrom->id);
+            strLogMsg = strprintf("SPORK -- hash: %s id: %d value: %10d bestHeight: %d peer=%d", hash.ToString(), spork.nSporkID, spork.strValue, chainActive.Height(), pfrom->GetId());
         }
 
         if(IsNewerSpork(spork)) {
             LogPrintf("%s new\n", strLogMsg);
         } else if(!IsMultiValueSpork(spork.nSporkID)) {
-            LogPrint("spork", "%s seen\n", strLogMsg);
+            LogPrint(BCLog::SPORK, "%s seen\n", strLogMsg);
             pfrom->nSporksSynced++;
             return;
         }
@@ -139,7 +140,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         if(!spork.CheckSignature(sporkPubKey)) {
             LOCK(cs_main);
             LogPrintf("CSporkManager::ProcessSpork -- ERROR: invalid signature\n");
-            Misbehaving(pfrom->GetId(), 100);
+            state.DoS(100, false, REJECT_INVALID, "spork-invalid-sig");
             return;
         }
 
@@ -154,7 +155,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
             ExecuteSpork(spork.nSporkID);
         }
 
-        spork.Relay();
+        spork.Relay(connman);
 
     } else if (strCommand == NetMsgType::GETSPORKS) {
 
@@ -169,40 +170,9 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         int nSporkCount = 0;
         vRecv >> nSporkCount;
         pfrom->SetSporkCount(nSporkCount);
-        connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::GETSPORKS, {}));
+        connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::GETSPORKS));
     }
 
-}
-
-void ReprocessBlocks(int nBlocks)
-{
-    std::map<uint256, int64_t>::iterator it = mapRejectedBlocks.begin();
-    while (it != mapRejectedBlocks.end()) {
-        //use a window twice as large as is usual for the nBlocks we want to reset
-        if ((*it).second > GetTime() - (nBlocks * 60 * 5)) {
-            BlockMap::iterator mi = mapBlockIndex.find((*it).first);
-            if (mi != mapBlockIndex.end() && (*mi).second) {
-                LOCK(cs_main);
-
-                CBlockIndex* pindex = (*mi).second;
-                LogPrintf("ReprocessBlocks - %s\n", (*it).first.ToString());
-
-                CValidationState state;
-                ReconsiderBlock(state, pindex);
-            }
-        }
-        ++it;
-    }
-
-    CValidationState state;
-    {
-        LOCK(cs_main);
-        DisconnectBlocksAndReprocess(nBlocks);
-    }
-
-    if (state.IsValid()) {
-        ActivateBestChain(state);
-    }
 }
 
 void CSporkManager::ExecuteSpork(int nSporkID)
@@ -238,7 +208,7 @@ void CSporkManager::ExecuteSpork(int nSporkID)
             static int64_t nTimeExecuted = 0; // i.e. it was never executed before
 
             if(GetTime() - nTimeExecuted < nTimeout) {
-                LogPrint("spork", "CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider blocks, too soon - %d/%d\n", GetTime() - nTimeExecuted, nTimeout);
+                LogPrint(BCLog::SPORK, "CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider blocks, too soon - %d/%d\n", GetTime() - nTimeExecuted, nTimeout);
                 return;
             }
 
@@ -267,9 +237,11 @@ void CSporkManager::ExecuteMultiValueSpork(int nSporkID)
 
         minRelayTxFee = CFeeRate(activeSpork.nMinFeePerKb);
         maxTxFee = activeSpork.nMaxFee;
+#if 0
 #ifdef ENABLE_WALLET
         nTransactionSizeMultiplier = activeSpork.nTxSizeMultiplier;
         nTransactionValueMultiplier = activeSpork.nTxValueMultiplier;
+#endif
 #endif
     }
 }
@@ -297,7 +269,7 @@ static int GetActivationHeightHelper(int nSporkID, const std::string strValue)
     return nActivationTime;
 }
 
-bool CSporkManager::UpdateSpork(int nSporkID, string strValue)
+bool CSporkManager::UpdateSpork(int nSporkID, std::string strValue, CConnman *connman)
 {
 
     CSporkMessage spork = CSporkMessage(nSporkID, strValue, GetAdjustedTime());
@@ -312,7 +284,7 @@ bool CSporkManager::UpdateSpork(int nSporkID, string strValue)
     }
 
     if(spork.Sign(sporkPrivKey, sporkPubKey)) {
-        spork.Relay();
+        spork.Relay(connman);
         mapSporks[spork.GetHash()] = spork;
         AddActiveSpork(spork);
         return true;
@@ -345,7 +317,7 @@ bool CSporkManager::IsSporkActive(int nSporkID)
     } else if (mapSporkDefaults.count(nSporkID)) {
         r = mapSporkDefaults[nSporkID];
     } else {
-        LogPrint("spork", "CSporkManager::IsSporkActive -- Unknown Spork ID %d\n", nSporkID);
+        LogPrint(BCLog::SPORK, "CSporkManager::IsSporkActive -- Unknown Spork ID %d\n", nSporkID);
         r = "4070908800"; // 2099-1-1 i.e. off by default
     }
 
@@ -362,7 +334,7 @@ std::vector<CSporkMessage> CSporkManager::GetMultiValueSpork(int nSporkID) const
 }
 
 // grab the value of the spork on the network, or the default
-string CSporkManager::GetSporkValue(int nSporkID) const
+std::string CSporkManager::GetSporkValue(int nSporkID) const
 {
     if(IsMultiValueSpork(nSporkID)) {
         auto values = GetMultiValueSpork(nSporkID);
@@ -377,7 +349,7 @@ string CSporkManager::GetSporkValue(int nSporkID) const
         return mapSporkDefaults[nSporkID];
     }
 
-    LogPrint("spork", "CSporkManager::GetSporkValue -- Unknown Spork ID %d\n", nSporkID);
+    LogPrint(BCLog::SPORK, "CSporkManager::GetSporkValue -- Unknown Spork ID %d\n", nSporkID);
     return std::string();
 }
 
@@ -395,7 +367,7 @@ int CSporkManager::GetSporkIDByName(const std::string& strName)
     if (strName == "SPORK_15_BLOCK_VALUE")                      return SPORK_15_BLOCK_VALUE;
     if (strName == "SPORK_16_LOTTERY_TICKET_MIN_VALUE")         return SPORK_16_LOTTERY_TICKET_MIN_VALUE;
 
-    LogPrint("spork", "CSporkManager::GetSporkIDByName -- Unknown Spork name '%s'\n", strName);
+    LogPrint(BCLog::SPORK, "CSporkManager::GetSporkIDByName -- Unknown Spork name '%s'\n", strName);
     return -1;
 }
 
@@ -414,7 +386,7 @@ std::string CSporkManager::GetSporkNameByID(int nSporkID)
     case SPORK_15_BLOCK_VALUE:                      return "SPORK_15_BLOCK_VALUE";
     case SPORK_16_LOTTERY_TICKET_MIN_VALUE:         return "SPORK_16_LOTTERY_TICKET_MIN_VALUE";
     default:
-        LogPrint("spork", "CSporkManager::GetSporkNameByID -- Unknown Spork ID %d\n", nSporkID);
+        LogPrint(BCLog::SPORK, "CSporkManager::GetSporkNameByID -- Unknown Spork ID %d\n", nSporkID);
         return "Unknown";
     }
 }
@@ -435,7 +407,7 @@ bool CSporkManager::SetPrivKey(const std::string& strPrivKey)
 {
     CKey key;
     CPubKey pubKey;
-    if(!CObfuScationSigner::GetKeysFromSecret(strPrivKey, key, pubKey)) {
+    if(!CMessageSigner::GetKeysFromSecret(strPrivKey, key, pubKey)) {
         LogPrintf("CSporkManager::SetPrivKey -- Failed to parse private key\n");
         return false;
     }
@@ -479,12 +451,12 @@ bool CSporkMessage::Sign(const CKey& key, const CPubKey &sporkPubKey)
 
     std::string strMessage = boost::lexical_cast<std::string>(nSporkID) + strValue + boost::lexical_cast<std::string>(nTimeSigned);
 
-    if(!CObfuScationSigner::SignMessage(strMessage, strError, vchSig, key)) {
+    if(!CMessageSigner::SignMessage(strMessage, vchSig, key, CPubKey::InputScriptType::SPENDP2PKH)) {
         LogPrintf("CSporkMessage::Sign -- SignMessage() failed\n");
         return false;
     }
 
-    if(!CObfuScationSigner::VerifyMessage(sporkPubKey, vchSig, strMessage, strError)) {
+    if(!CMessageSigner::VerifyMessage(sporkPubKey.GetID(), vchSig, strMessage, strError)) {
         LogPrintf("CSporkMessage::Sign -- VerifyMessage() failed, error: %s\n", strError);
         return false;
     }
@@ -499,7 +471,7 @@ bool CSporkMessage::CheckSignature(const CPubKey& pubKey) const
 
     std::string strMessage = boost::lexical_cast<std::string>(nSporkID) + boost::lexical_cast<std::string>(strValue) + boost::lexical_cast<std::string>(nTimeSigned);
 
-    if (!CObfuScationSigner::VerifyMessage(pubKey, vchSig, strMessage, strError)){
+    if (!CMessageSigner::VerifyMessage(pubKey.GetID(), vchSig, strMessage, strError)){
         LogPrintf("CSporkMessage::CheckSignature -- VerifyHash() failed, error: %s\n", strError);
         return false;
     }
@@ -507,10 +479,10 @@ bool CSporkMessage::CheckSignature(const CPubKey& pubKey) const
     return true;
 }
 
-void CSporkMessage::Relay()
+void CSporkMessage::Relay(CConnman *connman)
 {
     CInv inv(MSG_SPORK, GetHash());
-    RelayInv(inv);
+    connman->RelayInv(inv);
 }
 
 template <class T>
@@ -567,7 +539,7 @@ BlockPaymentSporkValue::BlockPaymentSporkValue(int nStakeRewardIn, int nMasterno
 
 }
 
-BlockPaymentSporkValue BlockPaymentSporkValue::FromString(string strData)
+BlockPaymentSporkValue BlockPaymentSporkValue::FromString(std::string strData)
 {
     std::vector<int> vecParsedValues = ParseDataPayload(strData);
 
@@ -593,7 +565,7 @@ bool BlockPaymentSporkValue::IsValid() const
             std::accumulate(std::begin(values), std::end(values), 0) == 100;
 }
 
-string BlockPaymentSporkValue::ToString() const
+std::string BlockPaymentSporkValue::ToString() const
 {
     auto values = {
         nStakeReward,
@@ -622,7 +594,7 @@ BlockSubsiditySporkValue::BlockSubsiditySporkValue(int nBlockSubsidityIn, int nA
 
 }
 
-BlockSubsiditySporkValue BlockSubsiditySporkValue::FromString(string strData)
+BlockSubsiditySporkValue BlockSubsiditySporkValue::FromString(std::string strData)
 {
     std::vector<int> vecParsedValues = ParseDataPayload(strData);
 
@@ -638,7 +610,7 @@ bool BlockSubsiditySporkValue::IsValid() const
     return SporkMultiValue::IsValid() && nBlockSubsidity >= 0;
 }
 
-string BlockSubsiditySporkValue::ToString() const
+std::string BlockSubsiditySporkValue::ToString() const
 {
     return BuildDataPayload(std::vector<int> { nBlockSubsidity, nActivationBlockHeight });
 }
@@ -673,7 +645,7 @@ LotteryTicketMinValueSporkValue::LotteryTicketMinValueSporkValue(int nEntryTicke
 
 }
 
-LotteryTicketMinValueSporkValue LotteryTicketMinValueSporkValue::FromString(string strData)
+LotteryTicketMinValueSporkValue LotteryTicketMinValueSporkValue::FromString(std::string strData)
 {
     std::vector<int> vecParsedValues = ParseDataPayload(strData);
 
@@ -689,7 +661,7 @@ bool LotteryTicketMinValueSporkValue::IsValid() const
     return SporkMultiValue::IsValid() && nEntryTicketValue > 0;
 }
 
-string LotteryTicketMinValueSporkValue::ToString() const
+std::string LotteryTicketMinValueSporkValue::ToString() const
 {
     return BuildDataPayload(std::vector<int> { nEntryTicketValue, nActivationBlockHeight });
 }
@@ -716,7 +688,7 @@ TxFeeSporkValue::TxFeeSporkValue(int nTxValueMultiplierIn, int nTxSizeMultiplier
 
 }
 
-TxFeeSporkValue TxFeeSporkValue::FromString(string strData)
+TxFeeSporkValue TxFeeSporkValue::FromString(std::string strData)
 {
     std::vector<int> vecParsedValues = ParseDataPayload(strData);
 
@@ -735,7 +707,7 @@ bool TxFeeSporkValue::IsValid() const
             nMaxFee > 0 && nMinFeePerKb > 0;
 }
 
-string TxFeeSporkValue::ToString() const
+std::string TxFeeSporkValue::ToString() const
 {
     auto values = {
         nTxValueMultiplier,

@@ -53,6 +53,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <netfulfilledman.h>
+#include <sporkdb.h>
 
 #ifndef WIN32
 #include <signal.h>
@@ -1500,6 +1501,7 @@ bool AppInitMain(InitInterfaces& interfaces)
                 pcoinsTip.reset();
                 pcoinsdbview.reset();
                 pcoinscatcher.reset();
+                pSporkDB.reset(new CSporkDB(0, false, false));
                 // new CBlockTreeDB tries to delete the existing file, which
                 // fails if it's still open from the previous loop. Close it first:
                 pblocktree.reset();

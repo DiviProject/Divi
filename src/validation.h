@@ -42,6 +42,7 @@ class CScriptCheck;
 class CBlockPolicyEstimator;
 class CTxMemPool;
 class CValidationState;
+class CSporkDB;
 struct ChainTxData;
 
 struct PrecomputedTransactionData;
@@ -163,6 +164,7 @@ extern std::condition_variable g_best_block_cv;
 extern uint256 g_best_block;
 extern std::atomic_bool fImporting;
 extern std::atomic_bool fReindex;
+extern const std::string strMessageMagic;
 extern int nScriptCheckThreads;
 extern bool fIsBareMultisigStd;
 extern bool fRequireStandard;
@@ -176,6 +178,9 @@ extern CAmount maxTxFee;
 /** If the tip is older than this (in seconds), the node is considered to be in initial block download. */
 extern int64_t nMaxTipAge;
 extern bool fEnableReplacement;
+
+/** Global variable that points to the spork database (protected by cs_main) */
+extern std::unique_ptr<CSporkDB> pSporkDB;
 
 extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 
@@ -418,6 +423,7 @@ public:
 /** Initializes the script-execution cache */
 void InitScriptExecutionCache();
 
+void ReprocessBlocks(int nBlocks);
 
 /** Functions for disk access for blocks */
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus::Params& consensusParams);

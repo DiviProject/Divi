@@ -30,6 +30,14 @@ typedef uint256 ChainCode;
 class CPubKey
 {
 public:
+
+    enum class InputScriptType {
+        SPENDP2SHWITNESS,
+        SPENDWITNESS,
+        SPENDP2PKH,
+        SPENDUNKNOWN
+    };
+
     /**
      * secp256k1:
      */
@@ -194,7 +202,7 @@ public:
     static bool CheckLowS(const std::vector<unsigned char>& vchSig);
 
     //! Recover a public key from a compact signature.
-    bool RecoverCompact(const uint256& hash, const std::vector<unsigned char>& vchSig);
+    bool RecoverCompact(const uint256& hash, const std::vector<unsigned char>& vchSig, InputScriptType &inputScriptType);
 
     //! Turn this public key into an uncompressed public key.
     bool Decompress();

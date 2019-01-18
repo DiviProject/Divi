@@ -7,8 +7,8 @@
 #include <hash.h>
 #include <validation.h> // For strMessageMagic
 #include <tinyformat.h>
-#include <utilstrencodings.h>
 #include <key_io.h>
+#include <util/strencodings.h>
 
 bool CMessageSigner::GetKeysFromSecret(const std::string strSecret, CKey& keyRet, CPubKey& pubkeyRet)
 {   

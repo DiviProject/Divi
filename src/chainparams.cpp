@@ -78,6 +78,7 @@ public:
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016 // TODO
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing // TODO
 
+        consensus.nModifierUpdateBlock = 99999999;
         consensus.premineAmt = 617222416 * COIN;
         consensus.nMaturity = 20;
 

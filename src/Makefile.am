@@ -99,6 +99,7 @@ BITCOIN_CORE_H = \
   base58.h \
   bech32.h \
   bloom.h \
+  blocksigner.h \
   blockencodings.h \
   blockfilter.h \
   chain.h \
@@ -120,6 +121,7 @@ BITCOIN_CORE_H = \
   core_memusage.h \
   cuckoocache.h \
   fs.h \
+  flat-database.h \
   httprpc.h \
   httpserver.h \
   index/base.h \
@@ -133,6 +135,7 @@ BITCOIN_CORE_H = \
   key.h \
   key_io.h \
   keystore.h \
+  consensus/kernel.h \
   dbwrapper.h \
   limitedmap.h \
   logging.h \
@@ -141,6 +144,8 @@ BITCOIN_CORE_H = \
   miner.h \
   net.h \
   net_processing.h \
+  net_processing_divi.h \
+  netfulfilledman.h \
   netaddress.h \
   netbase.h \
   netmessagemaker.h \
@@ -228,6 +233,7 @@ libbitcoin_server_a_SOURCES = \
   addrdb.cpp \
   addrman.cpp \
   bloom.cpp \
+  blocksigner.cpp \
   blockencodings.cpp \
   blockfilter.cpp \
   chain.cpp \
@@ -241,11 +247,15 @@ libbitcoin_server_a_SOURCES = \
   interfaces/handler.cpp \
   interfaces/node.cpp \
   init.cpp \
+  consensus/kernel.cpp \
   dbwrapper.cpp \
   merkleblock.cpp \
+  messagesigner.cpp \
   miner.cpp \
   net.cpp \
   net_processing.cpp \
+  net_processing_divi.cpp \
+  netfulfilledman.cpp \
   noui.cpp \
   outputtype.cpp \
   policy/fees.cpp \

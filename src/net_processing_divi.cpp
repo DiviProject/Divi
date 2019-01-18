@@ -4,15 +4,6 @@
 #include <netmessagemaker.h>
 #include <map>
 #include <functional>
-#include <masternodeman.h>
-#include <masternode-sync.h>
-#include <masternode-payments.h>
-#include <governance/governance.h>
-#include <tpos/merchantnode-sync.h>
-#include <tpos/merchantnodeman.h>
-#include <activemasternode.h>
-#include <tpos/activemerchantnode.h>
-#include <instantx.h>
 #include <init.h>
 #include <boost/thread.hpp>
 
@@ -283,7 +274,7 @@ static int MapCurrentToLegacy(int nCurrentType)
 bool net_processing_divi::TransformInvForLegacyVersion(CInv &inv, CNode *pfrom, bool fForSending)
 {
 
-    if(pfrom->GetSendVersion() == PRESEGWIT_PROTO_VERSION)
+    if(pfrom->GetSendVersion() == PRESEGWIT_VERSION)
     {
 //        LogPrint(BCLog::NET, "Before %d, send version: %d, recv version: %d\n", inv.type, pfrom->GetSendVersion(), pfrom->GetRecvVersion());
         if(fForSending)

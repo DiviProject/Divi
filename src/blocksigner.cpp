@@ -1,10 +1,9 @@
 #include <blocksigner.h>
-#include <tpos/tposutils.h>
-#include <tpos/activemerchantnode.h>
 #include <keystore.h>
 #include <primitives/block.h>
-#include <utilstrencodings.h>
 #include <messagesigner.h>
+#include <util/system.h>
+#include <key_io.h>
 
 static CPubKey::InputScriptType GetScriptTypeFromDestination(const CTxDestination &dest)
 {

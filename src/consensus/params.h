@@ -76,6 +76,7 @@ struct Params {
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
     int64_t premineAmt;
+    int nModifierUpdateBlock;
     int nMaturity;
     int nLastPOWBlock;
     int nLotteryBlockStartBlock;

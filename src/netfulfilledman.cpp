@@ -4,7 +4,9 @@
 
 #include "chainparams.h"
 #include "netfulfilledman.h"
-#include "util.h"
+#include <util/time.h>
+#include <string>
+#include <sstream>
 
 CNetFulfilledRequestManager netfulfilledman;
 
@@ -12,7 +14,7 @@ void CNetFulfilledRequestManager::AddFulfilledRequest(const CService& addr, cons
 {
     LOCK(cs_mapFulfilledRequests);
     CService addrSquashed = CService(addr, 0);
-    mapFulfilledRequests[addrSquashed][strRequest] = GetTime() + Params().FulfilledRequestExpireTime();
+    mapFulfilledRequests[addrSquashed][strRequest] = GetTime() + Params().GetConsensus().nFulfilledRequestExpireTime;
 }
 
 bool CNetFulfilledRequestManager::HasFulfilledRequest(const CService& addr, const std::string& strRequest)

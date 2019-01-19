@@ -120,6 +120,7 @@ BITCOIN_CORE_H = \
   core_io.h \
   core_memusage.h \
   cuckoocache.h \
+  Denominations.h \
   fs.h \
   flat-database.h \
   httprpc.h \
@@ -239,6 +240,7 @@ libbitcoin_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   consensus/tx_verify.cpp \
+  Denominations.cpp \
   httprpc.cpp \
   httpserver.cpp \
   index/base.cpp \

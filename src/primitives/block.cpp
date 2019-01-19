@@ -10,9 +10,15 @@
 #include <util/strencodings.h>
 #include <crypto/common.h>
 
+#define BEGIN(a) ((char*)&(a))
+#define END(a) ((char*)&((&(a))[1]))
+
 uint256 CBlockHeader::GetHash() const
 {
-    return SerializeHash(*this);
+    if(nVersion < 4)
+        return HashQuark(BEGIN(nVersion), END(nNonce));
+
+    return Hash(BEGIN(nVersion), END(nAccumulatorCheckpoint));
 }
 
 std::string CBlock::ToString() const

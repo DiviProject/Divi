@@ -65,6 +65,16 @@ bool CBlockSigner::CheckBlockSignature() const
         return false;
 
     const CTxOut& txout = refBlock.vtx[1]->vout[1];
+    auto hashMessage = refBlock.GetHash();
+
+    std::vector<std::vector<unsigned char>> vSolutions;
+    txnouttype whichType = Solver(txout.scriptPubKey, vSolutions);
+
+    if(whichType == TX_PUBKEY)
+    {
+        CPubKey pubkey(vSolutions[0]);
+        return pubkey.IsValid() && pubkey.Verify(hashMessage, refBlock.vchBlockSig);
+    }
 
     CTxDestination destination;
 
@@ -73,11 +83,6 @@ bool CBlockSigner::CheckBlockSignature() const
         return error("CBlockSigner::CheckBlockSignature() : failed to extract destination from script: %s", txout.scriptPubKey.ToString());
     }
 
-    auto hashMessage = refBlock.GetHash();
-    if(refBlock.IsProofOfWork())
-    {
-        return true;
-    }
 
     std::string strError;
     return CHashSigner::VerifyHash(hashMessage, destination, refBlock.vchBlockSig, strError);

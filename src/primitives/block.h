@@ -44,6 +44,9 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
+
+        if(nVersion > 3)
+            READWRITE(nAccumulatorCheckpoint);
     }
 
     void SetNull()

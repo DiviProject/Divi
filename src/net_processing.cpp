@@ -1981,18 +1981,14 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                 UpdateBlockAvailability(pfrom->GetId(), inv.hash);
                 if (!fAlreadyHave && !fImporting && !fReindex && !mapBlocksInFlight.count(inv.hash)) {
 
-                    if(pfrom->GetRecvVersion() == PRESEGWIT_VERSION)
-                    {
-                        vToFetch.push_back(inv);
-                        continue;
-                    }
+                    vToFetch.push_back(inv);
 
                     // We used to request the full block here, but since headers-announcements are now the
                     // primary method of announcement on the network, and since, in the case that a node
                     // fell back to inv we probably have a reorg which we should get the headers for first,
                     // we now only provide a getheaders response here. When we receive the headers, we will
                     // then ask for the blocks we need.
-                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::GETHEADERS, chainActive.GetLocator(pindexBestHeader), inv.hash));
+//                    connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::GETHEADERS, chainActive.GetLocator(pindexBestHeader), inv.hash));
                     LogPrint(BCLog::NET, "getheaders (%d) %s to peer=%d\n", pindexBestHeader->nHeight, inv.hash.ToString(), pfrom->GetId());
                 }
             }
@@ -2007,10 +2003,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             }
         }
 
-        if(pfrom->GetRecvVersion() == PRESEGWIT_VERSION)
-        {
-            connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
-        }
+        connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::GETDATA, vToFetch));
 
         return true;
     }
@@ -2756,7 +2749,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         const uint256 hash(pblock->GetHash());
 
         auto it = mapBlockIndex.find(pblock->hashPrevBlock);
-        if (it != mapBlockIndex.end() && ((it->second->nStatus & BLOCK_HAVE_DATA) == 0))
+        if (it == mapBlockIndex.end() || ((it->second->nStatus & BLOCK_HAVE_DATA) == 0))
         {
             LogPrint(BCLog::NET, "Received block out of order: %s\n", pblock->GetHash().ToString());
             if (mapBlocksInFlight.count(pblock->hashPrevBlock))
@@ -2764,6 +2757,11 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                 LOCK(cs_main);
                 mapBlocksUnknownParent.insert(std::make_pair(pblock->hashPrevBlock, pblock));
                 MarkBlockAsReceived(pblock->hashPrevBlock); // invalidate to send again.
+            }
+
+            if(it == mapBlockIndex.end())
+            {
+                connman->PushMessage(pfrom, msgMaker.Make(NetMsgType::GETBLOCKS, chainActive.GetLocator(), uint256()));
             }
         }
         else
@@ -3230,7 +3228,8 @@ void PeerLogicValidation::ConsiderEviction(CNode *pto, int64_t time_in_seconds)
             } else {
                 assert(state.m_chain_sync.m_work_header);
                 LogPrint(BCLog::NET, "sending getheaders to outbound peer=%d to verify chain work (current best known block:%s, benchmark blockhash: %s)\n", pto->GetId(), state.pindexBestKnownBlock != nullptr ? state.pindexBestKnownBlock->GetBlockHash().ToString() : "<none>", state.m_chain_sync.m_work_header->GetBlockHash().ToString());
-                connman->PushMessage(pto, msgMaker.Make(NetMsgType::GETHEADERS, chainActive.GetLocator(state.m_chain_sync.m_work_header->pprev), uint256()));
+//                connman->PushMessage(pto, msgMaker.Make(NetMsgType::GETHEADERS, chainActive.GetLocator(state.m_chain_sync.m_work_header->pprev), uint256()));
+                connman->PushMessage(pto, msgMaker.Make(NetMsgType::GETBLOCKS, chainActive.GetLocator(state.m_chain_sync.m_work_header->pprev), uint256()));
                 state.m_chain_sync.m_sent_getheaders = true;
                 constexpr int64_t HEADERS_RESPONSE_TIME = 120; // 2 minutes
                 // Bump the timeout to allow a response, which could clear the timeout
@@ -3452,7 +3451,7 @@ bool PeerLogicValidation::SendMessages(CNode* pto)
                 if (pindexStart->pprev)
                     pindexStart = pindexStart->pprev;
                 LogPrint(BCLog::NET, "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->GetId(), pto->nStartingHeight);
-                connman->PushMessage(pto, msgMaker.Make(NetMsgType::GETHEADERS, chainActive.GetLocator(pindexStart), uint256()));
+                connman->PushMessage(pto, msgMaker.Make(NetMsgType::GETBLOCKS, chainActive.GetLocator(pindexStart), uint256()));
 #if 0
                 connman->PushMessage(pto, msgMaker.Make(NetMsgType::GETHEADERS, chainActive.GetLocator(pindexStart), uint256())); // old code, headers first sync
 #endif

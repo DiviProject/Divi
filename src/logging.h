@@ -54,6 +54,7 @@ namespace BCLog {
         QT          = (1 << 19),
         LEVELDB     = (1 << 20),
         SPORK       = (1 << 21),
+        MASTERNODE  = (1 << 22),
         ALL         = ~(uint32_t)0,
     };
 

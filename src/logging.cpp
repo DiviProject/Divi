@@ -120,6 +120,7 @@ const CLogCategoryDesc LogCategories[] =
     {BCLog::QT, "qt"},
     {BCLog::LEVELDB, "leveldb"},
     {BCLog::SPORK, "spork"},
+    {BCLog::MASTERNODE, "masternode"},
     {BCLog::ALL, "1"},
     {BCLog::ALL, "all"},
 };

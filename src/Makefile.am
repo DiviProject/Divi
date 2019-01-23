@@ -140,6 +140,11 @@ BITCOIN_CORE_H = \
   dbwrapper.h \
   limitedmap.h \
   logging.h \
+  masternodes/activemasternode.h \
+  masternodes/masternode.h \
+  masternodes/masternode-payments.h \
+  masternodes/masternode-sync.h \
+  masternodes/masternodeman.h \
   memusage.h \
   merkleblock.h \
   miner.h \
@@ -306,6 +311,11 @@ endif
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_wallet_a_SOURCES = \
+  masternodes/activemasternode.cpp \
+  masternodes/masternode.cpp \
+  masternodes/masternode-payments.cpp \
+  masternodes/masternode-sync.cpp \
+  masternodes/masternodeman.cpp \
   interfaces/wallet.cpp \
   wallet/coincontrol.cpp \
   wallet/crypter.cpp \

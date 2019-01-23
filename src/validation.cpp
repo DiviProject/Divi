@@ -44,6 +44,7 @@
 #include <warnings.h>
 #include <spork.h>
 #include <sporkdb.h>
+#include <masternodes/masternode-payments.h>
 
 #include <future>
 #include <sstream>
@@ -1004,6 +1005,66 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
 {
     const CChainParams& chainparams = Params();
     return AcceptToMemoryPoolWithTime(chainparams, pool, state, tx, pfMissingInputs, GetTime(), plTxnReplaced, bypass_limits, nAbsurdFee, test_accept);
+}
+
+int GetInputAge(CTxIn& vin)
+{
+    CCoinsView viewDummy;
+    CCoinsViewCache view(&viewDummy);
+    {
+        LOCK(mempool.cs);
+        CCoinsViewMemPool viewMempool(pcoinsTip.get(), mempool);
+        view.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
+
+        if(view.HaveCoin(vin.prevout))
+        {
+            const Coin &coin = view.AccessCoin(vin.prevout);
+            return coin.IsSpent() ? 0 : (chainActive.Tip()->nHeight + 1) - coin.nHeight;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+}
+
+int GetInputAgeIX(uint256 nTXHash, CTxIn& vin)
+{
+#if 0
+    int sigs = 0;
+    int nResult = GetInputAge(vin);
+    if (nResult < 0) nResult = 0;
+
+    if (nResult < 6) {
+        std::map<uint256, CTransactionLock>::iterator i = mapTxLocks.find(nTXHash);
+        if (i != mapTxLocks.end()) {
+            sigs = (*i).second.CountSignatures();
+        }
+        if (sigs >= SWIFTTX_SIGNATURES_REQUIRED) {
+            return nSwiftTXDepth + nResult;
+        }
+    }
+#endif
+
+    return -1;
+}
+
+int GetIXConfirmations(uint256 nTXHash)
+{
+#if 0
+    int sigs = 0;
+
+    std::map<uint256, CTransactionLock>::iterator i = mapTxLocks.find(nTXHash);
+    if (i != mapTxLocks.end()) {
+        sigs = (*i).second.CountSignatures();
+    }
+    if (sigs >= SWIFTTX_SIGNATURES_REQUIRED) {
+        return nSwiftTXDepth;
+    }
+
+#endif
+
+    return 0;
 }
 
 /**
@@ -2150,7 +2211,6 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
 
     const auto& coinbaseTx = (pindex->nHeight > chainparams.GetConsensus().nLastPOWBlock ? block.vtx[1] : block.vtx[0]);
 
-#if 0
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
         return state.DoS(100,
                          error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
@@ -2158,12 +2218,11 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                          REJECT_INVALID, "bad-cb-amount");
     }
 
-    if (!IsBlockPayeeValid(coinbaseTx, pindex->nHeight, pindex->pprev)) {
+    if (!IsBlockPayeeValid(*coinbaseTx, pindex->nHeight, pindex->pprev)) {
 //        mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
                          REJECT_INVALID, "bad-cb-payee");
     }
-#endif
 
     if (!control.Wait())
         return state.DoS(100, error("%s: CheckQueue failed", __func__), REJECT_INVALID, "block-validation-failed");
@@ -3077,9 +3136,7 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
     if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
         LogPrintf("AcceptProofOfStakeBlock() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, std::to_string(nStakeModifier));
 
-#if 0
     pindexNew->vLotteryWinnersCoinstakes = CalculateLotteryWinners(block, pindexNew->pprev, pindexNew->nHeight);
-#endif
 
     setDirtyBlockIndex.insert(pindexNew);
 }

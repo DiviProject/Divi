@@ -54,10 +54,10 @@ public:
     void AddedMasternodeWinner(uint256 hash);
     void GetNextAsset();
     std::string GetSyncStatus();
-    void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+    void ProcessMessage(CNode* pfrom, CValidationState &state, const std::__cxx11::string &strCommand, CDataStream& vRecv, CConnman &connman);
 
     void Reset();
-    void Process();
+    void Process(CConnman &connman);
     bool IsSynced();
     bool IsBlockchainSynced();
     bool IsMasternodeListSynced() { return RequestedMasternodeAssets > MASTERNODE_SYNC_LIST; }

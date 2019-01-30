@@ -47,6 +47,8 @@ const char *TXLOCKVOTE="txlvote";
 const char *SPORK="spork";
 const char *GETSPORKS="getsporks";
 const char *SPORKCOUNT="sporkcount";
+const char *MASTERNODEPAYMENTSYNC="mnget";
+const char *SYNCSTATUSCOUNT="ssc";
 } // namespace NetMsgType
 
 /** All known message types. Keep this in the same order as the list of
@@ -83,7 +85,9 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::TXLOCKVOTE,
     NetMsgType::SPORK,
     NetMsgType::GETSPORKS,
-    NetMsgType::SPORKCOUNT
+    NetMsgType::SPORKCOUNT,
+    NetMsgType::MASTERNODEPAYMENTSYNC,
+    NetMsgType::SYNCSTATUSCOUNT
 };
 const static std::vector<std::string> allNetMessageTypesVec(allNetMessageTypes, allNetMessageTypes+ARRAYLEN(allNetMessageTypes));
 

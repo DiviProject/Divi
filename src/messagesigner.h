@@ -20,6 +20,9 @@ public:
     /// Verify the message signature, returns true if succcessful
     static bool VerifyMessage(const CTxDestination &address, const std::vector<unsigned char>& vchSig,
                               const std::string strMessage, std::string& strErrorRet);
+
+    static bool SetKey(std::string strSecret, CKey& key, CPubKey& pubkey);
+
 };
 
 /** Helper class for signing hashes and checking their signatures

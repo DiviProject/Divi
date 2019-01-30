@@ -107,8 +107,9 @@ public:
     int getCount()
     {
         int c = -1;
-        BOOST_FOREACH (CMasternodeEntry e, entries) {
-            if (e.getAlias() != "") c++;
+        for (CMasternodeEntry e : entries) {
+            if (e.getAlias() != "")
+                c++;
         }
         return c;
     }

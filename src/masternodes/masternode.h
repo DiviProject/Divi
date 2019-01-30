@@ -23,6 +23,7 @@
 
 using namespace std;
 
+class CWallet;
 class CMasternode;
 class CMasternodeBroadcast;
 class CMasternodePing;
@@ -57,9 +58,9 @@ public:
         READWRITE(vchSig);
     }
 
-    bool CheckAndUpdate(int& nDos, bool fRequireEnabled = true);
+    bool CheckAndUpdate(int& nDos, bool fRequireEnabled, CConnman &connman);
     bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
-    void Relay();
+    void Relay(CConnman &connman);
 
     uint256 GetHash() const
     {
@@ -192,7 +193,7 @@ public:
         return !(a.vin == b.vin);
     }
 
-    uint256 CalculateScore(int mod = 1, int64_t nBlockHeight = 0);
+    arith_uint256 CalculateScore(int mod = 1, int64_t nBlockHeight = 0);
 
     ADD_SERIALIZE_METHODS;
 
@@ -221,7 +222,7 @@ public:
 
     int64_t SecondsSincePayment();
 
-    bool UpdateFromNewBroadcast(CMasternodeBroadcast &mnb);
+    bool UpdateFromNewBroadcast(CMasternodeBroadcast &mnb, CConnman &connman);
 
     inline uint64_t SliceHash(uint256& hash, int slice)
     {
@@ -303,10 +304,10 @@ public:
     CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey newPubkey, CPubKey newPubkey2, Tier nMasternodeTier, int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
-    bool CheckAndUpdate(int& nDoS);
-    bool CheckInputsAndAdd(int& nDos);
+    bool CheckAndUpdate(int& nDoS, CConnman &connman);
+    bool CheckInputsAndAdd(int& nDos, CConnman &connman);
     bool Sign(CKey& keyCollateralAddress);
-    void Relay() const;
+    void Relay(CConnman &connman) const;
 
     ADD_SERIALIZE_METHODS;
 
@@ -338,7 +339,7 @@ public:
                        CKey keyMasternodeNew, CPubKey pubKeyMasternodeNew,
                        Tier nMasternodeTier,
                        std::string& strErrorRet, CMasternodeBroadcast& mnbRet);
-    static bool Create(std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& strErrorRet, CMasternodeBroadcast& mnbRet, bool fOffline = false);
+    static bool Create(CWallet &wallet, std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& strErrorRet, CMasternodeBroadcast& mnbRet, bool fOffline = false);
 };
 
 #endif

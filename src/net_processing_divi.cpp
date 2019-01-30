@@ -6,6 +6,10 @@
 #include <functional>
 #include <init.h>
 #include <boost/thread.hpp>
+#include <masternodes/masternode-payments.h>
+#include <masternodes/masternode-sync.h>
+#include <masternodes/masternodeman.h>
+#include <masternodes/masternode.h>
 
 namespace LegacyInvMsg {
 enum {
@@ -118,14 +122,10 @@ bool net_processing_divi::ProcessGetData(CNode *pfrom, const Consensus::Params &
 
 void net_processing_divi::ProcessExtension(CNode *pfrom, CValidationState &state, const std::string &strCommand, CDataStream &vRecv, CConnman *connman)
 {
-//    mnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
-//    mnpayments.ProcessMessage(pfrom, strCommand, vRecv, *connman);
-//    merchantnodeman.ProcessMessage(pfrom, strCommand, vRecv, *connman);
-//    instantsend.ProcessMessage(pfrom, strCommand, vRecv, *connman);
+    mnodeman.ProcessMessage(pfrom, state, strCommand, vRecv, *connman);
+    masternodePayments.ProcessMessageMasternodePayments(pfrom, state, strCommand, vRecv, *connman);
     sporkManager.ProcessSpork(pfrom, state, strCommand, vRecv, connman);
-//    masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
-//    merchantnodeSync.ProcessMessage(pfrom, strCommand, vRecv);
-//    governance.ProcessMessage(pfrom, strCommand, vRecv, *connman);
+    masternodeSync.ProcessMessage(pfrom, state, strCommand, vRecv, *connman);
 }
 
 void net_processing_divi::ThreadProcessExtensions(CConnman *pConnman)

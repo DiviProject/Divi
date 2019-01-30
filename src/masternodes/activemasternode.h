@@ -27,14 +27,14 @@ private:
     mutable CCriticalSection cs;
 
     /// Ping Masternode
-    bool SendMasternodePing(std::string& errorMessage);
+    bool SendMasternodePing(std::string& errorMessage, CConnman &connman);
 
-    static bool GetVinFromOutput(COutput out, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
+    static bool GetVinFromOutput(CWallet &wallet, COutput out, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
     /// Register any Masternode
-    static bool Register(CMasternodeBroadcast &mnb);
+    static bool Register(CMasternodeBroadcast &mnb, CConnman &connman);
 
     /// Get 10000 PIV input that can be used for the Masternode
-    static bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex);
+    static bool GetMasterNodeVin(CWallet &wallet, CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex);
 
 public:
     // Initialized by init.cpp
@@ -54,20 +54,23 @@ public:
     }
 
     /// Manage status of main Masternode
-    void ManageStatus();
+    void ManageStatus(CWallet &wallet, CConnman &connman);
     std::string GetStatus();
 
     /// Register remote Masternode
-    static bool Register(std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage);
+    static bool Register(CWallet &wallet, std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage, CConnman &connman);
 
     /// Get 10000 PIV input that can be used for the Masternode
-    bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
-    static vector<COutput> SelectCoinsMasternode();
+    bool GetMasterNodeVin(CWallet &wallet, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
+    static vector<COutput> SelectCoinsMasternode(CWallet &wallet);
 
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);
 };
 
 extern CActiveMasternode activeMasternode;
+extern bool fMasterNode;
+extern std::string strMasterNodePrivKey;
+extern std::string strMasterNodeAddr;
 
 #endif

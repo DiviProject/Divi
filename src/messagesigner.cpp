@@ -86,3 +86,17 @@ bool CHashSigner::VerifyHash(const uint256& hash, const CTxDestination &address,
 
     return true;
 }
+
+bool CMessageSigner::SetKey(std::string strSecret, CKey &key, CPubKey &pubkey)
+{
+    CKey keyTmp = DecodeSecret(strSecret);
+
+    if (!keyTmp.IsValid()) {
+        return false;
+    }
+
+    key = keyTmp;
+    pubkey = key.GetPubKey();
+
+    return true;
+}

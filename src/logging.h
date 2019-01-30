@@ -55,6 +55,7 @@ namespace BCLog {
         LEVELDB     = (1 << 20),
         SPORK       = (1 << 21),
         MASTERNODE  = (1 << 22),
+        MNPAYMENTS  = (1 << 23),
         ALL         = ~(uint32_t)0,
     };
 

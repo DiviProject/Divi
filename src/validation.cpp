@@ -2211,14 +2211,14 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
 
     const auto& coinbaseTx = (pindex->nHeight > chainparams.GetConsensus().nLastPOWBlock ? block.vtx[1] : block.vtx[0]);
 
-    if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
+    if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint, chainparams.GetConsensus())) {
         return state.DoS(100,
                          error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
                                FormatMoney(pindex->nMint), nExpectedMint.ToString()),
                          REJECT_INVALID, "bad-cb-amount");
     }
 
-    if (!IsBlockPayeeValid(*coinbaseTx, pindex->nHeight, pindex->pprev)) {
+    if (!IsBlockPayeeValid(*coinbaseTx, pindex->nHeight, pindex->pprev, chainparams.GetConsensus())) {
 //        mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
                          REJECT_INVALID, "bad-cb-payee");
@@ -3136,7 +3136,7 @@ static void AcceptProofOfStakeBlock(const CBlock &block, CBlockIndex *pindexNew)
     if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
         LogPrintf("AcceptProofOfStakeBlock() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, std::to_string(nStakeModifier));
 
-    pindexNew->vLotteryWinnersCoinstakes = CalculateLotteryWinners(block, pindexNew->pprev, pindexNew->nHeight);
+    pindexNew->vLotteryWinnersCoinstakes = CalculateLotteryWinners(block, pindexNew->pprev, pindexNew->nHeight, Params().GetConsensus());
 
     setDirtyBlockIndex.insert(pindexNew);
 }

@@ -123,7 +123,7 @@ public:
         return false;
     }
 
-    bool IsTransactionValid(const CTransaction& txNew);
+    bool IsTransactionValid(const CTransaction& txNew, const Consensus::Params &consensus);
     std::string GetRequiredPaymentsString();
 
     ADD_SERIALIZE_METHODS;
@@ -173,7 +173,7 @@ public:
     bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
     bool IsValid(CNode* pnode, std::string& strError);
     bool SignatureValid();
-    void Relay();
+    void Relay(CConnman &connman);
 
     void AddPayee(CScript payeeIn)
     {
@@ -233,14 +233,14 @@ public:
     }
 
     bool AddWinningMasternode(const CMasternodePaymentWinner &winner);
-    bool ProcessBlock(int nBlockHeight);
+    bool ProcessBlock(int nBlockHeight, CConnman &connman);
 
-    void Sync(CNode* node, int nCountNeeded);
+    void Sync(CNode* node, int nCountNeeded, CConnman &connman);
     void CheckAndRemove();
     int LastPayment(CMasternode& mn);
 
     bool GetBlockPayee(int nBlockHeight, CScript& payee);
-    bool IsTransactionValid(const CTransaction& txNew, int nBlockHeight);
+    bool IsTransactionValid(const CTransaction& txNew, int nBlockHeight, const Consensus::Params &consensus);
     bool IsScheduled(CMasternode& mn, int nNotBlockHeight);
 
     bool CanVote(COutPoint outMasternode, int nBlockHeight)
@@ -260,7 +260,7 @@ public:
     }
 
     int GetMinMasternodePaymentsProto();
-    void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+    void ProcessMessageMasternodePayments(CNode* pfrom, CValidationState &state, const std::string& strCommand, CDataStream& vRecv, CConnman &connman);
     std::string GetRequiredPaymentsString(int nBlockHeight);
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake, const Consensus::Params &consensus);
     std::string ToString() const;

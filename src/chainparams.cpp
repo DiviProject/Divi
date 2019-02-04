@@ -131,7 +131,7 @@ public:
         // This is fine at runtime as we'll fall back to using them as a oneshot if they don't support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-//        vSeeds.emplace_back("autoseeds.diviseed.diviproject.org");
+        vSeeds.emplace_back("autoseeds.diviseed.diviproject.org");
 //        vSeeds.emplace_back("178.62.195.16");
 //        vSeeds.emplace_back("178.62.221.33");
 //        vSeeds.emplace_back("178.128.251.20");

@@ -56,7 +56,7 @@
 #include <sporkdb.h>
 #include <masternodes/masternode-payments.h>
 #include <masternodes/masternodeman.h>
-//#include <wallet/wallet.h>
+#include <wallet/wallet.h>
 
 #ifndef WIN32
 #include <signal.h>
@@ -1835,7 +1835,7 @@ bool AppInitMain(InitInterfaces& interfaces)
         client->start(scheduler);
     }
 
-    //    threadGroup.create_thread(boost::bind(ThreadCheckObfuScationPool, boost::ref(*GetWallets().front()), boost::ref(*g_connman)));
+    threadGroup.create_thread(boost::bind(ThreadCheckObfuScationPool, boost::ref(*GetWallets().front()), boost::ref(*g_connman)));
 
     return true;
 }

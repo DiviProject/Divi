@@ -8,6 +8,7 @@
 #include <masternodes/activemasternode.h>
 #include <masternodes/masternodeman.h>
 #include <masternodes/masternode-payments.h>
+#include <masternodes/masternode-sync.h>
 #include <masternodes/masternodeconfig.h>
 #include <key_io.h>
 #include <script/standard.h>
@@ -453,11 +454,46 @@ static UniValue getmasternodestatus (const JSONRPCRequest& request)
                         + activeMasternode.GetStatus());
 }
 
+UniValue mnsync(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() != 1)
+        throw runtime_error(
+            "mnsync [status|reset]\n"
+            "Returns the sync status, updates to the next step or resets it entirely.\n"
+        );
+
+    std::string strMode = request.params[0].get_str();
+
+    if(strMode == "status") {
+        UniValue obj(UniValue::VOBJ);
+        obj.pushKV("IsBlockchainSynced", masternodeSync.IsBlockchainSynced());
+        obj.pushKV("lastMasternodeList", masternodeSync.lastMasternodeList);
+        obj.pushKV("lastMasternodeWinner", masternodeSync.lastMasternodeWinner);
+        obj.pushKV("lastFailure", masternodeSync.lastFailure);
+        obj.pushKV("nCountFailures", masternodeSync.nCountFailures);
+        obj.pushKV("sumMasternodeList", masternodeSync.sumMasternodeList);
+        obj.pushKV("sumMasternodeWinner", masternodeSync.sumMasternodeWinner);
+        obj.pushKV("countMasternodeList", masternodeSync.countMasternodeList);
+        obj.pushKV("countMasternodeWinner", masternodeSync.countMasternodeWinner);
+        obj.pushKV("RequestedMasternodeAssets", masternodeSync.RequestedMasternodeAssets);
+        obj.pushKV("RequestedMasternodeAttempt", masternodeSync.RequestedMasternodeAttempt);
+        return obj;
+    }
+
+    if(strMode == "reset")
+    {
+        masternodeSync.Reset();
+        return "success";
+    }
+    return "failure";
+}
+
 // clang-format off
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
   //  --------------------- ------------------------  -----------------------  ----------
     { "masternode",            "listmasternodes",          &listmasternodes,          {"filter"} },
+    { "masternode",            "mnsync",                   &mnsync,                   {"command"} },
 };
 // clang-format on
 

@@ -326,8 +326,6 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
         return false;
     }
 
-    LogPrintf("Got stake modifier %lu at height %d\n", nStakeModifier, nStakeModifierHeight);
-
     //create data stream once instead of repeating it in the loop
     CDataStream ss(SER_GETHASH, 0);
     ss << nStakeModifier;
@@ -406,7 +404,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
     auto nValidInputs = std::count_if(std::begin(tx->vin), std::end(tx->vin), [&kernelScript](const CTxIn &txIn) {
         CTransactionRef txPrev;
         uint256 hashBlock;
-        if(GetTransaction(txIn.prevout.hash, txPrev, Params().GetConsensus(), hashBlock)) {
+        if(GetTransaction(txIn.prevout.hash, txPrev, Params().GetConsensus(), hashBlock, true)) {
             return txPrev->vout[txIn.prevout.n].scriptPubKey == kernelScript;
         }
 

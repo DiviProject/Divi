@@ -253,7 +253,7 @@ void CMasternode::Check(bool forceCheck)
 
     if (!unitTest) {
         Coin coin;
-        if (GetUTXOCoin(vin.prevout, coin)) {
+        if (!GetUTXOCoin(vin.prevout, coin)) {
             activeState = MASTERNODE_VIN_SPENT;
             return;
         }
@@ -636,7 +636,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos, CConnman &connman)
     }
 
     std::string errorMessage = "";
-    if (!CMessageSigner::VerifyMessage(pubKeyCollateralAddress, sig, strMessage, errorMessage)) {
+    if (!CMessageSigner::VerifyMessage(pubKeyCollateralAddress.GetID(), sig, strMessage, errorMessage)) {
         LogPrintf("%s : - Got bad Masternode address signature\n", __func__);
         nDos = 100;
         return false;
@@ -699,7 +699,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS, CConnman &connman)
     }
 
     Coin coin;
-    if (GetUTXOCoin(vin.prevout, coin)) {
+    if (!GetUTXOCoin(vin.prevout, coin)) {
         LogPrintf("mnb - coin is already spent\n");
         return false;
     }
@@ -771,7 +771,7 @@ bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress)
         return false;
     }
 
-    if (!CMessageSigner::VerifyMessage(pubKeyCollateralAddress, sig, strMessage, errorMessage)) {
+    if (!CMessageSigner::VerifyMessage(pubKeyCollateralAddress.GetID(), sig, strMessage, errorMessage)) {
         LogPrint(BCLog::MASTERNODE,"CMasternodeBroadcast::Sign() - Error: %s\n", errorMessage);
         return false;
     }
@@ -809,7 +809,7 @@ bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
         return false;
     }
 
-    if (!CMessageSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+    if (!CMessageSigner::VerifyMessage(pubKeyMasternode.GetID(), vchSig, strMessage, errorMessage)) {
         LogPrint(BCLog::MASTERNODE,"CMasternodePing::Sign() - Error: %s\n", errorMessage);
         return false;
     }
@@ -845,7 +845,7 @@ bool CMasternodePing::CheckAndUpdate(int& nDos, bool fRequireEnabled, CConnman &
             std::string strMessage = vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
 
             std::string errorMessage = "";
-            if (!CMessageSigner::VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+            if (!CMessageSigner::VerifyMessage(pmn->pubKeyMasternode.GetID(), vchSig, strMessage, errorMessage)) {
                 LogPrint(BCLog::MASTERNODE,"CMasternodePing::CheckAndUpdate - Got bad Masternode address signature %s\n", vin.prevout.hash.ToString());
                 nDos = 33;
                 return false;

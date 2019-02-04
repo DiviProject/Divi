@@ -5,10 +5,12 @@
 
 // clang-format off
 #include <net.h>
-#include <masternodeconfig.h>
-#include <util.h>
+#include <masternodes/masternodeconfig.h>
 #include <ui_interface.h>
 #include <base58.h>
+#include <chainparams.h>
+#include <netbase.h>
+#include <util/system.h>
 // clang-format on
 
 CMasternodeConfig masternodeConfig;
@@ -60,15 +62,19 @@ bool CMasternodeConfig::read(std::string& strErr)
             }
         }
 
-        if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            if (CService(ip).GetPort() != 51472) {
+        CService addr;
+        Lookup(ip.c_str(), addr, 0, false);
+
+        if (Params().NetworkIDString() == CBaseChainParams::MAIN) {
+
+            if (addr.GetPort() != 51472) {
                 strErr = _("Invalid port detected in masternode.conf") + "\n" +
                          strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
                          _("(must be 51472 for mainnet)");
                 streamConfig.close();
                 return false;
             }
-        } else if (CService(ip).GetPort() == 51472) {
+        } else if (addr.GetPort() == 51472) {
             strErr = _("Invalid port detected in masternode.conf") + "\n" +
                      strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
                      _("(51472 could be used only on mainnet)");

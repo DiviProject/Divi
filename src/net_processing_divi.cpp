@@ -79,24 +79,24 @@ static const MapSporkHandlers &GetMapGetDataHandlers()
 //                        }
 //                        return {};
 //                    });
-//        ADD_HANDLER(MSG_MASTERNODE_WINNER, {
-//                        if(masternodePayments.mapMasternodePayeeVotes.count(hash)) {
-//                            return msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, masternodePayments.mapMasternodePayeeVotes[hash]);
-//                        }
-//                        return {};
-//                    });
-//        ADD_HANDLER(MSG_MASTERNODE_ANNOUNCE, {
-//                        if(mnodeman.mapSeenMasternodeBroadcast.count(hash)) {
-//                            return msgMaker.Make(NetMsgType::MNANNOUNCE, mnodeman.mapSeenMasternodeBroadcast[hash].second);
-//                        }
-//                        return {};
-//                    });
-//        ADD_HANDLER(MSG_MASTERNODE_PING, {
-//                        if(mnodeman.mapSeenMasternodePing.count(hash)) {
-//                            return msgMaker.Make(NetMsgType::MNPING, mnodeman.mapSeenMasternodePing[hash]);
-//                        }
-//                        return {};
-//                    });
+        ADD_HANDLER(MSG_MASTERNODE_WINNER, {
+                        if(masternodePayments.mapMasternodePayeeVotes.count(hash)) {
+                            return msgMaker.Make(NetMsgType::MASTERNODEPAYMENTVOTE, masternodePayments.mapMasternodePayeeVotes[hash]);
+                        }
+                        return {};
+                    });
+        ADD_HANDLER(MSG_MASTERNODE_ANNOUNCE, {
+                        if(mnodeman.mapSeenMasternodeBroadcast.count(hash)) {
+                            return msgMaker.Make(NetMsgType::MNANNOUNCE, mnodeman.mapSeenMasternodeBroadcast[hash]);
+                        }
+                        return {};
+                    });
+        ADD_HANDLER(MSG_MASTERNODE_PING, {
+                        if(mnodeman.mapSeenMasternodePing.count(hash)) {
+                            return msgMaker.Make(NetMsgType::MNPING, mnodeman.mapSeenMasternodePing[hash]);
+                        }
+                        return {};
+                    });
     }
 
     return sporkHandlers;
@@ -221,22 +221,14 @@ bool net_processing_divi::AlreadyHave(const CInv &inv)
     case MSG_SPORK:
         return mapSporks.count(inv.hash);
 
-//    case MSG_MASTERNODE_PAYMENT_VOTE:
-//        return mnpayments.mapMasternodePaymentVotes.count(inv.hash);
+    case MSG_MASTERNODE_WINNER:
+        return masternodePayments.mapMasternodePayeeVotes.count(inv.hash);
 
-//    case MSG_MASTERNODE_PAYMENT_BLOCK:
-//    {
-//        BlockMap::iterator mi = mapBlockIndex.find(inv.hash);
-//        return mi != mapBlockIndex.end() && mnpayments.mapMasternodeBlocks.find(mi->second->nHeight) != mnpayments.mapMasternodeBlocks.end();
-//    }
+    case MSG_MASTERNODE_ANNOUNCE:
+        return mnodeman.mapSeenMasternodeBroadcast.count(inv.hash);
 
-//    case MSG_MASTERNODE_ANNOUNCE:
-//        return mnodeman.mapSeenMasternodeBroadcast.count(inv.hash) && !mnodeman.IsMnbRecoveryRequested(inv.hash);
-//    case MSG_MERCHANTNODE_ANNOUNCE:
-//        return merchantnodeman.mapSeenMerchantnodeBroadcast.count(inv.hash) && !merchantnodeman.IsMnbRecoveryRequested(inv.hash);
-
-//    case MSG_MASTERNODE_PING:
-//        return mnodeman.mapSeenMasternodePing.count(inv.hash);
+    case MSG_MASTERNODE_PING:
+        return mnodeman.mapSeenMasternodePing.count(inv.hash);
     }
     return true;
 }

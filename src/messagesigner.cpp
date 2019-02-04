@@ -10,6 +10,25 @@
 #include <key_io.h>
 #include <util/strencodings.h>
 
+bool CMessageSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, CMasternode::Tier nMasternodeTier)
+{
+    CScript payee2;
+    payee2 = GetScriptForDestination(pubkey.GetID());
+
+    CTransactionRef txVin;
+    uint256 hash;
+    auto nCollateral = CMasternode::GetTierCollateralAmount(nMasternodeTier);
+    if (GetTransaction(vin.prevout.hash, txVin, Params().GetConsensus(), hash, true)) {
+        for (CTxOut out : txVin->vout) {
+            if (out.nValue == nCollateral) {
+                if (out.scriptPubKey == payee2) return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 bool CMessageSigner::GetKeysFromSecret(const std::string strSecret, CKey& keyRet, CPubKey& pubkeyRet)
 {   
     CKey decodedKey = DecodeSecret(strSecret);

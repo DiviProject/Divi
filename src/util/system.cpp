@@ -816,6 +816,16 @@ const fs::path &GetDataDir(bool fNetSpecific)
     return path;
 }
 
+fs::path GetMasternodeConfigFile()
+{
+    boost::filesystem::path pathConfigFile(gArgs.GetArg("-mnconf", "masternode.conf"));
+    if (!pathConfigFile.is_complete())
+        return fs::absolute(pathConfigFile, GetDataDir());
+
+
+    return pathConfigFile;
+}
+
 void ClearDatadirCache()
 {
     LOCK(csPathCached);

@@ -244,8 +244,13 @@ extern const char *TXLOCKVOTE;
 extern const char *SPORK;
 extern const char *GETSPORKS;
 extern const char *SPORKCOUNT;
+extern const char *MNANNOUNCE;
+extern const char *MNPING;
 extern const char *MASTERNODEPAYMENTSYNC;
+extern const char *MASTERNODEPAYMENTVOTE;
+extern const char *DSEG;
 extern const char *SYNCSTATUSCOUNT;
+
 };
 
 /* Get a vector of all valid message types (see above) */

@@ -227,7 +227,7 @@ void CMasternodeSync::Process(CConnman &connman)
             if (RequestedMasternodeAttempt <= 2) {
                 connman.PushMessage(pnode, CNetMsgMaker(pnode->GetRecvVersion()).Make(NetMsgType::GETSPORKS));
             } else if (RequestedMasternodeAttempt < 4) {
-                mnodeman.DsegUpdate(pnode);
+                mnodeman.DsegUpdate(pnode, connman);
             } else if (RequestedMasternodeAttempt < 6) {
                 int nMnCount = mnodeman.size();
                 connman.PushMessage(pnode, CNetMsgMaker(pnode->GetRecvVersion()).Make(NetMsgType::MASTERNODEPAYMENTSYNC, nMnCount));
@@ -275,7 +275,7 @@ void CMasternodeSync::Process(CConnman &connman)
 
                 if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
 
-                mnodeman.DsegUpdate(pnode);
+                mnodeman.DsegUpdate(pnode, connman);
                 RequestedMasternodeAttempt++;
                 return;
             }

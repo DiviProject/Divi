@@ -54,6 +54,8 @@ BaseIndex::~BaseIndex()
 
 bool BaseIndex::Init()
 {
+    return true;
+
     CBlockLocator locator;
     if (!GetDB().ReadBestBlock(locator)) {
         locator.SetNull();
@@ -87,6 +89,8 @@ static const CBlockIndex* NextSyncBlock(const CBlockIndex* pindex_prev) EXCLUSIV
 
 void BaseIndex::ThreadSync()
 {
+    return;
+
     const CBlockIndex* pindex = m_best_block_index.load();
     if (!m_synced) {
         auto& consensus_params = Params().GetConsensus();
@@ -156,6 +160,8 @@ bool BaseIndex::WriteBestBlock(const CBlockIndex* block_index)
 void BaseIndex::BlockConnected(const std::shared_ptr<const CBlock>& block, const CBlockIndex* pindex,
                                const std::vector<CTransactionRef>& txn_conflicted)
 {
+    return;
+
     if (!m_synced) {
         return;
     }
@@ -193,6 +199,8 @@ void BaseIndex::BlockConnected(const std::shared_ptr<const CBlock>& block, const
 
 void BaseIndex::ChainStateFlushed(const CBlockLocator& locator)
 {
+    return;
+
     if (!m_synced) {
         return;
     }
@@ -232,6 +240,7 @@ void BaseIndex::ChainStateFlushed(const CBlockLocator& locator)
 bool BaseIndex::BlockUntilSyncedToCurrentChain()
 {
     AssertLockNotHeld(cs_main);
+    return true;
 
     if (!m_synced) {
         return false;

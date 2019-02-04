@@ -145,6 +145,7 @@ BITCOIN_CORE_H = \
   masternodes/masternode-payments.h \
   masternodes/masternode-sync.h \
   masternodes/masternodeman.h \
+  masternodes/masternodeconfig.h \
   memusage.h \
   merkleblock.h \
   miner.h \
@@ -174,6 +175,7 @@ BITCOIN_CORE_H = \
   rpc/rawtransaction.h \
   rpc/register.h \
   rpc/util.h \
+  rpc/masternode.h \
   scheduler.h \
   script/descriptor.h \
   script/ismine.h \
@@ -264,6 +266,12 @@ libbitcoin_server_a_SOURCES = \
   net_processing_divi.cpp \
   netfulfilledman.cpp \
   noui.cpp \
+  masternodes/activemasternode.cpp \
+  masternodes/masternode.cpp \
+  masternodes/masternode-payments.cpp \
+  masternodes/masternode-sync.cpp \
+  masternodes/masternodeman.cpp \
+  masternodes/masternodeconfig.cpp \
   outputtype.cpp \
   policy/fees.cpp \
   policy/policy.cpp \
@@ -275,6 +283,7 @@ libbitcoin_server_a_SOURCES = \
   rpc/misc.cpp \
   rpc/net.cpp \
   rpc/rawtransaction.cpp \
+  rpc/masternode.cpp \
   rpc/server.cpp \
   rpc/util.cpp \
   script/sigcache.cpp \
@@ -311,11 +320,6 @@ endif
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_wallet_a_SOURCES = \
-  masternodes/activemasternode.cpp \
-  masternodes/masternode.cpp \
-  masternodes/masternode-payments.cpp \
-  masternodes/masternode-sync.cpp \
-  masternodes/masternodeman.cpp \
   interfaces/wallet.cpp \
   wallet/coincontrol.cpp \
   wallet/crypter.cpp \

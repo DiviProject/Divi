@@ -47,7 +47,11 @@ const char *TXLOCKVOTE="txlvote";
 const char *SPORK="spork";
 const char *GETSPORKS="getsporks";
 const char *SPORKCOUNT="sporkcount";
+const char *MNANNOUNCE="mnb";
+const char *MNPING="mnp";
 const char *MASTERNODEPAYMENTSYNC="mnget";
+const char *MASTERNODEPAYMENTVOTE="mnw";
+const char *DSEG="dseg";
 const char *SYNCSTATUSCOUNT="ssc";
 } // namespace NetMsgType
 
@@ -86,7 +90,11 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::SPORK,
     NetMsgType::GETSPORKS,
     NetMsgType::SPORKCOUNT,
+    NetMsgType::MNANNOUNCE,
+    NetMsgType::MNPING,
     NetMsgType::MASTERNODEPAYMENTSYNC,
+    NetMsgType::MASTERNODEPAYMENTVOTE,
+    NetMsgType::DSEG,
     NetMsgType::SYNCSTATUSCOUNT
 };
 const static std::vector<std::string> allNetMessageTypesVec(allNetMessageTypes, allNetMessageTypes+ARRAYLEN(allNetMessageTypes));

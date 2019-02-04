@@ -54,6 +54,9 @@
 #include <stdio.h>
 #include <netfulfilledman.h>
 #include <sporkdb.h>
+#include <masternodes/masternode-payments.h>
+#include <masternodes/masternodeman.h>
+//#include <wallet/wallet.h>
 
 #ifndef WIN32
 #include <signal.h>
@@ -177,7 +180,6 @@ static bool LoadExtensionsDataCaches()
         boost::filesystem::remove((pathDB / strDBName).string(), ec);
     }
 
-#if 0
     CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
     if(!flatdb1.Load(mnodeman)) {
         return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
@@ -187,13 +189,12 @@ static bool LoadExtensionsDataCaches()
         strDBName = "mnpayments.dat";
         uiInterface.InitMessage(_("Loading masternode payment cache..."));
         CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
-        if(!flatdb2.Load(mnpayments)) {
+        if(!flatdb2.Load(masternodePayments)) {
             return InitError(_("Failed to load masternode payments cache from") + "\n" + (pathDB / strDBName).string());
         }
     } else {
         uiInterface.InitMessage(_("Masternode cache is empty, skipping payments and governance cache..."));
     }
-#endif
 
     strDBName = "netfulfilled.dat";
     uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
@@ -208,12 +209,10 @@ static bool LoadExtensionsDataCaches()
 static void StoreExtensionsDataCaches()
 {
     // STORE DATA CACHES INTO SERIALIZED DAT FILES
-#if 0
     CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
     flatdb1.Dump(mnodeman);
     CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
-    flatdb2.Dump(mnpayments);
-#endif
+    flatdb2.Dump(masternodePayments);
     CFlatDB<CNetFulfilledRequestManager> flatdb3("netfulfilled.dat", "magicFulfilledCache");
     flatdb3.Dump(netfulfilledman);
 }
@@ -1487,6 +1486,13 @@ bool AppInitMain(InitInterfaces& interfaces)
     LogPrintf("* Using %.1fMiB for chain state database\n", nCoinDBCache * (1.0 / 1024 / 1024));
     LogPrintf("* Using %.1fMiB for in-memory UTXO set (plus up to %.1fMiB of unused mempool space)\n", nCoinCacheUsage * (1.0 / 1024 / 1024), nMempoolSizeMax * (1.0 / 1024 / 1024));
 
+    // ********************************************************* Step 8: start indexers
+    // we need to do this here, because we relly on txindex during VerifyDb
+    if (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
+        g_txindex = MakeUnique<TxIndex>(nTxIndexCache, false, fReindex);
+        g_txindex->Start();
+    }
+
     bool fLoaded = false;
     while (!fLoaded && !ShutdownRequested()) {
         bool fReset = fReindex;
@@ -1659,12 +1665,6 @@ bool AppInitMain(InitInterfaces& interfaces)
         ::feeEstimator.Read(est_filein);
     fFeeEstimatesInitialized = true;
 
-    // ********************************************************* Step 8: start indexers
-    if (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
-        g_txindex = MakeUnique<TxIndex>(nTxIndexCache, false, fReindex);
-        g_txindex->Start();
-    }
-
     // ********************************************************* Step 9: load wallet
     for (const auto& client : interfaces.chain_clients) {
         if (!client->load()) {
@@ -1834,6 +1834,8 @@ bool AppInitMain(InitInterfaces& interfaces)
     for (const auto& client : interfaces.chain_clients) {
         client->start(scheduler);
     }
+
+    //    threadGroup.create_thread(boost::bind(ThreadCheckObfuScationPool, boost::ref(*GetWallets().front()), boost::ref(*g_connman)));
 
     return true;
 }

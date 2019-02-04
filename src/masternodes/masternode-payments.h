@@ -57,7 +57,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
         READWRITE(scriptPubKey);
         READWRITE(nVotes);
@@ -129,7 +129,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
         READWRITE(nBlockHeight);
         READWRITE(vecPayments);
@@ -171,7 +171,7 @@ public:
     }
 
     bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
-    bool IsValid(CNode* pnode, std::string& strError);
+    bool IsValid(CNode* pnode, std::string& strError, CConnman &connman);
     bool SignatureValid();
     void Relay(CConnman &connman);
 
@@ -184,7 +184,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
         READWRITE(vinMasternode);
         READWRITE(nBlockHeight);
@@ -270,12 +270,14 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
         READWRITE(mapMasternodePayeeVotes);
         READWRITE(mapMasternodeBlocks);
     }
 };
+
+void ThreadCheckObfuScationPool(CWallet &wallet, CConnman &connman);
 
 
 #endif

@@ -292,7 +292,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBloc
 int CMasternodePayments::GetMinMasternodePaymentsProto()
 {
     //    if (IsSporkActive(SPORK_10_MASTERNODE_PAY_UPDATED_NODES))
-    return PROTOCOL_VERSION;
+    return MIN_PEER_PROTO_VERSION;
 }
 
 void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, CValidationState &state, const string &strCommand, CDataStream& vRecv, CConnman &connman)
@@ -314,7 +314,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, CValida
         netfulfilledman.AddFulfilledRequest(pfrom->addr, NetMsgType::MASTERNODEPAYMENTSYNC);
         masternodePayments.Sync(pfrom, nCountNeeded, connman);
         LogPrint(BCLog::MNPAYMENTS, "mnget - Sent Masternode winners to peer %i\n", pfrom->GetId());
-    } else if (strCommand == "mnw") { //Masternode Payments Declare Winner
+    } else if (strCommand == NetMsgType::MASTERNODEPAYMENTVOTE) { //Masternode Payments Declare Winner
         //this is required in litemodef
         CMasternodePaymentWinner winner;
         vRecv >> winner;
@@ -341,7 +341,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, CValida
         }
 
         std::string strError = "";
-        if (!winner.IsValid(pfrom, strError)) {
+        if (!winner.IsValid(pfrom, strError, connman)) {
             // if(strError != "") LogPrint(BCLog::MASTERNODE,"mnw - invalid message - %s\n", strError);
             return;
         }
@@ -358,7 +358,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, CValida
                 state.DoS(20, false, REJECT_INVALID, "mnget - peer already asked me for the list");
             }
             // it could just be a non-synced masternode
-            mnodeman.AskForMN(pfrom, winner.vinMasternode);
+            mnodeman.AskForMN(pfrom, winner.vinMasternode, connman);
             return;
         }
 
@@ -388,7 +388,7 @@ bool CMasternodePaymentWinner::Sign(CKey& keyMasternode, CPubKey& pubKeyMasterno
         return false;
     }
 
-    if (!CMessageSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+    if (!CMessageSigner::VerifyMessage(pubKeyMasternode.GetID(), vchSig, strMessage, errorMessage)) {
         LogPrint(BCLog::MASTERNODE,"CMasternodePing::Sign() - Error: %s\n", errorMessage.c_str());
         return false;
     }
@@ -583,14 +583,14 @@ void CMasternodePayments::CheckAndRemove()
     }
 }
 
-bool CMasternodePaymentWinner::IsValid(CNode* pnode, std::string& strError)
+bool CMasternodePaymentWinner::IsValid(CNode* pnode, std::string& strError, CConnman &connman)
 {
     CMasternode* pmn = mnodeman.Find(vinMasternode);
 
     if (!pmn) {
         strError = strprintf("Unknown Masternode %s", vinMasternode.prevout.hash.ToString());
         LogPrint(BCLog::MASTERNODE,"CMasternodePaymentWinner::IsValid - %s\n", strError);
-        mnodeman.AskForMN(pnode, vinMasternode);
+        mnodeman.AskForMN(pnode, vinMasternode, connman);
         return false;
     }
 
@@ -699,7 +699,7 @@ bool CMasternodePaymentWinner::SignatureValid()
                 payee.ToString();
 
         std::string errorMessage = "";
-        if (!CMessageSigner::VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+        if (!CMessageSigner::VerifyMessage(pmn->pubKeyMasternode.GetID(), vchSig, strMessage, errorMessage)) {
             return error("CMasternodePaymentWinner::SignatureValid() - Got bad Masternode address signature %s\n", vinMasternode.prevout.hash.ToString());
         }
 
@@ -869,4 +869,46 @@ std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const 
     }
 
     return result;
+}
+
+
+//TODO: Rename/move to core
+void ThreadCheckObfuScationPool(CWallet &wallet, CConnman &connman)
+{
+    // Make this thread recognisable as the wallet flushing thread
+    RenameThread("divi-obfuscation");
+
+    unsigned int c = 0;
+
+    while (true) {
+        MilliSleep(1000);
+        //LogPrintf("ThreadCheckObfuScationPool::check timeout\n");
+
+        // try to sync from all available nodes, one step at a time
+        masternodeSync.Process(connman);
+
+        if (masternodeSync.IsBlockchainSynced()) {
+            c++;
+
+            // check if we should activate or ping every few minutes,
+            // start right after sync is considered to be done
+            if (c % MASTERNODE_PING_SECONDS == 1) activeMasternode.ManageStatus(wallet, connman);
+
+            if (c % 60 == 0) {
+                mnodeman.CheckAndRemoveInnactive();
+                mnodeman.ProcessMasternodeConnections();
+                masternodePayments.CheckAndRemove();
+//                CleanTransactionLocksList();
+            }
+
+            //if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
+
+//            obfuScationPool.CheckTimeout();
+//            obfuScationPool.CheckForCompleteQueue();
+
+//            if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
+//                obfuScationPool.DoAutomaticDenominating();
+//            }
+        }
+    }
 }

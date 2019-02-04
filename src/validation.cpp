@@ -45,6 +45,7 @@
 #include <spork.h>
 #include <sporkdb.h>
 #include <masternodes/masternode-payments.h>
+#include <masternodes/masternode-sync.h>
 
 #include <future>
 #include <sstream>
@@ -2139,7 +2140,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
             if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee)) {
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
             }
-            nFees += txfee;
+
             if (!MoneyRange(nFees)) {
                 return state.DoS(100, error("%s: accumulated fee in the block out of range.", __func__),
                                  REJECT_INVALID, "bad-txns-accumulated-fee-outofrange");
@@ -3822,6 +3823,7 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
 bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock> pblock, bool fForceProcessing, bool *fNewBlock)
 {
     AssertLockNotHeld(cs_main);
+    int nHeight = 0;
 
     {
         CBlockIndex *pindex = nullptr;
@@ -3843,6 +3845,8 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
             GetMainSignals().BlockChecked(*pblock, state);
             return error("%s: AcceptBlock FAILED (%s)", __func__, FormatStateMessage(state));
         }
+
+        nHeight = chainActive.Height();
     }
 
     NotifyHeaderTip();
@@ -3850,6 +3854,10 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
     CValidationState state; // Only used to report errors, not invalidity - ignore it
     if (!g_chainstate.ActivateBestChain(state, chainparams, pblock))
         return error("%s: ActivateBestChain failed (%s)", __func__, FormatStateMessage(state));
+
+    if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
+        masternodePayments.ProcessBlock(nHeight + 10, *g_connman);
+    }
 
     return true;
 }
@@ -5147,3 +5155,11 @@ public:
         mapBlockIndex.clear();
     }
 } instance_of_cmaincleanup;
+
+
+std::string CBlockRewards::ToString() const
+{
+    return strprintf("BlockRewards(nStakeReward=%s, nMasternodeReward=%s, nTreasuryReward=%s, nCharityReward=%s, nLotteryReward=%s, nProposalsReward=%s)",
+                     FormatMoney(nStakeReward), FormatMoney(nMasternodeReward), FormatMoney(nTreasuryReward),
+                     FormatMoney(nCharityReward), FormatMoney(nLotteryReward), FormatMoney(nProposalsReward));
+}

@@ -7,12 +7,15 @@
 
 #include <key.h>
 #include <script/standard.h>
+#include <masternodes/masternode.h>
 
 /** Helper class for signing messages and checking their signatures
  */
 class CMessageSigner
 {
 public:
+    /// Is the inputs associated with this public key? (and there is 10000 PIV - checking if valid masternode)
+    static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, CMasternode::Tier nMasternodeTier);
     /// Set the private/public key values, returns true if successful
     static bool GetKeysFromSecret(const std::string strSecret, CKey& keyRet, CPubKey& pubkeyRet);
     /// Sign the message, returns true if successful

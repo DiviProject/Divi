@@ -161,6 +161,7 @@ rpc/protocol.h
 rpc/rawtransaction.cpp
 rpc/rawtransaction.h
 rpc/register.h
+rpc/masternode.cpp
 rpc/server.cpp
 rpc/server.h
 rpc/util.cpp

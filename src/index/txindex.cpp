@@ -211,9 +211,9 @@ bool TxIndex::Init()
     // Attempt to migrate txindex from the old database to the new one. Even if
     // chain_tip is null, the node could be reindexing and we still want to
     // delete txindex records in the old database.
-    if (!m_db->MigrateData(*pblocktree, chainActive.GetLocator())) {
-        return false;
-    }
+//    if (!m_db->MigrateData(*pblocktree, chainActive.GetLocator())) {
+//        return false;
+//    }
 
     return BaseIndex::Init();
 }

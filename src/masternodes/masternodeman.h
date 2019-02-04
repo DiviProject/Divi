@@ -51,7 +51,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    inline void SerializationOp(Stream& s, Operation ser_action)
     {
         LOCK(cs);
         READWRITE(vMasternodes);
@@ -71,7 +71,7 @@ public:
     bool Add(CMasternode& mn);
 
     /// Ask (source) node for mnb
-    void AskForMN(CNode* pnode, CTxIn& vin);
+    void AskForMN(CNode* pnode, CTxIn& vin, CConnman &connman);
 
     /// Check all Masternodes
     void Check();
@@ -87,7 +87,7 @@ public:
 
     void CountNetworks(int protocolVersion, int& ipv4, int& ipv6, int& onion);
 
-    void DsegUpdate(CNode* pnode);
+    void DsegUpdate(CNode* pnode, CConnman &connman);
 
     /// Find an entry
     CMasternode* Find(const CScript& payee);
@@ -127,7 +127,7 @@ public:
     void Remove(CTxIn vin);
 
     /// Update masternode list and maps using provided CMasternodeBroadcast
-    void UpdateMasternodeList(CMasternodeBroadcast mnb);
+    void UpdateMasternodeList(CMasternodeBroadcast mnb, CConnman &connman);
 };
 
 #endif

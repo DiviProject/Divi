@@ -335,6 +335,116 @@ bool CWallet::AddWatchOnly(const CScript& dest)
     return WalletBatch(*database).WriteWatchOnly(dest, meta);
 }
 
+CAmount GetStakeReward(CAmount blockReward, unsigned int percentage)
+{
+    return (blockReward / 100) * percentage;
+}
+
+bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
+                                    unsigned int nBits, const CBlock &blockFrom,
+                                    unsigned int nTxPrevOffset, const CTransactionRef &txPrev,
+                                    const COutPoint &prevout, unsigned int &nTimeTx,
+                                    bool fGenerateSegwit, bool fPrintProofOfStake) const
+{
+    unsigned int nTryTime = 0;
+    uint256 hashProofOfStake;
+
+    if (blockFrom.GetBlockTime() + Params().GetConsensus().nStakeMinAge + nHashDrift > nTimeTx) // Min age requirement
+        return false;
+
+
+    if(!contract.IsValid()) {
+
+        CTxDestination dest;
+        if(!ExtractDestination(stakeScript, dest))
+            return false;
+
+        // this will return true only if it's P2SH_SEGWIT, SEGWIT, P2PKH(LEGACY)
+        if(GetKeyForDestination(*this, dest).IsNull())
+        {
+            return error("CreateCoinStakeKernel : no support for kernel %s\n", EncodeDestination(dest));
+        }
+
+        if(!fGenerateSegwit && !boost::get<CKeyID>(&dest))
+        {
+            return false;
+        }
+    }
+
+
+    for(unsigned int i = 0; i < nHashDrift; ++i)
+    {
+        nTryTime = nTimeTx - i;
+        if (CheckStakeKernelHash(nBits, blockFrom, nTxPrevOffset, txPrev, prevout, nTryTime, hashProofOfStake, fPrintProofOfStake))
+        {
+            //Double check that this will pass time requirements
+            if (nTryTime <= chainActive.Tip()->GetMedianTimePast()) {
+                LogPrintf("CreateCoinStakeKernel() : kernel found, but it is too far in the past \n");
+                continue;
+            }
+
+            // Found a kernel
+            if (gArgs.GetBoolArg("-printcoinstake", false))
+                LogPrintf("CreateCoinStakeKernel : kernel found\n");
+
+            kernelScript.clear();
+
+
+            kernelScript = stakeScript;
+            nTimeTx = nTryTime;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void CWallet::FillCoinStakePayments(CMutableTransaction &transaction,
+                                    const TPoSContract &tposContract,
+                                    const CScript &scriptPubKeyOut,
+                                    const COutPoint &stakePrevout,
+                                    CAmount blockReward) const
+{
+    const CWalletTx *walletTx = GetWalletTx(stakePrevout.hash);
+    CTxOut prevTxOut = walletTx->tx->vout[stakePrevout.n];
+
+    auto nCredit = prevTxOut.nValue;
+
+    unsigned int percentage = 100;
+
+    if(tposContract.IsValid())
+        percentage = tposContract.stakePercentage; // first vout is owner
+
+
+    // if this is tpos, we need to age coin, without paying reward to this address.
+    //                if(!tposContract.IsValid())
+    auto nCoinStakeReward = nCredit + GetStakeReward(blockReward, percentage);
+
+    transaction.vin.push_back(CTxIn(stakePrevout));
+
+    //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
+
+    // adding output which will pay to coin stake
+    transaction.vout.emplace_back(nCoinStakeReward, scriptPubKeyOut);
+
+    {
+        CTxOut &lastTx = transaction.vout.back();
+        if(lastTx.nValue / 2 > nStakeSplitThreshold * COIN)
+        {
+            lastTx.nValue /= 2;
+            transaction.vout.emplace_back(lastTx.nValue, lastTx.scriptPubKey);
+        }
+    }
+
+    // here we need to send reward to merchant to his reward address
+    if(tposContract.IsValid())
+    {
+        transaction.vout.emplace_back(GetStakeReward(blockReward, 100 - tposContract.stakePercentage),
+                                      GetScriptForDestination(tposContract.merchantAddress.Get()));
+    }
+}
+
 bool CWallet::AddWatchOnly(const CScript& dest, int64_t nCreateTime)
 {
     m_script_metadata[CScriptID(dest)].nCreateTime = nCreateTime;
@@ -1113,6 +1223,7 @@ void CWallet::TransactionRemovedFromMempool(const CTransactionRef &ptx) {
 
 void CWallet::BlockConnected(const std::shared_ptr<const CBlock>& pblock, const CBlockIndex *pindex, const std::vector<CTransactionRef>& vtxConflicted) {
     auto locked_chain = chain().lock();
+    bool witnessEnabled = IsWitnessEnabled(pindex, Params().GetConsensus());
     LOCK(cs_wallet);
     // TODO: Temporarily ensure that mempool removals are notified before
     // connected transactions.  This shouldn't matter, but the abandoned
@@ -1121,6 +1232,10 @@ void CWallet::BlockConnected(const std::shared_ptr<const CBlock>& pblock, const 
     // notification of a connected conflict might cause an outside process
     // to abandon a transaction and then have it inadvertently cleared by
     // the notification that the conflicted transaction was evicted.
+
+    if(witnessEnabled && m_default_address_type != OutputType::P2SH_SEGWIT)
+        m_default_address_type = OutputType::P2SH_SEGWIT;
+
 
     for (const CTransactionRef& ptx : vtxConflicted) {
         SyncTransaction(ptx);
@@ -2976,6 +3091,132 @@ bool CWallet::CreateTransaction(interfaces::Chain::Lock& locked_chain, const std
     return true;
 }
 
+bool CWallet::CreateCoinStake(unsigned int nBits,
+                              const CBlockRewards &blockReward,
+                              CMutableTransaction &txNew,
+                              unsigned int &nTxNewTime,
+                              std::vector<const CWalletTx*> &vwtxPrev,
+                              bool fGenerateSegwit)
+{
+    // The following split & combine thresholds are important to security
+    // Should not be adjusted if you don't understand the consequences
+    //int64_t nCombineThreshold = 0;
+    txNew.vin.clear();
+    txNew.vout.clear();
+
+    // Mark coin stake transaction
+    CScript scriptEmpty;
+    scriptEmpty.clear();
+    txNew.vout.push_back(CTxOut(0, scriptEmpty));
+    // Choose coins to use
+    CAmount nBalance = GetBalance();
+
+    //    if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
+    //        return error("CreateCoinStake : invalid reserve balance amount");
+
+    //    if (nBalance <= nReserveBalance)
+    //        return false;
+
+    // presstab HyperStake - Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
+    static StakeCoinsSet setStakeCoins;
+    static int nLastStakeSetUpdate = 0;
+
+    bool fIsTPoS = tposContract.IsValid();
+    if (GetTime() - nLastStakeSetUpdate > nStakeSetUpdateTime) {
+        setStakeCoins.clear();
+
+        CScript scriptPubKey;
+        if(fIsTPoS)
+        {
+            scriptPubKey = GetScriptForDestination(tposContract.tposAddress.Get());
+            LogPrint(BCLog::KERNEL, "finding tpos, contract tposAddress: %s\n", tposContract.tposAddress.ToString().c_str());
+        }
+
+        if (!SelectStakeCoins(setStakeCoins, nBalance /*- nReserveBalance*/, fGenerateSegwit, scriptPubKey)) {
+            return error("Failed to select coins for staking");
+        }
+
+        LogPrintf("Selected %d coins for staking\n", setStakeCoins.size());
+
+        nLastStakeSetUpdate = GetTime();
+    }
+
+    if (setStakeCoins.empty())
+        return error("CreateCoinStake() : No Coins to stake");
+
+    //prevent staking a time that won't be accepted
+    if (GetAdjustedTime() <= chainActive.Tip()->nTime)
+        MilliSleep(10000);
+
+    bool fKernelFound = false;
+    CAmount nCredit = 0;
+
+    COutPoint tposContractOutpoint = TPoSUtils::GetContractCollateralOutpoint(tposContract);
+    for(const std::pair<const CWalletTx*, unsigned int> &pcoin : setStakeCoins)
+    {
+        // this is probably collateral, don't stake it.
+        if(pcoin.first->GetHash() == tposContractOutpoint.hash &&
+                pcoin.second == tposContractOutpoint.n)
+            continue;
+
+        //make sure that enough time has elapsed between
+        CBlockIndex* pindex = NULL;
+        BlockMap::iterator it = mapBlockIndex.find(pcoin.first->hashBlock);
+        if (it != mapBlockIndex.end())
+            pindex = it->second;
+        else {
+            LogPrint(BCLog::KERNEL, "failed to find block index \n");
+            continue;
+        }
+
+        // Read block header
+        CBlockHeader block = pindex->GetBlockHeader();
+        COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
+
+        nTxNewTime = GetAdjustedTime();
+        //iterates each utxo inside of CheckStakeKernelHash()
+        CScript kernelScript;
+        auto stakeScript = pcoin.first->tx->vout[pcoin.second].scriptPubKey;
+        fKernelFound = CreateCoinStakeKernel(kernelScript, stakeScript, nBits,
+                                             block, sizeof(CBlock), pcoin.first->tx,
+                                             prevoutStake, nTxNewTime, tposContract, fGenerateSegwit, false);
+
+        if(fKernelFound)
+        {
+            if(!fIsTPoS) // we won't sign in case of tpos block
+                vwtxPrev.push_back(pcoin.first);
+
+            FillCoinStakePayments(txNew, tposContract, kernelScript, prevoutStake, blockReward);
+            break;
+        }
+    }
+
+    if(!fKernelFound)
+    {
+        LogPrint(BCLog::KERNEL, "Failed to find coinstake kernel\n");
+        return false;
+    }
+
+    // Limit size
+    unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
+    //    if (nBytes >= DEFAULT_BLOCK_MAX_SIZE / 5){
+    //        return error("CreateCoinStake() : exceeded coinstake size limit");
+    //    }
+
+    // Update coinbase transaction with additional info about masternode and governance payments,
+    // get some info back to pass to getblocktemplate
+    CTxOut txoutMasternode;
+    std::vector<CTxOut> voutSuperblock;
+    int nHeight = chainActive.Tip()->nHeight + 1;
+    FillBlockPayments(txNew, nHeight, blockReward, txoutMasternode, voutSuperblock);
+    AdjustMasternodePayment(txNew, txoutMasternode, tposContract);
+    LogPrintf("CreateCoinStake -- nBlockHeight %d blockReward %lld txoutMasternode %s txNew %s",
+              nHeight, blockReward, txoutMasternode.ToString(), txNew.ToString());
+
+    nLastStakeSetUpdate = 0; //this will trigger stake set to repopulate next round
+    return true;
+}
+
 /**
  * Call after CreateTransaction unless you want to abort
  */
@@ -4336,7 +4577,7 @@ int CMerkleTx::GetDepthInMainChain(interfaces::Chain::Lock& locked_chain) const
 
 int CMerkleTx::GetBlocksToMaturity(interfaces::Chain::Lock& locked_chain) const
 {
-    if (!IsCoinBase())
+    if (!IsCoinBase() && !IsCoinStake())
         return 0;
     int chain_depth = GetDepthInMainChain(locked_chain);
     assert(chain_depth >= 0); // coinbase tx should not be conflicted

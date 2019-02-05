@@ -104,7 +104,26 @@ void BlockAssembler::resetBlock()
     nFees = 0;
 }
 
-std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn)
+std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, bool fMineWitnessTx)
+{
+    return CreateNewBlock(nullptr, scriptPubKeyIn, false, fMineWitnessTx);
+}
+
+static bool SignInputsInCoinstake(const SigningProvider &provider, CMutableTransaction &txNew, const std::vector<const CWalletTx*> &vwtxPrev)
+{
+    // Sign
+    int nIn = 0;
+    for(const auto &wtx : vwtxPrev)
+    {
+        if(!SignSignature(provider, *wtx->tx, txNew, nIn++, SIGHASH_ALL))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, const CScript &scriptPubKeyIn, bool fProofOfStake, bool fMineWitnessTx)
 {
     int64_t nTimeStart = GetTimeMicros();
 
@@ -150,9 +169,6 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     // transaction (which in most cases can be a no-op).
     fIncludeWitness = IsWitnessEnabled(pindexPrev, chainparams.GetConsensus());
 
-    int nPackagesSelected = 0;
-    int nDescendantsUpdated = 0;
-    addPackageTxs(nPackagesSelected, nDescendantsUpdated);
 
     int64_t nTime1 = GetTimeMicros();
 
@@ -165,17 +181,65 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     coinbaseTx.vin[0].prevout.SetNull();
     coinbaseTx.vout.resize(1);
     coinbaseTx.vout[0].scriptPubKey = scriptPubKeyIn;
-    coinbaseTx.vout[0].nValue = nFees + GetBlockSubsidity(nHeight, chainparams.GetConsensus()).nStakeReward;
+    auto blockReward = GetBlockSubsidity(nHeight, Params().GetConsensus());
+    std::vector<const CWalletTx*> vwtxPrev;
+    if(fProofOfStake)
+    {
+        assert(wallet);
+        boost::this_thread::interruption_point();
+        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus());
+        CMutableTransaction coinstakeTx;
+        int64_t nSearchTime = pblock->nTime; // search to current time
+        bool fStakeFound = false;
+        if (nSearchTime >= nLastCoinStakeSearchTime) {
+            unsigned int nTxNewTime = 0;
+            if (wallet->CreateCoinStake(pblock->nBits, blockReward,
+                                        coinstakeTx, nTxNewTime, vwtxPrev, fIncludeWitness))
+            {
+                pblock->nTime = nTxNewTime;
+                coinbaseTx.vout[0].SetEmpty();
+                pblock->vtx.emplace_back(MakeTransactionRef(coinstakeTx));
+                fStakeFound = true;
+            }
+
+            nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
+            nLastCoinStakeSearchTime = nSearchTime;
+        }
+
+        if (!fStakeFound)
+            return nullptr;
+    }
+    else
+    {
+        coinbaseTx.vout[0].nValue = nFees + blockReward.nStakeReward;
+    }
+
+    int nPackagesSelected = 0;
+    int nDescendantsUpdated = 0;
+    {
+        LOCK(mempool.cs);
+        addPackageTxs(nPackagesSelected, nDescendantsUpdated);
+    }
+
+    if(pblock->IsProofOfStake())
+    {
+        CMutableTransaction mutableTx(*pblock->vtx[1]);
+        SignInputsInCoinstake(*wallet, mutableTx, vwtxPrev);
+        pblock->vtx[1] = MakeTransactionRef(std::move(mutableTx));
+    }
+
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
     pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
     pblocktemplate->vchCoinbaseCommitment = GenerateCoinbaseCommitment(*pblock, pindexPrev, chainparams.GetConsensus());
     pblocktemplate->vTxFees[0] = -nFees;
 
+
     LogPrintf("CreateNewBlock(): block weight: %u txs: %u fees: %ld sigops %d\n", GetBlockWeight(*pblock), nBlockTx, nFees, nBlockSigOpsCost);
 
     // Fill in header
     pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
-    UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
+    if(!fProofOfStake)
+        UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
     pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus());
     pblock->nNonce         = 0;
     pblocktemplate->vTxSigOpsCost[0] = WITNESS_SCALE_FACTOR * GetLegacySigOpCount(*pblock->vtx[0]);
@@ -539,7 +603,7 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
             if(!pindexPrev) break;
 
             BlockAssembler assemlber(chainparams);
-            auto pblocktemplate = std::unique_ptr<CBlockTemplate>();//assemlber.CreateNewBlock(pwallet, coinbaseScript->reserveScript, fProofOfStake, contract, true);
+            auto pblocktemplate = assemlber.CreateNewBlock(pwallet, coinbaseScript->reserveScript, fProofOfStake, true);
             if (!pblocktemplate.get())
             {
                 LogPrintf("DIVIMiner -- Failed to find a coinstake\n");
@@ -599,7 +663,7 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
                     {
                         // Found a solution
 //                        SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                        LogPrintf("DIVIMiner:\n  proof-of-work found\n  hash: %s\n  target: %s\n", hash.GetHex(), hashTarget.GetHex());
+                        LogPrintf("XsnMiner:\n  proof-of-work found\n  hash: %s\n  target: %s\n", hash.GetHex(), hashTarget.GetHex());
                         ProcessBlockFound(pblock, chainparams);
 //                        SetThreadPriority(THREAD_PRIORITY_LOWEST);
                         coinbaseScript->KeepScript();
@@ -674,11 +738,9 @@ void GenerateXSNs(bool fGenerate,
     if (nThreads == 0 || !fGenerate)
         return;
 
-#if 0
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
         minerThreads->create_thread(boost::bind(&DIVIMiner, boost::cref(chainparams), boost::ref(connman), GetWallets().front(), false));
-#endif
 }
 
 void ThreadStakeMinter(const CChainParams &chainparams, CConnman &connman, CWallet *pwallet)

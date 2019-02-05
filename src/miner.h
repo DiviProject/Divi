@@ -19,6 +19,7 @@ class CBlockIndex;
 class CChainParams;
 class CWallet;
 class CScript;
+class CConnman;
 
 namespace Consensus { struct Params; };
 
@@ -162,7 +163,12 @@ public:
     BlockAssembler(const CChainParams& params, const Options& options);
 
     /** Construct a new block template with coinbase to scriptPubKeyIn */
-    std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn);
+    std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn, bool fMineWitnessTx=true);
+    std::unique_ptr<CBlockTemplate> CreateNewBlock(CWallet *wallet,
+                                                   const CScript& scriptPubKeyIn,
+                                                   bool fProofOfStake,
+												   bool fMineWitnessTx);
+
 
 private:
     // utility functions

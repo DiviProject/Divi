@@ -700,7 +700,7 @@ bool CMasternodePaymentWinner::SignatureValid()
 
         std::string errorMessage = "";
         if (!CMessageSigner::VerifyMessage(pmn->pubKeyMasternode.GetID(), vchSig, strMessage, errorMessage)) {
-            return error("CMasternodePaymentWinner::SignatureValid() - Got bad Masternode address signature %s\n", vinMasternode.prevout.hash.ToString());
+            return error("CMasternodePaymentWinner::SignatureValid() - Got bad Masternode address signature %s %s\n", vinMasternode.prevout.hash.ToString(), errorMessage);
         }
 
         return true;

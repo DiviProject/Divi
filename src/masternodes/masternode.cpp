@@ -846,7 +846,7 @@ bool CMasternodePing::CheckAndUpdate(int& nDos, bool fRequireEnabled, CConnman &
 
             std::string errorMessage = "";
             if (!CMessageSigner::VerifyMessage(pmn->pubKeyMasternode.GetID(), vchSig, strMessage, errorMessage)) {
-                LogPrint(BCLog::MASTERNODE,"CMasternodePing::CheckAndUpdate - Got bad Masternode address signature %s\n", vin.prevout.hash.ToString());
+                LogPrint(BCLog::MASTERNODE,"CMasternodePing::CheckAndUpdate - Got bad Masternode address signature %s %s\n", vin.prevout.hash.ToString(), errorMessage);
                 nDos = 33;
                 return false;
             }

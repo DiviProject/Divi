@@ -304,6 +304,7 @@ public:
 
     const uint256& GetHash() const { return tx->GetHash(); }
     bool IsCoinBase() const { return tx->IsCoinBase(); }
+    bool IsCoinStake() const { return tx->IsCoinStake(); }
     bool IsImmatureCoinBase(interfaces::Chain::Lock& locked_chain) const;
 };
 
@@ -723,8 +724,7 @@ private:
     const CBlockIndex* m_last_block_processed = nullptr;
 
     bool CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
-                               unsigned int nBits, const CBlock& blockFrom,
-                               unsigned int nTxPrevOffset, const CTransactionRef &txPrev,
+                               unsigned int nBits, const CBlock& blockFrom, const CTransactionRef &txPrev,
                                const COutPoint& prevout, unsigned int &nTimeTx, bool fGenerateSegwit, bool fPrintProofOfStake) const;
 
     void FillCoinStakePayments(CMutableTransaction &transaction,

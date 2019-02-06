@@ -56,6 +56,7 @@ namespace BCLog {
         SPORK       = (1 << 21),
         MASTERNODE  = (1 << 22),
         MNPAYMENTS  = (1 << 23),
+        KERNEL      = (1 << 24),
         ALL         = ~(uint32_t)0,
     };
 

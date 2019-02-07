@@ -391,27 +391,73 @@ bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeS
     return false;
 }
 
-void CWallet::FillCoinStakePayments(CMutableTransaction &transaction,
+void CWallet::FillCoinStakePayments(const StakeCoinsSet &setStakeCoins,
+                                    std::vector<const CWalletTx*> &vwtxPrev,
+                                    CMutableTransaction &txNew,
                                     const CScript &scriptPubKeyOut,
-                                    const COutPoint &stakePrevout,
-                                    CAmount blockReward) const
+                                    CAmount nCredit) const
 {
-    const CWalletTx *walletTx = GetWalletTx(stakePrevout.hash);
-    CTxOut prevTxOut = walletTx->tx->vout[stakePrevout.n];
 
-    auto nCredit = prevTxOut.nValue;
+    txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
-    auto nCoinStakeReward = nCredit + blockReward;
-    transaction.vin.push_back(CTxIn(stakePrevout));
-    transaction.vout.emplace_back(nCoinStakeReward, scriptPubKeyOut);
+    if (nCredit > nStakeSplitThreshold * COIN)
+        txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
 
+    if(txNew.vout.size() == 2)
     {
-        CTxOut &lastTx = transaction.vout.back();
-        if(lastTx.nValue / 2 > nStakeSplitThreshold * COIN)
+        const CAmount nCombineThreshold = (nStakeSplitThreshold / 2) * COIN;
+        using Entry = std::pair<const CWalletTx*, unsigned int>;
+        std::vector<Entry> vCombineCandidates;
+        for(auto &&pcoin : setStakeCoins)
         {
-            lastTx.nValue /= 2;
-            transaction.vout.emplace_back(lastTx.nValue, lastTx.scriptPubKey);
+            const auto &tx = pcoin.first->tx;
+            // Attempt to add more inputs
+            // Only add coins of the same key/address as kernel
+            if (tx->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey &&
+                    tx->GetHash() != txNew.vin[0].prevout.hash)
+            {
+                // Do not add additional significant input
+                if (tx->vout[pcoin.second].nValue + nCredit > nCombineThreshold)
+                    continue;
+
+                vCombineCandidates.push_back(pcoin);
+            }
         }
+
+        std::sort(std::begin(vCombineCandidates), std::end(vCombineCandidates), [](const Entry &left, const Entry &right) {
+            return left.first->tx->vout[left.second].nValue < right.first->tx->vout[right.second].nValue;
+        });
+
+        for(auto &&pcoin : vCombineCandidates)
+        {
+            // Stop adding more inputs if already too many inputs
+            if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS)
+                break;
+
+            // Stop adding more inputs if value is already pretty significant
+            if (nCredit > nCombineThreshold)
+                break;
+
+//            // Stop adding inputs if reached reserve limit
+//            if (nCredit + pcoin.first->tx->vout[pcoin.second].nValue > nBalance - nReserveBalance)
+//                break;
+
+            // Can't add anymore, cause vector is sorted
+            if (nCredit + pcoin.first->tx->vout[pcoin.second].nValue > nCombineThreshold)
+                break;
+
+            txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
+            nCredit += pcoin.first->tx->vout[pcoin.second].nValue;
+            vwtxPrev.push_back(pcoin.first);
+        }
+    }
+
+    // Set output amount
+    if (txNew.vout.size() == 3) {
+        txNew.vout[1].nValue = nCredit / 2;
+        txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
+    } else {
+        txNew.vout[1].nValue = nCredit;
     }
 }
 
@@ -2436,6 +2482,84 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const CoinEligibil
     }
 }
 
+bool CWallet::MintableCoins(interfaces::Chain::Lock& locked_chain)
+{
+    //    CAmount nBalance = GetBalance();
+    //    if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
+    //        return error("MintableCoins() : invalid reserve balance amount");
+    //    if (nBalance <= nReserveBalance)
+    //        return false;
+
+    std::vector<COutput> vCoins;
+    {
+        LOCK2(cs_main, cs_wallet);
+        AvailableCoins(locked_chain, vCoins, true);
+    }
+
+    for (const COutput& out : vCoins)
+    {
+        if (GetTime() - out.tx->GetTxTime() > nStakeMinAge)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool CWallet::SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoinsSet &setCoins, CAmount nTargetAmount, bool fSelectWitness) const
+{
+    std::vector<COutput> vCoins;
+    {
+        LOCK2(cs_main, cs_wallet);
+        AvailableCoins(locked_chain, vCoins, true);
+    }
+    CAmount nAmountSelected = 0;
+
+    for (const COutput& out : vCoins) {
+        //make sure not to outrun target amount
+        CScript scriptPubKeyKernel;
+        scriptPubKeyKernel = out.tx->tx->vout[out.i].scriptPubKey;
+
+        if(!out.fSpendable)
+            continue;
+
+        CTxDestination dest;
+        if(!ExtractDestination(scriptPubKeyKernel, dest))
+            continue;
+
+        // for staking we support P2PKH, Native Segwit, P2SH Segwit
+        if(!boost::get<CKeyID>(&dest) && !boost::get<WitnessV0KeyHash>(&dest) &&
+                !boost::get<CScriptID>(&dest))
+            continue;
+
+        if(!fSelectWitness && !boost::get<CKeyID>(&dest))
+            continue;
+
+        //        LogPrintf("scriptPubKeyKernel is good\n");
+
+        //for now we will comment this out
+        //        if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
+        //            continue;
+
+        //        LogPrintf("amount is good\n");
+
+        //check for min age
+        if (GetTime() - out.tx->GetTxTime() < nStakeMinAge)
+            continue;
+
+        //        LogPrintf("min age is good\n");
+
+        //check that it is matured
+        if (out.nDepth < (out.tx->tx->IsCoinStake() ? COINBASE_MATURITY : 10))
+            continue;
+
+        nAmountSelected += out.tx->tx->vout[out.i].nValue; //maybe change here for tpos
+        setCoins.emplace(out.tx, out.i);
+    }
+    return true;
+}
+
 bool CWallet::SelectCoins(const std::vector<COutput>& vAvailableCoins, const CAmount& nTargetValue, std::set<CInputCoin>& setCoinsRet, CAmount& nValueRet, const CCoinControl& coin_control, CoinSelectionParams& coin_selection_params, bool& bnb_used) const
 {
     std::vector<COutput> vCoins(vAvailableCoins);
@@ -3091,10 +3215,11 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     static StakeCoinsSet setStakeCoins;
     static int nLastStakeSetUpdate = 0;
 
-    if (GetTime() - nLastStakeSetUpdate > nStakeSetUpdateTime) {
+    if (GetTime() - nLastStakeSetUpdate > nStakeSetUpdateTime)
+    {
         setStakeCoins.clear();
-
-        if (!SelectStakeCoins(setStakeCoins, nBalance /*- nReserveBalance*/, fGenerateSegwit)) {
+        auto locked_chain = chain().lock();
+        if (!SelectStakeCoins(*locked_chain, setStakeCoins, nBalance /*- nReserveBalance*/, fGenerateSegwit)) {
             return error("Failed to select coins for staking");
         }
 
@@ -3111,7 +3236,6 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
         MilliSleep(10000);
 
     bool fKernelFound = false;
-    CAmount nCredit = 0;
 
     for(const std::pair<const CWalletTx*, unsigned int> &pcoin : setStakeCoins)
     {
@@ -3137,11 +3261,13 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
                                              block, pcoin.first->tx,
                                              prevoutStake, nTxNewTime, fGenerateSegwit, false);
 
+        auto nCredit = pcoin.first->tx->vout[pcoin.second].nValue + blockReward.nStakeReward;
+
         if(fKernelFound)
         {
             vwtxPrev.push_back(pcoin.first);
-
-            FillCoinStakePayments(txNew, kernelScript, prevoutStake, blockReward.nStakeReward);
+            txNew.vin.push_back(CTxIn(prevoutStake));
+            FillCoinStakePayments(setStakeCoins, vwtxPrev, txNew, kernelScript, nCredit);
             break;
         }
     }

@@ -723,13 +723,15 @@ private:
      */
     const CBlockIndex* m_last_block_processed = nullptr;
 
+    using StakeCoinsSet = std::set<std::pair<const CWalletTx*, unsigned int>>;
     bool CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
                                unsigned int nBits, const CBlock& blockFrom, const CTransactionRef &txPrev,
                                const COutPoint& prevout, unsigned int &nTimeTx, bool fGenerateSegwit, bool fPrintProofOfStake) const;
 
-    void FillCoinStakePayments(CMutableTransaction &transaction,
-                               const CScript &kernelScript,
-                               const COutPoint &stakePrevout, CAmount blockReward) const;
+    void FillCoinStakePayments(const StakeCoinsSet &setStakeCoins,
+                               std::vector<const CWalletTx *> &vwtxPrev,
+                               CMutableTransaction &transaction,
+                               const CScript &kernelScript, CAmount nCredit) const;
 
 public:
     /*
@@ -839,9 +841,8 @@ public:
         std::set<CInputCoin>& setCoinsRet, CAmount& nValueRet, const CoinSelectionParams& coin_selection_params, bool& bnb_used) const;
 
     // Coin selection
-    using StakeCoinsSet = std::set<std::pair<const CWalletTx*, unsigned int>>;
-    bool MintableCoins();
-    bool SelectStakeCoins(StakeCoinsSet& setCoins, CAmount nTargetAmount, bool fSelectWitness, const CScript &scriptFilterPubKey = CScript()) const;
+    bool MintableCoins(interfaces::Chain::Lock &locked_chain);
+    bool SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoinsSet& setCoins, CAmount nTargetAmount, bool fSelectWitness) const;
 
     bool IsSpent(interfaces::Chain::Lock& locked_chain, const uint256& hash, unsigned int n) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     std::vector<OutputGroup> GroupOutputs(const std::vector<COutput>& outputs, bool single_coin) const;

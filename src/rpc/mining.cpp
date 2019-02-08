@@ -973,6 +973,87 @@ static UniValue estimaterawfee(const JSONRPCRequest& request)
     return result;
 }
 
+static UniValue setgenerate(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
+        throw std::runtime_error(
+            "setgenerate generate ( genproclimit )\n"
+            "\nSet 'generate' true or false to turn generation on or off.\n"
+            "Generation is limited to 'genproclimit' processors, -1 is unlimited.\n"
+            "See the getgenerate call for the current setting.\n"
+            "\nArguments:\n"
+            "1. generate         (boolean, required) Set to true to turn on generation, false to turn off.\n"
+            "2. genproclimit     (numeric, optional) Set the processor limit for when generation is on. Can be -1 for unlimited.\n"
+            "                    Note: in -regtest mode, genproclimit controls how many blocks are generated immediately.\n"
+            "\nResult\n"
+            "[ blockhashes ]     (array, -regtest only) hashes of blocks generated\n"
+            "\nExamples:\n"
+            "\nSet the generation on with a limit of one processor\n" +
+            HelpExampleCli("setgenerate", "true 1") +
+            "\nCheck the setting\n" + HelpExampleCli("getgenerate", "") +
+            "\nTurn off generation\n" + HelpExampleCli("setgenerate", "false") +
+            "\nUsing json rpc\n" + HelpExampleRpc("setgenerate", "true, 1"));
+
+
+    bool fGenerate = true;
+    if (request.params.size() > 0)
+        fGenerate = request.params[0].get_bool();
+
+    int nGenProcLimit = -1;
+    if (request.params.size() > 1) {
+        nGenProcLimit = request.params[1].get_int();
+        if (nGenProcLimit == 0)
+            fGenerate = false;
+    }
+
+    // -regtest mode: don't return until nGenProcLimit blocks are generated
+//    if (fGenerate && Params().MineBlocksOnDemand()) {
+//        int nHeightStart = 0;
+//        int nHeightEnd = 0;
+//        int nHeight = 0;
+//        int nGenerate = (nGenProcLimit > 0 ? nGenProcLimit : 1);
+//        CReserveKey reservekey(pwalletMain);
+
+//        { // Don't keep cs_main locked
+//            LOCK(cs_main);
+//            nHeightStart = chainActive.Height();
+//            nHeight = nHeightStart;
+//            nHeightEnd = nHeightStart + nGenerate;
+//        }
+//        unsigned int nExtraNonce = 0;
+//        Array blockHashes;
+//        while (nHeight < nHeightEnd) {
+//            unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwalletMain, false));
+//            if (!pblocktemplate.get())
+//                throw JSONRPCError(RPC_INTERNAL_ERROR, "Wallet keypool empty");
+//            CBlock* pblock = &pblocktemplate->block;
+//            {
+//                LOCK(cs_main);
+//                IncrementExtraNonce(pblock, chainActive.Tip(), nExtraNonce);
+//            }
+//            while (!CheckProofOfWork(pblock->GetHash(), pblock->nBits)) {
+//                // Yes, there is a chance every nonce could fail to satisfy the -regtest
+//                // target -- 1 in 2^(2^32). That ain't gonna happen.
+//                ++pblock->nNonce;
+//            }
+//            CValidationState state;
+//            if (!ProcessNewBlock(state, NULL, pblock))
+//                throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
+//            ++nHeight;
+//            blockHashes.push_back(pblock->GetHash().GetHex());
+//        }
+//        return blockHashes;
+//    }
+//    else // Not -regtest: start generate thread, return immediately
+    {
+//        mapArgs["-gen"] = (fGenerate ? "1" : "0");
+//        mapArgs["-genproclimit"] = itostr(nGenProcLimit);
+        GenerateDivis(fGenerate, nGenProcLimit, Params(), *g_connman);
+    }
+
+    return UniValue();
+}
+
 // clang-format off
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
@@ -983,7 +1064,7 @@ static const CRPCCommand commands[] =
     { "mining",             "getblocktemplate",       &getblocktemplate,       {"template_request"} },
     { "mining",             "submitblock",            &submitblock,            {"hexdata","dummy"} },
     { "mining",             "submitheader",           &submitheader,           {"hexdata"} },
-
+    { "generating",         "setgenerate",            &setgenerate,            {"generate", "genproclimit"} },
 
     { "generating",         "generatetoaddress",      &generatetoaddress,      {"nblocks","address","maxtries"} },
 

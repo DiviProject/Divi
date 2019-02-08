@@ -85,7 +85,7 @@ static BlockAssembler::Options DefaultOptions()
 }
 
 BlockAssembler::BlockAssembler(const CChainParams& params) : 
-	BlockAssembler(params, DefaultOptions()) 
+    BlockAssembler(params, DefaultOptions())
 {
     nLastCoinStakeSearchInterval = GetAdjustedTime();
 }
@@ -155,8 +155,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
     const int64_t nMedianTimePast = pindexPrev->GetMedianTimePast();
 
     nLockTimeCutoff = (STANDARD_LOCKTIME_VERIFY_FLAGS & LOCKTIME_MEDIAN_TIME_PAST)
-                       ? nMedianTimePast
-                       : pblock->GetBlockTime();
+            ? nMedianTimePast
+            : pblock->GetBlockTime();
 
     // Decide whether to include witness transactions
     // This is only needed in case the witness softfork activation is reverted
@@ -315,7 +315,7 @@ void BlockAssembler::AddToBlock(CTxMemPool::txiter iter)
 }
 
 int BlockAssembler::UpdatePackagesForAdded(const CTxMemPool::setEntries& alreadyAdded,
-        indexed_modified_transaction_set &mapModifiedTx)
+                                           indexed_modified_transaction_set &mapModifiedTx)
 {
     int nDescendantsUpdated = 0;
     for (CTxMemPool::txiter it : alreadyAdded) {
@@ -550,10 +550,10 @@ static bool ProcessBlockFound(const std::shared_ptr<const CBlock> &pblock, const
 
 // ***TODO*** that part changed in xsn, we are using a mix with old one here for now
 void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
-                     CWallet* pwallet, bool fProofOfStake)
+                      CWallet* pwallet, bool fProofOfStake)
 {
     LogPrintf("DIVIMiner -- started\n");
-//    SetThreadPriority(THREAD_PRIORITY_LOWEST);
+    //    SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("divi-miner");
 
     unsigned int nExtraNonce = 0;
@@ -639,9 +639,9 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
 
             // process proof of stake block
             if(fProofOfStake) {
-//                SetThreadPriority(THREAD_PRIORITY_NORMAL);
+                //                SetThreadPriority(THREAD_PRIORITY_NORMAL);
                 bool ret = ProcessBlockFound(pblock, chainparams);
-//                SetThreadPriority(THREAD_PRIORITY_LOWEST);
+                //                SetThreadPriority(THREAD_PRIORITY_LOWEST);
                 MilliSleep(10000);
                 continue;
             }
@@ -662,10 +662,10 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
                     if (UintToArith256(hash) <= hashTarget)
                     {
                         // Found a solution
-//                        SetThreadPriority(THREAD_PRIORITY_NORMAL);
+                        //                        SetThreadPriority(THREAD_PRIORITY_NORMAL);
                         LogPrintf("XsnMiner:\n  proof-of-work found\n  hash: %s\n  target: %s\n", hash.GetHex(), hashTarget.GetHex());
                         ProcessBlockFound(pblock, chainparams);
-//                        SetThreadPriority(THREAD_PRIORITY_LOWEST);
+                        //                        SetThreadPriority(THREAD_PRIORITY_LOWEST);
                         coinbaseScript->KeepScript();
 
                         // In regression test mode, stop mining after a block is found. This
@@ -718,10 +718,10 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
     }
 }
 
-void GenerateXSNs(bool fGenerate,
-                  int nThreads,
-                  const CChainParams& chainparams,
-                  CConnman &connman)
+void GenerateDivis(bool fGenerate,
+                   int nThreads,
+                   const CChainParams& chainparams,
+                   CConnman &connman)
 {
     static boost::thread_group* minerThreads = NULL;
 

@@ -40,6 +40,7 @@ bool CBlockSigner::SignBlock()
         {
             return error("Failed to extract destination while signing: %s\n", txout.ToString());
         }
+
         {
             auto keyid = GetKeyForDestination(*refKeystore, destination);
             if (keyid.IsNull()) {
@@ -52,7 +53,7 @@ bool CBlockSigner::SignBlock()
             scriptType = GetScriptTypeFromDestination(destination);
         }
     }
-//?
+    //?
     return CHashSigner::SignHash(refBlock.GetHash(), keySecret, scriptType, refBlock.vchBlockSig);
 }
 
@@ -70,19 +71,23 @@ bool CBlockSigner::CheckBlockSignature() const
     std::vector<std::vector<unsigned char>> vSolutions;
     txnouttype whichType = Solver(txout.scriptPubKey, vSolutions);
 
+    CTxDestination destination;
     if(whichType == TX_PUBKEY)
     {
         CPubKey pubkey(vSolutions[0]);
-        return pubkey.IsValid() && pubkey.Verify(hashMessage, refBlock.vchBlockSig);
+        bool isValid = pubkey.IsValid() && pubkey.Verify(hashMessage, refBlock.vchBlockSig);
+        if(isValid)
+        {
+            return true;
+        }
+
+        destination = pubkey.GetID();
     }
-
-    CTxDestination destination;
-
-    if(!ExtractDestination(txout.scriptPubKey, destination))
+    else if(!ExtractDestination(txout.scriptPubKey, destination))
     {
         return error("CBlockSigner::CheckBlockSignature() : failed to extract destination from script: %s", txout.scriptPubKey.ToString());
-    }
 
+    }
 
     std::string strError;
     return CHashSigner::VerifyHash(hashMessage, destination, refBlock.vchBlockSig, strError);

@@ -390,7 +390,6 @@ bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeS
 
         kernelScript.clear();
 
-
         kernelScript = stakeScript;
 
         return true;

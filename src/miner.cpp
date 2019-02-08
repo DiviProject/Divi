@@ -574,7 +574,7 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
 
             do {
                 bool fvNodesEmpty = connman.GetNodeCount(CConnman::CONNECTIONS_ALL) == 0;
-                if (!fvNodesEmpty /*&& !IsInitialBlockDownload()*/ /*&& masternodeSync.IsSynced()*/)
+                if (!fvNodesEmpty && !IsInitialBlockDownload() /*&& masternodeSync.IsSynced()*/)
                     break;
                 MilliSleep(1000);
             } while (true);

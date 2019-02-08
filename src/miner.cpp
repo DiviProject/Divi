@@ -574,7 +574,7 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
 
             do {
                 bool fvNodesEmpty = connman.GetNodeCount(CConnman::CONNECTIONS_ALL) == 0;
-                if (!fvNodesEmpty && !IsInitialBlockDownload() /*&& masternodeSync.IsSynced()*/)
+                if (!fvNodesEmpty /*&& !IsInitialBlockDownload()*/ /*&& masternodeSync.IsSynced()*/)
                     break;
                 MilliSleep(1000);
             } while (true);
@@ -592,6 +592,7 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
 
             if(!fProofOfStake && chainActive.Tip()->nHeight >= chainparams.GetConsensus().nLastPOWBlock)
             {
+                LogPrintf("DIVIMiner -- Proof of stake period ended, %d >= %d\n", chainActive.Tip()->nHeight, chainparams.GetConsensus().nLastPOWBlock);
                 return;
             }
 

@@ -390,9 +390,9 @@ void SetupServerArgs()
 
     // Hidden Options
     std::vector<std::string> hidden_args = {"-h", "-help",
-        "-dbcrashratio", "-forcecompactdb",
-        // GUI args. These will be overwritten by SetupUIArgs for the GUI
-        "-allowselfsignedrootcertificates", "-choosedatadir", "-lang=<lang>", "-min", "-resetguisettings", "-rootcertificates=<file>", "-splash", "-uiplatform"};
+                                            "-dbcrashratio", "-forcecompactdb",
+                                            // GUI args. These will be overwritten by SetupUIArgs for the GUI
+                                            "-allowselfsignedrootcertificates", "-choosedatadir", "-lang=<lang>", "-min", "-resetguisettings", "-rootcertificates=<file>", "-splash", "-uiplatform"};
 
     // Set all of the args and their help
     // When adding new options to the categories, please keep and ensure alphabetical ordering.
@@ -417,7 +417,7 @@ void SetupServerArgs()
     gArgs.AddArg("-mempoolexpiry=<n>", strprintf("Do not keep transactions in the mempool longer than <n> hours (default: %u)", DEFAULT_MEMPOOL_EXPIRY), false, OptionsCategory::OPTIONS);
     gArgs.AddArg("-minimumchainwork=<hex>", strprintf("Minimum work assumed to exist on a valid chain in hex (default: %s, testnet: %s)", defaultChainParams->GetConsensus().nMinimumChainWork.GetHex(), testnetChainParams->GetConsensus().nMinimumChainWork.GetHex()), true, OptionsCategory::OPTIONS);
     gArgs.AddArg("-par=<n>", strprintf("Set the number of script verification threads (%u to %d, 0 = auto, <0 = leave that many cores free, default: %d)",
-        -GetNumCores(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS), false, OptionsCategory::OPTIONS);
+                                       -GetNumCores(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS), false, OptionsCategory::OPTIONS);
     gArgs.AddArg("-persistmempool", strprintf("Whether to save the mempool on shutdown and load on restart (default: %u)", DEFAULT_PERSIST_MEMPOOL), false, OptionsCategory::OPTIONS);
 #ifndef WIN32
     gArgs.AddArg("-pid=<file>", strprintf("Specify pid file. Relative paths will be prefixed by a net-specific datadir location. (default: %s)", BITCOIN_PID_FILENAME), false, OptionsCategory::OPTIONS);
@@ -425,8 +425,8 @@ void SetupServerArgs()
     hidden_args.emplace_back("-pid");
 #endif
     gArgs.AddArg("-prune=<n>", strprintf("Reduce storage requirements by enabling pruning (deleting) of old blocks. This allows the pruneblockchain RPC to be called to delete specific blocks, and enables automatic pruning of old blocks if a target size in MiB is provided. This mode is incompatible with -txindex and -rescan. "
-            "Warning: Reverting this setting requires re-downloading the entire blockchain. "
-            "(default: 0 = disable pruning blocks, 1 = allow manual pruning via RPC, >=%u = automatically prune block files to stay under the specified target size in MiB)", MIN_DISK_SPACE_FOR_BLOCK_FILES / 1024 / 1024), false, OptionsCategory::OPTIONS);
+                                         "Warning: Reverting this setting requires re-downloading the entire blockchain. "
+                                         "(default: 0 = disable pruning blocks, 1 = allow manual pruning via RPC, >=%u = automatically prune block files to stay under the specified target size in MiB)", MIN_DISK_SPACE_FOR_BLOCK_FILES / 1024 / 1024), false, OptionsCategory::OPTIONS);
     gArgs.AddArg("-reindex", "Rebuild chain state and block index from the blk*.dat files on disk", false, OptionsCategory::OPTIONS);
     gArgs.AddArg("-reindex-chainstate", "Rebuild chain state from the currently indexed blocks. When in pruning mode or if blocks on disk might be corrupted, use full -reindex instead.", false, OptionsCategory::OPTIONS);
 #ifndef WIN32
@@ -477,7 +477,7 @@ void SetupServerArgs()
 #endif
     gArgs.AddArg("-whitebind=<addr>", "Bind to given address and whitelist peers connecting to it. Use [host]:port notation for IPv6", false, OptionsCategory::CONNECTION);
     gArgs.AddArg("-whitelist=<IP address or network>", "Whitelist peers connecting from the given IP address (e.g. 1.2.3.4) or CIDR notated network (e.g. 1.2.3.0/24). Can be specified multiple times."
-        " Whitelisted peers cannot be DoS banned and their transactions are always relayed, even if they are already in the mempool, useful e.g. for a gateway", false, OptionsCategory::CONNECTION);
+                                                       " Whitelisted peers cannot be DoS banned and their transactions are always relayed, even if they are already in the mempool, useful e.g. for a gateway", false, OptionsCategory::CONNECTION);
 
     g_wallet_init_interface.AddWalletOptions();
 
@@ -503,13 +503,13 @@ void SetupServerArgs()
 
     gArgs.AddArg("-checkblocks=<n>", strprintf("How many blocks to check at startup (default: %u, 0 = all)", DEFAULT_CHECKBLOCKS), true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-checklevel=<n>", strprintf("How thorough the block verification of -checkblocks is: "
-        "level 0 reads the blocks from disk, "
-        "level 1 verifies block validity, "
-        "level 2 verifies undo data, "
-        "level 3 checks disconnection of tip blocks, "
-        "and level 4 tries to reconnect the blocks, "
-        "each level includes the checks of the previous levels "
-        "(0-4, default: %u)", DEFAULT_CHECKLEVEL), true, OptionsCategory::DEBUG_TEST);
+                                              "level 0 reads the blocks from disk, "
+                                              "level 1 verifies block validity, "
+                                              "level 2 verifies undo data, "
+                                              "level 3 checks disconnection of tip blocks, "
+                                              "and level 4 tries to reconnect the blocks, "
+                                              "each level includes the checks of the previous levels "
+                                              "(0-4, default: %u)", DEFAULT_CHECKLEVEL), true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-checkblockindex", strprintf("Do a full consistency check for mapBlockIndex, setBlockIndexCandidates, chainActive and mapBlocksUnlinked occasionally. (default: %u, regtest: %u)", defaultChainParams->DefaultConsistencyChecks(), regtestChainParams->DefaultConsistencyChecks()), true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-checkmempool=<n>", strprintf("Run checks every <n> transactions (default: %u, regtest: %u)", defaultChainParams->DefaultConsistencyChecks(), regtestChainParams->DefaultConsistencyChecks()), true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-checkpoints", strprintf("Disable expensive verification for known chain history (default: %u)", DEFAULT_CHECKPOINTS_ENABLED), true, OptionsCategory::DEBUG_TEST);
@@ -523,7 +523,7 @@ void SetupServerArgs()
     gArgs.AddArg("-limitdescendantsize=<n>", strprintf("Do not accept transactions if any ancestor would have more than <n> kilobytes of in-mempool descendants (default: %u).", DEFAULT_DESCENDANT_SIZE_LIMIT), true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-addrmantest", "Allows to test address relay on localhost", true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-debug=<category>", "Output debugging information (default: -nodebug, supplying <category> is optional). "
-        "If <category> is not supplied or if <category> = 1, output all debugging information. <category> can be: " + ListLogCategories() + ".", false, OptionsCategory::DEBUG_TEST);
+                                      "If <category> is not supplied or if <category> = 1, output all debugging information. <category> can be: " + ListLogCategories() + ".", false, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-debugexclude=<category>", strprintf("Exclude debugging information for a category. Can be used in conjunction with -debug=1 to output debug logs for all categories except one or more specified categories."), false, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-help-debug", "Print help message with debugging options and exit", false, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-logips", strprintf("Include IP addresses in debug output (default: %u)", DEFAULT_LOGIPS), false, OptionsCategory::DEBUG_TEST);
@@ -533,7 +533,7 @@ void SetupServerArgs()
     gArgs.AddArg("-maxsigcachesize=<n>", strprintf("Limit sum of signature cache and script execution cache sizes to <n> MiB (default: %u)", DEFAULT_MAX_SIG_CACHE_SIZE), true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-maxtipage=<n>", strprintf("Maximum tip age in seconds to consider node in initial block download (default: %u)", DEFAULT_MAX_TIP_AGE), true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-maxtxfee=<amt>", strprintf("Maximum total fees (in %s) to use in a single wallet transaction or raw transaction; setting this too low may abort large transactions (default: %s)",
-        CURRENCY_UNIT, FormatMoney(DEFAULT_TRANSACTION_MAXFEE)), false, OptionsCategory::DEBUG_TEST);
+                                              CURRENCY_UNIT, FormatMoney(DEFAULT_TRANSACTION_MAXFEE)), false, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-printpriority", strprintf("Log transaction fee per kB when mining blocks (default: %u)", DEFAULT_PRINTPRIORITY), true, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-printtoconsole", "Send trace/debug info to console (default: 1 when no -daemon. To disable logging to file, set -nodebuglogfile)", false, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-shrinkdebugfile", "Shrink debug.log file on client startup (default: 1 when no -debug)", false, OptionsCategory::DEBUG_TEST);
@@ -549,7 +549,7 @@ void SetupServerArgs()
     gArgs.AddArg("-datacarriersize", strprintf("Maximum size of data in data carrier transactions we relay and mine (default: %u)", MAX_OP_RETURN_RELAY), false, OptionsCategory::NODE_RELAY);
     gArgs.AddArg("-mempoolreplacement", strprintf("Enable transaction replacement in the memory pool (default: %u)", DEFAULT_ENABLE_REPLACEMENT), false, OptionsCategory::NODE_RELAY);
     gArgs.AddArg("-minrelaytxfee=<amt>", strprintf("Fees (in %s/kB) smaller than this are considered zero fee for relaying, mining and transaction creation (default: %s)",
-        CURRENCY_UNIT, FormatMoney(DEFAULT_MIN_RELAY_TX_FEE)), false, OptionsCategory::NODE_RELAY);
+                                                   CURRENCY_UNIT, FormatMoney(DEFAULT_MIN_RELAY_TX_FEE)), false, OptionsCategory::NODE_RELAY);
     gArgs.AddArg("-whitelistforcerelay", strprintf("Force relay of transactions from whitelisted peers even if they violate local relay policy (default: %d)", DEFAULT_WHITELISTFORCERELAY), false, OptionsCategory::NODE_RELAY);
     gArgs.AddArg("-whitelistrelay", strprintf("Accept relayed transactions received from whitelisted peers even when not relaying transactions (default: %d)", DEFAULT_WHITELISTRELAY), false, OptionsCategory::NODE_RELAY);
 
@@ -590,20 +590,20 @@ std::string LicenseInfo()
     const std::string URL_WEBSITE = "<https://divicore.org>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2009, COPYRIGHT_YEAR) + " ") + "\n" +
-           "\n" +
-           strprintf(_("Please contribute if you find %s useful. "
-                       "Visit %s for further information about the software."),
-               PACKAGE_NAME, URL_WEBSITE) +
-           "\n" +
-           strprintf(_("The source code is available from %s."),
-               URL_SOURCE_CODE) +
-           "\n" +
-           "\n" +
-           _("This is experimental software.") + "\n" +
-           strprintf(_("Distributed under the MIT software license, see the accompanying file %s or %s"), "COPYING", "<https://opensource.org/licenses/MIT>") + "\n" +
-           "\n" +
-           strprintf(_("This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard."), "<https://www.openssl.org>") +
-           "\n";
+            "\n" +
+            strprintf(_("Please contribute if you find %s useful. "
+                        "Visit %s for further information about the software."),
+                      PACKAGE_NAME, URL_WEBSITE) +
+            "\n" +
+            strprintf(_("The source code is available from %s."),
+                      URL_SOURCE_CODE) +
+            "\n" +
+            "\n" +
+            _("This is experimental software.") + "\n" +
+            strprintf(_("Distributed under the MIT software license, see the accompanying file %s or %s"), "COPYING", "<https://opensource.org/licenses/MIT>") + "\n" +
+            "\n" +
+            strprintf(_("This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard."), "<https://www.openssl.org>") +
+            "\n";
 }
 
 static void BlockNotifyCallback(bool initialSync, const CBlockIndex *pBlockIndex)
@@ -665,8 +665,8 @@ static void CleanupBlockRevFiles()
     fs::path blocksdir = GetBlocksDir();
     for (fs::directory_iterator it(blocksdir); it != fs::directory_iterator(); it++) {
         if (fs::is_regular_file(*it) &&
-            it->path().filename().string().length() == 12 &&
-            it->path().filename().string().substr(8,4) == ".dat")
+                it->path().filename().string().length() == 12 &&
+                it->path().filename().string().substr(8,4) == ".dat")
         {
             if (it->path().filename().string().substr(0,3) == "blk")
                 mapBlockFiles[it->path().filename().string().substr(3,5)] = it->path();
@@ -696,67 +696,67 @@ static void ThreadImport(std::vector<fs::path> vImportFiles)
     ScheduleBatchPriority();
 
     {
-    CImportingNow imp;
+        CImportingNow imp;
 
-    // -reindex
-    if (fReindex) {
-        int nFile = 0;
-        while (true) {
-            CDiskBlockPos pos(nFile, 0);
-            if (!fs::exists(GetBlockPosFilename(pos, "blk")))
-                break; // No block files left to reindex
-            FILE *file = OpenBlockFile(pos, true);
-            if (!file)
-                break; // This error is logged in OpenBlockFile
-            LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
-            LoadExternalBlockFile(chainparams, file, &pos);
-            nFile++;
+        // -reindex
+        if (fReindex) {
+            int nFile = 0;
+            while (true) {
+                CDiskBlockPos pos(nFile, 0);
+                if (!fs::exists(GetBlockPosFilename(pos, "blk")))
+                    break; // No block files left to reindex
+                FILE *file = OpenBlockFile(pos, true);
+                if (!file)
+                    break; // This error is logged in OpenBlockFile
+                LogPrintf("Reindexing block file blk%05u.dat...\n", (unsigned int)nFile);
+                LoadExternalBlockFile(chainparams, file, &pos);
+                nFile++;
+            }
+            pblocktree->WriteReindexing(false);
+            fReindex = false;
+            LogPrintf("Reindexing finished\n");
+            // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
+            LoadGenesisBlock(chainparams);
         }
-        pblocktree->WriteReindexing(false);
-        fReindex = false;
-        LogPrintf("Reindexing finished\n");
-        // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
-        LoadGenesisBlock(chainparams);
-    }
 
-    // hardcoded $DATADIR/bootstrap.dat
-    fs::path pathBootstrap = GetDataDir() / "bootstrap.dat";
-    if (fs::exists(pathBootstrap)) {
-        FILE *file = fsbridge::fopen(pathBootstrap, "rb");
-        if (file) {
-            fs::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
-            LogPrintf("Importing bootstrap.dat...\n");
-            LoadExternalBlockFile(chainparams, file);
-            RenameOver(pathBootstrap, pathBootstrapOld);
-        } else {
-            LogPrintf("Warning: Could not open bootstrap file %s\n", pathBootstrap.string());
+        // hardcoded $DATADIR/bootstrap.dat
+        fs::path pathBootstrap = GetDataDir() / "bootstrap.dat";
+        if (fs::exists(pathBootstrap)) {
+            FILE *file = fsbridge::fopen(pathBootstrap, "rb");
+            if (file) {
+                fs::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
+                LogPrintf("Importing bootstrap.dat...\n");
+                LoadExternalBlockFile(chainparams, file);
+                RenameOver(pathBootstrap, pathBootstrapOld);
+            } else {
+                LogPrintf("Warning: Could not open bootstrap file %s\n", pathBootstrap.string());
+            }
         }
-    }
 
-    // -loadblock=
-    for (const fs::path& path : vImportFiles) {
-        FILE *file = fsbridge::fopen(path, "rb");
-        if (file) {
-            LogPrintf("Importing blocks file %s...\n", path.string());
-            LoadExternalBlockFile(chainparams, file);
-        } else {
-            LogPrintf("Warning: Could not open blocks file %s\n", path.string());
+        // -loadblock=
+        for (const fs::path& path : vImportFiles) {
+            FILE *file = fsbridge::fopen(path, "rb");
+            if (file) {
+                LogPrintf("Importing blocks file %s...\n", path.string());
+                LoadExternalBlockFile(chainparams, file);
+            } else {
+                LogPrintf("Warning: Could not open blocks file %s\n", path.string());
+            }
         }
-    }
 
-    // scan for better chains in the block chain database, that are not yet connected in the active best chain
-    CValidationState state;
-    if (!ActivateBestChain(state, chainparams)) {
-        LogPrintf("Failed to connect best block (%s)\n", FormatStateMessage(state));
-        StartShutdown();
-        return;
-    }
+        // scan for better chains in the block chain database, that are not yet connected in the active best chain
+        CValidationState state;
+        if (!ActivateBestChain(state, chainparams)) {
+            LogPrintf("Failed to connect best block (%s)\n", FormatStateMessage(state));
+            StartShutdown();
+            return;
+        }
 
-    if (gArgs.GetBoolArg("-stopafterblockimport", DEFAULT_STOPAFTERBLOCKIMPORT)) {
-        LogPrintf("Stopping after block import\n");
-        StartShutdown();
-        return;
-    }
+        if (gArgs.GetBoolArg("-stopafterblockimport", DEFAULT_STOPAFTERBLOCKIMPORT)) {
+            LogPrintf("Stopping after block import\n");
+            StartShutdown();
+            return;
+        }
     } // End scope of CImportingNow
     if (gArgs.GetArg("-persistmempool", DEFAULT_PERSIST_MEMPOOL)) {
         LoadMempool();
@@ -1036,7 +1036,7 @@ bool AppInitParameterInteraction()
         const std::vector<std::string> categories = gArgs.GetArgs("-debug");
 
         if (std::none_of(categories.begin(), categories.end(),
-            [](std::string cat){return cat == "0" || cat == "none";})) {
+                         [](std::string cat){return cat == "0" || cat == "none";})) {
             for (const auto& cat : categories) {
                 if (!g_logger->EnableCategory(cat)) {
                     InitWarning(strprintf(_("Unsupported logging category %s=%s."), "-debug", cat));
@@ -1291,7 +1291,7 @@ bool AppInitMain(InitInterfaces& interfaces)
                   "current working directory '%s'. This is fragile, because if divi is started in the future "
                   "from a different location, it will be unable to locate the current data files. There could "
                   "also be data loss if divi is started while in a temporary directory.\n",
-            gArgs.GetArg("-datadir", ""), fs::current_path().string());
+                  gArgs.GetArg("-datadir", ""), fs::current_path().string());
     }
 
     InitSignatureCache();
@@ -1370,7 +1370,7 @@ bool AppInitMain(InitInterfaces& interfaces)
     strSubVersion = FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, uacomments);
     if (strSubVersion.size() > MAX_SUBVERSION_LENGTH) {
         return InitError(strprintf(_("Total length of network version string (%i) exceeds maximum length (%i). Reduce the number or size of uacomments."),
-            strSubVersion.size(), MAX_SUBVERSION_LENGTH));
+                                   strSubVersion.size(), MAX_SUBVERSION_LENGTH));
     }
 
     if (gArgs.IsArgSet("-onlynet")) {
@@ -1602,20 +1602,20 @@ bool AppInitMain(InitInterfaces& interfaces)
                     uiInterface.InitMessage(_("Verifying blocks..."));
                     if (fHavePruned && gArgs.GetArg("-checkblocks", DEFAULT_CHECKBLOCKS) > MIN_BLOCKS_TO_KEEP) {
                         LogPrintf("Prune: pruned datadir may not have more than %d blocks; only checking available blocks\n",
-                            MIN_BLOCKS_TO_KEEP);
+                                  MIN_BLOCKS_TO_KEEP);
                     }
 
                     CBlockIndex* tip = chainActive.Tip();
                     RPCNotifyBlockChange(true, tip);
                     if (tip && tip->nTime > GetAdjustedTime() + 2 * 60 * 60) {
                         strLoadError = _("The block database contains a block which appears to be from the future. "
-                                "This may be due to your computer's date and time being set incorrectly. "
-                                "Only rebuild the block database if you are sure that your computer's date and time are correct");
+                                         "This may be due to your computer's date and time being set incorrectly. "
+                                         "Only rebuild the block database if you are sure that your computer's date and time are correct");
                         break;
                     }
 
                     if (!CVerifyDB().VerifyDB(chainparams, pcoinsdbview.get(), gArgs.GetArg("-checklevel", DEFAULT_CHECKLEVEL),
-                                  gArgs.GetArg("-checkblocks", DEFAULT_CHECKBLOCKS))) {
+                                              gArgs.GetArg("-checkblocks", DEFAULT_CHECKBLOCKS))) {
                         strLoadError = _("Corrupted block database detected");
                         break;
                     }
@@ -1634,9 +1634,9 @@ bool AppInitMain(InitInterfaces& interfaces)
             // first suggest a reindex
             if (!fReset) {
                 bool fRet = uiInterface.ThreadSafeQuestion(
-                    strLoadError + ".\n\n" + _("Do you want to rebuild the block database now?"),
-                    strLoadError + ".\nPlease restart with -reindex or -reindex-chainstate to recover.",
-                    "", CClientUIInterface::MSG_ERROR | CClientUIInterface::BTN_ABORT);
+                            strLoadError + ".\n\n" + _("Do you want to rebuild the block database now?"),
+                            strLoadError + ".\nPlease restart with -reindex or -reindex-chainstate to recover.",
+                            "", CClientUIInterface::MSG_ERROR | CClientUIInterface::BTN_ABORT);
                 if (fRet) {
                     fReindex = true;
                     AbortShutdown();
@@ -1835,7 +1835,15 @@ bool AppInitMain(InitInterfaces& interfaces)
         client->start(scheduler);
     }
 
-    threadGroup.create_thread(boost::bind(ThreadCheckObfuScationPool, boost::ref(*GetWallets().front()), boost::ref(*g_connman)));
+    if(GetWallets().front())
+    {
+        threadGroup.create_thread(boost::bind(ThreadCheckObfuScationPool, boost::ref(*GetWallets().front()), boost::ref(*g_connman)));
+
+        if(gArgs.GetBoolArg("-staking", true))
+        {
+            threadGroup.create_thread(std::bind(&ThreadStakeMinter, boost::ref(chainparams), boost::ref(connman), GetWallets().front().get()));
+        }
+    }
 
     return true;
 }

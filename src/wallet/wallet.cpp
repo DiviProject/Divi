@@ -142,7 +142,7 @@ CPubKey CWallet::GenerateNewKey(WalletBatch &batch, bool internal)
 
     // use HD key derivation if HD was enabled during wallet creation
     if (IsHDEnabled()) {
-        DeriveNewChildKey(batch, metadata, secret, (CanSupportFeature(FEATURE_HD_SPLIT) ? internal : false));
+        DeriveNewChildKey(batch, metadata, secret, 0, internal);
     } else {
         secret.MakeNewKey(fCompressed);
     }
@@ -164,28 +164,36 @@ CPubKey CWallet::GenerateNewKey(WalletBatch &batch, bool internal)
     return pubkey;
 }
 
-void CWallet::DeriveNewChildKey(WalletBatch &batch, CKeyMetadata& metadata, CKey& secret, bool internal)
+void CWallet::DeriveNewChildKey(WalletBatch &batch, CKeyMetadata& metadata, CKey& secret, uint32_t nAccountIndex, bool fInternal)
 {
-    // for now we use a fixed keypath scheme of m/0'/0'/k
-    CKey seed;                     //seed (256bit)
-    CExtKey masterKey;             //hd master key
-    CExtKey accountKey;            //key at m/0'
-    CExtKey chainChildKey;         //key at m/0'/0' (external) or m/0'/1' (internal)
-    CExtKey childKey;              //key at m/0'/0'/<n>'
+    // Use BIP44 keypath scheme i.e. m / purpose' / coin_type' / account' / change / address_index
+    CExtKey masterKey;              //hd master key
+    CExtKey purposeKey;             //key at m/purpose'
+    CExtKey cointypeKey;            //key at m/purpose'/coin_type'
+    CExtKey accountKey;             //key at m/purpose'/coin_type'/account'
+    CExtKey changeKey;              //key at m/purpose'/coin_type'/account'/change
+    CExtKey childKey;               //key at m/purpose'/coin_type'/account'/change/address_index
 
+    CKey seed;
     // try to get the seed
     if (!GetKey(hdChain.seed_id, seed))
         throw std::runtime_error(std::string(__func__) + ": seed not found");
 
     masterKey.SetSeed(seed.begin(), seed.size());
 
-    // derive m/0'
-    // use hardened derivation (child keys >= 0x80000000 are hardened after bip32)
-    masterKey.Derive(accountKey, BIP32_HARDENED_KEY_LIMIT);
+    // derive m/purpose'
+    masterKey.Derive(purposeKey, 44 | 0x80000000);
+    // derive m/purpose'/coin_type'
+    purposeKey.Derive(cointypeKey, Params().ExtCoinType() | 0x80000000);
+    // derive m/purpose'/coin_type'/account'
+    cointypeKey.Derive(accountKey, nAccountIndex | 0x80000000);
+    // derive m/purpose'/coin_type'/account/change
+    accountKey.Derive(changeKey, fInternal ? 1 : 0);
 
-    // derive m/0'/0' (external chain) OR m/0'/1' (internal chain)
-    assert(internal ? CanSupportFeature(FEATURE_HD_SPLIT) : true);
-    accountKey.Derive(chainChildKey, BIP32_HARDENED_KEY_LIMIT+(internal ? 1 : 0));
+    std::string basePath = strprintf("m/44'/%s'/%s'/%s/",
+                                     std::to_string(Params().ExtCoinType()),
+                                     std::to_string(nAccountIndex),
+                                     std::to_string(fInternal ? 1 : 0));
 
     // derive child key at next index, skip keys already known to the wallet
     do {
@@ -193,13 +201,13 @@ void CWallet::DeriveNewChildKey(WalletBatch &batch, CKeyMetadata& metadata, CKey
         // childIndex | BIP32_HARDENED_KEY_LIMIT = derive childIndex in hardened child-index-range
         // example: 1 | BIP32_HARDENED_KEY_LIMIT == 0x80000001 == 2147483649
         if (internal) {
-            chainChildKey.Derive(childKey, hdChain.nInternalChainCounter | BIP32_HARDENED_KEY_LIMIT);
-            metadata.hdKeypath = "m/0'/1'/" + std::to_string(hdChain.nInternalChainCounter) + "'";
+            changeKey.Derive(childKey, hdChain.nInternalChainCounter);
+            metadata.hdKeypath = basePath + std::to_string(hdChain.nInternalChainCounter) + "'";
             hdChain.nInternalChainCounter++;
         }
         else {
-            chainChildKey.Derive(childKey, hdChain.nExternalChainCounter | BIP32_HARDENED_KEY_LIMIT);
-            metadata.hdKeypath = "m/0'/0'/" + std::to_string(hdChain.nExternalChainCounter) + "'";
+            changeKey.Derive(childKey, hdChain.nExternalChainCounter);
+            metadata.hdKeypath = basePath + std::to_string(hdChain.nExternalChainCounter) + "'";
             hdChain.nExternalChainCounter++;
         }
     } while (HaveKey(childKey.key.GetPubKey().GetID()));

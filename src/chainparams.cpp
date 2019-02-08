@@ -143,7 +143,7 @@ public:
         base58Prefixes[EXT_SECRET_KEY] = {0x02, 0x21, 0x31, 0x2B};
 
         bech32_hrp = "bc";
-        consensus.nExtCoinType = 301;
+        nExtCoinType = 301;
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 

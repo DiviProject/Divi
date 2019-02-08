@@ -84,7 +84,6 @@ struct Params {
     int nLotteryBlockCycle;
     int nTreasuryPaymentsStartBlock;
     int nTreasuryPaymentsCycle;
-    int nExtCoinType;
     int nFulfilledRequestExpireTime;
     int64_t nStartMasternodePayments;
     std::string strSporkKey;

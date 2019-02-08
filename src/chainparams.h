@@ -79,6 +79,7 @@ public:
     const std::vector<SeedSpec6>& FixedSeeds() const { return vFixedSeeds; }
     const CCheckpointData& Checkpoints() const { return checkpointData; }
     const ChainTxData& TxData() const { return chainTxData; }
+    int ExtCoinType() const { return nExtCoinType; }
 protected:
     CChainParams() {}
 
@@ -97,6 +98,7 @@ protected:
     CCheckpointData checkpointData;
     ChainTxData chainTxData;
     bool m_fallback_fee_enabled;
+    int nExtCoinType;
 };
 
 /**

@@ -776,14 +776,10 @@ public:
     unsigned int nMasterKeyMaxID = 0;
 
     // Stake Settings
-    unsigned int nHashDrift;
-    unsigned int nHashInterval;
-    uint64_t nStakeSplitThreshold;
-    int nStakeSetUpdateTime;
-
-    //Auto Combine Inputs
-    bool fCombineDust;
-    CAmount nAutoCombineThreshold;
+    unsigned int nHashDrift = 45;
+    unsigned int nHashInterval = 22;
+    uint64_t nStakeSplitThreshold = 100000;
+    int nStakeSetUpdateTime = 300; // 5 minutes
 
     /** Construct wallet with specified name and database implementation. */
     CWallet(interfaces::Chain& chain, const WalletLocation& location, std::unique_ptr<WalletDatabase> database) : m_chain(chain), m_location(location), database(std::move(database))

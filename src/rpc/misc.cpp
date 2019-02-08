@@ -20,6 +20,7 @@
 #include <util/system.h>
 #include <util/strencodings.h>
 #include <warnings.h>
+#include <spork.h>
 
 #include <stdint.h>
 #ifdef HAVE_MALLOC_INFO
@@ -454,6 +455,48 @@ static UniValue echo(const JSONRPCRequest& request)
     return request.params;
 }
 
+/*
+    Used for updating/reading spork settings on the network
+*/
+UniValue spork(const JSONRPCRequest& request)
+{
+    if (request.params.size() == 1 && request.params[0].get_str() == "show") {
+        UniValue ret(UniValue::VOBJ);
+        for (int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++) {
+            if (sporkManager.GetSporkNameByID(nSporkID) != "Unknown")
+                ret.pushKV(sporkManager.GetSporkNameByID(nSporkID), sporkManager.GetSporkValue(nSporkID));
+        }
+        return ret;
+    } else if (request.params.size() == 1 && request.params[0].get_str() == "active") {
+        UniValue ret(UniValue::VOBJ);
+        for (int nSporkID = SPORK_START; nSporkID <= SPORK_END; nSporkID++) {
+            if (sporkManager.GetSporkNameByID(nSporkID) != "Unknown")
+                ret.pushKV(sporkManager.GetSporkNameByID(nSporkID), sporkManager.IsSporkActive(nSporkID));
+        }
+        return ret;
+    } else if (request.params.size() == 2) {
+        int nSporkID = sporkManager.GetSporkIDByName(request.params[0].get_str());
+        if (nSporkID == -1) {
+            return "Invalid spork name";
+        }
+
+        // SPORK VALUE
+        std::string strValue = request.params[1].get_str();
+
+        //broadcast new spork
+        if (sporkManager.UpdateSpork(nSporkID, strValue, g_connman.get())) {
+            return "success";
+        } else {
+            return "failure";
+        }
+    }
+
+    throw std::runtime_error(
+        "spork <name> [<value>]\n"
+        "<name> is the corresponding spork name, or 'show' to show all current spork settings, active to show which sporks are active"
+        "<value> is a epoch datetime to enable or disable spork");
+}
+
 // clang-format off
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
@@ -464,6 +507,7 @@ static const CRPCCommand commands[] =
     { "util",               "createmultisig",         &createmultisig,         {"nrequired","keys","address_type"} },
     { "util",               "verifymessage",          &verifymessage,          {"address","signature","message"} },
     { "util",               "signmessagewithprivkey", &signmessagewithprivkey, {"privkey","message"} },
+    { "util",               "spork",                  &spork,                  {"name", "value"} },
 
     /* Not shown in help */
     { "hidden",             "setmocktime",            &setmocktime,            {"timestamp"}},

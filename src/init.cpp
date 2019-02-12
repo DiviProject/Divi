@@ -1686,7 +1686,7 @@ bool AppInitMain(InitInterfaces& interfaces)
         }
     }
 
-    if (chainparams.GetConsensus().vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout != 0) {
+    if (IsWitnessEnabled(chainActive.Tip()->nHeight, chainparams.GetConsensus())) {
         // Only advertise witness capabilities if they have a reasonable start time.
         // This allows us to have the code merged without a defined softfork, by setting its
         // end time to 0.

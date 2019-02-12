@@ -167,7 +167,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
     // not activated.
     // TODO: replace this with a call to main to assess validity of a mempool
     // transaction (which in most cases can be a no-op).
-    fIncludeWitness = IsWitnessEnabled(pindexPrev, chainparams.GetConsensus());
+    fIncludeWitness = IsWitnessEnabled(nHeight, chainparams.GetConsensus());
 
 
     int64_t nTime1 = GetTimeMicros();

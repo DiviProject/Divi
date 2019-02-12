@@ -502,12 +502,6 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
         // TODO: Maybe recheck connections/IBD and (if something wrong) send an expires-immediately template to stop miners?
     }
 
-    const struct VBDeploymentInfo& segwit_info = VersionBitsDeploymentInfo[Consensus::DEPLOYMENT_SEGWIT];
-    // GBT must be called with 'segwit' set in the rules
-    if (setClientRules.count(segwit_info.name) != 1) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "getblocktemplate must be called with the segwit rule set (call with {\"rules\": [\"segwit\"]})");
-    }
-
     // Update block
     static CBlockIndex* pindexPrev;
     static int64_t nStart;
@@ -541,7 +535,7 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     pblock->nNonce = 0;
 
     // NOTE: If at some point we support pre-segwit miners post-segwit-activation, this needs to take segwit support into consideration
-    const bool fPreSegWit = (ThresholdState::ACTIVE != VersionBitsState(pindexPrev, consensusParams, Consensus::DEPLOYMENT_SEGWIT, versionbitscache));
+    const bool fPreSegWit =  IsWitnessEnabled(chainActive.Tip()->nHeight, consensusParams);
 
     UniValue aCaps(UniValue::VARR); aCaps.push_back("proposal");
 
@@ -732,6 +726,8 @@ static UniValue submitblock(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Block does not start with a coinbase");
     }
 
+    throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Not supported");
+
     uint256 hash = block.GetHash();
     {
         LOCK(cs_main);
@@ -750,7 +746,7 @@ static UniValue submitblock(const JSONRPCRequest& request)
         LOCK(cs_main);
         const CBlockIndex* pindex = LookupBlockIndex(block.hashPrevBlock);
         if (pindex) {
-            UpdateUncommittedBlockStructures(block, pindex, Params().GetConsensus());
+//            UpdateUncommittedBlockStructures(block, pindex, Params().GetConsensus());
         }
     }
 

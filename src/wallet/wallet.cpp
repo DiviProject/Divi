@@ -1246,7 +1246,7 @@ void CWallet::TransactionRemovedFromMempool(const CTransactionRef &ptx) {
 
 void CWallet::BlockConnected(const std::shared_ptr<const CBlock>& pblock, const CBlockIndex *pindex, const std::vector<CTransactionRef>& vtxConflicted) {
     auto locked_chain = chain().lock();
-    bool witnessEnabled = IsWitnessEnabled(pindex, Params().GetConsensus());
+    bool witnessEnabled = IsWitnessEnabled(pindex->nHeight, Params().GetConsensus());
     LOCK(cs_wallet);
     // TODO: Temporarily ensure that mempool removals are notified before
     // connected transactions.  This shouldn't matter, but the abandoned

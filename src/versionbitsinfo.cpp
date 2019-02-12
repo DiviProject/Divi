@@ -11,6 +11,7 @@ const struct VBDeploymentInfo VersionBitsDeploymentInfo[Consensus::MAX_VERSION_B
         /*.name =*/ "testdummy",
         /*.gbt_force =*/ true,
     },
+#if 0
     {
         /*.name =*/ "csv",
         /*.gbt_force =*/ true,
@@ -19,4 +20,5 @@ const struct VBDeploymentInfo VersionBitsDeploymentInfo[Consensus::MAX_VERSION_B
         /*.name =*/ "segwit",
         /*.gbt_force =*/ true,
     }
+#endif
 };

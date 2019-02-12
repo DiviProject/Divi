@@ -454,7 +454,7 @@ bool IsNullDummyEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& 
 bool RewindBlockIndex(const CChainParams& params);
 
 /** Update uncommitted block structures (currently: only the witness reserved value). This is safe for submitted blocks. */
-void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams);
+void UpdateUncommittedBlockStructures(CBlock& block);
 
 /** Produce the necessary coinbase commitment for a block (modifies the hash, don't call for mined blocks). */
 std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams);

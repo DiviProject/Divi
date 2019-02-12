@@ -1855,7 +1855,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         return true;
     }
 
-    if (!pfrom->fSuccessfullyConnected) {
+    if (pfrom->AreSporksSynced() && !pfrom->fSuccessfullyConnected) {
         // Must have a verack message before anything else
         LOCK(cs_main);
         Misbehaving(pfrom->GetId(), 1);

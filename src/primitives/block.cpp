@@ -46,3 +46,8 @@ bool CBlock::IsProofOfWork() const
 {
     return !IsProofOfStake();
 }
+
+bool CBlock::IsWitnessBlock() const
+{
+    return !vtx.empty() && vtx[0]->HasWitness();
+}

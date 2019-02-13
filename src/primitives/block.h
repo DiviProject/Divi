@@ -128,6 +128,7 @@ public:
 
     bool IsProofOfStake() const;
     bool IsProofOfWork() const;
+    bool IsWitnessBlock() const;
 
     std::string ToString() const;
 };

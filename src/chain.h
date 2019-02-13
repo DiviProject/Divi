@@ -220,6 +220,7 @@ public:
 
     // proof-of-stake specific fields
     arith_uint256 GetBlockTrust() const;
+    uint256 hashStakeModifierV3; // hash modifier for PoS v3.
     uint64_t nStakeModifier;             // hash modifier for proof-of-stake
     unsigned int nStakeModifierChecksum; // checksum of index; in-memeory only
     COutPoint prevoutStake;
@@ -268,6 +269,7 @@ public:
         nMint = 0;
         nMoneySupply = 0;
         nFlags = 0;
+        hashStakeModifierV3.SetNull();
         nStakeModifier = 0;
         nStakeModifierChecksum = 0;
         prevoutStake.SetNull();
@@ -302,6 +304,7 @@ public:
         nMint = 0;
         nMoneySupply = 0;
         nFlags = 0;
+        hashStakeModifierV3.SetNull();;
         nStakeModifier = 0;
         nStakeModifierChecksum = 0;
         hashProofOfStake = uint256();
@@ -539,6 +542,10 @@ public:
             READWRITE(nAccumulatorCheckpoint);
             READWRITE(mapZerocoinSupply);
             READWRITE(vMintDenominationsInBlock);
+        }
+
+        if(this->nVersion == 5) {
+            READWRITE(hashStakeModifierV3);
         }
     }
 

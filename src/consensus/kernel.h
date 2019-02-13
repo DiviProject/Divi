@@ -18,8 +18,7 @@ extern unsigned int getIntervalVersion(bool fTestNet);
 // ratio of group interval length between the last group and the first group
 static const int MODIFIER_INTERVAL_RATIO = 3;
 
-// Compute the hash modifier for proof-of-stake
-bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeModifier, bool& fGeneratedStakeModifier);
+bool ComputeAndSetStakeModifier(CBlockIndex *pindexNew, const Consensus::Params &consensus);
 
 // Check whether stake kernel meets hash target
 // Sets hashProofOfStake on success return
@@ -34,9 +33,6 @@ bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx);
 
 // Get stake modifier checksum
 uint64_t GetStakeModifierChecksum(const CBlockIndex* pindex);
-
-// Check stake modifier hard checkpoints
-bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum);
 
 // Get time weight using supplied timestamps
 int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd);

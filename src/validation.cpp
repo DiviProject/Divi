@@ -1829,8 +1829,7 @@ VersionBitsCache versionbitscache GUARDED_BY(cs_main);
 
 int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Params& params)
 {
-
-    return IsWitnessEnabled(pindexPrev->nHeight + 1, params) ? VERSIONBITS_SEGWIT_BLOCK_VERSION : VERSIONBITS_PRESEGWIT_BLOCK_VERSION;
+    return pindexPrev && IsWitnessEnabled(pindexPrev->nHeight + 1, params) ? VERSIONBITS_SEGWIT_BLOCK_VERSION : VERSIONBITS_PRESEGWIT_BLOCK_VERSION;
 
 /* Don't use BIP9, we don't need that, instead we are more interested in constant changes to block version
 

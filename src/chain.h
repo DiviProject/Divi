@@ -538,13 +538,13 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
 
-        if(this->nVersion == 4) { // TODO: check this version if ok
+        if(this->nVersion == VERSIONBITS_PRESEGWIT_BLOCK_VERSION) { // TODO: check this version if ok
             READWRITE(nAccumulatorCheckpoint);
             READWRITE(mapZerocoinSupply);
             READWRITE(vMintDenominationsInBlock);
         }
 
-        if(this->nVersion == 5) {
+        if(this->nVersion >= VERSIONBITS_SEGWIT_BLOCK_VERSION) {
             READWRITE(hashStakeModifierV3);
         }
     }

@@ -22,11 +22,20 @@ bool ComputeAndSetStakeModifier(CBlockIndex *pindexNew, const Consensus::Params 
 
 // Check whether stake kernel meets hash target
 // Sets hashProofOfStake on success return
-bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTransaction &txPrev, const COutPoint prevout, unsigned int& nTimeTx, unsigned int nHashDrift, bool fCheck, uint256& hashProofOfStake, bool fPrintProofOfStake = false);
+bool CheckStakeKernelHash(CBlockIndex *pindexPrev,
+                          unsigned int nBits,
+                          const CBlock &blockFrom,
+                          const CTransaction &txPrev,
+                          const COutPoint prevout,
+                          unsigned int& nTimeTx,
+                          unsigned int nHashDrift,
+                          bool fCheck,
+                          uint256& hashProofOfStake,
+                          bool fPrintProofOfStake = false);
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return
-bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake);
+bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake);
 
 // Check whether the coinstake timestamp meets protocol
 bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx);

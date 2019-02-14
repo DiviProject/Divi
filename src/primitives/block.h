@@ -10,6 +10,9 @@
 #include <serialize.h>
 #include <uint256.h>
 
+static const int32_t VERSIONBITS_PRESEGWIT_BLOCK_VERSION = 4;
+static const int32_t VERSIONBITS_SEGWIT_BLOCK_VERSION = 5;
+
 /** Nodes collect new transactions into a block, hash them into a hash tree,
  * and scan through nonce values to make the block's hash satisfy proof-of-work
  * requirements.  When they solve the proof-of-work, they broadcast the block
@@ -45,7 +48,7 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
 
-        if(nVersion > 3)
+        if(nVersion == VERSIONBITS_PRESEGWIT_BLOCK_VERSION)
             READWRITE(nAccumulatorCheckpoint);
     }
 

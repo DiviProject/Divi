@@ -1829,6 +1829,11 @@ VersionBitsCache versionbitscache GUARDED_BY(cs_main);
 
 int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Params& params)
 {
+
+    return IsWitnessEnabled(pindexPrev->nHeight + 1, params) ? VERSIONBITS_SEGWIT_BLOCK_VERSION : VERSIONBITS_PRESEGWIT_BLOCK_VERSION;
+
+/* Don't use BIP9, we don't need that, instead we are more interested in constant changes to block version
+
     LOCK(cs_main);
     int32_t nVersion = VERSIONBITS_TOP_BITS;
 
@@ -1840,6 +1845,7 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
     }
 
     return nVersion;
+*/
 }
 
 /**
@@ -2432,7 +2438,7 @@ void static UpdateTip(const CBlockIndex *pindexNew, const CChainParams& chainPar
         for (int i = 0; i < 100 && pindex != nullptr; i++)
         {
             int32_t nExpectedVersion = ComputeBlockVersion(pindex->pprev, chainParams.GetConsensus());
-            if (pindex->nVersion > VERSIONBITS_LAST_OLD_BLOCK_VERSION && (pindex->nVersion & ~nExpectedVersion) != 0)
+            if (pindex->nVersion > VERSIONBITS_PRESEGWIT_BLOCK_VERSION && (pindex->nVersion & ~nExpectedVersion) != 0)
                 ++nUpgraded;
             pindex = pindex->pprev;
         }

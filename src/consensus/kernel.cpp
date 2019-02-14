@@ -165,7 +165,7 @@ static bool ComputeNextStakeModifierV2(const CBlockIndex* pindexPrev, uint64_t& 
     if (pindexPrev->nHeight == 0) {
         //Give a stake modifier to the first block
         fGeneratedStakeModifier = true;
-//        nStakeModifier = uint64_t("stakemodifier");
+        //        nStakeModifier = uint64_t("stakemodifier");
         nStakeModifier = 8093378;
         return true;
     }
@@ -301,7 +301,7 @@ bool stakeTargetHit(uint256 hashProofOfStake, uint64_t nValueIn, arith_uint256 b
 }
 
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
-bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTransaction &txPrev, const COutPoint prevout, unsigned int& nTimeTx, unsigned int nHashDrift, bool fCheck, uint256& hashProofOfStake, bool fPrintProofOfStake)
+static bool CheckStakeKernelHashV2(unsigned int nBits, const CBlock blockFrom, const CTransaction &txPrev, const COutPoint prevout, unsigned int& nTimeTx, unsigned int nHashDrift, bool fCheck, uint256& hashProofOfStake, bool fPrintProofOfStake)
 {
     //assign new variables to make it easier to read
     int64_t nValueIn = txPrev.vout[prevout.n].nValue;
@@ -379,8 +379,72 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
     return fSuccess;
 }
 
+// BlackCoin kernel protocol
+// coinstake must meet hash target according to the protocol:
+// kernel (input 0) must meet the formula
+//     hash(nStakeModifier + blockFrom.nTime + txPrev.vout.hash + txPrev.vout.n + nTime) < bnTarget * nWeight
+// this ensures that the chance of getting a coinstake is proportional to the
+// amount of coins one owns.
+// The reason this hash is chosen is the following:
+//   nStakeModifier: scrambles computation to make it very difficult to precompute
+//                   future proof-of-stake
+//   blockFrom.nTime: slightly scrambles computation
+//   txPrev.vout.hash: hash of txPrev, to reduce the chance of nodes
+//                     generating coinstake at the same time
+//   txPrev.vout.n: output number of txPrev, to reduce the chance of nodes
+//                  generating coinstake at the same time
+//   nTime: current timestamp
+//   block/tx hash should not be used here as they can be generated in vast
+//   quantities so as to generate blocks faster, degrading the system back into
+//   a proof-of-work situation.
+//
+static bool CheckStakeKernelHashV3(CBlockIndex* pindexPrev, unsigned int nBits, uint32_t blockFromTime, CAmount prevoutValue, const COutPoint& prevout, unsigned int nTimeBlock, uint256& hashProofOfStake, bool fPrintProofOfStake)
+{
+    if (nTimeBlock < blockFromTime)  // Transaction timestamp violation
+        return error("%s : nTime violation", __func__);
+
+    if (blockFromTime + nStakeMinAge > nTimeBlock) // Min age requirement
+        return error("%s : min age violation - nTimeBlockFrom=%d nStakeMinAge=%d nTimeTx=%d", __func__, blockFromTime, nStakeMinAge, nTimeBlock);
+
+    // Base target
+    arith_uint256 bnTarget;
+    bnTarget.SetCompact(nBits);
+
+    // Weighted target
+    int64_t nValueIn = prevoutValue;
+    arith_uint256 bnWeight = arith_uint256(nValueIn);
+    bnTarget *= bnWeight;
+
+    uint256 nStakeModifier = pindexPrev->hashStakeModifierV3;
+
+    // Calculate hash
+    CDataStream ss(SER_GETHASH, 0);
+    ss << nStakeModifier;
+    ss << blockFromTime << prevout.hash << prevout.n << nTimeBlock;
+    hashProofOfStake = Hash(ss.begin(), ss.end());
+
+    if (fPrintProofOfStake)
+    {
+        LogPrint(BCLog::KERNEL, "%s : check modifier=%s nTimeBlockFrom=%u nPrevout=%u nTimeBlock=%u hashProof=%s\n", __func__,
+                 nStakeModifier.GetHex().c_str(),
+                 blockFromTime, prevout.n, nTimeBlock,
+                 hashProofOfStake.ToString());
+    }
+
+    // Now check if proof-of-stake hash meets target protocol
+    if (UintToArith256(hashProofOfStake) > bnTarget)
+        return false;
+
+    LogPrint(BCLog::KERNEL, "%s : check modifier=%s nTimeBlockFrom=%u nPrevout=%u nTimeBlock=%u hashProof=%s\n", __func__,
+             nStakeModifier.GetHex().c_str(),
+             blockFromTime, prevout.n, nTimeBlock,
+             hashProofOfStake.ToString());
+
+    return true;
+}
+
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
+bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
 {
     const CTransactionRef &tx = block.vtx[1];
     if (!tx->IsCoinStake())
@@ -434,7 +498,7 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
 
     unsigned int nInterval = 0;
     unsigned int nTime = block.nTime;
-    if (!CheckStakeKernelHash(block.nBits, blockprev, *txPrev, txin.prevout, nTime, nInterval, true, hashProofOfStake, false))
+    if (!CheckStakeKernelHash(mapBlockIndex[block.hashPrevBlock], block.nBits, blockprev, *txPrev, txin.prevout, nTime, nInterval, true, hashProofOfStake, false))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx->GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;
@@ -507,4 +571,11 @@ bool ComputeAndSetStakeModifier(CBlockIndex *pindexNew, const Consensus::Params 
     }
 
     return true;
+}
+
+bool CheckStakeKernelHash(CBlockIndex *pindexPrev, unsigned int nBits, const CBlock &blockFrom, const CTransaction &txPrev, const COutPoint prevout, unsigned int &nTimeTx, unsigned int nHashDrift, bool fCheck, uint256 &hashProofOfStake, bool fPrintProofOfStake)
+{
+    return IsWitnessEnabled(pindexPrev->nHeight + 1, Params().GetConsensus()) ?
+                CheckStakeKernelHashV3(pindexPrev, nBits, blockFrom.nTime, txPrev.vout[prevout.n].nValue, prevout, nTimeTx, hashProofOfStake, fPrintProofOfStake) :
+                CheckStakeKernelHashV2(nBits, blockFrom, txPrev, prevout, nTimeTx, nHashDrift, fCheck, hashProofOfStake, fPrintProofOfStake);
 }

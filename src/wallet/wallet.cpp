@@ -350,7 +350,7 @@ CAmount GetStakeReward(CAmount blockReward, unsigned int percentage)
     return (blockReward / 100) * percentage;
 }
 
-bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeScript,
+bool CWallet::CreateCoinStakeKernel(CBlockIndex *prevIndex, CScript &kernelScript, const CScript &stakeScript,
                                     unsigned int nBits, const CBlock &blockFrom,
                                     const CTransactionRef &txPrev,
                                     const COutPoint &prevout, unsigned int &nTimeTx,
@@ -377,7 +377,7 @@ bool CWallet::CreateCoinStakeKernel(CScript &kernelScript, const CScript &stakeS
         return false;
     }
 
-    if (CheckStakeKernelHash(nBits, blockFrom, *txPrev, prevout, nTimeTx, nHashDrift, false, hashProofOfStake, fPrintProofOfStake))
+    if (CheckStakeKernelHash(prevIndex, nBits, blockFrom, *txPrev, prevout, nTimeTx, nHashDrift, false, hashProofOfStake, fPrintProofOfStake))
     {
         //Double check that this will pass time requirements
         if (nTryTime <= chainActive.Tip()->GetMedianTimePast()) {
@@ -3238,8 +3238,10 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     if (setStakeCoins.empty())
         return error("CreateCoinStake() : No Coins to stake");
 
+    auto chainTip = chainActive.Tip();
+
     //prevent staking a time that won't be accepted
-    if (GetAdjustedTime() <= chainActive.Tip()->nTime)
+    if (GetAdjustedTime() <= chainTip->nTime)
         MilliSleep(10000);
 
     bool fKernelFound = false;
@@ -3264,7 +3266,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
         //iterates each utxo inside of CheckStakeKernelHash()
         CScript kernelScript;
         auto stakeScript = pcoin.first->tx->vout[pcoin.second].scriptPubKey;
-        fKernelFound = CreateCoinStakeKernel(kernelScript, stakeScript, nBits,
+        fKernelFound = CreateCoinStakeKernel(chainTip, kernelScript, stakeScript, nBits,
                                              block, pcoin.first->tx,
                                              prevoutStake, nTxNewTime, fGenerateSegwit, false);
 
@@ -3287,7 +3289,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
 
     // Update coinbase transaction with additional info about masternode and governance payments,
     // get some info back to pass to getblocktemplate
-    int nHeight = chainActive.Tip()->nHeight + 1;
+    int nHeight = chainTip->nHeight + 1;
     // Masternode payment
     FillBlockPayee(txNew, blockReward, true, Params().GetConsensus());
     LogPrintf("CreateCoinStake -- nBlockHeight %d blockReward %lld txNew %s",

@@ -405,7 +405,21 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         {
             CHDChain chain;
             ssValue >> chain;
-            pwallet->SetHDChain(chain, true);
+            if (!pwallet->SetHDChain(nullptr, chain, true))
+            {
+                strErr = "Error reading wallet database: SetHDChain failed";
+                return false;
+            }
+        }
+        else if (strType == "chdchain")
+        {
+            CHDChain chain;
+            ssValue >> chain;
+            if (!pwallet->SetCryptedHDChain(nullptr, chain, true))
+            {
+                strErr = "Error reading wallet database: SetHDCryptedChain failed";
+                return false;
+            }
         } else if (strType == "flags") {
             uint64_t flags;
             ssValue >> flags;
@@ -738,6 +752,26 @@ bool WalletBatch::EraseDestData(const std::string &address, const std::string &k
 bool WalletBatch::WriteHDChain(const CHDChain& chain)
 {
     return WriteIC(std::string("hdchain"), chain);
+}
+
+bool WalletBatch::WriteCryptedHDChain(const CHDChain &chain)
+{
+    if(!WriteIC("chdchain", chain))
+    {
+        return false;
+    }
+
+    EraseIC(std::string("hdchain"));
+
+    return true;
+}
+
+bool WalletBatch::WriteHDPubKey(const CHDPubKey &hdPubKey, const CKeyMetadata &keyMeta)
+{
+    if (!WriteIC(std::make_pair(std::string("keymeta"), hdPubKey.extPubKey.pubkey), keyMeta, false))
+        return false;
+
+    return WriteIC(std::make_pair(std::string("hdpubkey"), hdPubKey.extPubKey.pubkey), hdPubKey, false);
 }
 
 bool WalletBatch::WriteWalletFlags(const uint64_t flags)

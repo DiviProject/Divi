@@ -118,6 +118,8 @@ private:
 
     CKeyingMaterial vMasterKey GUARDED_BY(cs_KeyStore);
 
+    CHDChain cryptedHDChain GUARDED_BY(cs_KeyStore);
+
     //! if fUseCrypto is true, mapKeys must be empty
     //! if fUseCrypto is false, vMasterKey must be empty
     std::atomic<bool> fUseCrypto;
@@ -136,6 +138,11 @@ protected:
     bool Unlock(const CKeyingMaterial& vMasterKeyIn);
     CryptedKeyMap mapCryptedKeys GUARDED_BY(cs_KeyStore);
 
+    bool EncryptHDChain(const CKeyingMaterial& vMasterKeyIn);
+    bool DecryptHDChain(CHDChain& hdChainRet) const;
+    bool SetHDChain(const CHDChain& chain);
+    bool SetCryptedHDChain(const CHDChain& chain);
+
 public:
     CCryptoKeyStore() : fUseCrypto(false), fDecryptionThoroughlyChecked(false)
     {
@@ -151,6 +158,8 @@ public:
     bool GetKey(const CKeyID &address, CKey& keyOut) const override;
     bool GetPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const override;
     std::set<CKeyID> GetKeys() const override;
+
+    bool GetHDChain(CHDChain& hdChainRet) const override;
 
     /**
      * Wallet status (encrypted, locked) changed.

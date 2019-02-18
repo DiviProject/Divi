@@ -676,9 +676,6 @@ private:
      * Should be called with pindexBlock and posInBlock if this is for a transaction that is included in a block. */
     void SyncTransaction(const CTransactionRef& tx, const CBlockIndex *pindex = nullptr, int posInBlock = 0, bool update_tx = true) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
 
-    /* the HD chain data model (external chain counters) */
-    CHDChain hdChain;
-
     /* HD derive new child key (on internal or external chain) */
     void DeriveNewChildKey(WalletBatch &batch, CKeyMetadata& metadata, CKey& secret, uint32_t nAccountIndex, bool internal) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
 
@@ -792,6 +789,9 @@ public:
         encrypted_batch = nullptr;
     }
 
+    //<! memory map of HD extended pubkeys
+    std::map<CKeyID, CHDPubKey> mapHdPubKeys GUARDED_BY(cs_wallet);
+
     std::map<uint256, CWalletTx> mapWallet GUARDED_BY(cs_wallet);
 
     typedef std::multimap<int64_t, CWalletTx*> TxItems;
@@ -866,11 +866,20 @@ public:
      * Generate a new key
      */
     CPubKey GenerateNewKey(WalletBatch& batch, bool internal = false) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
+    bool HaveKey(const CKeyID &address) const override;
     //! Adds a key to the store, and saves it to disk.
     bool AddKeyPubKey(const CKey& key, const CPubKey &pubkey) override EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     bool AddKeyPubKeyWithDB(WalletBatch &batch,const CKey& key, const CPubKey &pubkey) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     //! Adds a key to the store, without saving it to disk (used by LoadWallet)
     bool LoadKey(const CKey& key, const CPubKey &pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
+    //! GetPubKey implementation that also checks the mapHdPubKeys
+    bool GetPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const override;
+    //! GetKey implementation that can derive a HD private key on the fly
+    bool GetKey(const CKeyID &address, CKey& keyOut) const override;
+    //! Adds a HDPubKey into the wallet(database)
+    bool AddHDPubKey(WalletBatch &batch, const CExtPubKey &extPubKey, bool fInternal);
+    //! loads a HDPubKey into the wallets memory
+    bool LoadHDPubKey(const CHDPubKey &hdPubKey);
     //! Load metadata (used by LoadWallet)
     void LoadKeyMetadata(const CKeyID& keyID, const CKeyMetadata &metadata) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     void LoadScriptMetadata(const CScriptID& script_id, const CKeyMetadata &metadata) EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
@@ -1137,24 +1146,16 @@ public:
 
     bool BackupWallet(const std::string& strDest);
 
-    /* Set the HD chain model (chain child index counters) */
-    void SetHDChain(const CHDChain& chain, bool memonly);
-    const CHDChain& GetHDChain() const { return hdChain; }
 
     /* Returns true if HD is enabled */
-    bool IsHDEnabled() const;
+    bool IsHDEnabled();
+    /* Generates a new HD chain */
+    void GenerateNewHDChain();
+    /* Set the HD chain model (chain child index counters) */
+    bool SetHDChain(WalletBatch *batch, const CHDChain& chain, bool memonly);
+    bool SetCryptedHDChain(WalletBatch *batch, const CHDChain& chain, bool memonly);
+    bool GetDecryptedHDChain(CHDChain& hdChainRet);
 
-    /* Generates a new HD seed (will not be activated) */
-    CPubKey GenerateNewSeed();
-
-    /* Derives a new HD seed (will not be activated) */
-    CPubKey DeriveNewSeed(const CKey& key);
-
-    /* Set the current HD seed (will reset the chain child index counters)
-       Sets the seed's version based on the current wallet version (so the
-       caller must ensure the current wallet version is correct before calling
-       this function). */
-    void SetHDSeed(const CPubKey& key);
 
     /**
      * Blocks until the wallet state is up-to-date to /at least/ the current

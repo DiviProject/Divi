@@ -2408,18 +2408,19 @@ static UniValue getwalletinfo(const JSONRPCRequest& request)
     obj.pushKV("txcount",       (int)pwallet->mapWallet.size());
     obj.pushKV("keypoololdest", pwallet->GetOldestKeyPoolTime());
     obj.pushKV("keypoolsize", (int64_t)kpExternalSize);
-    CKeyID seed_id = pwallet->GetHDChain().seed_id;
-    if (!seed_id.IsNull() && pwallet->CanSupportFeature(FEATURE_HD_SPLIT)) {
+    if (true && pwallet->CanSupportFeature(FEATURE_HD_SPLIT)) {
         obj.pushKV("keypoolsize_hd_internal",   (int64_t)(pwallet->GetKeyPoolSize() - kpExternalSize));
     }
     if (pwallet->IsCrypted()) {
         obj.pushKV("unlocked_until", pwallet->nRelockTime);
     }
     obj.pushKV("paytxfee", ValueFromAmount(pwallet->m_pay_tx_fee.GetFeePerK()));
+#if 0
     if (!seed_id.IsNull()) {
         obj.pushKV("hdseedid", seed_id.GetHex());
         obj.pushKV("hdmasterkeyid", seed_id.GetHex());
     }
+#endif
     obj.pushKV("private_keys_enabled", !pwallet->IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS));
     return obj;
 }
@@ -3857,7 +3858,7 @@ UniValue sethdseed(const JSONRPCRequest& request)
 
     CPubKey master_pub_key;
     if (request.params[1].isNull()) {
-        master_pub_key = pwallet->GenerateNewSeed();
+//        master_pub_key = pwallet->GenerateNewSeed();
     } else {
         CKey key = DecodeSecret(request.params[1].get_str());
         if (!key.IsValid()) {
@@ -3868,11 +3869,11 @@ UniValue sethdseed(const JSONRPCRequest& request)
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Already have this key (either as an HD seed or as a loose private key)");
         }
 
-        master_pub_key = pwallet->DeriveNewSeed(key);
+//        master_pub_key = pwallet->DeriveNewSeed(key);
     }
 
-    pwallet->SetHDSeed(master_pub_key);
-    if (flush_key_pool) pwallet->NewKeyPool();
+//    pwallet->SetHDSeed(master_pub_key);
+//    if (flush_key_pool) pwallet->NewKeyPool();
 
     return NullUniValue;
 }
@@ -4135,6 +4136,7 @@ UniValue importwallet(const JSONRPCRequest& request);
 UniValue importprunedfunds(const JSONRPCRequest& request);
 UniValue removeprunedfunds(const JSONRPCRequest& request);
 UniValue importmulti(const JSONRPCRequest& request);
+UniValue dumphdinfo(const JSONRPCRequest& request);
 
 // clang-format off
 static const CRPCCommand commands[] =
@@ -4151,6 +4153,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "createwallet",                     &createwallet,                  {"wallet_name", "disable_private_keys"} },
     { "wallet",             "dumpprivkey",                      &dumpprivkey,                   {"address"}  },
     { "wallet",             "dumpwallet",                       &dumpwallet,                    {"filename"} },
+    { "wallet",             "dumphdinfo",                       &dumphdinfo,                    {} },
     { "wallet",             "encryptwallet",                    &encryptwallet,                 {"passphrase"} },
     { "wallet",             "getaddressesbylabel",              &getaddressesbylabel,           {"label"} },
     { "wallet",             "getaddressinfo",                   &getaddressinfo,                {"address"} },
@@ -4185,7 +4188,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "rescanblockchain",                 &rescanblockchain,              {"start_height", "stop_height"} },
     { "wallet",             "sendmany",                         &sendmany,                      {"dummy","amounts","minconf","comment","subtractfeefrom","replaceable","conf_target","estimate_mode"} },
     { "wallet",             "sendtoaddress",                    &sendtoaddress,                 {"address","amount","comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
-    { "wallet",             "sethdseed",                        &sethdseed,                     {"newkeypool","seed"} },
+//    { "wallet",             "sethdseed",                        &sethdseed,                     {"newkeypool","seed"} },
     { "wallet",             "setlabel",                         &setlabel,                      {"address","label"} },
     { "wallet",             "settxfee",                         &settxfee,                      {"amount"} },
     { "wallet",             "signmessage",                      &signmessage,                   {"address","message"} },

@@ -125,6 +125,9 @@ BITCOIN_CORE_H = \
   flat-database.h \
   httprpc.h \
   httpserver.h \
+  hdchain.h \
+  bip39.h \
+  bip39_english.h \
   index/base.h \
   index/txindex.h \
   indirectmap.h \
@@ -444,6 +447,8 @@ libbitcoin_common_a_SOURCES = \
   core_write.cpp \
   key.cpp \
   key_io.cpp \
+  hdchain.cpp \
+  bip39.cpp \
   keystore.cpp \
   netaddress.cpp \
   netbase.cpp \

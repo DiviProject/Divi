@@ -204,9 +204,28 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial& vMasterKeyIn)
             LogPrintf("The wallet is probably corrupted: Some keys decrypt but not all.\n");
             throw std::runtime_error("Error unlocking wallet: some keys decrypt but not all. Your wallet file may be corrupt.");
         }
+
+        if (keyFail || (!keyPass && cryptedHDChain.IsNull()))
+            return false;
+
         if (keyFail || !keyPass)
             return false;
         vMasterKey = vMasterKeyIn;
+
+        if(!cryptedHDChain.IsNull()) {
+            bool chainPass = false;
+            // try to decrypt seed and make sure it matches
+            CHDChain hdChainTmp;
+            if (DecryptHDChain(hdChainTmp)) {
+                // make sure seed matches this chain
+                chainPass = cryptedHDChain.GetID() == hdChainTmp.GetSeedHash();
+            }
+            if (!chainPass) {
+                vMasterKey.clear();
+                return false;
+            }
+        }
+
         fDecryptionThoroughlyChecked = true;
     }
     NotifyStatusChanged(this);
@@ -247,6 +266,145 @@ bool CCryptoKeyStore::AddCryptedKey(const CPubKey &vchPubKey, const std::vector<
     mapCryptedKeys[vchPubKey.GetID()] = make_pair(vchPubKey, vchCryptedSecret);
     ImplicitlyLearnRelatedKeyScripts(vchPubKey);
     return true;
+}
+
+bool CCryptoKeyStore::EncryptHDChain(const CKeyingMaterial& vMasterKeyIn)
+{
+    // should call EncryptKeys first
+    if (!IsCrypted())
+        return false;
+
+    if (!cryptedHDChain.IsNull())
+        return true;
+
+    if (cryptedHDChain.IsCrypted())
+        return true;
+
+    // make sure seed matches this chain
+    if (hdChain.GetID() != hdChain.GetSeedHash())
+        return false;
+
+    std::vector<unsigned char> vchCryptedSeed;
+    if (!EncryptSecret(vMasterKeyIn, hdChain.GetSeed(), hdChain.GetID(), vchCryptedSeed))
+        return false;
+
+    hdChain.Debug(__func__);
+    cryptedHDChain = hdChain;
+    cryptedHDChain.SetCrypted(true);
+
+    CKeyingMaterial vchSecureCryptedSeed(vchCryptedSeed.begin(), vchCryptedSeed.end());
+    if (!cryptedHDChain.SetSeed(vchSecureCryptedSeed, false))
+        return false;
+
+    CKeyingMaterial vchMnemonic;
+    CKeyingMaterial vchMnemonicPassphrase;
+
+    // it's ok to have no mnemonic if wallet was initialized via hdseed
+    if (hdChain.GetMnemonic(vchMnemonic, vchMnemonicPassphrase)) {
+        std::vector<unsigned char> vchCryptedMnemonic;
+        std::vector<unsigned char> vchCryptedMnemonicPassphrase;
+
+        if (!vchMnemonic.empty() && !EncryptSecret(vMasterKeyIn, vchMnemonic, hdChain.GetID(), vchCryptedMnemonic))
+            return false;
+        if (!vchMnemonicPassphrase.empty() && !EncryptSecret(vMasterKeyIn, vchMnemonicPassphrase, hdChain.GetID(), vchCryptedMnemonicPassphrase))
+            return false;
+
+        CKeyingMaterial vchSecureCryptedMnemonic(vchCryptedMnemonic.begin(), vchCryptedMnemonic.end());
+        CKeyingMaterial vchSecureCryptedMnemonicPassphrase(vchCryptedMnemonicPassphrase.begin(), vchCryptedMnemonicPassphrase.end());
+        if (!cryptedHDChain.SetMnemonic(vchSecureCryptedMnemonic, vchSecureCryptedMnemonicPassphrase, false))
+            return false;
+    }
+
+    if (!hdChain.SetNull())
+        return false;
+
+    return true;
+}
+
+bool CCryptoKeyStore::DecryptHDChain(CHDChain& hdChainRet) const
+{
+    if (!IsCrypted())
+        return true;
+
+    if (cryptedHDChain.IsNull())
+        return false;
+
+    if (!cryptedHDChain.IsCrypted())
+        return false;
+
+    CKeyingMaterial vchSecureSeed;
+    CKeyingMaterial vchSecureCryptedSeed = cryptedHDChain.GetSeed();
+    std::vector<unsigned char> vchCryptedSeed(vchSecureCryptedSeed.begin(), vchSecureCryptedSeed.end());
+    if (!DecryptSecret(vMasterKey, vchCryptedSeed, cryptedHDChain.GetID(), vchSecureSeed))
+        return false;
+
+    hdChainRet = cryptedHDChain;
+    if (!hdChainRet.SetSeed(vchSecureSeed, false))
+        return false;
+
+    // hash of decrypted seed must match chain id
+    if (hdChainRet.GetSeedHash() != cryptedHDChain.GetID())
+        return false;
+
+    CKeyingMaterial vchSecureCryptedMnemonic;
+    CKeyingMaterial vchSecureCryptedMnemonicPassphrase;
+
+    // it's ok to have no mnemonic if wallet was initialized via hdseed
+    if (cryptedHDChain.GetMnemonic(vchSecureCryptedMnemonic, vchSecureCryptedMnemonicPassphrase)) {
+        CKeyingMaterial vchSecureMnemonic;
+        CKeyingMaterial vchSecureMnemonicPassphrase;
+
+        std::vector<unsigned char> vchCryptedMnemonic(vchSecureCryptedMnemonic.begin(), vchSecureCryptedMnemonic.end());
+        std::vector<unsigned char> vchCryptedMnemonicPassphrase(vchSecureCryptedMnemonicPassphrase.begin(), vchSecureCryptedMnemonicPassphrase.end());
+
+        if (!vchCryptedMnemonic.empty() && !DecryptSecret(vMasterKey, vchCryptedMnemonic, cryptedHDChain.GetID(), vchSecureMnemonic))
+            return false;
+        if (!vchCryptedMnemonicPassphrase.empty() && !DecryptSecret(vMasterKey, vchCryptedMnemonicPassphrase, cryptedHDChain.GetID(), vchSecureMnemonicPassphrase))
+            return false;
+
+        if (!hdChainRet.SetMnemonic(vchSecureMnemonic, vchSecureMnemonicPassphrase, false))
+            return false;
+    }
+
+    hdChainRet.SetCrypted(false);
+    hdChainRet.Debug(__func__);
+
+    return true;
+}
+
+bool CCryptoKeyStore::CCryptoKeyStore::SetHDChain(const CHDChain &chain)
+{
+    if (IsCrypted())
+        return false;
+
+    if (chain.IsCrypted())
+        return false;
+
+    hdChain = chain;
+    return true;
+}
+
+bool CCryptoKeyStore::CCryptoKeyStore::SetCryptedHDChain(const CHDChain &chain)
+{
+    if (!SetCrypted())
+        return false;
+
+    if (!chain.IsCrypted())
+        return false;
+
+    cryptedHDChain = chain;
+    return true;
+}
+
+bool CCryptoKeyStore::CCryptoKeyStore::GetHDChain(CHDChain &hdChainRet) const
+{
+    if(IsCrypted()) {
+        hdChainRet = cryptedHDChain;
+        return !cryptedHDChain.IsNull();
+    }
+
+    hdChainRet = hdChain;
+    return !hdChain.IsNull();
 }
 
 bool CCryptoKeyStore::HaveKey(const CKeyID &address) const

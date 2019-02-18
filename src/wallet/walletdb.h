@@ -10,6 +10,7 @@
 #include <primitives/transaction.h>
 #include <wallet/db.h>
 #include <key.h>
+#include <hdchain.h>
 
 #include <list>
 #include <stdint.h>
@@ -52,40 +53,6 @@ enum class DBErrors
     TOO_NEW,
     LOAD_FAIL,
     NEED_REWRITE
-};
-
-/* simple HD chain data model */
-class CHDChain
-{
-public:
-    uint32_t nExternalChainCounter;
-    uint32_t nInternalChainCounter;
-    CKeyID seed_id; //!< seed hash160
-
-    static const int VERSION_HD_BASE        = 1;
-    static const int VERSION_HD_CHAIN_SPLIT = 2;
-    static const int CURRENT_VERSION        = VERSION_HD_CHAIN_SPLIT;
-    int nVersion;
-
-    CHDChain() { SetNull(); }
-    ADD_SERIALIZE_METHODS;
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
-    {
-        READWRITE(this->nVersion);
-        READWRITE(nExternalChainCounter);
-        READWRITE(seed_id);
-        if (this->nVersion >= VERSION_HD_CHAIN_SPLIT)
-            READWRITE(nInternalChainCounter);
-    }
-
-    void SetNull()
-    {
-        nVersion = CHDChain::CURRENT_VERSION;
-        nExternalChainCounter = 0;
-        nInternalChainCounter = 0;
-        seed_id.SetNull();
-    }
 };
 
 class CKeyMetadata
@@ -219,8 +186,9 @@ public:
     /* verifies the database file */
     static bool VerifyDatabaseFile(const fs::path& wallet_path, std::string& warningStr, std::string& errorStr);
 
-    //! write the hdchain model (external chain child index counter)
     bool WriteHDChain(const CHDChain& chain);
+    bool WriteCryptedHDChain(const CHDChain& chain);
+    bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta);
 
     bool WriteWalletFlags(const uint64_t flags);
     //! Begin a new transaction

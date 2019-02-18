@@ -202,3 +202,10 @@ bool HaveKey(const CKeyStore& store, const CKey& key)
     key2.Set(key.begin(), key.end(), !key.IsCompressed());
     return store.HaveKey(key.GetPubKey().GetID()) || store.HaveKey(key2.GetPubKey().GetID());
 }
+
+bool CBasicKeyStore::GetHDChain(CHDChain& hdChainRet) const
+{
+    LOCK(cs_KeyStore);
+    hdChainRet = hdChain;
+    return !hdChain.IsNull();
+}

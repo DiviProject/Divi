@@ -12,6 +12,7 @@
 #include <script/sign.h>
 #include <script/standard.h>
 #include <sync.h>
+#include <hdchain.h>
 
 #include <boost/signals2/signal.hpp>
 
@@ -53,6 +54,8 @@ protected:
     WatchKeyMap mapWatchKeys GUARDED_BY(cs_KeyStore);
     ScriptMap mapScripts GUARDED_BY(cs_KeyStore);
     WatchOnlySet setWatchOnly GUARDED_BY(cs_KeyStore);
+    /* the HD chain data model*/
+    CHDChain hdChain GUARDED_BY(cs_KeyStore);
 
     void ImplicitlyLearnRelatedKeyScripts(const CPubKey& pubkey) EXCLUSIVE_LOCKS_REQUIRED(cs_KeyStore);
 
@@ -72,6 +75,8 @@ public:
     bool RemoveWatchOnly(const CScript &dest) override;
     bool HaveWatchOnly(const CScript &dest) const override;
     bool HaveWatchOnly() const override;
+
+    virtual bool GetHDChain(CHDChain& hdChainRet) const;
 };
 
 /** Return the CKeyID of the key involved in a script (if there is a unique one). */

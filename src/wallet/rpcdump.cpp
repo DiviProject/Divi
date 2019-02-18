@@ -702,6 +702,48 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
     return EncodeSecret(vchSecret);
 }
 
+UniValue dumphdinfo(const JSONRPCRequest& request)
+{
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    CWallet* const pwallet = wallet.get();
+
+    if (request.fHelp || request.params.size() != 0)
+        throw std::runtime_error(
+            "dumphdinfo\n"
+            "Returns an object containing sensitive private info about this HD wallet.\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"hdseed\": \"seed\",                    (string) The HD seed (bip32, in hex)\n"
+            "  \"mnemonic\": \"words\",                 (string) The mnemonic for this HD wallet (bip39, english words) \n"
+            "  \"mnemonicpassphrase\": \"passphrase\",  (string) The mnemonic passphrase for this HD wallet (bip39)\n"
+            "}\n"
+            "\nExamples:\n"
+            + HelpExampleCli("dumphdinfo", "")
+            + HelpExampleRpc("dumphdinfo", "")
+        );
+
+    LOCK(pwallet->cs_wallet);
+
+    EnsureWalletIsUnlocked(pwallet);
+
+    CHDChain hdChainCurrent;
+    if (!pwallet->GetHDChain(hdChainCurrent))
+        throw JSONRPCError(RPC_WALLET_ERROR, "This wallet is not a HD wallet.");
+
+    if (!pwallet->GetDecryptedHDChain(hdChainCurrent))
+        throw JSONRPCError(RPC_INTERNAL_ERROR, "Cannot decrypt HD seed");
+
+    SecureString ssMnemonic;
+    SecureString ssMnemonicPassphrase;
+    hdChainCurrent.GetMnemonic(ssMnemonic, ssMnemonicPassphrase);
+
+    UniValue obj(UniValue::VOBJ);
+    obj.pushKV("hdseed", HexStr(hdChainCurrent.GetSeed()));
+    obj.pushKV("mnemonic", ssMnemonic.c_str());
+    obj.pushKV("mnemonicpassphrase", ssMnemonicPassphrase.c_str());
+
+    return obj;
+}
 
 UniValue dumpwallet(const JSONRPCRequest& request)
 {
@@ -778,6 +820,7 @@ UniValue dumpwallet(const JSONRPCRequest& request)
     file << "\n";
 
     // add the base58check encoded extended master if the wallet uses HD
+#if 0
     CKeyID seed_id = pwallet->GetHDChain().seed_id;
     if (!seed_id.IsNull())
     {
@@ -789,6 +832,7 @@ UniValue dumpwallet(const JSONRPCRequest& request)
             file << "# extended private masterkey: " << EncodeExtKey(masterKey) << "\n\n";
         }
     }
+#endif
     for (std::vector<std::pair<int64_t, CKeyID> >::const_iterator it = vKeyBirth.begin(); it != vKeyBirth.end(); it++) {
         const CKeyID &keyid = it->second;
         std::string strTime = FormatISO8601DateTime(it->first);
@@ -799,9 +843,9 @@ UniValue dumpwallet(const JSONRPCRequest& request)
             file << strprintf("%s %s ", EncodeSecret(key), strTime);
             if (GetWalletAddressesForKey(pwallet, keyid, strAddr, strLabel)) {
                file << strprintf("label=%s", strLabel);
-            } else if (keyid == seed_id) {
+            } /*else if (keyid == seed_id) {
                 file << "hdseed=1";
-            } else if (mapKeyPool.count(keyid)) {
+            } */else if (mapKeyPool.count(keyid)) {
                 file << "reserve=1";
             } else if (pwallet->mapKeyMetadata[keyid].hdKeypath == "s") {
                 file << "inactivehdseed=1";

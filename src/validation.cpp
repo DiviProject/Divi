@@ -1831,7 +1831,7 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
 {
     return pindexPrev && IsWitnessEnabled(pindexPrev->nHeight + 1, params) ? VERSIONBITS_SEGWIT_BLOCK_VERSION : VERSIONBITS_PRESEGWIT_BLOCK_VERSION;
 
-/* Don't use BIP9, we don't need that, instead we are more interested in constant changes to block version
+    /* Don't use BIP9, we don't need that, instead we are more interested in constant changes to block version
 
     LOCK(cs_main);
     int32_t nVersion = VERSIONBITS_TOP_BITS;
@@ -3503,9 +3503,12 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
     // check for version 2, 3 and 4 upgrades
     if((block.nVersion < 2 && nHeight >= consensusParams.BIP34Height) ||
             (block.nVersion < 3 && nHeight >= consensusParams.BIP66Height) ||
-            (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height))
+            (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height) ||
+            (block.nVersion < VERSIONBITS_SEGWIT_BLOCK_VERSION && IsWitnessEnabled(nHeight, params.GetConsensus())))
+    {
         return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
                              strprintf("rejected nVersion=0x%08x block", block.nVersion));
+    }
 
     return true;
 }

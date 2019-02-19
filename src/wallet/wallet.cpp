@@ -221,26 +221,30 @@ CPubKey CWallet::GenerateNewKey(WalletBatch &batch, bool internal)
     CKeyMetadata metadata(nCreationTime);
 
     // use HD key derivation if HD was enabled during wallet creation
+    CPubKey pubkey;
     if (IsHDEnabled()) {
         DeriveNewChildKey(batch, metadata, secret, 0, internal);
     } else {
         secret.MakeNewKey(fCompressed);
+
+
+        // Compressed public keys were introduced in version 0.6.0
+        if (fCompressed) {
+            SetMinVersion(FEATURE_COMPRPUBKEY);
+        }
+
+        pubkey = secret.GetPubKey();
+
+        assert(secret.VerifyPubKey(pubkey));
+
+        mapKeyMetadata[pubkey.GetID()] = metadata;
+        UpdateTimeFirstKey(nCreationTime);
+
+        if (!AddKeyPubKeyWithDB(batch, secret, pubkey)) {
+            throw std::runtime_error(std::string(__func__) + ": AddKey failed");
+        }
     }
 
-    // Compressed public keys were introduced in version 0.6.0
-    if (fCompressed) {
-        SetMinVersion(FEATURE_COMPRPUBKEY);
-    }
-
-    CPubKey pubkey = secret.GetPubKey();
-    assert(secret.VerifyPubKey(pubkey));
-
-    mapKeyMetadata[pubkey.GetID()] = metadata;
-    UpdateTimeFirstKey(nCreationTime);
-
-    if (!AddKeyPubKeyWithDB(batch, secret, pubkey)) {
-        throw std::runtime_error(std::string(__func__) + ": AddKey failed");
-    }
     return pubkey;
 }
 
@@ -4663,7 +4667,7 @@ void CWallet::GenerateNewHDChain()
 
 bool CWallet::SetHDChain(WalletBatch *batch, const CHDChain& chain, bool memonly)
 {
-    assert(!memonly && batch);
+    assert((memonly && (batch == nullptr)) || !memonly);
     LOCK(cs_wallet);
 
     if (!CCryptoKeyStore::SetHDChain(chain))

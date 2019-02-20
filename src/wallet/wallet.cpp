@@ -224,6 +224,7 @@ CPubKey CWallet::GenerateNewKey(WalletBatch &batch, bool internal)
     CPubKey pubkey;
     if (IsHDEnabled()) {
         DeriveNewChildKey(batch, metadata, secret, 0, internal);
+        pubkey = secret.GetPubKey();
     } else {
         secret.MakeNewKey(fCompressed);
 

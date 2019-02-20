@@ -63,6 +63,9 @@ void WalletInit::AddWalletOptions() const
     gArgs.AddArg("-walletrbf", strprintf("Send transactions with full-RBF opt-in enabled (RPC only, default: %u)", DEFAULT_WALLET_RBF), false, OptionsCategory::WALLET);
     gArgs.AddArg("-zapwallettxes=<mode>", "Delete all wallet transactions and only recover those parts of the blockchain through -rescan on startup"
                                " (1 = keep tx meta data e.g. payment request information, 2 = drop tx meta data)", false, OptionsCategory::WALLET);
+    gArgs.AddArg("-hdseed=<seed>", "Seed for recovering HD wallet", false, OptionsCategory::WALLET);
+    gArgs.AddArg("-mnemonic=<mnemonic>", "Mnemonic for recovering HD wallet", false, OptionsCategory::WALLET);
+    gArgs.AddArg("-mnemonicpassphrase=<mnemonicpassphrase>", "Mnemonic passphrase for recovering HD wallet, used together with -mnemonic", false, OptionsCategory::WALLET);
 
     gArgs.AddArg("-dblogsize=<n>", strprintf("Flush wallet database activity from memory to disk log every <n> megabytes (default: %u)", DEFAULT_WALLET_DBLOGSIZE), true, OptionsCategory::WALLET_DEBUG_TEST);
     gArgs.AddArg("-flushwallet", strprintf("Run a thread to flush wallet periodically (default: %u)", DEFAULT_FLUSHWALLET), true, OptionsCategory::WALLET_DEBUG_TEST);

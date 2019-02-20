@@ -420,7 +420,27 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 strErr = "Error reading wallet database: SetHDCryptedChain failed";
                 return false;
             }
-        } else if (strType == "flags") {
+        }
+        else if (strType == "hdpubkey")
+        {
+            CPubKey vchPubKey;
+            ssKey >> vchPubKey;
+
+            CHDPubKey hdPubKey;
+            ssValue >> hdPubKey;
+
+            if(vchPubKey != hdPubKey.extPubKey.pubkey)
+            {
+                strErr = "Error reading wallet database: CHDPubKey corrupt";
+                return false;
+            }
+            if (!pwallet->LoadHDPubKey(hdPubKey))
+            {
+                strErr = "Error reading wallet database: LoadHDPubKey failed";
+                return false;
+            }
+        }
+        else if (strType == "flags") {
             uint64_t flags;
             ssValue >> flags;
             if (!pwallet->SetWalletFlags(flags, true)) {

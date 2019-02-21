@@ -1368,8 +1368,8 @@ void CWallet::BlockConnected(const std::shared_ptr<const CBlock>& pblock, const 
     // to abandon a transaction and then have it inadvertently cleared by
     // the notification that the conflicted transaction was evicted.
 
-    if(witnessEnabled && m_default_address_type != OutputType::P2SH_SEGWIT)
-        m_default_address_type = OutputType::P2SH_SEGWIT;
+//    if(witnessEnabled && m_default_address_type != OutputType::BECH32)
+//        m_default_address_type = OutputType::BECH32;
 
 
     for (const CTransactionRef& ptx : vtxConflicted) {

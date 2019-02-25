@@ -165,6 +165,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "createwallet", 1, "disable_private_keys"},
     { "getnodeaddresses", 0, "count"},
     { "stop", 0, "wait" },
+    { "setstakesplitthreshold", 0, "threshold"}
 };
 // clang-format on
 

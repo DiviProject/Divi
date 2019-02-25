@@ -191,6 +191,7 @@ public:
     bool WriteHDPubKey(const CHDPubKey& hdPubKey, const CKeyMetadata& keyMeta);
 
     bool WriteWalletFlags(const uint64_t flags);
+    bool WriteStakeSplitThreshold(uint64_t nStakeSplitThreshold);
     //! Begin a new transaction
     bool TxnBegin();
     //! Commit current transaction

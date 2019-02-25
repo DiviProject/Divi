@@ -85,6 +85,8 @@ static const bool DEFAULT_WALLET_RBF = false;
 static const bool DEFAULT_WALLETBROADCAST = true;
 static const bool DEFAULT_DISABLE_WALLET = false;
 
+static constexpr uint64_t DEFAULT_N_STAKE_SPLIT_THRESHOLD{20000};
+
 //! Pre-calculated constants for input size estimation in *virtual size*
 static constexpr size_t DUMMY_NESTED_P2WPKH_INPUT_SIZE = 91;
 
@@ -775,7 +777,7 @@ public:
     // Stake Settings
     unsigned int nHashDrift = 45;
     unsigned int nHashInterval = 22;
-    uint64_t nStakeSplitThreshold = 100000;
+    uint64_t nStakeSplitThreshold = DEFAULT_N_STAKE_SPLIT_THRESHOLD;
     int nStakeSetUpdateTime = 300; // 5 minutes
 
     /** Construct wallet with specified name and database implementation. */
@@ -1188,6 +1190,9 @@ public:
     /** overwrite all flags by the given uint64_t
        returns false if unknown, non-tolerable flags are present */
     bool SetWalletFlags(uint64_t overwriteFlags, bool memOnly);
+
+    /** Change nStakeSplitThreshold value and write it to wallet DB*/
+    void ChangeStakeSplitThreshold(uint64_t treshold);
 
     /** Returns a bracketed wallet name for displaying in logs, will return [default wallet] if the wallet has no name */
     const std::string GetDisplayName() const {

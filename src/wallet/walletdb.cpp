@@ -447,7 +447,11 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 strErr = "Error reading wallet database: Unknown non-tolerable wallet flags found";
                 return false;
             }
-        } else if (strType != "bestblock" && strType != "bestblock_nomerkle" &&
+        }
+        else if (strType == "stakeSplitThreshold") {
+            ssValue >> pwallet->nStakeSplitThreshold;
+        }
+        else if (strType != "bestblock" && strType != "bestblock_nomerkle" &&
                 strType != "minversion" && strType != "acentry") {
             wss.m_unknown_records++;
         }
@@ -797,6 +801,11 @@ bool WalletBatch::WriteHDPubKey(const CHDPubKey &hdPubKey, const CKeyMetadata &k
 bool WalletBatch::WriteWalletFlags(const uint64_t flags)
 {
     return WriteIC(std::string("flags"), flags);
+}
+
+bool WalletBatch::WriteStakeSplitThreshold(uint64_t nStakeSplitThreshold)
+{
+    return WriteIC(std::string("stakeSplitThreshold"), nStakeSplitThreshold);
 }
 
 bool WalletBatch::TxnBegin()

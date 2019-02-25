@@ -339,6 +339,41 @@ CTransactionRef SendMoney(interfaces::Chain::Lock& locked_chain, CWallet * const
     return tx;
 }
 
+UniValue setstakesplitthreshold(const JSONRPCRequest& request)
+{
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    CWallet* const pwallet = wallet.get();
+
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp))
+        return NullUniValue;
+
+    if (request.fHelp || request.params.size() != 1)
+        throw std::runtime_error(
+                RPCHelpMan{"setstakesplitthreshold",
+                           "\nSet new stake split threshold value. Changing this value will tell your wallet from which amount start to split/combine staked coins.\n",
+                           {
+                               {"threshold", RPCArg::Type::NUM, /* opt */ false, /* default_val */ "", "New stake split threshold value number"}
+                           }}.ToString()
+                + "\nExamples:\n"
+                + HelpExampleCli("setstakesplitthreshold", "20000")
+                + HelpExampleRpc("setstakesplitthreshold", "20000"));
+
+    const auto thresholdParam = request.params[0];
+    if (!thresholdParam.isNull())
+    {
+        auto newStakeSplitThreshold = static_cast<uint64_t>(thresholdParam.get_int64());
+
+        if (newStakeSplitThreshold < DEFAULT_N_STAKE_SPLIT_THRESHOLD)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("The invalid parameter. An expected valid threshold value, equal or greater than %d", DEFAULT_N_STAKE_SPLIT_THRESHOLD));
+
+        EnsureWalletIsUnlocked(pwallet);
+
+        pwallet->ChangeStakeSplitThreshold(newStakeSplitThreshold);
+    }
+
+    return NullUniValue;
+}
+
 static UniValue sendtoaddress(const JSONRPCRequest& request)
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
@@ -4190,6 +4225,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "sendtoaddress",                    &sendtoaddress,                 {"address","amount","comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
 //    { "wallet",             "sethdseed",                        &sethdseed,                     {"newkeypool","seed"} },
     { "wallet",             "setlabel",                         &setlabel,                      {"address","label"} },
+    { "wallet",             "setstakesplitthreshold",           &setstakesplitthreshold,        {"threshold"} },
     { "wallet",             "settxfee",                         &settxfee,                      {"amount"} },
     { "wallet",             "signmessage",                      &signmessage,                   {"address","message"} },
     { "wallet",             "signrawtransactionwithwallet",     &signrawtransactionwithwallet,  {"hexstring","prevtxs","sighashtype"} },

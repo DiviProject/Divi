@@ -1604,6 +1604,16 @@ bool CWallet::SetWalletFlags(uint64_t overwriteFlags, bool memonly)
     return true;
 }
 
+void CWallet::ChangeStakeSplitThreshold(uint64_t treshold)
+{
+    LOCK(cs_wallet);
+
+    nStakeSplitThreshold = treshold;
+
+    if (!WalletBatch(*database).WriteStakeSplitThreshold(nStakeSplitThreshold))
+        throw std::runtime_error(std::string(__func__) + ": writing stake split threshold failed");
+}
+
 int64_t CWalletTx::GetTxTime() const
 {
     int64_t n = nTimeSmart;

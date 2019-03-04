@@ -138,6 +138,9 @@ static const bool DEFAULT_PEERBLOOMFILTERS = true;
 /** Default for -stopatheight */
 static const int DEFAULT_STOPATHEIGHT = 0;
 
+/** Depth for Fake Stake fix blocks reading */
+static const int MAX_REORGANIZATION_DEPTH = 100;
+
 static const unsigned int nStakeMinAge = 60 * 60;
 static const unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
 

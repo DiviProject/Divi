@@ -3796,6 +3796,70 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
         return error("%s: %s", __func__, FormatStateMessage(state));
     }
 
+    //#TODO: Need to move this to a separate method or divide to smaller checks
+    if (block.IsProofOfStake())
+    {
+        const auto &stakeTransaction = block.vtx[1];
+
+        for (const auto &transaction : block.vtx)
+        {
+            if(transaction->IsCoinStake())
+                continue; //skip coinstake transaction
+
+            // Check if coinstake input is double spent inside the same block
+            for (const auto& in: transaction->vin)
+                for (const auto &stakeIn : stakeTransaction->vin)
+                    if(stakeIn.prevout == in.prevout)
+                        return error("%s: double spent coinstake input inside block", __func__);
+        }
+
+        bool isBlockFromFork = pindex && chainActive.Tip() != pindex;
+        int splitHeight = -1;
+
+        if (isBlockFromFork)
+        {
+            auto previousIndex = pindex->pprev;
+            int nofReadBlocks{0};
+            CBlock blockFromDisk;
+
+            do
+            {
+                if(nofReadBlocks == MAX_REORGANIZATION_DEPTH)
+                    return error("%s: forked chain longer than maximum reorg limit", __func__); // TODO: Remove this chain from disk.
+
+                if(!ReadBlockFromDisk(blockFromDisk, previousIndex, chainparams.GetConsensus()))
+                    return error("%s: previous block %s not on disk", __func__, previousIndex->GetBlockHash().GetHex());
+
+                ++nofReadBlocks;
+
+                for(const auto &transaction : blockFromDisk.vtx)
+                    for (const auto &in : transaction->vin)
+                        for (const auto &stakeIn : stakeTransaction->vin)
+                            if (stakeIn.prevout == in.prevout)
+                                return state.DoS(100, error("%s: input already spent on a previous block", __func__));
+
+                previousIndex = previousIndex->pprev;
+            }
+            while(!chainActive.Contains(previousIndex));
+
+            splitHeight = previousIndex->nHeight;
+        }
+
+        const auto& coins = pcoinsTip;
+
+        for (const auto& stakeIn: stakeTransaction->vin)
+        {
+            if(!coins->HaveCoin(stakeIn.prevout))
+            {
+                /* Get the height of the spent and validate it with the forked height
+                   Check if this occurred before the chain split */
+                auto  coin = coins->AccessCoin(stakeIn.prevout);
+                if(!(isBlockFromFork && coin.nHeight > splitHeight))
+                    return error("%s: coin stake inputs already spent in main chain", __func__);
+            }
+        }
+    }
+
     AcceptProofOfStakeBlock(block, pindex);
 
     // Header is valid/has work, merkle tree and segwit merkle tree are good...RELAY NOW

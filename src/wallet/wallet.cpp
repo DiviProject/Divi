@@ -2632,7 +2632,8 @@ bool CWallet::SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoins
 
         auto outTransactionValue = out.tx->tx->vout[out.i].nValue;
 
-        nAmountSelected += outTransactionValue; //maybe change here for tpos
+        nAmountSelected += outTransactionValue;
+
         allStakeCoins.emplace(out.tx, out.i);
 
         if(outTransactionValue >= MIN_STAKING_AMOUNT * COIN)

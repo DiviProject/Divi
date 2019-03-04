@@ -2583,7 +2583,7 @@ bool CWallet::MintableCoins(interfaces::Chain::Lock& locked_chain)
     return false;
 }
 
-bool CWallet::SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoinsSet &setCoins, CAmount nTargetAmount, bool fSelectWitness) const
+bool CWallet::SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoinsSet &allStakeCoins, StakeCoinsSet &validStakeCoins, CAmount nTargetAmount, bool fSelectWitness) const
 {
     std::vector<COutput> vCoins;
     {
@@ -2630,8 +2630,13 @@ bool CWallet::SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoins
         if (out.nDepth < (out.tx->tx->IsCoinStake() ? COINBASE_MATURITY : 10))
             continue;
 
-        nAmountSelected += out.tx->tx->vout[out.i].nValue; //maybe change here for tpos
-        setCoins.emplace(out.tx, out.i);
+        auto outTransactionValue = out.tx->tx->vout[out.i].nValue;
+
+        nAmountSelected += outTransactionValue; //maybe change here for tpos
+        allStakeCoins.emplace(out.tx, out.i);
+
+        if(outTransactionValue >= MIN_STAKING_AMOUNT * COIN)
+            validStakeCoins.emplace(out.tx, out.i);
     }
     return true;
 }
@@ -3288,23 +3293,23 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     //        return false;
 
     // presstab HyperStake - Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
-    static StakeCoinsSet setStakeCoins;
+    static StakeCoinsSet validStakeCoins;
+    static StakeCoinsSet allStakeCoins;
     static int nLastStakeSetUpdate = 0;
 
     if (GetTime() - nLastStakeSetUpdate > nStakeSetUpdateTime)
     {
-        setStakeCoins.clear();
+        allStakeCoins.clear();
+        validStakeCoins.clear();
         auto locked_chain = chain().lock();
-        if (!SelectStakeCoins(*locked_chain, setStakeCoins, nBalance /*- nReserveBalance*/, fGenerateSegwit)) {
+        if (!SelectStakeCoins(*locked_chain, allStakeCoins, validStakeCoins, nBalance /*- nReserveBalance*/, fGenerateSegwit)) {
             return error("Failed to select coins for staking");
         }
-
-        LogPrintf("Selected %d coins for staking\n", setStakeCoins.size());
 
         nLastStakeSetUpdate = GetTime();
     }
 
-    if (setStakeCoins.empty())
+    if (validStakeCoins.empty())
         return error("CreateCoinStake() : No Coins to stake");
 
     auto chainTip = chainActive.Tip();
@@ -3315,7 +3320,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
 
     bool fKernelFound = false;
 
-    for(const std::pair<const CWalletTx*, unsigned int> &pcoin : setStakeCoins)
+    for(const std::pair<const CWalletTx*, unsigned int> &pcoin : validStakeCoins)
     {
         //make sure that enough time has elapsed between
         CBlockIndex* pindex = NULL;
@@ -3339,13 +3344,12 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
                                              block, pcoin.first->tx,
                                              prevoutStake, nTxNewTime, fGenerateSegwit, false);
 
-        auto nCredit = pcoin.first->tx->vout[pcoin.second].nValue + blockReward.nStakeReward;
-
         if(fKernelFound)
         {
             vwtxPrev.push_back(pcoin.first);
             txNew.vin.push_back(CTxIn(prevoutStake));
-            FillCoinStakePayments(setStakeCoins, vwtxPrev, txNew, kernelScript, nCredit);
+            auto nCredit = pcoin.first->tx->vout[pcoin.second].nValue + blockReward.nStakeReward;
+            FillCoinStakePayments(allStakeCoins, vwtxPrev, txNew, kernelScript, nCredit);
             break;
         }
     }

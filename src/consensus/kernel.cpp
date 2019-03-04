@@ -464,16 +464,26 @@ bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
         return error("CheckProofOfStake() : INFO: read txPrev failed");
 
     const CScript &kernelScript = txPrev->vout[txin.prevout.n].scriptPubKey;
+    bool hasMinStakeAmount = false;
 
-    auto nValidInputs = std::count_if(std::begin(tx->vin), std::end(tx->vin), [&kernelScript](const CTxIn &txIn) {
+    auto nValidInputs = std::count_if(std::begin(tx->vin), std::end(tx->vin),
+                                      [&kernelScript, &hasMinStakeAmount](const CTxIn &txIn) {
         CTransactionRef txPrev;
         uint256 hashBlock;
         if(GetTransaction(txIn.prevout.hash, txPrev, Params().GetConsensus(), hashBlock, true)) {
-            return txPrev->vout[txIn.prevout.n].scriptPubKey == kernelScript;
+            auto transactionOut = txPrev->vout[txIn.prevout.n];
+
+            if (!hasMinStakeAmount && transactionOut.nValue >= MIN_STAKING_AMOUNT )
+                hasMinStakeAmount = true;
+
+            return transactionOut.scriptPubKey == kernelScript;
         }
 
         return false;
     });
+
+    if (!hasMinStakeAmount)
+        return error("CheckProofOfStake() : Amount of stake less than the required minimum of %d.", MIN_STAKING_AMOUNT);
 
     if(nValidInputs != tx->vin.size()) {
         return error("CheckProofOfStake() : Invalid inputs for stake total inputs: %d vs valid inputs %d", tx->vin.size(), nValidInputs);

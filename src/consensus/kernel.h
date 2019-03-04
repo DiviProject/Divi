@@ -11,6 +11,7 @@
 static const unsigned int MODIFIER_INTERVAL = 60;
 static const unsigned int MODIFIER_INTERVAL_TESTNET = 60;
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
+static const unsigned int MIN_STAKING_AMOUNT = 10000;
 extern unsigned int nModifierInterval;
 extern unsigned int getIntervalVersion(bool fTestNet);
 

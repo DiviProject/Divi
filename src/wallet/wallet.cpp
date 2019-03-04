@@ -500,12 +500,13 @@ void CWallet::FillCoinStakePayments(const StakeCoinsSet &setStakeCoins,
 
     txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
-    if (nCredit > nStakeSplitThreshold * COIN)
+    auto nStakeSplitAmount = static_cast<CAmount>(nStakeSplitThreshold * COIN);
+
+    if (nCredit > nStakeSplitAmount)
         txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
 
     if(txNew.vout.size() == 2)
     {
-        const CAmount nCombineThreshold = (nStakeSplitThreshold / 2) * COIN;
         using Entry = std::pair<const CWalletTx*, unsigned int>;
         std::vector<Entry> vCombineCandidates;
         for(auto &&pcoin : setStakeCoins)
@@ -517,7 +518,7 @@ void CWallet::FillCoinStakePayments(const StakeCoinsSet &setStakeCoins,
                     tx->GetHash() != txNew.vin[0].prevout.hash)
             {
                 // Do not add additional significant input
-                if (tx->vout[pcoin.second].nValue + nCredit > nCombineThreshold)
+                if (tx->vout[pcoin.second].nValue + nCredit > nStakeSplitAmount)
                     continue;
 
                 vCombineCandidates.push_back(pcoin);
@@ -535,7 +536,7 @@ void CWallet::FillCoinStakePayments(const StakeCoinsSet &setStakeCoins,
                 break;
 
             // Stop adding more inputs if value is already pretty significant
-            if (nCredit > nCombineThreshold)
+            if (nCredit > nStakeSplitAmount)
                 break;
 
             //            // Stop adding inputs if reached reserve limit
@@ -543,7 +544,7 @@ void CWallet::FillCoinStakePayments(const StakeCoinsSet &setStakeCoins,
             //                break;
 
             // Can't add anymore, cause vector is sorted
-            if (nCredit + pcoin.first->tx->vout[pcoin.second].nValue > nCombineThreshold)
+            if (nCredit + pcoin.first->tx->vout[pcoin.second].nValue > nStakeSplitAmount)
                 break;
 
             txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));

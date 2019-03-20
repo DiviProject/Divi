@@ -1529,6 +1529,10 @@ bool AppInitMain(InitInterfaces& interfaces)
 
                 if (ShutdownRequested()) break;
 
+                // DIVI: load previous sessions sporks if we have them.
+                uiInterface.InitMessage(_("Loading sporks..."));
+                sporkManager.LoadSporksFromDB();
+
                 // LoadBlockIndex will load fHavePruned if we've ever removed a
                 // block file from disk.
                 // Note that it also sets fReindex based on the disk flag!

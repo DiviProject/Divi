@@ -148,6 +148,9 @@ static const int MAX_REORGANIZATION_DEPTH = 100;
 static const unsigned int nStakeMinAge = 60 * 60;
 static const unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
 
+static const int64_t DEFAULT_N_TRANSACTION_VALUE_MULTIPLIER = 10000; // 1 / 0.0001 = 10000;
+static const uint64_t DEFAULT_N_TRANSACTION_SIZE_MULTIPLIER = 300;
+
 struct BlockHasher
 {
     // this used to call `GetCheapHash()` in uint256, which was later moved; the
@@ -186,8 +189,8 @@ extern CAmount maxTxFee;
 extern int64_t nMaxTipAge;
 extern bool fEnableReplacement;
 
-extern boost::optional<CAmount> optTxFeeSporkValueMultiplier;
-extern boost::optional<unsigned int> optTxFeeSporkSizeMultiplier;
+extern CAmount nTxFeeValueMultiplier;
+extern unsigned int nTxFeeSizeMultiplier;
 
 /** Global variable that points to the spork database (protected by cs_main) */
 extern std::unique_ptr<CSporkDB> pSporkDB;

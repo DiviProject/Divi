@@ -235,10 +235,8 @@ void CSporkManager::ExecuteSpork(int nSporkID)
 
         minRelayTxFee = CFeeRate(txFeeSpork.nMinFeePerKb);
         maxTxFee = txFeeSpork.nMaxFee;
-
-        optTxFeeSporkSizeMultiplier = txFeeSpork.nTxSizeMultiplier;
-        optTxFeeSporkValueMultiplier = txFeeSpork.nTxValueMultiplier;
-
+        nTxFeeSizeMultiplier = txFeeSpork.nTxSizeMultiplier;
+        nTxFeeValueMultiplier = txFeeSpork.nTxValueMultiplier;
         break;
     }
     default:

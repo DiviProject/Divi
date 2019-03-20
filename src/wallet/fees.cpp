@@ -19,15 +19,7 @@ CAmount GetRequiredFee(const CWallet& wallet, unsigned int nTxBytes)
 
 CAmount GetMinimumFee(const CAmount &txValue, unsigned int nTxBytes, const CWallet& wallet)
 {
-    auto valueMul = wallet.nTransactionValueMultiplier;
-    if (optTxFeeSporkValueMultiplier)
-        valueMul = *optTxFeeSporkValueMultiplier;
-
-    unsigned int sizeMul = wallet.nTransactionSizeMultiplier;
-    if (optTxFeeSporkSizeMultiplier)
-        sizeMul = *optTxFeeSporkSizeMultiplier;
-
-    CAmount feeNeeded = (txValue / valueMul) * std::max(nTxBytes / sizeMul, 1u);
+    CAmount feeNeeded = (txValue / nTxFeeValueMultiplier) * std::max(nTxBytes / nTxFeeSizeMultiplier, 1u);
 
     // back to a hard-coded fee
     if (feeNeeded == 0)

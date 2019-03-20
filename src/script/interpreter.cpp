@@ -520,7 +520,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                 }
                 break;
 
-                case OP_RETURN:
+                case OP_META:
                 {
                     return set_error(serror, SCRIPT_ERR_OP_RETURN);
                 }

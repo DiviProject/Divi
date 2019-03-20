@@ -425,7 +425,7 @@ CMutableTransaction ConstructTransaction(const UniValue& inputs_in, const UniVal
             has_data = true;
             std::vector<unsigned char> data = ParseHexV(outputs[name_].getValStr(), "Data");
 
-            CTxOut out(0, CScript() << OP_RETURN << data);
+            CTxOut out(0, CScript() << OP_META << data);
             rawTx.vout.push_back(out);
         } else {
             CTxDestination destination = DecodeDestination(name_);

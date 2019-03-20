@@ -89,7 +89,7 @@ enum opcodetype
     OP_ELSE = 0x67,
     OP_ENDIF = 0x68,
     OP_VERIFY = 0x69,
-    OP_RETURN = 0x6a,
+    OP_META = 0x6a,
 
     // stack ops
     OP_TOALTSTACK = 0x6b,
@@ -556,7 +556,7 @@ public:
      */
     bool IsUnspendable() const
     {
-        return (size() > 0 && *begin() == OP_RETURN) || (size() > MAX_SCRIPT_SIZE);
+        return (size() > 0 && *begin() == OP_META) || (size() > MAX_SCRIPT_SIZE);
     }
 
     std::string ToString() const;

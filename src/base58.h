@@ -15,6 +15,10 @@
 #define BITCOIN_BASE58_H
 
 #include <attributes.h>
+#include <chainparams.h>
+#include <pubkey.h>
+#include <script/standard.h>
+#include <support/allocators/zeroafterfree.h>
 
 #include <string>
 #include <vector>

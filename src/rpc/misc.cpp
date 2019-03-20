@@ -21,6 +21,7 @@
 #include <util/strencodings.h>
 #include <warnings.h>
 #include <spork.h>
+#include <script/standard.h>
 
 #include <stdint.h>
 #ifdef HAVE_MALLOC_INFO
@@ -352,6 +353,147 @@ static UniValue getmemoryinfo(const JSONRPCRequest& request)
     }
 }
 
+bool getAddressFromIndex(const int &type, const uint160 &hash, std::string &address)
+{
+    if (type == 2)
+        address = EncodeDestination(CScriptID(hash));
+    else if (type == 1)
+        address = EncodeDestination(CKeyID(hash));
+    else
+        return false;
+
+    return true;
+}
+
+bool getAddressesFromParams(const UniValue& params, std::vector<std::pair<uint160, int>> &addresses)
+{
+    auto addAddress = [&addresses](const std::string &addressValue)
+    {
+        auto dest = DecodeDestination(addressValue);
+        uint160 hashBytes;
+        int type = 0;
+
+        std::vector<std::vector<unsigned char>> vSolutions;
+        txnouttype whichType = Solver(GetScriptForDestination(dest), vSolutions);
+
+        if(whichType == TX_PUBKEY)
+        {
+            hashBytes = CPubKey(vSolutions[0]).GetID();
+            type = 1;
+        }
+        else if(whichType == TX_PUBKEYHASH)
+        {
+            hashBytes = CKeyID(uint160(vSolutions[0]));
+            type = 1;
+        }
+        else if(whichType == TX_SCRIPTHASH)
+        {
+            hashBytes = CScriptID(uint160(vSolutions[0]));
+            type = 2;
+        }
+        else
+        {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+        }
+
+        addresses.emplace_back(std::make_pair(hashBytes, type));
+    };
+
+    auto firstParam = params[0];
+    if (firstParam.isStr())
+    {
+        addAddress(firstParam.get_str());
+    }
+    else if (firstParam.isObject())
+    {
+        const auto &addressesArray = find_value(firstParam.get_obj(), "addresses");
+        if (!addressesArray.isArray())
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Addresses is expected to be an array");
+
+        const auto &addressesValues = addressesArray.getValues();
+        for (const auto &address : addressesValues)
+            addAddress(address.get_str());
+    }
+    else
+    {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+    }
+
+    return true;
+}
+
+static UniValue getaddressutxos(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() != 1)
+        throw std::runtime_error(
+            "getaddressutxos\n"
+            "\nReturns all unspent outputs for an address (requires addressindex to be enabled).\n"
+            "\nArguments:\n"
+            "{\n"
+            "  \"addresses\"\n"
+            "    [\n"
+            "      \"address\"  (string) The base58check encoded address\n"
+            "      ,...\n"
+            "    ]\n"
+            "}\n"
+            "\nResult:\n"
+            "[\n"
+            "  {\n"
+            "    \"address\"  (string) The address base58check encoded\n"
+            "    \"txid\"  (string) The output txid\n"
+            "    \"outputIndex\"  (number) The output index\n"
+            "    \"script\"  (string) The script hex encoded\n"
+            "    \"satoshis\"  (number) The number of duffs of the output\n"
+            "    \"height\"  (number) The block height\n"
+            "  }\n"
+            "]\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getaddressutxos", "'{\"addresses\": [\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\"]}'")
+            + HelpExampleRpc("getaddressutxos", "{\"addresses\": [\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\"]}")
+        );
+
+    std::vector<std::pair<uint160, int>> addresses;
+
+    if (!getAddressesFromParams(request.params, addresses))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+
+    std::vector<AddressUnspent> unspentOutputs;
+
+    for (const auto &address : addresses)
+        if (!GetAddressUnspent(address.first, address.second, unspentOutputs))
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
+
+    std::sort(std::begin(unspentOutputs), std::end(unspentOutputs),
+              [](const AddressUnspent &a, const AddressUnspent &b)
+    {
+        return a.second.blockHeight < b.second.blockHeight;
+    });
+
+    UniValue result(UniValue::VARR);
+
+    for (const auto &unspentOut : unspentOutputs)
+    {
+        UniValue output(UniValue::VOBJ);
+
+        auto unspentKey = unspentOut.first;
+        std::string address;
+        if (!getAddressFromIndex(unspentKey.type, unspentKey.hashBytes, address))
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unknown address type");
+
+        output.pushKV("address", address);
+        output.pushKV("txid", unspentKey.txhash.GetHex());
+        output.pushKV("outputIndex", static_cast<int>(unspentKey.index));
+
+        auto unspentValue = unspentOut.second;
+        output.pushKV("script", HexStr(unspentValue.script.begin(), unspentValue.script.end()));
+        output.pushKV("satoshis", unspentValue.satoshis);
+        output.pushKV("height", unspentValue.blockHeight);
+        result.push_back(output);
+    }
+
+    return result;
+}
+
 static void EnableOrDisableLogCategories(UniValue cats, bool enable) {
     cats = cats.get_array();
     for (unsigned int i = 0; i < cats.size(); ++i) {
@@ -508,6 +650,9 @@ static const CRPCCommand commands[] =
     { "util",               "verifymessage",          &verifymessage,          {"address","signature","message"} },
     { "util",               "signmessagewithprivkey", &signmessagewithprivkey, {"privkey","message"} },
     { "util",               "spork",                  &spork,                  {"name", "value"} },
+
+  /* Address index */
+    { "addressindex",       "getaddressutxos",        &getaddressutxos,        {"addresses"}},
 
     /* Not shown in help */
     { "hidden",             "setmocktime",            &setmocktime,            {"timestamp"}},

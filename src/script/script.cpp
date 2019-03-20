@@ -232,6 +232,21 @@ bool CScript::IsPayToWitnessScriptHash() const
             (*this)[1] == 0x20);
 }
 
+bool CScript::IsPayToPublicKey() const
+{
+    // Test for pay-to-pubkey CScript with both compressed or uncompressed pubkey
+
+    bool isPayToPublicCompressedKey = (this->size() == 35) &&
+            ((*this)[1] == 0x02 || (*this)[1] == 0x03) &&
+            (*this)[34] == OP_CHECKSIG;
+
+    bool isPayToPublicUncompressedKey = (this->size() == 67) &&
+            (*this)[1] == 0x04 &&
+            (*this)[66] == OP_CHECKSIG;
+
+    return isPayToPublicCompressedKey || isPayToPublicUncompressedKey;
+}
+
 // A witness program is any valid CScript that consists of a 1-byte push opcode
 // followed by a data push between 2 and 40 bytes.
 bool CScript::IsWitnessProgram(int& version, std::vector<unsigned char>& program) const

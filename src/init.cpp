@@ -435,6 +435,7 @@ void SetupServerArgs()
     hidden_args.emplace_back("-sysperms");
 #endif
     gArgs.AddArg("-txindex", strprintf("Maintain a full transaction index, used by the getrawtransaction rpc call (default: %u)", DEFAULT_TXINDEX), false, OptionsCategory::OPTIONS);
+    gArgs.AddArg("-addressindex", strprintf("Maintain a full address index, used to query unspent outputs for addresses (default: %u)", DEFAULT_ADDRESSINDEX), false, OptionsCategory::OPTIONS);
 
     gArgs.AddArg("-addnode=<ip>", "Add a node to connect to and attempt to keep the connection open (see the `addnode` RPC command help for more info). This option can be specified multiple times to add multiple nodes.", false, OptionsCategory::CONNECTION);
     gArgs.AddArg("-banscore=<n>", strprintf("Threshold for disconnecting misbehaving peers (default: %u)", DEFAULT_BANSCORE_THRESHOLD), false, OptionsCategory::CONNECTION);
@@ -716,6 +717,9 @@ static void ThreadImport(std::vector<fs::path> vImportFiles)
             pblocktree->WriteReindexing(false);
             fReindex = false;
             LogPrintf("Reindexing finished\n");
+
+            // Init setting for -addressindex in the new database
+            InitAddressIndex();
             // To avoid ending up in a situation without genesis block, re-try initializing (no-op if reindexing worked):
             LoadGenesisBlock(chainparams);
         }
@@ -1547,10 +1551,14 @@ bool AppInitMain(InitInterfaces& interfaces)
                     break;
                 }
 
+                // Init setting for -addressindex in the new database
+                InitAddressIndex();
+
                 // At this point blocktree args are consistent with what's on disk.
                 // If we're not mid-reindex (based on disk + args), add a genesis block on disk
                 // (otherwise we use the one already on disk).
                 // This is called again in ThreadImport after the reindex completes.
+
                 if (!fReindex && !LoadGenesisBlock(chainparams)) {
                     strLoadError = _("Error initializing block database");
                     break;

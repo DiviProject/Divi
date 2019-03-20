@@ -17,6 +17,7 @@
 #include <protocol.h> // For CMessageHeader::MessageStartChars
 #include <policy/feerate.h>
 #include <script/script_error.h>
+#include <spentindex.h>
 #include <sync.h>
 #include <versionbits.h>
 
@@ -119,6 +120,7 @@ static const int64_t MAX_FEE_ESTIMATION_TIP_AGE = 3 * 60 * 60;
 static const bool DEFAULT_PERMIT_BAREMULTISIG = true;
 static const bool DEFAULT_CHECKPOINTS_ENABLED = true;
 static const bool DEFAULT_TXINDEX = true;
+static const bool DEFAULT_ADDRESSINDEX = false;
 static const unsigned int DEFAULT_BANSCORE_THRESHOLD = 100;
 /** Default for -persistmempool */
 static const bool DEFAULT_PERSIST_MEMPOOL = true;
@@ -271,6 +273,8 @@ fs::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix);
 bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskBlockPos *dbp = nullptr);
 /** Ensures we have a genesis block in the block tree, possibly writing one to disk. */
 bool LoadGenesisBlock(const CChainParams& chainparams);
+/** Initialize a new block tree database + block data on disk */
+void InitAddressIndex();
 /** Load the block tree and coins database from disk,
  * initializing state if we're running with -reindex. */
 bool LoadBlockIndex(const CChainParams& chainparams) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
@@ -430,6 +434,9 @@ public:
 
 /** Initializes the script-execution cache */
 void InitScriptExecutionCache();
+
+bool GetAddressUnspent(uint160 addressHash, int type,
+                       std::vector<AddressUnspent> &unspentOutputs);
 
 void ReprocessBlocks(int nBlocks);
 

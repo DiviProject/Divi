@@ -190,6 +190,7 @@ serialize.h
 shutdown.cpp
 shutdown.h
 span.h
+spentindex.h
 spork.cpp
 spork.h
 sporkdb.cpp

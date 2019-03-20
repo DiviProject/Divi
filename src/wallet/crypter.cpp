@@ -208,8 +208,6 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial& vMasterKeyIn)
         if (keyFail || (!keyPass && cryptedHDChain.IsNull()))
             return false;
 
-        if (keyFail || !keyPass)
-            return false;
         vMasterKey = vMasterKeyIn;
 
         if(!cryptedHDChain.IsNull()) {

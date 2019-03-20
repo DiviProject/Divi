@@ -21,6 +21,8 @@
 #include <sync.h>
 #include <versionbits.h>
 
+#include <boost/optional.hpp>
+
 #include <algorithm>
 #include <exception>
 #include <map>
@@ -183,6 +185,9 @@ extern CAmount maxTxFee;
 /** If the tip is older than this (in seconds), the node is considered to be in initial block download. */
 extern int64_t nMaxTipAge;
 extern bool fEnableReplacement;
+
+extern boost::optional<CAmount> optTxFeeSporkValueMultiplier;
+extern boost::optional<unsigned int> optTxFeeSporkSizeMultiplier;
 
 /** Global variable that points to the spork database (protected by cs_main) */
 extern std::unique_ptr<CSporkDB> pSporkDB;

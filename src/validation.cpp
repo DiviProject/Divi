@@ -248,6 +248,8 @@ arith_uint256 nMinimumChainWork;
 
 CFeeRate minRelayTxFee = CFeeRate(DEFAULT_MIN_RELAY_TX_FEE);
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
+boost::optional<CAmount> optTxFeeSporkValueMultiplier;
+boost::optional<unsigned int> optTxFeeSporkSizeMultiplier;
 
 CBlockPolicyEstimator feeEstimator;
 CTxMemPool mempool(&feeEstimator);

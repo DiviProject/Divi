@@ -26,6 +26,7 @@ CAmount GetRequiredFee(const CWallet& wallet, unsigned int nTxBytes);
  * and the required fee
  */
 CAmount GetMinimumFee(const CWallet& wallet, unsigned int nTxBytes, const CCoinControl& coin_control, const CTxMemPool& pool, const CBlockPolicyEstimator& estimator, FeeCalculation* feeCalc);
+CAmount GetMinimumFee(const CAmount &txValue, unsigned int nTxBytes, const CWallet &wallet);
 
 /**
  * Return the minimum required feerate taking into account the

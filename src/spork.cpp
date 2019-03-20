@@ -32,12 +32,12 @@ static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_9_SUPERBLOCKS_ENABLED,            "4070908800"},    // OFF
     {SPORK_10_MASTERNODE_PAY_UPDATED_NODES,  "4070908800"},    // OFF
     {SPORK_12_RECONSIDER_BLOCKS,             "0"},             // 0 BLOCKS
+    {SPORK_14_TX_FEE,                        "10000;300;10000000;1000"}
 };
 
 static bool IsMultiValueSpork(int nSporkID)
 {
     if(SPORK_13_BLOCK_PAYMENTS == nSporkID ||
-            SPORK_14_TX_FEE == nSporkID ||
             SPORK_15_BLOCK_VALUE == nSporkID ||
             SPORK_16_LOTTERY_TICKET_MIN_VALUE == nSporkID) {
         return true;
@@ -107,6 +107,12 @@ void CSporkManager::LoadSporksFromDB()
         // add spork to memory
         mapSporks[spork.GetHash()] = spork;
         AddActiveSpork(spork);
+
+        if(spork.nSporkID == SPORK_14_TX_FEE)
+        {
+            ExecuteSpork(spork.nSporkID);
+        }
+
         LogPrintf("%s : loaded spork %s with value %d\n", __func__, sporkManager.GetSporkNameByID(spork.nSporkID), spork.strValue);
     }
 }
@@ -177,73 +183,71 @@ void CSporkManager::ProcessSpork(CNode* pfrom, CValidationState &state, const st
 
 void CSporkManager::ExecuteSpork(int nSporkID)
 {
-
-    if(IsMultiValueSpork(nSporkID)) {
-        ExecuteMultiValueSpork(nSporkID);
-    }
-    else
-    {
-        auto strValue = mapSporksActive.at(nSporkID).front().strValue;
-        //correct fork via spork technology
-        if(nSporkID == SPORK_12_RECONSIDER_BLOCKS) {
-
-            int64_t nValue = 0;
-            try
-            {
-                nValue = boost::lexical_cast<int64_t>(strValue);
-            }
-            catch(boost::bad_lexical_cast &)
-            {
-            }
-
-            if(nValue <= 0) {
-                return;
-            }
-
-            // allow to reprocess 24h of blocks max, which should be enough to resolve any issues
-            int64_t nMaxBlocks = 576;
-            // this potentially can be a heavy operation, so only allow this to be executed once per 10 minutes
-            int64_t nTimeout = 10 * 60;
-
-            static int64_t nTimeExecuted = 0; // i.e. it was never executed before
-
-            if(GetTime() - nTimeExecuted < nTimeout) {
-                LogPrint(BCLog::SPORK, "CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider blocks, too soon - %d/%d\n", GetTime() - nTimeExecuted, nTimeout);
-                return;
-            }
-
-            if(nValue > nMaxBlocks) {
-                LogPrintf("CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider too many blocks %d/%d\n", strValue, nMaxBlocks);
-                return;
-            }
-
-
-            LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
-
-            ReprocessBlocks(nValue);
-            nTimeExecuted = GetTime();
+    auto strValue = mapSporksActive.at(nSporkID).front().strValue;
+    //correct fork via spork technology
+    switch (nSporkID) {
+    case SPORK_12_RECONSIDER_BLOCKS: {
+        int64_t nValue = 0;
+        try
+        {
+            nValue = boost::lexical_cast<int64_t>(strValue);
         }
+        catch(boost::bad_lexical_cast &)
+        {
+        }
+
+        if(nValue <= 0) {
+            return;
+        }
+
+        // allow to reprocess 24h of blocks max, which should be enough to resolve any issues
+        int64_t nMaxBlocks = 576;
+        // this potentially can be a heavy operation, so only allow this to be executed once per 10 minutes
+        int64_t nTimeout = 10 * 60;
+
+        static int64_t nTimeExecuted = 0; // i.e. it was never executed before
+
+        if(GetTime() - nTimeExecuted < nTimeout) {
+            LogPrint(BCLog::SPORK, "CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider blocks, too soon - %d/%d\n", GetTime() - nTimeExecuted, nTimeout);
+            return;
+        }
+
+        if(nValue > nMaxBlocks) {
+            LogPrintf("CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider too many blocks %d/%d\n", strValue, nMaxBlocks);
+            return;
+        }
+
+
+        LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
+
+        ReprocessBlocks(nValue);
+        nTimeExecuted = GetTime();
+        break;
+    }
+    case SPORK_14_TX_FEE: {
+        auto txFeeSpork = TxFeeSporkValue::FromString(strValue);
+
+        if (!txFeeSpork.IsValid())
+        {
+            LogPrintf("CSporkManager::ExecuteSpork -- ERROR: Invalid transaction fee spork value\n");
+            return;
+        }
+
+        minRelayTxFee = CFeeRate(txFeeSpork.nMinFeePerKb);
+        maxTxFee = txFeeSpork.nMaxFee;
+
+        optTxFeeSporkSizeMultiplier = txFeeSpork.nTxSizeMultiplier;
+        optTxFeeSporkValueMultiplier = txFeeSpork.nTxValueMultiplier;
+
+        break;
+    }
+    default:
+        break;
     }
 }
 
 void CSporkManager::ExecuteMultiValueSpork(int nSporkID)
 {
-    if(nSporkID == SPORK_14_TX_FEE)
-    {
-        auto chainTip = chainActive.Tip();
-        MultiValueSporkList<TxFeeSporkValue> vValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_14_TX_FEE), vValues);
-        TxFeeSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, chainTip->nHeight, chainTip->nTime);
-
-        minRelayTxFee = CFeeRate(activeSpork.nMinFeePerKb);
-        maxTxFee = activeSpork.nMaxFee;
-#if 0
-#ifdef ENABLE_WALLET
-        nTransactionSizeMultiplier = activeSpork.nTxSizeMultiplier;
-        nTransactionValueMultiplier = activeSpork.nTxValueMultiplier;
-#endif
-#endif
-    }
 }
 
 static int GetActivationHeightHelper(int nSporkID, const std::string strValue)
@@ -252,9 +256,6 @@ static int GetActivationHeightHelper(int nSporkID, const std::string strValue)
 
     if(nSporkID == SPORK_13_BLOCK_PAYMENTS) {
         nActivationTime = BlockPaymentSporkValue::FromString(strValue).nActivationBlockHeight;
-    }
-    else if(nSporkID == SPORK_14_TX_FEE) {
-        nActivationTime = TxFeeSporkValue::FromString(strValue).nActivationBlockHeight;
     }
     else if(nSporkID == SPORK_15_BLOCK_VALUE) {
         nActivationTime = BlockSubsiditySporkValue::FromString(strValue).nActivationBlockHeight;
@@ -271,7 +272,6 @@ static int GetActivationHeightHelper(int nSporkID, const std::string strValue)
 
 bool CSporkManager::UpdateSpork(int nSporkID, std::string strValue, CConnman *connman)
 {
-
     CSporkMessage spork = CSporkMessage(nSporkID, strValue, GetAdjustedTime());
 
     if(!IsNewerSpork(spork))
@@ -667,7 +667,6 @@ std::string LotteryTicketMinValueSporkValue::ToString() const
 }
 
 TxFeeSporkValue::TxFeeSporkValue() :
-    SporkMultiValue(),
     nTxValueMultiplier(-1),
     nTxSizeMultiplier(-1),
     nMaxFee(-1),
@@ -677,34 +676,28 @@ TxFeeSporkValue::TxFeeSporkValue() :
 }
 
 TxFeeSporkValue::TxFeeSporkValue(int nTxValueMultiplierIn, int nTxSizeMultiplierIn, int nMaxFeeIn,
-                                 int nMinFeePerKbIn, int nActivationBlockHeightIn) :
-    SporkMultiValue(nActivationBlockHeightIn),
+                                 int nMinFeePerKbIn) :
     nTxValueMultiplier(nTxValueMultiplierIn),
     nTxSizeMultiplier(nTxSizeMultiplierIn),
     nMaxFee(nMaxFeeIn),
     nMinFeePerKb(nMinFeePerKbIn)
-
 {
-
 }
 
 TxFeeSporkValue TxFeeSporkValue::FromString(std::string strData)
 {
-    std::vector<int> vecParsedValues = ParseDataPayload(strData);
+    auto vecParsedValues = ParseDataPayload(strData);
 
-    if(vecParsedValues.size() != 6) {
-        return TxFeeSporkValue();
-    }
+    if(vecParsedValues.size() != 4)
+        return TxFeeSporkValue{};
 
-    return TxFeeSporkValue(vecParsedValues.at(0), vecParsedValues.at(1), vecParsedValues.at(2),
-                           vecParsedValues.at(3), vecParsedValues.at(4));
+    return TxFeeSporkValue{vecParsedValues.at(0), vecParsedValues.at(1), vecParsedValues.at(2),
+                           vecParsedValues.at(3)};
 }
 
 bool TxFeeSporkValue::IsValid() const
 {
-    return SporkMultiValue::IsValid() &&
-            nTxValueMultiplier > 0 && nTxSizeMultiplier > 0 &&
-            nMaxFee > 0 && nMinFeePerKb > 0;
+    return nTxValueMultiplier > 0 && nTxSizeMultiplier > 0 && nMaxFee > 0 && nMinFeePerKb > 0;
 }
 
 std::string TxFeeSporkValue::ToString() const
@@ -713,8 +706,7 @@ std::string TxFeeSporkValue::ToString() const
         nTxValueMultiplier,
         nTxSizeMultiplier,
         nMaxFee,
-        nMinFeePerKb,
-        nActivationBlockHeight
+        nMinFeePerKb
     };
 
     return BuildDataPayload(values);

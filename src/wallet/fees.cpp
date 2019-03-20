@@ -12,12 +12,38 @@
 #include <wallet/coincontrol.h>
 #include <wallet/wallet.h>
 
-
 CAmount GetRequiredFee(const CWallet& wallet, unsigned int nTxBytes)
 {
     return GetRequiredFeeRate(wallet).GetFee(nTxBytes);
 }
 
+CAmount GetMinimumFee(const CAmount &txValue, unsigned int nTxBytes, const CWallet& wallet)
+{
+    auto valueMul = wallet.nTransactionValueMultiplier;
+    if (optTxFeeSporkValueMultiplier)
+        valueMul = *optTxFeeSporkValueMultiplier;
+
+    unsigned int sizeMul = wallet.nTransactionSizeMultiplier;
+    if (optTxFeeSporkSizeMultiplier)
+        sizeMul = *optTxFeeSporkSizeMultiplier;
+
+    CAmount feeNeeded = (txValue / valueMul) * std::max(nTxBytes / sizeMul, 1u);
+
+    // back to a hard-coded fee
+    if (feeNeeded == 0)
+        feeNeeded = wallet.m_min_fee.GetFee(nTxBytes);
+
+    // prevent user from paying a non-sense fee (like 1 satoshi): 0 < fee < minRelayFee
+    auto minRelayTxFeeAmount = minRelayTxFee.GetFee(nTxBytes);
+    if (feeNeeded < minRelayTxFeeAmount)
+        feeNeeded = minRelayTxFeeAmount;
+
+    // But always obey the maximum
+    if (feeNeeded > maxTxFee)
+        feeNeeded = maxTxFee;
+
+    return feeNeeded;
+}
 
 CAmount GetMinimumFee(const CWallet& wallet, unsigned int nTxBytes, const CCoinControl& coin_control, const CTxMemPool& pool, const CBlockPolicyEstimator& estimator, FeeCalculation* feeCalc)
 {

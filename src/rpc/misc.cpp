@@ -600,7 +600,7 @@ static UniValue echo(const JSONRPCRequest& request)
 /*
     Used for updating/reading spork settings on the network
 */
-UniValue spork(const JSONRPCRequest& request)
+static UniValue spork(const JSONRPCRequest& request)
 {
     if (request.params.size() == 1 && request.params[0].get_str() == "show") {
         UniValue ret(UniValue::VOBJ);

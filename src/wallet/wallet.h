@@ -87,6 +87,9 @@ static const bool DEFAULT_DISABLE_WALLET = false;
 
 static constexpr uint64_t DEFAULT_N_STAKE_SPLIT_THRESHOLD{20000};
 
+static constexpr int64_t DEFAULT_N_TRANSACTION_VALUE_MULTIPLIER{10000}; // 1 / 0.0001 = 10000;
+static constexpr uint64_t DEFAULT_N_TRANSACTION_SIZE_MULTIPLIER{300};
+
 //! Pre-calculated constants for input size estimation in *virtual size*
 static constexpr size_t DUMMY_NESTED_P2WPKH_INPUT_SIZE = 91;
 
@@ -779,6 +782,13 @@ public:
     unsigned int nHashInterval = 22;
     uint64_t nStakeSplitThreshold = DEFAULT_N_STAKE_SPLIT_THRESHOLD;
     int nStakeSetUpdateTime = 300; // 5 minutes
+
+    /* TODO: Check if this value will really filled by "spork.cpp" in ExecuteMultiValueSpork method,
+     * as now they commented out. Maybe "Dead code". Temporary value from spork stores in optional
+     * separated variables */
+    //Fee Settings
+    CAmount nTransactionValueMultiplier = DEFAULT_N_TRANSACTION_VALUE_MULTIPLIER;
+    unsigned int nTransactionSizeMultiplier = DEFAULT_N_TRANSACTION_SIZE_MULTIPLIER;
 
     /** Construct wallet with specified name and database implementation. */
     CWallet(interfaces::Chain& chain, const WalletLocation& location, std::unique_ptr<WalletDatabase> database) : m_chain(chain), m_location(location), database(std::move(database))

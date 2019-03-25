@@ -35,11 +35,15 @@ bool CBlockSigner::SignBlock()
     {
         const CTxOut& txout = refBlock.vtx[1]->vout[1];
 
+
+
         CTxDestination destination;
         if(!ExtractDestination(txout.scriptPubKey, destination))
         {
             return error("Failed to extract destination while signing: %s\n", txout.ToString());
         }
+
+        LogPrintf("signing with address: %s\n", EncodeDestination(destination));
 
         auto keyid = GetKeyForDestination(*refKeystore, destination);
         {

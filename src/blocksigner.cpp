@@ -26,8 +26,6 @@ CBlockSigner::CBlockSigner(CBlock &block, const CKeyStore *keystore) :
 
 }
 
-#include <util/strencodings.h>
-
 bool CBlockSigner::SignBlock()
 {
     CKey keySecret;
@@ -43,8 +41,6 @@ bool CBlockSigner::SignBlock()
             return error("Failed to extract destination while signing: %s\n", txout.ToString());
         }
 
-        LogPrintf("signing with address: %s\n", EncodeDestination(destination));
-
         auto keyid = GetKeyForDestination(*refKeystore, destination);
         {
             if (keyid.IsNull()) {
@@ -57,15 +53,10 @@ bool CBlockSigner::SignBlock()
             scriptType = GetScriptTypeFromDestination(destination);
         }
 
-        LogPrintf("preparing to sign block: %s %s %d\n", refBlock.GetHash().ToString(), keyid.ToString(), static_cast<int>(scriptType));
     }
     //?
     auto hash = refBlock.GetHash();
     bool result = CHashSigner::SignHash(hash, keySecret, scriptType, refBlock.vchBlockSig);
-    std::string strError;
-    LogPrintf("Signed, result: %d %d %s %s\n",
-              result, CHashSigner::VerifyHash(hash, destination, refBlock.vchBlockSig, strError),
-              EncodeBase64(&refBlock.vchBlockSig[0], refBlock.vchBlockSig.size()), strError);
     return result;
 }
 
@@ -83,8 +74,6 @@ bool CBlockSigner::CheckBlockSignature() const
     std::vector<std::vector<unsigned char>> vSolutions;
     txnouttype whichType = Solver(txout.scriptPubKey, vSolutions);
 
-    LogPrintf("Checking block, whichType: %d\n", whichType);
-
     CTxDestination destination;
     if(whichType == TX_PUBKEY)
     {
@@ -100,14 +89,13 @@ bool CBlockSigner::CheckBlockSignature() const
     else if(!ExtractDestination(txout.scriptPubKey, destination))
     {
         return error("CBlockSigner::CheckBlockSignature() : failed to extract destination from script: %s", txout.scriptPubKey.ToString());
-
     }
 
     std::string strError;
     bool result = CHashSigner::VerifyHash(hashMessage, destination, refBlock.vchBlockSig, strError);
     if(!result)
     {
-        LogPrintf("Failed to verify hash, %s\n", strError);
+        LogPrintf("CBlockSigner::CheckBlockSignature() : Failed to verify hash, %s\n", strError);
     }
     return result;
 }

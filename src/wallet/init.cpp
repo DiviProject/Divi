@@ -89,15 +89,16 @@ bool WalletInit::ParameterInteraction() const
         LogPrintf("%s: parameter interaction: -blocksonly=1 -> setting -walletbroadcast=0\n", __func__);
     }
 
-    if (gArgs.GetBoolArg("-salvagewallet", false)) {
-        if (is_multiwallet) {
-            return InitError(strprintf("%s is only allowed with a single wallet file", "-salvagewallet"));
-        }
-        // Rewrite just private keys: rescan to find transactions
-        if (gArgs.SoftSetBoolArg("-rescan", true)) {
-            LogPrintf("%s: parameter interaction: -salvagewallet=1 -> setting -rescan=1\n", __func__);
-        }
-    }
+    // Won't salvage, too risky
+//    if (gArgs.GetBoolArg("-salvagewallet", false)) {
+//        if (is_multiwallet) {
+//            return InitError(strprintf("%s is only allowed with a single wallet file", "-salvagewallet"));
+//        }
+//        // Rewrite just private keys: rescan to find transactions
+//        if (gArgs.SoftSetBoolArg("-rescan", true)) {
+//            LogPrintf("%s: parameter interaction: -salvagewallet=1 -> setting -rescan=1\n", __func__);
+//        }
+//    }
 
     bool zapwallettxes = gArgs.GetBoolArg("-zapwallettxes", false);
     // -zapwallettxes implies dropping the mempool on startup
@@ -173,7 +174,7 @@ bool VerifyWallets(interfaces::Chain& chain, const std::vector<std::string>& wal
     // Parameter interaction code should have thrown an error if -salvagewallet
     // was enabled with more than wallet file, so the wallet_files size check
     // here should have no effect.
-    bool salvage_wallet = gArgs.GetBoolArg("-salvagewallet", false) && wallet_files.size() <= 1;
+    bool salvage_wallet = false;//gArgs.GetBoolArg("-salvagewallet", false) && wallet_files.size() <= 1;
 
     // Keep track of each wallet absolute path to detect duplicates.
     std::set<fs::path> wallet_paths;

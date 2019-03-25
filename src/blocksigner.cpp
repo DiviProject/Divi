@@ -53,7 +53,7 @@ bool CBlockSigner::SignBlock()
             scriptType = GetScriptTypeFromDestination(destination);
         }
 
-        LogPrintf("preparing to sign block: %s %s %d\n", refBlock.GetHash(), keyid.ToString(), scriptType);
+        LogPrintf("preparing to sign block: %s %s %d\n", refBlock.GetHash(), keyid.ToString(), static_cast<int>(scriptType));
     }
     //?
     return CHashSigner::SignHash(refBlock.GetHash(), keySecret, scriptType, refBlock.vchBlockSig);

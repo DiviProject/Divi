@@ -94,5 +94,10 @@ bool CBlockSigner::CheckBlockSignature() const
     }
 
     std::string strError;
-    return CHashSigner::VerifyHash(hashMessage, destination, refBlock.vchBlockSig, strError);
+    bool result = CHashSigner::VerifyHash(hashMessage, destination, refBlock.vchBlockSig, strError);
+    if(!result)
+    {
+        LogPrintf("Failed to verify hash, %s\n", strError);
+    }
+    return result;
 }

@@ -169,6 +169,7 @@ bool CWallet::GetKey(const CKeyID &address, CKey& keyOut) const
 
         CExtKey extkey;
         hdChainCurrent.DeriveChildExtKey(hdPubKey.nAccountIndex, hdPubKey.nChangeIndex != 0, hdPubKey.extPubKey.nChild, extkey);
+        LogPrintf("Derived extKey %s vs %s\n", extkey.key.GetPubKey().GetID().ToString(), address.ToString());
         keyOut = extkey.key;
 
         return true;

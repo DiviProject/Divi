@@ -443,8 +443,12 @@ CAmount GetStakeReward(CAmount blockReward, unsigned int percentage)
     return (blockReward / 100) * percentage;
 }
 
-bool CWallet::CreateCoinStakeKernel(CBlockIndex *prevIndex, CScript &kernelScript, const CScript &stakeScript,
-                                    unsigned int nBits, const CBlock &blockFrom,
+bool CWallet::CreateCoinStakeKernel(CBlockIndex *prevIndex,
+                                    CScript &kernelScript,
+                                    const CScript &stakeScript,
+                                    unsigned int nBits,
+                                    unsigned int nExpectedBlockHeight,
+                                    const CBlock &blockFrom,
                                     const CTransactionRef &txPrev,
                                     const COutPoint &prevout, unsigned int &nTimeTx,
                                     bool fGenerateSegwit, bool fPrintProofOfStake) const
@@ -470,7 +474,7 @@ bool CWallet::CreateCoinStakeKernel(CBlockIndex *prevIndex, CScript &kernelScrip
         return false;
     }
 
-    if (CheckStakeKernelHash(prevIndex, nBits, blockFrom, *txPrev, prevout, nTimeTx, nHashDrift, false, hashProofOfStake, fPrintProofOfStake))
+    if (CheckStakeKernelHash(prevIndex, nBits, blockFrom, *txPrev, prevout, nExpectedBlockHeight, nTimeTx, nHashDrift, false, hashProofOfStake, fPrintProofOfStake))
     {
         //Double check that this will pass time requirements
         if (nTryTime <= chainActive.Tip()->GetMedianTimePast()) {
@@ -3299,6 +3303,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     static int nLastStakeSetUpdate = 0;
 
     auto chainTip = chainActive.Tip();
+    unsigned int nExpectedBlockHeight = chainTip->nHeight + 1;
 
     if (GetTime() - nLastStakeSetUpdate > nStakeSetUpdateTime)
     {
@@ -3343,7 +3348,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
         //iterates each utxo inside of CheckStakeKernelHash()
         CScript kernelScript;
         auto stakeScript = pcoin.first->tx->vout[pcoin.second].scriptPubKey;
-        fKernelFound = CreateCoinStakeKernel(chainTip, kernelScript, stakeScript, nBits,
+        fKernelFound = CreateCoinStakeKernel(chainTip, kernelScript, stakeScript, nBits, nExpectedBlockHeight,
                                              block, pcoin.first->tx,
                                              prevoutStake, nTxNewTime, fGenerateSegwit, false);
 

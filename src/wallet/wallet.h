@@ -724,7 +724,7 @@ private:
 
     using StakeCoinsSet = std::set<std::pair<const CWalletTx*, unsigned int>>;
     bool CreateCoinStakeKernel(CBlockIndex *prevIndex, CScript &kernelScript, const CScript &stakeScript,
-                               unsigned int nBits, const CBlock& blockFrom, const CTransactionRef &txPrev,
+                               unsigned int nBits, unsigned int nExpectedBlockHeight, const CBlock& blockFrom, const CTransactionRef &txPrev,
                                const COutPoint& prevout, unsigned int &nTimeTx, bool fGenerateSegwit, bool fPrintProofOfStake) const;
 
     void FillCoinStakePayments(const StakeCoinsSet &setStakeCoins,

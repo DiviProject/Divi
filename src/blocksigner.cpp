@@ -41,8 +41,8 @@ bool CBlockSigner::SignBlock()
             return error("Failed to extract destination while signing: %s\n", txout.ToString());
         }
 
+        auto keyid = GetKeyForDestination(*refKeystore, destination);
         {
-            auto keyid = GetKeyForDestination(*refKeystore, destination);
             if (keyid.IsNull()) {
                 return error("CBlockSigner::SignBlock() : failed to get key for destination, won't sign.");
             }

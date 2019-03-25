@@ -52,6 +52,8 @@ bool CBlockSigner::SignBlock()
 
             scriptType = GetScriptTypeFromDestination(destination);
         }
+
+        LogPrintf("preparing to sign block: %s %s %d\n", refBlock.GetHash(), keyid.ToString(), scriptType);
     }
     //?
     return CHashSigner::SignHash(refBlock.GetHash(), keySecret, scriptType, refBlock.vchBlockSig);
@@ -70,6 +72,8 @@ bool CBlockSigner::CheckBlockSignature() const
 
     std::vector<std::vector<unsigned char>> vSolutions;
     txnouttype whichType = Solver(txout.scriptPubKey, vSolutions);
+
+    LogPrintf("Checking block, whichType: %d\n", whichType);
 
     CTxDestination destination;
     if(whichType == TX_PUBKEY)

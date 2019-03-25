@@ -2645,7 +2645,7 @@ bool CWallet::SelectStakeCoins(interfaces::Chain::Lock& locked_chain,
 
         allStakeCoins.emplace(out.tx, out.i);
 
-        if(fCheckForMinStakeAmount && outTransactionValue >= MIN_STAKING_AMOUNT * COIN)
+        if(!fCheckForMinStakeAmount || outTransactionValue >= MIN_STAKING_AMOUNT * COIN)
             validStakeCoins.emplace(out.tx, out.i);
     }
     return true;

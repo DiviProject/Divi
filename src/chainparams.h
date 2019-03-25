@@ -80,6 +80,7 @@ public:
     const CCheckpointData& Checkpoints() const { return checkpointData; }
     const ChainTxData& TxData() const { return chainTxData; }
     int ExtCoinType() const { return nExtCoinType; }
+    const std::string SporkKey() const { return consensus.strSporkKey; }
 protected:
     CChainParams() {}
 

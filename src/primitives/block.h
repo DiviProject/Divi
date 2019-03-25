@@ -47,9 +47,7 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
-
-        if(nVersion == VERSIONBITS_PRESEGWIT_BLOCK_VERSION)
-            READWRITE(nAccumulatorCheckpoint);
+        READWRITE(nAccumulatorCheckpoint);
     }
 
     void SetNull()

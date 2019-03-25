@@ -1531,6 +1531,7 @@ bool AppInitMain(InitInterfaces& interfaces)
 
                 // DIVI: load previous sessions sporks if we have them.
                 uiInterface.InitMessage(_("Loading sporks..."));
+                sporkManager.SetSporkAddress(Params().SporkKey());
                 sporkManager.LoadSporksFromDB();
 
                 // LoadBlockIndex will load fHavePruned if we've ever removed a

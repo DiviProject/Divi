@@ -224,9 +224,9 @@ public:
         pchMessageStart[3] = 0x78;
         nDefaultPort = 51474;
 
-        genesis = CreateGenesisBlock(1537971708, 749845, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1553526922, 380219, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
+        assert(consensus.hashGenesisBlock == uint256S("0x00000b83b5f5d85f2600fbec711323290e72244f6c983230b18388b201419dfe"));
         assert(genesis.hashMerkleRoot == uint256S("0xec803cc6b5e68728ec0117cb1154b6d2893152f89d61319647db106908888bd6"));
 
         vFixedSeeds.clear();
@@ -253,7 +253,7 @@ public:
         fMineBlocksOnDemand = false;
 
         consensus.nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
-        consensus.strSporkKey = "038cb7eae71ba974eb306b185a576ea2f9d097411e7b001c2217d43fbf77a17c02";
+        consensus.strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
         consensus.nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 
         checkpointData = {

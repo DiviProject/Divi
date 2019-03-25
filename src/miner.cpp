@@ -224,7 +224,10 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(CWallet *wallet, 
     if(pblock->IsProofOfStake())
     {
         CMutableTransaction mutableTx(*pblock->vtx[1]);
-        SignInputsInCoinstake(*wallet, mutableTx, vwtxPrev);
+        if(!SignInputsInCoinstake(*wallet, mutableTx, vwtxPrev))
+        {
+            LogPrintf("CreateNewBlock(): failed to sign inputs for coinstake\n");
+        }
         pblock->vtx[1] = MakeTransactionRef(std::move(mutableTx));
     }
 

@@ -26,18 +26,18 @@ CBlockSigner::CBlockSigner(CBlock &block, const CKeyStore *keystore) :
 
 }
 
+#include <util/strencodings.h>
+
 bool CBlockSigner::SignBlock()
 {
     CKey keySecret;
     CPubKey::InputScriptType scriptType;
 
+    CTxDestination destination;
     if(refBlock.IsProofOfStake())
     {
         const CTxOut& txout = refBlock.vtx[1]->vout[1];
 
-
-
-        CTxDestination destination;
         if(!ExtractDestination(txout.scriptPubKey, destination))
         {
             return error("Failed to extract destination while signing: %s\n", txout.ToString());
@@ -60,7 +60,10 @@ bool CBlockSigner::SignBlock()
         LogPrintf("preparing to sign block: %s %s %d\n", refBlock.GetHash().ToString(), keyid.ToString(), static_cast<int>(scriptType));
     }
     //?
-    return CHashSigner::SignHash(refBlock.GetHash(), keySecret, scriptType, refBlock.vchBlockSig);
+    bool result = CHashSigner::SignHash(refBlock.GetHash(), keySecret, scriptType, refBlock.vchBlockSig);
+    std::string strError;
+    LogPrintf("Signed, result: %d %s\n", CHashSigner::VerifyHash(refBlock.GetHash(), destination, refBlock.vchBlockSig, strError), EncodeBase64(&refBlock.vchBlockSig[0], refBlock.vchBlockSig.size()));
+    return result;
 }
 
 bool CBlockSigner::CheckBlockSignature() const

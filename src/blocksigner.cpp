@@ -62,7 +62,7 @@ bool CBlockSigner::SignBlock()
     //?
     bool result = CHashSigner::SignHash(refBlock.GetHash(), keySecret, scriptType, refBlock.vchBlockSig);
     std::string strError;
-    LogPrintf("Signed, result: %d %d %s\n",
+    LogPrintf("Signed, result: %d %d %s %s\n",
               result, CHashSigner::VerifyHash(refBlock.GetHash(), destination, refBlock.vchBlockSig, strError),
               EncodeBase64(&refBlock.vchBlockSig[0], refBlock.vchBlockSig.size()), strError);
     return result;

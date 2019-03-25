@@ -2583,7 +2583,12 @@ bool CWallet::MintableCoins(interfaces::Chain::Lock& locked_chain)
     return false;
 }
 
-bool CWallet::SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoinsSet &allStakeCoins, StakeCoinsSet &validStakeCoins, CAmount nTargetAmount, bool fSelectWitness) const
+bool CWallet::SelectStakeCoins(interfaces::Chain::Lock& locked_chain,
+                               StakeCoinsSet &allStakeCoins,
+                               StakeCoinsSet &validStakeCoins,
+                               CAmount nTargetAmount,
+                               bool fSelectWitness,
+                               bool fCheckForMinStakeAmount) const
 {
     std::vector<COutput> vCoins;
     {
@@ -2636,7 +2641,7 @@ bool CWallet::SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoins
 
         allStakeCoins.emplace(out.tx, out.i);
 
-        if(outTransactionValue >= MIN_STAKING_AMOUNT * COIN)
+        if(fCheckForMinStakeAmount && outTransactionValue >= MIN_STAKING_AMOUNT * COIN)
             validStakeCoins.emplace(out.tx, out.i);
     }
     return true;
@@ -3293,12 +3298,15 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     static StakeCoinsSet allStakeCoins;
     static int nLastStakeSetUpdate = 0;
 
+    auto chainTip = chainActive.Tip();
+
     if (GetTime() - nLastStakeSetUpdate > nStakeSetUpdateTime)
     {
         allStakeCoins.clear();
         validStakeCoins.clear();
         auto locked_chain = chain().lock();
-        if (!SelectStakeCoins(*locked_chain, allStakeCoins, validStakeCoins, nBalance /*- nReserveBalance*/, fGenerateSegwit)) {
+        bool fCheckForMinStakeAmount = ShouldCheckForMinStakeAmount(chainTip->nHeight);
+        if (!SelectStakeCoins(*locked_chain, allStakeCoins, validStakeCoins, nBalance /*- nReserveBalance*/, fGenerateSegwit, fCheckForMinStakeAmount)) {
             return error("Failed to select coins for staking");
         }
 
@@ -3308,7 +3316,6 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     if (validStakeCoins.empty())
         return error("CreateCoinStake() : No Coins to stake");
 
-    auto chainTip = chainActive.Tip();
 
     //prevent staking a time that won't be accepted
     if (GetAdjustedTime() <= chainTip->nTime)

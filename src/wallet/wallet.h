@@ -840,7 +840,7 @@ public:
 
     // Coin selection
     bool MintableCoins(interfaces::Chain::Lock &locked_chain);
-    bool SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoinsSet& allStakeCoins, StakeCoinsSet &validStakeCoins, CAmount nTargetAmount, bool fSelectWitness) const;
+    bool SelectStakeCoins(interfaces::Chain::Lock& locked_chain, StakeCoinsSet& allStakeCoins, StakeCoinsSet &validStakeCoins, CAmount nTargetAmount, bool fSelectWitness, bool fCheckForMinStakeAmount) const;
 
     bool IsSpent(interfaces::Chain::Lock& locked_chain, const uint256& hash, unsigned int n) const EXCLUSIVE_LOCKS_REQUIRED(cs_wallet);
     std::vector<OutputGroup> GroupOutputs(const std::vector<COutput>& outputs, bool single_coin) const;

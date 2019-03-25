@@ -473,7 +473,7 @@ bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
         if(GetTransaction(txIn.prevout.hash, txPrev, Params().GetConsensus(), hashBlock, true)) {
             auto transactionOut = txPrev->vout[txIn.prevout.n];
 
-            if (!hasMinStakeAmount && transactionOut.nValue >= MIN_STAKING_AMOUNT )
+            if (!hasMinStakeAmount && transactionOut.nValue >= MIN_STAKING_AMOUNT)
                 hasMinStakeAmount = true;
 
             return transactionOut.scriptPubKey == kernelScript;
@@ -482,7 +482,7 @@ bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
         return false;
     });
 
-    if (!hasMinStakeAmount)
+    if (!hasMinStakeAmount && ShouldCheckForMinStakeAmount(chainActive.Tip()->nHeight + 1))
         return error("CheckProofOfStake() : Amount of stake less than the required minimum of %d.", MIN_STAKING_AMOUNT);
 
     if(nValidInputs != tx->vin.size()) {

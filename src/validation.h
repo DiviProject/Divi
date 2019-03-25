@@ -560,4 +560,6 @@ inline bool IsBlockPruned(const CBlockIndex* pblockindex)
     return (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0);
 }
 
+bool ShouldCheckForMinStakeAmount(int chainHeight);
+
 #endif // BITCOIN_VALIDATION_H

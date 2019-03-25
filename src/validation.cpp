@@ -5360,3 +5360,8 @@ bool GetAddressUnspent(uint160 addressHash, int type, std::vector<AddressUnspent
 
     return true;
 }
+
+bool ShouldCheckForMinStakeAmount(int chainHeight)
+{
+    return chainHeight > 10000; // start enforcing after block 10k
+}

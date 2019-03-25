@@ -62,6 +62,7 @@ bool CMessageSigner::VerifyMessage(const CTxDestination &address, const std::vec
 
 bool CHashSigner::SignHash(const uint256& hash, const CKey &key, CPubKey::InputScriptType scriptType, std::vector<unsigned char>& vchSigRet)
 {
+    LogPrintf("Signing with keyid(from secret): %s\n", key.GetPubKey().GetID().ToString());
     return key.SignCompact(hash, vchSigRet, scriptType);
 }
 
@@ -70,6 +71,7 @@ bool CHashSigner::VerifyHash(const uint256& hash, const CTxDestination &address,
     CPubKey pubkeyFromSig;
     CPubKey::InputScriptType inputScriptType;
     if(!pubkeyFromSig.RecoverCompact(hash, vchSig, inputScriptType)) {
+        LogPrintf("Recovered keyid from siganture: %s\n", pubkeyFromSig.GetID().ToString());
         strErrorRet = "Error recovering public key.";
         return false;
     }

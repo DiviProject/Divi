@@ -60,10 +60,11 @@ bool CBlockSigner::SignBlock()
         LogPrintf("preparing to sign block: %s %s %d\n", refBlock.GetHash().ToString(), keyid.ToString(), static_cast<int>(scriptType));
     }
     //?
-    bool result = CHashSigner::SignHash(refBlock.GetHash(), keySecret, scriptType, refBlock.vchBlockSig);
+    auto hash = refBlock.GetHash();
+    bool result = CHashSigner::SignHash(hash, keySecret, scriptType, refBlock.vchBlockSig);
     std::string strError;
     LogPrintf("Signed, result: %d %d %s %s\n",
-              result, CHashSigner::VerifyHash(refBlock.GetHash(), destination, refBlock.vchBlockSig, strError),
+              result, CHashSigner::VerifyHash(hash, destination, refBlock.vchBlockSig, strError),
               EncodeBase64(&refBlock.vchBlockSig[0], refBlock.vchBlockSig.size()), strError);
     return result;
 }

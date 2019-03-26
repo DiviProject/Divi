@@ -512,7 +512,9 @@ bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
     if (!ReadBlockFromDisk(blockprev, pindex->GetBlockPos(), Params().GetConsensus()))
         return error("CheckProofOfStake(): INFO: failed to find block");
 
-    unsigned int nBlockHeight = mapBlockIndex.at(block.GetHash())->nHeight; // we will use this value to determine how long we should scan for stake modifier.
+
+    auto fIt = mapBlockIndex.find(block.GetHash()); // we will use this value to determine how long we should scan for stake modifier.
+    unsigned int nBlockHeight = fIt != std::end(mapBlockIndex) ? fIt->second->nHeight : chainActive.Tip()->nHeight + 1;
 
     unsigned int nInterval = 0;
     unsigned int nTime = block.nTime;

@@ -3454,7 +3454,8 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
     {
         LOCK(cs_KeyStore);
         // This wallet is in its first run if all of these are empty
-        fFirstRunRet = mapKeys.empty() && mapCryptedKeys.empty() && mapWatchKeys.empty() && setWatchOnly.empty() && mapScripts.empty() && !IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS);
+        fFirstRunRet = mapKeys.empty() && mapCryptedKeys.empty() && mapWatchKeys.empty() && setWatchOnly.empty() && mapScripts.empty() && !IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)
+                && mapHdPubKeys.empty();
     }
 
     if (nLoadWalletRet != DBErrors::LOAD_OK)
@@ -3653,11 +3654,15 @@ bool CWallet::TopUpKeyPool(unsigned int kpSize)
         int64_t missingExternal = std::max(std::max((int64_t) nTargetSize, (int64_t) 1) - (int64_t)setExternalKeyPool.size(), (int64_t) 0);
         int64_t missingInternal = std::max(std::max((int64_t) nTargetSize, (int64_t) 1) - (int64_t)setInternalKeyPool.size(), (int64_t) 0);
 
-        if (!IsHDEnabled() || !CanSupportFeature(FEATURE_HD_SPLIT))
+        if (!IsHDEnabled())
         {
+            LogPrintf("HD Wallet disabled\n");
             // don't create extra internal keys
             missingInternal = 0;
         }
+
+        LogPrintf("TopUpKeyPool missing external (%d), missing internal (%d)\n", missingExternal, missingInternal);
+
         bool internal = false;
         WalletBatch batch(*database);
         for (int64_t i = missingInternal + missingExternal; i--;)
@@ -3798,7 +3803,7 @@ int64_t CWallet::GetOldestKeyPoolTime()
 
     // load oldest key from keypool, get time and return
     int64_t oldestKey = GetOldestKeyTimeInPool(setExternalKeyPool, batch);
-    if (IsHDEnabled() && CanSupportFeature(FEATURE_HD_SPLIT)) {
+    if (IsHDEnabled()) {
         oldestKey = std::max(GetOldestKeyTimeInPool(setInternalKeyPool, batch), oldestKey);
     }
 

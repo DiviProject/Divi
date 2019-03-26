@@ -4173,6 +4173,78 @@ UniValue removeprunedfunds(const JSONRPCRequest& request);
 UniValue importmulti(const JSONRPCRequest& request);
 UniValue dumphdinfo(const JSONRPCRequest& request);
 
+static UniValue recoverwallet(const JSONRPCRequest& request)
+{
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    CWallet* const pwallet = wallet.get();
+
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+    UniValue result(UniValue::VOBJ);
+
+    int lostKeys = 0;
+    int availableKeys = 0;
+    for(auto &&entry : pwallet->mapHdPubKeys) {
+        CKey key;
+        if(!pwallet->GetKey(entry.first, key))
+            continue;
+
+        if(key.VerifyPubKey(entry.second.extPubKey.pubkey)) {
+            ++availableKeys;
+        }
+        else {
+            ++lostKeys;
+        }
+    }
+
+    result.pushKV("Total keys", lostKeys + availableKeys);
+    result.pushKV("Available keys", availableKeys);
+    result.pushKV("Lost keys", lostKeys);
+
+    CHDChain hdchain;
+    pwallet->GetHDChain(hdchain);
+    result.pushKV("hdchain", hdchain.GetID().GetHex());
+
+    return result;
+}
+
+static UniValue walletverify(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() != 0)
+        throw std::runtime_error(
+                "walletverify\n"
+                "\nChecks wallet integrity, if this returns true, you can be sure that all funds are accesible\n");
+
+    if (request.fHelp)
+        return true;
+
+    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+    CWallet* const pwallet = wallet.get();
+
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+
+    if(!pwallet->IsHDEnabled())
+        throw std::runtime_error("HD wallet is disabled, checking integrity works only with HD wallets");
+
+    for(auto &&entry : pwallet->mapHdPubKeys) {
+        CKey derivedKey;
+        if(!pwallet->GetKey(entry.first, derivedKey)) {
+            return false;
+        }
+
+        if(!derivedKey.VerifyPubKey(entry.second.extPubKey.pubkey)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // clang-format off
 static const CRPCCommand commands[] =
 { //  category              name                                actor (function)                argNames
@@ -4235,6 +4307,8 @@ static const CRPCCommand commands[] =
     { "wallet",             "walletpassphrase",                 &walletpassphrase,              {"passphrase","timeout"} },
     { "wallet",             "walletpassphrasechange",           &walletpassphrasechange,        {"oldpassphrase","newpassphrase"} },
     { "wallet",             "walletprocesspsbt",                &walletprocesspsbt,             {"psbt","sign","sighashtype","bip32derivs"} },
+    { "wallet",             "walletverify",                     &walletverify,                  {} },
+    { "wallet",             "recoverwallet",                    &recoverwallet,                 {} },
 };
 // clang-format on
 

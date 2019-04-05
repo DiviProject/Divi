@@ -23,9 +23,9 @@ RAW_TEST_FILES =
 GENERATED_TEST_FILES = $(JSON_TEST_FILES:.json=.json.h) $(RAW_TEST_FILES:.raw=.raw.h)
 
 BITCOIN_TEST_SUITE = \
-  test/test_bitcoin_main.cpp \
-  test/test_bitcoin.h \
-  test/test_bitcoin.cpp
+  test/test_divi_main.cpp \
+  test/test_divi.h \
+  test/test_divi.cpp
 
 # test_bitcoin binary #
 BITCOIN_TESTS =\

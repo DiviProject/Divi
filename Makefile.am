@@ -201,7 +201,7 @@ EXTRA_DIST = $(DIST_SHARE) test/functional/test_runner.py test/functional $(DIST
 
 EXTRA_DIST += \
     test/util/divi-util-test.py \
-    test/util/data/bitcoin-util-test.json \
+    test/util/data/divi-util-test.json \
     test/util/data/blanktxv1.hex \
     test/util/data/blanktxv1.json \
     test/util/data/blanktxv2.hex \

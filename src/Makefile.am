@@ -178,7 +178,6 @@ BITCOIN_CORE_H = \
   rpc/rawtransaction.h \
   rpc/register.h \
   rpc/util.h \
-  rpc/masternode.h \
   scheduler.h \
   script/descriptor.h \
   script/ismine.h \

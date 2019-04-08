@@ -178,7 +178,6 @@ BITCOIN_CORE_H = \
   rpc/rawtransaction.h \
   rpc/register.h \
   rpc/util.h \
-  rpc/masternode.h \
   scheduler.h \
   script/descriptor.h \
   script/ismine.h \
@@ -654,9 +653,9 @@ if EMBEDDED_LEVELDB
 include Makefile.leveldb.include
 endif
 
-if ENABLE_TESTS
-include Makefile.test.include
-endif
+#if ENABLE_TESTS
+#include Makefile.test.include
+#endif
 
 if ENABLE_BENCH
 include Makefile.bench.include

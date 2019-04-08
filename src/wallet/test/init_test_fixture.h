@@ -6,7 +6,7 @@
 #define BITCOIN_WALLET_TEST_INIT_TEST_FIXTURE_H
 
 #include <interfaces/chain.h>
-#include <test/test_bitcoin.h>
+#include <test/test_divi.h>
 
 
 struct InitWalletDirTestingSetup: public BasicTestingSetup {

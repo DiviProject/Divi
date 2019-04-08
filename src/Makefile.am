@@ -150,6 +150,7 @@ BITCOIN_CORE_H = \
   masternodes/masternodeman.h \
   masternodes/masternodeconfig.h \
   memusage.h \
+  messagesigner.h \
   merkleblock.h \
   miner.h \
   net.h \
@@ -167,6 +168,7 @@ BITCOIN_CORE_H = \
   policy/rbf.h \
   pow.h \
   protocol.h \
+  prevector.h \
   random.h \
   reverse_iterator.h \
   reverselock.h \
@@ -262,7 +264,6 @@ libbitcoin_server_a_SOURCES = \
   consensus/kernel.cpp \
   dbwrapper.cpp \
   merkleblock.cpp \
-  messagesigner.cpp \
   miner.cpp \
   net.cpp \
   net_processing.cpp \
@@ -275,6 +276,7 @@ libbitcoin_server_a_SOURCES = \
   masternodes/masternode-sync.cpp \
   masternodes/masternodeman.cpp \
   masternodes/masternodeconfig.cpp \
+  messagesigner.cpp \
   outputtype.cpp \
   policy/fees.cpp \
   policy/policy.cpp \

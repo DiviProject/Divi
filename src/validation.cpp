@@ -3806,11 +3806,13 @@ bool ProcessNewBlockHeaders(const std::vector<CBlockHeader>& headers, CValidatio
                 // Extra checks to prevent "fill up memory by spamming with bogus blocks"
                 const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
                 int64_t deltaTime = header.GetBlockTime() - pcheckpoint->nTime;
+#if 0
                 if (deltaTime < 0)
                 {
                     return state.DoS(1, false, REJECT_INVALID, "older-than-checkpoint", false,
                                      "ProcessNewBlockHeaders(): Block with a timestamp before last checkpoint");
                 }
+#endif
             }
 
             if (!g_chainstate.AcceptBlockHeader(header, state, chainparams, &pindex)) {

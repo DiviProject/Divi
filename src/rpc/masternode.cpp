@@ -458,9 +458,9 @@ UniValue mnsync(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 1)
         throw runtime_error(
-            "mnsync [status|reset]\n"
-            "Returns the sync status, updates to the next step or resets it entirely.\n"
-        );
+                "mnsync [status|reset]\n"
+                "Returns the sync status, updates to the next step or resets it entirely.\n"
+                );
 
     std::string strMode = request.params[0].get_str();
 
@@ -492,8 +492,15 @@ UniValue mnsync(const JSONRPCRequest& request)
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
   //  --------------------- ------------------------  -----------------------  ----------
-    { "masternode",            "listmasternodes",          &listmasternodes,          {"filter"} },
-    { "masternode",            "mnsync",                   &mnsync,                   {"command"} },
+  { "masternode",            "listmasternodes",          &listmasternodes,          {"filter"} },
+  { "masternode",            "mnsync",                   &mnsync,                   {"command"} },
+  { "masternode",            "getmasternodestatus",      &getmasternodestatus,      {}},
+  { "masternode",            "startmasternode",          &startmasternode,          {"alias"}},
+  { "masternode",            "getmasternodecount",       &getmasternodecount,       {}},
+  { "masternode",            "masternodeconnect",        &masternodeconnect,        {"address"}},
+  { "masternode",            "listmasternodes",          &listmasternodes,          {"filter"}},
+  { "masternode",            "fundmasternode",           &fundmasternode,           {"alias", "amount", "txid", "type"}},
+  { "masternode",            "allocatefunds",            &allocatefunds,            {"purpose", "identifier", "amount"}},
 };
 // clang-format on
 

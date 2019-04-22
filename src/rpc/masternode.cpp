@@ -114,7 +114,7 @@ static UniValue allocatefunds(const JSONRPCRequest& request)
 
     auto locked_chain = pwallet->chain().lock();
     CCoinControl coinControl;
-    CTransactionRef txRef = SendMoney(*locked_chain, pwallet, acctAddr, CMasternode::GetTierCollateralAmount(nMasternodeTier), true, coinControl, {});
+    CTransactionRef txRef = SendMoney(*locked_chain, pwallet, acctAddr, CMasternode::GetTierCollateralAmount(nMasternodeTier), false, coinControl, {});
 
     UniValue obj(UniValue::VOBJ);
     obj.pushKV("txhash", txRef->GetHash().GetHex());

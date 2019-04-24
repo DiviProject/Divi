@@ -659,7 +659,7 @@ std::string ArgsManager::GetHelpMessage() const
                 usage += HelpMessageGroup("Register Commands:");
                 break;
             case OptionsCategory::MASTERNODE:
-                usage =+ HelpMessageGroup("Masternode:");
+                usage += HelpMessageGroup("Masternode:");
                 break;
             default:
                 break;

@@ -4679,9 +4679,8 @@ bool CWallet::SetHDChain(WalletBatch *batch, const CHDChain& chain, bool memonly
 
 bool CWallet::SetCryptedHDChain(WalletBatch *batch, const CHDChain& chain, bool memonly)
 {
-    assert(!memonly && batch);
+    assert((!memonly && batch) || (memonly && !batch));
     LOCK(cs_wallet);
-
 
     if (!CCryptoKeyStore::SetCryptedHDChain(chain))
         return false;

@@ -455,7 +455,12 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 strType != "minversion" && strType != "acentry") {
             wss.m_unknown_records++;
         }
-    } catch (...)
+    } catch (std::exception &ex)
+    {
+        LogPrintf("Error in LoadWallet: %s\n", ex.what());
+        return false;
+    }
+    catch(...)
     {
         return false;
     }
@@ -780,7 +785,7 @@ bool WalletBatch::WriteHDChain(const CHDChain& chain)
 
 bool WalletBatch::WriteCryptedHDChain(const CHDChain &chain)
 {
-    if(!WriteIC("chdchain", chain))
+    if(!WriteIC(std::string("chdchain"), chain))
     {
         return false;
     }

@@ -54,8 +54,11 @@
 #include <stdio.h>
 #include <netfulfilledman.h>
 #include <sporkdb.h>
+#include <messagesigner.h>
 #include <masternodes/masternode-payments.h>
 #include <masternodes/masternodeman.h>
+#include <masternodes/activemasternode.h>
+#include <masternodes/masternodeconfig.h>
 #include <wallet/wallet.h>
 
 #ifndef WIN32
@@ -204,6 +207,65 @@ static bool LoadExtensionsDataCaches()
     }
 
     return true;
+}
+
+static bool LoadActiveMasternode()
+{
+    fMasterNode = gArgs.GetBoolArg("-masternode", false);
+
+    if ((fMasterNode || masternodeConfig.getCount() > -1) && !g_txindex) {
+        return InitError("Enabling Masternode support requires turning on transaction indexing."
+                         "Please add txindex=1 to your configuration and start with -reindex");
+    }
+
+    if (fMasterNode) {
+        LogPrintf("IS MASTER NODE\n");
+        strMasterNodeAddr = gArgs.GetArg("-masternodeaddr", "");
+
+        LogPrintf(" addr %s\n", strMasterNodeAddr.c_str());
+
+        if (!strMasterNodeAddr.empty()) {
+            CService addrTest;
+            Lookup(strMasterNodeAddr.c_str(), addrTest, 51472, false);
+            if (!addrTest.IsValid()) {
+                return InitError("Invalid -masternodeaddr address: " + strMasterNodeAddr);
+            }
+        }
+
+        strMasterNodePrivKey = gArgs.GetArg("-masternodeprivkey", "");
+        if (!strMasterNodePrivKey.empty()) {
+            CKey key;
+            CPubKey pubkey;
+
+            if (!CMessageSigner::GetKeysFromSecret(strMasterNodePrivKey,key, pubkey)) {
+                return InitError(_("Invalid masternodeprivkey. Please see documenation."));
+            }
+
+            activeMasternode.pubKeyMasternode = pubkey;
+
+        } else {
+            return InitError(_("You must specify a masternodeprivkey in the configuration. Please see documentation for help."));
+        }
+    }
+
+    return true;
+}
+
+static void LockMasternodeOutputs()
+{
+    if (gArgs.GetBoolArg("-mnconflock", true))
+    {
+        auto &pwalletMain = GetWallets().front();
+        LOCK(pwalletMain->cs_wallet);
+        LogPrintf("Locking Masternodes:\n");
+        uint256 mnTxHash;
+        for(CMasternodeConfig::CMasternodeEntry mne : masternodeConfig.getEntries()) {
+            LogPrintf("  %s %s\n", mne.getTxHash(), mne.getOutputIndex());
+            mnTxHash.SetHex(mne.getTxHash());
+            COutPoint outpoint = COutPoint(mnTxHash, boost::lexical_cast<unsigned int>(mne.getOutputIndex()));
+            pwalletMain->LockCoin(outpoint);
+        }
+    }
 }
 
 static void StoreExtensionsDataCaches()
@@ -574,6 +636,11 @@ void SetupServerArgs()
     gArgs.AddArg("-server", "Accept command line and JSON-RPC commands", false, OptionsCategory::RPC);
     gArgs.AddArg("-printstakemodifier", "Prints kernel stake modifiers", false, OptionsCategory::DEBUG_TEST);
     gArgs.AddArg("-staking", "Enabled or disables staking, (default: 1)", false, OptionsCategory::BLOCK_CREATION);
+    gArgs.AddArg("-masternode=<n>", strprintf(_("Enable the client to act as a masternode (0-1, default: %u)"), 0), false, OptionsCategory::MASTERNODE);
+    gArgs.AddArg("-mnconf=<file>", strprintf(_("Specify masternode configuration file (default: %s)"), "masternode.conf"), false, OptionsCategory::MASTERNODE);
+    gArgs.AddArg("-mnconflock=<n>", strprintf(_("Lock masternodes from masternode configuration file (default: %u)"), 1), false, OptionsCategory::MASTERNODE);
+    gArgs.AddArg("-masternodeprivkey=<n>", _("Set the masternode private key"), false, OptionsCategory::MASTERNODE);
+    gArgs.AddArg("-masternodeaddr=<n>", strprintf(_("Set external address:port to get to this masternode (example: %s)"), "128.127.106.235:51472"), false, OptionsCategory::MASTERNODE);
 
 
 #if HAVE_DECL_DAEMON
@@ -1756,6 +1823,7 @@ bool AppInitMain(InitInterfaces& interfaces)
     // ********************************************************* Step 11b: Load cache data
 
     LoadExtensionsDataCaches();
+    LoadActiveMasternode();
 
     // ********************************************************* Step 11c: start thread for divi extensions
 
@@ -1857,6 +1925,8 @@ bool AppInitMain(InitInterfaces& interfaces)
         {
             threadGroup.create_thread(std::bind(&ThreadStakeMinter, boost::ref(chainparams), boost::ref(connman), GetWallets().front().get()));
         }
+
+        LockMasternodeOutputs();
     }
 
     return true;

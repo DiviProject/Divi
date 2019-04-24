@@ -255,8 +255,7 @@ static void LockMasternodeOutputs()
 {
     if (gArgs.GetBoolArg("-mnconflock", true))
     {
-        auto &pwalletMain = GetWallets().front();
-        LOCK(pwalletMain->cs_wallet);
+        auto pwalletMain = GetWallets().front().get();
         LogPrintf("Locking Masternodes:\n");
         uint256 mnTxHash;
         for(CMasternodeConfig::CMasternodeEntry mne : masternodeConfig.getEntries()) {

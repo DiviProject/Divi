@@ -57,6 +57,7 @@ namespace BCLog {
         MASTERNODE  = (1 << 22),
         MNPAYMENTS  = (1 << 23),
         KERNEL      = (1 << 24),
+        MINER       = (1 << 25),
         ALL         = ~(uint32_t)0,
     };
 

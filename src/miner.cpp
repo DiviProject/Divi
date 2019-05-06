@@ -611,7 +611,7 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
             auto pblocktemplate = assemlber.CreateNewBlock(pwallet, coinbaseScript->reserveScript, fProofOfStake, true);
             if (!pblocktemplate.get())
             {
-                LogPrintf("DIVIMiner -- Failed to find a coinstake\n");
+                LogPrint(BCLog::MINER, "DIVIMiner -- Failed to find a coinstake\n");
                 MilliSleep(5000);
                 continue;
             }

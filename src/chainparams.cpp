@@ -228,9 +228,10 @@ public:
         pchMessageStart[3] = 0x78;
         nDefaultPort = 51474;
 
-        genesis = CreateGenesisBlock(1553526922, 380219, 0x1e0ffff0, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1557171200, 92676, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256S("0x00000b83b5f5d85f2600fbec711323290e72244f6c983230b18388b201419dfe"));
+
+        assert(consensus.hashGenesisBlock == uint256S("0x000008e145adf0330e6de3a844b76f5163e0b2011a5ef270c7c7b3d4410c7b31"));
         assert(genesis.hashMerkleRoot == uint256S("0xec803cc6b5e68728ec0117cb1154b6d2893152f89d61319647db106908888bd6"));
 
         vFixedSeeds.clear();

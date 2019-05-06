@@ -81,6 +81,11 @@ static int64_t GetLotteryReward(const CBlockRewards &rewards, const Consensus::P
     return consensus.nLotteryBlockCycle * rewards.nLotteryReward;
 }
 
+static int64_t GetSegwitForkPayment(const Consensus::Params &consensus)
+{
+    return consensus.nSegwitHardForkPayment * COIN;
+}
+
 static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake, const Consensus::Params &consensus)
 {
     CTransactionRef coinbaseTx;
@@ -115,6 +120,11 @@ static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rew
         auto scriptLotteryWinner = GetScriptForLotteryPayment(winner, consensus);
         tx.vout.emplace_back(reward, scriptLotteryWinner); // pay winners
     }
+}
+
+static void FillSegwitForkPayment(CMutableTransaction &tx, const Consensus::Params &consensus)
+{
+    tx.vout.emplace_back(GetSegwitForkPayment(consensus), GetScriptForDestination(TreasuryPaymentAddress()));
 }
 
 static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std::vector<WinnerCoinStake> vRequiredWinnersCoinstake, const Consensus::Params &consensus)
@@ -172,6 +182,18 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight, const Co
     return true;
 }
 
+static bool IsValidSegwitForkPayment(const CTransaction &tx, const Consensus::Params &consensus)
+{
+    CScript scriptPayment = GetScriptForDestination(TreasuryPaymentAddress());
+    CTxOut outPayment(GetSegwitForkPayment(consensus), scriptPayment);
+    return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
+}
+
+static bool IsValidSegwitForkPaymentBlockHeight(int nHeight, const Consensus::Params &consensus)
+{
+    return nHeight == consensus.nSegwitHeight;
+}
+
 bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted, const Consensus::Params &consensus)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
@@ -202,6 +224,10 @@ bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue,
         nExpectedMintCombined += GetLotteryReward(nExpectedValue, consensus);
     }
 
+    if(IsValidSegwitForkPaymentBlockHeight(nHeight, consensus)) {
+        nExpectedMintCombined += GetSegwitForkPayment(consensus);
+    }
+
     if (nMinted > nExpectedMintCombined) {
         return false;
     }
@@ -211,9 +237,8 @@ bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue,
 
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex, const Consensus::Params &consensus)
 {
-    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
-        LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
-        return true;
+    if(IsValidSegwitForkPaymentBlockHeight(nBlockHeight, consensus) && !IsValidSegwitForkPayment(txNew, consensus)) {
+        return false;
     }
 
     if(IsValidTreasuryBlockHeight(nBlockHeight, consensus)) {
@@ -224,6 +249,10 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
         return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes, consensus);
     }
 
+    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
+        LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
+        return true;
+    }
     //check for masternode payee
     if (masternodePayments.IsTransactionValid(txNew, nBlockHeight, consensus))
         return true;
@@ -250,6 +279,10 @@ void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, b
     }
     else {
         masternodePayments.FillBlockPayee(txNew, payments, fProofOfStake, consensus);
+    }
+
+    if(IsValidSegwitForkPaymentBlockHeight(pindexPrev->nHeight + 1, consensus)) {
+        FillSegwitForkPayment(txNew, consensus);
     }
 }
 

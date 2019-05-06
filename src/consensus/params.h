@@ -88,6 +88,7 @@ struct Params {
     int nTreasuryPaymentsStartBlock;
     int nTreasuryPaymentsCycle;
     int nFulfilledRequestExpireTime;
+    int nSegwitHardForkPayment;
     int64_t nStartMasternodePayments;
     std::string strSporkKey;
 };

@@ -485,6 +485,16 @@ UniValue mnsync(const JSONRPCRequest& request)
         masternodeSync.Reset();
         return "success";
     }
+
+    if(strMode == "next")
+    {
+        if(masternodeSync.RequestedMasternodeAssets != MASTERNODE_SYNC_FINISHED)
+        {
+            masternodeSync.GetNextAsset();
+        }
+        return "success";
+    }
+
     return "failure";
 }
 

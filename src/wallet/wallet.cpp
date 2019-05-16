@@ -3319,7 +3319,10 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
     }
 
     if (validStakeCoins.empty())
-        return error("CreateCoinStake() : No Coins to stake");
+    {
+        LogPrint(BCLog::MINER, "CreateCoinStake() : No Coins to stake");
+        return false;
+    }
 
 
     //prevent staking a time that won't be accepted

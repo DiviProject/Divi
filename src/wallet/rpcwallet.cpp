@@ -4172,6 +4172,7 @@ UniValue importprunedfunds(const JSONRPCRequest& request);
 UniValue removeprunedfunds(const JSONRPCRequest& request);
 UniValue importmulti(const JSONRPCRequest& request);
 UniValue dumphdinfo(const JSONRPCRequest& request);
+UniValue getstakingstatus(const JSONRPCRequest& request);
 
 static UniValue recoverwallet(const JSONRPCRequest& request)
 {
@@ -4309,6 +4310,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "walletprocesspsbt",                &walletprocesspsbt,             {"psbt","sign","sighashtype","bip32derivs"} },
     { "wallet",             "walletverify",                     &walletverify,                  {} },
     { "wallet",             "recoverwallet",                    &recoverwallet,                 {} },
+    { "wallet",             "getstakingstatus",                 &getstakingstatus,              {} },
 };
 // clang-format on
 

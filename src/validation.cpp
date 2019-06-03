@@ -319,7 +319,7 @@ enum class FlushStateMode {
     ALWAYS
 };
 
-static GetMaxFutureBlockTime(const CBlockIndex *pindexPrev, const Consensus::Params &params)
+static int64_t GetMaxFutureBlockTime(const CBlockIndex *pindexPrev, const Consensus::Params &params)
 {
     return pindexPrev->nHeight > params.nSegwitHeight ? MAX_FUTURE_BLOCK_TIME_SEGWIT :
                                                         MAX_FUTURE_BLOCK_TIME;

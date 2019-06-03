@@ -319,6 +319,12 @@ enum class FlushStateMode {
     ALWAYS
 };
 
+static GetMaxFutureBlockTime(const CBlockIndex *pindexPrev, const Consensus::Params &params)
+{
+    return pindexPrev->nHeight > params.nSegwitHeight ? MAX_FUTURE_BLOCK_TIME_SEGWIT :
+                                                        MAX_FUTURE_BLOCK_TIME;
+}
+
 // See definition for documentation
 static bool FlushStateToDisk(const CChainParams& chainParams, CValidationState &state, FlushStateMode mode, int nManualPruneHeight=0);
 static void FindFilesToPruneManual(std::set<int>& setFilesToPrune, int nManualPruneHeight);
@@ -3604,7 +3610,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationSta
         return state.Invalid(false, REJECT_INVALID, "time-too-old", "block's timestamp is too early");
 
     // Check timestamp
-    if (block.GetBlockTime() > nAdjustedTime + MAX_FUTURE_BLOCK_TIME)
+    if (block.GetBlockTime() > nAdjustedTime + GetMaxFutureBlockTime(pindexPrev))
         return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:

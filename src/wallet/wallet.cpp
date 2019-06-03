@@ -3317,7 +3317,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits,
         allStakeCoins.clear();
         validStakeCoins.clear();
         auto locked_chain = chain().lock();
-        bool fCheckForMinStakeAmount = ShouldCheckForMinStakeAmount(chainTip->nHeight);
+        bool fCheckForMinStakeAmount = ShouldCheckForMinStakeAmount(chainTip->nHeight, Params().GetConsensus());
         if (!SelectStakeCoins(*locked_chain, allStakeCoins, validStakeCoins, nBalance /*- nReserveBalance*/, fGenerateSegwit, fCheckForMinStakeAmount)) {
             return error("Failed to select coins for staking");
         }

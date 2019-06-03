@@ -87,7 +87,7 @@ bool EnsureWalletIsAvailable(CWallet * const pwallet, bool avoidException)
 
 void EnsureWalletIsUnlocked(CWallet * const pwallet)
 {
-    if (pwallet->IsLocked()) {
+    if (pwallet->IsLocked() || pwallet->fWalletUnlockStakingOnly) {
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
     }
 }
@@ -1930,7 +1930,7 @@ static UniValue walletpassphrase(const JSONRPCRequest& request)
         return NullUniValue;
     }
 
-    if (request.fHelp || request.params.size() != 2) {
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 3) {
         throw std::runtime_error(
             RPCHelpMan{"walletpassphrase",
                 "\nStores the wallet decryption key in memory for 'timeout' seconds.\n"
@@ -1938,6 +1938,7 @@ static UniValue walletpassphrase(const JSONRPCRequest& request)
                 {
                     {"passphrase", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The wallet passphrase"},
                     {"timeout", RPCArg::Type::NUM, /* opt */ false, /* default_val */ "", "The time to keep the decryption key in seconds; capped at 100000000 (~3 years)."},
+                    {"staking_only", RPCArg::Type::BOOL, /* opt */ false, /* default_val */ "", "Staking only unlock mode."},
                 }}
                 .ToString() +
             "\nNote:\n"
@@ -1983,7 +1984,14 @@ static UniValue walletpassphrase(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "passphrase can not be empty");
     }
 
-    if (!pwallet->Unlock(strWalletPass)) {
+    bool stakingOnly = false;
+    if (request.params.size() == 3)
+        stakingOnly = request.params[2].get_bool();
+
+    if (!pwallet->IsLocked() && pwallet->fWalletUnlockStakingOnly && stakingOnly)
+        throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked.");
+
+    if (!pwallet->Unlock(strWalletPass, stakingOnly)) {
         throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
     }
 
@@ -1999,6 +2007,7 @@ static UniValue walletpassphrase(const JSONRPCRequest& request)
         if (auto shared_wallet = weak_wallet.lock()) {
             LOCK(shared_wallet->cs_wallet);
             shared_wallet->Lock();
+            shared_wallet->fWalletUnlockStakingOnly = false;
             shared_wallet->nRelockTime = 0;
         }
     }, nSleepTime);
@@ -2096,6 +2105,7 @@ static UniValue walletlock(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but walletlock was called.");
     }
 
+    pwallet->fWalletUnlockStakingOnly = false;
     pwallet->Lock();
     pwallet->nRelockTime = 0;
 

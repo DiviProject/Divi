@@ -782,6 +782,8 @@ public:
 
     std::map<uint256, CWalletTx> mapWallet GUARDED_BY(cs_wallet);
 
+    bool fWalletUnlockStakingOnly GUARDED_BY(cs_wallet) = false;
+
     typedef std::multimap<int64_t, CWalletTx*> TxItems;
     TxItems wtxOrdered;
 
@@ -902,7 +904,7 @@ public:
     //! Holds a timestamp at which point the wallet is scheduled (externally) to be relocked. Caller must arrange for actual relocking to occur via Lock().
     int64_t nRelockTime = 0;
 
-    bool Unlock(const SecureString& strWalletPassphrase);
+    bool Unlock(const SecureString& strWalletPassphrase, bool stakingOnly = false);
     bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
     bool EncryptWallet(const SecureString& strWalletPassphrase);
 

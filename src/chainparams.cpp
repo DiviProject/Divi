@@ -90,7 +90,7 @@ public:
         consensus.nLotteryBlockCycle = 60 * 24 * 7; // one week
         consensus.nTreasuryPaymentsStartBlock = 101;
         consensus.nTreasuryPaymentsCycle = 60 * 24 * 7 + 1;
-        consensus.nSegwitHardForkPayment = 20552003;
+        consensus.nSegwitHardForkPayment = 23552003;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008

@@ -636,11 +636,15 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
                 LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", pblock->GetHash().ToString().c_str());
             }
 
+
             // check if block is valid
             CValidationState state;
             if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
                 throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
             }
+
+            MilliSleep(10000);
+            continue;
 
             // process proof of stake block
             if(fProofOfStake) {

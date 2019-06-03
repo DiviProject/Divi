@@ -590,10 +590,15 @@ bool CWallet::LoadWatchOnly(const CScript &dest)
     return CCryptoKeyStore::AddWatchOnly(dest);
 }
 
-bool CWallet::Unlock(const SecureString& strWalletPassphrase)
+bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool stakingOnly)
 {
     CCrypter crypter;
     CKeyingMaterial _vMasterKey;
+
+    if (!IsLocked()) {
+        fWalletUnlockStakingOnly = stakingOnly;
+        return true;
+    }
 
     {
         LOCK(cs_wallet);
@@ -603,8 +608,10 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase)
                 return false;
             if (!crypter.Decrypt(pMasterKey.second.vchCryptedKey, _vMasterKey))
                 continue; // try another master key
-            if (CCryptoKeyStore::Unlock(_vMasterKey))
+            if (CCryptoKeyStore::Unlock(_vMasterKey)) {
+                fWalletUnlockStakingOnly = stakingOnly;
                 return true;
+            }
         }
     }
     return false;
@@ -3642,7 +3649,7 @@ bool CWallet::TopUpKeyPool(unsigned int kpSize)
     {
         LOCK(cs_wallet);
 
-        if (IsLocked())
+        if (IsLocked(true))
             return false;
 
         // Top up key pool
@@ -3703,7 +3710,7 @@ bool CWallet::ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool, bool fRe
     {
         LOCK(cs_wallet);
 
-        if (!IsLocked())
+        if (!IsLocked(true))
             TopUpKeyPool();
 
         bool fReturningInternal = IsHDEnabled() && fRequestedInternal;

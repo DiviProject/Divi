@@ -127,6 +127,9 @@ private:
     //! keeps track of whether Unlock has run a thorough check before
     bool fDecryptionThoroughlyChecked;
 
+    //! if fOnlyMixingAllowed is true, only mixing should be allowed in unlocked wallet
+    bool fOnlyMixingAllowed = false;
+
 protected:
     using CryptedKeyMap = std::map<CKeyID, std::pair<CPubKey, std::vector<unsigned char>>>;
 
@@ -149,8 +152,8 @@ public:
     }
 
     bool IsCrypted() const { return fUseCrypto; }
-    bool IsLocked() const;
-    bool Lock();
+    bool IsLocked(bool fForMixing = false) const;
+    bool Lock(bool fAllowMixing = false);
 
     virtual bool AddCryptedKey(const CPubKey &vchPubKey, const std::vector<unsigned char> &vchCryptedSecret);
     bool AddKeyPubKey(const CKey& key, const CPubKey &pubkey) override;

@@ -595,6 +595,7 @@ bool ComputeAndSetStakeModifier(CBlockIndex *pindexNew, const Consensus::Params 
 
 bool CheckStakeKernelHash(CBlockIndex *pindexPrev, unsigned int nBits, const CBlock &blockFrom, const CTransaction &txPrev, const COutPoint prevout, unsigned int nBlockHeight, unsigned int &nTimeTx, unsigned int nHashDrift, bool fCheck, uint256 &hashProofOfStake, bool fPrintProofOfStake)
 {
+    return true;
     return IsWitnessEnabled(pindexPrev->nHeight + 1, Params().GetConsensus()) ?
                 CheckStakeKernelHashV3(pindexPrev, nBits, blockFrom.nTime, txPrev.vout[prevout.n].nValue, prevout, nTimeTx, hashProofOfStake, fPrintProofOfStake) :
                 CheckStakeKernelHashV2(nBlockHeight, nBits, blockFrom, txPrev, prevout, nTimeTx, nHashDrift, fCheck, hashProofOfStake, fPrintProofOfStake);

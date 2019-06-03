@@ -488,7 +488,7 @@ bool CheckProofOfStake(const CBlock &block, uint256& hashProofOfStake)
         return false;
     });
 
-    if (!hasMinStakeAmount && ShouldCheckForMinStakeAmount(chainActive.Tip()->nHeight + 1))
+    if (!hasMinStakeAmount && ShouldCheckForMinStakeAmount(chainActive.Tip()->nHeight + 1, Params().GetConsensus()))
         return error("CheckProofOfStake() : Amount of stake less than the required minimum of %d.", MIN_STAKING_AMOUNT);
 
     if(nValidInputs != tx->vin.size()) {

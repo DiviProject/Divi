@@ -359,6 +359,90 @@ Value getblockheader(const Array& params, bool fHelp)
     return blockHeaderToJSON(block, pblockindex);
 }
 
+Value getstakeamountrange(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getstakeamountrange\n"
+            "\nReturns statistics about the staking win amounts.\n"
+            "Note this call may take some time.\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"number_of_blocks\":n,     (numeric) The current block height (index)\n"
+            "  \"number_of_stake_reward_blocks_found\": n,   (numeric) The number of stake rewards found\n"
+            "  \"block_height_of_smallest_stake\": n,      (numeric) The block height having the smallest PoS amount\n"
+            "  \"smallest_staked_amount\": n,            (numeric) Smallest amount staked in PoS\n"
+            "  \"block_height_of_largest_stake\": n,  (numeric) The block height having the largest PoS amount\n"
+            "  \"largest_staked_amount\": n,   (numeric) Largest amount staked in PoS\n"
+            "  \"average_staked_amount\": n,   (numeric) Average amoutn staked in PoS\n"
+            "}\n");
+
+    Object ret;
+    CAmount minimumStakedAmount = 20000000*COIN;
+    CAmount maximumStakedAmount = 0*COIN;
+    CAmount totalStakedAmount = 0;
+    int64_t numberOfStakes = 0;
+    int64_t blockHeightOfLargestStake = 0;
+    int64_t blockHeightOfSmallestStake = 0;
+    int64_t totalNumberOfBlocks = 0;
+
+    FlushStateToDisk();
+    BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
+    if(it != mapBlockIndex.end())
+    {
+        CBlockIndex* pBlockIndex = it->second;
+        if(pBlockIndex->IsValid())
+        {
+            totalNumberOfBlocks = static_cast<int64_t>(pBlockIndex->nHeight);
+        }
+        // Verify that it's not null
+        while(pBlockIndex->IsValid() && pBlockIndex->IsProofOfStake())
+        {
+            CBlock currentBlock;
+            if(!ReadBlockFromDisk(currentBlock, pBlockIndex))
+            {
+                //Could not read from Disk
+                break;
+            }
+            else
+            {
+                BOOST_FOREACH (const CTransaction& tx, currentBlock.vtx) {
+                    if(tx.IsCoinStake())
+                    {
+                        CAmount stakedAmount = tx.GetValueOut()-996u*COIN;
+                        if(stakedAmount > maximumStakedAmount)
+                        {
+                            blockHeightOfLargestStake = (int64_t)pBlockIndex->nHeight;
+                        }
+                        if(stakedAmount < minimumStakedAmount)
+                        {
+                            blockHeightOfSmallestStake = (int64_t)pBlockIndex->nHeight;
+                        }
+                        maximumStakedAmount = std::max(maximumStakedAmount, stakedAmount);
+                        minimumStakedAmount = std::min(minimumStakedAmount, stakedAmount);
+                        totalStakedAmount += stakedAmount;
+                        ++numberOfStakes;
+                    }
+                }
+            }
+            // Continue iterating
+            pBlockIndex = pBlockIndex->pprev;
+        }
+    }
+
+    {
+        ret.push_back(Pair("number_of_blocks", totalNumberOfBlocks));
+        ret.push_back(Pair("number_of_stake_reward_blocks_found",numberOfStakes));
+        ret.push_back(Pair("block_height_of_smallest_stake", blockHeightOfSmallestStake));
+        ret.push_back(Pair("smallest_staked_amount", ValueFromAmount(minimumStakedAmount) ));
+        ret.push_back(Pair("block_height_of_largest_stake", blockHeightOfLargestStake));
+        ret.push_back(Pair("largest_staked_amount", ValueFromAmount(maximumStakedAmount) ));
+        ret.push_back(Pair("average_staked_amount",
+            Value(totalStakedAmount/static_cast<double>(numberOfStakes*COIN))));
+    }
+    return ret;
+}
+
 Value gettxoutsetinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)

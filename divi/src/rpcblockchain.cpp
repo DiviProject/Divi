@@ -385,6 +385,8 @@ Value getstakeamountrange(const Array& params, bool fHelp)
     int64_t blockHeightOfLargestStake = 0;
     int64_t blockHeightOfSmallestStake = 0;
     int64_t totalNumberOfBlocks = 0;
+    int64_t totalNumberOfTransactions = 0;
+    int64_t utxoCount = 0;
 
     FlushStateToDisk();
     BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
@@ -422,8 +424,12 @@ Value getstakeamountrange(const Array& params, bool fHelp)
                         minimumStakedAmount = std::min(minimumStakedAmount, stakedAmount);
                         totalStakedAmount += stakedAmount;
                         ++numberOfStakes;
+                        --utxoCount;// Has a single unspeandable txout
                     }
+                    utxoCount += static_cast<int64_t>(tx.vout.size() - tx.vin.size());
+
                 }
+                totalNumberOfTransactions += static_cast<int64_t>(currentBlock.vtx.size());
             }
             // Continue iterating
             pBlockIndex = pBlockIndex->pprev;
@@ -439,6 +445,8 @@ Value getstakeamountrange(const Array& params, bool fHelp)
         ret.push_back(Pair("largest_staked_amount", ValueFromAmount(maximumStakedAmount) ));
         ret.push_back(Pair("average_staked_amount",
             Value(totalStakedAmount/static_cast<double>(numberOfStakes*COIN))));
+        ret.push_back(Pair("total_transactions", totalNumberOfTransactions));
+        ret.push_back(Pair("total_utxos",utxoCount));
     }
     return ret;
 }
@@ -475,6 +483,8 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
         ret.push_back(Pair("bytes_serialized", (int64_t)stats.nSerializedSize));
         ret.push_back(Pair("hash_serialized", stats.hashSerialized.GetHex()));
         ret.push_back(Pair("total_amount", ValueFromAmount(stats.nTotalAmount)));
+        ret.push_back(Pair("utxo_distribution",
+          std::vector<Value>(stats.utxoAmountBins.begin(),stats.utxoAmountBins.end())));
     }
     return ret;
 }

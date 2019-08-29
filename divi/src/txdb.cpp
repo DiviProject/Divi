@@ -133,6 +133,8 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
     stats.hashBlock = GetBestBlock();
     ss << stats.hashBlock;
     CAmount nTotalAmount = 0;
+    stats.utxoAmountBins.resize(20);
+
     while (pcursor->Valid()) {
         boost::this_thread::interruption_point();
         try {
@@ -159,6 +161,13 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
                         ss << VARINT(i + 1);
                         ss << out;
                         nTotalAmount += out.nValue;
+                        if(out.nValue>0)
+                        {
+                            unsigned amountBin =
+                              static_cast<int64_t>(std::floor(std::log10(static_cast<double>(out.nValue)/static_cast<double>(COIN)))+8.0);
+                            ++stats.utxoAmountBins[amountBin];
+                        }
+
                     }
                 }
                 stats.nSerializedSize += 32 + slValue.size();
@@ -169,6 +178,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
             return error("%s : Deserialize or I/O error - %s", __func__, e.what());
         }
     }
+
     stats.nHeight = mapBlockIndex.find(GetBestBlock())->second->nHeight;
     stats.hashSerialized = ss.GetHash();
     stats.nTotalAmount = nTotalAmount;

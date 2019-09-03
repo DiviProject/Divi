@@ -424,7 +424,7 @@ Value getstakeamountrange(const Array& params, bool fHelp)
                         minimumStakedAmount = std::min(minimumStakedAmount, stakedAmount);
                         totalStakedAmount += stakedAmount;
                         ++numberOfStakes;
-                        --utxoCount;// Has a single unspeandable txout
+                        --utxoCount;// Has (at least) a single unspeandable txout
                     }
                     utxoCount += static_cast<int64_t>(tx.vout.size() - tx.vin.size());
 
@@ -485,6 +485,8 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
         ret.push_back(Pair("total_amount", ValueFromAmount(stats.nTotalAmount)));
         ret.push_back(Pair("utxo_distribution",
           std::vector<Value>(stats.utxoAmountBins.begin(),stats.utxoAmountBins.end())));
+        ret.push_back(Pair("total_utxo_bytes_0_value",(int64_t)stats.totalUtxoBytesUsefull));
+        ret.push_back(Pair("total_utxo_bytes_nonzero_value",(int64_t)stats.totalUtxoBytesNotUsefull));
     }
     return ret;
 }

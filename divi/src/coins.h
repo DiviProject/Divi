@@ -327,6 +327,8 @@ struct CCoinsStats {
     uint256 hashSerialized;
     CAmount nTotalAmount;
     std::vector<int64_t> utxoAmountBins;
+    uint64_t totalUtxoBytesUsefull=0;
+    uint64_t totalUtxoBytesNotUsefull=0;
 
     CCoinsStats() : nHeight(0), hashBlock(0), nTransactions(0), nTransactionOutputs(0), nSerializedSize(0), hashSerialized(0), nTotalAmount(0) {}
 };

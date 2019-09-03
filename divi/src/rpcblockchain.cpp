@@ -387,6 +387,11 @@ Value getstakeamountrange(const Array& params, bool fHelp)
     int64_t totalNumberOfBlocks = 0;
     int64_t totalNumberOfTransactions = 0;
     int64_t utxoCount = 0;
+    int64_t totalNumberOfTransactions_24h = 0;
+    int64_t totalBlockSize_24h = 0;
+    int64_t numberOfBlocks = 0;
+    uint32_t offset24h = 24u*60u*60u;
+    uint32_t currentTime = static_cast<uint32_t>(std::time(nullptr));
 
     FlushStateToDisk();
     BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
@@ -408,6 +413,12 @@ Value getstakeamountrange(const Array& params, bool fHelp)
             }
             else
             {
+                if(currentBlock.nTime > currentTime - offset24h)
+                {
+                    totalNumberOfTransactions_24h += static_cast<int64_t>(currentBlock.vtx.size());
+                    totalBlockSize_24h += (int64_t)::GetSerializeSize(currentBlock,SER_NETWORK, PROTOCOL_VERSION);
+                    ++numberOfBlocks;
+                }
                 BOOST_FOREACH (const CTransaction& tx, currentBlock.vtx) {
                     if(tx.IsCoinStake())
                     {
@@ -426,7 +437,7 @@ Value getstakeamountrange(const Array& params, bool fHelp)
                         ++numberOfStakes;
                         --utxoCount;// Has (at least) a single unspeandable txout
                     }
-                    utxoCount += static_cast<int64_t>(tx.vout.size() - tx.vin.size());
+                    utxoCount += static_cast<int64_t>(tx.vout.size()) - static_cast<int64_t>(tx.vin.size());
 
                 }
                 totalNumberOfTransactions += static_cast<int64_t>(currentBlock.vtx.size());
@@ -447,6 +458,10 @@ Value getstakeamountrange(const Array& params, bool fHelp)
             Value(totalStakedAmount/static_cast<double>(numberOfStakes*COIN))));
         ret.push_back(Pair("total_transactions", totalNumberOfTransactions));
         ret.push_back(Pair("total_utxos",utxoCount));
+        ret.push_back(Pair("average_block_size_24h_in_bytes",
+            static_cast<double>(totalBlockSize_24h)/static_cast<double>(numberOfBlocks)   ));
+        ret.push_back(Pair("transaction_count_24h",
+            static_cast<double>(totalNumberOfTransactions_24h)   ));
     }
     return ret;
 }

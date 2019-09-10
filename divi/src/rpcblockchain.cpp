@@ -17,6 +17,8 @@
 #include "utilmoneystr.h"
 #include "base58.h"
 
+#include <iostream>
+
 using namespace json_spirit;
 using namespace std;
 
@@ -359,11 +361,71 @@ Value getblockheader(const Array& params, bool fHelp)
     return blockHeaderToJSON(block, pblockindex);
 }
 
-Value getstakeamountrange(const Array& params, bool fHelp)
+CAmount computeValueIn(const CTransaction& tx)
+{
+    CAmount totalAmountIn =0;
+    uint256 blockHash = 0;
+
+    for(const CTxIn& txIn: tx.vin)
+    {
+        CTransaction prevTx;
+        if(GetTransaction(txIn.prevout.hash, prevTx, blockHash,true))
+        {
+            totalAmountIn += prevTx.vout[txIn.prevout.n].nValue;
+        }
+        else
+        {
+            //std::cerr << "Could not get transaction\n";
+        }
+
+    }
+    return totalAmountIn;
+}
+
+CAmount computeTotalOfInputsForBlock(const CBlockIndex* pBlockIndex)
+{
+  CBlock currentBlock;
+  if(ReadBlockFromDisk(currentBlock, pBlockIndex))
+  {
+      CAmount valueIn = 0;
+      for(const CTransaction& tx: currentBlock.vtx)
+      {
+          valueIn += computeValueIn(tx);
+      }
+      return valueIn;
+  }
+  return CAmount(0);
+}
+
+Value totalinputsforblock(const json_spirit::Array& params, bool fHelp)
+{
+    std::string input = params[0].get_str();
+    int targetBlockHeight = std::stoi(input);
+
+    Object ret;
+    FlushStateToDisk();
+    BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
+    if(it != mapBlockIndex.end())
+    {
+        CBlockIndex* pBlockIndex = it->second;
+        while(pBlockIndex->IsValid() && pBlockIndex->nHeight > targetBlockHeight)
+        {
+            pBlockIndex = pBlockIndex->pprev;
+        }
+        if(pBlockIndex->IsValid() && pBlockIndex->nHeight == targetBlockHeight)
+        {
+            ret.push_back(Pair("total_inputs", ValueFromAmount(computeTotalOfInputsForBlock(pBlockIndex)) ));
+        }
+    }
+    return ret;
+}
+
+
+Value getexpandedstatistics(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
-            "getstakeamountrange\n"
+            "getexpandedstatistics\n"
             "\nReturns statistics about the staking win amounts.\n"
             "Note this call may take some time.\n"
             "\nResult:\n"
@@ -378,20 +440,29 @@ Value getstakeamountrange(const Array& params, bool fHelp)
             "}\n");
 
     Object ret;
+    // Chain statistics
+    int64_t totalNumberOfBlocks = 0;
+    // Staking statistics
     CAmount minimumStakedAmount = 20000000*COIN;
     CAmount maximumStakedAmount = 0*COIN;
     CAmount totalStakedAmount = 0;
     int64_t numberOfStakes = 0;
     int64_t blockHeightOfLargestStake = 0;
     int64_t blockHeightOfSmallestStake = 0;
-    int64_t totalNumberOfBlocks = 0;
+    // Trasaction statistics
     int64_t totalNumberOfTransactions = 0;
-    int64_t utxoCount = 0;
     int64_t totalNumberOfTransactions_24h = 0;
     int64_t totalBlockSize_24h = 0;
-    int64_t numberOfBlocks = 0;
+    int64_t numberOfBlocks_24h = 0;
     uint32_t offset24h = 24u*60u*60u;
     uint32_t currentTime = static_cast<uint32_t>(std::time(nullptr));
+    // UTXO statistics
+    int64_t utxoCount = 0;
+    int64_t uselessUTXOCount = 0;
+    // Fee statistics
+    CAmount burnedFees = 0;
+    CAmount nonRewardBlockOutputs = 0;
+    CAmount blockInputs = 0;
 
     FlushStateToDisk();
     BlockMap::iterator it = mapBlockIndex.find(pcoinsTip->GetBestBlock());
@@ -403,26 +474,25 @@ Value getstakeamountrange(const Array& params, bool fHelp)
             totalNumberOfBlocks = static_cast<int64_t>(pBlockIndex->nHeight);
         }
         // Verify that it's not null
-        while(pBlockIndex->IsValid() && pBlockIndex->IsProofOfStake())
+        while(pBlockIndex->IsValid())
         {
             CBlock currentBlock;
-            if(!ReadBlockFromDisk(currentBlock, pBlockIndex))
-            {
-                //Could not read from Disk
-                break;
-            }
-            else
+            if(ReadBlockFromDisk(currentBlock, pBlockIndex))
             {
                 if(currentBlock.nTime > currentTime - offset24h)
                 {
                     totalNumberOfTransactions_24h += static_cast<int64_t>(currentBlock.vtx.size());
                     totalBlockSize_24h += (int64_t)::GetSerializeSize(currentBlock,SER_NETWORK, PROTOCOL_VERSION);
-                    ++numberOfBlocks;
+                    ++numberOfBlocks_24h;
                 }
+
+                CBlockRewards allRewards = GetBlockSubsidity(pBlockIndex->nHeight);
+                CAmount coinstakeAndMnRewards = allRewards.nStakeReward + allRewards.nMasternodeReward;
+                nonRewardBlockOutputs = 0;
                 BOOST_FOREACH (const CTransaction& tx, currentBlock.vtx) {
                     if(tx.IsCoinStake())
                     {
-                        CAmount stakedAmount = tx.GetValueOut()-996u*COIN;
+                        CAmount stakedAmount = tx.GetValueOut() - coinstakeAndMnRewards;
                         if(stakedAmount > maximumStakedAmount)
                         {
                             blockHeightOfLargestStake = (int64_t)pBlockIndex->nHeight;
@@ -435,33 +505,65 @@ Value getstakeamountrange(const Array& params, bool fHelp)
                         minimumStakedAmount = std::min(minimumStakedAmount, stakedAmount);
                         totalStakedAmount += stakedAmount;
                         ++numberOfStakes;
-                        --utxoCount;// Has (at least) a single unspeandable txout
                     }
-                    utxoCount += static_cast<int64_t>(tx.vout.size()) - static_cast<int64_t>(tx.vin.size());
+                    nonRewardBlockOutputs += tx.GetValueOut();
 
+
+                    utxoCount += static_cast<int64_t>(tx.vout.size()) - static_cast<int64_t>(tx.vin.size());
+                    utxoCount += (tx.IsCoinBase())? 1:0;
+                    for(const CTxOut& out: tx.vout)
+                    {
+                        uselessUTXOCount += (out.scriptPubKey.IsUnspendable() || !(out.nValue>0)) ? 1:0;
+                    }
                 }
+
+                nonRewardBlockOutputs -= coinstakeAndMnRewards;
+
                 totalNumberOfTransactions += static_cast<int64_t>(currentBlock.vtx.size());
+
+                blockInputs = computeTotalOfInputsForBlock(pBlockIndex);
             }
+
+            burnedFees += std::max(CAmount(0),blockInputs - nonRewardBlockOutputs);
             // Continue iterating
-            pBlockIndex = pBlockIndex->pprev;
+            if(pBlockIndex->nHeight==0)
+            {
+                break;
+            }
+            else
+            {
+                pBlockIndex = pBlockIndex->pprev;
+            }
+
         }
     }
 
     {
-        ret.push_back(Pair("number_of_blocks", totalNumberOfBlocks));
-        ret.push_back(Pair("number_of_stake_reward_blocks_found",numberOfStakes));
-        ret.push_back(Pair("block_height_of_smallest_stake", blockHeightOfSmallestStake));
-        ret.push_back(Pair("smallest_staked_amount", ValueFromAmount(minimumStakedAmount) ));
-        ret.push_back(Pair("block_height_of_largest_stake", blockHeightOfLargestStake));
-        ret.push_back(Pair("largest_staked_amount", ValueFromAmount(maximumStakedAmount) ));
-        ret.push_back(Pair("average_staked_amount",
+        Object stakingStatistics;
+        stakingStatistics.push_back(Pair("number_of_blocks", totalNumberOfBlocks));
+        stakingStatistics.push_back(Pair("block_height_of_smallest_stake", blockHeightOfSmallestStake));
+        stakingStatistics.push_back(Pair("smallest_staked_amount", ValueFromAmount(minimumStakedAmount) ));
+        stakingStatistics.push_back(Pair("block_height_of_largest_stake", blockHeightOfLargestStake));
+        stakingStatistics.push_back(Pair("largest_staked_amount", ValueFromAmount(maximumStakedAmount) ));
+        stakingStatistics.push_back(Pair("average_staked_amount",
             Value(totalStakedAmount/static_cast<double>(numberOfStakes*COIN))));
-        ret.push_back(Pair("total_transactions", totalNumberOfTransactions));
-        ret.push_back(Pair("total_utxos",utxoCount));
-        ret.push_back(Pair("average_block_size_24h_in_bytes",
-            static_cast<double>(totalBlockSize_24h)/static_cast<double>(numberOfBlocks)   ));
-        ret.push_back(Pair("transaction_count_24h",
+        ret.push_back(Pair("staking_statistics", stakingStatistics));
+
+        Object transactionStatistics;
+        transactionStatistics.push_back(Pair("total_transactions", totalNumberOfTransactions));
+        transactionStatistics.push_back(Pair("average_block_size_24h_in_bytes",
+            static_cast<double>(totalBlockSize_24h)/static_cast<double>(numberOfBlocks_24h)   ));
+        transactionStatistics.push_back(Pair("transaction_count_24h",
             static_cast<double>(totalNumberOfTransactions_24h)   ));
+        ret.push_back(Pair("transaction_statistics",transactionStatistics));
+
+        Object utxoStatistics;
+        utxoStatistics.push_back(Pair("total_utxos",utxoCount));
+        utxoStatistics.push_back(Pair("useless_utxos",uselessUTXOCount));
+        utxoStatistics.push_back(Pair("relevant_utxos",utxoCount-uselessUTXOCount));
+        ret.push_back(Pair("utxo_statistics",utxoStatistics));
+
+        ret.push_back(Pair("burned_fees", ValueFromAmount(burnedFees) ));
     }
     return ret;
 }
@@ -500,8 +602,8 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
         ret.push_back(Pair("total_amount", ValueFromAmount(stats.nTotalAmount)));
         ret.push_back(Pair("utxo_distribution",
           std::vector<Value>(stats.utxoAmountBins.begin(),stats.utxoAmountBins.end())));
-        ret.push_back(Pair("total_utxo_bytes_0_value",(int64_t)stats.totalUtxoBytesUsefull));
-        ret.push_back(Pair("total_utxo_bytes_nonzero_value",(int64_t)stats.totalUtxoBytesNotUsefull));
+        ret.push_back(Pair("total_utxo_bytes_nonzero_value",(int64_t)stats.totalUtxoBytesUsefull));
+        ret.push_back(Pair("total_utxo_bytes_0_value",(int64_t)stats.totalUtxoBytesNotUsefull));
     }
     return ret;
 }

@@ -32,5 +32,5 @@ docker run divi --expose 1337
 If you want to SSH into the docker container for development purposes you can run.
 
 ```bash
-docker exec -it divi bash
+docker exec -itd divi bash
 ```

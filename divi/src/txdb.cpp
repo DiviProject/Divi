@@ -162,7 +162,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
                         ss << VARINT(i + 1);
                         ss << out;
                         nTotalAmount += out.nValue;
-                        if(out.nValue>0)
+                        if(out.nValue > 0.0)
                         {
                             double value = static_cast<double>(out.nValue)/static_cast<double>(COIN);
                             unsigned amountBin =

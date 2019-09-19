@@ -18,7 +18,6 @@
 #include "base58.h"
 
 #include <iostream>
-
 using namespace json_spirit;
 using namespace std;
 

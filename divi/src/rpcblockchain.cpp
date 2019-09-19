@@ -602,6 +602,11 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
             "  \"bytes_serialized\": n,  (numeric) The serialized size\n"
             "  \"hash_serialized\": \"hash\",   (string) The serialized hash\n"
             "  \"total_amount\": x.xxx          (numeric) The total amount\n"
+            "  \"utxo_distribution\":  (numeric array) The bin counts for UTXOs \n"
+            "       according to log amounts each bin covering one order of magnitude.\n"
+            "       Starts at 10^-8\n"
+            "  \"total_utxo_bytes_nonzero_value\":   (numeric) Totla bytes used to store meaningful utxos\n"
+            "  \"total_utxo_bytes_0_value\":         (numeric) Total bytes used to store meaningless utxos\n"
             "}\n"
             "\nExamples:\n" +
             HelpExampleCli("gettxoutsetinfo", "") + HelpExampleRpc("gettxoutsetinfo", ""));

@@ -133,7 +133,8 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
     stats.hashBlock = GetBestBlock();
     ss << stats.hashBlock;
     CAmount nTotalAmount = 0;
-    stats.utxoAmountBins.resize(20);
+    const unsigned ordersOfMagnitudeCoveredByBins = 20;
+    stats.utxoAmountBins.resize(ordersOfMagnitudeCoveredByBins);
 
     while (pcursor->Valid()) {
         boost::this_thread::interruption_point();

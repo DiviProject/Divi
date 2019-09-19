@@ -398,6 +398,14 @@ CAmount computeTotalOfInputsForBlock(const CBlockIndex* pBlockIndex)
 
 Value totalinputsforblock(const json_spirit::Array& params, bool fHelp)
 {
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "totalinputsforblock \"blockheight\"\n"
+            "\nReturns the total of input amounts of transactions in the block.\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"total_inputs\":n,     (numeric) The total of inputs for the block at block height (index)\n"
+            "}\n");
     std::string input = params[0].get_str();
     int targetBlockHeight = std::stoi(input);
 

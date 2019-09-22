@@ -9,7 +9,7 @@ docker build -t atomicdivi -f ./test/docker/atomic.test.Dockerfile .
 Once the Docker environment is built, you can then SSH into it and start testing out both Bitcoin and Divi regression test nodes.
 
 ```bash
-docker run atomicdivi --itd
+docker run --itd atomicdivi
 docker attach [CONTAINER_ID]
 ```
 

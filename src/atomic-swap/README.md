@@ -40,6 +40,10 @@ docker build -t atomicdivi -f ./test/docker/atomic.test.Dockerfile .
 
 You can learn more about debugging atomic swaps with [ATOMIC.ENV.MD](../../test/docker/ATOMIC.ENV.MD).
 
+After you have the docker container built and are sshed into the Docker container. You can run `sh atomic.reg.test.sh` in this same folder (`/src/atomic-swap`). You should be able to run regression tests from there.
+
+Please note that the regression tests only include the initiate function, simply due to the fact that the current state of the cli does not make it easy to assign contract hashes to variables. Ideally once we have RPC/HTTP endpoints ready. We can regression tests the entire thing in something such as `Mocha` or anything that supports HTTP.
+
 ### References
 
 - https://github.com/decred/atomicswap

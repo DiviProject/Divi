@@ -47,11 +47,12 @@ var (
 	rpcuserFlag = flagset.String("rpcuser", "", "username for wallet RPC authentication")
 	rpcpassFlag = flagset.String("rpcpass", "", "password for wallet RPC authentication")
 	testnetFlag = flagset.Bool("testnet", false, "use testnet network")
+	regtestFlag = flagset.Bool("regtest", false, "use regtest network")
 )
 
 func init() {
 	flagset.Usage = func() {
-		fmt.Println("Usage: btcatomicswap [flags] cmd [cmd args]")
+		fmt.Println("Usage: diviatomicswap [flags] cmd [cmd args]")
 		fmt.Println()
 		fmt.Println("Commands:")
 		fmt.Println("  initiate <participant address> <amount>")
@@ -167,6 +168,10 @@ func run() (err error, showUsage bool) {
 
 	if *testnetFlag {
 		chainParams = &chaincfg.TestNet3Params
+	}
+
+	if *regtestFlag {
+		chainParams = &chaincfg.RegressionNetParams
 	}
 
 	var cmd command

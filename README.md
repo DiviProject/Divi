@@ -1,10 +1,8 @@
 [![Divi Banner](./divi-banner.jpg)](https://diviproject.org)
 
-<center>
-	[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./COPYING)
-	[![Build Status](https://travis-ci.org/DiviProject/Divi.svg?branch=posv3)](https://travis-ci.org/DiviProject/Divi)
-	[![codecov](https://codecov.io/gh/DiviProject/Divi/branch/posv3/graph/badge.svg)](https://codecov.io/gh/DiviProject/Divi)
-</center>
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./COPYING)
+[![Build Status](https://travis-ci.org/DiviProject/Divi.svg?branch=posv3)](https://travis-ci.org/DiviProject/Divi)
+[![codecov](https://codecov.io/gh/DiviProject/Divi/branch/posv3/graph/badge.svg)](https://codecov.io/gh/DiviProject/Divi)
 
 ## What is Divi?
 

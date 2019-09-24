@@ -1,77 +1,67 @@
-Bitcoin Core integration/staging tree
-=====================================
+[![Divi Banner](./divi-banner.jpg)](https://diviproject.org)
 
-[![Build Status](https://travis-ci.org/DiviProject/Divi.svg?branch=posv3)](https://travis-ci.org/DiviProject/Divi)
+<center>
+	[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./COPYING)
+	[![Build Status](https://travis-ci.org/DiviProject/Divi.svg?branch=posv3)](https://travis-ci.org/DiviProject/Divi)
+	[![codecov](https://codecov.io/gh/DiviProject/Divi/branch/posv3/graph/badge.svg)](https://codecov.io/gh/DiviProject/Divi)
+</center>
 
-https://bitcoincore.org
+## What is Divi?
 
-What is Bitcoin?
-----------------
+**Divi is crypto made easy.**
 
-Bitcoin is an experimental digital currency that enables instant payments to
-anyone, anywhere in the world. Bitcoin uses peer-to-peer technology to operate
-with no central authority: managing transactions and issuing money are carried
-out collectively by the network. Bitcoin Core is the name of open source
-software which enables the use of this currency.
+Spend, earn, or withdraw money in just a few taps. Top-up , cash out, earn income, buy a coffee, exchange money – all in a single tap. Because thats how it should be.
 
-For more information, as well as an immediately useable, binary version of
-the Bitcoin Core software, see https://bitcoincore.org/en/download/, or read the
-[original whitepaper](https://bitcoincore.org/bitcoin.pdf).
+Divi is a next-generation blockchain protocol that enables any user to begin earning, sending, and spending cryptocurrency easily, without the need for advanced technical knowledge. Divi uses a state-of-the-art Proof of Stake consensus mechanism that offers opportunities for users to stake their coins or allocate their coins to Masternodes, which secure the network and verify transactions.
 
-License
--------
+For more information, as well as an immediately usable version of the Divi Project software, visit our website's [download page](https://diviproject.org/downloads), or read our [whitepaper](https://wiki.diviproject.org/#whitepaper).
 
-Bitcoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
-information or see https://opensource.org/licenses/MIT.
+## Build and Compilation
 
-Development Process
--------------------
+To build from source on UNIX systems, follow these instructions.
 
-The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/bitcoin/bitcoin/tags) are created
-regularly to indicate new official, stable release versions of Bitcoin Core.
+### System requirements
 
-The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md)
-and useful hints for developers can be found in [doc/developer-notes.md](doc/developer-notes.md).
+C++ compilers are memory-hungry. It is recommended to have at least 1 GB of
+memory available when compiling DIVI Core. With 512MB of memory or less
+compilation will take much longer due to swap throttling.
 
-Testing
--------
+### Dependencies
 
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test on short notice. Please be patient and help out by testing
-other people's pull requests, and remember this is a security-critical project where any mistake might cost people
-lots of money.
+These dependencies are required:
 
-### Automated Testing
+ Library     | Purpose          | Description
+ ------------|------------------|----------------------
+ libssl      | SSL Support      | Secure communications
+ libboost    | Boost            | C++ Library
 
-Developers are strongly encouraged to write [unit tests](src/test/README.md) for new code, and to
-submit new unit tests for old code. Unit tests can be compiled and run
-(assuming they weren't disabled in configure) with: `make check`. Further details on running
-and extending unit tests can be found in [/src/test/README.md](/src/test/README.md).
+Optional dependencies:
 
-There are also [regression and integration tests](/test), written
-in Python, that are run automatically on the build server.
-These tests can be run (if the [test dependencies](/test) are installed) with: `test/functional/test_runner.py`
+ Library     | Purpose          | Description
+ ------------|------------------|----------------------
+ miniupnpc   | UPnP Support     | Firewall-jumping support
+ libdb4.8    | Berkeley DB      | Wallet storage (only needed when wallet enabled)
+ qt          | GUI              | GUI toolkit (only needed when GUI enabled)
+ protobuf    | Payments in GUI  | Data interchange format used for payment protocol (only needed when GUI enabled)
+ libqrencode | QR codes in GUI  | Optional for generating QR codes (only needed when GUI enabled)
 
-The Travis CI system makes sure that every pull request is built for Windows, Linux, and macOS, and that unit/sanity tests are run automatically.
+For the versions used in the release, see [release-process.md](./divi/doc/release-process.md) under *Fetch and build inputs*.
 
-### Manual Quality Assurance (QA) Testing
+For additional information about dependencies see [build-unix.md](./divi/doc/build-unix.md)
 
-Changes should be tested by somebody other than the developer who wrote the
-code. This is especially important for large or high-risk changes. It is useful
-to add a test plan to the pull request description if testing the changes is
-not straightforward.
+```bash
+./autogen.sh
+./configure --disable-tests --without-gui
+make
+make install # optional
+```
 
-Translations
-------------
+You can also compile with Docker see [build-docker.md](./divi/doc/build-docker).
 
-Changes to translations as well as new translations can be submitted to
-[Bitcoin Core's Transifex page](https://www.transifex.com/projects/p/bitcoin/).
+### Documentation
 
-Translations are periodically pulled from Transifex and merged into the git repository. See the
-[translation process](doc/translation_process.md) for details on how this works.
+For extensive documentation on the build process go to [wiki.diviproject.org](https://wiki.diviproject.org).
 
-**Important**: We do not accept translation changes as GitHub pull requests because the next
-pull from Transifex would automatically overwrite them again.
+### Issues and Pull Request 
 
-Translators should also subscribe to the [mailing list](https://groups.google.com/forum/#!forum/bitcoin-translators).
+Issues and pull requests open on the repository. Please try to follow our Issue and Pull Request guidelines.

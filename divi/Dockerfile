@@ -14,7 +14,7 @@ RUN apt-get install pkg-config -y
 RUN apt-get install autoconf -y
 RUN apt-get install libtool -y
 RUN apt-get install libboost-all-dev -y
-RUN apt-get install libssl-dev -y
+RUN apt-get install libssl1.0-dev -y
 RUN apt-get install libevent-dev -y
 RUN apt-get install libdb4.8-dev libdb4.8++-dev -y
 
@@ -22,7 +22,7 @@ WORKDIR /app
 COPY . .
 
 RUN ./autogen.sh
-RUN ./configure
+RUN ./configure --disable-tests --without-gui
 RUN make
 
 CMD ["bash"]

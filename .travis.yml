@@ -1,0 +1,12 @@
+os: linux
+dist: bionic
+language: cpp
+
+services:
+  - docker
+
+script:
+  # Compile from source
+  - cd divi
+  - docker build -t divi -f Dockerfile .
+  - docker run divi

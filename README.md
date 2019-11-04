@@ -1,4 +1,5 @@
 # DIVI Project
+https://travis-ci.org/galpHub/Divi.svg?branch=master0
 
 DIVI Core integration/staging repository
 =====================================

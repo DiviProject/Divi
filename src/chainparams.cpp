@@ -155,12 +155,6 @@ public:
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
 
-        checkpointData = {
-            {
-                { 11111, uint256S("0x0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d")},
-            }
-        };
-
         chainTxData = ChainTxData{
             // Data from rpc: getchaintxstats 4096 0000000000000000002e63058c023a9a1de233554f28c7b21380b6c9003f36a8
             /* nTime    */ 1532884444,
@@ -260,13 +254,7 @@ public:
         consensus.nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
         consensus.strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
         consensus.nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
-
-        checkpointData = {
-            {
-                {546, uint256S("000000002a936ca763904c3c35fce2f3556c559c0214345d31b1bcebf76acb70")},
-            }
-        };
-
+        
         chainTxData = ChainTxData{
             // Data from rpc: getchaintxstats 4096 0000000000000037a8cd3e06cd5edbfe9dd1dbcc5dacab279376ef7cfc2b4c75
             /* nTime    */ 1531929919,

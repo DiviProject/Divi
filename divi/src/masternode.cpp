@@ -26,7 +26,8 @@ const int TIER_DIAMOND_BASE_COLLATERAL  = 10000000;
 
 static CAmount getCollateralAmount(int tier)
 {
-  if(tier > -1 & tier <5)
+  if(tier >= static_cast<int>(CMasternode::Tier::MASTERNODE_TIER_COPPER) &&
+    tier < static_cast<int>(CMasternode::Tier::MASTERNODE_TIER_INVALID) )
   {
     return CMasternode::GetTierCollateralAmount(static_cast<CMasternode::Tier>(tier));
   }

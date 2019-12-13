@@ -23,6 +23,35 @@ const int TIER_GOLD_BASE_COLLATERAL     = 1000000;
 const int TIER_PLATINUM_BASE_COLLATERAL = 3000000;
 const int TIER_DIAMOND_BASE_COLLATERAL  = 10000000;
 
+
+static CAmount getCollateralAmount(int tier)
+{
+  if(tier >= static_cast<int>(CMasternode::Tier::MASTERNODE_TIER_COPPER) &&
+    tier < static_cast<int>(CMasternode::Tier::MASTERNODE_TIER_INVALID) )
+  {
+    return CMasternode::GetTierCollateralAmount(static_cast<CMasternode::Tier>(tier));
+  }
+  else
+  {
+    return static_cast<CAmount>(-1.0);
+  }
+}
+
+CAmount CMasternode::GetTierCollateralAmount(CMasternode::Tier tier)
+{
+    switch(tier)
+    {
+    case MASTERNODE_TIER_COPPER:   return TIER_COPPER_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_SILVER:   return TIER_SILVER_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_GOLD:     return TIER_GOLD_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_PLATINUM: return TIER_PLATINUM_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_DIAMOND:  return TIER_DIAMOND_BASE_COLLATERAL * COIN;
+    case MASTERNODE_TIER_INVALID: break;
+    }
+
+    return 0;
+}
+
 static size_t GetHashRoundsForTierMasternodes(CMasternode::Tier tier)
 {
     switch(tier)
@@ -47,13 +76,17 @@ static bool GetUTXOCoins(const uint256& txhash, CCoins& coins)
     return true;
 }
 
-static bool IsCoinSpent(const COutPoint &outpoint)
+static bool IsCoinSpent(const COutPoint &outpoint, const CAmount expectedCollateral)
 {
     CCoins coins;
     if(GetUTXOCoins(outpoint.hash, coins))
     {
         int n = outpoint.n;
         if (n < 0 || (unsigned int)n >= coins.vout.size() || coins.vout[n].IsNull()) {
+            return true;
+        }
+        else if (coins.vout[n].nValue != expectedCollateral)
+        {
             return true;
         }
         else {
@@ -259,28 +292,13 @@ void CMasternode::Check(bool forceCheck)
     }
 
     if (!unitTest) {
-        if (IsCoinSpent(vin.prevout)) {
+        if (IsCoinSpent(vin.prevout, getCollateralAmount(nTier))) {
             activeState = MASTERNODE_VIN_SPENT;
             return;
         }
     }
 
     activeState = MASTERNODE_ENABLED; // OK
-}
-
-CAmount CMasternode::GetTierCollateralAmount(CMasternode::Tier tier)
-{
-    switch(tier)
-    {
-    case MASTERNODE_TIER_COPPER:   return TIER_COPPER_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_SILVER:   return TIER_SILVER_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_GOLD:     return TIER_GOLD_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_PLATINUM: return TIER_PLATINUM_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_DIAMOND:  return TIER_DIAMOND_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_INVALID: break;
-    }
-
-    return 0;
 }
 
 CMasternode::Tier CMasternode::GetTierByCollateralAmount(CAmount nCollateral)
@@ -701,7 +719,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
             mnodeman.Remove(pmn->vin);
     }
 
-    if (IsCoinSpent(vin.prevout)) {
+    if (IsCoinSpent(vin.prevout, getCollateralAmount(nTier) )) {
         LogPrintf("mnb - coin is already spent\n");
         return false;
     }

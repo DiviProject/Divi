@@ -1,0 +1,41 @@
+FROM ubuntu:bionic
+
+RUN apt-get update
+RUN apt-get upgrade -y
+
+RUN apt-get install apt-utils -y
+RUN apt-get install bsdmainutils -y
+RUN apt-get install software-properties-common -y
+RUN add-apt-repository ppa:bitcoin/bitcoin -y
+
+RUN apt-get install make -y
+RUN apt-get install gcc -y
+RUN apt-get install g++ -y
+RUN apt-get install pkg-config -y
+RUN apt-get install autoconf -y
+RUN apt-get install libtool -y
+RUN apt-get install libboost-all-dev -y
+RUN apt-get install libssl1.0-dev -y
+RUN apt-get install libevent-dev -y
+RUN apt-get install libdb4.8-dev libdb4.8++-dev -y
+
+RUN apt-get install -y build-essential autotools-dev automake bsdmainutils curl
+RUN apt-get install -y libc6 libc6-dev
+
+WORKDIR /app
+COPY . .
+
+RUN apt-get install -y g++-mingw-w64-x86-64
+RUN update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+
+# Comment out the next three lines if you're not interested in building the dependencies
+WORKDIR /app/depends
+RUN make HOST=x86_64-w64-mingw32
+WORKDIR /app
+
+RUN PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
+RUN ./autogen.sh
+RUN CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --disable-tests --without-gui --prefix=/ 
+RUN make
+
+CMD ["bash"]

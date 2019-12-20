@@ -144,8 +144,9 @@ script: |
     CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}"
     make ${MAKEOPTS}
 
-    mkdir -p $OUTDIR/bin
-    cp `pwd`/src/divi*.exe  $OUTDIR/bin
+    mkdir -p $OUTDIR/bin/${DISTNAME}-${i}
+    cp `pwd`/src/divi*.exe  $OUTDIR/bin/${DISTNAME}-${i}
+    zip -r $OUTDIR/${DISTNAME}-${i}.zip $OUTDIR/bin/${DISTNAME}-${i}
     #make deploy
     #make install DESTDIR=${INSTALLPATH}
     #cp -f divi-*setup*.exe $OUTDIR/
@@ -161,6 +162,7 @@ script: |
     cd ../../
     rm -rf distsrc-${i}
   done
+  rm -rf $OUTDIR/bin
   #cd $OUTDIR
   #rename 's/-setup\.exe$/-setup-unsigned.exe/' *-setup.exe
   #find . -name "*-setup-unsigned.exe" | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-win-unsigned.tar.gz

@@ -330,19 +330,62 @@ Value masternodecurrent(const Array& params, bool fHelp)
 	throw runtime_error("masternodecurrent is deprecated!  masternode payments always rely upon votes");
 }
 
+Value broadcaststartmasternode(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "broadcaststartmasternode hex\n"
+            "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
+
+            "\nArguments:\n"
+            "1. broadcast_hex			(hex, required) hex representation of broadcast data.\n"
+            "\nResult:\n"
+            "\"status\"	(string) status of broadcast\n");
+    Object result;
+    try
+    {
+        std::vector<unsigned char> broadcastHex = ParseHex(params.at(0).get_str());
+        CDataStream ss(broadcastHex,SER_NETWORK,PROTOCOL_VERSION);
+        CMasternodeBroadcast mnb;
+        ss >> mnb;
+        mnb.Relay();
+    }
+    catch(const std::exception& e)
+    {
+        result.push_back(Pair("status","failed"));
+        return result;
+    }
+
+    result.push_back(Pair("status", "success"));
+    return result;
+}
+std::string charStringToHexString(const std::string& charString)
+{
+    const char hexCharacters[] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+    std::stringstream ss;
+    for(auto it = charString.begin(); it != charString.end(); ++it)
+    {
+        uint8_t charAsUint = *it;
+        ss << hexCharacters[(charAsUint & 0xF0) >> 4];
+        ss << hexCharacters[(charAsUint & 0x0F)];
+    }
+    return ss.str();
+}
 Value startmasternode(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 1)
+    if (fHelp || params.size() < 2)
         throw runtime_error(
             "startmasternode alias\n"
             "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
             "\nArguments:\n"
             "1. alias			(string, required) helpful identifier to recognize this allocation later.\n"
+            "2. deferRelay  (bool, optional) returns broadcast data to delegate signaling masternode start.\n"
             "\nResult:\n"
             "\"status\"	(string) status of masternode\n");
 
     auto alias = params.at(0).get_str();
+    bool deferRelay = (params.size() == 1)? false: params.at(1).get_bool();
 
     Object result;
     bool fFound = false;
@@ -352,11 +395,28 @@ Value startmasternode(const Array& params, bool fHelp)
         {
             fFound = true;
             std::string strError;
-            if(CActiveMasternode::Register(configEntry.getIp(), configEntry.getPrivKey(), configEntry.getTxHash(), configEntry.getOutputIndex(), strError))
+            if(!deferRelay)
             {
-                result.push_back(Pair("status", "success"));
+                if(CActiveMasternode::Register(configEntry.getIp(), configEntry.getPrivKey(), configEntry.getTxHash(), configEntry.getOutputIndex(), strError))
+                {
+                    result.push_back(Pair("status", "success"));
+                    fFound = true;
+                }
             }
             else
+            {
+                CMasternodeBroadcast mnb;
+                if(CActiveMasternode::RegisterWithoutBroadcast(configEntry.getIp(), configEntry.getPrivKey(), configEntry.getTxHash(), configEntry.getOutputIndex(), strError,mnb))
+                {
+                    CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
+                    ss << mnb;
+                    result.push_back(Pair("status", "success"));
+                    result.push_back(Pair("broadcastData", charStringToHexString(ss.str()) ));
+                    fFound = true;
+                }
+            }
+            
+            if(!fFound)
             {
                 result.push_back(Pair("status", "failed"));
                 result.push_back(Pair("error", strError));

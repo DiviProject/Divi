@@ -808,12 +808,15 @@ CMasternodePing::CMasternodePing()
 
 CMasternodePing::CMasternodePing(CTxIn& newVin)
 {
+    const int64_t offsetTimeBy17BlocksInSeconds = 60 * 17;
     vin = newVin;
-    blockHash = chainActive[chainActive.Height() - 12]->GetBlockHash();
-    sigTime = GetAdjustedTime();
+    {
+        CTransaction tx;
+        GetTransaction(vin.prevout.hash, tx, blockHash, true);
+    }
+    sigTime = GetAdjustedTime() + offsetTimeBy17BlocksInSeconds;
     vchSig = std::vector<unsigned char>();
 }
-
 
 bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 {

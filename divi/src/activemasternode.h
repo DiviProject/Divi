@@ -32,7 +32,7 @@ private:
 
     static bool GetVinFromOutput(COutput out, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
     /// Register any Masternode
-    static bool Register(CMasternodeBroadcast &mnb);
+    static bool Register(CMasternodeBroadcast &mnb, bool deferRelay = false);
 
     /// Get 10000 PIV input that can be used for the Masternode
     static bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex);
@@ -60,6 +60,13 @@ public:
 
     /// Register remote Masternode
     static bool Register(std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage);
+    static bool RegisterWithoutBroadcast(
+        std::string strService, 
+        std::string strKey, 
+        std::string strTxHash, 
+        std::string strOutputIndex, 
+        std::string& errorMessage, 
+        CMasternodeBroadcast& mnb);
 
     /// Get 10000 PIV input that can be used for the Masternode
     bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey);

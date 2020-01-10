@@ -580,7 +580,7 @@ bool CMasternodeBroadcast::Create(CTxIn txin, CService service, CKey keyCollater
              CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
              pubKeyMasternodeNew.GetID().ToString());
 
-    CMasternodePing mnp(txin);
+    CMasternodePing mnp = CMasternodePing::createDelayedMasternodePing(txin);
     if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) {
         strErrorRet = strprintf("Failed to sign ping, masternode=%s", txin.prevout.hash.ToString());
         LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
@@ -808,15 +808,36 @@ CMasternodePing::CMasternodePing()
 
 CMasternodePing::CMasternodePing(CTxIn& newVin)
 {
-    const int64_t offsetTimeBy17BlocksInSeconds = 60 * 17;
     vin = newVin;
-    {
-        CTransaction tx;
-        GetTransaction(vin.prevout.hash, tx, blockHash, true);
-    }
-    sigTime = GetAdjustedTime() + offsetTimeBy17BlocksInSeconds;
+    blockHash = chainActive[chainActive.Height() - 12]->GetBlockHash();
+    sigTime = GetAdjustedTime();
     vchSig = std::vector<unsigned char>();
 }
+
+CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
+{
+    CMasternodePing ping;
+    const int64_t offsetTimeBy17BlocksInSeconds = 60 * 17;
+    ping.vin = newVin;
+    {
+        CTransaction tx;
+        GetTransaction(ping.vin.prevout.hash, tx, ping.blockHash, true);
+        BlockMap::iterator mi = mapBlockIndex.find(ping.blockHash);
+        if (mi != mapBlockIndex.end() && (*mi).second) 
+        {
+            ping.sigTime = (*mi).second->GetBlockTime() + offsetTimeBy17BlocksInSeconds;
+        }
+        else
+        {
+            ping.sigTime = GetAdjustedTime() + offsetTimeBy17BlocksInSeconds;
+        }
+        
+    }
+    ping.vchSig = std::vector<unsigned char>();
+    return ping;
+}
+
+
 
 bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 {

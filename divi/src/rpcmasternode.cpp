@@ -342,21 +342,19 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
             "\nResult:\n"
             "\"status\"	(string) status of broadcast\n");
     Object result;
-    try
+    std::vector<unsigned char> broadcastHex = ParseHex(params.at(0).get_str());
+    CDataStream ss(broadcastHex,SER_NETWORK,PROTOCOL_VERSION);
+    CMasternodeBroadcast mnb;
+    ss >> mnb;
+    int DoS = 0;
+    if(mnb.CheckInputsAndAdd(DoS))
     {
-        std::vector<unsigned char> broadcastHex = ParseHex(params.at(0).get_str());
-        CDataStream ss(broadcastHex,SER_NETWORK,PROTOCOL_VERSION);
-        CMasternodeBroadcast mnb;
-        ss >> mnb;
-        mnb.Relay();
+        result.push_back(Pair("status", "success"));
     }
-    catch(const std::exception& e)
+    else
     {
         result.push_back(Pair("status","failed"));
-        return result;
     }
-
-    result.push_back(Pair("status", "success"));
     return result;
 }
 std::string charStringToHexString(const std::string& charString)
@@ -385,7 +383,7 @@ Value startmasternode(const Array& params, bool fHelp)
             "\"status\"	(string) status of masternode\n");
 
     auto alias = params.at(0).get_str();
-    bool deferRelay = (params.size() == 1)? false: params.at(1).get_bool();
+    bool deferRelay = (params.size() == 1)? false: true;
 
     Object result;
     bool fFound = false;

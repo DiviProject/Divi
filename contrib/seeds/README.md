@@ -17,5 +17,4 @@ The seeds compiled into the release are created from sipa's DNS seed data, like 
 ## Dependencies
 
 Ubuntu:
-
     sudo apt-get install python3-dnspython

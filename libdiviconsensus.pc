@@ -1,0 +1,11 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Divi Core consensus library
+Description: Library for the Divi consensus protocol.
+Version: 1.0.8
+Libs: -L${libdir} -ldiviconsensus
+Cflags: -I${includedir}
+Requires.private: libcrypto

@@ -1,3 +1,6 @@
-# List of fixed seed nodes for testnet
-167.172.128.97
-167.172.237.204
+# Should transition to CNAME records from multiple network peers
+157.245.250.28
+157.245.242.196
+157.245.87.4
+157.245.242.235
+157.245.252.243

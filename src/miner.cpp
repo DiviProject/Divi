@@ -85,7 +85,7 @@ static BlockAssembler::Options DefaultOptions()
     return options;
 }
 
-BlockAssembler::BlockAssembler(const CChainParams& params) : 
+BlockAssembler::BlockAssembler(const CChainParams& params) :
     BlockAssembler(params, DefaultOptions())
 {
     nLastCoinStakeSearchInterval = GetAdjustedTime();
@@ -642,9 +642,6 @@ void static DIVIMiner(const CChainParams& chainparams, CConnman& connman,
             if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
                 throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
             }
-
-            MilliSleep(10000);
-            continue;
 
             // process proof of stake block
             if(fProofOfStake) {

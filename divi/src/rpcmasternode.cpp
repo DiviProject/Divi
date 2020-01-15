@@ -349,6 +349,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
     int DoS = 0;
     if(mnb.CheckInputsAndAdd(DoS))
     {
+        mnb.Relay();
         result.push_back(Pair("status", "success"));
     }
     else

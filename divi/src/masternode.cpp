@@ -601,7 +601,8 @@ bool CMasternodeBroadcastFactory::Create(
     std::string strOutputIndex, 
     std::string& strErrorRet, 
     CMasternodeBroadcast& mnbRet, 
-    bool fOffline)
+    bool fOffline,
+    bool deferRelay)
 {
     CTxIn txin;
     std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
@@ -637,7 +638,8 @@ bool CMasternodeBroadcastFactory::Create(
                 masternodeKeyPair.second, 
                 nMasternodeTier,
                 strErrorRet,
-                mnbRet);
+                mnbRet,
+                false);
 }
 
 bool CMasternodeBroadcastFactory::Create(
@@ -649,7 +651,8 @@ bool CMasternodeBroadcastFactory::Create(
     CPubKey pubKeyMasternodeNew, 
     CMasternode::Tier nMasternodeTier, 
     std::string& strErrorRet, 
-    CMasternodeBroadcast& mnbRet)
+    CMasternodeBroadcast& mnbRet,
+    bool deferRelay)
 {
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;
@@ -658,7 +661,7 @@ bool CMasternodeBroadcastFactory::Create(
              CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
              pubKeyMasternodeNew.GetID().ToString());
 
-    CMasternodePing mnp = CMasternodePing::createDelayedMasternodePing(txin);
+    CMasternodePing mnp = (deferRelay)? CMasternodePing::createDelayedMasternodePing(txin): CMasternodePing(txin);
     if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) {
         strErrorRet = strprintf("Failed to sign ping, masternode=%s", txin.prevout.hash.ToString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);

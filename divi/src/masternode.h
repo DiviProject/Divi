@@ -335,12 +335,46 @@ public:
     }
 
     /// Create Masternode broadcast, needs to be relayed manually after that
-    static bool Create(CTxIn vin, CService service,
-                       CKey keyCollateralAddressNew, CPubKey pubKeyCollateralAddressNew,
-                       CKey keyMasternodeNew, CPubKey pubKeyMasternodeNew,
+    static bool Create(CTxIn vin, 
+                       CService service,
+                       CKey keyCollateralAddressNew, 
+                       CPubKey pubKeyCollateralAddressNew,
+                       CKey keyMasternodeNew, 
+                       CPubKey pubKeyMasternodeNew,
                        Tier nMasternodeTier,
-                       std::string& strErrorRet, CMasternodeBroadcast& mnbRet);
-    static bool Create(std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& strErrorRet, CMasternodeBroadcast& mnbRet, bool fOffline = false);
+                       std::string& strErrorRet, 
+                       CMasternodeBroadcast& mnbRet);
+    static bool Create(std::string strService,
+                       std::string strKey, 
+                       std::string strTxHash, 
+                       std::string strOutputIndex, 
+                       std::string& strErrorRet, 
+                       CMasternodeBroadcast& mnbRet, 
+                       bool fOffline = false);
+
+private:
+    static bool checkBlockchainSync(std::string& strErrorRet, bool fOffline);
+    static bool setMasternodeKeys(
+        const std::string& strKeyMasternode, 
+        std::pair<CKey,CPubKey>& masternodeKeyPair, 
+        std::string& strErrorRet);
+    static bool setMasternodeCollateralKeys(
+        const std::string& txHash, 
+        const std::string& outputIndex,
+        const std::string& service,
+        CTxIn& txin,
+        std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
+        std::string& error);
+    static bool checkMasternodeCollateral(
+        const CTxIn& txin,
+        const std::string& txHash, 
+        const std::string& outputIndex,
+        const std::string& service,
+        CMasternode::Tier& nMasternodeTier,
+        std::string& strErrorRet);
+    static bool checkNetworkPort(
+        const std::string& strService,
+        std::string& strErrorRet);
 };
 
 #endif

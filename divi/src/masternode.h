@@ -341,24 +341,26 @@ class CMasternodeBroadcastFactory
 {
 public:
     /// Create Masternode broadcast, needs to be relayed manually after that
-    static bool Create(CTxIn vin, 
-                       CService service,
-                       CKey keyCollateralAddressNew, 
-                       CPubKey pubKeyCollateralAddressNew,
-                       CKey keyMasternodeNew, 
-                       CPubKey pubKeyMasternodeNew,
-                       CMasternode::Tier nMasternodeTier,
-                       std::string& strErrorRet, 
-                       CMasternodeBroadcast& mnbRet);
     static bool Create(std::string strService,
                        std::string strKey, 
                        std::string strTxHash, 
                        std::string strOutputIndex, 
                        std::string& strErrorRet, 
                        CMasternodeBroadcast& mnbRet, 
-                       bool fOffline = false);
+                       bool fOffline = false,
+                       bool deferRelay = false);
 
 private:
+    static bool Create(CTxIn vin, 
+                        CService service,
+                        CKey keyCollateralAddressNew, 
+                        CPubKey pubKeyCollateralAddressNew,
+                        CKey keyMasternodeNew, 
+                        CPubKey pubKeyMasternodeNew,
+                        CMasternode::Tier nMasternodeTier,
+                        std::string& strErrorRet, 
+                        CMasternodeBroadcast& mnbRet,
+                        bool deferRelay);
     static bool checkBlockchainSync(std::string& strErrorRet, bool fOffline);
     static bool setMasternodeKeys(
         const std::string& strKeyMasternode, 

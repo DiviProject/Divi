@@ -817,7 +817,7 @@ CMasternodePing::CMasternodePing(CTxIn& newVin)
 CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
 {
     CMasternodePing ping;
-    const int64_t offsetTimeBy17BlocksInSeconds = 60 * 17;
+    const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
     ping.vin = newVin;
     {
         CTransaction tx;
@@ -825,11 +825,11 @@ CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
         BlockMap::iterator mi = mapBlockIndex.find(ping.blockHash);
         if (mi != mapBlockIndex.end() && (*mi).second) 
         {
-            ping.sigTime = (*mi).second->GetBlockTime() + offsetTimeBy17BlocksInSeconds;
+            ping.sigTime = (*mi).second->GetBlockTime() + offsetTimeBy45BlocksInSeconds;
         }
         else
         {
-            ping.sigTime = GetAdjustedTime() + offsetTimeBy17BlocksInSeconds;
+            ping.sigTime = GetAdjustedTime() + offsetTimeBy45BlocksInSeconds;
         }
         
     }

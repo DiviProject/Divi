@@ -118,14 +118,6 @@ void CActiveMasternode::ManageStatus()
                 return;
             }
 
-#if 0
-            if (!Register(vin, service, keyCollateralAddress, pubKeyCollateralAddress, keyMasternode, pubKeyMasternode, errorMessage)) {
-                notCapableReason = "Error on Register: " + errorMessage;
-                LogPrintf("Register::ManageStatus() - %s\n", notCapableReason);
-                return;
-            }
-#endif
-
             LogPrintf("CActiveMasternode::ManageStatus() - Is capable master node!\n");
             status = ACTIVE_MASTERNODE_STARTED;
 
@@ -212,44 +204,20 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
     }
 }
 
-bool MasternodePreRegistration(    
+bool CActiveMasternode::Register(
     std::string strService, 
-    std::string strKey, 
+    std::string strKeyMasternode,
     std::string strTxHash, 
     std::string strOutputIndex, 
-    std::string& errorMessage, 
-    CMasternodeBroadcast& mnb)
+    std::string& errorMessage,
+    CMasternodeBroadcast& mnb,
+    bool deferRelay)
 {
-    if(!CMasternodeBroadcastFactory::Create(strService, strKey, strTxHash, strOutputIndex, errorMessage, mnb, false))
+    if(!CMasternodeBroadcastFactory::Create(strService, strKeyMasternode, strTxHash, strOutputIndex, errorMessage, mnb, false,deferRelay))
         return false;
 
     addrman.Add(CAddress(mnb.addr), CNetAddr("127.0.0.1"), 2 * 60 * 60);
-    return true;
-}
-
-bool CActiveMasternode::Register(std::string strService, std::string strKeyMasternode, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage)
-{
-    CMasternodeBroadcast mnb;
-    if(!MasternodePreRegistration(strService,strKeyMasternode,strTxHash,strOutputIndex,errorMessage,mnb))
-    {
-        return false;
-    }
-    return Register(mnb);
-}
-
-bool CActiveMasternode::RegisterWithoutBroadcast(
-    std::string strService, 
-    std::string strKey, 
-    std::string strTxHash, 
-    std::string strOutputIndex, 
-    std::string& errorMessage, 
-    CMasternodeBroadcast& mnb)
-{
-    if(!MasternodePreRegistration(strService,strKey,strTxHash,strOutputIndex,errorMessage,mnb))
-    {
-        return false;
-    }
-    return Register(mnb,true);
+    return Register(mnb,deferRelay);
 }
 
 bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
@@ -272,7 +240,7 @@ bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
     //send to all peers
     if(!deferRelay)
     {
-        LogPrintf("CActiveMasternode::Register() - RelayElectionEntry vin = %s\n", mnb.vin.ToString());
+        LogPrintf("CActiveMasternode::Register() - Relaying broadcast vin = %s\n", mnb.vin.ToString());
         mnb.Relay();
     }
     else

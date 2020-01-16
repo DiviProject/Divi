@@ -394,25 +394,24 @@ Value startmasternode(const Array& params, bool fHelp)
         {
             fFound = true;
             std::string strError;
-            if(!deferRelay)
+            CMasternodeBroadcast mnb;
+            if(CActiveMasternode::Register(
+                configEntry.getIp(), 
+                configEntry.getPrivKey(), 
+                configEntry.getTxHash(), 
+                configEntry.getOutputIndex(), 
+                strError,
+                mnb,
+                deferRelay))
             {
-                if(CActiveMasternode::Register(configEntry.getIp(), configEntry.getPrivKey(), configEntry.getTxHash(), configEntry.getOutputIndex(), strError))
-                {
-                    result.push_back(Pair("status", "success"));
-                    fFound = true;
-                }
-            }
-            else
-            {
-                CMasternodeBroadcast mnb;
-                if(CActiveMasternode::RegisterWithoutBroadcast(configEntry.getIp(), configEntry.getPrivKey(), configEntry.getTxHash(), configEntry.getOutputIndex(), strError,mnb))
+                result.push_back(Pair("status", "success"));
+                if(deferRelay)
                 {
                     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
                     ss << mnb;
-                    result.push_back(Pair("status", "success"));
                     result.push_back(Pair("broadcastData", charStringToHexString(ss.str()) ));
-                    fFound = true;
                 }
+                fFound = true;
             }
             
             if(!fFound)

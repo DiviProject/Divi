@@ -59,14 +59,14 @@ public:
     std::string GetStatus();
 
     /// Register remote Masternode
-    static bool Register(std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage);
-    static bool RegisterWithoutBroadcast(
+    static bool Register(
         std::string strService, 
         std::string strKey, 
         std::string strTxHash, 
         std::string strOutputIndex, 
-        std::string& errorMessage, 
-        CMasternodeBroadcast& mnb);
+        std::string& errorMessage,
+        CMasternodeBroadcast& mnb,
+        bool deferRelay = false);
 
     /// Get 10000 PIV input that can be used for the Masternode
     bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey);

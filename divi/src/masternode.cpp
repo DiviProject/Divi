@@ -507,53 +507,77 @@ CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
     nTier = mn.nTier;
 }
 
-bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMasternode, std::string strTxHash, std::string strOutputIndex, std::string& strErrorRet, CMasternodeBroadcast& mnbRet, bool fOffline)
-{
-    CTxIn txin;
-    CPubKey pubKeyCollateralAddressNew;
-    CKey keyCollateralAddressNew;
-    CPubKey pubKeyMasternodeNew;
-    CKey keyMasternodeNew;
 
-    //need correct blocks to send ping
-    if (!fOffline && !masternodeSync.IsBlockchainSynced()) {
+bool CMasternodeBroadcast::checkBlockchainSync(std::string& strErrorRet, bool fOffline)
+{
+     if (!fOffline && !masternodeSync.IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
         LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         return false;
     }
-
-    if (!CObfuScationSigner::GetKeysFromSecret(strKeyMasternode, keyMasternodeNew, pubKeyMasternodeNew)) {
+    return true;
+}
+bool CMasternodeBroadcast::setMasternodeKeys(
+    const std::string& strKeyMasternode, 
+    std::pair<CKey,CPubKey>& masternodeKeyPair, 
+    std::string& strErrorRet)
+{
+    if (!CObfuScationSigner::GetKeysFromSecret(strKeyMasternode, masternodeKeyPair.first, masternodeKeyPair.second)) {
         strErrorRet = strprintf("Invalid masternode key %s", strKeyMasternode);
         LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         return false;
     }
-
-    if (!pwalletMain->GetMasternodeVinAndKeys(txin, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex)) {
-        strErrorRet = strprintf("Could not allocate txin %s:%s for masternode %s", strTxHash, strOutputIndex, strService);
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+    return true;
+}
+bool CMasternodeBroadcast::setMasternodeCollateralKeys(
+    const std::string& txHash, 
+    const std::string& outputIndex,
+    const std::string& service, 
+    CTxIn& txin,
+    std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
+    std::string& strError)
+{
+    if (!pwalletMain->GetMasternodeVinAndKeys(txin, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first, txHash, outputIndex)) {
+        strError = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
+        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strError);
         return false;
     }
+    return true;
+}
 
-    Tier nMasternodeTier = Tier::MASTERNODE_TIER_INVALID;
+bool CMasternodeBroadcast::checkMasternodeCollateral(
+    const CTxIn& txin,
+    const std::string& txHash, 
+    const std::string& outputIndex,
+    const std::string& service,
+    CMasternode::Tier& nMasternodeTier,
+    std::string& strErrorRet)
+{
+    nMasternodeTier = Tier::MASTERNODE_TIER_INVALID;
     if(auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash))
     {
         auto collateralAmount = walletTx->vout.at(txin.prevout.n).nValue;
         nMasternodeTier = GetTierByCollateralAmount(collateralAmount);
         if(!IsTierValid(nMasternodeTier))
         {
-            strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", strService, collateralAmount);
+            strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", service, collateralAmount);
             LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
             return false;
         }
     }
     else
     {
-        strErrorRet = strprintf("Could not allocate txin %s:%s for masternode %s", strTxHash, strOutputIndex, strService);
+        strErrorRet = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
         LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         return false;
     }
+    return true;
+}
 
-
+bool CMasternodeBroadcast::checkNetworkPort(
+    const std::string& strService,
+    std::string& strErrorRet)
+{
     CService service = CService(strService);
     int mainnetDefaultPort = Params(CBaseChainParams::MAIN).GetDefaultPort();
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
@@ -567,11 +591,65 @@ bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMast
         LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         return false;
     }
-
-    return Create(txin, CService(strService), keyCollateralAddressNew, pubKeyCollateralAddressNew, keyMasternodeNew, pubKeyMasternodeNew, nMasternodeTier, strErrorRet, mnbRet);
+    return true;
 }
 
-bool CMasternodeBroadcast::Create(CTxIn txin, CService service, CKey keyCollateralAddressNew, CPubKey pubKeyCollateralAddressNew, CKey keyMasternodeNew, CPubKey pubKeyMasternodeNew, Tier nMasternodeTier, std::string& strErrorRet, CMasternodeBroadcast& mnbRet)
+bool CMasternodeBroadcast::Create(
+    std::string strService, 
+    std::string strKeyMasternode, 
+    std::string strTxHash, 
+    std::string strOutputIndex, 
+    std::string& strErrorRet, 
+    CMasternodeBroadcast& mnbRet, 
+    bool fOffline)
+{
+    CTxIn txin;
+    std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
+    std::pair<CKey,CPubKey> masternodeKeyPair;
+    CMasternode::Tier nMasternodeTier;
+
+    //need correct blocks to send ping
+    if (!checkBlockchainSync(strErrorRet,fOffline)) {
+        return false;
+    }
+    if (!setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet))
+    {
+        return false;
+    }
+    if(!setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,txin,masternodeCollateralKeyPair,strErrorRet))
+    {
+        return false;
+    }
+    if(!checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet))
+    {
+        return false;
+    }
+    if(!checkNetworkPort(strService,strErrorRet))
+    {
+        return false;
+    }
+
+    return Create(txin, 
+                CService(strService), 
+                masternodeCollateralKeyPair.first, 
+                masternodeCollateralKeyPair.second, 
+                masternodeKeyPair.first, 
+                masternodeKeyPair.second, 
+                nMasternodeTier,
+                strErrorRet,
+                mnbRet);
+}
+
+bool CMasternodeBroadcast::Create(
+    CTxIn txin, 
+    CService service, 
+    CKey keyCollateralAddressNew, 
+    CPubKey pubKeyCollateralAddressNew, 
+    CKey keyMasternodeNew, 
+    CPubKey pubKeyMasternodeNew, 
+    Tier nMasternodeTier, 
+    std::string& strErrorRet, 
+    CMasternodeBroadcast& mnbRet)
 {
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;

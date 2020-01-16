@@ -220,7 +220,7 @@ bool MasternodePreRegistration(
     std::string& errorMessage, 
     CMasternodeBroadcast& mnb)
 {
-    if(!CMasternodeBroadcast::Create(strService, strKey, strTxHash, strOutputIndex, errorMessage, mnb, false))
+    if(!CMasternodeBroadcastFactory::Create(strService, strKey, strTxHash, strOutputIndex, errorMessage, mnb, false))
         return false;
 
     addrman.Add(CAddress(mnb.addr), CNetAddr("127.0.0.1"), 2 * 60 * 60);

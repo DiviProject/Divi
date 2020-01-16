@@ -508,28 +508,28 @@ CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
 }
 
 
-bool CMasternodeBroadcast::checkBlockchainSync(std::string& strErrorRet, bool fOffline)
+bool CMasternodeBroadcastFactory::checkBlockchainSync(std::string& strErrorRet, bool fOffline)
 {
      if (!fOffline && !masternodeSync.IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
     return true;
 }
-bool CMasternodeBroadcast::setMasternodeKeys(
+bool CMasternodeBroadcastFactory::setMasternodeKeys(
     const std::string& strKeyMasternode, 
     std::pair<CKey,CPubKey>& masternodeKeyPair, 
     std::string& strErrorRet)
 {
     if (!CObfuScationSigner::GetKeysFromSecret(strKeyMasternode, masternodeKeyPair.first, masternodeKeyPair.second)) {
         strErrorRet = strprintf("Invalid masternode key %s", strKeyMasternode);
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
     return true;
 }
-bool CMasternodeBroadcast::setMasternodeCollateralKeys(
+bool CMasternodeBroadcastFactory::setMasternodeCollateralKeys(
     const std::string& txHash, 
     const std::string& outputIndex,
     const std::string& service, 
@@ -539,13 +539,13 @@ bool CMasternodeBroadcast::setMasternodeCollateralKeys(
 {
     if (!pwalletMain->GetMasternodeVinAndKeys(txin, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first, txHash, outputIndex)) {
         strError = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strError);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strError);
         return false;
     }
     return true;
 }
 
-bool CMasternodeBroadcast::checkMasternodeCollateral(
+bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
     const CTxIn& txin,
     const std::string& txHash, 
     const std::string& outputIndex,
@@ -553,28 +553,28 @@ bool CMasternodeBroadcast::checkMasternodeCollateral(
     CMasternode::Tier& nMasternodeTier,
     std::string& strErrorRet)
 {
-    nMasternodeTier = Tier::MASTERNODE_TIER_INVALID;
+    nMasternodeTier = CMasternode::Tier::MASTERNODE_TIER_INVALID;
     if(auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash))
     {
         auto collateralAmount = walletTx->vout.at(txin.prevout.n).nValue;
-        nMasternodeTier = GetTierByCollateralAmount(collateralAmount);
-        if(!IsTierValid(nMasternodeTier))
+        nMasternodeTier = CMasternode::GetTierByCollateralAmount(collateralAmount);
+        if(!CMasternode::IsTierValid(nMasternodeTier))
         {
             strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", service, collateralAmount);
-            LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+            LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
             return false;
         }
     }
     else
     {
         strErrorRet = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
     return true;
 }
 
-bool CMasternodeBroadcast::checkNetworkPort(
+bool CMasternodeBroadcastFactory::checkNetworkPort(
     const std::string& strService,
     std::string& strErrorRet)
 {
@@ -583,18 +583,18 @@ bool CMasternodeBroadcast::checkNetworkPort(
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         if (service.GetPort() != mainnetDefaultPort) {
             strErrorRet = strprintf("Invalid port %u for masternode %s, only %d is supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort);
-            LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+            LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
             return false;
         }
     } else if (service.GetPort() == mainnetDefaultPort) {
         strErrorRet = strprintf("Invalid port %u for masternode %s, %d is the only supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort);
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
     return true;
 }
 
-bool CMasternodeBroadcast::Create(
+bool CMasternodeBroadcastFactory::Create(
     std::string strService, 
     std::string strKeyMasternode, 
     std::string strTxHash, 
@@ -640,47 +640,38 @@ bool CMasternodeBroadcast::Create(
                 mnbRet);
 }
 
-bool CMasternodeBroadcast::Create(
+bool CMasternodeBroadcastFactory::Create(
     CTxIn txin, 
     CService service, 
     CKey keyCollateralAddressNew, 
     CPubKey pubKeyCollateralAddressNew, 
     CKey keyMasternodeNew, 
     CPubKey pubKeyMasternodeNew, 
-    Tier nMasternodeTier, 
+    CMasternode::Tier nMasternodeTier, 
     std::string& strErrorRet, 
     CMasternodeBroadcast& mnbRet)
 {
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;
 
-    LogPrint("masternode", "CMasternodeBroadcast::Create -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
+    LogPrint("masternode", "CMasternodeBroadcastFactory::Create -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
              CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
              pubKeyMasternodeNew.GetID().ToString());
 
     CMasternodePing mnp = CMasternodePing::createDelayedMasternodePing(txin);
     if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) {
         strErrorRet = strprintf("Failed to sign ping, masternode=%s", txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         mnbRet = CMasternodeBroadcast();
         return false;
     }
 
     mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
 
-#if 0
-    if (!mnbRet.IsValidNetAddr()) {
-        strErrorRet = strprintf("Invalid IP address %s, masternode=%s", mnbRet.addr.ToStringIP (), txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
-        mnbRet = CMasternodeBroadcast();
-        return false;
-    }
-#endif
-
     mnbRet.lastPing = mnp;
     if (!mnbRet.Sign(keyCollateralAddressNew)) {
         strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         mnbRet = CMasternodeBroadcast();
         return false;
     }

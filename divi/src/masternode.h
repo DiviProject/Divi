@@ -26,6 +26,7 @@ using namespace std;
 
 class CMasternode;
 class CMasternodeBroadcast;
+class CMasternodeBroadcastFactory;
 class CMasternodePing;
 extern map<int64_t, uint256> mapCacheBlockHashes;
 
@@ -334,6 +335,11 @@ public:
         return ss.GetHash();
     }
 
+};
+
+class CMasternodeBroadcastFactory
+{
+public:
     /// Create Masternode broadcast, needs to be relayed manually after that
     static bool Create(CTxIn vin, 
                        CService service,
@@ -341,7 +347,7 @@ public:
                        CPubKey pubKeyCollateralAddressNew,
                        CKey keyMasternodeNew, 
                        CPubKey pubKeyMasternodeNew,
-                       Tier nMasternodeTier,
+                       CMasternode::Tier nMasternodeTier,
                        std::string& strErrorRet, 
                        CMasternodeBroadcast& mnbRet);
     static bool Create(std::string strService,

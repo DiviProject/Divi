@@ -83,25 +83,6 @@ void MasternodeList::StartAlias(std::string strAlias)
     std::string strStatusHtml;
     strStatusHtml += "<center>Alias: " + strAlias;
 
-#if 0
-    BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
-        if (mne.getAlias() == strAlias) {
-            std::string strError;
-            CMasternodeBroadcast mnb;
-
-            bool fSuccess = CMasternodeBroadcast::Create(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), strError, mnb);
-
-            if (fSuccess) {
-                strStatusHtml += "<br>Successfully started masternode.";
-                mnodeman.UpdateMasternodeList(mnb);
-                mnb.Relay();
-            } else {
-                strStatusHtml += "<br>Failed to start masternode.<br>Error: " + strError;
-            }
-            break;
-        }
-    }
-#endif
     strStatusHtml += "</center>";
 
     QMessageBox msg;
@@ -117,32 +98,6 @@ void MasternodeList::StartAll(std::string strCommand)
     int nCountFailed = 0;
     std::string strFailedHtml;
 
-#if 0
-    BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
-        std::string strError;
-        CMasternodeBroadcast mnb;
-
-        int nIndex;
-        if(!mne.castOutputIndex(nIndex))
-            continue;
-
-        CTxIn txin = CTxIn(uint256S(mne.getTxHash()), uint32_t(nIndex));
-        CMasternode* pmn = mnodeman.Find(txin);
-
-        if (strCommand == "start-missing" && pmn) continue;
-
-        bool fSuccess = CMasternodeBroadcast::Create(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), strError, mnb);
-
-        if (fSuccess) {
-            nCountSuccessful++;
-            mnodeman.UpdateMasternodeList(mnb);
-            mnb.Relay();
-        } else {
-            nCountFailed++;
-            strFailedHtml += "\nFailed to start " + mne.getAlias() + ". Error: " + strError;
-        }
-    }
-#endif
     pwalletMain->Lock();
 
     std::string returnObj;

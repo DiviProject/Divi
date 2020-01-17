@@ -639,7 +639,7 @@ bool CMasternodeBroadcastFactory::Create(
                 nMasternodeTier,
                 strErrorRet,
                 mnbRet,
-                false);
+                deferRelay);
 }
 
 bool CMasternodeBroadcastFactory::Create(
@@ -891,21 +891,12 @@ CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
     CMasternodePing ping;
     const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
     ping.vin = newVin;
-    {
-        CTransaction tx;
-        GetTransaction(ping.vin.prevout.hash, tx, ping.blockHash, true);
-        BlockMap::iterator mi = mapBlockIndex.find(ping.blockHash);
-        if (mi != mapBlockIndex.end() && (*mi).second) 
-        {
-            ping.sigTime = (*mi).second->GetBlockTime() + offsetTimeBy45BlocksInSeconds;
-        }
-        else
-        {
-            ping.sigTime = GetAdjustedTime() + offsetTimeBy45BlocksInSeconds;
-        }
-        
-    }
+    auto block = chainActive[chainActive.Height() -12];
+    ping.blockHash = block->GetBlockHash();
+    ping.sigTime = block->GetBlockTime() + offsetTimeBy45BlocksInSeconds;
     ping.vchSig = std::vector<unsigned char>();
+    LogPrint("masternode","mnp - relay block-time & sigtime: %d vs. %d\n", block->GetBlockTime(), ping.sigTime);
+
     return ping;
 }
 

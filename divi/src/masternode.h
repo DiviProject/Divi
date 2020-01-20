@@ -14,6 +14,8 @@
 #include "timedata.h"
 
 
+#include "masternodeconfig.h"
+
 #define MASTERNODE_MIN_CONFIRMATIONS 15
 #define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
 #define MASTERNODE_MIN_MNB_SECONDS (5 * 60)
@@ -341,10 +343,7 @@ class CMasternodeBroadcastFactory
 {
 public:
     /// Create Masternode broadcast, needs to be relayed manually after that
-    static bool Create(std::string strService,
-                       std::string strKey, 
-                       std::string strTxHash, 
-                       std::string strOutputIndex, 
+    static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry, 
                        std::string& strErrorRet, 
                        CMasternodeBroadcast& mnbRet, 
                        bool fOffline = false,

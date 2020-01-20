@@ -205,16 +205,20 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
 }
 
 bool CActiveMasternode::Register(
-    std::string strService, 
-    std::string strKeyMasternode,
-    std::string strTxHash, 
-    std::string strOutputIndex, 
+    const CMasternodeConfig::CMasternodeEntry& configEntry, 
     std::string& errorMessage,
     CMasternodeBroadcast& mnb,
     bool deferRelay)
 {
-    if(!CMasternodeBroadcastFactory::Create(strService, strKeyMasternode, strTxHash, strOutputIndex, errorMessage, mnb, false,deferRelay))
+    if(!CMasternodeBroadcastFactory::Create(
+            configEntry,
+            errorMessage,
+            mnb,
+            false,
+            deferRelay))
+    {
         return false;
+    }
 
     addrman.Add(CAddress(mnb.addr), CNetAddr("127.0.0.1"), 2 * 60 * 60);
     return Register(mnb,deferRelay);

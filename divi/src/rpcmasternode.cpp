@@ -396,10 +396,7 @@ Value startmasternode(const Array& params, bool fHelp)
             std::string strError;
             CMasternodeBroadcast mnb;
             if(CActiveMasternode::Register(
-                configEntry.getIp(), 
-                configEntry.getPrivKey(), 
-                configEntry.getTxHash(), 
-                configEntry.getOutputIndex(), 
+                configEntry, 
                 strError,
                 mnb,
                 deferRelay))

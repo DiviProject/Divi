@@ -595,15 +595,17 @@ bool CMasternodeBroadcastFactory::checkNetworkPort(
 }
 
 bool CMasternodeBroadcastFactory::Create(
-    std::string strService, 
-    std::string strKeyMasternode, 
-    std::string strTxHash, 
-    std::string strOutputIndex, 
+    const CMasternodeConfig::CMasternodeEntry configEntry, 
     std::string& strErrorRet, 
     CMasternodeBroadcast& mnbRet, 
     bool fOffline,
     bool deferRelay)
 {
+    std::string strService = configEntry.getIp();
+    std::string strKeyMasternode = configEntry.getPrivKey(); 
+    std::string strTxHash = configEntry.getTxHash();
+    std::string strOutputIndex = configEntry.getOutputIndex();
+
     CTxIn txin;
     std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
     std::pair<CKey,CPubKey> masternodeKeyPair;

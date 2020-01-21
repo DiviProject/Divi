@@ -900,16 +900,21 @@ void CMasternodeBroadcast::Relay() const
     RelayInv(inv);
 }
 
+std::string CMasternodeBroadcast::getMessageToSign() const
+{
+    std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
+    std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
+
+    std::string strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
+    return strMessage;
+}
+
 bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress)
 {
     std::string errorMessage;
 
-    std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
-    std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
-
     sigTime = GetAdjustedTime();
-
-    std::string strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
+    std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, sig, keyCollateralAddress)) {
         LogPrint("masternode","CMasternodeBroadcast::Sign() - Error: %s\n", errorMessage);
@@ -954,15 +959,17 @@ CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
     return ping;
 }
 
-
+std::string CMasternodePing::getMessageToSign() const
+{
+    return vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
+}
 
 bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 {
     std::string errorMessage;
-    std::string strMasterNodeSignMessage;
 
     sigTime = GetAdjustedTime();
-    std::string strMessage = vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
+    std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
         LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage);

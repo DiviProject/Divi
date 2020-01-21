@@ -348,8 +348,35 @@ public:
                        CMasternodeBroadcast& mnbRet, 
                        bool fOffline = false,
                        bool deferRelay = false);
+    
+    static void createWithoutSignatures(
+        CTxIn txin, 
+        CService service,
+        CPubKey pubKeyCollateralAddressNew, 
+        CPubKey pubKeyMasternodeNew, 
+        CMasternode::Tier nMasternodeTier,
+        bool deferRelay,
+        CMasternodeBroadcast& mnbRet);
 
 private:
+    static bool signPing(
+        CKey keyMasternodeNew, 
+        CPubKey pubKeyMasternodeNew,
+        CMasternodePing& mnp,
+        std::string& strErrorRet);
+
+    static bool signBroadcast(
+        CKey keyCollateralAddressNew,
+        CMasternodeBroadcast& mnb,
+        std::string& strErrorRet);
+
+    static bool provideSignatures(
+        CKey keyMasternodeNew,
+        CPubKey pubKeyMasternodeNew,
+        CKey keyCollateralAddressNew,
+        CMasternodeBroadcast& mnb,
+        std::string& strErrorRet);
+        
     static bool Create(CTxIn vin, 
                         CService service,
                         CKey keyCollateralAddressNew, 

@@ -644,6 +644,72 @@ bool CMasternodeBroadcastFactory::Create(
                 deferRelay);
 }
 
+bool CMasternodeBroadcastFactory::signPing(
+    CKey keyMasternodeNew, 
+    CPubKey pubKeyMasternodeNew,
+    CMasternodePing& mnp,
+    std::string& strErrorRet)
+{
+    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) 
+    {
+        strErrorRet = strprintf("Failed to sign ping, masternode=%s", mnp.vin.prevout.hash.ToString());
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::signBroadcast(
+    CKey keyCollateralAddressNew,
+    CMasternodeBroadcast& mnb,
+    std::string& strErrorRet)
+{
+    if (!mnb.Sign(keyCollateralAddressNew)) 
+    {
+        strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", mnb.vin.prevout.hash.ToString());
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        mnb = CMasternodeBroadcast();
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::provideSignatures(
+    CKey keyMasternodeNew,
+    CPubKey pubKeyMasternodeNew,
+    CKey keyCollateralAddressNew,
+    CMasternodeBroadcast& mnb,
+    std::string& strErrorRet)
+{
+    if(!signPing(keyMasternodeNew,pubKeyMasternodeNew,mnb.lastPing,strErrorRet))
+    {
+        return false;
+    }
+    if (!signBroadcast(keyCollateralAddressNew,mnb,strErrorRet))
+    {
+        return false;
+    }
+    return true;
+}
+
+void CMasternodeBroadcastFactory::createWithoutSignatures(
+    CTxIn txin, 
+    CService service,
+    CPubKey pubKeyCollateralAddressNew, 
+    CPubKey pubKeyMasternodeNew, 
+    CMasternode::Tier nMasternodeTier,
+    bool deferRelay,
+    CMasternodeBroadcast& mnbRet)
+{
+    LogPrint("masternode", "CMasternodeBroadcastFactory::createWithoutSignatures -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
+             CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
+             pubKeyMasternodeNew.GetID().ToString());
+
+    CMasternodePing mnp = (deferRelay)? CMasternodePing::createDelayedMasternodePing(txin): CMasternodePing(txin);
+    mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
+    mnbRet.lastPing = mnp;
+}
+
 bool CMasternodeBroadcastFactory::Create(
     CTxIn txin, 
     CService service, 
@@ -659,25 +725,11 @@ bool CMasternodeBroadcastFactory::Create(
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;
 
-    LogPrint("masternode", "CMasternodeBroadcastFactory::Create -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
-             CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
-             pubKeyMasternodeNew.GetID().ToString());
+    createWithoutSignatures(
+        txin,service,pubKeyCollateralAddressNew,pubKeyMasternodeNew,nMasternodeTier,deferRelay,mnbRet);
 
-    CMasternodePing mnp = (deferRelay)? CMasternodePing::createDelayedMasternodePing(txin): CMasternodePing(txin);
-    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) {
-        strErrorRet = strprintf("Failed to sign ping, masternode=%s", txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
-        mnbRet = CMasternodeBroadcast();
-        return false;
-    }
-
-    mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
-
-    mnbRet.lastPing = mnp;
-    if (!mnbRet.Sign(keyCollateralAddressNew)) {
-        strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
-        mnbRet = CMasternodeBroadcast();
+    if(!provideSignatures(keyMasternodeNew,pubKeyMasternodeNew,keyCollateralAddressNew,mnbRet,strErrorRet))
+    {
         return false;
     }
 

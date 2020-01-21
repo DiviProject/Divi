@@ -63,6 +63,7 @@ public:
     }
 
     bool CheckAndUpdate(int& nDos, bool fRequireEnabled = true);
+    std::string getMessageToSign() const;
     bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
     void Relay();
 
@@ -305,13 +306,20 @@ class CMasternodeBroadcast : public CMasternode
 {
 public:
     CMasternodeBroadcast();
-    CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey newPubkey, CPubKey newPubkey2, Tier nMasternodeTier, int protocolVersionIn);
+    CMasternodeBroadcast(
+        CService newAddr, 
+        CTxIn newVin, 
+        CPubKey pubKeyCollateralAddress, 
+        CPubKey pubKeyMasternode, 
+        Tier nMasternodeTier, 
+        int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
     bool CheckAndUpdate(int& nDoS);
     bool CheckInputsAndAdd(int& nDos);
     bool Sign(CKey& keyCollateralAddress);
     void Relay() const;
+    std::string getMessageToSign() const;
 
     ADD_SERIALIZE_METHODS;
 
@@ -376,7 +384,7 @@ private:
         CKey keyCollateralAddressNew,
         CMasternodeBroadcast& mnb,
         std::string& strErrorRet);
-        
+
     static bool Create(CTxIn vin, 
                         CService service,
                         CKey keyCollateralAddressNew, 

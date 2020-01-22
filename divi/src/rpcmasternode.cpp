@@ -251,30 +251,29 @@ Value setupmasternode(const Array& params, bool fHelp)
     {
         throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
     }
-
-    CKey vchSecret;
     CKey masternodeKey;
-    CPubKey masternodePubKey;
-    if (!pwalletMain->GetKey(keyID, vchSecret) || !pwalletMain->GetPubKey(keyID,masternodePubKey))
+    if (!pwalletMain->GetKey(keyID, masternodeKey))
     {
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + CBitcoinAddress(keyID).ToString() + " is not known");
     }
     
-    CTxIn vin(
-        uint256(params[1].get_str()),
-        uint32_t( std::stoi(params[2].get_str()) )
-        );
+    std::string alias = params[0].get_str();
+    std::string txHash = params[1].get_str();
+    std::string outputIndex = params[2].get_str();
+    std::string pubkeyStr = static_cast<std::string>(params[3].get_str());
+    std::string masternodeKeyStr = params[4].get_str();
+    std::string ip = params[5].get_str();
+    CPubKey pubkeyCollateralAddress;
+    pubkeyCollateralAddress.Set(pubkeyStr.begin(),pubkeyStr.end()) ;
 
-    std::string pubkeyString = params[2].get_str();
-    CPubKey pubkeyForCollateral; 
-    pubkeyForCollateral.Set(pubkeyString.begin(),pubkeyString.end());
-
-    CMasternode::Tier masternodeTier = GetMasternodeTierFromString(params[3].get_str());
-
-    CService service(params[4].get_str());
+    CMasternodeConfig::CMasternodeEntry config(alias,ip,masternodeKeyStr,txHash,outputIndex);
 
     CMasternodeBroadcast mnb;
-    CMasternodeBroadcastFactory::createWithoutSignatures(vin,service,pubkeyForCollateral,masternodePubKey, masternodeTier,false,mnb);
+    std::string errorMsg;
+    if(!CMasternodeBroadcastFactory::Create(config,pubkeyCollateralAddress,errorMsg,mnb))
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS,errorMsg);
+    }
 
     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
     result.push_back(Pair("protocol_version", PROTOCOL_VERSION ));

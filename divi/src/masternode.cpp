@@ -533,10 +533,19 @@ bool CMasternodeBroadcastFactory::setMasternodeCollateralKeys(
     const std::string& txHash, 
     const std::string& outputIndex,
     const std::string& service, 
+    bool collateralPrivKeyIsRemote,
     CTxIn& txin,
     std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
     std::string& strError)
 {
+    if(collateralPrivKeyIsRemote)
+    {
+        uint256 txid(txHash);
+        uint32_t outputIdx = static_cast<uint32_t>(std::stoi(outputIndex));
+        txin = CTxIn(txid,outputIdx);
+        masternodeCollateralKeyPair = std::pair<CKey,CPubKey>();
+        return true;
+    }
     if (!pwalletMain->GetMasternodeVinAndKeys(txin, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first, txHash, outputIndex)) {
         strError = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strError);
@@ -594,6 +603,76 @@ bool CMasternodeBroadcastFactory::checkNetworkPort(
     return true;
 }
 
+bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
+    const CMasternodeConfig::CMasternodeEntry configEntry, 
+    std::string& strErrorRet,
+    bool fOffline,
+    bool collateralPrivKeyIsRemote,
+    CTxIn& txin,
+    std::pair<CKey,CPubKey>& masternodeKeyPair,
+    std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
+    CMasternode::Tier& nMasternodeTier
+    )
+{
+    std::string strService = configEntry.getIp();
+    std::string strKeyMasternode = configEntry.getPrivKey(); 
+    std::string strTxHash = configEntry.getTxHash();
+    std::string strOutputIndex = configEntry.getOutputIndex();
+    //need correct blocks to send ping
+    if (!checkBlockchainSync(strErrorRet,fOffline)||
+        !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
+        !setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,collateralPrivKeyIsRemote,txin,masternodeCollateralKeyPair,strErrorRet) ||
+        !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet) || 
+        !checkNetworkPort(strService,strErrorRet))
+    {
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEntry configEntry,
+                    CPubKey pubkeyCollateralAddress,
+                    std::string& strErrorRet, 
+                    CMasternodeBroadcast& mnbRet,
+                    bool fOffline)
+{
+    const bool collateralPrivateKeyIsRemote = true;
+    const bool deferRelay = false;
+    CTxIn txin;
+    std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
+    std::pair<CKey,CPubKey> masternodeKeyPair;
+    CMasternode::Tier nMasternodeTier;
+
+    if(!createArgumentsFromConfig(
+        configEntry,
+        strErrorRet,
+        fOffline,
+        collateralPrivateKeyIsRemote,
+        txin,
+        masternodeKeyPair,
+        masternodeCollateralKeyPair,
+        nMasternodeTier))
+    {
+        return false;
+    }
+
+    createWithoutSignatures(
+        txin,
+        CService(configEntry.getIp()),
+        pubkeyCollateralAddress,
+        masternodeKeyPair.second,
+        nMasternodeTier,
+        deferRelay,
+        mnbRet);
+    
+    if(!signPing(masternodeKeyPair.first,masternodeKeyPair.second,mnbRet.lastPing,strErrorRet))
+    {
+        mnbRet = CMasternodeBroadcast();
+        return false;
+    }
+    return true;
+}
+
 bool CMasternodeBroadcastFactory::Create(
     const CMasternodeConfig::CMasternodeEntry configEntry, 
     std::string& strErrorRet, 
@@ -601,6 +680,7 @@ bool CMasternodeBroadcastFactory::Create(
     bool fOffline,
     bool deferRelay)
 {
+    const bool collateralPrivateKeyIsRemote = false;
     std::string strService = configEntry.getIp();
     std::string strKeyMasternode = configEntry.getPrivKey(); 
     std::string strTxHash = configEntry.getTxHash();
@@ -611,23 +691,15 @@ bool CMasternodeBroadcastFactory::Create(
     std::pair<CKey,CPubKey> masternodeKeyPair;
     CMasternode::Tier nMasternodeTier;
 
-    //need correct blocks to send ping
-    if (!checkBlockchainSync(strErrorRet,fOffline)) {
-        return false;
-    }
-    if (!setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet))
-    {
-        return false;
-    }
-    if(!setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,txin,masternodeCollateralKeyPair,strErrorRet))
-    {
-        return false;
-    }
-    if(!checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet))
-    {
-        return false;
-    }
-    if(!checkNetworkPort(strService,strErrorRet))
+    if(!createArgumentsFromConfig(
+        configEntry,
+        strErrorRet,
+        fOffline,
+        collateralPrivateKeyIsRemote,
+        txin,
+        masternodeKeyPair,
+        masternodeCollateralKeyPair,
+        nMasternodeTier))
     {
         return false;
     }

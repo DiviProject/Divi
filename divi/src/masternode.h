@@ -356,7 +356,13 @@ public:
                        CMasternodeBroadcast& mnbRet, 
                        bool fOffline = false,
                        bool deferRelay = false);
-    
+
+    static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry,
+                       CPubKey pubkeyCollateralAddress,
+                       std::string& strErrorRet, 
+                       CMasternodeBroadcast& mnbRet, 
+                       bool fOffline = false); 
+private:    
     static void createWithoutSignatures(
         CTxIn txin, 
         CService service,
@@ -366,7 +372,6 @@ public:
         bool deferRelay,
         CMasternodeBroadcast& mnbRet);
 
-private:
     static bool signPing(
         CKey keyMasternodeNew, 
         CPubKey pubKeyMasternodeNew,
@@ -404,6 +409,7 @@ private:
         const std::string& txHash, 
         const std::string& outputIndex,
         const std::string& service,
+        bool collateralPrivKeyIsRemote,
         CTxIn& txin,
         std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
         std::string& error);
@@ -417,6 +423,15 @@ private:
     static bool checkNetworkPort(
         const std::string& strService,
         std::string& strErrorRet);
+    static bool createArgumentsFromConfig(
+        const CMasternodeConfig::CMasternodeEntry configEntry, 
+        std::string& strErrorRet,
+        bool fOffline,
+        bool collateralPrivKeyIsRemote,
+        CTxIn& txin,
+        std::pair<CKey,CPubKey>& masternodeKeyPair,
+        std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
+        CMasternode::Tier& nMasternodeTier);
 };
 
 #endif

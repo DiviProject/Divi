@@ -55,17 +55,23 @@ static std::vector<unsigned char> hexToUCharVector(const std::string& hexString)
         };
 
     std::vector<unsigned char> result;
+    if(hexString.size() % 2 != 0)
+    {
+        return result;
+    }
+    result.reserve(hexString.size()/2);
+
     uint8_t leadingHexAsUint;
     uint8_t trailingHexAsUint;
     for(auto it = hexString.begin(); it != hexString.end(); ++it)
     {
         if(!toNumeric(*it++,leadingHexAsUint) ||
-           !toNumeric(*it++,trailingHexAsUint))
+           !toNumeric(*it,trailingHexAsUint))
         {
             result.clear();
             return result;
         }
-        leadingHexAsUint << 4;
+        leadingHexAsUint = leadingHexAsUint << 4;
         result.push_back( static_cast<unsigned char>( (leadingHexAsUint + trailingHexAsUint) ) );
     }
     return result;

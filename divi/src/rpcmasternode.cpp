@@ -277,9 +277,10 @@ Value setupmasternode(const Array& params, bool fHelp)
     CMasternodeBroadcastFactory::createWithoutSignatures(vin,service,pubkeyForCollateral,masternodePubKey, masternodeTier,false,mnb);
 
     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
-    ss << mnb;
     result.push_back(Pair("protocol_version", PROTOCOL_VERSION ));
-    result.push_back(Pair("broadcastData", charStringToHexString(ss.str()) ));
+    result.push_back(Pair("message_to_sign", mnb.getMessageToSign()));
+    ss << mnb;
+    result.push_back(Pair("broadcast_data", charStringToHexString(ss.str()) ));
     return result;    
 }
 

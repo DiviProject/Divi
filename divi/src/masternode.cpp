@@ -595,15 +595,17 @@ bool CMasternodeBroadcastFactory::checkNetworkPort(
 }
 
 bool CMasternodeBroadcastFactory::Create(
-    std::string strService, 
-    std::string strKeyMasternode, 
-    std::string strTxHash, 
-    std::string strOutputIndex, 
+    const CMasternodeConfig::CMasternodeEntry configEntry, 
     std::string& strErrorRet, 
     CMasternodeBroadcast& mnbRet, 
     bool fOffline,
     bool deferRelay)
 {
+    std::string strService = configEntry.getIp();
+    std::string strKeyMasternode = configEntry.getPrivKey(); 
+    std::string strTxHash = configEntry.getTxHash();
+    std::string strOutputIndex = configEntry.getOutputIndex();
+
     CTxIn txin;
     std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
     std::pair<CKey,CPubKey> masternodeKeyPair;
@@ -642,6 +644,72 @@ bool CMasternodeBroadcastFactory::Create(
                 deferRelay);
 }
 
+bool CMasternodeBroadcastFactory::signPing(
+    CKey keyMasternodeNew, 
+    CPubKey pubKeyMasternodeNew,
+    CMasternodePing& mnp,
+    std::string& strErrorRet)
+{
+    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) 
+    {
+        strErrorRet = strprintf("Failed to sign ping, masternode=%s", mnp.vin.prevout.hash.ToString());
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::signBroadcast(
+    CKey keyCollateralAddressNew,
+    CMasternodeBroadcast& mnb,
+    std::string& strErrorRet)
+{
+    if (!mnb.Sign(keyCollateralAddressNew)) 
+    {
+        strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", mnb.vin.prevout.hash.ToString());
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        mnb = CMasternodeBroadcast();
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::provideSignatures(
+    CKey keyMasternodeNew,
+    CPubKey pubKeyMasternodeNew,
+    CKey keyCollateralAddressNew,
+    CMasternodeBroadcast& mnb,
+    std::string& strErrorRet)
+{
+    if(!signPing(keyMasternodeNew,pubKeyMasternodeNew,mnb.lastPing,strErrorRet))
+    {
+        return false;
+    }
+    if (!signBroadcast(keyCollateralAddressNew,mnb,strErrorRet))
+    {
+        return false;
+    }
+    return true;
+}
+
+void CMasternodeBroadcastFactory::createWithoutSignatures(
+    CTxIn txin, 
+    CService service,
+    CPubKey pubKeyCollateralAddressNew, 
+    CPubKey pubKeyMasternodeNew, 
+    CMasternode::Tier nMasternodeTier,
+    bool deferRelay,
+    CMasternodeBroadcast& mnbRet)
+{
+    LogPrint("masternode", "CMasternodeBroadcastFactory::createWithoutSignatures -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
+             CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
+             pubKeyMasternodeNew.GetID().ToString());
+
+    CMasternodePing mnp = (deferRelay)? CMasternodePing::createDelayedMasternodePing(txin): CMasternodePing(txin);
+    mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
+    mnbRet.lastPing = mnp;
+}
+
 bool CMasternodeBroadcastFactory::Create(
     CTxIn txin, 
     CService service, 
@@ -657,25 +725,11 @@ bool CMasternodeBroadcastFactory::Create(
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;
 
-    LogPrint("masternode", "CMasternodeBroadcastFactory::Create -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
-             CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
-             pubKeyMasternodeNew.GetID().ToString());
+    createWithoutSignatures(
+        txin,service,pubKeyCollateralAddressNew,pubKeyMasternodeNew,nMasternodeTier,deferRelay,mnbRet);
 
-    CMasternodePing mnp = (deferRelay)? CMasternodePing::createDelayedMasternodePing(txin): CMasternodePing(txin);
-    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) {
-        strErrorRet = strprintf("Failed to sign ping, masternode=%s", txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
-        mnbRet = CMasternodeBroadcast();
-        return false;
-    }
-
-    mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
-
-    mnbRet.lastPing = mnp;
-    if (!mnbRet.Sign(keyCollateralAddressNew)) {
-        strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
-        mnbRet = CMasternodeBroadcast();
+    if(!provideSignatures(keyMasternodeNew,pubKeyMasternodeNew,keyCollateralAddressNew,mnbRet,strErrorRet))
+    {
         return false;
     }
 
@@ -846,16 +900,21 @@ void CMasternodeBroadcast::Relay() const
     RelayInv(inv);
 }
 
+std::string CMasternodeBroadcast::getMessageToSign() const
+{
+    std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
+    std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
+
+    std::string strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
+    return strMessage;
+}
+
 bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress)
 {
     std::string errorMessage;
 
-    std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
-    std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
-
     sigTime = GetAdjustedTime();
-
-    std::string strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
+    std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, sig, keyCollateralAddress)) {
         LogPrint("masternode","CMasternodeBroadcast::Sign() - Error: %s\n", errorMessage);
@@ -900,15 +959,17 @@ CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
     return ping;
 }
 
-
+std::string CMasternodePing::getMessageToSign() const
+{
+    return vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
+}
 
 bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 {
     std::string errorMessage;
-    std::string strMasterNodeSignMessage;
 
     sigTime = GetAdjustedTime();
-    std::string strMessage = vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
+    std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
         LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage);

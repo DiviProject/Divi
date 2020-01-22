@@ -12,6 +12,7 @@
 #include "masternodeconfig.h"
 #include "activemasternode.h"
 #include "masternodeman.h"
+#include "obfuscation.h"
 #include "rpcserver.h"
 #include "utilmoneystr.h"
 #include "script/standard.h"
@@ -20,6 +21,65 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 using namespace json_spirit;
+
+static std::string charStringToHexString(const std::string& charString)
+{
+    const char hexCharacters[] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+    std::stringstream ss;
+    for(auto it = charString.begin(); it != charString.end(); ++it)
+    {
+        uint8_t charAsUint = *it;
+        ss << hexCharacters[(charAsUint & 0xF0) >> 4];
+        ss << hexCharacters[(charAsUint & 0x0F)];
+    }
+    return ss.str();
+}
+
+static std::vector<unsigned char> hexToUCharVector(const std::string& hexString)
+{
+    const char hexCharacters[] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+    auto toNumeric = [hexCharacters](const char value,uint8_t& out) -> bool {
+        const char* start = &hexCharacters[0];
+        const char* end = start +16;
+        auto it = std::find(start,end,value);
+        if(it == end)
+        {
+            out = uint8_t(0);
+            return false;
+        }
+        else
+        {
+            out = static_cast<uint8_t>(it - &hexCharacters[0]);
+            return true;
+        }
+        };
+
+    std::vector<unsigned char> result;
+    uint8_t leadingHexAsUint;
+    uint8_t trailingHexAsUint;
+    for(auto it = hexString.begin(); it != hexString.end(); ++it)
+    {
+        if(!toNumeric(*it++,leadingHexAsUint) ||
+           !toNumeric(*it++,trailingHexAsUint))
+        {
+            result.clear();
+            return result;
+        }
+        leadingHexAsUint << 4;
+        result.push_back( static_cast<unsigned char>( (leadingHexAsUint + trailingHexAsUint) ) );
+    }
+    return result;
+}
+
+template <typename T>
+static T readFromHex(std::string hexString)
+{
+    std::vector<unsigned char> hex = ParseHex(hexString);
+    CDataStream ss(hex,SER_NETWORK,PROTOCOL_VERSION);
+    T object;
+    ss >> object;
+    return object;
+}
 
 static CMasternode::Tier GetMasternodeTierFromString(std::string str)
 {
@@ -158,6 +218,63 @@ Value fundmasternode(const Array& params, bool fHelp)
 	Object obj;
     obj.push_back(Pair("config line", boost::algorithm::join(tokens, " ")));
 	return obj;
+}
+
+Value setupmasternode(const Array& params, bool fHelp)
+{
+	if (fHelp || params.size() != 3)
+		throw runtime_error(
+			"launchmasternode alias txin collateralPubKey masternodeTier\n"
+			"\nStarts escrows funds for some purpose.\n"
+
+			"\nArguments:\n"
+			"1. alias			    (string, required) Helpful identifier to recognize this masternode later. \n"
+			"2. txHash              (string, required) Funding transaction. \n"
+            "3. outputIndex         (string, required) Output index transaction. \n"
+            "4. collateralPubkey    (string, required) collateral pubkey. \n"
+			"5. masternodeTier      (string, required) [diamond | platinum | gold | silver | copper] tier of masternode. \n"
+            "6. ip_address          (string, required) Local ip address of this node\n"
+			"\nResult:\n"
+			"\"vin\"			(string) funding transaction id necessary for next step.\n");
+
+    Object result;
+
+    CBitcoinAddress address = GetAccountAddress("reserved->" + params[0].get_str() );
+    CKeyID keyID;
+    if (!address.GetKeyID(keyID))
+    {
+        throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
+    }
+
+    CKey vchSecret;
+    CKey masternodeKey;
+    CPubKey masternodePubKey;
+    if (!pwalletMain->GetKey(keyID, vchSecret) || !pwalletMain->GetPubKey(keyID,masternodePubKey))
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + CBitcoinAddress(keyID).ToString() + " is not known");
+    }
+    
+    CTxIn vin(
+        uint256(params[1].get_str()),
+        uint32_t( std::stoi(params[2].get_str()) )
+        );
+
+    std::string pubkeyString = params[2].get_str();
+    CPubKey pubkeyForCollateral; 
+    pubkeyForCollateral.Set(pubkeyString.begin(),pubkeyString.end());
+
+    CMasternode::Tier masternodeTier = GetMasternodeTierFromString(params[3].get_str());
+
+    CService service(params[4].get_str());
+
+    CMasternodeBroadcast mnb;
+    CMasternodeBroadcastFactory::createWithoutSignatures(vin,service,pubkeyForCollateral,masternodePubKey, masternodeTier,false,mnb);
+
+    CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
+    ss << mnb;
+    result.push_back(Pair("protocol_version", PROTOCOL_VERSION ));
+    result.push_back(Pair("broadcastData", charStringToHexString(ss.str()) ));
+    return result;    
 }
 
 Value getpoolinfo(const Array& params, bool fHelp)
@@ -332,20 +449,24 @@ Value masternodecurrent(const Array& params, bool fHelp)
 
 Value broadcaststartmasternode(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 1)
+    if (fHelp || params.size() > 2 || params.size() < 1)
         throw runtime_error(
             "broadcaststartmasternode hex\n"
             "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
             "\nArguments:\n"
-            "1. broadcast_hex			(hex, required) hex representation of broadcast data.\n"
+            "1. broadcast_hex			 (hex, required) hex representation of broadcast data.\n"
+            "2. appendBroadcastSignature (hex, optional) hex representation of collateral signature.\n"
             "\nResult:\n"
             "\"status\"	(string) status of broadcast\n");
+
     Object result;
-    std::vector<unsigned char> broadcastHex = ParseHex(params.at(0).get_str());
-    CDataStream ss(broadcastHex,SER_NETWORK,PROTOCOL_VERSION);
-    CMasternodeBroadcast mnb;
-    ss >> mnb;
+    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params.at(0).get_str());
+    if(params.size()==2) 
+    {
+        mnb.sig = hexToUCharVector(params.at(1).get_str());
+    }
+
     int DoS = 0;
     if(mnb.CheckInputsAndAdd(DoS))
     {
@@ -358,18 +479,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
     }
     return result;
 }
-std::string charStringToHexString(const std::string& charString)
-{
-    const char hexCharacters[] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-    std::stringstream ss;
-    for(auto it = charString.begin(); it != charString.end(); ++it)
-    {
-        uint8_t charAsUint = *it;
-        ss << hexCharacters[(charAsUint & 0xF0) >> 4];
-        ss << hexCharacters[(charAsUint & 0x0F)];
-    }
-    return ss.str();
-}
+
 Value startmasternode(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2)
@@ -396,10 +506,7 @@ Value startmasternode(const Array& params, bool fHelp)
             std::string strError;
             CMasternodeBroadcast mnb;
             if(CActiveMasternode::Register(
-                configEntry.getIp(), 
-                configEntry.getPrivKey(), 
-                configEntry.getTxHash(), 
-                configEntry.getOutputIndex(), 
+                configEntry, 
                 strError,
                 mnb,
                 deferRelay))

@@ -228,7 +228,7 @@ Value fundmasternode(const Array& params, bool fHelp)
 
 Value setupmasternode(const Array& params, bool fHelp)
 {
-	if (fHelp || params.size() != 3)
+	if (fHelp || params.size() != 6)
 		throw runtime_error(
 			"launchmasternode alias txin collateralPubKey masternodeTier\n"
 			"\nStarts escrows funds for some purpose.\n"
@@ -260,13 +260,14 @@ Value setupmasternode(const Array& params, bool fHelp)
     std::string alias = params[0].get_str();
     std::string txHash = params[1].get_str();
     std::string outputIndex = params[2].get_str();
-    std::string pubkeyStr = static_cast<std::string>(params[3].get_str());
-    std::string masternodeKeyStr = params[4].get_str();
-    std::string ip = params[5].get_str();
+    std::vector<unsigned char> pubkeyStr = ParseHex(static_cast<std::string>(params[3].get_str()));
     CPubKey pubkeyCollateralAddress;
-    pubkeyCollateralAddress.Set(pubkeyStr.begin(),pubkeyStr.end()) ;
+    pubkeyCollateralAddress.Set(pubkeyStr.begin(),pubkeyStr.end());
 
-    CMasternodeConfig::CMasternodeEntry config(alias,ip,masternodeKeyStr,txHash,outputIndex);
+    std::string masternodeTier = params[4].get_str();
+    std::string ip = params[5].get_str();
+
+    CMasternodeConfig::CMasternodeEntry config(alias,ip,CBitcoinSecret(masternodeKey).ToString(),txHash,outputIndex);
 
     CMasternodeBroadcast mnb;
     std::string errorMsg;
@@ -277,7 +278,7 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
     result.push_back(Pair("protocol_version", PROTOCOL_VERSION ));
-    result.push_back(Pair("message_to_sign", mnb.getMessageToSign()));
+    result.push_back(Pair("message_to_sign", charStringToHexString(mnb.getMessageToSign()) ));
     ss << mnb;
     result.push_back(Pair("broadcast_data", charStringToHexString(ss.str()) ));
     return result;    
@@ -470,7 +471,8 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
     CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params.at(0).get_str());
     if(params.size()==2) 
     {
-        mnb.sig = hexToUCharVector(params.at(1).get_str());
+        std::string decodedSignature = DecodeBase64(params.at(1).get_str());
+        mnb.sig = std::vector<unsigned char>(decodedSignature.begin(),decodedSignature.end());
     }
 
     int DoS = 0;

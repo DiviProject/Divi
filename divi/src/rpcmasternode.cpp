@@ -475,8 +475,9 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
         mnb.sig = std::vector<unsigned char>(decodedSignature.begin(),decodedSignature.end());
     }
 
-    int DoS = 0;
-    if(mnb.CheckInputsAndAdd(DoS))
+    int nDoS = 0;
+    if(mnb.CheckAndUpdate(nDoS) && 
+        mnb.CheckInputsAndAdd(nDoS))
     {
         mnb.Relay();
         result.push_back(Pair("status", "success"));

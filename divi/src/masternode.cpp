@@ -637,7 +637,7 @@ bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEnt
                     bool fOffline)
 {
     const bool collateralPrivateKeyIsRemote = true;
-    const bool deferRelay = false;
+    const bool deferRelay = true;
     CTxIn txin;
     std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
     std::pair<CKey,CPubKey> masternodeKeyPair;

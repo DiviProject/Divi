@@ -22,61 +22,6 @@
 #include <fstream>
 using namespace json_spirit;
 
-static std::string charStringToHexString(const std::string& charString)
-{
-    const char hexCharacters[] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-    std::stringstream ss;
-    for(auto it = charString.begin(); it != charString.end(); ++it)
-    {
-        uint8_t charAsUint = *it;
-        ss << hexCharacters[(charAsUint & 0xF0) >> 4];
-        ss << hexCharacters[(charAsUint & 0x0F)];
-    }
-    return ss.str();
-}
-
-static std::vector<unsigned char> hexToUCharVector(const std::string& hexString)
-{
-    const char hexCharacters[] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-    auto toNumeric = [hexCharacters](const char value,uint8_t& out) -> bool {
-        const char* start = &hexCharacters[0];
-        const char* end = start +16;
-        auto it = std::find(start,end,value);
-        if(it == end)
-        {
-            out = uint8_t(0);
-            return false;
-        }
-        else
-        {
-            out = static_cast<uint8_t>(it - &hexCharacters[0]);
-            return true;
-        }
-        };
-
-    std::vector<unsigned char> result;
-    if(hexString.size() % 2 != 0)
-    {
-        return result;
-    }
-    result.reserve(hexString.size()/2);
-
-    uint8_t leadingHexAsUint;
-    uint8_t trailingHexAsUint;
-    for(auto it = hexString.begin(); it != hexString.end(); ++it)
-    {
-        if(!toNumeric(*it++,leadingHexAsUint) ||
-           !toNumeric(*it,trailingHexAsUint))
-        {
-            result.clear();
-            return result;
-        }
-        leadingHexAsUint = leadingHexAsUint << 4;
-        result.push_back( static_cast<unsigned char>( (leadingHexAsUint + trailingHexAsUint) ) );
-    }
-    return result;
-}
-
 template <typename T>
 static T readFromHex(std::string hexString)
 {
@@ -278,9 +223,9 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
     result.push_back(Pair("protocol_version", PROTOCOL_VERSION ));
-    result.push_back(Pair("message_to_sign", charStringToHexString(mnb.getMessageToSign()) ));
+    result.push_back(Pair("message_to_sign", HexStr(mnb.getMessageToSign()) ));
     ss << mnb;
-    result.push_back(Pair("broadcast_data", charStringToHexString(ss.str()) ));
+    result.push_back(Pair("broadcast_data", HexStr(ss.str()) ));
     return result;    
 }
 
@@ -525,7 +470,7 @@ Value startmasternode(const Array& params, bool fHelp)
                 {
                     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
                     ss << mnb;
-                    result.push_back(Pair("broadcastData", charStringToHexString(ss.str()) ));
+                    result.push_back(Pair("broadcastData", HexStr(ss.str()) ));
                 }
                 fFound = true;
             }

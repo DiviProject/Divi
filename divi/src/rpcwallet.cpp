@@ -449,14 +449,15 @@ Value listaddressgroupings(const Array& params, bool fHelp)
 
 Value signmessage(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 2)
+    if (fHelp || params.size() < 2 || params.size() > 3)
         throw runtime_error(
                 "signmessage \"diviaddress\" \"message\"\n"
                 "\nSign a message with the private key of an address" +
                 HelpRequiringPassphrase() + "\n"
                                             "\nArguments:\n"
-                                            "1. \"diviaddress\"  (string, required) The divi address to use for the private key.\n"
-                                            "2. \"message\"         (string, required) The message to create a signature of.\n"
+                                            "1. \"diviaddress\"    (string, required) The divi address to use for the private key.\n"
+                                            "2. \"message\"        (string, required) The message to create a signature of.\n"
+                                            "2. \"format\"         (string, optional) Message encoding format. Default plaintext\n"
                                             "\nResult:\n"
                                             "\"signature\"          (string) The signature of the message encoded in base 64\n"
                                             "\nExamples:\n"
@@ -470,7 +471,19 @@ Value signmessage(const Array& params, bool fHelp)
 
     string strAddress = params[0].get_str();
     string strMessage = params[1].get_str();
-
+    if(params.size()==3)
+    {
+        string format = static_cast<string>(params[2].get_str());
+        if(std::strcmp(format.c_str(),"hex")==0)
+        {
+            valtype decodedHex = ParseHex(strMessage);
+            strMessage = string(decodedHex.begin(),decodedHex.end());
+        }
+        else if(std::strcmp(format.c_str(),"b64")==0)
+        {
+            strMessage = DecodeBase64(strMessage);
+        }
+    }
     CBitcoinAddress addr(strAddress);
     if (!addr.IsValid())
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");

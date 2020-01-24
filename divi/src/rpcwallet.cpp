@@ -1171,7 +1171,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
     bool fAllAccounts = (strAccount == string("*"));
 
     if (wtx.IsCoinStake()) {
-        int64_t nTime = wtx.GetComputedTxTime();
+        wtx.GetComputedTxTime();
         CAmount nCredit = wtx.GetCredit(ISMINE_ALL);
         CAmount nDebit = wtx.GetDebit(ISMINE_ALL);
         CAmount nNet = nCredit - nDebit;

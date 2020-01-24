@@ -403,7 +403,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 2 || params.size() < 1)
         throw runtime_error(
-            "broadcaststartmasternode hex\n"
+            "broadcaststartmasternode hex sig\n"
             "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
             "\nArguments:\n"
@@ -413,11 +413,10 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
             "\"status\"	(string) status of broadcast\n");
 
     Object result;
-    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params.at(0).get_str());
+    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params[0].get_str());
     if(params.size()==2) 
     {
-        std::string decodedSignature = DecodeBase64(params.at(1).get_str());
-        mnb.sig = std::vector<unsigned char>(decodedSignature.begin(),decodedSignature.end());
+        mnb.sig = ParseHex(params[1].get_str());
     }
 
     int nDoS = 0;

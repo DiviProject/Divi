@@ -81,13 +81,17 @@ Value allocatefunds(const Array& params, bool fHelp)
 			"\"vin\"			(string) funding transaction id necessary for next step.\n");
 
     if (params[0].get_str() != "masternode")
+    {
         throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
+    }
 	CBitcoinAddress acctAddr = GetAccountAddress("alloc->" + params[1].get_str());
 	string strAmt = params[2].get_str();
 
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
     if(!CMasternode::IsTierValid(nMasternodeTier))
+    {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
+    }
 
 	CWalletTx wtx;
     SendMoney(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), wtx);
@@ -119,7 +123,9 @@ Value fundmasternode(const Array& params, bool fHelp)
     auto nMasternodeTier = GetMasternodeTierFromString(params[1].get_str());
 
     if(!CMasternode::IsTierValid(nMasternodeTier))
+    {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
+    }
 
 	uint256 txHash = uint256(params[2].get_str());
 	std::string mnAddress = params[3].get_str();
@@ -283,12 +289,10 @@ Value listmasternodes(const Array& params, bool fHelp)
             HelpExampleCli("masternodelist", "") + HelpExampleRpc("masternodelist", ""));
 
     Array ret;
-    int nHeight;
     {
         LOCK(cs_main);
         CBlockIndex* pindex = chainActive.Tip();
         if(!pindex) return 0;
-        nHeight = pindex->nHeight;
     }
     for(auto &&entry : mnodeman.GetFullMasternodeVector()) {
         Object obj;

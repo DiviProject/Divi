@@ -26,6 +26,16 @@
 #include <univalue.h>
 #include <fstream>
 
+template <typename T>
+static T readFromHex(std::string hexString)
+{
+    std::vector<unsigned char> hex = ParseHex(hexString);
+    CDataStream ss(hex,SER_NETWORK,PROTOCOL_VERSION);
+    T object;
+    ss >> object;
+    return object;
+}
+
 static CMasternode::Tier GetMasternodeTierFromString(std::string str)
 {
     boost::algorithm::to_lower(str); // modifies str
@@ -101,15 +111,18 @@ static UniValue allocatefunds(const JSONRPCRequest& request)
                 "\"vin\"			(string) funding transaction id necessary for next step.\n");
 
     if (request.params[0].get_str() != "masternode")
+    {
         throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
-
+    }
     LOCK(pwallet->cs_wallet);
     auto label = "alloc->" + request.params[1].get_str();
     string strAmt = request.params[2].get_str();
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
     if(!CMasternode::IsTierValid(nMasternodeTier))
+    {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
-
+    }
+        
     auto acctAddr = GetOrGenerateAddressForLabel(pwallet, label);
 
     auto locked_chain = pwallet->chain().lock();
@@ -151,7 +164,9 @@ static UniValue fundmasternode(const JSONRPCRequest& request)
     auto nMasternodeTier = GetMasternodeTierFromString(request.params[1].get_str());
 
     if(!CMasternode::IsTierValid(nMasternodeTier))
+    {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
+    }
 
     uint256 txHash;
     txHash.SetHex(request.params[2].get_str());
@@ -181,7 +196,9 @@ static UniValue fundmasternode(const JSONRPCRequest& request)
     }
 
     if (!pwallet->IsLocked())
+    {
         pwallet->TopUpKeyPool();
+    }    
 
     // Generate a new key that is added to wallet
     auto label = "reserved->" + alias;
@@ -194,7 +211,9 @@ static UniValue fundmasternode(const JSONRPCRequest& request)
 
     CKey vchSecret;
     if (!pwallet->GetKey(*keyID, vchSecret))
+    {    
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + EncodeDestination(address) + " is not known");
+    }
 
     auto tokens = {
         alias,
@@ -207,6 +226,73 @@ static UniValue fundmasternode(const JSONRPCRequest& request)
     UniValue obj(UniValue::VOBJ);
     obj.pushKV("config line", boost::algorithm::join(tokens, " "));
     return obj;
+}
+
+// TODO fix method
+static UniValue setupmasternode(const JSONRPCRequest& request)
+{
+    std::shared_ptr<CWallet> wallet = GetWalletForJSONRPCRequest(request);
+    CWallet* pwallet = wallet.get();
+
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+    const auto& params = request.params;
+
+	if (request.fHelp || params.size() != 5)
+		throw runtime_error(
+			"setupmasternode alias txin outputidx collateralPubKey ipaddress\n"
+			"\nStarts escrows funds for some purpose.\n"
+
+			"\nArguments:\n"
+			"1. alias			    (string, required) Helpful identifier to recognize this masternode later. \n"
+			"2. txHash              (string, required) Funding transaction. \n"
+            "3. outputIndex         (string, required) Output index transaction. \n"
+            "4. collateralPubkey    (string, required) collateral pubkey. \n"
+            "5. ip_address          (string, required) Local ip address of this node\n"
+			"\nResult:\n"
+			"\"vin\"			(string) funding transaction id necessary for next step.\n");
+
+    UniValue result(UniValue::VOBJ);
+
+    std::string label = "reserved->" + params[0].get_str();
+    auto address = GetOrGenerateAddressForLabel(pwallet, label);
+    CKeyID *keyID = boost::get<CKeyID>(&address);
+    if (keyID == nullptr)
+    {
+        throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
+    }
+    CKey masternodeKey;
+    if (!pwallet->GetKey(*keyID, masternodeKey))
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + EncodeDestination(*keyID) + " is not known");
+    }
+    
+    std::string alias = params[0].get_str();
+    std::string txHash = params[1].get_str();
+    std::string outputIndex = params[2].get_str();
+    std::vector<unsigned char> pubkeyStr = ParseHex(static_cast<std::string>(params[3].get_str()));
+    CPubKey pubkeyCollateralAddress;
+    pubkeyCollateralAddress.Set(pubkeyStr.begin(),pubkeyStr.end());
+
+    std::string ip = params[4].get_str();
+
+    CMasternodeConfig::CMasternodeEntry config(alias,ip,EncodeSecret(masternodeKey),txHash,outputIndex);
+
+    CMasternodeBroadcast mnb;
+    std::string errorMsg;
+    if(!CMasternodeBroadcastFactory::Create(*pwallet,config,pubkeyCollateralAddress,errorMsg,mnb))
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS,errorMsg);
+    }
+
+    CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
+    result.pushKV("protocol_version", PROTOCOL_VERSION );
+    result.pushKV("message_to_sign", HexStr(mnb.getMessageToSign()) );
+    ss << mnb;
+    result.pushKV("broadcast_data", HexStr(ss.str()) );
+    return result;    
 }
 
 string nodeHelp(string indent = "")
@@ -367,6 +453,41 @@ static UniValue getmasternodecount (const JSONRPCRequest& request)
     return obj;
 }
 
+static UniValue broadcaststartmasternode(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() > 2 || request.params.size() < 1)
+        throw runtime_error(
+            "broadcaststartmasternode hex sig\n"
+            "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
+
+            "\nArguments:\n"
+            "1. broadcast_hex			 (hex, required) hex representation of broadcast data.\n"
+            "2. appendBroadcastSignature (hex, optional) hex representation of collateral signature.\n"
+            "\nResult:\n"
+            "\"status\"	(string) status of broadcast\n");
+
+    const auto& params = request.params;
+    UniValue result(UniValue::VOBJ);
+    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params[0].get_str());
+    if(params.size()==2) 
+    {
+        mnb.sig = ParseHex(params[1].get_str());
+    }
+
+    int nDoS = 0;
+    if(mnb.CheckAndUpdate(nDoS,*g_connman) && 
+        mnb.CheckInputsAndAdd(nDoS,*g_connman))
+    {
+        mnb.Relay(*g_connman);
+        result.push_back(Pair("status", "success"));
+    }
+    else
+    {
+        result.push_back(Pair("status","failed"));
+    }
+    return result;
+}
+
 static UniValue startmasternode(const JSONRPCRequest& request)
 {
     std::shared_ptr<CWallet> wallet = GetWalletForJSONRPCRequest(request);
@@ -376,17 +497,19 @@ static UniValue startmasternode(const JSONRPCRequest& request)
         return NullUniValue;
     }
 
-    if (request.fHelp || request.params.size() < 1)
+    if (request.fHelp || request.params.size() > 2 || request.params.size() == 0)
         throw runtime_error(
                 "startmasternode alias\n"
                 "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
                 "\nArguments:\n"
                 "1. alias			(string, required) helpful identifier to recognize this allocation later.\n"
+                "2. deferRelay      (bool, optional) returns broadcast data to delegate signaling masternode start.\n"
                 "\nResult:\n"
                 "\"status\"	(string) status of masternode\n");
 
     auto alias = request.params[0].get_str();
+    bool deferRelay = (request.params.size()==2)? request.params[1].get_bool(): false;
 
     UniValue result(UniValue::VOBJ);
     bool fFound = false;
@@ -396,9 +519,22 @@ static UniValue startmasternode(const JSONRPCRequest& request)
         {
             fFound = true;
             std::string strError;
-            if(CActiveMasternode::Register(*pwallet, configEntry.getIp(), configEntry.getPrivKey(), configEntry.getTxHash(), configEntry.getOutputIndex(), strError, *g_connman))
+            CMasternodeBroadcast mnb;
+            if(CActiveMasternode::Register(
+                *pwallet, 
+                configEntry, 
+                strError,
+                *g_connman,
+                deferRelay,
+                mnb))
             {
                 result.pushKV("status", "success");
+                if(deferRelay)
+                {
+                    CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
+                    ss << mnb;
+                    result.pushKV("broadcast_data", HexStr(ss.str()) );   
+                }
             }
             else
             {
@@ -511,6 +647,8 @@ static const CRPCCommand commands[] =
   { "masternode",            "listmasternodes",          &listmasternodes,          {"filter"}},
   { "masternode",            "fundmasternode",           &fundmasternode,           {"alias", "amount", "txid", "type"}},
   { "masternode",            "allocatefunds",            &allocatefunds,            {"purpose", "identifier", "amount"}},
+  { "masternode",            "setupmasternode",          &setupmasternode,            {"alias","txin","outputidx","collateralPubKey","ipaddress"}},
+  { "masternode",            "broadcaststartmasternode",            &broadcaststartmasternode,            {"hex", "sig"}},
 };
 // clang-format on
 

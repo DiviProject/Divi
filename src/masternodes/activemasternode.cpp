@@ -219,11 +219,15 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage, CConnman &
     }
 }
 
-bool CActiveMasternode::Register(CWallet &wallet, std::string strService, std::string strKeyMasternode, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage, CConnman &connman)
+bool CActiveMasternode::Register(
+    CWallet &wallet, 
+    const CMasternodeConfig::CMasternodeEntry& config,
+    std::string& errorMessage, 
+    CConnman &connman,
+    bool deferRelay,
+    CMasternodeBroadcast& mnb)
 {
-
-    CMasternodeBroadcast mnb;
-    if(!CMasternodeBroadcast::Create(wallet, strService, strKeyMasternode, strTxHash, strOutputIndex, errorMessage, mnb, false))
+    if(!CMasternodeBroadcastFactory::Create(wallet, config, errorMessage, mnb, false,deferRelay))
         return false;
 
     CService localv4;
@@ -231,10 +235,10 @@ bool CActiveMasternode::Register(CWallet &wallet, std::string strService, std::s
 
     connman.AddNewAddresses({CAddress(mnb.addr, NODE_NETWORK)}, CAddress(localv4, NODE_NETWORK), 2 * 60 * 60);
 
-    return Register(mnb, connman);
+    return Register(mnb, connman, deferRelay);
 }
 
-bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, CConnman &connman)
+bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, CConnman &connman, bool deferRelay)
 {
     auto mnp = mnb.lastPing;
     mnodeman.mapSeenMasternodePing.insert(make_pair(mnp.GetHash(), mnp));
@@ -253,7 +257,7 @@ bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, CConnman &connman)
 
     //send to all peers
     LogPrintf("CActiveMasternode::Register() - RelayElectionEntry vin = %s\n", mnb.vin.ToString());
-    mnb.Relay(connman);
+    if(!deferRelay){ mnb.Relay(connman); LogPrintf("CActiveMasternode::Register() - deferring relay");}
 
     return true;
 }

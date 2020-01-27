@@ -9,6 +9,7 @@
 #include <init.h>
 #include <key.h>
 #include <masternodes/masternode.h>
+#include <masternodes/masternodeconfig.h>
 #include <net.h>
 #include <sync.h>
 #include <wallet/wallet.h>
@@ -31,7 +32,7 @@ private:
 
     static bool GetVinFromOutput(CWallet &wallet, COutput out, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
     /// Register any Masternode
-    static bool Register(CMasternodeBroadcast &mnb, CConnman &connman);
+    static bool Register(CMasternodeBroadcast &mnb, CConnman &connman,bool deferRelay = false);
 
     /// Get 10000 PIV input that can be used for the Masternode
     static bool GetMasterNodeVin(CWallet &wallet, CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex);
@@ -58,7 +59,13 @@ public:
     std::string GetStatus();
 
     /// Register remote Masternode
-    static bool Register(CWallet &wallet, std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage, CConnman &connman);
+    static bool Register(
+        CWallet &wallet, 
+        const CMasternodeConfig::CMasternodeEntry& config, 
+        std::string& errorMessage,
+        CConnman &connman,
+        bool deferRelay,
+        CMasternodeBroadcast& mnb);
 
     /// Get 10000 PIV input that can be used for the Masternode
     bool GetMasterNodeVin(CWallet &wallet, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
@@ -69,6 +76,7 @@ public:
 };
 
 extern CActiveMasternode activeMasternode;
+// TODO fix - remove these extern variables appropriately
 extern bool fMasterNode;
 extern std::string strMasterNodePrivKey;
 extern std::string strMasterNodeAddr;

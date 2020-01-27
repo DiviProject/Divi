@@ -339,12 +339,10 @@ static UniValue listmasternodes(const JSONRPCRequest& request)
                 HelpExampleCli("masternodelist", "") + HelpExampleRpc("masternodelist", ""));
 
     UniValue ret(UniValue::VARR);
-    int nHeight;
     {
         LOCK(cs_main);
         CBlockIndex* pindex = chainActive.Tip();
         if(!pindex) return 0;
-        nHeight = pindex->nHeight;
     }
     for(auto &&entry : mnodeman.GetFullMasternodeVector()) {
         UniValue obj(UniValue::VOBJ);

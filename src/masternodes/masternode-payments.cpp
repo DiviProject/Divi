@@ -410,7 +410,6 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, CValida
 bool CMasternodePaymentWinner::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 {
     std::string errorMessage;
-    std::string strMasterNodeSignMessage;
 
     std::string strMessage = vinMasternode.prevout.ToStringShort() +
             boost::lexical_cast<std::string>(nBlockHeight) +

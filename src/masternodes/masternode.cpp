@@ -1053,7 +1053,6 @@ std::string CMasternodePing::getMessageToSign() const
 bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 {
     std::string errorMessage;
-    std::string strMasterNodeSignMessage;
 
     sigTime = GetAdjustedTime();
     std::string strMessage = getMessageToSign();

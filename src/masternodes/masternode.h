@@ -13,6 +13,8 @@
 #include <sync.h>
 #include <timedata.h>
 
+#include <masternodes/masternodeconfig.h>
+
 #define MASTERNODE_MIN_CONFIRMATIONS 15
 #define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
 #define MASTERNODE_MIN_MNB_SECONDS (5 * 60)
@@ -26,6 +28,7 @@ using namespace std;
 class CWallet;
 class CMasternode;
 class CMasternodeBroadcast;
+class CMasternodeBroadcastFactory;
 class CMasternodePing;
 extern map<int64_t, uint256> mapCacheBlockHashes;
 
@@ -46,6 +49,7 @@ public:
 
     CMasternodePing();
     CMasternodePing(CTxIn& newVin);
+    static CMasternodePing createDelayedMasternodePing(CTxIn& newVin);
 
     ADD_SERIALIZE_METHODS;
 
@@ -58,6 +62,7 @@ public:
         READWRITE(vchSig);
     }
 
+    std::string getMessageToSign() const;
     bool CheckAndUpdate(int& nDos, bool fRequireEnabled, CConnman &connman);
     bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
     void Relay(CConnman &connman);
@@ -301,13 +306,20 @@ class CMasternodeBroadcast : public CMasternode
 {
 public:
     CMasternodeBroadcast();
-    CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey newPubkey, CPubKey newPubkey2, Tier nMasternodeTier, int protocolVersionIn);
+    CMasternodeBroadcast(
+        CService newAddr, 
+        CTxIn newVin, 
+        CPubKey pubKeyCollateralAddress, 
+        CPubKey pubKeyMasternode, 
+        Tier nMasternodeTier, 
+        int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
     bool CheckAndUpdate(int& nDoS, CConnman &connman);
     bool CheckInputsAndAdd(int& nDos, CConnman &connman);
     bool Sign(CKey& keyCollateralAddress);
     void Relay(CConnman &connman) const;
+    std::string getMessageToSign() const;
 
     ADD_SERIALIZE_METHODS;
 
@@ -332,14 +344,103 @@ public:
         ss << pubKeyCollateralAddress;
         return ss.GetHash();
     }
+};
 
+class CMasternodeBroadcastFactory
+{
+public:
     /// Create Masternode broadcast, needs to be relayed manually after that
-    static bool Create(CTxIn vin, CService service,
-                       CKey keyCollateralAddressNew, CPubKey pubKeyCollateralAddressNew,
-                       CKey keyMasternodeNew, CPubKey pubKeyMasternodeNew,
-                       Tier nMasternodeTier,
-                       std::string& strErrorRet, CMasternodeBroadcast& mnbRet);
-    static bool Create(CWallet &wallet, std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& strErrorRet, CMasternodeBroadcast& mnbRet, bool fOffline = false);
+    static bool Create(
+        CWallet& wallet,
+        const CMasternodeConfig::CMasternodeEntry& configEntry, 
+        std::string& strErrorRet, 
+        CMasternodeBroadcast& mnbRet, 
+        bool fOffline = false,
+        bool deferRelay = false);
+
+    static bool Create(
+        CWallet& wallet,
+        const CMasternodeConfig::CMasternodeEntry& configEntry,
+        CPubKey pubkeyCollateralAddress,
+        std::string& strErrorRet, 
+        CMasternodeBroadcast& mnbRet, 
+        bool fOffline = false);
+
+private:    
+    static void createWithoutSignatures(
+        CTxIn txin, 
+        CService service,
+        CPubKey pubKeyCollateralAddressNew, 
+        CPubKey pubKeyMasternodeNew, 
+        CMasternode::Tier nMasternodeTier,
+        bool deferRelay,
+        CMasternodeBroadcast& mnbRet);
+
+    static bool signPing(
+        CKey keyMasternodeNew, 
+        CPubKey pubKeyMasternodeNew,
+        CMasternodePing& mnp,
+        std::string& strErrorRet);
+
+    static bool signBroadcast(
+        CKey keyCollateralAddressNew,
+        CMasternodeBroadcast& mnb,
+        std::string& strErrorRet);
+
+    static bool provideSignatures(
+        CKey keyMasternodeNew,
+        CPubKey pubKeyMasternodeNew,
+        CKey keyCollateralAddressNew,
+        CMasternodeBroadcast& mnb,
+        std::string& strErrorRet);
+
+    static bool Create(CTxIn vin, 
+        CService service,
+        CKey keyCollateralAddressNew, 
+        CPubKey pubKeyCollateralAddressNew,
+        CKey keyMasternodeNew, 
+        CPubKey pubKeyMasternodeNew,
+        CMasternode::Tier nMasternodeTier,
+        std::string& strErrorRet, 
+        CMasternodeBroadcast& mnbRet,
+        bool deferRelay);
+    static bool checkBlockchainSync(std::string& strErrorRet, bool fOffline);
+    static bool setMasternodeKeys(
+        const std::string& strKeyMasternode, 
+        std::pair<CKey,CPubKey>& masternodeKeyPair, 
+        std::string& strErrorRet);
+    static bool setMasternodeCollateralKeys(
+        const std::string& txHash, 
+        const std::string& outputIndex,
+        const std::string& service,
+        CWallet& wallet,
+        bool collateralPrivKeyIsRemote,
+        CTxIn& txin,
+        std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
+        std::string& error);
+    static bool checkMasternodeCollateral(
+        const CTxIn& txin,
+        const std::string& txHash, 
+        const std::string& outputIndex,
+        const std::string& service,
+        CWallet& wallet,
+        CMasternode::Tier& nMasternodeTier,
+        std::string& strErrorRet);
+    static bool checkNetworkPort(
+        const std::string& strService,
+        std::string& strErrorRet,
+        CService& service);
+    static bool createArgumentsFromConfig(
+        const CMasternodeConfig::CMasternodeEntry configEntry, 
+        CWallet& wallet,
+        std::string& strErrorRet,
+        bool fOffline,
+        bool collateralPrivKeyIsRemote,
+        CTxIn& txin,
+        std::pair<CKey,CPubKey>& masternodeKeyPair,
+        std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
+        CMasternode::Tier& nMasternodeTier,
+        CService& service);
 };
 
 #endif

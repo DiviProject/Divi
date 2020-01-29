@@ -537,7 +537,7 @@ static UniValue signmessage(const JSONRPCRequest& request)
         return NullUniValue;
     }
 
-    if (request.fHelp || request.params.size() != 2)
+    if (request.fHelp || request.params.size() < 2 || request.params.size() > 4)
         throw std::runtime_error(
             RPCHelpMan{"signmessage",
                 "\nSign a message with the private key of an address" +
@@ -545,6 +545,8 @@ static UniValue signmessage(const JSONRPCRequest& request)
                 {
                     {"address", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The divi address to use for the private key."},
                     {"message", RPCArg::Type::STR, /* opt */ false, /* default_val */ "", "The message to create a signature of."},
+                    {"msg_encoding", RPCArg::Type::STR, /* opt */ true, /* default_val */ "", "The encoding of the input msg (e.g. 'hex')."},
+                    {"sig_encoding", RPCArg::Type::STR, /* opt */ true, /* default_val */ "b64", "The encoding of the signature (e.g. 'hex' or 'b64')."},
                 }}
                 .ToString() +
             "\nResult:\n"
@@ -567,6 +569,15 @@ static UniValue signmessage(const JSONRPCRequest& request)
 
     std::string strAddress = request.params[0].get_str();
     std::string strMessage = request.params[1].get_str();
+    if(request.params.size()>2)
+    {
+        std::string inputEncoding = request.params[2].get_str();
+        if(std::strcmp(inputEncoding.c_str(),"hex")==0)
+        {
+            std::vector<unsigned char> hexMsg = ParseHex(strMessage);
+            strMessage = std::string(hexMsg.begin(), hexMsg.end());
+        }
+    }
 
     CTxDestination dest = DecodeDestination(strAddress);
     if (!IsValidDestination(dest)) {
@@ -591,6 +602,14 @@ static UniValue signmessage(const JSONRPCRequest& request)
     if (!key.SignCompact(ss.GetHash(), vchSig))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
 
+    if(request.params.size()>3)
+    {
+        std::string outputEncoding = request.params[3].get_str();
+        if(std::strcmp(outputEncoding.c_str(),"hex")==0)
+        {
+            return HexStr(vchSig);
+        }
+    }
     return EncodeBase64(vchSig.data(), vchSig.size());
 }
 

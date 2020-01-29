@@ -252,7 +252,10 @@ static UniValue setupmasternode(const JSONRPCRequest& request)
             "4. collateralPubkey    (string, required) collateral pubkey. \n"
             "5. ip_address          (string, required) Local ip address of this node\n"
 			"\nResult:\n"
-			"\"vin\"			(string) funding transaction id necessary for next step.\n");
+			"\"protocol_version\"			(string) Protocol version used for serialization.\n"
+            "\"message_to_sign\"			(string) Hex-encoded msg requiring collateral signature.\n"
+            "\"config_line\"			    (string) Configuration data needed in the.\n"
+            "\"broadcast_data\"			    (string) funding transaction id necessary for next step.\n");
 
     UniValue result(UniValue::VOBJ);
 
@@ -290,6 +293,8 @@ static UniValue setupmasternode(const JSONRPCRequest& request)
     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
     result.pushKV("protocol_version", PROTOCOL_VERSION );
     result.pushKV("message_to_sign", HexStr(mnb.getMessageToSign()) );
+    result.pushKV("config_line",config.getAlias()+" "+ip+":"+
+        std::to_string(Params().GetDefaultPort()) +" "+ EncodeSecret(masternodeKey)+" "+txHash+" "+outputIndex);
     ss << mnb;
     result.pushKV("broadcast_data", HexStr(ss.str()) );
     return result;    

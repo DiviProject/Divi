@@ -103,12 +103,12 @@ void MineGenesis(CBlock genesis)
 //   (no blocks before with a timestamp after, none after with
 //    timestamp before)
 // + Contains no strange transactions
-static CCheckpoints::MapCheckpoints mapCheckpoints =
+static MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
         (0, uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"))
         (100, uint256("0x000000275b2b4a8af2c93ebdfd36ef8dd8c8ec710072bcc388ecbf5d0c8d3f9d"));
 
-static const CCheckpoints::CCheckpointData data = {
+static const CCheckpointData data = {
     &mapCheckpoints,
     1538069980, // * UNIX timestamp of last checkpoint block
     100,    // * total number of transactions between genesis and last checkpoint
@@ -116,17 +116,17 @@ static const CCheckpoints::CCheckpointData data = {
     2000        // * estimated number of transactions per day after checkpoint
 };
 
-static CCheckpoints::MapCheckpoints mapCheckpointsTestnet =
+static MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of(0, uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
-static const CCheckpoints::CCheckpointData dataTestnet = {
+static const CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
     1537971708,
     0,
     250};
 
-static CCheckpoints::MapCheckpoints mapCheckpointsRegtest =
+static MapCheckpoints mapCheckpointsRegtest =
         boost::assign::map_list_of(0, uint256("0x79ba0d9d15d36edee8d07cc300379ec65ab7e12765acd883e870aa618dbcc1a8"));
-static const CCheckpoints::CCheckpointData dataRegtest = {
+static const CCheckpointData dataRegtest = {
     &mapCheckpointsRegtest,
     1518723178,
     0,
@@ -275,7 +275,7 @@ public:
         nBudget_Fee_Confirmations = 6; // Number of confirmations for the finalization fee
     }
 
-    const CCheckpoints::CCheckpointData& Checkpoints() const
+    const CCheckpointData& Checkpoints() const
     {
         return data;
     }
@@ -414,7 +414,7 @@ public:
         nBudget_Fee_Confirmations = 6; // Number of confirmations for the finalization fee
     }
 
-    const CCheckpoints::CCheckpointData& Checkpoints() const
+    const CCheckpointData& Checkpoints() const
     {
         return data;
     }
@@ -534,7 +534,7 @@ public:
         nBudget_Fee_Confirmations = 3; // Number of confirmations for the finalization fee. We have to make this very short
         // here because we only have a 8 block finalization window on testnet
     }
-    const CCheckpoints::CCheckpointData& Checkpoints() const
+    const CCheckpointData& Checkpoints() const
     {
         return dataTestnet;
     }
@@ -591,7 +591,7 @@ public:
         fMineBlocksOnDemand = true;
         fTestnetToBeDeprecatedFieldRPC = false;
     }
-    const CCheckpoints::CCheckpointData& Checkpoints() const
+    const CCheckpointData& Checkpoints() const
     {
         return dataRegtest;
     }
@@ -619,7 +619,7 @@ public:
         fMineBlocksOnDemand = true;
     }
 
-    const CCheckpoints::CCheckpointData& Checkpoints() const
+    const CCheckpointData& Checkpoints() const
     {
         // UnitTest share the same checkpoints as MAIN
         return data;

@@ -11,6 +11,15 @@
 
 class CBlockIndex;
 
+typedef std::map<int, uint256> MapCheckpoints;
+class CCheckpointData {
+public:
+    const MapCheckpoints* mapCheckpoints;
+    int64_t nTimeLastCheckpoint;
+    int64_t nTransactionsLastCheckpoint;
+    double fTransactionsPerDay;
+};
+
 /** 
  * Block-chain checkpoints are compiled-in sanity checks.
  * They are updated every release or three.
@@ -18,16 +27,6 @@ class CBlockIndex;
 class CCheckpoints
 {
 public:
-    typedef std::map<int, uint256> MapCheckpoints;
-
-    struct CCheckpointData {
-        const MapCheckpoints* mapCheckpoints;
-        int64_t nTimeLastCheckpoint;
-        int64_t nTransactionsLastCheckpoint;
-        double fTransactionsPerDay;
-    };
-
-
     //! Returns true if block passes checkpoint checks
     static bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint = false);
 

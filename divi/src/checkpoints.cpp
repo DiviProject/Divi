@@ -25,12 +25,14 @@
 static const double SIGCHECK_VERIFICATION_FACTOR = 5.0;
 bool CCheckpoints::fEnabled = true;
 
+std::function<const CChainParams&()> CCheckpoints::chainParameters_ = []() -> const CChainParams& { return Params();};
+
 bool CCheckpoints::CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint)
 {
     if (!fEnabled)
         return true;
 
-    const MapCheckpoints& checkpoints = *Params().Checkpoints().mapCheckpoints;
+    const MapCheckpoints& checkpoints = *chainParameters_().Checkpoints().mapCheckpoints;
 
     MapCheckpoints::const_iterator i = checkpoints.find(nHeight);
     // If looking for an exact match, then return false
@@ -52,7 +54,7 @@ double CCheckpoints::GuessVerificationProgress(CBlockIndex* pindex, bool fSigche
     // Work is defined as: 1.0 per transaction before the last checkpoint, and
     // fSigcheckVerificationFactor per transaction after.
 
-    const CCheckpointData& data = Params().Checkpoints();
+    const CCheckpointData& data = chainParameters_().Checkpoints();
 
     if (pindex->nChainTx <= data.nTransactionsLastCheckpoint) {
         double nCheapBefore = pindex->nChainTx;
@@ -76,7 +78,7 @@ int CCheckpoints::GetTotalBlocksEstimate()
     if (!fEnabled)
         return 0;
 
-    const MapCheckpoints& checkpoints = *Params().Checkpoints().mapCheckpoints;
+    const MapCheckpoints& checkpoints = *chainParameters_().Checkpoints().mapCheckpoints;
 
     return checkpoints.rbegin()->first;
 }
@@ -86,7 +88,7 @@ CBlockIndex* CCheckpoints::GetLastCheckpoint()
     if (!fEnabled)
         return NULL;
 
-    const MapCheckpoints& checkpoints = *Params().Checkpoints().mapCheckpoints;
+    const MapCheckpoints& checkpoints = *chainParameters_().Checkpoints().mapCheckpoints;
 
     BOOST_REVERSE_FOREACH (const MapCheckpoints::value_type& i, checkpoints) {
         const uint256& hash = i.second;

@@ -7,9 +7,10 @@
 
 #include "uint256.h"
 #include "checkpoint_data.h"
+#include <functional>
 
 class CBlockIndex;
-
+class CChainParams;
 
 /** 
  * Block-chain checkpoints are compiled-in sanity checks.
@@ -17,6 +18,8 @@ class CBlockIndex;
  */
 class CCheckpoints
 {
+private:
+    static std::function<const CChainParams&()> chainParameters_;
 public:
     //! Returns true if block passes checkpoint checks
     static bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint = false);

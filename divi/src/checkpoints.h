@@ -22,15 +22,15 @@ private:
     static std::function<const CChainParams&()> chainParameters_;
 public:
     //! Returns true if block passes checkpoint checks
-    static bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint = false);
+    bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint = false) const;
 
     //! Return conservative estimate of total number of blocks, 0 if unknown
-    static int GetTotalBlocksEstimate();
+    int GetTotalBlocksEstimate() const;
 
     //! Returns last CBlockIndex* in mapBlockIndex that is a checkpoint
-    static CBlockIndex* GetLastCheckpoint();
+    CBlockIndex* GetLastCheckpoint() const;
 
-    static double GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks = true);
+    double GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks = true) const;
 
     static bool fEnabled;
 }; //class CCheckpoints

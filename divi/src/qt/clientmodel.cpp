@@ -110,8 +110,9 @@ QDateTime ClientModel::getLastBlockDate() const
 
 double ClientModel::getVerificationProgress() const
 {
+    static const CCheckpoints checkpointsService;
     LOCK(cs_main);
-    return CCheckpoints::GuessVerificationProgress(chainActive.Tip());
+    return checkpointsService.GuessVerificationProgress(chainActive.Tip());
 }
 
 void ClientModel::updateTimer()

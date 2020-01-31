@@ -15,30 +15,31 @@ class CBlockIndex;
  * Block-chain checkpoints are compiled-in sanity checks.
  * They are updated every release or three.
  */
-namespace Checkpoints
+class CCheckpoints
 {
-typedef std::map<int, uint256> MapCheckpoints;
+public:
+    typedef std::map<int, uint256> MapCheckpoints;
 
-struct CCheckpointData {
-    const MapCheckpoints* mapCheckpoints;
-    int64_t nTimeLastCheckpoint;
-    int64_t nTransactionsLastCheckpoint;
-    double fTransactionsPerDay;
-};
+    struct CCheckpointData {
+        const MapCheckpoints* mapCheckpoints;
+        int64_t nTimeLastCheckpoint;
+        int64_t nTransactionsLastCheckpoint;
+        double fTransactionsPerDay;
+    };
 
-//! Returns true if block passes checkpoint checks
-bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint = false);
 
-//! Return conservative estimate of total number of blocks, 0 if unknown
-int GetTotalBlocksEstimate();
+    //! Returns true if block passes checkpoint checks
+    static bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint = false);
 
-//! Returns last CBlockIndex* in mapBlockIndex that is a checkpoint
-CBlockIndex* GetLastCheckpoint();
+    //! Return conservative estimate of total number of blocks, 0 if unknown
+    static int GetTotalBlocksEstimate();
 
-double GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks = true);
+    //! Returns last CBlockIndex* in mapBlockIndex that is a checkpoint
+    static CBlockIndex* GetLastCheckpoint();
 
-extern bool fEnabled;
+    static double GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks = true);
 
-} //namespace Checkpoints
+    static bool fEnabled;
+}; //class CCheckpoints
 
 #endif // BITCOIN_CHECKPOINTS_H

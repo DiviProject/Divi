@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     uint256 hash;
 
     LOCK(cs_main);
-    Checkpoints::fEnabled = false;
+    CCheckpoints::fEnabled = false;
 
     // Simple block creation, nothing special yet:
     BOOST_CHECK(pblocktemplate = CreateNewBlock(scriptPubKey, pwalletMain, false));
@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     BOOST_FOREACH(CTransaction *tx, txFirst)
         delete tx;
 
-    Checkpoints::fEnabled = true;
+    CCheckpoints::fEnabled = true;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

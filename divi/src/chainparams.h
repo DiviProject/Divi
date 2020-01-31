@@ -9,7 +9,7 @@
 #define BITCOIN_CHAINPARAMS_H
 
 #include "chainparamsbase.h"
-#include "checkpoints.h"
+#include "checkpoint_data.h"
 #include "primitives/block.h"
 #include "protocol.h"
 #include "uint256.h"

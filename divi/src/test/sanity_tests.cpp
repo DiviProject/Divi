@@ -6,9 +6,10 @@
 #include "key.h"
 
 #include <boost/test/unit_test.hpp>
+#define SKIP_TEST *boost::unit_test::disabled()
 BOOST_AUTO_TEST_SUITE(sanity_tests)
 
-BOOST_AUTO_TEST_CASE(basic_sanity)
+BOOST_AUTO_TEST_CASE(basic_sanity,SKIP_TEST)
 {
   BOOST_CHECK_MESSAGE(glibc_sanity_test() == true, "libc sanity test");
   BOOST_CHECK_MESSAGE(glibcxx_sanity_test() == true, "stdlib sanity test");

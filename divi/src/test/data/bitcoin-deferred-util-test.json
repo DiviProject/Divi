@@ -1,0 +1,12 @@
+[
+  { "exec": "./divi-tx",
+    "args":
+    ["-create",
+     "in=4d49a71ec9da436f71ec4ee231d04f292a29cd316f598bb7068feccabdc59485:0",
+     "set=privatekeys:[\"891ns7GR4owBiozmFa8jDSaJWNZ2q4XoSYdUS2kSNuKJ9BaxLkC\"]",
+     "set=prevtxs:[{\"txid\":\"4d49a71ec9da436f71ec4ee231d04f292a29cd316f598bb7068feccabdc59485\",\"vout\":0,\"scriptPubKey\":\"4d49a71ec9da436f71ec4ee231d04f292a29cd316f598bb7068feccabdc59485\"}]",
+     "sign=ALL",
+     "outaddr=0.001:D72dLgywmL73JyTwQBfuU29CADz9yCJ99v"],
+    "output_cmp": "txcreatesign.hex"
+  }
+]

@@ -270,6 +270,11 @@ struct CBlockRewards {
     const CAmount nCharityReward;
     const CAmount nLotteryReward;
     const CAmount nProposalsReward;
+
+    CAmount total() const
+    {
+        return nStakeReward + nMasternodeReward + nTreasuryReward + nCharityReward + nLotteryReward + nProposalsReward;
+    }
 };
 
 CBlockRewards GetBlockSubsidity(int nHeight);

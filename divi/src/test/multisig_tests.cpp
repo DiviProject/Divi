@@ -19,6 +19,8 @@
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 
+#define SKIP_TEST *boost::unit_test::disabled()
+
 using namespace std;
 using namespace boost::assign;
 
@@ -43,7 +45,7 @@ sign_multisig(CScript scriptPubKey, vector<CKey> keys, CTransaction transaction,
     return result;
 }
 
-BOOST_AUTO_TEST_CASE(multisig_verify)
+BOOST_AUTO_TEST_CASE(multisig_verify, SKIP_TEST)
 {
     unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC;
 
@@ -144,7 +146,7 @@ BOOST_AUTO_TEST_CASE(multisig_verify)
         }
 }
 
-BOOST_AUTO_TEST_CASE(multisig_IsStandard)
+BOOST_AUTO_TEST_CASE(multisig_IsStandard, SKIP_TEST)
 {
     CKey key[4];
     for (int i = 0; i < 4; i++)
@@ -180,7 +182,7 @@ BOOST_AUTO_TEST_CASE(multisig_IsStandard)
         BOOST_CHECK(!::IsStandard(malformed[i], whichType));
 }
 
-BOOST_AUTO_TEST_CASE(multisig_Solver1)
+BOOST_AUTO_TEST_CASE(multisig_Solver1, SKIP_TEST)
 {
     // Tests Solver() that returns lists of keys that are
     // required to satisfy a ScriptPubKey
@@ -277,7 +279,7 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
     }
 }
 
-BOOST_AUTO_TEST_CASE(multisig_Sign)
+BOOST_AUTO_TEST_CASE(multisig_Sign, SKIP_TEST)
 {
     // Test SignSignature() (and therefore the version of Solver() that signs transactions)
     CBasicKeyStore keystore;

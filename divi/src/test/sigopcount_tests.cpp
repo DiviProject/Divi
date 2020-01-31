@@ -12,7 +12,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
-
+#define SKIP_TEST *boost::unit_test::disabled()
 using namespace std;
 
 // Helpers:
@@ -25,7 +25,7 @@ Serialize(const CScript& s)
 
 BOOST_AUTO_TEST_SUITE(sigopcount_tests)
 
-BOOST_AUTO_TEST_CASE(GetSigOpCount)
+BOOST_AUTO_TEST_CASE(GetSigOpCount,SKIP_TEST)
 {
     // Test CScript::GetSigOpCount()
     CScript s1;

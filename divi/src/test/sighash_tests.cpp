@@ -18,6 +18,10 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
 
+static FastRandomContext random_source;
+auto insecure_rand = []() -> uint32_t { return random_source.rand32();};
+auto seed_insecure_rand = [](const bool& val) -> void { random_source=FastRandomContext(val);};
+
 using namespace json_spirit;
 extern Array read_json(const std::string& jsondata);
 
@@ -84,7 +88,7 @@ uint256 static SignatureHashOld(CScript scriptCode, const CTransaction& txTo, un
 }
 
 void static RandomScript(CScript &script) {
-    static const opcodetype oplist[] = {OP_FALSE, OP_1, OP_2, OP_3, OP_CHECKSIG, OP_IF, OP_VERIF, OP_RETURN, OP_CODESEPARATOR};
+    static const opcodetype oplist[] = {OP_FALSE, OP_1, OP_2, OP_3, OP_CHECKSIG, OP_IF, OP_VERIF, OP_META, OP_CODESEPARATOR};
     script = CScript();
     int ops = (insecure_rand() % 10);
     for (int i=0; i<ops; i++)

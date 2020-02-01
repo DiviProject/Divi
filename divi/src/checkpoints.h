@@ -18,9 +18,15 @@ class CChainParams;
  */
 class CCheckpoints
 {
-private:
-    static std::function<const CChainParams&()> chainParameters_;
 public:
+    typedef const CCheckpointData& (*CheckpointDataProvider)();
+private:
+    typedef std::function<const CCheckpointData&()> InternalCheckpointDataProvider;
+    InternalCheckpointDataProvider checkpointDataProvider_;
+public:
+    explicit CCheckpoints(
+        CheckpointDataProvider checkpointDataProvider);
+
     //! Returns true if block passes checkpoint checks
     bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint = false) const;
 

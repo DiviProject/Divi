@@ -652,6 +652,11 @@ const CChainParams& Params()
     return *pCurrentParams;
 }
 
+const CCheckpointData& GetCurrentChainCheckpoints()
+{
+    return Params().Checkpoints();
+}
+
 CChainParams& Params(CBaseChainParams::Network network)
 {
     switch (network) {

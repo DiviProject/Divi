@@ -85,7 +85,7 @@ unsigned int nStakeMinAge = 60 * 60;
 unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
 int64_t nReserveBalance = 0;
 
-CCheckpoints checkpointsVerifier;
+CCheckpoints checkpointsVerifier(GetCurrentChainCheckpoints);
 
 /** Fees smaller than this (in duffs) are considered zero fee (for relaying and mining)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher

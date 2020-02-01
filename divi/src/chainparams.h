@@ -223,6 +223,7 @@ public:
  * outside of the unit tests.
  */
 const CChainParams& Params();
+const CCheckpointData& GetCurrentChainCheckpoints();
 
 /** Return parameters for the given network. */
 CChainParams& Params(CBaseChainParams::Network network);

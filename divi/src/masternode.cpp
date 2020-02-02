@@ -563,9 +563,12 @@ bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
     std::string& strErrorRet)
 {
     nMasternodeTier = CMasternode::Tier::MASTERNODE_TIER_INVALID;
-    if(auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash))
+    auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash);
+    uint256 blockHash;
+    CTransaction fundingTx;
+    if(walletTx || GetTransaction(txin.prevout.hash,fundingTx,blockHash,true))
     {
-        auto collateralAmount = walletTx->vout.at(txin.prevout.n).nValue;
+        auto collateralAmount = (walletTx)? walletTx->vout.at(txin.prevout.n).nValue: fundingTx.vout[txin.prevout.n].nValue;
         nMasternodeTier = CMasternode::GetTierByCollateralAmount(collateralAmount);
         if(!CMasternode::IsTierValid(nMasternodeTier))
         {

@@ -179,9 +179,9 @@ Value fundmasternode(const Array& params, bool fHelp)
 
 Value setupmasternode(const Array& params, bool fHelp)
 {
-	if (fHelp || params.size() != 6)
+	if (fHelp || params.size() != 5)
 		throw runtime_error(
-			"launchmasternode alias txin collateralPubKey masternodeTier\n"
+			"launchmasternode alias txhash outputIndex collateralPubKey ip_address\n"
 			"\nStarts escrows funds for some purpose.\n"
 
 			"\nArguments:\n"
@@ -189,10 +189,12 @@ Value setupmasternode(const Array& params, bool fHelp)
 			"2. txHash              (string, required) Funding transaction. \n"
             "3. outputIndex         (string, required) Output index transaction. \n"
             "4. collateralPubkey    (string, required) collateral pubkey. \n"
-			"5. masternodeTier      (string, required) [diamond | platinum | gold | silver | copper] tier of masternode. \n"
-            "6. ip_address          (string, required) Local ip address of this node\n"
+            "5. ip_address          (string, required) Local ip address of this node\n"
 			"\nResult:\n"
-			"\"vin\"			(string) funding transaction id necessary for next step.\n");
+			"\"protocol_version\"			(string) Protocol version used for serialization.\n"
+            "\"message_to_sign\"			(string) Hex-encoded msg requiring collateral signature.\n"
+            "\"config_line\"			    (string) Configuration data needed in the.\n"
+            "\"broadcast_data\"			    (string) funding transaction id necessary for next step.\n");
 
     Object result;
 
@@ -215,8 +217,7 @@ Value setupmasternode(const Array& params, bool fHelp)
     CPubKey pubkeyCollateralAddress;
     pubkeyCollateralAddress.Set(pubkeyStr.begin(),pubkeyStr.end());
 
-    std::string masternodeTier = params[4].get_str();
-    std::string ip = params[5].get_str();
+    std::string ip = params[4].get_str();
 
     CMasternodeConfig::CMasternodeEntry config(alias,ip,CBitcoinSecret(masternodeKey).ToString(),txHash,outputIndex);
 
@@ -230,6 +231,11 @@ Value setupmasternode(const Array& params, bool fHelp)
     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
     result.push_back(Pair("protocol_version", PROTOCOL_VERSION ));
     result.push_back(Pair("message_to_sign", HexStr(mnb.getMessageToSign()) ));
+    result.push_back(Pair("config_line",
+        config.getAlias()+" "+ 
+        ip +":"+std::to_string(Params().GetDefaultPort()) +" "+ 
+        CBitcoinSecret(masternodeKey).ToString()+" "
+        +txHash+" "+outputIndex));
     ss << mnb;
     result.push_back(Pair("broadcast_data", HexStr(ss.str()) ));
     return result;    

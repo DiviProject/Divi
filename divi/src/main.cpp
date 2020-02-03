@@ -4549,7 +4549,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
                          REJECT_CHECKPOINT, "checkpoint mismatch");
 
     // Don't accept any forks from the main chain prior to last checkpoint
-    CBlockIndex* pcheckpoint = checkpointsVerifier.GetLastCheckpoint();
+    CBlockIndex* pcheckpoint = checkpointsVerifier.GetLastCheckpoint(mapBlockIndex);
     if (pcheckpoint && nHeight < pcheckpoint->nHeight)
         return state.DoS(0, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
 

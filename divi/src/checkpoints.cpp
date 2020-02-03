@@ -6,8 +6,8 @@
 
 #include "checkpoints.h"
 
+#include "blockmap.h"
 #include "chainparams.h"
-#include "main.h"
 #include "uint256.h"
 
 #include <stdint.h>
@@ -94,7 +94,7 @@ int CCheckpoints::GetTotalBlocksEstimate() const
     return checkpoints.rbegin()->first;
 }
 
-CBlockIndex* CCheckpoints::GetLastCheckpoint() const
+CBlockIndex* CCheckpoints::GetLastCheckpoint(const BlockMap& mapBlockIndex) const
 {
     if (!CCheckpoints::fEnabled)
         return NULL;

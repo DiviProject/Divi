@@ -11,6 +11,7 @@
 
 class CBlockIndex;
 class CChainParams;
+class BlockMap;
 
 /** 
  * Block-chain checkpoints are compiled-in sanity checks.
@@ -36,7 +37,7 @@ public:
     int GetTotalBlocksEstimate() const;
 
     //! Returns last CBlockIndex* in mapBlockIndex that is a checkpoint
-    CBlockIndex* GetLastCheckpoint() const;
+    CBlockIndex* GetLastCheckpoint(const BlockMap& mapBlockIndex) const;
 
     double GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks = true) const;
 

@@ -8,6 +8,7 @@
 
 #include "checkpoints.h"
 
+#include "blockmap.h"
 #include "uint256.h"
 #include "random.h"
 
@@ -20,6 +21,10 @@ class TestCase
 private:
     int maxNumberOfBlocks = 800000;
 public:
+    TestCase()
+    {
+    }
+
     TestCase(unsigned int numberOfCheckpoints): checkpointCount_(numberOfCheckpoints)
     {
         for(unsigned j = 0; j < numberOfCheckpoints; j++)
@@ -59,53 +64,97 @@ public:
 BOOST_AUTO_TEST_SUITE(Checkpoints_tests)
 
 BOOST_AUTO_TEST_CASE(allCheckpointsWillBeAccountedFor)
-{
-    {   // Exhaustive search for correctness
-        unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
-        TestCase testSetup(checkpointCount);
-        CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
+{   // Exhaustive search for correctness
+    unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
+    TestCase testSetup(checkpointCount);
+    CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
 
-        for(const auto& checkpoint: testSetup.mapCheckpoints_)
-        {
-            BOOST_CHECK(checkpointsService.CheckBlock(checkpoint.first,checkpoint.second));
-        }
+    for(const auto& checkpoint: testSetup.mapCheckpoints_)
+    {
+        BOOST_CHECK(checkpointsService.CheckBlock(checkpoint.first,checkpoint.second));
     }
 }
 
 BOOST_AUTO_TEST_CASE(randomCheckpointsWillBeCorrectlyHandled)
-{
-    {   // Exhaustive search for correctness
-        unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
-        TestCase testSetup(checkpointCount);
-        CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
+{   
+    unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
+    TestCase testSetup(checkpointCount);
+    CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
 
-        for(unsigned checkpointIndex = 0; checkpointIndex < checkpointCount; checkpointIndex++)
-        {
-            std::pair<std::pair<int, uint256>,bool> checkpointAndExpectation = testSetup.getRandomCheckpointAndExpectation();
-            std::pair<int, uint256> checkpoint = checkpointAndExpectation.first;
-            BOOST_CHECK(checkpointsService.CheckBlock(checkpoint.first,checkpoint.second) == checkpointAndExpectation.second);
-        }
+    for(unsigned checkpointIndex = 0; checkpointIndex < checkpointCount; checkpointIndex++)
+    {
+        std::pair<std::pair<int, uint256>,bool> checkpointAndExpectation = testSetup.getRandomCheckpointAndExpectation();
+        std::pair<int, uint256> checkpoint = checkpointAndExpectation.first;
+        BOOST_CHECK(checkpointsService.CheckBlock(checkpoint.first,checkpoint.second) == checkpointAndExpectation.second);
     }
 }
+
 
 BOOST_AUTO_TEST_CASE(deliberatlyIncorrectCheckpointsWillBeCorrectlyHandled)
 {
-    {   // Exhaustive search for correctness
-        unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
-        TestCase testSetup(checkpointCount);
-        CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
+    unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
+    TestCase testSetup(checkpointCount);
+    CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
 
-        for(unsigned checkpointIndex = 0; checkpointIndex < checkpointCount; checkpointIndex++)
+    for(unsigned checkpointIndex = 0; checkpointIndex < checkpointCount; checkpointIndex++)
+    {
+        std::pair<int, uint256> checkpoint = testSetup.getRandomCorrectCheckpoint();
+        uint256 correctHash = checkpoint.second;
+        while(checkpoint.second == correctHash)
         {
-            std::pair<int, uint256> checkpoint = testSetup.getRandomCorrectCheckpoint();
-            uint256 correctHash = checkpoint.second;
-            while(checkpoint.second == correctHash)
-            {
-                checkpoint.second = GetRandHash();
-            }
-            BOOST_CHECK(!checkpointsService.CheckBlock(checkpoint.first,checkpoint.second));
+            checkpoint.second = GetRandHash();
         }
+        BOOST_CHECK(!checkpointsService.CheckBlock(checkpoint.first,checkpoint.second));
     }
 }
+
+BOOST_AUTO_TEST_CASE(willNotFailDueToLackOfCheckpoints)
+{
+    TestCase testSetup(0);
+    CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
+    BlockMap map;
+
+    BOOST_CHECK(checkpointsService.CheckBlock(GetRandInt(25),GetRandHash()));
+    BOOST_CHECK(checkpointsService.GetTotalBlocksEstimate()==0);
+    BOOST_CHECK(checkpointsService.GetLastCheckpoint(map)==nullptr);
+}
+
+
+BOOST_AUTO_TEST_CASE(willFindLargestHeightAmongstCheckpoints)
+{
+    unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
+    TestCase testSetup(checkpointCount);
+    CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
+
+    int highestBlockInCheckpoints = 0;
+    for(const auto& checkpoint: testSetup.mapCheckpoints_)
+    {
+        highestBlockInCheckpoints = std::max(highestBlockInCheckpoints, checkpoint.first);
+    }
+
+    BOOST_CHECK(checkpointsService.GetTotalBlocksEstimate()==highestBlockInCheckpoints);
+}
+
+
+BOOST_AUTO_TEST_CASE(willFindCorrectBlockInMap)
+{
+    std::shared_ptr<CBlockIndex> sharedBlockIndex = std::make_shared<CBlockIndex>();
+    uint256 blockHash = GetRandHash();
+    sharedBlockIndex->phashBlock = &blockHash;
+    sharedBlockIndex->nHeight = GetRandInt(800);
+    TestCase testSetup;
+    testSetup.mapCheckpoints_.insert( 
+        std::make_pair(static_cast<int>(sharedBlockIndex->nHeight),sharedBlockIndex->GetBlockHash()) );
+    testSetup.data_ = CCheckpointData({&testSetup.mapCheckpoints_,0,0,0});
+    
+    BlockMap map;
+    map.insert( std::make_pair(sharedBlockIndex->GetBlockHash(),sharedBlockIndex.get()) );
+
+    CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
+
+    BOOST_CHECK(checkpointsService.GetLastCheckpoint(map)!=nullptr);
+    BOOST_CHECK(checkpointsService.GetLastCheckpoint(map)->nHeight == sharedBlockIndex->nHeight);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -90,6 +90,10 @@ int CCheckpointServices::GetTotalBlocksEstimate() const
         return 0;
 
     const MapCheckpoints& checkpoints = *checkpointDataProvider_().mapCheckpoints;
+    if(checkpoints.empty())
+    {
+        return 0;
+    }
 
     return checkpoints.rbegin()->first;
 }

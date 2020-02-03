@@ -9,59 +9,103 @@
 #include "checkpoints.h"
 
 #include "uint256.h"
+#include "random.h"
 
 #include <boost/test/unit_test.hpp>
 #define SKIP_TEST *boost::unit_test::disabled()
 using namespace std;
 
-const MapCheckpoints* makeCheckpoints()
+class TestCase
 {
-    uint256 p259201 = uint256("0x1c9121bf9329a6234bfd1ea2d91515f19cd96990725265253f4b164283ade5dd");
-    uint256 p623933 = uint256("0xc7aafa648a0f1450157dc93bd4d7448913a85b7448f803b4ab970d91fc2a7da7");
-    return new MapCheckpoints{{259201,p259201},{623933,p623933}};
-}
-
-static bool wasSet = false;
-static CCheckpointData checkpointData;
-
-const CCheckpointData& checkpoint_data_test()
-{
-    checkpointData = CCheckpointData {makeCheckpoints(),0,0,0.0};
-    wasSet = true;
-    return checkpointData;
-}
-
-void clearCheckpointData()
-{
-    if(wasSet && !checkpointData.mapCheckpoints)
+private:
+    int maxNumberOfBlocks = 800000;
+public:
+    TestCase(unsigned int numberOfCheckpoints): checkpointCount_(numberOfCheckpoints)
     {
-        delete checkpointData.mapCheckpoints;
-        wasSet = false;
-        checkpointData = CCheckpointData();
+        for(unsigned j = 0; j < numberOfCheckpoints; j++)
+        {
+            blockIndices_.push_back(GetRandInt(maxNumberOfBlocks));
+            blockHashes_.push_back(GetRandHash());
+            mapCheckpoints_.insert({blockIndices_.back(),blockHashes_.back()});
+        }
+        data_ = CCheckpointData({&mapCheckpoints_,0,0,0});
     }
-}
+    const CCheckpointData& checkpoint_data() const
+    {
+        return data_;
+    }
+    const std::pair<int,uint256> getRandomCorrectCheckpoint()
+    {
+        return *std::next(mapCheckpoints_.begin(), (abs(GetRandInt(maxNumberOfBlocks)) % checkpointCount_));
+    }
+    const std::pair<std::pair<int,uint256>,bool> getRandomCheckpointAndExpectation()
+    {
+        std::pair<int,uint256> randomPair({GetRandInt(maxNumberOfBlocks),GetRandHash()});
+        auto it = mapCheckpoints_.find(randomPair.first);
+        if(it != mapCheckpoints_.end())
+        {
+            return std::make_pair(randomPair, randomPair.second == it->second);
+        }
+        return std::make_pair(randomPair, true);
+    }
+
+    unsigned int checkpointCount_;
+    std::vector<int> blockIndices_;
+    std::vector<uint256> blockHashes_;
+    MapCheckpoints mapCheckpoints_;
+    CCheckpointData data_;
+};
 
 BOOST_AUTO_TEST_SUITE(Checkpoints_tests)
 
-BOOST_AUTO_TEST_CASE(sanity)
+BOOST_AUTO_TEST_CASE(allCheckpointsWillBeAccountedFor)
 {
-    CCheckpoints checkpointsService(checkpoint_data_test);
-    uint256 p259201 = uint256("0x1c9121bf9329a6234bfd1ea2d91515f19cd96990725265253f4b164283ade5dd");
-    uint256 p623933 = uint256("0xc7aafa648a0f1450157dc93bd4d7448913a85b7448f803b4ab970d91fc2a7da7");
-    BOOST_CHECK(checkpointsService.CheckBlock(259201, p259201));
-    BOOST_CHECK(checkpointsService.CheckBlock(623933, p623933));
+    {   // Exhaustive search for correctness
+        unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
+        TestCase testSetup(checkpointCount);
+        CCheckpoints checkpointsService( testSetup.checkpoint_data() );
 
+        for(const auto& checkpoint: testSetup.mapCheckpoints_)
+        {
+            BOOST_CHECK(checkpointsService.CheckBlock(checkpoint.first,checkpoint.second));
+        }
+    }
+}
 
-    // Wrong hashes at checkpoints should fail:
-    BOOST_CHECK(!checkpointsService.CheckBlock(259201, p623933));
-    BOOST_CHECK(!checkpointsService.CheckBlock(623933, p259201));
+BOOST_AUTO_TEST_CASE(randomCheckpointsWillBeCorrectlyHandled)
+{
+    {   // Exhaustive search for correctness
+        unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
+        TestCase testSetup(checkpointCount);
+        CCheckpoints checkpointsService( testSetup.checkpoint_data() );
 
-    // ... but any hash not at a checkpoint should succeed:
-    BOOST_CHECK(checkpointsService.CheckBlock(259201+1, p623933));
-    BOOST_CHECK(checkpointsService.CheckBlock(623933+1, p259201));
+        for(unsigned checkpointIndex = 0; checkpointIndex < checkpointCount; checkpointIndex++)
+        {
+            std::pair<std::pair<int, uint256>,bool> checkpointAndExpectation = testSetup.getRandomCheckpointAndExpectation();
+            std::pair<int, uint256> checkpoint = checkpointAndExpectation.first;
+            BOOST_CHECK(checkpointsService.CheckBlock(checkpoint.first,checkpoint.second) == checkpointAndExpectation.second);
+        }
+    }
+}
 
-    BOOST_CHECK(checkpointsService.GetTotalBlocksEstimate() >= 623933);
-    clearCheckpointData();
+BOOST_AUTO_TEST_CASE(deliberatlyIncorrectCheckpointsWillBeCorrectlyHandled)
+{
+    {   // Exhaustive search for correctness
+        unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
+        TestCase testSetup(checkpointCount);
+        CCheckpoints checkpointsService( testSetup.checkpoint_data() );
+
+        for(unsigned checkpointIndex = 0; checkpointIndex < checkpointCount; checkpointIndex++)
+        {
+            std::pair<int, uint256> checkpoint = testSetup.getRandomCorrectCheckpoint();
+            uint256 correctHash = checkpoint.second;
+            while(checkpoint.second == correctHash)
+            {
+                checkpoint.second = GetRandHash();
+            }
+            BOOST_CHECK(!checkpointsService.CheckBlock(checkpoint.first,checkpoint.second));
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

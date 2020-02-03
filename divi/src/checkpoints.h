@@ -26,6 +26,8 @@ private:
 public:
     explicit CCheckpoints(
         CheckpointDataProvider checkpointDataProvider);
+    explicit CCheckpoints(
+        const CCheckpointData& staticCheckpointData);
 
     //! Returns true if block passes checkpoint checks
     bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint = false) const;

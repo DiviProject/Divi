@@ -30,6 +30,14 @@ CCheckpoints::CCheckpoints(
     ): checkpointDataProvider_(checkpointDataProvider)
 {
 }
+
+CCheckpoints::CCheckpoints(
+    const CCheckpointData& staticCheckpointData
+    ): checkpointDataProvider_(
+        InternalCheckpointDataProvider([&staticCheckpointData]()-> const CCheckpointData&{return staticCheckpointData;} ))
+{
+}
+
 bool CCheckpoints::CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint) const
 {
     if (!CCheckpoints::fEnabled)

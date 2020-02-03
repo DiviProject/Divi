@@ -17,7 +17,7 @@ class BlockMap;
  * Block-chain checkpoints are compiled-in sanity checks.
  * They are updated every release or three.
  */
-class CCheckpoints
+class CCheckpointServices
 {
 public:
     typedef const CCheckpointData& (*CheckpointDataProvider)();
@@ -25,9 +25,9 @@ private:
     typedef std::function<const CCheckpointData&()> InternalCheckpointDataProvider;
     InternalCheckpointDataProvider checkpointDataProvider_;
 public:
-    explicit CCheckpoints(
+    explicit CCheckpointServices(
         CheckpointDataProvider checkpointDataProvider);
-    explicit CCheckpoints(
+    explicit CCheckpointServices(
         const CCheckpointData& staticCheckpointData);
 
     //! Returns true if block passes checkpoint checks

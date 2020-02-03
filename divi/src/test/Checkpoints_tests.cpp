@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(allCheckpointsWillBeAccountedFor)
     {   // Exhaustive search for correctness
         unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
         TestCase testSetup(checkpointCount);
-        CCheckpoints checkpointsService( testSetup.checkpoint_data() );
+        CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
 
         for(const auto& checkpoint: testSetup.mapCheckpoints_)
         {
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(randomCheckpointsWillBeCorrectlyHandled)
     {   // Exhaustive search for correctness
         unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
         TestCase testSetup(checkpointCount);
-        CCheckpoints checkpointsService( testSetup.checkpoint_data() );
+        CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
 
         for(unsigned checkpointIndex = 0; checkpointIndex < checkpointCount; checkpointIndex++)
         {
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(deliberatlyIncorrectCheckpointsWillBeCorrectlyHandled)
     {   // Exhaustive search for correctness
         unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
         TestCase testSetup(checkpointCount);
-        CCheckpoints checkpointsService( testSetup.checkpoint_data() );
+        CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
 
         for(unsigned checkpointIndex = 0; checkpointIndex < checkpointCount; checkpointIndex++)
         {

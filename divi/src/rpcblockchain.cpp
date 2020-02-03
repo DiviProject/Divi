@@ -493,7 +493,7 @@ Value verifychain(const Array& params, bool fHelp)
 
 Value getblockchaininfo(const Array& params, bool fHelp)
 {
-    static const CCheckpoints checkpointsVerifier(GetCurrentChainCheckpoints);
+    static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
     if (fHelp || params.size() != 0)
         throw runtime_error(
             "getblockchaininfo\n"

@@ -1222,7 +1222,7 @@ bool CWalletTx::WriteToDisk()
  */
 int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
 {
-    static const CCheckpoints checkpointsVerifier(GetCurrentChainCheckpoints);
+    static const CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
     int ret = 0;
     int64_t nNow = GetTime();

@@ -23,24 +23,24 @@
      * fast multicore CPU, it won't be much higher than 1.
      */
 static const double SIGCHECK_VERIFICATION_FACTOR = 5.0;
-bool CCheckpoints::fEnabled = true;
+bool CCheckpointServices::fEnabled = true;
 
-CCheckpoints::CCheckpoints(
+CCheckpointServices::CCheckpointServices(
     CheckpointDataProvider checkpointDataProvider
     ): checkpointDataProvider_(checkpointDataProvider)
 {
 }
 
-CCheckpoints::CCheckpoints(
+CCheckpointServices::CCheckpointServices(
     const CCheckpointData& staticCheckpointData
     ): checkpointDataProvider_(
         InternalCheckpointDataProvider([&staticCheckpointData]()-> const CCheckpointData&{return staticCheckpointData;} ))
 {
 }
 
-bool CCheckpoints::CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint) const
+bool CCheckpointServices::CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint) const
 {
-    if (!CCheckpoints::fEnabled)
+    if (!CCheckpointServices::fEnabled)
         return true;
 
     const MapCheckpoints& checkpoints = *checkpointDataProvider_().mapCheckpoints;
@@ -52,7 +52,7 @@ bool CCheckpoints::CheckBlock(int nHeight, const uint256& hash, bool fMatchesChe
 }
 
 //! Guess how far we are in the verification process at the given block index
-double CCheckpoints::GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks) const
+double CCheckpointServices::GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks) const
 {
     if (pindex == NULL)
         return 0.0;
@@ -84,9 +84,9 @@ double CCheckpoints::GuessVerificationProgress(CBlockIndex* pindex, bool fSigche
     return fWorkBefore / (fWorkBefore + fWorkAfter);
 }
 
-int CCheckpoints::GetTotalBlocksEstimate() const
+int CCheckpointServices::GetTotalBlocksEstimate() const
 {
-    if (!CCheckpoints::fEnabled)
+    if (!CCheckpointServices::fEnabled)
         return 0;
 
     const MapCheckpoints& checkpoints = *checkpointDataProvider_().mapCheckpoints;
@@ -94,9 +94,9 @@ int CCheckpoints::GetTotalBlocksEstimate() const
     return checkpoints.rbegin()->first;
 }
 
-CBlockIndex* CCheckpoints::GetLastCheckpoint(const BlockMap& mapBlockIndex) const
+CBlockIndex* CCheckpointServices::GetLastCheckpoint(const BlockMap& mapBlockIndex) const
 {
-    if (!CCheckpoints::fEnabled)
+    if (!CCheckpointServices::fEnabled)
         return NULL;
 
     const MapCheckpoints& checkpoints = *checkpointDataProvider_().mapCheckpoints;

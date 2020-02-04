@@ -22,7 +22,6 @@
      * can be up to 20, while when downloading from a slow network with a
      * fast multicore CPU, it won't be much higher than 1.
      */
-static const double SIGCHECK_VERIFICATION_FACTOR = 5.0;
 bool CCheckpointServices::fEnabled = true;
 
 CCheckpointServices::CCheckpointServices(
@@ -52,33 +51,34 @@ bool CCheckpointServices::CheckBlock(int nHeight, const uint256& hash, bool fMat
 }
 
 //! Guess how far we are in the verification process at the given block index
-double CCheckpointServices::GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks) const
+double CCheckpointServices::GuessVerificationProgress(CBlockIndex* pindex, bool useConservativeEstimate) const
 {
+    static const double CONSERVATIVE_VERIFICATION_FACTOR = 5.0;
     if (pindex == NULL)
         return 0.0;
 
     int64_t nNow = time(NULL);
 
-    double fSigcheckVerificationFactor = fSigchecks ? SIGCHECK_VERIFICATION_FACTOR : 1.0;
+    double conservativeCheckVerificationFactor = useConservativeEstimate ? CONSERVATIVE_VERIFICATION_FACTOR : 1.0;
     double fWorkBefore = 0.0; // Amount of work done before pindex
     double fWorkAfter = 0.0;  // Amount of work left after pindex (estimated)
     // Work is defined as: 1.0 per transaction before the last checkpoint, and
-    // fSigcheckVerificationFactor per transaction after.
+    // conservativeCheckVerificationFactor per transaction after.
 
     const CCheckpointData& data = checkpointDataProvider_();
-
-    if (pindex->nChainTx <= data.nTransactionsLastCheckpoint) {
-        double nCheapBefore = pindex->nChainTx;
-        double nCheapAfter = data.nTransactionsLastCheckpoint - pindex->nChainTx;
-        double nExpensiveAfter = (nNow - data.nTimeLastCheckpoint) / 86400.0 * data.fTransactionsPerDay;
-        fWorkBefore = nCheapBefore;
-        fWorkAfter = nCheapAfter + nExpensiveAfter * fSigcheckVerificationFactor;
+    bool lessTxsThanLastCheckpoint = pindex->nChainTx <= data.nTransactionsLastCheckpoint;
+    if (lessTxsThanLastCheckpoint) {
+        double transactionCountAtBlock = pindex->nChainTx;
+        double additionalTransactionsToReachCheckpoint = data.nTransactionsLastCheckpoint - pindex->nChainTx;
+        double estimatedAdditionalTransactionsMissing = (nNow - data.nTimeLastCheckpoint) / 86400.0 * data.fTransactionsPerDay;
+        fWorkBefore = transactionCountAtBlock;
+        fWorkAfter = additionalTransactionsToReachCheckpoint + estimatedAdditionalTransactionsMissing * conservativeCheckVerificationFactor;
     } else {
-        double nCheapBefore = data.nTransactionsLastCheckpoint;
-        double nExpensiveBefore = pindex->nChainTx - data.nTransactionsLastCheckpoint;
-        double nExpensiveAfter = (nNow - pindex->GetBlockTime()) / 86400.0 * data.fTransactionsPerDay;
-        fWorkBefore = nCheapBefore + nExpensiveBefore * fSigcheckVerificationFactor;
-        fWorkAfter = nExpensiveAfter * fSigcheckVerificationFactor;
+        double transactionCountAtLastCheckpoint = data.nTransactionsLastCheckpoint;
+        double additionalTransactionsToReachBlock = pindex->nChainTx - data.nTransactionsLastCheckpoint;
+        double estimatedAdditionalTransactionsMissing = (nNow - pindex->GetBlockTime()) / 86400.0 * data.fTransactionsPerDay;
+        fWorkBefore = transactionCountAtLastCheckpoint + additionalTransactionsToReachBlock * conservativeCheckVerificationFactor;
+        fWorkAfter = estimatedAdditionalTransactionsMissing * conservativeCheckVerificationFactor;
     }
 
     return fWorkBefore / (fWorkBefore + fWorkAfter);

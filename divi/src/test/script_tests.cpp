@@ -35,7 +35,7 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
 
-#define SKIP_TEST *boost::unit_test::disabled()
+#include "test_only.h"
 using namespace std;
 using namespace json_spirit;
 using namespace boost::algorithm;

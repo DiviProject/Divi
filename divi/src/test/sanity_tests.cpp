@@ -6,7 +6,7 @@
 #include "key.h"
 
 #include <boost/test/unit_test.hpp>
-#define SKIP_TEST *boost::unit_test::disabled()
+#include "test_only.h"
 BOOST_AUTO_TEST_SUITE(sanity_tests)
 
 BOOST_AUTO_TEST_CASE(basic_sanity,SKIP_TEST)

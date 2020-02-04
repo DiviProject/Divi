@@ -14,7 +14,7 @@
 #include <vector>
 
 #include <boost/test/unit_test.hpp>
-#define SKIP_TEST *boost::unit_test::disabled()
+#include "test_only.h"
 
 using namespace std;
 

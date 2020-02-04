@@ -11,7 +11,7 @@
 #include <iostream>
 #include <accumulators.h>
 
-#define SKIP_TEST *boost::unit_test::disabled()
+#include "test_only.h"
 using namespace libzerocoin;
 
 extern bool DecodeHexTx(CTransaction& tx, const std::string& strHexTx);

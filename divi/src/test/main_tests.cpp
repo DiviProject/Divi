@@ -9,7 +9,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#define SKIP_TEST *boost::unit_test::disabled()
+#include "test_only.h"
 BOOST_AUTO_TEST_SUITE(main_tests)
 
 CAmount nMoneySupplyPoWEnd = 43199500 * COIN;

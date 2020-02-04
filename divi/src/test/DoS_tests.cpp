@@ -117,13 +117,16 @@ CTransaction RandomOrphan()
     return it->second.tx;
 }
 
-BOOST_AUTO_TEST_CASE(DoS_mapOrphans,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+    
     CKey key;
     key.MakeNewKey(true);
     CBasicKeyStore keystore;
     keystore.AddKey(key);
-
+ 
     // 50 orphan transactions:
     for (int i = 0; i < 50; i++)
     {
@@ -196,6 +199,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans,SKIP_TEST)
     LimitOrphanTxSize(0);
     BOOST_CHECK(mapOrphanTransactions.empty());
     BOOST_CHECK(mapOrphanTransactionsByPrev.empty());
+    ECC_Stop();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -7,13 +7,18 @@
 
 #include <boost/test/unit_test.hpp>
 #include "test_only.h"
+
 BOOST_AUTO_TEST_SUITE(sanity_tests)
 
-BOOST_AUTO_TEST_CASE(basic_sanity,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(basic_sanity)
 {
   BOOST_CHECK_MESSAGE(glibc_sanity_test() == true, "libc sanity test");
   BOOST_CHECK_MESSAGE(glibcxx_sanity_test() == true, "stdlib sanity test");
+
+  ECCVerifyHandle verificationModule;
+  ECC_Start();
   BOOST_CHECK_MESSAGE(ECC_InitSanityCheck() == true, "openssl ECC test");
+  ECC_Stop();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

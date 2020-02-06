@@ -45,8 +45,11 @@ sign_multisig(CScript scriptPubKey, vector<CKey> keys, CTransaction transaction,
     return result;
 }
 
-BOOST_AUTO_TEST_CASE(multisig_verify, SKIP_TEST)
+BOOST_AUTO_TEST_CASE(multisig_verify)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC;
 
     ScriptError err;
@@ -121,13 +124,14 @@ BOOST_AUTO_TEST_CASE(multisig_verify, SKIP_TEST)
             BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
         }
     }
+
     s.clear();
     s << OP_0 << OP_1;
     BOOST_CHECK(!VerifyScript(s, a_or_b, flags, MutableTransactionSignatureChecker(&txTo[1], 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_SIG_DER, ScriptErrorString(err));
 
-
     for (int i = 0; i < 4; i++)
+    {
         for (int j = 0; j < 4; j++)
         {
             keys.clear();
@@ -144,13 +148,21 @@ BOOST_AUTO_TEST_CASE(multisig_verify, SKIP_TEST)
                 BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
             }
         }
+    }
+
+    ECC_Stop();
 }
 
-BOOST_AUTO_TEST_CASE(multisig_IsStandard, SKIP_TEST)
+BOOST_AUTO_TEST_CASE(multisig_IsStandard)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     CKey key[4];
     for (int i = 0; i < 4; i++)
+    {
         key[i].MakeNewKey(true);
+    }
 
     txnouttype whichType;
 
@@ -179,11 +191,18 @@ BOOST_AUTO_TEST_CASE(multisig_IsStandard, SKIP_TEST)
     malformed[5] << OP_1 << ToByteVector(key[0].GetPubKey()) << ToByteVector(key[1].GetPubKey());
 
     for (int i = 0; i < 6; i++)
+    {
         BOOST_CHECK(!::IsStandard(malformed[i], whichType));
+    }
+
+    ECC_Stop();
 }
 
-BOOST_AUTO_TEST_CASE(multisig_Solver1, SKIP_TEST)
+BOOST_AUTO_TEST_CASE(multisig_Solver1)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     // Tests Solver() that returns lists of keys that are
     // required to satisfy a ScriptPubKey
     //
@@ -197,12 +216,14 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1, SKIP_TEST)
     CBasicKeyStore keystore, emptykeystore, partialkeystore;
     CKey key[3];
     CTxDestination keyaddr[3];
+
     for (int i = 0; i < 3; i++)
     {
         key[i].MakeNewKey(true);
         keystore.AddKey(key[i]);
         keyaddr[i] = key[i].GetPubKey().GetID();
     }
+
     partialkeystore.AddKey(key[0]);
 
     {
@@ -215,11 +236,13 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1, SKIP_TEST)
         CTxDestination addr;
         BOOST_CHECK(ExtractDestination(s, addr));
         BOOST_CHECK(addr == keyaddr[0]);
+
 #ifdef ENABLE_WALLET
-        BOOST_CHECK(IsMine(keystore, s));
-        BOOST_CHECK(!IsMine(emptykeystore, s));
+    BOOST_CHECK(IsMine(keystore, s));
+    BOOST_CHECK(!IsMine(emptykeystore, s));
 #endif
     }
+
     {
         vector<valtype> solutions;
         txnouttype whichType;
@@ -230,11 +253,13 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1, SKIP_TEST)
         CTxDestination addr;
         BOOST_CHECK(ExtractDestination(s, addr));
         BOOST_CHECK(addr == keyaddr[0]);
+
 #ifdef ENABLE_WALLET
-        BOOST_CHECK(IsMine(keystore, s));
-        BOOST_CHECK(!IsMine(emptykeystore, s));
+    BOOST_CHECK(IsMine(keystore, s));
+    BOOST_CHECK(!IsMine(emptykeystore, s));
 #endif
     }
+
     {
         vector<valtype> solutions;
         txnouttype whichType;
@@ -244,12 +269,14 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1, SKIP_TEST)
         BOOST_CHECK_EQUAL(solutions.size(), 4U);
         CTxDestination addr;
         BOOST_CHECK(!ExtractDestination(s, addr));
+
 #ifdef ENABLE_WALLET
-        BOOST_CHECK(IsMine(keystore, s));
-        BOOST_CHECK(!IsMine(emptykeystore, s));
-        BOOST_CHECK(!IsMine(partialkeystore, s));
+    BOOST_CHECK(IsMine(keystore, s));
+    BOOST_CHECK(!IsMine(emptykeystore, s));
+    BOOST_CHECK(!IsMine(partialkeystore, s));
 #endif
     }
+
     {
         vector<valtype> solutions;
         txnouttype whichType;
@@ -263,12 +290,14 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1, SKIP_TEST)
         BOOST_CHECK(addrs[0] == keyaddr[0]);
         BOOST_CHECK(addrs[1] == keyaddr[1]);
         BOOST_CHECK(nRequired == 1);
+
 #ifdef ENABLE_WALLET
-        BOOST_CHECK(IsMine(keystore, s));
-        BOOST_CHECK(!IsMine(emptykeystore, s));
-        BOOST_CHECK(!IsMine(partialkeystore, s));
+    BOOST_CHECK(IsMine(keystore, s));
+    BOOST_CHECK(!IsMine(emptykeystore, s));
+    BOOST_CHECK(!IsMine(partialkeystore, s));
 #endif
     }
+
     {
         vector<valtype> solutions;
         txnouttype whichType;
@@ -277,10 +306,15 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1, SKIP_TEST)
         BOOST_CHECK(Solver(s, whichType, solutions));
         BOOST_CHECK(solutions.size() == 5);
     }
+
+    ECC_Stop();
 }
 
-BOOST_AUTO_TEST_CASE(multisig_Sign, SKIP_TEST)
+BOOST_AUTO_TEST_CASE(multisig_Sign)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     // Test SignSignature() (and therefore the version of Solver() that signs transactions)
     CBasicKeyStore keystore;
     CKey key[4];
@@ -319,6 +353,8 @@ BOOST_AUTO_TEST_CASE(multisig_Sign, SKIP_TEST)
     {
         BOOST_CHECK_MESSAGE(SignSignature(keystore, txFrom, txTo[i], 0), strprintf("SignSignature %d", i));
     }
+
+    ECC_Stop();
 }
 
 

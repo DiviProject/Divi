@@ -25,9 +25,13 @@ Serialize(const CScript& s)
 
 BOOST_AUTO_TEST_SUITE(sigopcount_tests)
 
-BOOST_AUTO_TEST_CASE(GetSigOpCount,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(GetSigOpCount)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     // Test CScript::GetSigOpCount()
+
     CScript s1;
     BOOST_CHECK_EQUAL(s1.GetSigOpCount(false), 0U);
     BOOST_CHECK_EQUAL(s1.GetSigOpCount(true), 0U);
@@ -51,6 +55,7 @@ BOOST_AUTO_TEST_CASE(GetSigOpCount,SKIP_TEST)
         k.MakeNewKey(true);
         keys.push_back(k.GetPubKey());
     }
+
     CScript s2 = GetScriptForMultisig(1, keys);
     BOOST_CHECK_EQUAL(s2.GetSigOpCount(true), 3U);
     BOOST_CHECK_EQUAL(s2.GetSigOpCount(false), 20U);
@@ -58,9 +63,12 @@ BOOST_AUTO_TEST_CASE(GetSigOpCount,SKIP_TEST)
     p2sh = GetScriptForDestination(CScriptID(s2));
     BOOST_CHECK_EQUAL(p2sh.GetSigOpCount(true), 0U);
     BOOST_CHECK_EQUAL(p2sh.GetSigOpCount(false), 0U);
+
     CScript scriptSig2;
     scriptSig2 << OP_1 << ToByteVector(dummy) << ToByteVector(dummy) << Serialize(s2);
     BOOST_CHECK_EQUAL(p2sh.GetSigOpCount(scriptSig2), 3U);
+
+    ECC_Stop();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

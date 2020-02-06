@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
     BOOST_CHECK_THROW(CallRPC(string("sendrawtransaction ")+rawtx+" extra"), runtime_error);
 }
 
-BOOST_AUTO_TEST_CASE(rpc_rawsign,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(rpc_rawsign)
 {
     Value r;
     // input is a 1-of-2 multisig (so is output):
@@ -103,10 +103,15 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign,SKIP_TEST)
     string notsigned = r.get_str();
     string privkey1 = "\"YVobcS47fr6kceZy9LzLJR8WQ6YRpUwYKoJhrnEXepebMxaSpbnn\"";
     string privkey2 = "\"YRyMjG8hbm8jHeDMAfrzSeHq5GgAj7kuHFvJtMudCUH3sCkq1WtA\"";
+    
     r = CallRPC(string("signrawtransaction ")+notsigned+" "+prevout+" "+"[]");
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == false);
+
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
     r = CallRPC(string("signrawtransaction ")+notsigned+" "+prevout+" "+"["+privkey1+","+privkey2+"]");
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == true);
+    ECC_Stop();
 }
 
 BOOST_AUTO_TEST_CASE(rpc_format_monetary_values)

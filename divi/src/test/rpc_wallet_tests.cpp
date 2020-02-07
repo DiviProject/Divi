@@ -70,8 +70,6 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
     Value r;
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
 
     CPubKey demoPubkey = pwalletMain->GenerateNewKey(0,false);
     CBitcoinAddress demoAddress = CBitcoinAddress(CTxDestination(demoPubkey.GetID()));
@@ -173,7 +171,7 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
     /* Correct address and signature but wrong message */
     BOOST_CHECK(CallRPC("verifymessage " + demoAddress.ToString() + " " + retValue.get_str() + " wrongmessage").get_bool() == false);
     /* Correct address, message and signature*/
-    BOOST_CHECK(CallRPC("verifymessage " + demoAddress.ToString() + " " + retValue.get_str() + " mymessage").get_bool() == true);    
+    BOOST_CHECK(CallRPC("verifymessage " + demoAddress.ToString() + " " + retValue.get_str() + " mymessage").get_bool() == true);
 
     /*********************************
      * 		getaddressesbyaccount
@@ -183,6 +181,7 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
     Array arr = retValue.get_array();
     BOOST_CHECK(arr.size() > 0);
     BOOST_CHECK(CBitcoinAddress(arr[0].get_str()).Get() == demoAddress.Get());
+
     ECC_Stop();
 }
 

@@ -349,6 +349,8 @@ static const CRPCCommand vRPCCommands[] =
         {"divi", "mnsync", &mnsync, true, true, false},
         {"divi", "spork", &spork, true, true, false},
         {"divi", "getpoolinfo", &getpoolinfo, true, true, false},
+        {"divi","clearbanned",&clearbanned,false,false,false},
+        {"divi","listbanned",&listbanned,false,false,false},
 
         /* address index */
         { "addressindex", "getaddresstxids", &getaddresstxids, false, false, false },

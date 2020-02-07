@@ -610,6 +610,7 @@ public:
     // between nodes running old code and nodes running
     // new code.
     static void ClearBanned(); // needed for unit testing
+    static std::string ListBanned();
     static bool IsBanned(CNetAddr ip);
     static bool Ban(const CNetAddr& ip);
     void copyStats(CNodeStats& stats);

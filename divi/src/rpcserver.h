@@ -307,6 +307,8 @@ extern json_spirit::Value getaddressbalance(const json_spirit::Array& params, bo
 extern json_spirit::Value getaddressutxos(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getaddressmempool(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getspentinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value clearbanned(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listbanned(const json_spirit::Array& params, bool fHelp);
 
 // in rest.cpp
 extern bool HTTPReq_REST(AcceptedConnection* conn,

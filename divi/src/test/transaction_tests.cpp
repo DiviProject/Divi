@@ -43,9 +43,11 @@ static std::map<string, unsigned int> mapFlagNames = boost::assign::map_list_of
 
 unsigned int ParseScriptFlags(string strFlags)
 {
-    if (strFlags.empty()) {
+    if (strFlags.empty())
+    {
         return 0;
     }
+
     unsigned int flags = 0;
     vector<string> words;
     split(words, strFlags, is_any_of(","));
@@ -62,13 +64,18 @@ unsigned int ParseScriptFlags(string strFlags)
 
 string FormatScriptFlags(unsigned int flags)
 {
-    if (flags == 0) {
+    if (flags == 0)
+    {
         return "";
     }
+
     string ret;
     std::map<string, unsigned int>::const_iterator it = mapFlagNames.begin();
-    while (it != mapFlagNames.end()) {
-        if (flags & it->second) {
+
+    while (it != mapFlagNames.end())
+    {
+        if (flags & it->second)
+        {
             ret += it->first + ",";
         }
         it++;
@@ -78,8 +85,11 @@ string FormatScriptFlags(unsigned int flags)
 
 BOOST_AUTO_TEST_SUITE(transaction_tests)
 
-BOOST_AUTO_TEST_CASE(tx_valid, SKIP_TEST)
+BOOST_AUTO_TEST_CASE(tx_valid)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     // Read tests from test/data/tx_valid.json
     // Format is an array of arrays
     // Inner arrays are either [ "comment" ]
@@ -145,17 +155,28 @@ BOOST_AUTO_TEST_CASE(tx_valid, SKIP_TEST)
                 }
 
                 unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
-                BOOST_CHECK_MESSAGE(VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
-                                                 verify_flags, TransactionSignatureChecker(&tx, i), &err),
-                                    strTest);
+                BOOST_CHECK_MESSAGE(
+                    VerifyScript(
+                        tx.vin[i].scriptSig,
+                        mapprevOutScriptPubKeys[tx.vin[i].prevout],verify_flags,
+                        TransactionSignatureChecker(&tx, i),
+                        &err
+                    ),
+                    strTest
+                );
                 BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
             }
         }
     }
+
+    ECC_Stop();
 }
 
-BOOST_AUTO_TEST_CASE(tx_invalid, SKIP_TEST)
+BOOST_AUTO_TEST_CASE(tx_invalid)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     // Read tests from test/data/tx_invalid.json
     // Format is an array of arrays
     // Inner arrays are either [ "comment" ]
@@ -170,6 +191,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid, SKIP_TEST)
     {
         Array test = tv.get_array();
         string strTest = write_string(tv, false);
+
         if (test[0].type() == array_type)
         {
             if (test.size() != 3 || test[1].type() != str_type || test[2].type() != str_type)
@@ -181,6 +203,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid, SKIP_TEST)
             map<COutPoint, CScript> mapprevOutScriptPubKeys;
             Array inputs = test[0].get_array();
             bool fValid = true;
+
             BOOST_FOREACH(Value& input, inputs)
             {
                 if (input.type() != array_type)
@@ -188,7 +211,9 @@ BOOST_AUTO_TEST_CASE(tx_invalid, SKIP_TEST)
                     fValid = false;
                     break;
                 }
+
                 Array vinput = input.get_array();
+
                 if (vinput.size() != 3)
                 {
                     fValid = false;
@@ -197,6 +222,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid, SKIP_TEST)
 
                 mapprevOutScriptPubKeys[COutPoint(uint256(vinput[0].get_str()), vinput[1].get_int())] = ParseScript(vinput[2].get_str());
             }
+
             if (!fValid)
             {
                 BOOST_ERROR("Bad test: " << strTest);
@@ -223,10 +249,13 @@ BOOST_AUTO_TEST_CASE(tx_invalid, SKIP_TEST)
                 fValid = VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
                                       verify_flags, TransactionSignatureChecker(&tx, i), &err);
             }
+
             BOOST_CHECK_MESSAGE(!fValid, strTest);
             BOOST_CHECK_MESSAGE(err != SCRIPT_ERR_OK, ScriptErrorString(err));
         }
     }
+
+    ECC_Stop();
 }
 
 BOOST_AUTO_TEST_CASE(basic_transaction_tests)
@@ -283,8 +312,11 @@ SetupDummyInputs(CBasicKeyStore& keystoreRet, CCoinsViewCache& coinsRet)
     return dummyTransactions;
 }
 
-BOOST_AUTO_TEST_CASE(test_Get,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(test_Get)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     CBasicKeyStore keystore;
     CCoinsView coinsDummy;
     CCoinsViewCache coins(&coinsDummy);
@@ -315,10 +347,15 @@ BOOST_AUTO_TEST_CASE(test_Get,SKIP_TEST)
     // ... as should not having enough:
     t1.vin[0].scriptSig = CScript();
     BOOST_CHECK(!AreInputsStandard(t1, coins));
+
+    ECC_Stop();
 }
 
-BOOST_AUTO_TEST_CASE(test_IsStandard,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(test_IsStandard)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     LOCK(cs_main);
     CBasicKeyStore keystore;
     CCoinsView coinsDummy;
@@ -350,11 +387,19 @@ BOOST_AUTO_TEST_CASE(test_IsStandard,SKIP_TEST)
 
     // MAX_OP_META_RELAY-byte TX_NULL_DATA (standard)
     t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3804678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38");
+    BOOST_CHECK(MAX_OP_META_RELAY > t.vout[0].scriptPubKey.size());
+    BOOST_CHECK(IsStandardTx(t, reason));
+
+    // MaxString is used to test the max size of scriptPubKey while using MAX_OP_META_RELAY
+    string MaxString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore ve";
+
+    // MAX_OP_META_RELAY-byte TX_NULL_DATA (standard MAX SIZE)
+    t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex(HexStr(MaxString));
     BOOST_CHECK_EQUAL(MAX_OP_META_RELAY, t.vout[0].scriptPubKey.size());
     BOOST_CHECK(IsStandardTx(t, reason));
 
-    // MAX_OP_META_RELAY+1-byte TX_NULL_DATA (non-standard)
-    t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3804678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3800");
+    // MAX_OP_META_RELAY+1-byte TX_NULL_DATA (non-standard MAX SIZE)
+    t.vout[0].scriptPubKey = CScript() << OP_META << ParseHex(HexStr(MaxString + "1"));
     BOOST_CHECK_EQUAL(MAX_OP_META_RELAY + 1, t.vout[0].scriptPubKey.size());
     BOOST_CHECK(!IsStandardTx(t, reason));
 
@@ -388,9 +433,11 @@ BOOST_AUTO_TEST_CASE(test_IsStandard,SKIP_TEST)
     t.vout[1].scriptPubKey = CScript() << OP_META;
     BOOST_CHECK(!IsStandardTx(t, reason));
 
-t.vout[0].scriptPubKey = CScript() << OP_META;
+    t.vout[0].scriptPubKey = CScript() << OP_META;
     t.vout[1].scriptPubKey = CScript() << OP_META;
     BOOST_CHECK(!IsStandardTx(t, reason));
+
+    ECC_Stop();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

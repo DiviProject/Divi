@@ -22,61 +22,6 @@
 #include <fstream>
 using namespace json_spirit;
 
-static std::string charStringToHexString(const std::string& charString)
-{
-    const char hexCharacters[] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-    std::stringstream ss;
-    for(auto it = charString.begin(); it != charString.end(); ++it)
-    {
-        uint8_t charAsUint = *it;
-        ss << hexCharacters[(charAsUint & 0xF0) >> 4];
-        ss << hexCharacters[(charAsUint & 0x0F)];
-    }
-    return ss.str();
-}
-
-static std::vector<unsigned char> hexToUCharVector(const std::string& hexString)
-{
-    const char hexCharacters[] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-    auto toNumeric = [hexCharacters](const char value,uint8_t& out) -> bool {
-        const char* start = &hexCharacters[0];
-        const char* end = start +16;
-        auto it = std::find(start,end,value);
-        if(it == end)
-        {
-            out = uint8_t(0);
-            return false;
-        }
-        else
-        {
-            out = static_cast<uint8_t>(it - &hexCharacters[0]);
-            return true;
-        }
-        };
-
-    std::vector<unsigned char> result;
-    if(hexString.size() % 2 != 0)
-    {
-        return result;
-    }
-    result.reserve(hexString.size()/2);
-
-    uint8_t leadingHexAsUint;
-    uint8_t trailingHexAsUint;
-    for(auto it = hexString.begin(); it != hexString.end(); ++it)
-    {
-        if(!toNumeric(*it++,leadingHexAsUint) ||
-           !toNumeric(*it,trailingHexAsUint))
-        {
-            result.clear();
-            return result;
-        }
-        leadingHexAsUint = leadingHexAsUint << 4;
-        result.push_back( static_cast<unsigned char>( (leadingHexAsUint + trailingHexAsUint) ) );
-    }
-    return result;
-}
-
 template <typename T>
 static T readFromHex(std::string hexString)
 {
@@ -136,13 +81,17 @@ Value allocatefunds(const Array& params, bool fHelp)
 			"\"vin\"			(string) funding transaction id necessary for next step.\n");
 
     if (params[0].get_str() != "masternode")
+    {
         throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
+    }
 	CBitcoinAddress acctAddr = GetAccountAddress("alloc->" + params[1].get_str());
 	string strAmt = params[2].get_str();
 
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
     if(!CMasternode::IsTierValid(nMasternodeTier))
+    {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
+    }
 
 	CWalletTx wtx;
     SendMoney(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), wtx);
@@ -174,7 +123,9 @@ Value fundmasternode(const Array& params, bool fHelp)
     auto nMasternodeTier = GetMasternodeTierFromString(params[1].get_str());
 
     if(!CMasternode::IsTierValid(nMasternodeTier))
+    {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
+    }
 
 	uint256 txHash = uint256(params[2].get_str());
 	std::string mnAddress = params[3].get_str();
@@ -228,9 +179,9 @@ Value fundmasternode(const Array& params, bool fHelp)
 
 Value setupmasternode(const Array& params, bool fHelp)
 {
-	if (fHelp || params.size() != 6)
+	if (fHelp || params.size() != 5)
 		throw runtime_error(
-			"launchmasternode alias txin collateralPubKey masternodeTier\n"
+			"launchmasternode alias txhash outputIndex collateralPubKey ip_address\n"
 			"\nStarts escrows funds for some purpose.\n"
 
 			"\nArguments:\n"
@@ -238,10 +189,12 @@ Value setupmasternode(const Array& params, bool fHelp)
 			"2. txHash              (string, required) Funding transaction. \n"
             "3. outputIndex         (string, required) Output index transaction. \n"
             "4. collateralPubkey    (string, required) collateral pubkey. \n"
-			"5. masternodeTier      (string, required) [diamond | platinum | gold | silver | copper] tier of masternode. \n"
-            "6. ip_address          (string, required) Local ip address of this node\n"
+            "5. ip_address          (string, required) Local ip address of this node\n"
 			"\nResult:\n"
-			"\"vin\"			(string) funding transaction id necessary for next step.\n");
+			"\"protocol_version\"			(string) Protocol version used for serialization.\n"
+            "\"message_to_sign\"			(string) Hex-encoded msg requiring collateral signature.\n"
+            "\"config_line\"			    (string) Configuration data needed in the.\n"
+            "\"broadcast_data\"			    (string) funding transaction id necessary for next step.\n");
 
     Object result;
 
@@ -264,8 +217,7 @@ Value setupmasternode(const Array& params, bool fHelp)
     CPubKey pubkeyCollateralAddress;
     pubkeyCollateralAddress.Set(pubkeyStr.begin(),pubkeyStr.end());
 
-    std::string masternodeTier = params[4].get_str();
-    std::string ip = params[5].get_str();
+    std::string ip = params[4].get_str();
 
     CMasternodeConfig::CMasternodeEntry config(alias,ip,CBitcoinSecret(masternodeKey).ToString(),txHash,outputIndex);
 
@@ -278,9 +230,14 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
     result.push_back(Pair("protocol_version", PROTOCOL_VERSION ));
-    result.push_back(Pair("message_to_sign", charStringToHexString(mnb.getMessageToSign()) ));
+    result.push_back(Pair("message_to_sign", HexStr(mnb.getMessageToSign()) ));
+    result.push_back(Pair("config_line",
+        config.getAlias()+" "+ 
+        ip +":"+std::to_string(Params().GetDefaultPort()) +" "+ 
+        CBitcoinSecret(masternodeKey).ToString()+" "
+        +txHash+" "+outputIndex));
     ss << mnb;
-    result.push_back(Pair("broadcast_data", charStringToHexString(ss.str()) ));
+    result.push_back(Pair("broadcast_data", HexStr(ss.str()) ));
     return result;    
 }
 
@@ -338,12 +295,10 @@ Value listmasternodes(const Array& params, bool fHelp)
             HelpExampleCli("masternodelist", "") + HelpExampleRpc("masternodelist", ""));
 
     Array ret;
-    int nHeight;
     {
         LOCK(cs_main);
         CBlockIndex* pindex = chainActive.Tip();
         if(!pindex) return 0;
-        nHeight = pindex->nHeight;
     }
     for(auto &&entry : mnodeman.GetFullMasternodeVector()) {
         Object obj;
@@ -458,7 +413,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 2 || params.size() < 1)
         throw runtime_error(
-            "broadcaststartmasternode hex\n"
+            "broadcaststartmasternode hex sig\n"
             "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
             "\nArguments:\n"
@@ -468,11 +423,10 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
             "\"status\"	(string) status of broadcast\n");
 
     Object result;
-    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params.at(0).get_str());
+    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params[0].get_str());
     if(params.size()==2) 
     {
-        std::string decodedSignature = DecodeBase64(params.at(1).get_str());
-        mnb.sig = std::vector<unsigned char>(decodedSignature.begin(),decodedSignature.end());
+        mnb.sig = ParseHex(params[1].get_str());
     }
 
     int nDoS = 0;
@@ -525,7 +479,7 @@ Value startmasternode(const Array& params, bool fHelp)
                 {
                     CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
                     ss << mnb;
-                    result.push_back(Pair("broadcastData", charStringToHexString(ss.str()) ));
+                    result.push_back(Pair("broadcastData", HexStr(ss.str()) ));
                 }
                 fFound = true;
             }

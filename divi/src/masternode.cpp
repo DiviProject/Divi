@@ -563,9 +563,12 @@ bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
     std::string& strErrorRet)
 {
     nMasternodeTier = CMasternode::Tier::MASTERNODE_TIER_INVALID;
-    if(auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash))
+    auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash);
+    uint256 blockHash;
+    CTransaction fundingTx;
+    if(walletTx || GetTransaction(txin.prevout.hash,fundingTx,blockHash,true))
     {
-        auto collateralAmount = walletTx->vout.at(txin.prevout.n).nValue;
+        auto collateralAmount = (walletTx)? walletTx->vout.at(txin.prevout.n).nValue: fundingTx.vout[txin.prevout.n].nValue;
         nMasternodeTier = CMasternode::GetTierByCollateralAmount(collateralAmount);
         if(!CMasternode::IsTierValid(nMasternodeTier))
         {
@@ -1024,7 +1027,7 @@ CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
     ping.vin = newVin;
     auto block = chainActive[chainActive.Height() -12];
     ping.blockHash = block->GetBlockHash();
-    ping.sigTime = block->GetBlockTime() + offsetTimeBy45BlocksInSeconds;
+    ping.sigTime = std::max(block->GetBlockTime() + offsetTimeBy45BlocksInSeconds, GetAdjustedTime());
     ping.vchSig = std::vector<unsigned char>();
     LogPrint("masternode","mnp - relay block-time & sigtime: %d vs. %d\n", block->GetBlockTime(), ping.sigTime);
 

@@ -449,15 +449,16 @@ Value listaddressgroupings(const Array& params, bool fHelp)
 
 Value signmessage(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 2 || params.size() > 3)
+    if (fHelp || params.size() < 2 || params.size() > 4)
         throw runtime_error(
-                "signmessage \"diviaddress\" \"message\"\n"
+                "signmessage \"diviaddress\" \"message\" \"input_format\" \"output_format\"\n"
                 "\nSign a message with the private key of an address" +
                 HelpRequiringPassphrase() + "\n"
                                             "\nArguments:\n"
                                             "1. \"diviaddress\"    (string, required) The divi address to use for the private key.\n"
                                             "2. \"message\"        (string, required) The message to create a signature of.\n"
-                                            "2. \"format\"         (string, optional) Message encoding format. Default plaintext\n"
+                                            "3. \"input_format\"   (string, optional) ['hex'] Message encoding format. Default plaintext\n"
+                                            "4. \"output_format\"  (string, optional) ['hex'] Message encoding format. Default base64\n"
                                             "\nResult:\n"
                                             "\"signature\"          (string) The signature of the message encoded in base 64\n"
                                             "\nExamples:\n"
@@ -504,6 +505,14 @@ Value signmessage(const Array& params, bool fHelp)
     if (!key.SignCompact(ss.GetHash(), vchSig))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
 
+    if(params.size()==4)
+    {
+        string outputFormat = static_cast<string>(params[3].get_str());
+        if(std::strcmp(outputFormat.c_str(),"hex")==0)
+        {
+            return HexStr(vchSig);
+        }
+    }
     return EncodeBase64(&vchSig[0], vchSig.size());
 }
 
@@ -1162,7 +1171,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
     bool fAllAccounts = (strAccount == string("*"));
 
     if (wtx.IsCoinStake()) {
-        int64_t nTime = wtx.GetComputedTxTime();
+        wtx.GetComputedTxTime();
         CAmount nCredit = wtx.GetCredit(ISMINE_ALL);
         CAmount nDebit = wtx.GetDebit(ISMINE_ALL);
         CAmount nNet = nCredit - nDebit;

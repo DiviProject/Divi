@@ -61,8 +61,11 @@ BOOST_AUTO_TEST_CASE(rpc_addmultisig)
     BOOST_CHECK_THROW(addmultisig(createArgs(2, short2.c_str()), false), runtime_error);
 }
 
-BOOST_AUTO_TEST_CASE(rpc_wallet,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(rpc_wallet)
 {
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+
     // Test RPC calls for various wallet statistics
     Value r;
 
@@ -178,6 +181,8 @@ BOOST_AUTO_TEST_CASE(rpc_wallet,SKIP_TEST)
     Array arr = retValue.get_array();
     BOOST_CHECK(arr.size() > 0);
     BOOST_CHECK(CBitcoinAddress(arr[0].get_str()).Get() == demoAddress.Get());
+
+    ECC_Stop();
 }
 
 

@@ -4,6 +4,8 @@
 
 #include "aes.h"
 #include "crypto/common.h"
+#include <crypto/ctaes/ctaes.h>
+#include <crypto/ctaes/ctaes.c>
 
 #include <assert.h>
 #include <string.h>

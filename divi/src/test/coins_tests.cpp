@@ -11,9 +11,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-FastRandomContext random_source;
-auto insecure_rand = []() -> uint32_t { return random_source.rand32();};
-
 namespace
 {
 class CCoinsViewTest : public CCoinsView

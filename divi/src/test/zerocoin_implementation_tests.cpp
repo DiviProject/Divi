@@ -11,12 +11,9 @@
 #include <iostream>
 #include <accumulators.h>
 
-#include "test_only.h"
 using namespace libzerocoin;
 
 extern bool DecodeHexTx(CTransaction& tx, const std::string& strHexTx);
-
-auto charVectorFromString = [](const std::string& inputString) -> std::vector<unsigned char> {return std::vector<unsigned char>(inputString.begin(),inputString.end()); };
 
 BOOST_AUTO_TEST_SUITE(zerocoin_implementation_tests)
 
@@ -42,7 +39,7 @@ std::string zerocoinModulus = "2519590847565789349402718324004839857142928212620
     "7259085141865462043576798423387184774447920739934236584823824281198163815010674810451660377306056201619676256133"
     "8441436038339044149526344321901146575444541784240209246165157233507787077498171257724679629263863563732899121548"
     "31438167899885040445364023527381951378636564391212010397122822120720357";
-CBigNum bnTrustedModulus( charVectorFromString(zerocoinModulus) );
+CBigNum bnTrustedModulus(zerocoinModulus);
 libzerocoin::ZerocoinParams zerocoinParams = libzerocoin::ZerocoinParams(bnTrustedModulus);
 
 //ZQ_ONE mints
@@ -174,7 +171,7 @@ bool CheckZerocoinSpendNoDB(const CTransaction tx, string& strError)
     return fValidated;
 }
 
-BOOST_AUTO_TEST_CASE(checkzerocoinspend_test, SKIP_TEST)
+BOOST_AUTO_TEST_CASE(checkzerocoinspend_test)
 {
     cout << "Running check_zerocoinspend_test...\n";
 
@@ -207,8 +204,8 @@ BOOST_AUTO_TEST_CASE(checkzerocoinspend_test, SKIP_TEST)
 
     //spend our minted Zerocoin
     CZerocoinMint zerocoinMint;
-    zerocoinMint.SetRandomness(CBigNum(  charVectorFromString(rawTxRand1)  ));
-    zerocoinMint.SetSerialNumber(CBigNum(  charVectorFromString(rawTxSerial1)  ));
+    zerocoinMint.SetRandomness(CBigNum(rawTxRand1));
+    zerocoinMint.SetSerialNumber(CBigNum(rawTxSerial1));
     // Create a New Zerocoin with specific denomination given by pubCoin
     PrivateCoin privateCoin(Params().Zerocoin_Params(), pubCoin.getDenomination());
     privateCoin.setPublicCoin(pubCoin);

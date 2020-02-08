@@ -10,7 +10,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
-#include "test_only.h"
 
 using namespace std;
 using namespace json_spirit;
@@ -90,7 +89,7 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
     BOOST_CHECK_THROW(CallRPC(string("sendrawtransaction ")+rawtx+" extra"), runtime_error);
 }
 
-BOOST_AUTO_TEST_CASE(rpc_rawsign,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(rpc_rawsign)
 {
     Value r;
     // input is a 1-of-2 multisig (so is output):

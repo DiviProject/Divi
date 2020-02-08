@@ -8,7 +8,5 @@ services:
 script:
   # Compile from source
   - cd divi
-  - docker build -t divi -f DockerfileWithTests .
+  - docker build -t divi -f Dockerfile .
   - docker run divi
-after_failure:
-  - cat ./src/test-suite.log

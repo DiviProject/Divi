@@ -10,7 +10,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
-#include "test_only.h"
 
 using namespace std;
 using namespace json_spirit;
@@ -63,15 +62,12 @@ BOOST_AUTO_TEST_CASE(rpc_addmultisig)
 
 BOOST_AUTO_TEST_CASE(rpc_wallet)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
-
     // Test RPC calls for various wallet statistics
     Value r;
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    CPubKey demoPubkey = pwalletMain->GenerateNewKey(0,false);
+    CPubKey demoPubkey = pwalletMain->GenerateNewKey();
     CBitcoinAddress demoAddress = CBitcoinAddress(CTxDestination(demoPubkey.GetID()));
     Value retValue;
     string strAccount = "walletDemoAccount";
@@ -84,7 +80,7 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
         walletdb.WriteAccount(strAccount, account);
     });
 
-    CPubKey setaccountDemoPubkey = pwalletMain->GenerateNewKey(0,false);
+    CPubKey setaccountDemoPubkey = pwalletMain->GenerateNewKey();
     CBitcoinAddress setaccountDemoAddress = CBitcoinAddress(CTxDestination(setaccountDemoPubkey.GetID()));
 
     /*********************************
@@ -181,8 +177,6 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
     Array arr = retValue.get_array();
     BOOST_CHECK(arr.size() > 0);
     BOOST_CHECK(CBitcoinAddress(arr[0].get_str()).Get() == demoAddress.Get());
-
-    ECC_Stop();
 }
 
 

@@ -9,7 +9,7 @@
 #define BITCOIN_CHAINPARAMS_H
 
 #include "chainparamsbase.h"
-#include "checkpoint_data.h"
+#include "checkpoints.h"
 #include "primitives/block.h"
 #include "protocol.h"
 #include "uint256.h"
@@ -93,7 +93,7 @@ public:
     const std::vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     const std::vector<CAddress>& FixedSeeds() const { return vFixedSeeds; }
-    virtual const CCheckpointData& Checkpoints() const = 0;
+    virtual const Checkpoints::CCheckpointData& Checkpoints() const = 0;
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     std::string SporkKey() const { return strSporkKey; }
     std::string ObfuscationPoolDummyAddress() const { return strObfuscationPoolDummyAddress; }
@@ -223,7 +223,6 @@ public:
  * outside of the unit tests.
  */
 const CChainParams& Params();
-const CCheckpointData& GetCurrentChainCheckpoints();
 
 /** Return parameters for the given network. */
 CChainParams& Params(CBaseChainParams::Network network);

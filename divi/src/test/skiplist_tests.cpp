@@ -14,9 +14,6 @@
 
 BOOST_AUTO_TEST_SUITE(skiplist_tests)
 
-FastRandomContext random_source;
-auto insecure_rand = []() -> uint32_t { return random_source.rand32();};
-
 BOOST_AUTO_TEST_CASE(skiplist_test)
 {
     std::vector<CBlockIndex> vIndex(SKIPLIST_LENGTH);

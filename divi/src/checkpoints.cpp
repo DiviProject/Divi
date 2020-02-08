@@ -6,15 +6,16 @@
 
 #include "checkpoints.h"
 
-#include "blockmap.h"
 #include "chainparams.h"
+#include "main.h"
 #include "uint256.h"
 
 #include <stdint.h>
 
 #include <boost/foreach.hpp>
 
-
+namespace Checkpoints
+{
 /**
      * How many times we expect transactions after the last checkpoint to
      * be slower. This number is a compromise, as it can't be accurate for
@@ -22,27 +23,16 @@
      * can be up to 20, while when downloading from a slow network with a
      * fast multicore CPU, it won't be much higher than 1.
      */
-bool CCheckpointServices::fEnabled = true;
+static const double SIGCHECK_VERIFICATION_FACTOR = 5.0;
 
-CCheckpointServices::CCheckpointServices(
-    CheckpointDataProvider checkpointDataProvider
-    ): checkpointDataProvider_(checkpointDataProvider)
-{
-}
+bool fEnabled = true;
 
-CCheckpointServices::CCheckpointServices(
-    const CCheckpointData& staticCheckpointData
-    ): checkpointDataProvider_(
-        InternalCheckpointDataProvider([&staticCheckpointData]()-> const CCheckpointData&{return staticCheckpointData;} ))
+bool CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint)
 {
-}
-
-bool CCheckpointServices::CheckBlock(int nHeight, const uint256& hash, bool fMatchesCheckpoint) const
-{
-    if (!CCheckpointServices::fEnabled)
+    if (!fEnabled)
         return true;
 
-    const MapCheckpoints& checkpoints = *checkpointDataProvider_().mapCheckpoints;
+    const MapCheckpoints& checkpoints = *Params().Checkpoints().mapCheckpoints;
 
     MapCheckpoints::const_iterator i = checkpoints.find(nHeight);
     // If looking for an exact match, then return false
@@ -51,59 +41,54 @@ bool CCheckpointServices::CheckBlock(int nHeight, const uint256& hash, bool fMat
 }
 
 //! Guess how far we are in the verification process at the given block index
-double CCheckpointServices::GuessVerificationProgress(CBlockIndex* pindex, bool useConservativeEstimate) const
+double GuessVerificationProgress(CBlockIndex* pindex, bool fSigchecks)
 {
-    static const double CONSERVATIVE_VERIFICATION_FACTOR = 5.0;
     if (pindex == NULL)
         return 0.0;
 
     int64_t nNow = time(NULL);
 
-    double conservativeCheckVerificationFactor = useConservativeEstimate ? CONSERVATIVE_VERIFICATION_FACTOR : 1.0;
+    double fSigcheckVerificationFactor = fSigchecks ? SIGCHECK_VERIFICATION_FACTOR : 1.0;
     double fWorkBefore = 0.0; // Amount of work done before pindex
     double fWorkAfter = 0.0;  // Amount of work left after pindex (estimated)
     // Work is defined as: 1.0 per transaction before the last checkpoint, and
-    // conservativeCheckVerificationFactor per transaction after.
+    // fSigcheckVerificationFactor per transaction after.
 
-    const CCheckpointData& data = checkpointDataProvider_();
-    bool lessTxsThanLastCheckpoint = pindex->nChainTx <= data.nTransactionsLastCheckpoint;
-    if (lessTxsThanLastCheckpoint) {
-        double transactionCountAtBlock = pindex->nChainTx;
-        double additionalTransactionsToReachCheckpoint = data.nTransactionsLastCheckpoint - pindex->nChainTx;
-        double estimatedAdditionalTransactionsMissing = (nNow - data.nTimeLastCheckpoint) / 86400.0 * data.fTransactionsPerDay;
-        fWorkBefore = transactionCountAtBlock;
-        fWorkAfter = additionalTransactionsToReachCheckpoint + estimatedAdditionalTransactionsMissing * conservativeCheckVerificationFactor;
+    const CCheckpointData& data = Params().Checkpoints();
+
+    if (pindex->nChainTx <= data.nTransactionsLastCheckpoint) {
+        double nCheapBefore = pindex->nChainTx;
+        double nCheapAfter = data.nTransactionsLastCheckpoint - pindex->nChainTx;
+        double nExpensiveAfter = (nNow - data.nTimeLastCheckpoint) / 86400.0 * data.fTransactionsPerDay;
+        fWorkBefore = nCheapBefore;
+        fWorkAfter = nCheapAfter + nExpensiveAfter * fSigcheckVerificationFactor;
     } else {
-        double transactionCountAtLastCheckpoint = data.nTransactionsLastCheckpoint;
-        double additionalTransactionsToReachBlock = pindex->nChainTx - data.nTransactionsLastCheckpoint;
-        double estimatedAdditionalTransactionsMissing = (nNow - pindex->GetBlockTime()) / 86400.0 * data.fTransactionsPerDay;
-        fWorkBefore = transactionCountAtLastCheckpoint + additionalTransactionsToReachBlock * conservativeCheckVerificationFactor;
-        fWorkAfter = estimatedAdditionalTransactionsMissing * conservativeCheckVerificationFactor;
+        double nCheapBefore = data.nTransactionsLastCheckpoint;
+        double nExpensiveBefore = pindex->nChainTx - data.nTransactionsLastCheckpoint;
+        double nExpensiveAfter = (nNow - pindex->GetBlockTime()) / 86400.0 * data.fTransactionsPerDay;
+        fWorkBefore = nCheapBefore + nExpensiveBefore * fSigcheckVerificationFactor;
+        fWorkAfter = nExpensiveAfter * fSigcheckVerificationFactor;
     }
 
     return fWorkBefore / (fWorkBefore + fWorkAfter);
 }
 
-int CCheckpointServices::GetTotalBlocksEstimate() const
+int GetTotalBlocksEstimate()
 {
-    if (!CCheckpointServices::fEnabled)
+    if (!fEnabled)
         return 0;
 
-    const MapCheckpoints& checkpoints = *checkpointDataProvider_().mapCheckpoints;
-    if(checkpoints.empty())
-    {
-        return 0;
-    }
+    const MapCheckpoints& checkpoints = *Params().Checkpoints().mapCheckpoints;
 
     return checkpoints.rbegin()->first;
 }
 
-CBlockIndex* CCheckpointServices::GetLastCheckpoint(const BlockMap& mapBlockIndex) const
+CBlockIndex* GetLastCheckpoint()
 {
-    if (!CCheckpointServices::fEnabled)
+    if (!fEnabled)
         return NULL;
 
-    const MapCheckpoints& checkpoints = *checkpointDataProvider_().mapCheckpoints;
+    const MapCheckpoints& checkpoints = *Params().Checkpoints().mapCheckpoints;
 
     BOOST_REVERSE_FOREACH (const MapCheckpoints::value_type& i, checkpoints) {
         const uint256& hash = i.second;
@@ -113,3 +98,5 @@ CBlockIndex* CCheckpointServices::GetLastCheckpoint(const BlockMap& mapBlockInde
     }
     return NULL;
 }
+
+} // namespace Checkpoints

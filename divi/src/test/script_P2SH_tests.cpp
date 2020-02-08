@@ -16,7 +16,7 @@
 #include <vector>
 
 #include <boost/test/unit_test.hpp>
-#include "test_only.h"
+
 using namespace std;
 
 // Helpers:
@@ -49,7 +49,7 @@ Verify(const CScript& scriptSig, const CScript& scriptPubKey, bool fStrict, Scri
 
 BOOST_AUTO_TEST_SUITE(script_P2SH_tests)
 
-BOOST_AUTO_TEST_CASE(sign,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(sign)
 {
     LOCK(cs_main);
     // Pay-to-script-hash looks like this:
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(norecurse)
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
 }
 
-BOOST_AUTO_TEST_CASE(set,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(set)
 {
     LOCK(cs_main);
     // Test the CScript::Set* methods
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(switchover)
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EQUALVERIFY, ScriptErrorString(err));
 }
 
-BOOST_AUTO_TEST_CASE(AreInputsStandard,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(AreInputsStandard)
 {
     LOCK(cs_main);
     CCoinsView coinsDummy;

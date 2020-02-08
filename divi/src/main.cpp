@@ -85,8 +85,6 @@ unsigned int nStakeMinAge = 60 * 60;
 unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
 int64_t nReserveBalance = 0;
 
-CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
-
 /** Fees smaller than this (in duffs) are considered zero fee (for relaying and mining)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
  * so it's still 10 times lower comparing to bitcoin.
@@ -2293,7 +2291,7 @@ CBlockRewards GetBlockSubsidity(int nHeight)
 bool IsInitialBlockDownload()	//2446
 {
     LOCK(cs_main);
-    if (fImporting || fReindex || fVerifyingBlocks || chainActive.Height() < checkpointsVerifier.GetTotalBlocksEstimate())
+    if (fImporting || fReindex || fVerifyingBlocks || chainActive.Height() < Checkpoints::GetTotalBlocksEstimate())
         return true;
     static bool lockIBDState = false;
     if (lockIBDState)
@@ -3200,7 +3198,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return state.DoS(100, error("ConnectBlock() : PoW period ended"),
                          REJECT_INVALID, "PoW-ended");
 
-    bool fScriptChecks = pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate();
+    bool fScriptChecks = pindex->nHeight >= Checkpoints::GetTotalBlocksEstimate();
 
     // Do not allow blocks that contain transactions which 'overwrite' older transactions,
     // unless those are already completely spent.
@@ -3611,7 +3609,7 @@ void static UpdateTip(CBlockIndex* pindexNew)
     LogPrintf("UpdateTip: new best=%s  height=%d  log2_work=%.8g  tx=%lu  date=%s progress=%f  cache=%u\n",
               chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), log(chainActive.Tip()->nChainWork.getdouble()) / log(2.0), (unsigned long)chainActive.Tip()->nChainTx,
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
-              checkpointsVerifier.GuessVerificationProgress(chainActive.Tip()), (unsigned int)pcoinsTip->GetCacheSize());
+              Checkpoints::GuessVerificationProgress(chainActive.Tip()), (unsigned int)pcoinsTip->GetCacheSize());
 
     cvBlockChange.notify_all();
 
@@ -4029,7 +4027,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
         if (!fInitialDownload) {
             uint256 hashNewTip = pindexNewTip->GetBlockHash();
             // Relay inventory, but don't relay old inventory during initial block download.
-            int nBlockEstimate = checkpointsVerifier.GetTotalBlocksEstimate();
+            int nBlockEstimate = Checkpoints::GetTotalBlocksEstimate();
             {
                 LOCK(cs_vNodes);
                 BOOST_FOREACH (CNode* pnode, vNodes)
@@ -4544,12 +4542,12 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     }
 
     // Check that the block chain matches the known block chain up to a checkpoint
-    if (!checkpointsVerifier.CheckBlock(nHeight, hash))
+    if (!Checkpoints::CheckBlock(nHeight, hash))
         return state.DoS(100, error("%s : rejected by checkpoint lock-in at %d", __func__, nHeight),
                          REJECT_CHECKPOINT, "checkpoint mismatch");
 
     // Don't accept any forks from the main chain prior to last checkpoint
-    CBlockIndex* pcheckpoint = checkpointsVerifier.GetLastCheckpoint(mapBlockIndex);
+    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint();
     if (pcheckpoint && nHeight < pcheckpoint->nHeight)
         return state.DoS(0, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
 
@@ -4646,7 +4644,7 @@ bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
             //If this "invalid" block is an exact match from the checkpoints, then reconsider it
-            if (pindex && checkpointsVerifier.CheckBlock(pindex->nHeight - 1, block.hashPrevBlock, true)) {
+            if (pindex && Checkpoints::CheckBlock(pindex->nHeight - 1, block.hashPrevBlock, true)) {
                 LogPrintf("%s : Reconsidering block %s height %d\n", __func__, pindexPrev->GetBlockHash().GetHex(), pindexPrev->nHeight);
                 CValidationState statePrev;
                 ReconsiderBlock(statePrev, pindexPrev);
@@ -4689,7 +4687,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
             //If this "invalid" block is an exact match from the checkpoints, then reconsider it
-            if (checkpointsVerifier.CheckBlock(pindexPrev->nHeight, block.hashPrevBlock, true)) {
+            if (Checkpoints::CheckBlock(pindexPrev->nHeight, block.hashPrevBlock, true)) {
                 LogPrintf("%s : Reconsidering block %s height %d\n", __func__, pindexPrev->GetBlockHash().GetHex(), pindexPrev->nHeight);
                 CValidationState statePrev;
                 ReconsiderBlock(statePrev, pindexPrev);
@@ -5179,7 +5177,7 @@ bool static LoadBlockIndexDB(string& strError)
     LogPrintf("LoadBlockIndexDB(): hashBestChain=%s height=%d date=%s progress=%f\n",
               chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(),
               DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
-              checkpointsVerifier.GuessVerificationProgress(chainActive.Tip()));
+              Checkpoints::GuessVerificationProgress(chainActive.Tip()));
 
     return true;
 }

@@ -19,9 +19,6 @@
 
 BOOST_AUTO_TEST_SUITE(crypto_tests)
 
-FastRandomContext random_source;
-auto insecure_rand = []() -> uint32_t { return random_source.rand32();};
-
 template<typename Hasher, typename In, typename Out>
 void TestVector(const Hasher &h, const In &in, const Out &out) {
     Out hash;

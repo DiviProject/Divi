@@ -49,9 +49,11 @@ Verify(const CScript& scriptSig, const CScript& scriptPubKey, bool fStrict, Scri
 
 BOOST_AUTO_TEST_SUITE(script_P2SH_tests)
 
-BOOST_AUTO_TEST_CASE(sign,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(sign)
 {
     LOCK(cs_main);
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
     // Pay-to-script-hash looks like this:
     // scriptSig:    <sig> <sig...> <serialized_script>
     // scriptPubKey: HASH160 <hash> EQUAL
@@ -110,6 +112,7 @@ BOOST_AUTO_TEST_CASE(sign,SKIP_TEST)
     // All of the above should be OK, and the txTos have valid signatures
     // Check to make sure signature verification fails if we use the wrong ScriptSig:
     for (int i = 0; i < 8; i++)
+    {
         for (int j = 0; j < 8; j++)
         {
             CScript sigSave = txTo[i].vin[0].scriptSig;
@@ -121,6 +124,9 @@ BOOST_AUTO_TEST_CASE(sign,SKIP_TEST)
                 BOOST_CHECK_MESSAGE(!sigOK, strprintf("VerifySignature %d %d", i, j));
             txTo[i].vin[0].scriptSig = sigSave;
         }
+    }
+
+    ECC_Stop();
 }
 
 BOOST_AUTO_TEST_CASE(norecurse)
@@ -150,9 +156,11 @@ BOOST_AUTO_TEST_CASE(norecurse)
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
 }
 
-BOOST_AUTO_TEST_CASE(set,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(set)
 {
     LOCK(cs_main);
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
     // Test the CScript::Set* methods
     CBasicKeyStore keystore;
     CKey key[4];
@@ -205,6 +213,7 @@ BOOST_AUTO_TEST_CASE(set,SKIP_TEST)
         BOOST_CHECK_MESSAGE(SignSignature(keystore, txFrom, txTo[i], 0), strprintf("SignSignature %d", i));
         BOOST_CHECK_MESSAGE(IsStandardTx(txTo[i], reason), strprintf("txTo[%d].IsStandard", i));
     }
+    ECC_Stop();
 }
 
 BOOST_AUTO_TEST_CASE(is)
@@ -258,9 +267,12 @@ BOOST_AUTO_TEST_CASE(switchover)
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EQUALVERIFY, ScriptErrorString(err));
 }
 
-BOOST_AUTO_TEST_CASE(AreInputsStandard,SKIP_TEST)
+BOOST_AUTO_TEST_CASE(AreInputsStandard)
 {
     LOCK(cs_main);
+    ECCVerifyHandle verificationModule;
+    ECC_Start();
+    
     CCoinsView coinsDummy;
     CCoinsViewCache coins(&coinsDummy);
     CBasicKeyStore keystore;
@@ -376,6 +388,8 @@ BOOST_AUTO_TEST_CASE(AreInputsStandard,SKIP_TEST)
 
     BOOST_CHECK(!::AreInputsStandard(txToNonStd2, coins));
     BOOST_CHECK_EQUAL(GetP2SHSigOpCount(txToNonStd2, coins), 20U);
+
+    ECC_Stop();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -89,11 +89,13 @@ BITCOIN_CORE_H = \
   bip39.h \
   bip39_english.h \
   bloom.h \
+  blockmap.h\
   chain.h \
   chainparams.h \
   chainparamsbase.h \
   chainparamsseeds.h \
   checkpoints.h \
+  checkpoint_data.h\
   checkqueue.h \
   clientversion.h \
   coincontrol.h \

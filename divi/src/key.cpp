@@ -7,7 +7,6 @@
 #include "crypto/common.h"
 #include "crypto/hmac_sha512.h"
 #include "crypto/rfc6979_hmac_sha256.h"
-#include "eccryptoverify.h"
 #include "pubkey.h"
 #include "random.h"
 

@@ -119,8 +119,8 @@ CTransaction RandomOrphan()
 
 BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
     
     CKey key;
     key.MakeNewKey(true);
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
     LimitOrphanTxSize(0);
     BOOST_CHECK(mapOrphanTransactions.empty());
     BOOST_CHECK(mapOrphanTransactionsByPrev.empty());
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_SUITE_END()

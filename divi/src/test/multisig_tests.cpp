@@ -47,8 +47,8 @@ sign_multisig(CScript scriptPubKey, vector<CKey> keys, CTransaction transaction,
 
 BOOST_AUTO_TEST_CASE(multisig_verify)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC;
 
@@ -150,13 +150,13 @@ BOOST_AUTO_TEST_CASE(multisig_verify)
         }
     }
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(multisig_IsStandard)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     CKey key[4];
     for (int i = 0; i < 4; i++)
@@ -195,13 +195,13 @@ BOOST_AUTO_TEST_CASE(multisig_IsStandard)
         BOOST_CHECK(!::IsStandard(malformed[i], whichType));
     }
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(multisig_Solver1)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     // Tests Solver() that returns lists of keys that are
     // required to satisfy a ScriptPubKey
@@ -307,13 +307,13 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         BOOST_CHECK(solutions.size() == 5);
     }
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(multisig_Sign)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     // Test SignSignature() (and therefore the version of Solver() that signs transactions)
     CBasicKeyStore keystore;
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(multisig_Sign)
         BOOST_CHECK_MESSAGE(SignSignature(keystore, txFrom, txTo[i], 0), strprintf("SignSignature %d", i));
     }
 
-    ECC_Stop();
+    
 }
 
 

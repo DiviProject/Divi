@@ -52,8 +52,8 @@ BOOST_AUTO_TEST_SUITE(script_P2SH_tests)
 BOOST_AUTO_TEST_CASE(sign)
 {
     LOCK(cs_main);
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
     // Pay-to-script-hash looks like this:
     // scriptSig:    <sig> <sig...> <serialized_script>
     // scriptPubKey: HASH160 <hash> EQUAL
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(sign)
         }
     }
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(norecurse)
@@ -159,8 +159,8 @@ BOOST_AUTO_TEST_CASE(norecurse)
 BOOST_AUTO_TEST_CASE(set)
 {
     LOCK(cs_main);
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
     // Test the CScript::Set* methods
     CBasicKeyStore keystore;
     CKey key[4];
@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(set)
         BOOST_CHECK_MESSAGE(SignSignature(keystore, txFrom, txTo[i], 0), strprintf("SignSignature %d", i));
         BOOST_CHECK_MESSAGE(IsStandardTx(txTo[i], reason), strprintf("txTo[%d].IsStandard", i));
     }
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(is)
@@ -270,8 +270,8 @@ BOOST_AUTO_TEST_CASE(switchover)
 BOOST_AUTO_TEST_CASE(AreInputsStandard)
 {
     LOCK(cs_main);
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
     
     CCoinsView coinsDummy;
     CCoinsViewCache coins(&coinsDummy);
@@ -389,7 +389,7 @@ BOOST_AUTO_TEST_CASE(AreInputsStandard)
     BOOST_CHECK(!::AreInputsStandard(txToNonStd2, coins));
     BOOST_CHECK_EQUAL(GetP2SHSigOpCount(txToNonStd2, coins), 20U);
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_SUITE_END()

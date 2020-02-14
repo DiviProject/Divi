@@ -63,9 +63,6 @@ BOOST_AUTO_TEST_CASE(rpc_addmultisig)
 
 BOOST_AUTO_TEST_CASE(rpc_wallet)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
-
     // Test RPC calls for various wallet statistics
     Value r;
 
@@ -182,7 +179,6 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
     BOOST_CHECK(arr.size() > 0);
     BOOST_CHECK(CBitcoinAddress(arr[0].get_str()).Get() == demoAddress.Get());
 
-    ECC_Stop();
 }
 
 

@@ -329,8 +329,8 @@ public:
 
 BOOST_AUTO_TEST_CASE(script_build)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
     const KeyData keys;
 
     std::vector<TestBuilder> good;
@@ -610,7 +610,7 @@ BOOST_AUTO_TEST_CASE(script_build)
 #endif
         strBad += str + ",\n";
     }
-    ECC_Stop();
+    
 #ifdef UPDATE_JSON_TESTS
     FILE* valid = fopen("script_valid.json.gen", "w");
     fputs(strGood.c_str(), valid);
@@ -628,8 +628,8 @@ BOOST_AUTO_TEST_CASE(script_valid)
     // Inner arrays are [ "scriptSig", "scriptPubKey", "flags" ]
     // ... where scriptSig and scriptPubKey are stringified
     // scripts.
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
     Array tests = read_json(std::string(json_tests::script_valid, json_tests::script_valid + sizeof(json_tests::script_valid)));
 
     BOOST_FOREACH(Value& tv, tests)
@@ -651,13 +651,13 @@ BOOST_AUTO_TEST_CASE(script_valid)
 
         DoTest(scriptPubKey, scriptSig, scriptflags, true, strTest);
     }
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_invalid)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
     // Scripts that should evaluate as invalid
     Array tests = read_json(std::string(json_tests::script_invalid, json_tests::script_invalid + sizeof(json_tests::script_invalid)));
 
@@ -680,7 +680,7 @@ BOOST_AUTO_TEST_CASE(script_invalid)
 
         DoTest(scriptPubKey, scriptSig, scriptflags, false, strTest);
     }
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_PushData)
@@ -747,8 +747,8 @@ sign_multisig(CScript scriptPubKey, const CKey &key, CTransaction transaction)
 
 BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG12)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     ScriptError err;
     CKey key1, key2, key3;
@@ -777,13 +777,13 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG12)
     BOOST_CHECK(!VerifyScript(badsig1, scriptPubKey12, flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG23)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     ScriptError err;
     CKey key1, key2, key3, key4;
@@ -851,13 +851,13 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG23)
     BOOST_CHECK(!VerifyScript(badsig6, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_INVALID_STACK_OPERATION, ScriptErrorString(err));
 
-    ECC_Stop();
+    
 }    
 
 BOOST_AUTO_TEST_CASE(script_combineSigs)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
     
     // Test the CombineSignatures function
     CBasicKeyStore keystore;
@@ -965,7 +965,7 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     combined = CombineSignatures(scriptPubKey, txTo, 0, partial3b, partial3a);
     BOOST_CHECK(combined == partial3c);
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_standard_push)

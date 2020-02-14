@@ -75,7 +75,6 @@ int nWalletBackups = 100;
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
-static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -663,10 +662,6 @@ bool InitSanityCheck(void)
 bool AppInitSanityChecks()
 {
     // ********************************************************* Step 4: sanity checks
-
-    // Initialize elliptic curve code
-    ECC_Start();
-    globalVerifyHandle.reset(new ECCVerifyHandle());
 
     // Sanity check
     if (!InitSanityCheck())

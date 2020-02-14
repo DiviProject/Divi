@@ -92,8 +92,8 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
 
 BOOST_AUTO_TEST_CASE(rpc_rawsign)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     Value r;
     // input is a 1-of-2 multisig (so is output):
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign)
     r = CallRPC(string("signrawtransaction ")+notsigned+" "+prevout+" "+"["+privkey1+","+privkey2+"]");
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == true);
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(rpc_format_monetary_values)

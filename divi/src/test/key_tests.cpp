@@ -61,26 +61,55 @@ void dumpKeyInfo(uint256 privkey)
 
 BOOST_AUTO_TEST_SUITE(key_tests)
 
-BOOST_AUTO_TEST_CASE(key_test1)
+BOOST_AUTO_TEST_CASE(willFailToSetSecretsForBadAddress)
 {
-    
-    
+    CBitcoinSecret baddress1;
+    BOOST_CHECK(!baddress1.SetString(strAddressBad));
+}
 
+BOOST_AUTO_TEST_CASE(willSetSecretsCorrectlyForRightFormat)
+{
     CBitcoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
     BOOST_CHECK( bsecret1.SetString (strSecret1));
     BOOST_CHECK( bsecret2.SetString (strSecret2));
     BOOST_CHECK( bsecret1C.SetString(strSecret1C));
     BOOST_CHECK( bsecret2C.SetString(strSecret2C));
-    BOOST_CHECK(!baddress1.SetString(strAddressBad));
+}
+
+BOOST_AUTO_TEST_CASE(willRecognizeCompressedKeysFromNonCompressedKeys)
+{
+        
+    CBitcoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
+    BOOST_CHECK(
+        bsecret1.SetString (strSecret1) &&
+        bsecret2.SetString (strSecret2) &&
+        bsecret1C.SetString(strSecret1C) &&
+        bsecret2C.SetString(strSecret2C));
 
     CKey key1  = bsecret1.GetKey();
-    BOOST_CHECK(key1.IsCompressed() == false);
     CKey key2  = bsecret2.GetKey();
-    BOOST_CHECK(key2.IsCompressed() == false);
     CKey key1C = bsecret1C.GetKey();
-    BOOST_CHECK(key1C.IsCompressed() == true);
     CKey key2C = bsecret2C.GetKey();
+
+    BOOST_CHECK(key1.IsCompressed() == false);
+    BOOST_CHECK(key2.IsCompressed() == false);
+    BOOST_CHECK(key1C.IsCompressed() == true);
     BOOST_CHECK(key2C.IsCompressed() == true);
+}
+
+BOOST_AUTO_TEST_CASE(willCheckPrivateKeysOnlyVerifyTheirPubKey)
+{
+    CBitcoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
+
+    bsecret1.SetString (strSecret1);
+    bsecret2.SetString (strSecret2);
+    bsecret1C.SetString(strSecret1C);
+    bsecret2C.SetString(strSecret2C);
+    
+    CKey key1  = bsecret1.GetKey();
+    CKey key2  = bsecret2.GetKey();
+    CKey key1C = bsecret1C.GetKey();
+    CKey key2C = bsecret2C.GetKey();
 
     CPubKey pubkey1  = key1. GetPubKey();
     CPubKey pubkey2  = key2. GetPubKey();
@@ -106,11 +135,46 @@ BOOST_AUTO_TEST_CASE(key_test1)
     BOOST_CHECK(!key2C.VerifyPubKey(pubkey1C));
     BOOST_CHECK(!key2C.VerifyPubKey(pubkey2));
     BOOST_CHECK(key2C.VerifyPubKey(pubkey2C));
+}
+
+BOOST_AUTO_TEST_CASE(willMatchPubkeyToAddress)
+{
+    CBitcoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
+
+    bsecret1.SetString (strSecret1);
+    bsecret2.SetString (strSecret2);
+    bsecret1C.SetString(strSecret1C);
+    bsecret2C.SetString(strSecret2C);
+
+    CPubKey pubkey1  = bsecret1.GetKey(). GetPubKey();
+    CPubKey pubkey2  = bsecret2.GetKey(). GetPubKey();
+    CPubKey pubkey1C = bsecret1C.GetKey().GetPubKey();
+    CPubKey pubkey2C = bsecret2C.GetKey().GetPubKey();
 
     BOOST_CHECK(addr1.Get()  == CTxDestination(pubkey1.GetID()));
     BOOST_CHECK(addr2.Get()  == CTxDestination(pubkey2.GetID()));
     BOOST_CHECK(addr1C.Get() == CTxDestination(pubkey1C.GetID()));
     BOOST_CHECK(addr2C.Get() == CTxDestination(pubkey2C.GetID()));
+}
+
+BOOST_AUTO_TEST_CASE(willCheckKeysSignAndVerifySignatures)
+{
+   CBitcoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
+
+    bsecret1.SetString (strSecret1);
+    bsecret2.SetString (strSecret2);
+    bsecret1C.SetString(strSecret1C);
+    bsecret2C.SetString(strSecret2C);
+    
+    CKey key1  = bsecret1.GetKey();
+    CKey key2  = bsecret2.GetKey();
+    CKey key1C = bsecret1C.GetKey();
+    CKey key2C = bsecret2C.GetKey();
+
+    CPubKey pubkey1  = key1. GetPubKey();
+    CPubKey pubkey2  = key2. GetPubKey();
+    CPubKey pubkey1C = key1C.GetPubKey();
+    CPubKey pubkey2C = key2C.GetPubKey();
 
     for (int n=0; n<16; n++)
     {
@@ -192,5 +256,64 @@ BOOST_AUTO_TEST_CASE(key_test1)
 
     
 }
+
+BOOST_AUTO_TEST_CASE(willVerifyOnlySetKeysAreFullyValid)
+{
+
+    CBitcoinSecret bsecret1, bsecret2, bsecret1C, bsecret2C, baddress1;
+    BOOST_CHECK( bsecret1.SetString (strSecret1));
+    BOOST_CHECK( bsecret2.SetString (strSecret2));
+    BOOST_CHECK( bsecret1C.SetString(strSecret1C));
+    BOOST_CHECK( bsecret2C.SetString(strSecret2C));
+    BOOST_CHECK(!baddress1.SetString(strAddressBad));
+
+    CKey key1  = bsecret1.GetKey();
+    BOOST_CHECK(key1.IsCompressed() == false);
+    CKey key2  = bsecret2.GetKey();
+    BOOST_CHECK(key2.IsCompressed() == false);
+    CKey key1C = bsecret1C.GetKey();
+    BOOST_CHECK(key1C.IsCompressed() == true);
+    CKey key2C = bsecret2C.GetKey();
+    BOOST_CHECK(key2C.IsCompressed() == true);
+
+    CPubKey pubkey1  = key1. GetPubKey();
+    CPubKey pubkey2  = key2. GetPubKey();
+    CPubKey pubkey1C = key1C.GetPubKey();
+    CPubKey pubkey2C = key2C.GetPubKey();
+    CPubKey uninitializedKey;
+
+    BOOST_CHECK(pubkey1.IsFullyValid());
+    BOOST_CHECK(pubkey2.IsFullyValid());
+    BOOST_CHECK(pubkey1C.IsFullyValid());
+    BOOST_CHECK(pubkey2C.IsFullyValid());
+    BOOST_CHECK(!uninitializedKey.IsFullyValid());
+
+}
+
+BOOST_AUTO_TEST_CASE(willDecompressCompressedKeys)
+{
+
+    CBitcoinSecret bsecret1C, bsecret2C;
+    BOOST_CHECK( bsecret1C.SetString(strSecret1C));
+    BOOST_CHECK( bsecret2C.SetString(strSecret2C));
+
+    CKey key1C = bsecret1C.GetKey();
+    CKey key2C = bsecret2C.GetKey();
+    BOOST_CHECK(key1C.IsCompressed() == true);
+    BOOST_CHECK(key2C.IsCompressed() == true);
+
+    CPubKey pubkey1C = key1C.GetPubKey();
+    CPubKey pubkey2C = key2C.GetPubKey();
+    BOOST_CHECK(pubkey1C.IsCompressed());
+    BOOST_CHECK(pubkey2C.IsCompressed());
+
+    pubkey1C.Decompress();
+    pubkey2C.Decompress();
+
+    BOOST_CHECK(!pubkey1C.IsCompressed());
+    BOOST_CHECK(!pubkey2C.IsCompressed());
+
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

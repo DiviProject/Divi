@@ -671,9 +671,6 @@ bool AppInitSanityChecks()
     return true;
 }
 
-/** Initialize divi.
- *  @pre Parameters should be parsed and config file should be read.
- */
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup

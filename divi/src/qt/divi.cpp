@@ -269,8 +269,8 @@ void BitcoinCore::initialize()
     execute_restart = true;
 
     try {
-        qDebug() << __func__ << ": Running AppInit2 in thread";
-        int rv = AppInit2(threadGroup);
+        qDebug() << __func__ << ": Running InitializeDivi in thread";
+        int rv = InitializeDivi(threadGroup);
         if (rv) {
             /* Start a dummy RPC thread if no RPC thread is active yet
              * to handle timeouts.

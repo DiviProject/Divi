@@ -122,7 +122,7 @@ CClientUIInterface uiInterface;
 // threads that should only be stopped after the main network-processing
 // threads have exited.
 //
-// Note that if running -daemon the parent process returns from AppInit2
+// Note that if running -daemon the parent process returns from InitializeDivi
 // before adding any threads to the threadGroup, so .join_all() returns
 // immediately and the parent exits from main().
 //
@@ -177,7 +177,7 @@ void PrepareShutdown()
     if (!lockShutdown)
         return;
 
-    /// Note: Shutdown() must be able to handle cases in which AppInit2() failed part of the way,
+    /// Note: Shutdown() must be able to handle cases in which InitializeDivi() failed part of the way,
     /// for example if the data directory was found to be locked.
     /// Be sure that anything that writes files or flushes caches only does this if the respective
     /// module was initialized.
@@ -674,7 +674,7 @@ bool AppInitSanityChecks()
 /** Initialize divi.
  *  @pre Parameters should be parsed and config file should be read.
  */
-bool AppInit2(boost::thread_group& threadGroup)
+bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
 #ifdef _MSC_VER
@@ -749,15 +749,15 @@ bool AppInit2(boost::thread_group& threadGroup)
         // when specifying an explicit binding address, you want to listen on it
         // even when -connect or -proxy is specified
         if (SoftSetBoolArg("-listen", true))
-            LogPrintf("AppInit2 : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
+            LogPrintf("InitializeDivi : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
     }
 
     if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0) {
         // when only connecting to trusted nodes, do not seed via DNS, or listen by default
         if (SoftSetBoolArg("-dnsseed", false))
-            LogPrintf("AppInit2 : parameter interaction: -connect set -> setting -dnsseed=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -dnsseed=0\n");
         if (SoftSetBoolArg("-listen", false))
-            LogPrintf("AppInit2 : parameter interaction: -connect set -> setting -listen=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -listen=0\n");
     }
 
     if (mapArgs.count("-proxy")) {
@@ -770,40 +770,40 @@ bool AppInit2(boost::thread_group& threadGroup)
             LogPrintf("%s: parameter interaction: -proxy set -> setting -upnp=0\n", __func__);
         // to protect privacy, do not discover addresses by default
         if (SoftSetBoolArg("-discover", false))
-            LogPrintf("AppInit2 : parameter interaction: -proxy set -> setting -discover=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -proxy set -> setting -discover=0\n");
     }
 
     if (!GetBoolArg("-listen", true)) {
         // do not map ports or try to retrieve public IP when not listening (pointless)
         if (SoftSetBoolArg("-upnp", false))
-            LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -upnp=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -upnp=0\n");
         if (SoftSetBoolArg("-discover", false))
-            LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -discover=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -discover=0\n");
         if (SoftSetBoolArg("-listenonion", false))
-            LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -listenonion=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -listenonion=0\n");
     }
 
     if (mapArgs.count("-externalip")) {
         // if an explicit public IP is specified, do not try to find others
         if (SoftSetBoolArg("-discover", false))
-            LogPrintf("AppInit2 : parameter interaction: -externalip set -> setting -discover=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
     }
 
     if (GetBoolArg("-salvagewallet", false)) {
         // Rewrite just private keys: rescan to find transactions
         if (SoftSetBoolArg("-rescan", true))
-            LogPrintf("AppInit2 : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n");
+            LogPrintf("InitializeDivi : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n");
     }
 
     // -zapwallettx implies a rescan
     if (GetBoolArg("-zapwallettxes", false)) {
         if (SoftSetBoolArg("-rescan", true))
-            LogPrintf("AppInit2 : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
+            LogPrintf("InitializeDivi : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
     }
 
     if (!GetBoolArg("-enableswifttx", fEnableSwiftTX)) {
         if (SoftSetArg("-swifttxdepth", 0))
-            LogPrintf("AppInit2 : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
     }
 
     if (mapArgs.count("-reservebalance")) {
@@ -870,7 +870,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (fDisableWallet) {
 #endif
         if (SoftSetBoolArg("-staking", false))
-            LogPrintf("AppInit2 : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
 #ifdef ENABLE_WALLET
     }
 #endif

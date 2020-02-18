@@ -819,28 +819,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     SetNetworkingParameters();
 
-    if (GetBoolArg("-salvagewallet", false)) {
-        // Rewrite just private keys: rescan to find transactions
-        if (SoftSetBoolArg("-rescan", true))
-            LogPrintf("InitializeDivi : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n");
-    }
-
-    // -zapwallettx implies a rescan
-    if (GetBoolArg("-zapwallettxes", false)) {
-        if (SoftSetBoolArg("-rescan", true))
-            LogPrintf("InitializeDivi : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
-    }
-
-    if (!GetBoolArg("-enableswifttx", fEnableSwiftTX)) {
-        if (SoftSetArg("-swifttxdepth", 0))
-            LogPrintf("InitializeDivi : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
-    }
-
-    if (mapArgs.count("-reservebalance")) {
-        if (!ParseMoney(mapArgs["-reservebalance"], nReserveBalance)) {
-            InitError(_("Invalid amount for -reservebalance=<amount>"));
-            return false;
-        }
+    if(!EnableWalletFeatures())
+    {
+        return false;
     }
 
     // Make sure enough file descriptors are available

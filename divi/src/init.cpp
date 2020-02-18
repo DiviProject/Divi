@@ -671,6 +671,53 @@ bool AppInitSanityChecks()
     return true;
 }
 
+void SetNetworkingParameters()
+{
+    if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
+        // when specifying an explicit binding address, you want to listen on it
+        // even when -connect or -proxy is specified
+        if (SoftSetBoolArg("-listen", true))
+            LogPrintf("InitializeDivi : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
+    }
+
+    if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0) {
+        // when only connecting to trusted nodes, do not seed via DNS, or listen by default
+        if (SoftSetBoolArg("-dnsseed", false))
+            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -dnsseed=0\n");
+        if (SoftSetBoolArg("-listen", false))
+            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -listen=0\n");
+    }
+
+    if (mapArgs.count("-proxy")) {
+        // to protect privacy, do not listen by default if a default proxy server is specified
+        if (SoftSetBoolArg("-listen", false))
+            LogPrintf("%s: parameter interaction: -proxy set -> setting -listen=0\n", __func__);
+        // to protect privacy, do not use UPNP when a proxy is set. The user may still specify -listen=1
+        // to listen locally, so don't rely on this happening through -listen below.
+        if (SoftSetBoolArg("-upnp", false))
+            LogPrintf("%s: parameter interaction: -proxy set -> setting -upnp=0\n", __func__);
+        // to protect privacy, do not discover addresses by default
+        if (SoftSetBoolArg("-discover", false))
+            LogPrintf("InitializeDivi : parameter interaction: -proxy set -> setting -discover=0\n");
+    }
+
+    if (!GetBoolArg("-listen", true)) {
+        // do not map ports or try to retrieve public IP when not listening (pointless)
+        if (SoftSetBoolArg("-upnp", false))
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -upnp=0\n");
+        if (SoftSetBoolArg("-discover", false))
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -discover=0\n");
+        if (SoftSetBoolArg("-listenonion", false))
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -listenonion=0\n");
+    }
+
+    if (mapArgs.count("-externalip")) {
+        // if an explicit public IP is specified, do not try to find others
+        if (SoftSetBoolArg("-discover", false))
+            LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
+    }
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup

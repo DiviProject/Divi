@@ -839,8 +839,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 
     // Make sure enough file descriptors are available
-    int nFD;
-    if(!SetMaxConnectionsAndFileDescriptors(nFD))
+    int numberOfFileDescriptors;
+    if(!SetMaxConnectionsAndFileDescriptors(numberOfFileDescriptors))
     {
         return false;
     }
@@ -1002,7 +1002,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", strDataDir);
     LogPrintf("Using config file %s\n", GetConfigFile().string());
-    LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, nFD);
+    LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, numberOfFileDescriptors);
     std::ostringstream strErrors;
 
     LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);

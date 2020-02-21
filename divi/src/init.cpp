@@ -760,6 +760,27 @@ bool SetMaxConnectionsAndFileDescriptors(int& nFD)
     return true;
 }
 
+bool CheckCriticalUnsupportedFeaturesAreNotUsed()
+{
+    // Check for -debugnet
+    if (GetBoolArg("-debugnet", false))
+        InitWarning(_("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
+    // Check for -socks - as this is a privacy risk to continue, exit here
+    if (mapArgs.count("-socks"))
+        return InitError(_("Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported."));
+    // Check for -tor - as this is a privacy risk to continue, exit here
+    if (GetBoolArg("-tor", false))
+        return InitError(_("Error: Unsupported argument -tor found, use -onion."));
+    // Check level must be 4 for zerocoin checks
+    if (mapArgs.count("-checklevel"))
+        return InitError(_("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
+
+    if (GetBoolArg("-benchmark", false))
+        InitWarning(_("Warning: Unsupported argument -benchmark ignored, use -debug=bench."));
+    
+    return true;
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -853,21 +874,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
         fDebug = false;
 
-    // Check for -debugnet
-    if (GetBoolArg("-debugnet", false))
-        InitWarning(_("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
-    // Check for -socks - as this is a privacy risk to continue, exit here
-    if (mapArgs.count("-socks"))
-        return InitError(_("Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported."));
-    // Check for -tor - as this is a privacy risk to continue, exit here
-    if (GetBoolArg("-tor", false))
-        return InitError(_("Error: Unsupported argument -tor found, use -onion."));
-    // Check level must be 4 for zerocoin checks
-    if (mapArgs.count("-checklevel"))
-        return InitError(_("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
-
-    if (GetBoolArg("-benchmark", false))
-        InitWarning(_("Warning: Unsupported argument -benchmark ignored, use -debug=bench."));
+    if(!CheckCriticalUnsupportedFeaturesAreNotUsed())
+    {
+        return false;
+    }
 
     // Checkmempool and checkblockindex default to true in regtest mode
     mempool.setSanityCheck(GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));

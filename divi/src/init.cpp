@@ -800,6 +800,15 @@ void SetNumberOfThreadsToCheckScripts()
         nScriptCheckThreads = MAX_SCRIPTCHECK_THREADS;
 }
 
+bool WalletIsDisabled()
+{
+#ifdef ENABLE_WALLET
+    return GetBoolArg("-disablewallet", false);
+#else
+    return true;
+#endif
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -908,15 +917,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     setvbuf(stdout, NULL, _IOLBF, 0); /// ***TODO*** do we still need this after -printtoconsole is gone?
 
     // Staking needs a CWallet instance, so make sure wallet is enabled
-#ifdef ENABLE_WALLET
-    bool fDisableWallet = GetBoolArg("-disablewallet", false);
+    bool fDisableWallet = WalletIsDisabled();
     if (fDisableWallet) {
-#endif
         if (SoftSetBoolArg("-staking", false))
             LogPrintf("InitializeDivi : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
-#ifdef ENABLE_WALLET
     }
-#endif
 
     nConnectTimeout = GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
     if (nConnectTimeout <= 0)

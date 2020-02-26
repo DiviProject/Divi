@@ -902,6 +902,16 @@ bool TryLockDataDirectory(const std::string& datadir)
     return true;
 }
 
+bool CheckWalletFileExists(std::string strDataDir)
+{
+    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+    // Wallet file must be a plain filename without a directory
+    if (strWalletFile != boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile))
+        return InitError(strprintf(_("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
+    
+    return true;
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1017,12 +1027,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
-#ifdef ENABLE_WALLET
-    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
-    // Wallet file must be a plain filename without a directory
-    if (strWalletFile != boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile))
-        return InitError(strprintf(_("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
-#endif
+    if(!fDisableWallet && !CheckWalletFileExists(strDataDir))
+    {
+        return false;
+    }
 
 #ifndef WIN32
     CreatePidFile(GetPidFile(), getpid());
@@ -1070,6 +1078,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
 // ********************************************************* Step 5: Backup wallet and verify wallet database integrity
 #ifdef ENABLE_WALLET
+    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     if (!fDisableWallet) {
         filesystem::path backupDir = GetDataDir() / "backups";
         if (!filesystem::exists(backupDir)) {

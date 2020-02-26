@@ -869,6 +869,8 @@ bool SetTransactionRequirements()
     bdisableSystemnotifications = GetBoolArg("-disablesystemnotifications", false);
     fSendFreeTransactions = GetBoolArg("-sendfreetransactions", false);
 #endif
+    fIsBareMultisigStd = GetBoolArg("-permitbaremultisig", true) != 0;
+    nMaxDatacarrierBytes = GetArg("-datacarriersize", nMaxDatacarrierBytes);
     return true;
 }
 
@@ -995,9 +997,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
-
-    fIsBareMultisigStd = GetBoolArg("-permitbaremultisig", true) != 0;
-    nMaxDatacarrierBytes = GetArg("-datacarriersize", nMaxDatacarrierBytes);
 
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 

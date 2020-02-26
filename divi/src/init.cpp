@@ -1643,21 +1643,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
             pwalletMain->SetBestChain(chainActive.GetLocator());
 
-            // Try to create wallet backup right after new wallet was created
-            std::string strBackupWarning;
-            std::string strBackupError;
-#if 0 // TODO: check this
-            if(!AutoBackupWallet(pwalletMain, "", strBackupWarning, strBackupError)) {
-                if (!strBackupWarning.empty()) {
-                    InitWarning(strBackupWarning);
-                }
-                if (!strBackupError.empty()) {
-                    InitError(strBackupError);
-                    return NULL;
-                }
-            }
-#endif
-
         }
         else if (mapArgs.count("-usehd")) {
             bool useHD = GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);

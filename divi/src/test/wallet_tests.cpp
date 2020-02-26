@@ -305,4 +305,17 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
     empty_wallet();
 }
 
+BOOST_AUTO_TEST_CASE(check_if_charging_correct_amount_per_kilobyte)
+{
+    size_t kilobytes = 1000u;
+    CFeeRate feeRate = CFeeRate( 1 );
+
+    CAmount actualFee = feeRate.GetFee( kilobytes );
+    
+    CAmount expectedFee = 1;
+    
+    BOOST_CHECK_EQUAL(actualFee, expectedFee);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

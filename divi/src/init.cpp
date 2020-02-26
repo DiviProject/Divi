@@ -915,6 +915,14 @@ bool CheckWalletFileExists(std::string strDataDir)
     return true;
 }
 
+void StartScriptVerificationThreads(boost::thread_group& threadGroup)
+{
+    if (nScriptCheckThreads) {
+        for (int i = 0; i < nScriptCheckThreads - 1; i++)
+            threadGroup.create_thread(&ThreadScriptCheck);
+    }
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1051,10 +1059,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     std::ostringstream strErrors;
 
     LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
-    if (nScriptCheckThreads) {
-        for (int i = 0; i < nScriptCheckThreads - 1; i++)
-            threadGroup.create_thread(&ThreadScriptCheck);
-    }
+    StartScriptVerificationThreads(threadGroup);
 
     sporkManager.SetSporkAddress(Params().SporkKey());
 

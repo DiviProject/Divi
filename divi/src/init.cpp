@@ -716,6 +716,10 @@ void SetNetworkingParameters()
         if (SoftSetBoolArg("-discover", false))
             LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
     }
+
+    nConnectTimeout = GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
+    if (nConnectTimeout <= 0)
+        nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
 }
 
 bool EnableWalletFeatures()
@@ -964,10 +968,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if (SoftSetBoolArg("-staking", false))
             LogPrintf("InitializeDivi : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
     }
-
-    nConnectTimeout = GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
-    if (nConnectTimeout <= 0)
-        nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
 
     // Fee-per-kilobyte amount considered the same as "free"
     // If you are mining, be careful setting this:

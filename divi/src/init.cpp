@@ -791,6 +791,7 @@ bool CheckCriticalUnsupportedFeaturesAreNotUsed()
 
 void SetConsistencyChecks()
 {
+    // Checkmempool and checkblockindex default to true in regtest mode
     mempool.setSanityCheck(GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
     fCheckBlockIndex = GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks());
     CCheckpointServices::fEnabled = GetBoolArg("-checkpoints", true);
@@ -976,11 +977,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
-
-    // Checkmempool and checkblockindex default to true in regtest mode
     SetConsistencyChecks();
-
-    // -par=0 means autodetect, but nScriptCheckThreads==0 means no concurrency
     SetNumberOfThreadsToCheckScripts();
 
     fServer = GetBoolArg("-server", false);
@@ -992,14 +989,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if (SoftSetBoolArg("-staking", false))
             LogPrintf("InitializeDivi : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
     }
-
     if(!SetTransactionRequirements())
     {
         return false;
     }
-
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
-
     // Sanity check
     if (!VerifyCriticalDependenciesAreAvailable())
         return InitError(_("Initialization sanity check failed. DIVI Core is shutting down."));

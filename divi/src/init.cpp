@@ -720,6 +720,10 @@ void SetNetworkingParameters()
     nConnectTimeout = GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
     if (nConnectTimeout <= 0)
         nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
+
+    fAlerts = GetBoolArg("-alerts", DEFAULT_ALERTS);
+    if (GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
+        nLocalServices |= NODE_BLOOM;
 }
 
 bool EnableWalletFeatures()
@@ -991,15 +995,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
-    
+
     fIsBareMultisigStd = GetBoolArg("-permitbaremultisig", true) != 0;
     nMaxDatacarrierBytes = GetArg("-datacarriersize", nMaxDatacarrierBytes);
-
-    fAlerts = GetBoolArg("-alerts", DEFAULT_ALERTS);
-
-
-    if (GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
-        nLocalServices |= NODE_BLOOM;
 
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 

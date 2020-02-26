@@ -646,7 +646,7 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
  *  Ensure that DIVI is running in a usable environment with all
  *  necessary library support.
  */
-bool InitSanityCheck(void)
+bool VerifyECCAndLibCCompatibilityAreAvailable(void)
 {
     if (!ECC_InitSanityCheck()) {
         InitError("OpenSSL appears to lack support for elliptic curve cryptography. For more "
@@ -659,12 +659,12 @@ bool InitSanityCheck(void)
     return true;
 }
 
-bool AppInitSanityChecks()
+bool VerifyCriticalDependenciesAreAvailable()
 {
     // ********************************************************* Step 4: sanity checks
 
     // Sanity check
-    if (!InitSanityCheck())
+    if (!VerifyECCAndLibCCompatibilityAreAvailable())
         return InitError(strprintf(_("Initialization sanity check failed. %s is shutting down."), _(PACKAGE_NAME)));
 
     // Probe the data directory lock to give an early error message, if possible
@@ -1002,7 +1002,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
     // Sanity check
-    if (!AppInitSanityChecks())
+    if (!VerifyCriticalDependenciesAreAvailable())
         return InitError(_("Initialization sanity check failed. DIVI Core is shutting down."));
 
     std::string strDataDir = GetDataDir().string();

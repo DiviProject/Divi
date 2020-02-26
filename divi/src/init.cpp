@@ -815,6 +815,19 @@ bool WalletIsDisabled()
 
 bool SetTransactionRequirements()
 {
+    // Fee-per-kilobyte amount considered the same as "free"
+    // If you are mining, be careful setting this:
+    // if you set it to zero then
+    // a transaction spammer can cheaply fill blocks using
+    // 1-satoshi-fee transactions. It should be set above the real
+    // cost to you of processing a transaction.
+    if (mapArgs.count("-minrelaytxfee")) {
+        CAmount n = 0;
+        if (ParseMoney(mapArgs["-minrelaytxfee"], n) && n > 0)
+            ::minRelayTxFee = CFeeRate(n);
+        else
+            return InitError(strprintf(_("Invalid amount for -minrelaytxfee=<amount>: '%s'"), mapArgs["-minrelaytxfee"]));
+    }
 #ifdef ENABLE_WALLET
     if (mapArgs.count("-mintxfee")) {
         CAmount n = 0;
@@ -853,6 +866,19 @@ bool SetTransactionRequirements()
     fSendFreeTransactions = GetBoolArg("-sendfreetransactions", false);
 #endif
     return true;
+}
+
+void SetLoggingAndDebugSettings()
+{
+    fPrintToConsole = GetBoolArg("-printtoconsole", false);
+    fLogTimestamps = GetBoolArg("-logtimestamps", true);
+    fLogIPs = GetBoolArg("-logips", false);
+
+    fDebug = !mapMultiArgs["-debug"].empty();
+    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
+    const vector<string>& categories = mapMultiArgs["-debug"];
+    if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
+        fDebug = false;
 }
 
 bool InitializeDivi(boost::thread_group& threadGroup)
@@ -922,9 +948,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 2: parameter interactions
     // Set this early so that parameter interactions go to console
-    fPrintToConsole = GetBoolArg("-printtoconsole", false);
-    fLogTimestamps = GetBoolArg("-logtimestamps", true);
-    fLogIPs = GetBoolArg("-logips", false);
+    SetLoggingAndDebugSettings();
 
     SetNetworkingParameters();
 
@@ -941,12 +965,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 
     // ********************************************************* Step 3: parameter-to-internal-flags
-
-    fDebug = !mapMultiArgs["-debug"].empty();
-    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-    const vector<string>& categories = mapMultiArgs["-debug"];
-    if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
-        fDebug = false;
 
     if(!CheckCriticalUnsupportedFeaturesAreNotUsed())
     {
@@ -968,21 +986,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if (SoftSetBoolArg("-staking", false))
             LogPrintf("InitializeDivi : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
     }
-
-    // Fee-per-kilobyte amount considered the same as "free"
-    // If you are mining, be careful setting this:
-    // if you set it to zero then
-    // a transaction spammer can cheaply fill blocks using
-    // 1-satoshi-fee transactions. It should be set above the real
-    // cost to you of processing a transaction.
-    if (mapArgs.count("-minrelaytxfee")) {
-        CAmount n = 0;
-        if (ParseMoney(mapArgs["-minrelaytxfee"], n) && n > 0)
-            ::minRelayTxFee = CFeeRate(n);
-        else
-            return InitError(strprintf(_("Invalid amount for -minrelaytxfee=<amount>: '%s'"), mapArgs["-minrelaytxfee"]));
-    }
-
 
     if(!SetTransactionRequirements())
     {

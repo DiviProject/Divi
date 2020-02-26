@@ -886,6 +886,9 @@ void SetLoggingAndDebugSettings()
     const vector<string>& categories = mapMultiArgs["-debug"];
     if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
         fDebug = false;
+
+    if (GetBoolArg("-shrinkdebugfile", !fDebug))
+        ShrinkDebugFile();
 }
 
 bool TryLockDataDirectory(const std::string& datadir)
@@ -1035,9 +1038,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #ifndef WIN32
     CreatePidFile(GetPidFile(), getpid());
 #endif
-
-    if (GetBoolArg("-shrinkdebugfile", !fDebug))
-        ShrinkDebugFile();
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     LogPrintf("DIVI version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));

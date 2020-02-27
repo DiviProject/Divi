@@ -7,15 +7,13 @@
 #include "crypto/common.h"
 #include "crypto/hmac_sha512.h"
 #include "crypto/rfc6979_hmac_sha256.h"
-#include "eccryptoverify.h"
 #include "pubkey.h"
 #include "random.h"
 
 #include "ecwrapper.h"
-#include <secp256k1.h>
-#include <secp256k1_recovery.h>
+#include "Secp256k1Context.h"
 
-static secp256k1_context* secp256k1_context_sign = NULL;
+secp256k1_context* secp256k1_context_sign = Secp256k1Context::instance().GetSigningContext();
 
 /** These functions are taken from the libsecp256k1 distribution and are very ugly. */
 static int ec_privkey_import_der(const secp256k1_context* ctx, unsigned char *out32, const unsigned char *privkey, size_t privkeylen) {
@@ -296,30 +294,4 @@ bool ECC_InitSanityCheck() {
     key.MakeNewKey(true);
     CPubKey pubkey = key.GetPubKey();
     return key.VerifyPubKey(pubkey);
-}
-
-void ECC_Start() {
-    assert(secp256k1_context_sign == NULL);
-
-    secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
-    assert(ctx != NULL);
-
-    {
-        // Pass in a random blinding seed to the secp256k1 context.
-        std::vector<unsigned char, secure_allocator<unsigned char>> vseed(32);
-        GetRandBytes(vseed.data(), 32);
-        bool ret = secp256k1_context_randomize(ctx, vseed.data());
-        assert(ret);
-    }
-
-    secp256k1_context_sign = ctx;
-}
-
-void ECC_Stop() {
-    secp256k1_context *ctx = secp256k1_context_sign;
-    secp256k1_context_sign = NULL;
-
-    if (ctx) {
-        secp256k1_context_destroy(ctx);
-    }
 }

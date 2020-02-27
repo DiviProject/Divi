@@ -87,8 +87,8 @@ BOOST_AUTO_TEST_SUITE(transaction_tests)
 
 BOOST_AUTO_TEST_CASE(tx_valid)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     // Read tests from test/data/tx_valid.json
     // Format is an array of arrays
@@ -169,13 +169,13 @@ BOOST_AUTO_TEST_CASE(tx_valid)
         }
     }
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(tx_invalid)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     // Read tests from test/data/tx_invalid.json
     // Format is an array of arrays
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
         }
     }
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(basic_transaction_tests)
@@ -314,8 +314,8 @@ SetupDummyInputs(CBasicKeyStore& keystoreRet, CCoinsViewCache& coinsRet)
 
 BOOST_AUTO_TEST_CASE(test_Get)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     CBasicKeyStore keystore;
     CCoinsView coinsDummy;
@@ -348,13 +348,13 @@ BOOST_AUTO_TEST_CASE(test_Get)
     t1.vin[0].scriptSig = CScript();
     BOOST_CHECK(!AreInputsStandard(t1, coins));
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_CASE(test_IsStandard)
 {
-    ECCVerifyHandle verificationModule;
-    ECC_Start();
+    
+    
 
     LOCK(cs_main);
     CBasicKeyStore keystore;
@@ -437,7 +437,7 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     t.vout[1].scriptPubKey = CScript() << OP_META;
     BOOST_CHECK(!IsStandardTx(t, reason));
 
-    ECC_Stop();
+    
 }
 
 BOOST_AUTO_TEST_SUITE_END()

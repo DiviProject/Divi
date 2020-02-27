@@ -9,43 +9,38 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <iostream>
+#include "test_only.h"
 BOOST_AUTO_TEST_SUITE(main_tests)
-
-CAmount nMoneySupplyPoWEnd = 43199500 * COIN;
 
 BOOST_AUTO_TEST_CASE(subsidy_limit_test)
 {
+    SelectParams(CBaseChainParams::Network::MAIN);
+    int numberOfBlocksPerHalving = Params().SubsidyHalvingInterval();
     CAmount nSum = 0;
-    for (int nHeight = 0; nHeight < 1; nHeight += 1) {
-        /* premine in block 1 (60,001 DIV) */
-        CAmount nSubsidy = GetBlockValue(nHeight);
-        BOOST_CHECK(nSubsidy <= 60001 * COIN);
-        nSum += nSubsidy;
-    }
 
-    for (int nHeight = 1; nHeight < 86400; nHeight += 1) {
-        /* PoW Phase One */
-        CAmount nSubsidy = GetBlockValue(nHeight);
-        BOOST_CHECK(nSubsidy <= 250 * COIN);
-        nSum += nSubsidy;
-    }
+    CAmount startingExpectedSubsidy = 1250 * COIN;
+    CAmount yearlySubsidyReduction = 100 * COIN;
+    CAmount minimumSubsidy = 250*COIN;
+    auto expectedSubsidy = [startingExpectedSubsidy,yearlySubsidyReduction,minimumSubsidy](int year)->CAmount{
+        return (year>1)? std::max(startingExpectedSubsidy - yearlySubsidyReduction*(year-1),minimumSubsidy): startingExpectedSubsidy;
+    };
 
-    for (int nHeight = 86400; nHeight < 151200; nHeight += 1) {
-        /* PoW Phase Two */
-        CAmount nSubsidy = GetBlockValue(nHeight);
-        BOOST_CHECK(nSubsidy <= 225 * COIN);
-        nSum += nSubsidy;
-    }
+    for(int nHeight = 0; nHeight < numberOfBlocksPerHalving*13; ++nHeight)
+    {
+        CAmount nSubsidy = GetBlockSubsidity(nHeight).total();
+        if(nHeight < 2)
+        {
+            BOOST_CHECK(nSubsidy == ((nHeight==0)? 50*COIN: Params().premineAmt) );
+        }
+        else
+        {
+            BOOST_CHECK_EQUAL(nSubsidy, expectedSubsidy(nHeight/numberOfBlocksPerHalving));
+        }
 
-    for (int nHeight = 151200; nHeight < 259200; nHeight += 1) {
-        /* PoW Phase Two */
-        CAmount nSubsidy = GetBlockValue(nHeight);
-        BOOST_CHECK(nSubsidy <= 45 * COIN);
-        BOOST_CHECK(MoneyRange(nSubsidy));
+        BOOST_CHECK( nSubsidy==0 || (nSum+nSubsidy > nSum));
         nSum += nSubsidy;
-        BOOST_CHECK(nSum > 0 && nSum <= nMoneySupplyPoWEnd);
     }
-    BOOST_CHECK(nSum == 4109975100000000ULL);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

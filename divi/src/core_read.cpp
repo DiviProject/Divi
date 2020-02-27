@@ -32,6 +32,9 @@ CScript ParseScript(std::string s)
     static map<string, opcodetype> mapOpNames;
 
     if (mapOpNames.empty()) {
+        mapOpNames["OP_RETURN"] = opcodetype::OP_META;
+        mapOpNames["RETURN"] = opcodetype::OP_META;
+
         for (int op = 0; op <= OP_ZEROCOINSPEND; op++) {
             // Allow OP_RESERVED to get into mapOpNames
             if (op < OP_NOP && op != OP_RESERVED)

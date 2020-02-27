@@ -35,6 +35,7 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
 
+#include "test_only.h"
 using namespace std;
 using namespace json_spirit;
 using namespace boost::algorithm;
@@ -328,6 +329,8 @@ public:
 
 BOOST_AUTO_TEST_CASE(script_build)
 {
+    
+    
     const KeyData keys;
 
     std::vector<TestBuilder> good;
@@ -564,6 +567,7 @@ BOOST_AUTO_TEST_CASE(script_build)
                               ).Num(0).PushSig(keys.key1).PushSig(keys.key1));
 
 
+    
     std::set<std::string> tests_good;
     std::set<std::string> tests_bad;
 
@@ -586,9 +590,11 @@ BOOST_AUTO_TEST_CASE(script_build)
         test.Test(true);
         std::string str = write_string(Value(test.GetJSON()), true);
 #ifndef UPDATE_JSON_TESTS
+#ifdef CHECK_CACHED_TESTS
         if (tests_good.count(str) == 0) {
             BOOST_CHECK_MESSAGE(false, "Missing auto script_valid test: " + test.GetComment());
         }
+#endif
 #endif
         strGood += str + ",\n";
     }
@@ -596,13 +602,15 @@ BOOST_AUTO_TEST_CASE(script_build)
         test.Test(false);
         std::string str = write_string(Value(test.GetJSON()), true);
 #ifndef UPDATE_JSON_TESTS
+#ifdef CHECK_CACHED_TESTS
         if (tests_bad.count(str) == 0) {
             BOOST_CHECK_MESSAGE(false, "Missing auto script_invalid test: " + test.GetComment());
         }
 #endif
+#endif
         strBad += str + ",\n";
     }
-
+    
 #ifdef UPDATE_JSON_TESTS
     FILE* valid = fopen("script_valid.json.gen", "w");
     fputs(strGood.c_str(), valid);
@@ -620,6 +628,8 @@ BOOST_AUTO_TEST_CASE(script_valid)
     // Inner arrays are [ "scriptSig", "scriptPubKey", "flags" ]
     // ... where scriptSig and scriptPubKey are stringified
     // scripts.
+    
+    
     Array tests = read_json(std::string(json_tests::script_valid, json_tests::script_valid + sizeof(json_tests::script_valid)));
 
     BOOST_FOREACH(Value& tv, tests)
@@ -641,10 +651,13 @@ BOOST_AUTO_TEST_CASE(script_valid)
 
         DoTest(scriptPubKey, scriptSig, scriptflags, true, strTest);
     }
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_invalid)
 {
+    
+    
     // Scripts that should evaluate as invalid
     Array tests = read_json(std::string(json_tests::script_invalid, json_tests::script_invalid + sizeof(json_tests::script_invalid)));
 
@@ -667,6 +680,7 @@ BOOST_AUTO_TEST_CASE(script_invalid)
 
         DoTest(scriptPubKey, scriptSig, scriptflags, false, strTest);
     }
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_PushData)
@@ -733,6 +747,9 @@ sign_multisig(CScript scriptPubKey, const CKey &key, CTransaction transaction)
 
 BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG12)
 {
+    
+    
+
     ScriptError err;
     CKey key1, key2, key3;
     key1.MakeNewKey(true);
@@ -759,10 +776,15 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG12)
     CScript badsig1 = sign_multisig(scriptPubKey12, key3, txTo12);
     BOOST_CHECK(!VerifyScript(badsig1, scriptPubKey12, flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
+
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG23)
 {
+    
+    
+
     ScriptError err;
     CKey key1, key2, key3, key4;
     key1.MakeNewKey(true);
@@ -828,10 +850,15 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG23)
     CScript badsig6 = sign_multisig(scriptPubKey23, keys, txTo23);
     BOOST_CHECK(!VerifyScript(badsig6, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_INVALID_STACK_OPERATION, ScriptErrorString(err));
+
+    
 }    
 
 BOOST_AUTO_TEST_CASE(script_combineSigs)
 {
+    
+    
+    
     // Test the CombineSignatures function
     CBasicKeyStore keystore;
     vector<CKey> keys;
@@ -937,6 +964,8 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     BOOST_CHECK(combined == complete23);
     combined = CombineSignatures(scriptPubKey, txTo, 0, partial3b, partial3a);
     BOOST_CHECK(combined == partial3c);
+
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_standard_push)

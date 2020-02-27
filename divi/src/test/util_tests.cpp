@@ -20,6 +20,10 @@ using namespace std;
 
 BOOST_AUTO_TEST_SUITE(util_tests)
 
+static FastRandomContext random_source;
+auto insecure_rand = []() -> uint32_t { return random_source.rand32();};
+auto seed_insecure_rand = [](const bool& val) -> void { random_source=FastRandomContext(val);};
+
 BOOST_AUTO_TEST_CASE(util_criticalsection)
 {
     CCriticalSection cs;

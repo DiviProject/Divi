@@ -166,6 +166,65 @@ public:
 static CCoinsViewDB* pcoinsdbview = NULL;
 static CCoinsViewErrorCatcher* pcoinscatcher = NULL;
 
+
+#ifdef ENABLE_WALLET
+inline void FlushWallet(bool shutdown = false) { if(pwalletMain) bitdb.Flush(shutdown);}
+#endif
+void FlushWalletAndStopMinting()
+{
+#ifdef ENABLE_WALLET
+    FlushWallet();
+    GenerateBitcoins(false, NULL, 0);
+#endif
+}
+
+void StoreDataCaches()
+{
+    if (!fLiteMode) {
+        CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
+        flatdb1.Dump(mnodeman);
+        CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
+        flatdb2.Dump(masternodePayments);
+        CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
+        flatdb4.Dump(netfulfilledman);
+    }
+}
+
+void SaveFeeEstimatesFromMempool()
+{
+    if (fFeeEstimatesInitialized) {
+        boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
+        CAutoFile est_fileout(fopen(est_path.string().c_str(), "wb"), SER_DISK, CLIENT_VERSION);
+        if (!est_fileout.IsNull())
+            mempool.WriteFeeEstimates(est_fileout);
+        else
+            LogPrintf("%s: Failed to write fee estimates to %s\n", __func__, est_path.string());
+        fFeeEstimatesInitialized = false;
+    }
+}
+
+void DeallocateShallowDatabases()
+{
+    LOCK(cs_main);
+    if (pcoinsTip != NULL) {
+        FlushStateToDisk();
+        //record that client took the proper shutdown procedure
+        pblocktree->WriteFlag("shutdown", true);
+    }
+    delete pcoinsTip;
+    pcoinsTip = NULL;
+    delete pcoinscatcher;
+    pcoinscatcher = NULL;
+    delete pcoinsdbview;
+    pcoinsdbview = NULL;
+    delete pblocktree;
+    pblocktree = NULL;
+    delete zerocoinDB;
+    zerocoinDB = NULL;
+    delete pSporkDB;
+    pSporkDB = NULL;
+}
+
 /** Preparing steps before shutting down or restarting the wallet */
 void PrepareShutdown()
 {
@@ -184,64 +243,18 @@ void PrepareShutdown()
     RenameThread("divi-shutoff");
     mempool.AddTransactionsUpdated(1);
     StopRPCThreads();
-#ifdef ENABLE_WALLET
-    if (pwalletMain)
-        bitdb.Flush(false);
-    GenerateBitcoins(false, NULL, 0);
-#endif
+    FlushWalletAndStopMinting();
     StopNode();
     InterruptTorControl();
     StopTorControl();
-
-    // STORE DATA CACHES INTO SERIALIZED DAT FILES
-    if (!fLiteMode) {
-        CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
-        flatdb1.Dump(mnodeman);
-        CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
-        flatdb2.Dump(masternodePayments);
-        CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
-        flatdb4.Dump(netfulfilledman);
-    }
-
-
+    StoreDataCaches();
     UnregisterNodeSignals(GetNodeSignals());
+    SaveFeeEstimatesFromMempool();
+    DeallocateShallowDatabases();
 
-    if (fFeeEstimatesInitialized) {
-        boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
-        CAutoFile est_fileout(fopen(est_path.string().c_str(), "wb"), SER_DISK, CLIENT_VERSION);
-        if (!est_fileout.IsNull())
-            mempool.WriteFeeEstimates(est_fileout);
-        else
-            LogPrintf("%s: Failed to write fee estimates to %s\n", __func__, est_path.string());
-        fFeeEstimatesInitialized = false;
-    }
-
-    {
-        LOCK(cs_main);
-        if (pcoinsTip != NULL) {
-            FlushStateToDisk();
-
-            //record that client took the proper shutdown procedure
-            pblocktree->WriteFlag("shutdown", true);
-        }
-        delete pcoinsTip;
-        pcoinsTip = NULL;
-        delete pcoinscatcher;
-        pcoinscatcher = NULL;
-        delete pcoinsdbview;
-        pcoinsdbview = NULL;
-        delete pblocktree;
-        pblocktree = NULL;
-        delete zerocoinDB;
-        zerocoinDB = NULL;
-        delete pSporkDB;
-        pSporkDB = NULL;
-    }
 #ifdef ENABLE_WALLET
-    if (pwalletMain)
-        bitdb.Flush(true);
+    FlushWallet(true);
 #endif
-
 #if ENABLE_ZMQ
     if (pzmqNotificationInterface) {
         UnregisterValidationInterface(pzmqNotificationInterface);
@@ -249,10 +262,10 @@ void PrepareShutdown()
         pzmqNotificationInterface = NULL;
     }
 #endif
-
 #ifndef WIN32
     boost::filesystem::remove(GetPidFile());
 #endif
+
     UnregisterAllValidationInterfaces();
 }
 

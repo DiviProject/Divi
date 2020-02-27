@@ -507,7 +507,21 @@ CCriticalSection CNode::cs_setBanned;
 
 void CNode::ClearBanned()
 {
+    LOCK(cs_setBanned);
     setBanned.clear();
+}
+
+std::string CNode::ListBanned()
+{
+    std::string bannedIps = "[\n";
+    LOCK(cs_setBanned);
+    for(auto banned: setBanned)
+    {
+        bannedIps += banned.first.ToString();
+        bannedIps += ",\n";
+    }
+    bannedIps += "]";
+    return bannedIps;
 }
 
 bool CNode::IsBanned(CNetAddr ip)

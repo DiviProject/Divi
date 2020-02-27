@@ -1041,6 +1041,30 @@ Value getaddressutxos(const Array& params, bool fHelp)
     }
 }
 
+Value clearbanned(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 1)
+        throw runtime_error(
+            "clearbanned\n"
+            "\nUnbans all nodes.\n"
+            );
+    CNode::ClearBanned();
+    return Value();    
+
+}
+Value listbanned(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 1)
+        throw runtime_error(
+            "clearbanned\n"
+            "\nUnbans all nodes.\n"
+            );
+    Object result;
+    result.push_back(Pair("banned:",CNode::ListBanned()));
+    return result;    
+
+}
+
 #ifdef ENABLE_WALLET
 Value getstakingstatus(const Array& params, bool fHelp)
 {

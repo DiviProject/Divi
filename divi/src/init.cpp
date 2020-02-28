@@ -1051,8 +1051,43 @@ void BackupWalletFile(std::string strWalletFile, filesystem::path backupDir)
         BackupFile(sourceFile,backupFile);
     }
 }
-#endif
 
+void PruneOldBackups(std::string strWalletFile, filesystem::path backupDir)
+{
+    // Keep only the last 10 backups, including the new one of course
+    typedef std::multimap<std::time_t, boost::filesystem::path> folder_set_t;
+    folder_set_t folder_set;
+    boost::filesystem::directory_iterator end_iter;
+    boost::filesystem::path backupFolder = backupDir.string();
+    backupFolder.make_preferred();
+    // Build map of backup files for current(!) wallet sorted by last write time
+    boost::filesystem::path currentFile;
+    for (boost::filesystem::directory_iterator dir_iter(backupFolder); dir_iter != end_iter; ++dir_iter) {
+        // Only check regular files
+        if (boost::filesystem::is_regular_file(dir_iter->status())) {
+            currentFile = dir_iter->path().filename();
+            // Only add the backups for the current wallet, e.g. wallet.dat.*
+            if (dir_iter->path().stem().string() == strWalletFile) {
+                folder_set.insert(folder_set_t::value_type(boost::filesystem::last_write_time(dir_iter->path()), *dir_iter));
+            }
+        }
+    }
+    // Loop backward through backup files and keep the N newest ones (1 <= N <= 10)
+    int counter = 0;
+    BOOST_REVERSE_FOREACH (PAIRTYPE(const std::time_t, boost::filesystem::path) file, folder_set) {
+        counter++;
+        if (counter > nWalletBackups) {
+            // More than nWalletBackups backups: delete oldest one(s)
+            try {
+                boost::filesystem::remove(file.second);
+                LogPrintf("Old backup deleted: %s\n", file.second);
+            } catch (boost::filesystem::filesystem_error& error) {
+                LogPrintf("Failed to delete backup %s\n", error.what());
+            }
+        }
+    }
+}
+#endif
 bool BackupWallet(std::string strDataDir, bool fDisableWallet)
 {
 #ifdef ENABLE_WALLET
@@ -1069,38 +1104,7 @@ bool BackupWallet(std::string strDataDir, bool fDisableWallet)
             if (filesystem::exists(backupDir)) 
             {
                 BackupWalletFile(strWalletFile,backupDir);
-                // Keep only the last 10 backups, including the new one of course
-                typedef std::multimap<std::time_t, boost::filesystem::path> folder_set_t;
-                folder_set_t folder_set;
-                boost::filesystem::directory_iterator end_iter;
-                boost::filesystem::path backupFolder = backupDir.string();
-                backupFolder.make_preferred();
-                // Build map of backup files for current(!) wallet sorted by last write time
-                boost::filesystem::path currentFile;
-                for (boost::filesystem::directory_iterator dir_iter(backupFolder); dir_iter != end_iter; ++dir_iter) {
-                    // Only check regular files
-                    if (boost::filesystem::is_regular_file(dir_iter->status())) {
-                        currentFile = dir_iter->path().filename();
-                        // Only add the backups for the current wallet, e.g. wallet.dat.*
-                        if (dir_iter->path().stem().string() == strWalletFile) {
-                            folder_set.insert(folder_set_t::value_type(boost::filesystem::last_write_time(dir_iter->path()), *dir_iter));
-                        }
-                    }
-                }
-                // Loop backward through backup files and keep the N newest ones (1 <= N <= 10)
-                int counter = 0;
-                BOOST_REVERSE_FOREACH (PAIRTYPE(const std::time_t, boost::filesystem::path) file, folder_set) {
-                    counter++;
-                    if (counter > nWalletBackups) {
-                        // More than nWalletBackups backups: delete oldest one(s)
-                        try {
-                            boost::filesystem::remove(file.second);
-                            LogPrintf("Old backup deleted: %s\n", file.second);
-                        } catch (boost::filesystem::filesystem_error& error) {
-                            LogPrintf("Failed to delete backup %s\n", error.what());
-                        }
-                    }
-                }
+                PruneOldBackups(strWalletFile,backupDir);
             }
         }
 

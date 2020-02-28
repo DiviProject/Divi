@@ -1122,6 +1122,124 @@ bool BackupWallet(std::string strDataDir, bool fDisableWallet)
     return true;
 }
 
+bool InitializeP2PNetwork()
+{
+    RegisterNodeSignals(GetNodeSignals());
+
+    if (mapArgs.count("-onlynet")) {
+        std::set<enum Network> nets;
+        BOOST_FOREACH (std::string snet, mapMultiArgs["-onlynet"]) {
+            enum Network net = ParseNetwork(snet);
+            if (net == NET_UNROUTABLE)
+                return InitError(strprintf(_("Unknown network specified in -onlynet: '%s'"), snet));
+            nets.insert(net);
+        }
+        for (int n = 0; n < NET_MAX; n++) {
+            enum Network net = (enum Network)n;
+            if (!nets.count(net))
+                SetLimited(net);
+        }
+    }
+
+    if (mapArgs.count("-whitelist")) {
+        BOOST_FOREACH (const std::string& net, mapMultiArgs["-whitelist"]) {
+            CSubNet subnet(net);
+            if (!subnet.IsValid())
+                return InitError(strprintf(_("Invalid netmask specified in -whitelist: '%s'"), net));
+            CNode::AddWhitelistedRange(subnet);
+        }
+    }
+
+    // Check for host lookup allowed before parsing any network related parameters
+    fNameLookup = GetBoolArg("-dns", DEFAULT_NAME_LOOKUP);
+
+    bool proxyRandomize = GetBoolArg("-proxyrandomize", true);
+    // -proxy sets a proxy for all outgoing network traffic
+    // -noproxy (or -proxy=0) as well as the empty string can be used to not set a proxy, this is the default
+    std::string proxyArg = GetArg("-proxy", "");
+    if (proxyArg != "" && proxyArg != "0") {
+        CService proxyAddr;
+        if (!Lookup(proxyArg.c_str(), proxyAddr, 9050, fNameLookup)) {
+            return InitError(strprintf(_("Invalid -proxy address or hostname: '%s'"), proxyArg));
+        }
+
+        proxyType addrProxy = proxyType(proxyAddr, proxyRandomize);
+        if (!addrProxy.IsValid())
+            return InitError(strprintf(_("Invalid -proxy address or hostname: '%s'"), proxyArg));
+
+        SetProxy(NET_IPV4, addrProxy);
+        SetProxy(NET_IPV6, addrProxy);
+        SetProxy(NET_TOR, addrProxy);
+        SetNameProxy(addrProxy);
+        SetReachable(NET_TOR); // by default, -proxy sets onion as reachable, unless -noonion later
+    }
+
+    // -onion can be used to set only a proxy for .onion, or override normal proxy for .onion addresses
+    // -noonion (or -onion=0) disables connecting to .onion entirely
+    // An empty string is used to not override the onion proxy (in which case it defaults to -proxy set above, or none)
+    std::string onionArg = GetArg("-onion", "");
+    if (onionArg != "") {
+        if (onionArg == "0") { // Handle -noonion/-onion=0
+            SetReachable(NET_TOR, false); // set onions as unreachable
+        } else {
+            CService onionProxy;
+            if (!Lookup(onionArg.c_str(), onionProxy, 9050, fNameLookup)) {
+                return InitError(strprintf(_("Invalid -onion address or hostname: '%s'"), onionArg));
+            }
+            proxyType addrOnion = proxyType(onionProxy, proxyRandomize);
+            if (!addrOnion.IsValid())
+                return InitError(strprintf(_("Invalid -onion address or hostname: '%s'"), onionArg));
+            SetProxy(NET_TOR, addrOnion);
+            SetReachable(NET_TOR);
+        }
+    }
+
+    // see Step 2: parameter interactions for more information about these
+    fListen = GetBoolArg("-listen", DEFAULT_LISTEN);
+    fDiscover = GetBoolArg("-discover", true);
+
+    bool fBound = false;
+    if (fListen) {
+        if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
+            BOOST_FOREACH (std::string strBind, mapMultiArgs["-bind"]) {
+                CService addrBind;
+                if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
+                    return InitError(strprintf(_("Cannot resolve -bind address: '%s'"), strBind));
+                fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR));
+            }
+            BOOST_FOREACH (std::string strBind, mapMultiArgs["-whitebind"]) {
+                CService addrBind;
+                if (!Lookup(strBind.c_str(), addrBind, 0, false))
+                    return InitError(strprintf(_("Cannot resolve -whitebind address: '%s'"), strBind));
+                if (addrBind.GetPort() == 0)
+                    return InitError(strprintf(_("Need to specify a port with -whitebind: '%s'"), strBind));
+                fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR | BF_WHITELIST));
+            }
+        } else {
+            struct in_addr inaddr_any;
+            inaddr_any.s_addr = INADDR_ANY;
+            fBound |= Bind(CService(in6addr_any, GetListenPort()), BF_NONE);
+            fBound |= Bind(CService(inaddr_any, GetListenPort()), !fBound ? BF_REPORT_ERROR : BF_NONE);
+        }
+        if (!fBound)
+            return InitError(_("Failed to listen on any port. Use -listen=0 if you want this."));
+    }
+
+    if (mapArgs.count("-externalip")) {
+        BOOST_FOREACH (string strAddr, mapMultiArgs["-externalip"]) {
+            CService addrLocal(strAddr, GetListenPort(), fNameLookup);
+            if (!addrLocal.IsValid())
+                return InitError(strprintf(_("Cannot resolve -externalip address: '%s'"), strAddr));
+            AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
+        }
+    }
+
+    BOOST_FOREACH (string strDest, mapMultiArgs["-seednode"])
+        AddOneShot(strDest);
+    
+    return true;
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1282,118 +1400,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     BackupWallet(strDataDir, fDisableWallet);
     // ********************************************************* Step 6: network initialization
 
-    RegisterNodeSignals(GetNodeSignals());
-
-    if (mapArgs.count("-onlynet")) {
-        std::set<enum Network> nets;
-        BOOST_FOREACH (std::string snet, mapMultiArgs["-onlynet"]) {
-            enum Network net = ParseNetwork(snet);
-            if (net == NET_UNROUTABLE)
-                return InitError(strprintf(_("Unknown network specified in -onlynet: '%s'"), snet));
-            nets.insert(net);
-        }
-        for (int n = 0; n < NET_MAX; n++) {
-            enum Network net = (enum Network)n;
-            if (!nets.count(net))
-                SetLimited(net);
-        }
+    if(!InitializeP2PNetwork())
+    {
+        return false;
     }
-
-    if (mapArgs.count("-whitelist")) {
-        BOOST_FOREACH (const std::string& net, mapMultiArgs["-whitelist"]) {
-            CSubNet subnet(net);
-            if (!subnet.IsValid())
-                return InitError(strprintf(_("Invalid netmask specified in -whitelist: '%s'"), net));
-            CNode::AddWhitelistedRange(subnet);
-        }
-    }
-
-    // Check for host lookup allowed before parsing any network related parameters
-    fNameLookup = GetBoolArg("-dns", DEFAULT_NAME_LOOKUP);
-
-    bool proxyRandomize = GetBoolArg("-proxyrandomize", true);
-    // -proxy sets a proxy for all outgoing network traffic
-    // -noproxy (or -proxy=0) as well as the empty string can be used to not set a proxy, this is the default
-    std::string proxyArg = GetArg("-proxy", "");
-    if (proxyArg != "" && proxyArg != "0") {
-        CService proxyAddr;
-        if (!Lookup(proxyArg.c_str(), proxyAddr, 9050, fNameLookup)) {
-            return InitError(strprintf(_("Invalid -proxy address or hostname: '%s'"), proxyArg));
-        }
-
-        proxyType addrProxy = proxyType(proxyAddr, proxyRandomize);
-        if (!addrProxy.IsValid())
-            return InitError(strprintf(_("Invalid -proxy address or hostname: '%s'"), proxyArg));
-
-        SetProxy(NET_IPV4, addrProxy);
-        SetProxy(NET_IPV6, addrProxy);
-        SetProxy(NET_TOR, addrProxy);
-        SetNameProxy(addrProxy);
-        SetReachable(NET_TOR); // by default, -proxy sets onion as reachable, unless -noonion later
-    }
-
-    // -onion can be used to set only a proxy for .onion, or override normal proxy for .onion addresses
-    // -noonion (or -onion=0) disables connecting to .onion entirely
-    // An empty string is used to not override the onion proxy (in which case it defaults to -proxy set above, or none)
-    std::string onionArg = GetArg("-onion", "");
-    if (onionArg != "") {
-        if (onionArg == "0") { // Handle -noonion/-onion=0
-            SetReachable(NET_TOR, false); // set onions as unreachable
-        } else {
-            CService onionProxy;
-            if (!Lookup(onionArg.c_str(), onionProxy, 9050, fNameLookup)) {
-                return InitError(strprintf(_("Invalid -onion address or hostname: '%s'"), onionArg));
-            }
-            proxyType addrOnion = proxyType(onionProxy, proxyRandomize);
-            if (!addrOnion.IsValid())
-                return InitError(strprintf(_("Invalid -onion address or hostname: '%s'"), onionArg));
-            SetProxy(NET_TOR, addrOnion);
-            SetReachable(NET_TOR);
-        }
-    }
-
-    // see Step 2: parameter interactions for more information about these
-    fListen = GetBoolArg("-listen", DEFAULT_LISTEN);
-    fDiscover = GetBoolArg("-discover", true);
-
-    bool fBound = false;
-    if (fListen) {
-        if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
-            BOOST_FOREACH (std::string strBind, mapMultiArgs["-bind"]) {
-                CService addrBind;
-                if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
-                    return InitError(strprintf(_("Cannot resolve -bind address: '%s'"), strBind));
-                fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR));
-            }
-            BOOST_FOREACH (std::string strBind, mapMultiArgs["-whitebind"]) {
-                CService addrBind;
-                if (!Lookup(strBind.c_str(), addrBind, 0, false))
-                    return InitError(strprintf(_("Cannot resolve -whitebind address: '%s'"), strBind));
-                if (addrBind.GetPort() == 0)
-                    return InitError(strprintf(_("Need to specify a port with -whitebind: '%s'"), strBind));
-                fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR | BF_WHITELIST));
-            }
-        } else {
-            struct in_addr inaddr_any;
-            inaddr_any.s_addr = INADDR_ANY;
-            fBound |= Bind(CService(in6addr_any, GetListenPort()), BF_NONE);
-            fBound |= Bind(CService(inaddr_any, GetListenPort()), !fBound ? BF_REPORT_ERROR : BF_NONE);
-        }
-        if (!fBound)
-            return InitError(_("Failed to listen on any port. Use -listen=0 if you want this."));
-    }
-
-    if (mapArgs.count("-externalip")) {
-        BOOST_FOREACH (string strAddr, mapMultiArgs["-externalip"]) {
-            CService addrLocal(strAddr, GetListenPort(), fNameLookup);
-            if (!addrLocal.IsValid())
-                return InitError(strprintf(_("Cannot resolve -externalip address: '%s'"), strAddr));
-            AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
-        }
-    }
-
-    BOOST_FOREACH (string strDest, mapMultiArgs["-seednode"])
-        AddOneShot(strDest);
 
     if (mapArgs.count("-hdseed") && IsHex(GetArg("-hdseed", "not hex")) && (mapArgs.count("-mnemonic") || mapArgs.count("-mnemonicpassphrase"))) {
         ForceRemoveArg("-mnemonic");

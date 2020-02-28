@@ -1214,7 +1214,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     SetConsistencyChecks();
     SetNumberOfThreadsToCheckScripts();
 
-    fServer = GetBoolArg("-server", false);
     setvbuf(stdout, NULL, _IOLBF, 0); /// ***TODO*** do we still need this after -printtoconsole is gone?
 
     // Staking needs a CWallet instance, so make sure wallet is enabled
@@ -1255,8 +1254,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("Using data directory %s\n", strDataDir);
     LogPrintf("Using config file %s\n", GetConfigFile().string());
     LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, numberOfFileDescriptors);
-    std::ostringstream strErrors;
-
     LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
     StartScriptVerificationThreads(threadGroup);
 
@@ -1273,6 +1270,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
      * that the server is there and will be ready later).  Warmup mode will
      * be disabled when initialisation is finished.
      */
+    fServer = GetBoolArg("-server", false);
     if (fServer) {
         uiInterface.InitMessage.connect(SetRPCWarmupStatus);
         StartRPCThreads();
@@ -1601,6 +1599,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     fFeeEstimatesInitialized = true;
 
 // ********************************************************* Step 8: load wallet
+    std::ostringstream strErrors;
 #ifdef ENABLE_WALLET
     std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     if (fDisableWallet) {

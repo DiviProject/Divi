@@ -448,9 +448,15 @@ int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, in
     int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;
     int64_t nMasternode_Age = 0;
 
+    const int minimumBlockHeightAtWhichLastRankGetsUpdated = 747360;
+    int rankForNodesNotFound = -1;
+    if(minimumBlockHeightAtWhichLastRankGetsUpdated <= nBlockHeight)
+    {
+        rankForNodesNotFound = vMasternodes.size() + 1;
+    }
     //make sure we know about this block
     uint256 hash = 0;
-    if (!GetBlockHash(hash, nBlockHeight)) return -1;
+    if (!GetBlockHash(hash, nBlockHeight)) return rankForNodesNotFound;
 
     // scan for winner
     BOOST_FOREACH (CMasternode& mn, vMasternodes) {
@@ -486,7 +492,7 @@ int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, in
         }
     }
 
-    return -1;
+    return rankForNodesNotFound;
 }
 
 std::vector<pair<int, CMasternode> > CMasternodeMan::GetMasternodeRanks(int64_t nBlockHeight, int minProtocol)
@@ -502,13 +508,14 @@ std::vector<pair<int, CMasternode> > CMasternodeMan::GetMasternodeRanks(int64_t 
     if (!GetBlockHash(hash, nBlockHeight)) return vecMasternodeRanks;
 
     // scan for winner
+    std::vector<pair<int64_t, CMasternode> > vecDisabledMasternodeScores;
     BOOST_FOREACH (CMasternode& mn, vMasternodes) {
         mn.Check();
 
         if (mn.protocolVersion < minProtocol) continue;
 
         if (!mn.IsEnabled()) {
-            vecMasternodeScores.push_back(make_pair(9999, mn));
+            vecDisabledMasternodeScores.push_back(make_pair(9999, mn));
             continue;
         }
 
@@ -519,6 +526,7 @@ std::vector<pair<int, CMasternode> > CMasternodeMan::GetMasternodeRanks(int64_t 
     }
 
     sort(vecMasternodeScores.rbegin(), vecMasternodeScores.rend(), CompareScoreMN());
+    vecMasternodeScores.insert(vecMasternodeScores.end(),vecDisabledMasternodeScores.begin(),vecDisabledMasternodeScores.end());
 
     int rank = 0;
     BOOST_FOREACH (PAIRTYPE(int64_t, CMasternode) & s, vecMasternodeScores) {

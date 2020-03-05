@@ -30,9 +30,6 @@ extern unsigned int nWalletDBUpdated;
 
 void ThreadFlushWalletDB(const std::string& strWalletFile);
 
-extern CDBEnv bitdb;
-
-
 /** RAII class that provides access to a Berkeley database */
 class CDB
 {

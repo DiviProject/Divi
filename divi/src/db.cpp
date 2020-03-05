@@ -31,8 +31,6 @@ unsigned int nWalletDBUpdated;
 // CDB
 //
 
-CDBEnv bitdb;
-
 CDBEnv CDB::otherBitdb;
 
 CDB::CDB(const std::string& strFilename, const char* pszMode) : pdb(NULL), activeTxn(NULL)

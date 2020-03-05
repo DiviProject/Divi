@@ -168,7 +168,7 @@ static CCoinsViewErrorCatcher* pcoinscatcher = NULL;
 
 
 #ifdef ENABLE_WALLET
-inline void FlushWallet(bool shutdown = false) { if(pwalletMain) bitdb.Flush(shutdown);}
+inline void FlushWallet(bool shutdown = false) { if(pwalletMain) CDB::otherBitdb.Flush(shutdown);}
 #endif
 void FlushWalletAndStopMinting()
 {
@@ -958,7 +958,7 @@ void BackupFile(boost::filesystem::path& sourceFile,boost::filesystem::path& bac
 bool BackupDatabase()
 {
     std::string strDataDir = GetDataDir().string();
-    if (!bitdb.Open(strDataDir)) 
+    if (!CDB::otherBitdb.Open(strDataDir)) 
     {
         // try moving the database env out of the way
         boost::filesystem::path pathDatabase = GetDataDir() / "database";
@@ -971,7 +971,7 @@ bool BackupDatabase()
         }
 
         // try again
-        if (!bitdb.Open(GetDataDir())) {
+        if (!CDB::otherBitdb.Open(GetDataDir())) {
             // if it still fails, it probably means we can't even create the database env
             string msg = strprintf(_("Error initializing wallet database environment %s!"), strDataDir);
             return InitError(msg);
@@ -984,7 +984,7 @@ bool VerifyWallet(std::string strWalletFile)
 {
     std::string strDataDir = GetDataDir().string();
     if (filesystem::exists(GetDataDir() / strWalletFile)) {
-        CDBEnv::VerifyResult r = bitdb.Verify(strWalletFile, NULL);
+        CDBEnv::VerifyResult r = CDB::otherBitdb.Verify(strWalletFile, NULL);
         if (r == CDBEnv::RECOVER_OK) {
             string msg = strprintf(_("Warning: wallet.dat corrupt, data salvaged!"
                                         " Original wallet.dat saved as wallet.{timestamp}.bak in %s; if"

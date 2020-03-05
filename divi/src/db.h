@@ -214,7 +214,7 @@ public:
     {
         if (!pdb || activeTxn)
             return false;
-        DbTxn* ptxn = bitdb.TxnBegin();
+        DbTxn* ptxn = CDB::otherBitdb.TxnBegin();
         if (!ptxn)
             return false;
         activeTxn = ptxn;

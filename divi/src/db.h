@@ -36,6 +36,8 @@ extern CDBEnv bitdb;
 /** RAII class that provides access to a Berkeley database */
 class CDB
 {
+public:
+    static CDBEnv otherBitdb;
 protected:
     Db* pdb;
     std::string strFile;

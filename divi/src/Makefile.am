@@ -114,7 +114,7 @@ BITCOIN_CORE_H = \
   obfuscation.h \
   obfuscation-relay.h \
   db.h \
-  db_clean.h \
+  dbenv.h \
   eccryptoverify.h \
   ecwrapper.h \
   flat-database.h \
@@ -262,7 +262,7 @@ libbitcoin_wallet_a_SOURCES = \
   obfuscation.cpp \
   obfuscation-relay.cpp \
   db.cpp \
-  db_clean.cpp \
+  dbenv.cpp \
   crypto/aes.cpp \
   crypter.cpp \
   swifttx.cpp \

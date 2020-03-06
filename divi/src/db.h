@@ -19,7 +19,7 @@
 #include <boost/filesystem/path.hpp>
 
 #include <db_cxx.h>
-#include "db_clean.h"
+#include "dbenv.h"
 
 class CDiskBlockIndex;
 class COutPoint;

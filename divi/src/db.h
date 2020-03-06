@@ -28,8 +28,6 @@ struct CBlockLocator;
 
 extern unsigned int nWalletDBUpdated;
 
-void ThreadFlushWalletDB(const std::string& strWalletFile);
-
 /** RAII class that provides access to a Berkeley database */
 class CDB
 {

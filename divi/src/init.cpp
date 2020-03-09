@@ -189,51 +189,94 @@ void FlushWalletAndStopMinting()
 #endif
 }
 
+class DataCacheManager
+{
+private:
+    CMasternodeMan& masternodeManager_;
+    CMasternodePayments& masternodePayments_;
+    CNetFulfilledRequestManager& networkRequestManager_;
+    boost::filesystem::path pathDB;
+    bool litemode_;
+public:
+    DataCacheManager(
+        CMasternodeMan& mnmanager,
+        CMasternodePayments& mnPayments,
+        CNetFulfilledRequestManager& networkRequestManager,
+        const boost::filesystem::path& dataDirectory,
+        bool litemodeEnabled = false
+        ): masternodeManager_(mnmanager)
+        , masternodePayments_(mnPayments)
+        , networkRequestManager_(networkRequestManager)
+        , pathDB(dataDirectory)
+        , litemode_(litemodeEnabled)
+    {
+    }
+
+    void StoreDataCaches()
+    {
+        if (!fLiteMode) {
+            CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
+            flatdb1.Dump(masternodeManager_);
+            CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
+            flatdb2.Dump(masternodePayments_);
+            CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
+            flatdb4.Dump(networkRequestManager_);
+        }
+    }
+
+    bool LoadDataCaches()
+    {
+        if (!fLiteMode) {
+            std::string strDBName;
+
+            strDBName = "mncache.dat";
+            uiInterface.InitMessage(_("Loading masternode cache..."));
+            CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
+            if(!flatdb1.Load(masternodeManager_)) {
+                return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
+            }
+
+            if(masternodeManager_.size()) {
+                strDBName = "mnpayments.dat";
+                uiInterface.InitMessage(_("Loading masternode payment cache..."));
+                CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
+                if(!flatdb2.Load(masternodePayments_)) {
+                    return InitError(_("Failed to load masternode payments cache from") + "\n" + (pathDB / strDBName).string());
+                }
+            } else {
+                uiInterface.InitMessage(_("Masternode cache is empty, skipping payments and governance cache..."));
+            }
+
+            strDBName = "netfulfilled.dat";
+            uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
+            CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
+            if(!flatdb4.Load(networkRequestManager_)) {
+                return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
+            }
+        }
+
+        return true;
+    }
+};
+
 void StoreDataCaches()
 {
-    if (!fLiteMode) {
-        CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
-        flatdb1.Dump(mnodeman);
-        CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
-        flatdb2.Dump(masternodePayments);
-        CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
-        flatdb4.Dump(netfulfilledman);
-    }
+    DataCacheManager(
+        mnodeman,
+        masternodePayments,
+        netfulfilledman,
+        GetDataDir(),
+        fLiteMode).StoreDataCaches();
 }
 
 bool LoadDataCaches()
 {
-    if (!fLiteMode) {
-        boost::filesystem::path pathDB = GetDataDir();
-        std::string strDBName;
-
-        strDBName = "mncache.dat";
-        uiInterface.InitMessage(_("Loading masternode cache..."));
-        CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
-        if(!flatdb1.Load(mnodeman)) {
-            return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
-        }
-
-        if(mnodeman.size()) {
-            strDBName = "mnpayments.dat";
-            uiInterface.InitMessage(_("Loading masternode payment cache..."));
-            CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
-            if(!flatdb2.Load(masternodePayments)) {
-                return InitError(_("Failed to load masternode payments cache from") + "\n" + (pathDB / strDBName).string());
-            }
-        } else {
-            uiInterface.InitMessage(_("Masternode cache is empty, skipping payments and governance cache..."));
-        }
-
-        strDBName = "netfulfilled.dat";
-        uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
-        CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
-        if(!flatdb4.Load(netfulfilledman)) {
-            return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
-        }
-    }
-
-    return true;
+    return DataCacheManager(
+        mnodeman,
+        masternodePayments,
+        netfulfilledman,
+        GetDataDir(),
+        fLiteMode).LoadDataCaches();
 }
 
 void SaveFeeEstimatesFromMempool()

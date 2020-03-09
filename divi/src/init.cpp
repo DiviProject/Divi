@@ -1833,35 +1833,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 10: setup ObfuScation
 
-
-    if (!fLiteMode) {
-        boost::filesystem::path pathDB = GetDataDir();
-        std::string strDBName;
-
-        strDBName = "mncache.dat";
-        uiInterface.InitMessage(_("Loading masternode cache..."));
-        CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
-        if(!flatdb1.Load(mnodeman)) {
-            return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
-        }
-
-        if(mnodeman.size()) {
-            strDBName = "mnpayments.dat";
-            uiInterface.InitMessage(_("Loading masternode payment cache..."));
-            CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
-            if(!flatdb2.Load(masternodePayments)) {
-                return InitError(_("Failed to load masternode payments cache from") + "\n" + (pathDB / strDBName).string());
-            }
-        } else {
-            uiInterface.InitMessage(_("Masternode cache is empty, skipping payments and governance cache..."));
-        }
-
-        strDBName = "netfulfilled.dat";
-        uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
-        CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
-        if(!flatdb4.Load(netfulfilledman)) {
-            return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
-        }
+    if(!LoadDataCaches())
+    {
+        return false;
     }
 
 

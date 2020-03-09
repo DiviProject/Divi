@@ -896,29 +896,29 @@ void ThreadFlushWalletDB(const string& strFile)
         }
 
         if (nLastFlushed != nWalletDBUpdated && GetTime() - nLastWalletUpdate >= 2) {
-            TRY_LOCK(CDB::otherBitdb.cs_db, lockDb);
+            TRY_LOCK(CDB::bitdb.cs_db, lockDb);
             if (lockDb) {
                 // Don't do this if any databases are in use
                 int nRefCount = 0;
-                map<string, int>::iterator mi = CDB::otherBitdb.mapFileUseCount.begin();
-                while (mi != CDB::otherBitdb.mapFileUseCount.end()) {
+                map<string, int>::iterator mi = CDB::bitdb.mapFileUseCount.begin();
+                while (mi != CDB::bitdb.mapFileUseCount.end()) {
                     nRefCount += (*mi).second;
                     mi++;
                 }
 
                 if (nRefCount == 0) {
                     boost::this_thread::interruption_point();
-                    map<string, int>::iterator mi = CDB::otherBitdb.mapFileUseCount.find(strFile);
-                    if (mi != CDB::otherBitdb.mapFileUseCount.end()) {
+                    map<string, int>::iterator mi = CDB::bitdb.mapFileUseCount.find(strFile);
+                    if (mi != CDB::bitdb.mapFileUseCount.end()) {
                         LogPrint("db", "Flushing wallet.dat\n");
                         nLastFlushed = nWalletDBUpdated;
                         int64_t nStart = GetTimeMillis();
 
                         // Flush wallet.dat so it's self contained
-                        CDB::otherBitdb.CloseDb(strFile);
-                        CDB::otherBitdb.CheckpointLSN(strFile);
+                        CDB::bitdb.CloseDb(strFile);
+                        CDB::bitdb.CheckpointLSN(strFile);
 
-                        CDB::otherBitdb.mapFileUseCount.erase(mi++);
+                        CDB::bitdb.mapFileUseCount.erase(mi++);
                         LogPrint("db", "Flushed wallet.dat %dms\n", GetTimeMillis() - nStart);
                     }
                 }
@@ -933,12 +933,12 @@ bool BackupWallet(const CWallet& wallet, const string& strDest)
         return false;
     while (true) {
         {
-            LOCK(CDB::otherBitdb.cs_db);
-            if (!CDB::otherBitdb.mapFileUseCount.count(wallet.strWalletFile) || CDB::otherBitdb.mapFileUseCount[wallet.strWalletFile] == 0) {
+            LOCK(CDB::bitdb.cs_db);
+            if (!CDB::bitdb.mapFileUseCount.count(wallet.strWalletFile) || CDB::bitdb.mapFileUseCount[wallet.strWalletFile] == 0) {
                 // Flush log data to the dat file
-                CDB::otherBitdb.CloseDb(wallet.strWalletFile);
-                CDB::otherBitdb.CheckpointLSN(wallet.strWalletFile);
-                CDB::otherBitdb.mapFileUseCount.erase(wallet.strWalletFile);
+                CDB::bitdb.CloseDb(wallet.strWalletFile);
+                CDB::bitdb.CheckpointLSN(wallet.strWalletFile);
+                CDB::bitdb.mapFileUseCount.erase(wallet.strWalletFile);
 
                 // Copy wallet.dat
                 filesystem::path pathSrc = GetDataDir() / wallet.strWalletFile;

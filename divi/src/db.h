@@ -34,7 +34,7 @@ void ThreadFlushWalletDB(const std::string& strWalletFile);
 class CDB
 {
 public:
-    static CDBEnv otherBitdb;
+    static CDBEnv bitdb;
 protected:
     Db* pdb;
     std::string strFile;
@@ -211,7 +211,7 @@ public:
     {
         if (!pdb || activeTxn)
             return false;
-        DbTxn* ptxn = CDB::otherBitdb.TxnBegin();
+        DbTxn* ptxn = CDB::bitdb.TxnBegin();
         if (!ptxn)
             return false;
         activeTxn = ptxn;

@@ -121,6 +121,7 @@ BITCOIN_CORE_H = \
   hash.h \
   hdchain.h \
   init.h \
+  datacachemanager.h \
   kernel.h \
   swifttx.h \
   key.h \
@@ -212,6 +213,7 @@ libbitcoin_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   init.cpp \
+  datacachemanager.cpp \
   leveldbwrapper.cpp \
   main.cpp \
   merkleblock.cpp \

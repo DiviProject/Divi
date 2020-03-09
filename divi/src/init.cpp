@@ -17,6 +17,7 @@
 #include "amount.h"
 #include "checkpoints.h"
 #include "compat/sanity.h"
+#include "datacachemanager.h"
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
@@ -113,44 +114,6 @@ bool static InitWarning(const std::string& str)
     return true;
 }
 
-class UIMessenger
-{
-private:
-    CClientUIInterface& uiInterface_;
-
-    inline std::string translate(const char* psz)
-    {
-        boost::optional<std::string> rv = uiInterface_.Translate(psz);
-        return rv ? (*rv) : psz;
-    }
-    inline std::string translate(std::string psz)
-    {
-        return translate(psz.c_str());
-    }
-    std::string translate(const std::string& translatable, const std::string& untranslatable)
-    {
-        return translate(translatable) + untranslatable;
-    }
-public:
-    UIMessenger(CClientUIInterface& uiInterface_in): uiInterface_(uiInterface_in){}
-
-    bool InitError(const std::string& str, std::string untranslateableString = std::string())
-    {
-        uiInterface_.ThreadSafeMessageBox(translate(str,untranslateableString), "", CClientUIInterface::MSG_ERROR);
-        return false;
-    }
-    bool InitWarning(const std::string& str, std::string untranslateableString = std::string())
-    {
-        uiInterface_.ThreadSafeMessageBox(translate(str,untranslateableString), "", CClientUIInterface::MSG_WARNING);
-        return true;
-    }
-    bool InitMessage(const std::string& str, std::string untranslateableString = std::string())
-    {
-        uiInterface_.InitMessage(translate(str,untranslateableString));
-        return true;
-    }
-};
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Shutdown
@@ -226,79 +189,6 @@ void FlushWalletAndStopMinting()
     GenerateBitcoins(false, NULL, 0);
 #endif
 }
-
-class DataCacheManager
-{
-private:
-    CMasternodeMan& masternodeManager_;
-    CMasternodePayments& masternodePayments_;
-    CNetFulfilledRequestManager& networkRequestManager_;
-    boost::filesystem::path pathDB;
-    UIMessenger uiMessenger_;
-    bool litemode_;
-public:
-    DataCacheManager(
-        CMasternodeMan& mnmanager,
-        CMasternodePayments& mnPayments,
-        CNetFulfilledRequestManager& networkRequestManager,
-        const boost::filesystem::path& dataDirectory,
-        CClientUIInterface& uiInterface_in,
-        bool litemodeEnabled = false
-        ): masternodeManager_(mnmanager)
-        , masternodePayments_(mnPayments)
-        , networkRequestManager_(networkRequestManager)
-        , pathDB(dataDirectory)
-        , uiMessenger_(uiInterface_in)
-        , litemode_(litemodeEnabled)
-    {
-    }
-
-    void StoreDataCaches()
-    {
-        if (!fLiteMode) {
-            CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
-            flatdb1.Dump(masternodeManager_);
-            CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
-            flatdb2.Dump(masternodePayments_);
-            CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
-            flatdb4.Dump(networkRequestManager_);
-        }
-    }
-
-    bool LoadDataCaches()
-    {
-        if (!fLiteMode) {
-            std::string strDBName;
-
-            strDBName = "mncache.dat";
-            uiMessenger_.InitMessage("Loading masternode cache...");
-            CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
-            if(!flatdb1.Load(masternodeManager_)) {
-                return uiMessenger_.InitError("Failed to load masternode cache from", "\n" + (pathDB / strDBName).string());
-            }
-
-            if(masternodeManager_.size()) {
-                strDBName = "mnpayments.dat";
-                uiMessenger_.InitMessage("Loading masternode payment cache...");
-                CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
-                if(!flatdb2.Load(masternodePayments_)) {
-                    return uiMessenger_.InitError("Failed to load masternode payments cache from", "\n" + (pathDB / strDBName).string());
-                }
-            } else {
-                uiMessenger_.InitMessage("Masternode cache is empty, skipping payments and governance cache...");
-            }
-
-            strDBName = "netfulfilled.dat";
-            uiMessenger_.InitMessage("Loading fulfilled requests cache...");
-            CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
-            if(!flatdb4.Load(networkRequestManager_)) {
-                return uiMessenger_.InitError("Failed to load fulfilled requests cache from", "\n" + (pathDB / strDBName).string());
-            }
-        }
-
-        return true;
-    }
-};
 
 void StoreDataCaches()
 {

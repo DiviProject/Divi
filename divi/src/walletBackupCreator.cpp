@@ -173,7 +173,6 @@ void WalletBackupCreator::PruneOldBackups(std::string strWalletFile, PathType ba
 
 bool WalletBackupCreator::BackupWallet(std::string strDataDir, bool fDisableWallet)
 {
-#ifdef ENABLE_WALLET
     std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     if (!fDisableWallet) {
         PathType backupDir = dataDirectory_ + "/backups";
@@ -198,7 +197,6 @@ bool WalletBackupCreator::BackupWallet(std::string strDataDir, bool fDisableWall
 
         if(!VerifyWallet(strWalletFile)) return false;
 
-    }  
-#endif // ENABLE_WALLET
+    }
     return true;
 }

@@ -135,6 +135,7 @@ BITCOIN_CORE_H = \
   eccryptoverify.h \
   ecwrapper.h \
   flat-database.h \
+  filesystemtestproxy.h \
   hash.h \
   hdchain.h \
   init.h \
@@ -154,6 +155,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   miner.h \
+  mockFileSystem.h \
   mruset.h \
   netbase.h \
   netfulfilledman.h \
@@ -230,12 +232,14 @@ libbitcoin_server_a_SOURCES = \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
+  filesystemtestproxy.cpp \
   init.cpp \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \
+  mockFileSystem.cpp \
   net.cpp \
   netfulfilledman.cpp \
   noui.cpp \

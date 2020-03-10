@@ -149,6 +149,11 @@ public:
         containedFileNames_.clear();
         return fileReferences;
     }
+    std::vector<File*> getContainedFiles()
+    {
+        return containedFiles_;
+    }
+    
 private:
     std::vector<File*> containedFiles_;
     std::unordered_set<std::string> containedFileNames_;
@@ -272,6 +277,18 @@ public:
             return true;
         }
         return false;
+    }
+
+    Directory getDirectoryIfExists(const std::string& fullPath) const
+    {
+        Directory folder(fullPath, std::time_t(0), NULL);
+
+        auto it = fileSystemHashMap_.find(folder);
+        if(it != fileSystemHashMap_.end())
+        {
+            return *reinterpret_cast<Directory*>(it->second);
+        }
+        return Directory();
     }
 
     bool moveFile(const File& file, Directory* from, Directory* to)

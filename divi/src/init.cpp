@@ -912,6 +912,11 @@ void SetLoggingAndDebugSettings()
 
     if (GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
+    
+    if(fPrintToConsole)
+    {
+        setvbuf(stdout, NULL, _IOLBF, 0);
+    }
 }
 
 bool TryLockDataDirectory(const std::string& datadir)
@@ -1259,6 +1264,20 @@ void PruneHDSeedParameterInteraction()
     }
 }
 
+void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, const std::string& dataDirectoryInUse)
+{
+    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    LogPrintf("DIVI version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
+    LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
+    if(!fDisableWallet) LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
+    if (!fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
+    LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
+    LogPrintf("Using data directory %s\n", dataDirectoryInUse);
+    LogPrintf("Using config file %s\n", GetConfigFile().string());
+    LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, numberOfFileDescriptors);
+    LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1351,8 +1370,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     SetConsistencyChecks();
     SetNumberOfThreadsToCheckScripts();
 
-    setvbuf(stdout, NULL, _IOLBF, 0); /// ***TODO*** do we still need this after -printtoconsole is gone?
-
     // Staking needs a CWallet instance, so make sure wallet is enabled
     bool fDisableWallet = WalletIsDisabled();
     if (fDisableWallet) {
@@ -1385,8 +1402,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("DIVI version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
     if(!fDisableWallet) LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
-    if (!fLogTimestamps)
-        LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
+    if (!fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", strDataDir);
     LogPrintf("Using config file %s\n", GetConfigFile().string());

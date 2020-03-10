@@ -1414,8 +1414,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
      * that the server is there and will be ready later).  Warmup mode will
      * be disabled when initialisation is finished.
      */
-    fServer = GetBoolArg("-server", false);
-    if (fServer) {
+    if (GetBoolArg("-server", false)) {
         uiInterface.InitMessage.connect(SetRPCWarmupStatus);
         StartRPCThreads();
     }

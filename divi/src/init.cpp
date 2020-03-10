@@ -1278,6 +1278,18 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
     LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
 }
 
+bool SetSporkKey()
+{
+    sporkManager.SetSporkAddress(Params().SporkKey());
+    if (mapArgs.count("-sporkkey")) // spork priv key
+    {
+        if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
+            return InitError(_("Unable to sign spork message, wrong key?"));
+    }
+    return true;
+}
+
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1401,12 +1413,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     PrintInitialLogHeader(fDisableWallet,numberOfFileDescriptors,strDataDir);
     StartScriptVerificationThreads(threadGroup);
 
-    sporkManager.SetSporkAddress(Params().SporkKey());
-
-    if (mapArgs.count("-sporkkey")) // spork priv key
+    if(!SetSporkKey())
     {
-        if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
-            return InitError(_("Unable to sign spork message, wrong key?"));
+        return false;
     }
 
     /* Start the RPC server already.  It will be started in "warmup" mode

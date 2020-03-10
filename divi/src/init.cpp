@@ -1289,6 +1289,18 @@ bool SetSporkKey()
     return true;
 }
 
+void WarmUpRPCAndStartRPCThreads()
+{
+    /* Start the RPC server already.  It will be started in "warmup" mode
+     * and not really process calls already (but it will signify connections
+     * that the server is there and will be ready later).  Warmup mode will
+     * be disabled when initialisation is finished.
+     */
+    if (GetBoolArg("-server", false)) {
+        uiInterface.InitMessage.connect(SetRPCWarmupStatus);
+        StartRPCThreads();
+    }
+}
 
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
@@ -1417,16 +1429,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
-
-    /* Start the RPC server already.  It will be started in "warmup" mode
-     * and not really process calls already (but it will signify connections
-     * that the server is there and will be ready later).  Warmup mode will
-     * be disabled when initialisation is finished.
-     */
-    if (GetBoolArg("-server", false)) {
-        uiInterface.InitMessage.connect(SetRPCWarmupStatus);
-        StartRPCThreads();
-    }
+    WarmUpRPCAndStartRPCThreads();
 
     int64_t nStart;
 

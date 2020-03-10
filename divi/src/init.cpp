@@ -1398,16 +1398,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #ifndef WIN32
     CreatePidFile(GetPidFile(), getpid());
 #endif
-    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("DIVI version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
-    LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
-    if(!fDisableWallet) LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
-    if (!fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
-    LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
-    LogPrintf("Using data directory %s\n", strDataDir);
-    LogPrintf("Using config file %s\n", GetConfigFile().string());
-    LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, numberOfFileDescriptors);
-    LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
+    PrintInitialLogHeader(fDisableWallet,numberOfFileDescriptors,strDataDir);
     StartScriptVerificationThreads(threadGroup);
 
     sporkManager.SetSporkAddress(Params().SporkKey());

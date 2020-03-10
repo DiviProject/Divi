@@ -11,8 +11,8 @@ BOOST_AUTO_TEST_CASE(will_fail_to_backup_to_bogus_directory)
     FileSystemTree internalFileSystem;
     MockFileSystem fileSystem(internalFileSystem);
 
-    WalletBackupCreator octal(10, fileSystem, "/");
-    BOOST_CHECK(!octal.BackupWallet ("bogusDirectory", false));
+    WalletBackupCreator backupCreator(10, fileSystem, "/");
+    BOOST_CHECK(!backupCreator.BackupWallet ("bogusDirectory", false));
 }
 
 

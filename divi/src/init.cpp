@@ -1331,6 +1331,26 @@ void CreateHardlinksForBlocks()
     }
 }
 
+std::pair<size_t,size_t> CalculateDBCacheSizes()
+{
+    size_t nTotalCache = (GetArg("-dbcache", nDefaultDbCache) << 20);
+    size_t nBlockTreeDBCache = 0;
+    size_t nCoinDBCache = 0;
+    if (nTotalCache < (nMinDbCache << 20))
+        nTotalCache = (nMinDbCache << 20); // total cache cannot be less than nMinDbCache
+    else if (nTotalCache > (nMaxDbCache << 20))
+        nTotalCache = (nMaxDbCache << 20); // total cache cannot be greater than nMaxDbCache
+    nBlockTreeDBCache = nTotalCache / 8;
+    if (nBlockTreeDBCache > (1 << 21) && !GetBoolArg("-txindex", true))
+        nBlockTreeDBCache = (1 << 21); // block tree db cache shouldn't be larger than 2 MiB
+    nTotalCache -= nBlockTreeDBCache;
+    nCoinDBCache = nTotalCache / 2; // use half of the remaining cache for coindb cache
+    nTotalCache -= nCoinDBCache;
+    nCoinCacheSize = nTotalCache / 300; // coins in memory require around 300 bytes
+
+    return std::make_pair(nBlockTreeDBCache,nCoinDBCache);
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1483,20 +1503,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 7: load block chain
     CreateHardlinksForBlocks();
-
-    // cache size calculations
-    size_t nTotalCache = (GetArg("-dbcache", nDefaultDbCache) << 20);
-    if (nTotalCache < (nMinDbCache << 20))
-        nTotalCache = (nMinDbCache << 20); // total cache cannot be less than nMinDbCache
-    else if (nTotalCache > (nMaxDbCache << 20))
-        nTotalCache = (nMaxDbCache << 20); // total cache cannot be greater than nMaxDbCache
-    size_t nBlockTreeDBCache = nTotalCache / 8;
-    if (nBlockTreeDBCache > (1 << 21) && !GetBoolArg("-txindex", true))
-        nBlockTreeDBCache = (1 << 21); // block tree db cache shouldn't be larger than 2 MiB
-    nTotalCache -= nBlockTreeDBCache;
-    size_t nCoinDBCache = nTotalCache / 2; // use half of the remaining cache for coindb cache
-    nTotalCache -= nCoinDBCache;
-    nCoinCacheSize = nTotalCache / 300; // coins in memory require around 300 bytes
+    std::pair<size_t,size_t> blockTreeAndCoinDBCacheSizes = CalculateDBCacheSizes();
 
     bool fLoaded = false;
     while (!fLoaded) {
@@ -1518,8 +1525,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
                 zerocoinDB = new CZerocoinDB(0, false, false);
                 pSporkDB = new CSporkDB(0, false, false);
-                pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
-                pcoinsdbview = new CCoinsViewDB(nCoinDBCache, false, fReindex);
+                pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
+                pcoinsdbview = new CCoinsViewDB(blockTreeAndCoinDBCacheSizes.second, false, fReindex);
                 pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
                 pcoinsTip = new CCoinsViewCache(pcoinscatcher);
 

@@ -63,7 +63,9 @@ void MockFileSystem::addLastWriteTimeMapping (PathType path, std::time_t time)
 }
 std::time_t MockFileSystem::last_write_time(const PathType& path)
 {
-    return std::time_t(0);
+    auto it = lastWriteTimeMapping.find(path);
+    
+    return (it!=lastWriteTimeMapping.end())? it->second: std::time_t(0);
 }
 
 void MockFileSystem::addCreateDirectoriesMapping (PathType path, bool directory)
@@ -72,7 +74,9 @@ void MockFileSystem::addCreateDirectoriesMapping (PathType path, bool directory)
 }
 bool MockFileSystem::create_directories(const PathType& path)
 {
-    return false;
+    auto it = createDirectoriesMapping.find(path);
+    
+    return (it!=createDirectoriesMapping.end())? it->second: false;
 }
 
 void MockFileSystem::addGetTimestampsMapping (PathType path, TimeStampedFilePaths timestampedPath)

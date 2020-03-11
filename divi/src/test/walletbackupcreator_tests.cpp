@@ -13,5 +13,17 @@ BOOST_AUTO_TEST_CASE(will_fail_to_backup_wallet_if_it_cant_create_directory)
     BOOST_CHECK(!backupCreator.BackupWallet ("bogusDirectory", false));
 }
 
+BOOST_AUTO_TEST_CASE(will_attempt_backup_to_existing_directory)
+{
+    MockFileSystem fileSystem;
+
+    fileSystem.addExistsMapping("/bogusDirectory/backups", true);
+
+    BOOST_CHECK(fileSystem.exists("/bogusDirectory/backups"));
+
+    WalletBackupCreator backupCreator(10, fileSystem, "");
+    
+    BOOST_CHECK(backupCreator.BackupWallet("/bogusDirectory", false));
+}
 
 BOOST_AUTO_TEST_SUITE_END()

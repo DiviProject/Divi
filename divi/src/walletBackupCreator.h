@@ -12,7 +12,7 @@ private:
     I_FileSystem& fileSystem_;
     std::string dataDirectory_;
     void ClearFoldersForResync();
-    bool BackupDatabase();
+    bool BackupDatabaseInCaseOfError();
     bool VerifyWallet(std::string strWalletFile);
     void BackupFile(PathType& sourceFile, PathType& backupFile);
     void BackupWalletFile(std::string strWalletFile, PathType backupDir);

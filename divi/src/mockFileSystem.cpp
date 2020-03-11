@@ -1,52 +1,87 @@
 #include <mockFileSystem.h>
-#include <filesystemtestproxy.h>
+
+
+void MockFileSystem::clearMappings()
+{
+    existsMapping.clear();
+    removeAllMapping.clear();
+    removeMapping.clear();
+    lastWriteTimeMapping.clear();
+    createDirectoriesMapping.clear();
+    timestampsMapping.clear();
+}
+
+void MockFileSystem::addExistsMapping(PathType path, bool existence)
+{
+    existsMapping[path] = existence;
+}
 
 bool MockFileSystem::exists(const PathType& path)
 {
-    return false;
+    auto it = existsMapping.find(path);
+    
+    return (it!=existsMapping.end())? it->second: false;
+}
+
+void MockFileSystem::addRemoveAllMapping(PathType path, unsigned numberRemoved)
+{
+    existsMapping[path] = numberRemoved;
 }
 unsigned MockFileSystem::remove_all(const PathType& path)
 {
-    return 0;
-}
-bool MockFileSystem::remove(const PathType& path)
-{
-    File file = File(path, 0, false);
-    return fileSystem_.deleteFile(file);
-}
-void MockFileSystem::copy_file(const PathType& from, const PathType& to)
-{
+    auto it = removeAllMapping.find(path);
     
+    return (it!=removeAllMapping.end())? it->second: 0;
 }
-std::time_t MockFileSystem::last_write_time(const PathType& path)
-{
-    return std::time_t(0);
-}
-bool MockFileSystem::create_directories(const PathType& path)
-{
-    return false;
-}
+
+
 void MockFileSystem::rename(const PathType& oldPath, const PathType& newPath)
 {
     
 }
 
+
+void MockFileSystem::addRemoveMapping(PathType path, bool removed)
+{
+    removeMapping[path] = removed;
+}
+bool MockFileSystem::remove(const PathType& path)
+{
+    auto it = removeMapping.find(path);
+    
+    return (it!=removeMapping.end())? it->second: false;
+}
+
+void MockFileSystem::copy_file(const PathType& from, const PathType& to)
+{
+    
+}
+
+void MockFileSystem::addLastWriteTimeMapping (PathType path, std::time_t time)
+{
+    lastWriteTimeMapping[path] = time;
+}
+std::time_t MockFileSystem::last_write_time(const PathType& path)
+{
+    return std::time_t(0);
+}
+
+void MockFileSystem::addCreateDirectoriesMapping (PathType path, bool directory)
+{
+    createDirectoriesMapping[path] = directory;
+}
+bool MockFileSystem::create_directories(const PathType& path)
+{
+    return false;
+}
+
+void MockFileSystem::addGetTimestampsMapping (PathType path, TimeStampedFilePaths timestampedPath)
+{
+    timestampsMapping[path] = timestampedPath;
+}
 TimeStampedFilePaths MockFileSystem::get_timestamps(const PathType& path)
 {
-    Directory directory = fileSystem_.getDirectoryIfExists(path);
-    std::vector<File*> directoryContents = directory.getContainedFiles();
-    TimeStampedFilePaths namedTimestamps;
-
-    unsigned end_iter = directoryContents.size();
-    for(File* content: directoryContents)
-    {
-        //i translate to ith element of directory
-        std::time_t timeStamp = content -> modifiedTime;
-        std::string name = content -> name;
-        
-        namedTimestamps.push_back(std::make_pair(timeStamp, name));
-    }
+    auto it = timestampsMapping.find(path);
     
-    //return all timestamps
-    return namedTimestamps;
+    return (it!=timestampsMapping.end())? it->second: TimeStampedFilePaths();
 }

@@ -3,6 +3,8 @@
 #include <util.h>
 #include <boost/foreach.hpp>
 #include <db.h>
+#include <iostream>
+#include <ui_interface.h>
 
 bool Error (std::string msg) 
 {
@@ -23,7 +25,7 @@ std::string make_preferred(std::string path)
     return boostPath.string();
 }
 
-bool WalletBackupCreator::BackupDatabase()
+bool WalletBackupCreator::BackupDatabaseInCaseOfError()
 {
     std::string strDataDir = dataDirectory_;
     if (!bitdb.Open(strDataDir)) 
@@ -41,7 +43,7 @@ bool WalletBackupCreator::BackupDatabase()
         // try again
         if (!bitdb.Open(dataDirectory_)) {
             // if it still fails, it probably means we can't even create the database env
-            std::string msg = strprintf(("Error initializing wallet database environment %s!"), strDataDir);
+            std::string msg = strprintf(_("Error initializing wallet database environment %s!"), strDataDir);
             // return InitError(msg);
             return Error(msg);
         }
@@ -54,19 +56,18 @@ bool WalletBackupCreator::VerifyWallet(std::string strWalletFile)
     std::string strDataDir = dataDirectory_;
     if (fileSystem_.exists(dataDirectory_ + strWalletFile)) {
         CDBEnv::VerifyResult r = bitdb.Verify(strWalletFile, NULL);
+
         if (r == CDBEnv::RECOVER_OK) {
-            std::string msg = strprintf(("Warning: wallet.dat corrupt, data salvaged!"
+            std::string msg = strprintf(_("Warning: wallet.dat corrupt, data salvaged!"
                                         " Original wallet.dat saved as wallet.{timestamp}.bak in %s; if"
                                         " your balance or transactions are incorrect you should"
                                         " restore from a backup."),
                 strDataDir);
-            // InitWarning(msg);
             Warning(msg);
         }
         if (r == CDBEnv::RECOVER_FAIL)
-        
             // return InitError(_("wallet.dat corrupt, salvage failed"));
-            return Error(("wallet.dat corrupt, salvage failed"));
+            return Error(_("wallet.dat corrupt, salvage failed"));
     }
     return true;
 }
@@ -174,6 +175,7 @@ void WalletBackupCreator::PruneOldBackups(std::string strWalletFile, PathType ba
 bool WalletBackupCreator::BackupWallet(std::string strDataDir, bool fDisableWallet)
 {
     std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+    bool attemptedToCreateBackups = true;
     if (!fDisableWallet) {
         PathType backupDir = dataDirectory_ + "/backups";
         if (!fileSystem_.exists(backupDir)) {
@@ -185,18 +187,22 @@ bool WalletBackupCreator::BackupWallet(std::string strDataDir, bool fDisableWall
             {
                 BackupWalletFile(strWalletFile,backupDir);
                 PruneOldBackups(strWalletFile,backupDir);
+            } 
+            else
+            {
+                attemptedToCreateBackups = false;
             }
+            
         }
-
         if (GetBoolArg("-resync", false)) ClearFoldersForResync();
 
         LogPrintf("Using wallet %s\n", strWalletFile.c_str());
         // uiInterface.InitMessage(_("Verifying wallet..."));
 
-        if(!BackupDatabase()) return false;
+        if(!BackupDatabaseInCaseOfError()) return false;
 
         if(!VerifyWallet(strWalletFile)) return false;
 
     }
-    return true;
+    return attemptedToCreateBackups;
 }

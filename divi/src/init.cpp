@@ -242,6 +242,17 @@ void DeallocateShallowDatabases()
     pSporkDB = NULL;
 }
 
+void CleanAndReallocateShallowDatabases(const std::pair<std::size_t,std::size_t>& blockTreeAndCoinDBCacheSizes)
+{
+    DeallocateShallowDatabases();
+    pSporkDB = new CSporkDB(0, false, false);
+    zerocoinDB = new CZerocoinDB(0, false, false);
+    pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
+    pcoinsdbview = new CCoinsViewDB(blockTreeAndCoinDBCacheSizes.second, false, fReindex);
+    pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
+    pcoinsTip = new CCoinsViewCache(pcoinscatcher);
+}
+
 void FlushStateAndDeallocateShallowDatabases()
 {
     LOCK(cs_main);
@@ -1522,19 +1533,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         {
             try {
                 UnloadBlockIndex();
-                delete pcoinsTip;
-                delete pcoinscatcher;
-                delete pcoinsdbview;
-                delete pblocktree;
-                delete zerocoinDB;
-                delete pSporkDB;
-
-                pSporkDB = new CSporkDB(0, false, false);
-                zerocoinDB = new CZerocoinDB(0, false, false);
-                pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
-                pcoinsdbview = new CCoinsViewDB(blockTreeAndCoinDBCacheSizes.second, false, fReindex);
-                pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
-                pcoinsTip = new CCoinsViewCache(pcoinscatcher);
+                CleanAndReallocateShallowDatabases(blockTreeAndCoinDBCacheSizes);
 
                 if (fReindex)
                     pblocktree->WriteReindexing(true);

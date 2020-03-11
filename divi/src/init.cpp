@@ -1517,14 +1517,14 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             try {
                 UnloadBlockIndex();
                 delete pcoinsTip;
-                delete pcoinsdbview;
                 delete pcoinscatcher;
+                delete pcoinsdbview;
                 delete pblocktree;
                 delete zerocoinDB;
                 delete pSporkDB;
 
-                zerocoinDB = new CZerocoinDB(0, false, false);
                 pSporkDB = new CSporkDB(0, false, false);
+                zerocoinDB = new CZerocoinDB(0, false, false);
                 pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
                 pcoinsdbview = new CCoinsViewDB(blockTreeAndCoinDBCacheSizes.second, false, fReindex);
                 pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);

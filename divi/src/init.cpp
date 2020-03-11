@@ -225,6 +225,23 @@ void SaveFeeEstimatesFromMempool()
     }
 }
 
+void DeallocaeShallowDatabases_b()
+{
+    delete pcoinsTip;
+    delete pcoinscatcher;
+    delete pcoinsdbview;
+    delete pblocktree;
+    delete zerocoinDB;
+    delete pSporkDB;
+    
+    pcoinsTip = NULL;
+    pcoinscatcher = NULL;
+    pcoinsdbview = NULL;
+    pblocktree = NULL;
+    zerocoinDB = NULL;
+    pSporkDB = NULL;
+}
+
 void DeallocateShallowDatabases()
 {
     LOCK(cs_main);
@@ -233,18 +250,7 @@ void DeallocateShallowDatabases()
         //record that client took the proper shutdown procedure
         pblocktree->WriteFlag("shutdown", true);
     }
-    delete pcoinsTip;
-    pcoinsTip = NULL;
-    delete pcoinscatcher;
-    pcoinscatcher = NULL;
-    delete pcoinsdbview;
-    pcoinsdbview = NULL;
-    delete pblocktree;
-    pblocktree = NULL;
-    delete zerocoinDB;
-    zerocoinDB = NULL;
-    delete pSporkDB;
-    pSporkDB = NULL;
+    DeallocaeShallowDatabases_b();
 }
 
 /** Preparing steps before shutting down or restarting the wallet */

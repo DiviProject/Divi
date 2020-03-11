@@ -1530,7 +1530,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         uiInterface.InitMessage(_("Loading block index..."));
 
         nStart = GetTimeMillis();
-        {
+        do {
             try {
                 UnloadBlockIndex();
                 CleanAndReallocateShallowDatabases(blockTreeAndCoinDBCacheSizes);
@@ -1619,7 +1619,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
             fVerifyingBlocks = false;
             fLoaded = true;
-        }
+        } while (false);
 
         if (!fLoaded) {
             // first suggest a reindex

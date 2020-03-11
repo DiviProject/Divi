@@ -1368,6 +1368,102 @@ std::pair<size_t,size_t> CalculateDBCacheSizes()
     return std::make_pair(nBlockTreeDBCache,nCoinDBCache);
 }
 
+bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
+{
+    const bool skipLoadingDueToError = true;
+    try {
+        UnloadBlockIndex();
+        std::pair<std::size_t, std::size_t> dbCacheSizes = CalculateDBCacheSizes();
+        CleanAndReallocateShallowDatabases(dbCacheSizes);
+
+        if (fReindex)
+            pblocktree->WriteReindexing(true);
+
+        // DIVI: load previous sessions sporks if we have them.
+        uiInterface.InitMessage(_("Loading sporks..."));
+        sporkManager.LoadSporksFromDB();
+
+        uiInterface.InitMessage(_("Loading block index..."));
+        string strBlockIndexError = "";
+        if (!LoadBlockIndex(strBlockIndexError)) {
+            strLoadError = _("Error loading block database");
+            strLoadError = strprintf("%s : %s", strLoadError, strBlockIndexError);
+            return skipLoadingDueToError;
+        }
+
+        // If the loaded chain has a wrong genesis, bail out immediately
+        // (we're likely using a testnet datadir, or the other way around).
+        if (!mapBlockIndex.empty() && mapBlockIndex.count(Params().HashGenesisBlock()) == 0)
+            return InitError(_("Incorrect or no genesis block found. Wrong datadir for network?"));
+
+        // Initialize the block index (no-op if non-empty database was already loaded)
+        if (!InitBlockIndex()) {
+            strLoadError = _("Error initializing block database");
+            return skipLoadingDueToError;
+        }
+
+        // Check for changed -txindex state
+        if (fTxIndex != GetBoolArg("-txindex", true)) {
+            strLoadError = _("You need to rebuild the database using -reindex to change -txindex");
+            return skipLoadingDueToError;
+        }
+
+        // Populate list of invalid/fraudulent outpoints that are banned from the chain
+        PopulateInvalidOutPointMap();
+
+        // Recalculate money supply for blocks that are impacted by accounting issue after zerocoin activation
+        if (GetBoolArg("-reindexmoneysupply", false)) {
+            if (chainActive.Height() > Params().Zerocoin_StartHeight()) {
+                RecalculateZDIVMinted();
+                RecalculateZDIVSpent();
+            }
+            RecalculateDIVSupply(1);
+        }
+
+        // Force recalculation of accumulators.
+        if (GetBoolArg("-reindexaccumulators", false)) {
+            CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
+            while (pindex->nHeight < chainActive.Height()) {
+                if (!count(listAccCheckpointsNoDB.begin(), listAccCheckpointsNoDB.end(), pindex->nAccumulatorCheckpoint))
+                    listAccCheckpointsNoDB.emplace_back(pindex->nAccumulatorCheckpoint);
+                pindex = chainActive.Next(pindex);
+            }
+        }
+
+        // DIVI: recalculate Accumulator Checkpoints that failed to database properly
+        if (!listAccCheckpointsNoDB.empty()) {
+            uiInterface.InitMessage(_("Calculating missing accumulators..."));
+            LogPrintf("%s : finding missing checkpoints\n", __func__);
+
+            string strError;
+            if (!ReindexAccumulators(listAccCheckpointsNoDB, strError))
+                return InitError(strError);
+        }
+
+        uiInterface.InitMessage(_("Verifying blocks..."));
+
+        // Flag sent to validation code to let it know it can skip certain checks
+        fVerifyingBlocks = true;
+
+        // Zerocoin must check at level 4
+        if (!CVerifyDB().VerifyDB(pcoinsdbview, 4, GetArg("-checkblocks", 100))) {
+            strLoadError = _("Corrupted block database detected");
+            fVerifyingBlocks = false;
+            return skipLoadingDueToError;
+        }
+    } catch (std::exception& e) {
+        if (fDebug) LogPrintf("%s\n", e.what());
+        strLoadError = _("Error opening block database");
+        fVerifyingBlocks = false;
+        return skipLoadingDueToError;
+    }
+
+    fVerifyingBlocks = false;
+    fLoaded = true;
+
+    return true;
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1520,8 +1616,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 7: load block chain
     CreateHardlinksForBlocks();
-    std::pair<size_t,size_t> blockTreeAndCoinDBCacheSizes = CalculateDBCacheSizes();
-
     bool fLoaded = false;
     while (!fLoaded) {
         bool fReset = fReindex;
@@ -1530,96 +1624,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         uiInterface.InitMessage(_("Loading block index..."));
 
         nStart = GetTimeMillis();
-        do {
-            try {
-                UnloadBlockIndex();
-                CleanAndReallocateShallowDatabases(blockTreeAndCoinDBCacheSizes);
-
-                if (fReindex)
-                    pblocktree->WriteReindexing(true);
-
-                // DIVI: load previous sessions sporks if we have them.
-                uiInterface.InitMessage(_("Loading sporks..."));
-                sporkManager.LoadSporksFromDB();
-
-                uiInterface.InitMessage(_("Loading block index..."));
-                string strBlockIndexError = "";
-                if (!LoadBlockIndex(strBlockIndexError)) {
-                    strLoadError = _("Error loading block database");
-                    strLoadError = strprintf("%s : %s", strLoadError, strBlockIndexError);
-                    break;
-                }
-
-                // If the loaded chain has a wrong genesis, bail out immediately
-                // (we're likely using a testnet datadir, or the other way around).
-                if (!mapBlockIndex.empty() && mapBlockIndex.count(Params().HashGenesisBlock()) == 0)
-                    return InitError(_("Incorrect or no genesis block found. Wrong datadir for network?"));
-
-                // Initialize the block index (no-op if non-empty database was already loaded)
-                if (!InitBlockIndex()) {
-                    strLoadError = _("Error initializing block database");
-                    break;
-                }
-
-                // Check for changed -txindex state
-                if (fTxIndex != GetBoolArg("-txindex", true)) {
-                    strLoadError = _("You need to rebuild the database using -reindex to change -txindex");
-                    break;
-                }
-
-                // Populate list of invalid/fraudulent outpoints that are banned from the chain
-                PopulateInvalidOutPointMap();
-
-                // Recalculate money supply for blocks that are impacted by accounting issue after zerocoin activation
-                if (GetBoolArg("-reindexmoneysupply", false)) {
-                    if (chainActive.Height() > Params().Zerocoin_StartHeight()) {
-                        RecalculateZDIVMinted();
-                        RecalculateZDIVSpent();
-                    }
-                    RecalculateDIVSupply(1);
-                }
-
-                // Force recalculation of accumulators.
-                if (GetBoolArg("-reindexaccumulators", false)) {
-                    CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
-                    while (pindex->nHeight < chainActive.Height()) {
-                        if (!count(listAccCheckpointsNoDB.begin(), listAccCheckpointsNoDB.end(), pindex->nAccumulatorCheckpoint))
-                            listAccCheckpointsNoDB.emplace_back(pindex->nAccumulatorCheckpoint);
-                        pindex = chainActive.Next(pindex);
-                    }
-                }
-
-                // DIVI: recalculate Accumulator Checkpoints that failed to database properly
-                if (!listAccCheckpointsNoDB.empty()) {
-                    uiInterface.InitMessage(_("Calculating missing accumulators..."));
-                    LogPrintf("%s : finding missing checkpoints\n", __func__);
-
-                    string strError;
-                    if (!ReindexAccumulators(listAccCheckpointsNoDB, strError))
-                        return InitError(strError);
-                }
-
-                uiInterface.InitMessage(_("Verifying blocks..."));
-
-                // Flag sent to validation code to let it know it can skip certain checks
-                fVerifyingBlocks = true;
-
-                // Zerocoin must check at level 4
-                if (!CVerifyDB().VerifyDB(pcoinsdbview, 4, GetArg("-checkblocks", 100))) {
-                    strLoadError = _("Corrupted block database detected");
-                    fVerifyingBlocks = false;
-                    break;
-                }
-            } catch (std::exception& e) {
-                if (fDebug) LogPrintf("%s\n", e.what());
-                strLoadError = _("Error opening block database");
-                fVerifyingBlocks = false;
-                break;
-            }
-
-            fVerifyingBlocks = false;
-            fLoaded = true;
-        } while (false);
+        if(!TryToLoadBlocks(fLoaded,strLoadError))
+        {
+            return false;
+        }
 
         if (!fLoaded) {
             // first suggest a reindex

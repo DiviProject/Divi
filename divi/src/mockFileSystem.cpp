@@ -1,6 +1,5 @@
 #include <mockFileSystem.h>
 
-
 void MockFileSystem::clearMappings()
 {
     existsMapping.clear();
@@ -54,7 +53,10 @@ bool MockFileSystem::remove(const PathType& path)
 
 void MockFileSystem::copy_file(const PathType& from, const PathType& to)
 {
-    
+    if(exists(from))
+    {
+        addExistsMapping(to, true);
+    }
 }
 
 void MockFileSystem::addLastWriteTimeMapping (PathType path, std::time_t time)

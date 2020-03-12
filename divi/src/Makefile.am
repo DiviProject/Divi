@@ -156,6 +156,7 @@ BITCOIN_CORE_H = \
   merkleblock.h \
   miner.h \
   mockFileSystem.h \
+  mockFormattedTimestampProvider.h \
   mruset.h \
   netbase.h \
   netfulfilledman.h \
@@ -240,6 +241,7 @@ libbitcoin_server_a_SOURCES = \
   merkleblock.cpp \
   miner.cpp \
   mockFileSystem.cpp \
+  mockFormattedTimestampProvider.cpp \
   net.cpp \
   netfulfilledman.cpp \
   noui.cpp \

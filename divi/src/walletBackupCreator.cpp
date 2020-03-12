@@ -5,6 +5,7 @@
 #include <db.h>
 #include <iostream>
 #include <ui_interface.h>
+#include <i_formattedTimestampProvider.h>
 
 bool Error (std::string msg) 
 {
@@ -120,7 +121,7 @@ void WalletBackupCreator::BackupFile(PathType& sourceFile, PathType& backupFile)
 void WalletBackupCreator::BackupWalletFile(std::string strWalletFile, PathType backupDir)
 {
     // Create backup of the wallet
-    std::string dateTimeStr = DateTimeStrFormat(".%Y-%m-%d-%H-%M", GetTime());
+    std::string dateTimeStr = formattedTimestampProvider_.currentTimeStamp();
     std::string backupPathStr = backupDir;
     backupPathStr += "/" + strWalletFile;
     std::string sourcePathStr = dataDirectory_;
@@ -171,39 +172,36 @@ void WalletBackupCreator::PruneOldBackups(std::string strWalletFile, PathType ba
     }
 }
 
-bool WalletBackupCreator::BackupWallet(std::string strDataDir, bool fDisableWallet)
+bool WalletBackupCreator::BackupWallet(std::string strDataDir)
 {
     dataDirectory_ = strDataDir;
     std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     
-    bool attemptedToCreateBackups = true;
-    if (!fDisableWallet) {
-        PathType backupDir = dataDirectory_ + "/backups";
-        if (!fileSystem_.exists(backupDir)) {
-            
-            // Always create backup folder to not confuse the operating system's file browser
-            fileSystem_.create_directories(backupDir);
-        }
+    bool attemptedToCreateBackups = false;
 
-        if (nWalletBackups > 0) {
-            if (fileSystem_.exists(backupDir)) 
-            {
-                BackupWalletFile(strWalletFile,backupDir);
-                PruneOldBackups(strWalletFile,backupDir);
-            } 
-            else
-            {
-                attemptedToCreateBackups = false;
-            }
-        }
-        if (GetBoolArg("-resync", false)) ClearFoldersForResync();
-
-        LogPrintf("Using wallet %s\n", strWalletFile.c_str());
-        // uiInterface.InitMessage(_("Verifying wallet..."));
-
-        if(!BackupDatabaseInCaseOfError()) return false;
-
-        if(!VerifyWallet(strWalletFile)) return false;
+    PathType backupDir = dataDirectory_ + "/backups";
+    if (!fileSystem_.exists(backupDir)) {
+        
+        // Always create backup folder to not confuse the operating system's file browser
+        fileSystem_.create_directories(backupDir);
     }
+
+    if (nWalletBackups > 0) {
+        if (fileSystem_.exists(backupDir)) 
+        {
+            attemptedToCreateBackups = true;
+            BackupWalletFile(strWalletFile,backupDir);
+            PruneOldBackups(strWalletFile,backupDir);
+        }
+    }
+    if (GetBoolArg("-resync", false)) ClearFoldersForResync();
+
+    LogPrintf("Using wallet %s\n", strWalletFile.c_str());
+    // uiInterface.InitMessage(_("Verifying wallet..."));
+
+    if(!BackupDatabaseInCaseOfError()) return false;
+
+    if(!VerifyWallet(strWalletFile)) return false;
+
     return attemptedToCreateBackups;
 }

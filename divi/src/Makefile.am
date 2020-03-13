@@ -32,6 +32,22 @@ LIBBITCOIN_UNIVALUE=univalue/libbitcoin_univalue.a
 LIBBITCOIN_ZEROCOIN=libzerocoin/libbitcoin_zerocoin.a
 LIBBITCOINQT=qt/libbitcoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
+LIBGMOCK=GMock/libgmock.a
+GMOCK=GMock/gmock-all.o
+GTEST=GMock/gtest-all.o
+GMOCK_INCLUDE=GMock/googlemock/include
+GTEST_INCLUDE=GMock/googletest/include
+GMOCK_ALL=GMock/googlemock/src/gmock-all.cc
+GTEST_ALL=GMock/googletest/src/gtest-all.cc
+
+$(GMOCK): $(wildcard ${GMOCK_INCLUDE}/*) $(wildcard ${GTEST_INCLUDE}/*) $(GMOCK_ALL)
+	$(CC) -isystem ${GMOCK_INCLUDE} -IGMock/googlemock/ -isystem ${GTEST_INCLUDE} -IGMock/googletest -pthread -c ${GMOCK_ALL}
+
+$(GTEST): $(wildcard ${GMOCK_INCLUDE}/*) $(wildcard ${GTEST_INCLUDE}/*) $(GTEST_ALL)
+	$(CC) -isystem ${GMOCK_INCLUDE} -IGMock/googlemock/ -isystem ${GTEST_INCLUDE} -IGMock/googletest -pthread -c ${GTEST_ALL}
+
+$(LIBGMOCK): $(GTEST) $(GMOCK)
+	ar -rv $@ $^
 
 $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
@@ -46,6 +62,7 @@ EXTRA_LIBRARIES = \
   libzerocoin/libbitcoin_zerocoin.a \
   libbitcoin_server.a \
   libbitcoin_cli.a
+
 if ENABLE_WALLET
 BITCOIN_INCLUDES += $(BDB_CPPFLAGS)
 EXTRA_LIBRARIES += libbitcoin_wallet.a

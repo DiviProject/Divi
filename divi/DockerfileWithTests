@@ -21,6 +21,10 @@ RUN apt-get install libdb4.8-dev libdb4.8++-dev -y
 WORKDIR /app
 COPY . .
 
+WORKDIR /app/src/GMock
+RUN autoreconf -fvi
+
+WORKDIR /app
 RUN ./autogen.sh
 RUN ./configure --without-gui NO_QT=1
 RUN make NO_QT=1

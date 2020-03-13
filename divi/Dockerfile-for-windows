@@ -31,8 +31,11 @@ RUN update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32
 # Comment out the next three lines if you're not interested in building the dependencies
 WORKDIR /app/depends
 RUN make HOST=x86_64-w64-mingw32
-WORKDIR /app
 
+WORKDIR /app/src/GMock
+RUN autoreconf -fvi
+
+WORKDIR /app
 RUN PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
 RUN ./autogen.sh
 RUN CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --disable-tests --without-gui --prefix=/ 

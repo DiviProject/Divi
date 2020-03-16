@@ -28,7 +28,7 @@ std::string make_preferred(std::string path)
 
 bool WalletBackupCreator::BackupDatabaseInCaseOfError()
 {
-    if (!bitdb.Open(dataDirectory_)) 
+    if (!CDB::bitdb.Open(dataDirectory_)) 
     {
         // try moving the database env out of the way
         PathType pathDatabase = dataDirectory_ + "/database";
@@ -41,7 +41,7 @@ bool WalletBackupCreator::BackupDatabaseInCaseOfError()
         }
 
         // try again
-        if (!bitdb.Open(dataDirectory_)) {
+        if (!CDB::bitdb.Open(dataDirectory_)) {
             // if it still fails, it probably means we can't even create the database env
             std::string msg = strprintf(_("Error initializing wallet database environment %s!"), dataDirectory_);
             // return InitError(msg);
@@ -54,7 +54,7 @@ bool WalletBackupCreator::BackupDatabaseInCaseOfError()
 bool WalletBackupCreator::VerifyWallet(std::string strWalletFile)
 {
     if (fileSystem_.exists(dataDirectory_ + strWalletFile)) {
-        CDBEnv::VerifyResult r = bitdb.Verify(strWalletFile, NULL);
+        CDBEnv::VerifyResult r = CDB::bitdb.Verify(strWalletFile, NULL);
 
         if (r == CDBEnv::RECOVER_OK) {
             std::string msg = strprintf(_("Warning: wallet.dat corrupt, data salvaged!"

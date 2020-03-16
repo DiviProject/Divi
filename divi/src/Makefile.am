@@ -135,6 +135,7 @@ BITCOIN_CORE_H = \
   eccryptoverify.h \
   ecwrapper.h \
   flat-database.h \
+  filesystemtestproxy.h \
   hash.h \
   hdchain.h \
   init.h \
@@ -196,6 +197,7 @@ BITCOIN_CORE_H = \
   validationinterface.h \
   version.h \
   wallet.h \
+  walletBackupCreator.h \
   wallet_ismine.h \
   walletdb.h \
   zmq/zmqabstractnotifier.h \
@@ -229,6 +231,7 @@ libbitcoin_server_a_SOURCES = \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
+  filesystemtestproxy.cpp \
   init.cpp \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
@@ -255,6 +258,7 @@ libbitcoin_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   validationinterface.cpp \
+  walletBackupCreator.cpp \
   $(JSON_H) \
   $(BITCOIN_CORE_H)
 

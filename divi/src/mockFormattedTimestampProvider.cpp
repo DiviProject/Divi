@@ -1,10 +1,11 @@
 #include <mockFormattedTimestampProvider.h>
 
-std::string MockFormattedTimestampProvider::currentTimeStamp() const
+MockFormattedTimestampProvider::MockFormattedTimestampProvider()
 {
-    return timestampIndex < currentTimeStampMapping.size()? currentTimeStampMapping[timestampIndex++]: std::to_string(timestampIndex++);
+
 }
-void MockFormattedTimestampProvider::addCurrentTimestampMapping (std::string timestamp)
+
+MockFormattedTimestampProvider::~MockFormattedTimestampProvider()
 {
-    currentTimeStampMapping.push_back(timestamp);
+
 }

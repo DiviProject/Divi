@@ -1,12 +1,13 @@
 #include <i_formattedTimestampProvider.h>
 #include <string>
 #include <vector>
+#include <gmock/gmock.h>
+
 class MockFormattedTimestampProvider : public I_FormattedTimestampProvider
 {
-private:
-    mutable unsigned timestampIndex = 0u;
-    std::vector<std::string> currentTimeStampMapping;
 public:
-    void addCurrentTimestampMapping (std::string timestamp);
-    virtual std::string currentTimeStamp() const;
+    MockFormattedTimestampProvider();
+    virtual ~MockFormattedTimestampProvider();
+    
+    MOCK_CONST_METHOD0(currentTimeStamp, std::string());
 };

@@ -121,34 +121,62 @@ BOOST_AUTO_TEST_CASE(will_create_backup_file)
     BOOST_CHECK(backupCreator.BackupWallet(dataDirectory));
 }
 
-/*
-BOOST_AUTO_TEST_CASE(will_backup_wallet_file)
+TimeStampedFolderContents createTimestampedFolderContents(const std::string& directoryPath, unsigned numberOfFiles)
+{
+    TimeStampedFolderContents timestampedContents;
+    for(unsigned fileindex = 0u; fileindex < numberOfFiles; ++fileindex)
+    {
+        unsigned timestamp = 45u*fileindex;
+        std::string filepath = directoryPath + "/wallet.dat" +"/" + std::to_string(timestamp);
+        timestampedContents.push_back(std::pair<std::time_t,std::string>{std::time_t(timestamp),filepath});
+    }
+    return timestampedContents;
+}
+
+BOOST_AUTO_TEST_CASE(will_remove_no_backups_when_at_or_below_maximum_number_of_backups)
 {
     NiceMock<MockFileSystem> fileSystem;
-    MockFormattedTimestampProvider formattedTimestampProvider;
+    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
     
-    TimeStampedFilePaths namedTimestamps;
+    std::string dataDirectory = "/bogusDirectory";
+    std::string backupDirectoryPath = dataDirectory+"/backups";
+    std::string walletPath = dataDirectory+"/wallet.dat";
 
-    for(int i = 0; i < 11; i++)
-    {
-        std::string walletDatPath = "/bogusDirectory/backups/wallet.dat" + std::to_string( i );
-        
-        //fileSystem.addExistsMapping( walletDatPath, true );
-        
-        namedTimestamps.push_back(std::make_pair( std::time_t(i*10), walletDatPath));
-    }
-    //fileSystem.addGetTimestampsMapping("/bogusDirectory/backups", namedTimestamps);
+    ON_CALL(fileSystem, exists(backupDirectoryPath)).WillByDefault(Return(true));
+    ON_CALL(fileSystem, exists(walletPath)).WillByDefault(Return(true));
 
+    unsigned numberOfBackups = 10u;
+    ON_CALL(fileSystem, get_timestamped_folder_contents(backupDirectoryPath))
+        .WillByDefault(Return(createTimestampedFolderContents(backupDirectoryPath,numberOfBackups)));
+    EXPECT_CALL(fileSystem, remove(_)).Times(0);
 
-    //fileSystem.addExistsMapping("/bogusDirectory/backups", true);
-    //fileSystem.addExistsMapping("/bogusDirectory/wallet.dat", true);
+    WalletBackupCreator backupCreator(numberOfBackups, fileSystem, formattedTimestampProvider,  "");
 
-
-    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  "");
-
-
-    backupCreator.BackupWallet("/bogusDirectory");
-    
+    backupCreator.BackupWallet(dataDirectory);
 }
-*/
+
+BOOST_AUTO_TEST_CASE(will_remove_files_down_to_maximum_number_of_backups)
+{
+    NiceMock<MockFileSystem> fileSystem;
+    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
+    
+    std::string dataDirectory = "/bogusDirectory";
+    std::string backupDirectoryPath = dataDirectory+"/backups";
+    std::string walletPath = dataDirectory+"/wallet.dat";
+
+    ON_CALL(fileSystem, exists(backupDirectoryPath)).WillByDefault(Return(true));
+    ON_CALL(fileSystem, exists(walletPath)).WillByDefault(Return(true));
+
+    unsigned maximumNumberOfBackups = 10u;
+    unsigned numberOfExcessBackups = 27u;
+    unsigned numberOfFilesInsideBackupFolder = maximumNumberOfBackups + numberOfExcessBackups;
+    ON_CALL(fileSystem, get_timestamped_folder_contents(backupDirectoryPath))
+        .WillByDefault(Return(createTimestampedFolderContents(backupDirectoryPath,numberOfFilesInsideBackupFolder)));
+    EXPECT_CALL(fileSystem, remove(_)).Times(numberOfExcessBackups);
+
+    WalletBackupCreator backupCreator(maximumNumberOfBackups, fileSystem, formattedTimestampProvider,  "");
+
+    backupCreator.BackupWallet(dataDirectory);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

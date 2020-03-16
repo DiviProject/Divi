@@ -139,33 +139,22 @@ bool WalletBackupCreator::BackupWalletFile(std::string strWalletFile, PathType b
     return false;
 }
 
-TimeStampedFilePaths WalletBackupCreator::RecordTimestamps(PathType backupDir)
-{
-    return fileSystem_.get_timestamps(make_preferred(backupDir));
-}
-
 void WalletBackupCreator::PruneOldBackups(std::string strWalletFile, PathType backupDir)
 {
-    // Keep only the last 10 backups, including the new one of course
-    PathType backupFolder = backupDir;
-    backupFolder = make_preferred(backupFolder);
-    // Build map of backup files for current(!) wallet sorted by last write time
-    PathType currentFile;
-
     // Loop backward through backup files and keep the N newest ones (1 <= N <= 10)
-    TimeStampedFilePaths folder_set = RecordTimestamps(backupDir);
-    if(folder_set.empty()){
+    TimeStampedFolderContents folderContents = fileSystem_.get_timestamped_folder_contents(backupDir);
+    if(folderContents.empty()){
         return;
     }
-    typedef TimeStampedFilePaths::value_type TimeStampedPath;
-    std::sort(folder_set.begin(), folder_set.end(), 
+    typedef TimeStampedFolderContents::value_type TimeStampedPath;
+    std::sort(folderContents.begin(), folderContents.end(), 
         [](const TimeStampedPath& a, const TimeStampedPath& b) 
         {
             return a.first < b.first;
         });
     
     int counter = 0;
-    BOOST_REVERSE_FOREACH (TimeStampedFilePaths::value_type file, folder_set) {
+    BOOST_REVERSE_FOREACH (TimeStampedFolderContents::value_type file, folderContents) {
         counter++;
         if (counter > nWalletBackups) {
             // More than nWalletBackups backups: delete oldest one(s)

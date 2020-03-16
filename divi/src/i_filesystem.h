@@ -4,8 +4,7 @@
 #include <ctime>
 #include <vector>
 typedef std::string PathType;
-typedef std::vector<std::pair<std::time_t, PathType>> TimeStampedFilePaths;
-
+typedef std::vector<std::pair<std::time_t,PathType>> TimeStampedFolderContents;
 class I_FileSystem
 {
 public:
@@ -17,8 +16,8 @@ public:
     virtual bool remove(const PathType& path) = 0;
     virtual void copy_file(const PathType& from, const PathType& to) = 0;
     virtual std::time_t last_write_time(const PathType& path) = 0;
-    virtual bool create_directories(const PathType& path) = 0;    
-    virtual TimeStampedFilePaths get_timestamps(const PathType& path) = 0;
+    virtual bool create_directories(const PathType& path) = 0;
+    virtual TimeStampedFolderContents get_timestamped_folder_contents(const PathType& directory) = 0;
 };
 
 #endif //I_FILESYSTEM_H 

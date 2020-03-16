@@ -19,7 +19,6 @@ private:
     bool BackupFile(PathType& sourceFile, PathType& backupFile);
     bool BackupWalletFile(std::string strWalletFile, PathType backupDir);
     void PruneOldBackups(std::string strWalletFile, PathType backupDir);
-    TimeStampedFilePaths RecordTimestamps(PathType backupDir);
 
 public:
     WalletBackupCreator (

@@ -17,7 +17,7 @@ public:
     MOCK_METHOD2(copy_file, void(const PathType&, const PathType&));
     MOCK_METHOD1(last_write_time, std::time_t(const PathType&));
     MOCK_METHOD1(create_directories, bool(const PathType&));
-    MOCK_METHOD1(get_timestamps, TimeStampedFilePaths(const PathType&));
+    MOCK_METHOD1(get_timestamped_folder_contents, TimeStampedFolderContents(const PathType&));
 };
 
 #endif //MOCKFILESYSTEM_H

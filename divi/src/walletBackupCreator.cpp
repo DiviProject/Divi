@@ -53,7 +53,7 @@ bool WalletBackupCreator::BackupDatabaseInCaseOfError()
 
 bool WalletBackupCreator::VerifyWallet(std::string strWalletFile)
 {
-    if (fileSystem_.exists(dataDirectory_ + strWalletFile)) {
+    if (fileSystem_.exists(dataDirectory_ +"/"+ strWalletFile)) {
         CDBEnv::VerifyResult r = CDB::bitdb.Verify(strWalletFile, NULL);
 
         if (r == CDBEnv::RECOVER_OK) {
@@ -184,7 +184,7 @@ bool WalletBackupCreator::BackupWallet(std::string strDataDir)
     dataDirectory_ = strDataDir;
     std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     
-    bool attemptedToCreateBackups = false;
+    bool backupWalletStatus = false;
 
     PathType backupDir = dataDirectory_ + "/backups";
     if (!fileSystem_.exists(backupDir)) {
@@ -195,12 +195,19 @@ bool WalletBackupCreator::BackupWallet(std::string strDataDir)
     if (nWalletBackups > 0) {
         if (fileSystem_.exists(backupDir))
         {
-            attemptedToCreateBackups = true;
-            BackupWalletFile(strWalletFile,backupDir);
+            backupWalletStatus = BackupWalletFile(strWalletFile,backupDir);
             PruneOldBackups(strWalletFile,backupDir);
         }
     }
-    if (GetBoolArg("-resync", false)) ClearFoldersForResync();
+
+    return backupWalletStatus;
+}
+
+
+bool WalletBackupCreator::CheckWalletIntegrity(bool resync)
+{
+    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+    if (resync) ClearFoldersForResync();
 
     LogPrintf("Using wallet %s\n", strWalletFile.c_str());
     // uiInterface.InitMessage(_("Verifying wallet..."));
@@ -209,5 +216,5 @@ bool WalletBackupCreator::BackupWallet(std::string strDataDir)
 
     if(!VerifyWallet(strWalletFile)) return false;
 
-    return attemptedToCreateBackups;
+    return true;
 }

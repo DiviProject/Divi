@@ -35,6 +35,9 @@ public:
         nWalletBackups = std::max(0, std::min(10, nWalletBackups));
     }
     bool BackupWallet(std::string strDataDir);
+    bool CheckWalletIntegrity(bool resync = false);
 };
+
+
 
 #endif //WALLET_BACKUP_CREATOR_H

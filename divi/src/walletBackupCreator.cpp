@@ -108,17 +108,20 @@ void WalletBackupCreator::ClearFoldersForResync()
     }
 }
 
-void WalletBackupCreator::BackupFile(PathType& sourceFile, PathType& backupFile)
+bool WalletBackupCreator::BackupFile(PathType& sourceFile, PathType& backupFile)
 {
     try {
         fileSystem_.copy_file(sourceFile, backupFile);
         LogPrintf("Creating backup of %s -> %s\n", sourceFile.c_str(), backupFile.c_str());
+        return true;
     } catch (...) {
         LogPrintf("Failed to create backup\n");
+        return false;
     }
+    return false;
 }
 
-void WalletBackupCreator::BackupWalletFile(std::string strWalletFile, PathType backupDir)
+bool WalletBackupCreator::BackupWalletFile(std::string strWalletFile, PathType backupDir)
 {
     // Create backup of the wallet
     std::string dateTimeStr = formattedTimestampProvider_.currentTimeStamp();
@@ -131,8 +134,9 @@ void WalletBackupCreator::BackupWalletFile(std::string strWalletFile, PathType b
     sourceFile = make_preferred(sourceFile);
     backupFile = make_preferred(backupFile);
     if (fileSystem_.exists(sourceFile)) {
-        BackupFile(sourceFile,backupFile);
+        return BackupFile(sourceFile,backupFile);
     }
+    return false;
 }
 
 TimeStampedFilePaths WalletBackupCreator::RecordTimestamps(PathType backupDir)
@@ -150,6 +154,9 @@ void WalletBackupCreator::PruneOldBackups(std::string strWalletFile, PathType ba
 
     // Loop backward through backup files and keep the N newest ones (1 <= N <= 10)
     TimeStampedFilePaths folder_set = RecordTimestamps(backupDir);
+    if(folder_set.empty()){
+        return;
+    }
     typedef TimeStampedFilePaths::value_type TimeStampedPath;
     std::sort(folder_set.begin(), folder_set.end(), 
         [](const TimeStampedPath& a, const TimeStampedPath& b) 
@@ -181,13 +188,12 @@ bool WalletBackupCreator::BackupWallet(std::string strDataDir)
 
     PathType backupDir = dataDirectory_ + "/backups";
     if (!fileSystem_.exists(backupDir)) {
-        
         // Always create backup folder to not confuse the operating system's file browser
         fileSystem_.create_directories(backupDir);
     }
 
     if (nWalletBackups > 0) {
-        if (fileSystem_.exists(backupDir)) 
+        if (fileSystem_.exists(backupDir))
         {
             attemptedToCreateBackups = true;
             BackupWalletFile(strWalletFile,backupDir);

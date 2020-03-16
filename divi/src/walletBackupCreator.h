@@ -16,8 +16,8 @@ private:
     void ClearFoldersForResync();
     bool BackupDatabaseInCaseOfError();
     bool VerifyWallet(std::string strWalletFile);
-    void BackupFile(PathType& sourceFile, PathType& backupFile);
-    void BackupWalletFile(std::string strWalletFile, PathType backupDir);
+    bool BackupFile(PathType& sourceFile, PathType& backupFile);
+    bool BackupWalletFile(std::string strWalletFile, PathType backupDir);
     void PruneOldBackups(std::string strWalletFile, PathType backupDir);
     TimeStampedFilePaths RecordTimestamps(PathType backupDir);
 

@@ -14,6 +14,8 @@ private:
     std::unordered_map<std::string, bool> createDirectoriesMapping;
     std::unordered_map<std::string, TimeStampedFilePaths> timestampsMapping;
     
+    mutable unsigned timestampTracker = 0;
+
     void clearMappings();
 public:
     MockFileSystem()

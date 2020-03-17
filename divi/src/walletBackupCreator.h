@@ -13,6 +13,7 @@ private:
     I_FileSystem& fileSystem_;
     I_FormattedTimestampProvider& formattedTimestampProvider_;
     std::string dataDirectory_;
+    std::string walletFilename_;
     void ClearFoldersForResync();
     bool BackupDatabaseInCaseOfError();
     bool VerifyWallet(std::string strWalletFile);
@@ -25,11 +26,13 @@ public:
         int numberOfBackups,
         I_FileSystem& fileSystem,
         I_FormattedTimestampProvider& formattedTimestampProvider,
-        std::string dataDirectory
+        std::string dataDirectory,
+        std::string walletFilename = std::string("wallet.dat")
         ): nWalletBackups(numberOfBackups)
         , fileSystem_(fileSystem)
         , formattedTimestampProvider_(formattedTimestampProvider)
         , dataDirectory_(dataDirectory)
+        , walletFilename_(walletFilename)
     {
         nWalletBackups = std::max(0, std::min(10, nWalletBackups));
     }

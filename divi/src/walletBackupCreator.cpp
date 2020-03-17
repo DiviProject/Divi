@@ -170,8 +170,6 @@ void WalletBackupCreator::PruneOldBackups(std::string strWalletFile, PathType ba
 
 bool WalletBackupCreator::BackupWallet()
 {
-    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
-    
     bool backupWalletStatus = false;
 
     PathType backupDir = dataDirectory_ + "/backups";
@@ -183,8 +181,8 @@ bool WalletBackupCreator::BackupWallet()
     if (nWalletBackups > 0) {
         if (fileSystem_.exists(backupDir))
         {
-            backupWalletStatus = BackupWalletFile(strWalletFile,backupDir);
-            PruneOldBackups(strWalletFile,backupDir);
+            backupWalletStatus = BackupWalletFile(walletFilename_,backupDir);
+            PruneOldBackups(walletFilename_,backupDir);
         }
     }
 
@@ -194,15 +192,14 @@ bool WalletBackupCreator::BackupWallet()
 
 bool WalletBackupCreator::CheckWalletIntegrity(bool resync)
 {
-    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     if (resync) ClearFoldersForResync();
 
-    LogPrintf("Using wallet %s\n", strWalletFile.c_str());
+    LogPrintf("Using wallet %s\n", walletFilename_.c_str());
     // uiInterface.InitMessage(_("Verifying wallet..."));
 
     if(!BackupDatabaseInCaseOfError()) return false;
 
-    if(!VerifyWallet(strWalletFile)) return false;
+    if(!VerifyWallet(walletFilename_)) return false;
 
     return true;
 }

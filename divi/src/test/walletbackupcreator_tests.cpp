@@ -21,10 +21,8 @@ BOOST_AUTO_TEST_CASE(will_fail_to_backup_wallet_if_it_cant_create_directory)
     ON_CALL(fileSystem, exists(backupDirectoryPath)).WillByDefault(Return(false));
     {
         ::testing::InSequence seq;
-        EXPECT_CALL(fileSystem,exists(backupDirectoryPath)).WillOnce(Return(false));
+        EXPECT_CALL(fileSystem,exists(backupDirectoryPath)).Times(1);
         EXPECT_CALL(fileSystem,create_directories(backupDirectoryPath)).Times(1);
-        EXPECT_CALL(fileSystem,exists(backupDirectoryPath)).WillOnce(Return(false));
-
     }
     WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
 

@@ -168,9 +168,8 @@ void WalletBackupCreator::PruneOldBackups(std::string strWalletFile, PathType ba
     }
 }
 
-bool WalletBackupCreator::BackupWallet(std::string strDataDir)
+bool WalletBackupCreator::BackupWallet()
 {
-    dataDirectory_ = strDataDir;
     std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     
     bool backupWalletStatus = false;

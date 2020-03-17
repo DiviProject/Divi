@@ -33,7 +33,7 @@ public:
     {
         nWalletBackups = std::max(0, std::min(10, nWalletBackups));
     }
-    bool BackupWallet(std::string strDataDir);
+    bool BackupWallet();
     bool CheckWalletIntegrity(bool resync = false);
 };
 

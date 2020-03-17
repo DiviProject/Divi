@@ -26,9 +26,9 @@ BOOST_AUTO_TEST_CASE(will_fail_to_backup_wallet_if_it_cant_create_directory)
         EXPECT_CALL(fileSystem,exists(backupDirectoryPath)).WillOnce(Return(false));
 
     }
-    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  "");
+    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
 
-    BOOST_CHECK(!backupCreator.BackupWallet ("/bogusDirectory"));
+    BOOST_CHECK(!backupCreator.BackupWallet ());
 }
 
 BOOST_AUTO_TEST_CASE(will_attempt_backup_to_existing_directory_if_walletfile_exists)
@@ -49,9 +49,9 @@ BOOST_AUTO_TEST_CASE(will_attempt_backup_to_existing_directory_if_walletfile_exi
         EXPECT_CALL(fileSystem,copy_file(walletPath,_)).Times(1);
     }
 
-    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  "");
+    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
     
-    BOOST_CHECK(backupCreator.BackupWallet(dataDirectory));
+    BOOST_CHECK(backupCreator.BackupWallet());
 }
 
 
@@ -73,9 +73,9 @@ BOOST_AUTO_TEST_CASE(will_not_backup_to_existing_directory_if_walletfile_does_no
         EXPECT_CALL(fileSystem,copy_file(walletPath,_)).Times(0);
     }
 
-    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  "");
+    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
     
-    BOOST_CHECK(!backupCreator.BackupWallet(dataDirectory));
+    BOOST_CHECK(!backupCreator.BackupWallet());
 }
 
 
@@ -95,9 +95,9 @@ BOOST_AUTO_TEST_CASE(will_create_backup_directory_if_nonexistent)
         EXPECT_CALL(fileSystem, exists(backupDirectoryPath));
         EXPECT_CALL(fileSystem,create_directories(backupDirectoryPath)).Times(1);
     }
-    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  "");
+    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
 
-    backupCreator.BackupWallet(dataDirectory);
+    backupCreator.BackupWallet();
 }
 
 
@@ -116,9 +116,9 @@ BOOST_AUTO_TEST_CASE(will_create_backup_file)
     ON_CALL(formattedTimestampProvider, currentTimeStamp()).WillByDefault(Return(backupfileSuffix));
 
     EXPECT_CALL(fileSystem, copy_file( walletPath, backupDirectoryPath +"/wallet.dat"+ backupfileSuffix )).Times(1);
-    WalletBackupCreator backupCreator(1, fileSystem, formattedTimestampProvider,  "");
+    WalletBackupCreator backupCreator(1, fileSystem, formattedTimestampProvider,  dataDirectory);
     
-    BOOST_CHECK(backupCreator.BackupWallet(dataDirectory));
+    BOOST_CHECK(backupCreator.BackupWallet());
 }
 
 TimeStampedFolderContents createTimestampedFolderContents(const std::string& directoryPath, unsigned numberOfFiles)
@@ -150,9 +150,9 @@ BOOST_AUTO_TEST_CASE(will_remove_no_backups_when_at_or_below_maximum_number_of_b
         .WillByDefault(Return(createTimestampedFolderContents(backupDirectoryPath,numberOfBackups)));
     EXPECT_CALL(fileSystem, remove(_)).Times(0);
 
-    WalletBackupCreator backupCreator(numberOfBackups, fileSystem, formattedTimestampProvider,  "");
+    WalletBackupCreator backupCreator(numberOfBackups, fileSystem, formattedTimestampProvider,  dataDirectory);
 
-    backupCreator.BackupWallet(dataDirectory);
+    backupCreator.BackupWallet();
 }
 
 BOOST_AUTO_TEST_CASE(will_remove_files_down_to_maximum_number_of_backups)
@@ -174,9 +174,9 @@ BOOST_AUTO_TEST_CASE(will_remove_files_down_to_maximum_number_of_backups)
         .WillByDefault(Return(createTimestampedFolderContents(backupDirectoryPath,numberOfFilesInsideBackupFolder)));
     EXPECT_CALL(fileSystem, remove(_)).Times(numberOfExcessBackups);
 
-    WalletBackupCreator backupCreator(maximumNumberOfBackups, fileSystem, formattedTimestampProvider,  "");
+    WalletBackupCreator backupCreator(maximumNumberOfBackups, fileSystem, formattedTimestampProvider,  dataDirectory);
 
-    backupCreator.BackupWallet(dataDirectory);
+    backupCreator.BackupWallet();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

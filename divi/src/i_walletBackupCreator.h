@@ -8,4 +8,4 @@ public:
     virtual bool CheckWalletIntegrity(bool resync) = 0;
 };
 
-#endif //I_FILESYSTEM_H 
+#endif //I_WALLETBACKUPCREATOR_H 

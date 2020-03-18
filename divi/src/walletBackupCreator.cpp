@@ -205,7 +205,7 @@ bool WalletBackupCreator::BackupWallet()
 }
 
 
-bool WalletBackupCreator::CheckWalletIntegrity(bool resync)
+bool WalletBackupCreator::CheckWalletIntegrity(bool resync = false)
 {
     if (resync) ClearFoldersForResync();
 

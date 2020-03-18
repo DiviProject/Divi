@@ -2,11 +2,12 @@
 #define WALLET_BACKUP_CREATOR_H
 #include <string>
 #include <boost/filesystem.hpp>
+#include <i_walletBackupCreator.h>
 #include <i_filesystem.h>
 
 class I_FormattedTimestampProvider;
 
-class WalletBackupCreator
+class WalletBackupCreator : public I_WalletBackupCreator
 {
 private:
     int nWalletBackups = 0;
@@ -28,8 +29,10 @@ public:
         I_FormattedTimestampProvider& formattedTimestampProvider,
         std::string dataDirectory,
         std::string walletFilename = std::string("wallet.dat"));
-    bool BackupWallet();
-    bool CheckWalletIntegrity(bool resync = false);
+
+    virtual ~WalletBackupCreator(){}
+    virtual bool BackupWallet();
+    virtual bool CheckWalletIntegrity(bool resync);
 };
 
 

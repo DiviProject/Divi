@@ -1,3 +1,6 @@
+#ifndef MONTHLYWALLETBACKUPCREATOR_H
+#define MONTHLYWALLETBACKUPCREATOR_H
+
 #include <ctime>
 #include <i_walletBackupCreator.h>
 #include <i_filesystem.h>
@@ -22,33 +25,8 @@ public:
 
         }
     virtual ~MonthlyWalletBackupCreator(){}
-    bool BackupWallet()
-    {
-        
-        TimeStampedFolderContents folderContents = fileSystem_.get_timestamped_folder_contents(backupDirectory_);
-        bool createBackup = false;
-        if(folderContents.size() > 0)
-        {
-            double secondsInMonth = 2.628e+6;
-            std::time_t currentTime = std::time_t(0);
-            std::time_t mostRecentBackup = std::time_t(0);
-            for(std::vector< std::pair<std::time_t,PathType> >::iterator it = folderContents.begin(); it != folderContents.end(); ++it)
-            {
-                std::time_t backupTime = (*it).first;
-                double secondsSinceLastWriteTime = std::difftime ( currentTime, backupTime );
-                if(secondsSinceLastWriteTime > secondsInMonth){
-                    createBackup = true;
-                }
-            }
-        }
-        else
-        {
-            createBackup = true;
-        }
-       
-        if(createBackup)
-        {
-            backupWalletCreator_.BackupWallet();
-        }
-    }
+    virtual bool BackupWallet();
+    virtual bool CheckWalletIntegrity(bool resync);
 };
+
+#endif //MONTHLYWALLETBACKUPCREATOR_H

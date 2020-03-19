@@ -154,6 +154,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   miner.h \
+  monthlyWalletBackupCreator.h \
   mruset.h \
   netbase.h \
   netfulfilledman.h \
@@ -237,6 +238,7 @@ libbitcoin_server_a_SOURCES = \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \
+  monthlyWalletBackupCreator.cpp \
   net.cpp \
   netfulfilledman.cpp \
   noui.cpp \

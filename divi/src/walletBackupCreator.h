@@ -6,18 +6,6 @@
 
 class I_FormattedTimestampProvider;
 
-class I_DatabaseWrapper;
-
-class WalletIntegrityVerifier
-{
-private:
-    I_FileSystem& fileSystem_;
-    I_DatabaseWrapper& dbInterface_;
-public:
-    WalletIntegrityVerifier(I_FileSystem& fileSystem, I_DatabaseWrapper& database);
-    bool CheckWalletIntegrity();
-};
-
 class WalletBackupCreator
 {
 private:

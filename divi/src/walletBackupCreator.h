@@ -39,7 +39,7 @@ public:
         I_FileSystem& fileSystem,
         I_FormattedTimestampProvider& formattedTimestampProvider,
         std::string dataDirectory,
-        std::string walletFilename);
+        std::string walletFilename = std::string("wallet.dat"));
     bool BackupWallet();
     bool CheckWalletIntegrity(bool resync = false);
 };

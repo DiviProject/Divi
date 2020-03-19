@@ -27,7 +27,7 @@ WalletBackupCreator::WalletBackupCreator (
     I_FileSystem& fileSystem,
     I_FormattedTimestampProvider& formattedTimestampProvider,
     std::string dataDirectory,
-    std::string walletFilename = std::string("wallet.dat")
+    std::string walletFilename
     ): nWalletBackups(numberOfBackups)
     , fileSystem_(fileSystem)
     , formattedTimestampProvider_(formattedTimestampProvider)

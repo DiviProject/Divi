@@ -27,15 +27,7 @@ public:
         I_FileSystem& fileSystem,
         I_FormattedTimestampProvider& formattedTimestampProvider,
         std::string dataDirectory,
-        std::string walletFilename = std::string("wallet.dat")
-        ): nWalletBackups(numberOfBackups)
-        , fileSystem_(fileSystem)
-        , formattedTimestampProvider_(formattedTimestampProvider)
-        , dataDirectory_(dataDirectory)
-        , walletFilename_(walletFilename)
-    {
-        nWalletBackups = std::max(0, std::min(10, nWalletBackups));
-    }
+        std::string walletFilename);
     bool BackupWallet();
     bool CheckWalletIntegrity(bool resync = false);
 };

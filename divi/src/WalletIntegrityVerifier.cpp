@@ -11,7 +11,9 @@ WalletIntegrityVerifier::WalletIntegrityVerifier(
 {
 }
 
-bool WalletIntegrityVerifier::CheckWalletIntegrity()
+bool WalletIntegrityVerifier::CheckWalletIntegrity(
+    const std::string& dataDirectory,
+    const std::string& walletFilename)
 {
-    return true;
+    return false;
 }

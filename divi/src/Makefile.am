@@ -197,6 +197,7 @@ BITCOIN_CORE_H = \
   version.h \
   wallet.h \
   walletBackupCreator.h \
+  WalletIntegrityVerifier.h \
   wallet_ismine.h \
   walletdb.h \
   zmq/zmqabstractnotifier.h \
@@ -257,6 +258,7 @@ libbitcoin_server_a_SOURCES = \
   txmempool.cpp \
   validationinterface.cpp \
   walletBackupCreator.cpp \
+  WalletIntegrityVerifier.cpp \
   $(JSON_H) \
   $(BITCOIN_CORE_H)
 

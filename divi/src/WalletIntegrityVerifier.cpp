@@ -43,7 +43,10 @@ bool WalletIntegrityVerifier::CheckWalletIntegrity(
     if(!backupDatabaseIfUnavailable(dataDirectory)) return false;
     if(fileSystem_.exists(dataDirectory+"/"+walletFilename))
     {
-        dbInterface_.Verify(walletFilename);
+        if(dbInterface_.Verify(walletFilename) == I_DatabaseWrapper::RECOVERY_FAIL)
+        {
+            return false;
+        }
     }
     return true;
 }

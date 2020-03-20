@@ -192,4 +192,62 @@ BOOST_AUTO_TEST_CASE(willOnlyAttemptToVerifyWalletIfFileExists)
     }
 }
 
+BOOST_AUTO_TEST_CASE(willVerifyWalletDatabaseIntegrityIsOK)
+{
+    {
+        NiceMock<MockFileSystem> fileSystem;
+        NiceMock<MockDatabaseWrapper> dbWrapper;
+        WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+        std::string dataDirectory = "/SomeRandomFolder";
+        std::string walletFilename = "randomWalletFilename.dat";
+
+        ON_CALL(dbWrapper, Open(dataDirectory))
+            .WillByDefault(Return(true));
+        ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
+            .WillByDefault(Return(true));
+        ON_CALL(dbWrapper, Verify(walletFilename))
+            .WillByDefault(Return(I_DatabaseWrapper::DatabaseStatus::OK));
+
+        BOOST_CHECK(
+            integrityVerifier.CheckWalletIntegrity(dataDirectory,walletFilename));
+    }
+    {
+        NiceMock<MockFileSystem> fileSystem;
+        NiceMock<MockDatabaseWrapper> dbWrapper;
+        WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+        std::string dataDirectory = "/SomeRandomFolder";
+        std::string walletFilename = "randomWalletFilename.dat";
+
+        ON_CALL(dbWrapper, Open(dataDirectory))
+            .WillByDefault(Return(true));
+        ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
+            .WillByDefault(Return(true));
+        ON_CALL(dbWrapper, Verify(walletFilename))
+            .WillByDefault(Return(I_DatabaseWrapper::DatabaseStatus::RECOVERED_OK));
+
+        BOOST_CHECK(
+            integrityVerifier.CheckWalletIntegrity(dataDirectory,walletFilename));
+    }
+    {
+        NiceMock<MockFileSystem> fileSystem;
+        NiceMock<MockDatabaseWrapper> dbWrapper;
+        WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+        std::string dataDirectory = "/SomeRandomFolder";
+        std::string walletFilename = "randomWalletFilename.dat";
+
+        ON_CALL(dbWrapper, Open(dataDirectory))
+            .WillByDefault(Return(true));
+        ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
+            .WillByDefault(Return(true));
+        ON_CALL(dbWrapper, Verify(walletFilename))
+            .WillByDefault(Return(I_DatabaseWrapper::DatabaseStatus::RECOVERY_FAIL));
+
+        BOOST_CHECK(
+            !integrityVerifier.CheckWalletIntegrity(dataDirectory,walletFilename));
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

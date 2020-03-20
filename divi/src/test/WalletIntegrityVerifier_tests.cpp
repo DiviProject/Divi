@@ -126,6 +126,8 @@ BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
         
 
         ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
+        ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
+            .WillByDefault(Return(true));
         EXPECT_CALL(dbWrapper, Verify(_)).Times(0);
 
         integrityVerifier.CheckWalletIntegrity(
@@ -142,6 +144,8 @@ BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
         
 
         ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(true));
+        ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
+            .WillByDefault(Return(true));
         EXPECT_CALL(dbWrapper, Verify(_)).Times(1);
 
         integrityVerifier.CheckWalletIntegrity(

@@ -2,6 +2,7 @@
 
 #include <i_filesystem.h>
 #include <i_databaseWrapper.h>
+#include "utiltime.h"
 
 WalletIntegrityVerifier::WalletIntegrityVerifier(
     I_FileSystem& fileSystem,
@@ -22,7 +23,9 @@ bool WalletIntegrityVerifier::CheckWalletIntegrity(
         {
             fileSystem_.rename(
             dataDirectory + "/database",
-            dataDirectory + "/database."+std::to_string(backupCount_++)+".bak");
+            dataDirectory + "/database."+
+                std::to_string(backupCount_++)+"_"+
+                std::to_string(GetTime())+".bak");
         }
         catch(...)
         {

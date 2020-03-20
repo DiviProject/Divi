@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(willCheckDatabaseEnvironmentIsAvailable)
 
     std::string dataDirectory = "/SomeRandomFolder";
     std::string walletFilename = "randomWalletFilename.dat";
-    std::string dbFolderPath =  dataDirectory + "/database";
+    
 
     ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(true));
     {
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(willGracefullyFailOnFilesystemError)
 
     std::string dataDirectory = "/SomeRandomFolder";
     std::string walletFilename = "randomWalletFilename.dat";
-    std::string dbFolderPath =  dataDirectory + "/database";
+    
 
     ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
     ON_CALL(fileSystem, rename(_,_))
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(willBackupToADifferentFolderEachTime)
 
     std::string dataDirectory = "/SomeRandomFolder";
     std::string walletFilename = "randomWalletFilename.dat";
-    std::string dbFolderPath =  dataDirectory + "/database";
+    
 
     std::set<std::string> usedDbBackupFolderPath;
     ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
 
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
-        std::string dbFolderPath =  dataDirectory + "/database";
+        
 
         ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
         EXPECT_CALL(dbWrapper, Verify(_)).Times(0);
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
 
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
-        std::string dbFolderPath =  dataDirectory + "/database";
+        
 
         ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(true));
         EXPECT_CALL(dbWrapper, Verify(_)).Times(1);
@@ -158,7 +158,6 @@ BOOST_AUTO_TEST_CASE(willOnlyAttemptToVerifyWalletIfFileExists)
 
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
-        std::string dbFolderPath =  dataDirectory + "/database";
 
         ON_CALL(dbWrapper, Open(dataDirectory))
             .WillByDefault(Return(true));
@@ -176,7 +175,7 @@ BOOST_AUTO_TEST_CASE(willOnlyAttemptToVerifyWalletIfFileExists)
 
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
-        std::string dbFolderPath =  dataDirectory + "/database";
+        
 
         ON_CALL(dbWrapper, Open(dataDirectory))
             .WillByDefault(Return(true));

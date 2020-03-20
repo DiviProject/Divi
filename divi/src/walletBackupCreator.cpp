@@ -12,12 +12,14 @@ WalletBackupCreator::WalletBackupCreator (
     I_FileSystem& fileSystem,
     I_FormattedTimestampProvider& formattedTimestampProvider,
     std::string dataDirectory,
-    std::string walletFilename
+    std::string walletFilename,
+    std::string backupSubfolderDirectory
     ): nWalletBackups(numberOfBackups)
     , fileSystem_(fileSystem)
     , formattedTimestampProvider_(formattedTimestampProvider)
     , dataDirectory_(dataDirectory)
     , walletFilename_(walletFilename)
+    , backupSubfolderDirectory_(backupSubfolderDirectory)
 {
     nWalletBackups = std::max(0, std::min(10, nWalletBackups));
 }
@@ -187,7 +189,7 @@ bool WalletBackupCreator::BackupWallet()
 {
     bool backupWalletStatus = false;
 
-    PathType backupDir = dataDirectory_ + "/backups";
+    PathType backupDir = dataDirectory_ + backupSubfolderDirectory_;
     if (!fileSystem_.exists(backupDir)) {
         // Always create backup folder to not confuse the operating system's file browser
         fileSystem_.create_directories(backupDir);

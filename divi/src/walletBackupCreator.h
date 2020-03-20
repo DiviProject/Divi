@@ -15,6 +15,7 @@ private:
     I_FormattedTimestampProvider& formattedTimestampProvider_;
     std::string dataDirectory_;
     std::string walletFilename_;
+    std::string backupSubfolderDirectory_;
     void ClearFoldersForResync();
     bool BackupDatabaseInCaseOfError();
     bool VerifyWallet(std::string strWalletFile);
@@ -28,7 +29,8 @@ public:
         I_FileSystem& fileSystem,
         I_FormattedTimestampProvider& formattedTimestampProvider,
         std::string dataDirectory,
-        std::string walletFilename = std::string("wallet.dat"));
+        std::string walletFilename = std::string("wallet.dat"),
+        std::string backupSubfolderDirectory = std::string("/backups"));
 
     virtual ~WalletBackupCreator(){}
     virtual bool BackupWallet();

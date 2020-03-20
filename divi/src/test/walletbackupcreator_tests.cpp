@@ -8,6 +8,8 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Invoke;
 using ::testing::_;
+using ::testing::AtLeast;
+
 BOOST_AUTO_TEST_SUITE(wallet_backups_test)
 
 
@@ -23,6 +25,7 @@ BOOST_AUTO_TEST_CASE(will_fail_to_backup_wallet_if_it_cant_create_directory)
         ::testing::InSequence seq;
         EXPECT_CALL(fileSystem,exists(backupDirectoryPath)).Times(1);
         EXPECT_CALL(fileSystem,create_directories(backupDirectoryPath)).Times(1);
+        EXPECT_CALL(fileSystem,exists(backupDirectoryPath)).Times(1);
     }
     WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
 
@@ -42,7 +45,7 @@ BOOST_AUTO_TEST_CASE(will_attempt_backup_to_existing_directory_if_walletfile_exi
     ON_CALL(fileSystem, exists(walletPath)).WillByDefault(Return(true));
     {
         ::testing::InSequence seq;
-        EXPECT_CALL(fileSystem, exists(backupDirectoryPath));
+        EXPECT_CALL(fileSystem, exists(backupDirectoryPath)).Times(2);
         EXPECT_CALL(fileSystem, exists(walletPath));
         EXPECT_CALL(fileSystem,copy_file(walletPath,_)).Times(1);
     }
@@ -66,7 +69,7 @@ BOOST_AUTO_TEST_CASE(will_not_backup_to_existing_directory_if_walletfile_does_no
     ON_CALL(fileSystem, exists(walletPath)).WillByDefault(Return(false));
     {
         ::testing::InSequence seq;
-        EXPECT_CALL(fileSystem, exists(backupDirectoryPath));
+        EXPECT_CALL(fileSystem, exists(backupDirectoryPath)).Times(2);
         EXPECT_CALL(fileSystem, exists(walletPath));
         EXPECT_CALL(fileSystem,copy_file(walletPath,_)).Times(0);
     }
@@ -92,6 +95,7 @@ BOOST_AUTO_TEST_CASE(will_create_backup_directory_if_nonexistent)
         ::testing::InSequence seq;
         EXPECT_CALL(fileSystem, exists(backupDirectoryPath));
         EXPECT_CALL(fileSystem,create_directories(backupDirectoryPath)).Times(1);
+        EXPECT_CALL(fileSystem, exists(backupDirectoryPath));
     }
     WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
 

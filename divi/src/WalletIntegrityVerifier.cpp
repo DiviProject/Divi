@@ -15,5 +15,5 @@ bool WalletIntegrityVerifier::CheckWalletIntegrity(
     const std::string& dataDirectory,
     const std::string& walletFilename)
 {
-    return false;
+    return dbInterface_.Open(dataDirectory);
 }

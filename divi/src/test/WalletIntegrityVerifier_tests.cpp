@@ -113,4 +113,41 @@ BOOST_AUTO_TEST_CASE(willBackupToADifferentFolderEachTime)
     BOOST_CHECK(usedDbBackupFolderPath.size()==2);
 }
 
+
+BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
+{
+    {
+        NiceMock<MockFileSystem> fileSystem;
+        NiceMock<MockDatabaseWrapper> dbWrapper;
+        WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+        std::string dataDirectory = "/SomeRandomFolder";
+        std::string walletFilename = "randomWalletFilename.dat";
+        std::string dbFolderPath =  dataDirectory + "/database";
+
+        ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
+        EXPECT_CALL(dbWrapper, Verify(_)).Times(0);
+
+        integrityVerifier.CheckWalletIntegrity(
+            dataDirectory,walletFilename);
+    }
+
+    {
+        NiceMock<MockFileSystem> fileSystem;
+        NiceMock<MockDatabaseWrapper> dbWrapper;
+        WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+        std::string dataDirectory = "/SomeRandomFolder";
+        std::string walletFilename = "randomWalletFilename.dat";
+        std::string dbFolderPath =  dataDirectory + "/database";
+
+        ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(true));
+        EXPECT_CALL(dbWrapper, Verify(_)).Times(1);
+
+        integrityVerifier.CheckWalletIntegrity(
+            dataDirectory,walletFilename);
+    }
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

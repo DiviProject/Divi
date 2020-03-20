@@ -40,5 +40,7 @@ bool WalletIntegrityVerifier::CheckWalletIntegrity(
     const std::string& dataDirectory,
     const std::string& walletFilename)
 {
-    return backupDatabaseIfUnavailable(dataDirectory);
+    if(!backupDatabaseIfUnavailable(dataDirectory)) return false;
+    dbInterface_.Verify(walletFilename);
+    return true;
 }

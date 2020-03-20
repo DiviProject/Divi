@@ -30,7 +30,10 @@ bool WalletIntegrityVerifier::backupDatabaseIfUnavailable(
         {
         }
 
-        return false;
+        if(!dbInterface_.Open(dataDirectory))
+        {
+            return false;
+        }
     }
     return true;
 }

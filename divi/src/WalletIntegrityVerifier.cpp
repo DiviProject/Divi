@@ -15,5 +15,12 @@ bool WalletIntegrityVerifier::CheckWalletIntegrity(
     const std::string& dataDirectory,
     const std::string& walletFilename)
 {
-    return dbInterface_.Open(dataDirectory);
+    if(!dbInterface_.Open(dataDirectory))
+    {
+        fileSystem_.rename(
+            dataDirectory + "/database",
+            dataDirectory + "/database.bak");
+        return false;
+    }
+    return true;
 }

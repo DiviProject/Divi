@@ -44,4 +44,25 @@ BOOST_AUTO_TEST_CASE(willCheckDatabaseEnvironmentIsAvailable)
     EXPECT_EQ(integrityVerifier.CheckWalletIntegrity(dataDirectory,walletFilename),true);
 }
 
+BOOST_AUTO_TEST_CASE(willBackupDatabaseIfEnvironmentIsUnavailable)
+{
+    NiceMock<MockFileSystem> fileSystem;
+    NiceMock<MockDatabaseWrapper> dbWrapper;
+    WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+    std::string dataDirectory = "/SomeRandomFolder";
+    std::string walletFilename = "randomWalletFilename.dat";
+    std::string dbFolderPath =  dataDirectory + "/database";
+
+    ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
+    {
+        ::testing::InSequence seq;
+        EXPECT_CALL(dbWrapper, Open(dataDirectory)).Times(1);
+        EXPECT_CALL(fileSystem, rename(dbFolderPath,_));
+    }
+
+    integrityVerifier.CheckWalletIntegrity(
+        dataDirectory,walletFilename);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

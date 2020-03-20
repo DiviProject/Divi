@@ -9,6 +9,7 @@ class WalletIntegrityVerifier
 private:
     I_FileSystem& fileSystem_;
     I_DatabaseWrapper& dbInterface_;
+    unsigned backupCount_;
 public:
     WalletIntegrityVerifier(
         I_FileSystem& fileSystem, 

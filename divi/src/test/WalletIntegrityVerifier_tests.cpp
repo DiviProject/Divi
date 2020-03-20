@@ -6,6 +6,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <stdexcept>
+#include <set>
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -85,5 +86,31 @@ BOOST_AUTO_TEST_CASE(willGracefullyFailOnFilesystemError)
         dataDirectory,walletFilename));
 }
 
+BOOST_AUTO_TEST_CASE(willBackupToADifferentFolderEachTime)
+{
+    NiceMock<MockFileSystem> fileSystem;
+    NiceMock<MockDatabaseWrapper> dbWrapper;
+    WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+    std::string dataDirectory = "/SomeRandomFolder";
+    std::string walletFilename = "randomWalletFilename.dat";
+    std::string dbFolderPath =  dataDirectory + "/database";
+
+    std::set<std::string> usedDbBackupFolderPath;
+    ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
+    ON_CALL(fileSystem, rename(_,_))
+        .WillByDefault( 
+            Invoke( [&usedDbBackupFolderPath](const PathType& a, const PathType b)
+            {
+                usedDbBackupFolderPath.insert(b);
+            })
+        );
+
+    BOOST_CHECK(!integrityVerifier.CheckWalletIntegrity(
+        dataDirectory,walletFilename));
+    BOOST_CHECK(!integrityVerifier.CheckWalletIntegrity(
+        dataDirectory,walletFilename));
+    BOOST_CHECK(usedDbBackupFolderPath.size()==2);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

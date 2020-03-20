@@ -8,6 +8,7 @@ WalletIntegrityVerifier::WalletIntegrityVerifier(
     I_DatabaseWrapper& database
     ): fileSystem_(fileSystem)
     , dbInterface_(database)
+    , backupCount_(0u)
 {
 }
 
@@ -21,12 +22,12 @@ bool WalletIntegrityVerifier::CheckWalletIntegrity(
         {
             fileSystem_.rename(
             dataDirectory + "/database",
-            dataDirectory + "/database.bak");
+            dataDirectory + "/database."+std::to_string(backupCount_++)+".bak");
         }
         catch(...)
         {
         }
-        
+
         return false;
     }
     return true;

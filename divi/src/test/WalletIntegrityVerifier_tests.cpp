@@ -149,5 +149,44 @@ BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
     }
 }
 
+BOOST_AUTO_TEST_CASE(willOnlyAttemptToVerifyWalletIfFileExists)
+{
+    {
+        NiceMock<MockFileSystem> fileSystem;
+        NiceMock<MockDatabaseWrapper> dbWrapper;
+        WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+        std::string dataDirectory = "/SomeRandomFolder";
+        std::string walletFilename = "randomWalletFilename.dat";
+        std::string dbFolderPath =  dataDirectory + "/database";
+
+        ON_CALL(dbWrapper, Open(dataDirectory))
+            .WillByDefault(Return(true));
+        ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
+            .WillByDefault(Return(false));
+        EXPECT_CALL(dbWrapper, Verify(_)).Times(0);
+
+        integrityVerifier.CheckWalletIntegrity(
+            dataDirectory,walletFilename);
+    }
+    {
+        NiceMock<MockFileSystem> fileSystem;
+        NiceMock<MockDatabaseWrapper> dbWrapper;
+        WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+        std::string dataDirectory = "/SomeRandomFolder";
+        std::string walletFilename = "randomWalletFilename.dat";
+        std::string dbFolderPath =  dataDirectory + "/database";
+
+        ON_CALL(dbWrapper, Open(dataDirectory))
+            .WillByDefault(Return(true));
+        ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
+            .WillByDefault(Return(true));
+        EXPECT_CALL(dbWrapper, Verify(_)).Times(1);
+
+        integrityVerifier.CheckWalletIntegrity(
+            dataDirectory,walletFilename);
+    }
+}
 
 BOOST_AUTO_TEST_SUITE_END()

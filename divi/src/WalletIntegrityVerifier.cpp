@@ -41,6 +41,9 @@ bool WalletIntegrityVerifier::CheckWalletIntegrity(
     const std::string& walletFilename)
 {
     if(!backupDatabaseIfUnavailable(dataDirectory)) return false;
-    dbInterface_.Verify(walletFilename);
+    if(fileSystem_.exists(dataDirectory+"/"+walletFilename))
+    {
+        dbInterface_.Verify(walletFilename);
+    }
     return true;
 }

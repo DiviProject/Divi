@@ -5,6 +5,7 @@
 #include <WalletIntegrityVerifier.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <stdexcept>
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -64,5 +65,25 @@ BOOST_AUTO_TEST_CASE(willBackupDatabaseIfEnvironmentIsUnavailable)
     integrityVerifier.CheckWalletIntegrity(
         dataDirectory,walletFilename);
 }
+
+
+BOOST_AUTO_TEST_CASE(willGracefullyFailOnFilesystemError)
+{
+    NiceMock<MockFileSystem> fileSystem;
+    NiceMock<MockDatabaseWrapper> dbWrapper;
+    WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
+
+    std::string dataDirectory = "/SomeRandomFolder";
+    std::string walletFilename = "randomWalletFilename.dat";
+    std::string dbFolderPath =  dataDirectory + "/database";
+
+    ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
+    ON_CALL(fileSystem, rename(_,_))
+        .WillByDefault(::testing::Throw(std::runtime_error("Failed to copy folder")));
+  
+    BOOST_CHECK(!integrityVerifier.CheckWalletIntegrity(
+        dataDirectory,walletFilename));
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

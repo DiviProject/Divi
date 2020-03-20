@@ -17,9 +17,16 @@ bool WalletIntegrityVerifier::CheckWalletIntegrity(
 {
     if(!dbInterface_.Open(dataDirectory))
     {
-        fileSystem_.rename(
+        try
+        {
+            fileSystem_.rename(
             dataDirectory + "/database",
             dataDirectory + "/database.bak");
+        }
+        catch(...)
+        {
+        }
+        
         return false;
     }
     return true;

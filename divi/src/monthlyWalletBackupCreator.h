@@ -1,6 +1,8 @@
 #ifndef MONTHLYWALLETBACKUPCREATOR_H
 #define MONTHLYWALLETBACKUPCREATOR_H
 
+#define NUMBER_OF_SECONDS_IN_A_MONTH 3600 * 24 * 30.
+
 #include <ctime>
 #include <i_walletBackupCreator.h>
 #include <i_filesystem.h>
@@ -27,6 +29,7 @@ public:
     virtual ~MonthlyWalletBackupCreator(){}
     virtual bool BackupWallet();
     virtual bool CheckWalletIntegrity(bool resync);
+    virtual std::string GetBackupSubfolderDirectory() const;
 };
 
 #endif //MONTHLYWALLETBACKUPCREATOR_H

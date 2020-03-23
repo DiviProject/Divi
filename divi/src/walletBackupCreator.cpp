@@ -220,3 +220,9 @@ bool WalletBackupCreator::CheckWalletIntegrity(bool resync = false)
 
     return true;
 }
+
+
+std::string WalletBackupCreator::GetBackupSubfolderDirectory() const
+{
+    return dataDirectory_ + backupSubfolderDirectory_;
+}

@@ -15,15 +15,12 @@ private:
     I_WalletBackupCreator& backupWalletCreator_;
     I_FileSystem& fileSystem_;
     std::time_t getTimeOfLastBackupDate() const;
-    std::string backupDirectory_;
 public:
     MonthlyWalletBackupCreator(
         I_WalletBackupCreator& backupWalletCreator,
-        I_FileSystem& fileSystem,
-        std::string backupDirectory = std::string("")
+        I_FileSystem& fileSystem
         ): backupWalletCreator_(backupWalletCreator)
-        , fileSystem_(fileSystem)
-        , backupDirectory_(backupDirectory) {
+        , fileSystem_(fileSystem) {
 
         }
     virtual ~MonthlyWalletBackupCreator(){}

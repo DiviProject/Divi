@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(monthly_backup_creator_forwards_call)
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
 
-    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, dataDirectory);
+    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
     
     EXPECT_CALL(backupCreator, BackupWallet()).Times(1);
     
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(doesntbackUpWhenEarliestBackupIsUnderAMonthOld)
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
 
-    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, backupDirectoryPath);
+    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
     
     TimeStampedFolderContents expectedTime = {
         std::pair<std::time_t, std::string> {std::time(0), "backup1"}
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(doesbackUpWhenEarliestBackupIsOverAMonthOld)
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
 
-    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, backupDirectoryPath);
+    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
     
     TimeStampedFolderContents expectedTime = {
         std::pair<std::time_t, std::string> {std::time(0) - NUMBER_OF_SECONDS_IN_A_MONTH, "backup1"}
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(monthlyBackupCreatorForwardsGetBackupSubfolderDirectoryCall
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
 
-    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, backupDirectoryPath);
+    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
     
     EXPECT_CALL(backupCreator, GetBackupSubfolderDirectory());
     
@@ -106,14 +106,14 @@ BOOST_AUTO_TEST_CASE(monthlyBackupCreatorForwardedCallReturnsIdenticalOutputs)
 
     {
         MockWalletBackupCreator backupCreator;
-        MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, backupDirectoryPath);
+        MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
 
         EXPECT_EQ(monthlyBackupCreator.GetBackupSubfolderDirectory(), backupCreator.GetBackupSubfolderDirectory());
     }
 
     {
         MockWalletBackupCreator backupCreator;
-        MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, backupDirectoryPath);
+        MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
 
         ON_CALL(backupCreator, GetBackupSubfolderDirectory()).WillByDefault( Return (backupDirectoryPath) );
         

@@ -181,4 +181,25 @@ BOOST_AUTO_TEST_CASE(will_remove_files_down_to_maximum_number_of_backups)
     backupCreator.BackupWallet();
 }
 
+BOOST_AUTO_TEST_CASE(willSetBackupDirectoryPath)
+{
+    NiceMock<MockFileSystem> fileSystem;
+    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
+
+    std::string walletFileName = "wallet.dat";
+    std::string dataDirectory = "/bogusDirectory";
+    std::string backupSubfolderDirectory = "/backups";
+    std::string backupDirectoryPath = dataDirectory+backupSubfolderDirectory;
+    unsigned maximumNumberOfBackups = 10u;
+    WalletBackupCreator backupCreator(
+        maximumNumberOfBackups, 
+        fileSystem, 
+        formattedTimestampProvider, 
+        dataDirectory, 
+        walletFileName,
+        backupSubfolderDirectory);
+
+    EXPECT_EQ(backupCreator.GetBackupSubfolderDirectory(), backupDirectoryPath);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

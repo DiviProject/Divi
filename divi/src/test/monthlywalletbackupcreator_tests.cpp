@@ -46,16 +46,71 @@ BOOST_AUTO_TEST_CASE(doesntbackUpWhenEarliestBackupIsUnderAMonthOld)
         std::pair<std::time_t, std::string> {std::time(0), "backup1"}
     };
 
-    bool internalBackupWalletMethodCalled = false;
-    ON_CALL(backupCreator, BackupWallet()).WillByDefault(Invoke( [&internalBackupWalletMethodCalled]()->bool { internalBackupWalletMethodCalled = true; return true; } ));
-    
     ON_CALL(fileSystem, get_timestamped_folder_contents(backupDirectoryPath)).WillByDefault( Return(expectedTime) );
 
-    // EXPECT_CALL(backupCreator, BackupWallet()).Times(Exactly(0));
+    EXPECT_CALL(backupCreator, BackupWallet()).Times(Exactly(0));
     
     monthlyBackupCreator.BackupWallet();
+}
 
-    BOOST_CHECK(!internalBackupWalletMethodCalled);
+BOOST_AUTO_TEST_CASE(doesbackUpWhenEarliestBackupIsOverAMonthOld)
+{
+    StrictMock<MockWalletBackupCreator> backupCreator;
+    NiceMock<MockFileSystem> fileSystem;
+
+    std::string dataDirectory = "/bogusDirectory";
+    std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
+
+    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, backupDirectoryPath);
+    
+    TimeStampedFolderContents expectedTime = {
+        std::pair<std::time_t, std::string> {std::time(0) - NUMBER_OF_SECONDS_IN_A_MONTH, "backup1"}
+    };
+
+    ON_CALL(fileSystem, get_timestamped_folder_contents(backupDirectoryPath)).WillByDefault( Return(expectedTime) );
+
+    EXPECT_CALL(backupCreator, BackupWallet());
+    
+    monthlyBackupCreator.BackupWallet();
+}
+
+BOOST_AUTO_TEST_CASE(monthlyBackupCreatorForwardsGetBackupSubfolderDirectoryCall)
+{
+    StrictMock<MockWalletBackupCreator> backupCreator;
+    NiceMock<MockFileSystem> fileSystem;
+
+    std::string dataDirectory = "/bogusDirectory";
+    std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
+
+    MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, backupDirectoryPath);
+    
+    EXPECT_CALL(backupCreator, GetBackupSubfolderDirectory());
+    
+    monthlyBackupCreator.GetBackupSubfolderDirectory();
+}
+
+BOOST_AUTO_TEST_CASE(monthlyBackupCreatorForwardedCallReturnsIdenticalOutputs)
+{
+    NiceMock<MockFileSystem> fileSystem;
+
+    std::string dataDirectory = "/bogusDirectory";
+    std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
+
+    {
+        MockWalletBackupCreator backupCreator;
+        MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, backupDirectoryPath);
+
+        EXPECT_EQ(monthlyBackupCreator.GetBackupSubfolderDirectory(), backupCreator.GetBackupSubfolderDirectory());
+    }
+
+    {
+        MockWalletBackupCreator backupCreator;
+        MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem, backupDirectoryPath);
+
+        ON_CALL(backupCreator, GetBackupSubfolderDirectory()).WillByDefault( Return (backupDirectoryPath) );
+        
+        EXPECT_EQ(monthlyBackupCreator.GetBackupSubfolderDirectory(), backupCreator.GetBackupSubfolderDirectory());
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

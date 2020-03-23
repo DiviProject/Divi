@@ -20,7 +20,7 @@ public:
     MonthlyWalletBackupCreator(
         I_WalletBackupCreator& backupWalletCreator,
         I_FileSystem& fileSystem,
-        std::string backupDirectory
+        std::string backupDirectory = std::string("")
         ): backupWalletCreator_(backupWalletCreator)
         , fileSystem_(fileSystem)
         , backupDirectory_(backupDirectory) {

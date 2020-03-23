@@ -46,6 +46,10 @@ BOOST_AUTO_TEST_CASE(doesntbackUpWhenEarliestBackupIsUnderAMonthOld)
         std::pair<std::time_t, std::string> {std::time(0), "backup1"}
     };
 
+    EXPECT_CALL(backupCreator, GetBackupSubfolderDirectory());
+
+    ON_CALL(backupCreator, GetBackupSubfolderDirectory()).WillByDefault( Return (backupDirectoryPath) );
+
     ON_CALL(fileSystem, get_timestamped_folder_contents(backupDirectoryPath)).WillByDefault( Return(expectedTime) );
 
     EXPECT_CALL(backupCreator, BackupWallet()).Times(Exactly(0));
@@ -66,6 +70,10 @@ BOOST_AUTO_TEST_CASE(doesbackUpWhenEarliestBackupIsOverAMonthOld)
     TimeStampedFolderContents expectedTime = {
         std::pair<std::time_t, std::string> {std::time(0) - NUMBER_OF_SECONDS_IN_A_MONTH, "backup1"}
     };
+
+    EXPECT_CALL(backupCreator, GetBackupSubfolderDirectory());
+
+    ON_CALL(backupCreator, GetBackupSubfolderDirectory()).WillByDefault( Return (backupDirectoryPath) );
 
     ON_CALL(fileSystem, get_timestamped_folder_contents(backupDirectoryPath)).WillByDefault( Return(expectedTime) );
 

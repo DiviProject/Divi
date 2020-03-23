@@ -1,8 +1,7 @@
 #include <monthlyWalletBackupCreator.h>
-#include <iostream>
 bool MonthlyWalletBackupCreator::BackupWallet()
 {
-    TimeStampedFolderContents folderContents = fileSystem_.get_timestamped_folder_contents(backupDirectory_);
+    TimeStampedFolderContents folderContents = fileSystem_.get_timestamped_folder_contents(backupWalletCreator_.GetBackupSubfolderDirectory());
     if (!folderContents.empty())
     {
         std::pair<std::time_t, PathType> newestFile = folderContents[0];

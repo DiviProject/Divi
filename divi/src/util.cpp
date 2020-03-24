@@ -128,14 +128,9 @@ bool fSucessfullyLoaded = false;
 
 map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
-bool fDebug = false;
-bool fPrintToConsole = false;
-bool fPrintToDebugLog = true;
 bool fDaemon = false;
 string strMiscWarning;
-bool fLogTimestamps = false;
 bool fLogIPs = false;
-volatile bool fReopenDebugLog = false;
 
 /** Init OpenSSL library multithreading support */
 static CCriticalSection** ppmutexOpenSSL;

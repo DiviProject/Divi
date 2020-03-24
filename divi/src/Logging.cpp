@@ -14,6 +14,11 @@ volatile bool fReopenDebugLog = false;
 bool fLogTimestamps = false
 map<string, std::vector<string> > mapMultiArgs;
 */
+bool fDebug = false;
+bool fPrintToConsole = false;
+bool fPrintToDebugLog = true;
+volatile bool fReopenDebugLog = false;
+bool fLogTimestamps = false;
 
 using namespace Temporary;
 // depends on multiArgs - rather the debug flags passed I should say

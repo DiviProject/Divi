@@ -48,13 +48,8 @@ extern bool fSucessfullyLoaded;
 
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
-extern bool fDebug;
-extern bool fPrintToConsole;
-extern bool fPrintToDebugLog;
 extern std::string strMiscWarning;
-extern bool fLogTimestamps;
 extern bool fLogIPs;
-extern volatile bool fReopenDebugLog;
 
 void SetupEnvironment();
 

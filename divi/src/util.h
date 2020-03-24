@@ -29,6 +29,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread/exceptions.hpp>
 
+#include <Logging.h>
 //DIVI only features
 
 extern bool fMasterNode;

@@ -30,6 +30,7 @@
 #include <boost/thread/exceptions.hpp>
 
 #include <Logging.h>
+#include <DataDirectory.h>
 //DIVI only features
 
 extern bool fMasterNode;
@@ -51,8 +52,6 @@ extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
 extern std::string strMiscWarning;
 extern bool fLogIPs;
 
-using namespace Temporary;
-
 void SetupEnvironment();
 
 void PrintExceptionContinue(std::exception* pex, const char* pszThread);
@@ -63,8 +62,6 @@ int RaiseFileDescriptorLimit(int nMinFD);
 void AllocateFileRange(FILE* file, unsigned int offset, unsigned int length);
 bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest);
 bool TryCreateDirectory(const boost::filesystem::path& p);
-boost::filesystem::path GetDefaultDataDir();
-const boost::filesystem::path& GetDataDir(bool fNetSpecific = true);
 boost::filesystem::path GetConfigFile();
 boost::filesystem::path GetMasternodeConfigFile();
 #ifndef WIN32

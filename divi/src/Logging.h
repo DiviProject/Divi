@@ -13,8 +13,6 @@ extern volatile bool fReopenDebugLog;
 extern bool fLogTimestamps;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
 
-namespace Temporary
-{
 /** Return true if log accepts specified category */
 bool LogAcceptCategory(const char* category);
 /** Send a string to the log output */
@@ -59,5 +57,4 @@ static inline bool error(const char* format)
     return false;
 }
 
-}
 #endif //LOGGING_H

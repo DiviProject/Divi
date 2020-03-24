@@ -6,22 +6,15 @@
 #include <utiltime.h>
 #include <set>
 
-/* Variables used by logging
-bool fPrintToConsole = false;
-bool fPrintToDebugLog = true;
-bool fDebug = false;
-volatile bool fReopenDebugLog = false;
-bool fLogTimestamps = false
-map<string, std::vector<string> > mapMultiArgs;
-*/
+#include <DataDirectory.h>
+#include <chainparamsbase.h>
+
 bool fDebug = false;
 bool fPrintToConsole = false;
 bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
 bool fLogTimestamps = false;
 
-namespace Temporary
-{
 // depends on multiArgs - rather the debug flags passed I should say
 
 static boost::once_flag debugPrintInitFlag = BOOST_ONCE_INIT;
@@ -34,13 +27,7 @@ static boost::mutex* mutexDebugLog = NULL;
 
 boost::filesystem::path getDebugLogPath()
 {
-    //return GetDataDir() / "debug.log";
-    return boost::filesystem::path("Temporary/debug.log");
-}
-
-bool skipWaitingForChainParameters()
-{
-    return true;
+    return GetDataDir() / "debug.log";
 }
 
 static void DebugPrintInit()
@@ -101,7 +88,7 @@ int LogPrintStr(const std::string& str)
         // print to console
         ret = fwrite(str.data(), 1, str.size(), stdout);
         fflush(stdout);
-    } else if (fPrintToDebugLog && skipWaitingForChainParameters()) {
+    } else if (fPrintToDebugLog && AreBaseParamsConfigured()) {
         static bool fStartedNewLine = true;
         boost::call_once(&DebugPrintInit, debugPrintInitFlag);
 
@@ -130,6 +117,4 @@ int LogPrintStr(const std::string& str)
     }
 
     return ret;
-}
-
 }

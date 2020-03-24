@@ -6,7 +6,7 @@
 #include "protocol.h"
 
 #include "chainparams.h"
-#include "util.h"
+#include "Logging.h"
 #include "utilstrencodings.h"
 
 #ifndef WIN32

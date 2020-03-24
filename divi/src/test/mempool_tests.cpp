@@ -4,7 +4,6 @@
 
 #include "main.h"
 #include "txmempool.h"
-#include "util.h"
 
 #include <boost/test/unit_test.hpp>
 #include <list>

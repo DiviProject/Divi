@@ -8,7 +8,6 @@
 #include "serialize.h"
 #include "script/script.h"
 #include "script/interpreter.h"
-#include "util.h"
 #include "version.h"
 
 #include <iostream>

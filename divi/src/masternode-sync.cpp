@@ -12,7 +12,8 @@
 #include "masternode.h"
 #include "masternodeman.h"
 #include "spork.h"
-#include "util.h"
+#include "utiltime.h"
+#include "Logging.h"
 #include "addrman.h"
 #include "netfulfilledman.h"
 // clang-format on

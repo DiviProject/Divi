@@ -9,7 +9,9 @@
 #include "clientversion.h"
 #include "hash.h"
 #include "streams.h"
-#include "util.h"
+#include "utiltime.h"
+#include "Logging.h"
+#include "DataDirectory.h"
 
 #include <boost/filesystem.hpp>
 

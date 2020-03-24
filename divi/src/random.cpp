@@ -10,7 +10,9 @@
 #include "compat.h" // for Windows API
 #include <wincrypt.h>
 #endif
-#include "util.h"             // for LogPrint()
+
+#include "compat.h"
+#include "Logging.h"             // for LogPrint()
 #include "utilstrencodings.h" // for GetTime()
 
 #include <stdlib.h>

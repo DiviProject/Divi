@@ -10,7 +10,7 @@
 #include "keystore.h"
 #include "script/standard.h"
 #include "uint256.h"
-#include "util.h"
+#include "Logging.h"
 
 #include <boost/foreach.hpp>
 

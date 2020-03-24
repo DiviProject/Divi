@@ -9,8 +9,7 @@
 #include "key.h"
 #include "script/script.h"
 #include "script/standard.h"
-#include "util.h"
-
+#include "Logging.h"
 #include <boost/foreach.hpp>
 
 bool CKeyStore::AddKey(const CKey &key) {

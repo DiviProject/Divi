@@ -11,7 +11,7 @@
 #include "script/sign.h"
 #include "tinyformat.h"
 #include "utilstrencodings.h"
-#include "util.h"
+#include "Logging.h"
 
 uint256 CBlockHeader::GetHash() const
 {

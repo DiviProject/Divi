@@ -6,6 +6,7 @@
 
 #include "libzerocoin/Accumulator.h"
 #include "libzerocoin/Coin.h"
+#include <memory>
 
 //A map with an accumulator for each denomination
 class AccumulatorMap

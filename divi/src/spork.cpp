@@ -12,7 +12,8 @@
 #include "protocol.h"
 #include "sync.h"
 #include "sporkdb.h"
-#include "util.h"
+#include "utiltime.h"
+#include "Logging.h"
 
 #include <numeric>
 #include <boost/algorithm/string/join.hpp>

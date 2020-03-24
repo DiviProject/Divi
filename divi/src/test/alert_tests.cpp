@@ -12,7 +12,6 @@
 
 #include "serialize.h"
 #include "streams.h"
-#include "util.h"
 #include "utilstrencodings.h"
 
 #include <fstream>

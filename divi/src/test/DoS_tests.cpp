@@ -14,7 +14,6 @@
 #include "pow.h"
 #include "script/sign.h"
 #include "serialize.h"
-#include "util.h"
 
 #include <stdint.h>
 

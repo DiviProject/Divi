@@ -8,7 +8,7 @@
 #include "version.h"
 #include "main.h"
 #include "streams.h"
-#include "util.h"
+#include "Logging.h"
 
 void zmqError(const char *str)
 {

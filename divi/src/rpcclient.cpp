@@ -9,7 +9,6 @@
 
 #include "rpcprotocol.h"
 #include "ui_interface.h"
-#include "util.h"
 
 #include <set>
 #include <stdint.h>

@@ -12,7 +12,7 @@
 #include "obfuscation.h"
 #include "spork.h"
 #include "sync.h"
-#include "util.h"
+#include "Logging.h"
 #include "utilmoneystr.h"
 #include "netfulfilledman.h"
 #include <boost/filesystem.hpp>

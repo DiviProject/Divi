@@ -17,7 +17,6 @@
 #include "Params.h"
 #include "amount.h"
 #include "bignum.h"
-#include "util.h"
 namespace libzerocoin
 {
 /** A Public coin is the part of a coin that

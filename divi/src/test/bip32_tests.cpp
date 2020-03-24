@@ -7,7 +7,6 @@
 #include "base58.h"
 #include "key.h"
 #include "uint256.h"
-#include "util.h"
 
 #include <string>
 #include <vector>

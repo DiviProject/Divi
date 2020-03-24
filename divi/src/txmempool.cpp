@@ -9,7 +9,7 @@
 #include "clientversion.h"
 #include "main.h"
 #include "streams.h"
-#include "util.h"
+#include "Logging.h"
 #include "utilmoneystr.h"
 #include "version.h"
 

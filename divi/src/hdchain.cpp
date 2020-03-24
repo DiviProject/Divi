@@ -6,7 +6,7 @@
 #include "chainparams.h"
 #include "hdchain.h"
 #include "tinyformat.h"
-#include "util.h"
+
 #include "utilstrencodings.h"
 
 bool CHDChain::SetNull()

@@ -20,7 +20,8 @@ bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
 bool fLogTimestamps = false;
 
-using namespace Temporary;
+namespace Temporary
+{
 // depends on multiArgs - rather the debug flags passed I should say
 
 static boost::once_flag debugPrintInitFlag = BOOST_ONCE_INIT;
@@ -129,4 +130,6 @@ int LogPrintStr(const std::string& str)
     }
 
     return ret;
+}
+
 }

@@ -30,7 +30,10 @@ bool WalletIntegrityVerifier::backupDatabaseIfUnavailable(
         {
         }
 
-        return false;
+        if(!dbInterface_.Open(dataDirectory))
+        {
+            return false;
+        }
     }
     return true;
 }
@@ -41,6 +44,12 @@ bool WalletIntegrityVerifier::CheckWalletIntegrity(
     const std::string& walletFilename)
 {
     if(!backupDatabaseIfUnavailable(dataDirectory)) return false;
-    dbInterface_.Verify(walletFilename);
+    if(fileSystem_.exists(dataDirectory+"/"+walletFilename))
+    {
+        if(dbInterface_.Verify(walletFilename) == I_DatabaseWrapper::RECOVERY_FAIL)
+        {
+            return false;
+        }
+    }
     return true;
 }

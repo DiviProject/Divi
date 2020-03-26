@@ -26,6 +26,7 @@
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "activemasternode.h"
+#include <walletBackupFeatureContainer.h>
 #include "flat-database.h"
 #include "netfulfilledman.h"
 #include "miner.h"
@@ -1123,31 +1124,9 @@ bool BackupWallet(std::string strDataDir, bool fDisableWallet)
 #ifdef ENABLE_WALLET
     std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     if (!fDisableWallet) {
-        boost::filesystem::path backupDir = GetDataDir() / "backups";
-        if (!boost::filesystem::exists(backupDir)) {
-            // Always create backup folder to not confuse the operating system's file browser
-            boost::filesystem::create_directories(backupDir);
-        }
-        nWalletBackups = GetArg("-createwalletbackups", 10);
-        nWalletBackups = std::max(0, std::min(10, nWalletBackups));
-        if (nWalletBackups > 0) {
-            if (boost::filesystem::exists(backupDir)) 
-            {
-                BackupWalletFile(strWalletFile,backupDir);
-                PruneOldBackups(strWalletFile,backupDir);
-            }
-        }
-
-        if (GetBoolArg("-resync", false)) ClearFoldersForResync();
-
-        LogPrintf("Using wallet %s\n", strWalletFile);
-        uiInterface.InitMessage(_("Verifying wallet..."));
-
-        if(!BackupDatabase()) return false;
-
-        if(!VerifyWallet(strWalletFile)) return false;
-
-    }  
+        WalletBackupFeatureContainer walletBackupFeatureContainer(nWalletBackups, strWalletFile, strDataDir);
+        return walletBackupFeatureContainer.backupWallet();
+    }
 #endif // ENABLE_WALLET
     return true;
 }

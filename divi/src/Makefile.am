@@ -135,6 +135,7 @@ BITCOIN_CORE_H = \
   eccryptoverify.h \
   ecwrapper.h \
   flat-database.h \
+  FilteredBoostFileSystem.h\
   hash.h \
   hdchain.h \
   init.h \
@@ -232,6 +233,7 @@ libbitcoin_server_a_SOURCES = \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
+  FilteredBoostFileSystem.cpp\
   init.cpp \
   datacachemanager.cpp \
   leveldbwrapper.cpp \

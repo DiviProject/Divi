@@ -5,14 +5,11 @@
 #include <i_walletBackupCreator.h>
 #include <i_filesystem.h>
 
-class I_FormattedTimestampProvider;
-
 class WalletBackupCreator : public I_WalletBackupCreator
 {
 private:
     int nWalletBackups = 0;
     I_FileSystem& fileSystem_;
-    I_FormattedTimestampProvider& formattedTimestampProvider_;
     std::string dataDirectory_;
     std::string walletFilename_;
     std::string backupSubfolderDirectory_;
@@ -27,7 +24,6 @@ public:
     WalletBackupCreator (
         int numberOfBackups,
         I_FileSystem& fileSystem,
-        I_FormattedTimestampProvider& formattedTimestampProvider,
         std::string dataDirectory,
         std::string walletFilename = std::string("wallet.dat"),
         std::string backupSubfolderDirectory = std::string("/backups"));

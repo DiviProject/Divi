@@ -5,18 +5,15 @@
 #include <db.h>
 #include <iostream>
 #include <ui_interface.h>
-#include <i_formattedTimestampProvider.h>
 
 WalletBackupCreator::WalletBackupCreator (
     int numberOfBackups,
     I_FileSystem& fileSystem,
-    I_FormattedTimestampProvider& formattedTimestampProvider,
     std::string dataDirectory,
     std::string walletFilename,
     std::string backupSubfolderDirectory
     ): nWalletBackups(numberOfBackups)
     , fileSystem_(fileSystem)
-    , formattedTimestampProvider_(formattedTimestampProvider)
     , dataDirectory_(dataDirectory)
     , walletFilename_(walletFilename)
     , backupSubfolderDirectory_(backupSubfolderDirectory)
@@ -141,7 +138,7 @@ bool WalletBackupCreator::BackupFile(PathType& sourceFile, PathType& backupFile)
 bool WalletBackupCreator::BackupWalletFile(std::string strWalletFile, PathType backupDir)
 {
     // Create backup of the wallet
-    std::string dateTimeStr = formattedTimestampProvider_.currentTimeStamp();
+    std::string dateTimeStr = DateTimeStrFormat(".%Y-%m-%d-%H-%M", GetTime());
     std::string backupPathStr = backupDir;
     backupPathStr += "/" + strWalletFile;
     std::string sourcePathStr = dataDirectory_;

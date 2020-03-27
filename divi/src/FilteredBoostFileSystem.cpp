@@ -15,7 +15,8 @@ unsigned FilteredBoostFileSystem::remove_all(const PathType& path)
 {
     return boost::filesystem::remove_all(path);
 }
-bool FilteredBoostFileSystem::remove(const PathType& path){
+bool FilteredBoostFileSystem::remove(const PathType& path)
+{
     return boost::filesystem::remove(path);
 }
 void FilteredBoostFileSystem::copy_file(const PathType& from, const PathType& to)
@@ -34,6 +35,10 @@ TimeStampedFolderContents FilteredBoostFileSystem::get_timestamped_folder_conten
 {
     // Keep only the last 10 backups, including the new one of course
     TimeStampedFolderContents folder_set;
+    if(!exists(directory))
+    {
+        return folder_set;
+    }
     boost::filesystem::directory_iterator end_iter;
     boost::filesystem::path directoryPath = directory;
     directoryPath.make_preferred();

@@ -58,6 +58,7 @@ BITCOIN_TESTS =\
   mockFileSystem.cpp \
   mockFormattedTimestampProvider.cpp \
   test/monthlywalletbackupcreator_tests.cpp \
+  test/filteredBoostFileSystem_tests.cpp \
   test/mruset_tests.cpp \
   test/multisig_tests.cpp \
   test/netbase_tests.cpp \

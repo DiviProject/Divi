@@ -129,8 +129,35 @@ bool fSucessfullyLoaded = false;
 map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
 bool fDaemon = false;
-string strMiscWarning;
 bool fLogIPs = false;
+
+
+/* PrintException */
+string strMiscWarning;
+
+static std::string FormatException(std::exception* pex, const char* pszThread)
+{
+#ifdef WIN32
+    char pszModule[MAX_PATH] = "";
+    GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
+#else
+    const char* pszModule = "divi";
+#endif
+    if (pex)
+        return strprintf(
+            "EXCEPTION: %s       \n%s       \n%s in %s       \n", typeid(*pex).name(), pex->what(), pszModule, pszThread);
+    else
+        return strprintf(
+            "UNKNOWN EXCEPTION       \n%s in %s       \n", pszModule, pszThread);
+}
+
+void PrintExceptionContinue(std::exception* pex, const char* pszThread)
+{
+    std::string message = FormatException(pex, pszThread);
+    LogPrintf("\n\n************************\n%s\n", message);
+    fprintf(stderr, "\n\n************************\n%s\n", message.c_str());
+    strMiscWarning = message;
+}
 
 /** Init OpenSSL library multithreading support */
 static CCriticalSection** ppmutexOpenSSL;
@@ -282,30 +309,6 @@ std::string HelpMessageOpt(const std::string &option, const std::string &message
            std::string("\n") + std::string(msgIndent,' ') +
            FormatParagraph(message, screenWidth - msgIndent, msgIndent) +
            std::string("\n\n");
-}
-
-static std::string FormatException(std::exception* pex, const char* pszThread)
-{
-#ifdef WIN32
-    char pszModule[MAX_PATH] = "";
-    GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
-#else
-    const char* pszModule = "divi";
-#endif
-    if (pex)
-        return strprintf(
-            "EXCEPTION: %s       \n%s       \n%s in %s       \n", typeid(*pex).name(), pex->what(), pszModule, pszThread);
-    else
-        return strprintf(
-            "UNKNOWN EXCEPTION       \n%s in %s       \n", pszModule, pszThread);
-}
-
-void PrintExceptionContinue(std::exception* pex, const char* pszThread)
-{
-    std::string message = FormatException(pex, pszThread);
-    LogPrintf("\n\n************************\n%s\n", message);
-    fprintf(stderr, "\n\n************************\n%s\n", message.c_str());
-    strMiscWarning = message;
 }
 
 boost::filesystem::path GetConfigFile()

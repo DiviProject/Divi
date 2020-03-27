@@ -49,12 +49,12 @@ extern bool fSucessfullyLoaded;
 
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
-extern std::string strMiscWarning;
 extern bool fLogIPs;
 
-void SetupEnvironment();
-
+extern std::string strMiscWarning;
 void PrintExceptionContinue(std::exception* pex, const char* pszThread);
+
+void SetupEnvironment();
 void ParseParameters(int argc, const char* const argv[]);
 void FileCommit(FILE* fileout);
 bool TruncateFile(FILE* file, unsigned int length);

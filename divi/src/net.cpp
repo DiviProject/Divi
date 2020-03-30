@@ -18,6 +18,8 @@
 #include "obfuscation.h"
 #include "primitives/transaction.h"
 #include "ui_interface.h"
+#include <monthlyWalletBackupCreator.h>
+#include <walletBackupFeatureContainer.h>
 #include "wallet.h"
 
 #ifdef WIN32
@@ -1470,6 +1472,28 @@ void static ThreadStakeMinter()
     LogPrintf("ThreadStakeMinter exiting,\n");
 }
 
+void ThreadBackupWallet()
+{
+    std::string walletFileName = GetArg("-wallet", "wallet.dat");
+    WalletBackupFeatureContainer walletBackupFeatureContainer(10, walletFileName, GetDataDir().string());
+    while (true) 
+    {
+        {
+            LOCK(CDB::bitdb.cs_db);
+            if (!CDB::bitdb.mapFileUseCount.count(walletFileName) || CDB::bitdb.mapFileUseCount[walletFileName] == 0) 
+            {
+                // Flush log data to the dat file
+                CDB::bitdb.CloseDb(walletFileName);
+                CDB::bitdb.CheckpointLSN(walletFileName);
+                CDB::bitdb.mapFileUseCount.erase(walletFileName);
+                LogPrintf("backing up wallet\n");
+                walletBackupFeatureContainer.backupWallet();
+            }
+        }
+        MilliSleep(100);
+    }
+}
+
 bool BindListenPort(const CService& addrBind, string& strError, bool fWhitelisted)
 {
     strError = "";
@@ -1656,6 +1680,8 @@ void StartNode(boost::thread_group& threadGroup)
     // ppcoin:mint proof-of-stake blocks in the background
     if (GetBoolArg("-staking", true))
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "stakemint", &ThreadStakeMinter));
+
+    threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "backup", &ThreadBackupWallet, NUMBER_OF_SECONDS_IN_A_MONTH * 1000));
 }
 
 bool StopNode()

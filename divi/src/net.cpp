@@ -1475,17 +1475,20 @@ void static ThreadStakeMinter()
 void ThreadBackupWallet()
 {
     std::string walletFileName = GetArg("-wallet", "wallet.dat");
-    WalletBackupFeatureContainer walletBackupFeatureContainer(10, walletFileName, GetDataDir().string());
+    static WalletBackupFeatureContainer walletBackupFeatureContainer(10, walletFileName, GetDataDir().string());
     while (true) 
     {
+        if(!pwalletMain->fFileBacked)
+        {
+            LogPrintf("Error: Wallet isn't backed up\n");
+            return;
+        }
         {
             LOCK(CDB::bitdb.cs_db);
             if (!CDB::bitdb.mapFileUseCount.count(walletFileName) || CDB::bitdb.mapFileUseCount[walletFileName] == 0) 
             {
                 // Flush log data to the dat file
-                CDB::bitdb.CloseDb(walletFileName);
-                CDB::bitdb.CheckpointLSN(walletFileName);
-                CDB::bitdb.mapFileUseCount.erase(walletFileName);
+                WalletBackupFeatureContainer.GetDatabase().Dettach(walletFileName);
                 LogPrintf("backing up wallet\n");
                 walletBackupFeatureContainer.backupWallet();
             }

@@ -28,3 +28,8 @@ bool WalletBackupFeatureContainer::backupWallet()
     }
     return false;
 }
+
+I_DatabaseWrapper& WalletBackupFeatureContainer::GetDatabase ()
+{
+    return *database_;
+}

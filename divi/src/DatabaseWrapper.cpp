@@ -18,3 +18,9 @@ DatabaseWrapper::DatabaseStatus DatabaseWrapper::Verify(const std::string& walle
 {
     return conversionTable.at(CDB::bitdb.Verify(walletFilename,NULL));
 }
+void DatabaseWrapper::Dettach(const std::string& walletFilename)
+{
+    CDB::bitdb.CloseDb(walletFilename);
+    CDB::bitdb.CheckpointLSN(walletFilename);
+    CDB::bitdb.mapFileUseCount.erase(walletFilename);
+}

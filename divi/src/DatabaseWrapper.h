@@ -8,5 +8,6 @@ public:
     virtual ~DatabaseWrapper(){}
     virtual bool Open(const std::string& directory);
     virtual DatabaseStatus Verify(const std::string& walletFilename);
+    virtual void Dettach(const std::string& walletFilename);
 };
 #endif //DATABASE_WRAPPER_H

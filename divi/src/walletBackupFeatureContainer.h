@@ -25,11 +25,7 @@ public:
         std::string walletFileName,
         std::string dataDirectory);
     bool backupWallet ();
-
-
-
-
-
+    I_DatabaseWrapper& GetDatabase ();
 };
 
 #endif //WALLET_BACKUP_FEATURE_CONTAINER_H

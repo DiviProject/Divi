@@ -1475,7 +1475,7 @@ void static ThreadStakeMinter()
 void ThreadBackupWallet()
 {
     std::string walletFileName = GetArg("-wallet", "wallet.dat");
-    static WalletBackupFeatureContainer walletBackupFeatureContainer(10, walletFileName, GetDataDir().string());
+    static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
     while (true) 
     {
         if(!pwalletMain->fFileBacked)

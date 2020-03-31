@@ -1484,8 +1484,8 @@ void ThreadBackupWallet()
             return;
         }
         {
-            LOCK(CDB::bitdb.cs_db);
-            if (!walletBackupFeatureContainer.GetDatabse().FilenameIsInUse(walletFileName)) 
+            LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
+            if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName)) 
             {
                 // Flush log data to the dat file
                 walletBackupFeatureContainer.GetDatabase().Dettach(walletFileName);

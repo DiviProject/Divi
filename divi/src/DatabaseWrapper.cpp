@@ -34,3 +34,8 @@ bool DatabaseWrapper::FilenameIsInUse(const std::string& walletFilename)
         ((it != CDB::bitdb.mapFileUseCount.end())?  (it->second > 0)  :  false)
     );
 }
+
+CCriticalSection& DatabaseWrapper::GetDatabaseLock()
+{
+    return CDB::bitdb.cs_db;
+}

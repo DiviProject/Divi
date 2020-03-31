@@ -10,5 +10,6 @@ public:
     virtual DatabaseStatus Verify(const std::string& walletFilename);
     virtual void Dettach(const std::string& walletFilename);
     virtual bool FilenameIsInUse(const std::string& walletFilename);
+    virtual CCriticalSection& GetDatabaseLock();
 };
 #endif //DATABASE_WRAPPER_H

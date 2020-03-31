@@ -1484,13 +1484,22 @@ void ThreadBackupWallet()
             return;
         }
         {
+            
             LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
             if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName)) 
             {
                 // Flush log data to the dat file
                 walletBackupFeatureContainer.GetDatabase().Dettach(walletFileName);
                 LogPrintf("backing up wallet\n");
-                walletBackupFeatureContainer.backupWallet();
+                if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(GetDataDir().string(), walletFileName))
+                {
+                    walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
+                }
+                else 
+                {
+                    LogPrintf("Error: Wallet integrity check failed.");
+                    return;
+                }
             }
         }
         MilliSleep(100);

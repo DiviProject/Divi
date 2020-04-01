@@ -1693,7 +1693,7 @@ void StartNode(boost::thread_group& threadGroup)
     if (GetBoolArg("-staking", true))
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "stakemint", &ThreadStakeMinter));
 
-    threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "backup", &ThreadBackupWallet, NUMBER_OF_SECONDS_IN_A_MONTH * 1000));
+    threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "backup", &ThreadBackupWallet, NUMBER_OF_SECONDS_IN_A_DAY * 1000));
 }
 
 bool StopNode()

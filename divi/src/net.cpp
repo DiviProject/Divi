@@ -18,7 +18,7 @@
 #include "obfuscation.h"
 #include "primitives/transaction.h"
 #include "ui_interface.h"
-#include <monthlyWalletBackupCreator.h>
+#include <timeIntervalConstants.h>
 #include <walletBackupFeatureContainer.h>
 #include "wallet.h"
 

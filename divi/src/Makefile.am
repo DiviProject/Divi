@@ -185,6 +185,7 @@ BITCOIN_CORE_H = \
   sync.h \
   threadsafety.h \
   timedata.h \
+  timeIntervalConstants.h \
   tinyformat.h \
   torcontrol.h \
   txdb.h \

@@ -5,6 +5,7 @@
 #include <ctime>
 #include <monthlyWalletBackupCreator.h>
 #include <mockWalletBackupCreator.h>
+#include <timeIntervalConstants.h>
 
 using ::testing::Exactly;
 using ::testing::NiceMock;

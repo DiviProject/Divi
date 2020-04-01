@@ -1,9 +1,6 @@
 #ifndef MONTHLYWALLETBACKUPCREATOR_H
 #define MONTHLYWALLETBACKUPCREATOR_H
 
-#define NUMBER_OF_SECONDS_IN_A_DAY 3600 * 24.
-#define NUMBER_OF_SECONDS_IN_A_MONTH (NUMBER_OF_SECONDS_IN_A_DAY * 30.)
-
 #include <ctime>
 #include <i_walletBackupCreator.h>
 #include <i_filesystem.h>

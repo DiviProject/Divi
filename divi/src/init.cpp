@@ -1472,6 +1472,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 5: Backup wallet and verify wallet database integrity
     BackupWallet(strDataDir, fDisableWallet);
+    if (GetBoolArg("-resync", false))
+    {
+        ClearFoldersForResync();
+    }
     // ********************************************************* Step 6: network initialization
 
     if(!InitializeP2PNetwork())

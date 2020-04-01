@@ -1016,7 +1016,8 @@ bool BackupWallet(std::string strDataDir, bool fDisableWallet)
         LogPrintf("backing up wallet\n");
         if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(strDataDir, strWalletFile))
         {
-            return walletBackupFeatureContainer.GetBackupCreator().BackupWallet();
+            return walletBackupFeatureContainer.GetBackupCreator().BackupWallet() && 
+                walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
         }
         else 
         {

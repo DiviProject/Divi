@@ -28,10 +28,6 @@ bool MonthlyWalletBackupCreator::BackupWallet()
     return false;
 }
 
-bool MonthlyWalletBackupCreator::CheckWalletIntegrity(bool resync) 
-{
-    return true;
-}
 std::string MonthlyWalletBackupCreator::GetBackupSubfolderDirectory() const 
 {
     return backupWalletCreator_.GetBackupSubfolderDirectory();

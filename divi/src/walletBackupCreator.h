@@ -13,9 +13,6 @@ private:
     std::string dataDirectory_;
     std::string walletFilename_;
     std::string backupSubfolderDirectory_;
-    void ClearFoldersForResync();
-    bool BackupDatabaseInCaseOfError();
-    bool VerifyWallet(std::string strWalletFile);
     bool BackupFile(PathType& sourceFile, PathType& backupFile);
     bool BackupWalletFile(std::string strWalletFile, PathType backupDir);
     void PruneOldBackups(std::string strWalletFile, PathType backupDir);
@@ -30,7 +27,6 @@ public:
 
     virtual ~WalletBackupCreator(){}
     virtual bool BackupWallet();
-    virtual bool CheckWalletIntegrity(bool resync);
     virtual std::string GetBackupSubfolderDirectory() const;
 };
 

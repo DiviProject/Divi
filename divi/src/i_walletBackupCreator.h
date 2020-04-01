@@ -7,7 +7,6 @@ class I_WalletBackupCreator
 public:
     virtual ~I_WalletBackupCreator(){}
     virtual bool BackupWallet() = 0;
-    virtual bool CheckWalletIntegrity(bool resync) = 0;
     virtual std::string GetBackupSubfolderDirectory() const = 0;
 };
 

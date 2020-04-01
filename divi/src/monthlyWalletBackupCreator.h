@@ -25,7 +25,6 @@ public:
         }
     virtual ~MonthlyWalletBackupCreator(){}
     virtual bool BackupWallet();
-    virtual bool CheckWalletIntegrity(bool resync);
     virtual std::string GetBackupSubfolderDirectory() const;
 };
 

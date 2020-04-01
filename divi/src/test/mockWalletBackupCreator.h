@@ -12,7 +12,6 @@ public:
 
     virtual ~MockWalletBackupCreator(){};
     MOCK_METHOD0(BackupWallet, bool());
-    MOCK_METHOD1(CheckWalletIntegrity, bool(bool));
     MOCK_CONST_METHOD0(GetBackupSubfolderDirectory, std::string());
 };
 

@@ -40,88 +40,6 @@ std::string make_preferred(std::string path)
     return boostPath.string();
 }
 
-bool WalletBackupCreator::BackupDatabaseInCaseOfError()
-{
-    if (!CDB::bitdb.Open(dataDirectory_)) 
-    {
-        // try moving the database env out of the way
-        PathType pathDatabase = dataDirectory_ + "/database";
-        PathType pathDatabaseBak = dataDirectory_ + "/database." + std::to_string(GetTime()) + ".bak";
-        try {
-            fileSystem_.rename(pathDatabase, pathDatabaseBak);
-            LogPrintf("Moved old %s to %s. Retrying.\n", pathDatabase.c_str(), pathDatabaseBak.c_str());
-        } catch (...) {
-            // failure is ok (well, not really, but it's not worse than what we started with)
-        }
-
-        // try again
-        if (!CDB::bitdb.Open(dataDirectory_)) {
-            // if it still fails, it probably means we can't even create the database env
-            std::string msg = strprintf(_("Error initializing wallet database environment %s!"), dataDirectory_);
-            // return InitError(msg);
-            return Error(msg);
-        }
-    }
-    return true;
-}
-
-bool WalletBackupCreator::VerifyWallet(std::string strWalletFile)
-{
-    if (fileSystem_.exists(dataDirectory_ +"/"+ strWalletFile)) {
-        CDBEnv::VerifyResult r = CDB::bitdb.Verify(strWalletFile, NULL);
-
-        if (r == CDBEnv::RECOVER_OK) {
-            std::string msg = strprintf(_("Warning: wallet.dat corrupt, data salvaged!"
-                                        " Original wallet.dat saved as wallet.{timestamp}.bak in %s; if"
-                                        " your balance or transactions are incorrect you should"
-                                        " restore from a backup."),
-                dataDirectory_);
-            Warning(msg);
-        }
-        if (r == CDBEnv::RECOVER_FAIL)
-        {
-            return Error(_("wallet.dat corrupt, salvage failed"));
-        }
-    }
-    return true;
-}
-
-void WalletBackupCreator::ClearFoldersForResync()
-{
-    // uiInterface.InitMessage(_("Preparing for resync..."));
-    // Delete the local blockchain folders to force a resync from scratch to get a consitent blockchain-state
-    PathType blocksDir = dataDirectory_ + "/blocks";
-    PathType chainstateDir = dataDirectory_ + "/chainstate";
-    PathType sporksDir = dataDirectory_ + "/sporks";
-    PathType zerocoinDir = dataDirectory_ + "/zerocoin";
-    
-    LogPrintf("Deleting blockchain folders blocks, chainstate, sporks and zerocoin\n");
-    // We delete in 4 individual steps in case one of the folder is missing already
-    try {
-        if (fileSystem_.exists(blocksDir)){
-            fileSystem_.remove_all(blocksDir);
-            LogPrintf("-resync: folder deleted: %s\n", blocksDir.c_str());
-        }
-
-        if (fileSystem_.exists(chainstateDir)){
-            fileSystem_.remove_all(chainstateDir);
-            LogPrintf("-resync: folder deleted: %s\n", chainstateDir.c_str());
-        }
-
-        if (fileSystem_.exists(sporksDir)){
-            fileSystem_.remove_all(sporksDir);
-            LogPrintf("-resync: folder deleted: %s\n", sporksDir.c_str());
-        }
-
-        if (fileSystem_.exists(zerocoinDir)){
-            fileSystem_.remove_all(zerocoinDir);
-            LogPrintf("-resync: folder deleted: %s\n", zerocoinDir.c_str());
-        }
-    } catch (...) {
-        LogPrintf("Failed to delete blockchain folders\n");
-    }
-}
-
 bool WalletBackupCreator::BackupFile(PathType& sourceFile, PathType& backupFile)
 {
     try {
@@ -202,22 +120,6 @@ bool WalletBackupCreator::BackupWallet()
 
     return backupWalletStatus;
 }
-
-
-bool WalletBackupCreator::CheckWalletIntegrity(bool resync = false)
-{
-    if (resync) ClearFoldersForResync();
-
-    LogPrintf("Using wallet %s\n", walletFilename_.c_str());
-    // uiInterface.InitMessage(_("Verifying wallet..."));
-
-    if(!BackupDatabaseInCaseOfError()) return false;
-
-    if(!VerifyWallet(walletFilename_)) return false;
-
-    return true;
-}
-
 
 std::string WalletBackupCreator::GetBackupSubfolderDirectory() const
 {

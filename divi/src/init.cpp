@@ -1013,7 +1013,16 @@ bool BackupWallet(std::string strDataDir, bool fDisableWallet)
     std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     if (!fDisableWallet) {
         WalletBackupFeatureContainer walletBackupFeatureContainer(nWalletBackups, strWalletFile, strDataDir);
-        return walletBackupFeatureContainer.backupWallet();
+        LogPrintf("backing up wallet\n");
+        if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(strDataDir, strWalletFile))
+        {
+            return walletBackupFeatureContainer.GetBackupCreator().BackupWallet();
+        }
+        else 
+        {
+            LogPrintf("Error: Wallet integrity check failed.");
+            return false;
+        }
     }
 #endif // ENABLE_WALLET
     return true;

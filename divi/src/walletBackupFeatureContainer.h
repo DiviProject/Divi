@@ -25,6 +25,7 @@ public:
         std::string walletFileName,
         std::string dataDirectory);
     bool backupWallet ();
+    I_WalletBackupCreator& GetBackupCreator ();
     I_WalletBackupCreator& GetMonthlyBackupCreator ();
     I_DatabaseWrapper& GetDatabase ();
     WalletIntegrityVerifier& GetWalletIntegrityVerifier ();

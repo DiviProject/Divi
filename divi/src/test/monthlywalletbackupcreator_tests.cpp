@@ -1,7 +1,6 @@
 #include <monthlyWalletBackupCreator.h>
 #include <boost/test/unit_test.hpp>
 #include <mockFileSystem.h>
-#include <mockFormattedTimestampProvider.h>
 #include <string>
 #include <ctime>
 #include <monthlyWalletBackupCreator.h>

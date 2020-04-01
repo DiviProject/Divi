@@ -1,7 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include <walletBackupCreator.h>
 #include <mockFileSystem.h>
-#include <mockFormattedTimestampProvider.h>
 #include <iostream>
 
 using ::testing::NiceMock;

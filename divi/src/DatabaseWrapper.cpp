@@ -18,3 +18,24 @@ DatabaseWrapper::DatabaseStatus DatabaseWrapper::Verify(const std::string& walle
 {
     return conversionTable.at(CDB::bitdb.Verify(walletFilename,NULL));
 }
+
+void DatabaseWrapper::Dettach(const std::string& walletFilename)
+{
+    CDB::bitdb.CloseDb(walletFilename);
+    CDB::bitdb.CheckpointLSN(walletFilename);
+    CDB::bitdb.mapFileUseCount.erase(walletFilename);
+}
+
+bool DatabaseWrapper::FilenameIsInUse(const std::string& walletFilename)
+{
+    auto it = CDB::bitdb.mapFileUseCount.find( walletFilename );
+    return (
+        CDB::bitdb.mapFileUseCount.count(walletFilename) > 0 &&
+        ((it != CDB::bitdb.mapFileUseCount.end())?  (it->second > 0)  :  false)
+    );
+}
+
+CCriticalSection& DatabaseWrapper::GetDatabaseLock()
+{
+    return CDB::bitdb.cs_db;
+}

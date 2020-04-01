@@ -136,6 +136,7 @@ BITCOIN_CORE_H = \
   eccryptoverify.h \
   ecwrapper.h \
   flat-database.h \
+  FilteredBoostFileSystem.h\
   hash.h \
   hdchain.h \
   init.h \
@@ -155,6 +156,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   miner.h \
+  monthlyWalletBackupCreator.h \
   mruset.h \
   netbase.h \
   netfulfilledman.h \
@@ -183,6 +185,7 @@ BITCOIN_CORE_H = \
   sync.h \
   threadsafety.h \
   timedata.h \
+  timeIntervalConstants.h \
   tinyformat.h \
   torcontrol.h \
   txdb.h \
@@ -200,6 +203,7 @@ BITCOIN_CORE_H = \
   version.h \
   wallet.h \
   walletBackupCreator.h \
+  walletBackupFeatureContainer.h \
   WalletIntegrityVerifier.h \
   wallet_ismine.h \
   walletdb.h \
@@ -234,12 +238,14 @@ libbitcoin_server_a_SOURCES = \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
+  FilteredBoostFileSystem.cpp\
   init.cpp \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \
+  monthlyWalletBackupCreator.cpp \
   net.cpp \
   netfulfilledman.cpp \
   noui.cpp \
@@ -261,6 +267,7 @@ libbitcoin_server_a_SOURCES = \
   txmempool.cpp \
   validationinterface.cpp \
   walletBackupCreator.cpp \
+  walletBackupFeatureContainer.cpp \
   WalletIntegrityVerifier.cpp \
   $(JSON_H) \
   $(BITCOIN_CORE_H)

@@ -1,7 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include <walletBackupCreator.h>
 #include <mockFileSystem.h>
-#include <mockFormattedTimestampProvider.h>
 #include <iostream>
 
 using ::testing::NiceMock;
@@ -16,7 +15,7 @@ BOOST_AUTO_TEST_SUITE(wallet_backups_test)
 BOOST_AUTO_TEST_CASE(will_fail_to_backup_wallet_if_it_cant_create_directory)
 {
     NiceMock<MockFileSystem> fileSystem;
-    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
+    
 
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory+"/backups";
@@ -27,7 +26,7 @@ BOOST_AUTO_TEST_CASE(will_fail_to_backup_wallet_if_it_cant_create_directory)
         EXPECT_CALL(fileSystem,create_directories(backupDirectoryPath)).Times(1);
         EXPECT_CALL(fileSystem,exists(backupDirectoryPath)).Times(1);
     }
-    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
+    WalletBackupCreator backupCreator(10, fileSystem,  dataDirectory);
 
     BOOST_CHECK(!backupCreator.BackupWallet ());
 }
@@ -35,7 +34,7 @@ BOOST_AUTO_TEST_CASE(will_fail_to_backup_wallet_if_it_cant_create_directory)
 BOOST_AUTO_TEST_CASE(will_attempt_backup_to_existing_directory_if_walletfile_exists)
 {
     NiceMock<MockFileSystem> fileSystem;
-    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
+    
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory+"/backups";
     std::string walletPath = dataDirectory+"/wallet.dat";
@@ -50,7 +49,7 @@ BOOST_AUTO_TEST_CASE(will_attempt_backup_to_existing_directory_if_walletfile_exi
         EXPECT_CALL(fileSystem,copy_file(walletPath,_)).Times(1);
     }
 
-    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
+    WalletBackupCreator backupCreator(10, fileSystem,  dataDirectory);
     
     BOOST_CHECK(backupCreator.BackupWallet());
 }
@@ -59,7 +58,7 @@ BOOST_AUTO_TEST_CASE(will_attempt_backup_to_existing_directory_if_walletfile_exi
 BOOST_AUTO_TEST_CASE(will_not_backup_to_existing_directory_if_walletfile_does_not_exist)
 {
     NiceMock<MockFileSystem> fileSystem;
-    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
+    
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory+"/backups";
     std::string walletPath = dataDirectory+"/wallet.dat";
@@ -74,7 +73,7 @@ BOOST_AUTO_TEST_CASE(will_not_backup_to_existing_directory_if_walletfile_does_no
         EXPECT_CALL(fileSystem,copy_file(walletPath,_)).Times(0);
     }
 
-    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
+    WalletBackupCreator backupCreator(10, fileSystem,  dataDirectory);
     
     BOOST_CHECK(!backupCreator.BackupWallet());
 }
@@ -83,7 +82,7 @@ BOOST_AUTO_TEST_CASE(will_not_backup_to_existing_directory_if_walletfile_does_no
 BOOST_AUTO_TEST_CASE(will_create_backup_directory_if_nonexistent)
 {
     NiceMock<MockFileSystem> fileSystem;
-    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
+    
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory+"/backups";
 
@@ -97,7 +96,7 @@ BOOST_AUTO_TEST_CASE(will_create_backup_directory_if_nonexistent)
         EXPECT_CALL(fileSystem,create_directories(backupDirectoryPath)).Times(1);
         EXPECT_CALL(fileSystem, exists(backupDirectoryPath));
     }
-    WalletBackupCreator backupCreator(10, fileSystem, formattedTimestampProvider,  dataDirectory);
+    WalletBackupCreator backupCreator(10, fileSystem,  dataDirectory);
 
     backupCreator.BackupWallet();
 }
@@ -106,19 +105,16 @@ BOOST_AUTO_TEST_CASE(will_create_backup_directory_if_nonexistent)
 BOOST_AUTO_TEST_CASE(will_create_backup_file)
 {
     NiceMock<MockFileSystem> fileSystem;
-    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
 
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory+"/backups";
     std::string walletPath = dataDirectory+"/wallet.dat";
-    std::string backupfileSuffix = "backup.1-1-2020";
 
     ON_CALL(fileSystem,exists(backupDirectoryPath)).WillByDefault(Return(true));
     ON_CALL(fileSystem,exists(walletPath)).WillByDefault(Return(true));
-    ON_CALL(formattedTimestampProvider, currentTimeStamp()).WillByDefault(Return(backupfileSuffix));
 
-    EXPECT_CALL(fileSystem, copy_file( walletPath, backupDirectoryPath +"/wallet.dat"+ backupfileSuffix )).Times(1);
-    WalletBackupCreator backupCreator(1, fileSystem, formattedTimestampProvider,  dataDirectory);
+    EXPECT_CALL(fileSystem, copy_file(walletPath, _)).Times(1);
+    WalletBackupCreator backupCreator(1, fileSystem,  dataDirectory);
     
     BOOST_CHECK(backupCreator.BackupWallet());
 }
@@ -138,7 +134,7 @@ TimeStampedFolderContents createTimestampedFolderContents(const std::string& dir
 BOOST_AUTO_TEST_CASE(will_remove_no_backups_when_at_or_below_maximum_number_of_backups)
 {
     NiceMock<MockFileSystem> fileSystem;
-    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
+    
     
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory+"/backups";
@@ -152,7 +148,7 @@ BOOST_AUTO_TEST_CASE(will_remove_no_backups_when_at_or_below_maximum_number_of_b
         .WillByDefault(Return(createTimestampedFolderContents(backupDirectoryPath,numberOfBackups)));
     EXPECT_CALL(fileSystem, remove(_)).Times(0);
 
-    WalletBackupCreator backupCreator(numberOfBackups, fileSystem, formattedTimestampProvider,  dataDirectory);
+    WalletBackupCreator backupCreator(numberOfBackups, fileSystem,  dataDirectory);
 
     backupCreator.BackupWallet();
 }
@@ -160,7 +156,7 @@ BOOST_AUTO_TEST_CASE(will_remove_no_backups_when_at_or_below_maximum_number_of_b
 BOOST_AUTO_TEST_CASE(will_remove_files_down_to_maximum_number_of_backups)
 {
     NiceMock<MockFileSystem> fileSystem;
-    NiceMock<MockFormattedTimestampProvider> formattedTimestampProvider;
+    
     
     std::string dataDirectory = "/bogusDirectory";
     std::string backupDirectoryPath = dataDirectory+"/backups";
@@ -176,9 +172,29 @@ BOOST_AUTO_TEST_CASE(will_remove_files_down_to_maximum_number_of_backups)
         .WillByDefault(Return(createTimestampedFolderContents(backupDirectoryPath,numberOfFilesInsideBackupFolder)));
     EXPECT_CALL(fileSystem, remove(_)).Times(numberOfExcessBackups);
 
-    WalletBackupCreator backupCreator(maximumNumberOfBackups, fileSystem, formattedTimestampProvider,  dataDirectory);
+    WalletBackupCreator backupCreator(maximumNumberOfBackups, fileSystem,  dataDirectory);
 
     backupCreator.BackupWallet();
+}
+
+BOOST_AUTO_TEST_CASE(willSetBackupDirectoryPath)
+{
+    NiceMock<MockFileSystem> fileSystem;
+    
+    std::string walletFileName = "wallet.dat";
+    std::string dataDirectory = "/bogusDirectory";
+    std::string backupSubfolderDirectory = "/backups";
+    std::string backupDirectoryPath = dataDirectory+backupSubfolderDirectory;
+    unsigned maximumNumberOfBackups = 10u;
+    WalletBackupCreator backupCreator(
+        maximumNumberOfBackups, 
+        fileSystem, 
+        
+        dataDirectory, 
+        walletFileName,
+        backupSubfolderDirectory);
+
+    EXPECT_EQ(backupCreator.GetBackupSubfolderDirectory(), backupDirectoryPath);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -18,6 +18,8 @@
 #include "obfuscation.h"
 #include "primitives/transaction.h"
 #include "ui_interface.h"
+#include <timeIntervalConstants.h>
+#include <walletBackupFeatureContainer.h>
 #include "wallet.h"
 
 #ifdef WIN32
@@ -1470,6 +1472,40 @@ void static ThreadStakeMinter()
     LogPrintf("ThreadStakeMinter exiting,\n");
 }
 
+void ThreadBackupWallet()
+{
+    std::string walletFileName = GetArg("-wallet", "wallet.dat");
+    static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
+    while (true) 
+    {
+        if(!pwalletMain->fFileBacked)
+        {
+            LogPrintf("Error: Wallet isn't backed up\n");
+            return;
+        }
+        {
+            
+            LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
+            if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName)) 
+            {
+                // Flush log data to the dat file
+                walletBackupFeatureContainer.GetDatabase().Dettach(walletFileName);
+                LogPrintf("backing up wallet\n");
+                if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(GetDataDir().string(), walletFileName))
+                {
+                    walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
+                }
+                else 
+                {
+                    LogPrintf("Error: Wallet integrity check failed.");
+                    return;
+                }
+            }
+        }
+        MilliSleep(100);
+    }
+}
+
 bool BindListenPort(const CService& addrBind, string& strError, bool fWhitelisted)
 {
     strError = "";
@@ -1656,6 +1692,8 @@ void StartNode(boost::thread_group& threadGroup)
     // ppcoin:mint proof-of-stake blocks in the background
     if (GetBoolArg("-staking", true))
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "stakemint", &ThreadStakeMinter));
+
+    threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "backup", &ThreadBackupWallet, NUMBER_OF_SECONDS_IN_A_DAY * 1000));
 }
 
 bool StopNode()

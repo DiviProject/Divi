@@ -313,23 +313,8 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 //
                 // Push value
                 //
-                case OP_1NEGATE:
-                case OP_1:
-                case OP_2:
-                case OP_3:
-                case OP_4:
-                case OP_5:
-                case OP_6:
-                case OP_7:
-                case OP_8:
-                case OP_9:
-                case OP_10:
-                case OP_11:
-                case OP_12:
-                case OP_13:
-                case OP_14:
-                case OP_15:
-                case OP_16:
+                case OP_1NEGATE: case OP_1: case OP_2: case OP_3: case OP_4: case OP_5: case OP_6: case OP_7: case OP_8:
+                case OP_9: case OP_10: case OP_11: case OP_12: case OP_13: case OP_14: case OP_15: case OP_16:
                 {
                     // ( -- value)
                     CScriptNum bn((int)opcode - (int)(OP_1 - 1));
@@ -338,7 +323,6 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     // they push, so no need for a CheckMinimalPush here.
                 }
                 break;
-
 
                 //
                 // Control
@@ -354,8 +338,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 }
                 break;
 
-                case OP_IF:
-                case OP_NOTIF:
+                case OP_IF: case OP_NOTIF:
                 {
                     // <expression> if [statements] [else [statements]] endif
                     bool fValue = false;
@@ -559,8 +542,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 }
                 break;
 
-                case OP_PICK:
-                case OP_ROLL:
+                case OP_PICK: case OP_ROLL:
                 {
                     // (xn ... x2 x1 x0 n - xn ... x2 x1 x0 xn)
                     // (xn ... x2 x1 x0 n - ... x2 x1 x0 xn)
@@ -623,8 +605,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 //
                 // Bitwise logic
                 //
-                case OP_EQUAL:
-                case OP_EQUALVERIFY:
+                case OP_EQUAL: case OP_EQUALVERIFY:
                 //case OP_NOTEQUAL: // use OP_NUMNOTEQUAL
                 {
                     // (x1 x2 - bool)
@@ -655,12 +636,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 //
                 // Numeric
                 //
-                case OP_1ADD:
-                case OP_1SUB:
-                case OP_NEGATE:
-                case OP_ABS:
-                case OP_NOT:
-                case OP_0NOTEQUAL:
+                case OP_1ADD: case OP_1SUB: case OP_NEGATE: case OP_ABS: case OP_NOT: case OP_0NOTEQUAL:
                 {
                     // (in -- out)
                     if (stack.size() < 1)
@@ -681,19 +657,8 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 }
                 break;
 
-                case OP_ADD:
-                case OP_SUB:
-                case OP_BOOLAND:
-                case OP_BOOLOR:
-                case OP_NUMEQUAL:
-                case OP_NUMEQUALVERIFY:
-                case OP_NUMNOTEQUAL:
-                case OP_LESSTHAN:
-                case OP_GREATERTHAN:
-                case OP_LESSTHANOREQUAL:
-                case OP_GREATERTHANOREQUAL:
-                case OP_MIN:
-                case OP_MAX:
+                case OP_ADD: case OP_SUB: case OP_BOOLAND: case OP_BOOLOR: case OP_NUMEQUAL: case OP_NUMEQUALVERIFY: case OP_NUMNOTEQUAL: 
+                case OP_LESSTHAN: case OP_GREATERTHAN: case OP_LESSTHANOREQUAL: case OP_GREATERTHANOREQUAL: case OP_MIN: case OP_MAX:
                 {
                     // (x1 x2 -- out)
                     if (stack.size() < 2)
@@ -703,26 +668,26 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     CScriptNum bn(0);
                     switch (opcode)
                     {
-                    case OP_ADD:
-                        bn = bn1 + bn2;
-                        break;
+                        case OP_ADD:
+                            bn = bn1 + bn2;
+                            break;
 
-                    case OP_SUB:
-                        bn = bn1 - bn2;
-                        break;
+                        case OP_SUB:
+                            bn = bn1 - bn2;
+                            break;
 
-                    case OP_BOOLAND:             bn = (bn1 != bnZero && bn2 != bnZero); break;
-                    case OP_BOOLOR:              bn = (bn1 != bnZero || bn2 != bnZero); break;
-                    case OP_NUMEQUAL:            bn = (bn1 == bn2); break;
-                    case OP_NUMEQUALVERIFY:      bn = (bn1 == bn2); break;
-                    case OP_NUMNOTEQUAL:         bn = (bn1 != bn2); break;
-                    case OP_LESSTHAN:            bn = (bn1 < bn2); break;
-                    case OP_GREATERTHAN:         bn = (bn1 > bn2); break;
-                    case OP_LESSTHANOREQUAL:     bn = (bn1 <= bn2); break;
-                    case OP_GREATERTHANOREQUAL:  bn = (bn1 >= bn2); break;
-                    case OP_MIN:                 bn = (bn1 < bn2 ? bn1 : bn2); break;
-                    case OP_MAX:                 bn = (bn1 > bn2 ? bn1 : bn2); break;
-                    default:                     assert(!"invalid opcode"); break;
+                        case OP_BOOLAND:             bn = (bn1 != bnZero && bn2 != bnZero); break;
+                        case OP_BOOLOR:              bn = (bn1 != bnZero || bn2 != bnZero); break;
+                        case OP_NUMEQUAL:            bn = (bn1 == bn2); break;
+                        case OP_NUMEQUALVERIFY:      bn = (bn1 == bn2); break;
+                        case OP_NUMNOTEQUAL:         bn = (bn1 != bn2); break;
+                        case OP_LESSTHAN:            bn = (bn1 < bn2); break;
+                        case OP_GREATERTHAN:         bn = (bn1 > bn2); break;
+                        case OP_LESSTHANOREQUAL:     bn = (bn1 <= bn2); break;
+                        case OP_GREATERTHANOREQUAL:  bn = (bn1 >= bn2); break;
+                        case OP_MIN:                 bn = (bn1 < bn2 ? bn1 : bn2); break;
+                        case OP_MAX:                 bn = (bn1 > bn2 ? bn1 : bn2); break;
+                        default:                     assert(!"invalid opcode"); break;
                     }
                     popstack(stack);
                     popstack(stack);
@@ -758,11 +723,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 //
                 // Crypto
                 //
-                case OP_RIPEMD160:
-                case OP_SHA1:
-                case OP_SHA256:
-                case OP_HASH160:
-                case OP_HASH256:
+                case OP_RIPEMD160: case OP_SHA1: case OP_SHA256: case OP_HASH160: case OP_HASH256:
                 {
                     // (in -- hash)
                     if (stack.size() < 1)
@@ -791,8 +752,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 }
                 break;
 
-                case OP_CHECKSIG:
-                case OP_CHECKSIGVERIFY:
+                case OP_CHECKSIG: case OP_CHECKSIGVERIFY:
                 {
                     // (sig pubkey -- bool)
                     if (stack.size() < 2)
@@ -826,8 +786,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 }
                 break;
 
-                case OP_CHECKMULTISIG:
-                case OP_CHECKMULTISIGVERIFY:
+                case OP_CHECKMULTISIG: case OP_CHECKMULTISIGVERIFY:
                 {
                     // ([sig ...] num_of_signatures [pubkey ...] num_of_pubkeys -- bool)
 

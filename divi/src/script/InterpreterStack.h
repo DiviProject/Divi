@@ -18,6 +18,7 @@ public:
     void push(const StackElement& element);
     void pop();
     bool empty() const;
+    unsigned size() const;
 
     const BasicStack& getStack() const;
 };

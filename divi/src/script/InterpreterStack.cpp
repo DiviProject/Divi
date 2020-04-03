@@ -38,6 +38,10 @@ bool RandomAccessStack::empty() const
     return stack_.empty();
 }
 
+unsigned RandomAccessStack::size() const
+{
+    return stack_.size();
+}
 
 // Interpreter Stack functionality
 

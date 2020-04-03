@@ -18,7 +18,7 @@
 #include "sync.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
-
+#include <GlobalParametersRecord.h>
 #include <stdarg.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -205,41 +205,33 @@ void ParseParameters(int argc, const char* const argv[])
     }
 }
 
+GlobalParametersRecord globalParametersRecord(mapArgs);
+
+
+
 std::string GetArg(const std::string& strArg, const std::string& strDefault)
 {
-    if (mapArgs.count(strArg))
-        return mapArgs[strArg];
-    return strDefault;
+    globalParametersRecord.GetArg(strArg, strDefault);
 }
 
 int64_t GetArg(const std::string& strArg, int64_t nDefault)
 {
-    if (mapArgs.count(strArg))
-        return atoi64(mapArgs[strArg]);
-    return nDefault;
+    globalParametersRecord.GetArg(strArg, nDefault);
 }
 
 bool GetBoolArg(const std::string& strArg, bool fDefault)
 {
-    if (mapArgs.count(strArg))
-        return InterpretBool(mapArgs[strArg]);
-    return fDefault;
+    globalParametersRecord.GetBoolArg(strArg, fDefault);
 }
 
 bool SoftSetArg(const std::string& strArg, const std::string& strValue)
 {
-    if (mapArgs.count(strArg))
-        return false;
-    mapArgs[strArg] = strValue;
-    return true;
+    globalParametersRecord.SoftSetArg(strArg, strValue);
 }
 
 bool SoftSetBoolArg(const std::string& strArg, bool fValue)
 {
-    if (fValue)
-        return SoftSetArg(strArg, std::string("1"));
-    else
-        return SoftSetArg(strArg, std::string("0"));
+    globalParametersRecord.SoftSetBoolArg(strArg, fValue);
 }
 
 static const int screenWidth = 79;

@@ -139,7 +139,8 @@ BITCOIN_CORE_H = \
   ecwrapper.h \
   FeeRate.h \
   flat-database.h \
-  FilteredBoostFileSystem.h\
+  FilteredBoostFileSystem.h \
+  GlobalParametersRecord.h \
   hash.h \
   hdchain.h \
   init.h \
@@ -270,7 +271,8 @@ libbitcoin_server_a_SOURCES = \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
-  FilteredBoostFileSystem.cpp\
+  FilteredBoostFileSystem.cpp \
+  GlobalParametersRecord.cpp \
   init.cpp \
   FeeAndPriorityCalculator.cpp \
   datacachemanager.cpp \

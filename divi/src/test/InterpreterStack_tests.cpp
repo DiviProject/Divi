@@ -22,10 +22,10 @@ BOOST_AUTO_TEST_CASE(WillNotThrowExceptionTryingToReadFromAnEmptyStack)
     EXPECT_NO_THROW(stack.top());
 }
 
-StackElement createRandomElement()
+StackElement createRandomElement(std::string suffix = std::string(""))
 {
-    unsigned char values[] = "abc";
-    StackElement stackElement(values, values+3);
+    std::string values = std::string("abc")+suffix;
+    StackElement stackElement(values.begin(), values.end());
     return stackElement;
 }
 unsigned getRandomUInt(unsigned minimum = 10, unsigned maximum = 100)
@@ -59,6 +59,21 @@ BOOST_AUTO_TEST_CASE(WillNotThrowWhenAccessingDeeperThanAvailableOnStack)
     StackElement stackElement = createRandomElement();
     stack.push(stackElement);
     EXPECT_NO_THROW(stack.top(stack.size()+1));
+}
+
+#define EXPECT_VECTOR_EQ(x, y) EXPECT_TRUE(std::equal(x.begin(),x.end(),y.begin()) && std::equal(y.begin(),y.end(),x.begin()))
+
+BOOST_AUTO_TEST_CASE(WillModifyReferenceDuringPush)
+{
+    unsigned pushCount = getRandomUInt();
+    RandomAccessStack stack;
+    const BasicStack& internalStack = stack.getStack();
+    for(unsigned pushIndex = 0; pushIndex < pushCount; ++pushIndex)
+    {
+        StackElement stackElement = createRandomElement();
+        stack.push(stackElement);
+    }
+    EXPECT_VECTOR_EQ(internalStack, stack.getStack());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

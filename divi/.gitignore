@@ -127,3 +127,5 @@ nbproject/
 .idea
 CMakeLists.txt
 cmake-build-debug
+
+src/GMock/*

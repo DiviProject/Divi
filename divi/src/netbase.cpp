@@ -13,7 +13,8 @@
 #include "sync.h"
 #include "uint256.h"
 #include "random.h"
-#include "util.h"
+#include "Logging.h"
+#include "utiltime.h"
 #include "utilstrencodings.h"
 
 #ifdef HAVE_GETADDRINFO_A

@@ -11,9 +11,10 @@
 #include "serialize.h"
 #include "streams.h"
 #include "univalue/univalue.h"
-#include "util.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
+
+#include "tinyformat.h"
 
 #include <boost/foreach.hpp>
 

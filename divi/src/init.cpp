@@ -17,6 +17,7 @@
 #include "amount.h"
 #include "checkpoints.h"
 #include "compat/sanity.h"
+#include "datacachemanager.h"
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
@@ -25,6 +26,7 @@
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "activemasternode.h"
+#include <walletBackupFeatureContainer.h>
 #include "flat-database.h"
 #include "netfulfilledman.h"
 #include "miner.h"
@@ -65,8 +67,6 @@
 #include "zmq/zmqnotificationinterface.h"
 #endif
 
-using namespace boost;
-using namespace std;
 
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
@@ -75,7 +75,6 @@ int nWalletBackups = 100;
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
-static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -102,6 +101,18 @@ string errorMsg;
 static const char* FEE_ESTIMATES_FILENAME = "fee_estimates.dat";
 CClientUIInterface uiInterface;
 
+bool static InitError(const std::string& str)
+{
+    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
+    return false;
+}
+
+bool static InitWarning(const std::string& str)
+{
+    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_WARNING);
+    return true;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Shutdown
@@ -123,7 +134,7 @@ CClientUIInterface uiInterface;
 // threads that should only be stopped after the main network-processing
 // threads have exited.
 //
-// Note that if running -daemon the parent process returns from AppInit2
+// Note that if running -daemon the parent process returns from InitializeDivi
 // before adding any threads to the threadGroup, so .join_all() returns
 // immediately and the parent exits from main().
 //
@@ -167,6 +178,91 @@ public:
 static CCoinsViewDB* pcoinsdbview = NULL;
 static CCoinsViewErrorCatcher* pcoinscatcher = NULL;
 
+#ifdef ENABLE_WALLET
+inline void FlushWallet(bool shutdown = false) { if(pwalletMain) CDB::bitdb.Flush(shutdown);}
+#endif
+void FlushWalletAndStopMinting()
+{
+#ifdef ENABLE_WALLET
+    FlushWallet();
+    GenerateBitcoins(false, NULL, 0);
+#endif
+}
+
+void StoreDataCaches()
+{
+    DataCacheManager(
+        mnodeman,
+        masternodePayments,
+        netfulfilledman,
+        GetDataDir(),
+        uiInterface,
+        fLiteMode).StoreDataCaches();
+}
+
+bool LoadDataCaches()
+{
+    return DataCacheManager(
+        mnodeman,
+        masternodePayments,
+        netfulfilledman,
+        GetDataDir(),
+        uiInterface,
+        fLiteMode).LoadDataCaches();
+}
+
+void SaveFeeEstimatesFromMempool()
+{
+    if (fFeeEstimatesInitialized) {
+        boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
+        CAutoFile est_fileout(fopen(est_path.string().c_str(), "wb"), SER_DISK, CLIENT_VERSION);
+        if (!est_fileout.IsNull())
+            mempool.WriteFeeEstimates(est_fileout);
+        else
+            LogPrintf("%s: Failed to write fee estimates to %s\n", __func__, est_path.string());
+        fFeeEstimatesInitialized = false;
+    }
+}
+
+void DeallocateShallowDatabases()
+{
+    delete pcoinsTip;
+    delete pcoinscatcher;
+    delete pcoinsdbview;
+    delete pblocktree;
+    delete zerocoinDB;
+    delete pSporkDB;
+    
+    pcoinsTip = NULL;
+    pcoinscatcher = NULL;
+    pcoinsdbview = NULL;
+    pblocktree = NULL;
+    zerocoinDB = NULL;
+    pSporkDB = NULL;
+}
+
+void CleanAndReallocateShallowDatabases(const std::pair<std::size_t,std::size_t>& blockTreeAndCoinDBCacheSizes)
+{
+    DeallocateShallowDatabases();
+    pSporkDB = new CSporkDB(0, false, false);
+    zerocoinDB = new CZerocoinDB(0, false, false);
+    pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
+    pcoinsdbview = new CCoinsViewDB(blockTreeAndCoinDBCacheSizes.second, false, fReindex);
+    pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
+    pcoinsTip = new CCoinsViewCache(pcoinscatcher);
+}
+
+void FlushStateAndDeallocateShallowDatabases()
+{
+    LOCK(cs_main);
+    if (pcoinsTip != NULL) {
+        FlushStateToDisk();
+        //record that client took the proper shutdown procedure
+        pblocktree->WriteFlag("shutdown", true);
+    }
+    DeallocateShallowDatabases();
+}
+
 /** Preparing steps before shutting down or restarting the wallet */
 void PrepareShutdown()
 {
@@ -178,71 +274,25 @@ void PrepareShutdown()
     if (!lockShutdown)
         return;
 
-    /// Note: Shutdown() must be able to handle cases in which AppInit2() failed part of the way,
+    /// Note: Shutdown() must be able to handle cases in which InitializeDivi() failed part of the way,
     /// for example if the data directory was found to be locked.
     /// Be sure that anything that writes files or flushes caches only does this if the respective
     /// module was initialized.
     RenameThread("divi-shutoff");
     mempool.AddTransactionsUpdated(1);
     StopRPCThreads();
-#ifdef ENABLE_WALLET
-    if (pwalletMain)
-        bitdb.Flush(false);
-    GenerateBitcoins(false, NULL, 0);
-#endif
+    FlushWalletAndStopMinting();
     StopNode();
     InterruptTorControl();
     StopTorControl();
-
-    // STORE DATA CACHES INTO SERIALIZED DAT FILES
-    if (!fLiteMode) {
-        CFlatDB<CMasternodeMan> flatdb1("mncache.dat", "magicMasternodeCache");
-        flatdb1.Dump(mnodeman);
-        CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
-        flatdb2.Dump(masternodePayments);
-        CFlatDB<CNetFulfilledRequestManager> flatdb4("netfulfilled.dat", "magicFulfilledCache");
-        flatdb4.Dump(netfulfilledman);
-    }
-
-
+    StoreDataCaches();
     UnregisterNodeSignals(GetNodeSignals());
+    SaveFeeEstimatesFromMempool();
+    FlushStateAndDeallocateShallowDatabases();
 
-    if (fFeeEstimatesInitialized) {
-        boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
-        CAutoFile est_fileout(fopen(est_path.string().c_str(), "wb"), SER_DISK, CLIENT_VERSION);
-        if (!est_fileout.IsNull())
-            mempool.WriteFeeEstimates(est_fileout);
-        else
-            LogPrintf("%s: Failed to write fee estimates to %s\n", __func__, est_path.string());
-        fFeeEstimatesInitialized = false;
-    }
-
-    {
-        LOCK(cs_main);
-        if (pcoinsTip != NULL) {
-            FlushStateToDisk();
-
-            //record that client took the proper shutdown procedure
-            pblocktree->WriteFlag("shutdown", true);
-        }
-        delete pcoinsTip;
-        pcoinsTip = NULL;
-        delete pcoinscatcher;
-        pcoinscatcher = NULL;
-        delete pcoinsdbview;
-        pcoinsdbview = NULL;
-        delete pblocktree;
-        pblocktree = NULL;
-        delete zerocoinDB;
-        zerocoinDB = NULL;
-        delete pSporkDB;
-        pSporkDB = NULL;
-    }
 #ifdef ENABLE_WALLET
-    if (pwalletMain)
-        bitdb.Flush(true);
+    FlushWallet(true);
 #endif
-
 #if ENABLE_ZMQ
     if (pzmqNotificationInterface) {
         UnregisterValidationInterface(pzmqNotificationInterface);
@@ -250,10 +300,10 @@ void PrepareShutdown()
         pzmqNotificationInterface = NULL;
     }
 #endif
-
 #ifndef WIN32
     boost::filesystem::remove(GetPidFile());
 #endif
+
     UnregisterAllValidationInterfaces();
 }
 
@@ -292,18 +342,6 @@ void HandleSIGTERM(int)
 void HandleSIGHUP(int)
 {
     fReopenDebugLog = true;
-}
-
-bool static InitError(const std::string& str)
-{
-    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_ERROR);
-    return false;
-}
-
-bool static InitWarning(const std::string& str)
-{
-    uiInterface.ThreadSafeMessageBox(str, "", CClientUIInterface::MSG_WARNING);
-    return true;
 }
 
 bool static Bind(const CService& addr, unsigned int flags)
@@ -610,12 +648,12 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
     }
 
     // hardcoded $DATADIR/bootstrap.dat
-    filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
-    if (filesystem::exists(pathBootstrap)) {
+    boost::filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
+    if (boost::filesystem::exists(pathBootstrap)) {
         FILE* file = fopen(pathBootstrap.string().c_str(), "rb");
         if (file) {
             CImportingNow imp;
-            filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
+            boost::filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
             LogPrintf("Importing bootstrap.dat...\n");
             LoadExternalBlockFile(file);
             RenameOver(pathBootstrap, pathBootstrapOld);
@@ -647,7 +685,7 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
  *  Ensure that DIVI is running in a usable environment with all
  *  necessary library support.
  */
-bool InitSanityCheck(void)
+bool VerifyECCAndLibCCompatibilityAreAvailable(void)
 {
     if (!ECC_InitSanityCheck()) {
         InitError("OpenSSL appears to lack support for elliptic curve cryptography. For more "
@@ -660,109 +698,33 @@ bool InitSanityCheck(void)
     return true;
 }
 
-bool AppInitSanityChecks()
+bool VerifyCriticalDependenciesAreAvailable()
 {
     // ********************************************************* Step 4: sanity checks
 
-    // Initialize elliptic curve code
-    ECC_Start();
-    globalVerifyHandle.reset(new ECCVerifyHandle());
-
     // Sanity check
-    if (!InitSanityCheck())
+    if (!VerifyECCAndLibCCompatibilityAreAvailable())
         return InitError(strprintf(_("Initialization sanity check failed. %s is shutting down."), _(PACKAGE_NAME)));
 
     // Probe the data directory lock to give an early error message, if possible
     return true;
 }
 
-/** Initialize divi.
- *  @pre Parameters should be parsed and config file should be read.
- */
-bool AppInit2(boost::thread_group& threadGroup)
+void SetNetworkingParameters()
 {
-// ********************************************************* Step 1: setup
-#ifdef _MSC_VER
-    // Turn off Microsoft heap dump noise
-    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-    _CrtSetReportFile(_CRT_WARN, CreateFileA("NUL", GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, 0));
-#endif
-#if _MSC_VER >= 1400
-    // Disable confusing "helpful" text message on abort, Ctrl-C
-    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-#endif
-#ifdef WIN32
-// Enable Data Execution Prevention (DEP)
-// Minimum supported OS versions: WinXP SP3, WinVista >= SP1, Win Server 2008
-// A failure is non-critical and needs no further attention!
-#ifndef PROCESS_DEP_ENABLE
-// We define this here, because GCCs winbase.h limits this to _WIN32_WINNT >= 0x0601 (Windows 7),
-// which is not correct. Can be removed, when GCCs winbase.h is fixed!
-#define PROCESS_DEP_ENABLE 0x00000001
-#endif
-    typedef BOOL(WINAPI * PSETPROCDEPPOL)(DWORD);
-    PSETPROCDEPPOL setProcDEPPol = (PSETPROCDEPPOL)GetProcAddress(GetModuleHandleA("Kernel32.dll"), "SetProcessDEPPolicy");
-    if (setProcDEPPol != NULL) setProcDEPPol(PROCESS_DEP_ENABLE);
-
-    // Initialize Windows Sockets
-    WSADATA wsadata;
-    int ret = WSAStartup(MAKEWORD(2, 2), &wsadata);
-    if (ret != NO_ERROR || LOBYTE(wsadata.wVersion) != 2 || HIBYTE(wsadata.wVersion) != 2) {
-        return InitError(strprintf("Error: Winsock library failed to start (WSAStartup returned error %d)", ret));
-    }
-#endif
-#ifndef WIN32
-
-    if (GetBoolArg("-sysperms", false)) {
-#ifdef ENABLE_WALLET
-        if (!GetBoolArg("-disablewallet", false))
-            return InitError("Error: -sysperms is not allowed in combination with enabled wallet functionality");
-#endif
-    } else {
-        umask(077);
-    }
-
-
-    // Clean shutdown on SIGTERM
-    struct sigaction sa;
-    sa.sa_handler = HandleSIGTERM;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    sigaction(SIGTERM, &sa, NULL);
-    sigaction(SIGINT, &sa, NULL);
-
-    // Reopen debug.log on SIGHUP
-    struct sigaction sa_hup;
-    sa_hup.sa_handler = HandleSIGHUP;
-    sigemptyset(&sa_hup.sa_mask);
-    sa_hup.sa_flags = 0;
-    sigaction(SIGHUP, &sa_hup, NULL);
-
-#if defined(__SVR4) && defined(__sun)
-    // ignore SIGPIPE on Solaris
-    signal(SIGPIPE, SIG_IGN);
-#endif
-#endif
-
-    // ********************************************************* Step 2: parameter interactions
-    // Set this early so that parameter interactions go to console
-    fPrintToConsole = GetBoolArg("-printtoconsole", false);
-    fLogTimestamps = GetBoolArg("-logtimestamps", true);
-    fLogIPs = GetBoolArg("-logips", false);
-
     if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
         // when specifying an explicit binding address, you want to listen on it
         // even when -connect or -proxy is specified
         if (SoftSetBoolArg("-listen", true))
-            LogPrintf("AppInit2 : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
+            LogPrintf("InitializeDivi : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
     }
 
     if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0) {
         // when only connecting to trusted nodes, do not seed via DNS, or listen by default
         if (SoftSetBoolArg("-dnsseed", false))
-            LogPrintf("AppInit2 : parameter interaction: -connect set -> setting -dnsseed=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -dnsseed=0\n");
         if (SoftSetBoolArg("-listen", false))
-            LogPrintf("AppInit2 : parameter interaction: -connect set -> setting -listen=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -listen=0\n");
     }
 
     if (mapArgs.count("-proxy")) {
@@ -775,40 +737,51 @@ bool AppInit2(boost::thread_group& threadGroup)
             LogPrintf("%s: parameter interaction: -proxy set -> setting -upnp=0\n", __func__);
         // to protect privacy, do not discover addresses by default
         if (SoftSetBoolArg("-discover", false))
-            LogPrintf("AppInit2 : parameter interaction: -proxy set -> setting -discover=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -proxy set -> setting -discover=0\n");
     }
 
     if (!GetBoolArg("-listen", true)) {
         // do not map ports or try to retrieve public IP when not listening (pointless)
         if (SoftSetBoolArg("-upnp", false))
-            LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -upnp=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -upnp=0\n");
         if (SoftSetBoolArg("-discover", false))
-            LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -discover=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -discover=0\n");
         if (SoftSetBoolArg("-listenonion", false))
-            LogPrintf("AppInit2 : parameter interaction: -listen=0 -> setting -listenonion=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -listenonion=0\n");
     }
 
     if (mapArgs.count("-externalip")) {
         // if an explicit public IP is specified, do not try to find others
         if (SoftSetBoolArg("-discover", false))
-            LogPrintf("AppInit2 : parameter interaction: -externalip set -> setting -discover=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
     }
 
+    nConnectTimeout = GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
+    if (nConnectTimeout <= 0)
+        nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
+
+    fAlerts = GetBoolArg("-alerts", DEFAULT_ALERTS);
+    if (GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
+        nLocalServices |= NODE_BLOOM;
+}
+
+bool EnableWalletFeatures()
+{
     if (GetBoolArg("-salvagewallet", false)) {
         // Rewrite just private keys: rescan to find transactions
         if (SoftSetBoolArg("-rescan", true))
-            LogPrintf("AppInit2 : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n");
+            LogPrintf("InitializeDivi : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n");
     }
 
     // -zapwallettx implies a rescan
     if (GetBoolArg("-zapwallettxes", false)) {
         if (SoftSetBoolArg("-rescan", true))
-            LogPrintf("AppInit2 : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
+            LogPrintf("InitializeDivi : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
     }
 
     if (!GetBoolArg("-enableswifttx", fEnableSwiftTX)) {
         if (SoftSetArg("-swifttxdepth", 0))
-            LogPrintf("AppInit2 : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
+            LogPrintf("InitializeDivi : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
     }
 
     if (mapArgs.count("-reservebalance")) {
@@ -817,25 +790,25 @@ bool AppInit2(boost::thread_group& threadGroup)
             return false;
         }
     }
+    return true;
+}
 
-    // Make sure enough file descriptors are available
+bool SetMaxConnectionsAndFileDescriptors(int& nFD)
+{
     int nBind = std::max((int)mapArgs.count("-bind") + (int)mapArgs.count("-whitebind"), 1);
     nMaxConnections = GetArg("-maxconnections", 125);
     nMaxConnections = std::max(std::min(nMaxConnections, (int)(FD_SETSIZE - nBind - MIN_CORE_FILEDESCRIPTORS)), 0);
-    int nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS);
+    nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS);
     if (nFD < MIN_CORE_FILEDESCRIPTORS)
         return InitError(_("Not enough file descriptors available."));
     if (nFD - MIN_CORE_FILEDESCRIPTORS < nMaxConnections)
         nMaxConnections = nFD - MIN_CORE_FILEDESCRIPTORS;
+    
+    return true;
+}
 
-    // ********************************************************* Step 3: parameter-to-internal-flags
-
-    fDebug = !mapMultiArgs["-debug"].empty();
-    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-    const vector<string>& categories = mapMultiArgs["-debug"];
-    if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
-        fDebug = false;
-
+bool CheckCriticalUnsupportedFeaturesAreNotUsed()
+{
     // Check for -debugnet
     if (GetBoolArg("-debugnet", false))
         InitWarning(_("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
@@ -851,12 +824,20 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (GetBoolArg("-benchmark", false))
         InitWarning(_("Warning: Unsupported argument -benchmark ignored, use -debug=bench."));
+    
+    return true;
+}
 
+void SetConsistencyChecks()
+{
     // Checkmempool and checkblockindex default to true in regtest mode
     mempool.setSanityCheck(GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
     fCheckBlockIndex = GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks());
-    Checkpoints::fEnabled = GetBoolArg("-checkpoints", true);
+    CCheckpointServices::fEnabled = GetBoolArg("-checkpoints", true);
+}
 
+void SetNumberOfThreadsToCheckScripts()
+{
     // -par=0 means autodetect, but nScriptCheckThreads==0 means no concurrency
     nScriptCheckThreads = GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS);
     if (nScriptCheckThreads <= 0)
@@ -865,25 +846,19 @@ bool AppInit2(boost::thread_group& threadGroup)
         nScriptCheckThreads = 0;
     else if (nScriptCheckThreads > MAX_SCRIPTCHECK_THREADS)
         nScriptCheckThreads = MAX_SCRIPTCHECK_THREADS;
+}
 
-    fServer = GetBoolArg("-server", false);
-    setvbuf(stdout, NULL, _IOLBF, 0); /// ***TODO*** do we still need this after -printtoconsole is gone?
-
-    // Staking needs a CWallet instance, so make sure wallet is enabled
+bool WalletIsDisabled()
+{
 #ifdef ENABLE_WALLET
-    bool fDisableWallet = GetBoolArg("-disablewallet", false);
-    if (fDisableWallet) {
+    return GetBoolArg("-disablewallet", false);
+#else
+    return true;
 #endif
-        if (SoftSetBoolArg("-staking", false))
-            LogPrintf("AppInit2 : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
-#ifdef ENABLE_WALLET
-    }
-#endif
+}
 
-    nConnectTimeout = GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
-    if (nConnectTimeout <= 0)
-        nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
-
+bool SetTransactionRequirements()
+{
     // Fee-per-kilobyte amount considered the same as "free"
     // If you are mining, be careful setting this:
     // if you set it to zero then
@@ -897,7 +872,6 @@ bool AppInit2(boost::thread_group& threadGroup)
         else
             return InitError(strprintf(_("Invalid amount for -minrelaytxfee=<amount>: '%s'"), mapArgs["-minrelaytxfee"]));
     }
-
 #ifdef ENABLE_WALLET
     if (mapArgs.count("-mintxfee")) {
         CAmount n = 0;
@@ -934,31 +908,35 @@ bool AppInit2(boost::thread_group& threadGroup)
     bSpendZeroConfChange = GetBoolArg("-spendzeroconfchange", false);
     bdisableSystemnotifications = GetBoolArg("-disablesystemnotifications", false);
     fSendFreeTransactions = GetBoolArg("-sendfreetransactions", false);
-
-    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
-#endif // ENABLE_WALLET
-
+#endif
     fIsBareMultisigStd = GetBoolArg("-permitbaremultisig", true) != 0;
     nMaxDatacarrierBytes = GetArg("-datacarriersize", nMaxDatacarrierBytes);
+    return true;
+}
 
-    fAlerts = GetBoolArg("-alerts", DEFAULT_ALERTS);
+void SetLoggingAndDebugSettings()
+{
+    fPrintToConsole = GetBoolArg("-printtoconsole", false);
+    fLogTimestamps = GetBoolArg("-logtimestamps", true);
+    fLogIPs = GetBoolArg("-logips", false);
 
+    fDebug = !mapMultiArgs["-debug"].empty();
+    // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
+    const vector<string>& categories = mapMultiArgs["-debug"];
+    if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
+        fDebug = false;
 
-    if (GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
-        nLocalServices |= NODE_BLOOM;
+    if (GetBoolArg("-shrinkdebugfile", !fDebug))
+        ShrinkDebugFile();
+    
+    if(fPrintToConsole)
+    {
+        setvbuf(stdout, NULL, _IOLBF, 0);
+    }
+}
 
-    // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
-
-    // Sanity check
-    if (!AppInitSanityChecks())
-        return InitError(_("Initialization sanity check failed. DIVI Core is shutting down."));
-
-    std::string strDataDir = GetDataDir().string();
-#ifdef ENABLE_WALLET
-    // Wallet file must be a plain filename without a directory
-    if (strWalletFile != boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile))
-        return InitError(strprintf(_("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
-#endif
+bool TryLockDataDirectory(const std::string& datadir)
+{
     // Make sure only a single DIVI process is using the data directory.
     boost::filesystem::path pathLockFile = GetDataDir() / ".lock";
     FILE* file = fopen(pathLockFile.string().c_str(), "a"); // empty lock file; created if it doesn't exist.
@@ -967,206 +945,92 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // Wait maximum 10 seconds if an old wallet is still running. Avoids lockup during restart
     if (!lock.timed_lock(boost::get_system_time() + boost::posix_time::seconds(10)))
-        return InitError(strprintf(_("Cannot obtain a lock on data directory %s. DIVI Core is probably already running."), strDataDir));
+        return InitError(strprintf(_("Cannot obtain a lock on data directory %s. DIVI Core is probably already running."), datadir));
+    return true;
+}
 
-#ifndef WIN32
-    CreatePidFile(GetPidFile(), getpid());
-#endif
-    if (GetBoolArg("-shrinkdebugfile", !fDebug))
-        ShrinkDebugFile();
-    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("DIVI version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
-    LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
-#ifdef ENABLE_WALLET
-    LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
-#endif
-    if (!fLogTimestamps)
-        LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
-    LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
-    LogPrintf("Using data directory %s\n", strDataDir);
-    LogPrintf("Using config file %s\n", GetConfigFile().string());
-    LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, nFD);
-    std::ostringstream strErrors;
+bool CheckWalletFileExists(std::string strDataDir)
+{
+    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+    // Wallet file must be a plain filename without a directory
+    if (strWalletFile != boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile))
+        return InitError(strprintf(_("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
+    
+    return true;
+}
 
-    LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
+void StartScriptVerificationThreads(boost::thread_group& threadGroup)
+{
     if (nScriptCheckThreads) {
         for (int i = 0; i < nScriptCheckThreads - 1; i++)
             threadGroup.create_thread(&ThreadScriptCheck);
     }
+}
 
-    sporkManager.SetSporkAddress(Params().SporkKey());
 
-    if (mapArgs.count("-sporkkey")) // spork priv key
-    {
-        if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
-            return InitError(_("Unable to sign spork message, wrong key?"));
-    }
-
-    /* Start the RPC server already.  It will be started in "warmup" mode
-     * and not really process calls already (but it will signify connections
-     * that the server is there and will be ready later).  Warmup mode will
-     * be disabled when initialisation is finished.
-     */
-    if (fServer) {
-        uiInterface.InitMessage.connect(SetRPCWarmupStatus);
-        StartRPCThreads();
-    }
-
-    int64_t nStart;
-
-// ********************************************************* Step 5: Backup wallet and verify wallet database integrity
 #ifdef ENABLE_WALLET
-    if (!fDisableWallet) {
-        filesystem::path backupDir = GetDataDir() / "backups";
-        if (!filesystem::exists(backupDir)) {
-            // Always create backup folder to not confuse the operating system's file browser
-            filesystem::create_directories(backupDir);
+
+void ClearFoldersForResync()
+{
+    uiInterface.InitMessage(_("Preparing for resync..."));
+    // Delete the local blockchain folders to force a resync from scratch to get a consitent blockchain-state
+    boost::filesystem::path blocksDir = GetDataDir() / "blocks";
+    boost::filesystem::path chainstateDir = GetDataDir() / "chainstate";
+    boost::filesystem::path sporksDir = GetDataDir() / "sporks";
+    boost::filesystem::path zerocoinDir = GetDataDir() / "zerocoin";
+    
+    LogPrintf("Deleting blockchain folders blocks, chainstate, sporks and zerocoin\n");
+    // We delete in 4 individual steps in case one of the folder is missing already
+    try {
+        if (boost::filesystem::exists(blocksDir)){
+            boost::filesystem::remove_all(blocksDir);
+            LogPrintf("-resync: folder deleted: %s\n", blocksDir.string().c_str());
         }
-        nWalletBackups = GetArg("-createwalletbackups", 10);
-        nWalletBackups = std::max(0, std::min(10, nWalletBackups));
-        if (nWalletBackups > 0) {
-            if (filesystem::exists(backupDir)) {
-                // Create backup of the wallet
-                std::string dateTimeStr = DateTimeStrFormat(".%Y-%m-%d-%H-%M", GetTime());
-                std::string backupPathStr = backupDir.string();
-                backupPathStr += "/" + strWalletFile;
-                std::string sourcePathStr = GetDataDir().string();
-                sourcePathStr += "/" + strWalletFile;
-                boost::filesystem::path sourceFile = sourcePathStr;
-                boost::filesystem::path backupFile = backupPathStr + dateTimeStr;
-                sourceFile.make_preferred();
-                backupFile.make_preferred();
-                if (boost::filesystem::exists(sourceFile)) {
-#if BOOST_VERSION >= 158000
-                    try {
-                        boost::filesystem::copy_file(sourceFile, backupFile);
-                        LogPrintf("Creating backup of %s -> %s\n", sourceFile, backupFile);
-                    } catch (boost::filesystem::filesystem_error& error) {
-                        LogPrintf("Failed to create backup %s\n", error.what());
-                    }
-#else
-                    std::ifstream src(sourceFile.string(), std::ios::binary);
-                    std::ofstream dst(backupFile.string(), std::ios::binary);
-                    dst << src.rdbuf();
+
+        if (boost::filesystem::exists(chainstateDir)){
+            boost::filesystem::remove_all(chainstateDir);
+            LogPrintf("-resync: folder deleted: %s\n", chainstateDir.string().c_str());
+        }
+
+        if (boost::filesystem::exists(sporksDir)){
+            boost::filesystem::remove_all(sporksDir);
+            LogPrintf("-resync: folder deleted: %s\n", sporksDir.string().c_str());
+        }
+
+        if (boost::filesystem::exists(zerocoinDir)){
+            boost::filesystem::remove_all(zerocoinDir);
+            LogPrintf("-resync: folder deleted: %s\n", zerocoinDir.string().c_str());
+        }
+    } catch (boost::filesystem::filesystem_error& error) {
+        LogPrintf("Failed to delete blockchain folders %s\n", error.what());
+    }
+}
+
 #endif
-                }
-                // Keep only the last 10 backups, including the new one of course
-                typedef std::multimap<std::time_t, boost::filesystem::path> folder_set_t;
-                folder_set_t folder_set;
-                boost::filesystem::directory_iterator end_iter;
-                boost::filesystem::path backupFolder = backupDir.string();
-                backupFolder.make_preferred();
-                // Build map of backup files for current(!) wallet sorted by last write time
-                boost::filesystem::path currentFile;
-                for (boost::filesystem::directory_iterator dir_iter(backupFolder); dir_iter != end_iter; ++dir_iter) {
-                    // Only check regular files
-                    if (boost::filesystem::is_regular_file(dir_iter->status())) {
-                        currentFile = dir_iter->path().filename();
-                        // Only add the backups for the current wallet, e.g. wallet.dat.*
-                        if (dir_iter->path().stem().string() == strWalletFile) {
-                            folder_set.insert(folder_set_t::value_type(boost::filesystem::last_write_time(dir_iter->path()), *dir_iter));
-                        }
-                    }
-                }
-                // Loop backward through backup files and keep the N newest ones (1 <= N <= 10)
-                int counter = 0;
-                BOOST_REVERSE_FOREACH (PAIRTYPE(const std::time_t, boost::filesystem::path) file, folder_set) {
-                    counter++;
-                    if (counter > nWalletBackups) {
-                        // More than nWalletBackups backups: delete oldest one(s)
-                        try {
-                            boost::filesystem::remove(file.second);
-                            LogPrintf("Old backup deleted: %s\n", file.second);
-                        } catch (boost::filesystem::filesystem_error& error) {
-                            LogPrintf("Failed to delete backup %s\n", error.what());
-                        }
-                    }
-                }
-            }
+bool BackupWallet(std::string strDataDir, bool fDisableWallet)
+{
+#ifdef ENABLE_WALLET
+    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+    if (!fDisableWallet) {
+        WalletBackupFeatureContainer walletBackupFeatureContainer(nWalletBackups, strWalletFile, strDataDir);
+        LogPrintf("backing up wallet\n");
+        if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(strDataDir, strWalletFile))
+        {
+            return walletBackupFeatureContainer.GetBackupCreator().BackupWallet() && 
+                walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
         }
-
-        if (GetBoolArg("-resync", false)) {
-            uiInterface.InitMessage(_("Preparing for resync..."));
-            // Delete the local blockchain folders to force a resync from scratch to get a consitent blockchain-state
-            filesystem::path blocksDir = GetDataDir() / "blocks";
-            filesystem::path chainstateDir = GetDataDir() / "chainstate";
-            filesystem::path sporksDir = GetDataDir() / "sporks";
-            filesystem::path zerocoinDir = GetDataDir() / "zerocoin";
-            
-            LogPrintf("Deleting blockchain folders blocks, chainstate, sporks and zerocoin\n");
-            // We delete in 4 individual steps in case one of the folder is missing already
-            try {
-                if (filesystem::exists(blocksDir)){
-                    boost::filesystem::remove_all(blocksDir);
-                    LogPrintf("-resync: folder deleted: %s\n", blocksDir.string().c_str());
-                }
-
-                if (filesystem::exists(chainstateDir)){
-                    boost::filesystem::remove_all(chainstateDir);
-                    LogPrintf("-resync: folder deleted: %s\n", chainstateDir.string().c_str());
-                }
-
-                if (filesystem::exists(sporksDir)){
-                    boost::filesystem::remove_all(sporksDir);
-                    LogPrintf("-resync: folder deleted: %s\n", sporksDir.string().c_str());
-                }
-
-                if (filesystem::exists(zerocoinDir)){
-                    boost::filesystem::remove_all(zerocoinDir);
-                    LogPrintf("-resync: folder deleted: %s\n", zerocoinDir.string().c_str());
-                }
-            } catch (boost::filesystem::filesystem_error& error) {
-                LogPrintf("Failed to delete blockchain folders %s\n", error.what());
-            }
+        else 
+        {
+            LogPrintf("Error: Wallet integrity check failed.");
+            return false;
         }
-
-        LogPrintf("Using wallet %s\n", strWalletFile);
-        uiInterface.InitMessage(_("Verifying wallet..."));
-
-        if (!bitdb.Open(GetDataDir())) {
-            // try moving the database env out of the way
-            boost::filesystem::path pathDatabase = GetDataDir() / "database";
-            boost::filesystem::path pathDatabaseBak = GetDataDir() / strprintf("database.%d.bak", GetTime());
-            try {
-                boost::filesystem::rename(pathDatabase, pathDatabaseBak);
-                LogPrintf("Moved old %s to %s. Retrying.\n", pathDatabase.string(), pathDatabaseBak.string());
-            } catch (boost::filesystem::filesystem_error& error) {
-                // failure is ok (well, not really, but it's not worse than what we started with)
-            }
-
-            // try again
-            if (!bitdb.Open(GetDataDir())) {
-                // if it still fails, it probably means we can't even create the database env
-                string msg = strprintf(_("Error initializing wallet database environment %s!"), strDataDir);
-                return InitError(msg);
-            }
-        }
-
-// Won't salvage, too risky
-//        if (GetBoolArg("-salvagewallet", false)) {
-//            // Recover readable keypairs:
-//            if (!CWalletDB::Recover(bitdb, strWalletFile, true))
-//                return false;
-//        }
-
-        if (filesystem::exists(GetDataDir() / strWalletFile)) {
-            CDBEnv::VerifyResult r = bitdb.Verify(strWalletFile, NULL);
-            if (r == CDBEnv::RECOVER_OK) {
-                string msg = strprintf(_("Warning: wallet.dat corrupt, data salvaged!"
-                                         " Original wallet.dat saved as wallet.{timestamp}.bak in %s; if"
-                                         " your balance or transactions are incorrect you should"
-                                         " restore from a backup."),
-                    strDataDir);
-                InitWarning(msg);
-            }
-            if (r == CDBEnv::RECOVER_FAIL)
-                return InitError(_("wallet.dat corrupt, salvage failed"));
-        }
-
-    }  // (!fDisableWallet)
+    }
 #endif // ENABLE_WALLET
-    // ********************************************************* Step 6: network initialization
+    return true;
+}
 
+bool InitializeP2PNetwork()
+{
     RegisterNodeSignals(GetNodeSignals());
 
     if (mapArgs.count("-onlynet")) {
@@ -1279,39 +1143,74 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     BOOST_FOREACH (string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
+    
+    return true;
+}
 
+void PruneHDSeedParameterInteraction()
+{
     if (mapArgs.count("-hdseed") && IsHex(GetArg("-hdseed", "not hex")) && (mapArgs.count("-mnemonic") || mapArgs.count("-mnemonicpassphrase"))) {
         ForceRemoveArg("-mnemonic");
         ForceRemoveArg("-mnemonicpassphrase");
         LogPrintf("%s: parameter interaction: can't use -hdseed and -mnemonic/-mnemonicpassphrase together, will prefer -seed\n", __func__);
     }
+}
 
-#if ENABLE_ZMQ
-    pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(mapArgs);
+void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, const std::string& dataDirectoryInUse)
+{
+    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    LogPrintf("DIVI version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
+    LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
+    if(!fDisableWallet) LogPrintf("Using BerkeleyDB version %s\n", DbEnv::version(0, 0, 0));
+    if (!fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
+    LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
+    LogPrintf("Using data directory %s\n", dataDirectoryInUse);
+    LogPrintf("Using config file %s\n", GetConfigFile().string());
+    LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, numberOfFileDescriptors);
+    LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
+}
 
-    if (pzmqNotificationInterface) {
-        RegisterValidationInterface(pzmqNotificationInterface);
+bool SetSporkKey()
+{
+    sporkManager.SetSporkAddress(Params().SporkKey());
+    if (mapArgs.count("-sporkkey")) // spork priv key
+    {
+        if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
+            return InitError(_("Unable to sign spork message, wrong key?"));
     }
-#endif
+    return true;
+}
 
-    // ********************************************************* Step 7: load block chain
+void WarmUpRPCAndStartRPCThreads()
+{
+    /* Start the RPC server already.  It will be started in "warmup" mode
+     * and not really process calls already (but it will signify connections
+     * that the server is there and will be ready later).  Warmup mode will
+     * be disabled when initialisation is finished.
+     */
+    if (GetBoolArg("-server", false)) {
+        uiInterface.InitMessage.connect(SetRPCWarmupStatus);
+        StartRPCThreads();
+    }
+}
 
+void CreateHardlinksForBlocks()
+{
     fReindex = GetBoolArg("-reindex", false);
-
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
-    filesystem::path blocksDir = GetDataDir() / "blocks";
-    if (!filesystem::exists(blocksDir)) {
-        filesystem::create_directories(blocksDir);
+    boost::filesystem::path blocksDir = GetDataDir() / "blocks";
+    if (!boost::filesystem::exists(blocksDir)) {
+        boost::filesystem::create_directories(blocksDir);
         bool linked = false;
         for (unsigned int i = 1; i < 10000; i++) {
-            filesystem::path source = GetDataDir() / strprintf("blk%04u.dat", i);
-            if (!filesystem::exists(source)) break;
-            filesystem::path dest = blocksDir / strprintf("blk%05u.dat", i - 1);
+            boost::filesystem::path source = GetDataDir() / strprintf("blk%04u.dat", i);
+            if (!boost::filesystem::exists(source)) break;
+            boost::filesystem::path dest = blocksDir / strprintf("blk%05u.dat", i - 1);
             try {
-                filesystem::create_hard_link(source, dest);
+                boost::filesystem::create_hard_link(source, dest);
                 LogPrintf("Hardlinked %s -> %s\n", source.string(), dest.string());
                 linked = true;
-            } catch (filesystem::filesystem_error& e) {
+            } catch (boost::filesystem::filesystem_error& e) {
                 // Note: hardlink creation failing is not a disaster, it just means
                 // blocks will get re-downloaded from peers.
                 LogPrintf("Error hardlinking blk%04u.dat : %s\n", i, e.what());
@@ -1322,21 +1221,280 @@ bool AppInit2(boost::thread_group& threadGroup)
             fReindex = true;
         }
     }
+}
 
-    // cache size calculations
+std::pair<size_t,size_t> CalculateDBCacheSizes()
+{
     size_t nTotalCache = (GetArg("-dbcache", nDefaultDbCache) << 20);
+    size_t nBlockTreeDBCache = 0;
+    size_t nCoinDBCache = 0;
     if (nTotalCache < (nMinDbCache << 20))
         nTotalCache = (nMinDbCache << 20); // total cache cannot be less than nMinDbCache
     else if (nTotalCache > (nMaxDbCache << 20))
         nTotalCache = (nMaxDbCache << 20); // total cache cannot be greater than nMaxDbCache
-    size_t nBlockTreeDBCache = nTotalCache / 8;
+    nBlockTreeDBCache = nTotalCache / 8;
     if (nBlockTreeDBCache > (1 << 21) && !GetBoolArg("-txindex", true))
         nBlockTreeDBCache = (1 << 21); // block tree db cache shouldn't be larger than 2 MiB
     nTotalCache -= nBlockTreeDBCache;
-    size_t nCoinDBCache = nTotalCache / 2; // use half of the remaining cache for coindb cache
+    nCoinDBCache = nTotalCache / 2; // use half of the remaining cache for coindb cache
     nTotalCache -= nCoinDBCache;
     nCoinCacheSize = nTotalCache / 300; // coins in memory require around 300 bytes
 
+    return std::make_pair(nBlockTreeDBCache,nCoinDBCache);
+}
+
+bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
+{
+    const bool skipLoadingDueToError = true;
+    try {
+        UnloadBlockIndex();
+        std::pair<std::size_t, std::size_t> dbCacheSizes = CalculateDBCacheSizes();
+        CleanAndReallocateShallowDatabases(dbCacheSizes);
+
+        if (fReindex)
+            pblocktree->WriteReindexing(true);
+
+        // DIVI: load previous sessions sporks if we have them.
+        uiInterface.InitMessage(_("Loading sporks..."));
+        sporkManager.LoadSporksFromDB();
+
+        uiInterface.InitMessage(_("Loading block index..."));
+        string strBlockIndexError = "";
+        if (!LoadBlockIndex(strBlockIndexError)) {
+            strLoadError = _("Error loading block database");
+            strLoadError = strprintf("%s : %s", strLoadError, strBlockIndexError);
+            return skipLoadingDueToError;
+        }
+
+        // If the loaded chain has a wrong genesis, bail out immediately
+        // (we're likely using a testnet datadir, or the other way around).
+        if (!mapBlockIndex.empty() && mapBlockIndex.count(Params().HashGenesisBlock()) == 0)
+            return InitError(_("Incorrect or no genesis block found. Wrong datadir for network?"));
+
+        // Initialize the block index (no-op if non-empty database was already loaded)
+        if (!InitBlockIndex()) {
+            strLoadError = _("Error initializing block database");
+            return skipLoadingDueToError;
+        }
+
+        // Check for changed -txindex state
+        if (fTxIndex != GetBoolArg("-txindex", true)) {
+            strLoadError = _("You need to rebuild the database using -reindex to change -txindex");
+            return skipLoadingDueToError;
+        }
+
+        // Populate list of invalid/fraudulent outpoints that are banned from the chain
+        PopulateInvalidOutPointMap();
+
+        // Recalculate money supply for blocks that are impacted by accounting issue after zerocoin activation
+        if (GetBoolArg("-reindexmoneysupply", false)) {
+            if (chainActive.Height() > Params().Zerocoin_StartHeight()) {
+                RecalculateZDIVMinted();
+                RecalculateZDIVSpent();
+            }
+            RecalculateDIVSupply(1);
+        }
+
+        // Force recalculation of accumulators.
+        if (GetBoolArg("-reindexaccumulators", false)) {
+            CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
+            while (pindex->nHeight < chainActive.Height()) {
+                if (!count(listAccCheckpointsNoDB.begin(), listAccCheckpointsNoDB.end(), pindex->nAccumulatorCheckpoint))
+                    listAccCheckpointsNoDB.emplace_back(pindex->nAccumulatorCheckpoint);
+                pindex = chainActive.Next(pindex);
+            }
+        }
+
+        // DIVI: recalculate Accumulator Checkpoints that failed to database properly
+        if (!listAccCheckpointsNoDB.empty()) {
+            uiInterface.InitMessage(_("Calculating missing accumulators..."));
+            LogPrintf("%s : finding missing checkpoints\n", __func__);
+
+            string strError;
+            if (!ReindexAccumulators(listAccCheckpointsNoDB, strError))
+                return InitError(strError);
+        }
+
+        uiInterface.InitMessage(_("Verifying blocks..."));
+
+        // Flag sent to validation code to let it know it can skip certain checks
+        fVerifyingBlocks = true;
+
+        // Zerocoin must check at level 4
+        if (!CVerifyDB().VerifyDB(pcoinsdbview, 4, GetArg("-checkblocks", 100))) {
+            strLoadError = _("Corrupted block database detected");
+            fVerifyingBlocks = false;
+            return skipLoadingDueToError;
+        }
+    } catch (std::exception& e) {
+        if (fDebug) LogPrintf("%s\n", e.what());
+        strLoadError = _("Error opening block database");
+        fVerifyingBlocks = false;
+        return skipLoadingDueToError;
+    }
+
+    fVerifyingBlocks = false;
+    fLoaded = true;
+
+    return true;
+}
+
+bool InitializeDivi(boost::thread_group& threadGroup)
+{
+// ********************************************************* Step 1: setup
+#ifdef _MSC_VER
+    // Turn off Microsoft heap dump noise
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_WARN, CreateFileA("NUL", GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, 0));
+#endif
+#if _MSC_VER >= 1400
+    // Disable confusing "helpful" text message on abort, Ctrl-C
+    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+#endif
+#ifdef WIN32
+// Enable Data Execution Prevention (DEP)
+// Minimum supported OS versions: WinXP SP3, WinVista >= SP1, Win Server 2008
+// A failure is non-critical and needs no further attention!
+#ifndef PROCESS_DEP_ENABLE
+// We define this here, because GCCs winbase.h limits this to _WIN32_WINNT >= 0x0601 (Windows 7),
+// which is not correct. Can be removed, when GCCs winbase.h is fixed!
+#define PROCESS_DEP_ENABLE 0x00000001
+#endif
+    typedef BOOL(WINAPI * PSETPROCDEPPOL)(DWORD);
+    PSETPROCDEPPOL setProcDEPPol = (PSETPROCDEPPOL)GetProcAddress(GetModuleHandleA("Kernel32.dll"), "SetProcessDEPPolicy");
+    if (setProcDEPPol != NULL) setProcDEPPol(PROCESS_DEP_ENABLE);
+
+    // Initialize Windows Sockets
+    WSADATA wsadata;
+    int ret = WSAStartup(MAKEWORD(2, 2), &wsadata);
+    if (ret != NO_ERROR || LOBYTE(wsadata.wVersion) != 2 || HIBYTE(wsadata.wVersion) != 2) {
+        return InitError(strprintf("Error: Winsock library failed to start (WSAStartup returned error %d)", ret));
+    }
+#endif
+#ifndef WIN32
+
+    if (GetBoolArg("-sysperms", false)) {
+#ifdef ENABLE_WALLET
+        if (!GetBoolArg("-disablewallet", false))
+            return InitError("Error: -sysperms is not allowed in combination with enabled wallet functionality");
+#endif
+    } else {
+        umask(077);
+    }
+
+
+    // Clean shutdown on SIGTERM
+    struct sigaction sa;
+    sa.sa_handler = HandleSIGTERM;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction(SIGTERM, &sa, NULL);
+    sigaction(SIGINT, &sa, NULL);
+
+    // Reopen debug.log on SIGHUP
+    struct sigaction sa_hup;
+    sa_hup.sa_handler = HandleSIGHUP;
+    sigemptyset(&sa_hup.sa_mask);
+    sa_hup.sa_flags = 0;
+    sigaction(SIGHUP, &sa_hup, NULL);
+
+#if defined(__SVR4) && defined(__sun)
+    // ignore SIGPIPE on Solaris
+    signal(SIGPIPE, SIG_IGN);
+#endif
+#endif
+
+    // ********************************************************* Step 2: parameter interactions
+    // Set this early so that parameter interactions go to console
+    SetLoggingAndDebugSettings();
+
+    SetNetworkingParameters();
+
+    if(!EnableWalletFeatures())
+    {
+        return false;
+    }
+
+    // Make sure enough file descriptors are available
+    int numberOfFileDescriptors;
+    if(!SetMaxConnectionsAndFileDescriptors(numberOfFileDescriptors))
+    {
+        return false;
+    }
+
+    // ********************************************************* Step 3: parameter-to-internal-flags
+
+    if(!CheckCriticalUnsupportedFeaturesAreNotUsed())
+    {
+        return false;
+    }
+    SetConsistencyChecks();
+    SetNumberOfThreadsToCheckScripts();
+
+    // Staking needs a CWallet instance, so make sure wallet is enabled
+    bool fDisableWallet = WalletIsDisabled();
+    if (fDisableWallet) {
+        if (SoftSetBoolArg("-staking", false))
+            LogPrintf("InitializeDivi : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
+    }
+    if(!SetTransactionRequirements())
+    {
+        return false;
+    }
+    // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
+    // Sanity check
+    if (!VerifyCriticalDependenciesAreAvailable())
+        return InitError(_("Initialization sanity check failed. DIVI Core is shutting down."));
+
+    std::string strDataDir = GetDataDir().string();
+    if(!TryLockDataDirectory(strDataDir))
+    {
+        return false;
+    }
+    if(!fDisableWallet && !CheckWalletFileExists(strDataDir))
+    {
+        return false;
+    }
+
+#ifndef WIN32
+    CreatePidFile(GetPidFile(), getpid());
+#endif
+    PrintInitialLogHeader(fDisableWallet,numberOfFileDescriptors,strDataDir);
+    StartScriptVerificationThreads(threadGroup);
+
+    if(!SetSporkKey())
+    {
+        return false;
+    }
+    WarmUpRPCAndStartRPCThreads();
+
+    int64_t nStart;
+
+    // ********************************************************* Step 5: Backup wallet and verify wallet database integrity
+    BackupWallet(strDataDir, fDisableWallet);
+    if (GetBoolArg("-resync", false))
+    {
+        ClearFoldersForResync();
+    }
+    // ********************************************************* Step 6: network initialization
+
+    if(!InitializeP2PNetwork())
+    {
+        return false;
+    }
+
+    PruneHDSeedParameterInteraction();
+
+#if ENABLE_ZMQ
+    pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(mapArgs);
+
+    if (pzmqNotificationInterface) {
+        RegisterValidationInterface(pzmqNotificationInterface);
+    }
+#endif
+
+    // ********************************************************* Step 7: load block chain
+    CreateHardlinksForBlocks();
     bool fLoaded = false;
     while (!fLoaded) {
         bool fReset = fReindex;
@@ -1345,108 +1503,10 @@ bool AppInit2(boost::thread_group& threadGroup)
         uiInterface.InitMessage(_("Loading block index..."));
 
         nStart = GetTimeMillis();
-        do {
-            try {
-                UnloadBlockIndex();
-                delete pcoinsTip;
-                delete pcoinsdbview;
-                delete pcoinscatcher;
-                delete pblocktree;
-                delete zerocoinDB;
-                delete pSporkDB;
-
-                zerocoinDB = new CZerocoinDB(0, false, false);
-                pSporkDB = new CSporkDB(0, false, false);
-                pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReindex);
-                pcoinsdbview = new CCoinsViewDB(nCoinDBCache, false, fReindex);
-                pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);
-                pcoinsTip = new CCoinsViewCache(pcoinscatcher);
-
-                if (fReindex)
-                    pblocktree->WriteReindexing(true);
-
-                // DIVI: load previous sessions sporks if we have them.
-                uiInterface.InitMessage(_("Loading sporks..."));
-                sporkManager.LoadSporksFromDB();
-
-                uiInterface.InitMessage(_("Loading block index..."));
-                string strBlockIndexError = "";
-                if (!LoadBlockIndex(strBlockIndexError)) {
-                    strLoadError = _("Error loading block database");
-                    strLoadError = strprintf("%s : %s", strLoadError, strBlockIndexError);
-                    break;
-                }
-
-                // If the loaded chain has a wrong genesis, bail out immediately
-                // (we're likely using a testnet datadir, or the other way around).
-                if (!mapBlockIndex.empty() && mapBlockIndex.count(Params().HashGenesisBlock()) == 0)
-                    return InitError(_("Incorrect or no genesis block found. Wrong datadir for network?"));
-
-                // Initialize the block index (no-op if non-empty database was already loaded)
-                if (!InitBlockIndex()) {
-                    strLoadError = _("Error initializing block database");
-                    break;
-                }
-
-                // Check for changed -txindex state
-                if (fTxIndex != GetBoolArg("-txindex", true)) {
-                    strLoadError = _("You need to rebuild the database using -reindex to change -txindex");
-                    break;
-                }
-
-                // Populate list of invalid/fraudulent outpoints that are banned from the chain
-                PopulateInvalidOutPointMap();
-
-                // Recalculate money supply for blocks that are impacted by accounting issue after zerocoin activation
-                if (GetBoolArg("-reindexmoneysupply", false)) {
-                    if (chainActive.Height() > Params().Zerocoin_StartHeight()) {
-                        RecalculateZDIVMinted();
-                        RecalculateZDIVSpent();
-                    }
-                    RecalculateDIVSupply(1);
-                }
-
-                // Force recalculation of accumulators.
-                if (GetBoolArg("-reindexaccumulators", false)) {
-                    CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
-                    while (pindex->nHeight < chainActive.Height()) {
-                        if (!count(listAccCheckpointsNoDB.begin(), listAccCheckpointsNoDB.end(), pindex->nAccumulatorCheckpoint))
-                            listAccCheckpointsNoDB.emplace_back(pindex->nAccumulatorCheckpoint);
-                        pindex = chainActive.Next(pindex);
-                    }
-                }
-
-                // DIVI: recalculate Accumulator Checkpoints that failed to database properly
-                if (!listAccCheckpointsNoDB.empty()) {
-                    uiInterface.InitMessage(_("Calculating missing accumulators..."));
-                    LogPrintf("%s : finding missing checkpoints\n", __func__);
-
-                    string strError;
-                    if (!ReindexAccumulators(listAccCheckpointsNoDB, strError))
-                        return InitError(strError);
-                }
-
-                uiInterface.InitMessage(_("Verifying blocks..."));
-
-                // Flag sent to validation code to let it know it can skip certain checks
-                fVerifyingBlocks = true;
-
-                // Zerocoin must check at level 4
-                if (!CVerifyDB().VerifyDB(pcoinsdbview, 4, GetArg("-checkblocks", 100))) {
-                    strLoadError = _("Corrupted block database detected");
-                    fVerifyingBlocks = false;
-                    break;
-                }
-            } catch (std::exception& e) {
-                if (fDebug) LogPrintf("%s\n", e.what());
-                strLoadError = _("Error opening block database");
-                fVerifyingBlocks = false;
-                break;
-            }
-
-            fVerifyingBlocks = false;
-            fLoaded = true;
-        } while (false);
+        if(!TryToLoadBlocks(fLoaded,strLoadError))
+        {
+            return false;
+        }
 
         if (!fLoaded) {
             // first suggest a reindex
@@ -1484,7 +1544,9 @@ bool AppInit2(boost::thread_group& threadGroup)
     fFeeEstimatesInitialized = true;
 
 // ********************************************************* Step 8: load wallet
+    std::ostringstream strErrors;
 #ifdef ENABLE_WALLET
+    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     if (fDisableWallet) {
         pwalletMain = NULL;
         LogPrintf("Wallet disabled!\n");
@@ -1569,21 +1631,6 @@ bool AppInit2(boost::thread_group& threadGroup)
             }
 
             pwalletMain->SetBestChain(chainActive.GetLocator());
-
-            // Try to create wallet backup right after new wallet was created
-            std::string strBackupWarning;
-            std::string strBackupError;
-#if 0 // TODO: check this
-            if(!AutoBackupWallet(pwalletMain, "", strBackupWarning, strBackupError)) {
-                if (!strBackupWarning.empty()) {
-                    InitWarning(strBackupWarning);
-                }
-                if (!strBackupError.empty()) {
-                    InitError(strBackupError);
-                    return NULL;
-                }
-            }
-#endif
 
         }
         else if (mapArgs.count("-usehd")) {
@@ -1682,35 +1729,9 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 10: setup ObfuScation
 
-
-    if (!fLiteMode) {
-        boost::filesystem::path pathDB = GetDataDir();
-        std::string strDBName;
-
-        strDBName = "mncache.dat";
-        uiInterface.InitMessage(_("Loading masternode cache..."));
-        CFlatDB<CMasternodeMan> flatdb1(strDBName, "magicMasternodeCache");
-        if(!flatdb1.Load(mnodeman)) {
-            return InitError(_("Failed to load masternode cache from") + "\n" + (pathDB / strDBName).string());
-        }
-
-        if(mnodeman.size()) {
-            strDBName = "mnpayments.dat";
-            uiInterface.InitMessage(_("Loading masternode payment cache..."));
-            CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
-            if(!flatdb2.Load(masternodePayments)) {
-                return InitError(_("Failed to load masternode payments cache from") + "\n" + (pathDB / strDBName).string());
-            }
-        } else {
-            uiInterface.InitMessage(_("Masternode cache is empty, skipping payments and governance cache..."));
-        }
-
-        strDBName = "netfulfilled.dat";
-        uiInterface.InitMessage(_("Loading fulfilled requests cache..."));
-        CFlatDB<CNetFulfilledRequestManager> flatdb4(strDBName, "magicFulfilledCache");
-        if(!flatdb4.Load(netfulfilledman)) {
-            return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
-        }
+    if(!LoadDataCaches())
+    {
+        return false;
     }
 
 

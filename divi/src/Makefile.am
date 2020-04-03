@@ -32,6 +32,22 @@ LIBBITCOIN_UNIVALUE=univalue/libbitcoin_univalue.a
 LIBBITCOIN_ZEROCOIN=libzerocoin/libbitcoin_zerocoin.a
 LIBBITCOINQT=qt/libbitcoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
+LIBGMOCK=GMock/libgmock.a
+GMOCK=GMock/gmock-all.o
+GTEST=GMock/gtest-all.o
+GMOCK_INCLUDE=GMock/googlemock/include
+GTEST_INCLUDE=GMock/googletest/include
+GMOCK_ALL=GMock/googlemock/src/gmock-all.cc
+GTEST_ALL=GMock/googletest/src/gtest-all.cc
+
+$(GMOCK): $(wildcard ${GMOCK_INCLUDE}/*) $(wildcard ${GTEST_INCLUDE}/*) $(GMOCK_ALL)
+	$(CC) -isystem ${GMOCK_INCLUDE} -IGMock/googlemock/ -isystem ${GTEST_INCLUDE} -IGMock/googletest -pthread -c ${GMOCK_ALL} -o $@
+
+$(GTEST): $(wildcard ${GMOCK_INCLUDE}/*) $(wildcard ${GTEST_INCLUDE}/*) $(GTEST_ALL)
+	$(CC) -isystem ${GMOCK_INCLUDE} -IGMock/googlemock/ -isystem ${GTEST_INCLUDE} -IGMock/googletest -pthread -c ${GTEST_ALL} -o $@
+
+$(LIBGMOCK): $(GTEST) $(GMOCK)
+	ar -rv $@ $^
 
 $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
@@ -46,6 +62,7 @@ EXTRA_LIBRARIES = \
   libzerocoin/libbitcoin_zerocoin.a \
   libbitcoin_server.a \
   libbitcoin_cli.a
+
 if ENABLE_WALLET
 BITCOIN_INCLUDES += $(BDB_CPPFLAGS)
 EXTRA_LIBRARIES += libbitcoin_wallet.a
@@ -89,11 +106,13 @@ BITCOIN_CORE_H = \
   bip39.h \
   bip39_english.h \
   bloom.h \
+  blockmap.h\
   chain.h \
   chainparams.h \
   chainparamsbase.h \
   chainparamsseeds.h \
   checkpoints.h \
+  checkpoint_data.h\
   checkqueue.h \
   clientversion.h \
   coincontrol.h \
@@ -112,12 +131,16 @@ BITCOIN_CORE_H = \
   obfuscation.h \
   obfuscation-relay.h \
   db.h \
+  dbenv.h \
+  DatabaseWrapper.h\
   eccryptoverify.h \
   ecwrapper.h \
   flat-database.h \
+  FilteredBoostFileSystem.h\
   hash.h \
   hdchain.h \
   init.h \
+  datacachemanager.h \
   kernel.h \
   swifttx.h \
   key.h \
@@ -133,6 +156,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   miner.h \
+  monthlyWalletBackupCreator.h \
   mruset.h \
   netbase.h \
   netfulfilledman.h \
@@ -153,6 +177,7 @@ BITCOIN_CORE_H = \
   script/standard.h \
   script/script_error.h \
   serialize.h \
+  Secp256k1Context.h \
   spork.h \
   sporkdb.h \
   spentindex.h \
@@ -160,6 +185,7 @@ BITCOIN_CORE_H = \
   sync.h \
   threadsafety.h \
   timedata.h \
+  timeIntervalConstants.h \
   tinyformat.h \
   torcontrol.h \
   txdb.h \
@@ -168,12 +194,17 @@ BITCOIN_CORE_H = \
   uint256.h \
   undo.h \
   util.h \
+  Logging.h \
+  DataDirectory.h \
   utilstrencodings.h \
   utilmoneystr.h \
   utiltime.h \
   validationinterface.h \
   version.h \
   wallet.h \
+  walletBackupCreator.h \
+  walletBackupFeatureContainer.h \
+  WalletIntegrityVerifier.h \
   wallet_ismine.h \
   walletdb.h \
   zmq/zmqabstractnotifier.h \
@@ -207,11 +238,14 @@ libbitcoin_server_a_SOURCES = \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
+  FilteredBoostFileSystem.cpp\
   init.cpp \
+  datacachemanager.cpp \
   leveldbwrapper.cpp \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \
+  monthlyWalletBackupCreator.cpp \
   net.cpp \
   netfulfilledman.cpp \
   noui.cpp \
@@ -232,6 +266,9 @@ libbitcoin_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   validationinterface.cpp \
+  walletBackupCreator.cpp \
+  walletBackupFeatureContainer.cpp \
+  WalletIntegrityVerifier.cpp \
   $(JSON_H) \
   $(BITCOIN_CORE_H)
 
@@ -258,6 +295,9 @@ libbitcoin_wallet_a_SOURCES = \
   obfuscation.cpp \
   obfuscation-relay.cpp \
   db.cpp \
+  dbenv.cpp \
+  DatabaseWrapper.cpp \
+  crypto/aes.cpp \
   crypter.cpp \
   swifttx.cpp \
   masternode.cpp \
@@ -381,6 +421,7 @@ libbitcoin_common_a_SOURCES = \
   script/sign.cpp \
   script/standard.cpp \
   script/script_error.cpp \
+  Secp256k1Context.cpp \
   spork.cpp \
   sporkdb.cpp \
   $(BITCOIN_CORE_H)
@@ -401,6 +442,8 @@ libbitcoin_util_a_SOURCES = \
   sync.cpp \
   uint256.cpp \
   util.cpp \
+  Logging.cpp \
+  DataDirectory.cpp \
   utilstrencodings.cpp \
   utilmoneystr.cpp \
   utiltime.cpp \
@@ -553,12 +596,4 @@ clean-local:
 
 if ENABLE_TESTS
 include Makefile.test.include
-endif
-
-if ENABLE_QT
-include Makefile.qt.include
-endif
-
-if ENABLE_QT_TESTS
-include Makefile.qttest.include
 endif

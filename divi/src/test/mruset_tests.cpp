@@ -5,7 +5,6 @@
 #include "mruset.h"
 
 #include "random.h"
-#include "util.h"
 
 #include <set>
 

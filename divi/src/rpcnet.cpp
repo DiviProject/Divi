@@ -13,7 +13,7 @@
 #include "protocol.h"
 #include "sync.h"
 #include "timedata.h"
-#include "util.h"
+#include "utiltime.h"
 #include "version.h"
 
 #include <boost/foreach.hpp>

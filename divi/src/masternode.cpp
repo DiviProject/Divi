@@ -8,7 +8,7 @@
 #include "masternodeman.h"
 #include "obfuscation.h"
 #include "sync.h"
-#include "util.h"
+#include "Logging.h"
 #include <boost/lexical_cast.hpp>
 
 // keep track of the scanning errors I've seen

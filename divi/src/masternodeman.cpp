@@ -9,7 +9,7 @@
 #include "masternode.h"
 #include "obfuscation.h"
 #include "spork.h"
-#include "util.h"
+#include "Logging.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 

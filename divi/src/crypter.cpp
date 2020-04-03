@@ -5,10 +5,11 @@
 #include "crypter.h"
 
 #include "crypto/aes.h"
+
 #include "crypto/sha512.h"
 #include "script/script.h"
 #include "script/standard.h"
-#include "util.h"
+#include "Logging.h"
 
 #include <boost/foreach.hpp>
 #include <openssl/aes.h>

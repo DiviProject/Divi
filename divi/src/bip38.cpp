@@ -6,7 +6,6 @@
 #include "base58.h"
 #include "hash.h"
 #include "pubkey.h"
-#include "util.h"
 #include "utilstrencodings.h"
 
 #include <openssl/aes.h>

@@ -10,6 +10,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
+#include "test_only.h"
 
 using namespace std;
 using namespace json_spirit;
@@ -91,6 +92,9 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
 
 BOOST_AUTO_TEST_CASE(rpc_rawsign)
 {
+    
+    
+
     Value r;
     // input is a 1-of-2 multisig (so is output):
     string prevout =
@@ -102,10 +106,14 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign)
     string notsigned = r.get_str();
     string privkey1 = "\"YVobcS47fr6kceZy9LzLJR8WQ6YRpUwYKoJhrnEXepebMxaSpbnn\"";
     string privkey2 = "\"YRyMjG8hbm8jHeDMAfrzSeHq5GgAj7kuHFvJtMudCUH3sCkq1WtA\"";
+
     r = CallRPC(string("signrawtransaction ")+notsigned+" "+prevout+" "+"[]");
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == false);
+
     r = CallRPC(string("signrawtransaction ")+notsigned+" "+prevout+" "+"["+privkey1+","+privkey2+"]");
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == true);
+
+    
 }
 
 BOOST_AUTO_TEST_CASE(rpc_format_monetary_values)

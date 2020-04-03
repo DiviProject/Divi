@@ -36,7 +36,7 @@ struct TestingSetup {
         SelectParams(CBaseChainParams::UNITTEST);
         noui_connect();
 #ifdef ENABLE_WALLET
-        bitdb.MakeMock();
+        CDB::bitdb.MakeMock();
 #endif
         pathTemp = GetTempPath() / strprintf("test_divi_%lu_%i", (unsigned long)GetTime(), (int)(GetRand(100000)));
         boost::filesystem::create_directories(pathTemp);
@@ -69,7 +69,7 @@ struct TestingSetup {
         delete pcoinsdbview;
         delete pblocktree;
 #ifdef ENABLE_WALLET
-        bitdb.Flush(true);
+        CDB::bitdb.Flush(true);
 #endif
         boost::filesystem::remove_all(pathTemp);
     }

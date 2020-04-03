@@ -11,7 +11,7 @@
 #include "script/script.h"
 #include "script/standard.h"
 #include "sync.h"
-#include "util.h"
+#include "Logging.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
 #include "wallet.h"

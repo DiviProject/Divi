@@ -9,7 +9,7 @@
 // Copyright (c) 2015-2017 The PIVX Developers
 
 #include "reverse_iterate.h"
-#include "util.h"
+#include "Logging.h"
 #include "libzerocoin/Denominations.h"
 #include "primitives/zerocoin.h"
 #include <list>

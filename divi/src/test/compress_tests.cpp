@@ -3,7 +3,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "compressor.h"
-#include "util.h"
 
 #include <stdint.h>
 

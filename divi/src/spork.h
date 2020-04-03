@@ -11,7 +11,6 @@
 #include "main.h"
 #include "net.h"
 #include "sync.h"
-#include "util.h"
 
 #include "obfuscation.h"
 #include "protocol.h"

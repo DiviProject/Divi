@@ -16,7 +16,7 @@
 #include <vector>
 
 #include <boost/test/unit_test.hpp>
-
+#include "test_only.h"
 using namespace std;
 
 // Helpers:
@@ -52,6 +52,8 @@ BOOST_AUTO_TEST_SUITE(script_P2SH_tests)
 BOOST_AUTO_TEST_CASE(sign)
 {
     LOCK(cs_main);
+    
+    
     // Pay-to-script-hash looks like this:
     // scriptSig:    <sig> <sig...> <serialized_script>
     // scriptPubKey: HASH160 <hash> EQUAL
@@ -110,6 +112,7 @@ BOOST_AUTO_TEST_CASE(sign)
     // All of the above should be OK, and the txTos have valid signatures
     // Check to make sure signature verification fails if we use the wrong ScriptSig:
     for (int i = 0; i < 8; i++)
+    {
         for (int j = 0; j < 8; j++)
         {
             CScript sigSave = txTo[i].vin[0].scriptSig;
@@ -121,6 +124,9 @@ BOOST_AUTO_TEST_CASE(sign)
                 BOOST_CHECK_MESSAGE(!sigOK, strprintf("VerifySignature %d %d", i, j));
             txTo[i].vin[0].scriptSig = sigSave;
         }
+    }
+
+    
 }
 
 BOOST_AUTO_TEST_CASE(norecurse)
@@ -153,6 +159,8 @@ BOOST_AUTO_TEST_CASE(norecurse)
 BOOST_AUTO_TEST_CASE(set)
 {
     LOCK(cs_main);
+    
+    
     // Test the CScript::Set* methods
     CBasicKeyStore keystore;
     CKey key[4];
@@ -205,6 +213,7 @@ BOOST_AUTO_TEST_CASE(set)
         BOOST_CHECK_MESSAGE(SignSignature(keystore, txFrom, txTo[i], 0), strprintf("SignSignature %d", i));
         BOOST_CHECK_MESSAGE(IsStandardTx(txTo[i], reason), strprintf("txTo[%d].IsStandard", i));
     }
+    
 }
 
 BOOST_AUTO_TEST_CASE(is)
@@ -261,6 +270,9 @@ BOOST_AUTO_TEST_CASE(switchover)
 BOOST_AUTO_TEST_CASE(AreInputsStandard)
 {
     LOCK(cs_main);
+    
+    
+    
     CCoinsView coinsDummy;
     CCoinsViewCache coins(&coinsDummy);
     CBasicKeyStore keystore;
@@ -376,6 +388,8 @@ BOOST_AUTO_TEST_CASE(AreInputsStandard)
 
     BOOST_CHECK(!::AreInputsStandard(txToNonStd2, coins));
     BOOST_CHECK_EQUAL(GetP2SHSigOpCount(txToNonStd2, coins), 20U);
+
+    
 }
 
 BOOST_AUTO_TEST_SUITE_END()

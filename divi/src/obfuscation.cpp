@@ -11,7 +11,8 @@
 #include "script/sign.h"
 #include "swifttx.h"
 #include "ui_interface.h"
-#include "util.h"
+#include "utiltime.h"
+#include "Logging.h"
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>

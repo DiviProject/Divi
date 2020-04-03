@@ -300,7 +300,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
     {
         while (pc < pend)
         {
-            bool fExec = !count(vfExec.begin(), vfExec.end(), false);
+            bool fExec = std::count(vfExec.begin(), vfExec.end(), false)==0;
 
             //
             // Read instruction

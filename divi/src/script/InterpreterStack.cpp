@@ -6,7 +6,15 @@ RandomAccessStack::RandomAccessStack(): stack_()
 
 const StackElement& RandomAccessStack::top(unsigned depth) const
 {
-    return *(stack_.rbegin() + depth);
+    static StackElement defaultValue;
+    if(depth < stack_.size())
+    {
+        return *(stack_.rbegin() + depth);
+    }
+    else
+    {
+        return defaultValue;
+    }
 }
 void RandomAccessStack::push(const StackElement& element)
 {
@@ -14,7 +22,10 @@ void RandomAccessStack::push(const StackElement& element)
 }
 void RandomAccessStack::pop()
 {
-    stack_.pop_back();
+    if(!empty())
+    {
+        stack_.pop_back();
+    }
 }
 
 const BasicStack& RandomAccessStack::getStack() const

@@ -1,10 +1,10 @@
-#include <InterpreterStack.h>
+#include <script/InterpreterStack.h>
 
 RandomAccessStack::RandomAccessStack(): stack_()
 {
 }
 
-const StackElement& RandomAccessStack::top(unsigned depth = 0) const
+const StackElement& RandomAccessStack::top(unsigned depth) const
 {
     return *(stack_.rbegin() + depth);
 }
@@ -33,6 +33,7 @@ bool RandomAccessStack::empty() const
 // Interface functionality
 bool InterpreterStack::PushData(const StackElement& data)
 {
+    return false;
 }
 
 bool InterpreterStack::ApplyOpcode(opcodetype opcode)

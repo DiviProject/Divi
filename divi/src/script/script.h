@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-#include <opcodes.h>
+#include <script/opcodes.h>
 
 typedef std::vector<unsigned char> valtype;
 

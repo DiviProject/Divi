@@ -207,31 +207,51 @@ void ParseParameters(int argc, const char* const argv[])
 
 GlobalParametersRecord globalParametersRecord(mapArgs);
 
+bool ParameterIsSet (const std::string& key)
+{
+    return mapArgs.count(key);
+}
 
+std::string GetParameter(const std::string& key)
+{
+    if(ParameterIsSet(key))
+    {
+        return mapArgs[key];
+    }
+    else
+    {
+        return "";
+    }
+}
+
+void SetParameter (const std::string& key, const std::string& value)
+{
+    mapArgs[key] = value;
+}
 
 std::string GetArg(const std::string& strArg, const std::string& strDefault)
 {
-    globalParametersRecord.GetArg(strArg, strDefault);
+    return globalParametersRecord.GetArg(strArg, strDefault);
 }
 
 int64_t GetArg(const std::string& strArg, int64_t nDefault)
 {
-    globalParametersRecord.GetArg(strArg, nDefault);
+    return globalParametersRecord.GetArg(strArg, nDefault);
 }
 
 bool GetBoolArg(const std::string& strArg, bool fDefault)
 {
-    globalParametersRecord.GetBoolArg(strArg, fDefault);
+    return globalParametersRecord.GetBoolArg(strArg, fDefault);
 }
 
 bool SoftSetArg(const std::string& strArg, const std::string& strValue)
 {
-    globalParametersRecord.SoftSetArg(strArg, strValue);
+    return globalParametersRecord.SoftSetArg(strArg, strValue);
 }
 
 bool SoftSetBoolArg(const std::string& strArg, bool fValue)
 {
-    globalParametersRecord.SoftSetBoolArg(strArg, fValue);
+    return globalParametersRecord.SoftSetBoolArg(strArg, fValue);
 }
 
 static const int screenWidth = 79;

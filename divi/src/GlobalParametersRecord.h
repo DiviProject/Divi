@@ -1,5 +1,5 @@
-#ifndef GLOBAL_PAREMETERS_RECORD_H
-#define GLOBAL_PAREMETERS_RECORD_H
+#ifndef GLOBAL_PARAMETERS_RECORD_H
+#define GLOBAL_PARAMETERS_RECORD_H
 #include <string>
 #include <map>
 
@@ -30,4 +30,4 @@ public:
     bool SoftSetBoolArg(const std::string& strArg, bool fValue);
 };
 
-#endif //GLOBAL_PAREMETERS_RECORD_H
+#endif //GLOBAL_PARAMETERS_RECORD_H

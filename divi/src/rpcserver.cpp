@@ -680,14 +680,14 @@ void StartRPCThreads()
     std::vector<ip::tcp::endpoint> vEndpoints;
     bool bBindAny = false;
     int defaultPort = GetArg("-rpcport", BaseParams().RPCPort());
-    if (!mapArgs.count("-rpcallowip")) // Default to loopback if not allowing external IPs
+    if (!ParameterIsSet("-rpcallowip")) // Default to loopback if not allowing external IPs
     {
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v6::loopback(), defaultPort));
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v4::loopback(), defaultPort));
-        if (mapArgs.count("-rpcbind")) {
+        if (ParameterIsSet("-rpcbind")) {
             LogPrintf("WARNING: option -rpcbind was ignored because -rpcallowip was not specified, refusing to allow everyone to connect\n");
         }
-    } else if (mapArgs.count("-rpcbind")) // Specific bind address
+    } else if (ParameterIsSet("-rpcbind")) // Specific bind address
     {
         BOOST_FOREACH (const std::string& addr, mapMultiArgs["-rpcbind"]) {
             try {

@@ -68,10 +68,10 @@ bool AppInit(int argc, char* argv[])
     ParseParameters(argc, argv);
 
     // Process help and version before taking care about datadir
-    if (mapArgs.count("-?") || mapArgs.count("-help") || mapArgs.count("-version")) {
+    if (ParameterIsSet("-?") || ParameterIsSet("-help") || ParameterIsSet("-version")) {
         std::string strUsage = translate("Divi Core Daemon") + " " + translate("version") + " " + FormatFullVersion() + "\n";
 
-        if (mapArgs.count("-version")) {
+        if (ParameterIsSet("-version")) {
             strUsage += LicenseInfo();
         } else {
             strUsage += "\n" + translate("Usage:") + "\n" +

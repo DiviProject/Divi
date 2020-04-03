@@ -46,7 +46,7 @@ static bool AppInitRawTx(int argc, char* argv[])
 
     fCreateBlank = GetBoolArg("-create", false);
 
-    if (argc < 2 || mapArgs.count("-?") || mapArgs.count("-help")) {
+    if (argc < 2 || ParameterIsSet("-?") || ParameterIsSet("-help")) {
         // First part of help message is specific to this utility
         std::string strUsage = translate("Divi Core divi-tx utility version") + " " + FormatFullVersion() + "\n\n" +
                                translate("Usage:") + "\n" +

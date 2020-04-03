@@ -272,7 +272,6 @@ libbitcoin_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   FilteredBoostFileSystem.cpp \
-  GlobalParametersRecord.cpp \
   init.cpp \
   FeeAndPriorityCalculator.cpp \
   datacachemanager.cpp \
@@ -461,6 +460,7 @@ libbitcoin_util_a_SOURCES = \
   compat/glibcxx_sanity.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
+  GlobalParametersRecord.cpp \
   random.cpp \
   rpcprotocol.cpp \
   sync.cpp \

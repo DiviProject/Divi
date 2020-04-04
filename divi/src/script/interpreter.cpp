@@ -300,7 +300,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
     {
         while (pc < pend)
         {
-            bool fExec = std::count(vfExec.begin(), vfExec.end(), false)==0;
+            bool conditionalScopeNeedsClosing = std::count(vfExec.begin(), vfExec.end(), false)==0;
 
             //
             // Read instruction
@@ -317,13 +317,13 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
             if (OpcodeIsDisabled(opcode))
                 return set_error(serror, SCRIPT_ERR_DISABLED_OPCODE); // Disabled opcodes.
 
-            if (fExec && 0 <= opcode && opcode <= OP_PUSHDATA4) {
+            if (conditionalScopeNeedsClosing && 0 <= opcode && opcode <= OP_PUSHDATA4) {
                 if (fRequireMinimal && !CheckMinimalPush(vchPushValue, opcode)) {
                     return set_error(serror, SCRIPT_ERR_MINIMALDATA);
                 }
                 stack.push_back(vchPushValue);
             }
-            else if (fExec || (OP_IF <= opcode && opcode <= OP_ENDIF))
+            else if (conditionalScopeNeedsClosing || (OP_IF <= opcode && opcode <= OP_ENDIF))
             {
                 switch (opcode)
                 {
@@ -359,7 +359,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     {
                         // <expression> if [statements] [else [statements]] endif
                         bool fValue = false;
-                        if (fExec)
+                        if (conditionalScopeNeedsClosing)
                         {
                             if (stack.size() < 1)
                                 return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);

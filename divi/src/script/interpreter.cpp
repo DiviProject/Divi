@@ -288,7 +288,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
     CScript::const_iterator pbegincodehash = script.begin();
     opcodetype opcode;
     valtype vchPushValue;
-    vector<bool> vfExec;
+    vector<bool> conditionalScopeReadStatusStack;
     vector<valtype> altstack;
     set_error(serror, SCRIPT_ERR_UNKNOWN_ERROR);
     if (script.size() > 10000)
@@ -300,7 +300,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
     {
         while (pc < pend)
         {
-            bool conditionalScopeNeedsClosing = std::count(vfExec.begin(), vfExec.end(), false)==0;
+            bool conditionalScopeNeedsClosing = std::count(conditionalScopeReadStatusStack.begin(), conditionalScopeReadStatusStack.end(), false)!=0;
 
             //
             // Read instruction
@@ -317,13 +317,13 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
             if (OpcodeIsDisabled(opcode))
                 return set_error(serror, SCRIPT_ERR_DISABLED_OPCODE); // Disabled opcodes.
 
-            if (conditionalScopeNeedsClosing && 0 <= opcode && opcode <= OP_PUSHDATA4) {
+            if (!conditionalScopeNeedsClosing && 0 <= opcode && opcode <= OP_PUSHDATA4) {
                 if (fRequireMinimal && !CheckMinimalPush(vchPushValue, opcode)) {
                     return set_error(serror, SCRIPT_ERR_MINIMALDATA);
                 }
                 stack.push_back(vchPushValue);
             }
-            else if (conditionalScopeNeedsClosing || (OP_IF <= opcode && opcode <= OP_ENDIF))
+            else if (!conditionalScopeNeedsClosing || (OP_IF <= opcode && opcode <= OP_ENDIF))
             {
                 switch (opcode)
                 {
@@ -359,7 +359,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     {
                         // <expression> if [statements] [else [statements]] endif
                         bool fValue = false;
-                        if (conditionalScopeNeedsClosing)
+                        if (!conditionalScopeNeedsClosing)
                         {
                             if (stack.size() < 1)
                                 return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
@@ -369,23 +369,23 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                                 fValue = !fValue;
                             popstack(stack);
                         }
-                        vfExec.push_back(fValue);
+                        conditionalScopeReadStatusStack.push_back(fValue);
                     }
                     break;
 
                     case OP_ELSE:
                     {
-                        if (vfExec.empty())
+                        if (conditionalScopeReadStatusStack.empty())
                             return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
-                        vfExec.back() = !vfExec.back();
+                        conditionalScopeReadStatusStack.back() = !conditionalScopeReadStatusStack.back();
                     }
                     break;
 
                     case OP_ENDIF:
                     {
-                        if (vfExec.empty())
+                        if (conditionalScopeReadStatusStack.empty())
                             return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
-                        vfExec.pop_back();
+                        conditionalScopeReadStatusStack.pop_back();
                     }
                     break;
 
@@ -914,7 +914,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
         return set_error(serror, SCRIPT_ERR_UNKNOWN_ERROR);
     }
 
-    if (!vfExec.empty())
+    if (!conditionalScopeReadStatusStack.empty())
         return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
 
     return set_success(serror);

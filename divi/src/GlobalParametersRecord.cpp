@@ -45,3 +45,8 @@ bool GlobalParametersRecord::SoftSetBoolArg(const std::string& strArg, bool fVal
     else
         return SoftSetArg(strArg, std::string("0"));
 }
+
+void GlobalParametersRecord::ForceRemoveArg(const std::string &strArg)
+{
+    mapArgs_.erase(strArg);
+}

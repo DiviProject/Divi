@@ -254,6 +254,11 @@ bool SoftSetBoolArg(const std::string& strArg, bool fValue)
     return globalParametersRecord.SoftSetBoolArg(strArg, fValue);
 }
 
+void ForceRemoveArg(const std::string &strArg)
+{
+    globalParametersRecord.ForceRemoveArg(strArg);
+}
+
 static const int screenWidth = 79;
 static const int optIndent = 2;
 static const int msgIndent = 7;
@@ -544,9 +549,4 @@ void SetThreadPriority(int nPriority)
     setpriority(PRIO_PROCESS, 0, nPriority);
 #endif // PRIO_THREAD
 #endif // WIN32
-}
-
-void ForceRemoveArg(const string &strArg)
-{
-    mapArgs.erase(strArg);
 }

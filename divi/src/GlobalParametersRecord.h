@@ -28,6 +28,8 @@ public:
     bool SoftSetArg(const std::string& strArg, const std::string& strValue);
 
     bool SoftSetBoolArg(const std::string& strArg, bool fValue);
+    
+    void ForceRemoveArg(const std::string &strArg);
 };
 
 #endif //GLOBAL_PARAMETERS_RECORD_H

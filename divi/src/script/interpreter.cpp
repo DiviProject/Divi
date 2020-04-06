@@ -14,6 +14,8 @@
 #include "script/script.h"
 #include "uint256.h"
 
+#include <functional>
+
 using namespace std;
 
 typedef vector<unsigned char> valtype;
@@ -258,6 +260,64 @@ bool OpcodeIsDisabled(const opcodetype& opcode)
     return false;
 }
 
+
+typedef std::vector<valtype> StackType;
+typedef bool (*StackOperation)(StackType&, StackType&, unsigned int, ScriptError*);
+
+bool UnknownOp(StackType& stack, StackType& altstack, unsigned flags, ScriptError* serror)
+{
+    return set_error(serror, SCRIPT_ERR_BAD_OPCODE);
+}
+
+bool DisabledOp(StackType& stack, StackType& altstack, unsigned flags, ScriptError* serror)
+{
+    if (flags & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
+    {
+        return set_error(serror, SCRIPT_ERR_DISCOURAGE_UPGRADABLE_NOPS);
+    }
+    return true;
+}
+
+struct StackOperationManager
+{
+private:
+    const std::set<opcodetype> upgradableOpCodes = 
+        {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
+private:
+    std::map<opcodetype, StackOperation> stackOperationMapping_;
+    StackOperation defaultOperation_;
+    void SetMappingForUpgradableOpCodes()
+    {
+        using namespace std::placeholders;
+
+        for(const opcodetype& opcode: upgradableOpCodes)
+        {
+            stackOperationMapping_[opcode] = DisabledOp;
+        }
+    }
+public:
+    StackOperationManager(): defaultOperation_(UnknownOp)
+    {
+    }
+
+    void InitMapping()
+    {
+        SetMappingForUpgradableOpCodes();
+    }
+
+    StackOperation& GetOp(opcodetype opcode)
+    {
+        auto it = stackOperationMapping_.find(opcode);
+        if(it != stackOperationMapping_.end())
+        {
+            return it->second;
+        }
+        return defaultOperation_;
+    }
+};
+
+
+
 bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror)
 {
     static const CScriptNum bnZero(0);
@@ -280,6 +340,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
         return set_error(serror, SCRIPT_ERR_SCRIPT_SIZE);
     int nOpCount = 0;
     bool fRequireMinimal = (flags & SCRIPT_VERIFY_MINIMALDATA) != 0;
+
+    StackOperationManager stackManager;
+    stackManager.InitMapping();
 
     try
     {
@@ -318,8 +381,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     case OP_NOP1: case OP_NOP2: case OP_NOP3: case OP_NOP4: case OP_NOP5:
                     case OP_NOP6: case OP_NOP7: case OP_NOP8: case OP_NOP9: case OP_NOP10:
                     {
-                        if (flags & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
-                            return set_error(serror, SCRIPT_ERR_DISCOURAGE_UPGRADABLE_NOPS);
+                        if(!stackManager.GetOp(opcode)(stack,altstack,flags,serror)) return false;
                     }
                     break;
                     

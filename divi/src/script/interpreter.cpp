@@ -262,14 +262,14 @@ bool OpcodeIsDisabled(const opcodetype& opcode)
 
 
 typedef std::vector<valtype> StackType;
-typedef bool (*StackOperation)(StackType&, StackType&, unsigned int, ScriptError*);
+typedef bool (*StackOperation)(StackType&, StackType&, unsigned int,opcodetype, ScriptError*);
 
-bool UnknownOp(StackType& stack, StackType& altstack, unsigned flags, ScriptError* serror)
+bool UnknownOp(StackType& stack, StackType& altstack, unsigned flags, opcodetype opcode, ScriptError* serror)
 {
     return set_error(serror, SCRIPT_ERR_BAD_OPCODE);
 }
 
-bool DisabledOp(StackType& stack, StackType& altstack, unsigned flags, ScriptError* serror)
+bool DisabledOp(StackType& stack, StackType& altstack, unsigned flags,opcodetype opcode, ScriptError* serror)
 {
     if (flags & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
     {
@@ -278,11 +278,21 @@ bool DisabledOp(StackType& stack, StackType& altstack, unsigned flags, ScriptErr
     return true;
 }
 
+bool PushValue(StackType& stack, StackType& altstack, unsigned flags,opcodetype opcode, ScriptError* serror)
+{
+    CScriptNum bn((int)opcode - (int)(OP_1 - 1));
+    stack.push_back(bn.getvch());
+    return true;
+}
+
 struct StackOperationManager
 {
 private:
     const std::set<opcodetype> upgradableOpCodes = 
         {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
+    const std::set<opcodetype> simpleValueOpcodes = 
+        {OP_1NEGATE ,OP_1 ,OP_2 ,OP_3 , OP_4 , OP_5 , OP_6 , OP_7 , OP_8,
+        OP_9 ,OP_10 ,OP_11 , OP_12 , OP_13 , OP_14 , OP_15 , OP_16};
 private:
     std::map<opcodetype, StackOperation> stackOperationMapping_;
     StackOperation defaultOperation_;
@@ -295,6 +305,15 @@ private:
             stackOperationMapping_[opcode] = DisabledOp;
         }
     }
+    void SetMappingForSimpleValueOpCodes()
+    {
+        using namespace std::placeholders;
+
+        for(const opcodetype& opcode: simpleValueOpcodes)
+        {
+            stackOperationMapping_[opcode] = PushValue;
+        }
+    }
 public:
     StackOperationManager(): defaultOperation_(UnknownOp)
     {
@@ -303,6 +322,7 @@ public:
     void InitMapping()
     {
         SetMappingForUpgradableOpCodes();
+        SetMappingForSimpleValueOpCodes();
     }
 
     StackOperation& GetOp(opcodetype opcode)
@@ -381,7 +401,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     case OP_NOP1: case OP_NOP2: case OP_NOP3: case OP_NOP4: case OP_NOP5:
                     case OP_NOP6: case OP_NOP7: case OP_NOP8: case OP_NOP9: case OP_NOP10:
                     {
-                        if(!stackManager.GetOp(opcode)(stack,altstack,flags,serror)) return false;
+                        if(!stackManager.GetOp(opcode)(stack,altstack,flags,opcode,serror)) return false;
                     }
                     break;
                     
@@ -392,8 +412,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     case OP_9: case OP_10: case OP_11: case OP_12: case OP_13: case OP_14: case OP_15: case OP_16:
                     {
                         // ( -- value)
-                        CScriptNum bn((int)opcode - (int)(OP_1 - 1));
-                        stack.push_back(bn.getvch());
+                        if(!stackManager.GetOp(opcode)(stack,altstack,flags,opcode,serror)) return false;
                         // The result of these opcodes should always be the minimal way to push the data
                         // they push, so no need for a CheckMinimalPush here.
                     }

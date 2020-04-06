@@ -258,21 +258,6 @@ bool OpcodeIsDisabled(const opcodetype& opcode)
     return false;
 }
 
-enum OPTYPE
-{
-    DISABLED,
-    PUSHVALUE,
-    UPGRADABLE,
-    CONTROL,
-    METADATA,
-    STACKOPS,
-    BITWISE_LOGIC,
-    NUMERIC,
-    HASHING,
-    FORMATTING,
-    SIGNATURE,
-};
-
 bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror)
 {
     static const CScriptNum bnZero(0);

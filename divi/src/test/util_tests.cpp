@@ -119,22 +119,22 @@ BOOST_AUTO_TEST_CASE(util_ParseParameters)
     BOOST_CHECK(mapMultiArgs.count("-a") && mapMultiArgs.count("-b") && mapMultiArgs.count("-ccc")
                 && !mapMultiArgs.count("f") && !mapMultiArgs.count("-d"));
 
-    BOOST_CHECK(mapArgs["-a"] == "" && mapArgs["-ccc"] == "multiple");
+    BOOST_CHECK(GetParameter("-a") == "" && GetParameter("-ccc") == "multiple");
     BOOST_CHECK(mapMultiArgs["-ccc"].size() == 2);
 }
 
 BOOST_AUTO_TEST_CASE(util_GetArg)
 {
     mapArgs.clear();
-    mapArgs["strtest1"] = "string...";
+    SetParameter("strtest1", "string...");
     // strtest2 undefined on purpose
-    mapArgs["inttest1"] = "12345";
-    mapArgs["inttest2"] = "81985529216486895";
+    SetParameter("inttest1", "12345");
+    SetParameter("inttest2", "81985529216486895");
     // inttest3 undefined on purpose
-    mapArgs["booltest1"] = "";
+    SetParameter("booltest1", "");
     // booltest2 undefined on purpose
-    mapArgs["booltest3"] = "0";
-    mapArgs["booltest4"] = "1";
+    SetParameter("booltest3", "0");
+    SetParameter("booltest4", "1");
 
     BOOST_CHECK_EQUAL(GetArg("strtest1", "default"), "string...");
     BOOST_CHECK_EQUAL(GetArg("strtest2", "default"), "default");

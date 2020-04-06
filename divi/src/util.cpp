@@ -200,7 +200,7 @@ void ParseParameters(int argc, const char* const argv[])
             str = str.substr(1);
         InterpretNegativeSetting(str, strValue);
 
-        mapArgs[str] = strValue;
+        SetParameter(str, strValue);
         mapMultiArgs[str].push_back(strValue);
     }
 }

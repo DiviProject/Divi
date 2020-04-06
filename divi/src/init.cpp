@@ -775,7 +775,7 @@ bool EnableWalletFeatures()
     }
 
     if (ParameterIsSet("-reservebalance")) {
-        if (!ParseMoney(mapArgs["-reservebalance"], nReserveBalance)) {
+        if (!ParseMoney(GetParameter("-reservebalance"), nReserveBalance)) {
             InitError(translate("Invalid amount for -reservebalance=<amount>"));
             return false;
         }
@@ -857,41 +857,41 @@ bool SetTransactionRequirements()
     // cost to you of processing a transaction.
     if (ParameterIsSet("-minrelaytxfee")) {
         CAmount n = 0;
-        if (ParseMoney(mapArgs["-minrelaytxfee"], n) && n > 0)
+        if (ParseMoney(GetParameter("-minrelaytxfee"), n) && n > 0)
             ::minRelayTxFee = CFeeRate(n);
         else
-            return InitError(strprintf(translate("Invalid amount for -minrelaytxfee=<amount>: '%s'"), mapArgs["-minrelaytxfee"]));
+            return InitError(strprintf(translate("Invalid amount for -minrelaytxfee=<amount>: '%s'"), GetParameter("-minrelaytxfee")));
     }
 #ifdef ENABLE_WALLET
     if (ParameterIsSet("-mintxfee")) {
         CAmount n = 0;
-        if (ParseMoney(mapArgs["-mintxfee"], n) && n > 0)
+        if (ParseMoney(GetParameter("-mintxfee"), n) && n > 0)
             CWallet::minTxFee = CFeeRate(n);
         else
-            return InitError(strprintf(translate("Invalid amount for -mintxfee=<amount>: '%s'"), mapArgs["-mintxfee"]));
+            return InitError(strprintf(translate("Invalid amount for -mintxfee=<amount>: '%s'"), GetParameter("-mintxfee")));
     }
     if (ParameterIsSet("-paytxfee")) {
         CAmount nFeePerK = 0;
-        if (!ParseMoney(mapArgs["-paytxfee"], nFeePerK))
-            return InitError(strprintf(translate("Invalid amount for -paytxfee=<amount>: '%s'"), mapArgs["-paytxfee"]));
+        if (!ParseMoney(GetParameter("-paytxfee"), nFeePerK))
+            return InitError(strprintf(translate("Invalid amount for -paytxfee=<amount>: '%s'"), GetParameter("-paytxfee")));
         if (nFeePerK > nHighTransactionFeeWarning)
             InitWarning(translate("Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction."));
         payTxFee = CFeeRate(nFeePerK, 1000);
         if (payTxFee < ::minRelayTxFee) {
             return InitError(strprintf(translate("Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
-                mapArgs["-paytxfee"], ::minRelayTxFee.ToString()));
+                GetParameter("-paytxfee"), ::minRelayTxFee.ToString()));
         }
     }
     if (ParameterIsSet("-maxtxfee")) {
         CAmount nMaxFee = 0;
-        if (!ParseMoney(mapArgs["-maxtxfee"], nMaxFee))
-            return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), mapArgs["-maxtxfee"]));
+        if (!ParseMoney(GetParameter("-maxtxfee"), nMaxFee))
+            return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), GetParameter("-maxtxfee")));
         if (nMaxFee > nHighTransactionMaxFeeWarning)
             InitWarning(translate("Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction."));
         maxTxFee = nMaxFee;
         if (CFeeRate(maxTxFee, 1000) < ::minRelayTxFee) {
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)"),
-                mapArgs["-maxtxfee"], ::minRelayTxFee.ToString()));
+                GetParameter("-maxtxfee"), ::minRelayTxFee.ToString()));
         }
     }
     nTxConfirmTarget = GetArg("-txconfirmtarget", 1);

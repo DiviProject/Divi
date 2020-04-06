@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
 BOOST_AUTO_TEST_CASE(DoS_banscore)
 {
     CNode::ClearBanned();
-    mapArgs["-banscore"] = "111"; // because 11 is my favorite number
+    SetParameter("-banscore", "111"); // because 11 is my favorite number
     CAddress addr1(ip(0xa0b0c001));
     CNode dummyNode1(INVALID_SOCKET, addr1, "", true);
     dummyNode1.nVersion = 1;

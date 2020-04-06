@@ -4796,7 +4796,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 {
     if (fDebug)
         LogPrintf("received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
-    if (ParameterIsSet("-dropmessagestest") && GetRand(atoi(mapArgs["-dropmessagestest"])) == 0) {
+    if (ParameterIsSet("-dropmessagestest") && GetRand(atoi(GetParameter("-dropmessagestest"))) == 0) {
         LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");
         return true;
     }

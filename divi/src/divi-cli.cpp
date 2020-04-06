@@ -81,7 +81,7 @@ static bool AppInitRPC(int argc, char* argv[])
         return false;
     }
     if (!boost::filesystem::is_directory(GetDataDir(false))) {
-        fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", mapArgs["-datadir"].c_str());
+        fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", GetParameter("-datadir").c_str());
         return false;
     }
     try {
@@ -100,7 +100,7 @@ static bool AppInitRPC(int argc, char* argv[])
 
 Object CallRPC(const string& strMethod, const Array& params)
 {
-    if (mapArgs["-rpcuser"] == "" && mapArgs["-rpcpassword"] == "")
+    if (GetParameter("-rpcuser") == "" && GetParameter("-rpcpassword") == "")
         throw runtime_error(strprintf(
             translate("You must set rpcpassword=<password> in the configuration file:\n%s\n"
               "If the file does not exist, create it with owner-readable-only file permissions."),
@@ -120,7 +120,7 @@ Object CallRPC(const string& strMethod, const Array& params)
         throw CConnectionFailed("couldn't connect to server");
 
     // HTTP basic authentication
-    string strUserPass64 = EncodeBase64(mapArgs["-rpcuser"] + ":" + mapArgs["-rpcpassword"]);
+    string strUserPass64 = EncodeBase64(GetParameter("-rpcuser") + ":" + GetParameter("-rpcpassword"));
     map<string, string> mapRequestHeaders;
     mapRequestHeaders["Authorization"] = string("Basic ") + strUserPass64;
 

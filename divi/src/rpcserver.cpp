@@ -626,9 +626,9 @@ void StartRPCThreads()
         strAllowed += subnet.ToString() + " ";
     LogPrint("rpc", "Allowing RPC connections from: %s\n", strAllowed);
 
-    strRPCUserColonPass = mapArgs["-rpcuser"] + ":" + mapArgs["-rpcpassword"];
-    if (((mapArgs["-rpcpassword"] == "") ||
-            (mapArgs["-rpcuser"] == mapArgs["-rpcpassword"])) &&
+    strRPCUserColonPass = GetParameter("-rpcuser") + ":" + GetParameter("-rpcpassword");
+    if (((GetParameter("-rpcpassword") == "") ||
+            (GetParameter("-rpcuser") == GetParameter("-rpcpassword"))) &&
         Params().RequireRPCPassword()) {
         unsigned char rand_pwd[32];
         GetRandBytes(rand_pwd, 32);

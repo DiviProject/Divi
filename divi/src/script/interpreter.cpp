@@ -574,42 +574,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
 
                     case OP_NOP1: case OP_NOP2: case OP_NOP3: case OP_NOP4: case OP_NOP5:
                     case OP_NOP6: case OP_NOP7: case OP_NOP8: case OP_NOP9: case OP_NOP10:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-                    
-                    //
-                    // Push value
-                    //
                     case OP_1NEGATE: case OP_1: case OP_2: case OP_3: case OP_4: case OP_5: case OP_6: case OP_7: case OP_8:
                     case OP_9: case OP_10: case OP_11: case OP_12: case OP_13: case OP_14: case OP_15: case OP_16:
-                    {
-                        // ( -- value)
-                        // The result of these opcodes should always be the minimal way to push the data
-                        // they push, so no need for a CheckMinimalPush here.
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
-                    //
-                    // Control
-                    //
-
-                    case OP_IF: case OP_NOTIF:
-                    {
-                        // <expression> if [statements] [else [statements]] endif
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
-                    case OP_ELSE:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
-                    case OP_ENDIF:
+                    case OP_IF: case OP_NOTIF: case OP_ELSE: case OP_ENDIF:
                     {
                         if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }

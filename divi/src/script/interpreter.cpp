@@ -324,6 +324,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     case OP_1NEGATE: case OP_1: case OP_2: case OP_3: case OP_4: case OP_5: case OP_6: case OP_7: case OP_8:
                     case OP_9: case OP_10: case OP_11: case OP_12: case OP_13: case OP_14: case OP_15: case OP_16:
                     case OP_IF: case OP_NOTIF: case OP_ELSE: case OP_ENDIF:
+                    case OP_TOALTSTACK: case OP_FROMALTSTACK: case OP_2DROP: case OP_2DUP: case OP_3DUP: case OP_2OVER: case OP_2ROT:
+                    case OP_2SWAP: case OP_IFDUP: case OP_DEPTH: case OP_DROP: case OP_DUP: case OP_NIP: case OP_OVER: case OP_PICK: 
+                    case OP_ROLL: case OP_ROT: case OP_SWAP: case OP_TUCK: case OP_SIZE:
                     {
                         if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
@@ -348,19 +351,6 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                         return set_error(serror, SCRIPT_ERR_OP_META);
                     }
                     break;
-
-
-                    //
-                    // Stack ops
-                    //
-                    case OP_TOALTSTACK: case OP_FROMALTSTACK: case OP_2DROP: case OP_2DUP: case OP_3DUP: case OP_2OVER: case OP_2ROT:
-                    case OP_2SWAP: case OP_IFDUP: case OP_DEPTH: case OP_DROP: case OP_DUP: case OP_NIP: case OP_OVER: case OP_PICK: 
-                    case OP_ROLL: case OP_ROT: case OP_SWAP: case OP_TUCK: case OP_SIZE:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
 
                     //
                     // Bitwise logic

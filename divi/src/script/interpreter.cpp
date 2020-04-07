@@ -14,7 +14,7 @@
 #include "script/script.h"
 #include "uint256.h"
 
-#include <functional>
+#include <memory>
 
 using namespace std;
 
@@ -261,81 +261,258 @@ bool OpcodeIsDisabled(const opcodetype& opcode)
 }
 
 
+
 typedef std::vector<valtype> StackType;
-typedef bool (*StackOperation)(StackType&, StackType&, unsigned int,opcodetype, ScriptError*);
 
-bool UnknownOp(StackType& stack, StackType& altstack, unsigned flags, opcodetype opcode, ScriptError* serror)
+class ConditionalScopeStackManager
 {
-    return set_error(serror, SCRIPT_ERR_BAD_OPCODE);
-}
+private:
+    std::vector<bool> conditionalScopeReadStatusStack;
+    bool conditionalScopeNeedsClosing = false;
 
-bool DisabledOp(StackType& stack, StackType& altstack, unsigned flags,opcodetype opcode, ScriptError* serror)
-{
-    if (flags & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
+    void CheckConditionalScopeStatus()
     {
-        return set_error(serror, SCRIPT_ERR_DISCOURAGE_UPGRADABLE_NOPS);
+        conditionalScopeNeedsClosing = std::count(conditionalScopeReadStatusStack.begin(),conditionalScopeReadStatusStack.end(),false)!=0;
     }
-    return true;
-}
+public:
+    bool StackIsEmpty() const
+    {
+        return conditionalScopeReadStatusStack.empty();
+    }
+    bool ConditionalScopeNeedsClosing() const
+    {
+        return conditionalScopeNeedsClosing;
+    }
 
-bool PushValue(StackType& stack, StackType& altstack, unsigned flags,opcodetype opcode, ScriptError* serror)
+    void OpenScope(bool conditionStatus)
+    {
+        conditionalScopeReadStatusStack.push_back(conditionStatus);
+        conditionalScopeNeedsClosing |= (conditionStatus==false);
+    }
+    bool TryElse()
+    {
+        if(conditionalScopeReadStatusStack.empty()) return false;
+        conditionalScopeReadStatusStack.back()= !conditionalScopeReadStatusStack.back();
+        CheckConditionalScopeStatus();
+        return true;
+    }
+    bool TryCLoseScope()
+    {
+        if(conditionalScopeReadStatusStack.empty()) return false;
+        conditionalScopeReadStatusStack.pop_back();
+        CheckConditionalScopeStatus();
+        return true;
+    }
+};
+
+
+struct StackOperator
 {
-    CScriptNum bn((int)opcode - (int)(OP_1 - 1));
-    stack.push_back(bn.getvch());
-    return true;
-}
+protected:
+    StackType& stack_;
+    StackType& altstack_;
+    unsigned& flags_;
+    ConditionalScopeStackManager& conditionalManager_;
+public:
+    StackOperator(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager
+        ): stack_(stack)
+        , altstack_(altstack)
+        , flags_(flags)
+        , conditionalManager_(conditionalManager)
+    {
+    }
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror)
+    {
+        return set_error(serror, SCRIPT_ERR_BAD_OPCODE);
+    }
+};
+
+struct DisabledOp: public StackOperator
+{
+    DisabledOp(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+    {
+    }
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        if (flags_ & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
+        {
+            return set_error(serror, SCRIPT_ERR_DISCOURAGE_UPGRADABLE_NOPS);
+        }
+        return true;
+    }
+};
+
+struct PushValueOp: public StackOperator
+{
+    PushValueOp(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+    {}
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        CScriptNum bn((int)opcode - (int)(OP_1 - 1));
+        stack_.push_back(bn.getvch());
+        return true;
+    }
+};
+
+struct ConditionalOp: public StackOperator
+{
+public:
+    ConditionalOp(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+    {}
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        switch(opcode)
+        {
+            case OP_IF: case OP_NOTIF:
+            {
+                // <expression> if [statements] [else [statements]] endif
+                bool fValue = false;
+                if (!conditionalManager_.ConditionalScopeNeedsClosing())
+                {
+                    if (stack_.size() < 1)
+                        return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
+                    valtype& vch = stack_.back();
+                    fValue = CastToBool(vch);
+                    if (opcode == OP_NOTIF)
+                        fValue = !fValue;
+                    popstack(stack_);
+                }
+                conditionalManager_.OpenScope(fValue);
+            }
+            break;
+
+            case OP_ELSE:
+            {
+                if (!conditionalManager_.TryElse())
+                    return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
+            }
+            break;
+
+            case OP_ENDIF:
+            {
+                if (!conditionalManager_.TryCLoseScope())
+                    return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
+            }
+            break;
+            default:
+            break;
+        }
+        return true;
+    }
+
+};
 
 struct StackOperationManager
 {
 private:
     const std::set<opcodetype> upgradableOpCodes = 
         {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
-    const std::set<opcodetype> simpleValueOpcodes = 
+    const std::set<opcodetype> simpleValueOpCodes = 
         {OP_1NEGATE ,OP_1 ,OP_2 ,OP_3 , OP_4 , OP_5 , OP_6 , OP_7 , OP_8,
         OP_9 ,OP_10 ,OP_11 , OP_12 , OP_13 , OP_14 , OP_15 , OP_16};
+    const std::set<opcodetype> conditionalOpCodes = {OP_IF, OP_NOTIF, OP_ELSE,OP_ENDIF};
+    
+    StackType& stack_;
+    StackType& altstack_;
+    unsigned flags_;
+    ConditionalScopeStackManager conditionalManager_;
+    StackOperator defaultOperation_;
+    std::map<opcodetype, StackOperator*> stackOperationMapping_;
+
+    std::shared_ptr<StackOperator> disableOp_;
+    std::shared_ptr<StackOperator> pushValueOp_;
+    std::shared_ptr<StackOperator> conditionalOp_;
 private:
-    std::map<opcodetype, StackOperation> stackOperationMapping_;
-    StackOperation defaultOperation_;
+
     void SetMappingForUpgradableOpCodes()
     {
-        using namespace std::placeholders;
-
         for(const opcodetype& opcode: upgradableOpCodes)
         {
-            stackOperationMapping_[opcode] = DisabledOp;
+            stackOperationMapping_.insert({opcode, disableOp_.get() });
         }
     }
     void SetMappingForSimpleValueOpCodes()
     {
-        using namespace std::placeholders;
-
-        for(const opcodetype& opcode: simpleValueOpcodes)
+        for(const opcodetype& opcode: simpleValueOpCodes)
         {
-            stackOperationMapping_[opcode] = PushValue;
+            stackOperationMapping_.insert({opcode, pushValueOp_.get() });
+        }
+    }
+
+    void SetMappingForConditionalOpCodes()
+    {
+        for(const opcodetype& opcode: conditionalOpCodes)
+        {
+            stackOperationMapping_.insert({opcode, conditionalOp_.get() });
         }
     }
 public:
-    StackOperationManager(): defaultOperation_(UnknownOp)
+    StackOperationManager(
+        StackType& stack,
+        StackType& altstack,
+        unsigned flags
+        ): stack_(stack)
+        , altstack_(altstack) 
+        , flags_(flags)
+        , conditionalManager_()
+        , defaultOperation_(stack,altstack,flags,conditionalManager_)
+        , stackOperationMapping_()
+        , disableOp_(std::make_shared<DisabledOp>(stack_,altstack_,flags_,conditionalManager_))
+        , pushValueOp_(std::make_shared<PushValueOp>(stack_,altstack_,flags_,conditionalManager_))
+        , conditionalOp_(std::make_shared<ConditionalOp>(stack_,altstack_,flags_,conditionalManager_))
     {
+        InitMapping();
     }
 
     void InitMapping()
     {
         SetMappingForUpgradableOpCodes();
         SetMappingForSimpleValueOpCodes();
+        SetMappingForConditionalOpCodes();
     }
 
-    StackOperation& GetOp(opcodetype opcode)
+    StackOperator* GetOp(opcodetype opcode)
     {
         auto it = stackOperationMapping_.find(opcode);
         if(it != stackOperationMapping_.end())
         {
             return it->second;
         }
-        return defaultOperation_;
+        return &defaultOperation_;
+    }
+    
+    bool ConditionalNeedsClosing() const
+    {
+        return conditionalManager_.ConditionalScopeNeedsClosing();
+    }
+    bool ConditionalScopeIsBalanced() const
+    {
+        return conditionalManager_.StackIsEmpty();
     }
 };
-
 
 
 bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror)
@@ -361,15 +538,12 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
     int nOpCount = 0;
     bool fRequireMinimal = (flags & SCRIPT_VERIFY_MINIMALDATA) != 0;
 
-    StackOperationManager stackManager;
-    stackManager.InitMapping();
+    StackOperationManager stackManager(stack,altstack,flags);
 
     try
     {
         while (pc < pend)
         {
-            bool conditionalScopeNeedsClosing = std::count(conditionalScopeReadStatusStack.begin(), conditionalScopeReadStatusStack.end(), false)!=0;
-
             //
             // Read instruction
             //
@@ -385,13 +559,13 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
             if (OpcodeIsDisabled(opcode))
                 return set_error(serror, SCRIPT_ERR_DISABLED_OPCODE); // Disabled opcodes.
 
-            if (!conditionalScopeNeedsClosing && 0 <= opcode && opcode <= OP_PUSHDATA4) {
+            if (!stackManager.ConditionalNeedsClosing() && 0 <= opcode && opcode <= OP_PUSHDATA4) {
                 if (fRequireMinimal && !CheckMinimalPush(vchPushValue, opcode)) {
                     return set_error(serror, SCRIPT_ERR_MINIMALDATA);
                 }
                 stack.push_back(vchPushValue);
             }
-            else if (!conditionalScopeNeedsClosing || (OP_IF <= opcode && opcode <= OP_ENDIF))
+            else if (!stackManager.ConditionalNeedsClosing() || (OP_IF <= opcode && opcode <= OP_ENDIF))
             {
                 switch (opcode)
                 {
@@ -401,7 +575,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     case OP_NOP1: case OP_NOP2: case OP_NOP3: case OP_NOP4: case OP_NOP5:
                     case OP_NOP6: case OP_NOP7: case OP_NOP8: case OP_NOP9: case OP_NOP10:
                     {
-                        if(!stackManager.GetOp(opcode)(stack,altstack,flags,opcode,serror)) return false;
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
                     
@@ -412,9 +586,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     case OP_9: case OP_10: case OP_11: case OP_12: case OP_13: case OP_14: case OP_15: case OP_16:
                     {
                         // ( -- value)
-                        if(!stackManager.GetOp(opcode)(stack,altstack,flags,opcode,serror)) return false;
                         // The result of these opcodes should always be the minimal way to push the data
                         // they push, so no need for a CheckMinimalPush here.
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
 
@@ -425,34 +599,19 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     case OP_IF: case OP_NOTIF:
                     {
                         // <expression> if [statements] [else [statements]] endif
-                        bool fValue = false;
-                        if (!conditionalScopeNeedsClosing)
-                        {
-                            if (stack.size() < 1)
-                                return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
-                            valtype& vch = stacktop(-1);
-                            fValue = CastToBool(vch);
-                            if (opcode == OP_NOTIF)
-                                fValue = !fValue;
-                            popstack(stack);
-                        }
-                        conditionalScopeReadStatusStack.push_back(fValue);
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
 
                     case OP_ELSE:
                     {
-                        if (conditionalScopeReadStatusStack.empty())
-                            return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
-                        conditionalScopeReadStatusStack.back() = !conditionalScopeReadStatusStack.back();
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
 
                     case OP_ENDIF:
                     {
-                        if (conditionalScopeReadStatusStack.empty())
-                            return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
-                        conditionalScopeReadStatusStack.pop_back();
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
 
@@ -981,7 +1140,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
         return set_error(serror, SCRIPT_ERR_UNKNOWN_ERROR);
     }
 
-    if (!conditionalScopeReadStatusStack.empty())
+    if (!stackManager.ConditionalScopeIsBalanced())
         return set_error(serror, SCRIPT_ERR_UNBALANCED_CONDITIONAL);
 
     return set_success(serror);

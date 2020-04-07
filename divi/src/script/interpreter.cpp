@@ -332,46 +332,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     }
                     break;
 
-                    case OP_VERIFY:
+                    case OP_VERIFY: case OP_EQUAL: case OP_EQUALVERIFY:
                     {
-                        // (true -- ) or
-                        // (false -- false) and return
-                        if (stack.size() < 1)
-                            return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-                        bool fValue = CastToBool(stacktop(-1));
-                        if (fValue)
-                            popstack(stack);
-                        else
-                            return set_error(serror, SCRIPT_ERR_VERIFY);
-                    }
-                    break;
-                    //
-                    // Bitwise logic
-                    //
-                    case OP_EQUAL: case OP_EQUALVERIFY:
-                    //case OP_NOTEQUAL: // use OP_NUMNOTEQUAL
-                    {
-                        // (x1 x2 - bool)
-                        if (stack.size() < 2)
-                            return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-                        valtype& vch1 = stacktop(-2);
-                        valtype& vch2 = stacktop(-1);
-                        bool fEqual = (vch1 == vch2);
-                        // OP_NOTEQUAL is disabled because it would be too easy to say
-                        // something like n != 1 and have some wiseguy pass in 1 with extra
-                        // zero bytes after it (numerically, 0x01 == 0x0001 == 0x000001)
-                        //if (opcode == OP_NOTEQUAL)
-                        //    fEqual = !fEqual;
-                        popstack(stack);
-                        popstack(stack);
-                        stack.push_back(fEqual ? vchTrue : vchFalse);
-                        if (opcode == OP_EQUALVERIFY)
-                        {
-                            if (fEqual)
-                                popstack(stack);
-                            else
-                                return set_error(serror, SCRIPT_ERR_EQUALVERIFY);
-                        }
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
 

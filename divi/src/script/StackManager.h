@@ -82,6 +82,14 @@ protected:
     unsigned& flags_;
     ConditionalScopeStackManager& conditionalManager_;
 public:
+    static const CScriptNum bnZero;
+    static const CScriptNum bnOne;
+    static const CScriptNum bnFalse;
+    static const CScriptNum bnTrue;
+    static const valtype vchFalse;
+    static const valtype vchZero;
+    static const valtype vchTrue;
+
     StackOperator(
         StackType& stack, 
         StackType& altstack, 
@@ -108,6 +116,14 @@ public:
         return *(altstack_.rbegin()+ depth);
     }
 };
+
+const CScriptNum StackOperator::bnZero = CScriptNum(0);
+const CScriptNum StackOperator::bnOne=CScriptNum(1);
+const CScriptNum StackOperator::bnFalse=CScriptNum(0);
+const CScriptNum StackOperator::bnTrue=CScriptNum(1);
+const valtype StackOperator::vchFalse =valtype(0);
+const valtype StackOperator::vchZero =valtype(0);
+const valtype StackOperator::vchTrue =valtype(1, 1);
 
 struct DisabledOp: public StackOperator
 {
@@ -426,6 +442,56 @@ struct StackModificationOp: public StackOperator
     }
 };
 
+struct EqualityVerificationOp: public StackOperator
+{
+    EqualityVerificationOp(
+    StackType& stack, 
+    StackType& altstack, 
+    unsigned& flags,
+    ConditionalScopeStackManager& conditionalManager
+    ): StackOperator(stack,altstack,flags,conditionalManager)
+    {}
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        if(opcode == OP_VERIFY)
+        {
+            if (stack_.size() < 1)
+                return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+            bool fValue = Helpers::CastToBool(stackTop());
+            if (fValue)
+                stack_.pop_back();
+            else
+                return Helpers::set_error(serror, SCRIPT_ERR_VERIFY);
+        }
+        if(opcode == OP_EQUAL || opcode == OP_EQUALVERIFY)
+        {
+            if (stack_.size() < 2)
+                return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+            valtype& vch1 = stackTop(1);
+            valtype& vch2 = stackTop(0);
+            bool fEqual = (vch1 == vch2);
+            // OP_NOTEQUAL is disabled because it would be too easy to say
+            // something like n != 1 and have some wiseguy pass in 1 with extra
+            // zero bytes after it (numerically, 0x01 == 0x0001 == 0x000001)
+            //if (opcode == OP_NOTEQUAL)
+            //    fEqual = !fEqual;
+            stack_.pop_back();
+            stack_.pop_back();
+            stack_.push_back(fEqual ? vchTrue : vchFalse);
+            if (opcode == OP_EQUALVERIFY)
+            {
+                if (fEqual)
+                    stack_.pop_back();
+                else
+                    return Helpers::set_error(serror, SCRIPT_ERR_EQUALVERIFY);
+            }
+        }
+        return true;
+    }
+};
+
+
 struct StackOperationManager
 {
 private:
@@ -440,6 +506,9 @@ private:
         OP_2SWAP, OP_IFDUP, OP_DEPTH, OP_DROP, OP_DUP, OP_NIP, OP_OVER, OP_PICK, OP_ROLL,
         OP_ROT, OP_SWAP, OP_TUCK, OP_SIZE};
     
+    const std::set<opcodetype> equalityAndVerificationOpCodes =
+        {OP_EQUAL,OP_EQUALVERIFY, OP_VERIFY};
+
     StackType& stack_;
     StackType& altstack_;
     unsigned flags_;
@@ -451,6 +520,7 @@ private:
     std::shared_ptr<StackOperator> pushValueOp_;
     std::shared_ptr<StackOperator> conditionalOp_;
     std::shared_ptr<StackOperator> stackModificationOp_;
+    std::shared_ptr<StackOperator> equalityVerificationOp_;
 private:
 
     void SetMappingForUpgradableOpCodes()
@@ -483,6 +553,14 @@ private:
             stackOperationMapping_.insert({opcode, stackModificationOp_.get() });
         }
     }
+
+    void SetMappingForEqualityVerificationOpCodes()
+    {
+        for(const opcodetype& opcode: equalityAndVerificationOpCodes)
+        {
+            stackOperationMapping_.insert({opcode, equalityVerificationOp_.get() });
+        }
+    }
 public:
     StackOperationManager(
         StackType& stack,
@@ -498,6 +576,7 @@ public:
         , pushValueOp_(std::make_shared<PushValueOp>(stack_,altstack_,flags_,conditionalManager_))
         , conditionalOp_(std::make_shared<ConditionalOp>(stack_,altstack_,flags_,conditionalManager_))
         , stackModificationOp_(std::make_shared<StackModificationOp>(stack_,altstack_,flags_,conditionalManager_))
+        , equalityVerificationOp_(std::make_shared<EqualityVerificationOp>(stack_,altstack_,flags_,conditionalManager_))
     {
         InitMapping();
     }
@@ -508,6 +587,7 @@ public:
         SetMappingForSimpleValueOpCodes();
         SetMappingForConditionalOpCodes();
         SetMappingForStackModificationOpCodes();
+        SetMappingForEqualityVerificationOpCodes();
     }
 
     StackOperator* GetOp(opcodetype opcode)

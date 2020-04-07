@@ -345,13 +345,6 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                             return set_error(serror, SCRIPT_ERR_VERIFY);
                     }
                     break;
-
-                    case OP_META:
-                    {
-                        return set_error(serror, SCRIPT_ERR_OP_META);
-                    }
-                    break;
-
                     //
                     // Bitwise logic
                     //
@@ -379,6 +372,12 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                             else
                                 return set_error(serror, SCRIPT_ERR_EQUALVERIFY);
                         }
+                    }
+                    break;
+
+                    case OP_META:
+                    {
+                        return set_error(serror, SCRIPT_ERR_OP_META);
                     }
                     break;
 

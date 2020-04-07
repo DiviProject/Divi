@@ -607,7 +607,7 @@ void StartRPCThreads()
     rpc_allow_subnets.clear();
     rpc_allow_subnets.push_back(CSubNet("127.0.0.0/8")); // always allow IPv4 local subnet
     rpc_allow_subnets.push_back(CSubNet("::1"));         // always allow IPv6 localhost
-    if (mapMultiArgs.count("-rpcallowip")) {
+    if (ParameterIsSetForMultiArgs("-rpcallowip")) {
         const vector<string>& vAllow = mapMultiArgs["-rpcallowip"];
         BOOST_FOREACH (string strAllow, vAllow) {
             CSubNet subnet(strAllow);

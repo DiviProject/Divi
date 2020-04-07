@@ -116,8 +116,8 @@ BOOST_AUTO_TEST_CASE(util_ParseParameters)
     BOOST_CHECK(mapArgs.size() == 3 && mapMultiArgs.size() == 3);
     BOOST_CHECK(ParameterIsSet("-a") && ParameterIsSet("-b") && ParameterIsSet("-ccc")
                 && !ParameterIsSet("f") && !ParameterIsSet("-d"));
-    BOOST_CHECK(mapMultiArgs.count("-a") && mapMultiArgs.count("-b") && mapMultiArgs.count("-ccc")
-                && !mapMultiArgs.count("f") && !mapMultiArgs.count("-d"));
+    BOOST_CHECK(ParameterIsSetForMultiArgs("-a") && ParameterIsSetForMultiArgs("-b") && ParameterIsSetForMultiArgs("-ccc")
+                && !ParameterIsSetForMultiArgs("f") && !ParameterIsSetForMultiArgs("-d"));
 
     BOOST_CHECK(GetParameter("-a") == "" && GetParameter("-ccc") == "multiple");
     BOOST_CHECK(mapMultiArgs["-ccc"].size() == 2);
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(util_ParseParameters)
 
 BOOST_AUTO_TEST_CASE(util_GetArg)
 {
-    mapArgs.clear();
+    ClearParameter();
     SetParameter("strtest1", "string...");
     // strtest2 undefined on purpose
     SetParameter("inttest1", "12345");

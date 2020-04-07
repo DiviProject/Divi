@@ -174,7 +174,7 @@ static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
 
 void ParseParameters(int argc, const char* const argv[])
 {
-    mapArgs.clear();
+    ClearParameter();
     mapMultiArgs.clear();
 
     for (int i = 1; i < argc; i++) {
@@ -212,6 +212,11 @@ bool ParameterIsSet (const std::string& key)
     return mapArgs.count(key);
 }
 
+bool ParameterIsSetForMultiArgs (const std::string& key)
+{
+    return mapMultiArgs.count(key);
+}
+
 std::string GetParameter(const std::string& key)
 {
     if(ParameterIsSet(key))
@@ -224,9 +229,19 @@ std::string GetParameter(const std::string& key)
     }
 }
 
+void ForceRemoveArg(const std::string &strArg)
+{
+    globalParametersRecord.ForceRemoveArg(strArg);
+}
+
 void SetParameter (const std::string& key, const std::string& value)
 {
     mapArgs[key] = value;
+}
+
+void ClearParamenter () 
+{
+    mapArgs.clear();
 }
 
 std::string GetArg(const std::string& strArg, const std::string& strDefault)
@@ -254,10 +269,6 @@ bool SoftSetBoolArg(const std::string& strArg, bool fValue)
     return globalParametersRecord.SoftSetBoolArg(strArg, fValue);
 }
 
-void ForceRemoveArg(const std::string &strArg)
-{
-    globalParametersRecord.ForceRemoveArg(strArg);
-}
 
 static const int screenWidth = 79;
 static const int optIndent = 2;

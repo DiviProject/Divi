@@ -86,6 +86,7 @@ private:
     std::shared_ptr<StackOperator> metadataOp_;
     std::shared_ptr<StackOperator> unaryNumericOp_;
     std::shared_ptr<StackOperator> binaryNumericOp_;
+    std::shared_ptr<StackOperator> numericBoundsOp_;
     void InitMapping();
 public:
     StackOperationManager(

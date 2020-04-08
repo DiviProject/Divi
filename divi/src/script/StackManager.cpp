@@ -581,6 +581,36 @@ struct BinaryNumericOp: public StackOperator
     }
 };
 
+struct NumericBoundsOp: public StackOperator
+{
+    NumericBoundsOp(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+    {}
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        // (x min max -- out)
+        if (stack_.size() < 3)
+            return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+        
+        bool fRequireMinimal = (flags_ & SCRIPT_VERIFY_MINIMALDATA) != 0;
+        CScriptNum bn1(stackTop(2), fRequireMinimal);
+        CScriptNum bn2(stackTop(1), fRequireMinimal);
+        CScriptNum bn3(stackTop(0), fRequireMinimal);
+        bool fValue = (bn2 <= bn1 && bn1 < bn3);
+        stack_.pop_back();
+        stack_.pop_back();
+        stack_.pop_back();
+        stack_.push_back(fValue ? vchTrue : vchFalse);
+
+        return true;
+    }
+};
+
 const std::set<opcodetype> StackOperationManager::upgradableOpCodes = 
     {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
 const std::set<opcodetype> StackOperationManager::simpleValueOpCodes = 
@@ -617,6 +647,7 @@ StackOperationManager::StackOperationManager(
     , metadataOp_(std::make_shared<MetadataOp>(stack_,altstack_,flags_,conditionalManager_))
     , unaryNumericOp_(std::make_shared<UnaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
     , binaryNumericOp_(std::make_shared<BinaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
+    , numericBoundsOp_(std::make_shared<NumericBoundsOp>(stack_,altstack_,flags_,conditionalManager_))
 {
     InitMapping();
 }
@@ -652,6 +683,7 @@ void StackOperationManager::InitMapping()
         stackOperationMapping_.insert({opcode, binaryNumericOp_.get() });
     }
     stackOperationMapping_.insert({OP_META, metadataOp_.get()});
+    stackOperationMapping_.insert({OP_WITHIN, numericBoundsOp_.get()});
 }
 
 StackOperator* StackOperationManager::GetOp(opcodetype opcode)

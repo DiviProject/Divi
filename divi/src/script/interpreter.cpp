@@ -359,17 +359,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
 
                     case OP_WITHIN:
                     {
-                        // (x min max -- out)
-                        if (stack.size() < 3)
-                            return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-                        CScriptNum bn1(stacktop(-3), fRequireMinimal);
-                        CScriptNum bn2(stacktop(-2), fRequireMinimal);
-                        CScriptNum bn3(stacktop(-1), fRequireMinimal);
-                        bool fValue = (bn2 <= bn1 && bn1 < bn3);
-                        popstack(stack);
-                        popstack(stack);
-                        popstack(stack);
-                        stack.push_back(fValue ? vchTrue : vchFalse);
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
 

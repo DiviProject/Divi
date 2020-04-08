@@ -327,43 +327,11 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     case OP_TOALTSTACK: case OP_FROMALTSTACK: case OP_2DROP: case OP_2DUP: case OP_3DUP: case OP_2OVER: case OP_2ROT:
                     case OP_2SWAP: case OP_IFDUP: case OP_DEPTH: case OP_DROP: case OP_DUP: case OP_NIP: case OP_OVER: case OP_PICK: 
                     case OP_ROLL: case OP_ROT: case OP_SWAP: case OP_TUCK: case OP_SIZE:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
-                    case OP_VERIFY: case OP_EQUAL: case OP_EQUALVERIFY:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
-                    case OP_META:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
+                    case OP_VERIFY: case OP_EQUAL: case OP_EQUALVERIFY: case OP_META:
                     case OP_1ADD: case OP_1SUB: case OP_NEGATE: case OP_ABS: case OP_NOT: case OP_0NOTEQUAL:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
                     case OP_ADD: case OP_SUB: case OP_BOOLAND: case OP_BOOLOR: case OP_NUMEQUAL: case OP_NUMEQUALVERIFY: case OP_NUMNOTEQUAL: 
                     case OP_LESSTHAN: case OP_GREATERTHAN: case OP_LESSTHANOREQUAL: case OP_GREATERTHANOREQUAL: case OP_MIN: case OP_MAX:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
-                    case OP_WITHIN:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;
-
-                    case OP_RIPEMD160: case OP_SHA1: case OP_SHA256: case OP_HASH160: case OP_HASH256:
+                    case OP_WITHIN: case OP_RIPEMD160: case OP_SHA1: case OP_SHA256: case OP_HASH160: case OP_HASH256:
                     {
                         if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }

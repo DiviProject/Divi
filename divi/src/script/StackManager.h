@@ -81,7 +81,7 @@ private:
     std::shared_ptr<StackOperator> conditionalOp_;
     std::shared_ptr<StackOperator> stackModificationOp_;
     std::shared_ptr<StackOperator> equalityVerificationOp_;
-
+    std::shared_ptr<StackOperator> metadataOp_;
     void InitMapping();
 public:
     StackOperationManager(

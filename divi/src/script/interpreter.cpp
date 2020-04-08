@@ -340,7 +340,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
 
                     case OP_META:
                     {
-                        return set_error(serror, SCRIPT_ERR_OP_META);
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
 

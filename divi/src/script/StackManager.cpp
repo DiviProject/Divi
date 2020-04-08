@@ -473,7 +473,21 @@ struct EqualityVerificationOp: public StackOperator
     }
 };
 
+struct MetadataOp: public StackOperator
+{
+    MetadataOp(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+    {}
 
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        return Helpers::set_error(serror, SCRIPT_ERR_OP_META);
+    }
+};
 
 const std::set<opcodetype> StackOperationManager::upgradableOpCodes = 
     {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
@@ -487,7 +501,6 @@ const std::set<opcodetype> StackOperationManager::stackModificationOpCodes = {
     OP_ROT, OP_SWAP, OP_TUCK, OP_SIZE};
 const std::set<opcodetype> StackOperationManager::equalityAndVerificationOpCodes =
     {OP_EQUAL,OP_EQUALVERIFY,OP_VERIFY};
-
 
 StackOperationManager::StackOperationManager(
     StackType& stack,
@@ -504,6 +517,7 @@ StackOperationManager::StackOperationManager(
     , conditionalOp_(std::make_shared<ConditionalOp>(stack_,altstack_,flags_,conditionalManager_))
     , stackModificationOp_(std::make_shared<StackModificationOp>(stack_,altstack_,flags_,conditionalManager_))
     , equalityVerificationOp_(std::make_shared<EqualityVerificationOp>(stack_,altstack_,flags_,conditionalManager_))
+    , metadataOp_(std::make_shared<MetadataOp>(stack_,altstack_,flags_,conditionalManager_))
 {
     InitMapping();
 }
@@ -530,6 +544,7 @@ void StackOperationManager::InitMapping()
     {
         stackOperationMapping_.insert({opcode, equalityVerificationOp_.get() });
     }
+    stackOperationMapping_.insert({OP_META, metadataOp_.get()});
 }
 
 StackOperator* StackOperationManager::GetOp(opcodetype opcode)

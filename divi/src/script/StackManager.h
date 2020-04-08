@@ -68,6 +68,7 @@ private:
     static const std::set<opcodetype> conditionalOpCodes;
     static const std::set<opcodetype> stackModificationOpCodes;
     static const std::set<opcodetype> equalityAndVerificationOpCodes;
+    static const std::set<opcodetype> unaryNumericOpCodes;
 
     StackType& stack_;
     StackType& altstack_;
@@ -82,6 +83,7 @@ private:
     std::shared_ptr<StackOperator> stackModificationOp_;
     std::shared_ptr<StackOperator> equalityVerificationOp_;
     std::shared_ptr<StackOperator> metadataOp_;
+    std::shared_ptr<StackOperator> unaryNumericOp_;
     void InitMapping();
 public:
     StackOperationManager(

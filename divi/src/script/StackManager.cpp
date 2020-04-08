@@ -489,6 +489,40 @@ struct MetadataOp: public StackOperator
     }
 };
 
+struct UnaryNumericOp: public StackOperator
+{
+    UnaryNumericOp(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+    {}
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        if (stack_.size() < 1)
+            return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+        
+        bool fRequireMinimal = (flags_ & SCRIPT_VERIFY_MINIMALDATA) != 0;
+        CScriptNum bn(stackTop(), fRequireMinimal);
+        switch (opcode)
+        {
+            case OP_1ADD:       bn += bnOne; break;
+            case OP_1SUB:       bn -= bnOne; break;
+            case OP_NEGATE:     bn = -bn; break;
+            case OP_ABS:        if (bn < bnZero) bn = -bn; break;
+            case OP_NOT:        bn = (bn == bnZero); break;
+            case OP_0NOTEQUAL:  bn = (bn != bnZero); break;
+            default:            assert(!"invalid opcode"); break;
+        }
+        stack_.pop_back();
+        stack_.push_back(bn.getvch());
+        return true;
+    }
+};
+
+
 const std::set<opcodetype> StackOperationManager::upgradableOpCodes = 
     {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
 const std::set<opcodetype> StackOperationManager::simpleValueOpCodes = 
@@ -501,6 +535,8 @@ const std::set<opcodetype> StackOperationManager::stackModificationOpCodes = {
     OP_ROT, OP_SWAP, OP_TUCK, OP_SIZE};
 const std::set<opcodetype> StackOperationManager::equalityAndVerificationOpCodes =
     {OP_EQUAL,OP_EQUALVERIFY,OP_VERIFY};
+const std::set<opcodetype> StackOperationManager::unaryNumericOpCodes = 
+    {OP_1ADD ,OP_1SUB ,OP_NEGATE, OP_ABS ,OP_NOT ,OP_0NOTEQUAL};
 
 StackOperationManager::StackOperationManager(
     StackType& stack,
@@ -518,6 +554,7 @@ StackOperationManager::StackOperationManager(
     , stackModificationOp_(std::make_shared<StackModificationOp>(stack_,altstack_,flags_,conditionalManager_))
     , equalityVerificationOp_(std::make_shared<EqualityVerificationOp>(stack_,altstack_,flags_,conditionalManager_))
     , metadataOp_(std::make_shared<MetadataOp>(stack_,altstack_,flags_,conditionalManager_))
+    , unaryNumericOp_(std::make_shared<UnaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
 {
     InitMapping();
 }
@@ -543,6 +580,10 @@ void StackOperationManager::InitMapping()
     for(const opcodetype& opcode: equalityAndVerificationOpCodes)
     {
         stackOperationMapping_.insert({opcode, equalityVerificationOp_.get() });
+    }
+    for(const opcodetype& opcode: unaryNumericOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, unaryNumericOp_.get() });
     }
     stackOperationMapping_.insert({OP_META, metadataOp_.get()});
 }

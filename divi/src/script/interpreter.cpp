@@ -344,28 +344,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     }
                     break;
 
-
-                    //
-                    // Numeric
-                    //
                     case OP_1ADD: case OP_1SUB: case OP_NEGATE: case OP_ABS: case OP_NOT: case OP_0NOTEQUAL:
                     {
-                        // (in -- out)
-                        if (stack.size() < 1)
-                            return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-                        CScriptNum bn(stacktop(-1), fRequireMinimal);
-                        switch (opcode)
-                        {
-                        case OP_1ADD:       bn += bnOne; break;
-                        case OP_1SUB:       bn -= bnOne; break;
-                        case OP_NEGATE:     bn = -bn; break;
-                        case OP_ABS:        if (bn < bnZero) bn = -bn; break;
-                        case OP_NOT:        bn = (bn == bnZero); break;
-                        case OP_0NOTEQUAL:  bn = (bn != bnZero); break;
-                        default:            assert(!"invalid opcode"); break;
-                        }
-                        popstack(stack);
-                        stack.push_back(bn.getvch());
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
 

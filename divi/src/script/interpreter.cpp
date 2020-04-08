@@ -363,29 +363,9 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     }
                     break;
 
-
-                    //
-                    // Crypto
-                    //
                     case OP_RIPEMD160: case OP_SHA1: case OP_SHA256: case OP_HASH160: case OP_HASH256:
                     {
-                        // (in -- hash)
-                        if (stack.size() < 1)
-                            return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-                        valtype& vch = stacktop(-1);
-                        valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
-                        if (opcode == OP_RIPEMD160)
-                            CRIPEMD160().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
-                        else if (opcode == OP_SHA1)
-                            CSHA1().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
-                        else if (opcode == OP_SHA256)
-                            CSHA256().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
-                        else if (opcode == OP_HASH160)
-                            CHash160().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
-                        else if (opcode == OP_HASH256)
-                            CHash256().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
-                        popstack(stack);
-                        stack.push_back(vchHash);
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;                                   
 

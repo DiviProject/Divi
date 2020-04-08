@@ -1,5 +1,9 @@
 #include <script/StackManager.h>
 
+#include "crypto/ripemd160.h"
+#include "crypto/sha1.h"
+#include "crypto/sha256.h"
+
 #include <script/opcodes.h>
 #include <vector>
 #include <script/script.h>
@@ -67,9 +71,6 @@ bool ConditionalScopeStackManager::TryCLoseScope()
     CheckConditionalScopeStatus();
     return true;
 }
-
-
-
 
 
 StackOperator::StackOperator(
@@ -611,6 +612,40 @@ struct NumericBoundsOp: public StackOperator
     }
 };
 
+struct HashingOp: public StackOperator
+{
+    HashingOp(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+    {}
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        // (in -- hash)
+        if (stack_.size() < 1)
+            return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+        valtype& vch = stackTop();
+        valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
+        if (opcode == OP_RIPEMD160)
+            CRIPEMD160().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
+        else if (opcode == OP_SHA1)
+            CSHA1().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
+        else if (opcode == OP_SHA256)
+            CSHA256().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
+        else if (opcode == OP_HASH160)
+            CHash160().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
+        else if (opcode == OP_HASH256)
+            CHash256().Write(begin_ptr(vch), vch.size()).Finalize(begin_ptr(vchHash));
+        stack_.pop_back();
+        stack_.push_back(vchHash);
+
+        return true;
+    }
+};
+
 const std::set<opcodetype> StackOperationManager::upgradableOpCodes = 
     {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
 const std::set<opcodetype> StackOperationManager::simpleValueOpCodes = 
@@ -628,6 +663,8 @@ const std::set<opcodetype> StackOperationManager::unaryNumericOpCodes =
 const std::set<opcodetype> StackOperationManager::binaryNumericOpCodes = 
     {OP_ADD, OP_SUB, OP_BOOLAND, OP_BOOLOR, OP_NUMEQUAL, OP_NUMEQUALVERIFY, OP_NUMNOTEQUAL, 
     OP_LESSTHAN, OP_GREATERTHAN, OP_LESSTHANOREQUAL, OP_GREATERTHANOREQUAL, OP_MIN, OP_MAX};
+const std::set<opcodetype> StackOperationManager::hashingOpCodes = 
+    {OP_RIPEMD160, OP_SHA1, OP_SHA256, OP_HASH160, OP_HASH256};
 
 StackOperationManager::StackOperationManager(
     StackType& stack,
@@ -648,6 +685,7 @@ StackOperationManager::StackOperationManager(
     , unaryNumericOp_(std::make_shared<UnaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
     , binaryNumericOp_(std::make_shared<BinaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
     , numericBoundsOp_(std::make_shared<NumericBoundsOp>(stack_,altstack_,flags_,conditionalManager_))
+    , hashingOp_(std::make_shared<HashingOp>(stack_,altstack_,flags_,conditionalManager_))
 {
     InitMapping();
 }
@@ -682,6 +720,11 @@ void StackOperationManager::InitMapping()
     {
         stackOperationMapping_.insert({opcode, binaryNumericOp_.get() });
     }
+    for(const opcodetype& opcode: hashingOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, hashingOp_.get() });
+    }
+    
     stackOperationMapping_.insert({OP_META, metadataOp_.get()});
     stackOperationMapping_.insert({OP_WITHIN, numericBoundsOp_.get()});
 }

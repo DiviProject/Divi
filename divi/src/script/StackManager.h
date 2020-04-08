@@ -70,6 +70,7 @@ private:
     static const std::set<opcodetype> equalityAndVerificationOpCodes;
     static const std::set<opcodetype> unaryNumericOpCodes;
     static const std::set<opcodetype> binaryNumericOpCodes;
+    static const std::set<opcodetype> hashingOpCodes;
 
     StackType& stack_;
     StackType& altstack_;
@@ -87,6 +88,7 @@ private:
     std::shared_ptr<StackOperator> unaryNumericOp_;
     std::shared_ptr<StackOperator> binaryNumericOp_;
     std::shared_ptr<StackOperator> numericBoundsOp_;
+    std::shared_ptr<StackOperator> hashingOp_;
     void InitMapping();
 public:
     StackOperationManager(

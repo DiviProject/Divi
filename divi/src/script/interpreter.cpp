@@ -353,46 +353,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                     case OP_ADD: case OP_SUB: case OP_BOOLAND: case OP_BOOLOR: case OP_NUMEQUAL: case OP_NUMEQUALVERIFY: case OP_NUMNOTEQUAL: 
                     case OP_LESSTHAN: case OP_GREATERTHAN: case OP_LESSTHANOREQUAL: case OP_GREATERTHANOREQUAL: case OP_MIN: case OP_MAX:
                     {
-                        // (x1 x2 -- out)
-                        if (stack.size() < 2)
-                            return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-                        CScriptNum bn1(stacktop(-2), fRequireMinimal);
-                        CScriptNum bn2(stacktop(-1), fRequireMinimal);
-                        CScriptNum bn(0);
-                        switch (opcode)
-                        {
-                            case OP_ADD:
-                                bn = bn1 + bn2;
-                                break;
-
-                            case OP_SUB:
-                                bn = bn1 - bn2;
-                                break;
-
-                            case OP_BOOLAND:             bn = (bn1 != bnZero && bn2 != bnZero); break;
-                            case OP_BOOLOR:              bn = (bn1 != bnZero || bn2 != bnZero); break;
-                            case OP_NUMEQUAL:            bn = (bn1 == bn2); break;
-                            case OP_NUMEQUALVERIFY:      bn = (bn1 == bn2); break;
-                            case OP_NUMNOTEQUAL:         bn = (bn1 != bn2); break;
-                            case OP_LESSTHAN:            bn = (bn1 < bn2); break;
-                            case OP_GREATERTHAN:         bn = (bn1 > bn2); break;
-                            case OP_LESSTHANOREQUAL:     bn = (bn1 <= bn2); break;
-                            case OP_GREATERTHANOREQUAL:  bn = (bn1 >= bn2); break;
-                            case OP_MIN:                 bn = (bn1 < bn2 ? bn1 : bn2); break;
-                            case OP_MAX:                 bn = (bn1 > bn2 ? bn1 : bn2); break;
-                            default:                     assert(!"invalid opcode"); break;
-                        }
-                        popstack(stack);
-                        popstack(stack);
-                        stack.push_back(bn.getvch());
-
-                        if (opcode == OP_NUMEQUALVERIFY)
-                        {
-                            if (CastToBool(stacktop(-1)))
-                                popstack(stack);
-                            else
-                                return set_error(serror, SCRIPT_ERR_NUMEQUALVERIFY);
-                        }
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
                     }
                     break;
 

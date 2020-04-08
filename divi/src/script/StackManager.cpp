@@ -522,6 +522,64 @@ struct UnaryNumericOp: public StackOperator
     }
 };
 
+struct BinaryNumericOp: public StackOperator
+{
+    BinaryNumericOp(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+    {}
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        // (x1 x2 -- out)
+        if (stack_.size() < 2)
+            return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+        
+        bool fRequireMinimal = (flags_ & SCRIPT_VERIFY_MINIMALDATA) != 0;
+        CScriptNum bn1(stackTop(1), fRequireMinimal);
+        CScriptNum bn2(stackTop(0), fRequireMinimal);
+        CScriptNum bn(0);
+        switch (opcode)
+        {
+            case OP_ADD:
+                bn = bn1 + bn2;
+                break;
+
+            case OP_SUB:
+                bn = bn1 - bn2;
+                break;
+
+            case OP_BOOLAND:             bn = (bn1 != bnZero && bn2 != bnZero); break;
+            case OP_BOOLOR:              bn = (bn1 != bnZero || bn2 != bnZero); break;
+            case OP_NUMEQUAL:            bn = (bn1 == bn2); break;
+            case OP_NUMEQUALVERIFY:      bn = (bn1 == bn2); break;
+            case OP_NUMNOTEQUAL:         bn = (bn1 != bn2); break;
+            case OP_LESSTHAN:            bn = (bn1 < bn2); break;
+            case OP_GREATERTHAN:         bn = (bn1 > bn2); break;
+            case OP_LESSTHANOREQUAL:     bn = (bn1 <= bn2); break;
+            case OP_GREATERTHANOREQUAL:  bn = (bn1 >= bn2); break;
+            case OP_MIN:                 bn = (bn1 < bn2 ? bn1 : bn2); break;
+            case OP_MAX:                 bn = (bn1 > bn2 ? bn1 : bn2); break;
+            default:                     return Helpers::set_error(serror,SCRIPT_ERR_UNKNOWN_ERROR); break;
+        }
+
+        stack_.pop_back();
+        stack_.pop_back();
+        stack_.push_back(bn.getvch());
+
+        if (opcode == OP_NUMEQUALVERIFY)
+        {
+            if (Helpers::CastToBool(stackTop()))
+                stack_.pop_back();
+            else
+                return Helpers::set_error(serror, SCRIPT_ERR_NUMEQUALVERIFY);
+        }
+        return true;
+    }
+};
 
 const std::set<opcodetype> StackOperationManager::upgradableOpCodes = 
     {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
@@ -537,6 +595,9 @@ const std::set<opcodetype> StackOperationManager::equalityAndVerificationOpCodes
     {OP_EQUAL,OP_EQUALVERIFY,OP_VERIFY};
 const std::set<opcodetype> StackOperationManager::unaryNumericOpCodes = 
     {OP_1ADD ,OP_1SUB ,OP_NEGATE, OP_ABS ,OP_NOT ,OP_0NOTEQUAL};
+const std::set<opcodetype> StackOperationManager::binaryNumericOpCodes = 
+    {OP_ADD, OP_SUB, OP_BOOLAND, OP_BOOLOR, OP_NUMEQUAL, OP_NUMEQUALVERIFY, OP_NUMNOTEQUAL, 
+    OP_LESSTHAN, OP_GREATERTHAN, OP_LESSTHANOREQUAL, OP_GREATERTHANOREQUAL, OP_MIN, OP_MAX};
 
 StackOperationManager::StackOperationManager(
     StackType& stack,
@@ -555,6 +616,7 @@ StackOperationManager::StackOperationManager(
     , equalityVerificationOp_(std::make_shared<EqualityVerificationOp>(stack_,altstack_,flags_,conditionalManager_))
     , metadataOp_(std::make_shared<MetadataOp>(stack_,altstack_,flags_,conditionalManager_))
     , unaryNumericOp_(std::make_shared<UnaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
+    , binaryNumericOp_(std::make_shared<BinaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
 {
     InitMapping();
 }
@@ -584,6 +646,10 @@ void StackOperationManager::InitMapping()
     for(const opcodetype& opcode: unaryNumericOpCodes)
     {
         stackOperationMapping_.insert({opcode, unaryNumericOp_.get() });
+    }
+    for(const opcodetype& opcode: binaryNumericOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, binaryNumericOp_.get() });
     }
     stackOperationMapping_.insert({OP_META, metadataOp_.get()});
 }

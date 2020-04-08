@@ -514,7 +514,7 @@ struct UnaryNumericOp: public StackOperator
             case OP_ABS:        if (bn < bnZero) bn = -bn; break;
             case OP_NOT:        bn = (bn == bnZero); break;
             case OP_0NOTEQUAL:  bn = (bn != bnZero); break;
-            default:            assert(!"invalid opcode"); break;
+            default:            return Helpers::set_error(serror,SCRIPT_ERR_UNKNOWN_ERROR); break;
         }
         stack_.pop_back();
         stack_.push_back(bn.getvch());

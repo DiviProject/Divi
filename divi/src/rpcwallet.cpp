@@ -333,7 +333,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
                 HelpRequiringPassphrase() +
                 "\nArguments:\n"
                 "1. \"diviaddress\"  (string, required) The divi address to send to.\n"
-                "2. \"amount\"      (numeric, required) The amount in btc to send. eg 0.1\n"
+                "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n"
                 "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
                 "                             This is not part of the transaction, just kept in your wallet.\n"
                 "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
@@ -374,7 +374,7 @@ Value sendtoaddressix(const Array& params, bool fHelp)
                 HelpRequiringPassphrase() +
                 "\nArguments:\n"
                 "1. \"diviaddress\"  (string, required) The divi address to send to.\n"
-                "2. \"amount\"      (numeric, required) The amount in btc to send. eg 0.1\n"
+                "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n"
                 "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
                 "                             This is not part of the transaction, just kept in your wallet.\n"
                 "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
@@ -418,7 +418,7 @@ Value listaddressgroupings(const Array& params, bool fHelp)
                 "  [\n"
                 "    [\n"
                 "      \"diviaddress\",     (string) The divi address\n"
-                "      amount,                 (numeric) The amount in btc\n"
+                "      amount,                 (numeric) The amount in DIVI\n"
                 "      \"account\"             (string, optional) The account\n"
                 "    ]\n"
                 "    ,...\n"
@@ -505,7 +505,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
                 "1. \"diviaddress\"  (string, required) The divi address for transactions.\n"
                 "2. minconf             (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
                 "\nResult:\n"
-                "amount   (numeric) The total amount in btc received at this address.\n"
+                "amount   (numeric) The total amount in DIVI received at this address.\n"
                 "\nExamples:\n"
                 "\nThe amount from transactions with at least 1 confirmation\n" +
                 HelpExampleCli("getreceivedbyaddress", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\"") +
@@ -553,7 +553,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
                 "1. \"account\"      (string, required) The selected account, may be the default account using \"\".\n"
                 "2. minconf          (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
                 "\nResult:\n"
-                "amount              (numeric) The total amount in btc received for this account.\n"
+                "amount              (numeric) The total amount in DIVI received for this account.\n"
                 "\nExamples:\n"
                 "\nAmount received by the default account with at least 1 confirmation\n" +
                 HelpExampleCli("getreceivedbyaccount", "\"\"") +
@@ -634,7 +634,7 @@ Value getbalance(const Array& params, bool fHelp)
                 "2. minconf          (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
                 "3. includeWatchonly (bool, optional, default=false) Also include balance in watchonly addresses (see 'importaddress')\n"
                 "\nResult:\n"
-                "amount              (numeric) The total amount in btc received for this account.\n"
+                "amount              (numeric) The total amount in DIVI received for this account.\n"
                 "\nExamples:\n"
                 "\nThe total amount in the server across all accounts\n" +
                 HelpExampleCli("getbalance", "") +
@@ -711,9 +711,9 @@ Value movecmd(const Array& params, bool fHelp)
                 "\nResult:\n"
                 "true|false           (boolean) true if successfull.\n"
                 "\nExamples:\n"
-                "\nMove 0.01 btc from the default account to the account named tabby\n" +
+                "\nMove 0.01 DIVI from the default account to the account named tabby\n" +
                 HelpExampleCli("move", "\"\" \"tabby\" 0.01") +
-                "\nMove 0.01 btc timotei to akiko with a comment and funds have 6 confirmations\n" + HelpExampleCli("move", "\"timotei\" \"akiko\" 0.01 6 \"happy birthday!\"") +
+                "\nMove 0.01 DIVI timotei to akiko with a comment and funds have 6 confirmations\n" + HelpExampleCli("move", "\"timotei\" \"akiko\" 0.01 6 \"happy birthday!\"") +
                 "\nAs a json rpc call\n" + HelpExampleRpc("move", "\"timotei\", \"akiko\", 0.01, 6, \"happy birthday!\""));
 
     string strFrom = AccountFromValue(params[0]);
@@ -770,7 +770,7 @@ Value sendfrom(const Array& params, bool fHelp)
                                             "\nArguments:\n"
                                             "1. \"fromaccount\"       (string, required) The name of the account to send funds from. May be the default account using \"\".\n"
                                             "2. \"todiviaddress\"  (string, required) The divi address to send funds to.\n"
-                                            "3. amount                (numeric, required) The amount in btc. (transaction fee is added on top).\n"
+                                            "3. amount                (numeric, required) The amount in DIVI. (transaction fee is added on top).\n"
                                             "4. minconf               (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
                                             "5. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
                                             "                                     This is not part of the transaction, just kept in your wallet.\n"
@@ -780,7 +780,7 @@ Value sendfrom(const Array& params, bool fHelp)
                                             "\nResult:\n"
                                             "\"transactionid\"        (string) The transaction id.\n"
                                             "\nExamples:\n"
-                                            "\nSend 0.01 btc from the default account to the address, must have at least 1 confirmation\n" +
+                                            "\nSend 0.01 DIVI from the default account to the address, must have at least 1 confirmation\n" +
                 HelpExampleCli("sendfrom", "\"\" \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.01") +
                 "\nSend 0.01 from the tabby account to the given address, funds must have at least 6 confirmations\n" + HelpExampleCli("sendfrom", "\"tabby\" \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.01 6 \"donation\" \"seans outpost\"") +
                 "\nAs a json rpc call\n" + HelpExampleRpc("sendfrom", "\"tabby\", \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\", 0.01, 6, \"donation\", \"seans outpost\""));
@@ -825,7 +825,7 @@ Value sendmany(const Array& params, bool fHelp)
                                             "1. \"fromaccount\"         (string, required) The account to send the funds from, can be \"\" for the default account\n"
                                             "2. \"amounts\"             (string, required) A json object with addresses and amounts\n"
                                             "    {\n"
-                                            "      \"address\":amount   (numeric) The divi address is the key, the numeric amount in btc is the value\n"
+                                            "      \"address\":amount   (numeric) The divi address is the key, the numeric amount in DIVI is the value\n"
                                             "      ,...\n"
                                             "    }\n"
                                             "3. minconf                 (numeric, optional, default=1) Only use the balance confirmed at least this many times.\n"
@@ -1081,7 +1081,7 @@ Value listreceivedbyaddress(const Array& params, bool fHelp)
                 "    \"involvesWatchonly\" : \"true\",    (bool) Only returned if imported addresses were involved in transaction\n"
                 "    \"address\" : \"receivingaddress\",  (string) The receiving address\n"
                 "    \"account\" : \"accountname\",       (string) The account of the receiving address. The default account is \"\".\n"
-                "    \"amount\" : x.xxx,                  (numeric) The total amount in btc received by the address\n"
+                "    \"amount\" : x.xxx,                  (numeric) The total amount in DIVI received by the address\n"
                 "    \"confirmations\" : n                (numeric) The number of confirmations of the most recent transaction included\n"
                 "    \"bcconfirmations\" : n              (numeric) The number of blockchain confirmations of the most recent transaction included\n"
                 "  }\n"
@@ -1358,11 +1358,11 @@ Value listtransactions(const Array& params, bool fHelp)
                 "                                                transaction between accounts, and not associated with an address,\n"
                 "                                                transaction id or block. 'send' and 'receive' transactions are \n"
                 "                                                associated with an address, transaction id and block details\n"
-                "    \"amount\": x.xxx,          (numeric) The amount in btc. This is negative for the 'send' category, and for the\n"
+                "    \"amount\": x.xxx,          (numeric) The amount in DIVI. This is negative for the 'send' category, and for the\n"
                 "                                         'move' category for moves outbound. It is positive for the 'receive' category,\n"
                 "                                         and for the 'move' category for inbound funds.\n"
                 "    \"vout\" : n,               (numeric) the vout value\n"
-                "    \"fee\": x.xxx,             (numeric) The amount of the fee in btc. This is negative and only available for the \n"
+                "    \"fee\": x.xxx,             (numeric) The amount of the fee in DIVI. This is negative and only available for the \n"
                 "                                         'send' category of transactions.\n"
                 "    \"confirmations\": n,       (numeric) The number of confirmations for the transaction. Available for 'send' and \n"
                 "                                         'receive' category of transactions.\n"
@@ -1529,10 +1529,10 @@ Value listsinceblock(const Array& params, bool fHelp)
                 "    \"account\":\"accountname\",       (string) The account name associated with the transaction. Will be \"\" for the default account.\n"
                 "    \"address\":\"diviaddress\",    (string) The divi address of the transaction. Not present for move transactions (category = move).\n"
                 "    \"category\":\"send|receive\",     (string) The transaction category. 'send' has negative amounts, 'receive' has positive amounts.\n"
-                "    \"amount\": x.xxx,          (numeric) The amount in btc. This is negative for the 'send' category, and for the 'move' category for moves \n"
+                "    \"amount\": x.xxx,          (numeric) The amount in DIVI. This is negative for the 'send' category, and for the 'move' category for moves \n"
                 "                                          outbound. It is positive for the 'receive' category, and for the 'move' category for inbound funds.\n"
                 "    \"vout\" : n,               (numeric) the vout value\n"
-                "    \"fee\": x.xxx,             (numeric) The amount of the fee in btc. This is negative and only available for the 'send' category of transactions.\n"
+                "    \"fee\": x.xxx,             (numeric) The amount of the fee in DIVI. This is negative and only available for the 'send' category of transactions.\n"
                 "    \"confirmations\": n,       (numeric) The number of confirmations for the transaction. Available for 'send' and 'receive' category of transactions.\n"
                 "    \"bcconfirmations\" : n,    (numeric) The number of blockchain confirmations for the transaction. Available for 'send' and 'receive' category of transactions.\n"
                 "    \"blockhash\": \"hashvalue\",     (string) The block hash containing the transaction. Available for 'send' and 'receive' category of transactions.\n"
@@ -1605,7 +1605,7 @@ Value gettransaction(const Array& params, bool fHelp)
                 "2. \"includeWatchonly\"    (bool, optional, default=false) Whether to include watchonly addresses in balance calculation and details[]\n"
                 "\nResult:\n"
                 "{\n"
-                "  \"amount\" : x.xxx,        (numeric) The transaction amount in btc\n"
+                "  \"amount\" : x.xxx,        (numeric) The transaction amount in DIVI\n"
                 "  \"confirmations\" : n,     (numeric) The number of confirmations\n"
                 "  \"bcconfirmations\" : n,   (numeric) The number of blockchain confirmations\n"
                 "  \"blockhash\" : \"hash\",  (string) The block hash\n"
@@ -1619,7 +1619,7 @@ Value gettransaction(const Array& params, bool fHelp)
                 "      \"account\" : \"accountname\",  (string) The account name involved in the transaction, can be \"\" for the default account.\n"
                 "      \"address\" : \"diviaddress\",   (string) The divi address involved in the transaction\n"
                 "      \"category\" : \"send|receive\",    (string) The category, either 'send' or 'receive'\n"
-                "      \"amount\" : x.xxx                  (numeric) The amount in btc\n"
+                "      \"amount\" : x.xxx                  (numeric) The amount in DIVI\n"
                 "      \"vout\" : n,                       (numeric) the vout value\n"
                 "    }\n"
                 "    ,...\n"
@@ -2045,7 +2045,7 @@ Value settxfee(const Array& params, bool fHelp)
                 "settxfee amount\n"
                 "\nSet the transaction fee per kB.\n"
                 "\nArguments:\n"
-                "1. amount         (numeric, required) The transaction fee in DIV/kB rounded to the nearest 0.00000001\n"
+                "1. amount         (numeric, required) The transaction fee in DIVI/kB rounded to the nearest 0.00000001\n"
                 "\nResult\n"
                 "true|false        (boolean) Returns true if successful\n"
                 "\nExamples:\n" +
@@ -2087,7 +2087,7 @@ Value getwalletinfo(const Array& params, bool fHelp)
                 "\nResult:\n"
                 "{\n"
                 "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
-                "  \"balance\": xxxxxxx,         (numeric) the total DIV balance of the wallet\n"
+                "  \"balance\": xxxxxxx,         (numeric) the total DIVI balance of the wallet\n"
                 "  \"txcount\": xxxxxxx,         (numeric) the total number of transactions in the wallet\n"
                 "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
                 "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"
@@ -2470,7 +2470,7 @@ Value multisend(const Array& params, bool fHelp)
     string strAddress = params[0].get_str();
     CBitcoinAddress address(strAddress);
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIV address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
     if (boost::lexical_cast<int>(params[1].get_str()) < 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid percentage");
     if (pwalletMain->IsLocked())
@@ -2603,7 +2603,7 @@ Value mintzerocoin(const Array& params, bool fHelp)
     if (fHelp || params.size() != 1)
         throw runtime_error(
                 "mintzerocoin <amount>\n"
-                "Usage: Enter an amount of Div to convert to zDiv"
+                "Usage: Enter an amount of DIVI to convert to zDiv"
                 + HelpRequiringPassphrase());
 
     int64_t nTime = GetTimeMillis();
@@ -2643,9 +2643,9 @@ Value spendzerocoin(const Array& params, bool fHelp)
     if (fHelp || params.size() > 5 || params.size() < 4)
         throw runtime_error(
                 "spendzerocoin <amount> <mintchange [true|false]> <minimizechange [true|false]>  <securitylevel [1-100]> <address>\n"
-                "Overview: Convert zDIV (zerocoins) into DIV. \n"
+                "Overview: Convert zDIV (zerocoins) into DIVI. \n"
                 "amount: amount to spend\n"
-                "mintchange: if there is left over DIV (change), the wallet can convert it automatically back to zerocoins [true]\n"
+                "mintchange: if there is left over DIVI (change), the wallet can convert it automatically back to zerocoins [true]\n"
                 "minimizechange: try to minimize the returning change  [false]\n"
                 "security level: the amount of checkpoints to add to the accumulator. A checkpoint contains 10 blocks worth of zerocoinmints."
                 "The more checkpoints that are added, the more untraceable the transaction will be. Use [100] to add the maximum amount"

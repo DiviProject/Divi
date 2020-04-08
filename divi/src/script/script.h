@@ -28,9 +28,6 @@ std::vector<unsigned char> ToByteVector(const T& in)
     return std::vector<unsigned char>(in.begin(), in.end());
 }
 
-
-const char* GetOpName(opcodetype opcode);
-
 class scriptnum_error : public std::runtime_error
 {
 public:

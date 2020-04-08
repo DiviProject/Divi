@@ -148,4 +148,6 @@ enum opcodetype
 
     OP_INVALIDOPCODE = 0xff,
 };
+
+const char* GetOpName(opcodetype opcode);
 #endif // OPCODES_H

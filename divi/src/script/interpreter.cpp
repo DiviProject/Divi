@@ -280,7 +280,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
     int nOpCount = 0;
     bool fRequireMinimal = (flags & SCRIPT_VERIFY_MINIMALDATA) != 0;
 
-    StackOperationManager stackManager(stack,altstack,flags);
+    StackOperationManager stackManager(stack,flags);
 
     try
     {

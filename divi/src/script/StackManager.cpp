@@ -665,13 +665,12 @@ const std::set<opcodetype> StackOperationManager::hashingOpCodes =
 
 StackOperationManager::StackOperationManager(
     StackType& stack,
-    StackType& altstack,
     unsigned flags
     ): stack_(stack)
-    , altstack_(altstack) 
+    , altstack_() 
     , flags_(flags)
     , conditionalManager_()
-    , defaultOperation_(stack,altstack,flags,conditionalManager_)
+    , defaultOperation_(stack,altstack_,flags,conditionalManager_)
     , stackOperationMapping_()
     , disableOp_(std::make_shared<DisabledOp>(stack_,altstack_,flags_,conditionalManager_))
     , pushValueOp_(std::make_shared<PushValueOp>(stack_,altstack_,flags_,conditionalManager_))

@@ -74,7 +74,7 @@ private:
     static const std::set<opcodetype> hashingOpCodes;
 
     StackType& stack_;
-    StackType& altstack_;
+    StackType altstack_;
     unsigned flags_;
     ConditionalScopeStackManager conditionalManager_;
     StackOperator defaultOperation_;
@@ -94,7 +94,6 @@ private:
 public:
     StackOperationManager(
         StackType& stack,
-        StackType& altstack,
         unsigned flags
         );
 

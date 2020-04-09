@@ -102,4 +102,5 @@ public:
     
     bool ConditionalNeedsClosing() const;
     bool ConditionalScopeIsBalanced() const;
+    unsigned TotalStackSize() const;
 };

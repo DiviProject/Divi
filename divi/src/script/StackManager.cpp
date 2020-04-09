@@ -744,3 +744,8 @@ bool StackOperationManager::ConditionalScopeIsBalanced() const
 {
     return conditionalManager_.StackIsEmpty();
 }
+
+unsigned StackOperationManager::TotalStackSize() const
+{
+    return stack_.size() + altstack_.size();
+}

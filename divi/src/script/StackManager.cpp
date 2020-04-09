@@ -49,7 +49,7 @@ bool ConditionalScopeStackManager::StackIsEmpty() const
 }
 bool ConditionalScopeStackManager::ConditionalScopeNeedsClosing() const
 {
-    return ConditionalScopeStackManager::conditionalScopeNeedsClosing;
+    return conditionalScopeNeedsClosing;
 }
 
 void ConditionalScopeStackManager::OpenScope(bool conditionStatus)

@@ -37,6 +37,7 @@ protected:
     StackType& altstack_;
     unsigned& flags_;
     ConditionalScopeStackManager& conditionalManager_;
+    bool fRequireMinimal_;
 public:
     static const CScriptNum bnZero;
     static const CScriptNum bnOne;

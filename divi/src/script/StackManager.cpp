@@ -82,6 +82,7 @@ StackOperator::StackOperator(
     , altstack_(altstack)
     , flags_(flags)
     , conditionalManager_(conditionalManager)
+    , fRequireMinimal_(flags_ & SCRIPT_VERIFY_MINIMALDATA)
 {
 }
 
@@ -366,8 +367,7 @@ struct StackModificationOp: public StackOperator
                 if (stack_.size() < 2)
                     return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
                 
-                bool fRequireMinimal = (flags_ & SCRIPT_VERIFY_MINIMALDATA) != 0;
-                int n = CScriptNum(stackTop(), fRequireMinimal).getint();
+                int n = CScriptNum(stackTop(), fRequireMinimal_).getint();
                 stack_.pop_back();
                 if (n < 0 || n >= (int)stack_.size())
                     return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
@@ -505,8 +505,7 @@ struct UnaryNumericOp: public StackOperator
         if (stack_.size() < 1)
             return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
         
-        bool fRequireMinimal = (flags_ & SCRIPT_VERIFY_MINIMALDATA) != 0;
-        CScriptNum bn(stackTop(), fRequireMinimal);
+        CScriptNum bn(stackTop(), fRequireMinimal_);
         switch (opcode)
         {
             case OP_1ADD:       bn += bnOne; break;
@@ -539,9 +538,8 @@ struct BinaryNumericOp: public StackOperator
         if (stack_.size() < 2)
             return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
         
-        bool fRequireMinimal = (flags_ & SCRIPT_VERIFY_MINIMALDATA) != 0;
-        CScriptNum bn1(stackTop(1), fRequireMinimal);
-        CScriptNum bn2(stackTop(0), fRequireMinimal);
+        CScriptNum bn1(stackTop(1), fRequireMinimal_);
+        CScriptNum bn2(stackTop(0), fRequireMinimal_);
         CScriptNum bn(0);
         switch (opcode)
         {
@@ -598,10 +596,9 @@ struct NumericBoundsOp: public StackOperator
         if (stack_.size() < 3)
             return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
         
-        bool fRequireMinimal = (flags_ & SCRIPT_VERIFY_MINIMALDATA) != 0;
-        CScriptNum bn1(stackTop(2), fRequireMinimal);
-        CScriptNum bn2(stackTop(1), fRequireMinimal);
-        CScriptNum bn3(stackTop(0), fRequireMinimal);
+        CScriptNum bn1(stackTop(2), fRequireMinimal_);
+        CScriptNum bn2(stackTop(1), fRequireMinimal_);
+        CScriptNum bn3(stackTop(0), fRequireMinimal_);
         bool fValue = (bn2 <= bn1 && bn1 < bn3);
         stack_.pop_back();
         stack_.pop_back();

@@ -272,11 +272,13 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
     CScript::const_iterator pbegincodehash = script.begin();
     opcodetype opcode;
     valtype vchPushValue;
-    vector<bool> conditionalScopeReadStatusStack;
-    vector<valtype> altstack;
+
     set_error(serror, SCRIPT_ERR_UNKNOWN_ERROR);
     if (script.size() > 10000)
+    {    
         return set_error(serror, SCRIPT_ERR_SCRIPT_SIZE);
+    }
+
     int nOpCount = 0;
     bool fRequireMinimal = (flags & SCRIPT_VERIFY_MINIMALDATA) != 0;
 

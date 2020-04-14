@@ -171,7 +171,7 @@ BITCOIN_CORE_H = \
   rpcprotocol.h \
   rpcserver.h \
   script/interpreter.h \
-  script/InterpreterStack.h \
+  script/SignatureCheckers.h \
   script/StackManager.h \
   script/script.h \
   script/sigcache.h \
@@ -419,7 +419,7 @@ libbitcoin_common_a_SOURCES = \
   protocol.cpp \
   pubkey.cpp \
   script/interpreter.cpp \
-  script/InterpreterStack.cpp \
+  script/SignatureCheckers.cpp \
   script/StackManager.cpp \
   script/opcodes.cpp \
   script/script.cpp \

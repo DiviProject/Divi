@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <memory>
 
+
+class BaseSignatureChecker;
+
 namespace Helpers
 {
     bool CastToBool(const valtype& vch);
@@ -55,6 +58,7 @@ public:
         );
 
     virtual bool operator()(opcodetype opcode, ScriptError* serror);
+    virtual bool operator()(opcodetype opcode, CScript scriptCode, ScriptError* serror);
 
     valtype& stackTop(unsigned depth = 0);
     valtype& altstackTop(unsigned depth = 0);
@@ -74,6 +78,7 @@ private:
     static const std::set<opcodetype> hashingOpCodes;
 
     StackType& stack_;
+    const BaseSignatureChecker& checker_;
     StackType altstack_;
     unsigned flags_;
     ConditionalScopeStackManager conditionalManager_;
@@ -94,10 +99,12 @@ private:
 public:
     StackOperationManager(
         StackType& stack,
+        const BaseSignatureChecker& checker,
         unsigned flags
         );
 
     StackOperator* GetOp(opcodetype opcode);
+    bool HasOp(opcodetype opcode) const;
     
     bool ConditionalNeedsClosing() const;
     bool ConditionalScopeIsBalanced() const;

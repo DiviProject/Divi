@@ -7,6 +7,7 @@
 #define BITCOIN_SCRIPT_STANDARD_H
 
 #include "script/interpreter.h"
+#include "script/scriptandsigflags.h"
 #include "uint256.h"
 
 #include <boost/variant.hpp>

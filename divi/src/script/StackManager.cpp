@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <memory>
 
+#include <script/SignatureCheckers.h>
+
 namespace Helpers
 {
     bool CastToBool(const valtype& vch)
@@ -89,6 +91,10 @@ StackOperator::StackOperator(
 bool StackOperator::operator()(opcodetype opcode, ScriptError* serror)
 {
     return Helpers::set_error(serror, SCRIPT_ERR_BAD_OPCODE);
+}
+bool StackOperator::operator()(opcodetype opcode, CScript scriptCode, ScriptError* serror)
+{
+    return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
 }
 
 valtype& StackOperator::stackTop(unsigned depth)
@@ -643,6 +649,49 @@ struct HashingOp: public StackOperator
     }
 };
 
+struct SignatureCheckOp: public StackOperator
+{
+private:
+    const BaseSignatureChecker& checker_;
+public:
+    SignatureCheckOp(
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager,
+        const BaseSignatureChecker& checker
+        ): StackOperator(stack,altstack,flags,conditionalManager), checker_(checker)
+    {}
+
+    virtual bool operator()(opcodetype opcode, CScript scriptCode, ScriptError* serror) override
+    {
+        // Subset of script starting at the most recent codeseparator
+        //CScript scriptCode(pbegincodehash, pend);
+        // (sig pubkey -- bool)
+        if (stack_.size() < 2)
+            return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+        valtype& vchSig    = stackTop(1);
+        valtype& vchPubKey = stackTop(0);
+
+        // Drop the signature, since there's no way for a signature to sign itself
+        scriptCode.FindAndDelete(CScript(vchSig));
+
+        bool fSuccess = checker_.CheckSig(vchSig, vchPubKey, scriptCode); // Needs to include the encoding checks at the begining
+
+        stack_.pop_back();
+        stack_.pop_back();
+        stack_.push_back(fSuccess ? vchTrue : vchFalse);
+        if (opcode == OP_CHECKSIGVERIFY)
+        {
+            if (fSuccess)
+                stack_.pop_back();
+            else
+                return Helpers::set_error(serror, SCRIPT_ERR_CHECKSIGVERIFY);
+        }
+    }
+};
+
 const std::set<opcodetype> StackOperationManager::upgradableOpCodes = 
     {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
 const std::set<opcodetype> StackOperationManager::simpleValueOpCodes = 
@@ -665,9 +714,11 @@ const std::set<opcodetype> StackOperationManager::hashingOpCodes =
 
 StackOperationManager::StackOperationManager(
     StackType& stack,
+    const BaseSignatureChecker& checker,
     unsigned flags
     ): stack_(stack)
-    , altstack_() 
+    , checker_(checker)
+    , altstack_()
     , flags_(flags)
     , conditionalManager_()
     , defaultOperation_(stack,altstack_,flags,conditionalManager_)
@@ -733,6 +784,12 @@ StackOperator* StackOperationManager::GetOp(opcodetype opcode)
         return it->second;
     }
     return &defaultOperation_;
+}
+
+bool StackOperationManager::HasOp(opcodetype opcode) const
+{
+    auto it = stackOperationMapping_.find(opcode);
+    return it != stackOperationMapping_.end();
 }
 
 bool StackOperationManager::ConditionalNeedsClosing() const

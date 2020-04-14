@@ -7,13 +7,13 @@
 #define BITCOIN_SCRIPT_INTERPRETER_H
 
 #include "script_error.h"
-#include <script/SignatureCheckers.h>
 
 #include <vector>
 #include <stdint.h>
 #include <string>
 
 class CScript;
+class BaseSignatureChecker;
 
 bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& script, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* error = NULL);
 bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* error = NULL);

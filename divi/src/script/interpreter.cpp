@@ -5,6 +5,8 @@
 
 #include "interpreter.h"
 
+#include <script/SignatureCheckers.h>
+
 #include "script/scriptandsigflags.h"
 #include "primitives/transaction.h"
 #include "crypto/ripemd160.h"

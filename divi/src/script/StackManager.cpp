@@ -14,6 +14,8 @@
 
 #include <script/SignatureCheckers.h>
 
+#define MAXIMUM_NUMBER_OF_OPCODES 201
+
 namespace Helpers
 {
     bool CastToBool(const valtype& vch)
@@ -652,6 +654,7 @@ struct HashingOp: public StackOperator
 struct SignatureCheckOp: public StackOperator
 {
 private:
+    unsigned& opCount_;
     const BaseSignatureChecker& checker_;
 public:
     SignatureCheckOp(
@@ -659,8 +662,11 @@ public:
         StackType& altstack, 
         unsigned& flags,
         ConditionalScopeStackManager& conditionalManager,
+        unsigned opCount,
         const BaseSignatureChecker& checker
-        ): StackOperator(stack,altstack,flags,conditionalManager), checker_(checker)
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+        , opCount_(opCount)
+        , checker_(checker)
     {}
 
     virtual bool operator()(opcodetype opcode, CScript scriptCode, ScriptError* serror) override
@@ -668,27 +674,133 @@ public:
         // Subset of script starting at the most recent codeseparator
         //CScript scriptCode(pbegincodehash, pend);
         // (sig pubkey -- bool)
-        if (stack_.size() < 2)
-            return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-
-        valtype& vchSig    = stackTop(1);
-        valtype& vchPubKey = stackTop(0);
-
-        // Drop the signature, since there's no way for a signature to sign itself
-        scriptCode.FindAndDelete(CScript(vchSig));
-
-        bool fSuccess = checker_.CheckSig(vchSig, vchPubKey, scriptCode); // Needs to include the encoding checks at the begining
-
-        stack_.pop_back();
-        stack_.pop_back();
-        stack_.push_back(fSuccess ? vchTrue : vchFalse);
-        if (opcode == OP_CHECKSIGVERIFY)
+        switch(opcode)
         {
-            if (fSuccess)
+            case OP_CHECKSIG: case OP_CHECKSIGVERIFY:
+            {
+                if (stack_.size() < 2)
+                    return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+                const valtype& vchSig    = stackTop(1);
+                const valtype& vchPubKey = stackTop(0);
+
+                // Drop the signature, since there's no way for a signature to sign itself
+                scriptCode.FindAndDelete(CScript(vchSig));
+                if (!BaseSignatureChecker::CheckSignatureEncoding(vchSig, flags_, serror) || 
+                    !BaseSignatureChecker::CheckPubKeyEncoding(vchPubKey, flags_, serror)) 
+                {
+                    return false;
+                }
+                bool fSuccess = checker_.CheckSig(vchSig, vchPubKey, scriptCode); // Needs to include the encoding checks at the begining
+
                 stack_.pop_back();
-            else
-                return Helpers::set_error(serror, SCRIPT_ERR_CHECKSIGVERIFY);
+                stack_.pop_back();
+                stack_.push_back(fSuccess ? vchTrue : vchFalse);
+                if (opcode == OP_CHECKSIGVERIFY)
+                {
+                    if (fSuccess)
+                        stack_.pop_back();
+                    else
+                        return Helpers::set_error(serror, SCRIPT_ERR_CHECKSIGVERIFY);
+                }
+            }
+            break;
+            case OP_CHECKMULTISIG: case OP_CHECKMULTISIGVERIFY:
+            {    // ([sig ...] num_of_signatures [pubkey ...] num_of_pubkeys -- bool)
+                int i = 1;
+                if ((int)stack_.size() < 1)
+                    return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+                int nKeysCount = CScriptNum(stackTop(i-1), fRequireMinimal_).getint();
+                if (nKeysCount < 0 || nKeysCount > 20)
+                    return Helpers::set_error(serror, SCRIPT_ERR_PUBKEY_COUNT);
+                opCount_ += (unsigned) nKeysCount;
+                if (opCount_ > MAXIMUM_NUMBER_OF_OPCODES)
+                    return Helpers::set_error(serror, SCRIPT_ERR_OP_COUNT);
+                
+                int ikey = ++i;
+                i += nKeysCount;
+                if ((int)stack_.size() < i)
+                    return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+                int nSigsCount = CScriptNum(stackTop(i-1), fRequireMinimal_).getint();
+                if (nSigsCount < 0 || nSigsCount > nKeysCount)
+                    return Helpers::set_error(serror, SCRIPT_ERR_SIG_COUNT);
+                int isig = ++i;
+                i += nSigsCount;
+                if ((int)stack_.size() < i)
+                    return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+                // Drop the signatures, since there's no way for a signature to sign itself
+                for (int k = 0; k < nSigsCount; k++)
+                {
+                    valtype& vchSig = stackTop(isig+k-1);
+                    scriptCode.FindAndDelete(CScript(vchSig));
+                }
+
+                bool fSuccess = true;
+                while (fSuccess && nSigsCount > 0)
+                {
+                    valtype& vchSig    = stackTop(isig-1);
+                    valtype& vchPubKey = stackTop(ikey-1);
+
+                    // Note how this makes the exact order of pubkey/signature evaluation
+                    // distinguishable by CHECKMULTISIG NOT if the STRICTENC flag is set.
+                    // See the script_(in)valid tests for details.
+                    if (!BaseSignatureChecker::CheckSignatureEncoding(vchSig, flags_, serror) || 
+                        !BaseSignatureChecker::CheckPubKeyEncoding(vchPubKey, flags_, serror)) {
+                        // serror is set
+                        return false;
+                    }
+
+                    // Check signature
+                    bool fOk = checker_.CheckSig(vchSig, vchPubKey, scriptCode);
+
+                    if (fOk) {
+                        isig++;
+                        nSigsCount--;
+                    }
+                    ikey++;
+                    nKeysCount--;
+
+                    // If there are more signatures left than keys left,
+                    // then too many signatures have failed. Exit early,
+                    // without checking any further signatures.
+                    if (nSigsCount > nKeysCount)
+                        fSuccess = false;
+                }
+
+                // Clean up stack of actual arguments
+                while (i-- > 1)
+                    stack_.pop_back();
+
+                // A bug causes CHECKMULTISIG to consume one extra argument
+                // whose contents were not checked in any way.
+                //
+                // Unfortunately this is a potential source of mutability,
+                // so optionally verify it is exactly equal to zero prior
+                // to removing it from the stack.
+                if (stack_.size() < 1)
+                    return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+                if ((flags_ & SCRIPT_VERIFY_NULLDUMMY) && stackTop().size())
+                    return Helpers::set_error(serror, SCRIPT_ERR_SIG_NULLDUMMY);
+                stack_.pop_back();
+
+                stack_.push_back(fSuccess ? vchTrue : vchFalse);
+
+                if (opcode == OP_CHECKMULTISIGVERIFY)
+                {
+                    if (fSuccess)
+                        stack_.pop_back();
+                    else
+                        return Helpers::set_error(serror, SCRIPT_ERR_CHECKMULTISIGVERIFY);
+                }
+            }
+            break;
+            default:
+            break;
         }
+        return true;
     }
 };
 
@@ -711,6 +823,8 @@ const std::set<opcodetype> StackOperationManager::binaryNumericOpCodes =
     OP_LESSTHAN, OP_GREATERTHAN, OP_LESSTHANOREQUAL, OP_GREATERTHANOREQUAL, OP_MIN, OP_MAX};
 const std::set<opcodetype> StackOperationManager::hashingOpCodes = 
     {OP_RIPEMD160, OP_SHA1, OP_SHA256, OP_HASH160, OP_HASH256};
+const std::set<opcodetype> StackOperationManager::checkSigOpcodes =
+    {OP_CHECKSIG, OP_CHECKSIGVERIFY, OP_CHECKMULTISIG, OP_CHECKMULTISIGVERIFY};
 
 StackOperationManager::StackOperationManager(
     StackType& stack,
@@ -720,6 +834,7 @@ StackOperationManager::StackOperationManager(
     , checker_(checker)
     , altstack_()
     , flags_(flags)
+    , opCount_(0u)
     , conditionalManager_()
     , defaultOperation_(stack,altstack_,flags,conditionalManager_)
     , stackOperationMapping_()
@@ -733,6 +848,7 @@ StackOperationManager::StackOperationManager(
     , binaryNumericOp_(std::make_shared<BinaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
     , numericBoundsOp_(std::make_shared<NumericBoundsOp>(stack_,altstack_,flags_,conditionalManager_))
     , hashingOp_(std::make_shared<HashingOp>(stack_,altstack_,flags_,conditionalManager_))
+    , checksigOp_(std::make_shared<SignatureCheckOp>(stack_,altstack_,flags_,conditionalManager_,opCount_,checker_))
 {
     InitMapping();
 }
@@ -771,6 +887,10 @@ void StackOperationManager::InitMapping()
     {
         stackOperationMapping_.insert({opcode, hashingOp_.get() });
     }
+    for(const opcodetype& opcode: checkSigOpcodes)
+    {
+        stackOperationMapping_.insert({opcode, checksigOp_.get() });
+    }
     
     stackOperationMapping_.insert({OP_META, metadataOp_.get()});
     stackOperationMapping_.insert({OP_WITHIN, numericBoundsOp_.get()});
@@ -778,6 +898,7 @@ void StackOperationManager::InitMapping()
 
 StackOperator* StackOperationManager::GetOp(opcodetype opcode)
 {
+    ++opCount_;
     auto it = stackOperationMapping_.find(opcode);
     if(it != stackOperationMapping_.end())
     {
@@ -790,6 +911,11 @@ bool StackOperationManager::HasOp(opcodetype opcode) const
 {
     auto it = stackOperationMapping_.find(opcode);
     return it != stackOperationMapping_.end();
+}
+
+bool StackOperationManager::AllowsAdditionalOp() const
+{
+    return (opCount_+1u) > MAXIMUM_NUMBER_OF_OPCODES;
 }
 
 bool StackOperationManager::ConditionalNeedsClosing() const

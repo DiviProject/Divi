@@ -76,11 +76,14 @@ private:
     static const std::set<opcodetype> unaryNumericOpCodes;
     static const std::set<opcodetype> binaryNumericOpCodes;
     static const std::set<opcodetype> hashingOpCodes;
+    static const std::set<opcodetype> checkSigOpcodes;
 
     StackType& stack_;
     const BaseSignatureChecker& checker_;
     StackType altstack_;
     unsigned flags_;
+    unsigned opCount_;
+
     ConditionalScopeStackManager conditionalManager_;
     StackOperator defaultOperation_;
     std::map<opcodetype, StackOperator*> stackOperationMapping_;
@@ -95,6 +98,7 @@ private:
     std::shared_ptr<StackOperator> binaryNumericOp_;
     std::shared_ptr<StackOperator> numericBoundsOp_;
     std::shared_ptr<StackOperator> hashingOp_;
+    std::shared_ptr<StackOperator> checksigOp_;
     void InitMapping();
 public:
     StackOperationManager(
@@ -105,6 +109,7 @@ public:
 
     StackOperator* GetOp(opcodetype opcode);
     bool HasOp(opcodetype opcode) const;
+    bool AllowsAdditionalOp() const;
     
     bool ConditionalNeedsClosing() const;
     bool ConditionalScopeIsBalanced() const;

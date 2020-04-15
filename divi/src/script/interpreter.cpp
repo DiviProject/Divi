@@ -42,8 +42,6 @@ bool CastToBool(const valtype& vch)
  * Script is a stack machine (like Forth) that evaluates a predicate
  * returning a bool indicating valid or not.  There are no loops.
  */
-#define stacktop(i)  (stack.at(stack.size()+(i)))
-#define altstacktop(i)  (altstack.at(altstack.size()+(i)))
 static inline void popstack(vector<valtype>& stack)
 {
     if (stack.empty())
@@ -98,13 +96,8 @@ bool OpcodeIsDisabled(const opcodetype& opcode)
     return false;
 }
 
-
-
 bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror)
 {
-    static const valtype vchFalse(0);
-    static const valtype vchTrue(1, 1);
-
     CScript::const_iterator pc = script.begin();
     CScript::const_iterator pend = script.end();
     CScript::const_iterator pbegincodehash = script.begin();
@@ -117,9 +110,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
         return set_error(serror, SCRIPT_ERR_SCRIPT_SIZE);
     }
 
-    int nOpCount = 0;
     bool fRequireMinimal = (flags & SCRIPT_VERIFY_MINIMALDATA) != 0;
-
     StackOperationManager stackManager(stack,checker,flags);
 
     try
@@ -153,42 +144,21 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
                 {
                     case OP_NOP:
                     break;
-
-                    case OP_NOP1: case OP_NOP2: case OP_NOP3: case OP_NOP4: case OP_NOP5:
-                    case OP_NOP6: case OP_NOP7: case OP_NOP8: case OP_NOP9: case OP_NOP10:
-                    case OP_1NEGATE: case OP_1: case OP_2: case OP_3: case OP_4: case OP_5: case OP_6: case OP_7: case OP_8:
-                    case OP_9: case OP_10: case OP_11: case OP_12: case OP_13: case OP_14: case OP_15: case OP_16:
-                    case OP_IF: case OP_NOTIF: case OP_ELSE: case OP_ENDIF:
-                    case OP_TOALTSTACK: case OP_FROMALTSTACK: case OP_2DROP: case OP_2DUP: case OP_3DUP: case OP_2OVER: case OP_2ROT:
-                    case OP_2SWAP: case OP_IFDUP: case OP_DEPTH: case OP_DROP: case OP_DUP: case OP_NIP: case OP_OVER: case OP_PICK: 
-                    case OP_ROLL: case OP_ROT: case OP_SWAP: case OP_TUCK: case OP_SIZE:
-                    case OP_VERIFY: case OP_EQUAL: case OP_EQUALVERIFY: case OP_META:
-                    case OP_1ADD: case OP_1SUB: case OP_NEGATE: case OP_ABS: case OP_NOT: case OP_0NOTEQUAL:
-                    case OP_ADD: case OP_SUB: case OP_BOOLAND: case OP_BOOLOR: case OP_NUMEQUAL: case OP_NUMEQUALVERIFY: case OP_NUMNOTEQUAL: 
-                    case OP_LESSTHAN: case OP_GREATERTHAN: case OP_LESSTHANOREQUAL: case OP_GREATERTHANOREQUAL: case OP_MIN: case OP_MAX:
-                    case OP_WITHIN: case OP_RIPEMD160: case OP_SHA1: case OP_SHA256: case OP_HASH160: case OP_HASH256:
-                    {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
-                    }
-                    break;                                   
-
                     case OP_CODESEPARATOR:
                     {
-                        // Hash starts after the code separator
                         pbegincodehash = pc;
                     }
                     break;
-
                     case OP_CHECKSIG: case OP_CHECKSIGVERIFY: case OP_CHECKMULTISIG: case OP_CHECKMULTISIGVERIFY:
                     {
-                        // (sig pubkey -- bool)
                         CScript scriptCode(pbegincodehash, pend);
                         if(!stackManager.GetOp(opcode)->operator()(opcode,scriptCode,serror)) return false;
                     }
                     break;
-
                     default:
-                        return set_error(serror, SCRIPT_ERR_BAD_OPCODE);
+                    {
+                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
+                    }
                 }
             }
 

@@ -49,7 +49,6 @@ static inline void popstack(vector<valtype>& stack)
     stack.pop_back();
 }
 
-
 bool static CheckMinimalPush(const valtype& data, opcodetype opcode) {
     if (data.size() == 0) {
         // Could have used OP_0.
@@ -71,29 +70,6 @@ bool static CheckMinimalPush(const valtype& data, opcodetype opcode) {
         return opcode == OP_PUSHDATA2;
     }
     return true;
-}
-
-bool OpcodeIsDisabled(const opcodetype& opcode)
-{
-    if (opcode == OP_CAT ||
-        opcode == OP_SUBSTR ||
-        opcode == OP_LEFT ||
-        opcode == OP_RIGHT ||
-        opcode == OP_INVERT ||
-        opcode == OP_AND ||
-        opcode == OP_OR ||
-        opcode == OP_XOR ||
-        opcode == OP_2MUL ||
-        opcode == OP_2DIV ||
-        opcode == OP_MUL ||
-        opcode == OP_DIV ||
-        opcode == OP_MOD ||
-        opcode == OP_LSHIFT ||
-        opcode == OP_RSHIFT)
-    {
-        return true;
-    }
-    return false;
 }
 
 bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror)
@@ -129,7 +105,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, un
             if (opcode > OP_16 && !stackManager.ReserveAdditionalOp() )
                 return set_error(serror, SCRIPT_ERR_OP_COUNT);
 
-            if (OpcodeIsDisabled(opcode))
+            if (stackManager.OpcodeIsDisabled(opcode))
                 return set_error(serror, SCRIPT_ERR_DISABLED_OPCODE); // Disabled opcodes.
 
             if (!stackManager.ConditionalNeedsClosing() && 0 <= opcode && opcode <= OP_PUSHDATA4) {

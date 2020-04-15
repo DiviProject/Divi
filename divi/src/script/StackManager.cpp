@@ -662,7 +662,7 @@ public:
         StackType& altstack, 
         unsigned& flags,
         ConditionalScopeStackManager& conditionalManager,
-        unsigned opCount,
+        unsigned& opCount,
         const BaseSignatureChecker& checker
         ): StackOperator(stack,altstack,flags,conditionalManager)
         , opCount_(opCount)
@@ -714,7 +714,7 @@ public:
                 int nKeysCount = CScriptNum(stackTop(i-1), fRequireMinimal_).getint();
                 if (nKeysCount < 0 || nKeysCount > 20)
                     return Helpers::set_error(serror, SCRIPT_ERR_PUBKEY_COUNT);
-                opCount_ += (unsigned) nKeysCount;
+                opCount_ += static_cast<unsigned>(nKeysCount);
                 if (opCount_ > MAXIMUM_NUMBER_OF_OPCODES)
                     return Helpers::set_error(serror, SCRIPT_ERR_OP_COUNT);
                 
@@ -898,7 +898,6 @@ void StackOperationManager::InitMapping()
 
 StackOperator* StackOperationManager::GetOp(opcodetype opcode)
 {
-    ++opCount_;
     auto it = stackOperationMapping_.find(opcode);
     if(it != stackOperationMapping_.end())
     {
@@ -913,9 +912,14 @@ bool StackOperationManager::HasOp(opcodetype opcode) const
     return it != stackOperationMapping_.end();
 }
 
-bool StackOperationManager::AllowsAdditionalOp() const
+bool StackOperationManager::ReserveAdditionalOp()
 {
-    return (opCount_+1u) > MAXIMUM_NUMBER_OF_OPCODES;
+    return (++opCount_ <= MAXIMUM_NUMBER_OF_OPCODES);
+}
+
+void StackOperationManager::PushData(const valtype& stackElement)
+{
+    stack_.push_back(stackElement);
 }
 
 bool StackOperationManager::ConditionalNeedsClosing() const

@@ -109,7 +109,8 @@ public:
 
     StackOperator* GetOp(opcodetype opcode);
     bool HasOp(opcodetype opcode) const;
-    bool AllowsAdditionalOp() const;
+    bool ReserveAdditionalOp();
+    void PushData(const valtype& stackElement);
     
     bool ConditionalNeedsClosing() const;
     bool ConditionalScopeIsBalanced() const;

@@ -44,10 +44,7 @@ protected:
 public:
     static const CScriptNum bnZero;
     static const CScriptNum bnOne;
-    static const CScriptNum bnFalse;
-    static const CScriptNum bnTrue;
     static const valtype vchFalse;
-    static const valtype vchZero;
     static const valtype vchTrue;
 
     StackOperator(

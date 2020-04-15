@@ -110,10 +110,7 @@ valtype& StackOperator::altstackTop(unsigned depth)
 
 const CScriptNum StackOperator::bnZero = CScriptNum(0);
 const CScriptNum StackOperator::bnOne=CScriptNum(1);
-const CScriptNum StackOperator::bnFalse=CScriptNum(0);
-const CScriptNum StackOperator::bnTrue=CScriptNum(1);
 const valtype StackOperator::vchFalse =valtype(0);
-const valtype StackOperator::vchZero =valtype(0);
 const valtype StackOperator::vchTrue =valtype(1, 1);
 
 

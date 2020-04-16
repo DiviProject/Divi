@@ -115,14 +115,17 @@ bool CScript::IsPayToScriptHash() const
 bool CScript::IsZerocoinMint() const
 {
     //fast test for Zerocoin Mint CScripts
-    return (this->size() > 0 &&
-        this->at(0) == OP_ZEROCOINMINT);
+    return false;
+    /*return (this->size() > 0 &&
+        this->at(0) == OP_ZEROCOINMINT);*/
 }
 
 bool CScript::IsZerocoinSpend() const
 {
+    return false;
+    /*
     return (this->size() > 0 &&
-        this->at(0) == OP_ZEROCOINSPEND);
+        this->at(0) == OP_ZEROCOINSPEND);*/
 }
 
 bool CScript::IsPushOnly(const_iterator pc) const

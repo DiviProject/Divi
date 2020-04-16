@@ -2710,9 +2710,7 @@ Value spendzerocoin(const Array& params, bool fHelp)
         nValueOut += txout.nValue;
 
         CTxDestination dest;
-        if(txout.scriptPubKey.IsZerocoinMint())
-            out.push_back(Pair("address", "zerocoinmint"));
-        else if(ExtractDestination(txout.scriptPubKey, dest))
+        if(ExtractDestination(txout.scriptPubKey, dest))
             out.push_back(Pair("address", CBitcoinAddress(dest).ToString()));
         vout.push_back(out);
     }

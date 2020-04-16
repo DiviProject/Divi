@@ -807,9 +807,7 @@ Value getinvalid (const Array& params, bool fHelp)
             objTx.emplace_back(Pair("mixed_with_valid", objMixedValid));
 
         CScript scriptPubKey = tx.vout[out.n].scriptPubKey;
-        if (scriptPubKey.IsZerocoinMint()) {
-            nMint += nValue;
-        } else if (!fSpent) {
+        if (!fSpent) {
             CTxDestination dest;
             if (!ExtractDestination(scriptPubKey, dest)) {
                 continue;

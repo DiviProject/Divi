@@ -169,11 +169,6 @@ public:
         return (nValue < 3*minRelayTxFee.GetFee(nSize));
     }
 
-    bool IsZerocoinMint() const
-    {
-        return !scriptPubKey.empty() && scriptPubKey.IsZerocoinMint();
-    }
-
     friend bool operator==(const CTxOut& a, const CTxOut& b)
     {
         return (a.nValue       == b.nValue &&
@@ -253,16 +248,6 @@ public:
 
     // Compute modified tx size for priority calculation (optionally given tx size)
     unsigned int CalculateModifiedSize(unsigned int nTxSize=0) const;
-
-    bool IsZerocoinSpend() const
-    {
-        return false;
-    }
-
-    bool IsZerocoinMint() const
-    {
-        return false;
-    }
 
     bool ContainsZerocoins() const
     {

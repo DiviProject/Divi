@@ -64,14 +64,6 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
         return true;
     }
 
-    // Zerocoin
-    if (scriptPubKey.IsZerocoinMint()){
-        typeRet = TX_ZEROCOINMINT;
-        if(scriptPubKey.size() > 150) return false;
-        vector<unsigned char> hashBytes(scriptPubKey.begin()+2, scriptPubKey.end());
-        vSolutionsRet.push_back(hashBytes);
-        return true;
-    }
 
     // Provably prunable, data-carrying output
     //

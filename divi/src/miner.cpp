@@ -201,11 +201,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             CAmount nTotalIn = 0;
             bool fMissingInputs = false;
             for (const CTxIn& txin : tx.vin) {
-                //zerocoinspend has special vin
-                if (tx.IsZerocoinSpend()) {
-                    nTotalIn = tx.GetZerocoinSpent();
-                    break;
-                }
 
                 // Read prev transaction
                 if (!view.HaveCoins(txin.prevout.hash)) {
@@ -304,7 +299,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             double dPriorityDelta = 0;
             CAmount nFeeDelta = 0;
             mempool.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
-            if (!tx.IsZerocoinSpend() && fSortedByFee && (dPriorityDelta <= 0) && (nFeeDelta <= 0) && (feeRate < ::minRelayTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
+            if (fSortedByFee && (dPriorityDelta <= 0) && (nFeeDelta <= 0) && (feeRate < ::minRelayTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
                 continue;
 
             // Prioritise by fee once past the priority size or we run out of high-priority
@@ -319,31 +314,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             if (!view.HaveInputs(tx))
                 continue;
 
-            // double check that there are no double spent zDiv spends in this block or tx
-            if (tx.IsZerocoinSpend()) {
-                int nHeightTx = 0;
-                if (IsTransactionInChain(tx.GetHash(), nHeightTx))
-                    continue;
-
-                bool fDoubleSerial = false;
-                for (const CTxIn txIn : tx.vin) {
-                    if (txIn.scriptSig.IsZerocoinSpend()) {
-                        libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txIn);
-                        if (!spend.HasValidSerial(Params().Zerocoin_Params()))
-                            fDoubleSerial = true;
-                        if (count(vBlockSerials.begin(), vBlockSerials.end(), spend.getCoinSerialNumber()))
-                            fDoubleSerial = true;
-                        if (count(vTxSerials.begin(), vTxSerials.end(), spend.getCoinSerialNumber()))
-                            fDoubleSerial = true;
-                        if (fDoubleSerial)
-                            break;
-                        vTxSerials.emplace_back(spend.getCoinSerialNumber());
-                    }
-                }
-                //This zDiv serial has already been included in the block, do not add this tx.
-                if (fDoubleSerial)
-                    continue;
-            }
 
             CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
 

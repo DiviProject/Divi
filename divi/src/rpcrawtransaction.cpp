@@ -863,10 +863,5 @@ Value getspentzerocoinamount(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter for transaction input");
 
     const CTxIn& input = tx.vin[inputIndex];
-    if (!input.scriptSig.IsZerocoinSpend())
-        return -1;
-
-    libzerocoin::CoinSpend spend = TxInToZerocoinSpend(input);
-    CAmount nValue = libzerocoin::ZerocoinDenominationToAmount(spend.getDenomination());
-    return FormatMoney(nValue); 
+    return -1;
 }

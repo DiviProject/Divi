@@ -256,21 +256,17 @@ public:
 
     bool IsZerocoinSpend() const
     {
-        return (vin.size() > 0 && vin[0].prevout.IsNull() && vin[0].scriptSig[0] == OP_ZEROCOINSPEND);
+        return false;
     }
 
     bool IsZerocoinMint() const
     {
-        for(const CTxOut& txout : vout) {
-            if (txout.scriptPubKey.IsZerocoinMint())
-                return true;
-        }
         return false;
     }
 
     bool ContainsZerocoins() const
     {
-        return IsZerocoinSpend() || IsZerocoinMint();
+        return false;
     }
 
     CAmount GetZerocoinMinted() const;

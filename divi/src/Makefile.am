@@ -302,6 +302,7 @@ libbitcoin_wallet_a_SOURCES = \
   crypto/aes.cpp \
   crypter.cpp \
   swifttx.cpp \
+  libzerocoin/CoinSpend.cpp \
   masternode.cpp \
   masternode-budget.cpp \
   masternode-payments.cpp \

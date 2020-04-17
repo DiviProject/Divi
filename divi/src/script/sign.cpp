@@ -11,6 +11,7 @@
 #include "script/standard.h"
 #include "uint256.h"
 #include "Logging.h"
+#include <script/SignatureCheckers.h>
 
 #include <boost/foreach.hpp>
 

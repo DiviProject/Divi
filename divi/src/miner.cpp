@@ -193,9 +193,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 continue;
             }
 
-            if (true/*GetAdjustedTime() > GetSporkValue(SPORK_16_ZEROCOIN_MAINTENANCE_MODE)*/ && tx.ContainsZerocoins())
-                continue;
-
             COrphan* porphan = NULL;
             double dPriority = 0;
             CAmount nTotalIn = 0;

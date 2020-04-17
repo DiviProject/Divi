@@ -1274,7 +1274,7 @@ bool CheckZerocoinSpend(const CTransaction tx, bool fVerifySignature, CValidatio
     // Send signal to wallet if this is ours
     if (pwalletMain) {
         CWalletDB walletdb(pwalletMain->strWalletFile);
-        list <CBigNum> listMySerials = walletdb.ListMintedCoinsSerial();
+        list <CBigNum> listMySerials = list <CBigNum>();
         for (const auto& newSpend : vSpends) {
             list<CBigNum>::iterator it = find(listMySerials.begin(), listMySerials.end(), newSpend.getCoinSerialNumber());
             if (it != listMySerials.end()) {

@@ -248,11 +248,7 @@ public:
 
     // Compute modified tx size for priority calculation (optionally given tx size)
     unsigned int CalculateModifiedSize(unsigned int nTxSize=0) const;
-
-    CAmount GetZerocoinMinted() const;
-    CAmount GetZerocoinSpent() const;
-    int GetZerocoinMintCount() const;
-
+    
     bool UsesUTXO(const COutPoint out);
     std::list<COutPoint> GetOutPoints() const;
 

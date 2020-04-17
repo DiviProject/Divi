@@ -406,8 +406,6 @@ bool ValidOutPoint(const COutPoint out, int nHeight);
 void RecalculateZDIVSpent();
 void RecalculateZDIVMinted();
 bool RecalculateDIVSupply(int nHeightStart);
-bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError);
-
 
 /**
  * Check if transaction will be final in the next block to be created.

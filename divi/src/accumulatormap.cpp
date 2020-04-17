@@ -33,17 +33,6 @@ void AccumulatorMap::Reset()
 //Load a checkpoint containing 8 32bit checksums of accumulator values.
 bool AccumulatorMap::Load(uint256 nCheckpoint)
 {
-    for (auto& denom : zerocoinDenomList) {
-        uint32_t nChecksum = ParseChecksum(nCheckpoint, denom);
-
-        CBigNum bnValue;
-        if (!zerocoinDB->ReadAccumulatorValue(nChecksum, bnValue)) {
-            LogPrintf("%s : cannot find checksum %d", __func__, nChecksum);
-            return false;
-        }
-
-        mapAccumulators.at(denom)->setValue(bnValue);
-    }
     return true;
 }
 
@@ -72,16 +61,7 @@ CBigNum AccumulatorMap::GetValue(CoinDenomination denom)
 //Calculate a 32bit checksum of each accumulator value. Concatenate checksums into uint256
 uint256 AccumulatorMap::GetCheckpoint()
 {
-    uint256 nCheckpoint;
-
-    //Prevent possible overflows from future changes to the list and forgetting to update this code
-    assert(zerocoinDenomList.size() == 8);
-    for (auto& denom : zerocoinDenomList) {
-        CBigNum bnValue = mapAccumulators.at(denom)->getValue();
-        uint32_t nCheckSum = GetChecksum(bnValue);
-        nCheckpoint = nCheckpoint << 32 | nCheckSum;
-    }
-
+    uint256 nCheckpoint(uint256S("0x01"));
     return nCheckpoint;
 }
 

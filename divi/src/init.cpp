@@ -384,7 +384,6 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-pid=<file>", strprintf(_("Specify pid file (default: %s)"), "divid.pid"));
 #endif
     strUsage += HelpMessageOpt("-reindex", _("Rebuild block chain index from current blk000??.dat files") + " " + _("on startup"));
-    strUsage += HelpMessageOpt("-reindexaccumulators", _("Reindex the accumulator database") + " " + _("on startup"));
     strUsage += HelpMessageOpt("-reindexmoneysupply", _("Reindex the DIV and zDIV money supply statistics") + " " + _("on startup"));
     strUsage += HelpMessageOpt("-resync", _("Delete blockchain folders and resync from scratch") + " " + _("on startup"));
 #if !defined(WIN32)
@@ -1293,26 +1292,6 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
                 RecalculateZDIVSpent();
             }
             RecalculateDIVSupply(1);
-        }
-
-        // Force recalculation of accumulators.
-        if (GetBoolArg("-reindexaccumulators", false)) {
-            CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
-            while (pindex->nHeight < chainActive.Height()) {
-                if (!count(listAccCheckpointsNoDB.begin(), listAccCheckpointsNoDB.end(), pindex->nAccumulatorCheckpoint))
-                    listAccCheckpointsNoDB.emplace_back(pindex->nAccumulatorCheckpoint);
-                pindex = chainActive.Next(pindex);
-            }
-        }
-
-        // DIVI: recalculate Accumulator Checkpoints that failed to database properly
-        if (!listAccCheckpointsNoDB.empty()) {
-            uiInterface.InitMessage(_("Calculating missing accumulators..."));
-            LogPrintf("%s : finding missing checkpoints\n", __func__);
-
-            string strError;
-            if (!ReindexAccumulators(listAccCheckpointsNoDB, strError))
-                return InitError(strError);
         }
 
         uiInterface.InitMessage(_("Verifying blocks..."));

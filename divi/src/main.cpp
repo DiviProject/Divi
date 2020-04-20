@@ -2097,7 +2097,7 @@ void PopulateInvalidOutPointMap()
     nFilteredThroughBittrex = 0;
 
     //Calculate over the entire period between the first bad tx and the tip of the chain - or the point at which this becomes enforced
-    int nHeightLast = min(Params().Zerocoin_Block_RecalculateAccumulators() + 1, chainActive.Height());
+    int nHeightLast = chainActive.Height();
 
     map<COutPoint, int> mapValidMixed;
     for (int i = Params().Zerocoin_Block_FirstFraudulent(); i < nHeightLast; i++) {
@@ -2173,8 +2173,6 @@ void PopulateInvalidOutPointMap()
             }
         }
 
-        if (pindex->nHeight > Params().Zerocoin_Block_RecalculateAccumulators())
-            fListPopulatedAfterLock = true;
     }
 }
 
@@ -2548,19 +2546,6 @@ bool RecalculateDIVSupply(int nHeightStart)
         pindex->nMoneySupply = nSupplyPrev + nValueOut - nValueIn;
         nSupplyPrev = pindex->nMoneySupply;
 
-        // Add fraudulent funds to the supply and remove any recovered funds.
-        if (pindex->nHeight == Params().Zerocoin_Block_RecalculateAccumulators()) {
-            PopulateInvalidOutPointMap();
-            LogPrintf("%s : Original money supply=%s\n", __func__, FormatMoney(pindex->nMoneySupply));
-
-            pindex->nMoneySupply += nFilteredThroughBittrex;
-            LogPrintf("%s : Adding bittrex filtered funds to supply + %s : supply=%s\n", __func__, FormatMoney(nFilteredThroughBittrex), FormatMoney(pindex->nMoneySupply));
-
-            CAmount nLocked = GetInvalidUTXOValue();
-            pindex->nMoneySupply -= nLocked;
-            LogPrintf("%s : Removing locked from supply - %s : supply=%s\n", __func__, FormatMoney(nLocked), FormatMoney(pindex->nMoneySupply));
-        }
-
         assert(pblocktree->WriteBlockIndex(CDiskBlockIndex(pindex)));
 
         if (pindex->nHeight < chainActive.Height())
@@ -2897,7 +2882,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
 
     //Continue tracking possible movement of fraudulent funds until they are completely frozen
-    if (pindex->nHeight >= Params().Zerocoin_Block_FirstFraudulent() && pindex->nHeight <= Params().Zerocoin_Block_RecalculateAccumulators() + 1)
+    if (pindex->nHeight >= Params().Zerocoin_Block_FirstFraudulent() )
         AddInvalidSpendsToMap(block);
 
     return true;

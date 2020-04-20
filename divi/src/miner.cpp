@@ -378,8 +378,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             UpdateTime(pblock, pindexPrev);
         pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
         pblock->nNonce = 0;
-        uint256 nCheckpoint = 0;
-        pblock->nAccumulatorCheckpoint = nCheckpoint;
+        pblock->nAccumulatorCheckpoint = static_cast<uint256>(0);
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
         //byrd transaction printout

@@ -403,8 +403,6 @@ bool IsTransactionInChain(uint256 txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);
 void PopulateInvalidOutPointMap();
 bool ValidOutPoint(const COutPoint out, int nHeight);
-void RecalculateZDIVSpent();
-void RecalculateZDIVMinted();
 bool RecalculateDIVSupply(int nHeightStart);
 
 /**

@@ -1095,11 +1095,6 @@ std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock
     return vSpends;
 }
 
-bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationState& state, bool fCheckOnly)
-{
-    return false;
-}
-
 CoinSpend TxInToZerocoinSpend(const CTxIn& txin)
 {
     // Deserialize the CoinSpend intro a fresh object

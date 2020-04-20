@@ -1097,17 +1097,7 @@ std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock
 
 bool CheckZerocoinMint(const uint256& txHash, const CTxOut& txout, CValidationState& state, bool fCheckOnly)
 {
-    PublicCoin pubCoin(Params().Zerocoin_Params());
-    if(!TxOutToPublicCoin(txout, pubCoin, state))
-        return state.DoS(100, error("CheckZerocoinMint(): TxOutToPublicCoin() failed"));
-
-    if (!pubCoin.validate())
-        return state.DoS(100, error("CheckZerocoinMint() : PubCoin does not validate"));
-
-    if(!fCheckOnly && !RecordMintToDB(pubCoin, txHash))
-        return state.DoS(100, error("CheckZerocoinMint(): RecordMintToDB() failed"));
-
-    return true;
+    return false;
 }
 
 CoinSpend TxInToZerocoinSpend(const CTxIn& txin)

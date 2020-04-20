@@ -106,7 +106,6 @@ public:
     int GetTreasuryPaymentsCycle() const { return nTreasuryPaymentsCycle; }
 
     /** Zerocoin **/
-    int Zerocoin_MaxSpendsPerTransaction() const { return nMaxZerocoinSpendsPerTransaction; }
 
     /** Height or Time Based Activations **/
     int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }

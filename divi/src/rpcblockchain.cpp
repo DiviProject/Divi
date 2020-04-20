@@ -90,12 +90,6 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
 
     result.push_back(Pair("moneysupply",ValueFromAmount(blockindex->nMoneySupply)));
 
-    Object zdivObj;
-    for (auto denom : libzerocoin::zerocoinDenomList) {
-        zdivObj.push_back(Pair(to_string(denom), ValueFromAmount(blockindex->mapZerocoinSupply.at(denom) * (denom*COIN))));
-    }
-    zdivObj.emplace_back(Pair("total", ValueFromAmount(blockindex->GetZerocoinSupply())));
-
     return result;
 }
 

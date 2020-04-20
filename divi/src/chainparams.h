@@ -106,14 +106,7 @@ public:
     int GetTreasuryPaymentsCycle() const { return nTreasuryPaymentsCycle; }
 
     /** Zerocoin **/
-    std::string Zerocoin_Modulus() const { return zerocoinModulus; }
-    libzerocoin::ZerocoinParams* Zerocoin_Params() const;
     int Zerocoin_MaxSpendsPerTransaction() const { return nMaxZerocoinSpendsPerTransaction; }
-    CAmount Zerocoin_MintFee() const { return nMinZerocoinMintFee; }
-    int Zerocoin_MintRequiredConfirmations() const { return nMintRequiredConfirmations; }
-    int Zerocoin_RequiredAccumulation() const { return nRequiredAccumulation; }
-    int Zerocoin_DefaultSpendSecurity() const { return nDefaultSecurityLevel; }
-    int Zerocoin_HeaderVersion() const { return nZerocoinHeaderVersion; }
 
     /** Height or Time Based Activations **/
     int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
@@ -122,7 +115,6 @@ public:
     int Zerocoin_Block_EnforceSerialRange() const { return nBlockEnforceSerialRange; }
     int Zerocoin_Block_RecalculateAccumulators() const { return nBlockRecalculateAccumulators; }
     int Zerocoin_Block_FirstFraudulent() const { return nBlockFirstFraudulent; }
-    int Zerocoin_Block_LastGoodCheckpoint() const { return nBlockLastGoodCheckpoint; }
     int Zerocoin_StartTime() const { return nZerocoinStartTime; }
     int Block_Enforce_Invalid() const { return nBlockEnforceInvalidUTXO; }
 

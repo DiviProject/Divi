@@ -2965,12 +2965,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
 
-    //DC-start: commented for error in Genesis Block/Coins minting.
-    //for (auto& denom : zerocoinDenomList) {
-    //LogPrint("zero" "%s coins for denomination %d pubcoin %s\n", func, pindex->mapZerocoinSupply.at(denom), denom);
-    //}
-    //DC-end
-
     // track money supply and mint amount info
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
     pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;

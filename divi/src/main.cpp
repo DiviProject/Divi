@@ -7,7 +7,6 @@
 
 #include "main.h"
 
-#include "accumulators.h"
 #include "addrman.h"
 #include "alert.h"
 #include "chainparams.h"

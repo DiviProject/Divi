@@ -94,8 +94,6 @@ endif
 # divi core #
 BITCOIN_CORE_H = \
   activemasternode.h \
-  accumulators.h \
-  accumulatormap.h \
   addrman.h \
   alert.h \
   allocators.h \
@@ -395,8 +393,6 @@ libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
 # common: shared between divid, and divi-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_common_a_SOURCES = \
-  accumulators.cpp \
-  accumulatormap.cpp \
   allocators.cpp \
   amount.cpp \
   base58.cpp \

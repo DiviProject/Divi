@@ -2096,7 +2096,7 @@ void PopulateInvalidOutPointMap()
 
 bool ValidOutPoint(const COutPoint out, int nHeight)
 {
-    bool isInvalid = nHeight >= Params().Block_Enforce_Invalid() && mapInvalidOutPoints.count(out);
+    bool isInvalid = false && mapInvalidOutPoints.count(out);
     return !isInvalid;
 }
 

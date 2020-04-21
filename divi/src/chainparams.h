@@ -14,7 +14,6 @@
 #include "protocol.h"
 #include "uint256.h"
 
-#include "libzerocoin/Params.h"
 #include <vector>
 
 typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
@@ -103,8 +102,6 @@ public:
     int GetLotteryBlockCycle() const { return nLotteryBlockCycle; }
     int GetTreasuryPaymentsStartBlock() const { return nTreasuryPaymentsStartBlock; }
     int GetTreasuryPaymentsCycle() const { return nTreasuryPaymentsCycle; }
-
-    /** Zerocoin **/
 
     /** Height or Time Based Activations **/
     int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }

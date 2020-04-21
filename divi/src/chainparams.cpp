@@ -175,14 +175,6 @@ public:
 
         nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
 
-        nZerocoinStartHeight = 99999999;				// this and following five are all Zerocoin and thus irrelevant to Divi
-        nZerocoinStartTime = 9999999999;
-        nBlockEnforceSerialRange = 99999999;
-        nBlockRecalculateAccumulators = 99999999;
-        nBlockFirstFraudulent = 99999999;
-        nBlockLastGoodCheckpoint = 99999999;
-
-        nBlockEnforceInvalidUTXO = 99999999;			// Start enforcing the invalid UTXO's; may be worth implementing in the future
 
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -247,20 +239,6 @@ public:
         strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 
-        /** Zerocoin */
-        zerocoinModulus = "25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784"
-                          "4069182906412495150821892985591491761845028084891200728449926873928072877767359714183472702618963750149718246911"
-                          "6507761337985909570009733045974880842840179742910064245869181719511874612151517265463228221686998754918242243363"
-                          "7259085141865462043576798423387184774447920739934236584823824281198163815010674810451660377306056201619676256133"
-                          "8441436038339044149526344321901146575444541784240209246165157233507787077498171257724679629263863563732899121548"
-                          "31438167899885040445364023527381951378636564391212010397122822120720357";
-        nMaxZerocoinSpendsPerTransaction = 7; // Assume about 20kb each
-        nMinZerocoinMintFee = 1 * CENT; //high fee required for zerocoin mints
-        nMintRequiredConfirmations = 20; //the maximum amount of confirmations until accumulated in 19
-        nRequiredAccumulation = 2;
-        nDefaultSecurityLevel = 100; //full security level for accumulators
-        nZerocoinHeaderVersion = 4; //Block headers must be this version once zerocoin is active
-        nBudget_Fee_Confirmations = 6; // Number of confirmations for the finalization fee
     }
 
     const CCheckpointData& Checkpoints() const
@@ -312,13 +290,6 @@ public:
         /** Height or Time Based Activations **/
         nLastPOWBlock = 56700;
         nModifierUpdateBlock = 615800;
-        nZerocoinStartHeight = 863787;
-        nZerocoinStartTime = 1533945600; // October 17, 2017 4:30:00 AM
-        nBlockEnforceSerialRange = 895400; //Enforce serial range starting this block
-        nBlockRecalculateAccumulators = 908000; //Trigger a recalculation of accumulators
-        nBlockFirstFraudulent = 891737; //First block that bad serials emerged
-        nBlockLastGoodCheckpoint = 891730; //Last valid accumulator checkpoint
-        nBlockEnforceInvalidUTXO = 902850; //Start enforcing the invalid UTXO's
 
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -386,20 +357,6 @@ public:
         strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 
-        /** Zerocoin */
-        zerocoinModulus = "25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784"
-                          "4069182906412495150821892985591491761845028084891200728449926873928072877767359714183472702618963750149718246911"
-                          "6507761337985909570009733045974880842840179742910064245869181719511874612151517265463228221686998754918242243363"
-                          "7259085141865462043576798423387184774447920739934236584823824281198163815010674810451660377306056201619676256133"
-                          "8441436038339044149526344321901146575444541784240209246165157233507787077498171257724679629263863563732899121548"
-                          "31438167899885040445364023527381951378636564391212010397122822120720357";
-        nMaxZerocoinSpendsPerTransaction = 7; // Assume about 20kb each
-        nMinZerocoinMintFee = 1 * CENT; //high fee required for zerocoin mints
-        nMintRequiredConfirmations = 20; //the maximum amount of confirmations until accumulated in 19
-        nRequiredAccumulation = 2;
-        nDefaultSecurityLevel = 100; //full security level for accumulators
-        nZerocoinHeaderVersion = 4; //Block headers must be this version once zerocoin is active
-        nBudget_Fee_Confirmations = 6; // Number of confirmations for the finalization fee
     }
 
     const CCheckpointData& Checkpoints() const
@@ -437,15 +394,6 @@ public:
         nMaxMoneyOut = 2534320700 * COIN;
         premineAmt = 617222416 * COIN;
 
-        nZerocoinStartHeight = 99999999;				// this and following five are all Zerocoin and thus irrelevant to Divi
-        nZerocoinStartTime = 9999999999;
-        nBlockEnforceSerialRange = 99999999;
-        nBlockRecalculateAccumulators = 99999999;
-        nBlockFirstFraudulent = 99999999;
-        nBlockLastGoodCheckpoint = 99999999;
-
-        nBlockEnforceInvalidUTXO = 99999999;
-
         /** Height or Time Based Activations **/
         nLastPOWBlock = 100;
 
@@ -480,13 +428,6 @@ public:
         nMaxMoneyOut = 2535000000 * COIN;
 
         nModifierUpdateBlock = 615800;
-        nZerocoinStartHeight = 863787;
-        nZerocoinStartTime = 1533945600; // October 17, 2017 4:30:00 AM
-        nBlockEnforceSerialRange = 895400; //Enforce serial range starting this block
-        nBlockRecalculateAccumulators = 908000; //Trigger a recalculation of accumulators
-        nBlockFirstFraudulent = 891737; //First block that bad serials emerged
-        nBlockLastGoodCheckpoint = 891730; //Last valid accumulator checkpoint
-        nBlockEnforceInvalidUTXO = 902850; //Start enforcing the invalid UTXO's
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
@@ -519,7 +460,6 @@ public:
         strSporkKey = "034ffa41e5cffdd009f3b34a3e1482ec82b514bb218b7648948b5858cc5c035adb";
         strObfuscationPoolDummyAddress = "y57cqfGRkekRyDRNeJiLtYVEbvhXrNbmox";
         nStartMasternodePayments = 1533945600; //Fri, 09 Jan 2015 21:05:58 GMT
-        nBudget_Fee_Confirmations = 3; // Number of confirmations for the finalization fee. We have to make this very short
         // here because we only have a 8 block finalization window on testnet
     }
     const CCheckpointData& Checkpoints() const

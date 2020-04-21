@@ -22,7 +22,6 @@
 #include "util.h"
 #include "utilmoneystr.h"
 
-#include "denomination_functions.h"
 #include "libzerocoin/Denominations.h"
 #include "libzerocoin/CoinSpend.h"
 #include <assert.h>

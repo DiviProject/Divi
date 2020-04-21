@@ -153,10 +153,6 @@ std::string CScript::ToString() const
             str += ValueString(vch);
         } else {
             str += GetOpName(opcode);
-            if (opcode == OP_ZEROCOINSPEND) {
-                //Zerocoinspend has no further op codes.
-                break;
-            }
         }
 
     }

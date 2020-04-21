@@ -1025,11 +1025,6 @@ isminetype CWallet::IsMine(const CTxIn& txin) const
     return ISMINE_NO;
 }
 
-bool CWallet::IsMyZerocoinSpend(const CBigNum& bnSerial) const
-{
-    return false;
-}
-
 CAmount CWallet::GetDebit(const CTxIn& txin, const isminefilter& filter) const
 {
     {

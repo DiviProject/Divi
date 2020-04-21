@@ -17,7 +17,6 @@
 #include "main.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
-#include "primitives/zerocoin.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "validationinterface.h"
@@ -535,7 +534,7 @@ public:
     {
         return ::IsMine(*this, txout.scriptPubKey);
     }
-    bool IsMyZerocoinSpend(const CBigNum& bnSerial) const;
+
     CAmount GetCredit(const CTxOut& txout, const isminefilter& filter) const
     {
         if (!MoneyRange(txout.nValue))

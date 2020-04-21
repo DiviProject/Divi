@@ -9,7 +9,6 @@
 
 #include "leveldbwrapper.h"
 #include "main.h"
-#include "primitives/zerocoin.h"
 
 #include <map>
 #include <string>

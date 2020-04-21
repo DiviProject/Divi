@@ -30,7 +30,6 @@
 #include "util.h"
 #include "utilmoneystr.h"
 
-#include "primitives/zerocoin.h"
 #include "libzerocoin/Denominations.h"
 
 #include <sstream>

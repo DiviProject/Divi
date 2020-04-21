@@ -122,10 +122,8 @@ BITCOIN_CORE_H = \
   compressor.h \
   primitives/block.h \
   primitives/transaction.h \
-  primitives/zerocoin.h \
   core_io.h \
   crypter.h \
-  denomination_functions.h \
   obfuscation.h \
   obfuscation-relay.h \
   db.h \
@@ -291,7 +289,6 @@ libbitcoin_wallet_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_SOURCES = \
   activemasternode.cpp \
   bip38.cpp \
-  denomination_functions.cpp \
   obfuscation.cpp \
   obfuscation-relay.cpp \
   db.cpp \
@@ -309,7 +306,6 @@ libbitcoin_wallet_a_SOURCES = \
   masternodeman.cpp \
   netfulfilledman.cpp \
   rpcdump.cpp \
-  primitives/zerocoin.cpp \
   rpcwallet.cpp \
   kernel.cpp \
   wallet.cpp \
@@ -403,7 +399,6 @@ libbitcoin_common_a_SOURCES = \
   compressor.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \
-  primitives/zerocoin.cpp \
   core_read.cpp \
   core_write.cpp \
   eccryptoverify.cpp \

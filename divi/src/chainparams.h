@@ -110,7 +110,6 @@ public:
     /** Height or Time Based Activations **/
     int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
-    int Zerocoin_StartTime() const { return nZerocoinStartTime; }
 
     int ExtCoinType() const { return nExtCoinType; }
     int FulfilledRequestExpireTime() const { return nFulfilledRequestExpireTime; }

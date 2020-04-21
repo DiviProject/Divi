@@ -228,14 +228,12 @@ void DeallocateShallowDatabases()
     delete pcoinscatcher;
     delete pcoinsdbview;
     delete pblocktree;
-    delete zerocoinDB;
     delete pSporkDB;
     
     pcoinsTip = NULL;
     pcoinscatcher = NULL;
     pcoinsdbview = NULL;
     pblocktree = NULL;
-    zerocoinDB = NULL;
     pSporkDB = NULL;
 }
 
@@ -243,7 +241,6 @@ void CleanAndReallocateShallowDatabases(const std::pair<std::size_t,std::size_t>
 {
     DeallocateShallowDatabases();
     pSporkDB = new CSporkDB(0, false, false);
-    zerocoinDB = new CZerocoinDB(0, false, false);
     pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
     pcoinsdbview = new CCoinsViewDB(blockTreeAndCoinDBCacheSizes.second, false, fReindex);
     pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);

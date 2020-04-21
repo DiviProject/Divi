@@ -22,7 +22,6 @@
 
 #include <stdint.h>
 
-#include "libzerocoin/Coin.h"
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 #include "spork.h"

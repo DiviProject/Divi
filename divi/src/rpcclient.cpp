@@ -112,7 +112,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"setstakesplitthreshold", 0},
         {"autocombinerewards", 0},
         {"autocombinerewards", 1},
-        {"getspentzerocoinamount", 1},
 
         {"getaddresstxids", 0},
         {"getaddressdeltas", 0},

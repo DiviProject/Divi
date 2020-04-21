@@ -15,7 +15,6 @@
 #include <boost/thread.hpp>
 
 using namespace std;
-using namespace libzerocoin;
 
 static const char DB_ADDRESSINDEX = 'a';
 static const char DB_SPENTINDEX = 'p';

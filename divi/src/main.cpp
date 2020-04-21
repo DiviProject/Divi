@@ -988,146 +988,6 @@ bool MoneyRange(CAmount nValueOut)
     return nValueOut >= 0 && nValueOut <= Params().MaxMoneyOut();
 }
 
-bool GetZerocoinMint(const CBigNum& bnPubcoin, uint256& txHash)
-{
-    txHash = 0;
-    return zerocoinDB->ReadCoinMint(bnPubcoin, txHash);
-}
-
-bool IsSerialKnown(const CBigNum& bnSerial)
-{
-    uint256 txHash = 0;
-    return zerocoinDB->ReadCoinSpend(bnSerial, txHash);
-}
-
-bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx)
-{
-    uint256 txHash = 0;
-    // if not in zerocoinDB then its not in the blockchain
-    if (!zerocoinDB->ReadCoinSpend(bnSerial, txHash))
-        return false;
-
-    CTransaction tx;
-    uint256 hashBlock;
-    if (!GetTransaction(txHash, tx, hashBlock, true))
-        return false;
-
-    bool inChain = mapBlockIndex.count(hashBlock) && chainActive.Contains(mapBlockIndex[hashBlock]);
-    if (inChain)
-        nHeightTx = mapBlockIndex.at(hashBlock)->nHeight;
-
-    return inChain;
-}
-
-bool RemoveSerialFromDB(const CBigNum& bnSerial)
-{
-    return zerocoinDB->EraseCoinSpend(bnSerial);
-}
-
-/** zerocoin transaction checks */
-bool RecordMintToDB(PublicCoin publicZerocoin, const uint256& txHash)
-{
-    //Check the pubCoinValue didn't already store in the zerocoin database. todo: pubcoin memory map?
-    //write the zerocoinmint to db if we don't already have it
-    //note that many of the mint parameters are not set here because those params are private to the minter
-    CZerocoinMint pubCoinTx;
-    uint256 hashFromDB;
-    if (zerocoinDB->ReadCoinMint(publicZerocoin.getValue(), hashFromDB)) {
-        if(hashFromDB == txHash)
-            return true;
-
-        LogPrintf("RecordMintToDB: failed, we already have this public coin recorded\n");
-        return false;
-    }
-
-    if (!zerocoinDB->WriteCoinMint(publicZerocoin, txHash)) {
-        LogPrintf("RecordMintToDB: failed to record public coin to DB\n");
-        return false;
-    }
-
-    return true;
-}
-
-bool BlockToPubcoinList(const CBlock& block, list<PublicCoin>& listPubcoins, bool fFilterInvalid)
-{
-    return true;
-}
-
-//return a list of zerocoin mints contained in a specific block
-bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints, bool fFilterInvalid)
-{
-    return true;
-}
-
-bool BlockToMintValueVector(const CBlock& block, const CoinDenomination denom, vector<CBigNum>& vValues)
-{
-    return true;
-}
-
-//return a list of zerocoin spends contained in a specific block, list may have many denominations
-std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block, bool fFilterInvalid)
-{
-    std::list<libzerocoin::CoinDenomination> vSpends;
-    return vSpends;
-}
-
-bool IsZerocoinSpendUnknown(CoinSpend coinSpend, uint256 hashTx, CValidationState& state)
-{
-    uint256 hashTxFromDB;
-    if(zerocoinDB->ReadCoinSpend(coinSpend.getCoinSerialNumber(), hashTxFromDB))
-        return hashTx == hashTxFromDB;
-
-    if(!zerocoinDB->WriteCoinSpend(coinSpend.getCoinSerialNumber(), hashTx))
-        return state.DoS(100, error("CheckZerocoinSpend(): Failed to write zerocoin mint to database"));
-
-    return true;
-}
-
-bool CheckZerocoinSpend(const CTransaction tx, bool fVerifySignature, CValidationState& state)
-{
-    //max needed non-mint outputs should be 2 - one for redemption address and a possible 2nd for change
-    if (tx.vout.size() > 2) {
-        int outs = 0;
-        for (const CTxOut out : tx.vout) {
-            outs++;
-        }
-        if (outs > 2)
-            return state.DoS(100, error("CheckZerocoinSpend(): over two non-mint outputs in a zerocoinspend transaction"));
-    }
-
-    //compute the txout hash that is used for the zerocoinspend signatures
-    CMutableTransaction txTemp;
-    for (const CTxOut out : tx.vout) {
-        txTemp.vout.push_back(out);
-    }
-    uint256 hashTxOut = txTemp.GetHash();
-
-    bool fValidated = false;
-    set<CBigNum> serials;
-    list<CoinSpend> vSpends;
-    CAmount nTotalRedeemed = 0;
-
-    if (nTotalRedeemed < tx.GetValueOut()) {
-        LogPrintf("redeemed = %s , spend = %s \n", FormatMoney(nTotalRedeemed), FormatMoney(tx.GetValueOut()));
-        return state.DoS(100, error("Transaction spend more than was redeemed in zerocoins"));
-    }
-
-    // Send signal to wallet if this is ours
-    if (pwalletMain) {
-        CWalletDB walletdb(pwalletMain->strWalletFile);
-        list <CBigNum> listMySerials = list <CBigNum>();
-        for (const auto& newSpend : vSpends) {
-            list<CBigNum>::iterator it = find(listMySerials.begin(), listMySerials.end(), newSpend.getCoinSerialNumber());
-            if (it != listMySerials.end()) {
-                LogPrintf("%s: %s detected spent zerocoin mint in transaction %s \n", __func__, it->GetHex(), tx.GetHash().GetHex());
-                pwalletMain->NotifyZerocoinChanged(pwalletMain, it->GetHex(), "Used", CT_UPDATED);
-            }
-        }
-    }
-
-    return fValidated;
-}
-
 bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fRejectBadUTXO, CValidationState& state)
 {
     // Basic checks that don't depend on any context
@@ -1164,13 +1024,11 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
 
     // Check for duplicate inputs
     set<COutPoint> vInOutPoints;
-    set<CBigNum> vZerocoinSpendSerials;
     for (const CTxIn& txin : tx.vin) {
         if (vInOutPoints.count(txin.prevout))
             return state.DoS(100, error("CheckTransaction() : duplicate inputs"),
                              REJECT_INVALID, "bad-txns-inputs-duplicate");
 
-        //duplicate zcspend serials are checked in CheckZerocoinSpend()
         vInOutPoints.insert(txin.prevout);
     }
 

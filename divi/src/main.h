@@ -385,15 +385,6 @@ void UpdateCoins(const CTransaction& tx, CValidationState& state, CCoinsViewCach
 
 /** Context-independent validity checks */
 bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fRejectBadUTXO, CValidationState& state);
-bool CheckZerocoinSpend(const CTransaction tx, bool fVerifySignature, CValidationState& state);
-bool BlockToPubcoinList(const CBlock& block, list<libzerocoin::PublicCoin>& listPubcoins, bool fFilterInvalid);
-bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints, bool fFilterInvalid);
-bool BlockToMintValueVector(const CBlock& block, const libzerocoin::CoinDenomination denom, std::vector<CBigNum>& vValues);
-std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block, bool fFilterInvalid);
-bool GetZerocoinMint(const CBigNum& bnPubcoin, uint256& txHash);
-bool IsSerialKnown(const CBigNum& bnSerial);
-bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx);
-bool RemoveSerialFromDB(const CBigNum& bnSerial);
 bool IsTransactionInChain(uint256 txId, int& nHeightTx);
 bool IsBlockHashInChain(const uint256& hashBlock);
 void PopulateInvalidOutPointMap();

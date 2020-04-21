@@ -23,7 +23,6 @@
 #include "utilmoneystr.h"
 
 #include "libzerocoin/Denominations.h"
-#include "libzerocoin/CoinSpend.h"
 #include <assert.h>
 
 #include <boost/algorithm/string/replace.hpp>

@@ -40,7 +40,7 @@
 #include <utility>
 #include <vector>
 
-#include "libzerocoin/CoinSpend.h"
+#include "libzerocoin/bignum.h"
 
 #include <boost/unordered_map.hpp>
 

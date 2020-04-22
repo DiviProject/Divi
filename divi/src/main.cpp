@@ -986,7 +986,7 @@ bool MoneyRange(CAmount nValueOut)
     return nValueOut >= 0 && nValueOut <= Params().MaxMoneyOut();
 }
 
-bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fRejectBadUTXO, CValidationState& state)
+bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationState& state)
 {
     // Basic checks that don't depend on any context
     if (tx.vin.empty())
@@ -1034,11 +1034,6 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
         if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 150)
             return state.DoS(100, error("CheckTransaction() : coinbase script size=%d", tx.vin[0].scriptSig.size()),
                     REJECT_INVALID, "bad-cb-length");
-    } else {
-        BOOST_FOREACH (const CTxIn& txin, tx.vin)
-                if (txin.prevout.IsNull() && (fZerocoinActive ))
-                return state.DoS(10, error("CheckTransaction() : prevout is null"),
-                                 REJECT_INVALID, "bad-txns-prevout-null");
     }
 
     return true;
@@ -1110,7 +1105,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         *pfMissingInputs = false;
 
 
-    if (!CheckTransaction(tx, false, true, state))
+    if (!CheckTransaction(tx, true, state))
         return state.DoS(100, error("AcceptToMemoryPool: : CheckTransaction failed"), REJECT_INVALID, "bad-tx");
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -1321,7 +1316,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
     if (pfMissingInputs)
         *pfMissingInputs = false;
 
-    if (!CheckTransaction(tx, false, true, state))
+    if (!CheckTransaction(tx, true, state))
         return error("AcceptableInputs: : CheckTransaction failed");
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -3568,10 +3563,8 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     }
     */
     // Check transactions
-    bool fZerocoinActive = false;
-    vector<CBigNum> vBlockSerials;
     for (const CTransaction& tx : block.vtx) {
-        if (!CheckTransaction(tx, fZerocoinActive, false, state))
+        if (!CheckTransaction(tx, false, state))
             return error("CheckBlock() : CheckTransaction failed");
 
     }
@@ -3581,7 +3574,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     BOOST_FOREACH (const CTransaction& tx, block.vtx) {
         nSigOps += GetLegacySigOpCount(tx);
     }
-    unsigned int nMaxBlockSigOps = fZerocoinActive ? MAX_BLOCK_SIGOPS_CURRENT : MAX_BLOCK_SIGOPS_LEGACY;
+    unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_LEGACY;
     if (nSigOps > nMaxBlockSigOps)
         return state.DoS(100, error("CheckBlock() : out-of-bounds SigOpCount"),
                          REJECT_INVALID, "bad-blk-sigops", true);

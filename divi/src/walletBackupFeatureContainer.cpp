@@ -8,12 +8,12 @@ WalletBackupFeatureContainer::WalletBackupFeatureContainer (
         int numberOfBackups,
         std::string walletFileName,
         std::string dataDirectory
-    ): fileSystem_(std::make_unique<FilteredBoostFileSystem>(walletFileName))
-    , walletBackupCreator_(std::make_unique<WalletBackupCreator>(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/backups"))
-    , monthlyWalletBackupCreator_(std::make_unique<WalletBackupCreator>(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/monthlyBackups"))
-    , monthlyWalletBackupDecorator_(std::make_unique<MonthlyWalletBackupCreator>(*monthlyWalletBackupCreator_, *fileSystem_))
-    , database_(std::make_unique<DatabaseWrapper>())
-    , walletIntegrityVerifier_(std::make_unique<WalletIntegrityVerifier>(*fileSystem_, *database_))
+    ): fileSystem_(new FilteredBoostFileSystem(walletFileName))
+    , walletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/backups"))
+    , monthlyWalletBackupCreator_(new WalletBackupCreator(numberOfBackups, *fileSystem_, dataDirectory, walletFileName, "/monthlyBackups"))
+    , monthlyWalletBackupDecorator_(new MonthlyWalletBackupCreator(*monthlyWalletBackupCreator_, *fileSystem_))
+    , database_(new DatabaseWrapper())
+    , walletIntegrityVerifier_(new WalletIntegrityVerifier(*fileSystem_, *database_))
     , dataDirectory_(dataDirectory)
     , walletFileName_(walletFileName)
 {

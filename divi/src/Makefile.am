@@ -136,6 +136,9 @@ BITCOIN_CORE_H = \
   hash.h \
   hdchain.h \
   init.h \
+  i_filesystem.h \
+  i_walletBackupCreator.h \
+  i_databaseWrapper.h \
   datacachemanager.h \
   kernel.h \
   swifttx.h \

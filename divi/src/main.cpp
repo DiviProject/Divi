@@ -996,7 +996,7 @@ bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationSt
                          REJECT_INVALID, "bad-txns-vout-empty");
 
     // Size limits
-    unsigned int nMaxSize = MAX_ZEROCOIN_TX_SIZE;
+    unsigned int nMaxSize = MAX_STANDARD_TX_SIZE;
 
     if (::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION) > nMaxSize)
         return state.DoS(100, error("CheckTransaction() : size limits failed"),

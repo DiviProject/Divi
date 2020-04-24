@@ -1657,8 +1657,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         }
         fVerifyingBlocks = false;
 
-        bool fEnableZDivBackups = GetBoolArg("-backupzdiv", true);
-        pwalletMain->setZDivAutoBackups(fEnableZDivBackups);
     }  // (!fDisableWallet)
 #else  // ENABLE_WALLET
     LogPrintf("No wallet compiled in!\n");

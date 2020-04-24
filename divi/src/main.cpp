@@ -3899,11 +3899,6 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     int64_t nStartTime = GetTimeMillis();
     bool checked = CheckBlock(*pblock, state);
 
-    int nMints = 0;
-    int nSpends = 0;
-    if (nMints || nSpends)
-        LogPrintf("%s : block contains %d zDiv mints and %d zDiv spends\n", __func__, nMints, nSpends);
-
     // ppcoin: check proof-of-stake
     // Limited duplicity on stake: prevents block flood attack
     // Duplicate stake allowed only when there is orphan child block

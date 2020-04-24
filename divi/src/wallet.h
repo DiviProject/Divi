@@ -188,10 +188,6 @@ public:
     bool SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount) const;
     int CountInputsWithAmount(CAmount nInputAmount);
 
-    /** Zerocin entry changed.
-    * @note called with lock cs_wallet held.
-    */
-    boost::signals2::signal<void(CWallet* wallet, const std::string& pubCoin, const std::string& isUsed, ChangeType status)> NotifyZerocoinChanged;
     /*
      * Main wallet lock.
      * This lock protects all the fields added by CWallet
@@ -283,16 +279,6 @@ public:
         //Auto Combine Dust
         fCombineDust = false;
         nAutoCombineThreshold = 0;
-    }
-
-    bool isZeromintEnabled()
-    {
-        return false;
-    }
-
-    void setZDivAutoBackups(bool fEnabled)
-    {
-        fBackupMints = fEnabled;
     }
     
     bool isMultiSendEnabled()

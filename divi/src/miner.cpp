@@ -101,7 +101,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         return NULL;
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 
-    // Make sure to create the correct block version after zerocoin is enabled
+    // Make sure to create the correct block version
     pblock->nVersion = 4;
 
     // Create coinbase tx

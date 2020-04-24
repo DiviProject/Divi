@@ -56,8 +56,6 @@ static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
 //! if set, all keys will be derived by using BIP39/BIP44
 static const bool DEFAULT_USE_HD_WALLET = true;
 
-// Zerocoin denomination which creates exactly one of each denominations:
-// 6666 = 1*5000 + 1*1000 + 1*500 + 1*100 + 1*50 + 1*10 + 1*5 + 1
 static const int ZQ_6666 = 6666;
 
 class CAccountingEntry;
@@ -82,26 +80,6 @@ enum WalletFeature {
 enum AvailableCoinsType {
     ALL_COINS = 1,                    // find masternode outputs including locked ones (use with caution)
     STAKABLE_COINS = 6                          // UTXO's that are valid for staking
-};
-
-// Possible states for zDIV send
-enum ZerocoinSpendStatus {
-    ZDIV_SPEND_OKAY = 0,                            // No error
-    ZDIV_SPEND_ERROR = 1,                           // Unspecified class of errors, more details are (hopefully) in the returning text
-    ZDIV_WALLET_LOCKED = 2,                         // Wallet was locked
-    ZDIV_COMMIT_FAILED = 3,                         // Commit failed, reset status
-    ZDIV_ERASE_SPENDS_FAILED = 4,                   // Erasing spends during reset failed
-    ZDIV_ERASE_NEW_MINTS_FAILED = 5,                // Erasing new mints during reset failed
-    ZDIV_TRX_FUNDS_PROBLEMS = 6,                    // Everything related to available funds
-    ZDIV_TRX_CREATE = 7,                            // Everything related to create the transaction
-    ZDIV_TRX_CHANGE = 8,                            // Everything related to transaction change
-    ZDIV_TXMINT_GENERAL = 9,                        // General errors in MintToTxIn
-    ZDIV_INVALID_COIN = 10,                         // Selected mint coin is not valid
-    ZDIV_FAILED_ACCUMULATOR_INITIALIZATION = 11,    // Failed to initialize witness
-    ZDIV_INVALID_WITNESS = 12,                      // Spend coin transaction did not verify
-    ZDIV_BAD_SERIALIZATION = 13,                    // Transaction verification failed
-    ZDIV_SPENT_USED_ZDIV = 14,                      // Coin has already been spend
-    ZDIV_TX_TOO_LARGE = 15                          // The transaction is larger than the max tx size
 };
 
 struct CompactTallyItem {
@@ -309,7 +287,7 @@ public:
 
     bool isZeromintEnabled()
     {
-        return fEnableZeromint;
+        return false;
     }
 
     void setZDivAutoBackups(bool fEnabled)

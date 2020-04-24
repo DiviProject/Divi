@@ -1607,7 +1607,6 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
             continue;
 
-        //if zerocoinspend, then use the block time
         int64_t nTxTime = out.tx->GetTxTime();
 
         //check for min age

@@ -624,7 +624,7 @@ Value getbalance(const Array& params, bool fHelp)
     if (fHelp || params.size() > 3)
         throw runtime_error(
                 "getbalance ( \"account\" minconf includeWatchonly )\n"
-                "\nIf account is not specified, returns the server's total available balance (excluding zerocoins).\n"
+                "\nIf account is not specified, returns the server's total available balance.\n"
                 "If account is specified, returns the balance in the account.\n"
                 "Note that the account \"\" is not the same as leaving the parameter out.\n"
                 "The server total may be different to the balance in the default \"\" account.\n"

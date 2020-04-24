@@ -512,7 +512,7 @@ std::string HelpMessage(HelpMessageMode mode)
     }
     strUsage += HelpMessageOpt("-shrinkdebugfile", _("Shrink debug.log file on client startup (default: 1 when no -debug)"));
     strUsage += HelpMessageOpt("-testnet", _("Use the test network"));
-    strUsage += HelpMessageOpt("-litemode=<n>", strprintf(_("Disable all DIVI specific functionality (Masternodes, Zerocoin, SwiftX, Budgeting) (0-1, default: %u)"), 0));
+    strUsage += HelpMessageOpt("-litemode=<n>", strprintf(_("Disable all DIVI specific functionality (Masternodes, SwiftX, Budgeting) (0-1, default: %u)"), 0));
 
 #ifdef ENABLE_WALLET
     strUsage += HelpMessageGroup(_("Staking options:"));
@@ -531,12 +531,6 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-masternodeprivkey=<n>", _("Set the masternode private key"));
     strUsage += HelpMessageOpt("-masternodeaddr=<n>", strprintf(_("Set external address:port to get to this masternode (example: %s)"), "128.127.106.235:51472"));
     strUsage += HelpMessageOpt("-budgetvotemode=<mode>", _("Change automatic finalized budget voting behavior. mode=auto: Vote for only exact finalized budget match to my generated budget. (string, default: auto)"));
-
-    strUsage += HelpMessageGroup(_("Zerocoin options:"));
-    strUsage += HelpMessageOpt("-enablezeromint=<n>", strprintf(_("Enable automatic Zerocoin minting (0-1, default: %u)"), 1));
-    strUsage += HelpMessageOpt("-zeromintpercentage=<n>", strprintf(_("Percentage of automatically minted Zerocoin  (10-100, default: %u)"), 10));
-    strUsage += HelpMessageOpt("-preferredDenom=<n>", strprintf(_("Preferred Denomination for automatically minted Zerocoin  (1/5/10/50/100/500/1000/5000), 0 for no preference. default: %u)"), 0));
-    strUsage += HelpMessageOpt("-backupzdiv=<n>", strprintf(_("Enable automatic wallet backups triggered after each zDiv minting (0-1, default: %u)"), 1));
 
 //    strUsage += "  -anonymizediviamount=<n>     " + strprintf(_("Keep N DIV anonymized (default: %u)"), 0) + "\n";
 //    strUsage += "  -liquidityprovider=<n>       " + strprintf(_("Provide liquidity to Obfuscation by infrequently mixing coins on a continual basis (0-100, default: %u, 1=very frequent, high fees, 100=very infrequent, low fees)"), 0) + "\n";
@@ -812,7 +806,7 @@ bool CheckCriticalUnsupportedFeaturesAreNotUsed()
     // Check for -tor - as this is a privacy risk to continue, exit here
     if (GetBoolArg("-tor", false))
         return InitError(_("Error: Unsupported argument -tor found, use -onion."));
-    // Check level must be 4 for zerocoin checks
+
     if (mapArgs.count("-checklevel"))
         return InitError(_("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
 
@@ -971,9 +965,8 @@ void ClearFoldersForResync()
     boost::filesystem::path blocksDir = GetDataDir() / "blocks";
     boost::filesystem::path chainstateDir = GetDataDir() / "chainstate";
     boost::filesystem::path sporksDir = GetDataDir() / "sporks";
-    boost::filesystem::path zerocoinDir = GetDataDir() / "zerocoin";
     
-    LogPrintf("Deleting blockchain folders blocks, chainstate, sporks and zerocoin\n");
+    LogPrintf("Deleting blockchain folders blocks, chainstate and sporks\n");
     // We delete in 4 individual steps in case one of the folder is missing already
     try {
         if (boost::filesystem::exists(blocksDir)){
@@ -991,10 +984,6 @@ void ClearFoldersForResync()
             LogPrintf("-resync: folder deleted: %s\n", sporksDir.string().c_str());
         }
 
-        if (boost::filesystem::exists(zerocoinDir)){
-            boost::filesystem::remove_all(zerocoinDir);
-            LogPrintf("-resync: folder deleted: %s\n", zerocoinDir.string().c_str());
-        }
     } catch (boost::filesystem::filesystem_error& error) {
         LogPrintf("Failed to delete blockchain folders %s\n", error.what());
     }
@@ -1280,7 +1269,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         // Populate list of invalid/fraudulent outpoints that are banned from the chain
         PopulateInvalidOutPointMap();
 
-        // Recalculate money supply for blocks that are impacted by accounting issue after zerocoin activation
+        // Recalculate money supply
         if (GetBoolArg("-reindexmoneysupply", false)) {
             RecalculateDIVSupply(1);
         }
@@ -1290,7 +1279,6 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         // Flag sent to validation code to let it know it can skip certain checks
         fVerifyingBlocks = true;
 
-        // Zerocoin must check at level 4
         if (!CVerifyDB().VerifyDB(pcoinsdbview, 4, GetArg("-checkblocks", 100))) {
             strLoadError = _("Corrupted block database detected");
             fVerifyingBlocks = false;
@@ -1669,8 +1657,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         }
         fVerifyingBlocks = false;
 
-        bool fEnableZDivBackups = GetBoolArg("-backupzdiv", true);
-        pwalletMain->setZDivAutoBackups(fEnableZDivBackups);
     }  // (!fDisableWallet)
 #else  // ENABLE_WALLET
     LogPrintf("No wallet compiled in!\n");
@@ -1754,12 +1740,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             pwalletMain->LockCoin(outpoint);
         }
     }
-
-    fEnableZeromint = false;
-
-    nZeromintPercentage = GetArg("-zeromintpercentage", 10);
-    if (nZeromintPercentage > 100) nZeromintPercentage = 100;
-    if (nZeromintPercentage < 10) nZeromintPercentage = 10;
 
 // XX42 Remove/refactor code below. Until then provide safe defaults
     nAnonymizeDiviAmount = 2;

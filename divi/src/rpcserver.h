@@ -260,6 +260,7 @@ extern json_spirit::Value masternodeconnect(const json_spirit::Array& params, bo
 extern json_spirit::Value masternodecurrent(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value masternodedebug(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value setupmasternode(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value verifymasternodesetup(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value broadcaststartmasternode(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value startmasternode(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value createmasternodekey(const json_spirit::Array& params, bool fHelp);

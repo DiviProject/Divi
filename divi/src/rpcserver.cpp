@@ -329,6 +329,7 @@ static const CRPCCommand vRPCCommands[] =
         {"divi", "masternodecurrent", &masternodecurrent, true, true, false},
         // {"divi", "masternodedebug", &masternodedebug, true, true, false},
         {"divi","setupmasternode",&setupmasternode,true,false,true},
+        {"divi","verifymasternodesetup",&verifymasternodesetup,true,true,true},
         {"divi", "broadcaststartmasternode", &broadcaststartmasternode, true, true, false},
         {"divi", "startmasternode", &startmasternode, true, true, false},
         {"divi", "createmasternodekey", &createmasternodekey, true, true, false},

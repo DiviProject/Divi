@@ -176,6 +176,44 @@ Value fundmasternode(const Array& params, bool fHelp)
     obj.push_back(Pair("config line", boost::algorithm::join(tokens, " ")));
 	return obj;
 }
+Value verifymasternodesetup(const Array&params, bool fHelp)
+{
+    if (fHelp || params.size() != 4)
+		throw runtime_error(
+			"verifymasternodesetup ip_address sigtime collateralPubKey masternodePubKey\n"
+			"\nStarts escrows funds for some purpose.\n"
+
+			"\nArguments:\n"
+            "1. ip_address			 (string, required) Local ip address of this node. \n"
+			"2. sigtime              (string, required) Timestamp for signature \n"
+            "3. collateralPubKey     (string, required) Collateral pubkey \n"
+            "4. masternodePubKey     (string, required) Masternode pubkey. \n"
+			"\nResult:\n"
+			"\"expected_message\"			    (bool) Expected masternode-broadcast message\n");
+    
+    Object result;
+    try
+    {
+        std::string pubkeyString =params[2].get_str();
+        std::string mnPubkeyString = params[3].get_str();
+
+        CMasternodeBroadcast mnb;
+        mnb.addr = CService(params[0].get_str()+":"+std::to_string(Params().GetDefaultPort()) );
+        mnb.sigTime = static_cast<int64_t>(std::stoll(params[1].get_str()));
+        mnb.pubKeyCollateralAddress = CPubKey(pubkeyString.begin(),pubkeyString.end());
+        mnb.pubKeyMasternode = CPubKey(mnPubkeyString.begin(), mnPubkeyString.end());
+        mnb.protocolVersion = PROTOCOL_VERSION;
+
+        result.push_back(Pair("expected_message_to_sign",HexStr(mnb.getMessageToSign())));
+
+        return result;
+    }
+    catch(...)
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS,std::string("Error parsing input arguments\n"));
+    }
+    return result;
+}
 
 Value setupmasternode(const Array& params, bool fHelp)
 {

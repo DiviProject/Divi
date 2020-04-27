@@ -1494,6 +1494,7 @@ void ThreadBackupWallet()
                 if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(GetDataDir().string(), walletFileName))
                 {
                     walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
+                    return;
                 }
                 else 
                 {

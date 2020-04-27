@@ -179,9 +179,9 @@ Value fundmasternode(const Array& params, bool fHelp)
 
 Value setupmasternode(const Array& params, bool fHelp)
 {
-	if (fHelp || params.size() != 5)
+	if (fHelp || params.size() < 5 || params.size() > 6)
 		throw runtime_error(
-			"launchmasternode alias txhash outputIndex collateralPubKey ip_address\n"
+			"setupmasternode alias txhash outputIndex collateralPubKey ip_address\n"
 			"\nStarts escrows funds for some purpose.\n"
 
 			"\nArguments:\n"
@@ -217,9 +217,9 @@ Value setupmasternode(const Array& params, bool fHelp)
     CPubKey pubkeyCollateralAddress;
     pubkeyCollateralAddress.Set(pubkeyStr.begin(),pubkeyStr.end());
 
-    std::string ip = params[4].get_str();
+    std::string ipAndPort = params[4].get_str() + std::to_string(Params().GetDefaultPort());
 
-    CMasternodeConfig::CMasternodeEntry config(alias,ip,CBitcoinSecret(masternodeKey).ToString(),txHash,outputIndex);
+    CMasternodeConfig::CMasternodeEntry config(alias,ipAndPort,CBitcoinSecret(masternodeKey).ToString(),txHash,outputIndex);
 
     CMasternodeBroadcast mnb;
     std::string errorMsg;
@@ -233,7 +233,7 @@ Value setupmasternode(const Array& params, bool fHelp)
     result.push_back(Pair("message_to_sign", HexStr(mnb.getMessageToSign()) ));
     result.push_back(Pair("config_line",
         config.getAlias()+" "+ 
-        ip +":"+std::to_string(Params().GetDefaultPort()) +" "+ 
+        ipAndPort +" "+ 
         CBitcoinSecret(masternodeKey).ToString()+" "
         +txHash+" "+outputIndex));
     ss << mnb;

@@ -422,11 +422,9 @@ Value getmasternodecount (const Array& params, bool fHelp)
             HelpExampleCli("getmasternodecount", "") + HelpExampleRpc("getmasternodecount", ""));
 
     Object obj;
-    int nCount = 0;
     int ipv4 = 0, ipv6 = 0, onion = 0;
 
-    if (chainActive.Tip())
-        mnodeman.GetNextMasternodeInQueueForPayment(chainActive.Tip()->nHeight, true, nCount);
+    int nCount = chainActive.Tip()? static_cast<int>(mnodeman.GetMasternodePaymentQueue(chainActive.Tip()->nHeight, true).size()): 0;
 
     mnodeman.CountNetworks(ActiveProtocol(), ipv4, ipv6, onion);
 

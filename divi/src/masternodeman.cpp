@@ -325,11 +325,11 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 //
 // Deterministically select the oldest/best masternode to pay on the network
 //
-std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHeight, bool fFilterSigTime, int& nCount)
+std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHeight, bool fFilterSigTime)
 {
     LOCK(cs);
     std::vector< CMasternode* > masternodeQueue;
-    std::map<CMasternode*, int64_t> secondsSinceLastPaid;
+    std::map<const CMasternode*, int64_t> secondsSinceLastPaid;
 
     int nMnCount = CountEnabled();
     BOOST_FOREACH (CMasternode& mn, vMasternodes)
@@ -353,10 +353,8 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
         secondsSinceLastPaid[&mn] = mn.SecondsSincePayment();
     }
 
-    nCount = (int)masternodeQueue.size();
-
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
-    if (fFilterSigTime && nCount < nMnCount / 3) return GetMasternodePaymentQueue(nBlockHeight, false, nCount);
+    if (fFilterSigTime && masternodeQueue.size() < nMnCount / 3) return GetMasternodePaymentQueue(nBlockHeight, false);
 
     
     std::sort(masternodeQueue.begin(), masternodeQueue.end(), 
@@ -372,9 +370,9 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
     return masternodeQueue;
 }
 
-CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool fFilterSigTime, int& nCount)
+CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool fFilterSigTime)
 {
-    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(nBlockHeight,fFilterSigTime,nCount);
+    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(nBlockHeight,fFilterSigTime);
 
     return (!mnQueue.empty())? mnQueue.front() : NULL;
 }

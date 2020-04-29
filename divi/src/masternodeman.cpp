@@ -325,6 +325,48 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 //
 // Deterministically select the oldest/best masternode to pay on the network
 //
+std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHeight, bool fFilterSigTime, int nCount)
+{
+    LOCK(cs);
+    std::vector< CMasternode* > masternodeQueue;
+
+    int nMnCount = CountEnabled();
+    BOOST_FOREACH (CMasternode& mn, vMasternodes)
+    {
+        mn.Check();
+        if (!mn.IsEnabled()) continue;
+
+        // //check protocol version
+        if (mn.protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) continue;
+
+        //it's in the list (up to 8 entries ahead of current block to allow propagation) -- so let's skip it
+        if (masternodePayments.IsScheduled(mn, nBlockHeight)) continue;
+
+        //it's too new, wait for a cycle
+        if (fFilterSigTime && mn.sigTime + (nMnCount * 2.6 * 60) > GetAdjustedTime()) continue;
+
+        //make sure it has as many confirmations as there are masternodes
+        if (mn.GetMasternodeInputAge() < nMnCount) continue;
+
+        masternodeQueue.push_back(&mn);
+    }
+
+    nCount = (int)masternodeQueue.size();
+
+    //when the network is in the process of upgrading, don't penalize nodes that recently restarted
+    if (fFilterSigTime && nCount < nMnCount / 3) return GetMasternodePaymentQueue(nBlockHeight, false, nCount);
+
+    std::sort(masternodeQueue.begin(), masternodeQueue.end(), 
+        [nBlockHeight](const CMasternode* a, const CMasternode* b)
+        {
+            if(!b) return true;
+            if(!a) return false;
+            
+            return const_cast<CMasternode*>(a)->CalculateScore(1,nBlockHeight - 100) > const_cast<CMasternode*>(b)->CalculateScore(1, nBlockHeight - 100);
+        }   );
+    return masternodeQueue;
+}
+
 CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool fFilterSigTime, int& nCount)
 {
     LOCK(cs);
@@ -337,7 +379,8 @@ CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight
     */
 
     int nMnCount = CountEnabled();
-    BOOST_FOREACH (CMasternode& mn, vMasternodes) {
+    BOOST_FOREACH (CMasternode& mn, vMasternodes)
+    {
         mn.Check();
         if (!mn.IsEnabled()) continue;
 

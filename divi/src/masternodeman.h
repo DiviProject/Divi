@@ -96,6 +96,7 @@ public:
     CMasternode* Find(const CPubKey& pubKeyMasternode);
 
     /// Find an entry in the masternode list that is next to be paid
+    std::vector<CMasternode*> GetMasternodePaymentQueue(int nBlockHeight, bool fFilterSigTime, int nCount);
     CMasternode* GetNextMasternodeInQueueForPayment(int nBlockHeight, bool fFilterSigTime, int& nCount);
 
     /// Find a random entry

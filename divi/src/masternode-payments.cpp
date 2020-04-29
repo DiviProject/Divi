@@ -622,7 +622,16 @@ bool CMasternodePaymentWinner::IsValid(CNode* pnode, std::string& strError)
         return false;
     }
 
-    return true;
+    std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(nBlockHeight,true, 0);
+    std::vector<CMasternode*>::iterator it = std::find(mnQueue.begin(),mnQueue.end(), mnodeman.Find(payee));
+    if(it != mnQueue.end())
+    {
+        return (std::distance(mnQueue.begin(),it) < 2*MNPAYMENTS_SIGNATURES_TOTAL)? true : false;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool CMasternodePayments::ProcessBlock(int nBlockHeight)

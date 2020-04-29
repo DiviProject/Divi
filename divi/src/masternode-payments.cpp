@@ -622,7 +622,8 @@ bool CMasternodePaymentWinner::IsValid(CNode* pnode, std::string& strError)
         return false;
     }
 
-    std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(nBlockHeight,true, 0);
+    int nCount = 0;
+    std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(nBlockHeight,true, nCount);
     std::vector<CMasternode*>::iterator it = std::find(mnQueue.begin(),mnQueue.end(), mnodeman.Find(payee));
     if(it != mnQueue.end())
     {

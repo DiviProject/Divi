@@ -329,7 +329,7 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
 {
     LOCK(cs);
     std::vector< CMasternode* > masternodeQueue;
-    std::map<const CMasternode*, int64_t> secondsSinceLastPaid;
+    std::map<const CMasternode*, uint256> masternodeScores;
 
     int nMnCount = CountEnabled();
     BOOST_FOREACH (CMasternode& mn, vMasternodes)
@@ -350,7 +350,7 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
         if (mn.GetMasternodeInputAge() < nMnCount) continue;
 
         masternodeQueue.push_back(&mn);
-        secondsSinceLastPaid[&mn] = mn.SecondsSincePayment();
+        masternodeScores[&mn] = mn.CalculateScore(1,nBlockHeight - 100);
     }
 
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
@@ -358,14 +358,14 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
 
     
     std::sort(masternodeQueue.begin(), masternodeQueue.end(), 
-        [nBlockHeight,&secondsSinceLastPaid](const CMasternode* a, const CMasternode* b)
+        [&masternodeScores](const CMasternode* a, const CMasternode* b)
         {
             if(!b) return true;
             if(!a) return false;
             
-            uint256 aScore = const_cast<CMasternode*>(a)->CalculateScore(1,nBlockHeight - 100);
-            uint256 bScore = const_cast<CMasternode*>(b)->CalculateScore(1, nBlockHeight - 100);
-            return (aScore > bScore) || (aScore == bScore && secondsSinceLastPaid[a] > secondsSinceLastPaid[b]);
+            uint256 aScore = masternodeScores[a];
+            uint256 bScore = masternodeScores[b];
+            return (aScore > bScore);
         }   );
     return masternodeQueue;
 }

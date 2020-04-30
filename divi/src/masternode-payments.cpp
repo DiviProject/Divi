@@ -463,22 +463,10 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
     LOCK(cs_vecPayments);
 
     int nMaxSignatures = 0;
-    int nMasternode_Drift_Count = 0;
 
     std::string strPayeesPossible = "";
 
     auto rewards = GetBlockSubsidity(nBlockHeight);
-
-    if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
-        // Get a stable number of masternodes by ignoring newly activated (< 8000 sec old) masternodes
-        nMasternode_Drift_Count = mnodeman.stable_size() + Params().MasternodeCountDrift();
-    }
-    else {
-        //account for the fact that all peers do not see the same masternode count. A allowance of being off our masternode count is given
-        //we only need to look at an increased masternode count because as count increases, the reward decreases. This code only checks
-        //for mnPayment >= required, so it only makes sense to check the max node count allowed.
-        nMasternode_Drift_Count = mnodeman.size() + Params().MasternodeCountDrift();
-    }
 
     CAmount requiredMasternodePayment = rewards.nMasternodeReward;
 
@@ -622,7 +610,18 @@ bool CMasternodePaymentWinner::IsValid(CNode* pnode, std::string& strError)
         return false;
     }
 
-    return true;
+    if(!masternodeSync.IsSynced()){ return true;}
+
+    std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(nBlockHeight,true);
+    std::vector<CMasternode*>::iterator it = std::find(mnQueue.begin(),mnQueue.end(), mnodeman.Find(payee));
+    if(it != mnQueue.end())
+    {
+        return (std::distance(mnQueue.begin(),it) < 2*MNPAYMENTS_SIGNATURES_TOTAL)? true : false;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool CMasternodePayments::ProcessBlock(int nBlockHeight)
@@ -650,8 +649,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
     LogPrint("masternode","CMasternodePayments::ProcessBlock() Start nHeight %d - vin %s. \n", nBlockHeight, activeMasternode.vin.prevout.hash.ToString());
 
     // pay to the oldest MN that still had no payment but its input is old enough and it was active long enough
-    int nCount = 0;
-    CMasternode* pmn = mnodeman.GetNextMasternodeInQueueForPayment(nBlockHeight, true, nCount);
+    CMasternode* pmn = mnodeman.GetNextMasternodeInQueueForPayment(nBlockHeight, true);
 
     if (pmn != NULL) {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");

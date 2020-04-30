@@ -325,19 +325,15 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 //
 // Deterministically select the oldest/best masternode to pay on the network
 //
-CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool fFilterSigTime, int& nCount)
+std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHeight, bool fFilterSigTime)
 {
     LOCK(cs);
-
-    CMasternode* pBestMasternode = NULL;
-    std::vector<pair<int64_t, CTxIn> > vecMasternodeLastPaid;
-
-    /*
-        Make a vector with all of the last paid times
-    */
+    std::vector< CMasternode* > masternodeQueue;
+    std::map<const CMasternode*, uint256> masternodeScores;
 
     int nMnCount = CountEnabled();
-    BOOST_FOREACH (CMasternode& mn, vMasternodes) {
+    BOOST_FOREACH (CMasternode& mn, vMasternodes)
+    {
         mn.Check();
         if (!mn.IsEnabled()) continue;
 
@@ -353,37 +349,32 @@ CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight
         //make sure it has as many confirmations as there are masternodes
         if (mn.GetMasternodeInputAge() < nMnCount) continue;
 
-        vecMasternodeLastPaid.push_back(std::make_pair(mn.SecondsSincePayment(), mn.vin));
+        masternodeQueue.push_back(&mn);
+        masternodeScores[&mn] = mn.CalculateScore(1,nBlockHeight - 100);
     }
-
-    nCount = (int)vecMasternodeLastPaid.size();
 
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
-    if (fFilterSigTime && nCount < nMnCount / 3) return GetNextMasternodeInQueueForPayment(nBlockHeight, false, nCount);
+    if (fFilterSigTime && masternodeQueue.size() < nMnCount / 3) return GetMasternodePaymentQueue(nBlockHeight, false);
 
-    // Sort them high to low
-    sort(vecMasternodeLastPaid.rbegin(), vecMasternodeLastPaid.rend(), CompareLastPaid());
+    
+    std::sort(masternodeQueue.begin(), masternodeQueue.end(), 
+        [&masternodeScores](const CMasternode* a, const CMasternode* b)
+        {
+            if(!b) return true;
+            if(!a) return false;
+            
+            uint256 aScore = masternodeScores[a];
+            uint256 bScore = masternodeScores[b];
+            return (aScore > bScore);
+        }   );
+    return masternodeQueue;
+}
 
-    // Look at 1/10 of the oldest nodes (by last payment), calculate their scores and pay the best one
-    //  -- This doesn't look at who is being paid in the +8-10 blocks, allowing for double payments very rarely
-    //  -- 1/100 payments should be a double payment on mainnet - (1/(3000/10))*2
-    //  -- (chance per block * chances before IsScheduled will fire)
-//    int nTenthNetwork = CountEnabled() / 10;
-//    int nCountTenth = 0;
-    uint256 nHigh = 0;
-    BOOST_FOREACH (PAIRTYPE(int64_t, CTxIn) & s, vecMasternodeLastPaid) {
-        CMasternode* pmn = Find(s.second);
-        if (!pmn) break;
+CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool fFilterSigTime)
+{
+    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(nBlockHeight,fFilterSigTime);
 
-        uint256 n = pmn->CalculateScore(1, nBlockHeight - 100);
-        if (n > nHigh) {
-            nHigh = n;
-            pBestMasternode = pmn;
-        }
-//        nCountTenth++;
-//        if (nCountTenth >= nTenthNetwork) break;
-    }
-    return pBestMasternode;
+    return (!mnQueue.empty())? mnQueue.front() : NULL;
 }
 
 CMasternode* CMasternodeMan::FindRandomNotInVec(std::vector<CTxIn>& vecToExclude, int protocolVersion)

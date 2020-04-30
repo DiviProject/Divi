@@ -173,6 +173,8 @@ BITCOIN_CORE_H = \
   script/SignatureCheckers.h \
   script/StackManager.h \
   script/script.h \
+  script/opcodes.h \
+  script/scriptandsigflags.h \
   script/sigcache.h \
   script/sign.h \
   script/standard.h \
@@ -300,7 +302,6 @@ libbitcoin_wallet_a_SOURCES = \
   crypto/aes.cpp \
   crypter.cpp \
   swifttx.cpp \
-  libzerocoin/CoinSpend.cpp \
   masternode.cpp \
   masternode-budget.cpp \
   masternode-payments.cpp \

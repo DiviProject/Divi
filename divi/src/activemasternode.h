@@ -9,10 +9,12 @@
 #include "init.h"
 #include "key.h"
 #include "masternode.h"
+#include "masternodeconfig.h"
 #include "net.h"
 #include "obfuscation.h"
 #include "sync.h"
 #include "wallet.h"
+
 
 #define ACTIVE_MASTERNODE_INITIAL 0 // initial state
 #define ACTIVE_MASTERNODE_SYNC_IN_PROCESS 1
@@ -32,7 +34,7 @@ private:
 
     static bool GetVinFromOutput(COutput out, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
     /// Register any Masternode
-    static bool Register(CMasternodeBroadcast &mnb);
+    static bool Register(CMasternodeBroadcast &mnb, bool deferRelay = false);
 
     /// Get 10000 PIV input that can be used for the Masternode
     static bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex);
@@ -59,7 +61,11 @@ public:
     std::string GetStatus();
 
     /// Register remote Masternode
-    static bool Register(std::string strService, std::string strKey, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage);
+    static bool Register(
+        const CMasternodeConfig::CMasternodeEntry& configEntry, 
+        std::string& errorMessage,
+        CMasternodeBroadcast& mnb,
+        bool deferRelay = false);
 
     /// Get 10000 PIV input that can be used for the Masternode
     bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey);

@@ -12,6 +12,7 @@
 #include "masternodeconfig.h"
 #include "activemasternode.h"
 #include "masternodeman.h"
+#include "obfuscation.h"
 #include "rpcserver.h"
 #include "utilmoneystr.h"
 #include "script/standard.h"
@@ -20,6 +21,16 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 using namespace json_spirit;
+
+template <typename T>
+static T readFromHex(std::string hexString)
+{
+    std::vector<unsigned char> hex = ParseHex(hexString);
+    CDataStream ss(hex,SER_NETWORK,PROTOCOL_VERSION);
+    T object;
+    ss >> object;
+    return object;
+}
 
 static CMasternode::Tier GetMasternodeTierFromString(std::string str)
 {
@@ -70,13 +81,17 @@ Value allocatefunds(const Array& params, bool fHelp)
 			"\"vin\"			(string) funding transaction id necessary for next step.\n");
 
     if (params[0].get_str() != "masternode")
+    {
         throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
+    }
 	CBitcoinAddress acctAddr = GetAccountAddress("alloc->" + params[1].get_str());
 	string strAmt = params[2].get_str();
 
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
     if(!CMasternode::IsTierValid(nMasternodeTier))
+    {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
+    }
 
 	CWalletTx wtx;
     SendMoney(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), wtx);
@@ -108,7 +123,9 @@ Value fundmasternode(const Array& params, bool fHelp)
     auto nMasternodeTier = GetMasternodeTierFromString(params[1].get_str());
 
     if(!CMasternode::IsTierValid(nMasternodeTier))
+    {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
+    }
 
 	uint256 txHash = uint256(params[2].get_str());
 	std::string mnAddress = params[3].get_str();
@@ -158,6 +175,108 @@ Value fundmasternode(const Array& params, bool fHelp)
 	Object obj;
     obj.push_back(Pair("config line", boost::algorithm::join(tokens, " ")));
 	return obj;
+}
+Value verifymasternodesetup(const Array&params, bool fHelp)
+{
+    if (fHelp || params.size() != 4)
+		throw runtime_error(
+			"verifymasternodesetup ip_address sigtime collateralPubKey masternodePubKey\n"
+			"\nStarts escrows funds for some purpose.\n"
+
+			"\nArguments:\n"
+            "1. ip_address			 (string, required) Local ip address of this node. \n"
+			"2. sigtime              (string, required) Timestamp for signature \n"
+            "3. collateralPubKey     (string, required) Collateral pubkey \n"
+            "4. masternodePubKey     (string, required) Masternode pubkey. \n"
+			"\nResult:\n"
+			"\"expected_message\"			    (bool) Expected masternode-broadcast message\n");
+    
+    Object result;
+    try
+    {
+        std::string pubkeyString =params[2].get_str();
+        std::string mnPubkeyString = params[3].get_str();
+
+        CMasternodeBroadcast mnb;
+        mnb.addr = CService(params[0].get_str()+":"+std::to_string(Params().GetDefaultPort()) );
+        mnb.sigTime = static_cast<int64_t>(std::stoll(params[1].get_str()));
+        mnb.pubKeyCollateralAddress = CPubKey(pubkeyString.begin(),pubkeyString.end());
+        mnb.pubKeyMasternode = CPubKey(mnPubkeyString.begin(), mnPubkeyString.end());
+        mnb.protocolVersion = PROTOCOL_VERSION;
+
+        result.push_back(Pair("expected_message_to_sign",HexStr(mnb.getMessageToSign())));
+
+        return result;
+    }
+    catch(...)
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS,std::string("Error parsing input arguments\n"));
+    }
+    return result;
+}
+
+Value setupmasternode(const Array& params, bool fHelp)
+{
+	if (fHelp || params.size() < 5 || params.size() > 6)
+		throw runtime_error(
+			"setupmasternode alias txhash outputIndex collateralPubKey ip_address\n"
+			"\nStarts escrows funds for some purpose.\n"
+
+			"\nArguments:\n"
+			"1. alias			    (string, required) Helpful identifier to recognize this masternode later. \n"
+			"2. txHash              (string, required) Funding transaction. \n"
+            "3. outputIndex         (string, required) Output index transaction. \n"
+            "4. collateralPubkey    (string, required) collateral pubkey. \n"
+            "5. ip_address          (string, required) Local ip address of this node\n"
+			"\nResult:\n"
+			"\"protocol_version\"			(string) Protocol version used for serialization.\n"
+            "\"message_to_sign\"			(string) Hex-encoded msg requiring collateral signature.\n"
+            "\"config_line\"			    (string) Configuration data needed in the.\n"
+            "\"broadcast_data\"			    (string) funding transaction id necessary for next step.\n");
+
+    Object result;
+
+    CBitcoinAddress address = GetAccountAddress("reserved->" + params[0].get_str() );
+    CKeyID keyID;
+    if (!address.GetKeyID(keyID))
+    {
+        throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
+    }
+    CKey masternodeKey;
+    if (!pwalletMain->GetKey(keyID, masternodeKey))
+    {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + CBitcoinAddress(keyID).ToString() + " is not known");
+    }
+    
+    std::string alias = params[0].get_str();
+    std::string txHash = params[1].get_str();
+    std::string outputIndex = params[2].get_str();
+    std::vector<unsigned char> pubkeyStr = ParseHex(static_cast<std::string>(params[3].get_str()));
+    CPubKey pubkeyCollateralAddress;
+    pubkeyCollateralAddress.Set(pubkeyStr.begin(),pubkeyStr.end());
+
+    std::string ipAndPort = params[4].get_str() + std::to_string(Params().GetDefaultPort());
+
+    CMasternodeConfig::CMasternodeEntry config(alias,ipAndPort,CBitcoinSecret(masternodeKey).ToString(),txHash,outputIndex);
+
+    CMasternodeBroadcast mnb;
+    std::string errorMsg;
+    if(!CMasternodeBroadcastFactory::Create(config,pubkeyCollateralAddress,errorMsg,mnb))
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMS,errorMsg);
+    }
+
+    CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
+    result.push_back(Pair("protocol_version", PROTOCOL_VERSION ));
+    result.push_back(Pair("message_to_sign", HexStr(mnb.getMessageToSign()) ));
+    result.push_back(Pair("config_line",
+        config.getAlias()+" "+ 
+        ipAndPort +" "+ 
+        CBitcoinSecret(masternodeKey).ToString()+" "
+        +txHash+" "+outputIndex));
+    ss << mnb;
+    result.push_back(Pair("broadcast_data", HexStr(ss.str()) ));
+    return result;    
 }
 
 Value getpoolinfo(const Array& params, bool fHelp)
@@ -214,12 +333,10 @@ Value listmasternodes(const Array& params, bool fHelp)
             HelpExampleCli("masternodelist", "") + HelpExampleRpc("masternodelist", ""));
 
     Array ret;
-    int nHeight;
     {
         LOCK(cs_main);
         CBlockIndex* pindex = chainActive.Tip();
         if(!pindex) return 0;
-        nHeight = pindex->nHeight;
     }
     for(auto &&entry : mnodeman.GetFullMasternodeVector()) {
         Object obj;
@@ -305,11 +422,9 @@ Value getmasternodecount (const Array& params, bool fHelp)
             HelpExampleCli("getmasternodecount", "") + HelpExampleRpc("getmasternodecount", ""));
 
     Object obj;
-    int nCount = 0;
     int ipv4 = 0, ipv6 = 0, onion = 0;
 
-    if (chainActive.Tip())
-        mnodeman.GetNextMasternodeInQueueForPayment(chainActive.Tip()->nHeight, true, nCount);
+    int nCount = chainActive.Tip()? static_cast<int>(mnodeman.GetMasternodePaymentQueue(chainActive.Tip()->nHeight, true).size()): 0;
 
     mnodeman.CountNetworks(ActiveProtocol(), ipv4, ipv6, onion);
 
@@ -330,19 +445,55 @@ Value masternodecurrent(const Array& params, bool fHelp)
 	throw runtime_error("masternodecurrent is deprecated!  masternode payments always rely upon votes");
 }
 
+Value broadcaststartmasternode(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 2 || params.size() < 1)
+        throw runtime_error(
+            "broadcaststartmasternode hex sig\n"
+            "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
+
+            "\nArguments:\n"
+            "1. broadcast_hex			 (hex, required) hex representation of broadcast data.\n"
+            "2. appendBroadcastSignature (hex, optional) hex representation of collateral signature.\n"
+            "\nResult:\n"
+            "\"status\"	(string) status of broadcast\n");
+
+    Object result;
+    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params[0].get_str());
+    if(params.size()==2) 
+    {
+        mnb.sig = ParseHex(params[1].get_str());
+    }
+
+    int nDoS = 0;
+    if(mnb.CheckAndUpdate(nDoS) && 
+        mnb.CheckInputsAndAdd(nDoS))
+    {
+        mnb.Relay();
+        result.push_back(Pair("status", "success"));
+    }
+    else
+    {
+        result.push_back(Pair("status","failed"));
+    }
+    return result;
+}
+
 Value startmasternode(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 1)
+    if (fHelp || params.size() < 2)
         throw runtime_error(
             "startmasternode alias\n"
             "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
             "\nArguments:\n"
             "1. alias			(string, required) helpful identifier to recognize this allocation later.\n"
+            "2. deferRelay  (bool, optional) returns broadcast data to delegate signaling masternode start.\n"
             "\nResult:\n"
             "\"status\"	(string) status of masternode\n");
 
     auto alias = params.at(0).get_str();
+    bool deferRelay = (params.size() == 1)? false: true;
 
     Object result;
     bool fFound = false;
@@ -352,11 +503,24 @@ Value startmasternode(const Array& params, bool fHelp)
         {
             fFound = true;
             std::string strError;
-            if(CActiveMasternode::Register(configEntry.getIp(), configEntry.getPrivKey(), configEntry.getTxHash(), configEntry.getOutputIndex(), strError))
+            CMasternodeBroadcast mnb;
+            if(CActiveMasternode::Register(
+                configEntry, 
+                strError,
+                mnb,
+                deferRelay))
             {
                 result.push_back(Pair("status", "success"));
+                if(deferRelay)
+                {
+                    CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
+                    ss << mnb;
+                    result.push_back(Pair("broadcastData", HexStr(ss.str()) ));
+                }
+                fFound = true;
             }
-            else
+            
+            if(!fFound)
             {
                 result.push_back(Pair("status", "failed"));
                 result.push_back(Pair("error", strError));

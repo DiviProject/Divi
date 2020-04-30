@@ -118,14 +118,6 @@ void CActiveMasternode::ManageStatus()
                 return;
             }
 
-#if 0
-            if (!Register(vin, service, keyCollateralAddress, pubKeyCollateralAddress, keyMasternode, pubKeyMasternode, errorMessage)) {
-                notCapableReason = "Error on Register: " + errorMessage;
-                LogPrintf("Register::ManageStatus() - %s\n", notCapableReason);
-                return;
-            }
-#endif
-
             LogPrintf("CActiveMasternode::ManageStatus() - Is capable master node!\n");
             status = ACTIVE_MASTERNODE_STARTED;
 
@@ -212,19 +204,27 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
     }
 }
 
-bool CActiveMasternode::Register(std::string strService, std::string strKeyMasternode, std::string strTxHash, std::string strOutputIndex, std::string& errorMessage)
+bool CActiveMasternode::Register(
+    const CMasternodeConfig::CMasternodeEntry& configEntry, 
+    std::string& errorMessage,
+    CMasternodeBroadcast& mnb,
+    bool deferRelay)
 {
-
-    CMasternodeBroadcast mnb;
-    if(!CMasternodeBroadcast::Create(strService, strKeyMasternode, strTxHash, strOutputIndex, errorMessage, mnb, false))
+    if(!CMasternodeBroadcastFactory::Create(
+            configEntry,
+            errorMessage,
+            mnb,
+            false,
+            deferRelay))
+    {
         return false;
+    }
 
     addrman.Add(CAddress(mnb.addr), CNetAddr("127.0.0.1"), 2 * 60 * 60);
-
-    return Register(mnb);
+    return Register(mnb,deferRelay);
 }
 
-bool CActiveMasternode::Register(CMasternodeBroadcast &mnb)
+bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
 {
     auto mnp = mnb.lastPing;
     mnodeman.mapSeenMasternodePing.insert(make_pair(mnp.GetHash(), mnp));
@@ -242,8 +242,16 @@ bool CActiveMasternode::Register(CMasternodeBroadcast &mnb)
     }
 
     //send to all peers
-    LogPrintf("CActiveMasternode::Register() - RelayElectionEntry vin = %s\n", mnb.vin.ToString());
-    mnb.Relay();
+    if(!deferRelay)
+    {
+        LogPrintf("CActiveMasternode::Register() - Relaying broadcast vin = %s\n", mnb.vin.ToString());
+        mnb.Relay();
+    }
+    else
+    {
+        LogPrintf("CActiveMasternode::Register() - Deferring Relay vin = %s\n", mnb.vin.ToString());
+    }
+    
 
     return true;
 }

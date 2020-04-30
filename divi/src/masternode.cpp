@@ -507,103 +507,304 @@ CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
     nTier = mn.nTier;
 }
 
-bool CMasternodeBroadcast::Create(std::string strService, std::string strKeyMasternode, std::string strTxHash, std::string strOutputIndex, std::string& strErrorRet, CMasternodeBroadcast& mnbRet, bool fOffline)
+
+bool CMasternodeBroadcastFactory::checkBlockchainSync(std::string& strErrorRet, bool fOffline)
 {
-    CTxIn txin;
-    CPubKey pubKeyCollateralAddressNew;
-    CKey keyCollateralAddressNew;
-    CPubKey pubKeyMasternodeNew;
-    CKey keyMasternodeNew;
-
-    //need correct blocks to send ping
-    if (!fOffline && !masternodeSync.IsBlockchainSynced()) {
+     if (!fOffline && !masternodeSync.IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
-
-    if (!CObfuScationSigner::GetKeysFromSecret(strKeyMasternode, keyMasternodeNew, pubKeyMasternodeNew)) {
+    return true;
+}
+bool CMasternodeBroadcastFactory::setMasternodeKeys(
+    const std::string& strKeyMasternode, 
+    std::pair<CKey,CPubKey>& masternodeKeyPair, 
+    std::string& strErrorRet)
+{
+    if (!CObfuScationSigner::GetKeysFromSecret(strKeyMasternode, masternodeKeyPair.first, masternodeKeyPair.second)) {
         strErrorRet = strprintf("Invalid masternode key %s", strKeyMasternode);
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
-
-    if (!pwalletMain->GetMasternodeVinAndKeys(txin, pubKeyCollateralAddressNew, keyCollateralAddressNew, strTxHash, strOutputIndex)) {
-        strErrorRet = strprintf("Could not allocate txin %s:%s for masternode %s", strTxHash, strOutputIndex, strService);
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
-        return false;
-    }
-
-    Tier nMasternodeTier = Tier::MASTERNODE_TIER_INVALID;
-    if(auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash))
+    return true;
+}
+bool CMasternodeBroadcastFactory::setMasternodeCollateralKeys(
+    const std::string& txHash, 
+    const std::string& outputIndex,
+    const std::string& service, 
+    bool collateralPrivKeyIsRemote,
+    CTxIn& txin,
+    std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
+    std::string& strError)
+{
+    if(collateralPrivKeyIsRemote)
     {
-        auto collateralAmount = walletTx->vout.at(txin.prevout.n).nValue;
-        nMasternodeTier = GetTierByCollateralAmount(collateralAmount);
-        if(!IsTierValid(nMasternodeTier))
+        uint256 txid(txHash);
+        uint32_t outputIdx = static_cast<uint32_t>(std::stoi(outputIndex));
+        txin = CTxIn(txid,outputIdx);
+        masternodeCollateralKeyPair = std::pair<CKey,CPubKey>();
+        return true;
+    }
+    if (!pwalletMain->GetMasternodeVinAndKeys(txin, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first, txHash, outputIndex)) {
+        strError = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strError);
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
+    const CTxIn& txin,
+    const std::string& txHash, 
+    const std::string& outputIndex,
+    const std::string& service,
+    CMasternode::Tier& nMasternodeTier,
+    std::string& strErrorRet)
+{
+    nMasternodeTier = CMasternode::Tier::MASTERNODE_TIER_INVALID;
+    auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash);
+    uint256 blockHash;
+    CTransaction fundingTx;
+    if(walletTx || GetTransaction(txin.prevout.hash,fundingTx,blockHash,true))
+    {
+        auto collateralAmount = (walletTx)? walletTx->vout.at(txin.prevout.n).nValue: fundingTx.vout[txin.prevout.n].nValue;
+        nMasternodeTier = CMasternode::GetTierByCollateralAmount(collateralAmount);
+        if(!CMasternode::IsTierValid(nMasternodeTier))
         {
-            strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", strService, collateralAmount);
-            LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+            strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", service, collateralAmount);
+            LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
             return false;
         }
     }
     else
     {
-        strErrorRet = strprintf("Could not allocate txin %s:%s for masternode %s", strTxHash, strOutputIndex, strService);
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        strErrorRet = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
+    return true;
+}
 
-
+bool CMasternodeBroadcastFactory::checkNetworkPort(
+    const std::string& strService,
+    std::string& strErrorRet)
+{
     CService service = CService(strService);
     int mainnetDefaultPort = Params(CBaseChainParams::MAIN).GetDefaultPort();
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         if (service.GetPort() != mainnetDefaultPort) {
             strErrorRet = strprintf("Invalid port %u for masternode %s, only %d is supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort);
-            LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+            LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
             return false;
         }
     } else if (service.GetPort() == mainnetDefaultPort) {
         strErrorRet = strprintf("Invalid port %u for masternode %s, %d is the only supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort);
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
+    const CMasternodeConfig::CMasternodeEntry configEntry, 
+    std::string& strErrorRet,
+    bool fOffline,
+    bool collateralPrivKeyIsRemote,
+    CTxIn& txin,
+    std::pair<CKey,CPubKey>& masternodeKeyPair,
+    std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
+    CMasternode::Tier& nMasternodeTier
+    )
+{
+    std::string strService = configEntry.getIp();
+    std::string strKeyMasternode = configEntry.getPrivKey(); 
+    std::string strTxHash = configEntry.getTxHash();
+    std::string strOutputIndex = configEntry.getOutputIndex();
+    //need correct blocks to send ping
+    if (!checkBlockchainSync(strErrorRet,fOffline)||
+        !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
+        !setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,collateralPrivKeyIsRemote,txin,masternodeCollateralKeyPair,strErrorRet) ||
+        !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet) || 
+        !checkNetworkPort(strService,strErrorRet))
+    {
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEntry configEntry,
+                    CPubKey pubkeyCollateralAddress,
+                    std::string& strErrorRet, 
+                    CMasternodeBroadcast& mnbRet,
+                    bool fOffline)
+{
+    const bool collateralPrivateKeyIsRemote = true;
+    const bool deferRelay = true;
+    CTxIn txin;
+    std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
+    std::pair<CKey,CPubKey> masternodeKeyPair;
+    CMasternode::Tier nMasternodeTier;
+
+    if(!createArgumentsFromConfig(
+        configEntry,
+        strErrorRet,
+        fOffline,
+        collateralPrivateKeyIsRemote,
+        txin,
+        masternodeKeyPair,
+        masternodeCollateralKeyPair,
+        nMasternodeTier))
+    {
         return false;
     }
 
-    return Create(txin, CService(strService), keyCollateralAddressNew, pubKeyCollateralAddressNew, keyMasternodeNew, pubKeyMasternodeNew, nMasternodeTier, strErrorRet, mnbRet);
+    createWithoutSignatures(
+        txin,
+        CService(configEntry.getIp()),
+        pubkeyCollateralAddress,
+        masternodeKeyPair.second,
+        nMasternodeTier,
+        deferRelay,
+        mnbRet);
+    
+    if(!signPing(masternodeKeyPair.first,masternodeKeyPair.second,mnbRet.lastPing,strErrorRet))
+    {
+        mnbRet = CMasternodeBroadcast();
+        return false;
+    }
+    return true;
 }
 
-bool CMasternodeBroadcast::Create(CTxIn txin, CService service, CKey keyCollateralAddressNew, CPubKey pubKeyCollateralAddressNew, CKey keyMasternodeNew, CPubKey pubKeyMasternodeNew, Tier nMasternodeTier, std::string& strErrorRet, CMasternodeBroadcast& mnbRet)
+bool CMasternodeBroadcastFactory::Create(
+    const CMasternodeConfig::CMasternodeEntry configEntry, 
+    std::string& strErrorRet, 
+    CMasternodeBroadcast& mnbRet, 
+    bool fOffline,
+    bool deferRelay)
+{
+    const bool collateralPrivateKeyIsRemote = false;
+    std::string strService = configEntry.getIp();
+    std::string strKeyMasternode = configEntry.getPrivKey(); 
+    std::string strTxHash = configEntry.getTxHash();
+    std::string strOutputIndex = configEntry.getOutputIndex();
+
+    CTxIn txin;
+    std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
+    std::pair<CKey,CPubKey> masternodeKeyPair;
+    CMasternode::Tier nMasternodeTier;
+
+    if(!createArgumentsFromConfig(
+        configEntry,
+        strErrorRet,
+        fOffline,
+        collateralPrivateKeyIsRemote,
+        txin,
+        masternodeKeyPair,
+        masternodeCollateralKeyPair,
+        nMasternodeTier))
+    {
+        return false;
+    }
+
+    return Create(txin, 
+                CService(strService), 
+                masternodeCollateralKeyPair.first, 
+                masternodeCollateralKeyPair.second, 
+                masternodeKeyPair.first, 
+                masternodeKeyPair.second, 
+                nMasternodeTier,
+                strErrorRet,
+                mnbRet,
+                deferRelay);
+}
+
+bool CMasternodeBroadcastFactory::signPing(
+    CKey keyMasternodeNew, 
+    CPubKey pubKeyMasternodeNew,
+    CMasternodePing& mnp,
+    std::string& strErrorRet)
+{
+    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) 
+    {
+        strErrorRet = strprintf("Failed to sign ping, masternode=%s", mnp.vin.prevout.hash.ToString());
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::signBroadcast(
+    CKey keyCollateralAddressNew,
+    CMasternodeBroadcast& mnb,
+    std::string& strErrorRet)
+{
+    if (!mnb.Sign(keyCollateralAddressNew)) 
+    {
+        strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", mnb.vin.prevout.hash.ToString());
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        mnb = CMasternodeBroadcast();
+        return false;
+    }
+    return true;
+}
+
+bool CMasternodeBroadcastFactory::provideSignatures(
+    CKey keyMasternodeNew,
+    CPubKey pubKeyMasternodeNew,
+    CKey keyCollateralAddressNew,
+    CMasternodeBroadcast& mnb,
+    std::string& strErrorRet)
+{
+    if(!signPing(keyMasternodeNew,pubKeyMasternodeNew,mnb.lastPing,strErrorRet))
+    {
+        return false;
+    }
+    if (!signBroadcast(keyCollateralAddressNew,mnb,strErrorRet))
+    {
+        return false;
+    }
+    return true;
+}
+
+void CMasternodeBroadcastFactory::createWithoutSignatures(
+    CTxIn txin, 
+    CService service,
+    CPubKey pubKeyCollateralAddressNew, 
+    CPubKey pubKeyMasternodeNew, 
+    CMasternode::Tier nMasternodeTier,
+    bool deferRelay,
+    CMasternodeBroadcast& mnbRet)
+{
+    LogPrint("masternode", "CMasternodeBroadcastFactory::createWithoutSignatures -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
+             CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
+             pubKeyMasternodeNew.GetID().ToString());
+
+    CMasternodePing mnp = (deferRelay)? CMasternodePing::createDelayedMasternodePing(txin): CMasternodePing(txin);
+    mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
+    mnbRet.lastPing = mnp;
+}
+
+bool CMasternodeBroadcastFactory::Create(
+    CTxIn txin, 
+    CService service, 
+    CKey keyCollateralAddressNew, 
+    CPubKey pubKeyCollateralAddressNew, 
+    CKey keyMasternodeNew, 
+    CPubKey pubKeyMasternodeNew, 
+    CMasternode::Tier nMasternodeTier, 
+    std::string& strErrorRet, 
+    CMasternodeBroadcast& mnbRet,
+    bool deferRelay)
 {
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;
 
-    LogPrint("masternode", "CMasternodeBroadcast::Create -- pubKeyCollateralAddressNew = %s, pubKeyMasternodeNew.GetID() = %s\n",
-             CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
-             pubKeyMasternodeNew.GetID().ToString());
+    createWithoutSignatures(
+        txin,service,pubKeyCollateralAddressNew,pubKeyMasternodeNew,nMasternodeTier,deferRelay,mnbRet);
 
-    CMasternodePing mnp(txin);
-    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) {
-        strErrorRet = strprintf("Failed to sign ping, masternode=%s", txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
-        mnbRet = CMasternodeBroadcast();
-        return false;
-    }
-
-    mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
-
-#if 0
-    if (!mnbRet.IsValidNetAddr()) {
-        strErrorRet = strprintf("Invalid IP address %s, masternode=%s", mnbRet.addr.ToStringIP (), txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
-        mnbRet = CMasternodeBroadcast();
-        return false;
-    }
-#endif
-
-    mnbRet.lastPing = mnp;
-    if (!mnbRet.Sign(keyCollateralAddressNew)) {
-        strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", txin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcast::Create -- %s\n", strErrorRet);
-        mnbRet = CMasternodeBroadcast();
+    if(!provideSignatures(keyMasternodeNew,pubKeyMasternodeNew,keyCollateralAddressNew,mnbRet,strErrorRet))
+    {
         return false;
     }
 
@@ -774,16 +975,21 @@ void CMasternodeBroadcast::Relay() const
     RelayInv(inv);
 }
 
+std::string CMasternodeBroadcast::getMessageToSign() const
+{
+    std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
+    std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
+
+    std::string strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
+    return strMessage;
+}
+
 bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress)
 {
     std::string errorMessage;
 
-    std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
-    std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
-
     sigTime = GetAdjustedTime();
-
-    std::string strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
+    std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, sig, keyCollateralAddress)) {
         LogPrint("masternode","CMasternodeBroadcast::Sign() - Error: %s\n", errorMessage);
@@ -814,14 +1020,31 @@ CMasternodePing::CMasternodePing(CTxIn& newVin)
     vchSig = std::vector<unsigned char>();
 }
 
+CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
+{
+    CMasternodePing ping;
+    const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
+    ping.vin = newVin;
+    auto block = chainActive[chainActive.Height() -12];
+    ping.blockHash = block->GetBlockHash();
+    ping.sigTime = std::max(block->GetBlockTime() + offsetTimeBy45BlocksInSeconds, GetAdjustedTime());
+    ping.vchSig = std::vector<unsigned char>();
+    LogPrint("masternode","mnp - relay block-time & sigtime: %d vs. %d\n", block->GetBlockTime(), ping.sigTime);
+
+    return ping;
+}
+
+std::string CMasternodePing::getMessageToSign() const
+{
+    return vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
+}
 
 bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
 {
     std::string errorMessage;
-    std::string strMasterNodeSignMessage;
 
     sigTime = GetAdjustedTime();
-    std::string strMessage = vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
+    std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
         LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage);

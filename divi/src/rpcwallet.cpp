@@ -9,8 +9,6 @@
 #include "base58.h"
 #include "core_io.h"
 #include "init.h"
-#include "net.h"
-#include "netbase.h"
 #include "rpcserver.h"
 #include "timedata.h"
 #include "Logging.h"

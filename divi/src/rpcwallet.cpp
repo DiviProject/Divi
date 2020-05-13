@@ -1780,6 +1780,11 @@ Value walletpassphrase(const Array& params, bool fHelp)
     if (params.size() == 3)
         anonymizeOnly = params[2].get_bool();
 
+    if(!pwalletMain->IsLocked() && pwalletMain->fWalletUnlockAnonymizeOnly != anonymizeOnly && !anonymizeOnly)
+    {
+        throw JSONRPCError(RPC_WALLET_NEEDS_RELOCK, "Error: Wallet needs to be locked & re-unlocked to spend.");
+    }
+
     if (!pwalletMain->IsLocked() && pwalletMain->fWalletUnlockAnonymizeOnly && anonymizeOnly)
         throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked.");
 

@@ -14,6 +14,7 @@
 #include "compat.h"
 #include "Logging.h"             // for LogPrint()
 #include "utilstrencodings.h" // for GetTime()
+#include "utiltime.h"
 
 #include <stdlib.h>
 #include <limits>

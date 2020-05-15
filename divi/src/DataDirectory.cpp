@@ -12,6 +12,7 @@
 #endif
 
 #include <chainparamsbase.h>
+#include <Logging.h>
 
 #ifdef WIN32
 boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)

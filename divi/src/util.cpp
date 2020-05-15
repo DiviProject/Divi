@@ -448,22 +448,6 @@ void ShrinkDebugFile()
         fclose(file);
 }
 
-#ifdef WIN32
-boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
-{
-    namespace fs = boost::filesystem;
-
-    char pszPath[MAX_PATH] = "";
-
-    if (SHGetSpecialFolderPathA(NULL, pszPath, nFolder, fCreate)) {
-        return fs::path(pszPath);
-    }
-
-    LogPrintf("SHGetSpecialFolderPathA() failed, could not obtain requested path.\n");
-    return fs::path("");
-}
-#endif
-
 boost::filesystem::path GetTempPath()
 {
 #if BOOST_FILESYSTEM_VERSION == 3

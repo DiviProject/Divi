@@ -330,24 +330,6 @@ bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest)
 #endif /* WIN32 */
 }
 
-/**
- * Ignores exceptions thrown by Boost's create_directory if the requested directory exists.
- * Specifically handles case where path p exists, but it wasn't possible for the user to
- * write to the parent directory.
- */
-bool TryCreateDirectory(const boost::filesystem::path& p)
-{
-    try {
-        return boost::filesystem::create_directory(p);
-    } catch (boost::filesystem::filesystem_error) {
-        if (!boost::filesystem::exists(p) || !boost::filesystem::is_directory(p))
-            throw;
-    }
-
-    // create_directory didn't create the directory, it had to have existed already
-    return false;
-}
-
 void FileCommit(FILE* fileout)
 {
     fflush(fileout); // harmless if redundantly called

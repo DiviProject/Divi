@@ -368,6 +368,7 @@ Value listmasternodes(const Array& params, bool fHelp)
             obj.push_back(Pair("activetime", (int64_t)(mn->lastPing.sigTime - mn->sigTime)));
             obj.push_back(Pair("lastpaid", (int64_t)mn->GetLastPaid()));
             obj.push_back(Pair("tier", CMasternode::TierToString(static_cast<CMasternode::Tier>(mn->nTier))));
+            obj.push_back(Pair("ip_address", mn->addr.ToStringIPPort() )) ;
 
             ret.push_back(obj);
         }

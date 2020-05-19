@@ -7,7 +7,7 @@
 
 static CMainSignals g_signals;
 
-void RegisterValidationInterface(CValidationInterface* pwalletIn) {
+void ValidationInterfaceRegistry::RegisterValidationInterface(CValidationInterface* pwalletIn) {
     g_signals.UpdatedBlockTip.connect(boost::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn, _1));
     g_signals.SyncTransaction.connect(boost::bind(&CValidationInterface::SyncTransaction, pwalletIn, _1, _2));
     g_signals.NotifyTransactionLock.connect(boost::bind(&CValidationInterface::NotifyTransactionLock, pwalletIn, _1));
@@ -20,7 +20,7 @@ void RegisterValidationInterface(CValidationInterface* pwalletIn) {
     g_signals.BlockFound.connect(boost::bind(&CValidationInterface::ResetRequestCount, pwalletIn, _1));
 }
 
-void UnregisterValidationInterface(CValidationInterface* pwalletIn) {
+void ValidationInterfaceRegistry::UnregisterValidationInterface(CValidationInterface* pwalletIn) {
     g_signals.BlockFound.disconnect(boost::bind(&CValidationInterface::ResetRequestCount, pwalletIn, _1));
     g_signals.ScriptForMining.disconnect(boost::bind(&CValidationInterface::GetScriptForMining, pwalletIn, _1));
     g_signals.BlockChecked.disconnect(boost::bind(&CValidationInterface::BlockChecked, pwalletIn, _1, _2));
@@ -33,7 +33,7 @@ void UnregisterValidationInterface(CValidationInterface* pwalletIn) {
     g_signals.UpdatedBlockTip.disconnect(boost::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn, _1));
 }
 
-void UnregisterAllValidationInterfaces() {
+void ValidationInterfaceRegistry::UnregisterAllValidationInterfaces() {
     g_signals.BlockFound.disconnect_all_slots();
     g_signals.ScriptForMining.disconnect_all_slots();
     g_signals.BlockChecked.disconnect_all_slots();
@@ -46,6 +46,6 @@ void UnregisterAllValidationInterfaces() {
     g_signals.UpdatedBlockTip.disconnect_all_slots();
 }
 
-void SyncWithWallets(const CTransaction &tx, const CBlock *pblock = NULL) {
+void ValidationInterfaceRegistry::SyncWithWallets(const CTransaction &tx, const CBlock *pblock = NULL) {
     g_signals.SyncTransaction(tx, pblock);
 }

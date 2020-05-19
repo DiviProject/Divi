@@ -19,7 +19,9 @@ class CValidationState;
 class uint256;
 
 // These functions dispatch to one or all registered wallets
-
+class ValidationInterfaceRegistry
+{
+public:
 /** Register a wallet to receive updates from core */
 void RegisterValidationInterface(CValidationInterface* pwalletIn);
 /** Unregister a wallet from core */
@@ -28,6 +30,7 @@ void UnregisterValidationInterface(CValidationInterface* pwalletIn);
 void UnregisterAllValidationInterfaces();
 /** Push an updated transaction to all registered wallets */
 void SyncWithWallets(const CTransaction& tx, const CBlock* pblock);
+};
 
 class CValidationInterface {
 protected:
@@ -45,6 +48,7 @@ protected:
     friend void ::RegisterValidationInterface(CValidationInterface*);
     friend void ::UnregisterValidationInterface(CValidationInterface*);
     friend void ::UnregisterAllValidationInterfaces();
+    friend class ValidationInterfaceRegistry;
 };
 
 struct CMainSignals {

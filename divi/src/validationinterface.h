@@ -70,6 +70,4 @@ struct CMainSignals {
     boost::signals2::signal<void (const uint256 &)> BlockFound;
 };
 
-CMainSignals& GetMainSignals();
-
 #endif // BITCOIN_VALIDATIONINTERFACE_H

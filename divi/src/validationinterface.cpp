@@ -7,11 +7,6 @@
 
 static CMainSignals g_signals;
 
-CMainSignals& GetMainSignals()
-{
-    return g_signals;
-}
-
 void RegisterValidationInterface(CValidationInterface* pwalletIn) {
     g_signals.UpdatedBlockTip.connect(boost::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn, _1));
     g_signals.SyncTransaction.connect(boost::bind(&CValidationInterface::SyncTransaction, pwalletIn, _1, _2));

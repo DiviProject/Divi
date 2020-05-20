@@ -74,10 +74,6 @@ protected:
     virtual void BlockChecked(const CBlock&, const CValidationState&) {}
     virtual void GetScriptForMining(boost::shared_ptr<CReserveScript>&) {};
     virtual void ResetRequestCount(const uint256 &hash) {};
-    friend void ::RegisterValidationInterface(CValidationInterface*);
-    friend void ::UnregisterValidationInterface(CValidationInterface*);
-    friend void ::UnregisterAllValidationInterfaces();
-    friend class ValidationInterfaceRegistry;
 public:
     /** (Un)Register a wallet to receive updates from core */
     void RegisterWith(MainNotificationSignals&);

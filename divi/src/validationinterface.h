@@ -74,6 +74,10 @@ protected:
     friend void ::UnregisterValidationInterface(CValidationInterface*);
     friend void ::UnregisterAllValidationInterfaces();
     friend class ValidationInterfaceRegistry;
+public:
+    /** (Un)Register a wallet to receive updates from core */
+    void RegisterWith(CMainSignals&);
+    void UnregisterWith(CMainSignals&);
 };
 
 #endif // BITCOIN_VALIDATIONINTERFACE_H

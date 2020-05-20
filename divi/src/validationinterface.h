@@ -8,6 +8,7 @@
 
 #include <boost/signals2/signal.hpp>
 #include <boost/shared_ptr.hpp>
+#include <unordered_set>
 
 class CBlock;
 struct CBlockLocator;
@@ -47,6 +48,7 @@ class ValidationInterfaceRegistry
 {
 private:
     static CMainSignals g_signals;
+    std::unordered_set<CValidationInterface*> registeredInterfaces;
 public:
     /** Register a wallet to receive updates from core */
     void RegisterValidationInterface(CValidationInterface* pwalletIn);

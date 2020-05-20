@@ -9,20 +9,21 @@ CMainSignals ValidationInterfaceRegistry::g_signals;
 
 void ValidationInterfaceRegistry::RegisterValidationInterface(CValidationInterface* pwalletIn)
 {
+    registeredInterfaces.insert(pwalletIn);
     pwalletIn->RegisterWith(g_signals);
 }
 void ValidationInterfaceRegistry::UnregisterValidationInterface(CValidationInterface* pwalletIn)
 {
+    registeredInterfaces.erase(pwalletIn);
     pwalletIn->UnregisterWith(g_signals);
 }
 
 void ValidationInterfaceRegistry::UnregisterAllValidationInterfaces() {
-    g_signals.BlockChecked.disconnect_all_slots();
-    g_signals.Broadcast.disconnect_all_slots();
-    g_signals.Inventory.disconnect_all_slots();
-    g_signals.SetBestChain.disconnect_all_slots();
-    g_signals.UpdatedTransaction.disconnect_all_slots();
-    g_signals.SyncTransaction.disconnect_all_slots();
+    for(CValidationInterface* interfaceObj: registeredInterfaces)
+    {
+        interfaceObj->UnregisterWith(g_signals);
+    }
+    registeredInterfaces.clear();
 }
 
 void ValidationInterfaceRegistry::SyncWithWallets(const CTransaction &tx, const CBlock *pblock = NULL) {

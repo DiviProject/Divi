@@ -20,7 +20,7 @@ class CValidationState;
 class uint256;
 
 
-struct CMainSignals {
+struct MainNotificationSignals {
     /** Notifies listeners of updated block chain tip */
     boost::signals2::signal<void (const CBlockIndex *)> UpdatedBlockTip;
     /** Notifies listeners of updated transaction data (transaction, and optionally the block it is found in. */
@@ -47,7 +47,7 @@ struct CMainSignals {
 class ValidationInterfaceRegistry
 {
 private:
-    static CMainSignals g_signals;
+    static MainNotificationSignals g_signals;
     std::unordered_set<CValidationInterface*> registeredInterfaces;
 public:
     /** Register a wallet to receive updates from core */
@@ -59,7 +59,7 @@ public:
     /** Push an updated transaction to all registered wallets */
     void SyncWithWallets(const CTransaction& tx, const CBlock* pblock);
 
-    CMainSignals& getSignals() const;
+    MainNotificationSignals& getSignals() const;
 };
 
 class CValidationInterface {
@@ -80,8 +80,8 @@ protected:
     friend class ValidationInterfaceRegistry;
 public:
     /** (Un)Register a wallet to receive updates from core */
-    void RegisterWith(CMainSignals&);
-    void UnregisterWith(CMainSignals&);
+    void RegisterWith(MainNotificationSignals&);
+    void UnregisterWith(MainNotificationSignals&);
 };
 
 #endif // BITCOIN_VALIDATIONINTERFACE_H

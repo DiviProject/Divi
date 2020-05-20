@@ -29,6 +29,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "validationinterface.h"
 
 #include "libzerocoin/Denominations.h"
 
@@ -196,26 +197,7 @@ set<int> setDirtyFileInfo;
 
 // These functions dispatch to one or all registered wallets
 
-namespace
-{
-struct CMainSignals {
-    /** Notifies listeners of updated transaction data (transaction, and optionally the block it is found in. */
-    boost::signals2::signal<void(const CTransaction&, const CBlock*)> SyncTransaction;
-    /** Notifies listeners of an erased transaction (currently disabled, requires transaction replacement). */
-    // XX42    boost::signals2::signal<void(const uint256&)> EraseTransaction;
-    /** Notifies listeners of an updated transaction without new data (for now: a coinbase potentially becoming visible). */
-    boost::signals2::signal<void(const uint256&)> UpdatedTransaction;
-    /** Notifies listeners of a new active block chain. */
-    boost::signals2::signal<void(const CBlockLocator&)> SetBestChain;
-    /** Notifies listeners about an inventory item being seen on the network. */
-    boost::signals2::signal<void(const uint256&)> Inventory;
-    /** Tells listeners to broadcast their data. */
-    boost::signals2::signal<void()> Broadcast;
-    /** Notifies listeners of a block validation result */
-    boost::signals2::signal<void(const CBlock&, const CValidationState&)> BlockChecked;
-} g_signals;
-
-} // anon namespace
+struct CMainSignals g_signals;
 
 void RegisterValidationInterface(CValidationInterface* pwalletIn)
 {

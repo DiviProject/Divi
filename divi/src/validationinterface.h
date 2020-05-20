@@ -24,14 +24,14 @@ class ValidationInterfaceRegistry
 private:
     static CMainSignals g_signals;
 public:
-/** Register a wallet to receive updates from core */
-void RegisterValidationInterface(CValidationInterface* pwalletIn);
-/** Unregister a wallet from core */
-void UnregisterValidationInterface(CValidationInterface* pwalletIn);
-/** Unregister all wallets from core */
-void UnregisterAllValidationInterfaces();
-/** Push an updated transaction to all registered wallets */
-void SyncWithWallets(const CTransaction& tx, const CBlock* pblock);
+    /** Register a wallet to receive updates from core */
+    void RegisterValidationInterface(CValidationInterface* pwalletIn);
+    /** Unregister a wallet from core */
+    void UnregisterValidationInterface(CValidationInterface* pwalletIn);
+    /** Unregister all wallets from core */
+    void UnregisterAllValidationInterfaces();
+    /** Push an updated transaction to all registered wallets */
+    void SyncWithWallets(const CTransaction& tx, const CBlock* pblock);
 };
 
 class CValidationInterface {

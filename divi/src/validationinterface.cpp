@@ -5,7 +5,7 @@
 
 #include "validationinterface.h"
 
-static CMainSignals g_signals;
+CMainSignals ValidationInterfaceRegistry::g_signals;
 
 void ValidationInterfaceRegistry::RegisterValidationInterface(CValidationInterface* pwalletIn) {
     g_signals.UpdatedBlockTip.connect(boost::bind(&CValidationInterface::UpdatedBlockTip, pwalletIn, _1));

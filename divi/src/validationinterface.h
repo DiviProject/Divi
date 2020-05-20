@@ -21,6 +21,8 @@ class uint256;
 // These functions dispatch to one or all registered wallets
 class ValidationInterfaceRegistry
 {
+private:
+    static CMainSignals g_signals;
 public:
 /** Register a wallet to receive updates from core */
 void RegisterValidationInterface(CValidationInterface* pwalletIn);

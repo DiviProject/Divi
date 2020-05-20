@@ -197,7 +197,8 @@ set<int> setDirtyFileInfo;
 
 // These functions dispatch to one or all registered wallets
 
-struct CMainSignals g_signals;
+ValidationInterfaceRegistry registry;
+CMainSignals& g_signals = registry.getSignals();
 
 void RegisterValidationInterface(CValidationInterface* pwalletIn)
 {

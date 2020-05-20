@@ -29,6 +29,11 @@ void ValidationInterfaceRegistry::SyncWithWallets(const CTransaction &tx, const 
     g_signals.SyncTransaction(tx, pblock);
 }
 
+CMainSignals& ValidationInterfaceRegistry::getSignals() const
+{
+    return g_signals;
+}
+
 void CValidationInterface::RegisterWith(CMainSignals& signals){
     signals.SyncTransaction.connect(boost::bind(&CValidationInterface::SyncTransaction, this, _1, _2));
     signals.UpdatedTransaction.connect(boost::bind(&CValidationInterface::UpdatedTransaction, this, _1));

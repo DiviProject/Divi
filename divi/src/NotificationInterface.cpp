@@ -5,20 +5,20 @@
 
 #include "NotificationInterface.h"
 
-MainNotificationSignals ValidationInterfaceRegistry::g_signals;
+MainNotificationSignals NotificationInterfaceRegistry::g_signals;
 
-void ValidationInterfaceRegistry::RegisterValidationInterface(NotificationInterface* pwalletIn)
+void NotificationInterfaceRegistry::RegisterValidationInterface(NotificationInterface* pwalletIn)
 {
     registeredInterfaces.insert(pwalletIn);
     pwalletIn->RegisterWith(g_signals);
 }
-void ValidationInterfaceRegistry::UnregisterValidationInterface(NotificationInterface* pwalletIn)
+void NotificationInterfaceRegistry::UnregisterValidationInterface(NotificationInterface* pwalletIn)
 {
     registeredInterfaces.erase(pwalletIn);
     pwalletIn->UnregisterWith(g_signals);
 }
 
-void ValidationInterfaceRegistry::UnregisterAllValidationInterfaces() {
+void NotificationInterfaceRegistry::UnregisterAllValidationInterfaces() {
     for(NotificationInterface* interfaceObj: registeredInterfaces)
     {
         interfaceObj->UnregisterWith(g_signals);
@@ -26,11 +26,11 @@ void ValidationInterfaceRegistry::UnregisterAllValidationInterfaces() {
     registeredInterfaces.clear();
 }
 
-void ValidationInterfaceRegistry::SyncWithWallets(const CTransaction &tx, const CBlock *pblock = NULL) {
+void NotificationInterfaceRegistry::SyncWithWallets(const CTransaction &tx, const CBlock *pblock = NULL) {
     g_signals.SyncTransaction(tx, pblock);
 }
 
-MainNotificationSignals& ValidationInterfaceRegistry::getSignals() const
+MainNotificationSignals& NotificationInterfaceRegistry::getSignals() const
 {
     return g_signals;
 }

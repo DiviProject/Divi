@@ -197,7 +197,7 @@ set<int> setDirtyFileInfo;
 
 // These functions dispatch to one or all registered wallets
 
-ValidationInterfaceRegistry registry;
+NotificationInterfaceRegistry registry;
 MainNotificationSignals& g_signals = registry.getSignals();
 
 void RegisterValidationInterface(NotificationInterface* pwalletIn)

@@ -44,7 +44,7 @@ struct MainNotificationSignals {
 };
 
 // These functions dispatch to one or all registered wallets
-class ValidationInterfaceRegistry
+class NotificationInterfaceRegistry
 {
 private:
     static MainNotificationSignals g_signals;

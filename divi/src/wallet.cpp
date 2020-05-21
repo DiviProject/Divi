@@ -3096,6 +3096,14 @@ void CWallet::AutoCombineDust()
     }
 }
 
+bool CWallet::IsMasternodeReward(const CTransaction& tx, uint32_t n) const
+{
+    if(!tx.IsCoinStake())
+        return false;
+
+    return (n == tx.vout.size() - 1) && (tx.vout[1].scriptPubKey != tx.vout[n].scriptPubKey);
+}
+
 bool CWallet::MultiSend()
 {
     if (IsInitialBlockDownload() || IsLocked()) {
@@ -3117,7 +3125,7 @@ bool CWallet::MultiSend()
             continue;
 
         COutPoint outpoint(out.tx->GetHash(), out.i);
-        bool sendMSonMNReward = fMultiSendMasternodeReward && outpoint.IsMasternodeReward(out.tx);
+        bool sendMSonMNReward = fMultiSendMasternodeReward && IsMasternodeReward(*out.tx,outpoint.n);
         bool sendMSOnStake = fMultiSendStake && out.tx->IsCoinStake() && !sendMSonMNReward; //output is either mnreward or stake reward, not both
 
         if (!(sendMSOnStake || sendMSonMNReward))

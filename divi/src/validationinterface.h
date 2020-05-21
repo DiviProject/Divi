@@ -15,7 +15,7 @@ struct CBlockLocator;
 class CBlockIndex;
 class CReserveScript;
 class CTransaction;
-class CValidationInterface;
+class NotificationInterface;
 class CValidationState;
 class uint256;
 
@@ -48,12 +48,12 @@ class ValidationInterfaceRegistry
 {
 private:
     static MainNotificationSignals g_signals;
-    std::unordered_set<CValidationInterface*> registeredInterfaces;
+    std::unordered_set<NotificationInterface*> registeredInterfaces;
 public:
     /** Register a wallet to receive updates from core */
-    void RegisterValidationInterface(CValidationInterface* pwalletIn);
+    void RegisterValidationInterface(NotificationInterface* pwalletIn);
     /** Unregister a wallet from core */
-    void UnregisterValidationInterface(CValidationInterface* pwalletIn);
+    void UnregisterValidationInterface(NotificationInterface* pwalletIn);
     /** Unregister all wallets from core */
     void UnregisterAllValidationInterfaces();
     /** Push an updated transaction to all registered wallets */
@@ -62,7 +62,7 @@ public:
     MainNotificationSignals& getSignals() const;
 };
 
-class CValidationInterface {
+class NotificationInterface {
 protected:
     virtual void UpdatedBlockTip(const CBlockIndex *pindex) {}
     virtual void SyncTransaction(const CTransaction &tx, const CBlock *pblock) {}

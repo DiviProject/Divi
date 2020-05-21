@@ -587,7 +587,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     return result;
 }
 
-class submitblock_StateCatcher : public CValidationInterface
+class submitblock_StateCatcher : public NotificationInterface
 {
 public:
     uint256 hash;

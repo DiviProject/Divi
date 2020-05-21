@@ -50,7 +50,7 @@ class CSporkDB;
 class CBloomFilter;
 class CInv;
 class CScriptCheck;
-class CValidationInterface;
+class NotificationInterface;
 class CValidationState;
 
 struct CBlockTemplate;
@@ -169,9 +169,9 @@ extern CBlockIndex* pindexBestHeader;
 static const uint64_t nMinDiskSpace = 52428800;
 
 /** Register a wallet to receive updates from core */
-void RegisterValidationInterface(CValidationInterface* pwalletIn);
+void RegisterValidationInterface(NotificationInterface* pwalletIn);
 /** Unregister a wallet from core */
-void UnregisterValidationInterface(CValidationInterface* pwalletIn);
+void UnregisterValidationInterface(NotificationInterface* pwalletIn);
 /** Unregister all wallets from core */
 void UnregisterAllValidationInterfaces();
 /** Push an updated transaction to all registered wallets */
@@ -187,7 +187,7 @@ void UnregisterNodeSignals(CNodeSignals& nodeSignals);
  * block is made active. Note that it does not, however, guarantee that the
  * specific block passed to it has been checked for validity!
  * 
- * @param[out]  state   This may be set to an Error state if any error occurred processing it, including during validation/connection/etc of otherwise unrelated blocks during reorganisation; or it may be set to an Invalid state if pblock is itself invalid (but this is not guaranteed even when the block is checked). If you want to *possibly* get feedback on whether pblock is valid, you must also install a CValidationInterface - this will have its BlockChecked method called whenever *any* block completes validation.
+ * @param[out]  state   This may be set to an Error state if any error occurred processing it, including during validation/connection/etc of otherwise unrelated blocks during reorganisation; or it may be set to an Invalid state if pblock is itself invalid (but this is not guaranteed even when the block is checked). If you want to *possibly* get feedback on whether pblock is valid, you must also install a NotificationInterface - this will have its BlockChecked method called whenever *any* block completes validation.
  * @param[in]   pfrom   The node which we are receiving the block from; it is added to mapBlockSource and may be penalised if the block is invalid.
  * @param[in]   pblock  The block we want to process.
  * @param[out]  dbp     If pblock is stored to disk (or already there), this will be set to its location.

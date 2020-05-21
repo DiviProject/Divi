@@ -7,19 +7,19 @@
 
 MainNotificationSignals ValidationInterfaceRegistry::g_signals;
 
-void ValidationInterfaceRegistry::RegisterValidationInterface(CValidationInterface* pwalletIn)
+void ValidationInterfaceRegistry::RegisterValidationInterface(NotificationInterface* pwalletIn)
 {
     registeredInterfaces.insert(pwalletIn);
     pwalletIn->RegisterWith(g_signals);
 }
-void ValidationInterfaceRegistry::UnregisterValidationInterface(CValidationInterface* pwalletIn)
+void ValidationInterfaceRegistry::UnregisterValidationInterface(NotificationInterface* pwalletIn)
 {
     registeredInterfaces.erase(pwalletIn);
     pwalletIn->UnregisterWith(g_signals);
 }
 
 void ValidationInterfaceRegistry::UnregisterAllValidationInterfaces() {
-    for(CValidationInterface* interfaceObj: registeredInterfaces)
+    for(NotificationInterface* interfaceObj: registeredInterfaces)
     {
         interfaceObj->UnregisterWith(g_signals);
     }
@@ -35,20 +35,20 @@ MainNotificationSignals& ValidationInterfaceRegistry::getSignals() const
     return g_signals;
 }
 
-void CValidationInterface::RegisterWith(MainNotificationSignals& signals){
-    signals.SyncTransaction.connect(boost::bind(&CValidationInterface::SyncTransaction, this, _1, _2));
-    signals.UpdatedTransaction.connect(boost::bind(&CValidationInterface::UpdatedTransaction, this, _1));
-    signals.SetBestChain.connect(boost::bind(&CValidationInterface::SetBestChain, this, _1));
-    signals.Inventory.connect(boost::bind(&CValidationInterface::Inventory, this, _1));
-    signals.Broadcast.connect(boost::bind(&CValidationInterface::ResendWalletTransactions, this));
-    signals.BlockChecked.connect(boost::bind(&CValidationInterface::BlockChecked, this, _1, _2));
+void NotificationInterface::RegisterWith(MainNotificationSignals& signals){
+    signals.SyncTransaction.connect(boost::bind(&NotificationInterface::SyncTransaction, this, _1, _2));
+    signals.UpdatedTransaction.connect(boost::bind(&NotificationInterface::UpdatedTransaction, this, _1));
+    signals.SetBestChain.connect(boost::bind(&NotificationInterface::SetBestChain, this, _1));
+    signals.Inventory.connect(boost::bind(&NotificationInterface::Inventory, this, _1));
+    signals.Broadcast.connect(boost::bind(&NotificationInterface::ResendWalletTransactions, this));
+    signals.BlockChecked.connect(boost::bind(&NotificationInterface::BlockChecked, this, _1, _2));
 }
 
-void CValidationInterface::UnregisterWith(MainNotificationSignals& signals) {
-    signals.BlockChecked.disconnect(boost::bind(&CValidationInterface::BlockChecked, this, _1, _2));
-    signals.Broadcast.disconnect(boost::bind(&CValidationInterface::ResendWalletTransactions, this));
-    signals.Inventory.disconnect(boost::bind(&CValidationInterface::Inventory, this, _1));
-    signals.SetBestChain.disconnect(boost::bind(&CValidationInterface::SetBestChain, this, _1));
-    signals.UpdatedTransaction.disconnect(boost::bind(&CValidationInterface::UpdatedTransaction, this, _1));
-    signals.SyncTransaction.disconnect(boost::bind(&CValidationInterface::SyncTransaction, this, _1, _2));
+void NotificationInterface::UnregisterWith(MainNotificationSignals& signals) {
+    signals.BlockChecked.disconnect(boost::bind(&NotificationInterface::BlockChecked, this, _1, _2));
+    signals.Broadcast.disconnect(boost::bind(&NotificationInterface::ResendWalletTransactions, this));
+    signals.Inventory.disconnect(boost::bind(&NotificationInterface::Inventory, this, _1));
+    signals.SetBestChain.disconnect(boost::bind(&NotificationInterface::SetBestChain, this, _1));
+    signals.UpdatedTransaction.disconnect(boost::bind(&NotificationInterface::UpdatedTransaction, this, _1));
+    signals.SyncTransaction.disconnect(boost::bind(&NotificationInterface::SyncTransaction, this, _1, _2));
 }

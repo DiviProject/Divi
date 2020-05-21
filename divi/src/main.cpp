@@ -200,12 +200,12 @@ set<int> setDirtyFileInfo;
 ValidationInterfaceRegistry registry;
 MainNotificationSignals& g_signals = registry.getSignals();
 
-void RegisterValidationInterface(CValidationInterface* pwalletIn)
+void RegisterValidationInterface(NotificationInterface* pwalletIn)
 {
     registry.RegisterValidationInterface(pwalletIn);
 }
 
-void UnregisterValidationInterface(CValidationInterface* pwalletIn)
+void UnregisterValidationInterface(NotificationInterface* pwalletIn)
 {
     registry.UnregisterValidationInterface(pwalletIn);
 }

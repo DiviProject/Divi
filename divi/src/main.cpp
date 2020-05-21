@@ -29,7 +29,7 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
-#include "validationinterface.h"
+#include "NotificationInterface.h"
 
 #include "libzerocoin/Denominations.h"
 

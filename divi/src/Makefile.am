@@ -202,7 +202,7 @@ BITCOIN_CORE_H = \
   utilstrencodings.h \
   utilmoneystr.h \
   utiltime.h \
-  validationinterface.h \
+  NotificationInterface.h \
   version.h \
   wallet.h \
   walletBackupCreator.h \
@@ -268,7 +268,7 @@ libbitcoin_server_a_SOURCES = \
   torcontrol.cpp \
   txdb.cpp \
   txmempool.cpp \
-  validationinterface.cpp \
+  NotificationInterface.cpp \
   walletBackupCreator.cpp \
   walletBackupFeatureContainer.cpp \
   WalletIntegrityVerifier.cpp \

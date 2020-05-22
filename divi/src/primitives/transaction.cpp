@@ -138,16 +138,6 @@ CAmount CTransaction::GetValueOut() const
     return nValueOut;
 }
 
-bool CTransaction::UsesUTXO(const COutPoint out)
-{
-    for (const CTxIn in : vin) {
-        if (in.prevout == out)
-            return true;
-    }
-
-    return false;
-}
-
 std::list<COutPoint> CTransaction::GetOutPoints() const
 {
     std::list<COutPoint> listOutPoints;

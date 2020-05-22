@@ -232,7 +232,6 @@ public:
     // Compute modified tx size for priority calculation (optionally given tx size)
     unsigned int CalculateModifiedSize(unsigned int nTxSize=0) const;
     
-    bool UsesUTXO(const COutPoint out);
     std::list<COutPoint> GetOutPoints() const;
 
     bool IsCoinBase() const

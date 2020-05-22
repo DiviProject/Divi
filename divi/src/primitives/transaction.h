@@ -232,8 +232,6 @@ public:
     // Compute modified tx size for priority calculation (optionally given tx size)
     unsigned int CalculateModifiedSize(unsigned int nTxSize=0) const;
     
-    std::list<COutPoint> GetOutPoints() const;
-
     bool IsCoinBase() const
     {
         return (vin.size() == 1 && vin[0].prevout.IsNull());

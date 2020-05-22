@@ -138,15 +138,6 @@ CAmount CTransaction::GetValueOut() const
     return nValueOut;
 }
 
-std::list<COutPoint> CTransaction::GetOutPoints() const
-{
-    std::list<COutPoint> listOutPoints;
-    uint256 txHash = GetHash();
-    for (unsigned int i = 0; i < vout.size(); i++)
-        listOutPoints.emplace_back(COutPoint(txHash, i));
-    return listOutPoints;
-}
-
 double CTransaction::ComputePriority(double dPriorityInputs, unsigned int nTxSize) const
 {
     nTxSize = CalculateModifiedSize(nTxSize);

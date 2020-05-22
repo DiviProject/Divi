@@ -183,6 +183,7 @@ private:
 
     void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
 
+    bool walletStakingOnly;
 public:
     bool MintableCoins();
     bool SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount) const;
@@ -198,7 +199,9 @@ public:
     mutable CCriticalSection cs_wallet;
 
     bool fFileBacked;
-    bool fWalletUnlockAnonymizeOnly;
+    bool IsUnlockedForStakingOnly() const;
+    bool IsFullyUnlocked() const;
+    void LockFully();
     std::string strWalletFile;
     bool fBackupMints;
 
@@ -258,7 +261,7 @@ public:
         nNextResend = 0;
         nLastResend = 0;
         nTimeFirstKey = 0;
-        fWalletUnlockAnonymizeOnly = false;
+        walletStakingOnly = false;
         fBackupMints = false;
 
         // Stake Settings
@@ -390,7 +393,7 @@ public:
     //! Adds a MultiSig address to the store, without saving it to disk (used by LoadWallet)
     bool LoadMultiSig(const CScript& dest);
 
-    bool Unlock(const SecureString& strWalletPassphrase, bool anonimizeOnly = false);
+    bool Unlock(const SecureString& strWalletPassphrase, bool stakingOnly = false);
     bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
     bool EncryptWallet(const SecureString& strWalletPassphrase);
 

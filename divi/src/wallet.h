@@ -199,6 +199,8 @@ public:
 
     bool fFileBacked;
     bool fWalletUnlockAnonymizeOnly;
+    bool IsUnlockedForStakingOnly() const;
+    bool IsFullyUnlocked() const;
     std::string strWalletFile;
     bool fBackupMints;
 

@@ -42,7 +42,7 @@ std::string HelpRequiringPassphrase()
 
 void EnsureWalletIsUnlocked()
 {
-    if (pwalletMain->IsLocked() || pwalletMain->fWalletUnlockAnonymizeOnly)
+    if (!pwalletMain->IsFullyUnlocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 }
 
@@ -1747,13 +1747,13 @@ Value walletpassphrase(const Array& params, bool fHelp)
 {
     if (pwalletMain->IsCrypted() && (fHelp || params.size() < 2 || params.size() > 3))
         throw runtime_error(
-                "walletpassphrase \"passphrase\" timeout ( anonymizeonly )\n"
+                "walletpassphrase \"passphrase\" timeout ( stakingOnly )\n"
                 "\nStores the wallet decryption key in memory for 'timeout' seconds.\n"
                 "This is needed prior to performing transactions related to private keys such as sending DIVs\n"
                 "\nArguments:\n"
                 "1. \"passphrase\"     (string, required) The wallet passphrase\n"
                 "2. timeout            (numeric, required) The time to keep the decryption key in seconds.\n"
-                "3. anonymizeonly      (boolean, optional, default=flase) If is true sending functions are disabled."
+                "3. stakingOnly      (boolean, optional, default=flase) If is true sending functions are disabled."
                 "\nNote:\n"
                 "Issuing the walletpassphrase command while the wallet is already unlocked will set a new unlock\n"
                 "time that overrides the old one. A timeout of \"0\" unlocks until the wallet is closed.\n"
@@ -1776,19 +1776,17 @@ Value walletpassphrase(const Array& params, bool fHelp)
     // Alternately, find a way to make params[0] mlock()'d to begin with.
     strWalletPass = params[0].get_str().c_str();
 
-    bool anonymizeOnly = false;
+    bool stakingOnly = false;
     if (params.size() == 3)
-        anonymizeOnly = params[2].get_bool();
+        stakingOnly = params[2].get_bool();
 
-    if(!pwalletMain->IsLocked() && pwalletMain->fWalletUnlockAnonymizeOnly != anonymizeOnly && !anonymizeOnly)
+
+    if(pwalletMain->IsUnlockedForStakingOnly() && stakingOnly)
     {
-        throw JSONRPCError(RPC_WALLET_NEEDS_RELOCK, "Error: Wallet needs to be locked & re-unlocked to spend.");
+        throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked.");
     }
 
-    if (!pwalletMain->IsLocked() && pwalletMain->fWalletUnlockAnonymizeOnly && anonymizeOnly)
-        throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked.");
-
-    if (!pwalletMain->Unlock(strWalletPass, anonymizeOnly))
+    if (!pwalletMain->Unlock(strWalletPass, stakingOnly))
         throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
 
     pwalletMain->TopUpKeyPool();
@@ -1868,9 +1866,7 @@ Value walletlock(const Array& params, bool fHelp)
     RPCDiscardRunLater("lockwallet");
 
     {
-        LOCK(cs_nWalletUnlockTime);
-        pwalletMain->Lock();
-        nWalletUnlockTime = 0;
+        LockWallet(pwalletMain);
     }
 
     return Value::null;

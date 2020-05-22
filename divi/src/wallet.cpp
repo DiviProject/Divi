@@ -424,7 +424,7 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool anonymizeOnly
 {
     SecureString strWalletPassphraseFinal;
 
-    if (!IsLocked()) {
+    if (IsFullyUnlocked()) {
         fWalletUnlockAnonymizeOnly = anonymizeOnly;
         return true;
     }
@@ -3464,4 +3464,13 @@ bool CWallet::IsHDEnabled()
 {
     CHDChain hdChainCurrent;
     return GetHDChain(hdChainCurrent);
+}
+
+bool CWallet::IsUnlockedForStakingOnly() const
+{
+    return !IsLocked() && fWalletUnlockAnonymizeOnly;
+}
+bool CWallet::IsFullyUnlocked() const
+{
+    return !IsLocked() && !fWalletUnlockAnonymizeOnly;
 }

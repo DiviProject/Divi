@@ -1739,8 +1739,7 @@ static void LockWallet(CWallet* pWallet)
 {
     LOCK(cs_nWalletUnlockTime);
     nWalletUnlockTime = 0;
-    pWallet->fWalletUnlockAnonymizeOnly = false;
-    pWallet->Lock();
+    pWallet->LockFully();
 }
 
 Value walletpassphrase(const Array& params, bool fHelp)
@@ -2086,8 +2085,8 @@ static std::string DescribeEncryptionStatus(CWallet *wallet)
 {
     if(wallet->IsCrypted())
     {
-        if(wallet->fWalletUnlockAnonymizeOnly) {
-            return "locked-anonymization";
+        if(wallet->IsUnlockedForStakingOnly()) {
+            return "unlocked-for-staking";
         }
         else if(wallet->IsLocked()) {
             return "locked";

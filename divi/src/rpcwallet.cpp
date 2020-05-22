@@ -1783,7 +1783,7 @@ Value walletpassphrase(const Array& params, bool fHelp)
 
     if(pwalletMain->IsUnlockedForStakingOnly() && stakingOnly)
     {
-        throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked.");
+        throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked for staking.");
     }
 
     if (!pwalletMain->Unlock(strWalletPass, stakingOnly))

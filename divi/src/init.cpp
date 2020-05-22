@@ -40,6 +40,8 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "NotificationInterface.h"
+#include "FeeAndPriorityCalculator.h"
+
 #ifdef ENABLE_WALLET
 #include "db.h"
 #include "wallet.h"
@@ -857,7 +859,7 @@ bool SetTransactionRequirements()
     if (mapArgs.count("-minrelaytxfee")) {
         CAmount n = 0;
         if (ParseMoney(mapArgs["-minrelaytxfee"], n) && n > 0)
-            ::minRelayTxFee = CFeeRate(n);
+            const_cast<CFeeRate&>(FeeAndPriorityCalculator::instance().getFeeRateQuote()) = CFeeRate(n);
         else
             return InitError(strprintf(_("Invalid amount for -minrelaytxfee=<amount>: '%s'"), mapArgs["-minrelaytxfee"]));
     }

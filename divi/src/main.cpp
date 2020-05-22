@@ -30,6 +30,7 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "NotificationInterface.h"
+#include "FeeAndPriorityCalculator.h"
 
 #include "libzerocoin/Denominations.h"
 
@@ -90,7 +91,7 @@ CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
  * so it's still 10 times lower comparing to bitcoin.
  */
-CFeeRate minRelayTxFee = CFeeRate(10000);
+CFeeRate minRelayTxFee = FeeAndPriorityCalculator::instance().getFeeRateQuote();
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 
 CTxMemPool mempool(::minRelayTxFee);
@@ -647,19 +648,6 @@ unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans)
     return nEvicted;
 }
 
-bool IsDust(CTxOut txout)
-{
-    // "Dust" is defined in terms of CTransaction::minRelayTxFee, which has units duffs-per-kilobyte.
-    // If you'd pay more than 1/3 in fees to spend something, then we consider it dust.
-    // A typical txout is 34 bytes big, and will need a CTxIn of at least 148 bytes to spend
-    // i.e. total is 148 + 32 = 182 bytes. Default -minrelaytxfee is 10000 duffs per kB
-    // and that means that fee per txout is 182 * 10000 / 1000 = 1820 duffs.
-    // So dust is a txout less than 1820 *3 = 5460 duffs
-    // with default -minrelaytxfee = minRelayTxFee = 10000 duffs per kB.
-    size_t nSize = txout.GetSerializeSize(SER_DISK,0)+148u;
-    return (txout.nValue < 3*::minRelayTxFee.GetFee(nSize));
-}
-
 bool IsStandardTx(const CTransaction& tx, string& reason)
 {
     AssertLockHeld(cs_main);
@@ -732,7 +720,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
         else if ((whichType == TX_MULTISIG) && (!fIsBareMultisigStd)) {
             reason = "bare-multisig";
             return false;
-        } else if (IsDust(txout)) {
+        } else if (FeeAndPriorityCalculator::instance().IsDust(txout)) {
             reason = "dust";
             return false;
         }

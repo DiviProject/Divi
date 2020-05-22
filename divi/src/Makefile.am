@@ -136,6 +136,7 @@ BITCOIN_CORE_H = \
   hash.h \
   hdchain.h \
   init.h \
+  FeeAndPriorityCalculator.h \
   i_filesystem.h \
   i_walletBackupCreator.h \
   i_databaseWrapper.h \
@@ -243,6 +244,7 @@ libbitcoin_server_a_SOURCES = \
   checkpoints.cpp \
   FilteredBoostFileSystem.cpp\
   init.cpp \
+  FeeAndPriorityCalculator.cpp \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
   main.cpp \
@@ -383,6 +385,7 @@ libbitcoin_common_a_SOURCES = \
   bip39.cpp \
   chainparams.cpp \
   coins.cpp \
+  FeeAndPriorityCalculator.cpp \
   compressor.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \

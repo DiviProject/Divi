@@ -9,6 +9,8 @@
 
 #include <assert.h>
 
+#include "FeeAndPriorityCalculator.h"
+
 /**
  * calculate number of bytes for the bitmask, and its number of non-zero bytes
  * each bit in the bitmask represents the availability of one output, but the
@@ -257,7 +259,7 @@ double CCoinsViewCache::GetPriority(const CTransaction& tx, int nHeight) const
             dResult += coins->vout[txin.prevout.n].nValue * (nHeight - coins->nHeight);
         }
     }
-    return tx.ComputePriority(dResult);
+    return FeeAndPriorityCalculator::instance().ComputePriority(tx,dResult);
 }
 
 CCoinsModifier::CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_) : cache(cache_), it(it_)

@@ -29,6 +29,10 @@
 #include <boost/thread.hpp>
 #include <boost/filesystem/operations.hpp>
 
+#include "FeeAndPriorityCalculator.h"
+
+const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator::instance();
+
 using namespace std;
 
 /**
@@ -1857,7 +1861,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 if (coinControl && !coinControl->fSplitBlock) {
                     BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
                         CTxOut txout(s.second, s.first);
-                        if (IsDust(txout)) {
+                        if (priorityFeeCalculator.IsDust(txout)) {
                             strFailReason = _("Transaction amount too small");
                             return false;
                         }
@@ -1949,7 +1953,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
 
                     // Never create dust outputs; if we would, just
                     // add the dust to the fee.
-                    if (IsDust(newTxOut)) {
+                    if (priorityFeeCalculator.IsDust(newTxOut)) {
                         nFeeRet += nChange;
                         nChange = 0;
                         reservekey.ReturnKey();
@@ -1982,7 +1986,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     strFailReason = _("Transaction too large");
                     return false;
                 }
-                dPriority = wtxNew.ComputePriority(dPriority, nBytes);
+                dPriority = priorityFeeCalculator.ComputePriority(wtxNew,dPriority, nBytes);
 
                 // Can we complete this as a free transaction?
                 if (fSendFreeTransactions && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE) {

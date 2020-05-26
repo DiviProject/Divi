@@ -375,10 +375,12 @@ public:
     {
         networkID = CBaseChainParams::TESTNET;
         strNetworkID = "test";
+
         pchMessageStart[0] = 0xdf;
         pchMessageStart[1] = 0xa0;
         pchMessageStart[2] = 0x8d;
-        pchMessageStart[3] = 0x8b;
+        pchMessageStart[3] = 0x78;
+        
         vAlertPubKey = ParseHex("04b6f1de3a2f94bfc70917cd7e14a948e78c1638b30524370ac40d3a0fa298e10bbaf7f5c564279c3fddf3f9f785cf3ac4e2031a5e6451f455e5aa60d1e536b379");
         nDefaultPort = 51476;
         nEnforceBlockUpgradeMajority = 51;
@@ -407,10 +409,7 @@ public:
         genesis.nTime = 1537971708;
         genesis.nNonce = 749845;
         
-        pchMessageStart[0] = 0xdf;
-        pchMessageStart[1] = 0xa0;
-        pchMessageStart[2] = 0x8d;
-        pchMessageStart[3] = 0x78;
+
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51474;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12

@@ -591,15 +591,14 @@ bool CMasternodeBroadcastFactory::checkNetworkPort(
     std::string& strErrorRet)
 {
     CService service = CService(strService);
-    int mainnetDefaultPort = Params(CBaseChainParams::MAIN).GetDefaultPort();
-    if (Params().NetworkID() == CBaseChainParams::MAIN) {
-        if (service.GetPort() != mainnetDefaultPort) {
-            strErrorRet = strprintf("Invalid port %u for masternode %s, only %d is supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort);
-            LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
-            return false;
-        }
-    } else if (service.GetPort() == mainnetDefaultPort) {
-        strErrorRet = strprintf("Invalid port %u for masternode %s, %d is the only supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort);
+    int mainnetDefaultPort = Params().GetDefaultPort();
+    if (service.GetPort() != mainnetDefaultPort) {
+        strErrorRet = strprintf(
+            "Invalid port %u for masternode %s, only %d is supported on %s network", 
+            service.GetPort(), 
+            strService, 
+            mainnetDefaultPort, 
+            Params().NetworkIDString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }

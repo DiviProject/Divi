@@ -395,7 +395,6 @@ public:
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
         nMaturity = 1;
         nMasternodeCountDrift = 20;
-        nModifierUpdateBlock = 615800;
         nMaxMoneyOut = 2535000000 * COIN;
 
         /** Height or Time Based Activations **/
@@ -406,12 +405,13 @@ public:
         nTreasuryPaymentsStartBlock = 102;
         nTreasuryPaymentsCycle = 101;
 
-        nExtCoinType = 1;
+        nModifierUpdateBlock = 615800;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1537971708;
         genesis.nNonce = 749845;
 
+        nExtCoinType = 1;
         
 
         hashGenesisBlock = genesis.GetHash();

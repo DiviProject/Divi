@@ -380,6 +380,7 @@ public:
         pchMessageStart[1] = 0xa0;
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x78;
+        premineAmt = 617222416 * COIN;
         
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51474;
@@ -393,7 +394,6 @@ public:
         nMasternodeCountDrift = 20;
         nModifierUpdateBlock = 615800;
         nMaxMoneyOut = 2535000000 * COIN;
-        premineAmt = 617222416 * COIN;
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 100;

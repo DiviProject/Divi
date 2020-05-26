@@ -392,7 +392,7 @@ public:
         nMaturity = 1;
         nMasternodeCountDrift = 20;
         nModifierUpdateBlock = 615800;
-        nMaxMoneyOut = 2534320700 * COIN;
+        nMaxMoneyOut = 2535000000 * COIN;
         premineAmt = 617222416 * COIN;
 
         /** Height or Time Based Activations **/
@@ -413,7 +413,6 @@ public:
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 1000;
         nMaxReorganizationDepth = 100;
-        nMaxMoneyOut = 2535000000 * COIN;
 
         
 

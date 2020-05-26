@@ -8,8 +8,6 @@ class CTransaction;
 class FeeAndPriorityCalculator
 {
 private:
-    static CFeeRate minRelayTxFee_;
-
     FeeAndPriorityCalculator();
 public:
     static const FeeAndPriorityCalculator& instance()
@@ -17,7 +15,6 @@ public:
         static FeeAndPriorityCalculator uniqueInstance;
         return uniqueInstance;
     }
-    const CFeeRate& getFeeRateQuote() const;
     bool IsDust(const CTxOut& txout) const;
     double ComputePriority(const CTransaction& tx, double dPriorityInputs, unsigned int nTxSize = 0) const;
     unsigned int CalculateModifiedSize(const CTransaction& tx, unsigned int nTxSize = 0) const;

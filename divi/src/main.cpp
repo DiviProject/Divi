@@ -91,7 +91,6 @@ CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
  * so it's still 10 times lower comparing to bitcoin.
  */
-CFeeRate minRelayTxFee = FeeAndPriorityCalculator::instance().getFeeRateQuote();
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 
 CTxMemPool mempool(::minRelayTxFee);

@@ -1,15 +1,10 @@
 #include <FeeAndPriorityCalculator.h>
 #include "primitives/transaction.h"
 
-CFeeRate FeeAndPriorityCalculator::minRelayTxFee_ = CFeeRate(10000);
+CFeeRate minRelayTxFee = CFeeRate(10000);
 
 FeeAndPriorityCalculator::FeeAndPriorityCalculator()
 {
-}
-
-const CFeeRate& FeeAndPriorityCalculator::getFeeRateQuote() const
-{
-    return minRelayTxFee_;
 }
 
 bool FeeAndPriorityCalculator::IsDust(const CTxOut& txout) const
@@ -22,7 +17,7 @@ bool FeeAndPriorityCalculator::IsDust(const CTxOut& txout) const
     // So dust is a txout less than 1820 *3 = 5460 duffs
     // with default -minrelaytxfee = minRelayTxFee = 10000 duffs per kB.
     size_t nSize = txout.GetSerializeSize(SER_DISK,0)+148u;
-    return (txout.nValue < 3*minRelayTxFee_.GetFee(nSize));
+    return (txout.nValue < 3*minRelayTxFee.GetFee(nSize));
 }
 
 double FeeAndPriorityCalculator::ComputePriority(const CTransaction& tx, double dPriorityInputs, unsigned int nTxSize) const

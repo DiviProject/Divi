@@ -859,7 +859,7 @@ bool SetTransactionRequirements()
     if (mapArgs.count("-minrelaytxfee")) {
         CAmount n = 0;
         if (ParseMoney(mapArgs["-minrelaytxfee"], n) && n > 0)
-            const_cast<CFeeRate&>(FeeAndPriorityCalculator::instance().getFeeRateQuote()) = CFeeRate(n);
+            ::minRelayTxFee = CFeeRate(n);
         else
             return InitError(strprintf(_("Invalid amount for -minrelaytxfee=<amount>: '%s'"), mapArgs["-minrelaytxfee"]));
     }

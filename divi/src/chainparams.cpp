@@ -389,7 +389,7 @@ public:
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // DIVI: 1 day
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
-        nMaturity = 15;
+        nMaturity = 1;
         nMasternodeCountDrift = 4;
         nModifierUpdateBlock = 99999999;
         nMaxMoneyOut = 2534320700 * COIN;
@@ -413,7 +413,6 @@ public:
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 1000;
         nMaxReorganizationDepth = 100;
-        nMaturity = 1; //byrdset from 100
         nMasternodeCountDrift = 20;
         nMaxMoneyOut = 2535000000 * COIN;
 

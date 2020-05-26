@@ -391,7 +391,7 @@ public:
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
         nMaturity = 1;
         nMasternodeCountDrift = 20;
-        nModifierUpdateBlock = 99999999;
+        nModifierUpdateBlock = 615800;
         nMaxMoneyOut = 2534320700 * COIN;
         premineAmt = 617222416 * COIN;
 
@@ -415,7 +415,7 @@ public:
         nMaxReorganizationDepth = 100;
         nMaxMoneyOut = 2535000000 * COIN;
 
-        nModifierUpdateBlock = 615800;
+        
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));

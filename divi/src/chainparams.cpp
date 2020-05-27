@@ -436,6 +436,8 @@ public:
         fRequireStandard = false;
         fMineBlocksOnDemand = false;
         fTestnetToBeDeprecatedFieldRPC = true;
+        fHeadersFirstSyncingActive = false;
+        fSkipProofOfWorkCheck = false;
 
         nPoolMaxTransactions = 2;
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes

@@ -300,12 +300,11 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::st
         int nCountNeeded;
         vRecv >> nCountNeeded;
 
-        if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            if (netfulfilledman.HasFulfilledRequest(pfrom->addr, "mnget")) {
-                LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
-                Misbehaving(pfrom->GetId(), 20);
-                return;
-            }
+        if (netfulfilledman.HasFulfilledRequest(pfrom->addr, "mnget")) 
+        {
+            LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
+            Misbehaving(pfrom->GetId(), 20);
+            return;
         }
 
         netfulfilledman.AddFulfilledRequest(pfrom->addr, "mnget");

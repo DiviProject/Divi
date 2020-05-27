@@ -18,7 +18,7 @@ WalletBackupCreator::WalletBackupCreator (
     , walletFilename_(walletFilename)
     , backupSubfolderDirectory_(backupSubfolderDirectory)
 {
-    nWalletBackups = std::max(0, std::min(10, nWalletBackups));
+    nWalletBackups = std::max(0, nWalletBackups);
 }
 
 bool Error (std::string msg) 

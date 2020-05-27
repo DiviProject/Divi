@@ -228,10 +228,10 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
-        fSkipProofOfWorkCheck = false;
         fTestnetToBeDeprecatedFieldRPC = false;
         fHeadersFirstSyncingActive = false;
-
+        fSkipProofOfWorkCheck = false;
+        
         nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
         strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";

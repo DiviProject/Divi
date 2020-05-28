@@ -39,7 +39,7 @@ bool IsValidLotteryBlockHeight(int nBlockHeight)
             ((nBlockHeight % Params().GetLotteryBlockCycle()) == 0);
 }
 
-static bool IsValidTreasuryBlockHeight(int nBlockHeight)
+bool IsValidTreasuryBlockHeight(int nBlockHeight)
 {
     return nBlockHeight >= Params().GetTreasuryPaymentsStartBlock() &&
             ((nBlockHeight % Params().GetTreasuryPaymentsCycle()) == 0);

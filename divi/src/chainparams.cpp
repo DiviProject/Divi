@@ -225,7 +225,6 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
-        fTestnetToBeDeprecatedFieldRPC = false;
         fHeadersFirstSyncingActive = false;
         fSkipProofOfWorkCheck = false;
         
@@ -343,7 +342,6 @@ public:
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
         fSkipProofOfWorkCheck = false;
-        fTestnetToBeDeprecatedFieldRPC = false;
         fHeadersFirstSyncingActive = false;
 
         nPoolMaxTransactions = 3;
@@ -429,7 +427,6 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;
         fMineBlocksOnDemand = false;
-        fTestnetToBeDeprecatedFieldRPC = true;
         fHeadersFirstSyncingActive = false;
         fSkipProofOfWorkCheck = false;
 
@@ -495,7 +492,6 @@ public:
         fDefaultConsistencyChecks = true;
         fRequireStandard = false;
         fMineBlocksOnDemand = true;
-        fTestnetToBeDeprecatedFieldRPC = false;
     }
     const CCheckpointData& Checkpoints() const
     {

@@ -14,7 +14,7 @@ int getMaxBlockConflictHeight()
     int blockTreasuryStart = Params().GetTreasuryPaymentsStartBlock();
     int treasuryCycleLength = Params().GetTreasuryPaymentsCycle();
     
-    return (lotteryCycleLength+blockLotteryStart)*(treasuryCycleLength+blockTreasuryStart);
+    return 10*(lotteryCycleLength)*(treasuryCycleLength) + blockLotteryStart + blockTreasuryStart;
 }
 void CheckForBlockTypeConflicts()
 {

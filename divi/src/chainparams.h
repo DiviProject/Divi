@@ -104,7 +104,6 @@ public:
     int GetTreasuryPaymentsCycle() const { return nTreasuryPaymentsCycle; }
 
     /** Height or Time Based Activations **/
-    int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
 
     int ExtCoinType() const { return nExtCoinType; }
@@ -131,7 +130,6 @@ protected:
     int nLastPOWBlock;
     int nMasternodeCountDrift;
     int nMaturity;
-    int nModifierUpdateBlock;
     CAmount nMaxMoneyOut;
     int nMinerThreads;
     std::vector<CDNSSeedData> vSeeds;

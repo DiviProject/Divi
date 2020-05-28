@@ -172,9 +172,6 @@ public:
         nTreasuryPaymentsStartBlock = 101;
         nTreasuryPaymentsCycle = 60 * 24 * 7 + 1;
 
-        nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
-
-
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
         * be spent as it did not originally exist in the database.
@@ -288,7 +285,6 @@ public:
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 56700;
-        nModifierUpdateBlock = 615800;
 
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -404,8 +400,6 @@ public:
         nLotteryBlockCycle = 100; // one week
         nTreasuryPaymentsStartBlock = 102;
         nTreasuryPaymentsCycle = 101;
-
-        nModifierUpdateBlock = 615800;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1537971708;

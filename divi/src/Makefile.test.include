@@ -65,6 +65,7 @@ BITCOIN_TESTS =\
   test/sighash_tests.cpp \
   test/sigopcount_tests.cpp \
   test/skiplist_tests.cpp \
+  test/SuperblockHelper_tests.cpp \
   test/test_divi.cpp \
   test/timedata_tests.cpp \
   test/torcontrol_tests.cpp \

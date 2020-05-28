@@ -228,10 +228,8 @@ public:
         fHeadersFirstSyncingActive = false;
         fSkipProofOfWorkCheck = false;
         
-        nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
         strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
-        strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 
     }
@@ -344,10 +342,8 @@ public:
         fSkipProofOfWorkCheck = false;
         fHeadersFirstSyncingActive = false;
 
-        nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60 * 60; // fulfilled requests expire in 1 hour
         strSporkKey = "04B433E6598390C992F4F022F20D3B4CBBE691652EE7C48243B81701CBDB7CC7D7BF0EE09E154E6FCBF2043D65AF4E9E97B89B5DBAF830D83B9B7F469A6C45A717";
-        strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 
     }
@@ -430,10 +426,8 @@ public:
         fHeadersFirstSyncingActive = false;
         fSkipProofOfWorkCheck = false;
 
-        nPoolMaxTransactions = 2;
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
         strSporkKey = "034ffa41e5cffdd009f3b34a3e1482ec82b514bb218b7648948b5858cc5c035adb";
-        strObfuscationPoolDummyAddress = "y57cqfGRkekRyDRNeJiLtYVEbvhXrNbmox";
         nStartMasternodePayments = 1533945600; //Fri, 09 Jan 2015 21:05:58 GMT
         // here because we only have a 8 block finalization window on testnet
     }

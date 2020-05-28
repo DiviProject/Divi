@@ -91,9 +91,7 @@ public:
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     const std::vector<CAddress>& FixedSeeds() const { return vFixedSeeds; }
     virtual const CCheckpointData& Checkpoints() const = 0;
-    int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     std::string SporkKey() const { return strSporkKey; }
-    std::string ObfuscationPoolDummyAddress() const { return strObfuscationPoolDummyAddress; }
     int64_t StartMasternodePayments() const { return nStartMasternodePayments; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
     int GetLotteryBlockStartBlock() const { return nLotteryBlockStartBlock; }
@@ -144,9 +142,7 @@ protected:
     bool fMineBlocksOnDemand;
     bool fSkipProofOfWorkCheck;
     bool fHeadersFirstSyncingActive;
-    int nPoolMaxTransactions;
     std::string strSporkKey;
-    std::string strObfuscationPoolDummyAddress;
     int64_t nStartMasternodePayments;
 
     int nExtCoinType;

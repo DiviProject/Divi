@@ -150,6 +150,7 @@ BITCOIN_CORE_H = \
   main.h \
   masternode.h \
   masternode-payments.h \
+  SuperblockHelpers.h \
   masternode-budget.h \
   masternode-sync.h \
   masternodeman.h \
@@ -307,6 +308,7 @@ libbitcoin_wallet_a_SOURCES = \
   masternode.cpp \
   masternode-budget.cpp \
   masternode-payments.cpp \
+  SuperblockHelpers.cpp \
   masternode-sync.cpp \
   masternodeconfig.cpp \
   masternodeman.cpp \

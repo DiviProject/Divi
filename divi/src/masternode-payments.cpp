@@ -20,6 +20,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include <SuperblockHelpers.h>
+
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
 
@@ -32,18 +34,6 @@ const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
 
 const std::string TREASURY_PAYMENT_ADDRESS_TESTNET("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
 const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
-
-bool IsValidLotteryBlockHeight(int nBlockHeight)
-{
-    return nBlockHeight >= Params().GetLotteryBlockStartBlock() &&
-            ((nBlockHeight % Params().GetLotteryBlockCycle()) == 0);
-}
-
-bool IsValidTreasuryBlockHeight(int nBlockHeight)
-{
-    return nBlockHeight >= Params().GetTreasuryPaymentsStartBlock() &&
-            ((nBlockHeight % Params().GetTreasuryPaymentsCycle()) == 0);
-}
 
 static int64_t GetTreasuryReward(const CBlockRewards &rewards)
 {

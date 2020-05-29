@@ -14,6 +14,7 @@
 
 #include "amount.h"
 #include "blockmap.h"
+#include "BlockRewards.h"
 #include "chain.h"
 #include "chainparams.h"
 #include "coins.h"
@@ -243,33 +244,6 @@ double ConvertBitsToDouble(unsigned int nBits);
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock, bool fProofOfStake);
 
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
-
-
-struct CBlockRewards {
-    CBlockRewards(CAmount nStakeReward, CAmount nMasternodeReward, CAmount nTreasuryReward,
-                 CAmount nCharityReward, CAmount nLotteryReward, CAmount nProposalsReward) :
-        nStakeReward(nStakeReward),
-        nMasternodeReward(nMasternodeReward),
-        nTreasuryReward(nTreasuryReward),
-        nCharityReward(nCharityReward),
-        nLotteryReward(nLotteryReward),
-        nProposalsReward(nProposalsReward)
-    { }
-
-    std::string ToString() const;
-
-    const CAmount nStakeReward;
-    const CAmount nMasternodeReward;
-    const CAmount nTreasuryReward;
-    const CAmount nCharityReward;
-    const CAmount nLotteryReward;
-    const CAmount nProposalsReward;
-
-    CAmount total() const
-    {
-        return nStakeReward + nMasternodeReward + nTreasuryReward + nCharityReward + nLotteryReward + nProposalsReward;
-    }
-};
 
 CBlockRewards GetBlockSubsidity(int nHeight);
 

@@ -35,15 +35,6 @@ const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
 const std::string TREASURY_PAYMENT_ADDRESS_TESTNET("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
 const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
 
-static int64_t GetTreasuryReward(const CBlockRewards &rewards)
-{
-    return rewards.nTreasuryReward * Params().GetTreasuryPaymentsCycle();
-}
-
-static int64_t GetCharityReward(const CBlockRewards &rewards)
-{
-    return rewards.nCharityReward * Params().GetTreasuryPaymentsCycle();
-}
 
 static CBitcoinAddress TreasuryPaymentAddress()
 {
@@ -61,12 +52,6 @@ static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
     auto rewards = GetBlockSubsidity(nHeight - 1);
     tx.vout.emplace_back(GetTreasuryReward(rewards), GetScriptForDestination(TreasuryPaymentAddress().Get()));
     tx.vout.emplace_back(GetCharityReward(rewards), GetScriptForDestination(CharityPaymentAddress().Get()));
-}
-
-static int64_t GetLotteryReward(const CBlockRewards &rewards)
-{
-    // 50 coins every block for lottery
-    return Params().GetLotteryBlockCycle() * rewards.nLotteryReward;
 }
 
 static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)

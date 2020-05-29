@@ -1,5 +1,7 @@
 #ifndef SUPERBLOCK_HELPERS_H
 #define SUPERBLOCK_HELPERS_H
+#include <stdint.h>
+class CBlockRewards;
 class CChainParams;
 
 namespace Legacy
@@ -10,6 +12,11 @@ namespace Legacy
 
 bool IsValidLotteryBlockHeight(int nBlockHeight);
 bool IsValidTreasuryBlockHeight(int nBlockHeight);
+
+int64_t GetTreasuryReward(const CBlockRewards &rewards);
+int64_t GetCharityReward(const CBlockRewards &rewards);
+int64_t GetLotteryReward(const CBlockRewards &rewards);
+
 
 class LotteryAndTreasuryBlockSubsidyIncentives
 {

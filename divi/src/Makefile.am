@@ -105,6 +105,7 @@ BITCOIN_CORE_H = \
   bip39_english.h \
   bloom.h \
   blockmap.h\
+  BlockRewards.h \
   chain.h \
   chainparams.h \
   chainparamsbase.h \
@@ -240,6 +241,7 @@ libbitcoin_server_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT
 libbitcoin_server_a_SOURCES = \
   addrman.cpp \
   alert.cpp \
+  BlockRewards.cpp \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \

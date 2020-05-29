@@ -1,5 +1,6 @@
 #include <SuperblockHelpers.h>
 #include <chainparams.h>
+#include <BlockRewards.h>
 
 bool Legacy::IsValidLotteryBlockHeight(int nBlockHeight,const CChainParams& chainParams)
 {
@@ -23,6 +24,22 @@ bool IsValidTreasuryBlockHeight(int nBlockHeight)
 {
     LotteryAndTreasuryBlockSubsidyIncentives incentives(Params());
     return incentives.IsValidTreasuryBlockHeight(nBlockHeight);
+}
+
+int64_t GetTreasuryReward(const CBlockRewards &rewards)
+{
+    return rewards.nTreasuryReward * Params().GetTreasuryPaymentsCycle();
+}
+
+int64_t GetCharityReward(const CBlockRewards &rewards)
+{
+    return rewards.nCharityReward * Params().GetTreasuryPaymentsCycle();
+}
+
+int64_t GetLotteryReward(const CBlockRewards &rewards)
+{
+    // 50 coins every block for lottery
+    return Params().GetLotteryBlockCycle() * rewards.nLotteryReward;
 }
 
 LotteryAndTreasuryBlockSubsidyIncentives::LotteryAndTreasuryBlockSubsidyIncentives(

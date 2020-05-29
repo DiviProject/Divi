@@ -40,3 +40,46 @@ bool IsValidTreasuryBlockHeight(int nBlockHeight)
     }
 }
 
+LotteryAndTreasuryBlockSubsidyIncentives::LotteryAndTreasuryBlockSubsidyIncentives(
+    CChainParams& chainParameters
+    ): chainParameters_(chainParameters)
+{
+}
+
+bool LotteryAndTreasuryBlockSubsidyIncentives::OldIsValidLotteryBlockHeight(int nBlockHeight)
+{
+    return nBlockHeight >= chainParameters_.GetLotteryBlockStartBlock() &&
+            ((nBlockHeight % chainParameters_.GetLotteryBlockCycle()) == 0);
+}
+
+bool LotteryAndTreasuryBlockSubsidyIncentives::OldIsValidTreasuryBlockHeight(int nBlockHeight)
+{
+    return nBlockHeight >= chainParameters_.GetTreasuryPaymentsStartBlock() &&
+            ((nBlockHeight % chainParameters_.GetTreasuryPaymentsCycle()) == 0);
+}
+
+bool LotteryAndTreasuryBlockSubsidyIncentives::IsValidLotteryBlockHeight(int nBlockHeight)
+{
+    const int minConflictHeight = chainParameters_.GetLotteryBlockCycle()*chainParameters_.GetTreasuryPaymentsCycle();
+    if(nBlockHeight < minConflictHeight)
+    {
+        return OldIsValidLotteryBlockHeight(nBlockHeight);
+    }
+    else
+    {
+        int averageBlockCycleLength = (chainParameters_.GetLotteryBlockCycle()+chainParameters_.GetTreasuryPaymentsCycle())/2;
+        return ((nBlockHeight - minConflictHeight) % averageBlockCycleLength) == 0;
+    }
+}
+bool LotteryAndTreasuryBlockSubsidyIncentives::IsValidTreasuryBlockHeight(int nBlockHeight)
+{
+    const int minConflictHeight = chainParameters_.GetLotteryBlockCycle()*chainParameters_.GetTreasuryPaymentsCycle();
+    if(nBlockHeight < minConflictHeight)
+    {
+        return OldIsValidTreasuryBlockHeight(nBlockHeight);
+    }
+    else
+    {
+        return IsValidLotteryBlockHeight(nBlockHeight-1);
+    }
+}

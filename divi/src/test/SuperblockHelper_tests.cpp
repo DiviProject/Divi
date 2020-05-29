@@ -6,21 +6,22 @@
 
 BOOST_AUTO_TEST_SUITE(SuperblockHelper_tests)
 
-
-int getMaxBlockConflictHeight()
+int getMaxBlockConflictHeight(CChainParams& chainParams)
 {
-    int blockLotteryStart = Params().GetLotteryBlockStartBlock();
-    int lotteryCycleLength = Params().GetLotteryBlockCycle();
-    int blockTreasuryStart = Params().GetTreasuryPaymentsStartBlock();
-    int treasuryCycleLength = Params().GetTreasuryPaymentsCycle();
+    int blockLotteryStart = chainParams.GetLotteryBlockStartBlock();
+    int lotteryCycleLength = chainParams.GetLotteryBlockCycle();
+    int blockTreasuryStart = chainParams.GetTreasuryPaymentsStartBlock();
+    int treasuryCycleLength = chainParams.GetTreasuryPaymentsCycle();
     
     return 10*(lotteryCycleLength)*(treasuryCycleLength) + blockLotteryStart + blockTreasuryStart;
 }
-void CheckForBlockTypeConflicts()
+
+void CheckForBlockTypeConflicts(CChainParams& chainParams,LotteryAndTreasuryBlockSubsidyIncentives& incentives)
 {
-    for(int blockHeight = 0; blockHeight <= getMaxBlockConflictHeight(); blockHeight++)
+    for(int blockHeight = 0; blockHeight <= getMaxBlockConflictHeight(chainParams); blockHeight++)
     {
-        if(IsValidLotteryBlockHeight(blockHeight) && IsValidTreasuryBlockHeight(blockHeight))
+        if(incentives.IsValidLotteryBlockHeight(blockHeight) && 
+            incentives.IsValidTreasuryBlockHeight(blockHeight))
         {
             BOOST_CHECK_MESSAGE(false, "A treasury block cannot also be a lottery block! Failure at height " << blockHeight << "!" );
             break;
@@ -30,12 +31,14 @@ void CheckForBlockTypeConflicts()
 BOOST_AUTO_TEST_CASE(willNeverAssertAHeightIsValidForBothTreasuryAndLottery)
 {
     {
-        SelectParams(CBaseChainParams::MAIN);
-        CheckForBlockTypeConflicts();
+        CChainParams& chainParams = Params(CBaseChainParams::MAIN);
+        LotteryAndTreasuryBlockSubsidyIncentives incentives(chainParams);
+        CheckForBlockTypeConflicts(chainParams, incentives);
     }
     {
-        SelectParams(CBaseChainParams::TESTNET);
-        CheckForBlockTypeConflicts();
+        CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
+        LotteryAndTreasuryBlockSubsidyIncentives incentives(chainParams);
+        CheckForBlockTypeConflicts(chainParams, incentives);
     }
 }
 

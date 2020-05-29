@@ -24,11 +24,17 @@ private:
     const CChainParams& chainParameters_;
     int transitionHeight_;
     int superblockCycleLength_;
+
 public:
     LotteryAndTreasuryBlockSubsidyIncentives(const CChainParams& chainParameters);
     int getTransitionHeight() const;
     const CChainParams& getChainParameters() const;
     bool IsValidLotteryBlockHeight(int nBlockHeight);
     bool IsValidTreasuryBlockHeight(int nBlockHeight);
+
+
+    int64_t GetTreasuryReward(const CBlockRewards &rewards, int nBlockHeight);
+    int64_t GetCharityReward(const CBlockRewards &rewards, int nBlockHeight);
+    int64_t GetLotteryReward(const CBlockRewards &rewards, int nBlockHeight);
 };
 #endif // SUPERBLOCK_HELPERS_H

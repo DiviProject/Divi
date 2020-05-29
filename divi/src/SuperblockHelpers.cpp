@@ -82,3 +82,19 @@ const CChainParams& LotteryAndTreasuryBlockSubsidyIncentives::getChainParameters
 {
     return chainParameters_;
 }
+
+int64_t LotteryAndTreasuryBlockSubsidyIncentives::GetTreasuryReward(const CBlockRewards &rewards, int nBlockHeight)
+{
+    return rewards.nTreasuryReward * Params().GetTreasuryPaymentsCycle();
+}
+
+int64_t LotteryAndTreasuryBlockSubsidyIncentives::GetCharityReward(const CBlockRewards &rewards, int nBlockHeight)
+{
+    return rewards.nCharityReward * Params().GetTreasuryPaymentsCycle();
+}
+
+int64_t LotteryAndTreasuryBlockSubsidyIncentives::GetLotteryReward(const CBlockRewards &rewards, int nBlockHeight)
+{
+    // 50 coins every block for lottery
+    return Params().GetLotteryBlockCycle() * rewards.nLotteryReward;
+}

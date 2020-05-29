@@ -25,6 +25,8 @@ private:
     int transitionHeight_;
     int superblockCycleLength_;
 
+    int getTreasuryCycleLength(int blockHeight) const;
+    int getLotteryCycleLength(int blockHeight) const;
 public:
     LotteryAndTreasuryBlockSubsidyIncentives(const CChainParams& chainParameters);
     int getTransitionHeight() const;

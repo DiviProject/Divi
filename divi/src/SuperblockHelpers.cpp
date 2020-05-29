@@ -83,18 +83,34 @@ const CChainParams& LotteryAndTreasuryBlockSubsidyIncentives::getChainParameters
     return chainParameters_;
 }
 
+int LotteryAndTreasuryBlockSubsidyIncentives::getTreasuryCycleLength(int blockHeight) const
+{
+    if(blockHeight > transitionHeight_+1)
+    {
+        return superblockCycleLength_;
+    }
+    else
+    {
+        return chainParameters_.GetTreasuryPaymentsCycle() + ((blockHeight == transitionHeight_+1)? 1:0);
+    }
+}
+int  LotteryAndTreasuryBlockSubsidyIncentives::getLotteryCycleLength(int blockHeight) const
+{
+    return (blockHeight <= transitionHeight_)? chainParameters_.GetLotteryBlockCycle():superblockCycleLength_;
+}
+
 int64_t LotteryAndTreasuryBlockSubsidyIncentives::GetTreasuryReward(const CBlockRewards &rewards, int nBlockHeight)
 {
-    return rewards.nTreasuryReward * Params().GetTreasuryPaymentsCycle();
+    return rewards.nTreasuryReward * getTreasuryCycleLength(nBlockHeight);
 }
 
 int64_t LotteryAndTreasuryBlockSubsidyIncentives::GetCharityReward(const CBlockRewards &rewards, int nBlockHeight)
 {
-    return rewards.nCharityReward * Params().GetTreasuryPaymentsCycle();
+    return rewards.nCharityReward * getTreasuryCycleLength(nBlockHeight);
 }
 
 int64_t LotteryAndTreasuryBlockSubsidyIncentives::GetLotteryReward(const CBlockRewards &rewards, int nBlockHeight)
 {
     // 50 coins every block for lottery
-    return Params().GetLotteryBlockCycle() * rewards.nLotteryReward;
+    return rewards.nLotteryReward * getLotteryCycleLength(nBlockHeight);
 }

@@ -14,13 +14,13 @@ bool IsValidTreasuryBlockHeight(int nBlockHeight);
 class LotteryAndTreasuryBlockSubsidyIncentives
 {
 private:
-    CChainParams& chainParameters_;
+    const CChainParams& chainParameters_;
     int transitionHeight_;
     int superblockCycleLength_;
 public:
-    LotteryAndTreasuryBlockSubsidyIncentives(CChainParams& chainParameters);
+    LotteryAndTreasuryBlockSubsidyIncentives(const CChainParams& chainParameters);
     int getTransitionHeight() const;
-    CChainParams& getChainParameters() const;
+    const CChainParams& getChainParameters() const;
     bool IsValidLotteryBlockHeight(int nBlockHeight);
     bool IsValidTreasuryBlockHeight(int nBlockHeight);
 };

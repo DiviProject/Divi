@@ -15,33 +15,18 @@ bool Legacy::IsValidTreasuryBlockHeight(int nBlockHeight,const CChainParams& cha
 
 bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
-    const int minConflictHeight = Params().GetLotteryBlockCycle()*Params().GetTreasuryPaymentsCycle();
-    if(nBlockHeight < minConflictHeight)
-    {
-        return Legacy::IsValidLotteryBlockHeight(nBlockHeight,Params());
-    }
-    else
-    {
-        int averageBlockCycleLength = (Params().GetLotteryBlockCycle()+Params().GetTreasuryPaymentsCycle())/2;
-        return ((nBlockHeight - minConflictHeight) % averageBlockCycleLength) == 0;
-    }
+    LotteryAndTreasuryBlockSubsidyIncentives incentives(Params());
+    return incentives.IsValidLotteryBlockHeight(nBlockHeight);
 }
 
 bool IsValidTreasuryBlockHeight(int nBlockHeight)
 {
-    const int minConflictHeight = Params().GetLotteryBlockCycle()*Params().GetTreasuryPaymentsCycle();
-    if(nBlockHeight < minConflictHeight)
-    {
-        return Legacy::IsValidTreasuryBlockHeight(nBlockHeight,Params());
-    }
-    else
-    {
-        return IsValidLotteryBlockHeight(nBlockHeight-1);
-    }
+    LotteryAndTreasuryBlockSubsidyIncentives incentives(Params());
+    return incentives.IsValidTreasuryBlockHeight(nBlockHeight);
 }
 
 LotteryAndTreasuryBlockSubsidyIncentives::LotteryAndTreasuryBlockSubsidyIncentives(
-    CChainParams& chainParameters
+    const CChainParams& chainParameters
     ): chainParameters_(chainParameters)
     , transitionHeight_(chainParameters_.GetLotteryBlockCycle()*chainParameters_.GetTreasuryPaymentsCycle())
     , superblockCycleLength_((chainParameters_.GetLotteryBlockCycle()+chainParameters_.GetTreasuryPaymentsCycle())/2)
@@ -76,7 +61,7 @@ int LotteryAndTreasuryBlockSubsidyIncentives::getTransitionHeight() const
     return transitionHeight_;
 }
 
-CChainParams& LotteryAndTreasuryBlockSubsidyIncentives::getChainParameters() const
+const CChainParams& LotteryAndTreasuryBlockSubsidyIncentives::getChainParameters() const
 {
     return chainParameters_;
 }

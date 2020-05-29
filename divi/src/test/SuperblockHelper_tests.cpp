@@ -42,4 +42,31 @@ BOOST_AUTO_TEST_CASE(willNeverAssertAHeightIsValidForBothTreasuryAndLottery)
     }
 }
 
+void checkBackwardCompatibilityOfSuperblockValidity(LotteryAndTreasuryBlockSubsidyIncentives& incentives)
+{
+    for(int blockHeight = 0; blockHeight < incentives.getTransitionHeight(); blockHeight++)
+    {
+        if( Legacy::IsValidLotteryBlockHeight(blockHeight, incentives.getChainParameters()) != incentives.IsValidLotteryBlockHeight(blockHeight) ||
+            Legacy::IsValidTreasuryBlockHeight(blockHeight, incentives.getChainParameters()) != incentives.IsValidTreasuryBlockHeight(blockHeight))
+        {
+            BOOST_CHECK_MESSAGE(false, "Backward compatibility prior to transition height at block: " << blockHeight << "!");
+            return;
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(willBeBackWardCompatiblePriorToTransitionHeight)
+{
+    {
+        CChainParams& chainParams = Params(CBaseChainParams::MAIN);
+        LotteryAndTreasuryBlockSubsidyIncentives incentives(chainParams);
+        checkBackwardCompatibilityOfSuperblockValidity(incentives);
+    }
+    {
+        CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
+        LotteryAndTreasuryBlockSubsidyIncentives incentives(chainParams);
+        checkBackwardCompatibilityOfSuperblockValidity(incentives);
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

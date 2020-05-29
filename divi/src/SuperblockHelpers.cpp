@@ -15,11 +15,28 @@ bool OldIsValidTreasuryBlockHeight(int nBlockHeight)
 
 bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
-    return OldIsValidLotteryBlockHeight(nBlockHeight);
+    const int minConflictHeight = Params().GetLotteryBlockCycle()*Params().GetTreasuryPaymentsCycle();
+    if(nBlockHeight < minConflictHeight)
+    {
+        return OldIsValidLotteryBlockHeight(nBlockHeight);
+    }
+    else
+    {
+        int averageBlockCycleLength = (Params().GetLotteryBlockCycle()+Params().GetTreasuryPaymentsCycle())/2;
+        return ((nBlockHeight - minConflictHeight) % averageBlockCycleLength) == 0;
+    }
 }
 
 bool IsValidTreasuryBlockHeight(int nBlockHeight)
 {
-    return OldIsValidTreasuryBlockHeight(nBlockHeight);
+    const int minConflictHeight = Params().GetLotteryBlockCycle()*Params().GetTreasuryPaymentsCycle();
+    if(nBlockHeight < minConflictHeight)
+    {
+        return OldIsValidTreasuryBlockHeight(nBlockHeight);
+    }
+    else
+    {
+        return IsValidLotteryBlockHeight(nBlockHeight-1);
+    }
 }
 

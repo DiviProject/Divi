@@ -30,6 +30,7 @@
 #include "utilmoneystr.h"
 #include "NotificationInterface.h"
 #include "FeeAndPriorityCalculator.h"
+#include "SuperblockHelpers.h"
 
 #include "libzerocoin/Denominations.h"
 
@@ -1604,74 +1605,6 @@ double ConvertBitsToDouble(unsigned int nBits)
     }
 
     return dDiff;
-}
-
-static CAmount GetFullBlockValue(int nHeight)
-{
-
-    if(nHeight == 0) {
-        return 50 * COIN;
-    } else if (nHeight == 1) {
-        return Params().premineAmt;
-    }
-
-    if(sporkManager.IsSporkActive(SPORK_15_BLOCK_VALUE)) {
-        MultiValueSporkList<BlockSubsiditySporkValue> vBlockSubsiditySporkValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_15_BLOCK_VALUE), vBlockSubsiditySporkValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
-        BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight, nBlockTime);
-
-        if(activeSpork.IsValid()) {
-            // we expect that this value is in coins, not in satoshis
-            return activeSpork.nBlockSubsidity * COIN;
-        }
-    }
-
-    CAmount nSubsidy = 1250;
-    auto nSubsidyHalvingInterval = Params().SubsidyHalvingInterval();
-    // first two intervals == two years, same amount 1250
-    for (int i = nSubsidyHalvingInterval * 2; i <= nHeight; i += nSubsidyHalvingInterval) {
-        nSubsidy -= 100;
-    }
-
-    return std::max<CAmount>(nSubsidy, 250) * COIN;
-}
-
-CBlockRewards GetBlockSubsidity(int nHeight)
-{
-    CAmount nSubsidy = GetFullBlockValue(nHeight);
-
-    if(nHeight <= Params().LAST_POW_BLOCK()) {
-        return CBlockRewards(nSubsidy, 0, 0, 0, 0, 0);
-    }
-
-    CAmount nLotteryPart = (nHeight >= Params().GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
-
-    nSubsidy -= nLotteryPart;
-
-    auto helper = [nSubsidy](int nStakePercentage, int nMasternodePercentage, int nTreasuryPercentage, int nProposalsPercentage, int nCharityPercentage) {
-        auto helper = [nSubsidy](int percentage) {
-            return (nSubsidy * percentage) / 100;
-        };
-
-        return CBlockRewards(helper(nStakePercentage), helper(nMasternodePercentage), helper(nTreasuryPercentage), helper(nCharityPercentage), 50 * COIN, helper(nProposalsPercentage));
-    };
-
-
-    if(sporkManager.IsSporkActive(SPORK_13_BLOCK_PAYMENTS)) {
-        MultiValueSporkList<BlockPaymentSporkValue> vBlockPaymentsValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
-        BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight, nBlockTime);
-
-        if(activeSpork.IsValid()) {
-            // we expect that this value is in coins, not in satoshis
-            return helper(activeSpork.nStakeReward, activeSpork.nMasternodeReward,
-                          activeSpork.nTreasuryReward, activeSpork.nProposalsReward, activeSpork.nCharityReward);
-        }
-    }
-
-    return helper(38, 45, 16, 0, 1);
 }
 
 bool IsInitialBlockDownload()	//2446

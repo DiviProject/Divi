@@ -27,7 +27,7 @@ int64_t GetLotteryReward(const CBlockRewards &rewards);
 CBlockRewards GetBlockSubsidity(int nHeight);
 CAmount GetFullBlockValue(int nHeight);
 
-class LotteryAndTreasuryBlockSubsidyIncentives
+class SuperblockSubsidyHeightValidator
 {
 private:
     const CChainParams& chainParameters_;
@@ -35,7 +35,7 @@ private:
     int superblockCycleLength_;
 
 public:
-    LotteryAndTreasuryBlockSubsidyIncentives(const CChainParams& chainParameters);
+    SuperblockSubsidyHeightValidator(const CChainParams& chainParameters);
     int getTransitionHeight() const;
     const CChainParams& getChainParameters() const;
 

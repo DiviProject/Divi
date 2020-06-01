@@ -110,13 +110,13 @@ int64_t Legacy::GetLotteryReward(const CBlockRewards &rewards, const CChainParam
 
 bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
-    LotteryAndTreasuryBlockSubsidyIncentives incentives(Params());
+    SuperblockSubsidyHeightValidator incentives(Params());
     return incentives.IsValidLotteryBlockHeight(nBlockHeight);
 }
 
 bool IsValidTreasuryBlockHeight(int nBlockHeight)
 {
-    LotteryAndTreasuryBlockSubsidyIncentives incentives(Params());
+    SuperblockSubsidyHeightValidator incentives(Params());
     return incentives.IsValidTreasuryBlockHeight(nBlockHeight);
 }
 
@@ -143,7 +143,7 @@ CAmount GetFullBlockValue(int nHeight)
 
 
 
-LotteryAndTreasuryBlockSubsidyIncentives::LotteryAndTreasuryBlockSubsidyIncentives(
+SuperblockSubsidyHeightValidator::SuperblockSubsidyHeightValidator(
     const CChainParams& chainParameters
     ): chainParameters_(chainParameters)
     , transitionHeight_(chainParameters_.GetLotteryBlockCycle()*chainParameters_.GetTreasuryPaymentsCycle())
@@ -151,7 +151,7 @@ LotteryAndTreasuryBlockSubsidyIncentives::LotteryAndTreasuryBlockSubsidyIncentiv
 {
 }
 
-bool LotteryAndTreasuryBlockSubsidyIncentives::IsValidLotteryBlockHeight(int nBlockHeight)
+bool SuperblockSubsidyHeightValidator::IsValidLotteryBlockHeight(int nBlockHeight)
 {
     if(nBlockHeight < transitionHeight_)
     {
@@ -162,7 +162,7 @@ bool LotteryAndTreasuryBlockSubsidyIncentives::IsValidLotteryBlockHeight(int nBl
         return ((nBlockHeight - transitionHeight_) % superblockCycleLength_) == 0;
     }
 }
-bool LotteryAndTreasuryBlockSubsidyIncentives::IsValidTreasuryBlockHeight(int nBlockHeight)
+bool SuperblockSubsidyHeightValidator::IsValidTreasuryBlockHeight(int nBlockHeight)
 {
     if(nBlockHeight < transitionHeight_)
     {
@@ -174,12 +174,12 @@ bool LotteryAndTreasuryBlockSubsidyIncentives::IsValidTreasuryBlockHeight(int nB
     }
 }
 
-int LotteryAndTreasuryBlockSubsidyIncentives::getTransitionHeight() const
+int SuperblockSubsidyHeightValidator::getTransitionHeight() const
 {
     return transitionHeight_;
 }
 
-const CChainParams& LotteryAndTreasuryBlockSubsidyIncentives::getChainParameters() const
+const CChainParams& SuperblockSubsidyHeightValidator::getChainParameters() const
 {
     return chainParameters_;
 }

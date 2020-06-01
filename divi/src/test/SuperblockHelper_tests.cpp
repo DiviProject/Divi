@@ -16,12 +16,12 @@ int getMaxBlockConflictHeight(CChainParams& chainParams)
     return 10*(lotteryCycleLength)*(treasuryCycleLength) + blockLotteryStart + blockTreasuryStart;
 }
 
-void CheckForBlockTypeConflicts(CChainParams& chainParams,LotteryAndTreasuryBlockSubsidyIncentives& incentives)
+void CheckForBlockTypeConflicts(CChainParams& chainParams,SuperblockSubsidyHeightValidator& validator)
 {
     for(int blockHeight = 0; blockHeight <= getMaxBlockConflictHeight(chainParams); blockHeight++)
     {
-        if(incentives.IsValidLotteryBlockHeight(blockHeight) && 
-            incentives.IsValidTreasuryBlockHeight(blockHeight))
+        if(validator.IsValidLotteryBlockHeight(blockHeight) && 
+            validator.IsValidTreasuryBlockHeight(blockHeight))
         {
             BOOST_CHECK_MESSAGE(false, "A treasury block cannot also be a lottery block! Failure at height " << blockHeight << "!" );
             break;
@@ -32,22 +32,22 @@ BOOST_AUTO_TEST_CASE(willNeverAssertAHeightIsValidForBothTreasuryAndLottery)
 {
     {
         CChainParams& chainParams = Params(CBaseChainParams::MAIN);
-        LotteryAndTreasuryBlockSubsidyIncentives incentives(chainParams);
-        CheckForBlockTypeConflicts(chainParams, incentives);
+        SuperblockSubsidyHeightValidator validator(chainParams);
+        CheckForBlockTypeConflicts(chainParams, validator);
     }
     {
         CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
-        LotteryAndTreasuryBlockSubsidyIncentives incentives(chainParams);
-        CheckForBlockTypeConflicts(chainParams, incentives);
+        SuperblockSubsidyHeightValidator validator(chainParams);
+        CheckForBlockTypeConflicts(chainParams, validator);
     }
 }
 
-void checkBackwardCompatibilityOfSuperblockValidity(LotteryAndTreasuryBlockSubsidyIncentives& incentives)
+void checkBackwardCompatibilityOfSuperblockValidity(SuperblockSubsidyHeightValidator& validator)
 {
-    for(int blockHeight = 0; blockHeight < incentives.getTransitionHeight(); blockHeight++)
+    for(int blockHeight = 0; blockHeight < validator.getTransitionHeight(); blockHeight++)
     {
-        if( Legacy::IsValidLotteryBlockHeight(blockHeight, incentives.getChainParameters()) != incentives.IsValidLotteryBlockHeight(blockHeight) ||
-            Legacy::IsValidTreasuryBlockHeight(blockHeight, incentives.getChainParameters()) != incentives.IsValidTreasuryBlockHeight(blockHeight))
+        if( Legacy::IsValidLotteryBlockHeight(blockHeight, validator.getChainParameters()) != validator.IsValidLotteryBlockHeight(blockHeight) ||
+            Legacy::IsValidTreasuryBlockHeight(blockHeight, validator.getChainParameters()) != validator.IsValidTreasuryBlockHeight(blockHeight))
         {
             BOOST_CHECK_MESSAGE(false, "Backward compatibility prior to transition height at block: " << blockHeight << "!");
             return;
@@ -59,13 +59,13 @@ BOOST_AUTO_TEST_CASE(willBeBackWardCompatiblePriorToTransitionHeight)
 {
     {
         CChainParams& chainParams = Params(CBaseChainParams::MAIN);
-        LotteryAndTreasuryBlockSubsidyIncentives incentives(chainParams);
-        checkBackwardCompatibilityOfSuperblockValidity(incentives);
+        SuperblockSubsidyHeightValidator validator(chainParams);
+        checkBackwardCompatibilityOfSuperblockValidity(validator);
     }
     {
         CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
-        LotteryAndTreasuryBlockSubsidyIncentives incentives(chainParams);
-        checkBackwardCompatibilityOfSuperblockValidity(incentives);
+        SuperblockSubsidyHeightValidator validator(chainParams);
+        checkBackwardCompatibilityOfSuperblockValidity(validator);
     }
 }
 

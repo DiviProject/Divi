@@ -22,6 +22,7 @@
 #include "NotificationInterface.h"
 #include "wallet_ismine.h"
 #include "walletdb.h"
+#include "FeeRate.h"
 
 #include <algorithm>
 #include <map>

@@ -31,6 +31,7 @@
 #include "uint256.h"
 #include "undo.h"
 #include "spentindex.h"
+#include "FeeRate.h"
 
 #include <algorithm>
 #include <exception>

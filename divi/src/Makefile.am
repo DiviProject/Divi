@@ -132,6 +132,7 @@ BITCOIN_CORE_H = \
   DatabaseWrapper.h\
   eccryptoverify.h \
   ecwrapper.h \
+  FeeRate.h \
   flat-database.h \
   FilteredBoostFileSystem.h\
   hash.h \
@@ -383,7 +384,7 @@ libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_common_a_SOURCES = \
   allocators.cpp \
-  amount.cpp \
+  FeeRate.cpp \
   base58.cpp \
   bip38.cpp \
   bip39.cpp \

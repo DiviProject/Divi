@@ -1,7 +1,6 @@
 #ifndef FEE_AND_PRIORITY_CALCULATOR
 #define FEE_AND_PRIORITY_CALCULATOR
 
-#include <amount.h>
 class CTxOut;
 class CTransaction;
 

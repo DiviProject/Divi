@@ -10,6 +10,11 @@ namespace Legacy
 {
     bool IsValidLotteryBlockHeight(int nBlockHeight,const CChainParams& chainParams);
     bool IsValidTreasuryBlockHeight(int nBlockHeight,const CChainParams& chainParams);
+    int64_t GetTreasuryReward(const CBlockRewards &rewards);
+    int64_t GetCharityReward(const CBlockRewards &rewards);
+    int64_t GetLotteryReward(const CBlockRewards &rewards);
+    CBlockRewards GetBlockSubsidity(int nHeight);
+    CAmount GetFullBlockValue(int nHeight);
 };
 
 bool IsValidLotteryBlockHeight(int nBlockHeight);

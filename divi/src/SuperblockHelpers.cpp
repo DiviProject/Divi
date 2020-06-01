@@ -8,13 +8,14 @@
 
 extern CChain chainActive;
 
-CAmount GetFullBlockValue(int nHeight)
+// Legacy methods
+CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParameters)
 {
 
     if(nHeight == 0) {
         return 50 * COIN;
     } else if (nHeight == 1) {
-        return Params().premineAmt;
+        return chainParameters.premineAmt;
     }
 
     if(sporkManager.IsSporkActive(SPORK_15_BLOCK_VALUE)) {
@@ -30,7 +31,7 @@ CAmount GetFullBlockValue(int nHeight)
     }
 
     CAmount nSubsidy = 1250;
-    auto nSubsidyHalvingInterval = Params().SubsidyHalvingInterval();
+    auto nSubsidyHalvingInterval = chainParameters.SubsidyHalvingInterval();
     // first two intervals == two years, same amount 1250
     for (int i = nSubsidyHalvingInterval * 2; i <= nHeight; i += nSubsidyHalvingInterval) {
         nSubsidy -= 100;
@@ -39,15 +40,15 @@ CAmount GetFullBlockValue(int nHeight)
     return std::max<CAmount>(nSubsidy, 250) * COIN;
 }
 
-CBlockRewards GetBlockSubsidity(int nHeight)
+CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainParameters)
 {
     CAmount nSubsidy = GetFullBlockValue(nHeight);
 
-    if(nHeight <= Params().LAST_POW_BLOCK()) {
+    if(nHeight <= chainParameters.LAST_POW_BLOCK()) {
         return CBlockRewards(nSubsidy, 0, 0, 0, 0, 0);
     }
 
-    CAmount nLotteryPart = (nHeight >= Params().GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
+    CAmount nLotteryPart = (nHeight >= chainParameters.GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
 
     nSubsidy -= nLotteryPart;
 
@@ -89,6 +90,24 @@ bool Legacy::IsValidTreasuryBlockHeight(int nBlockHeight,const CChainParams& cha
             ((nBlockHeight % chainParams.GetTreasuryPaymentsCycle()) == 0);
 }
 
+int64_t Legacy::GetTreasuryReward(const CBlockRewards &rewards, const CChainParams& chainParameters)
+{
+    return rewards.nTreasuryReward * chainParameters.GetTreasuryPaymentsCycle();
+}
+
+int64_t Legacy::GetCharityReward(const CBlockRewards &rewards, const CChainParams& chainParameters)
+{
+    return rewards.nCharityReward * chainParameters.GetTreasuryPaymentsCycle();
+}
+
+int64_t Legacy::GetLotteryReward(const CBlockRewards &rewards, const CChainParams& chainParameters)
+{
+    // 50 coins every block for lottery
+    return chainParameters.GetLotteryBlockCycle() * rewards.nLotteryReward;
+}
+
+// Non-Legacy methods
+
 bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
     LotteryAndTreasuryBlockSubsidyIncentives incentives(Params());
@@ -103,19 +122,26 @@ bool IsValidTreasuryBlockHeight(int nBlockHeight)
 
 int64_t GetTreasuryReward(const CBlockRewards &rewards)
 {
-    return rewards.nTreasuryReward * Params().GetTreasuryPaymentsCycle();
+    return Legacy::GetTreasuryReward(rewards,Params());
 }
-
 int64_t GetCharityReward(const CBlockRewards &rewards)
 {
-    return rewards.nCharityReward * Params().GetTreasuryPaymentsCycle();
+    return Legacy::GetCharityReward(rewards,Params());
 }
-
 int64_t GetLotteryReward(const CBlockRewards &rewards)
 {
-    // 50 coins every block for lottery
-    return Params().GetLotteryBlockCycle() * rewards.nLotteryReward;
+    return Legacy::GetLotteryReward(rewards,Params());
 }
+CBlockRewards GetBlockSubsidity(int nHeight)
+{
+    return Legacy::GetBlockSubsidity(nHeight,Params());
+}
+CAmount GetFullBlockValue(int nHeight)
+{
+    return Legacy::GetFullBlockValue(nHeight,Params());
+}
+
+
 
 LotteryAndTreasuryBlockSubsidyIncentives::LotteryAndTreasuryBlockSubsidyIncentives(
     const CChainParams& chainParameters

@@ -6,8 +6,6 @@
 #ifndef BITCOIN_AMOUNT_H
 #define BITCOIN_AMOUNT_H
 
-#include "serialize.h"
-
 #include <stdlib.h>
 #include <string>
 
@@ -19,6 +17,7 @@ static const CAmount CENT = 1000000;
 /** Type-safe wrapper class to for fee rates
  * (how much to pay based on transaction size)
  */
+#include "serialize.h"
 class CFeeRate
 {
 private:

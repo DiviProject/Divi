@@ -5,7 +5,6 @@
 
 #include "masternode-payments.h"
 #include "addrman.h"
-#include "masternode-budget.h"
 #include "chainparamsbase.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"

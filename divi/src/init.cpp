@@ -20,7 +20,6 @@
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
-#include "masternode-budget.h"
 #include "masternode-payments.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"

@@ -42,7 +42,7 @@ CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParamete
 
 CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainParameters)
 {
-    CAmount nSubsidy = GetFullBlockValue(nHeight);
+    CAmount nSubsidy = Legacy::GetFullBlockValue(nHeight,chainParameters);
 
     if(nHeight <= chainParameters.LAST_POW_BLOCK()) {
         return CBlockRewards(nSubsidy, 0, 0, 0, 0, 0);

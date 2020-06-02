@@ -174,4 +174,51 @@ BOOST_AUTO_TEST_CASE(willComputeRewardsAsAMultipleOfBlockNumberWhenOnlyOneSuperb
     }
 }
 
+BOOST_AUTO_TEST_CASE(willComputeAccumulatedBlockRewardsBetweenValidSuperblocks)
+{
+    int firstTreasuryBlockHeight = 100;
+    int secondTreasuryBlockHeight = firstTreasuryBlockHeight+100;
+    CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
+    CBlockRewards firstBlockRewards(3,5,7,11,13,17);
+    CBlockRewards secondBlockRewards(23,23,23,23,23,23);
+    ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
+        .WillByDefault(
+            Invoke(
+                [firstBlockRewards,secondBlockRewards,firstTreasuryBlockHeight](int nHeight)
+                {
+                    if(nHeight < firstTreasuryBlockHeight)
+                    {
+                        return firstBlockRewards;
+                    }
+                    else
+                    {
+                        return secondBlockRewards;
+                    }
+                }
+            )
+        );
+    ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
+        .WillByDefault(
+            Invoke(
+                [firstTreasuryBlockHeight,secondTreasuryBlockHeight](int nHeight)
+                {
+                    return nHeight == firstTreasuryBlockHeight ||
+                        nHeight == secondTreasuryBlockHeight;
+                }
+            )
+        );
+
+    setChainParameters(chainParams);
+    CAmount firstExpectedRewards = firstTreasuryBlockHeight*firstBlockRewards.nTreasuryReward;
+    BOOST_CHECK_MESSAGE(
+        superblockSubsidyProvider_->GetTreasuryReward(firstTreasuryBlockHeight) == firstExpectedRewards,
+        "Inconsistent rewards");
+    
+    CAmount secondExpectedRewards = 
+        (secondTreasuryBlockHeight-firstTreasuryBlockHeight-1)*secondBlockRewards.nTreasuryReward;
+    BOOST_CHECK_MESSAGE(
+        superblockSubsidyProvider_->GetTreasuryReward(secondTreasuryBlockHeight) == secondExpectedRewards,
+        "Inconsistent rewards");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

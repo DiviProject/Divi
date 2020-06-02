@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(willHaveZeroTreasuryRewardsIfNoHeightIsAValidSuperblock)
    }    
 }
 
-BOOST_AUTO_TEST_CASE(willComputeAccumulatedRewardsFromBlockSubsidyOnSuperblock)
+BOOST_AUTO_TEST_CASE(willComputeRewardsAsAMultipleOfBlockNumberWhenOnlyOneSuperblockIsAvailable)
 {
     for(int treasuryBlockHeight = 0; treasuryBlockHeight < 100; treasuryBlockHeight++)
     {

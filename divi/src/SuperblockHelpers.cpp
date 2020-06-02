@@ -52,14 +52,19 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
 
     nSubsidy -= nLotteryPart;
 
-    auto helper = [nSubsidy](int nStakePercentage, int nMasternodePercentage, int nTreasuryPercentage, int nProposalsPercentage, int nCharityPercentage) {
+    auto helper = [nHeight,&chainParameters,nSubsidy](int nStakePercentage, int nMasternodePercentage, int nTreasuryPercentage, int nProposalsPercentage, int nCharityPercentage) {
         auto helper = [nSubsidy](int percentage) {
             return (nSubsidy * percentage) / 100;
         };
 
-        return CBlockRewards(helper(nStakePercentage), helper(nMasternodePercentage), helper(nTreasuryPercentage), helper(nCharityPercentage), 50 * COIN, helper(nProposalsPercentage));
+        return CBlockRewards(
+            helper(nStakePercentage), 
+            helper(nMasternodePercentage), 
+            helper(nTreasuryPercentage), 
+            helper(nCharityPercentage),
+            50 * COIN, 
+            helper(nProposalsPercentage));
     };
-
 
     if(sporkManager.IsSporkActive(SPORK_13_BLOCK_PAYMENTS)) {
         MultiValueSporkList<BlockPaymentSporkValue> vBlockPaymentsValues;
@@ -73,6 +78,7 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
                           activeSpork.nTreasuryReward, activeSpork.nProposalsReward, activeSpork.nCharityReward);
         }
     }
+
 
     return helper(38, 45, 16, 0, 1);
 }
@@ -92,18 +98,18 @@ bool Legacy::IsValidTreasuryBlockHeight(int nBlockHeight,const CChainParams& cha
 
 int64_t Legacy::GetTreasuryReward(const CBlockRewards &rewards, const CChainParams& chainParameters)
 {
-    return rewards.nTreasuryReward * chainParameters.GetTreasuryPaymentsCycle();
+    return rewards.nTreasuryReward*chainParameters.GetTreasuryPaymentsCycle();
 }
 
 int64_t Legacy::GetCharityReward(const CBlockRewards &rewards, const CChainParams& chainParameters)
 {
-    return rewards.nCharityReward * chainParameters.GetTreasuryPaymentsCycle();
+    return rewards.nCharityReward*chainParameters.GetTreasuryPaymentsCycle();
 }
 
 int64_t Legacy::GetLotteryReward(const CBlockRewards &rewards, const CChainParams& chainParameters)
 {
     // 50 coins every block for lottery
-    return chainParameters.GetLotteryBlockCycle() * rewards.nLotteryReward;
+    return rewards.nLotteryReward*chainParameters.GetLotteryBlockCycle();
 }
 
 // Non-Legacy methods
@@ -185,15 +191,21 @@ const CChainParams& SuperblockHeightValidator::getChainParameters() const
 }
 
 BlockSubsidyProvider::BlockSubsidyProvider(
-    const CChainParams& chainParameters
+    const CChainParams& chainParameters,
+    I_SuperblockHeightValidator& heightValidator
     ): chainParameters_(chainParameters)
+    , heightValidator_(heightValidator)
 {
 
 }
 
 CBlockRewards BlockSubsidyProvider::GetBlockSubsidity(int nHeight) const
 {
-    return Legacy::GetBlockSubsidity(nHeight,chainParameters_);
+    CBlockRewards rewards = Legacy::GetBlockSubsidity(nHeight,chainParameters_);
+    *const_cast<CAmount*>(&rewards.nTreasuryReward) *= (heightValidator_.IsValidTreasuryBlockHeight(nHeight))? chainParameters_.GetTreasuryPaymentsCycle():0;
+    *const_cast<CAmount*>(&rewards.nCharityReward) *= (heightValidator_.IsValidTreasuryBlockHeight(nHeight))? chainParameters_.GetTreasuryPaymentsCycle():0;
+    *const_cast<CAmount*>(&rewards.nLotteryReward) *= (heightValidator_.IsValidLotteryBlockHeight(nHeight))? chainParameters_.GetLotteryBlockCycle():0;
+    return rewards;
 }
 CAmount BlockSubsidyProvider::GetFullBlockValue(int nHeight) const
 {
@@ -212,21 +224,11 @@ SuperblockSubsidyProvider::SuperblockSubsidyProvider(
 
 CAmount SuperblockSubsidyProvider::GetTreasuryReward(int blockHeight) const
 {
+    CAmount totalReward = 0;
+    if(blockHeight==0) return totalReward;
     if(heightValidator_.IsValidTreasuryBlockHeight(blockHeight))
     {
-        CAmount totalReward = 0;
-        while(blockHeight>0 && !heightValidator_.IsValidTreasuryBlockHeight(--blockHeight))
-        {
-            totalReward+= blockSubsidyProvider_.GetBlockSubsidity(blockHeight).nTreasuryReward;
-        }
-        if(blockHeight>0 && heightValidator_.IsValidTreasuryBlockHeight(blockHeight))
-        {
-            totalReward+= blockSubsidyProvider_.GetBlockSubsidity(blockHeight).nTreasuryReward;
-        }
-        return totalReward;
+        return blockSubsidyProvider_.GetBlockSubsidity(blockHeight).nTreasuryReward;
     }
-    else
-    {
-        return CAmount(0);
-    }
+    return totalReward;
 }

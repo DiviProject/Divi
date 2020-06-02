@@ -48,8 +48,11 @@ class BlockSubsidyProvider: public I_BlockSubsidyProvider
 {
 private:
     const CChainParams& chainParameters_;
+    I_SuperblockHeightValidator& heightValidator_;
 public:
-    BlockSubsidyProvider(const CChainParams& chainParameters);
+    BlockSubsidyProvider(
+        const CChainParams& chainParameters,
+        I_SuperblockHeightValidator& heightValidator);
     virtual CBlockRewards GetBlockSubsidity(int nHeight) const;
     virtual CAmount GetFullBlockValue(int nHeight) const;
 };

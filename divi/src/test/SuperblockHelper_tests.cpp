@@ -115,16 +115,17 @@ public:
         ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
             .WillByDefault(
                 Invoke(
-                    [firstBlockRewards,secondBlockRewards,firstTreasuryBlockHeight](int nHeight)
+                    [firstBlockRewards,secondBlockRewards,firstTreasuryBlockHeight,secondTreasuryBlockHeight](int nHeight)
                     {
-                        if(nHeight < firstTreasuryBlockHeight)
+                        if(nHeight == firstTreasuryBlockHeight)
                         {
                             return firstBlockRewards;
                         }
-                        else
+                        else if(nHeight == secondTreasuryBlockHeight)
                         {
                             return secondBlockRewards;
                         }
+                        return CBlockRewards(0,0,0,0,0,0);
                     }
                 )
             );
@@ -140,13 +141,12 @@ public:
             );
 
         setChainParameters(chainParams);
-        CAmount firstExpectedRewards = firstTreasuryBlockHeight*firstBlockRewards.nTreasuryReward;
+        CAmount firstExpectedRewards = firstBlockRewards.nTreasuryReward;
         BOOST_CHECK_MESSAGE(
             superblockSubsidyProvider_->GetTreasuryReward(firstTreasuryBlockHeight) == firstExpectedRewards,
             "Inconsistent rewards");
         
-        CAmount secondExpectedRewards = 
-            (secondTreasuryBlockHeight-firstTreasuryBlockHeight)*secondBlockRewards.nTreasuryReward;
+        CAmount secondExpectedRewards = secondBlockRewards.nTreasuryReward;
         BOOST_CHECK_MESSAGE(
             superblockSubsidyProvider_->GetTreasuryReward(secondTreasuryBlockHeight) == secondExpectedRewards,
             "Inconsistent rewards");
@@ -163,6 +163,7 @@ public:
                         Invoke(
                             [blockRewards](int nHeight)
                             {
+                                *const_cast<CAmount*>(&blockRewards.nTreasuryReward) *= nHeight;
                                 return blockRewards;
                             }
                         )
@@ -211,6 +212,32 @@ public:
         }
     }
 
+    void checkBackwardCompatibility(const CChainParams& chainParams)
+    {
+        int transitionHeight =  SuperblockHeightValidator(chainParams).getTransitionHeight();
+        auto concreteHeightValidator = std::make_shared<SuperblockHeightValidator>(chainParams);
+        auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams,*concreteHeightValidator);
+        superblockSubsidyProvider_ = 
+            std::make_shared<SuperblockSubsidyProvider>(
+                chainParams,
+                *concreteHeightValidator,
+                *concreteBlockSubsidyProvider
+            );
+
+        for(int blockHeight =0; blockHeight < transitionHeight; blockHeight++)
+        {
+            if( concreteHeightValidator->IsValidTreasuryBlockHeight(blockHeight) )            
+            {
+                CAmount expectedTreasuryReward = Legacy::GetTreasuryReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
+                CAmount actualTreasuryReward = superblockSubsidyProvider_->GetTreasuryReward(blockHeight);
+
+                BOOST_CHECK_MESSAGE(actualTreasuryReward == expectedTreasuryReward,
+                    "Not backward compatible rewards! Height " << blockHeight 
+                    << "! " << actualTreasuryReward << " vs. " << expectedTreasuryReward);
+                if(actualTreasuryReward != expectedTreasuryReward) break;
+            }
+        }
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(BlockSubsidyProviderTests,SuperblockSubsidyProviderTestFixture)
@@ -229,6 +256,12 @@ BOOST_AUTO_TEST_CASE(willComputeAccumulatedBlockRewardsBetweenValidSuperblocks)
     
     computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::MAIN));
     computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::TESTNET));
+}
+
+BOOST_AUTO_TEST_CASE(willHaveBackwardCompatibleRewards)
+{
+    checkBackwardCompatibility(Params(CBaseChainParams::MAIN));
+    checkBackwardCompatibility(Params(CBaseChainParams::TESTNET));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -183,3 +183,19 @@ const CChainParams& SuperblockHeightValidator::getChainParameters() const
 {
     return chainParameters_;
 }
+
+BlockSubsidyProvider::BlockSubsidyProvider(
+    const CChainParams& chainParameters
+    ): chainParameters_(chainParameters)
+{
+
+}
+
+CBlockRewards BlockSubsidyProvider::GetBlockSubsidity(int nHeight) const
+{
+    return Legacy::GetBlockSubsidity(nHeight,chainParameters_);
+}
+CAmount BlockSubsidyProvider::GetFullBlockValue(int nHeight) const
+{
+    return Legacy::GetFullBlockValue(nHeight,chainParameters_);
+}

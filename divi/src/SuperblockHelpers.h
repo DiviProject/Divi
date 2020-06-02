@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <amount.h>
 #include <I_SuperblockHeightValidator.h>
+#include <I_BlockSubsidyProvider.h>
 
 class CBlockRewards;
 class CChainParams;
@@ -42,6 +43,15 @@ public:
 
     virtual bool IsValidLotteryBlockHeight(int nBlockHeight) const;
     virtual bool IsValidTreasuryBlockHeight(int nBlockHeight) const;
+};
+class BlockSubsidyProvider: public I_BlockSubsidyProvider
+{
+private:
+    const CChainParams& chainParameters_;
+public:
+    BlockSubsidyProvider(const CChainParams& chainParameters);
+    virtual CBlockRewards GetBlockSubsidity(int nHeight) const;
+    virtual CAmount GetFullBlockValue(int nHeight) const;
 };
 
 

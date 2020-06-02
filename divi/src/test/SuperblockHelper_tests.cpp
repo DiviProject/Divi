@@ -16,7 +16,7 @@ int getMaxBlockConflictHeight(CChainParams& chainParams)
     return 10*(lotteryCycleLength)*(treasuryCycleLength) + blockLotteryStart + blockTreasuryStart;
 }
 
-void CheckForBlockTypeConflicts(CChainParams& chainParams,SuperblockSubsidyHeightValidator& validator)
+void CheckForBlockTypeConflicts(CChainParams& chainParams,SuperblockHeightValidator& validator)
 {
     for(int blockHeight = 0; blockHeight <= getMaxBlockConflictHeight(chainParams); blockHeight++)
     {
@@ -32,17 +32,17 @@ BOOST_AUTO_TEST_CASE(willNeverAssertAHeightIsValidForBothTreasuryAndLottery)
 {
     {
         CChainParams& chainParams = Params(CBaseChainParams::MAIN);
-        SuperblockSubsidyHeightValidator validator(chainParams);
+        SuperblockHeightValidator validator(chainParams);
         CheckForBlockTypeConflicts(chainParams, validator);
     }
     {
         CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
-        SuperblockSubsidyHeightValidator validator(chainParams);
+        SuperblockHeightValidator validator(chainParams);
         CheckForBlockTypeConflicts(chainParams, validator);
     }
 }
 
-void checkBackwardCompatibilityOfSuperblockValidity(SuperblockSubsidyHeightValidator& validator)
+void checkBackwardCompatibilityOfSuperblockValidity(SuperblockHeightValidator& validator)
 {
     for(int blockHeight = 0; blockHeight < validator.getTransitionHeight(); blockHeight++)
     {
@@ -59,12 +59,12 @@ BOOST_AUTO_TEST_CASE(willBeBackWardCompatiblePriorToTransitionHeight)
 {
     {
         CChainParams& chainParams = Params(CBaseChainParams::MAIN);
-        SuperblockSubsidyHeightValidator validator(chainParams);
+        SuperblockHeightValidator validator(chainParams);
         checkBackwardCompatibilityOfSuperblockValidity(validator);
     }
     {
         CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
-        SuperblockSubsidyHeightValidator validator(chainParams);
+        SuperblockHeightValidator validator(chainParams);
         checkBackwardCompatibilityOfSuperblockValidity(validator);
     }
 }

@@ -27,7 +27,13 @@ int64_t GetLotteryReward(const CBlockRewards &rewards);
 CBlockRewards GetBlockSubsidity(int nHeight);
 CAmount GetFullBlockValue(int nHeight);
 
-class SuperblockSubsidyHeightValidator
+class I_SuperblockHeightValidator
+{
+public:
+    virtual bool IsValidLotteryBlockHeight(int nBlockHeight) const = 0;
+    virtual bool IsValidTreasuryBlockHeight(int nBlockHeight) const = 0;
+};
+class SuperblockHeightValidator: public I_SuperblockHeightValidator
 {
 private:
     const CChainParams& chainParameters_;
@@ -35,11 +41,13 @@ private:
     int superblockCycleLength_;
 
 public:
-    SuperblockSubsidyHeightValidator(const CChainParams& chainParameters);
+    SuperblockHeightValidator(const CChainParams& chainParameters);
     int getTransitionHeight() const;
     const CChainParams& getChainParameters() const;
 
-    bool IsValidLotteryBlockHeight(int nBlockHeight);
-    bool IsValidTreasuryBlockHeight(int nBlockHeight);
+    virtual bool IsValidLotteryBlockHeight(int nBlockHeight) const;
+    virtual bool IsValidTreasuryBlockHeight(int nBlockHeight) const;
 };
+
+
 #endif // SUPERBLOCK_HELPERS_H

@@ -110,13 +110,13 @@ int64_t Legacy::GetLotteryReward(const CBlockRewards &rewards, const CChainParam
 
 bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
-    SuperblockSubsidyHeightValidator incentives(Params());
+    SuperblockHeightValidator incentives(Params());
     return incentives.IsValidLotteryBlockHeight(nBlockHeight);
 }
 
 bool IsValidTreasuryBlockHeight(int nBlockHeight)
 {
-    SuperblockSubsidyHeightValidator incentives(Params());
+    SuperblockHeightValidator incentives(Params());
     return incentives.IsValidTreasuryBlockHeight(nBlockHeight);
 }
 
@@ -143,7 +143,7 @@ CAmount GetFullBlockValue(int nHeight)
 
 
 
-SuperblockSubsidyHeightValidator::SuperblockSubsidyHeightValidator(
+SuperblockHeightValidator::SuperblockHeightValidator(
     const CChainParams& chainParameters
     ): chainParameters_(chainParameters)
     , transitionHeight_(chainParameters_.GetLotteryBlockCycle()*chainParameters_.GetTreasuryPaymentsCycle())
@@ -151,7 +151,7 @@ SuperblockSubsidyHeightValidator::SuperblockSubsidyHeightValidator(
 {
 }
 
-bool SuperblockSubsidyHeightValidator::IsValidLotteryBlockHeight(int nBlockHeight)
+bool SuperblockHeightValidator::IsValidLotteryBlockHeight(int nBlockHeight) const
 {
     if(nBlockHeight < transitionHeight_)
     {
@@ -162,7 +162,7 @@ bool SuperblockSubsidyHeightValidator::IsValidLotteryBlockHeight(int nBlockHeigh
         return ((nBlockHeight - transitionHeight_) % superblockCycleLength_) == 0;
     }
 }
-bool SuperblockSubsidyHeightValidator::IsValidTreasuryBlockHeight(int nBlockHeight)
+bool SuperblockHeightValidator::IsValidTreasuryBlockHeight(int nBlockHeight) const
 {
     if(nBlockHeight < transitionHeight_)
     {
@@ -174,12 +174,12 @@ bool SuperblockSubsidyHeightValidator::IsValidTreasuryBlockHeight(int nBlockHeig
     }
 }
 
-int SuperblockSubsidyHeightValidator::getTransitionHeight() const
+int SuperblockHeightValidator::getTransitionHeight() const
 {
     return transitionHeight_;
 }
 
-const CChainParams& SuperblockSubsidyHeightValidator::getChainParameters() const
+const CChainParams& SuperblockHeightValidator::getChainParameters() const
 {
     return chainParameters_;
 }

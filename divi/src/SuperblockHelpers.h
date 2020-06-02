@@ -54,5 +54,18 @@ public:
     virtual CAmount GetFullBlockValue(int nHeight) const;
 };
 
-
+class SuperblockSubsidyProvider
+{
+private:
+    const CChainParams& chainParameters_;
+    I_SuperblockHeightValidator& heightValidator_;
+    I_BlockSubsidyProvider& blockSubsidyProvider_;
+public:
+    SuperblockSubsidyProvider(
+        const CChainParams& chainParameters, 
+        I_SuperblockHeightValidator& heightValidator,
+        I_BlockSubsidyProvider& blockSubsidyProvider);
+    
+    CAmount GetTreasuryReward(int blockHeight) const;
+};
 #endif // SUPERBLOCK_HELPERS_H

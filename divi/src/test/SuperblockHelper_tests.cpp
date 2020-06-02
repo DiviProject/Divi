@@ -1,8 +1,19 @@
 #include <test/test_only.h>
 #include <SuperblockHelpers.h>
 #include <chainparams.h>
+#include <MockSuperblockHeightValidator.h>
+#include <MockBlockSubsidyProvider.h>
+#include <memory>
 
 #include <boost/test/unit_test.hpp>
+
+using ::testing::Exactly;
+using ::testing::NiceMock;
+using ::testing::StrictMock;
+using ::testing::Return;
+using ::testing::Invoke;
+using ::testing::_;
+using ::testing::Ref;
 
 BOOST_AUTO_TEST_SUITE(SuperblockHelper_tests)
 
@@ -67,6 +78,65 @@ BOOST_AUTO_TEST_CASE(willBeBackWardCompatiblePriorToTransitionHeight)
         SuperblockHeightValidator validator(chainParams);
         checkBackwardCompatibilityOfSuperblockValidity(validator);
     }
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+
+class SuperblockSubsidyProviderTestFixture
+{
+public:
+    std::shared_ptr<MockSuperblockHeightValidator> heightValidator_;
+    std::shared_ptr<MockBlockSubsidyProvider> blockSubsidyProvider_;
+    std::shared_ptr<SuperblockSubsidyProvider> superblockSubsidyProvider_;
+
+    SuperblockSubsidyProviderTestFixture(
+        ): heightValidator_( new NiceMock<MockSuperblockHeightValidator>)
+        , blockSubsidyProvider_( new NiceMock<MockBlockSubsidyProvider> )
+        , superblockSubsidyProvider_(NULL)
+    {
+    }
+
+    void setChainParameters(const CChainParams& chainParameters)
+    {
+        superblockSubsidyProvider_ = 
+            std::make_shared<SuperblockSubsidyProvider>(
+                chainParameters,
+                *heightValidator_,
+                *blockSubsidyProvider_
+            );
+    }
+
+};
+
+BOOST_FIXTURE_TEST_SUITE(BlockSubsidyProviderTests,SuperblockSubsidyProviderTestFixture)
+
+BOOST_AUTO_TEST_CASE(willHaveZeroTreasuryRewardsIfNoHeightIsAValidSuperblock)
+{
+   {
+        CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
+
+        CBlockRewards fixedBlockRewards(100,100,100,100,100,100);
+        ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
+            .WillByDefault(
+                Invoke(
+                    [fixedBlockRewards](int nHeight)
+                    {
+                        return fixedBlockRewards;
+                    }
+                )
+            );
+        ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
+            .WillByDefault(
+                Return(false)
+            );
+        setChainParameters(chainParams);
+        for(int blockHeight = 0; blockHeight < 1000000; blockHeight++)
+        {
+            BOOST_CHECK_MESSAGE(
+                superblockSubsidyProvider_->GetTreasuryReward(blockHeight) == CAmount(0),
+                "Inconsistent rewards");
+        }
+   }    
 }
 
 BOOST_AUTO_TEST_SUITE_END()

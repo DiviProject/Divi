@@ -199,3 +199,18 @@ CAmount BlockSubsidyProvider::GetFullBlockValue(int nHeight) const
 {
     return Legacy::GetFullBlockValue(nHeight,chainParameters_);
 }
+
+SuperblockSubsidyProvider::SuperblockSubsidyProvider(
+    const CChainParams& chainParameters, 
+    I_SuperblockHeightValidator& heightValidator,
+    I_BlockSubsidyProvider& blockSubsidyProvider
+    ): chainParameters_(chainParameters)
+    , heightValidator_(heightValidator)
+    , blockSubsidyProvider_(blockSubsidyProvider)
+{
+}
+
+CAmount SuperblockSubsidyProvider::GetTreasuryReward(int blockHeight) const
+{
+    return CAmount(0);
+}

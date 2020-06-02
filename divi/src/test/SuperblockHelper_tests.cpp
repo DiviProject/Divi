@@ -106,15 +106,88 @@ public:
             );
     }
 
-};
+    void computesAccumulatedBlockRewardBetweenValidSuperblocks(const CChainParams& chainParams)
+    {
+        int firstTreasuryBlockHeight = 100;
+        int secondTreasuryBlockHeight = firstTreasuryBlockHeight+100;
+        CBlockRewards firstBlockRewards(3,5,7,11,13,17);
+        CBlockRewards secondBlockRewards(23,23,23,23,23,23);
+        ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
+            .WillByDefault(
+                Invoke(
+                    [firstBlockRewards,secondBlockRewards,firstTreasuryBlockHeight](int nHeight)
+                    {
+                        if(nHeight < firstTreasuryBlockHeight)
+                        {
+                            return firstBlockRewards;
+                        }
+                        else
+                        {
+                            return secondBlockRewards;
+                        }
+                    }
+                )
+            );
+        ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
+            .WillByDefault(
+                Invoke(
+                    [firstTreasuryBlockHeight,secondTreasuryBlockHeight](int nHeight)
+                    {
+                        return nHeight == firstTreasuryBlockHeight ||
+                            nHeight == secondTreasuryBlockHeight;
+                    }
+                )
+            );
 
-BOOST_FIXTURE_TEST_SUITE(BlockSubsidyProviderTests,SuperblockSubsidyProviderTestFixture)
+        setChainParameters(chainParams);
+        CAmount firstExpectedRewards = firstTreasuryBlockHeight*firstBlockRewards.nTreasuryReward;
+        BOOST_CHECK_MESSAGE(
+            superblockSubsidyProvider_->GetTreasuryReward(firstTreasuryBlockHeight) == firstExpectedRewards,
+            "Inconsistent rewards");
+        
+        CAmount secondExpectedRewards = 
+            (secondTreasuryBlockHeight-firstTreasuryBlockHeight-1)*secondBlockRewards.nTreasuryReward;
+        BOOST_CHECK_MESSAGE(
+            superblockSubsidyProvider_->GetTreasuryReward(secondTreasuryBlockHeight) == secondExpectedRewards,
+            "Inconsistent rewards");
+    }
 
-BOOST_AUTO_TEST_CASE(willHaveZeroTreasuryRewardsIfNoHeightIsAValidSuperblock)
-{
-   {
-        CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
+    void computesRewardAsMultipleOfBlockNumber(const CChainParams& chainParams)
+    {
+        for(int treasuryBlockHeight = 0; treasuryBlockHeight < 100; treasuryBlockHeight++)
+        {
+            {
+                CBlockRewards blockRewards(3,5,7,11,13,17);
+                ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
+                    .WillByDefault(
+                        Invoke(
+                            [blockRewards](int nHeight)
+                            {
+                                return blockRewards;
+                            }
+                        )
+                    );
+                ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
+                    .WillByDefault(
+                        Invoke(
+                            [treasuryBlockHeight](int nHeight)
+                            {
+                                return nHeight == treasuryBlockHeight;
+                            }
+                        )
+                    );
+                setChainParameters(chainParams);
+                CAmount expectedRewards = treasuryBlockHeight*blockRewards.nTreasuryReward;
 
+                BOOST_CHECK_MESSAGE(
+                    superblockSubsidyProvider_->GetTreasuryReward(treasuryBlockHeight) == expectedRewards,
+                    "Inconsistent rewards");
+            }
+        }
+    }
+
+    void zeroTreasuryRewardsIfNoHeightIsAValidSuperblock(const CChainParams& chainParams)
+    {
         CBlockRewards fixedBlockRewards(100,100,100,100,100,100);
         ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
             .WillByDefault(
@@ -136,89 +209,26 @@ BOOST_AUTO_TEST_CASE(willHaveZeroTreasuryRewardsIfNoHeightIsAValidSuperblock)
                 superblockSubsidyProvider_->GetTreasuryReward(blockHeight) == CAmount(0),
                 "Inconsistent rewards");
         }
-   }    
-}
+    }
 
+};
+
+BOOST_FIXTURE_TEST_SUITE(BlockSubsidyProviderTests,SuperblockSubsidyProviderTestFixture)
+BOOST_AUTO_TEST_CASE(willHaveZeroTreasuryRewardsIfNoHeightIsAValidSuperblock)
+{
+   zeroTreasuryRewardsIfNoHeightIsAValidSuperblock(Params(CBaseChainParams::MAIN));
+   zeroTreasuryRewardsIfNoHeightIsAValidSuperblock(Params(CBaseChainParams::TESTNET));    
+}
 BOOST_AUTO_TEST_CASE(willComputeRewardsAsAMultipleOfBlockNumberWhenOnlyOneSuperblockIsAvailable)
 {
-    for(int treasuryBlockHeight = 0; treasuryBlockHeight < 100; treasuryBlockHeight++)
-    {
-        {
-            CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
-            CBlockRewards blockRewards(3,5,7,11,13,17);
-            ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
-                .WillByDefault(
-                    Invoke(
-                        [blockRewards](int nHeight)
-                        {
-                            return blockRewards;
-                        }
-                    )
-                );
-            ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
-                .WillByDefault(
-                    Invoke(
-                        [treasuryBlockHeight](int nHeight)
-                        {
-                            return nHeight == treasuryBlockHeight;
-                        }
-                    )
-                );
-            setChainParameters(chainParams);
-            CAmount expectedRewards = treasuryBlockHeight*blockRewards.nTreasuryReward;
-
-            BOOST_CHECK_MESSAGE(
-                superblockSubsidyProvider_->GetTreasuryReward(treasuryBlockHeight) == expectedRewards,
-                "Inconsistent rewards");
-        }
-    }
+    computesRewardAsMultipleOfBlockNumber(Params(CBaseChainParams::MAIN));
+    computesRewardAsMultipleOfBlockNumber(Params(CBaseChainParams::TESTNET));
 }
-
 BOOST_AUTO_TEST_CASE(willComputeAccumulatedBlockRewardsBetweenValidSuperblocks)
 {
-    int firstTreasuryBlockHeight = 100;
-    int secondTreasuryBlockHeight = firstTreasuryBlockHeight+100;
-    CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
-    CBlockRewards firstBlockRewards(3,5,7,11,13,17);
-    CBlockRewards secondBlockRewards(23,23,23,23,23,23);
-    ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
-        .WillByDefault(
-            Invoke(
-                [firstBlockRewards,secondBlockRewards,firstTreasuryBlockHeight](int nHeight)
-                {
-                    if(nHeight < firstTreasuryBlockHeight)
-                    {
-                        return firstBlockRewards;
-                    }
-                    else
-                    {
-                        return secondBlockRewards;
-                    }
-                }
-            )
-        );
-    ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
-        .WillByDefault(
-            Invoke(
-                [firstTreasuryBlockHeight,secondTreasuryBlockHeight](int nHeight)
-                {
-                    return nHeight == firstTreasuryBlockHeight ||
-                        nHeight == secondTreasuryBlockHeight;
-                }
-            )
-        );
-
-    setChainParameters(chainParams);
-    CAmount firstExpectedRewards = firstTreasuryBlockHeight*firstBlockRewards.nTreasuryReward;
-    BOOST_CHECK_MESSAGE(
-        superblockSubsidyProvider_->GetTreasuryReward(firstTreasuryBlockHeight) == firstExpectedRewards,
-        "Inconsistent rewards");
     
-    CAmount secondExpectedRewards = 
-        (secondTreasuryBlockHeight-firstTreasuryBlockHeight-1)*secondBlockRewards.nTreasuryReward;
-    BOOST_CHECK_MESSAGE(
-        superblockSubsidyProvider_->GetTreasuryReward(secondTreasuryBlockHeight) == secondExpectedRewards,
-        "Inconsistent rewards");
+    computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::MAIN));
+    computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::TESTNET));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -143,6 +143,7 @@ BITCOIN_CORE_H = \
   i_walletBackupCreator.h \
   i_databaseWrapper.h \
   I_SuperblockHeightValidator.h \
+  I_BlockSubsidyProvider.h \
   datacachemanager.h \
   kernel.h \
   swifttx.h \

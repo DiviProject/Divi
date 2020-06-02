@@ -146,7 +146,7 @@ public:
             "Inconsistent rewards");
         
         CAmount secondExpectedRewards = 
-            (secondTreasuryBlockHeight-firstTreasuryBlockHeight-1)*secondBlockRewards.nTreasuryReward;
+            (secondTreasuryBlockHeight-firstTreasuryBlockHeight)*secondBlockRewards.nTreasuryReward;
         BOOST_CHECK_MESSAGE(
             superblockSubsidyProvider_->GetTreasuryReward(secondTreasuryBlockHeight) == secondExpectedRewards,
             "Inconsistent rewards");

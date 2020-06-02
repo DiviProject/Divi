@@ -2,6 +2,7 @@
 #define SUPERBLOCK_HELPERS_H
 #include <stdint.h>
 #include <amount.h>
+#include <I_SuperblockHeightValidator.h>
 
 class CBlockRewards;
 class CChainParams;
@@ -27,12 +28,6 @@ int64_t GetLotteryReward(const CBlockRewards &rewards);
 CBlockRewards GetBlockSubsidity(int nHeight);
 CAmount GetFullBlockValue(int nHeight);
 
-class I_SuperblockHeightValidator
-{
-public:
-    virtual bool IsValidLotteryBlockHeight(int nBlockHeight) const = 0;
-    virtual bool IsValidTreasuryBlockHeight(int nBlockHeight) const = 0;
-};
 class SuperblockHeightValidator: public I_SuperblockHeightValidator
 {
 private:

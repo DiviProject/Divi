@@ -139,4 +139,39 @@ BOOST_AUTO_TEST_CASE(willHaveZeroTreasuryRewardsIfNoHeightIsAValidSuperblock)
    }    
 }
 
+BOOST_AUTO_TEST_CASE(willComputeAccumulatedRewardsFromBlockSubsidyOnSuperblock)
+{
+
+    {
+        CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
+
+        CBlockRewards blockRewards(3,5,7,11,13,17);
+        ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
+            .WillByDefault(
+                Invoke(
+                    [blockRewards](int nHeight)
+                    {
+                        return blockRewards;
+                    }
+                )
+            );
+        ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
+            .WillByDefault(
+                Invoke(
+                    [](int nHeight)
+                    {
+                        return nHeight == 1;
+                    }
+                )
+            );
+        setChainParameters(chainParams);
+
+        CAmount expectedRewards = blockRewards.nTreasuryReward;
+
+        BOOST_CHECK_MESSAGE(
+            superblockSubsidyProvider_->GetTreasuryReward(1) == expectedRewards,
+            "Inconsistent rewards");
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

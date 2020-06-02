@@ -212,5 +212,5 @@ SuperblockSubsidyProvider::SuperblockSubsidyProvider(
 
 CAmount SuperblockSubsidyProvider::GetTreasuryReward(int blockHeight) const
 {
-    return CAmount(0);
+    return blockSubsidyProvider_.GetBlockSubsidity(blockHeight).nTreasuryReward;
 }

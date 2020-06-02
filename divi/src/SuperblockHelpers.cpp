@@ -212,5 +212,12 @@ SuperblockSubsidyProvider::SuperblockSubsidyProvider(
 
 CAmount SuperblockSubsidyProvider::GetTreasuryReward(int blockHeight) const
 {
-    return blockSubsidyProvider_.GetBlockSubsidity(blockHeight).nTreasuryReward;
+    if(heightValidator_.IsValidTreasuryBlockHeight(blockHeight))
+    {
+        return blockSubsidyProvider_.GetBlockSubsidity(blockHeight).nTreasuryReward*blockHeight;
+    }
+    else
+    {
+        return CAmount(0);
+    }
 }

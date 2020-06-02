@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(willHaveZeroTreasuryRewardsIfNoHeightIsAValidSuperblock)
                 Return(false)
             );
         setChainParameters(chainParams);
-        for(int blockHeight = 0; blockHeight < 1000000; blockHeight++)
+        for(int blockHeight = 0; blockHeight < 10000; blockHeight++)
         {
             BOOST_CHECK_MESSAGE(
                 superblockSubsidyProvider_->GetTreasuryReward(blockHeight) == CAmount(0),
@@ -141,36 +141,36 @@ BOOST_AUTO_TEST_CASE(willHaveZeroTreasuryRewardsIfNoHeightIsAValidSuperblock)
 
 BOOST_AUTO_TEST_CASE(willComputeAccumulatedRewardsFromBlockSubsidyOnSuperblock)
 {
-
+    for(int treasuryBlockHeight = 0; treasuryBlockHeight < 100; treasuryBlockHeight++)
     {
-        CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
+        {
+            CChainParams& chainParams = Params(CBaseChainParams::TESTNET);
+            CBlockRewards blockRewards(3,5,7,11,13,17);
+            ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
+                .WillByDefault(
+                    Invoke(
+                        [blockRewards](int nHeight)
+                        {
+                            return blockRewards;
+                        }
+                    )
+                );
+            ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
+                .WillByDefault(
+                    Invoke(
+                        [treasuryBlockHeight](int nHeight)
+                        {
+                            return nHeight == treasuryBlockHeight;
+                        }
+                    )
+                );
+            setChainParameters(chainParams);
+            CAmount expectedRewards = treasuryBlockHeight*blockRewards.nTreasuryReward;
 
-        CBlockRewards blockRewards(3,5,7,11,13,17);
-        ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
-            .WillByDefault(
-                Invoke(
-                    [blockRewards](int nHeight)
-                    {
-                        return blockRewards;
-                    }
-                )
-            );
-        ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
-            .WillByDefault(
-                Invoke(
-                    [](int nHeight)
-                    {
-                        return nHeight == 1;
-                    }
-                )
-            );
-        setChainParameters(chainParams);
-
-        CAmount expectedRewards = blockRewards.nTreasuryReward;
-
-        BOOST_CHECK_MESSAGE(
-            superblockSubsidyProvider_->GetTreasuryReward(1) == expectedRewards,
-            "Inconsistent rewards");
+            BOOST_CHECK_MESSAGE(
+                superblockSubsidyProvider_->GetTreasuryReward(treasuryBlockHeight) == expectedRewards,
+                "Inconsistent rewards");
+        }
     }
 }
 

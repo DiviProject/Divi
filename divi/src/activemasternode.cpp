@@ -384,7 +384,12 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
     {
         return false;
     }
-
+    
+    if(status == ACTIVE_MASTERNODE_STARTED)
+    {
+        LogPrintf("CActiveMasternode::EnableHotColdMasterNode() - Cannot modify masternode that is already started.\n");
+        return false;
+    }
     status = ACTIVE_MASTERNODE_STARTED;
 
     //The values below are needed for signing mnping messages going forward

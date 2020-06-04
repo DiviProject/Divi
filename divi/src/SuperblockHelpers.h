@@ -70,5 +70,6 @@ public:
     
     CAmount GetTreasuryReward(int blockHeight) const;
     CAmount GetCharityReward(int blockHeight) const;
+    CAmount GetLotteryReward(int blockHeight) const;
 };
 #endif // SUPERBLOCK_HELPERS_H

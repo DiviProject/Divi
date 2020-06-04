@@ -232,7 +232,7 @@ public:
                 CAmount actualTreasuryReward = superblockSubsidyProvider_->GetTreasuryReward(blockHeight);
 
                 BOOST_CHECK_MESSAGE(actualTreasuryReward == expectedTreasuryReward,
-                    "Not backward compatible rewards! Height " << blockHeight 
+                    "Treasury: Not backward compatible rewards! Height " << blockHeight 
                     << "! " << actualTreasuryReward << " vs. " << expectedTreasuryReward);
                 if(actualTreasuryReward != expectedTreasuryReward) break;
 
@@ -240,9 +240,19 @@ public:
                 CAmount actualCharityReward = superblockSubsidyProvider_->GetCharityReward(blockHeight);
 
                 BOOST_CHECK_MESSAGE(actualCharityReward == expectedCharityReward,
-                    "Not backward compatible rewards! Height " << blockHeight 
+                    "Charity: Not backward compatible rewards! Height " << blockHeight 
                     << "! " << actualCharityReward << " vs. " << expectedCharityReward);
                 if(actualCharityReward != expectedTreasuryReward) break;
+            }
+            if( concreteHeightValidator->IsValidLotteryBlockHeight(blockHeight) )
+            {
+                CAmount expectedLotteryReward = Legacy::GetLotteryReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
+                CAmount actualLotteryReward = superblockSubsidyProvider_->GetLotteryReward(blockHeight);
+
+                BOOST_CHECK_MESSAGE(actualLotteryReward == expectedLotteryReward,
+                    "Lottery: Not backward compatible rewards! Height " << blockHeight 
+                    << "! " << actualLotteryReward << " vs. " << expectedLotteryReward);
+                if(actualLotteryReward != expectedLotteryReward) break;
             }
         }
     }

@@ -238,3 +238,14 @@ CAmount SuperblockSubsidyProvider::GetCharityReward(int blockHeight) const
     }
     return totalReward;
 }
+
+CAmount SuperblockSubsidyProvider::GetLotteryReward(int blockHeight) const
+{
+    CAmount totalReward = 0;
+    if(blockHeight==0) return totalReward;
+    if(heightValidator_.IsValidLotteryBlockHeight(blockHeight))
+    {
+        return blockSubsidyProvider_.GetBlockSubsidity(blockHeight).nLotteryReward;
+    }
+    return totalReward;
+}

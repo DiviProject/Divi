@@ -11,7 +11,7 @@
 #include "protocol.h"
 #include "spork.h"
 
-CActiveMasternode activeMasternode;
+CActiveMasternode activeMasternode(masternodeConfig);
 
 //
 // Bootup the Masternode, look for a 10000 PIVX input and register on the network
@@ -346,7 +346,7 @@ vector<COutput> CActiveMasternode::SelectCoinsMasternode()
     // Temporary unlock MN coins from masternode.conf
     if (GetBoolArg("-mnconflock", true)) {
         uint256 mnTxHash;
-        BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfigurations_.getEntries()) {
             mnTxHash.SetHex(mne.getTxHash());
 
             int nIndex;
@@ -380,8 +380,10 @@ vector<COutput> CActiveMasternode::SelectCoinsMasternode()
 // when starting a Masternode, this can enable to run as a hot wallet with no funds
 bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newService)
 {
-    if (!fMasterNode)
+    if (!fMasterNode) 
+    {
         return false;
+    }
 
     status = ACTIVE_MASTERNODE_STARTED;
 

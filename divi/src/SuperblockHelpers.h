@@ -69,5 +69,6 @@ public:
         I_BlockSubsidyProvider& blockSubsidyProvider);
     
     CAmount GetTreasuryReward(int blockHeight) const;
+    CAmount GetCharityReward(int blockHeight) const;
 };
 #endif // SUPERBLOCK_HELPERS_H

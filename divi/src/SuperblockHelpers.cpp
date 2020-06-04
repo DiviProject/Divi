@@ -227,3 +227,14 @@ CAmount SuperblockSubsidyProvider::GetTreasuryReward(int blockHeight) const
     }
     return totalReward;
 }
+
+CAmount SuperblockSubsidyProvider::GetCharityReward(int blockHeight) const
+{
+    CAmount totalReward = 0;
+    if(blockHeight==0) return totalReward;
+    if(heightValidator_.IsValidTreasuryBlockHeight(blockHeight))
+    {
+        return blockSubsidyProvider_.GetBlockSubsidity(blockHeight).nCharityReward;
+    }
+    return totalReward;
+}

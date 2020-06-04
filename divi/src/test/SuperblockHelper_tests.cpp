@@ -235,6 +235,14 @@ public:
                     "Not backward compatible rewards! Height " << blockHeight 
                     << "! " << actualTreasuryReward << " vs. " << expectedTreasuryReward);
                 if(actualTreasuryReward != expectedTreasuryReward) break;
+
+                CAmount expectedCharityReward = Legacy::GetCharityReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
+                CAmount actualCharityReward = superblockSubsidyProvider_->GetCharityReward(blockHeight);
+
+                BOOST_CHECK_MESSAGE(actualCharityReward == expectedCharityReward,
+                    "Not backward compatible rewards! Height " << blockHeight 
+                    << "! " << actualCharityReward << " vs. " << expectedCharityReward);
+                if(actualCharityReward != expectedTreasuryReward) break;
             }
         }
     }

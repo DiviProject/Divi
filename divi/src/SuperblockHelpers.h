@@ -40,6 +40,8 @@ public:
     int getTransitionHeight() const;
     const CChainParams& getChainParameters() const;
 
+    virtual bool GetTreasuryBlockPaymentCycle(int nBlockHeight) const;
+    virtual bool GetLotteryBlockPaymentCycle(int nBlockHeight) const;
     virtual bool IsValidLotteryBlockHeight(int nBlockHeight) const;
     virtual bool IsValidTreasuryBlockHeight(int nBlockHeight) const;
 };

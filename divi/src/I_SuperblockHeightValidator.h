@@ -3,6 +3,8 @@
 class I_SuperblockHeightValidator
 {
 public:
+    virtual bool GetTreasuryBlockPaymentCycle(int nBlockHeight) const = 0;
+    virtual bool GetLotteryBlockPaymentCycle(int nBlockHeight) const = 0;
     virtual bool IsValidLotteryBlockHeight(int nBlockHeight) const = 0;
     virtual bool IsValidTreasuryBlockHeight(int nBlockHeight) const = 0;
 };

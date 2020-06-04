@@ -185,6 +185,15 @@ const CChainParams& SuperblockHeightValidator::getChainParameters() const
     return chainParameters_;
 }
 
+bool SuperblockHeightValidator::GetTreasuryBlockPaymentCycle(int nBlockHeight) const
+{
+    return (nBlockHeight < transitionHeight_)? chainParameters_.GetTreasuryPaymentsCycle(): superblockCycleLength_;
+}
+bool SuperblockHeightValidator::GetLotteryBlockPaymentCycle(int nBlockHeight) const
+{
+    return (nBlockHeight < transitionHeight_)? chainParameters_.GetLotteryBlockCycle(): superblockCycleLength_;
+}
+
 BlockSubsidyProvider::BlockSubsidyProvider(
     const CChainParams& chainParameters,
     I_SuperblockHeightValidator& heightValidator

@@ -27,7 +27,6 @@ int64_t GetCharityReward(const CBlockRewards &rewards);
 int64_t GetLotteryReward(const CBlockRewards &rewards);
 
 CBlockRewards GetBlockSubsidity(int nHeight);
-CAmount GetFullBlockValue(int nHeight);
 
 class SuperblockHeightValidator: public I_SuperblockHeightValidator
 {

@@ -142,11 +142,6 @@ CBlockRewards GetBlockSubsidity(int nHeight)
 {
     return Legacy::GetBlockSubsidity(nHeight,Params());
 }
-CAmount GetFullBlockValue(int nHeight)
-{
-    return Legacy::GetFullBlockValue(nHeight,Params());
-}
-
 
 
 SuperblockHeightValidator::SuperblockHeightValidator(

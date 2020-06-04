@@ -40,6 +40,8 @@ private:
     bool GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex);
 
     CMasternodeConfig& masternodeConfigurations_;
+
+    bool& fMasterNode_;
 public:
     // Initialized by init.cpp
     // Keys for the main Masternode
@@ -53,8 +55,10 @@ public:
     std::string notCapableReason;
 
     CActiveMasternode(
-        CMasternodeConfig& masternodeConfigurations
+        CMasternodeConfig& masternodeConfigurations,
+        bool& masterNodeEnabled
         ): masternodeConfigurations_(masternodeConfigurations)
+        , fMasterNode_(masterNodeEnabled)
     {
         status = ACTIVE_MASTERNODE_INITIAL;
     }

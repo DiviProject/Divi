@@ -11,7 +11,7 @@
 #include "protocol.h"
 #include "spork.h"
 
-CActiveMasternode activeMasternode(masternodeConfig);
+CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
 //
 // Bootup the Masternode, look for a 10000 PIVX input and register on the network
@@ -20,7 +20,7 @@ void CActiveMasternode::ManageStatus()
 {
     std::string errorMessage;
 
-    if (!fMasterNode) return;
+    if (!fMasterNode_) return;
 
     if (fDebug) LogPrintf("CActiveMasternode::ManageStatus() - Begin\n");
 
@@ -380,7 +380,7 @@ vector<COutput> CActiveMasternode::SelectCoinsMasternode()
 // when starting a Masternode, this can enable to run as a hot wallet with no funds
 bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newService)
 {
-    if (!fMasterNode) 
+    if (!fMasterNode_) 
     {
         return false;
     }

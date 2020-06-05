@@ -20,6 +20,8 @@ CAmount BlockSubsidy(int nHeight, const CChainParams& chainParameters)
     CAmount nSubsidy = std::max(
         1250 - 100* std::max(nHeight/chainParameters.SubsidyHalvingInterval() -1,0),
         250)*COIN;
+    
+    return nSubsidy;
 }
 CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParameters)
 {
@@ -28,6 +30,13 @@ CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParamete
         return 50 * COIN;
     } else if (nHeight == 1) {
         return chainParameters.premineAmt;
+    }
+
+    CAmount nSubsidy = 1250;
+    auto nSubsidyHalvingInterval = chainParameters.SubsidyHalvingInterval();
+    // first two intervals == two years, same amount 1250
+    for (int i = nSubsidyHalvingInterval * 2; i <= nHeight; i += nSubsidyHalvingInterval) {
+        nSubsidy -= 100;
     }
 
     if(sporkManager.IsSporkActive(SPORK_15_BLOCK_VALUE)) {
@@ -40,13 +49,6 @@ CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParamete
             // we expect that this value is in coins, not in satoshis
             return activeSpork.nBlockSubsidity * COIN;
         }
-    }
-
-    CAmount nSubsidy = 1250;
-    auto nSubsidyHalvingInterval = chainParameters.SubsidyHalvingInterval();
-    // first two intervals == two years, same amount 1250
-    for (int i = nSubsidyHalvingInterval * 2; i <= nHeight; i += nSubsidyHalvingInterval) {
-        nSubsidy -= 100;
     }
 
     return std::max<CAmount>(nSubsidy, 250) * COIN;

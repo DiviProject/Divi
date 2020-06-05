@@ -46,4 +46,11 @@ BOOST_AUTO_TEST_CASE(willNotAttemptToResetAlreadyStartedMasternode)
 }
 
 
+BOOST_AUTO_TEST_CASE(willNotEnableMasternodeOnEmptyConfigurations)
+{
+    CTxIn wrongTransaction;
+    CService service;
+    BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(wrongTransaction, service));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

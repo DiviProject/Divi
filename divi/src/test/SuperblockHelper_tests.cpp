@@ -105,6 +105,17 @@ public:
                 *blockSubsidyProvider_
             );
     }
+    void reset(const CChainParams& chainParameters)
+    {
+        heightValidator_.reset( new NiceMock<MockSuperblockHeightValidator>);
+        blockSubsidyProvider_.reset( new NiceMock<MockBlockSubsidyProvider> );
+        superblockSubsidyProvider_ = 
+            std::make_shared<SuperblockSubsidyProvider>(
+                chainParameters,
+                *heightValidator_,
+                *blockSubsidyProvider_
+            );
+    }
 
     void computesAccumulatedBlockRewardBetweenValidSuperblocks(const CChainParams& chainParams)
     {
@@ -297,43 +308,74 @@ public:
         }
     }
 
-    void checkSuperblockSubsidiesDoNotUndermintAfterHalving(const CChainParams& chainParams)
+    template <typename Action>
+    void checkSuperblockSubsidiesDoNotUndermintAfterHalving(
+        const CChainParams& chainParams, 
+        int superblockCycleLength,
+        bool superblockIsTreasuryBlock,
+        Action getReward)
     {
-        int subsidyHalvingHeight =  2*chainParams.SubsidyHalvingInterval();
-        int superblockCycleLength = chainParams.GetTreasuryPaymentsCycle();
-        int treasuryBlockAfterHalving = subsidyHalvingHeight - (subsidyHalvingHeight % superblockCycleLength) + superblockCycleLength;
-        int treasuryBlockBeforeHalving = treasuryBlockAfterHalving - superblockCycleLength;
+        reset(chainParams);
 
-        CBlockRewards firstBlockRewards = Legacy::GetBlockSubsidity(treasuryBlockBeforeHalving,chainParams);
-        CBlockRewards secondBlockRewards = Legacy::GetBlockSubsidity(treasuryBlockAfterHalving,chainParams);
+        int subsidyHalvingHeight =  2*chainParams.SubsidyHalvingInterval();
+        int superblockAfterHalving = subsidyHalvingHeight - (subsidyHalvingHeight % superblockCycleLength) + superblockCycleLength;
+        int superblockBeforeHalving = superblockAfterHalving - superblockCycleLength;
+
+        CBlockRewards firstBlockRewards = Legacy::GetBlockSubsidity(superblockBeforeHalving,chainParams);
+        CBlockRewards secondBlockRewards = Legacy::GetBlockSubsidity(superblockAfterHalving,chainParams);
         
-        ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
+        if(superblockIsTreasuryBlock)
+        {
+            ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
             .WillByDefault(
                 Invoke(
-                    [treasuryBlockAfterHalving,treasuryBlockBeforeHalving](int nHeight)
+                    [superblockAfterHalving,superblockBeforeHalving](int nHeight)
                     {
-                        return nHeight == treasuryBlockAfterHalving ||
-                            nHeight == treasuryBlockBeforeHalving;
+                        return nHeight == superblockAfterHalving ||
+                            nHeight == superblockBeforeHalving;
                     }
                 )
             );
-        ON_CALL(*heightValidator_,GetTreasuryBlockPaymentCycle(_))
+            ON_CALL(*heightValidator_,GetTreasuryBlockPaymentCycle(_))
+                .WillByDefault(
+                    Invoke(
+                        [superblockCycleLength](int nHeight)
+                        {
+                            return superblockCycleLength;
+                        }
+                    )
+                );
+        }
+        else
+        {
+            ON_CALL(*heightValidator_,IsValidLotteryBlockHeight(_))
             .WillByDefault(
                 Invoke(
-                    [superblockCycleLength](int nHeight)
+                    [superblockAfterHalving,superblockBeforeHalving](int nHeight)
                     {
-                        return superblockCycleLength;
+                        return nHeight == superblockAfterHalving ||
+                            nHeight == superblockBeforeHalving;
                     }
                 )
             );
-        CAmount expectedTreasuryReward = (treasuryBlockAfterHalving-subsidyHalvingHeight)* secondBlockRewards.nTreasuryReward +
-            (subsidyHalvingHeight-treasuryBlockBeforeHalving)* firstBlockRewards.nTreasuryReward;
+            ON_CALL(*heightValidator_,GetLotteryBlockPaymentCycle(_))
+                .WillByDefault(
+                    Invoke(
+                        [superblockCycleLength](int nHeight)
+                        {
+                            return superblockCycleLength;
+                        }
+                    )
+                );
+        }
+        CAmount expectedReward = (superblockAfterHalving-subsidyHalvingHeight)* getReward(secondBlockRewards) +
+            (subsidyHalvingHeight-superblockBeforeHalving)* getReward(firstBlockRewards);
             
         auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams,*heightValidator_);
-        CAmount actualTreasuryReward = concreteBlockSubsidyProvider->GetBlockSubsidity(treasuryBlockAfterHalving).nTreasuryReward;
+        CAmount actualReward = getReward(concreteBlockSubsidyProvider->GetBlockSubsidity(superblockAfterHalving));
         BOOST_CHECK_MESSAGE(
-            expectedTreasuryReward == actualTreasuryReward,
-            "Mismatched values "<< actualTreasuryReward << " vs. " << expectedTreasuryReward << "!"
+            expectedReward == actualReward,
+            "Mismatched values "<< actualReward << " vs. " << expectedReward << "!"
             );
     }
 };
@@ -351,7 +393,6 @@ BOOST_AUTO_TEST_CASE(willComputeRewardsAsAMultipleOfBlockNumberWhenOnlyOneSuperb
 }
 BOOST_AUTO_TEST_CASE(willComputeAccumulatedBlockRewardsBetweenValidSuperblocks)
 {
-    
     computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::MAIN));
     computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::TESTNET));
 }
@@ -376,8 +417,40 @@ BOOST_AUTO_TEST_CASE(willCorrectlyCountTheNumberOfBlocksBetweenSameTypeSuperbloc
 BOOST_AUTO_TEST_CASE(willNotMintLessCoinsThanRequired)
 {
     {
-        checkSuperblockSubsidiesDoNotUndermintAfterHalving(Params(CBaseChainParams::MAIN));
-        checkSuperblockSubsidiesDoNotUndermintAfterHalving(Params(CBaseChainParams::TESTNET));
+        const CChainParams& chainParams =Params(CBaseChainParams::MAIN);
+        checkSuperblockSubsidiesDoNotUndermintAfterHalving(
+            chainParams, 
+            chainParams.GetTreasuryPaymentsCycle(),
+            true,
+            [](const CBlockRewards& a){ return a.nTreasuryReward;});
+        checkSuperblockSubsidiesDoNotUndermintAfterHalving(
+            chainParams, 
+            chainParams.GetTreasuryPaymentsCycle(),
+            true,
+            [](const CBlockRewards& a){ return a.nCharityReward;});
+        checkSuperblockSubsidiesDoNotUndermintAfterHalving(
+            chainParams, 
+            chainParams.GetLotteryBlockCycle(),
+            false,
+            [](const CBlockRewards& a){ return a.nLotteryReward;});
+    }
+    {
+        const CChainParams& chainParams =Params(CBaseChainParams::TESTNET);
+        checkSuperblockSubsidiesDoNotUndermintAfterHalving(
+            chainParams, 
+            chainParams.GetTreasuryPaymentsCycle(),
+            true,
+            [](const CBlockRewards& a){ return a.nTreasuryReward;});
+        checkSuperblockSubsidiesDoNotUndermintAfterHalving(
+            chainParams, 
+            chainParams.GetTreasuryPaymentsCycle(),
+            true,
+            [](const CBlockRewards& a){ return a.nCharityReward;});
+        checkSuperblockSubsidiesDoNotUndermintAfterHalving(
+            chainParams, 
+            chainParams.GetLotteryBlockCycle(),
+            false,
+            [](const CBlockRewards& a){ return a.nLotteryReward;});
     }
 }
 

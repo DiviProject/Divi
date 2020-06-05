@@ -9,6 +9,18 @@
 extern CChain chainActive;
 
 // Legacy methods
+CAmount BlockSubsidy(int nHeight, const CChainParams& chainParameters)
+{
+    if(nHeight == 0) {
+        return 50 * COIN;
+    } else if (nHeight == 1) {
+        return chainParameters.premineAmt;
+    }
+
+    CAmount nSubsidy = std::max(
+        1250 - 100* std::max(nHeight/chainParameters.SubsidyHalvingInterval() -1,0),
+        250)*COIN;
+}
 CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParameters)
 {
 

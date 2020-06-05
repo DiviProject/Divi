@@ -81,7 +81,8 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
         auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
         BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight, nBlockTime);
 
-        if(activeSpork.IsValid()) {
+        if(activeSpork.IsValid() &&
+            (activeSpork.nActivationBlockHeight % chainParameters.SubsidyHalvingInterval()) == 0 ) {
             // we expect that this value is in coins, not in satoshis
             return helper(
                 activeSpork.nStakeReward,

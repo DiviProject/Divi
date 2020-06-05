@@ -31,7 +31,9 @@ CAmount Legacy::GetFullBlockValue(int nHeight, const CChainParams& chainParamete
         auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
         BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight, nBlockTime);
 
-        if(activeSpork.IsValid()) {
+        if(activeSpork.IsValid() && 
+            (activeSpork.nActivationBlockHeight % chainParameters.SubsidyHalvingInterval()) == 0 )
+        {
             // we expect that this value is in coins, not in satoshis
             return activeSpork.nBlockSubsidity * COIN;
         }

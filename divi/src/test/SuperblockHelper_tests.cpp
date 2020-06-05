@@ -296,6 +296,46 @@ public:
             }
         }
     }
+
+    void checkSuperblockSubsidiesDoNotUndermintAfterHalving(const CChainParams& chainParams)
+    {
+        int subsidyHalvingHeight =  2*chainParams.SubsidyHalvingInterval();
+        int superblockCycleLength = chainParams.GetTreasuryPaymentsCycle();
+        int treasuryBlockAfterHalving = subsidyHalvingHeight - (subsidyHalvingHeight % superblockCycleLength) + superblockCycleLength;
+        int treasuryBlockBeforeHalving = treasuryBlockAfterHalving - superblockCycleLength;
+
+        CBlockRewards firstBlockRewards = Legacy::GetBlockSubsidity(treasuryBlockBeforeHalving,chainParams);
+        CBlockRewards secondBlockRewards = Legacy::GetBlockSubsidity(treasuryBlockAfterHalving,chainParams);
+        
+        ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
+            .WillByDefault(
+                Invoke(
+                    [treasuryBlockAfterHalving,treasuryBlockBeforeHalving](int nHeight)
+                    {
+                        return nHeight == treasuryBlockAfterHalving ||
+                            nHeight == treasuryBlockBeforeHalving;
+                    }
+                )
+            );
+        ON_CALL(*heightValidator_,GetTreasuryBlockPaymentCycle(_))
+            .WillByDefault(
+                Invoke(
+                    [superblockCycleLength](int nHeight)
+                    {
+                        return superblockCycleLength;
+                    }
+                )
+            );
+        CAmount expectedTreasuryReward = (treasuryBlockAfterHalving-subsidyHalvingHeight)* secondBlockRewards.nTreasuryReward +
+            (subsidyHalvingHeight-treasuryBlockBeforeHalving)* firstBlockRewards.nTreasuryReward;
+            
+        auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams,*heightValidator_);
+        CAmount actualTreasuryReward = concreteBlockSubsidyProvider->GetBlockSubsidity(treasuryBlockAfterHalving).nTreasuryReward;
+        BOOST_CHECK_MESSAGE(
+            expectedTreasuryReward == actualTreasuryReward,
+            "Mismatched values "<< actualTreasuryReward << " vs. " << expectedTreasuryReward << "!"
+            );
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(BlockSubsidyProviderTests,SuperblockSubsidyProviderTestFixture)
@@ -330,6 +370,14 @@ BOOST_AUTO_TEST_CASE(willCorrectlyCountTheNumberOfBlocksBetweenSameTypeSuperbloc
     {
         checkLotteryBlockCycle(Params(CBaseChainParams::MAIN));
         checkLotteryBlockCycle(Params(CBaseChainParams::TESTNET));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(willNotMintLessCoinsThanRequired)
+{
+    {
+        checkSuperblockSubsidiesDoNotUndermintAfterHalving(Params(CBaseChainParams::MAIN));
+        checkSuperblockSubsidiesDoNotUndermintAfterHalving(Params(CBaseChainParams::TESTNET));
     }
 }
 

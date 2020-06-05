@@ -52,9 +52,16 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
 
     CAmount nLotteryPart = (nHeight >= chainParameters.GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
 
+    assert(nSubsidy >= nLotteryPart);
     nSubsidy -= nLotteryPart;
 
-    auto helper = [nHeight,&chainParameters,nSubsidy](int nStakePercentage, int nMasternodePercentage, int nTreasuryPercentage, int nProposalsPercentage, int nCharityPercentage) {
+    auto helper = [nHeight,&chainParameters,nSubsidy,nLotteryPart](
+        int nStakePercentage, 
+        int nMasternodePercentage,
+        int nTreasuryPercentage, 
+        int nProposalsPercentage, 
+        int nCharityPercentage) 
+    {
         auto helper = [nSubsidy](int percentage) {
             return (nSubsidy * percentage) / 100;
         };
@@ -64,7 +71,7 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
             helper(nMasternodePercentage), 
             helper(nTreasuryPercentage), 
             helper(nCharityPercentage),
-            50 * COIN, 
+            nLotteryPart, 
             helper(nProposalsPercentage));
     };
 
@@ -76,8 +83,12 @@ CBlockRewards Legacy::GetBlockSubsidity(int nHeight, const CChainParams& chainPa
 
         if(activeSpork.IsValid()) {
             // we expect that this value is in coins, not in satoshis
-            return helper(activeSpork.nStakeReward, activeSpork.nMasternodeReward,
-                          activeSpork.nTreasuryReward, activeSpork.nProposalsReward, activeSpork.nCharityReward);
+            return helper(
+                activeSpork.nStakeReward,
+                activeSpork.nMasternodeReward,
+                activeSpork.nTreasuryReward, 
+                activeSpork.nProposalsReward, 
+                activeSpork.nCharityReward);
         }
     }
 

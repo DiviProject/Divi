@@ -383,33 +383,53 @@ public:
 BOOST_FIXTURE_TEST_SUITE(BlockSubsidyProviderTests,SuperblockSubsidyProviderTestFixture)
 BOOST_AUTO_TEST_CASE(willHaveZeroTreasuryRewardsIfNoHeightIsAValidSuperblock)
 {
-   zeroTreasuryRewardsIfNoHeightIsAValidSuperblock(Params(CBaseChainParams::MAIN));
-   zeroTreasuryRewardsIfNoHeightIsAValidSuperblock(Params(CBaseChainParams::TESTNET));    
+   {
+       zeroTreasuryRewardsIfNoHeightIsAValidSuperblock(Params(CBaseChainParams::MAIN));
+   }
+   {
+       zeroTreasuryRewardsIfNoHeightIsAValidSuperblock(Params(CBaseChainParams::TESTNET));    
+   }
 }
 BOOST_AUTO_TEST_CASE(willComputeRewardsAsAMultipleOfBlockNumberWhenOnlyOneSuperblockIsAvailable)
 {
-    computesRewardAsMultipleOfBlockNumber(Params(CBaseChainParams::MAIN));
-    computesRewardAsMultipleOfBlockNumber(Params(CBaseChainParams::TESTNET));
+    {
+        computesRewardAsMultipleOfBlockNumber(Params(CBaseChainParams::MAIN));
+    }
+    {
+        computesRewardAsMultipleOfBlockNumber(Params(CBaseChainParams::TESTNET));
+    }
 }
 BOOST_AUTO_TEST_CASE(willComputeAccumulatedBlockRewardsBetweenValidSuperblocks)
 {
-    computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::MAIN));
-    computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::TESTNET));
+    {
+        computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::MAIN));
+    }
+    {
+        computesAccumulatedBlockRewardBetweenValidSuperblocks(Params(CBaseChainParams::TESTNET));
+    }
 }
 
 BOOST_AUTO_TEST_CASE(willHaveBackwardCompatibleRewards)
 {
-    checkBackwardCompatibility(Params(CBaseChainParams::MAIN));
-    checkBackwardCompatibility(Params(CBaseChainParams::TESTNET));
+    {
+        checkBackwardCompatibility(Params(CBaseChainParams::MAIN));
+    }
+    {
+        checkBackwardCompatibility(Params(CBaseChainParams::TESTNET));
+    }
 }
 BOOST_AUTO_TEST_CASE(willCorrectlyCountTheNumberOfBlocksBetweenSameTypeSuperblocks)
 {
     {
         checkTreasuryBlockCycle(Params(CBaseChainParams::MAIN));
+    }
+    {
         checkTreasuryBlockCycle(Params(CBaseChainParams::TESTNET));
     }
     {
         checkLotteryBlockCycle(Params(CBaseChainParams::MAIN));
+    }
+    {
         checkLotteryBlockCycle(Params(CBaseChainParams::TESTNET));
     }
 }

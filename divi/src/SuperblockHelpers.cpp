@@ -185,11 +185,12 @@ const CChainParams& SuperblockHeightValidator::getChainParameters() const
     return chainParameters_;
 }
 
-bool SuperblockHeightValidator::GetTreasuryBlockPaymentCycle(int nBlockHeight) const
+int SuperblockHeightValidator::GetTreasuryBlockPaymentCycle(int nBlockHeight) const
 {
-    return (nBlockHeight < transitionHeight_)? chainParameters_.GetTreasuryPaymentsCycle(): superblockCycleLength_;
+    return (nBlockHeight < transitionHeight_)? chainParameters_.GetTreasuryPaymentsCycle():
+        ((nBlockHeight <= transitionHeight_+1)? chainParameters_.GetTreasuryPaymentsCycle()+1: superblockCycleLength_);
 }
-bool SuperblockHeightValidator::GetLotteryBlockPaymentCycle(int nBlockHeight) const
+int SuperblockHeightValidator::GetLotteryBlockPaymentCycle(int nBlockHeight) const
 {
     return (nBlockHeight < transitionHeight_)? chainParameters_.GetLotteryBlockCycle(): superblockCycleLength_;
 }
@@ -206,9 +207,9 @@ BlockSubsidyProvider::BlockSubsidyProvider(
 CBlockRewards BlockSubsidyProvider::GetBlockSubsidity(int nHeight) const
 {
     CBlockRewards rewards = Legacy::GetBlockSubsidity(nHeight,chainParameters_);
-    *const_cast<CAmount*>(&rewards.nTreasuryReward) *= (heightValidator_.IsValidTreasuryBlockHeight(nHeight))? chainParameters_.GetTreasuryPaymentsCycle():0;
-    *const_cast<CAmount*>(&rewards.nCharityReward) *= (heightValidator_.IsValidTreasuryBlockHeight(nHeight))? chainParameters_.GetTreasuryPaymentsCycle():0;
-    *const_cast<CAmount*>(&rewards.nLotteryReward) *= (heightValidator_.IsValidLotteryBlockHeight(nHeight))? chainParameters_.GetLotteryBlockCycle():0;
+    *const_cast<CAmount*>(&rewards.nTreasuryReward) *= (heightValidator_.IsValidTreasuryBlockHeight(nHeight))? heightValidator_.GetTreasuryBlockPaymentCycle(nHeight):0;
+    *const_cast<CAmount*>(&rewards.nCharityReward) *= (heightValidator_.IsValidTreasuryBlockHeight(nHeight))? heightValidator_.GetTreasuryBlockPaymentCycle(nHeight):0;
+    *const_cast<CAmount*>(&rewards.nLotteryReward) *= (heightValidator_.IsValidLotteryBlockHeight(nHeight))? heightValidator_.GetLotteryBlockPaymentCycle(nHeight):0;
     return rewards;
 }
 CAmount BlockSubsidyProvider::GetFullBlockValue(int nHeight) const

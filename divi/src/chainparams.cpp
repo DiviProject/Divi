@@ -391,9 +391,9 @@ public:
         nLastPOWBlock = 100;
 
         nLotteryBlockStartBlock = 101;
-        nLotteryBlockCycle = 100; // one week
+        nLotteryBlockCycle = 200; // one week
         nTreasuryPaymentsStartBlock = 102;
-        nTreasuryPaymentsCycle = 101;
+        nTreasuryPaymentsCycle = 201;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1537971708;

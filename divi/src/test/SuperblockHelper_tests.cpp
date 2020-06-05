@@ -256,6 +256,46 @@ public:
             }
         }
     }
+
+    void checkTreasuryBlockCycle(const CChainParams& chainParams)
+    {
+        auto concreteHeightValidator = std::make_shared<SuperblockHeightValidator>(chainParams);
+        int lastKnownHeightOfTreasuryblock = 0;
+        for(int blockHeight =0; blockHeight < concreteHeightValidator->getTransitionHeight()*2; blockHeight++)
+        {
+            if(concreteHeightValidator->IsValidTreasuryBlockHeight(blockHeight))
+            {
+                int actual =(blockHeight-lastKnownHeightOfTreasuryblock);
+                int expected = concreteHeightValidator->GetTreasuryBlockPaymentCycle(blockHeight);
+                bool testPass = actual == expected;
+                BOOST_CHECK_MESSAGE(testPass, 
+                    "Invalid treasury block cycle length at height " << blockHeight 
+                    << "! " << actual << " vs. " << expected);
+                lastKnownHeightOfTreasuryblock = blockHeight;
+                if(!testPass) return;
+            }
+        }
+    }
+
+    void checkLotteryBlockCycle(const CChainParams& chainParams)
+    {
+        auto concreteHeightValidator = std::make_shared<SuperblockHeightValidator>(chainParams);
+        int lastKnownHeightOfLotteryblock = 0;
+        for(int blockHeight =0; blockHeight < concreteHeightValidator->getTransitionHeight()*2; blockHeight++)
+        {
+            if(concreteHeightValidator->IsValidLotteryBlockHeight(blockHeight))
+            {
+                int actual =(blockHeight-lastKnownHeightOfLotteryblock);
+                int expected = concreteHeightValidator->GetLotteryBlockPaymentCycle(blockHeight);
+                bool testPass = actual == expected;
+                BOOST_CHECK_MESSAGE(testPass, 
+                    "Invalid lottery block cycle length at height " << blockHeight 
+                    << "! " << actual << " vs. " << expected);
+                lastKnownHeightOfLotteryblock = blockHeight;
+                if(!testPass) return;
+            }
+        }
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(BlockSubsidyProviderTests,SuperblockSubsidyProviderTestFixture)
@@ -280,6 +320,17 @@ BOOST_AUTO_TEST_CASE(willHaveBackwardCompatibleRewards)
 {
     checkBackwardCompatibility(Params(CBaseChainParams::MAIN));
     checkBackwardCompatibility(Params(CBaseChainParams::TESTNET));
+}
+BOOST_AUTO_TEST_CASE(willCorrectlyCountTheNumberOfBlocksBetweenSameTypeSuperblocks)
+{
+    {
+        checkTreasuryBlockCycle(Params(CBaseChainParams::MAIN));
+        checkTreasuryBlockCycle(Params(CBaseChainParams::TESTNET));
+    }
+    {
+        checkLotteryBlockCycle(Params(CBaseChainParams::MAIN));
+        checkLotteryBlockCycle(Params(CBaseChainParams::TESTNET));
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

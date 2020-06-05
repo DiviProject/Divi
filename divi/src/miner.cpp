@@ -23,6 +23,7 @@
 #endif
 #include "masternode-payments.h"
 #include "spork.h"
+#include "SuperblockHelpers.h"
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>

@@ -390,7 +390,6 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
         LogPrintf("CActiveMasternode::EnableHotColdMasterNode() - Cannot modify masternode that is already started.\n");
         return false;
     }
-    status = ACTIVE_MASTERNODE_STARTED;
 
     bool transactionBelongsToMasternode = false;
     BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfigurations_.getEntries()) {
@@ -410,6 +409,7 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
     }
     
     //The values below are needed for signing mnping messages going forward
+    status = ACTIVE_MASTERNODE_STARTED;
     vin = newVin;
     service = newService;
 

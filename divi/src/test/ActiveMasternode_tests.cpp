@@ -30,58 +30,59 @@ public:
 BOOST_FIXTURE_TEST_SUITE(ActiveMasternodeTests, ActiveMasternodeTestFixture)
 
 
-BOOST_AUTO_TEST_CASE(willNotAttemptToResetAlreadyStartedMasternode)
+BOOST_AUTO_TEST_CASE(willNotAttemptToResetAlreadyStartedMasternodeIfConfigurationIsUnknown)
 {
-    {
-        activeMasternode_->status = ACTIVE_MASTERNODE_STARTED;
-        CTxIn txIn;
-        CService service;
-        BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(txIn, service));
-    }
-    {
-        activeMasternode_->status = ACTIVE_MASTERNODE_STARTED;
-        CTxIn txIn;
-        CService service;
-        AddDummyConfiguration(txIn, service);
-        BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(txIn, service));
-    }
+    activeMasternode_->status = ACTIVE_MASTERNODE_STARTED;
+    CTxIn txIn;
+    CService service;
+    BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(txIn, service));
 }
 
+BOOST_AUTO_TEST_CASE(willNotAttemptToResetAlreadyStartedMasternodeIfConfigurationIsKnown)
+{
+    activeMasternode_->status = ACTIVE_MASTERNODE_STARTED;
+    CTxIn txIn;
+    CService service;
+    AddDummyConfiguration(txIn, service);
+    BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(txIn, service));
+}
 
 BOOST_AUTO_TEST_CASE(willNotEnableMasternodeOnEmptyConfigurations)
 {
     CTxIn wrongTransaction;
     CService service;
     BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(wrongTransaction, service));
+    BOOST_CHECK(activeMasternode_->status != ACTIVE_MASTERNODE_STARTED);
 }
 
 BOOST_AUTO_TEST_CASE(willEnableMasternodeOnMatchingUTXO)
 {
-    {
-        uint256 dummyHash = GetRandHash();
-        uint32_t out = 0;
-        CTxIn validTxIn (dummyHash, out);
-        CService service;
+    uint256 dummyHash = GetRandHash();
+    uint32_t out = 0;
+    CTxIn validTxIn (dummyHash, out);
+    CService service;
 
-        AddDummyConfiguration(validTxIn, service);
-        BOOST_CHECK(activeMasternode_->EnableHotColdMasterNode(validTxIn, service));
-    }
+    AddDummyConfiguration(validTxIn, service);
+    BOOST_CHECK(activeMasternode_->EnableHotColdMasterNode(validTxIn, service));
+    BOOST_CHECK(activeMasternode_->status == ACTIVE_MASTERNODE_STARTED);
+}
 
-    {
-        uint32_t out = 0;
+BOOST_AUTO_TEST_CASE(willNotEnableMasternodeOnMismatchedUTXO)
+{
+    uint32_t out = 0;
 
-        uint256 correctDummyHash = GetRandHash();
-        CTxIn validTxIn (correctDummyHash, out);
+    uint256 correctDummyHash = GetRandHash();
+    CTxIn validTxIn (correctDummyHash, out);
 
-        uint256 wrongDummyHash = GetRandHash();
-        CTxIn wrongTxIn (wrongDummyHash, out);
+    uint256 wrongDummyHash = GetRandHash();
+    CTxIn wrongTxIn (wrongDummyHash, out);
 
 
-        CService service;
-        
-        AddDummyConfiguration(validTxIn, service);
-        BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(wrongTxIn, service));
-    }
+    CService service;
+    
+    AddDummyConfiguration(validTxIn, service);
+    BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(wrongTxIn, service));
+    BOOST_CHECK(activeMasternode_->status != ACTIVE_MASTERNODE_STARTED);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

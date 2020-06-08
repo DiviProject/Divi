@@ -311,3 +311,25 @@ CAmount SuperblockSubsidyProvider::GetLotteryReward(int blockHeight) const
     }
     return totalReward;
 }
+
+SuperblockSubsidyContainer::SuperblockSubsidyContainer(
+    const CChainParams& chainParameters
+    ): chainParameters_(chainParameters)
+    , heightValidator_(std::make_shared<SuperblockHeightValidator>(chainParameters_))
+    , blockSubsidies_(std::make_shared<BlockSubsidyProvider>(chainParameters_,*heightValidator_))
+    , superblockSubsidies_(chainParameters_,*heightValidator_,*blockSubsidies_)
+{
+}
+
+const I_SuperblockHeightValidator& SuperblockSubsidyContainer::superblockHeightValidator() const
+{
+    return *heightValidator_;
+}
+const I_BlockSubsidyProvider& SuperblockSubsidyContainer::blockSubsidiesProvider() const
+{
+    return *blockSubsidies_;
+}
+const SuperblockSubsidyProvider& SuperblockSubsidyContainer::superblockSubsidiesProvider() const
+{
+    return superblockSubsidies_;
+}

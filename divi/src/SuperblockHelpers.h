@@ -4,6 +4,7 @@
 #include <amount.h>
 #include <I_SuperblockHeightValidator.h>
 #include <I_BlockSubsidyProvider.h>
+#include <memory>
 
 class CBlockRewards;
 class CChainParams;
@@ -76,5 +77,19 @@ public:
     CAmount GetTreasuryReward(int blockHeight) const;
     CAmount GetCharityReward(int blockHeight) const;
     CAmount GetLotteryReward(int blockHeight) const;
+};
+
+class SuperblockSubsidyContainer
+{
+private:
+    const CChainParams& chainParameters_;
+    std::shared_ptr<I_SuperblockHeightValidator> heightValidator_;
+    std::shared_ptr<I_BlockSubsidyProvider> blockSubsidies_;
+    SuperblockSubsidyProvider superblockSubsidies_;
+public:
+    SuperblockSubsidyContainer(const CChainParams& chainParameters);
+    const I_SuperblockHeightValidator& superblockHeightValidator() const;
+    const I_BlockSubsidyProvider& blockSubsidiesProvider() const;
+    const SuperblockSubsidyProvider& superblockSubsidiesProvider() const;
 };
 #endif // SUPERBLOCK_HELPERS_H

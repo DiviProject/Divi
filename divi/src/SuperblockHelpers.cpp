@@ -126,37 +126,6 @@ int64_t Legacy::GetLotteryReward(const CBlockRewards &rewards, const CChainParam
     return rewards.nLotteryReward*chainParameters.GetLotteryBlockCycle();
 }
 
-// Non-Legacy methods
-
-bool IsValidLotteryBlockHeight(int nBlockHeight)
-{
-    SuperblockHeightValidator incentives(Params());
-    return incentives.IsValidLotteryBlockHeight(nBlockHeight);
-}
-
-bool IsValidTreasuryBlockHeight(int nBlockHeight)
-{
-    SuperblockHeightValidator incentives(Params());
-    return incentives.IsValidTreasuryBlockHeight(nBlockHeight);
-}
-
-int64_t GetTreasuryReward(const CBlockRewards &rewards)
-{
-    return Legacy::GetTreasuryReward(rewards,Params());
-}
-int64_t GetCharityReward(const CBlockRewards &rewards)
-{
-    return Legacy::GetCharityReward(rewards,Params());
-}
-int64_t GetLotteryReward(const CBlockRewards &rewards)
-{
-    return Legacy::GetLotteryReward(rewards,Params());
-}
-CBlockRewards GetBlockSubsidity(int nHeight)
-{
-    return Legacy::GetBlockSubsidity(nHeight,Params());
-}
-
 
 SuperblockHeightValidator::SuperblockHeightValidator(
     const CChainParams& chainParameters
@@ -332,4 +301,35 @@ const I_BlockSubsidyProvider& SuperblockSubsidyContainer::blockSubsidiesProvider
 const SuperblockSubsidyProvider& SuperblockSubsidyContainer::superblockSubsidiesProvider() const
 {
     return superblockSubsidies_;
+}
+
+// Non-Legacy methods
+
+bool IsValidLotteryBlockHeight(int nBlockHeight)
+{
+    SuperblockHeightValidator incentives(Params());
+    return incentives.IsValidLotteryBlockHeight(nBlockHeight);
+}
+
+bool IsValidTreasuryBlockHeight(int nBlockHeight)
+{
+    SuperblockHeightValidator incentives(Params());
+    return incentives.IsValidTreasuryBlockHeight(nBlockHeight);
+}
+
+int64_t GetTreasuryReward(const CBlockRewards &rewards)
+{
+    return Legacy::GetTreasuryReward(rewards,Params());
+}
+int64_t GetCharityReward(const CBlockRewards &rewards)
+{
+    return Legacy::GetCharityReward(rewards,Params());
+}
+int64_t GetLotteryReward(const CBlockRewards &rewards)
+{
+    return Legacy::GetLotteryReward(rewards,Params());
+}
+CBlockRewards GetBlockSubsidity(int nHeight)
+{
+    return Legacy::GetBlockSubsidity(nHeight,Params());
 }

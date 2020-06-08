@@ -23,9 +23,9 @@ namespace Legacy
 bool IsValidLotteryBlockHeight(int nBlockHeight);
 bool IsValidTreasuryBlockHeight(int nBlockHeight);
 
-int64_t GetTreasuryReward(const CBlockRewards &rewards);
-int64_t GetCharityReward(const CBlockRewards &rewards);
-int64_t GetLotteryReward(const CBlockRewards &rewards);
+CAmount GetTreasuryReward(int blockHeight);
+CAmount GetCharityReward(int blockHeight);
+CAmount GetLotteryReward(int blockHeight);
 
 CBlockRewards GetBlockSubsidity(int nHeight);
 

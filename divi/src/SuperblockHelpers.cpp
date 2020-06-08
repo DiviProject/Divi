@@ -307,29 +307,33 @@ const SuperblockSubsidyProvider& SuperblockSubsidyContainer::superblockSubsidies
 
 bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
-    SuperblockHeightValidator incentives(Params());
-    return incentives.IsValidLotteryBlockHeight(nBlockHeight);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    return subsidiesContainer.superblockHeightValidator().IsValidLotteryBlockHeight(nBlockHeight);
 }
 
 bool IsValidTreasuryBlockHeight(int nBlockHeight)
 {
-    SuperblockHeightValidator incentives(Params());
-    return incentives.IsValidTreasuryBlockHeight(nBlockHeight);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    return subsidiesContainer.superblockHeightValidator().IsValidTreasuryBlockHeight(nBlockHeight);
 }
 
-int64_t GetTreasuryReward(const CBlockRewards &rewards)
+CAmount GetTreasuryReward(int blockHeight)
 {
-    return Legacy::GetTreasuryReward(rewards,Params());
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    return subsidiesContainer.superblockSubsidiesProvider().GetTreasuryReward(blockHeight);
 }
-int64_t GetCharityReward(const CBlockRewards &rewards)
+CAmount GetCharityReward(int blockHeight)
 {
-    return Legacy::GetCharityReward(rewards,Params());
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    return subsidiesContainer.superblockSubsidiesProvider().GetCharityReward(blockHeight);
 }
-int64_t GetLotteryReward(const CBlockRewards &rewards)
+CAmount GetLotteryReward(int blockHeight)
 {
-    return Legacy::GetLotteryReward(rewards,Params());
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    return subsidiesContainer.superblockSubsidiesProvider().GetLotteryReward(blockHeight);
 }
 CBlockRewards GetBlockSubsidity(int nHeight)
 {
-    return Legacy::GetBlockSubsidity(nHeight,Params());
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    return subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
 }

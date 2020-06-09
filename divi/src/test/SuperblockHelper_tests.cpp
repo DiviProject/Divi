@@ -256,7 +256,7 @@ public:
             if( concreteHeightValidator->IsValidTreasuryBlockHeight(blockHeight) )            
             {
                 CAmount expectedTreasuryReward = Legacy::GetTreasuryReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
-                CAmount actualTreasuryReward = GetTreasuryReward(blockHeight,*concreteHeightValidator, *concreteBlockSubsidyProvider);
+                CAmount actualTreasuryReward = concreteBlockSubsidyProvider->GetBlockSubsidity(blockHeight).nTreasuryReward;
 
                 BOOST_CHECK_MESSAGE(actualTreasuryReward == expectedTreasuryReward,
                     "Treasury: Not backward compatible rewards! Height " << blockHeight 
@@ -264,7 +264,7 @@ public:
                 if(actualTreasuryReward != expectedTreasuryReward) break;
 
                 CAmount expectedCharityReward = Legacy::GetCharityReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
-                CAmount actualCharityReward = GetCharityReward(blockHeight,*concreteHeightValidator, *concreteBlockSubsidyProvider);
+                CAmount actualCharityReward = concreteBlockSubsidyProvider->GetBlockSubsidity(blockHeight).nCharityReward;
 
                 BOOST_CHECK_MESSAGE(actualCharityReward == expectedCharityReward,
                     "Charity: Not backward compatible rewards! Height " << blockHeight 
@@ -274,7 +274,7 @@ public:
             if( concreteHeightValidator->IsValidLotteryBlockHeight(blockHeight) )
             {
                 CAmount expectedLotteryReward = Legacy::GetLotteryReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
-                CAmount actualLotteryReward = GetLotteryReward(blockHeight,*concreteHeightValidator, *concreteBlockSubsidyProvider);
+                CAmount actualLotteryReward = concreteBlockSubsidyProvider->GetBlockSubsidity(blockHeight).nLotteryReward;
 
                 BOOST_CHECK_MESSAGE(actualLotteryReward == expectedLotteryReward,
                     "Lottery: Not backward compatible rewards! Height " << blockHeight 

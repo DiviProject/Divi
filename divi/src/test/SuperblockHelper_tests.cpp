@@ -228,7 +228,7 @@ public:
             );
         setChainParameters(chainParams);
         auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams,*heightValidator_);
-        for(int blockHeight = 0; blockHeight < 10000; blockHeight++)
+        for(int blockHeight = 0; blockHeight < chainParams.GetTreasuryPaymentsCycle()*10; blockHeight++)
         {
             BOOST_CHECK_MESSAGE(
                 concreteBlockSubsidyProvider->GetBlockSubsidity(blockHeight).nTreasuryReward == CAmount(0),

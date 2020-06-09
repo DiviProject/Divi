@@ -49,8 +49,8 @@ static CBitcoinAddress CharityPaymentAddress()
 static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
     auto rewards = GetBlockSubsidity(nHeight - 1);
-    tx.vout.emplace_back(GetTreasuryReward(rewards), GetScriptForDestination(TreasuryPaymentAddress().Get()));
-    tx.vout.emplace_back(GetCharityReward(rewards), GetScriptForDestination(CharityPaymentAddress().Get()));
+    tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination(TreasuryPaymentAddress().Get()));
+    tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination(CharityPaymentAddress().Get()));
 }
 
 static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
@@ -68,7 +68,7 @@ static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
     auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
     // when we call this we need to have exactly 11 winners
 
-    auto nLotteryReward = GetLotteryReward(rewards);
+    auto nLotteryReward = rewards.nLotteryReward;
     auto nBigReward = nLotteryReward / 2;
     auto nSmallReward = nBigReward / 10;
 
@@ -93,7 +93,7 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
     };
 
-    auto nLotteryReward = GetLotteryReward(GetBlockSubsidity(nHeight));
+    auto nLotteryReward = GetBlockSubsidity(nHeight).nLotteryReward;
     auto nBigReward = nLotteryReward / 2;
     auto nSmallReward = nBigReward / 10;
 
@@ -112,8 +112,8 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
 static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 {
     auto rewards = GetBlockSubsidity(nHeight);
-    auto charityPart = GetCharityReward(rewards);
-    auto treasuryPart = GetTreasuryReward(rewards);
+    auto charityPart = rewards.nCharityReward;
+    auto treasuryPart = rewards.nTreasuryReward;
 
     auto verifyPayment = [&tx](CBitcoinAddress address, CAmount amount) {
 
@@ -161,10 +161,10 @@ bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue,
 
     // here we expect treasury block payment
     if(IsValidTreasuryBlockHeight(nHeight)) {
-        nExpectedMintCombined += (GetTreasuryReward(nExpectedValue) + GetCharityReward(nExpectedValue));
+        nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
     }
     else if(IsValidLotteryBlockHeight(nHeight)) {
-        nExpectedMintCombined += GetLotteryReward(nExpectedValue);
+        nExpectedMintCombined += nExpectedValue.nLotteryReward;
     }
 
     if (nMinted > nExpectedMintCombined) {

@@ -26,8 +26,40 @@ CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParamet
     auto expectedSubsidy = [startingExpectedSubsidy,yearlySubsidyReduction,minimumSubsidy](int year)->CAmount{
         return (year>1)? std::max(startingExpectedSubsidy - yearlySubsidyReduction*(year-1),minimumSubsidy): startingExpectedSubsidy;
     };
+    auto getTreasuryAndCharityContributions = [](CAmount legacySubsidyValue)
+    {
+        legacySubsidyValue -= 50*COIN;
+        return legacySubsidyValue*17/100;
+    };
+    auto getLotteryContributions = [](CAmount legacySubsidyValue)
+    {
+        return 50*COIN;
+    };
 
     CAmount expectedSubsidyValue = expectedSubsidy(nHeight/numberOfBlocksPerHalving);
+    if(IsValidTreasuryBlockHeight(nHeight))
+    {
+        expectedSubsidyValue -= 50*COIN;
+        expectedSubsidyValue = expectedSubsidyValue*83/100;
+        for(int blockHeight = nHeight-1; blockHeight >= (nHeight - chainParameters.GetTreasuryPaymentsCycle()); blockHeight--  )
+        {
+            expectedSubsidyValue += getTreasuryAndCharityContributions(expectedSubsidy(blockHeight/numberOfBlocksPerHalving));
+        }
+    }
+    else if(IsValidLotteryBlockHeight(nHeight))
+    {
+        expectedSubsidyValue -= 50*COIN;
+        expectedSubsidyValue = expectedSubsidyValue*83/100;
+        for(int blockHeight = nHeight-1; blockHeight >= (nHeight - chainParameters.GetLotteryBlockCycle()); blockHeight--  )
+        {
+            expectedSubsidyValue += getLotteryContributions(expectedSubsidy(blockHeight/numberOfBlocksPerHalving));
+        }
+    }
+    else if(nHeight > chainParameters.LAST_POW_BLOCK())
+    {
+        expectedSubsidyValue -= 50*COIN;
+        return expectedSubsidyValue*83/100;
+    }
     return expectedSubsidyValue;
 }
 

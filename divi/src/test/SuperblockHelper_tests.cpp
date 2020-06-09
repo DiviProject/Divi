@@ -6,6 +6,7 @@
 #include <memory>
 #include <LegacyBlockSubsidies.h>
 #include <SuperblockHeightValidator.h>
+#include <BlockSubsidyProvider.h>
 
 #include <boost/test/unit_test.hpp>
 

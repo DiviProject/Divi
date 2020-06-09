@@ -105,6 +105,7 @@ BITCOIN_CORE_H = \
   bip39_english.h \
   bloom.h \
   blockmap.h\
+  BlockSubsidyProvider.h \
   BlockRewards.h \
   chain.h \
   chainparams.h \
@@ -302,6 +303,7 @@ libbitcoin_wallet_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_SOURCES = \
   activemasternode.cpp \
   bip38.cpp \
+  BlockSubsidyProvider.cpp \
   obfuscation.cpp \
   obfuscation-relay.cpp \
   db.cpp \

@@ -90,34 +90,53 @@ class SuperblockSubsidyProviderTestFixture
 public:
     std::shared_ptr<MockSuperblockHeightValidator> heightValidator_;
     std::shared_ptr<MockBlockSubsidyProvider> blockSubsidyProvider_;
-    std::shared_ptr<SuperblockSubsidyProvider> superblockSubsidyProvider_;
+
+    CAmount GetTreasuryReward(int blockHeight, I_SuperblockHeightValidator& heightValidator, I_BlockSubsidyProvider& blockSubsidyProvider) const
+    {
+        CAmount totalReward = 0;
+        if(blockHeight==0) return totalReward;
+        if(heightValidator.IsValidTreasuryBlockHeight(blockHeight))
+        {
+            return blockSubsidyProvider.GetBlockSubsidity(blockHeight).nTreasuryReward;
+        }
+        return totalReward;
+    }
+
+    CAmount GetCharityReward(int blockHeight, I_SuperblockHeightValidator& heightValidator, I_BlockSubsidyProvider& blockSubsidyProvider) const
+    {
+        CAmount totalReward = 0;
+        if(blockHeight==0) return totalReward;
+        if(heightValidator.IsValidTreasuryBlockHeight(blockHeight))
+        {
+            return blockSubsidyProvider.GetBlockSubsidity(blockHeight).nCharityReward;
+        }
+        return totalReward;
+    }
+
+    CAmount GetLotteryReward(int blockHeight, I_SuperblockHeightValidator& heightValidator, I_BlockSubsidyProvider& blockSubsidyProvider) const
+    {
+        CAmount totalReward = 0;
+        if(blockHeight==0) return totalReward;
+        if(heightValidator.IsValidLotteryBlockHeight(blockHeight))
+        {
+            return blockSubsidyProvider.GetBlockSubsidity(blockHeight).nLotteryReward;
+        }
+        return totalReward;
+    }
 
     SuperblockSubsidyProviderTestFixture(
         ): heightValidator_( new NiceMock<MockSuperblockHeightValidator>)
         , blockSubsidyProvider_( new NiceMock<MockBlockSubsidyProvider> )
-        , superblockSubsidyProvider_(NULL)
     {
     }
 
     void setChainParameters(const CChainParams& chainParameters)
     {
-        superblockSubsidyProvider_ = 
-            std::make_shared<SuperblockSubsidyProvider>(
-                chainParameters,
-                *heightValidator_,
-                *blockSubsidyProvider_
-            );
     }
     void reset(const CChainParams& chainParameters)
     {
         heightValidator_.reset( new NiceMock<MockSuperblockHeightValidator>);
         blockSubsidyProvider_.reset( new NiceMock<MockBlockSubsidyProvider> );
-        superblockSubsidyProvider_ = 
-            std::make_shared<SuperblockSubsidyProvider>(
-                chainParameters,
-                *heightValidator_,
-                *blockSubsidyProvider_
-            );
     }
 
     void computesAccumulatedBlockRewardBetweenValidSuperblocks(const CChainParams& chainParams)
@@ -157,12 +176,12 @@ public:
         setChainParameters(chainParams);
         CAmount firstExpectedRewards = firstBlockRewards.nTreasuryReward;
         BOOST_CHECK_MESSAGE(
-            superblockSubsidyProvider_->GetTreasuryReward(firstTreasuryBlockHeight) == firstExpectedRewards,
+            GetTreasuryReward(firstTreasuryBlockHeight,*heightValidator_, *blockSubsidyProvider_) == firstExpectedRewards,
             "Inconsistent rewards");
         
         CAmount secondExpectedRewards = secondBlockRewards.nTreasuryReward;
         BOOST_CHECK_MESSAGE(
-            superblockSubsidyProvider_->GetTreasuryReward(secondTreasuryBlockHeight) == secondExpectedRewards,
+            GetTreasuryReward(secondTreasuryBlockHeight,*heightValidator_, *blockSubsidyProvider_) == secondExpectedRewards,
             "Inconsistent rewards");
     }
 
@@ -195,7 +214,7 @@ public:
                 CAmount expectedRewards = treasuryBlockHeight*blockRewards.nTreasuryReward;
 
                 BOOST_CHECK_MESSAGE(
-                    superblockSubsidyProvider_->GetTreasuryReward(treasuryBlockHeight) == expectedRewards,
+                    GetTreasuryReward(treasuryBlockHeight,*heightValidator_, *blockSubsidyProvider_) == expectedRewards,
                     "Inconsistent rewards");
             }
         }
@@ -221,7 +240,7 @@ public:
         for(int blockHeight = 0; blockHeight < 10000; blockHeight++)
         {
             BOOST_CHECK_MESSAGE(
-                superblockSubsidyProvider_->GetTreasuryReward(blockHeight) == CAmount(0),
+                GetTreasuryReward(blockHeight,*heightValidator_, *blockSubsidyProvider_) == CAmount(0),
                 "Inconsistent rewards");
         }
     }
@@ -231,19 +250,13 @@ public:
         int transitionHeight =  SuperblockHeightValidator(chainParams).getTransitionHeight();
         auto concreteHeightValidator = std::make_shared<SuperblockHeightValidator>(chainParams);
         auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams,*concreteHeightValidator);
-        superblockSubsidyProvider_ = 
-            std::make_shared<SuperblockSubsidyProvider>(
-                chainParams,
-                *concreteHeightValidator,
-                *concreteBlockSubsidyProvider
-            );
 
         for(int blockHeight =0; blockHeight < transitionHeight; blockHeight++)
         {
             if( concreteHeightValidator->IsValidTreasuryBlockHeight(blockHeight) )            
             {
                 CAmount expectedTreasuryReward = Legacy::GetTreasuryReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
-                CAmount actualTreasuryReward = superblockSubsidyProvider_->GetTreasuryReward(blockHeight);
+                CAmount actualTreasuryReward = GetTreasuryReward(blockHeight,*concreteHeightValidator, *concreteBlockSubsidyProvider);
 
                 BOOST_CHECK_MESSAGE(actualTreasuryReward == expectedTreasuryReward,
                     "Treasury: Not backward compatible rewards! Height " << blockHeight 
@@ -251,7 +264,7 @@ public:
                 if(actualTreasuryReward != expectedTreasuryReward) break;
 
                 CAmount expectedCharityReward = Legacy::GetCharityReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
-                CAmount actualCharityReward = superblockSubsidyProvider_->GetCharityReward(blockHeight);
+                CAmount actualCharityReward = GetCharityReward(blockHeight,*concreteHeightValidator, *concreteBlockSubsidyProvider);
 
                 BOOST_CHECK_MESSAGE(actualCharityReward == expectedCharityReward,
                     "Charity: Not backward compatible rewards! Height " << blockHeight 
@@ -261,7 +274,7 @@ public:
             if( concreteHeightValidator->IsValidLotteryBlockHeight(blockHeight) )
             {
                 CAmount expectedLotteryReward = Legacy::GetLotteryReward(Legacy::GetBlockSubsidity(blockHeight,chainParams),chainParams);
-                CAmount actualLotteryReward = superblockSubsidyProvider_->GetLotteryReward(blockHeight);
+                CAmount actualLotteryReward = GetLotteryReward(blockHeight,*concreteHeightValidator, *concreteBlockSubsidyProvider);
 
                 BOOST_CHECK_MESSAGE(actualLotteryReward == expectedLotteryReward,
                     "Lottery: Not backward compatible rewards! Height " << blockHeight 

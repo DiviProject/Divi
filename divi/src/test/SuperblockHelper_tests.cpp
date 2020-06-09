@@ -222,25 +222,16 @@ public:
 
     void zeroTreasuryRewardsIfNoHeightIsAValidSuperblock(const CChainParams& chainParams)
     {
-        CBlockRewards fixedBlockRewards(100,100,100,100,100,100);
-        ON_CALL(*blockSubsidyProvider_, GetBlockSubsidity(_))
-            .WillByDefault(
-                Invoke(
-                    [fixedBlockRewards](int nHeight)
-                    {
-                        return fixedBlockRewards;
-                    }
-                )
-            );
         ON_CALL(*heightValidator_,IsValidTreasuryBlockHeight(_))
             .WillByDefault(
                 Return(false)
             );
         setChainParameters(chainParams);
+        auto concreteBlockSubsidyProvider = std::make_shared<BlockSubsidyProvider>(chainParams,*heightValidator_);
         for(int blockHeight = 0; blockHeight < 10000; blockHeight++)
         {
             BOOST_CHECK_MESSAGE(
-                GetTreasuryReward(blockHeight,*heightValidator_, *blockSubsidyProvider_) == CAmount(0),
+                concreteBlockSubsidyProvider->GetBlockSubsidity(blockHeight).nTreasuryReward == CAmount(0),
                 "Inconsistent rewards");
         }
     }

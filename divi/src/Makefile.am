@@ -149,12 +149,14 @@ BITCOIN_CORE_H = \
   swifttx.h \
   key.h \
   keystore.h \
+  LegacyBlockSubsidies.h \
   leveldbwrapper.h \
   limitedmap.h \
   main.h \
   masternode.h \
   masternode-payments.h \
   SuperblockHelpers.h \
+  SuperblockHeightValidator.h \
   masternode-sync.h \
   masternodeman.h \
   masternodeconfig.h \
@@ -308,9 +310,11 @@ libbitcoin_wallet_a_SOURCES = \
   crypto/aes.cpp \
   crypter.cpp \
   swifttx.cpp \
+  LegacyBlockSubsidies.cpp \
   masternode.cpp \
   masternode-payments.cpp \
   SuperblockHelpers.cpp \
+  SuperblockHeightValidator.cpp \
   masternode-sync.cpp \
   masternodeconfig.cpp \
   masternodeman.cpp \

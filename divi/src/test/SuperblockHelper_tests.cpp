@@ -4,6 +4,8 @@
 #include <MockSuperblockHeightValidator.h>
 #include <MockBlockSubsidyProvider.h>
 #include <memory>
+#include <LegacyBlockSubsidies.h>
+#include <SuperblockHeightValidator.h>
 
 #include <boost/test/unit_test.hpp>
 

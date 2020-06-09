@@ -23,10 +23,6 @@ namespace Legacy
 bool IsValidLotteryBlockHeight(int nBlockHeight);
 bool IsValidTreasuryBlockHeight(int nBlockHeight);
 
-CAmount GetTreasuryReward(int blockHeight);
-CAmount GetCharityReward(int blockHeight);
-CAmount GetLotteryReward(int blockHeight);
-
 CBlockRewards GetBlockSubsidity(int nHeight);
 
 class SuperblockHeightValidator: public I_SuperblockHeightValidator

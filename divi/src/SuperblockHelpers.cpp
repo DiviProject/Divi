@@ -317,21 +317,6 @@ bool IsValidTreasuryBlockHeight(int nBlockHeight)
     return subsidiesContainer.superblockHeightValidator().IsValidTreasuryBlockHeight(nBlockHeight);
 }
 
-CAmount GetTreasuryReward(int blockHeight)
-{
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    return subsidiesContainer.superblockSubsidiesProvider().GetTreasuryReward(blockHeight);
-}
-CAmount GetCharityReward(int blockHeight)
-{
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    return subsidiesContainer.superblockSubsidiesProvider().GetCharityReward(blockHeight);
-}
-CAmount GetLotteryReward(int blockHeight)
-{
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    return subsidiesContainer.superblockSubsidiesProvider().GetLotteryReward(blockHeight);
-}
 CBlockRewards GetBlockSubsidity(int nHeight)
 {
     SuperblockSubsidyContainer subsidiesContainer(Params());

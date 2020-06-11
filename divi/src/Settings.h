@@ -1,21 +1,21 @@
-#ifndef GLOBAL_PARAMETERS_RECORD_H
-#define GLOBAL_PARAMETERS_RECORD_H
+#ifndef SETTINGS_H
+#define SETTINGS_H
 #include <string>
 #include <map>
 
-class GlobalParametersRecord
+class Settings
 {
 
 private:
     std::map<std::string, std::string>& mapArgs_;
 public:
-    GlobalParametersRecord(
+    Settings(
         std::map<std::string, std::string>& mapArgs
         ): mapArgs_(mapArgs)
     {
     }
 
-    ~GlobalParametersRecord() 
+    ~Settings() 
     {
     }
     
@@ -32,4 +32,4 @@ public:
     void ForceRemoveArg(const std::string &strArg);
 };
 
-#endif //GLOBAL_PARAMETERS_RECORD_H
+#endif //SETTINGS_H

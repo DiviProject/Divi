@@ -140,7 +140,7 @@ BITCOIN_CORE_H = \
   FeeRate.h \
   flat-database.h \
   FilteredBoostFileSystem.h \
-  GlobalParametersRecord.h \
+  Settings.h \
   hash.h \
   hdchain.h \
   init.h \
@@ -460,7 +460,7 @@ libbitcoin_util_a_SOURCES = \
   compat/glibcxx_sanity.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
-  GlobalParametersRecord.cpp \
+  Settings.cpp \
   random.cpp \
   rpcprotocol.cpp \
   sync.cpp \

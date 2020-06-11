@@ -1,15 +1,15 @@
-#include <GlobalParametersRecord.h>
+#include <Settings.h>
 #include <string>
 #include <utilstrencodings.h>
 
-std::string GlobalParametersRecord::GetArg(const std::string& strArg, const std::string& strDefault)
+std::string Settings::GetArg(const std::string& strArg, const std::string& strDefault)
 {
     if (mapArgs_.count(strArg))
         return mapArgs_[strArg];
     return strDefault;
 }
 
-int64_t GlobalParametersRecord::GetArg(const std::string& strArg, int64_t nDefault)
+int64_t Settings::GetArg(const std::string& strArg, int64_t nDefault)
 {
     if (mapArgs_.count(strArg))
         return atoi64(mapArgs_[strArg]);
@@ -23,14 +23,14 @@ bool InterpretBool(const std::string& strValue)
     return (atoi(strValue) != 0);
 }
 
-bool GlobalParametersRecord::GetBoolArg(const std::string& strArg, bool fDefault)
+bool Settings::GetBoolArg(const std::string& strArg, bool fDefault)
 {
     if (mapArgs_.count(strArg))
         return InterpretBool(mapArgs_[strArg]);
     return fDefault;
 }
 
-bool GlobalParametersRecord::SoftSetArg(const std::string& strArg, const std::string& strValue)
+bool Settings::SoftSetArg(const std::string& strArg, const std::string& strValue)
 {
     if (mapArgs_.count(strArg))
         return false;
@@ -38,7 +38,7 @@ bool GlobalParametersRecord::SoftSetArg(const std::string& strArg, const std::st
     return true;
 }
 
-bool GlobalParametersRecord::SoftSetBoolArg(const std::string& strArg, bool fValue)
+bool Settings::SoftSetBoolArg(const std::string& strArg, bool fValue)
 {
     if (fValue)
         return SoftSetArg(strArg, std::string("1"));
@@ -46,7 +46,7 @@ bool GlobalParametersRecord::SoftSetBoolArg(const std::string& strArg, bool fVal
         return SoftSetArg(strArg, std::string("0"));
 }
 
-void GlobalParametersRecord::ForceRemoveArg(const std::string &strArg)
+void Settings::ForceRemoveArg(const std::string &strArg)
 {
     mapArgs_.erase(strArg);
 }

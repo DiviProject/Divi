@@ -18,7 +18,7 @@
 #include "sync.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
-#include <GlobalParametersRecord.h>
+#include <Settings.h>
 #include <stdarg.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -205,7 +205,7 @@ void ParseParameters(int argc, const char* const argv[])
     }
 }
 
-GlobalParametersRecord globalParametersRecord(mapArgs);
+Settings settings(mapArgs);
 
 bool ParameterIsSet (const std::string& key)
 {
@@ -231,7 +231,7 @@ std::string GetParameter(const std::string& key)
 
 void ForceRemoveArg(const std::string &strArg)
 {
-    globalParametersRecord.ForceRemoveArg(strArg);
+    settings.ForceRemoveArg(strArg);
 }
 
 void SetParameter (const std::string& key, const std::string& value)
@@ -239,34 +239,34 @@ void SetParameter (const std::string& key, const std::string& value)
     mapArgs[key] = value;
 }
 
-void ClearParamenter () 
+void ClearParameter () 
 {
     mapArgs.clear();
 }
 
 std::string GetArg(const std::string& strArg, const std::string& strDefault)
 {
-    return globalParametersRecord.GetArg(strArg, strDefault);
+    return settings.GetArg(strArg, strDefault);
 }
 
 int64_t GetArg(const std::string& strArg, int64_t nDefault)
 {
-    return globalParametersRecord.GetArg(strArg, nDefault);
+    return settings.GetArg(strArg, nDefault);
 }
 
 bool GetBoolArg(const std::string& strArg, bool fDefault)
 {
-    return globalParametersRecord.GetBoolArg(strArg, fDefault);
+    return settings.GetBoolArg(strArg, fDefault);
 }
 
 bool SoftSetArg(const std::string& strArg, const std::string& strValue)
 {
-    return globalParametersRecord.SoftSetArg(strArg, strValue);
+    return settings.SoftSetArg(strArg, strValue);
 }
 
 bool SoftSetBoolArg(const std::string& strArg, bool fValue)
 {
-    return globalParametersRecord.SoftSetBoolArg(strArg, fValue);
+    return settings.SoftSetBoolArg(strArg, fValue);
 }
 
 

@@ -80,9 +80,14 @@ inline bool IsSwitchChar(char c)
 
 bool ParameterIsSet (const std::string& key);
 
+bool ParameterIsSetForMultiArgs (const std::string& key);
+
 std::string GetParameter(const std::string& key);
 
 void SetParameter (const std::string& key, const std::string& value);
+
+void ClearParameter ();
+
 /**
  * Return string argument or default value
  *

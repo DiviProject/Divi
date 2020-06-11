@@ -50,3 +50,8 @@ void Settings::ForceRemoveArg(const std::string &strArg)
 {
     mapArgs_.erase(strArg);
 }
+
+bool Settings::ParameterIsSet (const std::string& key)
+{
+    return mapArgs_.count(key);
+}

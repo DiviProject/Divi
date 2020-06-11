@@ -30,6 +30,8 @@ public:
     bool SoftSetBoolArg(const std::string& strArg, bool fValue);
     
     void ForceRemoveArg(const std::string &strArg);
+
+    bool ParameterIsSet (const std::string& key);
 };
 
 #endif //SETTINGS_H

@@ -48,7 +48,7 @@ static CBitcoinAddress CharityPaymentAddress()
 
 static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
-    auto rewards = GetBlockSubsidity(nHeight - 1);
+    auto rewards = GetBlockSubsidity(nHeight);
     tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination(TreasuryPaymentAddress().Get()));
     tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination(CharityPaymentAddress().Get()));
 }
@@ -61,10 +61,10 @@ static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
     assert(coinbaseTx.IsCoinBase() || coinbaseTx.IsCoinStake());
 
     return coinbaseTx.IsCoinBase() ? coinbaseTx.vout[0].scriptPubKey : coinbaseTx.vout[1].scriptPubKey;
-    }
+}
 
-    static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
-    {
+static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
+{
     auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
     // when we call this we need to have exactly 11 winners
 
@@ -176,11 +176,6 @@ bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue,
 
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex)
 {
-    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
-        LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
-        return true;
-    }
-
     if(IsValidTreasuryBlockHeight(nBlockHeight)) {
         return IsValidTreasuryPayment(txNew, nBlockHeight);
     }
@@ -188,7 +183,11 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
     if(IsValidLotteryBlockHeight(nBlockHeight)) {
         return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes);
     }
-
+    
+    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
+        LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
+        return true;
+    }
     //check for masternode payee
     if (masternodePayments.IsTransactionValid(txNew, nBlockHeight))
         return true;

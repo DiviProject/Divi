@@ -8,15 +8,18 @@ class Settings
 
 private:
     std::map<std::string, std::string>& mapArgs_;
-public:
+
     Settings(
         std::map<std::string, std::string>& mapArgs
         ): mapArgs_(mapArgs)
     {
     }
 
-    ~Settings() 
-    {
+public:
+
+    static Settings& instance(std::map<std::string, std::string>& mapArgs) {
+        static Settings settings(mapArgs);
+        return settings;
     }
     
     std::string GetArg(const std::string& strArg, const std::string& strDefault);

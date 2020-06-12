@@ -15,6 +15,7 @@
 #include <Logging.h>
 
 #include <Settings.h>
+#include <vector>
 
 #ifdef WIN32
 boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
@@ -31,8 +32,8 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
     return fs::path("");
 }
 #endif
-
-Settings& settingsDataDirectory = Settings::instance(mapArgs);
+extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
+Settings& settingsDataDirectory = Settings::instance(mapArgs, mapMultiArgs);
 
 /**
  * Ignores exceptions thrown by Boost's create_directory if the requested directory exists.

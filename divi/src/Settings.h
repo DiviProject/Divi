@@ -2,23 +2,30 @@
 #define SETTINGS_H
 #include <string>
 #include <map>
+#include <vector> 
 
 class Settings
 {
 
 private:
     std::map<std::string, std::string>& mapArgs_;
+    std::map<std::string, std::vector<std::string> >& mapMultiArgs_;
 
     Settings(
-        std::map<std::string, std::string>& mapArgs
+        std::map<std::string, std::string>& mapArgs,
+        std::map<std::string, std::vector<std::string> >& mapMultiArgs
         ): mapArgs_(mapArgs)
+        , mapMultiArgs_(mapMultiArgs)
     {
     }
 
 public:
 
-    static Settings& instance(std::map<std::string, std::string>& mapArgs) {
-        static Settings settings(mapArgs);
+    static Settings& instance(
+        std::map<std::string, std::string>& mapArgs, 
+        std::map<std::string, std::vector<std::string> >& mapMultiArgs) 
+    {
+        static Settings settings(mapArgs, mapMultiArgs);
         return settings;
     }
     

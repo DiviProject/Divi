@@ -205,7 +205,7 @@ void ParseParameters(int argc, const char* const argv[])
     }
 }
 
-Settings& settings = Settings::instance(mapArgs);
+Settings& settings = Settings::instance(mapArgs, mapMultiArgs);
 
 bool ParameterIsSet (const std::string& key)
 {

@@ -481,7 +481,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
 
 Value startmasternode(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 2)
+    if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
             "startmasternode alias\n"
             "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
@@ -492,8 +492,8 @@ Value startmasternode(const Array& params, bool fHelp)
             "\nResult:\n"
             "\"status\"	(string) status of masternode\n");
 
-    auto alias = params.at(0).get_str();
-    bool deferRelay = (params.size() == 1)? false: true;
+    std::string alias = params[0].get_str();
+    bool deferRelay = (params.size() == 1)? false: params[1].get_bool();
 
     Object result;
     bool fFound = false;

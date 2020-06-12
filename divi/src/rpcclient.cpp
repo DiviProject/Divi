@@ -104,7 +104,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"submitbudget", 5},
         {"submitbudget", 7},
         // disabled until removal of the legacy 'masternode' command
-        //{"startmasternode", 1},
+        {"startmasternode", 1},
         {"mnvoteraw", 1},
         {"mnvoteraw", 4},
         {"reservebalance", 0},

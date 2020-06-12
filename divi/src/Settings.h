@@ -35,6 +35,12 @@ public:
     void ForceRemoveArg(const std::string &strArg);
 
     bool ParameterIsSet (const std::string& key);
+
+    std::string GetParameter(const std::string& key);
+
+    void SetParameter (const std::string& key, const std::string& value);
+
+    void ClearParameter (); 
 };
 
 #endif //SETTINGS_H

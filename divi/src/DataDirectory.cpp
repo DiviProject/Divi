@@ -14,6 +14,8 @@
 #include <chainparamsbase.h>
 #include <Logging.h>
 
+#include <Settings.h>
+
 #ifdef WIN32
 boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
 {
@@ -30,7 +32,8 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
 }
 #endif
 
-bool ParameterIsSet (const std::string& key);
+Settings& settingsDataDirectory = Settings::instance(mapArgs);
+
 /**
  * Ignores exceptions thrown by Boost's create_directory if the requested directory exists.
  * Specifically handles case where path p exists, but it wasn't possible for the user to
@@ -95,7 +98,7 @@ const boost::filesystem::path& GetDataDir(bool fNetSpecific)
     if (!path.empty())
         return path;
 
-    if (ParameterIsSet("-datadir")) {
+    if (settingsDataDirectory.ParameterIsSet("-datadir")) {
         path = fs::system_complete(mapArgs["-datadir"]);
         if (!fs::is_directory(path)) {
             path = "";

@@ -55,3 +55,25 @@ bool Settings::ParameterIsSet (const std::string& key)
 {
     return mapArgs_.count(key);
 }
+
+std::string Settings::GetParameter(const std::string& key)
+{
+    if(ParameterIsSet(key))
+    {
+        return mapArgs_[key];
+    }
+    else
+    {
+        return "";
+    }
+}
+
+void Settings::SetParameter (const std::string& key, const std::string& value)
+{
+    mapArgs_[key] = value;
+}
+
+void Settings::ClearParameter () 
+{
+    mapArgs_.clear();
+}

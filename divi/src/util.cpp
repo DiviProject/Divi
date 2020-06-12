@@ -209,7 +209,7 @@ Settings& settings = Settings::instance(mapArgs);
 
 bool ParameterIsSet (const std::string& key)
 {
-    return mapArgs.count(key);
+    return settings.ParameterIsSet(key);
 }
 
 bool ParameterIsSetForMultiArgs (const std::string& key)
@@ -219,14 +219,7 @@ bool ParameterIsSetForMultiArgs (const std::string& key)
 
 std::string GetParameter(const std::string& key)
 {
-    if(ParameterIsSet(key))
-    {
-        return mapArgs[key];
-    }
-    else
-    {
-        return "";
-    }
+    return settings.GetParameter(key);
 }
 
 void ForceRemoveArg(const std::string &strArg)
@@ -236,12 +229,12 @@ void ForceRemoveArg(const std::string &strArg)
 
 void SetParameter (const std::string& key, const std::string& value)
 {
-    mapArgs[key] = value;
+    settings.SetParameter(key, value);
 }
 
 void ClearParameter () 
 {
-    mapArgs.clear();
+    settings.ClearParameter();
 }
 
 std::string GetArg(const std::string& strArg, const std::string& strDefault)

@@ -214,7 +214,7 @@ bool ParameterIsSet (const std::string& key)
 
 bool ParameterIsSetForMultiArgs (const std::string& key)
 {
-    return mapMultiArgs.count(key);
+    return settings.ParameterIsSetForMultiArgs(key);
 }
 
 std::string GetParameter(const std::string& key)

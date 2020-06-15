@@ -4,38 +4,89 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "primitives/transaction.h"
-#include "main.h"
 
 #include <boost/test/unit_test.hpp>
 
 #include <iostream>
 #include "test_only.h"
+
+#include <chainparams.h>
+#include <SuperblockHelpers.h>
+
 BOOST_AUTO_TEST_SUITE(main_tests)
 
-BOOST_AUTO_TEST_CASE(subsidy_limit_test)
-{
-    SelectParams(CBaseChainParams::Network::MAIN);
-    int numberOfBlocksPerHalving = Params().SubsidyHalvingInterval();
-    CAmount nSum = 0;
 
+CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParameters)
+{
     CAmount startingExpectedSubsidy = 1250 * COIN;
     CAmount yearlySubsidyReduction = 100 * COIN;
     CAmount minimumSubsidy = 250*COIN;
+
+    int numberOfBlocksPerHalving = chainParameters.SubsidyHalvingInterval();
     auto expectedSubsidy = [startingExpectedSubsidy,yearlySubsidyReduction,minimumSubsidy](int year)->CAmount{
         return (year>1)? std::max(startingExpectedSubsidy - yearlySubsidyReduction*(year-1),minimumSubsidy): startingExpectedSubsidy;
     };
+    auto getTreasuryAndCharityContributions = [](CAmount legacySubsidyValue)
+    {
+        legacySubsidyValue -= 50*COIN;
+        return legacySubsidyValue*17/100;
+    };
+    auto getLotteryContributions = [](CAmount legacySubsidyValue)
+    {
+        return 50*COIN;
+    };
 
-    for(int nHeight = 0; nHeight < numberOfBlocksPerHalving*13; ++nHeight)
+    CAmount expectedSubsidyValue = expectedSubsidy(nHeight/numberOfBlocksPerHalving);
+    if(IsValidTreasuryBlockHeight(nHeight))
+    {
+        expectedSubsidyValue -= 50*COIN;
+        expectedSubsidyValue = expectedSubsidyValue*83/100;
+        for(int blockHeight = nHeight-1; blockHeight >= (nHeight - chainParameters.GetTreasuryPaymentsCycle()); blockHeight--  )
+        {
+            expectedSubsidyValue += getTreasuryAndCharityContributions(expectedSubsidy(blockHeight/numberOfBlocksPerHalving));
+        }
+    }
+    else if(IsValidLotteryBlockHeight(nHeight))
+    {
+        expectedSubsidyValue -= 50*COIN;
+        expectedSubsidyValue = expectedSubsidyValue*83/100;
+        for(int blockHeight = nHeight-1; blockHeight >= (nHeight - chainParameters.GetLotteryBlockCycle()); blockHeight--  )
+        {
+            expectedSubsidyValue += getLotteryContributions(expectedSubsidy(blockHeight/numberOfBlocksPerHalving));
+        }
+    }
+    else if(nHeight > chainParameters.LAST_POW_BLOCK())
+    {
+        expectedSubsidyValue -= 50*COIN;
+        return expectedSubsidyValue*83/100;
+    }
+    return expectedSubsidyValue;
+}
+
+BOOST_AUTO_TEST_CASE(subsidy_limit_test)
+{
+    const CChainParams& chainParameters= Params(CBaseChainParams::Network::MAIN);
+    CAmount nSum = 0;
+
+    for(int nHeight = 0; nHeight < chainParameters.SubsidyHalvingInterval()*13; ++nHeight)
     {
         CAmount nSubsidy = GetBlockSubsidity(nHeight).total();
+        CAmount expectedSubsidyValue = CAmount(0);
+        bool testPass = false;
         if(nHeight < 2)
         {
-            BOOST_CHECK(nSubsidy == ((nHeight==0)? 50*COIN: Params().premineAmt) );
+            expectedSubsidyValue = (nHeight==0)? 50*COIN: chainParameters.premineAmt;
+            testPass = (nSubsidy == expectedSubsidyValue);
+            BOOST_CHECK_MESSAGE(testPass, "Subsidy " << nSubsidy << " not equal to " << expectedSubsidyValue );
+            if(!testPass) return;
         }
         else
         {
-            BOOST_CHECK_EQUAL(nSubsidy, expectedSubsidy(nHeight/numberOfBlocksPerHalving));
+            expectedSubsidyValue = getExpectedSubsidyAtHeight(nHeight, chainParameters);
+
+            testPass = nSubsidy==expectedSubsidyValue;
+            BOOST_CHECK_MESSAGE(testPass, "Mismatched subsidy at height " << nHeight << "! " << nSubsidy << " vs. " << expectedSubsidyValue);
+            if(!testPass) return;
         }
 
         BOOST_CHECK( nSubsidy==0 || (nSum+nSubsidy > nSum));

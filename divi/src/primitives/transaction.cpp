@@ -68,14 +68,6 @@ CTxOut::CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn)
     scriptPubKey = scriptPubKeyIn;
 }
 
-bool COutPoint::IsMasternodeReward(const CTransaction* tx) const
-{
-    if(!tx->IsCoinStake())
-        return false;
-
-    return (n == tx->vout.size() - 1) && (tx->vout[1].scriptPubKey != tx->vout[n].scriptPubKey);
-}
-
 uint256 CTxOut::GetHash() const
 {
     return SerializeHash(*this);
@@ -144,51 +136,6 @@ CAmount CTransaction::GetValueOut() const
         nValueOut += it->nValue;
     }
     return nValueOut;
-}
-
-bool CTransaction::UsesUTXO(const COutPoint out)
-{
-    for (const CTxIn in : vin) {
-        if (in.prevout == out)
-            return true;
-    }
-
-    return false;
-}
-
-std::list<COutPoint> CTransaction::GetOutPoints() const
-{
-    std::list<COutPoint> listOutPoints;
-    uint256 txHash = GetHash();
-    for (unsigned int i = 0; i < vout.size(); i++)
-        listOutPoints.emplace_back(COutPoint(txHash, i));
-    return listOutPoints;
-}
-
-double CTransaction::ComputePriority(double dPriorityInputs, unsigned int nTxSize) const
-{
-    nTxSize = CalculateModifiedSize(nTxSize);
-    if (nTxSize == 0) return 0.0;
-
-    return dPriorityInputs / nTxSize;
-}
-
-unsigned int CTransaction::CalculateModifiedSize(unsigned int nTxSize) const
-{
-    // In order to avoid disincentivizing cleaning up the UTXO set we don't count
-    // the constant overhead for each txin and up to 110 bytes of scriptSig (which
-    // is enough to cover a compressed pubkey p2sh redemption) for priority.
-    // Providing any more cleanup incentive than making additional inputs free would
-    // risk encouraging people to create junk outputs to redeem later.
-    if (nTxSize == 0)
-        nTxSize = ::GetSerializeSize(*this, SER_NETWORK, PROTOCOL_VERSION);
-    for (std::vector<CTxIn>::const_iterator it(vin.begin()); it != vin.end(); ++it)
-    {
-        unsigned int offset = 41U + std::min(110U, (unsigned int)it->scriptSig.size());
-        if (nTxSize > offset)
-            nTxSize -= offset;
-    }
-    return nTxSize;
 }
 
 std::string CTransaction::ToString() const

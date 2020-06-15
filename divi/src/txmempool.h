@@ -12,6 +12,7 @@
 #include "addressindex.h"
 #include "spentindex.h"
 #include "amount.h"
+#include "FeeRate.h"
 #include "coins.h"
 #include "primitives/transaction.h"
 #include "sync.h"

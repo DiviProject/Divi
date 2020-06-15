@@ -8,6 +8,7 @@
 
 #include "uint256.h"
 #include "amount.h"
+#include "serialize.h"
 
 struct CSpentIndexKey {
     uint256 txid;

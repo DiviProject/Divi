@@ -20,7 +20,6 @@
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
-#include "masternode-budget.h"
 #include "masternode-payments.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
@@ -39,7 +38,9 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
-#include "validationinterface.h"
+#include "NotificationInterface.h"
+#include "FeeAndPriorityCalculator.h"
+
 #ifdef ENABLE_WALLET
 #include "db.h"
 #include "wallet.h"

@@ -11,12 +11,13 @@
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "kernel.h"
-#include "masternode-budget.h"
+#include "masternode-payments.h"
 #include "net.h"
 #include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/sign.h"
 #include "spork.h"
+#include "SuperblockHelpers.h"
 #include "swifttx.h"
 #include "timedata.h"
 #include "util.h"
@@ -28,6 +29,10 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>
 #include <boost/filesystem/operations.hpp>
+
+#include "FeeAndPriorityCalculator.h"
+
+const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator::instance();
 
 using namespace std;
 
@@ -1857,7 +1862,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 if (coinControl && !coinControl->fSplitBlock) {
                     BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
                         CTxOut txout(s.second, s.first);
-                        if (txout.IsDust(::minRelayTxFee)) {
+                        if (priorityFeeCalculator.IsDust(txout)) {
                             strFailReason = _("Transaction amount too small");
                             return false;
                         }
@@ -1949,7 +1954,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
 
                     // Never create dust outputs; if we would, just
                     // add the dust to the fee.
-                    if (newTxOut.IsDust(::minRelayTxFee)) {
+                    if (priorityFeeCalculator.IsDust(newTxOut)) {
                         nFeeRet += nChange;
                         nChange = 0;
                         reservekey.ReturnKey();
@@ -1982,7 +1987,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     strFailReason = _("Transaction too large");
                     return false;
                 }
-                dPriority = wtxNew.ComputePriority(dPriority, nBytes);
+                dPriority = priorityFeeCalculator.ComputePriority(wtxNew,dPriority, nBytes);
 
                 // Can we complete this as a free transaction?
                 if (fSendFreeTransactions && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE) {
@@ -3096,6 +3101,14 @@ void CWallet::AutoCombineDust()
     }
 }
 
+bool CWallet::IsMasternodeReward(const CTransaction& tx, uint32_t n) const
+{
+    if(!tx.IsCoinStake())
+        return false;
+
+    return (n == tx.vout.size() - 1) && (tx.vout[1].scriptPubKey != tx.vout[n].scriptPubKey);
+}
+
 bool CWallet::MultiSend()
 {
     if (IsInitialBlockDownload() || IsLocked()) {
@@ -3117,7 +3130,7 @@ bool CWallet::MultiSend()
             continue;
 
         COutPoint outpoint(out.tx->GetHash(), out.i);
-        bool sendMSonMNReward = fMultiSendMasternodeReward && outpoint.IsMasternodeReward(out.tx);
+        bool sendMSonMNReward = fMultiSendMasternodeReward && IsMasternodeReward(*out.tx,outpoint.n);
         bool sendMSOnStake = fMultiSendStake && out.tx->IsCoinStake() && !sendMSonMNReward; //output is either mnreward or stake reward, not both
 
         if (!(sendMSOnStake || sendMSonMNReward))

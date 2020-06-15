@@ -6,15 +6,11 @@
 #ifndef SPORK_H
 #define SPORK_H
 
-#include "base58.h"
 #include "key.h"
-#include "main.h"
-#include "net.h"
-#include "sync.h"
+#include "pubkey.h"
 
-#include "obfuscation.h"
-#include "protocol.h"
-#include <boost/lexical_cast.hpp>
+class CDataStream;
+class CNode;
 
 class CSporkMessage;
 class CSporkManager;

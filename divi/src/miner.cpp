@@ -23,9 +23,13 @@
 #endif
 #include "masternode-payments.h"
 #include "spork.h"
+#include "SuperblockHelpers.h"
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
+
+
+#include "FeeAndPriorityCalculator.h"
 
 using namespace std;
 
@@ -236,7 +240,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
             // Priority is sum(valuein * age) / modified_txsize
             unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-            dPriority = tx.ComputePriority(dPriority, nTxSize);
+            dPriority = FeeAndPriorityCalculator::instance().ComputePriority(tx,dPriority, nTxSize);
 
             uint256 hash = tx.GetHash();
             mempool.ApplyDeltas(hash, dPriority, nTotalIn);

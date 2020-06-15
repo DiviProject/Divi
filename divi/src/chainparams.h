@@ -85,17 +85,13 @@ public:
     int MasternodeCountDrift() const { return nMasternodeCountDrift; }
     /** Make miner stop after a block is found. In RPC, don't return until nGenProcLimit blocks are generated */
     bool MineBlocksOnDemand() const { return fMineBlocksOnDemand; }
-    /** In the future use NetworkIDString() for RPC fields */
-    bool TestnetToBeDeprecatedFieldRPC() const { return fTestnetToBeDeprecatedFieldRPC; }
     /** Return the BIP70 network string (main, test or regtest) */
     std::string NetworkIDString() const { return strNetworkID; }
     const std::vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     const std::vector<CAddress>& FixedSeeds() const { return vFixedSeeds; }
     virtual const CCheckpointData& Checkpoints() const = 0;
-    int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     std::string SporkKey() const { return strSporkKey; }
-    std::string ObfuscationPoolDummyAddress() const { return strObfuscationPoolDummyAddress; }
     int64_t StartMasternodePayments() const { return nStartMasternodePayments; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
     int GetLotteryBlockStartBlock() const { return nLotteryBlockStartBlock; }
@@ -104,7 +100,6 @@ public:
     int GetTreasuryPaymentsCycle() const { return nTreasuryPaymentsCycle; }
 
     /** Height or Time Based Activations **/
-    int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
 
     int ExtCoinType() const { return nExtCoinType; }
@@ -131,7 +126,6 @@ protected:
     int nLastPOWBlock;
     int nMasternodeCountDrift;
     int nMaturity;
-    int nModifierUpdateBlock;
     CAmount nMaxMoneyOut;
     int nMinerThreads;
     std::vector<CDNSSeedData> vSeeds;
@@ -147,11 +141,8 @@ protected:
     bool fRequireStandard;
     bool fMineBlocksOnDemand;
     bool fSkipProofOfWorkCheck;
-    bool fTestnetToBeDeprecatedFieldRPC;
     bool fHeadersFirstSyncingActive;
-    int nPoolMaxTransactions;
     std::string strSporkKey;
-    std::string strObfuscationPoolDummyAddress;
     int64_t nStartMasternodePayments;
 
     int nExtCoinType;

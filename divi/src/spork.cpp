@@ -4,12 +4,13 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "spork.h"
+
 #include "base58.h"
 #include "key.h"
 #include "main.h"
-#include "masternode-budget.h"
 #include "net.h"
 #include "protocol.h"
+#include "obfuscation.h"
 #include "sync.h"
 #include "sporkdb.h"
 #include "utiltime.h"

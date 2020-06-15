@@ -5,7 +5,6 @@
 
 #include "masternode-payments.h"
 #include "addrman.h"
-#include "masternode-budget.h"
 #include "chainparamsbase.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"
@@ -20,6 +19,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include <SuperblockHelpers.h>
+
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
 
@@ -33,27 +34,6 @@ const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
 const std::string TREASURY_PAYMENT_ADDRESS_TESTNET("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
 const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
 
-bool IsValidLotteryBlockHeight(int nBlockHeight)
-{
-    return nBlockHeight >= Params().GetLotteryBlockStartBlock() &&
-            ((nBlockHeight % Params().GetLotteryBlockCycle()) == 0);
-}
-
-static bool IsValidTreasuryBlockHeight(int nBlockHeight)
-{
-    return nBlockHeight >= Params().GetTreasuryPaymentsStartBlock() &&
-            ((nBlockHeight % Params().GetTreasuryPaymentsCycle()) == 0);
-}
-
-static int64_t GetTreasuryReward(const CBlockRewards &rewards)
-{
-    return rewards.nTreasuryReward * Params().GetTreasuryPaymentsCycle();
-}
-
-static int64_t GetCharityReward(const CBlockRewards &rewards)
-{
-    return rewards.nCharityReward * Params().GetTreasuryPaymentsCycle();
-}
 
 static CBitcoinAddress TreasuryPaymentAddress()
 {
@@ -68,15 +48,9 @@ static CBitcoinAddress CharityPaymentAddress()
 
 static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
-    auto rewards = GetBlockSubsidity(nHeight - 1);
-    tx.vout.emplace_back(GetTreasuryReward(rewards), GetScriptForDestination(TreasuryPaymentAddress().Get()));
-    tx.vout.emplace_back(GetCharityReward(rewards), GetScriptForDestination(CharityPaymentAddress().Get()));
-}
-
-static int64_t GetLotteryReward(const CBlockRewards &rewards)
-{
-    // 50 coins every block for lottery
-    return Params().GetLotteryBlockCycle() * rewards.nLotteryReward;
+    auto rewards = GetBlockSubsidity(nHeight);
+    tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination(TreasuryPaymentAddress().Get()));
+    tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination(CharityPaymentAddress().Get()));
 }
 
 static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
@@ -87,14 +61,14 @@ static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
     assert(coinbaseTx.IsCoinBase() || coinbaseTx.IsCoinStake());
 
     return coinbaseTx.IsCoinBase() ? coinbaseTx.vout[0].scriptPubKey : coinbaseTx.vout[1].scriptPubKey;
-    }
+}
 
-    static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
-    {
+static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
+{
     auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
     // when we call this we need to have exactly 11 winners
 
-    auto nLotteryReward = GetLotteryReward(rewards);
+    auto nLotteryReward = rewards.nLotteryReward;
     auto nBigReward = nLotteryReward / 2;
     auto nSmallReward = nBigReward / 10;
 
@@ -119,7 +93,7 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
     };
 
-    auto nLotteryReward = GetLotteryReward(GetBlockSubsidity(nHeight));
+    auto nLotteryReward = GetBlockSubsidity(nHeight).nLotteryReward;
     auto nBigReward = nLotteryReward / 2;
     auto nSmallReward = nBigReward / 10;
 
@@ -138,8 +112,8 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
 static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 {
     auto rewards = GetBlockSubsidity(nHeight);
-    auto charityPart = GetCharityReward(rewards);
-    auto treasuryPart = GetTreasuryReward(rewards);
+    auto charityPart = rewards.nCharityReward;
+    auto treasuryPart = rewards.nTreasuryReward;
 
     auto verifyPayment = [&tx](CBitcoinAddress address, CAmount amount) {
 
@@ -187,10 +161,10 @@ bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue,
 
     // here we expect treasury block payment
     if(IsValidTreasuryBlockHeight(nHeight)) {
-        nExpectedMintCombined += (GetTreasuryReward(nExpectedValue) + GetCharityReward(nExpectedValue));
+        nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
     }
     else if(IsValidLotteryBlockHeight(nHeight)) {
-        nExpectedMintCombined += GetLotteryReward(nExpectedValue);
+        nExpectedMintCombined += nExpectedValue.nLotteryReward;
     }
 
     if (nMinted > nExpectedMintCombined) {
@@ -202,11 +176,6 @@ bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue,
 
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex)
 {
-    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
-        LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
-        return true;
-    }
-
     if(IsValidTreasuryBlockHeight(nBlockHeight)) {
         return IsValidTreasuryPayment(txNew, nBlockHeight);
     }
@@ -214,7 +183,11 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
     if(IsValidLotteryBlockHeight(nBlockHeight)) {
         return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes);
     }
-
+    
+    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
+        LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
+        return true;
+    }
     //check for masternode payee
     if (masternodePayments.IsTransactionValid(txNew, nBlockHeight))
         return true;
@@ -300,12 +273,11 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::st
         int nCountNeeded;
         vRecv >> nCountNeeded;
 
-        if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            if (netfulfilledman.HasFulfilledRequest(pfrom->addr, "mnget")) {
-                LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
-                Misbehaving(pfrom->GetId(), 20);
-                return;
-            }
+        if (netfulfilledman.HasFulfilledRequest(pfrom->addr, "mnget")) 
+        {
+            LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
+            Misbehaving(pfrom->GetId(), 20);
+            return;
         }
 
         netfulfilledman.AddFulfilledRequest(pfrom->addr, "mnget");

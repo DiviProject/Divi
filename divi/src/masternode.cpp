@@ -591,15 +591,14 @@ bool CMasternodeBroadcastFactory::checkNetworkPort(
     std::string& strErrorRet)
 {
     CService service = CService(strService);
-    int mainnetDefaultPort = Params(CBaseChainParams::MAIN).GetDefaultPort();
-    if (Params().NetworkID() == CBaseChainParams::MAIN) {
-        if (service.GetPort() != mainnetDefaultPort) {
-            strErrorRet = strprintf("Invalid port %u for masternode %s, only %d is supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort);
-            LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
-            return false;
-        }
-    } else if (service.GetPort() == mainnetDefaultPort) {
-        strErrorRet = strprintf("Invalid port %u for masternode %s, %d is the only supported on mainnet.", service.GetPort(), strService, mainnetDefaultPort);
+    int mainnetDefaultPort = Params().GetDefaultPort();
+    if (service.GetPort() != mainnetDefaultPort) {
+        strErrorRet = strprintf(
+            "Invalid port %u for masternode %s, only %d is supported on %s network", 
+            service.GetPort(), 
+            strService, 
+            mainnetDefaultPort, 
+            Params().NetworkIDString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
@@ -865,10 +864,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
         return false;
     }
 
-    if (Params().NetworkID() == CBaseChainParams::MAIN) {
-        if (addr.GetPort() != 51472) return false;
-    } else if (addr.GetPort() == 51474)
-        return false;
+    if(addr.GetPort() != Params().GetDefaultPort()) return false;
 
     //search existing Masternode list, this is where we update existing Masternodes with new mnb broadcasts
     CMasternode* pmn = mnodeman.Find(vin);

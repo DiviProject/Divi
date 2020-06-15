@@ -105,6 +105,8 @@ BITCOIN_CORE_H = \
   bip39_english.h \
   bloom.h \
   blockmap.h\
+  BlockSubsidyProvider.h \
+  BlockRewards.h \
   chain.h \
   chainparams.h \
   chainparamsbase.h \
@@ -131,25 +133,31 @@ BITCOIN_CORE_H = \
   DatabaseWrapper.h\
   eccryptoverify.h \
   ecwrapper.h \
+  FeeRate.h \
   flat-database.h \
   FilteredBoostFileSystem.h\
   hash.h \
   hdchain.h \
   init.h \
+  FeeAndPriorityCalculator.h \
   i_filesystem.h \
   i_walletBackupCreator.h \
   i_databaseWrapper.h \
+  I_SuperblockHeightValidator.h \
+  I_BlockSubsidyProvider.h \
   datacachemanager.h \
   kernel.h \
   swifttx.h \
   key.h \
   keystore.h \
+  LegacyBlockSubsidies.h \
   leveldbwrapper.h \
   limitedmap.h \
   main.h \
   masternode.h \
   masternode-payments.h \
-  masternode-budget.h \
+  SuperblockHelpers.h \
+  SuperblockHeightValidator.h \
   masternode-sync.h \
   masternodeman.h \
   masternodeconfig.h \
@@ -202,7 +210,7 @@ BITCOIN_CORE_H = \
   utilstrencodings.h \
   utilmoneystr.h \
   utiltime.h \
-  validationinterface.h \
+  NotificationInterface.h \
   version.h \
   wallet.h \
   walletBackupCreator.h \
@@ -238,11 +246,13 @@ libbitcoin_server_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT
 libbitcoin_server_a_SOURCES = \
   addrman.cpp \
   alert.cpp \
+  BlockRewards.cpp \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
   FilteredBoostFileSystem.cpp\
   init.cpp \
+  FeeAndPriorityCalculator.cpp \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
   main.cpp \
@@ -256,7 +266,6 @@ libbitcoin_server_a_SOURCES = \
   rest.cpp \
   rpcblockchain.cpp \
   rpcmasternode.cpp \
-  rpcmasternode-budget.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \
   rpcnet.cpp \
@@ -268,7 +277,7 @@ libbitcoin_server_a_SOURCES = \
   torcontrol.cpp \
   txdb.cpp \
   txmempool.cpp \
-  validationinterface.cpp \
+  NotificationInterface.cpp \
   walletBackupCreator.cpp \
   walletBackupFeatureContainer.cpp \
   WalletIntegrityVerifier.cpp \
@@ -294,6 +303,7 @@ libbitcoin_wallet_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_SOURCES = \
   activemasternode.cpp \
   bip38.cpp \
+  BlockSubsidyProvider.cpp \
   obfuscation.cpp \
   obfuscation-relay.cpp \
   db.cpp \
@@ -302,9 +312,11 @@ libbitcoin_wallet_a_SOURCES = \
   crypto/aes.cpp \
   crypter.cpp \
   swifttx.cpp \
+  LegacyBlockSubsidies.cpp \
   masternode.cpp \
-  masternode-budget.cpp \
   masternode-payments.cpp \
+  SuperblockHelpers.cpp \
+  SuperblockHeightValidator.cpp \
   masternode-sync.cpp \
   masternodeconfig.cpp \
   masternodeman.cpp \
@@ -377,12 +389,13 @@ libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_common_a_SOURCES = \
   allocators.cpp \
-  amount.cpp \
+  FeeRate.cpp \
   base58.cpp \
   bip38.cpp \
   bip39.cpp \
   chainparams.cpp \
   coins.cpp \
+  FeeAndPriorityCalculator.cpp \
   compressor.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \

@@ -77,3 +77,8 @@ void Settings::ClearParameter ()
 {
     mapArgs_.clear();
 }
+
+bool Settings::ParameterIsSetForMultiArgs (const std::string& key)
+{
+    return mapMultiArgs_.count(key);
+}

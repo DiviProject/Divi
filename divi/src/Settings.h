@@ -48,6 +48,8 @@ public:
     void SetParameter (const std::string& key, const std::string& value);
 
     void ClearParameter (); 
+
+    bool ParameterIsSetForMultiArgs (const std::string& key);
 };
 
 #endif //SETTINGS_H

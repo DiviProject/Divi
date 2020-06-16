@@ -163,6 +163,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   miner.h \
+  CoinMinter.h \
   monthlyWalletBackupCreator.h \
   mruset.h \
   netbase.h \
@@ -257,6 +258,7 @@ libbitcoin_server_a_SOURCES = \
   leveldbwrapper.cpp \
   main.cpp \
   merkleblock.cpp \
+  CoinMinter.cpp \
   miner.cpp \
   monthlyWalletBackupCreator.cpp \
   net.cpp \

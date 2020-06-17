@@ -476,6 +476,17 @@ bool SatisfiesMintingRequirements()
             nReserveBalance >= pwallet->GetBalance() || 
             !masternodeSync.IsSynced());
 }
+bool LimitStakingSpeed()
+{
+    if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
+    {
+        if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes
+        {
+            return true;
+        }
+    }
+    false;
+}
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
     LogPrintf("DIVIMiner started\n");
@@ -516,13 +527,10 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                         MilliSleep(5000);
                     }
 
-                    if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
+                    if(LimitStakingSpeed())
                     {
-                        if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes
-                        {
-                            MilliSleep(5000);
-                            continue;
-                        }
+                        MilliSleep(5000);
+                        continue;
                     }
                 }
 

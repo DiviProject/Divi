@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <memory>
 #include <vector>
+#include <map>
 
 class CWallet;
 class CChain;
@@ -10,6 +11,7 @@ class CChainParams;
 class PeerNotificationOfMintService;
 class CNode;
 class CMasternodeSync;
+typedef std::map<unsigned int, unsigned int> HashedBlockMap;
 class CoinMinter
 {
     CWallet* pwallet_;
@@ -17,6 +19,7 @@ class CoinMinter
     const CChainParams& chainParameters_;
     std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
     CMasternodeSync& masternodeSync_;
+    HashedBlockMap& mapHashedBlocks_;
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
     int64_t timeToWait_;
@@ -29,7 +32,8 @@ public:
         CChain& chain,
         const CChainParams& chainParameters,
         std::vector<CNode*>& peers,
-        CMasternodeSync& masternodeSynchronization
+        CMasternodeSync& masternodeSynchronization,
+        HashedBlockMap& mapHashedBlocks
         );
     const int64_t& getTimeTillNextCheck() const;
     bool isMintable();

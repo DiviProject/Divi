@@ -498,7 +498,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
     //control the amount of times the client will check for mintable coins
     static bool fMintableCoins = false;
-    static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync);
+    static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks);
 
     while(true) {
 

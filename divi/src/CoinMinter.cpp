@@ -11,12 +11,14 @@ CoinMinter::CoinMinter(
     CChain& chain,
     const CChainParams& chainParameters,
     std::vector<CNode*>& peers,
-    CMasternodeSync& masternodeSynchronization
+    CMasternodeSync& masternodeSynchronization,
+    HashedBlockMap& mapHashedBlocks
     ): pwallet_(pwallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
     , peerNotifier_(new PeerNotificationOfMintService(peers))
     , masternodeSync_(masternodeSynchronization)
+    , mapHashedBlocks_(mapHashedBlocks)
     , haveMintableCoins_(false)
     , lastTimeCheckedMintable_(0)
     , timeToWait_(0)

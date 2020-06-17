@@ -517,8 +517,8 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
             {
                 if (fProofOfStake) 
                 {
-                    if (!AtProofOfStakeHeight() ||
-                        !fMintableCoins ||
+                    if (!fMintableCoins ||
+                        !AtProofOfStakeHeight() ||
                         !SatisfiesMintingRequirements() ||
                         LimitStakingSpeed())
                     {

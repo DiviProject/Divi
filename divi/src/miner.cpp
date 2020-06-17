@@ -514,8 +514,6 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                     {
                         nLastCoinStakeSearchInterval = 0;
                         MilliSleep(5000);
-                        if (!fGenerateBitcoins)
-                            continue;
                     }
 
                     if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet

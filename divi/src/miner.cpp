@@ -464,6 +464,18 @@ bool fGenerateBitcoins = false;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 
+bool AtProofOfStakeHeight()
+{
+    return chainActive.Tip()->nHeight >= Params().LAST_POW_BLOCK();
+}
+bool SatisfiesMintingRequirements()
+{
+    return !(chainActive.Tip()->nTime < 1471482000 || 
+            vNodes.empty() || 
+            pwallet->IsLocked() || 
+            nReserveBalance >= pwallet->GetBalance() || 
+            !masternodeSync.IsSynced());
+}
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
     LogPrintf("DIVIMiner started\n");
@@ -491,17 +503,14 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
             {
                 if (fProofOfStake) 
                 {
-                    if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
+                    if (!AtProofOfStakeHeight()) {
                         MilliSleep(5000);
                         continue;
                     }
 
-                    while (chainActive.Tip()->nTime < 1471482000 || 
-                        vNodes.empty() || 
-                        pwallet->IsLocked() || 
-                        !fMintableCoins || 
-                        nReserveBalance >= pwallet->GetBalance() || 
-                        !masternodeSync.IsSynced()) 
+                    while (
+                        !fMintableCoins ||
+                        !SatisfiesMintingRequirements()) 
                     {
                         nLastCoinStakeSearchInterval = 0;
                         MilliSleep(5000);

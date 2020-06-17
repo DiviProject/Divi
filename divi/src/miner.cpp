@@ -24,6 +24,7 @@
 #include "masternode-payments.h"
 #include "spork.h"
 #include "SuperblockHelpers.h"
+#include "CoinMiner.h"
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -475,26 +476,33 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
     //control the amount of times the client will check for mintable coins
     static bool fMintableCoins = false;
-    static int nMintableLastCheck = 0;
+    static CoinMinter minter(pwallet);
 
     while(true) {
 
         try {
 
-            if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
+            if (fProofOfStake) // 5 minute check time
             {
-                nMintableLastCheck = GetTime();
-                fMintableCoins = pwallet->MintableCoins();
+                fMintableCoins = minter.isReadyForProofOfStake();
             }
 
-            while (fGenerateBitcoins || fProofOfStake) {
-                if (fProofOfStake) {
+            while (fGenerateBitcoins || fProofOfStake) 
+            {
+                if (fProofOfStake) 
+                {
                     if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
                         MilliSleep(5000);
                         continue;
                     }
 
-                    while (chainActive.Tip()->nTime < 1471482000 || vNodes.empty() || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || !masternodeSync.IsSynced()) {
+                    while (chainActive.Tip()->nTime < 1471482000 || 
+                        vNodes.empty() || 
+                        pwallet->IsLocked() || 
+                        !fMintableCoins || 
+                        nReserveBalance >= pwallet->GetBalance() || 
+                        !masternodeSync.IsSynced()) 
+                    {
                         nLastCoinStakeSearchInterval = 0;
                         MilliSleep(5000);
                         if (!fGenerateBitcoins && !fProofOfStake)

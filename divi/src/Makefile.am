@@ -164,6 +164,7 @@ BITCOIN_CORE_H = \
   merkleblock.h \
   miner.h \
   CoinMinter.h \
+  PeerNotificationOfMintService.h \
   monthlyWalletBackupCreator.h \
   mruset.h \
   netbase.h \
@@ -259,6 +260,7 @@ libbitcoin_server_a_SOURCES = \
   main.cpp \
   merkleblock.cpp \
   CoinMinter.cpp \
+  PeerNotificationOfMintService.cpp \
   miner.cpp \
   monthlyWalletBackupCreator.cpp \
   net.cpp \

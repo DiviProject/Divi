@@ -3,14 +3,17 @@
 #include <utiltime.h>
 #include <chain.h>
 #include <chainparams.h>
+#include <PeerNotificationOfMintService.h>
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,
     CChain& chain,
-    const CChainParams& chainParameters
+    const CChainParams& chainParameters,
+    std::vector<CNode*>& peers
     ): pwallet_(pwallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
+    , peerNotifier_(new PeerNotificationOfMintService(peers))
     , haveMintableCoins_(false)
     , lastTimeCheckedMintable_(0)
     , timeToWait_(0)

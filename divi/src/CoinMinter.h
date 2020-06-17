@@ -1,15 +1,20 @@
 #ifndef COIN_MINTER_H
 #define COIN_MINTER_H
 #include <stdint.h>
+#include <memory>
+#include <vector>
+
 class CWallet;
 class CChain;
 class CChainParams;
-
+class PeerNotificationOfMintService;
+class CNode;
 class CoinMinter
 {
     CWallet* pwallet_;
     CChain& chain_;
     const CChainParams& chainParameters_;
+    std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
     int64_t timeToWait_;
@@ -20,7 +25,8 @@ public:
     CoinMinter(
         CWallet* pwallet,
         CChain& chain,
-        const CChainParams& chainParameters
+        const CChainParams& chainParameters,
+        std::vector<CNode*>& peers
         );
     const int64_t& getTimeTillNextCheck() const;
     bool isMintable();

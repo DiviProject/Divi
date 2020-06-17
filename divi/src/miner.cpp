@@ -464,10 +464,6 @@ bool fGenerateBitcoins = false;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 
-bool AtProofOfStakeHeight()
-{
-    return chainActive.Tip()->nHeight >= Params().LAST_POW_BLOCK();
-}
 bool SatisfiesMintingRequirements(CWallet* pwallet)
 {
     bool stakingRequirements =
@@ -502,7 +498,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
     //control the amount of times the client will check for mintable coins
     static bool fMintableCoins = false;
-    static CoinMinter minter(pwallet);
+    static CoinMinter minter(pwallet, chainActive, Params());
 
     while(true) {
 
@@ -518,7 +514,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 if (fProofOfStake) 
                 {
                     if (!fMintableCoins ||
-                        !AtProofOfStakeHeight() ||
+                        !minter.isAtProofOfStakeHeight() ||
                         !SatisfiesMintingRequirements(pwallet) ||
                         LimitStakingSpeed(pwallet))
                     {

@@ -1,10 +1,16 @@
 #include <CoinMinter.h>
 #include <wallet.h>
 #include <utiltime.h>
+#include <chain.h>
+#include <chainparams.h>
 
 CoinMinter::CoinMinter(
-    CWallet* pwallet
+    CWallet* pwallet,
+    CChain& chain,
+    const CChainParams& chainParameters
     ): pwallet_(pwallet)
+    , chain_(chain)
+    , chainParameters_(chainParameters)
     , haveMintableCoins_(false)
     , lastTimeCheckedMintable_(0)
     , timeToWait_(0)
@@ -25,6 +31,10 @@ bool CoinMinter::hasMintableCoinForProofOfStake()
         timeToWait_ = fiveMinutes_ - timeWaited;
     }
     return haveMintableCoins_;
+}
+bool CoinMinter::isAtProofOfStakeHeight() const
+{
+    return chain_.Tip()->nHeight >= chainParameters_.LAST_POW_BLOCK();
 }
 const int64_t& CoinMinter::getTimeTillNextCheck() const
 {

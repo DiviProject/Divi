@@ -517,21 +517,10 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
             {
                 if (fProofOfStake) 
                 {
-                    if (!AtProofOfStakeHeight()) 
-                    {
-                        MilliSleep(5000);
-                        continue;
-                    }
-
-                    if (
+                    if (!AtProofOfStakeHeight() ||
                         !fMintableCoins ||
-                        !SatisfiesMintingRequirements()) 
-                    {
-                        MilliSleep(5000);
-                        continue;
-                    }
-
-                    if(LimitStakingSpeed())
+                        !SatisfiesMintingRequirements() ||
+                        LimitStakingSpeed())
                     {
                         MilliSleep(5000);
                         continue;

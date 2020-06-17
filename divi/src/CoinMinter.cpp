@@ -4,16 +4,19 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <PeerNotificationOfMintService.h>
+#include <masternode-sync.h>
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,
     CChain& chain,
     const CChainParams& chainParameters,
-    std::vector<CNode*>& peers
+    std::vector<CNode*>& peers,
+    CMasternodeSync& masternodeSynchronization
     ): pwallet_(pwallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
     , peerNotifier_(new PeerNotificationOfMintService(peers))
+    , masternodeSync_(masternodeSynchronization)
     , haveMintableCoins_(false)
     , lastTimeCheckedMintable_(0)
     , timeToWait_(0)

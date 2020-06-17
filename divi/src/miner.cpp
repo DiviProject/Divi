@@ -514,7 +514,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                     {
                         nLastCoinStakeSearchInterval = 0;
                         MilliSleep(5000);
-                        if (!fGenerateBitcoins && !fProofOfStake)
+                        if (!fGenerateBitcoins)
                             continue;
                     }
 

@@ -464,28 +464,6 @@ bool fGenerateBitcoins = false;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 
-bool SatisfiesMintingRequirements(CWallet* pwallet)
-{
-    bool stakingRequirements =
-        !(chainActive.Tip()->nTime < 1471482000 || 
-        vNodes.empty() || 
-        pwallet->IsLocked() || 
-        nReserveBalance >= pwallet->GetBalance() || 
-        !masternodeSync.IsSynced());
-    if(!stakingRequirements) nLastCoinStakeSearchInterval = 0;
-    return stakingRequirements;
-}
-bool LimitStakingSpeed(CWallet* pwallet)
-{
-    if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
-    {
-        if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes
-        {
-            return true;
-        }
-    }
-    return false;
-}
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
     LogPrintf("DIVIMiner started\n");
@@ -515,8 +493,8 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 {
                     if (!fMintableCoins ||
                         !minter.isAtProofOfStakeHeight() ||
-                        !SatisfiesMintingRequirements(pwallet) ||
-                        LimitStakingSpeed(pwallet))
+                        !minter.satisfiesMintingRequirements() ||
+                        minter.limitStakingSpeed())
                     {
                         MilliSleep(5000);
                         continue;

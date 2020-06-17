@@ -37,6 +37,8 @@ public:
         );
     const int64_t& getTimeTillNextCheck() const;
     bool isMintable();
+    bool satisfiesMintingRequirements() const;
+    bool limitStakingSpeed() const;
     bool isAtProofOfStakeHeight() const;
 };
 

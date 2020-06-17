@@ -24,7 +24,7 @@
 #include "masternode-payments.h"
 #include "spork.h"
 #include "SuperblockHelpers.h"
-#include "CoinMiner.h"
+#include "CoinMinter.h"
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -468,7 +468,7 @@ bool AtProofOfStakeHeight()
 {
     return chainActive.Tip()->nHeight >= Params().LAST_POW_BLOCK();
 }
-bool SatisfiesMintingRequirements()
+bool SatisfiesMintingRequirements(CWallet* pwallet)
 {
     bool stakingRequirements =
         !(chainActive.Tip()->nTime < 1471482000 || 
@@ -479,7 +479,7 @@ bool SatisfiesMintingRequirements()
     if(!stakingRequirements) nLastCoinStakeSearchInterval = 0;
     return stakingRequirements;
 }
-bool LimitStakingSpeed()
+bool LimitStakingSpeed(CWallet* pwallet)
 {
     if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
     {
@@ -488,7 +488,7 @@ bool LimitStakingSpeed()
             return true;
         }
     }
-    false;
+    return false;
 }
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
@@ -519,8 +519,8 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 {
                     if (!fMintableCoins ||
                         !AtProofOfStakeHeight() ||
-                        !SatisfiesMintingRequirements() ||
-                        LimitStakingSpeed())
+                        !SatisfiesMintingRequirements(pwallet) ||
+                        LimitStakingSpeed(pwallet))
                     {
                         MilliSleep(5000);
                         continue;

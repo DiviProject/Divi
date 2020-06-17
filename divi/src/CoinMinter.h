@@ -17,7 +17,7 @@ public:
         CWallet* pwallet
         );
     const int64_t& getTimeTillNextCheck() const;
-    bool isReadyForProofOfStake();
+    bool isMintable();
 };
 
 #endif // COIN_MINTER_H

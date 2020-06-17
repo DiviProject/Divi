@@ -484,7 +484,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
             if (fProofOfStake) // 5 minute check time
             {
-                fMintableCoins = minter.isReadyForProofOfStake();
+                fMintableCoins = minter.isMintable();
             }
 
             while (fGenerateBitcoins || fProofOfStake) 

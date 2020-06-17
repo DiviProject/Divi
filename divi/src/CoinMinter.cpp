@@ -30,7 +30,7 @@ const int64_t& CoinMinter::getTimeTillNextCheck() const
 {
     return timeToWait_;
 }
-bool CoinMinter::isReadyForProofOfStake()
+bool CoinMinter::isMintable()
 {
     if(!hasMintableCoinForProofOfStake()) return false;
     

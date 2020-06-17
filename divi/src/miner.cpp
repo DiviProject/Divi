@@ -470,11 +470,14 @@ bool AtProofOfStakeHeight()
 }
 bool SatisfiesMintingRequirements()
 {
-    return !(chainActive.Tip()->nTime < 1471482000 || 
-            vNodes.empty() || 
-            pwallet->IsLocked() || 
-            nReserveBalance >= pwallet->GetBalance() || 
-            !masternodeSync.IsSynced());
+    bool stakingRequirements =
+        !(chainActive.Tip()->nTime < 1471482000 || 
+        vNodes.empty() || 
+        pwallet->IsLocked() || 
+        nReserveBalance >= pwallet->GetBalance() || 
+        !masternodeSync.IsSynced());
+    if(!stakingRequirements) nLastCoinStakeSearchInterval = 0;
+    return stakingRequirements;
 }
 bool LimitStakingSpeed()
 {
@@ -524,7 +527,6 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                         !fMintableCoins ||
                         !SatisfiesMintingRequirements()) 
                     {
-                        nLastCoinStakeSearchInterval = 0;
                         MilliSleep(5000);
                         continue;
                     }

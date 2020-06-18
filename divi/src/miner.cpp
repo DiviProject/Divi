@@ -91,7 +91,7 @@ void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev)
 
     // Updating time can change work required on testnet:
     if (Params().AllowMinDifficultyBlocks())
-        block->nBits = GetNextWorkRequired(pindexPrev, block);
+        block->nBits = GetNextWorkRequired(pindexPrev, block,Params());
 }
 
 CMutableTransaction CreateCoinbaseTransaction(const CScript& scriptPubKeyIn)
@@ -137,7 +137,7 @@ bool CreateAndFindStake(
 void SetRequiredWork(CBlock& block)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
-    block.nBits = GetNextWorkRequired(pindexPrev, &block);
+    block.nBits = GetNextWorkRequired(pindexPrev, &block,Params());
 }
 
 int64_t SetBlockTime(CBlock& block)
@@ -178,7 +178,7 @@ private:
         block.hashPrevBlock = indexPrev.GetBlockHash();
         if (!proofOfStake)
             UpdateTime(&block, &indexPrev);
-        block.nBits = GetNextWorkRequired(&indexPrev, &block);
+        block.nBits = GetNextWorkRequired(&indexPrev, &block, Params());
         block.nNonce = 0;
         block.nAccumulatorCheckpoint = static_cast<uint256>(0);
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(block.vtx[0]);

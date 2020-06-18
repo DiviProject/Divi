@@ -266,7 +266,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->vLotteryWinnersCoinstakes = diskindex.vLotteryWinnersCoinstakes;
 
                 if (pindexNew->nHeight <= Params().LAST_POW_BLOCK()) {
-                    if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits))
+                    if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params()))
                         return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());
                 }
                 // ppcoin: build setStakeSeen

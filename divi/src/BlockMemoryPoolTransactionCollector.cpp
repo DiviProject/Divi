@@ -319,10 +319,6 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
         if (!view.HaveInputs(tx)) {
             continue;
         }
-
-
-        CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
-
         nTxSigOps += GetP2SHSigOpCount(tx, view);
         if (nBlockSigOps + nTxSigOps >= nMaxBlockSigOps) {
             continue;
@@ -336,6 +332,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
             continue;
         }
 
+        CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
         CTxUndo txundo;
         UpdateCoins(tx, state, view, txundo, nHeight);
 

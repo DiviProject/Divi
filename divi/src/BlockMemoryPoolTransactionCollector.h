@@ -120,7 +120,6 @@ private:
 
     std::vector<TxPriority> PrioritizeMempoolTransactions (
         const int& nHeight,
-        std::list<COrphan>& vOrphan,
         std::map<uint256, std::vector<COrphan*> >& mapDependers,
         CCoinsViewCache& view) const;
 
@@ -128,9 +127,9 @@ private:
         std::vector<TxPriority>& vecPriority,
         bool& fSortedByFee, 
         TxPriorityCompare& comparer,
-        uint64_t& nBlockSize,
-        unsigned int& nTxSize,
-        unsigned int& nBlockPrioritySize,
+        const uint64_t& nBlockSize,
+        const unsigned int& nTxSize,
+        const unsigned int& nBlockPrioritySize,
         double& dPriority) const;
 
     void AddTransactionsToBlockIfPossible (

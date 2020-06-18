@@ -51,6 +51,7 @@ void BlockMemoryPoolTransactionCollector::UpdateTime(CBlockHeader* block, const 
 
 void BlockMemoryPoolTransactionCollector::SetBlockHeaders(CBlock& block, const bool& proofOfStake, const CBlockIndex& indexPrev, std::unique_ptr<CBlockTemplate>& pblocktemplate) const
 {
+    // Fill in header
     block.hashPrevBlock = indexPrev.GetBlockHash();
     if (!proofOfStake)
         UpdateTime(&block, &indexPrev);
@@ -144,6 +145,7 @@ void BlockMemoryPoolTransactionCollector::SetCoinBaseTransaction (
     CMutableTransaction& txNew,
     const CAmount& nFees) const
 {
+    // Compute final coinbase transaction.
     block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
     if (!fProofOfStake) {
         txNew.vout[0].nValue = GetBlockSubsidity(nHeight).nStakeReward;
@@ -186,10 +188,10 @@ void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
 
 std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTransactions (
     const int& nHeight,
-    std::list<COrphan>& vOrphan,
     std::map<uint256, std::vector<COrphan*> >& mapDependers,
     CCoinsViewCache& view) const
 {
+    std::list<COrphan> vOrphan;
     std::vector<TxPriority> vecPriority;
     vecPriority.reserve(mempool.mapTx.size());
     for (std::map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin(); mi != mempool.mapTx.end(); ++mi) {
@@ -249,9 +251,9 @@ void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize (
     std::vector<TxPriority>& vecPriority,
     bool& fSortedByFee, 
     TxPriorityCompare& comparer,
-    uint64_t& nBlockSize,
-    unsigned int& nTxSize,
-    unsigned int& nBlockPrioritySize,
+    const uint64_t& nBlockSize,
+    const unsigned int& nTxSize,
+    const unsigned int& nBlockPrioritySize,
     double& dPriority) const 
 {
     if (!fSortedByFee &&
@@ -300,19 +302,17 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
 
         // Size limits
         unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-        if (nBlockSize + nTxSize >= nBlockMaxSize) {
-            continue;
-        }
-
         // Legacy limits on sigOps:
         unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
         unsigned int nTxSigOps = GetLegacySigOpCount(tx);
+        // Skip free transactions if we're past the minimum block size:
+        const uint256& hash = tx.GetHash();
+        if (nBlockSize + nTxSize >= nBlockMaxSize) {
+            continue;
+        }
         if (nBlockSigOps + nTxSigOps >= nMaxBlockSigOps) {
             continue;
         }
-        
-        const uint256& hash = tx.GetHash();
-        // Skip free transactions if we're past the minimum block size:
         if(IsFreeTransaction(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, nBlockMinSize, tx))
         {
             continue;
@@ -379,11 +379,10 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     CCoinsViewCache view(pcoinsTip);
 
     // Priority order to process transactions
-    std::list<COrphan> vOrphan; // list memory doesn't move
     std::map<uint256, std::vector<COrphan*> > mapDependers;
 
     // This vector will be sorted into a priority queue:
-    std::vector<TxPriority> vecPriority = PrioritizeMempoolTransactions(nHeight, vOrphan, mapDependers, view);
+    std::vector<TxPriority> vecPriority = PrioritizeMempoolTransactions(nHeight, mapDependers, view);
 
     // Collect transactions into block
     AddTransactionsToBlockIfPossible(
@@ -395,15 +394,11 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
         mapDependers
     );
 
-    // Compute final coinbase transaction.
     SetCoinBaseTransaction(block, pblocktemplate, fProofOfStake, nHeight, txNew, nFees);
-
-    // Fill in header
     SetBlockHeaders(block, fProofOfStake, *pindexPrev, pblocktemplate);
 
     //byrd transaction printout
     LogPrintf("CreateNewBlock(): block tostring %s\n", block.ToString());
-
     CValidationState state;
     if (!TestBlockValidity(state, block, pindexPrev, false, false)) {
         LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");

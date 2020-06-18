@@ -284,6 +284,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     uint64_t nBlockSize = 1000;
     uint64_t nBlockTx = 0;
     int nBlockSigOps = 100;
+    const unsigned int constexpr nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
     bool fSortedByFee = (nBlockPrioritySize <= 0);
 
     TxPriorityCompare comparer(fSortedByFee);
@@ -303,24 +304,18 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
         // Size limits
         unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
         // Legacy limits on sigOps:
-        unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
         unsigned int nTxSigOps = GetLegacySigOpCount(tx);
         // Skip free transactions if we're past the minimum block size:
         const uint256& hash = tx.GetHash();
-        if (nBlockSize + nTxSize >= nBlockMaxSize) {
-            continue;
-        }
-        if (nBlockSigOps + nTxSigOps >= nMaxBlockSigOps) {
-            continue;
-        }
-        if(IsFreeTransaction(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, nBlockMinSize, tx))
+        if (nBlockSize + nTxSize >= nBlockMaxSize || 
+            nBlockSigOps + nTxSigOps >= nMaxBlockSigOps||
+            IsFreeTransaction(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, nBlockMinSize, tx))
         {
             continue;
         }
         // Prioritise by fee once past the priority size or we run out of high-priority
         // transactions:
         PrioritizeFeePastPrioritySize(vecPriority, fSortedByFee, comparer, nBlockSize, nTxSize, nBlockPrioritySize, dPriority);
-
         if (!view.HaveInputs(tx)) {
             continue;
         }

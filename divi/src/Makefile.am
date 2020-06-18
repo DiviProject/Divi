@@ -171,6 +171,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   miner.h \
+  BlockMemoryPoolTransactionCollector.h \
   CoinMinter.h \
   PeerNotificationOfMintService.h \
   monthlyWalletBackupCreator.h \
@@ -277,6 +278,7 @@ libbitcoin_server_a_SOURCES = \
   CoinMinter.cpp \
   PeerNotificationOfMintService.cpp \
   miner.cpp \
+  BlockMemoryPoolTransactionCollector.cpp \
   monthlyWalletBackupCreator.cpp \
   net.cpp \
   netfulfilledman.cpp \

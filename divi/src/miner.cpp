@@ -509,23 +509,14 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 CBlockIndex* pindexPrev = chainActive.Tip();
                 if (!pindexPrev)
                     continue;
-                //LogPrintf("BitcoinMiner(): chainActive.Tip %s\n", chainActive.Tip());
 
                 unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));
-                //LogPrintf("BitcoinMiner(): pblocktemplate created %s\n", "");
 
                 if (!pblocktemplate.get())
                     continue;
 
-                //LogPrintf("BitcoinMiner(): pblocktemplate.get %s\n", "");
-
-
                 CBlock* pblock = &pblocktemplate->block;
-                //LogPrintf("BitcoinMiner(): block created. %s\n", "");
-
                 IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
-                //LogPrintf("BitcoinMiner(): nonce incremented. %s\n", "");
-
 
                 //Stake miner main
                 if (fProofOfStake) {

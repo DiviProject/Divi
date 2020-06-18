@@ -14,6 +14,7 @@
 
 #include "amount.h"
 #include "blockmap.h"
+#include "BlockTemplate.h"
 #include "BlockRewards.h"
 #include "chain.h"
 #include "chainparams.h"
@@ -628,12 +629,6 @@ extern CBlockTreeDB* pblocktree;
 
 /** Global variable that points to the spork database (protected by cs_main) */
 extern CSporkDB* pSporkDB;
-
-struct CBlockTemplate {
-    CBlock block;
-    std::vector<CAmount> vTxFees;
-    std::vector<int64_t> vTxSigOps;
-};
 
 /** Address index */
 struct CAddressIndexKey {

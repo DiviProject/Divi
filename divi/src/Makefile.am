@@ -154,6 +154,7 @@ BITCOIN_CORE_H = \
   leveldbwrapper.h \
   limitedmap.h \
   main.h \
+  BlockTemplate.h \
   masternode.h \
   masternode-payments.h \
   SuperblockHelpers.h \

@@ -100,6 +100,10 @@ BITCOIN_CORE_H = \
   addressindex.h \
   amount.h \
   base58.h \
+  BIP9Deployment.h \
+  BIP9ActivationManager.h \
+  BIP9ActivationFeatureContainer.h \
+  CachedBIP9ActivationStateTracker.h \
   bip38.h \
   bip39.h \
   bip39_english.h \
@@ -143,6 +147,9 @@ BITCOIN_CORE_H = \
   i_filesystem.h \
   i_walletBackupCreator.h \
   i_databaseWrapper.h \
+  I_SuperblockHeightValidator.h \
+  I_BlockSubsidyProvider.h \
+  I_BIP9ActivationTrackerFactory.h \
   I_SuperblockHeightValidator.h \
   I_BlockSubsidyProvider.h \
   datacachemanager.h \
@@ -197,6 +204,7 @@ BITCOIN_CORE_H = \
   spentindex.h \
   streams.h \
   sync.h \
+  ThresholdConditionCache.h \
   threadsafety.h \
   timedata.h \
   timeIntervalConstants.h \
@@ -214,6 +222,7 @@ BITCOIN_CORE_H = \
   utilmoneystr.h \
   utiltime.h \
   NotificationInterface.h \
+  versionbits.h \
   version.h \
   wallet.h \
   walletBackupCreator.h \
@@ -250,6 +259,11 @@ libbitcoin_server_a_SOURCES = \
   addrman.cpp \
   alert.cpp \
   BlockRewards.cpp \
+  BIP9Deployment.cpp \
+  BIP9ActivationManager.cpp \
+  BIP9ActivationFeatureContainer.cpp \
+  BlockRewards.cpp \
+  CachedBIP9ActivationStateTracker.cpp \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
@@ -283,6 +297,7 @@ libbitcoin_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   NotificationInterface.cpp \
+  versionbits.cpp \
   walletBackupCreator.cpp \
   walletBackupFeatureContainer.cpp \
   WalletIntegrityVerifier.cpp \

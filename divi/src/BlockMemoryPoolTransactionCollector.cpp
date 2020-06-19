@@ -334,7 +334,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
 
         CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
         CTxUndo txundo;
-        UpdateCoins(tx, state, view, txundo, nHeight);
+        UpdateCoins(tx, view, txundo, nHeight);
 
         // Added
         AddTransactionToBlock(block, tx, pblocktemplate, nTxFees, nTxSigOps);

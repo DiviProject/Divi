@@ -148,12 +148,10 @@ private:
         CCoinsViewCache& view,
         std::map<uint256, std::vector<COrphan*> >& mapDependers) const;
     void AddTransactionsToBlockIfPossible (
-        std::vector<TxPriority>& vecPriority,
         const int& nHeight,
         CCoinsViewCache& view,
         std::unique_ptr<CBlockTemplate>& pblocktemplate,
-        CAmount& nFees,
-        std::map<uint256, std::vector<COrphan*> >& mapDependers) const;
+        CAmount& nFees) const;
 public:
     bool CollectTransactionsIntoBlock (
         std::unique_ptr<CBlockTemplate>& pblocktemplate,

@@ -360,15 +360,22 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
 }
 
 void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
-    std::vector<TxPriority>& vecPriority,
     const int& nHeight,
     CCoinsViewCache& view,
     std::unique_ptr<CBlockTemplate>& pblocktemplate,
-    CAmount& nFees,
-    std::map<uint256, std::vector<COrphan*> >& dependentTransactions) const
+    CAmount& nFees) const
 {
-    std::vector<PrioritizedTransactionData> prioritizedTransactions = PrioritizeTransactions(
-        vecPriority, nHeight, view, dependentTransactions);
+    std::map<uint256, std::vector<COrphan*> > dependentTransactions;
+
+    std::vector<TxPriority> vecPriority = 
+        PrioritizeMempoolTransactions(nHeight, dependentTransactions, view);
+        
+    std::vector<PrioritizedTransactionData> prioritizedTransactions = 
+        PrioritizeTransactions(
+            vecPriority, 
+            nHeight, 
+            view, 
+            dependentTransactions);
 
     for(const PrioritizedTransactionData& txData: prioritizedTransactions)
     {
@@ -398,21 +405,11 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     const int nHeight = pindexPrev->nHeight + 1;
     CCoinsViewCache view(pcoinsTip);
 
-    // Priority order to process transactions
-    std::map<uint256, std::vector<COrphan*> > dependentTransactions;
-
-    // This vector will be sorted into a priority queue:
-    std::vector<TxPriority> vecPriority = PrioritizeMempoolTransactions(nHeight, dependentTransactions, view);
-
-    // Collect transactions into block
     AddTransactionsToBlockIfPossible(
-        vecPriority,
         nHeight,
         view,
         pblocktemplate,
-        nFees,
-        dependentTransactions
-    );
+        nFees);
 
     SetCoinBaseTransaction(block, pblocktemplate, fProofOfStake, nHeight, txNew, nFees);
     SetBlockHeaders(block, fProofOfStake, *pindexPrev, pblocktemplate);

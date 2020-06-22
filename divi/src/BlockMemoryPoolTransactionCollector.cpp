@@ -85,14 +85,14 @@ void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
     std::list<COrphan>& vOrphan, 
     const CTransaction& tx, 
     const CTxIn& txin,
-    std::map<uint256, std::vector<COrphan*> >& mapDependers) const
+    std::map<uint256, std::vector<COrphan*> >& dependentTransactions) const
 {
     if (!porphan) {
         // Use list for automatic deletion
         vOrphan.push_back(COrphan(&tx));
         porphan = &vOrphan.back();
     }
-    mapDependers[txin.prevout.hash].push_back(porphan);
+    dependentTransactions[txin.prevout.hash].push_back(porphan);
     porphan->setDependsOn.insert(txin.prevout.hash);
 }
 
@@ -120,13 +120,13 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority (
 }
 
 void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue (
-    std::map<uint256, std::vector<COrphan*> >& mapDependers,
+    std::map<uint256, std::vector<COrphan*> >& dependentTransactions,
     const uint256& hash,
     std::vector<TxPriority>& vecPriority,
     TxPriorityCompare& comparer) const
 {
-    if (mapDependers.count(hash)) {
-        BOOST_FOREACH (COrphan* porphan, mapDependers[hash]) {
+    if (dependentTransactions.count(hash)) {
+        BOOST_FOREACH (COrphan* porphan, dependentTransactions[hash]) {
             if (!porphan->setDependsOn.empty()) {
                 porphan->setDependsOn.erase(hash);
                 if (porphan->setDependsOn.empty()) {
@@ -187,7 +187,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
 
 std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTransactions (
     const int& nHeight,
-    std::map<uint256, std::vector<COrphan*> >& mapDependers,
+    std::map<uint256, std::vector<COrphan*> >& dependentTransactions,
     CCoinsViewCache& view) const
 {
     std::list<COrphan> vOrphan;
@@ -217,7 +217,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
                 }
 
                 // Has to wait for dependencies
-                RecordOrphanTransaction(porphan, vOrphan, tx, txin, mapDependers);
+                RecordOrphanTransaction(porphan, vOrphan, tx, txin, dependentTransactions);
 
                 nTotalIn += mempool.mapTx[txin.prevout.hash].GetTx().vout[txin.prevout.n].nValue;
                 continue;
@@ -280,7 +280,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     std::vector<TxPriority>& vecPriority,
     const int& nHeight,
     CCoinsViewCache& view,
-    std::map<uint256, std::vector<COrphan*> >& mapDependers) const
+    std::map<uint256, std::vector<COrphan*> >& dependentTransactions) const
 {
     std::vector<PrioritizedTransactionData> prioritizedTransactions;
 
@@ -352,7 +352,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         }
 
         // Add transactions that depend on this one to the priority queue
-        AddDependingTransactionsToPriorityQueue(mapDependers, hash, vecPriority, comparer);
+        AddDependingTransactionsToPriorityQueue(dependentTransactions, hash, vecPriority, comparer);
     }
 
     LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
@@ -365,10 +365,10 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     CCoinsViewCache& view,
     std::unique_ptr<CBlockTemplate>& pblocktemplate,
     CAmount& nFees,
-    std::map<uint256, std::vector<COrphan*> >& mapDependers) const
+    std::map<uint256, std::vector<COrphan*> >& dependentTransactions) const
 {
     std::vector<PrioritizedTransactionData> prioritizedTransactions = PrioritizeTransactions(
-        vecPriority, nHeight, view, mapDependers);
+        vecPriority, nHeight, view, dependentTransactions);
 
     for(const PrioritizedTransactionData& txData: prioritizedTransactions)
     {
@@ -399,10 +399,10 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     CCoinsViewCache view(pcoinsTip);
 
     // Priority order to process transactions
-    std::map<uint256, std::vector<COrphan*> > mapDependers;
+    std::map<uint256, std::vector<COrphan*> > dependentTransactions;
 
     // This vector will be sorted into a priority queue:
-    std::vector<TxPriority> vecPriority = PrioritizeMempoolTransactions(nHeight, mapDependers, view);
+    std::vector<TxPriority> vecPriority = PrioritizeMempoolTransactions(nHeight, dependentTransactions, view);
 
     // Collect transactions into block
     AddTransactionsToBlockIfPossible(
@@ -411,7 +411,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
         view,
         pblocktemplate,
         nFees,
-        mapDependers
+        dependentTransactions
     );
 
     SetCoinBaseTransaction(block, pblocktemplate, fProofOfStake, nHeight, txNew, nFees);

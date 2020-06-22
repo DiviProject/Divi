@@ -358,16 +358,9 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
 
         prioritizedTransactions.emplace_back(tx, nTxSize,nTxSigOps);
 
-        CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
-        CTxUndo txundo;
-        UpdateCoins(tx, view, txundo, nHeight);
-
-        // Added
-        AddTransactionToBlock(block, tx, pblocktemplate, nTxFees, nTxSigOps);
-        nBlockSize += nTxSize;
         ++nBlockTx;
+        nBlockSize += nTxSize;
         nBlockSigOps += nTxSigOps;
-        nFees += nTxFees;
         
         if (fPrintPriority) {
             LogPrintf("priority %.1f fee %s txid %s\n",
@@ -377,7 +370,19 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
         // Add transactions that depend on this one to the priority queue
         AddDependingTransactionsToPriorityQueue(mapDependers, hash, vecPriority, comparer);
     }
-    
+
+    for(const PrioritizedTransactionData& txData: prioritizedTransactions)
+    {
+        const CTransaction& tx = *txData.tx;
+        CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
+        CTxUndo txundo;
+        UpdateCoins(tx, view, txundo, nHeight);
+
+        // Added
+        AddTransactionToBlock(block, tx, pblocktemplate, nTxFees, txData.nTxSigOps);
+        nFees += nTxFees;
+    }
+
     LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 }
 

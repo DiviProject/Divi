@@ -253,7 +253,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                         !minter.satisfiesMintingRequirements() ||
                         minter.limitStakingSpeed())
                     {
-                        MilliSleep(5000);
+                        minter.sleep(5000);
                         continue;
                     }
                 }

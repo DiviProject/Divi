@@ -78,3 +78,8 @@ bool CoinMinter::isMintable()
     
     return true;
 }
+
+void CoinMinter::sleep(uint64_t milliseconds) const
+{
+    MilliSleep(milliseconds);
+}

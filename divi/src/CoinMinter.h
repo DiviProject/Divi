@@ -40,6 +40,7 @@ public:
     bool satisfiesMintingRequirements() const;
     bool limitStakingSpeed() const;
     bool isAtProofOfStakeHeight() const;
+    void sleep(uint64_t milliseconds) const;
 };
 
 #endif // COIN_MINTER_H

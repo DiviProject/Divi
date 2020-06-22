@@ -70,9 +70,9 @@ void BlockMemoryPoolTransactionCollector::SetBlockHeaders(CBlock& block, const b
     pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(block.vtx[0]);
 }
 
-bool BlockMemoryPoolTransactionCollector::VerifyUTXOIsKnownToMemPool (const CTxMemPool& mempool, const CTxIn& txin, bool& fMissingInputs)  const
+bool BlockMemoryPoolTransactionCollector::VerifyUTXOIsKnownToMemPool (const CTxIn& txin, bool& fMissingInputs)  const
 {
-    if(!mempool.mapTx.count(txin.prevout.hash)){
+    if(!mempool_.mapTx.count(txin.prevout.hash)){
         LogPrintf("ERROR: mempool transaction missing input\n");
         if (fDebug) assert("mempool transaction missing input" == 0);
         fMissingInputs = true;
@@ -117,7 +117,7 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority (
     dPriority = FeeAndPriorityCalculator::instance().ComputePriority(tx,dPriority, nTxSize);
 
     uint256 hash = tx.GetHash();
-    mempool.ApplyDeltas(hash, dPriority, nTotalIn);
+    mempool_.ApplyDeltas(hash, dPriority, nTotalIn);
 
     CFeeRate feeRate(nTotalIn - tx.GetValueOut(), nTxSize);
 
@@ -174,7 +174,7 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
 {
     double dPriorityDelta = 0;
     CAmount nFeeDelta = 0;
-    mempool.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
+    mempool_.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
     
     return (fSortedByFee && 
         (dPriorityDelta <= 0) && 
@@ -201,8 +201,8 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
 {
     std::list<COrphan> vOrphan;
     std::vector<TxPriority> vecPriority;
-    vecPriority.reserve(mempool.mapTx.size());
-    for (std::map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin(); mi != mempool.mapTx.end(); ++mi) {
+    vecPriority.reserve(mempool_.mapTx.size());
+    for (std::map<uint256, CTxMemPoolEntry>::iterator mi = mempool_.mapTx.begin(); mi != mempool_.mapTx.end(); ++mi) {
         const CTransaction& tx = mi->second.GetTx();
         if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)){
             continue;
@@ -219,7 +219,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
                 // This should never happen; all transactions in the memory
                 // pool should connect to either transactions in the chain
                 // or other transactions in the memory pool.
-                if (!VerifyUTXOIsKnownToMemPool(mempool, txin, fMissingInputs)) {
+                if (!VerifyUTXOIsKnownToMemPool(txin, fMissingInputs)) {
                     if (porphan)
                         vOrphan.pop_back();
                     break;
@@ -228,7 +228,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
                 // Has to wait for dependencies
                 RecordOrphanTransaction(porphan, vOrphan, tx, txin, dependentTransactions);
 
-                nTotalIn += mempool.mapTx[txin.prevout.hash].GetTx().vout[txin.prevout.n].nValue;
+                nTotalIn += mempool_.mapTx[txin.prevout.hash].GetTx().vout[txin.prevout.n].nValue;
                 continue;
             }
 
@@ -405,7 +405,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     CMutableTransaction& txNew) const
 {
     
-    LOCK2(cs_main, mempool.cs);
+    LOCK2(mainCS_, mempool_.cs);
 
     CAmount nFees = 0;
     CBlock& block = pblocktemplate->block;
@@ -428,7 +428,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     CValidationState state;
     if (!TestBlockValidity(state, block, pindexPrev, false, false)) {
         LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
-        mempool.clear();
+        mempool_.clear();
         return false;
     }
     LogPrintf("CreateNewBlock(): validation passed %s\n", "");

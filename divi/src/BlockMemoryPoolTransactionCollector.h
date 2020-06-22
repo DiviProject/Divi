@@ -92,7 +92,7 @@ private:
 private: 
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     void SetBlockHeaders(CBlock& block, const bool& proofOfStake, const CBlockIndex& indexPrev, std::unique_ptr<CBlockTemplate>& pblocktemplate) const;
-    bool VerifyUTXOIsKnownToMemPool (const CTxMemPool& mempool, const CTxIn& txin, bool& fMissingInputs) const;
+    bool VerifyUTXOIsKnownToMemPool (const CTxIn& txin, bool& fMissingInputs) const;
     bool CheckUTXOValidity (const CTxIn& txin, bool& fMissingInputs, const CTransaction &tx) const;
     void RecordOrphanTransaction (
         COrphan* porphan, 

@@ -13,6 +13,8 @@
 #include <vector>
 
 #include <boost/tuple/tuple.hpp>
+#include <boost/thread/recursive_mutex.hpp>
+
 
 class CTransaction;
 class CTxIn;
@@ -22,6 +24,9 @@ class CBlock;
 class CCoinsViewCache;
 class CBlockIndex;
 class CTxMemPool;
+
+template <typename MutexObj>
+class AnnotatedMixin;
 
 
 
@@ -81,6 +86,9 @@ public:
 
 class BlockMemoryPoolTransactionCollector
 {
+private:
+    CTxMemPool& mempool_;
+    AnnotatedMixin<boost::recursive_mutex>& mainCS_;
 private: 
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     void SetBlockHeaders(CBlock& block, const bool& proofOfStake, const CBlockIndex& indexPrev, std::unique_ptr<CBlockTemplate>& pblocktemplate) const;
@@ -153,6 +161,9 @@ private:
         std::unique_ptr<CBlockTemplate>& pblocktemplate,
         CAmount& nFees) const;
 public:
+    BlockMemoryPoolTransactionCollector(
+        CTxMemPool& mempool, 
+        AnnotatedMixin<boost::recursive_mutex>& mainCS);
     bool CollectTransactionsIntoBlock (
         std::unique_ptr<CBlockTemplate>& pblocktemplate,
         bool& fProofOfStake,

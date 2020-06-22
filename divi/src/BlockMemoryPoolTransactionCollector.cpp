@@ -39,6 +39,15 @@ unsigned int GetBlockMinSize(unsigned int defaultBlockMinSize, unsigned int bloc
     return blockMinSize;
 }
 
+BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
+    CTxMemPool& mempool, 
+    CCriticalSection& mainCS
+    ): mempool_(mempool)
+    , mainCS_(mainCS)
+{
+
+}
+
 
 void BlockMemoryPoolTransactionCollector::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const
 {

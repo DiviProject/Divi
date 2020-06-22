@@ -134,7 +134,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
     // Collect memory pool transactions into the block
 
-    if(!BlockMemoryPoolTransactionCollector ()
+    if(!BlockMemoryPoolTransactionCollector (mempool,cs_main)
         .CollectTransactionsIntoBlock(
             pblocktemplate,
             fProofOfStake,

@@ -306,7 +306,6 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     unsigned int nBlockMinSize = GetBlockMinSize(DEFAULT_BLOCK_MIN_SIZE, nBlockMaxSize);
 
     uint64_t nBlockSize = 1000;
-    uint64_t nBlockTx = 0;
     int nBlockSigOps = 100;
     const unsigned int constexpr nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
     bool fSortedByFee = (nBlockPrioritySize <= 0);
@@ -357,11 +356,9 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
         }
 
         prioritizedTransactions.emplace_back(tx, nTxSize,nTxSigOps);
-
-        ++nBlockTx;
         nBlockSize += nTxSize;
         nBlockSigOps += nTxSigOps;
-        
+
         if (fPrintPriority) {
             LogPrintf("priority %.1f fee %s txid %s\n",
                     dPriority, feeRate.ToString(), tx.GetHash().ToString());

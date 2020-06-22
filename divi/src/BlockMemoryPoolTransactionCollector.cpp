@@ -277,6 +277,87 @@ PrioritizedTransactionData::PrioritizedTransactionData(
 {
 }
 
+std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::PrioritizeTransactions(
+    std::vector<TxPriority>& vecPriority,
+    const int& nHeight,
+    CCoinsViewCache& view,
+    std::map<uint256, std::vector<COrphan*> >& mapDependers) const
+{
+    std::vector<PrioritizedTransactionData> prioritizedTransactions;
+
+    // Largest block you're willing to create:
+    unsigned int nBlockMaxSize = GetMaxBlockSize(DEFAULT_BLOCK_MAX_SIZE, MAX_BLOCK_SIZE_CURRENT);
+    // How much of the block should be dedicated to high-priority transactions,
+    // included regardless of the fees they pay
+    unsigned int nBlockPrioritySize = GetBlockPrioritySize(DEFAULT_BLOCK_PRIORITY_SIZE, nBlockMaxSize);
+    // Minimum block size you want to create; block will be filled with free transactions
+    // until there are no more or the block reaches this size:
+    unsigned int nBlockMinSize = GetBlockMinSize(DEFAULT_BLOCK_MIN_SIZE, nBlockMaxSize);
+
+    uint64_t nBlockSize = 1000;
+    int nBlockSigOps = 100;
+    const unsigned int constexpr nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
+    bool fSortedByFee = (nBlockPrioritySize <= 0);
+
+    TxPriorityCompare comparer(fSortedByFee);
+    std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
+
+    bool fPrintPriority = GetBoolArg("-printpriority", false);
+    while (!vecPriority.empty()) {
+        // Take highest priority transaction off the priority queue:
+        double dPriority = vecPriority.front().get<0>();
+        CFeeRate feeRate = vecPriority.front().get<1>();
+        const CTransaction& tx = *(vecPriority.front().get<2>());
+
+        std::pop_heap(vecPriority.begin(), vecPriority.end(), comparer);
+        vecPriority.pop_back();
+
+        // Size limits
+        unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+        // Legacy limits on sigOps:
+        unsigned int nTxSigOps = GetLegacySigOpCount(tx);
+        // Skip free transactions if we're past the minimum block size:
+        const uint256& hash = tx.GetHash();
+        if (nBlockSize + nTxSize >= nBlockMaxSize || 
+            nBlockSigOps + nTxSigOps >= nMaxBlockSigOps||
+            IsFreeTransaction(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, nBlockMinSize, tx))
+        {
+            continue;
+        }
+        // Prioritise by fee once past the priority size or we run out of high-priority
+        // transactions:
+        PrioritizeFeePastPrioritySize(vecPriority, fSortedByFee, comparer, nBlockSize, nTxSize, nBlockPrioritySize, dPriority);
+        if (!view.HaveInputs(tx)) {
+            continue;
+        }
+        nTxSigOps += GetP2SHSigOpCount(tx, view);
+        if (nBlockSigOps + nTxSigOps >= nMaxBlockSigOps) {
+            continue;
+        }
+
+        // Note that flags: we don't want to set mempool/IsStandard()
+        // policy here, but we still have to ensure that the block we
+        // create only contains transactions that are valid in new blocks.
+        CValidationState state;
+        if (!CheckInputs(tx, state, view, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true)) {
+            continue;
+        }
+
+        prioritizedTransactions.emplace_back(tx, nTxSigOps);
+        nBlockSize += nTxSize;
+        nBlockSigOps += nTxSigOps;
+
+        if (fPrintPriority) {
+            LogPrintf("priority %.1f fee %s txid %s\n",
+                    dPriority, feeRate.ToString(), tx.GetHash().ToString());
+        }
+
+        // Add transactions that depend on this one to the priority queue
+        AddDependingTransactionsToPriorityQueue(mapDependers, hash, vecPriority, comparer);
+    }
+    return prioritizedTransactions;
+}
+
 void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     std::vector<TxPriority>& vecPriority,
     const int& nHeight,

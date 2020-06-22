@@ -143,7 +143,11 @@ private:
         const unsigned int& nTxSize,
         const unsigned int& nBlockPrioritySize,
         double& dPriority) const;
-
+    std::vector<PrioritizedTransactionData> PrioritizeTransactions(
+        std::vector<TxPriority>& vecPriority,
+        const int& nHeight,
+        CCoinsViewCache& view,
+        std::map<uint256, std::vector<COrphan*> >& mapDependers) const;
     void AddTransactionsToBlockIfPossible (
         std::vector<TxPriority>& vecPriority,
         const int& nHeight,

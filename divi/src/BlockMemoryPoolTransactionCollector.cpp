@@ -356,6 +356,8 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
             continue;
         }
 
+        prioritizedTransactions.emplace_back(tx, nTxSize,nTxSigOps);
+
         CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
         CTxUndo txundo;
         UpdateCoins(tx, view, txundo, nHeight);

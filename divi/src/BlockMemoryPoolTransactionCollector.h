@@ -23,6 +23,18 @@ class CCoinsViewCache;
 class CBlockIndex;
 class CTxMemPool;
 
+
+
+struct PrioritizedTransactionData
+{
+    const CTransaction* tx;
+    unsigned int nTxSigOps;
+    PrioritizedTransactionData();
+    PrioritizedTransactionData(
+        const CTransaction& transaction, 
+        unsigned txSigOps);
+};
+
 //
 // Unconfirmed transactions in the memory pool often depend on other
 // transactions in the memory pool. When we select transactions from the

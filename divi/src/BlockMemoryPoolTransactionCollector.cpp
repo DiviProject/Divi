@@ -264,23 +264,18 @@ void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize (
     }
 }
 
-struct PrioritizedTransactionData
+PrioritizedTransactionData::PrioritizedTransactionData(
+    ): tx(nullptr)
+    , nTxSigOps(0u)
 {
-    const CTransaction* tx;
-    unsigned int nTxSigOps;
-    PrioritizedTransactionData(
-        ): tx(nullptr)
-        , nTxSigOps(0u)
-    {
-    }
-    PrioritizedTransactionData(
-        const CTransaction& transaction, 
-        unsigned txSigOps
-        ): tx(&transaction)
-        , nTxSigOps(txSigOps)
-    {
-    }
-};
+}
+PrioritizedTransactionData::PrioritizedTransactionData(
+    const CTransaction& transaction, 
+    unsigned txSigOps
+    ): tx(&transaction)
+    , nTxSigOps(txSigOps)
+{
+}
 
 void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     std::vector<TxPriority>& vecPriority,

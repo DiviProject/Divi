@@ -267,20 +267,16 @@ void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize (
 struct PrioritizedTransactionData
 {
     const CTransaction* tx;
-    unsigned int nTxSize;
     unsigned int nTxSigOps;
     PrioritizedTransactionData(
         ): tx(nullptr)
-        , nTxSize(0u)
         , nTxSigOps(0u)
     {
     }
     PrioritizedTransactionData(
         const CTransaction& transaction, 
-        unsigned txSize,
         unsigned txSigOps
         ): tx(&transaction)
-        , nTxSize(txSize)
         , nTxSigOps(txSigOps)
     {
     }
@@ -355,7 +351,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
             continue;
         }
 
-        prioritizedTransactions.emplace_back(tx, nTxSize,nTxSigOps);
+        prioritizedTransactions.emplace_back(tx, nTxSigOps);
         nBlockSize += nTxSize;
         nBlockSigOps += nTxSigOps;
 

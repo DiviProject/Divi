@@ -264,6 +264,28 @@ void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize (
     }
 }
 
+struct PrioritizedTransactionData
+{
+    const CTransaction* tx;
+    unsigned int nTxSize;
+    unsigned int nTxSigOps;
+    PrioritizedTransactionData(
+        ): tx(nullptr)
+        , nTxSize(0u)
+        , nTxSigOps(0u)
+    {
+    }
+    PrioritizedTransactionData(
+        const CTransaction& transaction, 
+        unsigned txSize,
+        unsigned txSigOps
+        ): tx(&transaction)
+        , nTxSize(txSize)
+        , nTxSigOps(txSigOps)
+    {
+    }
+};
+
 void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     std::vector<TxPriority>& vecPriority,
     const int& nHeight,
@@ -272,6 +294,8 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     CAmount& nFees,
     std::map<uint256, std::vector<COrphan*> >& mapDependers) const
 {
+    std::vector<PrioritizedTransactionData> prioritizedTransactions;
+
     // Largest block you're willing to create:
     unsigned int nBlockMaxSize = GetMaxBlockSize(DEFAULT_BLOCK_MAX_SIZE, MAX_BLOCK_SIZE_CURRENT);
     // How much of the block should be dedicated to high-priority transactions,

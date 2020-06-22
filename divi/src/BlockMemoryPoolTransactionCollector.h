@@ -124,7 +124,6 @@ private:
         const CTransaction& tx) const;
 
     void AddTransactionToBlock (
-        CBlock& block,
         const CTransaction& tx, 
         std::unique_ptr<CBlockTemplate>& pblocktemplate,
         const CAmount& nTxFees,

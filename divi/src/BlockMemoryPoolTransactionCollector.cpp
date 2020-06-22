@@ -175,13 +175,12 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
 }
 
 void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
-    CBlock& block,
     const CTransaction& tx, 
     std::unique_ptr<CBlockTemplate>& pblocktemplate,
     const CAmount& nTxFees,
     const unsigned int& nTxSigOps) const
 {  
-    block.vtx.push_back(tx);
+    pblocktemplate->block.vtx.push_back(tx);
     pblocktemplate->vTxFees.push_back(nTxFees);
     pblocktemplate->vTxSigOps.push_back(nTxSigOps);
 }
@@ -448,7 +447,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
         UpdateCoins(tx, view, txundo, nHeight);
 
         // Added
-        AddTransactionToBlock(block, tx, pblocktemplate, nTxFees, txData.nTxSigOps);
+        AddTransactionToBlock(tx, pblocktemplate, nTxFees, txData.nTxSigOps);
         nFees += nTxFees;
     }
 

@@ -52,6 +52,8 @@ public:
     bool ParameterIsSetForMultiArgs (const std::string& key);
 
     bool InterpretBool(const std::string& strValue);
+    
+    void InterpretNegativeSetting(std::string& strKey, std::string& strValue);
 };
 
 #endif //SETTINGS_H

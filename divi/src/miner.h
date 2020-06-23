@@ -19,6 +19,7 @@ struct CBlockTemplate;
 
 /** Run the miner threads */
 void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads);
+void ThreadStakeMinter(CWallet* pwallet);
 /** Generate a new block, without valid proof-of-work */
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake);
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake);

@@ -200,5 +200,11 @@ void TraceThread(const char* name, Callable func)
         throw;
     }
 }
+template <typename Callable, typename Arg>
+void TraceThread(const char* name, Callable func, Arg arg)
+{
+    auto compactFunction = [&arg,&func](){ func(arg); };
+    TraceThread(name,compactFunction);
+}
 
 #endif // BITCOIN_UTIL_H

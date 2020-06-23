@@ -111,6 +111,22 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     }
 }
 
+// ppcoin: stake minter thread
+void ThreadStakeMinter(CWallet* pwallet)
+{
+    boost::this_thread::interruption_point();
+    LogPrintf("ThreadStakeMinter started\n");
+    try {
+        BitcoinMiner(pwallet, true);
+        boost::this_thread::interruption_point();
+    } catch (std::exception& e) {
+        LogPrintf("ThreadStakeMinter() exception \n");
+    } catch (...) {
+        LogPrintf("ThreadStakeMinter() error \n");
+    }
+    LogPrintf("ThreadStakeMinter exiting,\n");
+}
+
 void static ThreadBitcoinMiner(void* parg)
 {
     boost::this_thread::interruption_point();

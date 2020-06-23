@@ -32,7 +32,7 @@ bool fGenerateBitcoins = false;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 
-void BitcoinMiner(CWallet* pwallet, bool fProofOfStake,CoinMinter& minter)
+void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
 {
     LogPrintf("DIVIMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);

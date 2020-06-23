@@ -11,6 +11,7 @@ class CChainParams;
 class PeerNotificationOfMintService;
 class CNode;
 class CMasternodeSync;
+class CReserveKey;
 typedef std::map<unsigned int, unsigned int> HashedBlockMap;
 class CoinMinter
 {
@@ -41,6 +42,11 @@ public:
     bool limitStakingSpeed() const;
     bool isAtProofOfStakeHeight() const;
     void sleep(uint64_t milliseconds) const;
+
+    bool createNewBlock(
+        unsigned int nExtraNonce, 
+        CReserveKey& reserveKey, 
+        bool fProofOfStake) const;
 };
 
 #endif // COIN_MINTER_H

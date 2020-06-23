@@ -8,30 +8,17 @@
 #include "miner.h"
 
 #include "amount.h"
-#include "hash.h"
 #include "main.h"
 #include "masternode-sync.h"
-#include "net.h"
-#include "pow.h"
-#include "primitives/block.h"
-#include "primitives/transaction.h"
-#include "timedata.h"
-#include "util.h"
-#include "utilmoneystr.h"
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
-#include "masternode-payments.h"
-#include "spork.h"
-#include "SuperblockHelpers.h"
 #include "CoinMinter.h"
-#include "BlockMemoryPoolTransactionCollector.h"
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 
 
-#include "FeeAndPriorityCalculator.h"
 
 using namespace std;
 

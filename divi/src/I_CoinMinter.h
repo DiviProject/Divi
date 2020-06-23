@@ -12,6 +12,8 @@ public:
     virtual bool limitStakingSpeed() const = 0;
     virtual bool isAtProofOfStakeHeight() const = 0;
     virtual void sleep(uint64_t milliseconds) const = 0;
+    virtual void setMintingRequestStatus(bool newStatus) = 0;
+    virtual bool mintingHasBeenRequested() const = 0;
 
     virtual bool createNewBlock(
         unsigned int nExtraNonce, 

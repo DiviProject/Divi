@@ -17,6 +17,7 @@ class CReserveKey;
 typedef std::map<unsigned int, unsigned int> HashedBlockMap;
 class CoinMinter: public I_CoinMinter
 {
+    bool mintingIsRequested_;
     CWallet* pwallet_;
     CChain& chain_;
     const CChainParams& chainParameters_;
@@ -36,13 +37,15 @@ public:
         const CChainParams& chainParameters,
         std::vector<CNode*>& peers,
         CMasternodeSync& masternodeSynchronization,
-        HashedBlockMap& mapHashedBlocks
-        );
+        HashedBlockMap& mapHashedBlocks);
+
     virtual bool isMintable();
     virtual bool satisfiesMintingRequirements() const;
     virtual bool limitStakingSpeed() const;
     virtual bool isAtProofOfStakeHeight() const;
     virtual void sleep(uint64_t milliseconds) const;
+    virtual void setMintingRequestStatus(bool newStatus);
+    virtual bool mintingHasBeenRequested() const;
 
     virtual bool createNewBlock(
         unsigned int nExtraNonce, 

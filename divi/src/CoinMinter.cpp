@@ -16,7 +16,8 @@ CoinMinter::CoinMinter(
     std::vector<CNode*>& peers,
     CMasternodeSync& masternodeSynchronization,
     HashedBlockMap& mapHashedBlocks
-    ): pwallet_(pwallet)
+    ): mintingIsRequested_(false)
+    , pwallet_(pwallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
     , peerNotifier_(new PeerNotificationOfMintService(peers))
@@ -81,6 +82,14 @@ bool CoinMinter::isMintable()
 void CoinMinter::sleep(uint64_t milliseconds) const
 {
     MilliSleep(milliseconds);
+}
+void CoinMinter::setMintingRequestStatus(bool newStatus)
+{
+    mintingIsRequested_ = newStatus;
+}
+bool CoinMinter::mintingHasBeenRequested() const
+{
+    return mintingIsRequested_;
 }
 
 // Actual mining functions

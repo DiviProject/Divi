@@ -47,10 +47,6 @@ bool CoinMinter::isAtProofOfStakeHeight() const
 {
     return chain_.Tip()->nHeight >= chainParameters_.LAST_POW_BLOCK();
 }
-const int64_t& CoinMinter::getTimeTillNextCheck() const
-{
-    return timeToWait_;
-}
 
 bool CoinMinter::satisfiesMintingRequirements() const
 {

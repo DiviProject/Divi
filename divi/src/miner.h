@@ -14,6 +14,7 @@ class CBlockIndex;
 class CReserveKey;
 class CScript;
 class CWallet;
+class CoinMinter;
 
 struct CBlockTemplate;
 
@@ -28,6 +29,6 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 /** Check mined block */
 void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
 
-void BitcoinMiner(CWallet* pwallet, bool fProofOfStake);
+void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, CoinMinter& minter);
 
 #endif // BITCOIN_MINER_H

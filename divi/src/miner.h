@@ -29,6 +29,12 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 /** Check mined block */
 void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
 
+void MintCoins(
+    bool& fMintableCoins, 
+    bool fProofOfStake, 
+    I_CoinMinter& minter,
+    unsigned int nExtraNonce,
+    CReserveKey& reservekey);
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter);
 
 #endif // BITCOIN_MINER_H

@@ -31,7 +31,42 @@
 bool fGenerateBitcoins = false;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
+void MintCoins(
+    bool& fMintableCoins, 
+    bool fProofOfStake, 
+    I_CoinMinter& minter,
+    unsigned int nExtraNonce,
+    CReserveKey& reservekey)
+{
+    if (fProofOfStake) // 5 minute check time
+    {
+        fMintableCoins = minter.isMintable();
+    }
 
+    while (minter.mintingHasBeenRequested()) 
+    {
+        if (fProofOfStake) 
+        {
+            if (!fMintableCoins ||
+                !minter.isAtProofOfStakeHeight() ||
+                !minter.satisfiesMintingRequirements() ||
+                minter.limitStakingSpeed())
+            {
+                minter.sleep(5000);
+                continue;
+            }
+        }
+
+        //
+        // Create new block
+        //
+        if(!minter.createNewBlock(nExtraNonce,reservekey,fProofOfStake))
+        {
+            continue;
+        }
+    }
+
+}
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
 {
     LogPrintf("DIVIMiner started\n");
@@ -48,34 +83,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
     while(true) {
 
         try {
-
-            if (fProofOfStake) // 5 minute check time
-            {
-                fMintableCoins = minter.isMintable();
-            }
-
-            while (minter.mintingHasBeenRequested()) 
-            {
-                if (fProofOfStake) 
-                {
-                    if (!fMintableCoins ||
-                        !minter.isAtProofOfStakeHeight() ||
-                        !minter.satisfiesMintingRequirements() ||
-                        minter.limitStakingSpeed())
-                    {
-                        minter.sleep(5000);
-                        continue;
-                    }
-                }
-
-                //
-                // Create new block
-                //
-                if(!minter.createNewBlock(nExtraNonce,reservekey,fProofOfStake))
-                {
-                    continue;
-                }
-            }
+            MintCoins(fMintableCoins,fProofOfStake,minter,nExtraNonce, reservekey);
         }
         catch (const boost::thread_interrupted&)
         {

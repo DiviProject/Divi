@@ -46,7 +46,7 @@ bool CoinMinter::hasMintableCoinForProofOfStake()
 }
 bool CoinMinter::isAtProofOfStakeHeight() const
 {
-    return chain_.Tip()->nHeight >= chainParameters_.LAST_POW_BLOCK();
+    return chain_.Tip()->nHeight > chainParameters_.LAST_POW_BLOCK();
 }
 
 bool CoinMinter::satisfiesMintingRequirements() const

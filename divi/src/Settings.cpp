@@ -82,3 +82,10 @@ bool Settings::ParameterIsSetForMultiArgs (const std::string& key)
 {
     return mapMultiArgs_.count(key);
 }
+
+bool Settings::InterpretBool(const std::string& strValue)
+{
+    if (strValue.empty())
+        return true;
+    return (atoi(strValue) != 0);
+}

@@ -50,6 +50,8 @@ public:
     void ClearParameter (); 
 
     bool ParameterIsSetForMultiArgs (const std::string& key);
+
+    bool InterpretBool(const std::string& strValue);
 };
 
 #endif //SETTINGS_H

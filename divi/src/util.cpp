@@ -155,12 +155,12 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
     strMiscWarning = message;
 }
 
+Settings& settings = Settings::instance(mapArgs, mapMultiArgs);
+
 /** Interpret string as boolean, for argument parsing */
 static bool InterpretBool(const std::string& strValue)
 {
-    if (strValue.empty())
-        return true;
-    return (atoi(strValue) != 0);
+    return settings.InterpretBool(strValue);
 }
 
 /** Turn -noX into -X=0 */
@@ -204,8 +204,6 @@ void ParseParameters(int argc, const char* const argv[])
         mapMultiArgs[str].push_back(strValue);
     }
 }
-
-Settings& settings = Settings::instance(mapArgs, mapMultiArgs);
 
 bool ParameterIsSet (const std::string& key)
 {

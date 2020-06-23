@@ -171,6 +171,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   miner.h \
+  I_CoinMinter.h \
   BlockMemoryPoolTransactionCollector.h \
   CoinMinter.h \
   PeerNotificationOfMintService.h \

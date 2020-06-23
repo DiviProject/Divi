@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include <I_CoinMinter.h>
+
 class CWallet;
 class CChain;
 class CChainParams;
@@ -13,7 +15,7 @@ class CNode;
 class CMasternodeSync;
 class CReserveKey;
 typedef std::map<unsigned int, unsigned int> HashedBlockMap;
-class CoinMinter
+class CoinMinter: public I_CoinMinter
 {
     CWallet* pwallet_;
     CChain& chain_;
@@ -36,13 +38,13 @@ public:
         CMasternodeSync& masternodeSynchronization,
         HashedBlockMap& mapHashedBlocks
         );
-    bool isMintable();
-    bool satisfiesMintingRequirements() const;
-    bool limitStakingSpeed() const;
-    bool isAtProofOfStakeHeight() const;
-    void sleep(uint64_t milliseconds) const;
+    virtual bool isMintable();
+    virtual bool satisfiesMintingRequirements() const;
+    virtual bool limitStakingSpeed() const;
+    virtual bool isAtProofOfStakeHeight() const;
+    virtual void sleep(uint64_t milliseconds) const;
 
-    bool createNewBlock(
+    virtual bool createNewBlock(
         unsigned int nExtraNonce, 
         CReserveKey& reserveKey, 
         bool fProofOfStake) const;

@@ -98,7 +98,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     try {
         static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks);
         bool isProofOfStake = true;
-        minter.setMintingRequestStatus(fGenerateBitcoins || isProofOfStake);
+        minter.setMintingRequestStatus(isProofOfStake);
         BitcoinMiner(pwallet, isProofOfStake,minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
@@ -117,7 +117,7 @@ void static ThreadBitcoinMiner(void* parg)
     try {
         static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks);
         bool isProofOfStake = false;
-        minter.setMintingRequestStatus(fGenerateBitcoins || isProofOfStake);
+        minter.setMintingRequestStatus(fGenerateBitcoins);
         BitcoinMiner(pwallet, isProofOfStake, minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {

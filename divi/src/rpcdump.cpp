@@ -236,7 +236,7 @@ Value importwallet(const Array& params, bool fHelp)
     int64_t nFilesize = std::max((int64_t)1, (int64_t)file.tellg());
     file.seekg(0, file.beg);
 
-    pwalletMain->ShowProgress(_("Importing..."), 0); // show progress dialog in GUI
+    pwalletMain->ShowProgress(translate("Importing..."), 0); // show progress dialog in GUI
     while (file.good()) {
         pwalletMain->ShowProgress("", std::max(1, std::min(99, (int)(((double)file.tellg() / (double)nFilesize) * 100))));
         std::string line;

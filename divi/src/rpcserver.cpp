@@ -633,7 +633,7 @@ void StartRPCThreads()
         unsigned char rand_pwd[32];
         GetRandBytes(rand_pwd, 32);
         uiInterface.ThreadSafeMessageBox(strprintf(
-                                             _("To use divid, or the -server option to divi-qt, you must set an rpcpassword in the configuration file:\n"
+                                             translate("To use divid, or the -server option to divi-qt, you must set an rpcpassword in the configuration file:\n"
                                                "%s\n"
                                                "It is recommended you use the following random password:\n"
                                                "rpcuser=divirpc\n"
@@ -694,7 +694,7 @@ void StartRPCThreads()
                 vEndpoints.push_back(ParseEndpoint(addr, defaultPort));
             } catch (const boost::system::system_error&) {
                 uiInterface.ThreadSafeMessageBox(
-                    strprintf(_("Could not parse -rpcbind value %s as network address"), addr),
+                    strprintf(translate("Could not parse -rpcbind value %s as network address"), addr),
                     "", CClientUIInterface::MSG_ERROR);
                 StartShutdown();
                 return;
@@ -740,7 +740,7 @@ void StartRPCThreads()
                 break;
         } catch (boost::system::system_error& e) {
             LogPrintf("ERROR: Binding RPC on address %s port %i failed: %s\n", straddress, endpoint.port(), e.what());
-            strerr = strprintf(_("An error occurred while setting up the RPC address %s port %u for listening: %s"), straddress, endpoint.port(), e.what());
+            strerr = strprintf(translate("An error occurred while setting up the RPC address %s port %u for listening: %s"), straddress, endpoint.port(), e.what());
         }
     }
 

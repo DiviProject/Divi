@@ -2604,7 +2604,7 @@ void static UpdateTip(CBlockIndex* pindexNew)
             LogPrintf("SetBestChain: %d of last 100 blocks above version %d\n", nUpgraded, (int)CBlock::CURRENT_VERSION);
         if (nUpgraded > 100 / 2) {
             // strMiscWarning is read by GetWarnings(), called by Qt and the JSON-RPC code to warn the user:
-            strMiscWarning = _("Warning: This version is obsolete, upgrade required!");
+            strMiscWarning = translate("Warning: This version is obsolete, upgrade required!");
             CAlert::Notify(strMiscWarning, true);
             fWarned = true;
         }
@@ -2783,7 +2783,7 @@ bool DisconnectBlockAndInputs(CValidationState& state, CTransaction txLock)
 
         CBlock block;
         if (!ReadBlockFromDisk(block, BlockReading))
-            return state.Abort(_("Failed to read block"));
+            return state.Abort(translate("Failed to read block"));
 
         // Queue memory transactions to resurrect.
         // We only do this for blocks after the last checkpoint (reorganisation before that
@@ -3846,7 +3846,7 @@ bool AbortNode(const std::string& strMessage, const std::string& userMessage)
     strMiscWarning = strMessage;
     LogPrintf("*** %s\n", strMessage);
     uiInterface.ThreadSafeMessageBox(
-                userMessage.empty() ? _("Error: A fatal internal error occured, see debug.log for details") : userMessage,
+                userMessage.empty() ? translate("Error: A fatal internal error occured, see debug.log for details") : userMessage,
                 "", CClientUIInterface::MSG_ERROR);
     StartShutdown();
     return false;
@@ -3858,7 +3858,7 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
 
     // Check for nMinDiskSpace bytes (currently 50MB)
     if (nFreeBytesAvailable < nMinDiskSpace + nAdditionalBytes)
-        return AbortNode("Disk space is low!", _("Error: Disk space is low!"));
+        return AbortNode("Disk space is low!", translate("Error: Disk space is low!"));
 
     return true;
 }
@@ -4108,7 +4108,7 @@ bool static LoadBlockIndexDB(string& strError)
 
 CVerifyDB::CVerifyDB()
 {
-    uiInterface.ShowProgress(_("Verifying blocks..."), 0);
+    uiInterface.ShowProgress(translate("Verifying blocks..."), 0);
 }
 
 CVerifyDB::~CVerifyDB()
@@ -4136,7 +4136,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
     CValidationState state;
     for (CBlockIndex* pindex = chainActive.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
         boost::this_thread::interruption_point();
-        uiInterface.ShowProgress(_("Verifying blocks..."), std::max(1, std::min(99, (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100)))));
+        uiInterface.ShowProgress(translate("Verifying blocks..."), std::max(1, std::min(99, (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100)))));
         if (pindex->nHeight < chainActive.Height() - nCheckDepth)
             break;
         CBlock block;
@@ -4178,7 +4178,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth
         CBlockIndex* pindex = pindexState;
         while (pindex != chainActive.Tip()) {
             boost::this_thread::interruption_point();
-            uiInterface.ShowProgress(_("Verifying blocks..."), std::max(1, std::min(99, 100 - (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * 50))));
+            uiInterface.ShowProgress(translate("Verifying blocks..."), std::max(1, std::min(99, 100 - (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * 50))));
             pindex = chainActive.Next(pindex);
             CBlock block;
             if (!ReadBlockFromDisk(block, pindex))
@@ -4513,7 +4513,7 @@ string GetWarnings(string strFor)
     string strRPC;
 
     if (!CLIENT_VERSION_IS_RELEASE)
-        strStatusBar = _("This is a pre-release test build - use at your own risk - do not use for staking or merchant applications!");
+        strStatusBar = translate("This is a pre-release test build - use at your own risk - do not use for staking or merchant applications!");
 
     if (GetBoolArg("-testsafemode", false))
         strStatusBar = strRPC = "testsafemode enabled";
@@ -4526,10 +4526,10 @@ string GetWarnings(string strFor)
 
     if (fLargeWorkForkFound) {
         nPriority = 2000;
-        strStatusBar = strRPC = _("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.");
+        strStatusBar = strRPC = translate("Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.");
     } else if (fLargeWorkInvalidChainFound) {
         nPriority = 2000;
-        strStatusBar = strRPC = _("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.");
+        strStatusBar = strRPC = translate("Warning: We do not appear to fully agree with our peers! You may need to upgrade, or other nodes may need to upgrade.");
     }
 
     // Alerts

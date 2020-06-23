@@ -1226,12 +1226,12 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
         while (pindex && nTimeFirstKey && (pindex->GetBlockTime() < (nTimeFirstKey - 7200)))
             pindex = chainActive.Next(pindex);
 
-        ShowProgress(_("Rescanning..."), 0); // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
+        ShowProgress(translate("Rescanning..."), 0); // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
         double dProgressStart = checkpointsVerifier.GuessVerificationProgress(pindex, false);
         double dProgressTip = checkpointsVerifier.GuessVerificationProgress(chainActive.Tip(), false);
         while (pindex) {
             if (pindex->nHeight % 100 == 0 && dProgressTip - dProgressStart > 0.0)
-                ShowProgress(_("Rescanning..."), std::max(1, std::min(99, (int)((checkpointsVerifier.GuessVerificationProgress(pindex, false) - dProgressStart) / (dProgressTip - dProgressStart) * 100))));
+                ShowProgress(translate("Rescanning..."), std::max(1, std::min(99, (int)((checkpointsVerifier.GuessVerificationProgress(pindex, false) - dProgressStart) / (dProgressTip - dProgressStart) * 100))));
 
             CBlock block;
             ReadBlockFromDisk(block, pindex);
@@ -1245,7 +1245,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
                 LogPrintf("Still rescanning. At block %d. Progress=%f\n", pindex->nHeight, checkpointsVerifier.GuessVerificationProgress(pindex));
             }
         }
-        ShowProgress(_("Rescanning..."), 100); // hide progress dialog in GUI
+        ShowProgress(translate("Rescanning..."), 100); // hide progress dialog in GUI
     }
     return ret;
 }
@@ -1831,13 +1831,13 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
 
     BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
         if (nValue < 0) {
-            strFailReason = _("Transaction amounts must be positive");
+            strFailReason = translate("Transaction amounts must be positive");
             return false;
         }
         nValue += s.second;
     }
     if (vecSend.empty() || nValue < 0) {
-        strFailReason = _("Transaction amounts must be positive");
+        strFailReason = translate("Transaction amounts must be positive");
         return false;
     }
 
@@ -1863,7 +1863,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
                         CTxOut txout(s.second, s.first);
                         if (priorityFeeCalculator.IsDust(txout)) {
-                            strFailReason = _("Transaction amount too small");
+                            strFailReason = translate("Transaction amount too small");
                             return false;
                         }
                         txNew.vout.push_back(txout);
@@ -1894,14 +1894,14 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
 
                 if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type, useIX)) {
                     if (coin_type == ALL_COINS) {
-                        strFailReason = _("Insufficient funds.");
+                        strFailReason = translate("Insufficient funds.");
                     } else {
-                        strFailReason = _("Unable to locate enough Obfuscation denominated funds for this transaction.");
-                        strFailReason += " " + _("Obfuscation uses exact denominated amounts to send funds, you might simply need to anonymize some more coins.");
+                        strFailReason = translate("Unable to locate enough Obfuscation denominated funds for this transaction.");
+                        strFailReason += " " + translate("Obfuscation uses exact denominated amounts to send funds, you might simply need to anonymize some more coins.");
                     }
 
                     if (useIX) {
-                        strFailReason += " " + _("SwiftX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.");
+                        strFailReason += " " + translate("SwiftX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.");
                     }
 
                     return false;
@@ -1974,7 +1974,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 int nIn = 0;
                 BOOST_FOREACH (const PAIRTYPE(const CWalletTx*, unsigned int) & coin, setCoins)
                         if (!SignSignature(*this, *coin.first, txNew, nIn++)) {
-                    strFailReason = _("Signing transaction failed");
+                    strFailReason = translate("Signing transaction failed");
                     return false;
                 }
 
@@ -1984,7 +1984,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 // Limit size
                 unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
                 if (nBytes >= MAX_STANDARD_TX_SIZE) {
-                    strFailReason = _("Transaction too large");
+                    strFailReason = translate("Transaction too large");
                     return false;
                 }
                 dPriority = priorityFeeCalculator.ComputePriority(wtxNew,dPriority, nBytes);
@@ -2007,7 +2007,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 // If we made it here and we aren't even able to meet the relay fee on the next pass, give up
                 // because we must be at the maximum allowed fee.
                 if (nFeeNeeded < ::minRelayTxFee.GetFee(nBytes)) {
-                    strFailReason = _("Transaction too large for fee policy");
+                    strFailReason = translate("Transaction too large for fee policy");
                     return false;
                 }
 
@@ -2530,7 +2530,7 @@ bool CWallet::TopUpKeyPool(unsigned int kpSize)
             LogPrintf("keypool added key %d, size=%u, internal=%d\n", nEnd, setInternalKeyPool.size() + setExternalKeyPool.size(), fInternal);
 
             double dProgress = 100.f * nEnd / (nTargetSize + 1);
-            std::string strMsg = strprintf(_("Loading wallet... (%3.2f %%)"), dProgress);
+            std::string strMsg = strprintf(translate("Loading wallet... (%3.2f %%)"), dProgress);
             uiInterface.InitMessage(strMsg);
         }
     }

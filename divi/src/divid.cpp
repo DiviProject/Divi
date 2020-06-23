@@ -69,13 +69,13 @@ bool AppInit(int argc, char* argv[])
 
     // Process help and version before taking care about datadir
     if (mapArgs.count("-?") || mapArgs.count("-help") || mapArgs.count("-version")) {
-        std::string strUsage = _("Divi Core Daemon") + " " + _("version") + " " + FormatFullVersion() + "\n";
+        std::string strUsage = translate("Divi Core Daemon") + " " + translate("version") + " " + FormatFullVersion() + "\n";
 
         if (mapArgs.count("-version")) {
             strUsage += LicenseInfo();
         } else {
-            strUsage += "\n" + _("Usage:") + "\n" +
-                        "  divid [options]                     " + _("Start Divi Core Daemon") + "\n";
+            strUsage += "\n" + translate("Usage:") + "\n" +
+                        "  divid [options]                     " + translate("Start Divi Core Daemon") + "\n";
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
         }

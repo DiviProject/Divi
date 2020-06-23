@@ -47,7 +47,7 @@ bool CObfuScationSigner::SetKey(std::string strSecret, std::string& errorMessage
     bool fGood = vchSecret.SetString(strSecret);
 
     if (!fGood) {
-        errorMessage = _("Invalid private key.");
+        errorMessage = translate("Invalid private key.");
         return false;
     }
 
@@ -76,7 +76,7 @@ bool CObfuScationSigner::SignMessage(std::string strMessage, std::string& errorM
     ss << strMessage;
 
     if (!key.SignCompact(ss.GetHash(), vchSig)) {
-        errorMessage = _("Signing failed.");
+        errorMessage = translate("Signing failed.");
         return false;
     }
 
@@ -91,7 +91,7 @@ bool CObfuScationSigner::VerifyMessage(CPubKey pubkey, const vector<unsigned cha
 
     CPubKey pubkey2;
     if (!pubkey2.RecoverCompact(ss.GetHash(), vchSig)) {
-        errorMessage = _("Error recovering public key.");
+        errorMessage = translate("Error recovering public key.");
         return false;
     }
 

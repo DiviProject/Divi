@@ -53,8 +53,8 @@ bool CMasternodeConfig::read(std::string& strErr)
             iss.str(line);
             iss.clear();
             if (!(iss >> alias >> ip >> privKey >> txHash >> outputIndex)) {
-                strErr = _("Could not parse masternode.conf") + "\n" +
-                         strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"";
+                strErr = translate("Could not parse masternode.conf") + "\n" +
+                         strprintf(translate("Line: %d"), linenumber) + "\n\"" + line + "\"";
                 streamConfig.close();
                 return false;
             }
@@ -62,9 +62,9 @@ bool CMasternodeConfig::read(std::string& strErr)
 
         if (Params().GetDefaultPort() != CService(ip).GetPort())
         {
-            strErr = _("Invalid port detected in masternode.conf") + "\n" +
-                        strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
-                        strprintf(_("(must be %d for %s)"), Params().GetDefaultPort(), Params().NetworkIDString());
+            strErr = translate("Invalid port detected in masternode.conf") + "\n" +
+                        strprintf(translate("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
+                        strprintf(translate("(must be %d for %s)"), Params().GetDefaultPort(), Params().NetworkIDString());
             streamConfig.close();
             return false;
         }

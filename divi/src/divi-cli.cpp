@@ -14,7 +14,7 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#define _(x) std::string(x) /* Keep the _() around in case gettext or such will be used later to translate non-UI */
+#define translate(x) std::string(x) /* Keep the translate() around in case gettext or such will be used later to translate non-UI */
 
 using namespace std;
 using namespace boost;
@@ -24,21 +24,21 @@ using namespace json_spirit;
 std::string HelpMessageCli()
 {
     string strUsage;
-    strUsage += HelpMessageGroup(_("Options:"));
-    strUsage += HelpMessageOpt("-?", _("This help message"));
-    strUsage += HelpMessageOpt("-conf=<file>", strprintf(_("Specify configuration file (default: %s)"), "divi.conf"));
-    strUsage += HelpMessageOpt("-datadir=<dir>", _("Specify data directory"));
-    strUsage += HelpMessageOpt("-testnet", _("Use the test network"));
-    strUsage += HelpMessageOpt("-regtest", _("Enter regression test mode, which uses a special chain in which blocks can be "
+    strUsage += HelpMessageGroup(translate("Options:"));
+    strUsage += HelpMessageOpt("-?", translate("This help message"));
+    strUsage += HelpMessageOpt("-conf=<file>", strprintf(translate("Specify configuration file (default: %s)"), "divi.conf"));
+    strUsage += HelpMessageOpt("-datadir=<dir>", translate("Specify data directory"));
+    strUsage += HelpMessageOpt("-testnet", translate("Use the test network"));
+    strUsage += HelpMessageOpt("-regtest", translate("Enter regression test mode, which uses a special chain in which blocks can be "
                                              "solved instantly. This is intended for regression testing tools and app development."));
-    strUsage += HelpMessageOpt("-rpcconnect=<ip>", strprintf(_("Send commands to node running on <ip> (default: %s)"), "127.0.0.1"));
-    strUsage += HelpMessageOpt("-rpcport=<port>", strprintf(_("Connect to JSON-RPC on <port> (default: %u or testnet: %u)"), 51473, 51475));
-    strUsage += HelpMessageOpt("-rpcwait", _("Wait for RPC server to start"));
-    strUsage += HelpMessageOpt("-rpcuser=<user>", _("Username for JSON-RPC connections"));
-    strUsage += HelpMessageOpt("-rpcpassword=<pw>", _("Password for JSON-RPC connections"));
+    strUsage += HelpMessageOpt("-rpcconnect=<ip>", strprintf(translate("Send commands to node running on <ip> (default: %s)"), "127.0.0.1"));
+    strUsage += HelpMessageOpt("-rpcport=<port>", strprintf(translate("Connect to JSON-RPC on <port> (default: %u or testnet: %u)"), 51473, 51475));
+    strUsage += HelpMessageOpt("-rpcwait", translate("Wait for RPC server to start"));
+    strUsage += HelpMessageOpt("-rpcuser=<user>", translate("Username for JSON-RPC connections"));
+    strUsage += HelpMessageOpt("-rpcpassword=<pw>", translate("Password for JSON-RPC connections"));
 
-    strUsage += HelpMessageGroup(_("SSL options: (see the DIVI Wiki for SSL setup instructions)"));
-    strUsage += HelpMessageOpt("-rpcssl", _("Use OpenSSL (https) for JSON-RPC connections"));
+    strUsage += HelpMessageGroup(translate("SSL options: (see the DIVI Wiki for SSL setup instructions)"));
+    strUsage += HelpMessageOpt("-rpcssl", translate("Use OpenSSL (https) for JSON-RPC connections"));
 
     return strUsage;
 }
@@ -67,12 +67,12 @@ static bool AppInitRPC(int argc, char* argv[])
     //
     ParseParameters(argc, argv);
     if (argc < 2 || mapArgs.count("-?") || mapArgs.count("-help") || mapArgs.count("-version")) {
-        std::string strUsage = _("Divi Core RPC client version") + " " + FormatFullVersion() + "\n";
+        std::string strUsage = translate("Divi Core RPC client version") + " " + FormatFullVersion() + "\n";
         if (!mapArgs.count("-version")) {
-            strUsage += "\n" + _("Usage:") + "\n" +
-                        "  divi-cli [options] <command> [params]  " + _("Send command to Divi Core") + "\n" +
-                        "  divi-cli [options] help                " + _("List commands") + "\n" +
-                        "  divi-cli [options] help <command>      " + _("Get help for a command") + "\n";
+            strUsage += "\n" + translate("Usage:") + "\n" +
+                        "  divi-cli [options] <command> [params]  " + translate("Send command to Divi Core") + "\n" +
+                        "  divi-cli [options] help                " + translate("List commands") + "\n" +
+                        "  divi-cli [options] help <command>      " + translate("Get help for a command") + "\n";
 
             strUsage += "\n" + HelpMessageCli();
         }
@@ -102,7 +102,7 @@ Object CallRPC(const string& strMethod, const Array& params)
 {
     if (mapArgs["-rpcuser"] == "" && mapArgs["-rpcpassword"] == "")
         throw runtime_error(strprintf(
-            _("You must set rpcpassword=<password> in the configuration file:\n%s\n"
+            translate("You must set rpcpassword=<password> in the configuration file:\n%s\n"
               "If the file does not exist, create it with owner-readable-only file permissions."),
             GetConfigFile().string().c_str()));
 

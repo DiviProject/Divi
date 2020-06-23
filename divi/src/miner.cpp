@@ -54,7 +54,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
                 fMintableCoins = minter.isMintable();
             }
 
-            while (fGenerateBitcoins || fProofOfStake) 
+            while (minter.mintingHasBeenRequested()) 
             {
                 if (fProofOfStake) 
                 {

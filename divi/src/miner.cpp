@@ -38,16 +38,11 @@ void MintCoins(
     unsigned int nExtraNonce,
     CReserveKey& reservekey)
 {
-    if (fProofOfStake) // 5 minute check time
-    {
-        fMintableCoins = minter.isMintable();
-    }
-
     while (minter.mintingHasBeenRequested()) 
     {
         if (fProofOfStake) 
         {
-            if (!fMintableCoins ||
+            if (!minter.isMintable() ||
                 !minter.isAtProofOfStakeHeight() ||
                 !minter.satisfiesMintingRequirements() ||
                 minter.limitStakingSpeed())

@@ -171,35 +171,7 @@ static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
 
 void ParseParameters(int argc, const char* const argv[])
 {
-    ClearParameter();
-    mapMultiArgs.clear();
-
-    for (int i = 1; i < argc; i++) {
-        std::string str(argv[i]);
-        std::string strValue;
-        size_t is_index = str.find('=');
-        if (is_index != std::string::npos) {
-            strValue = str.substr(is_index + 1);
-            str = str.substr(0, is_index);
-        }
-#ifdef WIN32
-        boost::to_lower(str);
-        if (boost::algorithm::starts_with(str, "/"))
-            str = "-" + str.substr(1);
-#endif
-
-        if (str[0] != '-')
-            break;
-
-        // Interpret --foo as -foo.
-        // If both --foo and -foo are set, the last takes effect.
-        if (str.length() > 1 && str[1] == '-')
-            str = str.substr(1);
-        InterpretNegativeSetting(str, strValue);
-
-        SetParameter(str, strValue);
-        mapMultiArgs[str].push_back(strValue);
-    }
+    settings.ParseParameters(argc, argv);
 }
 
 bool ParameterIsSet (const std::string& key)

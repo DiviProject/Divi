@@ -28,7 +28,7 @@
 //
 // Internal miner
 //
-bool fGenerateBitcoins = false;
+bool fGenerateDivi = false;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 void MintCoins(
@@ -62,7 +62,7 @@ void MintCoins(
     }
 
 }
-void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
+void MinterThread(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
 {
     LogPrintf("DIVIMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
@@ -82,12 +82,12 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
         }
         catch (const boost::thread_interrupted&)
         {
-            LogPrintf("BitcoinMiner -- terminated\n");
+            LogPrintf("MinterThread -- terminated\n");
             throw;
         }
         catch (const std::runtime_error &e)
         {
-            LogPrintf("BitcoinMiner -- runtime error: %s\n", e.what());
+            LogPrintf("MinterThread -- runtime error: %s\n", e.what());
             return;
         }
     }
@@ -102,7 +102,7 @@ void ThreadStakeMinter(CWallet* pwallet)
         static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks);
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
-        BitcoinMiner(pwallet, isProofOfStake,minter);
+        MinterThread(pwallet, isProofOfStake,minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
         LogPrintf("ThreadStakeMinter() exception \n");
@@ -112,7 +112,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     LogPrintf("ThreadStakeMinter exiting,\n");
 }
 
-void static ThreadBitcoinMiner(void* parg)
+void static ThreadPoWMinter(void* parg)
 {
     boost::this_thread::interruption_point();
     CWallet* pwallet = (CWallet*)parg;
@@ -120,22 +120,22 @@ void static ThreadBitcoinMiner(void* parg)
     try {
         static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks);
         bool isProofOfStake = false;
-        minter.setMintingRequestStatus(fGenerateBitcoins);
-        BitcoinMiner(pwallet, isProofOfStake, minter);
+        minter.setMintingRequestStatus(fGenerateDivi);
+        MinterThread(pwallet, isProofOfStake, minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
-        LogPrintf("ThreadBitcoinMiner() exception: %s\n");
+        LogPrintf("ThreadPoWMinter() exception: %s\n");
     } catch (...) {
-        LogPrintf("ThreadBitcoinMiner() unknown exception");
+        LogPrintf("ThreadPoWMinter() unknown exception");
     }
 
-    LogPrintf("ThreadBitcoinMiner exiting\n");
+    LogPrintf("ThreadPoWMinter exiting\n");
 }
 
-void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads)
+void GenerateDivi(bool fGenerate, CWallet* pwallet, int nThreads)
 {
     static boost::thread_group* minerThreads = NULL;
-    fGenerateBitcoins = fGenerate;
+    fGenerateDivi = fGenerate;
 
     if (nThreads < 0) {
         // In regtest threads defaults to 1
@@ -156,7 +156,7 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads)
 
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
-        minerThreads->create_thread(boost::bind(&ThreadBitcoinMiner, pwallet));
+        minerThreads->create_thread(boost::bind(&ThreadPoWMinter, pwallet));
 }
 
 #endif // ENABLE_WALLET

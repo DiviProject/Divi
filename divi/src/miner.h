@@ -19,7 +19,7 @@ class I_CoinMinter;
 struct CBlockTemplate;
 
 /** Run the miner threads */
-void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads);
+void GenerateDivi(bool fGenerate, CWallet* pwallet, int nThreads);
 void ThreadStakeMinter(CWallet* pwallet);
 /** Generate a new block, without valid proof-of-work */
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake);
@@ -35,6 +35,6 @@ void MintCoins(
     I_CoinMinter& minter,
     unsigned int nExtraNonce,
     CReserveKey& reservekey);
-void BitcoinMiner(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter);
+void MinterThread(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter);
 
 #endif // BITCOIN_MINER_H

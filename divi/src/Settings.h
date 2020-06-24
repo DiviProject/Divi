@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <vector> 
+#include <boost/filesystem.hpp>
 
 class Settings
 {
@@ -56,6 +57,8 @@ public:
     void InterpretNegativeSetting(std::string& strKey, std::string& strValue);
 
     void ParseParameters(int argc, const char* const argv[]);
+
+    boost::filesystem::path GetConfigFile();
 };
 
 #endif //SETTINGS_H

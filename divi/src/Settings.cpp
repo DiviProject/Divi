@@ -1,6 +1,7 @@
 #include <Settings.h>
 #include <string>
 #include <utilstrencodings.h>
+#include <DataDirectory.h>
 
 std::string Settings::GetArg(const std::string& strArg, const std::string& strDefault)
 {
@@ -129,4 +130,13 @@ void Settings::ParseParameters(int argc, const char* const argv[])
         SetParameter(str, strValue);
         mapMultiArgs_[str].push_back(strValue);
     }
+}
+
+boost::filesystem::path Settings::GetConfigFile()
+{
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "divi.conf"));
+    if (!pathConfigFile.is_complete())
+        pathConfigFile = GetDataDir(false) / pathConfigFile;
+
+    return pathConfigFile;
 }

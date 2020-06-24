@@ -54,6 +54,8 @@ public:
     bool InterpretBool(const std::string& strValue);
     
     void InterpretNegativeSetting(std::string& strKey, std::string& strValue);
+
+    void ParseParameters(int argc, const char* const argv[]);
 };
 
 #endif //SETTINGS_H

@@ -262,13 +262,14 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
     return CreateNewBlock(scriptPubKey, pwallet, fProofOfStake);
 }
 
-bool CoinMinter::createNewBlock(
+bool CoinMinter::createProofOfStakeBlock(
     unsigned int nExtraNonce, 
     CReserveKey& reserveKey, 
     bool fProofOfStake) const
 {
+    bool blockSuccesfullyCreated = false;
     unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
-    CBlockIndex* pindexPrev = chainActive.Tip();
+    CBlockIndex* pindexPrev = chain_.Tip();
     if (!pindexPrev)
         return false;
 
@@ -281,43 +282,59 @@ bool CoinMinter::createNewBlock(
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     //Stake miner main
-    if (fProofOfStake) {
-        LogPrintf("CPUMiner : proof-of-stake block found %s \n", block->GetHash().ToString().c_str());
+    LogPrintf("CPUMiner : proof-of-stake block found %s \n", block->GetHash().ToString().c_str());
 
-        if (!block->SignBlock(*pwallet_)) {
-            LogPrintf("BitcoinMiner(): Signing new block failed \n");
-            return false;
-        }
-
-        LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", block->GetHash().ToString().c_str());
-        SetThreadPriority(THREAD_PRIORITY_NORMAL);
-        ProcessBlockFound(block, *pwallet_, reserveKey);
-        SetThreadPriority(THREAD_PRIORITY_LOWEST);
-
+    if (!block->SignBlock(*pwallet_)) {
+        LogPrintf("BitcoinMiner(): Signing new block failed \n");
         return false;
     }
+
+    LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", block->GetHash().ToString().c_str());
+    SetThreadPriority(THREAD_PRIORITY_NORMAL);
+    blockSuccesfullyCreated = ProcessBlockFound(block, *pwallet_, reserveKey);
+    SetThreadPriority(THREAD_PRIORITY_LOWEST);
+
+    return blockSuccesfullyCreated;
+}
+
+bool CoinMinter::createProofOfWorkBlock(
+    unsigned int nExtraNonce, 
+    CReserveKey& reserveKey, 
+    bool fProofOfStake) const
+{
+    bool blockSuccesfullyCreated = false;
+    unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
+    CBlockIndex* pindexPrev = chain_.Tip();
+    if (!pindexPrev)
+        return false;
+
+    unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reserveKey, pwallet_, fProofOfStake));
+
+    if (!pblocktemplate.get())
+        return false;
+
+    CBlock* block = &pblocktemplate->block;
+    IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     LogPrintf("Running DIVIMiner with %u transactions in block (%u bytes)\n", block->vtx.size(),
                 ::GetSerializeSize(*block, SER_NETWORK, PROTOCOL_VERSION));
 
-    //
-    // Search
-    //
     int64_t nStart = GetTime();
     uint256 hashTarget = uint256().SetCompact(block->nBits);
     while (true) 
     {
         unsigned int nHashesDone = 0;
-
+        blockSuccesfullyCreated = false;
         uint256 hash;
         while (true) {
             hash = block->GetHash();
-            if (hash <= hashTarget) {
+            if (hash <= hashTarget) 
+            {
                 // Found a solution
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
                 LogPrintf("BitcoinMiner:\n");
                 LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex(), hashTarget.GetHex());
-                ProcessBlockFound(block, *pwallet_, reserveKey);
+                blockSuccesfullyCreated = ProcessBlockFound(block, *pwallet_, reserveKey);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
                 // In regression test mode, stop mining after a block is found. This
@@ -342,15 +359,32 @@ bool CoinMinter::createNewBlock(
             break;
         if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
             break;
-        if (pindexPrev != chainActive.Tip())
+        if (pindexPrev != chain_.Tip())
             break;
 
         // Update nTime every few seconds
         UpdateTime(block, pindexPrev);
-        if (chainParameters_.AllowMinDifficultyBlocks()) {
+        if (chainParameters_.AllowMinDifficultyBlocks()) 
+        {
             // Changing block->nTime can change work required on testnet:
             hashTarget.SetCompact(block->nBits);
         }
     }
-    return true;
+    return blockSuccesfullyCreated;
+}
+
+
+bool CoinMinter::createNewBlock(
+    unsigned int nExtraNonce, 
+    CReserveKey& reserveKey, 
+    bool fProofOfStake) const
+{
+    if(fProofOfStake)
+    {
+        return createProofOfStakeBlock(nExtraNonce,reserveKey,fProofOfStake);
+    }
+    else
+    {
+        return createProofOfWorkBlock(nExtraNonce,reserveKey,fProofOfStake);
+    }
 }

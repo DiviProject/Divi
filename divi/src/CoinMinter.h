@@ -30,6 +30,14 @@ class CoinMinter: public I_CoinMinter
     static const int64_t constexpr fiveMinutes_ = 5 * 60;
 
     bool hasMintableCoinForProofOfStake();
+    bool createProofOfStakeBlock(
+        unsigned int nExtraNonce, 
+        CReserveKey& reserveKey, 
+        bool fProofOfStake) const;
+    bool createProofOfWorkBlock(
+        unsigned int nExtraNonce, 
+        CReserveKey& reserveKey, 
+        bool fProofOfStake) const;
 public:
     CoinMinter(
         CWallet* pwallet,

@@ -42,7 +42,7 @@ void MintCoins(
     {
         if (fProofOfStake) 
         {
-            if (!minter.isMintable() ||
+            if (!minter.CanMintCoins() ||
                 !minter.isAtProofOfStakeHeight() ||
                 !minter.satisfiesMintingRequirements() ||
                 minter.limitStakingSpeed())

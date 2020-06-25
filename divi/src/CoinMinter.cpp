@@ -72,7 +72,7 @@ bool CoinMinter::limitStakingSpeed() const
     return false;
 }
 
-bool CoinMinter::isMintable()
+bool CoinMinter::CanMintCoins()
 {
     if(!hasMintableCoinForProofOfStake()) return false;
     

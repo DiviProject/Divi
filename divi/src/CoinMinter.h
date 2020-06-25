@@ -47,7 +47,7 @@ public:
         CMasternodeSync& masternodeSynchronization,
         HashedBlockMap& mapHashedBlocks);
 
-    virtual bool isMintable();
+    virtual bool CanMintCoins();
     virtual bool satisfiesMintingRequirements() const;
     virtual bool limitStakingSpeed() const;
     virtual bool isAtProofOfStakeHeight() const;

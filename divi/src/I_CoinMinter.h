@@ -7,7 +7,7 @@ class I_CoinMinter
 {
 public:
     virtual ~I_CoinMinter(){};
-    virtual bool isMintable() = 0;
+    virtual bool CanMintCoins() = 0;
     virtual bool satisfiesMintingRequirements() const = 0;
     virtual bool limitStakingSpeed() const = 0;
     virtual bool isAtProofOfStakeHeight() const = 0;

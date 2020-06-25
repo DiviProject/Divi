@@ -6,7 +6,7 @@
 class MockCoinMinter: public I_CoinMinter
 {
 public:
-    MOCK_METHOD0(isMintable, bool());
+    MOCK_METHOD0(CanMintCoins, bool());
     MOCK_CONST_METHOD0(satisfiesMintingRequirements, bool());
     MOCK_CONST_METHOD0(limitStakingSpeed, bool());
     MOCK_CONST_METHOD0(isAtProofOfStakeHeight, bool());

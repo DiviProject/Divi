@@ -2,6 +2,9 @@
 #include <string>
 #include <utilstrencodings.h>
 #include <DataDirectory.h>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/program_options/detail/config_file.hpp>
+#include <set>
 
 std::string Settings::GetArg(const std::string& strArg, const std::string& strDefault)
 {
@@ -139,4 +142,32 @@ boost::filesystem::path Settings::GetConfigFile()
         pathConfigFile = GetDataDir(false) / pathConfigFile;
 
     return pathConfigFile;
+}
+
+void Settings::ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet,
+    std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet)
+{
+    boost::filesystem::ifstream streamConfig(GetConfigFile());
+    if (!streamConfig.good()) {
+        // Create empty divi.conf if it does not exist
+        FILE* configFile = fopen(GetConfigFile().string().c_str(), "a");
+        if (configFile != NULL)
+            fclose(configFile);
+        return; // Nothing to read, so just return
+    }
+
+    std::set<std::string> setOptions;
+    setOptions.insert("*");
+
+    for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it) {
+        // Don't overwrite existing settings so command line settings override divi.conf
+        std::string strKey = std::string("-") + it->string_key;
+        std::string strValue = it->value[0];
+        InterpretNegativeSetting(strKey, strValue);
+        if (mapSettingsRet.count(strKey) == 0)
+            mapSettingsRet[strKey] = strValue;
+        mapMultiSettingsRet[strKey].push_back(strValue);
+    }
+    // If datadir is changed in .conf file:
+    ClearDatadirCache();
 }

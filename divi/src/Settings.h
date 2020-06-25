@@ -59,6 +59,9 @@ public:
     void ParseParameters(int argc, const char* const argv[]);
 
     boost::filesystem::path GetConfigFile();
+
+    void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet,
+        std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
 };
 
 #endif //SETTINGS_H

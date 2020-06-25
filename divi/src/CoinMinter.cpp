@@ -127,7 +127,7 @@ void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev)
         block->nBits = GetNextWorkRequired(pindexPrev, block,Params());
 }
 
-bool ProcessBlockFound(CBlock* block, CWallet& wallet, CReserveKey& reservekey)
+bool CoinMinter::ProcessBlockFound(CBlock* block, CWallet& wallet, CReserveKey& reservekey) const
 {
     LogPrintf("%s\n", block->ToString());
     LogPrintf("generated %s\n", FormatMoney(block->vtx[0].vout[0].nValue));

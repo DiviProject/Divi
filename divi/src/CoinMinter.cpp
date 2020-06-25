@@ -271,7 +271,6 @@ bool CoinMinter::createProofOfStakeBlock(
     bool fProofOfStake) const
 {
     bool blockSuccesfullyCreated = false;
-    unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
     CBlockIndex* pindexPrev = chain_.Tip();
     if (!pindexPrev)
         return false;

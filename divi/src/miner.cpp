@@ -40,21 +40,13 @@ void MintCoins(
 {
     while (minter.mintingHasBeenRequested()) 
     {
-        if (fProofOfStake) 
+        if (fProofOfStake && !minter.CanMintCoins())
         {
-            if (!minter.CanMintCoins())
-            {
-                minter.sleep(5000);
-                continue;
-            }
+            minter.sleep(5000);
         }
-
-        //
-        // Create new block
-        //
-        if(!minter.createNewBlock(nExtraNonce,reservekey,fProofOfStake))
+        else
         {
-            continue;
+            minter.createNewBlock(nExtraNonce,reservekey,fProofOfStake);
         }
     }
 

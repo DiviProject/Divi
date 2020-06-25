@@ -42,10 +42,7 @@ void MintCoins(
     {
         if (fProofOfStake) 
         {
-            if (!minter.CanMintCoins() ||
-                !minter.isAtProofOfStakeHeight() ||
-                !minter.satisfiesMintingRequirements() ||
-                minter.limitStakingSpeed())
+            if (!minter.CanMintCoins())
             {
                 minter.sleep(5000);
                 continue;

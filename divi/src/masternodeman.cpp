@@ -352,7 +352,7 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
     }
 
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
-    if (fFilterSigTime && masternodeQueue.size() < nMnCount / 3) return GetMasternodePaymentQueue(nBlockHeight, false);
+    if (fFilterSigTime && static_cast<int>(masternodeQueue.size()) < nMnCount / 3) return GetMasternodePaymentQueue(nBlockHeight, false);
 
     
     std::sort(masternodeQueue.begin(), masternodeQueue.end(), 

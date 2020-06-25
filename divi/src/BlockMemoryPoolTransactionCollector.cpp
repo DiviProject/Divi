@@ -423,14 +423,6 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     SetCoinBaseTransaction(block, pblocktemplate, fProofOfStake, nHeight, txNew, nFees);
     SetBlockHeaders(block, fProofOfStake, *pindexPrev, pblocktemplate);
 
-    //byrd transaction printout
     LogPrintf("CreateNewBlock(): block tostring %s\n", block.ToString());
-    CValidationState state;
-    if (!TestBlockValidity(state, block, pindexPrev, false, false)) {
-        LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
-        mempool_.clear();
-        return false;
-    }
-    LogPrintf("CreateNewBlock(): validation passed %s\n", "");
     return true;
 }

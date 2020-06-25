@@ -35,7 +35,7 @@ class CoinMinter: public I_CoinMinter
     bool limitStakingSpeed() const;
     bool isAtProofOfStakeHeight() const;
 
-    bool ProcessBlockFound(CBlock* block, CWallet& wallet, CReserveKey& reservekey) const;
+    bool ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const;
 
     bool createProofOfStakeBlock(
         unsigned int nExtraNonce, 

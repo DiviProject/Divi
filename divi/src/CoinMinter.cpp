@@ -127,7 +127,7 @@ void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev)
         block->nBits = GetNextWorkRequired(pindexPrev, block,Params());
 }
 
-bool CoinMinter::ProcessBlockFound(CBlock* block, CWallet& wallet, CReserveKey& reservekey) const
+bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
 {
     LogPrintf("%s\n", block->ToString());
     LogPrintf("generated %s\n", FormatMoney(block->vtx[0].vout[0].nValue));
@@ -144,8 +144,8 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CWallet& wallet, CReserveKey& 
 
     // Track how many getdata requests this block gets
     {
-        LOCK(wallet.cs_wallet);
-        wallet.mapRequestCount[block->GetHash()] = 0;
+        LOCK(pwallet_->cs_wallet);
+        pwallet_->mapRequestCount[block->GetHash()] = 0;
     }
 
     // Process this block the same as if we had received it from another node
@@ -294,7 +294,7 @@ bool CoinMinter::createProofOfStakeBlock(
 
     LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", block->GetHash().ToString().c_str());
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-    blockSuccesfullyCreated = ProcessBlockFound(block, *pwallet_, reserveKey);
+    blockSuccesfullyCreated = ProcessBlockFound(block, reserveKey);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
     return blockSuccesfullyCreated;
@@ -337,7 +337,7 @@ bool CoinMinter::createProofOfWorkBlock(
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
                 LogPrintf("BitcoinMiner:\n");
                 LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex(), hashTarget.GetHex());
-                blockSuccesfullyCreated = ProcessBlockFound(block, *pwallet_, reserveKey);
+                blockSuccesfullyCreated = ProcessBlockFound(block, reserveKey);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
                 // In regression test mode, stop mining after a block is found. This

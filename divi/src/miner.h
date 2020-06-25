@@ -23,7 +23,6 @@ void GenerateDivi(bool fGenerate, CWallet* pwallet, int nThreads);
 void ThreadStakeMinter(CWallet* pwallet);
 
 void MintCoins(
-    bool& fMintableCoins, 
     bool fProofOfStake, 
     I_CoinMinter& minter,
     unsigned int nExtraNonce,

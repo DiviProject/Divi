@@ -54,14 +54,12 @@ BOOST_AUTO_TEST_CASE(willSuccesfullyTransitionFromNonMintableToMintableInProofOf
     EXPECT_CALL(minter, sleep(_)).Times(1);
     EXPECT_CALL(minter, createNewBlock(_,_,_)).Times(9);
     
-    bool mintableStatus = false;
     bool proofOfStake = true;
     unsigned int extraNonce = 0u;
     std::shared_ptr<CWallet> testWallet(new CWallet());
     CReserveKey reserveKey(testWallet.get());
     
     MintCoins(
-        mintableStatus,
         proofOfStake, 
         minter, 
         extraNonce,

@@ -32,7 +32,6 @@ bool fGenerateDivi = false;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 void MintCoins(
-    bool& fMintableCoins, 
     bool fProofOfStake, 
     I_CoinMinter& minter,
     unsigned int nExtraNonce,
@@ -61,13 +60,10 @@ void MinterThread(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
     CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
 
-    //control the amount of times the client will check for mintable coins
-    static bool fMintableCoins = false;
-
     while(true) {
 
         try {
-            MintCoins(fMintableCoins,fProofOfStake,minter,nExtraNonce, reservekey);
+            MintCoins(fProofOfStake,minter,nExtraNonce, reservekey);
         }
         catch (const boost::thread_interrupted&)
         {

@@ -53,7 +53,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
 {
     bool stakingRequirements =
         !(chain_.Tip()->nTime < 1471482000 || 
-        vNodes.empty() || 
+        peerNotifier_->havePeersToNotify() || 
         pwallet_->IsLocked() || 
         nReserveBalance >= pwallet_->GetBalance() || 
         !masternodeSync_.IsSynced());
@@ -153,9 +153,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CWallet& wallet, CReserveKey& 
     if (!ProcessNewBlock(state, NULL, block))
         return error("DIVIMiner : ProcessNewBlock, block not accepted");
 
-    for (CNode* node : vNodes) {
-        node->PushInventory(CInv(MSG_BLOCK, block->GetHash()));
-    }
+    peerNotifier_->notifyPeers(block->GetHash());
 
     return true;
 }
@@ -358,7 +356,7 @@ bool CoinMinter::createProofOfWorkBlock(
         // Check for stop or if block needs to be rebuilt
         boost::this_thread::interruption_point();
         // Regtest mode doesn't require peers
-        if (vNodes.empty() && chainParameters_.MiningRequiresPeers())
+        if (peerNotifier_->havePeersToNotify() && chainParameters_.MiningRequiresPeers())
             break;
         if (block->nNonce >= 0xffff0000)
             break;

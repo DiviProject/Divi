@@ -2,7 +2,6 @@
 #define PEER_NOTIFICATION_OF_MINT_SERVICE_H
 #include <vector>
 class CNode;
-class CBlock;
 class uint256;
 
 class PeerNotificationOfMintService
@@ -12,7 +11,7 @@ private:
 public:
     PeerNotificationOfMintService(std::vector<CNode*>& peers);
     bool havePeersToNotify() const;
-    void notifyPeers(const CBlock* block, const uint256& hash) const;
+    void notifyPeers(const uint256& blockHash) const;
 };
 
 #endif // PEER_NOTIFICATION_OF_MINT_SERVICE_H

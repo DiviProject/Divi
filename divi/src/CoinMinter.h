@@ -30,6 +30,9 @@ class CoinMinter: public I_CoinMinter
     static const int64_t constexpr fiveMinutes_ = 5 * 60;
 
     bool hasMintableCoinForProofOfStake();
+    bool satisfiesMintingRequirements() const;
+    bool limitStakingSpeed() const;
+    bool isAtProofOfStakeHeight() const;
     bool createProofOfStakeBlock(
         unsigned int nExtraNonce, 
         CReserveKey& reserveKey, 
@@ -38,6 +41,7 @@ class CoinMinter: public I_CoinMinter
         unsigned int nExtraNonce, 
         CReserveKey& reserveKey, 
         bool fProofOfStake) const;
+
 public:
     CoinMinter(
         CWallet* pwallet,
@@ -48,9 +52,6 @@ public:
         HashedBlockMap& mapHashedBlocks);
 
     virtual bool CanMintCoins();
-    virtual bool satisfiesMintingRequirements() const;
-    virtual bool limitStakingSpeed() const;
-    virtual bool isAtProofOfStakeHeight() const;
     virtual void sleep(uint64_t milliseconds) const;
     virtual void setMintingRequestStatus(bool newStatus);
     virtual bool mintingHasBeenRequested() const;

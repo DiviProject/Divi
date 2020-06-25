@@ -50,12 +50,6 @@ BOOST_AUTO_TEST_CASE(willSuccesfullyTransitionFromNonMintableToMintableInProofOf
                 }
             )
         );
-    ON_CALL(minter,isAtProofOfStakeHeight())
-        .WillByDefault(Return(true));
-    ON_CALL(minter,satisfiesMintingRequirements())
-        .WillByDefault(Return(true));
-    ON_CALL(minter,limitStakingSpeed())
-        .WillByDefault(Return(false));
 
     EXPECT_CALL(minter, sleep(_)).Times(1);
     EXPECT_CALL(minter, createNewBlock(_,_,_)).Times(9);

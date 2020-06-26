@@ -112,11 +112,11 @@ void SetBlockTime(CBlock& block)
     block.nTime = GetAdjustedTime();
 }
 
-void AddTransactionToBlockAndSetDefaultFees(
+void SetCoinbaseTransactionAndDefaultFees(
     std::unique_ptr<CBlockTemplate>& pblocktemplate, 
-    const CMutableTransaction& txNew)
+    const CMutableTransaction& coinbaseTransaction)
 {
-    pblocktemplate->block.vtx.push_back(txNew);
+    pblocktemplate->block.vtx.push_back(coinbaseTransaction);
     pblocktemplate->vTxFees.push_back(-1);   // updated at end
     pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 }
@@ -227,9 +227,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     CBlock& block = pblocktemplate->block; // pointer for convenience
 
     // Create coinbase tx
-    CMutableTransaction txNew = CreateCoinbaseTransaction(scriptPubKeyIn);
+    CMutableTransaction coinbaseTransaction = CreateCoinbaseTransaction(scriptPubKeyIn);
     
-    AddTransactionToBlockAndSetDefaultFees(pblocktemplate, txNew);
+    SetCoinbaseTransactionAndDefaultFees(pblocktemplate, coinbaseTransaction);
 
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
@@ -244,7 +244,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         .CollectTransactionsIntoBlock(
             pblocktemplate,
             fProofOfStake,
-            txNew
+            coinbaseTransaction
         ))
     {
         return NULL;

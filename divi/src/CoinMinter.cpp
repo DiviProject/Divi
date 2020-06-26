@@ -8,6 +8,7 @@
 #include <BlockMemoryPoolTransactionCollector.h>
 #include <utilmoneystr.h>
 #include <timedata.h>
+#include <CoinstakeCreator.h>
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,
@@ -196,20 +197,22 @@ bool CreateAndFindStake(
     // ppcoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
-    int64_t nSearchTime = block.nTime;
-    bool fStakeFound = false;
-    if (nSearchTime >= nLastCoinStakeSearchTime) {
-        unsigned int nTxNewTime = 0;
-        if (pwallet.CreateCoinStake(pwallet, block.nBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime)) {
-            block.nTime = nTxNewTime;
-            block.vtx[0].vout[0].SetEmpty();
-            block.vtx.push_back(CTransaction(txCoinStake));
-            fStakeFound = true;
-        }
-        nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
-        nLastCoinStakeSearchTime = nSearchTime;
+    unsigned int nTxNewTime = 0;
+    if(CoinstakeCreator(pwallet,nLastCoinStakeSearchInterval)
+        .CreateAndFindStake(
+            block.nBits, 
+            block.nTime,
+            nLastCoinStakeSearchTime,
+            txCoinStake,
+            nTxNewTime))
+    {
+        block.nTime = nTxNewTime;
+        block.vtx[0].vout[0].SetEmpty();
+        block.vtx.push_back(CTransaction(txCoinStake));
+        return true;
     }
-    return fStakeFound;
+
+    return false;
 }
 
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)

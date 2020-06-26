@@ -104,11 +104,9 @@ void SetRequiredWork(CBlock& block)
     block.nBits = GetNextWorkRequired(pindexPrev, &block,Params());
 }
 
-int64_t SetBlockTime(CBlock& block)
+void SetBlockTime(CBlock& block)
 {
     block.nTime = GetAdjustedTime();
-    int64_t nSearchTime = block.nTime; // search to current time
-    return nSearchTime;
 }
 
 void AddTransactionToBlockAndSetDefaultFees(CBlock& block, std::unique_ptr<CBlockTemplate>& pblocktemplate, const CMutableTransaction& txNew)
@@ -188,7 +186,6 @@ CMutableTransaction CreateCoinbaseTransaction(const CScript& scriptPubKeyIn)
 
 extern int64_t nLastCoinStakeSearchInterval;
 bool CreateAndFindStake(
-    int64_t nSearchTime, 
     CWallet& pwallet, 
     CBlock& block, 
     CMutableTransaction& txCoinStake)
@@ -196,6 +193,7 @@ bool CreateAndFindStake(
     // ppcoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
+    int64_t nSearchTime = block.nTime;
     bool fStakeFound = false;
     if (nSearchTime >= nLastCoinStakeSearchTime) {
         unsigned int nTxNewTime = 0;
@@ -230,8 +228,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         CMutableTransaction txCoinStake;
 
         SetRequiredWork(*block);
+        SetBlockTime(*block);
 
-        if (!CreateAndFindStake(SetBlockTime(*block), *pwallet, *block, txCoinStake))
+        if (!CreateAndFindStake(*pwallet, *block, txCoinStake))
             return NULL;
     }
 

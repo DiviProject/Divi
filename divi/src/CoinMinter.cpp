@@ -187,9 +187,12 @@ CMutableTransaction CreateCoinbaseTransaction(const CScript& scriptPubKeyIn)
 extern int64_t nLastCoinStakeSearchInterval;
 bool CreateAndFindStake(
     CWallet& pwallet, 
-    CBlock& block, 
-    CMutableTransaction& txCoinStake)
+    CBlock& block)
 {
+    CMutableTransaction txCoinStake;
+    SetRequiredWork(block);
+    SetBlockTime(block);
+
     // ppcoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
@@ -224,13 +227,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
-        
-        CMutableTransaction txCoinStake;
 
-        SetRequiredWork(*block);
-        SetBlockTime(*block);
-
-        if (!CreateAndFindStake(*pwallet, *block, txCoinStake))
+        if (!CreateAndFindStake(*pwallet, *block))
             return NULL;
     }
 

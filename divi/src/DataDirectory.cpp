@@ -100,7 +100,7 @@ const boost::filesystem::path& GetDataDir(bool fNetSpecific)
         return path;
 
     if (settingsDataDirectory.ParameterIsSet("-datadir")) {
-        path = fs::system_complete(mapArgs["-datadir"]);
+        path = fs::system_complete(settingsDataDirectory.GetArg("-datadir", ""));
         if (!fs::is_directory(path)) {
             path = "";
             return path;

@@ -32,8 +32,8 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
     return fs::path("");
 }
 #endif
-extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
-Settings& settingsDataDirectory = Settings::instance(mapArgs, mapMultiArgs);
+
+extern Settings& settings;
 
 /**
  * Ignores exceptions thrown by Boost's create_directory if the requested directory exists.
@@ -99,8 +99,8 @@ const boost::filesystem::path& GetDataDir(bool fNetSpecific)
     if (!path.empty())
         return path;
 
-    if (settingsDataDirectory.ParameterIsSet("-datadir")) {
-        path = fs::system_complete(settingsDataDirectory.GetArg("-datadir", ""));
+    if (settings.ParameterIsSet("-datadir")) {
+        path = fs::system_complete(settings.GetArg("-datadir", ""));
         if (!fs::is_directory(path)) {
             path = "";
             return path;

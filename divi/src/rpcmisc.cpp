@@ -43,7 +43,7 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
-
+extern int64_t nLastCoinStakeSearchInterval;
 Value getinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)

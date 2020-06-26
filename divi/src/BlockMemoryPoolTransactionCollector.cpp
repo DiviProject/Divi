@@ -13,7 +13,6 @@
 #include "util.h"
 #include "wallet.h"
 
-int64_t nLastCoinStakeSearchInterval = 0;
 
 unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
 {

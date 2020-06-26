@@ -10,6 +10,8 @@
 #include <timedata.h>
 #include <CoinstakeCreator.h>
 
+int64_t nLastCoinStakeSearchInterval = 0;
+
 CoinMinter::CoinMinter(
     CWallet* pwallet,
     CChain& chain,
@@ -185,7 +187,6 @@ CMutableTransaction CreateCoinbaseTransaction(const CScript& scriptPubKeyIn)
     return txNew;
 }
 
-extern int64_t nLastCoinStakeSearchInterval;
 bool CreateAndFindStake(
     CWallet& pwallet, 
     CBlock& block)

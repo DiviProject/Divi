@@ -12,6 +12,10 @@ private:
     std::map<std::string, std::string>& mapArgs_;
     std::map<std::string, std::vector<std::string> >& mapMultiArgs_;
 
+    bool InterpretBool(const std::string& strValue);
+    
+    void InterpretNegativeSetting(std::string& strKey, std::string& strValue);
+
     Settings(
         std::map<std::string, std::string>& mapArgs,
         std::map<std::string, std::vector<std::string> >& mapMultiArgs
@@ -51,10 +55,6 @@ public:
     void ClearParameter (); 
 
     bool ParameterIsSetForMultiArgs (const std::string& key);
-
-    bool InterpretBool(const std::string& strValue);
-    
-    void InterpretNegativeSetting(std::string& strKey, std::string& strValue);
 
     void ParseParameters(int argc, const char* const argv[]);
 

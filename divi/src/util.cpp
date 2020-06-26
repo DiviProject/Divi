@@ -157,18 +157,6 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 
 Settings& settings = Settings::instance(mapArgs, mapMultiArgs);
 
-/** Interpret string as boolean, for argument parsing */
-static bool InterpretBool(const std::string& strValue)
-{
-    return settings.InterpretBool(strValue);
-}
-
-/** Turn -noX into -X=0 */
-static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
-{
-    return settings.InterpretNegativeSetting(strKey, strValue);
-}
-
 void ParseParameters(int argc, const char* const argv[])
 {
     settings.ParseParameters(argc, argv);

@@ -187,7 +187,7 @@ CMutableTransaction CreateCoinbaseTransaction(const CScript& scriptPubKeyIn)
     return txNew;
 }
 
-bool CreateAndFindStake(
+bool AppendProofOfStakeToBlock(
     CWallet& pwallet, 
     CBlock& block)
 {
@@ -232,7 +232,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
 
-        if (!CreateAndFindStake(*pwallet, *block))
+        if (!AppendProofOfStakeToBlock(*pwallet, *block))
             return NULL;
     }
 

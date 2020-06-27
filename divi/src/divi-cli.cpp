@@ -11,6 +11,7 @@
 #include "rpcprotocol.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include "Settings.h"
 
 #include <boost/filesystem/operations.hpp>
 
@@ -20,6 +21,7 @@ using namespace std;
 using namespace boost;
 using namespace boost::asio;
 using namespace json_spirit;
+extern Settings& settings;
 
 std::string HelpMessageCli()
 {
@@ -85,7 +87,7 @@ static bool AppInitRPC(int argc, char* argv[])
         return false;
     }
     try {
-        ReadConfigFile(mapArgs, mapMultiArgs);
+        settings.ReadConfigFile(mapArgs, mapMultiArgs);
     } catch (std::exception& e) {
         fprintf(stderr, "Error reading configuration file: %s\n", e.what());
         return false;

@@ -13,6 +13,7 @@
 #include "rpcserver.h"
 #include "ui_interface.h"
 #include "util.h"
+#include "Settings.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
@@ -35,6 +36,7 @@
  */
 
 static bool fDaemon;
+extern Settings& settings;
 
 void DetectShutdownThread(boost::thread_group* threadGroup)
 {
@@ -90,7 +92,7 @@ bool AppInit(int argc, char* argv[])
             return false;
         }
         try {
-            ReadConfigFile(mapArgs, mapMultiArgs);
+            settings.ReadConfigFile(mapArgs, mapMultiArgs);
         } catch (std::exception& e) {
             fprintf(stderr, "Error reading configuration file: %s\n", e.what());
             return false;

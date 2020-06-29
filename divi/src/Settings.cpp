@@ -164,9 +164,9 @@ void Settings::ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet
         std::string strKey = std::string("-") + it->string_key;
         std::string strValue = it->value[0];
         InterpretNegativeSetting(strKey, strValue);
-        if (mapSettingsRet.count(strKey) == 0)
-            mapSettingsRet[strKey] = strValue;
-        mapMultiSettingsRet[strKey].push_back(strValue);
+        if (mapArgs_.count(strKey) == 0)
+            mapArgs_[strKey] = strValue;
+        mapMultiArgs_[strKey].push_back(strValue);
     }
     // If datadir is changed in .conf file:
     ClearDatadirCache();

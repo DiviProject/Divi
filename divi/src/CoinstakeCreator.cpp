@@ -160,37 +160,10 @@ bool CoinstakeCreator::CreateCoinStake(
             if (fDebug && GetBoolArg("-printcoinstake", false))
                 LogPrintf("CreateCoinStake : kernel found\n");
 
-            CScript scriptPubKeyOut;
-
-            vector<valtype> vSolutions;
-            txnouttype whichType;
-            scriptPubKeyKernel = pcoin.first->vout[pcoin.second].scriptPubKey;
-            if (!Solver(scriptPubKeyKernel, whichType, vSolutions)) {
-                LogPrintf("CreateCoinStake : failed to parse kernel\n");
+            if(!SetSuportedStakingScript(pcoin,blockSubsidity.nStakeReward,txNew))
+            {
                 break;
             }
-            if (fDebug && GetBoolArg("-printcoinstake", false)) LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
-            if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH) 
-            {
-                if (fDebug && GetBoolArg("-printcoinstake", false))
-                    LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
-                break; // only support pay to public key and pay to address
-            }
-
-            scriptPubKeyOut = scriptPubKeyKernel;
-
-            txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
-            txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
-
-            //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
-            uint64_t nTotalSize = pcoin.first->vout[pcoin.second].nValue + blockSubsidity.nStakeReward;
-
-            //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values asigned further down)
-            if (nTotalSize > wallet_.nStakeSplitThreshold * COIN)
-                txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
-
-            if (fDebug && GetBoolArg("-printcoinstake", false))
-                LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
 
             vwtxPrev.push_back(pcoin.first);
             nCredit += pcoin.first->vout[pcoin.second].nValue;

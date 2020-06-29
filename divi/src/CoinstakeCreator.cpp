@@ -130,7 +130,6 @@ void CoinstakeCreator::CombineUtxos(
     }
 }
 
-// ppcoin: create coin stake transaction
 bool CoinstakeCreator::CreateCoinStake(
     const CKeyStore& keystore, 
     unsigned int nBits,
@@ -138,30 +137,22 @@ bool CoinstakeCreator::CreateCoinStake(
     CMutableTransaction& txNew,
     unsigned int& nTxNewTime)
 {
-    // The following split & combine thresholds are important to security
-    // Should not be adjusted if you don't understand the consequences
-    //int64_t nCombineThreshold = 0;
     if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
 
     CAmount allowedStakingAmount = wallet_.GetBalance() - nReserveBalance;
     MarkTransactionAsCoinstake(txNew);
-    // Choose coins to use
-    // presstab HyperStake - Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
+
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
-
     if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins))
     {
         return false;
     }
 
-    //prevent staking a time that won't be accepted
-    if (GetAdjustedTime() <= chainActive.Tip()->nTime)
-        MilliSleep(10000);
+    if (GetAdjustedTime() <= chainActive.Tip()->nTime) MilliSleep(10000);
 
     vector<const CWalletTx*> vwtxPrev;
-
     CAmount nCredit = 0;
     const CBlockIndex* pIndex0 = chainActive.Tip();
     auto blockSubsidity = GetBlockSubsidity(pIndex0->nHeight + 1);

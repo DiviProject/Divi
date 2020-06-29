@@ -75,14 +75,14 @@ bool CoinstakeCreator::CreateCoinStake(
         return false;
     }
 
+    //prevent staking a time that won't be accepted
+    if (GetAdjustedTime() <= chainActive.Tip()->nTime)
+        MilliSleep(10000);
+
     vector<const CWalletTx*> vwtxPrev;
 
     CAmount nCredit = 0;
     CScript scriptPubKeyKernel;
-
-    //prevent staking a time that won't be accepted
-    if (GetAdjustedTime() <= chainActive.Tip()->nTime)
-        MilliSleep(10000);
 
     const CBlockIndex* pIndex0 = chainActive.Tip();
     auto blockSubsidity = GetBlockSubsidity(pIndex0->nHeight + 1);

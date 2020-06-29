@@ -45,7 +45,7 @@ public:
     CoinstakeCreator(
         CWallet& wallet,
         int64_t& coinstakeSearchInterval);
-    bool CreateAndFindStake(
+    bool CreateProofOfStake(
         uint32_t blockBits,
         int64_t nSearchTime, 
         int64_t& nLastCoinStakeSearchTime, 

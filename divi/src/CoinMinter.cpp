@@ -202,7 +202,7 @@ bool AppendProofOfStakeToBlock(
 
     unsigned int nTxNewTime = 0;
     if(CoinstakeCreator(pwallet,nLastCoinStakeSearchInterval)
-        .CreateAndFindStake(
+        .CreateProofOfStake(
             block.nBits, 
             block.nTime,
             nLastCoinStakeSearchTime,

@@ -213,7 +213,7 @@ bool CoinstakeCreator::CreateCoinStake(
     return true;
 }
 
-bool CoinstakeCreator::CreateAndFindStake(
+bool CoinstakeCreator::CreateProofOfStake(
     uint32_t blockBits,
     int64_t nSearchTime, 
     int64_t& nLastCoinStakeSearchTime, 

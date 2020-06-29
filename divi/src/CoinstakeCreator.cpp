@@ -63,7 +63,7 @@ bool CoinstakeCreator::CreateCoinStake(
 
     // Choose coins to use
     // presstab HyperStake - Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
-    static std::set<pair<const CWalletTx*, unsigned int> > setStakeCoins;
+    static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
 
     if (nBalance <= nReserveBalance)

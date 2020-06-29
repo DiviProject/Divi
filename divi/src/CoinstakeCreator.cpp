@@ -16,6 +16,28 @@ CoinstakeCreator::CoinstakeCreator(
 
 }
 
+bool CoinstakeCreator::SelectCoins(
+    CAmount allowedStakingBalance,
+    int& nLastStakeSetUpdate, 
+    std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins)
+{
+    if (allowedStakingBalance <= 0)
+        return false;
+
+    if (GetTime() - nLastStakeSetUpdate > wallet_.nStakeSetUpdateTime) {
+        setStakeCoins.clear();
+        if (!wallet_.SelectStakeCoins(setStakeCoins, allowedStakingBalance))
+            return false;
+
+        nLastStakeSetUpdate = GetTime();
+    }
+
+    if (setStakeCoins.empty())
+        return false;
+
+    return true;
+}
+
 // ppcoin: create coin stake transaction
 bool CoinstakeCreator::CreateCoinStake(
     const CKeyStore& keystore, 

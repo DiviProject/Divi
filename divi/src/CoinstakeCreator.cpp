@@ -72,13 +72,6 @@ bool CoinstakeCreator::SetSuportedStakingScript(
     txNew.vin.push_back(CTxIn(transactionAndIndexPair.first->GetHash(), transactionAndIndexPair.second));
     txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
-    //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
-    uint64_t nTotalSize = transactionAndIndexPair.first->vout[transactionAndIndexPair.second].nValue + stakingReward;
-
-    //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values asigned further down)
-    if (nTotalSize > wallet_.nStakeSplitThreshold * COIN)
-        txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
-
     if (fDebug && GetBoolArg("-printcoinstake", false))
         LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
 
@@ -180,7 +173,9 @@ bool CoinstakeCreator::CreateCoinStake(
     CAmount nReward = blockSubsidity.nStakeReward;
     nCredit += nReward;
 
-
+    //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values asigned further down)
+    if (nCredit > static_cast<CAmount>(wallet_.nStakeSplitThreshold) * COIN)
+        txNew.vout.push_back(txNew.vout.back()); //split stake
 
     if(txNew.vout.size() == 2)
     {

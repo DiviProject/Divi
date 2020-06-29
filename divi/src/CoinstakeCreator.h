@@ -5,6 +5,7 @@
 #include <amount.h>
 #include <set>
 #include <utility>
+#include <vector>
 
 class CWallet;
 class CBlock;
@@ -17,6 +18,13 @@ class CoinstakeCreator
 private:
     CWallet& wallet_;
     int64_t& coinstakeSearchInterval_;
+
+    void CombineUtxos(
+        const CAmount& allowedStakingAmount,
+        CMutableTransaction& txNew,
+        CAmount& nCredit,
+        std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins,
+        std::vector<const CWalletTx*>& walletTransactions);
 
     bool SetSuportedStakingScript(
         const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,

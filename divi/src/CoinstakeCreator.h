@@ -28,7 +28,6 @@ private:
 
     bool SetSuportedStakingScript(
         const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
-        CAmount stakingReward,
         CMutableTransaction& txNew);
 
     bool SelectCoins(

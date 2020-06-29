@@ -51,7 +51,6 @@ void MarkTransactionAsCoinstake(CMutableTransaction& txNew)
 
 bool CoinstakeCreator::SetSuportedStakingScript(
     const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
-    CAmount stakingReward, 
     CMutableTransaction& txNew)
 {
     CScript scriptPubKeyOut = transactionAndIndexPair.first->vout[transactionAndIndexPair.second].scriptPubKey;
@@ -207,7 +206,7 @@ bool CoinstakeCreator::CreateCoinStake(
             if (fDebug && GetBoolArg("-printcoinstake", false))
                 LogPrintf("CreateCoinStake : kernel found\n");
 
-            if(!SetSuportedStakingScript(pcoin,blockSubsidity.nStakeReward,txNew))
+            if(!SetSuportedStakingScript(pcoin,txNew))
             {
                 break;
             }

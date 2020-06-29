@@ -125,9 +125,10 @@ bool CoinstakeCreator::CreateCoinStake(
             if (fDebug && GetBoolArg("-printcoinstake", false))
                 LogPrintf("CreateCoinStake : kernel found\n");
 
+            CScript scriptPubKeyOut;
+
             vector<valtype> vSolutions;
             txnouttype whichType;
-            CScript scriptPubKeyOut;
             scriptPubKeyKernel = pcoin.first->vout[pcoin.second].scriptPubKey;
             if (!Solver(scriptPubKeyKernel, whichType, vSolutions)) {
                 LogPrintf("CreateCoinStake : failed to parse kernel\n");
@@ -144,8 +145,6 @@ bool CoinstakeCreator::CreateCoinStake(
             scriptPubKeyOut = scriptPubKeyKernel;
 
             txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
-            nCredit += pcoin.first->vout[pcoin.second].nValue;
-            vwtxPrev.push_back(pcoin.first);
             txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
             //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
@@ -157,6 +156,9 @@ bool CoinstakeCreator::CreateCoinStake(
 
             if (fDebug && GetBoolArg("-printcoinstake", false))
                 LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
+
+            vwtxPrev.push_back(pcoin.first);
+            nCredit += pcoin.first->vout[pcoin.second].nValue;
             fKernelFound = true;
             break;
         }

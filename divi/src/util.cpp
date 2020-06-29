@@ -244,13 +244,6 @@ boost::filesystem::path GetMasternodeConfigFile()
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir() / pathConfigFile;
     return pathConfigFile;
 }
-
-void ReadConfigFile(map<string, string>& mapSettingsRet,
-    map<string, vector<string> >& mapMultiSettingsRet)
-{
-    settings.ReadConfigFile(mapSettingsRet, mapMultiSettingsRet);
-}
-
 #ifndef WIN32
 boost::filesystem::path GetPidFile()
 {

@@ -49,6 +49,41 @@ void MarkTransactionAsCoinstake(CMutableTransaction& txNew)
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
 }
 
+bool CoinstakeCreator::SetSuportedStakingScript(
+    const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
+    CAmount stakingReward, 
+    CMutableTransaction& txNew)
+{
+    CScript scriptPubKeyOut = transactionAndIndexPair.first->vout[transactionAndIndexPair.second].scriptPubKey;
+    vector<valtype> vSolutions;
+    txnouttype whichType;
+    if (!Solver(scriptPubKeyOut, whichType, vSolutions)) {
+        LogPrintf("CreateCoinStake : failed to parse kernel\n");
+        return false;
+    }
+    if (fDebug && GetBoolArg("-printcoinstake", false)) LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
+    if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH) 
+    {
+        if (fDebug && GetBoolArg("-printcoinstake", false))
+            LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
+        return false; // only support pay to public key and pay to address
+    }
+
+    txNew.vin.push_back(CTxIn(transactionAndIndexPair.first->GetHash(), transactionAndIndexPair.second));
+    txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
+
+    //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
+    uint64_t nTotalSize = transactionAndIndexPair.first->vout[transactionAndIndexPair.second].nValue + stakingReward;
+
+    //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values asigned further down)
+    if (nTotalSize > wallet_.nStakeSplitThreshold * COIN)
+        txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
+
+    if (fDebug && GetBoolArg("-printcoinstake", false))
+        LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
+
+    return true;
+}
 // ppcoin: create coin stake transaction
 bool CoinstakeCreator::CreateCoinStake(
     const CKeyStore& keystore, 

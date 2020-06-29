@@ -18,6 +18,11 @@ private:
     CWallet& wallet_;
     int64_t& coinstakeSearchInterval_;
 
+    bool SetSuportedStakingScript(
+        const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
+        CAmount stakingReward,
+        CMutableTransaction& txNew);
+
     bool SelectCoins(
         CAmount allowedStakingBalance,
         int& nLastStakeSetUpdate,

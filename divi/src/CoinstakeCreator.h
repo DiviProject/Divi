@@ -5,12 +5,20 @@
 class CWallet;
 class CBlock;
 class CMutableTransaction;
+class CKeyStore;
 
 class CoinstakeCreator
 {
 private:
     CWallet& wallet_;
     int64_t& coinstakeSearchInterval_;
+
+    bool CreateCoinStake(
+        const CKeyStore& keystore, 
+        unsigned int nBits, 
+        int64_t nSearchInterval, 
+        CMutableTransaction& txNew,
+        unsigned int& nTxNewTime);
 public:
     CoinstakeCreator(
         CWallet& wallet,

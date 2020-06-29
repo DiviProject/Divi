@@ -60,8 +60,7 @@ public:
 
     boost::filesystem::path GetConfigFile();
 
-    void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet,
-        std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
+    void ReadConfigFile();
 };
 
 #endif //SETTINGS_H

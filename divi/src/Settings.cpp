@@ -144,8 +144,7 @@ boost::filesystem::path Settings::GetConfigFile()
     return pathConfigFile;
 }
 
-void Settings::ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet,
-    std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet)
+void Settings::ReadConfigFile()
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good()) {

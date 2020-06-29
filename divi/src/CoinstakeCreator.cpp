@@ -13,7 +13,6 @@ CoinstakeCreator::CoinstakeCreator(
     ): wallet_(wallet)
     , coinstakeSearchInterval_(coinstakeSearchInterval)
 {
-
 }
 
 bool CoinstakeCreator::SelectCoins(
@@ -42,8 +41,6 @@ void MarkTransactionAsCoinstake(CMutableTransaction& txNew)
 {
     txNew.vin.clear();
     txNew.vout.clear();
-
-    // Mark coin stake transaction
     CScript scriptEmpty;
     scriptEmpty.clear();
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
@@ -146,7 +143,6 @@ bool CoinstakeCreator::CreateCoinStake(
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins) 
     {
-        //make sure that enough time has elapsed between
         CBlockIndex* pindex = NULL;
         BlockMap::iterator it = mapBlockIndex.find(pcoin.first->hashBlock);
         if (it != mapBlockIndex.end())
@@ -159,26 +155,19 @@ bool CoinstakeCreator::CreateCoinStake(
             continue;
         }
 
-        // Read block header
         CBlockHeader block = pindex->GetBlockHeader();
-
         bool fKernelFound = false;
         uint256 hashProofOfStake = 0;
         COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
         nTxNewTime = GetAdjustedTime();
 
-
-        //iterates each utxo inside of CheckStakeKernelHash()
         if (CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, wallet_.nHashDrift, false, hashProofOfStake, true)) 
         {
-            //Double check that this will pass time requirements
             if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast()) 
             {
                 LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
                 continue;
             }
-
-            // Found a kernel
             if (fDebug && GetBoolArg("-printcoinstake", false))
                 LogPrintf("CreateCoinStake : kernel found\n");
 
@@ -198,11 +187,8 @@ bool CoinstakeCreator::CreateCoinStake(
     if (nCredit == 0 || nCredit > allowedStakingAmount)
         return false;
 
-    // Calculate reward
     CAmount nReward = blockSubsidity.nStakeReward;
     nCredit += nReward;
-
-    // Set output amount
     if (nCredit > static_cast<CAmount>(wallet_.nStakeSplitThreshold) * COIN) 
     {
         txNew.vout.push_back(txNew.vout.back());
@@ -215,21 +201,17 @@ bool CoinstakeCreator::CreateCoinStake(
         txNew.vout[1].nValue = nCredit;
     }
 
-    // Masternode payment
     FillBlockPayee(txNew, blockSubsidity, true);
 
-    // Sign
     int nIn = 0;
     for (const CWalletTx* pcoin : vwtxPrev) {
         if (!SignSignature(wallet_, *pcoin, txNew, nIn++))
             return error("CreateCoinStake : failed to sign coinstake");
     }
 
-    // Successfully generated coinstake
     nLastStakeSetUpdate = 0; //this will trigger stake set to repopulate next round
     return true;
 }
-
 
 bool CoinstakeCreator::CreateAndFindStake(
     uint32_t blockBits,

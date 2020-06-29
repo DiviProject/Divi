@@ -60,17 +60,17 @@ bool CoinstakeCreator::CreateCoinStake(
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
     //int64_t nCombineThreshold = 0;
-    CAmount nBalance = wallet_.GetBalance();
     if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
 
+    CAmount allowedStakingAmount = wallet_.GetBalance() - nReserveBalance;
     MarkTransactionAsCoinstake(txNew);
     // Choose coins to use
     // presstab HyperStake - Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
 
-    if(!SelectCoins(nBalance-nReserveBalance,nLastStakeSetUpdate,setStakeCoins))
+    if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins))
     {
         return false;
     }
@@ -158,7 +158,7 @@ bool CoinstakeCreator::CreateCoinStake(
         if (fKernelFound)
             break; // if kernel is found stop searching
     }
-    if (nCredit == 0 || nCredit > nBalance - nReserveBalance)
+    if (nCredit == 0 || nCredit > allowedStakingAmount)
         return false;
 
     // Calculate reward
@@ -202,7 +202,7 @@ bool CoinstakeCreator::CreateCoinStake(
                 break;
 
             // Stop adding inputs if reached reserve limit
-            if (nCredit + pcoin.first->vout[pcoin.second].nValue > nBalance - nReserveBalance)
+            if (nCredit + pcoin.first->vout[pcoin.second].nValue > allowedStakingAmount)
                 break;
 
             // Can't add anymore, cause vector is sorted

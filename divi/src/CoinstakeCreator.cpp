@@ -40,12 +40,12 @@ bool CoinstakeCreator::CreateCoinStake(
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
 
     // Choose coins to use
-    if (nBalance <= nReserveBalance)
-        return false;
-
     // presstab HyperStake - Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
     static std::set<pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
+
+    if (nBalance <= nReserveBalance)
+        return false;
 
     if (GetTime() - nLastStakeSetUpdate > wallet_.nStakeSetUpdateTime) {
         setStakeCoins.clear();

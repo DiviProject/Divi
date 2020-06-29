@@ -227,20 +227,16 @@ bool CoinstakeCreator::CreateCoinStake(
     CAmount nReward = blockSubsidity.nStakeReward;
     nCredit += nReward;
 
-    //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values asigned further down)
-    if (nCredit > static_cast<CAmount>(wallet_.nStakeSplitThreshold) * COIN)
-        txNew.vout.push_back(txNew.vout.back()); //split stake
-
-    if(txNew.vout.size() == 2)
-    {
-        CombineUtxos(allowedStakingAmount,txNew,nCredit,setStakeCoins,vwtxPrev);
-    }
-
     // Set output amount
-    if (txNew.vout.size() == 3) {
+    if (nCredit > static_cast<CAmount>(wallet_.nStakeSplitThreshold) * COIN) 
+    {
+        txNew.vout.push_back(txNew.vout.back());
         txNew.vout[1].nValue = nCredit / 2;
         txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
-    } else {
+    }
+    else 
+    {
+        CombineUtxos(allowedStakingAmount,txNew,nCredit,setStakeCoins,vwtxPrev);
         txNew.vout[1].nValue = nCredit;
     }
 

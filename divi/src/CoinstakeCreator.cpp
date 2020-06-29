@@ -265,7 +265,8 @@ bool CoinstakeCreator::CreateAndFindStake(
 
     bool fStakeFound = false;
     if (nSearchTime >= nLastCoinStakeSearchTime) {
-        if (wallet_.CreateCoinStake(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime)) {
+        if (CreateCoinStake(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime)) 
+        {
             fStakeFound = true;
         }
         coinstakeSearchInterval_ = nSearchTime - nLastCoinStakeSearchTime;

@@ -38,6 +38,17 @@ bool CoinstakeCreator::SelectCoins(
     return true;
 }
 
+void MarkTransactionAsCoinstake(CMutableTransaction& txNew)
+{
+    txNew.vin.clear();
+    txNew.vout.clear();
+
+    // Mark coin stake transaction
+    CScript scriptEmpty;
+    scriptEmpty.clear();
+    txNew.vout.push_back(CTxOut(0, scriptEmpty));
+}
+
 // ppcoin: create coin stake transaction
 bool CoinstakeCreator::CreateCoinStake(
     const CKeyStore& keystore, 
@@ -53,14 +64,7 @@ bool CoinstakeCreator::CreateCoinStake(
     if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
 
-    txNew.vin.clear();
-    txNew.vout.clear();
-
-    // Mark coin stake transaction
-    CScript scriptEmpty;
-    scriptEmpty.clear();
-    txNew.vout.push_back(CTxOut(0, scriptEmpty));
-
+    MarkTransactionAsCoinstake(txNew);
     // Choose coins to use
     // presstab HyperStake - Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;

@@ -233,50 +233,7 @@ bool CoinstakeCreator::CreateCoinStake(
 
     if(txNew.vout.size() == 2)
     {
-        const CAmount nCombineThreshold = (wallet_.nStakeSplitThreshold / 2) * COIN;
-        using Entry = std::pair<const CWalletTx*, unsigned int>;
-        std::vector<Entry> vCombineCandidates;
-        for(auto &&pcoin : setStakeCoins)
-        {
-            // Attempt to add more inputs
-            // Only add coins of the same key/address as kernel
-            if (pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey &&
-                    pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
-            {
-                // Do not add additional significant input
-                if (pcoin.first->vout[pcoin.second].nValue + nCredit > nCombineThreshold)
-                    continue;
-
-                vCombineCandidates.push_back(pcoin);
-            }
-        }
-
-        std::sort(std::begin(vCombineCandidates), std::end(vCombineCandidates), [](const Entry &left, const Entry &right) {
-            return left.first->vout[left.second].nValue < right.first->vout[right.second].nValue;
-        });
-
-        for(auto &&pcoin : vCombineCandidates)
-        {
-            // Stop adding more inputs if already too many inputs
-            if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS)
-                break;
-
-            // Stop adding more inputs if value is already pretty significant
-            if (nCredit > nCombineThreshold)
-                break;
-
-            // Stop adding inputs if reached reserve limit
-            if (nCredit + pcoin.first->vout[pcoin.second].nValue > allowedStakingAmount)
-                break;
-
-            // Can't add anymore, cause vector is sorted
-            if (nCredit + pcoin.first->vout[pcoin.second].nValue > nCombineThreshold)
-                break;
-
-            txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
-            nCredit += pcoin.first->vout[pcoin.second].nValue;
-            vwtxPrev.push_back(pcoin.first);
-        }
+        CombineUtxos(allowedStakingAmount,txNew,nCredit,setStakeCoins,vwtxPrev);
     }
 
     // Set output amount

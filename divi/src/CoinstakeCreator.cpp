@@ -66,19 +66,10 @@ bool CoinstakeCreator::CreateCoinStake(
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
 
-    if (nBalance <= nReserveBalance)
+    if(!SelectCoins(nBalance-nReserveBalance,nLastStakeSetUpdate,setStakeCoins))
+    {
         return false;
-
-    if (GetTime() - nLastStakeSetUpdate > wallet_.nStakeSetUpdateTime) {
-        setStakeCoins.clear();
-        if (!wallet_.SelectStakeCoins(setStakeCoins, nBalance - nReserveBalance))
-            return false;
-
-        nLastStakeSetUpdate = GetTime();
     }
-
-    if (setStakeCoins.empty())
-        return false;
 
     vector<const CWalletTx*> vwtxPrev;
 

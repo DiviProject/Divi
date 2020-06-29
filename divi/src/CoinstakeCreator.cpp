@@ -27,6 +27,9 @@ bool CoinstakeCreator::CreateCoinStake(
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
     //int64_t nCombineThreshold = 0;
+    CAmount nBalance = wallet_.GetBalance();
+    if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
+        return error("CreateCoinStake : invalid reserve balance amount");
 
     txNew.vin.clear();
     txNew.vout.clear();
@@ -37,11 +40,6 @@ bool CoinstakeCreator::CreateCoinStake(
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
 
     // Choose coins to use
-    CAmount nBalance = wallet_.GetBalance();
-
-    if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
-        return error("CreateCoinStake : invalid reserve balance amount");
-
     if (nBalance <= nReserveBalance)
         return false;
 

@@ -44,7 +44,7 @@ private:
     bool FindStake(
         unsigned int nBits,
         unsigned int& nTxNewTime,
-        std::pair<CWalletTx*, unsigned int>& stakeData,
+        std::pair<const CWalletTx*, unsigned int>& stakeData,
         CMutableTransaction& txNew);
 public:
     CoinstakeCreator(

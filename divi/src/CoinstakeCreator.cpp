@@ -117,7 +117,7 @@ void CoinstakeCreator::CombineUtxos(
 bool CoinstakeCreator::FindStake(
     unsigned int nBits,
     unsigned int& nTxNewTime,
-    std::pair<CWalletTx*, unsigned int>& stakeData,
+    std::pair<const CWalletTx*, unsigned int>& stakeData,
     CMutableTransaction& txNew)
 {
     BlockMap::iterator it = mapBlockIndex.find(stakeData.first->hashBlock);

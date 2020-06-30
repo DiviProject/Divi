@@ -149,7 +149,7 @@ BITCOIN_CORE_H = \
   i_databaseWrapper.h \
   I_SuperblockHeightValidator.h \
   I_BlockSubsidyProvider.h \
-  I_BIP9ActivationStateTracker.h
+  I_BIP9ActivationStateTracker.h \
   I_BIP9ActivationTrackerFactory.h \
   I_SuperblockHeightValidator.h \
   I_BlockSubsidyProvider.h \

@@ -140,23 +140,18 @@ bool CoinstakeCreator::CreateCoinStake(
     {
         CBlockIndex* pindex = NULL;
         BlockMap::iterator it = mapBlockIndex.find(pcoin.first->hashBlock);
-        if (it != mapBlockIndex.end())
-        {
-            pindex = it->second;
-        }
-        else 
+        if (it == mapBlockIndex.end())
         {
             if (fDebug) LogPrintf("CreateCoinStake() failed to find block index \n");
             continue;
         }
 
-        CBlockHeader block = pindex->GetBlockHeader();
         bool fKernelFound = false;
         uint256 hashProofOfStake = 0;
         COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
         nTxNewTime = GetAdjustedTime();
 
-        if (CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, wallet_.nHashDrift, false, hashProofOfStake, true)) 
+        if (CheckStakeKernelHash(nBits, it->second->GetBlockHeader(), *pcoin.first, prevoutStake, nTxNewTime, wallet_.nHashDrift, false, hashProofOfStake, true)) 
         {
             if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast()) 
             {

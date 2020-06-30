@@ -41,6 +41,11 @@ private:
         int64_t nSearchInterval, 
         CMutableTransaction& txNew,
         unsigned int& nTxNewTime);
+    bool FindStake(
+        unsigned int nBits,
+        unsigned int& nTxNewTime,
+        std::pair<CWalletTx*, unsigned int>& stakeData,
+        CMutableTransaction& txNew);
 public:
     CoinstakeCreator(
         CWallet& wallet,

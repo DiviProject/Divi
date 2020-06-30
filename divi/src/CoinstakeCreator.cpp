@@ -114,6 +114,51 @@ void CoinstakeCreator::CombineUtxos(
     }
 }
 
+bool CoinstakeCreator::FindStake(
+    unsigned int nBits,
+    unsigned int& nTxNewTime,
+    std::pair<CWalletTx*, unsigned int>& stakeData,
+    CMutableTransaction& txNew)
+{
+    BlockMap::iterator it = mapBlockIndex.find(stakeData.first->hashBlock);
+    if (it == mapBlockIndex.end())
+    {
+        if (fDebug) LogPrintf("CreateCoinStake() failed to find block index \n");
+        return false;
+    }
+
+    uint256 hashProofOfStake = 0;
+    nTxNewTime = GetAdjustedTime();
+
+    if (CheckStakeKernelHash(
+            nBits,
+            it->second->GetBlockHeader(),
+            *stakeData.first,
+            COutPoint(stakeData.first->GetHash(), stakeData.second),
+            nTxNewTime,
+            wallet_.nHashDrift,
+            false,
+            hashProofOfStake,
+            true))
+    {
+        if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast())
+        {
+            LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
+            return false;
+        }
+        if (fDebug && GetBoolArg("-printcoinstake", false))
+            LogPrintf("CreateCoinStake : kernel found\n");
+
+        if(!SetSuportedStakingScript(stakeData,txNew))
+        {
+            return false;
+        }
+
+        return true;
+    }
+    return false;
+}
+
 bool CoinstakeCreator::CreateCoinStake(
     const CKeyStore& keystore, 
     unsigned int nBits,

@@ -138,8 +138,7 @@ bool CoinstakeCreator::CreateCoinStake(
 
     vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
-    const CBlockIndex* pIndex0 = chainActive.Tip();
-    auto blockSubsidity = GetBlockSubsidity(pIndex0->nHeight + 1);
+    auto blockSubsidity = GetBlockSubsidity(chainActive.Tip()->nHeight + 1);
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins) 
     {

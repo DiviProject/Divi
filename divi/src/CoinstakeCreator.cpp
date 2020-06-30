@@ -129,11 +129,7 @@ bool CoinstakeCreator::CreateCoinStake(
 
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
-    if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins))
-    {
-        return false;
-    }
-
+    if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
     if (GetAdjustedTime() <= chainActive.Tip()->nTime) MilliSleep(10000);
 
     vector<const CWalletTx*> vwtxPrev;

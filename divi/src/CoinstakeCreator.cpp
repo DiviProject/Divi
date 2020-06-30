@@ -148,10 +148,18 @@ bool CoinstakeCreator::CreateCoinStake(
 
         bool fKernelFound = false;
         uint256 hashProofOfStake = 0;
-        COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
         nTxNewTime = GetAdjustedTime();
 
-        if (CheckStakeKernelHash(nBits, it->second->GetBlockHeader(), *pcoin.first, prevoutStake, nTxNewTime, wallet_.nHashDrift, false, hashProofOfStake, true)) 
+        if (CheckStakeKernelHash(
+                nBits,
+                it->second->GetBlockHeader(),
+                *pcoin.first,
+                COutPoint(pcoin.first->GetHash(), pcoin.second),
+                nTxNewTime,
+                wallet_.nHashDrift,
+                false,
+                hashProofOfStake,
+                true))
         {
             if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast()) 
             {

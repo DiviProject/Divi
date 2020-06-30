@@ -5,8 +5,12 @@
 #ifndef BITCOIN_KERNEL_H
 #define BITCOIN_KERNEL_H
 
-#include "main.h"
-
+#include <stdint.h>
+#include <uint256.h>
+#include <primitives/transaction.h>
+#include <primitives/block.h>
+#include <streams.h>
+class CBlockIndex;
 
 // MODIFIER_INTERVAL: time to elapse before new modifier is computed
 static const unsigned int MODIFIER_INTERVAL = 60;

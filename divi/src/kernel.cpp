@@ -4,14 +4,17 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <boost/assign/list_of.hpp>
-#include <boost/lexical_cast.hpp>
 
-#include "db.h"
 #include "kernel.h"
+
+#include "main.h"
+#include "db.h"
 #include "script/interpreter.h"
 #include "timedata.h"
 #include "util.h"
+
+#include <boost/assign/list_of.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 

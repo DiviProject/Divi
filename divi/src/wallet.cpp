@@ -45,6 +45,7 @@ bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
 
+extern unsigned int nStakeMinAge;
 /**
  * Fees smaller than this (in duffs) are considered zero fee (for transaction creation)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minTxFee 10 times higher

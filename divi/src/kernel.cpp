@@ -23,8 +23,8 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos);
 bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock, bool fAllowSlow = false);
 extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 extern BlockMap mapBlockIndex;
-extern unsigned int nStakeMinAge;
-extern unsigned int nStakeMaxAge;
+unsigned int nStakeMinAge = 60 * 60;
+unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
 extern CChain chainActive;
 
 using namespace std;

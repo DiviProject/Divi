@@ -6,8 +6,10 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
+
 #include "checkpoints.h"
 #include "coincontrol.h"
+#include "kernel.h"
 #include "masternode-payments.h"
 #include "net.h"
 #include "script/script.h"

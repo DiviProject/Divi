@@ -7,14 +7,25 @@
 
 #include "kernel.h"
 
-#include "main.h"
-#include "db.h"
+#include "blockmap.h"
+#include "chain.h"
+#include "chainparams.h"
 #include "script/interpreter.h"
-#include "timedata.h"
-#include "util.h"
+#include "script/SignatureCheckers.h"
+#include "script/standard.h"
+#include "utilstrencodings.h"
 
 #include <boost/assign/list_of.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
+
+bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos);
+bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock, bool fAllowSlow = false);
+extern std::map<unsigned int, unsigned int> mapHashedBlocks;
+extern BlockMap mapBlockIndex;
+extern unsigned int nStakeMinAge;
+extern unsigned int nStakeMaxAge;
+extern CChain chainActive;
 
 using namespace std;
 

@@ -27,8 +27,6 @@ unsigned int nStakeMinAge = 60 * 60;
 unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
 extern CChain chainActive;
 
-using namespace std;
-
 bool fTestNet = false; //Params().NetworkID() == CBaseChainParams::TESTNET;
 
 // Modifier interval: time to elapse before new modifier is computed

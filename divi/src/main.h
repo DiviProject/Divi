@@ -33,19 +33,7 @@
 #include "undo.h"
 #include "spentindex.h"
 #include "FeeRate.h"
-
-#include <algorithm>
-#include <exception>
-#include <map>
-#include <set>
-#include <stdint.h>
-#include <string>
-#include <utility>
-#include <vector>
-
 #include "libzerocoin/bignum.h"
-
-#include <boost/unordered_map.hpp>
 
 class CBlockIndex;
 class CBlockTreeDB;

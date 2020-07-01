@@ -6,23 +6,17 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
-
-#include "base58.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
-#include "kernel.h"
 #include "masternode-payments.h"
 #include "net.h"
-#include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/sign.h"
 #include "spork.h"
 #include "SuperblockHelpers.h"
 #include "swifttx.h"
 #include "timedata.h"
-#include "util.h"
 #include "utilmoneystr.h"
-
 #include "libzerocoin/Denominations.h"
 #include <assert.h>
 

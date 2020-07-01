@@ -114,6 +114,51 @@ void CoinstakeCreator::CombineUtxos(
     }
 }
 
+bool CoinstakeCreator::FindStake(
+    unsigned int nBits,
+    unsigned int& nTxNewTime,
+    std::pair<const CWalletTx*, unsigned int>& stakeData,
+    CMutableTransaction& txNew)
+{
+    BlockMap::iterator it = mapBlockIndex.find(stakeData.first->hashBlock);
+    if (it == mapBlockIndex.end())
+    {
+        if (fDebug) LogPrintf("CreateCoinStake() failed to find block index \n");
+        return false;
+    }
+
+    uint256 hashProofOfStake = 0;
+    nTxNewTime = GetAdjustedTime();
+
+    if (CheckStakeKernelHash(
+            nBits,
+            it->second->GetBlockHeader(),
+            *stakeData.first,
+            COutPoint(stakeData.first->GetHash(), stakeData.second),
+            nTxNewTime,
+            wallet_.nHashDrift,
+            false,
+            hashProofOfStake,
+            true))
+    {
+        if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast())
+        {
+            LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
+            return false;
+        }
+        if (fDebug && GetBoolArg("-printcoinstake", false))
+            LogPrintf("CreateCoinStake : kernel found\n");
+
+        if(!SetSuportedStakingScript(stakeData,txNew))
+        {
+            return false;
+        }
+
+        return true;
+    }
+    return false;
+}
+
 bool CoinstakeCreator::CreateCoinStake(
     const CKeyStore& keystore, 
     unsigned int nBits,
@@ -129,60 +174,21 @@ bool CoinstakeCreator::CreateCoinStake(
 
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
-    if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins))
-    {
-        return false;
-    }
-
+    if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
     if (GetAdjustedTime() <= chainActive.Tip()->nTime) MilliSleep(10000);
 
     vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
-    const CBlockIndex* pIndex0 = chainActive.Tip();
-    auto blockSubsidity = GetBlockSubsidity(pIndex0->nHeight + 1);
+    auto blockSubsidity = GetBlockSubsidity(chainActive.Tip()->nHeight + 1);
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins) 
     {
-        CBlockIndex* pindex = NULL;
-        BlockMap::iterator it = mapBlockIndex.find(pcoin.first->hashBlock);
-        if (it != mapBlockIndex.end())
+        if(FindStake(nBits, nTxNewTime, pcoin,txNew))
         {
-            pindex = it->second;
-        }
-        else 
-        {
-            if (fDebug) LogPrintf("CreateCoinStake() failed to find block index \n");
-            continue;
-        }
-
-        CBlockHeader block = pindex->GetBlockHeader();
-        bool fKernelFound = false;
-        uint256 hashProofOfStake = 0;
-        COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
-        nTxNewTime = GetAdjustedTime();
-
-        if (CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, wallet_.nHashDrift, false, hashProofOfStake, true)) 
-        {
-            if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast()) 
-            {
-                LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
-                continue;
-            }
-            if (fDebug && GetBoolArg("-printcoinstake", false))
-                LogPrintf("CreateCoinStake : kernel found\n");
-
-            if(!SetSuportedStakingScript(pcoin,txNew))
-            {
-                break;
-            }
-
             vwtxPrev.push_back(pcoin.first);
             nCredit += pcoin.first->vout[pcoin.second].nValue;
-            fKernelFound = true;
             break;
         }
-        if (fKernelFound)
-            break; // if kernel is found stop searching
     }
     if (nCredit == 0 || nCredit > allowedStakingAmount)
         return false;

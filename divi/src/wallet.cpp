@@ -7,22 +7,18 @@
 
 #include "wallet.h"
 
-#include "base58.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "kernel.h"
 #include "masternode-payments.h"
 #include "net.h"
-#include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/sign.h"
 #include "spork.h"
 #include "SuperblockHelpers.h"
 #include "swifttx.h"
 #include "timedata.h"
-#include "util.h"
 #include "utilmoneystr.h"
-
 #include "libzerocoin/Denominations.h"
 #include <assert.h>
 
@@ -49,6 +45,7 @@ bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
 
+extern unsigned int nStakeMinAge;
 /**
  * Fees smaller than this (in duffs) are considered zero fee (for transaction creation)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minTxFee 10 times higher

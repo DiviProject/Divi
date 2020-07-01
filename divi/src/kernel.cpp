@@ -4,16 +4,28 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+
+#include "kernel.h"
+
+#include "blockmap.h"
+#include "chain.h"
+#include "chainparams.h"
+#include "script/interpreter.h"
+#include "script/SignatureCheckers.h"
+#include "script/standard.h"
+#include "utilstrencodings.h"
+
 #include <boost/assign/list_of.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
-#include "db.h"
-#include "kernel.h"
-#include "script/interpreter.h"
-#include "timedata.h"
-#include "util.h"
-
-using namespace std;
+bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos);
+bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock, bool fAllowSlow = false);
+extern std::map<unsigned int, unsigned int> mapHashedBlocks;
+extern BlockMap mapBlockIndex;
+unsigned int nStakeMinAge = 60 * 60;
+unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
+extern CChain chainActive;
 
 bool fTestNet = false; //Params().NetworkID() == CBaseChainParams::TESTNET;
 
@@ -32,12 +44,6 @@ unsigned int getIntervalVersion(bool fTestNet)
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of(0, 0xfd11f4e7u);
-
-// Get time weight
-int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd)
-{
-    return nIntervalEnd - nIntervalBeginning - nStakeMinAge;
-}
 
 // Get the last stake modifier and its generation time from a given block
 static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModifier, int64_t& nModifierTime)
@@ -429,13 +435,6 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;
-}
-
-// Check whether the coinstake timestamp meets protocol
-bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx)
-{
-    // v0.3 protocol
-    return (nTimeBlock == nTimeTx);
 }
 
 // Get stake modifier checksum

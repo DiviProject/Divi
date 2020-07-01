@@ -6,10 +6,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "main.h"
-
 #include "addrman.h"
 #include "alert.h"
-#include "chainparams.h"
 #include "checkpoints.h"
 #include "checkqueue.h"
 #include "init.h"
@@ -17,23 +15,18 @@
 #include "masternode-payments.h"
 #include "masternodeman.h"
 #include "merkleblock.h"
-#include "net.h"
 #include "obfuscation.h"
-#include "pow.h"
 #include "spork.h"
 #include "sporkdb.h"
 #include "swifttx.h"
 #include "txdb.h"
-#include "txmempool.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
 #include "NotificationInterface.h"
 #include "FeeAndPriorityCalculator.h"
 #include "SuperblockHelpers.h"
-
 #include "libzerocoin/Denominations.h"
-
 #include <sstream>
 
 #include <boost/algorithm/string/replace.hpp>
@@ -81,8 +74,6 @@ bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
 bool fAlerts = DEFAULT_ALERTS;
 
-unsigned int nStakeMinAge = 60 * 60;
-unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
 int64_t nReserveBalance = 0;
 
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);

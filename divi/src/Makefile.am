@@ -162,6 +162,7 @@ BITCOIN_CORE_H = \
   leveldbwrapper.h \
   limitedmap.h \
   main.h \
+  BlockFileOpener.h \
   BlockTemplate.h \
   masternode.h \
   masternode-payments.h \
@@ -277,6 +278,7 @@ libbitcoin_server_a_SOURCES = \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
   main.cpp \
+  BlockFileOpener.cpp \
   merkleblock.cpp \
   CoinMinter.cpp \
   CoinstakeCreator.cpp \

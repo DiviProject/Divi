@@ -14,6 +14,7 @@
 #include "activemasternode.h"
 #include "addrman.h"
 #include "amount.h"
+#include "BlockFileOpener.h"
 #include "checkpoints.h"
 #include "compat/sanity.h"
 #include "datacachemanager.h"
@@ -621,7 +622,7 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
         int nFile = 0;
         while (true) {
             CDiskBlockPos pos(nFile, 0);
-            if (!boost::filesystem::exists(GetBlockPosFilename(pos, "blk")))
+            if (!BlockFileExists(pos, "blk"))
                 break; // No block files left to reindex
             FILE* file = OpenBlockFile(pos, true);
             if (!file)

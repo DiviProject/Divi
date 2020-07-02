@@ -4,6 +4,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "obfuscation.h"
+
+#include "BlockDiskAccessor.h"
 #include "coincontrol.h"
 #include "init.h"
 #include "main.h"

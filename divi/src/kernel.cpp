@@ -20,7 +20,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
-bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock, bool fAllowSlow = false);
 extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 extern BlockMap mapBlockIndex;
 unsigned int nStakeMinAge = 60 * 60;

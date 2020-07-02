@@ -8,6 +8,7 @@
 #include "kernel.h"
 
 #include "blockmap.h"
+#include "BlockDiskAccessor.h"
 #include "chain.h"
 #include "chainparams.h"
 #include "script/interpreter.h"
@@ -19,7 +20,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
-bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos);
 bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock, bool fAllowSlow = false);
 extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 extern BlockMap mapBlockIndex;

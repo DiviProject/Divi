@@ -7,6 +7,7 @@
 #include "main.h"
 #include "Logging.h"
 #include "crypto/common.h"
+#include "BlockDiskAccessor.h"
 
 static std::multimap<std::string, CZMQAbstractPublishNotifier*> mapPublishNotifiers;
 

@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "main.h"
+#include "BlockDiskAccessor.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "rpcserver.h"

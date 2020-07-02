@@ -7,6 +7,7 @@
 
 #include "wallet.h"
 
+#include "BlockDiskAccessor.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "kernel.h"

@@ -40,6 +40,7 @@
 #include "utilmoneystr.h"
 #include "NotificationInterface.h"
 #include "FeeAndPriorityCalculator.h"
+#include <Settings.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -74,6 +75,7 @@ int nWalletBackups = 20;
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
+extern Settings& settings;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -1447,7 +1449,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     PruneHDSeedParameterInteraction();
 
 #if ENABLE_ZMQ
-    pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(mapArgs);
+    pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(settings);
 
     if (pzmqNotificationInterface) {
         RegisterValidationInterface(pzmqNotificationInterface);

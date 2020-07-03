@@ -99,7 +99,7 @@ enum BindFlags {
     BF_WHITELIST = (1U << 2),
 };
 
-string errorMsg;
+std::string errorMsg;
 static const char* FEE_ESTIMATES_FILENAME = "fee_estimates.dat";
 CClientUIInterface uiInterface;
 
@@ -360,7 +360,7 @@ std::string HelpMessage(HelpMessageMode mode)
 {
 
     // When adding new options to the categories, please keep and ensure alphabetical ordering.
-    string strUsage = HelpMessageGroup(translate("Options:"));
+    std::string strUsage = HelpMessageGroup(translate("Options:"));
     strUsage += HelpMessageOpt("-?", translate("This help message"));
     strUsage += HelpMessageOpt("-version", translate("Print version and exit"));
     strUsage += HelpMessageOpt("-alertnotify=<cmd>", translate("Execute command when a relevant alert is received or we see a really long fork (%s in cmd is replaced by message)"));
@@ -487,7 +487,7 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-stopafterblockimport", strprintf(translate("Stop running after importing blocks from disk (default: %u)"), 0));
         strUsage += HelpMessageOpt("-sporkkey=<privkey>", translate("Enable spork administration functionality with the appropriate private key."));
     }
-    string debugCategories = "addrman, alert, bench, coindb, db, lock, rand, rpc, selectcoins, tor, mempool, net, proxy, divi, (obfuscation, swiftx, masternode, mnpayments, mnbudget, zero)"; // Don't translate these and qt below
+    std::string debugCategories = "addrman, alert, bench, coindb, db, lock, rand, rpc, selectcoins, tor, mempool, net, proxy, divi, (obfuscation, swiftx, masternode, mnpayments, mnbudget, zero)"; // Don't translate these and qt below
     if (mode == HMM_BITCOIN_QT)
         debugCategories += ", qt";
     strUsage += HelpMessageOpt("-debug=<category>", strprintf(translate("Output debugging information (default: %u, supplying <category> is optional)"), 0) + ". " +
@@ -915,8 +915,8 @@ void SetLoggingAndDebugSettings()
 
     fDebug = !mapMultiArgs["-debug"].empty();
     // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-    const vector<string>& categories = mapMultiArgs["-debug"];
-    if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
+    const std::vector<std::string>& categories = mapMultiArgs["-debug"];
+    if (GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
         fDebug = false;
 
     if (GetBoolArg("-shrinkdebugfile", !fDebug))
@@ -1122,7 +1122,7 @@ bool InitializeP2PNetwork()
     }
 
     if (ParameterIsSet("-externalip")) {
-        BOOST_FOREACH (string strAddr, mapMultiArgs["-externalip"]) {
+        BOOST_FOREACH (std::string strAddr, mapMultiArgs["-externalip"]) {
             CService addrLocal(strAddr, GetListenPort(), fNameLookup);
             if (!addrLocal.IsValid())
                 return InitError(strprintf(translate("Cannot resolve -externalip address: '%s'"), strAddr));
@@ -1130,7 +1130,7 @@ bool InitializeP2PNetwork()
         }
     }
 
-    BOOST_FOREACH (string strDest, mapMultiArgs["-seednode"])
+    BOOST_FOREACH (std::string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
     
     return true;
@@ -1248,7 +1248,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         sporkManager.LoadSporksFromDB();
 
         uiInterface.InitMessage(translate("Loading block index..."));
-        string strBlockIndexError = "";
+        std::string strBlockIndexError = "";
         if (!LoadBlockIndex(strBlockIndexError)) {
             strLoadError = translate("Error loading block database");
             strLoadError = strprintf("%s : %s", strLoadError, strBlockIndexError);
@@ -1543,7 +1543,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             if (nLoadWalletRet == DB_CORRUPT)
                 strErrors << translate("Error loading wallet.dat: Wallet corrupted") << "\n";
             else if (nLoadWalletRet == DB_NONCRITICAL_ERROR) {
-                string msg(translate("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
+                std::string msg(translate("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
                              " or address book entries might be missing or incorrect."));
                 InitWarning(msg);
             } else if (nLoadWalletRet == DB_TOO_NEW)
@@ -1679,7 +1679,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     std::vector<boost::filesystem::path> vImportFiles;
     if (ParameterIsSet("-loadblock")) {
-        BOOST_FOREACH (string strFile, mapMultiArgs["-loadblock"])
+        BOOST_FOREACH (std::string strFile, mapMultiArgs["-loadblock"])
             vImportFiles.push_back(strFile);
     }
     threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));

@@ -150,7 +150,7 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
         }
 
         pmn->lastPing = mnp;
-        mnodeman.mapSeenMasternodePing.insert(make_pair(mnp.GetHash(), mnp));
+        mnodeman.mapSeenMasternodePing.insert(std::make_pair(mnp.GetHash(), mnp));
 
         //mnodeman.mapSeenMasternodeBroadcast.lastPing is probably outdated, so we'll update it
         CMasternodeBroadcast mnb(*pmn);
@@ -192,10 +192,10 @@ bool CActiveMasternode::Register(
 bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
 {
     auto mnp = mnb.lastPing;
-    mnodeman.mapSeenMasternodePing.insert(make_pair(mnp.GetHash(), mnp));
+    mnodeman.mapSeenMasternodePing.insert(std::make_pair(mnp.GetHash(), mnp));
 
     LogPrintf("CActiveMasternode::Register() - Adding to Masternode list\n    service: %s\n    vin: %s\n", mnb.addr.ToString(), mnb.vin.ToString());
-    mnodeman.mapSeenMasternodeBroadcast.insert(make_pair(mnb.GetHash(), mnb));
+    mnodeman.mapSeenMasternodeBroadcast.insert(std::make_pair(mnb.GetHash(), mnb));
     masternodeSync.AddedMasternodeList(mnb.GetHash());
 
     CMasternode* pmn = mnodeman.Find(mnb.vin);

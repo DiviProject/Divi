@@ -70,10 +70,10 @@ bool IsHex(const string& str)
     return (str.size() > 0) && (str.size() % 2 == 0);
 }
 
-vector<unsigned char> ParseHex(const char* psz)
+std::vector<unsigned char> ParseHex(const char* psz)
 {
     // convert hex dump to vector
-    vector<unsigned char> vch;
+    std::vector<unsigned char> vch;
     while (true) {
         while (isspace(*psz))
             psz++;
@@ -90,7 +90,7 @@ vector<unsigned char> ParseHex(const char* psz)
     return vch;
 }
 
-vector<unsigned char> ParseHex(const string& str)
+std::vector<unsigned char> ParseHex(const string& str)
 {
     return ParseHex(str.c_str());
 }
@@ -143,7 +143,7 @@ string EncodeBase64(const string& str)
     return EncodeBase64((const unsigned char*)str.c_str(), str.size());
 }
 
-vector<unsigned char> DecodeBase64(const char* p, bool* pfInvalid)
+std::vector<unsigned char> DecodeBase64(const char* p, bool* pfInvalid)
 {
     static const int decode64_table[256] =
         {
@@ -164,7 +164,7 @@ vector<unsigned char> DecodeBase64(const char* p, bool* pfInvalid)
     if (pfInvalid)
         *pfInvalid = false;
 
-    vector<unsigned char> vchRet;
+    std::vector<unsigned char> vchRet;
     vchRet.reserve(strlen(p) * 3 / 4);
 
     int mode = 0;
@@ -224,7 +224,7 @@ vector<unsigned char> DecodeBase64(const char* p, bool* pfInvalid)
 
 string DecodeBase64(const string& str)
 {
-    vector<unsigned char> vchRet = DecodeBase64(str.c_str());
+    std::vector<unsigned char> vchRet = DecodeBase64(str.c_str());
     return (vchRet.size() == 0) ? string() : string((const char*)&vchRet[0], vchRet.size());
 }
 
@@ -345,7 +345,7 @@ string EncodeBase32(const string& str)
     return EncodeBase32((const unsigned char*)str.c_str(), str.size());
 }
 
-vector<unsigned char> DecodeBase32(const char* p, bool* pfInvalid)
+std::vector<unsigned char> DecodeBase32(const char* p, bool* pfInvalid)
 {
     static const int decode32_table[256] =
         {
@@ -366,7 +366,7 @@ vector<unsigned char> DecodeBase32(const char* p, bool* pfInvalid)
     if (pfInvalid)
         *pfInvalid = false;
 
-    vector<unsigned char> vchRet;
+    std::vector<unsigned char> vchRet;
     vchRet.reserve((strlen(p)) * 5 / 8);
 
     int mode = 0;
@@ -460,7 +460,7 @@ vector<unsigned char> DecodeBase32(const char* p, bool* pfInvalid)
 
 string DecodeBase32(const string& str)
 {
-    vector<unsigned char> vchRet = DecodeBase32(str.c_str());
+    std::vector<unsigned char> vchRet = DecodeBase32(str.c_str());
     return (vchRet.size() == 0) ? string() : string((const char*)&vchRet[0], vchRet.size());
 }
 

@@ -50,7 +50,7 @@ CScript ParseScript(std::string s)
         }
     }
 
-    vector<string> words;
+    std::vector<std::string> words;
     split(words, s, is_any_of(" \t\n"), token_compress_on);
 
     for (std::vector<std::string>::const_iterator w = words.begin(); w != words.end(); ++w) {
@@ -86,7 +86,7 @@ bool DecodeHexTx(CTransaction& tx, const std::string& strHexTx)
     if (!IsHex(strHexTx))
         return false;
 
-    vector<unsigned char> txData(ParseHex(strHexTx));
+    std::vector<unsigned char> txData(ParseHex(strHexTx));
     CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
     try {
         ssData >> tx;
@@ -131,9 +131,9 @@ uint256 ParseHashStr(const std::string& strHex, const std::string& strName)
     return result;
 }
 
-vector<unsigned char> ParseHexUV(const UniValue& v, const string& strName)
+std::vector<unsigned char> ParseHexUV(const UniValue& v, const std::string& strName)
 {
-    string strHex;
+    std::string strHex;
     if (v.isStr())
         strHex = v.getValStr();
     if (!IsHex(strHex))

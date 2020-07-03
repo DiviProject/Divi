@@ -500,7 +500,7 @@ Value signmessage(const Array& params, bool fHelp)
     ss << strMessageMagic;
     ss << strMessage;
 
-    vector<unsigned char> vchSig;
+    std::vector<unsigned char> vchSig;
     if (!key.SignCompact(ss.GetHash(), vchSig))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
 
@@ -871,7 +871,7 @@ Value sendmany(const Array& params, bool fHelp)
         wtx.mapValue["comment"] = params[3].get_str();
 
     set<CBitcoinAddress> setAddress;
-    vector<pair<CScript, CAmount> > vecSend;
+    std::vector<std::pair<CScript, CAmount> > vecSend;
 
     CAmount totalAmount = 0;
     BOOST_FOREACH (const Pair& s, sendTo) {
@@ -887,7 +887,7 @@ Value sendmany(const Array& params, bool fHelp)
         CAmount nAmount = AmountFromValue(s.value_);
         totalAmount += nAmount;
 
-        vecSend.push_back(make_pair(scriptPubKey, nAmount));
+        vecSend.push_back(std::make_pair(scriptPubKey, nAmount));
     }
 
     EnsureWalletIsUnlocked();
@@ -958,7 +958,7 @@ struct tallyitem {
     CAmount nAmount;
     int nConf;
     int nBCConf;
-    vector<uint256> txids;
+    std::vector<uint256> txids;
     bool fIsWatchonly;
     tallyitem()
     {
@@ -1252,7 +1252,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
             CTxDestination dest;
             ExtractDestination(txout.scriptPubKey, dest);
 
-            string account;
+            std::string account;
             if (pwalletMain->mapAddressBook.count(dest)) {
                 account = pwalletMain->mapAddressBook[dest].name;
             }
@@ -2042,7 +2042,7 @@ Value listlockunspent(const Array& params, bool fHelp)
                 "\nUnlock the transaction again\n" + HelpExampleCli("lockunspent", "true \"[{\\\"txid\\\":\\\"a08e6907dbbd3d809776dbfc5d82e371b764ed838b5655e72f463568df1aadf0\\\",\\\"vout\\\":1}]\"") +
                 "\nAs a json rpc call\n" + HelpExampleRpc("listlockunspent", ""));
 
-    vector<COutPoint> vOutpts;
+    std::vector<COutPoint> vOutpts;
     pwalletMain->ListLockedCoins(vOutpts);
 
     Array ret;

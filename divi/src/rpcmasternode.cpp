@@ -66,7 +66,7 @@ Value debug(const Array& params, bool fHelp)
 Value allocatefunds(const Array& params, bool fHelp)
 {
 	if (fHelp || params.size() != 3)
-		throw runtime_error(
+		throw std::runtime_error(
 			"allocatefunds purpose alias amount ( \"pay wallet\" ( \"voting wallet\" ) )\n"
 			"\nStarts escrows funds for some purpose.\n"
 
@@ -81,10 +81,10 @@ Value allocatefunds(const Array& params, bool fHelp)
 
     if (params[0].get_str() != "masternode")
     {
-        throw runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
+        throw std::runtime_error("Surely you meant the first argument to be ""masternode"" . . . . ");
     }
 	CBitcoinAddress acctAddr = GetAccountAddress("alloc->" + params[1].get_str());
-	string strAmt = params[2].get_str();
+	std::string strAmt = params[2].get_str();
 
     auto nMasternodeTier = GetMasternodeTierFromString(strAmt);
     if(!CMasternode::IsTierValid(nMasternodeTier))
@@ -103,7 +103,7 @@ Value allocatefunds(const Array& params, bool fHelp)
 Value fundmasternode(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 4)
-		throw runtime_error(
+		throw std::runtime_error(
 			"fundmasternode alias amount TxID masternode ( \"pay wallet\" ( \"voting wallet\" ) )\n"
 			"\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
@@ -178,7 +178,7 @@ Value fundmasternode(const Array& params, bool fHelp)
 Value verifymasternodesetup(const Array&params, bool fHelp)
 {
     if (fHelp || params.size() != 4)
-		throw runtime_error(
+		throw std::runtime_error(
 			"verifymasternodesetup ip_address sigtime collateralPubKey masternodePubKey\n"
 			"\nStarts escrows funds for some purpose.\n"
 
@@ -217,7 +217,7 @@ Value verifymasternodesetup(const Array&params, bool fHelp)
 Value setupmasternode(const Array& params, bool fHelp)
 {
 	if (fHelp || params.size() < 5 || params.size() > 6)
-		throw runtime_error(
+		throw std::runtime_error(
 			"setupmasternode alias txhash outputIndex collateralPubKey ip_address\n"
 			"\nStarts escrows funds for some purpose.\n"
 
@@ -280,17 +280,17 @@ Value setupmasternode(const Array& params, bool fHelp)
 
 Value getpoolinfo(const Array& params, bool fHelp)
 {
-	throw runtime_error("Obfuscation, in general, and getpoolinfo, in particular, are deprecated!");
+	throw std::runtime_error("Obfuscation, in general, and getpoolinfo, in particular, are deprecated!");
 }
 
 Value masternode(const Array& params, bool fHelp)
 {
-	throw runtime_error("masternode is deprecated!  Use one of the newer, clearer commands.");
+	throw std::runtime_error("masternode is deprecated!  Use one of the newer, clearer commands.");
 }
 
-string nodeHelp(string indent = "")
+std::string nodeHelp(std::string indent = "")
 {
-	string ret = indent + "\"address\": \"address\",    (string) Masternode DIVI address\n";
+	std::string ret = indent + "\"address\": \"address\",    (string) Masternode DIVI address\n";
 	ret += indent + "\"protocol\": xxxx,        (numeric) Protocol version\n";
 //	ret += indent + "\"netaddr\": \"xxxx\",       (string) Masternode network address\n";;
 	ret += indent + "\"lastseen\": ttt,			(numeric) The time in seconds since last seen\n";
@@ -306,7 +306,7 @@ Value listmasternodes(const Array& params, bool fHelp)
     if (params.size() == 1) strFilter = params[0].get_str();
 
     if (fHelp || (params.size() > 1))
-        throw runtime_error(
+        throw std::runtime_error(
             "listmasternodes ( \"filter\" )\n"
             "\nGet a ranked list of masternodes\n"
 
@@ -346,9 +346,9 @@ Value listmasternodes(const Array& params, bool fHelp)
         CMasternode* mn = mnodeman.Find(entry.vin);
 
         if (mn != NULL) {
-            if (strFilter != "" && strTxHash.find(strFilter) == string::npos &&
-                mn->Status().find(strFilter) == string::npos &&
-                CBitcoinAddress(mn->pubKeyCollateralAddress.GetID()).ToString().find(strFilter) == string::npos) continue;
+            if (strFilter != "" && strTxHash.find(strFilter) == std::string::npos &&
+                mn->Status().find(strFilter) == std::string::npos &&
+                CBitcoinAddress(mn->pubKeyCollateralAddress.GetID()).ToString().find(strFilter) == std::string::npos) continue;
 
             std::string strStatus = mn->Status();
             std::string strHost;
@@ -378,7 +378,7 @@ Value listmasternodes(const Array& params, bool fHelp)
 Value masternodeconnect(const Array& params, bool fHelp)
 {
 	if (fHelp || (params.size() != 1))
-		throw runtime_error(
+		throw std::runtime_error(
 			"masternodeconnect \"address\"\n"
 			"\nAttempts to connect to specified masternode address\n"
 
@@ -398,14 +398,14 @@ Value masternodeconnect(const Array& params, bool fHelp)
 		return Value::null;
 	}
 	else {
-		throw runtime_error("error connecting\n");
+		throw std::runtime_error("error connecting\n");
 	}
 }
 
 Value getmasternodecount (const Array& params, bool fHelp)
 {
     if (fHelp || (params.size() > 0))
-        throw runtime_error(
+        throw std::runtime_error(
             "getmasternodecount\n"
             "\nGet masternode count values\n"
 
@@ -441,13 +441,13 @@ Value getmasternodecount (const Array& params, bool fHelp)
 
 Value masternodecurrent(const Array& params, bool fHelp)
 {
-	throw runtime_error("masternodecurrent is deprecated!  masternode payments always rely upon votes");
+	throw std::runtime_error("masternodecurrent is deprecated!  masternode payments always rely upon votes");
 }
 
 Value broadcaststartmasternode(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 2 || params.size() < 1)
-        throw runtime_error(
+        throw std::runtime_error(
             "broadcaststartmasternode hex sig\n"
             "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
@@ -481,7 +481,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
 Value startmasternode(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
-        throw runtime_error(
+        throw std::runtime_error(
             "startmasternode alias\n"
             "\nVerifies the escrowed funds for the masternode and returns the necessary info for your and its configuration files.\n"
 
@@ -537,23 +537,23 @@ Value startmasternode(const Array& params, bool fHelp)
 
 Value createmasternodekey(const Array& params, bool fHelp)
 {
-	throw runtime_error("createmasternodekey is deprecated!  A masternodekey is no longer necessary for setup.");
+	throw std::runtime_error("createmasternodekey is deprecated!  A masternodekey is no longer necessary for setup.");
 }
 
 Value getmasternodeoutputs(const Array& params, bool fHelp)
 {
-	throw runtime_error("getmasternodeoutputs is deprecated!  It has been replaced by fundmasternode for setup.");
+	throw std::runtime_error("getmasternodeoutputs is deprecated!  It has been replaced by fundmasternode for setup.");
 }
 
 Value listmasternodeconf(const Array& params, bool fHelp)
 {
-	throw runtime_error("listmasternodeconf is deprecated!  It is not necessary for setup.");
+	throw std::runtime_error("listmasternodeconf is deprecated!  It is not necessary for setup.");
 }
 
 Value getmasternodestatus (const Array& params, bool fHelp)
 {
     if (fHelp || (params.size() != 0))
-        throw runtime_error(
+        throw std::runtime_error(
             "getmasternodestatus\n"
             "\nPrint masternode status\n"
 
@@ -570,7 +570,7 @@ Value getmasternodestatus (const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmasternodestatus", "") + HelpExampleRpc("getmasternodestatus", ""));
 
-    if (!fMasterNode) throw runtime_error("This is not a masternode");
+    if (!fMasterNode) throw std::runtime_error("This is not a masternode");
 
     CMasternode* pmn = mnodeman.Find(activeMasternode.vin);
 
@@ -584,14 +584,14 @@ Value getmasternodestatus (const Array& params, bool fHelp)
         mnObj.push_back(Pair("message", activeMasternode.GetStatus()));
         return mnObj;
     }
-    throw runtime_error("Masternode not found in the list of available masternodes. Current status: "
+    throw std::runtime_error("Masternode not found in the list of available masternodes. Current status: "
                         + activeMasternode.GetStatus());
 }
 
 Value getmasternodewinners (const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 3)
-        throw runtime_error(
+        throw std::runtime_error(
             "getmasternodewinners ( blocks \"filter\" )\n"
             "\nPrint the masternode winners for the last n blocks\n"
 
@@ -658,7 +658,7 @@ Value getmasternodewinners (const Array& params, bool fHelp)
             Array winner;
             boost::char_separator<char> sep(",");
             boost::tokenizer< boost::char_separator<char> > tokens(strPayment, sep);
-            BOOST_FOREACH (const string& t, tokens) {
+            BOOST_FOREACH (const std::string& t, tokens) {
                 Object addr;
                 std::size_t pos = t.find(":");
                 std::string strAddress = t.substr(0,pos);
@@ -690,5 +690,5 @@ Value getmasternodewinners (const Array& params, bool fHelp)
 }
 Value getmasternodescores(const Array& params, bool fHelp)
 {
-	throw runtime_error("getmasternodescores is deprecated!  masternode payments always rely upon votes not current scores");
+	throw std::runtime_error("getmasternodescores is deprecated!  masternode payments always rely upon votes not current scores");
 }

@@ -24,13 +24,11 @@
 #define MASTERNODE_REMOVAL_SECONDS (130 * 60)
 #define MASTERNODE_CHECK_SECONDS 5
 
-using namespace std;
-
 class CMasternode;
 class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
-extern map<int64_t, uint256> mapCacheBlockHashes;
+extern std::map<int64_t, uint256> mapCacheBlockHashes;
 
 bool GetBlockHash(uint256& hash, int nBlockHeight);
 
@@ -276,7 +274,7 @@ public:
     static CAmount GetTierCollateralAmount(Tier tier);
     static Tier GetTierByCollateralAmount(CAmount nCollateral);
     static bool IsTierValid(Tier tier);
-    static string TierToString(Tier tier);
+    static std::string TierToString(Tier tier);
 
     std::string GetStatus();
 

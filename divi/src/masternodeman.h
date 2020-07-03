@@ -16,8 +16,6 @@
 #define MASTERNODES_DUMP_SECONDS (15 * 60)
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 
-using namespace std;
-
 class CMasternodeMan;
 
 extern CMasternodeMan mnodeman;
@@ -42,9 +40,9 @@ private:
 
 public:
     // Keep track of all broadcasts I've seen
-    map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;
+    std::map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;
     // Keep track of all pings I've seen
-    map<uint256, CMasternodePing> mapSeenMasternodePing;
+    std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
     // keep track of dsq count to prevent masternodes from gaming obfuscation queue
     int64_t nDsqCount;
@@ -110,7 +108,7 @@ public:
         return vMasternodes;
     }
 
-    std::vector<pair<int, CMasternode> > GetMasternodeRanks(int64_t nBlockHeight, int minProtocol = 0);
+    std::vector<std::pair<int, CMasternode> > GetMasternodeRanks(int64_t nBlockHeight, int minProtocol = 0);
     int GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol = 0, bool fOnlyActive = true);
     CMasternode* GetMasternodeByRank(int nRank, int64_t nBlockHeight, int minProtocol = 0, bool fOnlyActive = true);
 

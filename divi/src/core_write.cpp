@@ -27,7 +27,7 @@ string FormatScript(const CScript& script)
     opcodetype op;
     while (it != script.end()) {
         CScript::const_iterator it2 = it;
-        vector<unsigned char> vch;
+        std::vector<unsigned char> vch;
         if (script.GetOp2(it, op, &vch)) {
             if (op == OP_0) {
                 ret += "0 ";
@@ -67,7 +67,7 @@ void ScriptPubKeyToUniv(const CScript& scriptPubKey,
     bool fIncludeHex)
 {
     txnouttype type;
-    vector<CTxDestination> addresses;
+    std::vector<CTxDestination> addresses;
     int nRequired;
 
     out.pushKV("asm", scriptPubKey.ToString());

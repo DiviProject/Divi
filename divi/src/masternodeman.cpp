@@ -19,24 +19,24 @@
 CMasternodeMan mnodeman;
 
 struct CompareLastPaid {
-    bool operator()(const pair<int64_t, CTxIn>& t1,
-        const pair<int64_t, CTxIn>& t2) const
+    bool operator()(const std::pair<int64_t, CTxIn>& t1,
+        const std::pair<int64_t, CTxIn>& t2) const
     {
         return t1.first < t2.first;
     }
 };
 
 struct CompareScoreTxIn {
-    bool operator()(const pair<int64_t, CTxIn>& t1,
-        const pair<int64_t, CTxIn>& t2) const
+    bool operator()(const std::pair<int64_t, CTxIn>& t1,
+        const std::pair<int64_t, CTxIn>& t2) const
     {
         return t1.first < t2.first;
     }
 };
 
 struct CompareScoreMN {
-    bool operator()(const pair<int64_t, CMasternode>& t1,
-        const pair<int64_t, CMasternode>& t2) const
+    bool operator()(const std::pair<int64_t, CMasternode>& t1,
+        const std::pair<int64_t, CMasternode>& t2) const
     {
         return t1.first < t2.first;
     }
@@ -99,7 +99,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
     LOCK(cs);
 
     //remove inactive and outdated
-    vector<CMasternode>::iterator it = vMasternodes.begin();
+    std::vector<CMasternode>::iterator it = vMasternodes.begin();
     while (it != vMasternodes.end()) {
         if ((*it).activeState == CMasternode::MASTERNODE_REMOVE ||
             (*it).activeState == CMasternode::MASTERNODE_VIN_SPENT ||
@@ -110,7 +110,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
             //erase all of the broadcasts we've seen from this vin
             // -- if we missed a few pings and the node was removed, this will allow is to get it back without them
             //    sending a brand new mnb
-            map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
+            std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
             while (it3 != mapSeenMasternodeBroadcast.end()) {
                 if ((*it3).second.vin == (*it).vin) {
                     masternodeSync.mapSeenSyncMNB.erase((*it3).first);
@@ -121,7 +121,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
             }
 
             // allow us to ask for this masternode again if we see another ping
-            map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
+            std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
             while (it2 != mWeAskedForMasternodeListEntry.end()) {
                 if ((*it2).first == (*it).vin.prevout) {
                     mWeAskedForMasternodeListEntry.erase(it2++);
@@ -137,7 +137,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
     }
 
     // check who's asked for the Masternode list
-    map<CNetAddr, int64_t>::iterator it1 = mAskedUsForMasternodeList.begin();
+    std::map<CNetAddr, int64_t>::iterator it1 = mAskedUsForMasternodeList.begin();
     while (it1 != mAskedUsForMasternodeList.end()) {
         if ((*it1).second < GetTime()) {
             mAskedUsForMasternodeList.erase(it1++);
@@ -157,7 +157,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
     }
 
     // check which Masternodes we've asked for
-    map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
+    std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
     while (it2 != mWeAskedForMasternodeListEntry.end()) {
         if ((*it2).second < GetTime()) {
             mWeAskedForMasternodeListEntry.erase(it2++);
@@ -167,7 +167,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
     }
 
     // remove expired mapSeenMasternodeBroadcast
-    map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
+    std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
     while (it3 != mapSeenMasternodeBroadcast.end()) {
         if ((*it3).second.lastPing.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
             mapSeenMasternodeBroadcast.erase(it3++);
@@ -178,7 +178,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
     }
 
     // remove expired mapSeenMasternodePing
-    map<uint256, CMasternodePing>::iterator it4 = mapSeenMasternodePing.begin();
+    std::map<uint256, CMasternodePing>::iterator it4 = mapSeenMasternodePing.begin();
     while (it4 != mapSeenMasternodePing.end()) {
         if ((*it4).second.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
             mapSeenMasternodePing.erase(it4++);
@@ -433,7 +433,7 @@ CMasternode* CMasternodeMan::GetCurrentMasterNode(int mod, int64_t nBlockHeight,
 
 int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol, bool fOnlyActive)
 {
-    std::vector<pair<int64_t, CTxIn> > vecMasternodeScores;
+    std::vector<std::pair<int64_t, CTxIn> > vecMasternodeScores;
     int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;
     int64_t nMasternode_Age = 0;
 
@@ -468,7 +468,7 @@ int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, in
         uint256 n = mn.CalculateScore(1, nBlockHeight);
         int64_t n2 = n.GetCompact(false);
 
-        vecMasternodeScores.push_back(make_pair(n2, mn.vin));
+        vecMasternodeScores.push_back(std::make_pair(n2, mn.vin));
     }
 
     sort(vecMasternodeScores.rbegin(), vecMasternodeScores.rend(), CompareScoreTxIn());
@@ -484,34 +484,34 @@ int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, in
     return rankForNodesNotFound;
 }
 
-std::vector<pair<int, CMasternode> > CMasternodeMan::GetMasternodeRanks(int64_t nBlockHeight, int minProtocol)
+std::vector<std::pair<int, CMasternode> > CMasternodeMan::GetMasternodeRanks(int64_t nBlockHeight, int minProtocol)
 {
     if (!masternodeSync.IsMasternodeListSynced())
-        return std::vector<pair<int, CMasternode>>();
+        return std::vector<std::pair<int, CMasternode>>();
 
-    std::vector<pair<int64_t, CMasternode> > vecMasternodeScores;
-    std::vector<pair<int, CMasternode> > vecMasternodeRanks;
+    std::vector<std::pair<int64_t, CMasternode> > vecMasternodeScores;
+    std::vector<std::pair<int, CMasternode> > vecMasternodeRanks;
 
     //make sure we know about this block
     uint256 hash = 0;
     if (!GetBlockHash(hash, nBlockHeight)) return vecMasternodeRanks;
 
     // scan for winner
-    std::vector<pair<int64_t, CMasternode> > vecDisabledMasternodeScores;
+    std::vector<std::pair<int64_t, CMasternode> > vecDisabledMasternodeScores;
     BOOST_FOREACH (CMasternode& mn, vMasternodes) {
         mn.Check();
 
         if (mn.protocolVersion < minProtocol) continue;
 
         if (!mn.IsEnabled()) {
-            vecDisabledMasternodeScores.push_back(make_pair(9999, mn));
+            vecDisabledMasternodeScores.push_back(std::make_pair(9999, mn));
             continue;
         }
 
         uint256 n = mn.CalculateScore(1, nBlockHeight);
         int64_t n2 = n.GetCompact(false);
 
-        vecMasternodeScores.push_back(make_pair(n2, mn));
+        vecMasternodeScores.push_back(std::make_pair(n2, mn));
     }
 
     sort(vecMasternodeScores.rbegin(), vecMasternodeScores.rend(), CompareScoreMN());
@@ -520,7 +520,7 @@ std::vector<pair<int, CMasternode> > CMasternodeMan::GetMasternodeRanks(int64_t 
     int rank = 0;
     BOOST_FOREACH (PAIRTYPE(int64_t, CMasternode) & s, vecMasternodeScores) {
         rank++;
-        vecMasternodeRanks.push_back(make_pair(rank, s.second));
+        vecMasternodeRanks.push_back(std::make_pair(rank, s.second));
     }
 
     return vecMasternodeRanks;
@@ -528,7 +528,7 @@ std::vector<pair<int, CMasternode> > CMasternodeMan::GetMasternodeRanks(int64_t 
 
 CMasternode* CMasternodeMan::GetMasternodeByRank(int nRank, int64_t nBlockHeight, int minProtocol, bool fOnlyActive)
 {
-    std::vector<pair<int64_t, CTxIn> > vecMasternodeScores;
+    std::vector<std::pair<int64_t, CTxIn> > vecMasternodeScores;
 
     // scan for winner
     BOOST_FOREACH (CMasternode& mn, vMasternodes) {
@@ -541,7 +541,7 @@ CMasternode* CMasternodeMan::GetMasternodeByRank(int nRank, int64_t nBlockHeight
         uint256 n = mn.CalculateScore(1, nBlockHeight);
         int64_t n2 = n.GetCompact(false);
 
-        vecMasternodeScores.push_back(make_pair(n2, mn.vin));
+        vecMasternodeScores.push_back(std::make_pair(n2, mn.vin));
     }
 
     sort(vecMasternodeScores.rbegin(), vecMasternodeScores.rend(), CompareScoreTxIn());
@@ -579,7 +579,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
             masternodeSync.AddedMasternodeList(mnb.GetHash());
             return;
         }
-        mapSeenMasternodeBroadcast.insert(make_pair(mnb.GetHash(), mnb));
+        mapSeenMasternodeBroadcast.insert(std::make_pair(mnb.GetHash(), mnb));
 
         int nDoS = 0;
         if (!mnb.CheckAndUpdate(nDoS)) {
@@ -619,7 +619,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         LogPrint("masternode", "mnp - Masternode ping, vin: %s\n", mnp.vin.prevout.hash.ToString());
 
         if (mapSeenMasternodePing.count(mnp.GetHash())) return; //seen
-        mapSeenMasternodePing.insert(make_pair(mnp.GetHash(), mnp));
+        mapSeenMasternodePing.insert(std::make_pair(mnp.GetHash(), mnp));
 
         int nDoS = 0;
         if (mnp.CheckAndUpdate(nDoS)) return;
@@ -677,7 +677,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
                     pfrom->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
                     nInvCount++;
 
-                    if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(make_pair(hash, mnb));
+                    if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
 
                     if (vin == mn.vin) {
                         LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
@@ -698,7 +698,7 @@ void CMasternodeMan::Remove(CTxIn vin)
 {
     LOCK(cs);
 
-    vector<CMasternode>::iterator it = vMasternodes.begin();
+    std::vector<CMasternode>::iterator it = vMasternodes.begin();
     while (it != vMasternodes.end()) {
         if ((*it).vin == vin) {
             LogPrint("masternode", "CMasternodeMan: Removing Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), size() - 1);

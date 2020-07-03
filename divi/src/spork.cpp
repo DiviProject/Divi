@@ -298,7 +298,7 @@ static int GetActivationHeightHelper(int nSporkID, const std::string strValue)
     return nActivationTime;
 }
 
-bool CSporkManager::UpdateSpork(int nSporkID, string strValue)
+bool CSporkManager::UpdateSpork(int nSporkID, std::string strValue)
 {
 
     CSporkMessage spork = CSporkMessage(nSporkID, strValue, GetAdjustedTime());
@@ -363,7 +363,7 @@ std::vector<CSporkMessage> CSporkManager::GetMultiValueSpork(int nSporkID) const
 }
 
 // grab the value of the spork on the network, or the default
-string CSporkManager::GetSporkValue(int nSporkID) const
+std::string CSporkManager::GetSporkValue(int nSporkID) const
 {
     if(IsMultiValueSpork(nSporkID)) {
         auto values = GetMultiValueSpork(nSporkID);
@@ -568,7 +568,7 @@ BlockPaymentSporkValue::BlockPaymentSporkValue(int nStakeRewardIn, int nMasterno
 
 }
 
-BlockPaymentSporkValue BlockPaymentSporkValue::FromString(string strData)
+BlockPaymentSporkValue BlockPaymentSporkValue::FromString(std::string strData)
 {
     std::vector<int> vecParsedValues = ParseDataPayload(strData);
 
@@ -594,7 +594,7 @@ bool BlockPaymentSporkValue::IsValid() const
             std::accumulate(std::begin(values), std::end(values), 0) == 100;
 }
 
-string BlockPaymentSporkValue::ToString() const
+std::string BlockPaymentSporkValue::ToString() const
 {
     auto values = {
         nStakeReward,
@@ -623,7 +623,7 @@ BlockSubsiditySporkValue::BlockSubsiditySporkValue(int nBlockSubsidityIn, int nA
 
 }
 
-BlockSubsiditySporkValue BlockSubsiditySporkValue::FromString(string strData)
+BlockSubsiditySporkValue BlockSubsiditySporkValue::FromString(std::string strData)
 {
     std::vector<int> vecParsedValues = ParseDataPayload(strData);
 
@@ -639,7 +639,7 @@ bool BlockSubsiditySporkValue::IsValid() const
     return SporkMultiValue::IsValid() && nBlockSubsidity >= 0;
 }
 
-string BlockSubsiditySporkValue::ToString() const
+std::string BlockSubsiditySporkValue::ToString() const
 {
     return BuildDataPayload(std::vector<int> { nBlockSubsidity, nActivationBlockHeight });
 }
@@ -674,7 +674,7 @@ LotteryTicketMinValueSporkValue::LotteryTicketMinValueSporkValue(int nEntryTicke
 
 }
 
-LotteryTicketMinValueSporkValue LotteryTicketMinValueSporkValue::FromString(string strData)
+LotteryTicketMinValueSporkValue LotteryTicketMinValueSporkValue::FromString(std::string strData)
 {
     std::vector<int> vecParsedValues = ParseDataPayload(strData);
 
@@ -690,7 +690,7 @@ bool LotteryTicketMinValueSporkValue::IsValid() const
     return SporkMultiValue::IsValid() && nEntryTicketValue > 0;
 }
 
-string LotteryTicketMinValueSporkValue::ToString() const
+std::string LotteryTicketMinValueSporkValue::ToString() const
 {
     return BuildDataPayload(std::vector<int> { nEntryTicketValue, nActivationBlockHeight });
 }
@@ -717,7 +717,7 @@ TxFeeSporkValue::TxFeeSporkValue(int nTxValueMultiplierIn, int nTxSizeMultiplier
 
 }
 
-TxFeeSporkValue TxFeeSporkValue::FromString(string strData)
+TxFeeSporkValue TxFeeSporkValue::FromString(std::string strData)
 {
     std::vector<int> vecParsedValues = ParseDataPayload(strData);
 
@@ -736,7 +736,7 @@ bool TxFeeSporkValue::IsValid() const
             nMaxFee > 0 && nMinFeePerKb > 0;
 }
 
-string TxFeeSporkValue::ToString() const
+std::string TxFeeSporkValue::ToString() const
 {
     auto values = {
         nTxValueMultiplier,

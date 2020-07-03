@@ -62,17 +62,17 @@ void CBloomFilter::insert(const COutPoint& outpoint)
 {
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << outpoint;
-    vector<unsigned char> data(stream.begin(), stream.end());
+    std::vector<unsigned char> data(stream.begin(), stream.end());
     insert(data);
 }
 
 void CBloomFilter::insert(const uint256& hash)
 {
-    vector<unsigned char> data(hash.begin(), hash.end());
+    std::vector<unsigned char> data(hash.begin(), hash.end());
     insert(data);
 }
 
-bool CBloomFilter::contains(const vector<unsigned char>& vKey) const
+bool CBloomFilter::contains(const std::vector<unsigned char>& vKey) const
 {
     if (isFull)
         return true;
@@ -91,13 +91,13 @@ bool CBloomFilter::contains(const COutPoint& outpoint) const
 {
     CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
     stream << outpoint;
-    vector<unsigned char> data(stream.begin(), stream.end());
+    std::vector<unsigned char> data(stream.begin(), stream.end());
     return contains(data);
 }
 
 bool CBloomFilter::contains(const uint256& hash) const
 {
-    vector<unsigned char> data(hash.begin(), hash.end());
+    std::vector<unsigned char> data(hash.begin(), hash.end());
     return contains(data);
 }
 
@@ -133,7 +133,7 @@ bool CBloomFilter::IsRelevantAndUpdate(const CTransaction& tx)
         // This means clients don't have to update the filter themselves when a new relevant tx
         // is discovered in order to find spending transactions, which avoids round-tripping and race conditions.
         CScript::const_iterator pc = txout.scriptPubKey.begin();
-        vector<unsigned char> data;
+        std::vector<unsigned char> data;
         while (pc < txout.scriptPubKey.end()) {
             opcodetype opcode;
             if (!txout.scriptPubKey.GetOp(pc, opcode, data))
@@ -144,7 +144,7 @@ bool CBloomFilter::IsRelevantAndUpdate(const CTransaction& tx)
                     insert(COutPoint(hash, i));
                 else if ((nFlags & BLOOM_UPDATE_MASK) == BLOOM_UPDATE_P2PUBKEY_ONLY) {
                     txnouttype type;
-                    vector<vector<unsigned char> > vSolutions;
+                    std::vector<std::vector<unsigned char> > vSolutions;
                     if (Solver(txout.scriptPubKey, type, vSolutions) &&
                         (type == TX_PUBKEY || type == TX_MULTISIG))
                         insert(COutPoint(hash, i));
@@ -164,7 +164,7 @@ bool CBloomFilter::IsRelevantAndUpdate(const CTransaction& tx)
 
         // Match if the filter contains any arbitrary script data element in any scriptSig in tx
         CScript::const_iterator pc = txin.scriptSig.begin();
-        vector<unsigned char> data;
+        std::vector<unsigned char> data;
         while (pc < txin.scriptSig.end()) {
             opcodetype opcode;
             if (!txin.scriptSig.GetOp(pc, opcode, data))

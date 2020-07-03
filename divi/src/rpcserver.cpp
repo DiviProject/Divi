@@ -121,7 +121,7 @@ uint256 ParseHashO(const Object& o, string strKey)
 {
     return ParseHashV(find_value(o, strKey), strKey);
 }
-vector<unsigned char> ParseHexV(const Value& v, string strName)
+std::vector<unsigned char> ParseHexV(const Value& v, string strName)
 {
     string strHex;
     if (v.type() == str_type)
@@ -130,7 +130,7 @@ vector<unsigned char> ParseHexV(const Value& v, string strName)
         throw JSONRPCError(RPC_INVALID_PARAMETER, strName + " must be hexadecimal string (not '" + strHex + "')");
     return ParseHex(strHex);
 }
-vector<unsigned char> ParseHexO(const Object& o, string strKey)
+std::vector<unsigned char> ParseHexO(const Object& o, string strKey)
 {
     return ParseHexV(find_value(o, strKey), strKey);
 }
@@ -158,20 +158,20 @@ bool ParseBool(const Object& o, string strKey)
  * Note: This interface may still be subject to change.
  */
 
-string CRPCTable::help(string strCommand) const
+std::string CRPCTable::help(std::string strCommand) const
 {
-    string strRet;
-    string category;
-    set<rpcfn_type> setDone;
-    vector<pair<string, const CRPCCommand*> > vCommands;
+    std::string strRet;
+    std::string category;
+    std::set<rpcfn_type> setDone;
+    std::vector<std::pair<std::string, const CRPCCommand*> > vCommands;
 
-    for (map<string, const CRPCCommand*>::const_iterator mi = mapCommands.begin(); mi != mapCommands.end(); ++mi)
-        vCommands.push_back(make_pair(mi->second->category + mi->first, mi->second));
+    for (std::map<std::string, const CRPCCommand*>::const_iterator mi = mapCommands.begin(); mi != mapCommands.end(); ++mi)
+        vCommands.push_back(std::make_pair(mi->second->category + mi->first, mi->second));
     sort(vCommands.begin(), vCommands.end());
 
-    BOOST_FOREACH (const PAIRTYPE(string, const CRPCCommand*) & command, vCommands) {
+    BOOST_FOREACH (const PAIRTYPE(std::string, const CRPCCommand*) & command, vCommands) {
         const CRPCCommand* pcmd = command.second;
-        string strMethod = pcmd->name;
+        std::string strMethod = pcmd->name;
         // We already filter duplicates, but these deprecated screw up the sort order
         if (strMethod.find("label") != string::npos)
             continue;
@@ -843,7 +843,7 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
     assert(rpc_io_service != NULL);
 
     if (deadlineTimers.count(name) == 0) {
-        deadlineTimers.insert(make_pair(name,
+        deadlineTimers.insert(std::make_pair(name,
             boost::shared_ptr<deadline_timer>(new deadline_timer(*rpc_io_service))));
     }
     deadlineTimers[name]->expires_from_now(posix_time::seconds(nSeconds));

@@ -211,7 +211,7 @@ Value getrawmempool(const Array& params, bool fHelp)
         }
         return o;
     } else {
-        vector<uint256> vtxid;
+        std::vector<uint256> vtxid;
         mempool.queryHashes(vtxid);
 
         Array a;

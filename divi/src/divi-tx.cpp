@@ -318,10 +318,10 @@ uint256 ParseHashUO(map<string, UniValue>& o, string strKey)
     return ParseHashUV(o[strKey], strKey);
 }
 
-vector<unsigned char> ParseHexUO(map<string, UniValue>& o, string strKey)
+std::vector<unsigned char> ParseHexUO(map<string, UniValue>& o, string strKey)
 {
     if (!o.count(strKey)) {
-        vector<unsigned char> emptyVec;
+        std::vector<unsigned char> emptyVec;
         return emptyVec;
     }
     return ParseHexUV(o[strKey], strKey);
@@ -335,7 +335,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
         if (!findSighashFlags(nHashType, flagStr))
             throw runtime_error("unknown sighash flag/sign option");
 
-    vector<CTransaction> txVariants;
+    std::vector<CTransaction> txVariants;
     txVariants.push_back(tx);
 
     // mergedTx will end up with all the signatures; it
@@ -384,7 +384,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
             if (nOut < 0)
                 throw runtime_error("vout must be positive");
 
-            vector<unsigned char> pkData(ParseHexUV(prevOut["scriptPubKey"], "scriptPubKey"));
+            std::vector<unsigned char> pkData(ParseHexUV(prevOut["scriptPubKey"], "scriptPubKey"));
             CScript scriptPubKey(pkData.begin(), pkData.end());
 
             {
@@ -406,7 +406,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
             if (fGivenKeys && scriptPubKey.IsPayToScriptHash() &&
                 prevOut.exists("redeemScript")) {
                 UniValue v = prevOut["redeemScript"];
-                vector<unsigned char> rsData(ParseHexUV(v, "redeemScript"));
+                std::vector<unsigned char> rsData(ParseHexUV(v, "redeemScript"));
                 CScript redeemScript(rsData.begin(), rsData.end());
                 tempKeystore.AddCScript(redeemScript);
             }

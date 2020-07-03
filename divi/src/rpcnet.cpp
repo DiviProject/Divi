@@ -108,7 +108,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getpeerinfo", "") + HelpExampleRpc("getpeerinfo", ""));
 
-    vector<CNodeStats> vstats;
+    std::vector<CNodeStats> vstats;
     CopyNodeStats(vstats);
 
     Array ret;
@@ -181,7 +181,7 @@ Value addnode(const Array& params, bool fHelp)
     }
 
     LOCK(cs_vAddedNodes);
-    vector<string>::iterator it = vAddedNodes.begin();
+    std::vector<std::string>::iterator it = vAddedNodes.begin();
     for (; it != vAddedNodes.end(); it++)
         if (strNode == *it)
             break;
@@ -258,11 +258,11 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
         return ret;
     }
 
-    list<pair<string, vector<CService> > > laddedAddreses(0);
+    std::list<std::pair<std::string, std::vector<CService> > > laddedAddreses(0);
     BOOST_FOREACH (string& strAddNode, laddedNodes) {
-        vector<CService> vservNode(0);
+        std::vector<CService> vservNode(0);
         if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0))
-            laddedAddreses.push_back(make_pair(strAddNode, vservNode));
+            laddedAddreses.push_back(std::make_pair(strAddNode, vservNode));
         else {
             Object obj;
             obj.push_back(Pair("addednode", strAddNode));
@@ -273,7 +273,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
     }
 
     LOCK(cs_vNodes);
-    for (list<pair<string, vector<CService> > >::iterator it = laddedAddreses.begin(); it != laddedAddreses.end(); it++) {
+    for (std::list<std::pair<std::string, std::vector<CService> > >::iterator it = laddedAddreses.begin(); it != laddedAddreses.end(); it++) {
         Object obj;
         obj.push_back(Pair("addednode", it->first));
 
@@ -384,7 +384,7 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     Object obj;
     obj.push_back(Pair("version", CLIENT_VERSION_STR));
     obj.push_back(Pair("subversion",
-        FormatSubVersion(std::vector<string>())));
+        FormatSubVersion(std::vector<std::string>())));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
     obj.push_back(Pair("localservices", strprintf("%016x", nLocalServices)));
     obj.push_back(Pair("timeoffset", GetTimeOffset()));

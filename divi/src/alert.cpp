@@ -221,7 +221,7 @@ bool CAlert::ProcessAlert(bool fThread)
         }
 
         // Add to mapAlerts
-        mapAlerts.insert(make_pair(GetHash(), *this));
+        mapAlerts.insert(std::make_pair(GetHash(), *this));
         // Notify UI and -alertnotify if it applies to me
         if (AppliesToMe()) {
             uiInterface.NotifyAlertChanged(GetHash(), CT_NEW);

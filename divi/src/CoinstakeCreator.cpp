@@ -54,7 +54,7 @@ bool CoinstakeCreator::SetSuportedStakingScript(
     CMutableTransaction& txNew)
 {
     CScript scriptPubKeyOut = transactionAndIndexPair.first->vout[transactionAndIndexPair.second].scriptPubKey;
-    vector<valtype> vSolutions;
+    std::vector<valtype> vSolutions;
     txnouttype whichType;
     if (!Solver(scriptPubKeyOut, whichType, vSolutions)) {
         LogPrintf("CreateCoinStake : failed to parse kernel\n");
@@ -180,7 +180,7 @@ bool CoinstakeCreator::CreateCoinStake(
     if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
     if (GetAdjustedTime() <= chainActive.Tip()->nTime) MilliSleep(10000);
 
-    vector<const CWalletTx*> vwtxPrev;
+    std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
     auto blockSubsidity = GetBlockSubsidity(chainActive.Tip()->nHeight + 1);
 

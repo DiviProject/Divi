@@ -222,7 +222,7 @@ bool AppendProofOfStakeToBlock(
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)
 {
     // Create new block
-    unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
+    std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
     if (!pblocktemplate.get())
         return NULL;
     CBlock& block = pblocktemplate->block; // pointer for convenience
@@ -275,7 +275,7 @@ bool CoinMinter::createProofOfStakeBlock(
     if (!pindexPrev)
         return false;
 
-    unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reserveKey, pwallet_, fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reserveKey, pwallet_, fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;
@@ -310,7 +310,7 @@ bool CoinMinter::createProofOfWorkBlock(
     if (!pindexPrev)
         return false;
 
-    unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reserveKey, pwallet_, fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reserveKey, pwallet_, fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;

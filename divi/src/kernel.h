@@ -16,7 +16,6 @@ class CBlockIndex;
 static const unsigned int MODIFIER_INTERVAL = 60;
 static const unsigned int MODIFIER_INTERVAL_TESTNET = 60;
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
-extern unsigned int getIntervalVersion(bool fTestNet);
 
 // MODIFIER_INTERVAL_RATIO:
 // ratio of group interval length between the last group and the first group

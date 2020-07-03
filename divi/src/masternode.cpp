@@ -5,6 +5,7 @@
 
 #include "masternode.h"
 #include "addrman.h"
+#include "BlockDiskAccessor.h"
 #include "masternodeman.h"
 #include "obfuscation.h"
 #include "sync.h"

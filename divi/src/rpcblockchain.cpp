@@ -7,6 +7,7 @@
 
 #include "checkpoints.h"
 #include "main.h"
+#include "BlockDiskAccessor.h"
 #include "rpcserver.h"
 #include "sync.h"
 #include "util.h"

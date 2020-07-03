@@ -6,6 +6,9 @@
 #include <script/sign.h>
 #include <utilmoneystr.h>
 #include <SuperblockHelpers.h>
+#include <Settings.h>
+
+extern Settings& settings;
 
 CoinstakeCreator::CoinstakeCreator(
     CWallet& wallet,
@@ -166,7 +169,7 @@ bool CoinstakeCreator::CreateCoinStake(
     CMutableTransaction& txNew,
     unsigned int& nTxNewTime)
 {
-    if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
+    if (settings.ParameterIsSet("-reservebalance") && !ParseMoney(settings.GetParameter("-reservebalance"), nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
 
     CAmount allowedStakingAmount = wallet_.GetBalance() - nReserveBalance;

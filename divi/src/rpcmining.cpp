@@ -182,8 +182,8 @@ Value setgenerate(const Array& params, bool fHelp)
         return blockHashes;
     } else // Not -regtest: start generate thread, return immediately
     {
-        mapArgs["-gen"] = (fGenerate ? "1" : "0");
-        mapArgs["-genproclimit"] = itostr(nGenProcLimit);
+        SetParameter("-gen", (fGenerate ? "1" : "0"));
+        SetParameter("-genproclimit", itostr(nGenProcLimit));
         GenerateDivi(fGenerate, pwalletMain, nGenProcLimit);
     }
 

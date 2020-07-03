@@ -607,7 +607,7 @@ void StartRPCThreads()
     rpc_allow_subnets.clear();
     rpc_allow_subnets.push_back(CSubNet("127.0.0.0/8")); // always allow IPv4 local subnet
     rpc_allow_subnets.push_back(CSubNet("::1"));         // always allow IPv6 localhost
-    if (mapMultiArgs.count("-rpcallowip")) {
+    if (ParameterIsSetForMultiArgs("-rpcallowip")) {
         const vector<string>& vAllow = mapMultiArgs["-rpcallowip"];
         BOOST_FOREACH (string strAllow, vAllow) {
             CSubNet subnet(strAllow);
@@ -626,9 +626,9 @@ void StartRPCThreads()
         strAllowed += subnet.ToString() + " ";
     LogPrint("rpc", "Allowing RPC connections from: %s\n", strAllowed);
 
-    strRPCUserColonPass = mapArgs["-rpcuser"] + ":" + mapArgs["-rpcpassword"];
-    if (((mapArgs["-rpcpassword"] == "") ||
-            (mapArgs["-rpcuser"] == mapArgs["-rpcpassword"])) &&
+    strRPCUserColonPass = GetParameter("-rpcuser") + ":" + GetParameter("-rpcpassword");
+    if (((GetParameter("-rpcpassword") == "") ||
+            (GetParameter("-rpcuser") == GetParameter("-rpcpassword"))) &&
         Params().RequireRPCPassword()) {
         unsigned char rand_pwd[32];
         GetRandBytes(rand_pwd, 32);
@@ -680,14 +680,14 @@ void StartRPCThreads()
     std::vector<ip::tcp::endpoint> vEndpoints;
     bool bBindAny = false;
     int defaultPort = GetArg("-rpcport", BaseParams().RPCPort());
-    if (!mapArgs.count("-rpcallowip")) // Default to loopback if not allowing external IPs
+    if (!ParameterIsSet("-rpcallowip")) // Default to loopback if not allowing external IPs
     {
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v6::loopback(), defaultPort));
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v4::loopback(), defaultPort));
-        if (mapArgs.count("-rpcbind")) {
+        if (ParameterIsSet("-rpcbind")) {
             LogPrintf("WARNING: option -rpcbind was ignored because -rpcallowip was not specified, refusing to allow everyone to connect\n");
         }
-    } else if (mapArgs.count("-rpcbind")) // Specific bind address
+    } else if (ParameterIsSet("-rpcbind")) // Specific bind address
     {
         BOOST_FOREACH (const std::string& addr, mapMultiArgs["-rpcbind"]) {
             try {

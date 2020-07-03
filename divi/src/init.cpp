@@ -41,6 +41,7 @@
 #include "utilmoneystr.h"
 #include "NotificationInterface.h"
 #include "FeeAndPriorityCalculator.h"
+#include <Settings.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -75,6 +76,7 @@ int nWalletBackups = 20;
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
+extern Settings& settings;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -703,14 +705,14 @@ bool VerifyCriticalDependenciesAreAvailable()
 
 void SetNetworkingParameters()
 {
-    if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
+    if (ParameterIsSet("-bind") || ParameterIsSet("-whitebind")) {
         // when specifying an explicit binding address, you want to listen on it
         // even when -connect or -proxy is specified
         if (SoftSetBoolArg("-listen", true))
             LogPrintf("InitializeDivi : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
     }
 
-    if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0) {
+    if (ParameterIsSet("-connect") && mapMultiArgs["-connect"].size() > 0) {
         // when only connecting to trusted nodes, do not seed via DNS, or listen by default
         if (SoftSetBoolArg("-dnsseed", false))
             LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -dnsseed=0\n");
@@ -718,7 +720,7 @@ void SetNetworkingParameters()
             LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -listen=0\n");
     }
 
-    if (mapArgs.count("-proxy")) {
+    if (ParameterIsSet("-proxy")) {
         // to protect privacy, do not listen by default if a default proxy server is specified
         if (SoftSetBoolArg("-listen", false))
             LogPrintf("%s: parameter interaction: -proxy set -> setting -listen=0\n", __func__);
@@ -741,7 +743,7 @@ void SetNetworkingParameters()
             LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -listenonion=0\n");
     }
 
-    if (mapArgs.count("-externalip")) {
+    if (ParameterIsSet("-externalip")) {
         // if an explicit public IP is specified, do not try to find others
         if (SoftSetBoolArg("-discover", false))
             LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
@@ -775,8 +777,8 @@ bool EnableWalletFeatures()
             LogPrintf("InitializeDivi : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
     }
 
-    if (mapArgs.count("-reservebalance")) {
-        if (!ParseMoney(mapArgs["-reservebalance"], nReserveBalance)) {
+    if (ParameterIsSet("-reservebalance")) {
+        if (!ParseMoney(GetParameter("-reservebalance"), nReserveBalance)) {
             InitError(translate("Invalid amount for -reservebalance=<amount>"));
             return false;
         }
@@ -786,7 +788,7 @@ bool EnableWalletFeatures()
 
 bool SetMaxConnectionsAndFileDescriptors(int& nFD)
 {
-    int nBind = std::max((int)mapArgs.count("-bind") + (int)mapArgs.count("-whitebind"), 1);
+    int nBind = std::max((int)ParameterIsSet("-bind") + (int)ParameterIsSet("-whitebind"), 1);
     nMaxConnections = GetArg("-maxconnections", 125);
     nMaxConnections = std::max(std::min(nMaxConnections, (int)(FD_SETSIZE - nBind - MIN_CORE_FILEDESCRIPTORS)), 0);
     nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS);
@@ -804,13 +806,13 @@ bool CheckCriticalUnsupportedFeaturesAreNotUsed()
     if (GetBoolArg("-debugnet", false))
         InitWarning(translate("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
     // Check for -socks - as this is a privacy risk to continue, exit here
-    if (mapArgs.count("-socks"))
+    if (ParameterIsSet("-socks"))
         return InitError(translate("Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported."));
     // Check for -tor - as this is a privacy risk to continue, exit here
     if (GetBoolArg("-tor", false))
         return InitError(translate("Error: Unsupported argument -tor found, use -onion."));
-
-    if (mapArgs.count("-checklevel"))
+    // Check level must be 4 for zerocoin checks
+    if (ParameterIsSet("-checklevel"))
         return InitError(translate("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
 
     if (GetBoolArg("-benchmark", false))
@@ -856,43 +858,43 @@ bool SetTransactionRequirements()
     // a transaction spammer can cheaply fill blocks using
     // 1-satoshi-fee transactions. It should be set above the real
     // cost to you of processing a transaction.
-    if (mapArgs.count("-minrelaytxfee")) {
+    if (ParameterIsSet("-minrelaytxfee")) {
         CAmount n = 0;
-        if (ParseMoney(mapArgs["-minrelaytxfee"], n) && n > 0)
+        if (ParseMoney(GetParameter("-minrelaytxfee"), n) && n > 0)
             ::minRelayTxFee = CFeeRate(n);
         else
-            return InitError(strprintf(translate("Invalid amount for -minrelaytxfee=<amount>: '%s'"), mapArgs["-minrelaytxfee"]));
+            return InitError(strprintf(translate("Invalid amount for -minrelaytxfee=<amount>: '%s'"), GetParameter("-minrelaytxfee")));
     }
 #ifdef ENABLE_WALLET
-    if (mapArgs.count("-mintxfee")) {
+    if (ParameterIsSet("-mintxfee")) {
         CAmount n = 0;
-        if (ParseMoney(mapArgs["-mintxfee"], n) && n > 0)
+        if (ParseMoney(GetParameter("-mintxfee"), n) && n > 0)
             CWallet::minTxFee = CFeeRate(n);
         else
-            return InitError(strprintf(translate("Invalid amount for -mintxfee=<amount>: '%s'"), mapArgs["-mintxfee"]));
+            return InitError(strprintf(translate("Invalid amount for -mintxfee=<amount>: '%s'"), GetParameter("-mintxfee")));
     }
-    if (mapArgs.count("-paytxfee")) {
+    if (ParameterIsSet("-paytxfee")) {
         CAmount nFeePerK = 0;
-        if (!ParseMoney(mapArgs["-paytxfee"], nFeePerK))
-            return InitError(strprintf(translate("Invalid amount for -paytxfee=<amount>: '%s'"), mapArgs["-paytxfee"]));
+        if (!ParseMoney(GetParameter("-paytxfee"), nFeePerK))
+            return InitError(strprintf(translate("Invalid amount for -paytxfee=<amount>: '%s'"), GetParameter("-paytxfee")));
         if (nFeePerK > nHighTransactionFeeWarning)
             InitWarning(translate("Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction."));
         payTxFee = CFeeRate(nFeePerK, 1000);
         if (payTxFee < ::minRelayTxFee) {
             return InitError(strprintf(translate("Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
-                mapArgs["-paytxfee"], ::minRelayTxFee.ToString()));
+                GetParameter("-paytxfee"), ::minRelayTxFee.ToString()));
         }
     }
-    if (mapArgs.count("-maxtxfee")) {
+    if (ParameterIsSet("-maxtxfee")) {
         CAmount nMaxFee = 0;
-        if (!ParseMoney(mapArgs["-maxtxfee"], nMaxFee))
-            return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), mapArgs["-maxtxfee"]));
+        if (!ParseMoney(GetParameter("-maxtxfee"), nMaxFee))
+            return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), GetParameter("-maxtxfee")));
         if (nMaxFee > nHighTransactionMaxFeeWarning)
             InitWarning(translate("Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction."));
         maxTxFee = nMaxFee;
         if (CFeeRate(maxTxFee, 1000) < ::minRelayTxFee) {
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)"),
-                mapArgs["-maxtxfee"], ::minRelayTxFee.ToString()));
+                GetParameter("-maxtxfee"), ::minRelayTxFee.ToString()));
         }
     }
     nTxConfirmTarget = GetArg("-txconfirmtarget", 1);
@@ -1020,7 +1022,7 @@ bool InitializeP2PNetwork()
 {
     RegisterNodeSignals(GetNodeSignals());
 
-    if (mapArgs.count("-onlynet")) {
+    if (ParameterIsSet("-onlynet")) {
         std::set<enum Network> nets;
         BOOST_FOREACH (std::string snet, mapMultiArgs["-onlynet"]) {
             enum Network net = ParseNetwork(snet);
@@ -1035,7 +1037,7 @@ bool InitializeP2PNetwork()
         }
     }
 
-    if (mapArgs.count("-whitelist")) {
+    if (ParameterIsSet("-whitelist")) {
         BOOST_FOREACH (const std::string& net, mapMultiArgs["-whitelist"]) {
             CSubNet subnet(net);
             if (!subnet.IsValid())
@@ -1094,7 +1096,7 @@ bool InitializeP2PNetwork()
 
     bool fBound = false;
     if (fListen) {
-        if (mapArgs.count("-bind") || mapArgs.count("-whitebind")) {
+        if (ParameterIsSet("-bind") || ParameterIsSet("-whitebind")) {
             BOOST_FOREACH (std::string strBind, mapMultiArgs["-bind"]) {
                 CService addrBind;
                 if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
@@ -1119,7 +1121,7 @@ bool InitializeP2PNetwork()
             return InitError(translate("Failed to listen on any port. Use -listen=0 if you want this."));
     }
 
-    if (mapArgs.count("-externalip")) {
+    if (ParameterIsSet("-externalip")) {
         BOOST_FOREACH (string strAddr, mapMultiArgs["-externalip"]) {
             CService addrLocal(strAddr, GetListenPort(), fNameLookup);
             if (!addrLocal.IsValid())
@@ -1136,7 +1138,7 @@ bool InitializeP2PNetwork()
 
 void PruneHDSeedParameterInteraction()
 {
-    if (mapArgs.count("-hdseed") && IsHex(GetArg("-hdseed", "not hex")) && (mapArgs.count("-mnemonic") || mapArgs.count("-mnemonicpassphrase"))) {
+    if (ParameterIsSet("-hdseed") && IsHex(GetArg("-hdseed", "not hex")) && (ParameterIsSet("-mnemonic") || ParameterIsSet("-mnemonicpassphrase"))) {
         ForceRemoveArg("-mnemonic");
         ForceRemoveArg("-mnemonicpassphrase");
         LogPrintf("%s: parameter interaction: can't use -hdseed and -mnemonic/-mnemonicpassphrase together, will prefer -seed\n", __func__);
@@ -1160,7 +1162,7 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
 bool SetSporkKey()
 {
     sporkManager.SetSporkAddress(Params().SporkKey());
-    if (mapArgs.count("-sporkkey")) // spork priv key
+    if (ParameterIsSet("-sporkkey")) // spork priv key
     {
         if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
             return InitError(translate("Unable to sign spork message, wrong key?"));
@@ -1448,7 +1450,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     PruneHDSeedParameterInteraction();
 
 #if ENABLE_ZMQ
-    pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(mapArgs);
+    pzmqNotificationInterface = CZMQNotificationInterface::CreateWithArguments(settings);
 
     if (pzmqNotificationInterface) {
         RegisterValidationInterface(pzmqNotificationInterface);
@@ -1595,7 +1597,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             pwalletMain->SetBestChain(chainActive.GetLocator());
 
         }
-        else if (mapArgs.count("-usehd")) {
+        else if (ParameterIsSet("-usehd")) {
             bool useHD = GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
             if (pwalletMain->IsHDEnabled() && !useHD) {
                 InitError(strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"),
@@ -1667,7 +1669,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #endif // !ENABLE_WALLET
     // ********************************************************* Step 9: import blocks
 
-    if (mapArgs.count("-blocknotify"))
+    if (ParameterIsSet("-blocknotify"))
         uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
 
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
@@ -1676,7 +1678,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         strErrors << "Failed to connect best block";
 
     std::vector<boost::filesystem::path> vImportFiles;
-    if (mapArgs.count("-loadblock")) {
+    if (ParameterIsSet("-loadblock")) {
         BOOST_FOREACH (string strFile, mapMultiArgs["-loadblock"])
             vImportFiles.push_back(strFile);
     }

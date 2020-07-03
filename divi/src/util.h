@@ -64,7 +64,6 @@ boost::filesystem::path GetMasternodeConfigFile();
 boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path& path, pid_t pid);
 #endif
-void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet, std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
 boost::filesystem::path GetTempPath();
 void ShrinkDebugFile();
 void runCommand(std::string strCommand);
@@ -77,6 +76,16 @@ inline bool IsSwitchChar(char c)
     return c == '-';
 #endif
 }
+
+bool ParameterIsSet (const std::string& key);
+
+bool ParameterIsSetForMultiArgs (const std::string& key);
+
+std::string GetParameter(const std::string& key);
+
+void SetParameter (const std::string& key, const std::string& value);
+
+void ClearParameter ();
 
 /**
  * Return string argument or default value

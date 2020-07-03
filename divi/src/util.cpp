@@ -18,7 +18,7 @@
 #include "sync.h"
 #include "utilstrencodings.h"
 #include "utiltime.h"
-
+#include <Settings.h>
 #include <stdarg.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -155,92 +155,68 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
     strMiscWarning = message;
 }
 
-/** Interpret string as boolean, for argument parsing */
-static bool InterpretBool(const std::string& strValue)
-{
-    if (strValue.empty())
-        return true;
-    return (atoi(strValue) != 0);
-}
-
-/** Turn -noX into -X=0 */
-static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
-{
-    if (strKey.length()>3 && strKey[0]=='-' && strKey[1]=='n' && strKey[2]=='o') {
-        strKey = "-" + strKey.substr(3);
-        strValue = InterpretBool(strValue) ? "0" : "1";
-    }
-}
+Settings& settings = Settings::instance(mapArgs, mapMultiArgs);
 
 void ParseParameters(int argc, const char* const argv[])
 {
-    mapArgs.clear();
-    mapMultiArgs.clear();
+    settings.ParseParameters(argc, argv);
+}
 
-    for (int i = 1; i < argc; i++) {
-        std::string str(argv[i]);
-        std::string strValue;
-        size_t is_index = str.find('=');
-        if (is_index != std::string::npos) {
-            strValue = str.substr(is_index + 1);
-            str = str.substr(0, is_index);
-        }
-#ifdef WIN32
-        boost::to_lower(str);
-        if (boost::algorithm::starts_with(str, "/"))
-            str = "-" + str.substr(1);
-#endif
+bool ParameterIsSet (const std::string& key)
+{
+    return settings.ParameterIsSet(key);
+}
 
-        if (str[0] != '-')
-            break;
+bool ParameterIsSetForMultiArgs (const std::string& key)
+{
+    return settings.ParameterIsSetForMultiArgs(key);
+}
 
-        // Interpret --foo as -foo.
-        // If both --foo and -foo are set, the last takes effect.
-        if (str.length() > 1 && str[1] == '-')
-            str = str.substr(1);
-        InterpretNegativeSetting(str, strValue);
+std::string GetParameter(const std::string& key)
+{
+    return settings.GetParameter(key);
+}
 
-        mapArgs[str] = strValue;
-        mapMultiArgs[str].push_back(strValue);
-    }
+void ForceRemoveArg(const std::string &strArg)
+{
+    settings.ForceRemoveArg(strArg);
+}
+
+void SetParameter (const std::string& key, const std::string& value)
+{
+    settings.SetParameter(key, value);
+}
+
+void ClearParameter () 
+{
+    settings.ClearParameter();
 }
 
 std::string GetArg(const std::string& strArg, const std::string& strDefault)
 {
-    if (mapArgs.count(strArg))
-        return mapArgs[strArg];
-    return strDefault;
+    return settings.GetArg(strArg, strDefault);
 }
 
 int64_t GetArg(const std::string& strArg, int64_t nDefault)
 {
-    if (mapArgs.count(strArg))
-        return atoi64(mapArgs[strArg]);
-    return nDefault;
+    return settings.GetArg(strArg, nDefault);
 }
 
 bool GetBoolArg(const std::string& strArg, bool fDefault)
 {
-    if (mapArgs.count(strArg))
-        return InterpretBool(mapArgs[strArg]);
-    return fDefault;
+    return settings.GetBoolArg(strArg, fDefault);
 }
 
 bool SoftSetArg(const std::string& strArg, const std::string& strValue)
 {
-    if (mapArgs.count(strArg))
-        return false;
-    mapArgs[strArg] = strValue;
-    return true;
+    return settings.SoftSetArg(strArg, strValue);
 }
 
 bool SoftSetBoolArg(const std::string& strArg, bool fValue)
 {
-    if (fValue)
-        return SoftSetArg(strArg, std::string("1"));
-    else
-        return SoftSetArg(strArg, std::string("0"));
+    return settings.SoftSetBoolArg(strArg, fValue);
 }
+
 
 static const int screenWidth = 79;
 static const int optIndent = 2;
@@ -259,11 +235,7 @@ std::string HelpMessageOpt(const std::string &option, const std::string &message
 
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "divi.conf"));
-    if (!pathConfigFile.is_complete())
-        pathConfigFile = GetDataDir(false) / pathConfigFile;
-
-    return pathConfigFile;
+    return settings.GetConfigFile();
 }
 
 boost::filesystem::path GetMasternodeConfigFile()
@@ -272,35 +244,6 @@ boost::filesystem::path GetMasternodeConfigFile()
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir() / pathConfigFile;
     return pathConfigFile;
 }
-
-void ReadConfigFile(map<string, string>& mapSettingsRet,
-    map<string, vector<string> >& mapMultiSettingsRet)
-{
-    boost::filesystem::ifstream streamConfig(GetConfigFile());
-    if (!streamConfig.good()) {
-        // Create empty divi.conf if it does not exist
-        FILE* configFile = fopen(GetConfigFile().string().c_str(), "a");
-        if (configFile != NULL)
-            fclose(configFile);
-        return; // Nothing to read, so just return
-    }
-
-    set<string> setOptions;
-    setOptions.insert("*");
-
-    for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it) {
-        // Don't overwrite existing settings so command line settings override divi.conf
-        string strKey = string("-") + it->string_key;
-        string strValue = it->value[0];
-        InterpretNegativeSetting(strKey, strValue);
-        if (mapSettingsRet.count(strKey) == 0)
-            mapSettingsRet[strKey] = strValue;
-        mapMultiSettingsRet[strKey].push_back(strValue);
-    }
-    // If datadir is changed in .conf file:
-    ClearDatadirCache();
-}
-
 #ifndef WIN32
 boost::filesystem::path GetPidFile()
 {
@@ -532,9 +475,4 @@ void SetThreadPriority(int nPriority)
     setpriority(PRIO_PROCESS, 0, nPriority);
 #endif // PRIO_THREAD
 #endif // WIN32
-}
-
-void ForceRemoveArg(const string &strArg)
-{
-    mapArgs.erase(strArg);
 }

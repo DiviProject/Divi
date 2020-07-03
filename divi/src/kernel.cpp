@@ -26,6 +26,12 @@ unsigned int nStakeMinAge = 60 * 60;
 unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
 extern CChain chainActive;
 
+// MODIFIER_INTERVAL: time to elapse before new modifier is computed
+static const int MODIFIER_INTERVAL_RATIO = 3;
+// MODIFIER_INTERVAL_RATIO:
+// ratio of group interval length between the last group and the first group
+static const unsigned int MODIFIER_INTERVAL = 60;
+
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
 unsigned int nModifierInterval;

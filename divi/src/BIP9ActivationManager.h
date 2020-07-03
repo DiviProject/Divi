@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <string>
 
 class I_BIP9ActivationStateTracker;
 struct ThresholdConditionCache;

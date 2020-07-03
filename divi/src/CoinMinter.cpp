@@ -9,6 +9,7 @@
 #include <utilmoneystr.h>
 #include <timedata.h>
 #include <CoinstakeCreator.h>
+#include <boost/thread/thread.hpp>
 
 int64_t nLastCoinStakeSearchInterval = 0;
 

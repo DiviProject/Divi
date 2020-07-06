@@ -261,8 +261,6 @@ public:
     std::string GetRequiredPaymentsString(int nBlockHeight);
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake);
     std::string ToString() const;
-    int GetOldestBlock();
-    int GetNewestBlock();
 
     ADD_SERIALIZE_METHODS;
 

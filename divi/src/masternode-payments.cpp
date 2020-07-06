@@ -726,42 +726,6 @@ std::string CMasternodePayments::ToString() const
     return info.str();
 }
 
-
-int CMasternodePayments::GetOldestBlock()
-{
-    LOCK(cs_mapMasternodeBlocks);
-
-    int nOldestBlock = std::numeric_limits<int>::max();
-
-    std::map<int, CMasternodeBlockPayees>::iterator it = mapMasternodeBlocks.begin();
-    while (it != mapMasternodeBlocks.end()) {
-        if ((*it).first < nOldestBlock) {
-            nOldestBlock = (*it).first;
-        }
-        it++;
-    }
-
-    return nOldestBlock;
-}
-
-
-int CMasternodePayments::GetNewestBlock()
-{
-    LOCK(cs_mapMasternodeBlocks);
-
-    int nNewestBlock = 0;
-
-    std::map<int, CMasternodeBlockPayees>::iterator it = mapMasternodeBlocks.begin();
-    while (it != mapMasternodeBlocks.end()) {
-        if ((*it).first > nNewestBlock) {
-            nNewestBlock = (*it).first;
-        }
-        it++;
-    }
-
-    return nNewestBlock;
-}
-
 static uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock)
 {
     // Deterministically calculate a "score" for a Masternode based on any given (block)hash

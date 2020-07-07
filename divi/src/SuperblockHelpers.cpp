@@ -5,8 +5,6 @@
 #include <LegacyBlockSubsidies.h>
 #include <SuperblockHeightValidator.h>
 #include <BlockSubsidyProvider.h>
-#include <chain.h>
-#include <blockmap.h>
 
 SuperblockSubsidyContainer::SuperblockSubsidyContainer(
     const CChainParams& chainParameters
@@ -44,7 +42,7 @@ CBlockRewards GetBlockSubsidity(int nHeight)
     return subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
 }
 
-bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight)
+bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight)
 {
     auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;
 

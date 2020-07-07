@@ -46,12 +46,12 @@ CBlockRewards GetBlockSubsidity(int nHeight)
 
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
-bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted)
+bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (pindexPrev == NULL) return true;
 
-    int nHeight = 0;
+    nHeight = 0;
     if (pindexPrev->GetBlockHash() == block.hashPrevBlock) {
         nHeight = pindexPrev->nHeight + 1;
     } else { //out of order

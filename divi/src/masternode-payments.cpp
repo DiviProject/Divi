@@ -271,12 +271,6 @@ std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const 
     return result;
 }
 
-
-std::string GetRequiredPaymentsString(int nBlockHeight)
-{
-    return masternodePayments.GetRequiredPaymentsString(nBlockHeight);
-}
-
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();

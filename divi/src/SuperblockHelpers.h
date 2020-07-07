@@ -13,7 +13,7 @@ bool IsValidLotteryBlockHeight(int nBlockHeight);
 bool IsValidTreasuryBlockHeight(int nBlockHeight);
 
 CBlockRewards GetBlockSubsidity(int nHeight);
-bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight = 0);
+bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight);
 
 class SuperblockSubsidyContainer
 {

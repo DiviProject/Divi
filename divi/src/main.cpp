@@ -2293,7 +2293,25 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
-    if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
+    CBlockIndex* chainTip = chainActive.Tip();
+    bool chainTipIsNull = chainTip == NULL;
+    int blockHeight = 0;
+    if (!chainTipIsNull)
+    {
+        if (chainTip->GetBlockHash() == block.hashPrevBlock) {
+            blockHeight = chainTip->nHeight + 1;
+        } else { //out of order
+            BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
+            if (mi != mapBlockIndex.end() && (*mi).second)
+                blockHeight = (*mi).second->nHeight + 1;
+        }
+    }
+
+    if (blockHeight == 0) {
+        LogPrint("masternode","IsBlockValueValid() : WARNING: Couldn't find previous block\n");
+    }
+
+    if (!chainTipIsNull && !IsBlockValueValid(block, nExpectedMint, pindex->nMint, blockHeight)) {
         return state.DoS(100,
                          error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
                                FormatMoney(pindex->nMint), nExpectedMint.ToString()),

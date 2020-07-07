@@ -8,11 +8,13 @@
 
 class CBlockRewards;
 class CChainParams;
+class CBlock;
 
 bool IsValidLotteryBlockHeight(int nBlockHeight);
 bool IsValidTreasuryBlockHeight(int nBlockHeight);
 
 CBlockRewards GetBlockSubsidity(int nHeight);
+bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted);
 
 class SuperblockSubsidyContainer
 {

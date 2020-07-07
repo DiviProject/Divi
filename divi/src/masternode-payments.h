@@ -28,7 +28,6 @@ extern CMasternodePayments masternodePayments;
 void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);
 std::string GetRequiredPaymentsString(int nBlockHeight);
-bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted);
 void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake);
 
 using WinnerCoinStake = uint256;

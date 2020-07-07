@@ -138,43 +138,6 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
     return true;
 }
 
-bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted)
-{
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    if (pindexPrev == NULL) return true;
-
-    int nHeight = 0;
-    if (pindexPrev->GetBlockHash() == block.hashPrevBlock) {
-        nHeight = pindexPrev->nHeight + 1;
-    } else { //out of order
-        BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-        if (mi != mapBlockIndex.end() && (*mi).second)
-            nHeight = (*mi).second->nHeight + 1;
-    }
-
-    if (nHeight == 0) {
-        LogPrint("masternode","IsBlockValueValid() : WARNING: Couldn't find previous block\n");
-    }
-
-    //LogPrintf("XX69----------> IsBlockValueValid(): nMinted: %d, nExpectedValue: %d\n", FormatMoney(nMinted), FormatMoney(nExpectedValue));
-
-    auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;
-
-    // here we expect treasury block payment
-    if(IsValidTreasuryBlockHeight(nHeight)) {
-        nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
-    }
-    else if(IsValidLotteryBlockHeight(nHeight)) {
-        nExpectedMintCombined += nExpectedValue.nLotteryReward;
-    }
-
-    if (nMinted > nExpectedMintCombined) {
-        return false;
-    }
-
-    return true;
-}
-
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex)
 {
     if(IsValidTreasuryBlockHeight(nBlockHeight)) {

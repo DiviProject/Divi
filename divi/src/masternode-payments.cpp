@@ -77,13 +77,13 @@ static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rew
     for(size_t i = 0; i < lotteryWinners.size(); ++i) {
         CAmount reward = i == 0 ? nBigReward : nSmallReward;
         const auto &winner = lotteryWinners[i];
-        LogPrintf("%s: Winner: %s\n", __func__, winner.ToString());
-        auto scriptLotteryWinner = GetScriptForLotteryPayment(winner);
+        LogPrintf("%s: Winner: %s\n", __func__, winner.first.ToString());
+        auto scriptLotteryWinner = winner.second;
         tx.vout.emplace_back(reward, scriptLotteryWinner); // pay winners
     }
 }
 
-static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std::vector<WinnerCoinStake> vRequiredWinnersCoinstake)
+static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoinstakes vRequiredWinnersCoinstake)
 {
     if(vRequiredWinnersCoinstake.empty()) {
         return true;
@@ -99,10 +99,10 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
     auto nSmallReward = nBigReward / 10;
 
     for(size_t i = 0; i < vRequiredWinnersCoinstake.size(); ++i) {
-        CScript scriptPayment = GetScriptForLotteryPayment(vRequiredWinnersCoinstake[i]);
+        CScript scriptPayment = vRequiredWinnersCoinstake[i].second;
         CAmount reward = i == 0 ? nBigReward : nSmallReward;
         if(!verifyPayment(scriptPayment, reward)) {
-            LogPrintf("%s: No payment for winner: %s\n", vRequiredWinnersCoinstake[i].ToString());
+            LogPrintf("%s: No payment for winner: %s\n", vRequiredWinnersCoinstake[i].first.ToString());
             return false;
         }
     }
@@ -219,9 +219,9 @@ static bool IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight)
     return nAmount > nMinStakeValue * COIN; // only if stake is more than 10k
 }
 
-std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
+LotteryCoinstakes CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
 {
-    std::vector<WinnerCoinStake> result;
+    LotteryCoinstakes result;
     // if that's a block when lottery happens, reset score for whole cycle
     if(IsValidLotteryBlockHeight(nHeight))
         return result;
@@ -245,20 +245,25 @@ std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const 
     auto hashLastLotteryBlock = pblockindex->GetBlockHash();
     // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
     using LotteryScore = uint256;
-    std::vector<std::pair<LotteryScore, WinnerCoinStake>> scores;
-    for(auto &&hashCoinstake : prevBlockIndex->vLotteryWinnersCoinstakes) {
-        scores.emplace_back(CalculateLotteryScore(hashCoinstake, hashLastLotteryBlock), hashCoinstake);
+    using LotteryCoinstake = std::pair<uint256, CScript>;
+    std::vector<std::pair<LotteryScore, LotteryCoinstake>> scores;
+
+    for(auto &&lotteryCoinstake : prevBlockIndex->vLotteryWinnersCoinstakes) {
+        scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock), lotteryCoinstake);
     }
 
     auto newScore = CalculateLotteryScore(coinbaseTx.GetHash(), hashLastLotteryBlock);
-    scores.emplace_back(newScore, coinbaseTx.GetHash());
+    scores.emplace_back(newScore, std::make_pair(coinbaseTx.GetHash(),coinbaseTx.vout[1].scriptPubKey) );
 
     // biggest entry at the begining
     if(scores.size() > 1)
     {
-        std::sort(std::begin(scores), std::end(scores), [](const std::pair<LotteryScore, WinnerCoinStake> &lhs, const std::pair<LotteryScore, WinnerCoinStake> &rhs) {
-            return lhs.first > rhs.first;
-        });
+        std::sort(std::begin(scores), std::end(scores), 
+            [](const std::pair<LotteryScore, LotteryCoinstake> &lhs, const std::pair<LotteryScore, LotteryCoinstake> &rhs) 
+            {
+                return lhs.first > rhs.first;
+            }
+        );
     }
 
     scores.resize(std::min<size_t>(scores.size(), 11)); // don't go over 11 entries, since we will have only 11 winners

@@ -168,6 +168,7 @@ BITCOIN_CORE_H = \
   BlockTemplate.h \
   masternode.h \
   masternode-payments.h \
+  LotteryCoinstakes.h \
   SuperblockHelpers.h \
   SuperblockHeightValidator.h \
   masternode-sync.h \

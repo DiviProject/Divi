@@ -13,6 +13,7 @@
 #include "uint256.h"
 #include "util.h"
 #include "libzerocoin/Denominations.h"
+#include "LotteryCoinstakes.h"
 
 #include <vector>
 
@@ -182,7 +183,7 @@ public:
     std::map<libzerocoin::CoinDenomination, int64_t> mapZerocoinSupply;
     std::vector<libzerocoin::CoinDenomination> vMintDenominationsInBlock;
 
-    std::vector<uint256> vLotteryWinnersCoinstakes;
+    LotteryCoinstakes vLotteryWinnersCoinstakes;
     
     void SetNull()
     {

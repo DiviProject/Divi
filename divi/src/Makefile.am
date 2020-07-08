@@ -169,6 +169,7 @@ BITCOIN_CORE_H = \
   masternode.h \
   masternode-payments.h \
   LotteryCoinstakes.h \
+  LotteryWinnersCalculator.h \
   SuperblockHelpers.h \
   SuperblockHeightValidator.h \
   masternode-sync.h \
@@ -347,6 +348,7 @@ libbitcoin_wallet_a_SOURCES = \
   LegacyBlockSubsidies.cpp \
   masternode.cpp \
   masternode-payments.cpp \
+  LotteryWinnersCalculator.cpp \
   SuperblockHelpers.cpp \
   SuperblockHeightValidator.cpp \
   masternode-sync.cpp \

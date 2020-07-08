@@ -37,7 +37,9 @@ CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParamet
     };
 
     CAmount expectedSubsidyValue = expectedSubsidy(nHeight/numberOfBlocksPerHalving);
-    if(IsValidTreasuryBlockHeight(nHeight))
+    SuperblockSubsidyContainer superblockSubsidies(chainParameters);
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    if(heightValidator.IsValidTreasuryBlockHeight(nHeight))
     {
         expectedSubsidyValue -= 50*COIN;
         expectedSubsidyValue = expectedSubsidyValue*83/100;
@@ -46,7 +48,7 @@ CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParamet
             expectedSubsidyValue += getTreasuryAndCharityContributions(expectedSubsidy(blockHeight/numberOfBlocksPerHalving));
         }
     }
-    else if(IsValidLotteryBlockHeight(nHeight))
+    else if(heightValidator.IsValidLotteryBlockHeight(nHeight))
     {
         expectedSubsidyValue -= 50*COIN;
         expectedSubsidyValue = expectedSubsidyValue*83/100;

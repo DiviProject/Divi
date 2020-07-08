@@ -1163,6 +1163,9 @@ static std::string GetAccountAddress(const CTxDestination &dest)
 
 void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter& filter)
 {
+    SuperblockSubsidyContainer superblockSubsidies(Params());
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+
     CAmount nFee;
     string strSentAccount;
     list<COutputEntry> listReceived;
@@ -1182,7 +1185,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
                 const CBlockIndex *index = nullptr;
                 if(wtx.GetDepthInMainChain(index, true) > 0 && index)
                 {
-                    bool isLotteryPayment = IsValidLotteryBlockHeight(index->nHeight);
+                    bool isLotteryPayment = heightValidator.IsValidLotteryBlockHeight(index->nHeight);
                     //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
                     for (unsigned int i = 1; i < wtx.vout.size(); i++) {
                         CTxDestination outAddress;

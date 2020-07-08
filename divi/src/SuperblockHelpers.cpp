@@ -47,10 +47,13 @@ bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int
     auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;
 
     // here we expect treasury block payment
-    if(IsValidTreasuryBlockHeight(nHeight)) {
+    SuperblockSubsidyContainer superblockSubsidies(Params());
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+
+    if(heightValidator.IsValidTreasuryBlockHeight(nHeight)) {
         nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
     }
-    else if(IsValidLotteryBlockHeight(nHeight)) {
+    else if(heightValidator.IsValidLotteryBlockHeight(nHeight)) {
         nExpectedMintCombined += nExpectedValue.nLotteryReward;
     }
 

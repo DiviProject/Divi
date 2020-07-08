@@ -131,11 +131,13 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex)
 {
-    if(IsValidTreasuryBlockHeight(nBlockHeight)) {
+    SuperblockSubsidyContainer superblockSubsidies(Params());
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    if(heightValidator.IsValidTreasuryBlockHeight(nBlockHeight)) {
         return IsValidTreasuryPayment(txNew, nBlockHeight);
     }
 
-    if(IsValidLotteryBlockHeight(nBlockHeight)) {
+    if(heightValidator.IsValidLotteryBlockHeight(nBlockHeight)) {
         return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes);
     }
     
@@ -161,10 +163,12 @@ void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, b
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return;
 
-    if (IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
+    SuperblockSubsidyContainer superblockSubsidies(Params());
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    if (heightValidator.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
         FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
     }
-    else if(IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
+    else if(heightValidator.IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
         FillLotteryPayment(txNew, payments, pindexPrev);
     }
     else {

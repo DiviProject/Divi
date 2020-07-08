@@ -78,7 +78,8 @@ LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock
     if(!prevBlockIndex)
         return result;
 
-    int nLastLotteryHeight = std::max(chainParameters_.GetLotteryBlockStartBlock(), chainParameters_.GetLotteryBlockCycle() * ((nHeight - 1) / chainParameters_.GetLotteryBlockCycle()));
+    const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(nHeight);
+    int nLastLotteryHeight = std::max(chainParameters_.GetLotteryBlockStartBlock(),  lotteryBlockPaymentCycle* ((nHeight - 1) / lotteryBlockPaymentCycle) );
 
     if(nHeight <= nLastLotteryHeight) {
         return result;

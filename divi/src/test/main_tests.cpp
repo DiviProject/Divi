@@ -65,9 +65,8 @@ CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParamet
     return expectedSubsidyValue;
 }
 
-BOOST_AUTO_TEST_CASE(subsidy_limit_test)
+void CheckRewardDistribution(const CChainParams& chainParameters)
 {
-    const CChainParams& chainParameters= Params(CBaseChainParams::Network::MAIN);
     CAmount nSum = 0;
 
     SuperblockSubsidyContainer subsidiesContainer(chainParameters);
@@ -96,6 +95,11 @@ BOOST_AUTO_TEST_CASE(subsidy_limit_test)
         BOOST_CHECK( nSubsidy==0 || (nSum+nSubsidy > nSum));
         nSum += nSubsidy;
     }
+}
+
+BOOST_AUTO_TEST_CASE(subsidy_limit_test)
+{
+    CheckRewardDistribution(Params(CBaseChainParams::Network::MAIN));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

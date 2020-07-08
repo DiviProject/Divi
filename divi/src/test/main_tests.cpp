@@ -43,7 +43,7 @@ CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParamet
     {
         expectedSubsidyValue -= 50*COIN;
         expectedSubsidyValue = expectedSubsidyValue*83/100;
-        for(int blockHeight = nHeight-1; blockHeight >= (nHeight - chainParameters.GetTreasuryPaymentsCycle()); blockHeight--  )
+        for(int blockHeight = nHeight-1; blockHeight >= (nHeight - heightValidator.GetTreasuryBlockPaymentCycle(nHeight)); blockHeight--  )
         {
             expectedSubsidyValue += getTreasuryAndCharityContributions(expectedSubsidy(blockHeight/numberOfBlocksPerHalving));
         }
@@ -52,7 +52,7 @@ CAmount getExpectedSubsidyAtHeight(int nHeight, const CChainParams& chainParamet
     {
         expectedSubsidyValue -= 50*COIN;
         expectedSubsidyValue = expectedSubsidyValue*83/100;
-        for(int blockHeight = nHeight-1; blockHeight >= (nHeight - chainParameters.GetLotteryBlockCycle()); blockHeight--  )
+        for(int blockHeight = nHeight-1; blockHeight >= (nHeight - heightValidator.GetLotteryBlockPaymentCycle(nHeight)); blockHeight--  )
         {
             expectedSubsidyValue += getLotteryContributions(expectedSubsidy(blockHeight/numberOfBlocksPerHalving));
         }
@@ -70,8 +70,8 @@ BOOST_AUTO_TEST_CASE(subsidy_limit_test)
     const CChainParams& chainParameters= Params(CBaseChainParams::Network::MAIN);
     CAmount nSum = 0;
 
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    
+    SuperblockSubsidyContainer subsidiesContainer(chainParameters);
+
     for(int nHeight = 0; nHeight < chainParameters.SubsidyHalvingInterval()*13; ++nHeight)
     {
         CAmount nSubsidy = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).total();

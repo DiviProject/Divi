@@ -100,6 +100,7 @@ void CheckRewardDistribution(const CChainParams& chainParameters)
 BOOST_AUTO_TEST_CASE(subsidy_limit_test)
 {
     CheckRewardDistribution(Params(CBaseChainParams::Network::MAIN));
+    CheckRewardDistribution(Params(CBaseChainParams::Network::TESTNET));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

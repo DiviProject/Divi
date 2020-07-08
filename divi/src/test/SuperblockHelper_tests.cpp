@@ -481,4 +481,28 @@ BOOST_AUTO_TEST_CASE(willNotMintLessCoinsThanRequired)
     }
 }
 
+BOOST_AUTO_TEST_CASE(willKeepLotteryBlockCycleSameBeforeAndAfterTransitionHeight)
+{
+    {
+        const CChainParams& chainParams =Params(CBaseChainParams::TESTNET);
+        SuperblockHeightValidator heightValidator(chainParams);
+        int startingHeight = heightValidator.getTransitionHeight() - chainParams.GetLotteryBlockCycle();
+        int finalHeight = heightValidator.getTransitionHeight() + chainParams.GetLotteryBlockCycle();
+        for(int blockHeight = startingHeight; blockHeight < finalHeight; ++blockHeight)
+        {
+            BOOST_CHECK(heightValidator.GetLotteryBlockPaymentCycle(blockHeight) == chainParams.GetLotteryBlockCycle());
+        }
+    }
+    {
+        const CChainParams& chainParams =Params(CBaseChainParams::MAIN);
+        SuperblockHeightValidator heightValidator(chainParams);
+        int startingHeight = heightValidator.getTransitionHeight() - chainParams.GetLotteryBlockCycle();
+        int finalHeight = heightValidator.getTransitionHeight() + chainParams.GetLotteryBlockCycle();
+        for(int blockHeight = startingHeight; blockHeight < finalHeight; ++blockHeight)
+        {
+            BOOST_CHECK(heightValidator.GetLotteryBlockPaymentCycle(blockHeight) == chainParams.GetLotteryBlockCycle());
+        }
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -21,16 +21,6 @@ LotteryWinnersCalculator::LotteryWinnersCalculator(
 {
 }
 
-CScript LotteryWinnersCalculator::GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake) const
-{
-    CTransaction coinbaseTx;
-    uint256 hashBlock;
-    assert(GetTransaction(hashWinningCoinstake, coinbaseTx, hashBlock));
-    assert(coinbaseTx.IsCoinBase() || coinbaseTx.IsCoinStake());
-
-    return coinbaseTx.IsCoinBase() ? coinbaseTx.vout[0].scriptPubKey : coinbaseTx.vout[1].scriptPubKey;
-}
-
 uint256 LotteryWinnersCalculator::CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock) const
 {
     // Deterministically calculate a "score" for a Masternode based on any given (block)hash

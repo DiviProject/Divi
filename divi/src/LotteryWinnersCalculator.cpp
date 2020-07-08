@@ -11,14 +11,17 @@
 #include <numeric>
 #include <spork.h>
 #include <BlockDiskAccessor.h>
+#include <I_SuperblockHeightValidator.h>
 
 LotteryWinnersCalculator::LotteryWinnersCalculator(
     const CChainParams& chainParameters,
     CChain& activeChain,
-    CSporkManager& sporkManager
+    CSporkManager& sporkManager,
+    const I_SuperblockHeightValidator& superblockHeightValidator
     ): chainParameters_(chainParameters)
     , activeChain_(activeChain)
     , sporkManager_(sporkManager)
+    , superblockHeightValidator_(superblockHeightValidator)
 {
 }
 
@@ -69,7 +72,7 @@ LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock
 {
     LotteryCoinstakes result;
     // if that's a block when lottery happens, reset score for whole cycle
-    if(IsValidLotteryBlockHeight(nHeight))
+    if(superblockHeightValidator_.IsValidLotteryBlockHeight(nHeight))
         return result;
 
     if(!prevBlockIndex)

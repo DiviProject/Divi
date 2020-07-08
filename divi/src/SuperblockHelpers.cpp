@@ -22,20 +22,8 @@ const I_BlockSubsidyProvider& SuperblockSubsidyContainer::blockSubsidiesProvider
 {
     return *blockSubsidies_;
 }
+
 // Non-Legacy methods
-
-bool IsValidLotteryBlockHeight(int nBlockHeight)
-{
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    return subsidiesContainer.superblockHeightValidator().IsValidLotteryBlockHeight(nBlockHeight);
-}
-
-bool IsValidTreasuryBlockHeight(int nBlockHeight)
-{
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    return subsidiesContainer.superblockHeightValidator().IsValidTreasuryBlockHeight(nBlockHeight);
-}
-
 CBlockRewards GetBlockSubsidity(int nHeight)
 {
     SuperblockSubsidyContainer subsidiesContainer(Params());

@@ -23,13 +23,6 @@ const I_BlockSubsidyProvider& SuperblockSubsidyContainer::blockSubsidiesProvider
     return *blockSubsidies_;
 }
 
-// Non-Legacy methods
-CBlockRewards GetBlockSubsidity(int nHeight)
-{
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    return subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
-}
-
 bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight)
 {
     auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;

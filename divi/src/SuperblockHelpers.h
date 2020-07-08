@@ -9,10 +9,6 @@
 class CBlockRewards;
 class CChainParams;
 
-bool IsValidLotteryBlockHeight(int nBlockHeight);
-bool IsValidTreasuryBlockHeight(int nBlockHeight);
-
-CBlockRewards GetBlockSubsidity(int nHeight);
 bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight);
 
 class SuperblockSubsidyContainer

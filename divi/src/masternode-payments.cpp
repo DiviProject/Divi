@@ -50,7 +50,8 @@ static CBitcoinAddress CharityPaymentAddress()
 
 static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
-    auto rewards = GetBlockSubsidity(nHeight);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
     tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination(TreasuryPaymentAddress().Get()));
     tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination(CharityPaymentAddress().Get()));
 }
@@ -85,7 +86,8 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const Lot
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
     };
 
-    auto nLotteryReward = GetBlockSubsidity(nHeight).nLotteryReward;
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    auto nLotteryReward = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nLotteryReward;
     auto nBigReward = nLotteryReward / 2;
     auto nSmallReward = nBigReward / 10;
 
@@ -103,7 +105,8 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const Lot
 
 static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 {
-    auto rewards = GetBlockSubsidity(nHeight);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
     auto charityPart = rewards.nCharityReward;
     auto treasuryPart = rewards.nTreasuryReward;
 
@@ -399,7 +402,8 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 
     std::string strPayeesPossible = "";
 
-    auto rewards = GetBlockSubsidity(nBlockHeight);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nBlockHeight);
 
     CAmount requiredMasternodePayment = rewards.nMasternodeReward;
 

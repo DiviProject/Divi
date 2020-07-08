@@ -70,9 +70,11 @@ BOOST_AUTO_TEST_CASE(subsidy_limit_test)
     const CChainParams& chainParameters= Params(CBaseChainParams::Network::MAIN);
     CAmount nSum = 0;
 
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    
     for(int nHeight = 0; nHeight < chainParameters.SubsidyHalvingInterval()*13; ++nHeight)
     {
-        CAmount nSubsidy = GetBlockSubsidity(nHeight).total();
+        CAmount nSubsidy = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).total();
         CAmount expectedSubsidyValue = CAmount(0);
         bool testPass = false;
         if(nHeight < 2)

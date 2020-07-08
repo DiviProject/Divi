@@ -14,9 +14,11 @@
 
 LotteryWinnersCalculator::LotteryWinnersCalculator(
     const CChainParams& chainParameters,
-    CChain& activeChain
+    CChain& activeChain,
+    CSporkManager& sporkManager
     ): chainParameters_(chainParameters)
     , activeChain_(activeChain)
+    , sporkManager_(sporkManager)
 {
 }
 
@@ -24,9 +26,9 @@ int LotteryWinnersCalculator::minimumCoinstakeForTicket(int nHeight) const
 {
     int nMinStakeValue = 10000; // default is 10k
 
-    if(sporkManager.IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
+    if(sporkManager_.IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
         MultiValueSporkList<LotteryTicketMinValueSporkValue> vValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager_.GetMultiValueSpork(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
         auto nBlockTime = activeChain_[nHeight] ? activeChain_[nHeight]->nTime : GetAdjustedTime();
         LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight, nBlockTime);
 

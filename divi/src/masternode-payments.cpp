@@ -174,7 +174,7 @@ void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, b
 
 LotteryCoinstakes CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
 {
-    return LotteryWinnersCalculator(Params()).CalculateLotteryWinners(block,prevBlockIndex,nHeight);
+    return LotteryWinnersCalculator(Params(),chainActive).CalculateLotteryWinners(block,prevBlockIndex,nHeight);
 }
 
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake)

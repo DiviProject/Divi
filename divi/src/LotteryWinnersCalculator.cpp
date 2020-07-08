@@ -12,12 +12,11 @@
 #include <spork.h>
 #include <BlockDiskAccessor.h>
 
-class CChain;
-extern CChain chainActive;
-
 LotteryWinnersCalculator::LotteryWinnersCalculator(
-    const CChainParams& chainParameters
+    const CChainParams& chainParameters,
+    CChain& activeChain
     ): chainParameters_(chainParameters)
+    , activeChain_(activeChain)
 {
 }
 
@@ -28,7 +27,7 @@ int LotteryWinnersCalculator::minimumCoinstakeForTicket(int nHeight) const
     if(sporkManager.IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
         MultiValueSporkList<LotteryTicketMinValueSporkValue> vValues;
         CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        auto nBlockTime = activeChain_[nHeight] ? activeChain_[nHeight]->nTime : GetAdjustedTime();
         LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight, nBlockTime);
 
         if(activeSpork.IsValid()) {
@@ -86,7 +85,7 @@ LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock
         return prevBlockIndex->vLotteryWinnersCoinstakes; // return last if we have no lotter participant in this block
     }
 
-    CBlockIndex* pblockindex = chainActive[nLastLotteryHeight];
+    CBlockIndex* pblockindex = activeChain_[nLastLotteryHeight];
     auto hashLastLotteryBlock = pblockindex->GetBlockHash();
     // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
     using LotteryScore = uint256;

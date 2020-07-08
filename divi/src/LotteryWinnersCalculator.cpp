@@ -15,7 +15,11 @@
 class CChain;
 extern CChain chainActive;
 
-CScript LotteryWinnersCalculator::GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
+LotteryWinnersCalculator::LotteryWinnersCalculator()
+{
+}
+
+CScript LotteryWinnersCalculator::GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake) const
 {
     CTransaction coinbaseTx;
     uint256 hashBlock;
@@ -25,7 +29,7 @@ CScript LotteryWinnersCalculator::GetScriptForLotteryPayment(const uint256 &hash
     return coinbaseTx.IsCoinBase() ? coinbaseTx.vout[0].scriptPubKey : coinbaseTx.vout[1].scriptPubKey;
 }
 
-uint256 LotteryWinnersCalculator::CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock)
+uint256 LotteryWinnersCalculator::CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock) const
 {
     // Deterministically calculate a "score" for a Masternode based on any given (block)hash
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
@@ -33,7 +37,7 @@ uint256 LotteryWinnersCalculator::CalculateLotteryScore(const uint256 &hashCoinb
     return ss.GetHash();
 }
 
-bool LotteryWinnersCalculator::IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight)
+bool LotteryWinnersCalculator::IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight) const
 {
     CAmount nAmount = 0;
     if(tx.IsCoinBase()) {
@@ -63,7 +67,7 @@ bool LotteryWinnersCalculator::IsCoinstakeValidForLottery(const CTransaction &tx
     return nAmount > nMinStakeValue * COIN; // only if stake is more than 10k
 }
 
-LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
+LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight) const
 {
     LotteryCoinstakes result;
     // if that's a block when lottery happens, reset score for whole cycle

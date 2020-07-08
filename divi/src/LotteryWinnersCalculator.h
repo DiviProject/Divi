@@ -11,6 +11,7 @@ class LotteryWinnersCalculator
 {
 private:
     const CChainParams& chainParameters_;
+    int minimumCoinstakeForTicket(int nHeight) const;
 public:
     LotteryWinnersCalculator(const CChainParams& chainParameters);
     uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock) const;

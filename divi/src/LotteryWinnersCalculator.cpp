@@ -21,6 +21,25 @@ LotteryWinnersCalculator::LotteryWinnersCalculator(
 {
 }
 
+int LotteryWinnersCalculator::minimumCoinstakeForTicket(int nHeight) const
+{
+    int nMinStakeValue = 10000; // default is 10k
+
+    if(sporkManager.IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
+        MultiValueSporkList<LotteryTicketMinValueSporkValue> vValues;
+        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
+        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
+        LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight, nBlockTime);
+
+        if(activeSpork.IsValid()) {
+            // we expect that this value is in coins, not in satoshis
+            nMinStakeValue = activeSpork.nEntryTicketValue;
+        }
+    }
+
+    return nMinStakeValue;
+}
+
 uint256 LotteryWinnersCalculator::CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock) const
 {
     // Deterministically calculate a "score" for a Masternode based on any given (block)hash

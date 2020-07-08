@@ -6,11 +6,13 @@ class uint256;
 class CTransaction;
 class CBlock;
 class CBlockIndex;
-
+class CChainParams;
 class LotteryWinnersCalculator
 {
+private:
+    const CChainParams& chainParameters_;
 public:
-    LotteryWinnersCalculator();
+    LotteryWinnersCalculator(const CChainParams& chainParameters);
     CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake) const;
     uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock) const;
     bool IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight) const;

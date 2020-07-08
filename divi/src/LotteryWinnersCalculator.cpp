@@ -15,7 +15,9 @@
 class CChain;
 extern CChain chainActive;
 
-LotteryWinnersCalculator::LotteryWinnersCalculator()
+LotteryWinnersCalculator::LotteryWinnersCalculator(
+    const CChainParams& chainParameters
+    ): chainParameters_(chainParameters)
 {
 }
 
@@ -77,13 +79,13 @@ LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock
     if(!prevBlockIndex)
         return result;
 
-    int nLastLotteryHeight = std::max(Params().GetLotteryBlockStartBlock(), Params().GetLotteryBlockCycle() * ((nHeight - 1) / Params().GetLotteryBlockCycle()));
+    int nLastLotteryHeight = std::max(chainParameters_.GetLotteryBlockStartBlock(), chainParameters_.GetLotteryBlockCycle() * ((nHeight - 1) / chainParameters_.GetLotteryBlockCycle()));
 
     if(nHeight <= nLastLotteryHeight) {
         return result;
     }
 
-    const auto& coinbaseTx = (nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
+    const auto& coinbaseTx = (nHeight > chainParameters_.LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
     if(!IsCoinstakeValidForLottery(coinbaseTx, nHeight)) {
         return prevBlockIndex->vLotteryWinnersCoinstakes; // return last if we have no lotter participant in this block

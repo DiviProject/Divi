@@ -50,34 +50,6 @@ static CBitcoinAddress CharityPaymentAddress()
     return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
 }
 
-
-static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
-{
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
-    tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination(TreasuryPaymentAddress().Get()));
-    tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination(CharityPaymentAddress().Get()));
-}
-
-static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
-{
-    auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
-    // when we call this we need to have exactly 11 winners
-
-    auto nLotteryReward = rewards.nLotteryReward;
-    auto nBigReward = nLotteryReward / 2;
-    auto nSmallReward = nBigReward / 10;
-
-    LogPrintf("%s : Paying lottery reward\n", __func__);
-    for(size_t i = 0; i < lotteryWinners.size(); ++i) {
-        CAmount reward = i == 0 ? nBigReward : nSmallReward;
-        const auto &winner = lotteryWinners[i];
-        LogPrintf("%s: Winner: %s\n", __func__, winner.first.ToString());
-        auto scriptLotteryWinner = winner.second;
-        tx.vout.emplace_back(reward, scriptLotteryWinner); // pay winners
-    }
-}
-
 void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake)
 {
     const CChainParams& chainParameters = Params();

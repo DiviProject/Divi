@@ -9,6 +9,8 @@
 #include <BlockRewards.h>
 
 #include <masternode-payments.h>
+#include <I_SuperblockHeightValidator.h>
+#include <I_BlockSubsidyProvider.h>
 
 
 const std::string TREASURY_PAYMENT_ADDRESS("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");
@@ -20,10 +22,14 @@ const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4z
 BlockIncentivesPopulator::BlockIncentivesPopulator(
     const CChainParams& chainParameters,
     CChain& activeChain,
-    CMasternodePayments& masternodePayments
+    CMasternodePayments& masternodePayments,
+    const I_SuperblockHeightValidator& heightValidator,
+    const I_BlockSubsidyProvider& blockSubsidies
     ): chainParameters_(chainParameters)
     , activeChain_(activeChain)
     , masternodePayments_(masternodePayments)
+    , heightValidator_(heightValidator)
+    , blockSubsidies_(blockSubsidies)
     , treasuryPaymentAddress_(
         chainParameters_.NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET)
     , charityPaymentAddress_(
@@ -33,8 +39,7 @@ BlockIncentivesPopulator::BlockIncentivesPopulator(
 
 void BlockIncentivesPopulator::FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
-    SuperblockSubsidyContainer subsidiesContainer(chainParameters_);
-    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
+    auto rewards = blockSubsidies_.GetBlockSubsidity(nHeight);
     tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination( CBitcoinAddress(treasuryPaymentAddress_).Get()));
     tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination( CBitcoinAddress(charityPaymentAddress_).Get()));
 }
@@ -63,12 +68,10 @@ void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const 
     CBlockIndex* pindexPrev = activeChain_.Tip();
     if (!pindexPrev) return;
 
-    SuperblockSubsidyContainer superblockSubsidies(chainParameters_);
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    if (heightValidator.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
+    if (heightValidator_.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
         FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
     }
-    else if(heightValidator.IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
+    else if(heightValidator_.IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
         FillLotteryPayment(txNew, payments, pindexPrev);
     }
     else {

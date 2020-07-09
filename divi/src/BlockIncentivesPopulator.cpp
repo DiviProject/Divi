@@ -10,28 +10,37 @@
 
 #include <masternode-payments.h>
 
+
 const std::string TREASURY_PAYMENT_ADDRESS("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");
 const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
 
 const std::string TREASURY_PAYMENT_ADDRESS_TESTNET("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
 const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
 
-extern CChain chainActive;
+BlockIncentivesPopulator::BlockIncentivesPopulator(
+    const CChainParams& chainParameters,
+    CChain& activeChain,
+    CMasternodePayments& masternodePayments
+    ): chainParameters_(chainParameters)
+    , activeChain_(activeChain)
+    , masternodePayments_(masternodePayments)
+{
+}
 
 CBitcoinAddress BlockIncentivesPopulator::TreasuryPaymentAddress()
 {
-    return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET);
+    return CBitcoinAddress(chainParameters_.NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET);
 }
 
 CBitcoinAddress BlockIncentivesPopulator::CharityPaymentAddress()
 {
-    return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
+    return CBitcoinAddress(chainParameters_.NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
 }
 
 
 void BlockIncentivesPopulator::FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
-    SuperblockSubsidyContainer subsidiesContainer(Params());
+    SuperblockSubsidyContainer subsidiesContainer(chainParameters_);
     auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
     tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination(TreasuryPaymentAddress().Get()));
     tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination(CharityPaymentAddress().Get()));
@@ -58,10 +67,10 @@ void BlockIncentivesPopulator::FillLotteryPayment(CMutableTransaction &tx, const
 
 void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake)
 {
-    CBlockIndex* pindexPrev = chainActive.Tip();
+    CBlockIndex* pindexPrev = activeChain_.Tip();
     if (!pindexPrev) return;
 
-    SuperblockSubsidyContainer superblockSubsidies(Params());
+    SuperblockSubsidyContainer superblockSubsidies(chainParameters_);
     const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
     if (heightValidator.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
         FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
@@ -70,6 +79,6 @@ void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const 
         FillLotteryPayment(txNew, payments, pindexPrev);
     }
     else {
-        masternodePayments.FillBlockPayee(txNew, payments, fProofOfStake);
+        masternodePayments_.FillBlockPayee(txNew, payments, fProofOfStake);
     }
 }

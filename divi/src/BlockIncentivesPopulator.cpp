@@ -24,26 +24,19 @@ BlockIncentivesPopulator::BlockIncentivesPopulator(
     ): chainParameters_(chainParameters)
     , activeChain_(activeChain)
     , masternodePayments_(masternodePayments)
+    , treasuryPaymentAddress_(
+        chainParameters_.NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET)
+    , charityPaymentAddress_(
+        chainParameters_.NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET)
 {
 }
-
-CBitcoinAddress BlockIncentivesPopulator::TreasuryPaymentAddress()
-{
-    return CBitcoinAddress(chainParameters_.NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET);
-}
-
-CBitcoinAddress BlockIncentivesPopulator::CharityPaymentAddress()
-{
-    return CBitcoinAddress(chainParameters_.NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
-}
-
 
 void BlockIncentivesPopulator::FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
     SuperblockSubsidyContainer subsidiesContainer(chainParameters_);
     auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
-    tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination(TreasuryPaymentAddress().Get()));
-    tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination(CharityPaymentAddress().Get()));
+    tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination( CBitcoinAddress(treasuryPaymentAddress_).Get()));
+    tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination( CBitcoinAddress(charityPaymentAddress_).Get()));
 }
 
 void BlockIncentivesPopulator::FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)

@@ -23,6 +23,8 @@
 #include <SuperblockHelpers.h>
 #include <LotteryWinnersCalculator.h>
 
+#define MNPAYMENTS_SIGNATURES_REQUIRED 6
+#define MNPAYMENTS_SIGNATURES_TOTAL 10
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
 

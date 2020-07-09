@@ -12,18 +12,14 @@
 #include <boost/lexical_cast.hpp>
 #include "LotteryCoinstakes.h"
 
-extern CCriticalSection cs_vecPayments;
-extern CCriticalSection cs_mapMasternodeBlocks;
-extern CCriticalSection cs_mapMasternodePayeeVotes;
-
 class CMasternodePayments;
 class CMasternodePaymentWinner;
 class CMasternodeBlockPayees;
 
+extern CCriticalSection cs_vecPayments;
+extern CCriticalSection cs_mapMasternodeBlocks;
+extern CCriticalSection cs_mapMasternodePayeeVotes;
 extern CMasternodePayments masternodePayments;
-
-#define MNPAYMENTS_SIGNATURES_REQUIRED 6
-#define MNPAYMENTS_SIGNATURES_TOTAL 10
 
 void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);

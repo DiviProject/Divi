@@ -155,10 +155,11 @@ void BlockMemoryPoolTransactionCollector::SetCoinBaseTransaction (
     CMutableTransaction& txNew,
     const CAmount& nFees) const
 {
+    SuperblockSubsidyContainer subsidiesContainer(Params());
     // Compute final coinbase transaction.
     block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
     if (!fProofOfStake) {
-        txNew.vout[0].nValue = GetBlockSubsidity(nHeight).nStakeReward;
+        txNew.vout[0].nValue = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         block.vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;

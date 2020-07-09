@@ -10,7 +10,7 @@
 #include "main.h"
 #include "masternode.h"
 #include <boost/lexical_cast.hpp>
-
+#include "LotteryCoinstakes.h"
 
 extern CCriticalSection cs_vecPayments;
 extern CCriticalSection cs_mapMasternodeBlocks;
@@ -27,12 +27,9 @@ extern CMasternodePayments masternodePayments;
 
 void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);
-std::string GetRequiredPaymentsString(int nBlockHeight);
-bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted);
 void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake);
 
-using WinnerCoinStake = uint256;
-std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
+LotteryCoinstakes CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
 
 class CMasternodePayee
 {
@@ -261,8 +258,6 @@ public:
     std::string GetRequiredPaymentsString(int nBlockHeight);
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake);
     std::string ToString() const;
-    int GetOldestBlock();
-    int GetNewestBlock();
 
     ADD_SERIALIZE_METHODS;
 

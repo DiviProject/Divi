@@ -182,7 +182,8 @@ bool CoinstakeCreator::CreateCoinStake(
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
-    auto blockSubsidity = GetBlockSubsidity(chainActive.Tip()->nHeight + 1);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    auto blockSubsidity = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(chainActive.Tip()->nHeight + 1);
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins) 
     {

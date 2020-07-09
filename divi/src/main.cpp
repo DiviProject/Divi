@@ -2287,13 +2287,33 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
-    CBlockRewards nBaseExpectedMint = GetBlockSubsidity(pindex->nHeight);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    CBlockRewards nBaseExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
+    
     CBlockRewards nPoWExpectedMint(nBaseExpectedMint.nStakeReward + nFees, 0, 0, 0, 0, 0);
     const CBlockRewards &nExpectedMint = block.IsProofOfWork() ? nPoWExpectedMint : nBaseExpectedMint;
 
     const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
-    if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
+    CBlockIndex* chainTip = chainActive.Tip();
+    bool chainTipIsNull = chainTip == NULL;
+    int blockHeight = 0;
+    if (!chainTipIsNull)
+    {
+        if (chainTip->GetBlockHash() == block.hashPrevBlock) {
+            blockHeight = chainTip->nHeight + 1;
+        } else { //out of order
+            BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
+            if (mi != mapBlockIndex.end() && (*mi).second)
+                blockHeight = (*mi).second->nHeight + 1;
+        }
+    }
+
+    if (blockHeight == 0) {
+        LogPrint("masternode","IsBlockValueValid() : WARNING: Couldn't find previous block\n");
+    }
+
+    if (!chainTipIsNull && !IsBlockValueValid(nExpectedMint, pindex->nMint, blockHeight)) {
         return state.DoS(100,
                          error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
                                FormatMoney(pindex->nMint), nExpectedMint.ToString()),

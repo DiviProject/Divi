@@ -21,6 +21,7 @@
 #include <numeric>
 
 #include <SuperblockHelpers.h>
+#include <LotteryWinnersCalculator.h>
 
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
@@ -49,19 +50,10 @@ static CBitcoinAddress CharityPaymentAddress()
 
 static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
 {
-    auto rewards = GetBlockSubsidity(nHeight);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
     tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination(TreasuryPaymentAddress().Get()));
     tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination(CharityPaymentAddress().Get()));
-}
-
-static CScript GetScriptForLotteryPayment(const uint256 &hashWinningCoinstake)
-{
-    CTransaction coinbaseTx;
-    uint256 hashBlock;
-    assert(GetTransaction(hashWinningCoinstake, coinbaseTx, hashBlock));
-    assert(coinbaseTx.IsCoinBase() || coinbaseTx.IsCoinStake());
-
-    return coinbaseTx.IsCoinBase() ? coinbaseTx.vout[0].scriptPubKey : coinbaseTx.vout[1].scriptPubKey;
 }
 
 static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
@@ -77,13 +69,13 @@ static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rew
     for(size_t i = 0; i < lotteryWinners.size(); ++i) {
         CAmount reward = i == 0 ? nBigReward : nSmallReward;
         const auto &winner = lotteryWinners[i];
-        LogPrintf("%s: Winner: %s\n", __func__, winner.ToString());
-        auto scriptLotteryWinner = GetScriptForLotteryPayment(winner);
+        LogPrintf("%s: Winner: %s\n", __func__, winner.first.ToString());
+        auto scriptLotteryWinner = winner.second;
         tx.vout.emplace_back(reward, scriptLotteryWinner); // pay winners
     }
 }
 
-static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std::vector<WinnerCoinStake> vRequiredWinnersCoinstake)
+static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoinstakes vRequiredWinnersCoinstake)
 {
     if(vRequiredWinnersCoinstake.empty()) {
         return true;
@@ -94,15 +86,16 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
     };
 
-    auto nLotteryReward = GetBlockSubsidity(nHeight).nLotteryReward;
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    auto nLotteryReward = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nLotteryReward;
     auto nBigReward = nLotteryReward / 2;
     auto nSmallReward = nBigReward / 10;
 
     for(size_t i = 0; i < vRequiredWinnersCoinstake.size(); ++i) {
-        CScript scriptPayment = GetScriptForLotteryPayment(vRequiredWinnersCoinstake[i]);
+        CScript scriptPayment = vRequiredWinnersCoinstake[i].second;
         CAmount reward = i == 0 ? nBigReward : nSmallReward;
         if(!verifyPayment(scriptPayment, reward)) {
-            LogPrintf("%s: No payment for winner: %s\n", vRequiredWinnersCoinstake[i].ToString());
+            LogPrintf("%s: No payment for winner: %s\n", vRequiredWinnersCoinstake[i].first.ToString());
             return false;
         }
     }
@@ -112,7 +105,8 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const std
 
 static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 {
-    auto rewards = GetBlockSubsidity(nHeight);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
     auto charityPart = rewards.nCharityReward;
     auto treasuryPart = rewards.nTreasuryReward;
 
@@ -138,50 +132,15 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
     return true;
 }
 
-bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted)
-{
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    if (pindexPrev == NULL) return true;
-
-    int nHeight = 0;
-    if (pindexPrev->GetBlockHash() == block.hashPrevBlock) {
-        nHeight = pindexPrev->nHeight + 1;
-    } else { //out of order
-        BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-        if (mi != mapBlockIndex.end() && (*mi).second)
-            nHeight = (*mi).second->nHeight + 1;
-    }
-
-    if (nHeight == 0) {
-        LogPrint("masternode","IsBlockValueValid() : WARNING: Couldn't find previous block\n");
-    }
-
-    //LogPrintf("XX69----------> IsBlockValueValid(): nMinted: %d, nExpectedValue: %d\n", FormatMoney(nMinted), FormatMoney(nExpectedValue));
-
-    auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;
-
-    // here we expect treasury block payment
-    if(IsValidTreasuryBlockHeight(nHeight)) {
-        nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
-    }
-    else if(IsValidLotteryBlockHeight(nHeight)) {
-        nExpectedMintCombined += nExpectedValue.nLotteryReward;
-    }
-
-    if (nMinted > nExpectedMintCombined) {
-        return false;
-    }
-
-    return true;
-}
-
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex)
 {
-    if(IsValidTreasuryBlockHeight(nBlockHeight)) {
+    SuperblockSubsidyContainer superblockSubsidies(Params());
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    if(heightValidator.IsValidTreasuryBlockHeight(nBlockHeight)) {
         return IsValidTreasuryPayment(txNew, nBlockHeight);
     }
 
-    if(IsValidLotteryBlockHeight(nBlockHeight)) {
+    if(heightValidator.IsValidLotteryBlockHeight(nBlockHeight)) {
         return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes);
     }
     
@@ -207,10 +166,12 @@ void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, b
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return;
 
-    if (IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
+    SuperblockSubsidyContainer superblockSubsidies(Params());
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    if (heightValidator.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
         FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
     }
-    else if(IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
+    else if(heightValidator.IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
         FillLotteryPayment(txNew, payments, pindexPrev);
     }
     else {
@@ -218,9 +179,11 @@ void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, b
     }
 }
 
-std::string GetRequiredPaymentsString(int nBlockHeight)
+LotteryCoinstakes CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
 {
-    return masternodePayments.GetRequiredPaymentsString(nBlockHeight);
+    const CChainParams& chainParameters = Params();
+    SuperblockSubsidyContainer subsidyCointainer(chainParameters);
+    return LotteryWinnersCalculator(chainParameters,chainActive, sporkManager,subsidyCointainer.superblockHeightValidator()).CalculateLotteryWinners(block,prevBlockIndex,nHeight);
 }
 
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake)
@@ -439,7 +402,8 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 
     std::string strPayeesPossible = "";
 
-    auto rewards = GetBlockSubsidity(nBlockHeight);
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nBlockHeight);
 
     CAmount requiredMasternodePayment = rewards.nMasternodeReward;
 
@@ -724,130 +688,4 @@ std::string CMasternodePayments::ToString() const
     info << "Votes: " << (int)mapMasternodePayeeVotes.size() << ", Blocks: " << (int)mapMasternodeBlocks.size();
 
     return info.str();
-}
-
-
-int CMasternodePayments::GetOldestBlock()
-{
-    LOCK(cs_mapMasternodeBlocks);
-
-    int nOldestBlock = std::numeric_limits<int>::max();
-
-    std::map<int, CMasternodeBlockPayees>::iterator it = mapMasternodeBlocks.begin();
-    while (it != mapMasternodeBlocks.end()) {
-        if ((*it).first < nOldestBlock) {
-            nOldestBlock = (*it).first;
-        }
-        it++;
-    }
-
-    return nOldestBlock;
-}
-
-
-int CMasternodePayments::GetNewestBlock()
-{
-    LOCK(cs_mapMasternodeBlocks);
-
-    int nNewestBlock = 0;
-
-    std::map<int, CMasternodeBlockPayees>::iterator it = mapMasternodeBlocks.begin();
-    while (it != mapMasternodeBlocks.end()) {
-        if ((*it).first > nNewestBlock) {
-            nNewestBlock = (*it).first;
-        }
-        it++;
-    }
-
-    return nNewestBlock;
-}
-
-static uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock)
-{
-    // Deterministically calculate a "score" for a Masternode based on any given (block)hash
-    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-    ss << hashCoinbaseTx << hashLastLotteryBlock;
-    return ss.GetHash();
-}
-
-static bool IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight)
-{
-    CAmount nAmount = 0;
-    if(tx.IsCoinBase()) {
-        nAmount = tx.vout[0].nValue;
-    }
-    else {
-        auto payee = tx.vout[1].scriptPubKey;
-        nAmount = std::accumulate(std::begin(tx.vout), std::end(tx.vout), CAmount(0), [payee](CAmount accum, const CTxOut &out) {
-                return out.scriptPubKey == payee ? accum + out.nValue : accum;
-    });
-    }
-
-    int nMinStakeValue = 10000; // default is 10k
-
-    if(sporkManager.IsSporkActive(SPORK_16_LOTTERY_TICKET_MIN_VALUE)) {
-        MultiValueSporkList<LotteryTicketMinValueSporkValue> vValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_16_LOTTERY_TICKET_MIN_VALUE), vValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
-        LotteryTicketMinValueSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vValues, nHeight, nBlockTime);
-
-        if(activeSpork.IsValid()) {
-            // we expect that this value is in coins, not in satoshis
-            nMinStakeValue = activeSpork.nEntryTicketValue;
-        }
-    }
-
-    return nAmount > nMinStakeValue * COIN; // only if stake is more than 10k
-}
-
-std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
-{
-    std::vector<WinnerCoinStake> result;
-    // if that's a block when lottery happens, reset score for whole cycle
-    if(IsValidLotteryBlockHeight(nHeight))
-        return result;
-
-    if(!prevBlockIndex)
-        return result;
-
-    int nLastLotteryHeight = std::max(Params().GetLotteryBlockStartBlock(), Params().GetLotteryBlockCycle() * ((nHeight - 1) / Params().GetLotteryBlockCycle()));
-
-    if(nHeight <= nLastLotteryHeight) {
-        return result;
-    }
-
-    const auto& coinbaseTx = (nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
-
-    if(!IsCoinstakeValidForLottery(coinbaseTx, nHeight)) {
-        return prevBlockIndex->vLotteryWinnersCoinstakes; // return last if we have no lotter participant in this block
-    }
-
-    CBlockIndex* pblockindex = chainActive[nLastLotteryHeight];
-    auto hashLastLotteryBlock = pblockindex->GetBlockHash();
-    // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
-    using LotteryScore = uint256;
-    std::vector<std::pair<LotteryScore, WinnerCoinStake>> scores;
-    for(auto &&hashCoinstake : prevBlockIndex->vLotteryWinnersCoinstakes) {
-        scores.emplace_back(CalculateLotteryScore(hashCoinstake, hashLastLotteryBlock), hashCoinstake);
-    }
-
-    auto newScore = CalculateLotteryScore(coinbaseTx.GetHash(), hashLastLotteryBlock);
-    scores.emplace_back(newScore, coinbaseTx.GetHash());
-
-    // biggest entry at the begining
-    if(scores.size() > 1)
-    {
-        std::sort(std::begin(scores), std::end(scores), [](const std::pair<LotteryScore, WinnerCoinStake> &lhs, const std::pair<LotteryScore, WinnerCoinStake> &rhs) {
-            return lhs.first > rhs.first;
-        });
-    }
-
-    scores.resize(std::min<size_t>(scores.size(), 11)); // don't go over 11 entries, since we will have only 11 winners
-
-    // prepare new coinstakes vector
-    for(auto &&score : scores) {
-        result.push_back(score.second);
-    }
-
-    return result;
 }

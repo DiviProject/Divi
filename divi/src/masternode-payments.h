@@ -21,7 +21,6 @@ extern CCriticalSection cs_mapMasternodeBlocks;
 extern CCriticalSection cs_mapMasternodePayeeVotes;
 extern CMasternodePayments masternodePayments;
 
-void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);
 void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake);
 

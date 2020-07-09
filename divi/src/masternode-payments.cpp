@@ -75,6 +75,24 @@ static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rew
     }
 }
 
+void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake)
+{
+    CBlockIndex* pindexPrev = chainActive.Tip();
+    if (!pindexPrev) return;
+
+    SuperblockSubsidyContainer superblockSubsidies(Params());
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    if (heightValidator.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
+        FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
+    }
+    else if(heightValidator.IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
+        FillLotteryPayment(txNew, payments, pindexPrev);
+    }
+    else {
+        masternodePayments.FillBlockPayee(txNew, payments, fProofOfStake);
+    }
+}
+
 static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoinstakes vRequiredWinnersCoinstake)
 {
     if(vRequiredWinnersCoinstake.empty()) {
@@ -158,25 +176,6 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
     LogPrintf("%s : Masternode payment enforcement is disabled, accepting block\n", __func__);
 
     return true;
-}
-
-
-void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake)
-{
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    if (!pindexPrev) return;
-
-    SuperblockSubsidyContainer superblockSubsidies(Params());
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    if (heightValidator.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
-        FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
-    }
-    else if(heightValidator.IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
-        FillLotteryPayment(txNew, payments, pindexPrev);
-    }
-    else {
-        masternodePayments.FillBlockPayee(txNew, payments, fProofOfStake);
-    }
 }
 
 LotteryCoinstakes CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)

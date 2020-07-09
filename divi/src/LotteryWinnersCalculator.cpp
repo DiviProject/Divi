@@ -91,8 +91,8 @@ LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock
         return prevBlockIndex->vLotteryWinnersCoinstakes; // return last if we have no lotter participant in this block
     }
 
-    CBlockIndex* pblockindex = activeChain_[nLastLotteryHeight];
-    auto hashLastLotteryBlock = pblockindex->GetBlockHash();
+    CBlockIndex* prevLotteryBlockIndex = activeChain_[nLastLotteryHeight];
+    auto hashLastLotteryBlock = prevLotteryBlockIndex->GetBlockHash();
     // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
     using LotteryScore = uint256;
     using LotteryCoinstake = std::pair<uint256, CScript>;

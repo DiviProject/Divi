@@ -5,14 +5,14 @@
 #ifndef BITCOIN_ZMQ_ZMQNOTIFICATIONINTERFACE_H
 #define BITCOIN_ZMQ_ZMQNOTIFICATIONINTERFACE_H
 
-#include "validationinterface.h"
+#include "NotificationInterface.h"
 #include <string>
 #include <map>
 
 class CBlockIndex;
 class CZMQAbstractNotifier;
 
-class CZMQNotificationInterface : public CValidationInterface
+class CZMQNotificationInterface : public NotificationInterface
 {
 public:
     virtual ~CZMQNotificationInterface();
@@ -23,7 +23,7 @@ protected:
     bool Initialize();
     void Shutdown();
 
-    // CValidationInterface
+    // NotificationInterface
     void SyncTransaction(const CTransaction &tx, const CBlock *pblock);
     void UpdatedBlockTip(const CBlockIndex *pindex);
     void NotifyTransactionLock(const CTransaction &tx);

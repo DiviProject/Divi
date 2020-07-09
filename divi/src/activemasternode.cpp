@@ -11,7 +11,7 @@
 #include "protocol.h"
 #include "spork.h"
 
-CActiveMasternode activeMasternode;
+CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
 //
 // Bootup the Masternode, look for a 10000 PIVX input and register on the network
@@ -20,7 +20,7 @@ void CActiveMasternode::ManageStatus()
 {
     std::string errorMessage;
 
-    if (!fMasterNode) return;
+    if (!fMasterNode_) return;
 
     if (fDebug) LogPrintf("CActiveMasternode::ManageStatus() - Begin\n");
 
@@ -71,14 +71,9 @@ void CActiveMasternode::ManageStatus()
             service = CService(strMasterNodeAddr);
         }
 
-        if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            if (service.GetPort() != 51472) {
-                notCapableReason = strprintf("Invalid port: %u - only 51472 is supported on mainnet.", service.GetPort());
-                LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
-                return;
-            }
-        } else if (service.GetPort() == 51472) {
-            notCapableReason = strprintf("Invalid port: %u - 51472 is only supported on mainnet.", service.GetPort());
+        if (service.GetPort() != Params().GetDefaultPort()) 
+        {
+            notCapableReason = strprintf("Invalid port: %u - only 51472 is supported on mainnet.", service.GetPort());
             LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
             return;
         }
@@ -94,39 +89,9 @@ void CActiveMasternode::ManageStatus()
         pnode->Release();
 
         // Choose coins to use
-        CPubKey pubKeyCollateralAddress;
-        CKey keyCollateralAddress;
-
-        if (GetMasterNodeVin(vin, pubKeyCollateralAddress, keyCollateralAddress)) {
-            if (GetInputAge(vin) < MASTERNODE_MIN_CONFIRMATIONS) {
-                status = ACTIVE_MASTERNODE_INPUT_TOO_NEW;
-                notCapableReason = strprintf("%s - %d confirmations", GetStatus(), GetInputAge(vin));
-                LogPrintf("CActiveMasternode::ManageStatus() - %s\n", notCapableReason);
-                return;
-            }
-
-            LOCK(pwalletMain->cs_wallet);
-            pwalletMain->LockCoin(vin.prevout);
-
-            // send to all nodes
-            CPubKey pubKeyMasternode;
-            CKey keyMasternode;
-
-            if (!CObfuScationSigner::SetKey(strMasterNodePrivKey, errorMessage, keyMasternode, pubKeyMasternode)) {
-                notCapableReason = "Error upon calling SetKey: " + errorMessage;
-                LogPrintf("Register::ManageStatus() - %s\n", notCapableReason);
-                return;
-            }
-
-            LogPrintf("CActiveMasternode::ManageStatus() - Is capable master node!\n");
-            status = ACTIVE_MASTERNODE_STARTED;
-
-            return;
-        } else {
-            notCapableReason = "Could not find suitable coins!";
-            LogPrintf("CActiveMasternode::ManageStatus() - %s\n", notCapableReason);
-            return;
-        }
+        notCapableReason = "Could not find suitable coins!";
+        LogPrintf("CActiveMasternode::ManageStatus() - %s\n", notCapableReason);
+        return;
     }
 
     //send to all peers
@@ -256,136 +221,39 @@ bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
     return true;
 }
 
-bool CActiveMasternode::GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey)
-{
-    return GetMasterNodeVin(vin, pubkey, secretKey, "", "");
-}
-
-bool CActiveMasternode::GetMasterNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex)
-{
-    // Find possible candidates
-    TRY_LOCK(pwalletMain->cs_wallet, fWallet);
-    if (!fWallet) return false;
-
-    vector<COutput> possibleCoins = SelectCoinsMasternode();
-    COutput* selectedOutput;
-
-    // Find the vin
-    if (!strTxHash.empty()) {
-        // Let's find it
-        uint256 txHash(strTxHash);
-        int outputIndex;
-        try {
-            outputIndex = std::stoi(strOutputIndex.c_str());
-        } catch (const std::exception& e) {
-            LogPrintf("%s: %s on strOutputIndex\n", __func__, e.what());
-            return false;
-        }
-
-        bool found = false;
-        BOOST_FOREACH (COutput& out, possibleCoins) {
-            if (out.tx->GetHash() == txHash && out.i == outputIndex) {
-                selectedOutput = &out;
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            LogPrintf("CActiveMasternode::GetMasterNodeVin - Could not locate valid vin\n");
-            return false;
-        }
-    } else {
-        // No output specified,  Select the first one
-        if (possibleCoins.size() > 0) {
-            selectedOutput = &possibleCoins[0];
-        } else {
-            LogPrintf("CActiveMasternode::GetMasterNodeVin - Could not locate specified vin from possible list\n");
-            return false;
-        }
-    }
-
-    // At this point we have a selected output, retrieve the associated info
-    return GetVinFromOutput(*selectedOutput, vin, pubkey, secretKey);
-}
-
-
-// Extract Masternode vin information from output
-bool CActiveMasternode::GetVinFromOutput(COutput out, CTxIn& vin, CPubKey& pubkey, CKey& secretKey)
-{
-    CScript pubScript;
-
-    vin = CTxIn(out.tx->GetHash(), out.i);
-    pubScript = out.tx->vout[out.i].scriptPubKey; // the inputs PubKey
-
-    CTxDestination address1;
-    ExtractDestination(pubScript, address1);
-    CBitcoinAddress address2(address1);
-
-    CKeyID keyID;
-    if (!address2.GetKeyID(keyID)) {
-        LogPrintf("CActiveMasternode::GetMasterNodeVin - Address does not refer to a key\n");
-        return false;
-    }
-
-    if (!pwalletMain->GetKey(keyID, secretKey)) {
-        LogPrintf("CActiveMasternode::GetMasterNodeVin - Private key for address is not known\n");
-        return false;
-    }
-
-    pubkey = secretKey.GetPubKey();
-    return true;
-}
-
-// get all possible outputs for running Masternode
-vector<COutput> CActiveMasternode::SelectCoinsMasternode()
-{
-    vector<COutput> vCoins;
-    vector<COutput> filteredCoins;
-    vector<COutPoint> confLockedCoins;
-
-    // Temporary unlock MN coins from masternode.conf
-    if (GetBoolArg("-mnconflock", true)) {
-        uint256 mnTxHash;
-        BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
-            mnTxHash.SetHex(mne.getTxHash());
-
-            int nIndex;
-            if(!mne.castOutputIndex(nIndex))
-                continue;
-
-            COutPoint outpoint = COutPoint(mnTxHash, nIndex);
-            confLockedCoins.push_back(outpoint);
-            pwalletMain->UnlockCoin(outpoint);
-        }
-    }
-
-    // Retrieve all possible outputs
-    pwalletMain->AvailableCoins(vCoins);
-
-    // Lock MN coins from masternode.conf back if they where temporary unlocked
-    if (!confLockedCoins.empty()) {
-        BOOST_FOREACH (COutPoint outpoint, confLockedCoins)
-            pwalletMain->LockCoin(outpoint);
-    }
-
-    // Filter
-    BOOST_FOREACH (const COutput& out, vCoins) {
-        if (out.tx->vout[out.i].nValue == 10000 * COIN) { //exactly
-            filteredCoins.push_back(out);
-        }
-    }
-    return filteredCoins;
-}
-
 // when starting a Masternode, this can enable to run as a hot wallet with no funds
 bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newService)
 {
-    if (!fMasterNode)
+    if (!fMasterNode_) 
+    {
         return false;
+    }
 
-    status = ACTIVE_MASTERNODE_STARTED;
+    if(status == ACTIVE_MASTERNODE_STARTED)
+    {
+        LogPrintf("CActiveMasternode::EnableHotColdMasterNode() - Cannot modify masternode that is already started.\n");
+        return false;
+    }
 
+    bool transactionBelongsToMasternode = false;
+    BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfigurations_.getEntries()) {
+        if(
+            std::strcmp(newVin.prevout.hash.ToString().c_str(), mne.getTxHash().c_str()) == 0 &&
+            std::strcmp(std::to_string(newVin.prevout.n).c_str(), mne.getOutputIndex().c_str()) == 0
+        )
+        {
+            transactionBelongsToMasternode = true;
+            break;
+        }
+    }
+
+    if(!transactionBelongsToMasternode)
+    {
+        return false;
+    }
+    
     //The values below are needed for signing mnping messages going forward
+    status = ACTIVE_MASTERNODE_STARTED;
     vin = newVin;
     service = newService;
 

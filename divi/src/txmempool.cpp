@@ -15,6 +15,9 @@
 
 #include <boost/circular_buffer.hpp>
 
+
+#include "FeeAndPriorityCalculator.h"
+
 using namespace std;
 
 CTxMemPoolEntry::CTxMemPoolEntry() : nFee(0), nTxSize(0), nModSize(0), nTime(0), dPriority(0.0)
@@ -26,7 +29,7 @@ CTxMemPoolEntry::CTxMemPoolEntry(const CTransaction& _tx, const CAmount& _nFee, 
 {
     nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
 
-    nModSize = tx.CalculateModifiedSize(nTxSize);
+    nModSize = FeeAndPriorityCalculator::instance().CalculateModifiedSize(tx,nTxSize);
 }
 
 CTxMemPoolEntry::CTxMemPoolEntry(const CTxMemPoolEntry& other)

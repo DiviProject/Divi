@@ -50,7 +50,10 @@ BITCOIN_TESTS =\
   test/main_tests.cpp \
   test/mempool_tests.cpp \
   mockFileSystem.cpp \
+  test/MockSuperblockHeightValidator.h \
+  test/MockBlockSubsidyProvider.h \
   test/monthlywalletbackupcreator_tests.cpp \
+  test/ActiveMasternode_tests.cpp \
   test/filteredBoostFileSystem_tests.cpp \
   test/mruset_tests.cpp \
   test/multisig_tests.cpp \
@@ -65,6 +68,7 @@ BITCOIN_TESTS =\
   test/sighash_tests.cpp \
   test/sigopcount_tests.cpp \
   test/skiplist_tests.cpp \
+  test/SuperblockHelper_tests.cpp \
   test/test_divi.cpp \
   test/timedata_tests.cpp \
   test/torcontrol_tests.cpp \

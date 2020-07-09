@@ -172,9 +172,6 @@ public:
         nTreasuryPaymentsStartBlock = 101;
         nTreasuryPaymentsCycle = 60 * 24 * 7 + 1;
 
-        nModifierUpdateBlock = 99999999;				// protocol version fix; irrelevant to Divi
-
-
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
         * be spent as it did not originally exist in the database.
@@ -228,14 +225,11 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
-        fSkipProofOfWorkCheck = false;
-        fTestnetToBeDeprecatedFieldRPC = false;
         fHeadersFirstSyncingActive = false;
-
-        nPoolMaxTransactions = 3;
+        fSkipProofOfWorkCheck = false;
+        
         nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
         strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
-        strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 
     }
@@ -288,7 +282,6 @@ public:
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 56700;
-        nModifierUpdateBlock = 615800;
 
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -347,13 +340,10 @@ public:
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
         fSkipProofOfWorkCheck = false;
-        fTestnetToBeDeprecatedFieldRPC = false;
         fHeadersFirstSyncingActive = false;
 
-        nPoolMaxTransactions = 3;
         nFulfilledRequestExpireTime = 60 * 60; // fulfilled requests expire in 1 hour
         strSporkKey = "04B433E6598390C992F4F022F20D3B4CBBE691652EE7C48243B81701CBDB7CC7D7BF0EE09E154E6FCBF2043D65AF4E9E97B89B5DBAF830D83B9B7F469A6C45A717";
-        strObfuscationPoolDummyAddress = "D87q2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
 
     }
@@ -375,42 +365,13 @@ public:
     {
         networkID = CBaseChainParams::TESTNET;
         strNetworkID = "test";
-        pchMessageStart[0] = 0xdf;
-        pchMessageStart[1] = 0xa0;
-        pchMessageStart[2] = 0x8d;
-        pchMessageStart[3] = 0x8b;
-        vAlertPubKey = ParseHex("04b6f1de3a2f94bfc70917cd7e14a948e78c1638b30524370ac40d3a0fa298e10bbaf7f5c564279c3fddf3f9f785cf3ac4e2031a5e6451f455e5aa60d1e536b379");
-        nDefaultPort = 51476;
-        nEnforceBlockUpgradeMajority = 51;
-        nRejectBlockOutdatedMajority = 75;
-        nToCheckBlockUpgradeMajority = 100;
-        nMinerThreads = 0;
-        nTargetTimespan = 1 * 60; // DIVI: 1 day
-        nTargetSpacing = 1 * 60;  // DIVI: 1 minute
-        nMaturity = 15;
-        nMasternodeCountDrift = 4;
-        nModifierUpdateBlock = 99999999;
-        nMaxMoneyOut = 2534320700 * COIN;
-        premineAmt = 617222416 * COIN;
 
-        /** Height or Time Based Activations **/
-        nLastPOWBlock = 100;
-
-        nLotteryBlockStartBlock = 101;
-        nLotteryBlockCycle = 100; // one week
-        nTreasuryPaymentsStartBlock = 102;
-        nTreasuryPaymentsCycle = 101;
-
-        nExtCoinType = 1;
-
-        //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1537971708;
-        genesis.nNonce = 749845;
-        
         pchMessageStart[0] = 0xdf;
         pchMessageStart[1] = 0xa0;
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x78;
+        premineAmt = 617222416 * COIN;
+        
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51474;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
@@ -422,42 +383,52 @@ public:
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // DIVI: 1 day
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
-        nMaturity = 1; //byrdset from 100
+        nMaturity = 1;
         nMasternodeCountDrift = 20;
         nMaxMoneyOut = 2535000000 * COIN;
 
-        nModifierUpdateBlock = 615800;
+        /** Height or Time Based Activations **/
+        nLastPOWBlock = 100;
+
+        nLotteryBlockStartBlock = 101;
+        nLotteryBlockCycle = 200; // one week
+        nTreasuryPaymentsStartBlock = 102;
+        nTreasuryPaymentsCycle = 201;
+
+        //! Modify the testnet genesis block so the timestamp is valid for a later start.
+        genesis.nTime = 1591798387;
+        genesis.nNonce = 2105601;
+
+        nExtCoinType = 1;
+        
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"));
+        assert(hashGenesisBlock == uint256("0x00000f43b54bbcae395d815b255ac4ed0693bca7987d72b873d5d4b68d73a6bd"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
+        vSeeds.push_back(CDNSSeedData("autoseeds.tiviseed.diviproject.org", "autoseeds.tiviseed.diviproject.org"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 139); // Testnet divi addresses start with 'x' or 'y'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 19);  // Testnet divi script addresses start with '8' or '9'
         base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 239);     // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
-        // Testnet divi BIP32 pubkeys start with 'DRKV'
-        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x3a)(0x80)(0x61)(0xa0).convert_to_container<std::vector<unsigned char> >();
-        // Testnet divi BIP32 prvkeys start with 'DRKP'
-        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x3a)(0x80)(0x58)(0x37).convert_to_container<std::vector<unsigned char> >();
-        // Testnet divi BIP44 coin type is '1' (All coin's testnet default)
-        base58Prefixes[EXT_COIN_TYPE] = boost::assign::list_of(0x80)(0x00)(0x00)(0x01).convert_to_container<std::vector<unsigned char> >();
+        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x3a)(0x80)(0x61)(0xa0).convert_to_container<std::vector<unsigned char> >();// Testnet divi BIP32 pubkeys start with 'DRKV'
+        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x3a)(0x80)(0x58)(0x37).convert_to_container<std::vector<unsigned char> >();// Testnet divi BIP32 prvkeys start with 'DRKP'
+        base58Prefixes[EXT_COIN_TYPE] = boost::assign::list_of(0x80)(0x00)(0x00)(0x01).convert_to_container<std::vector<unsigned char> >();//// Testnet divi BIP44 coin type is '1' (All coin's testnet default)
 
         convertSeed6(vFixedSeeds, pnSeed6_test, ARRAYLEN(pnSeed6_test));
 
-        nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
         fRequireRPCPassword = true;
         fMiningRequiresPeers = true;
         fAllowMinDifficultyBlocks = true;
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;
         fMineBlocksOnDemand = false;
-        fTestnetToBeDeprecatedFieldRPC = true;
+        fHeadersFirstSyncingActive = false;
+        fSkipProofOfWorkCheck = false;
 
-        nPoolMaxTransactions = 2;
+        nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
         strSporkKey = "034ffa41e5cffdd009f3b34a3e1482ec82b514bb218b7648948b5858cc5c035adb";
-        strObfuscationPoolDummyAddress = "y57cqfGRkekRyDRNeJiLtYVEbvhXrNbmox";
         nStartMasternodePayments = 1533945600; //Fri, 09 Jan 2015 21:05:58 GMT
         // here because we only have a 8 block finalization window on testnet
     }
@@ -516,7 +487,6 @@ public:
         fDefaultConsistencyChecks = true;
         fRequireStandard = false;
         fMineBlocksOnDemand = true;
-        fTestnetToBeDeprecatedFieldRPC = false;
     }
     const CCheckpointData& Checkpoints() const
     {

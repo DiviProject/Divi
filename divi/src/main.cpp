@@ -14,7 +14,6 @@
 #include "checkqueue.h"
 #include "init.h"
 #include "kernel.h"
-#include "masternode-budget.h"
 #include "masternode-payments.h"
 #include "masternodeman.h"
 #include "merkleblock.h"
@@ -29,6 +28,9 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "NotificationInterface.h"
+#include "FeeAndPriorityCalculator.h"
+#include "SuperblockHelpers.h"
 
 #include "libzerocoin/Denominations.h"
 
@@ -89,7 +91,6 @@ CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
  * so it's still 10 times lower comparing to bitcoin.
  */
-CFeeRate minRelayTxFee = CFeeRate(10000);
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 
 CTxMemPool mempool(::minRelayTxFee);
@@ -196,63 +197,27 @@ set<int> setDirtyFileInfo;
 
 // These functions dispatch to one or all registered wallets
 
-namespace
-{
-struct CMainSignals {
-    /** Notifies listeners of updated transaction data (transaction, and optionally the block it is found in. */
-    boost::signals2::signal<void(const CTransaction&, const CBlock*)> SyncTransaction;
-    /** Notifies listeners of an erased transaction (currently disabled, requires transaction replacement). */
-    // XX42    boost::signals2::signal<void(const uint256&)> EraseTransaction;
-    /** Notifies listeners of an updated transaction without new data (for now: a coinbase potentially becoming visible). */
-    boost::signals2::signal<void(const uint256&)> UpdatedTransaction;
-    /** Notifies listeners of a new active block chain. */
-    boost::signals2::signal<void(const CBlockLocator&)> SetBestChain;
-    /** Notifies listeners about an inventory item being seen on the network. */
-    boost::signals2::signal<void(const uint256&)> Inventory;
-    /** Tells listeners to broadcast their data. */
-    boost::signals2::signal<void()> Broadcast;
-    /** Notifies listeners of a block validation result */
-    boost::signals2::signal<void(const CBlock&, const CValidationState&)> BlockChecked;
-} g_signals;
+NotificationInterfaceRegistry registry;
+MainNotificationSignals& g_signals = registry.getSignals();
 
-} // anon namespace
-
-void RegisterValidationInterface(CValidationInterface* pwalletIn)
+void RegisterValidationInterface(NotificationInterface* pwalletIn)
 {
-    g_signals.SyncTransaction.connect(boost::bind(&CValidationInterface::SyncTransaction, pwalletIn, _1, _2));
-    // XX42 g_signals.EraseTransaction.connect(boost::bind(&CValidationInterface::EraseFromWallet, pwalletIn, _1));
-    g_signals.UpdatedTransaction.connect(boost::bind(&CValidationInterface::UpdatedTransaction, pwalletIn, _1));
-    g_signals.SetBestChain.connect(boost::bind(&CValidationInterface::SetBestChain, pwalletIn, _1));
-    g_signals.Inventory.connect(boost::bind(&CValidationInterface::Inventory, pwalletIn, _1));
-    g_signals.Broadcast.connect(boost::bind(&CValidationInterface::ResendWalletTransactions, pwalletIn));
-    g_signals.BlockChecked.connect(boost::bind(&CValidationInterface::BlockChecked, pwalletIn, _1, _2));
+    registry.RegisterValidationInterface(pwalletIn);
 }
 
-void UnregisterValidationInterface(CValidationInterface* pwalletIn)
+void UnregisterValidationInterface(NotificationInterface* pwalletIn)
 {
-    g_signals.BlockChecked.disconnect(boost::bind(&CValidationInterface::BlockChecked, pwalletIn, _1, _2));
-    g_signals.Broadcast.disconnect(boost::bind(&CValidationInterface::ResendWalletTransactions, pwalletIn));
-    g_signals.Inventory.disconnect(boost::bind(&CValidationInterface::Inventory, pwalletIn, _1));
-    g_signals.SetBestChain.disconnect(boost::bind(&CValidationInterface::SetBestChain, pwalletIn, _1));
-    g_signals.UpdatedTransaction.disconnect(boost::bind(&CValidationInterface::UpdatedTransaction, pwalletIn, _1));
-    // XX42    g_signals.EraseTransaction.disconnect(boost::bind(&CValidationInterface::EraseFromWallet, pwalletIn, _1));
-    g_signals.SyncTransaction.disconnect(boost::bind(&CValidationInterface::SyncTransaction, pwalletIn, _1, _2));
+    registry.UnregisterValidationInterface(pwalletIn);
 }
 
 void UnregisterAllValidationInterfaces()
 {
-    g_signals.BlockChecked.disconnect_all_slots();
-    g_signals.Broadcast.disconnect_all_slots();
-    g_signals.Inventory.disconnect_all_slots();
-    g_signals.SetBestChain.disconnect_all_slots();
-    g_signals.UpdatedTransaction.disconnect_all_slots();
-    // XX42    g_signals.EraseTransaction.disconnect_all_slots();
-    g_signals.SyncTransaction.disconnect_all_slots();
+    registry.UnregisterAllValidationInterfaces();
 }
 
 void SyncWithWallets(const CTransaction& tx, const CBlock* pblock)
 {
-    g_signals.SyncTransaction(tx, pblock);
+    registry.SyncWithWallets(tx, pblock);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -754,7 +719,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
         else if ((whichType == TX_MULTISIG) && (!fIsBareMultisigStd)) {
             reason = "bare-multisig";
             return false;
-        } else if (txout.IsDust(::minRelayTxFee)) {
+        } else if (FeeAndPriorityCalculator::instance().IsDust(txout)) {
             reason = "dust";
             return false;
         }
@@ -927,57 +892,6 @@ int GetIXConfirmations(uint256 nTXHash)
     }
 
     return 0;
-}
-
-// ppcoin: total coin age spent in transaction, in the unit of coin-days.
-// Only those coins meeting minimum age requirement counts. As those
-// transactions not in main chain are not currently indexed so we
-// might not find out about their coin age. Older transactions are
-// guaranteed to be in main chain by sync-checkpoint. This rule is
-// introduced to help nodes establish a consistent view of the coin
-// age (trust score) of competing branches.
-bool GetCoinAge(const CTransaction& tx, const unsigned int nTxTime, uint64_t& nCoinAge)
-{
-    uint256 bnCentSecond = 0; // coin age in the unit of cent-seconds
-    nCoinAge = 0;
-
-    CBlockIndex* pindex = NULL;
-    BOOST_FOREACH (const CTxIn& txin, tx.vin) {
-        // First try finding the previous transaction in database
-        CTransaction txPrev;
-        uint256 hashBlockPrev;
-        if (!GetTransaction(txin.prevout.hash, txPrev, hashBlockPrev, true)) {
-            LogPrintf("GetCoinAge: failed to find vin transaction \n");
-            continue; // previous transaction not in main chain
-        }
-
-        BlockMap::iterator it = mapBlockIndex.find(hashBlockPrev);
-        if (it != mapBlockIndex.end())
-            pindex = it->second;
-        else {
-            LogPrintf("GetCoinAge() failed to find block index \n");
-            continue;
-        }
-
-        // Read block header
-        CBlockHeader prevblock = pindex->GetBlockHeader();
-
-        if (prevblock.nTime + nStakeMinAge > nTxTime)
-            continue; // only count coins meeting min age requirement
-
-        if (nTxTime < prevblock.nTime) {
-            LogPrintf("GetCoinAge: Timestamp Violation: txtime less than txPrev.nTime");
-            return false; // Transaction timestamp violation
-        }
-
-        int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
-        bnCentSecond += uint256(nValueIn) * (nTxTime - prevblock.nTime);
-    }
-
-    uint256 bnCoinDay = bnCentSecond / COIN / (24 * 60 * 60);
-    LogPrintf("coin age bnCoinDay=%s\n", bnCoinDay.ToString().c_str());
-    nCoinAge = bnCoinDay.GetCompact();
-    return true;
 }
 
 bool MoneyRange(CAmount nValueOut)
@@ -1691,74 +1605,6 @@ double ConvertBitsToDouble(unsigned int nBits)
     }
 
     return dDiff;
-}
-
-static CAmount GetFullBlockValue(int nHeight)
-{
-
-    if(nHeight == 0) {
-        return 50 * COIN;
-    } else if (nHeight == 1) {
-        return Params().premineAmt;
-    }
-
-    if(sporkManager.IsSporkActive(SPORK_15_BLOCK_VALUE)) {
-        MultiValueSporkList<BlockSubsiditySporkValue> vBlockSubsiditySporkValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_15_BLOCK_VALUE), vBlockSubsiditySporkValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
-        BlockSubsiditySporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockSubsiditySporkValues, nHeight, nBlockTime);
-
-        if(activeSpork.IsValid()) {
-            // we expect that this value is in coins, not in satoshis
-            return activeSpork.nBlockSubsidity * COIN;
-        }
-    }
-
-    CAmount nSubsidy = 1250;
-    auto nSubsidyHalvingInterval = Params().SubsidyHalvingInterval();
-    // first two intervals == two years, same amount 1250
-    for (int i = nSubsidyHalvingInterval * 2; i <= nHeight; i += nSubsidyHalvingInterval) {
-        nSubsidy -= 100;
-    }
-
-    return std::max<CAmount>(nSubsidy, 250) * COIN;
-}
-
-CBlockRewards GetBlockSubsidity(int nHeight)
-{
-    CAmount nSubsidy = GetFullBlockValue(nHeight);
-
-    if(nHeight <= Params().LAST_POW_BLOCK()) {
-        return CBlockRewards(nSubsidy, 0, 0, 0, 0, 0);
-    }
-
-    CAmount nLotteryPart = (nHeight >= Params().GetLotteryBlockStartBlock()) ? (50 * COIN) : 0;
-
-    nSubsidy -= nLotteryPart;
-
-    auto helper = [nSubsidy](int nStakePercentage, int nMasternodePercentage, int nTreasuryPercentage, int nProposalsPercentage, int nCharityPercentage) {
-        auto helper = [nSubsidy](int percentage) {
-            return (nSubsidy * percentage) / 100;
-        };
-
-        return CBlockRewards(helper(nStakePercentage), helper(nMasternodePercentage), helper(nTreasuryPercentage), helper(nCharityPercentage), 50 * COIN, helper(nProposalsPercentage));
-    };
-
-
-    if(sporkManager.IsSporkActive(SPORK_13_BLOCK_PAYMENTS)) {
-        MultiValueSporkList<BlockPaymentSporkValue> vBlockPaymentsValues;
-        CSporkManager::ConvertMultiValueSporkVector(sporkManager.GetMultiValueSpork(SPORK_13_BLOCK_PAYMENTS), vBlockPaymentsValues);
-        auto nBlockTime = chainActive[nHeight] ? chainActive[nHeight]->nTime : GetAdjustedTime();
-        BlockPaymentSporkValue activeSpork = CSporkManager::GetActiveMultiValueSpork(vBlockPaymentsValues, nHeight, nBlockTime);
-
-        if(activeSpork.IsValid()) {
-            // we expect that this value is in coins, not in satoshis
-            return helper(activeSpork.nStakeReward, activeSpork.nMasternodeReward,
-                          activeSpork.nTreasuryReward, activeSpork.nProposalsReward, activeSpork.nCharityReward);
-        }
-    }
-
-    return helper(38, 45, 16, 0, 1);
 }
 
 bool IsInitialBlockDownload()	//2446
@@ -6165,10 +6011,3 @@ public:
         mapOrphanTransactionsByPrev.clear();
     }
 } instance_of_cmaincleanup;
-
-string CBlockRewards::ToString() const
-{
-    return strprintf("BlockRewards(nStakeReward=%s, nMasternodeReward=%s, nTreasuryReward=%s, nCharityReward=%s, nLotteryReward=%s, nProposalsReward=%s)",
-                     FormatMoney(nStakeReward), FormatMoney(nMasternodeReward), FormatMoney(nTreasuryReward),
-                     FormatMoney(nCharityReward), FormatMoney(nLotteryReward), FormatMoney(nProposalsReward));
-}

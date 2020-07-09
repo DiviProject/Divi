@@ -20,7 +20,6 @@
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
-#include "masternode-budget.h"
 #include "masternode-payments.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
@@ -39,7 +38,9 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
-#include "validationinterface.h"
+#include "NotificationInterface.h"
+#include "FeeAndPriorityCalculator.h"
+
 #ifdef ENABLE_WALLET
 #include "db.h"
 #include "wallet.h"
@@ -68,7 +69,7 @@
 
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
-int nWalletBackups = 100;
+int nWalletBackups = 20;
 #endif
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
@@ -429,7 +430,8 @@ std::string HelpMessage(HelpMessageMode mode)
 
 #ifdef ENABLE_WALLET
     strUsage += HelpMessageGroup(_("Wallet options:"));
-    strUsage += HelpMessageOpt("-createwalletbackups=<n>", _("Number of automatic wallet backups (default: 10)"));
+    strUsage += HelpMessageOpt("-monthlybackups=<n>", _("Number of automatic (monthly) wallet backups (default: 12)"));
+    strUsage += HelpMessageOpt("-createwalletbackups=<n>", _("Number of automatic wallet backups (default: 20)"));
     strUsage += HelpMessageOpt("-disablewallet", _("Do not load the wallet and disable wallet RPC calls"));
     strUsage += HelpMessageOpt("-keypool=<n>", strprintf(_("Set key pool size to <n> (default: %u)"), 100));
     if (GetBoolArg("-help-debug", false))
@@ -995,7 +997,8 @@ bool BackupWallet(std::string strDataDir, bool fDisableWallet)
 #ifdef ENABLE_WALLET
     std::string strWalletFile = GetArg("-wallet", "wallet.dat");
     if (!fDisableWallet) {
-        WalletBackupFeatureContainer walletBackupFeatureContainer(nWalletBackups, strWalletFile, strDataDir);
+        WalletBackupFeatureContainer walletBackupFeatureContainer(
+            GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
         LogPrintf("backing up wallet\n");
         if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(strDataDir, strWalletFile))
         {

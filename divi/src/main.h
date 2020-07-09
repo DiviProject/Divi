@@ -14,6 +14,7 @@
 
 #include "amount.h"
 #include "blockmap.h"
+#include "BlockRewards.h"
 #include "chain.h"
 #include "chainparams.h"
 #include "coins.h"
@@ -30,6 +31,7 @@
 #include "uint256.h"
 #include "undo.h"
 #include "spentindex.h"
+#include "FeeRate.h"
 
 #include <algorithm>
 #include <exception>
@@ -50,7 +52,7 @@ class CSporkDB;
 class CBloomFilter;
 class CInv;
 class CScriptCheck;
-class CValidationInterface;
+class NotificationInterface;
 class CValidationState;
 
 struct CBlockTemplate;
@@ -169,9 +171,9 @@ extern CBlockIndex* pindexBestHeader;
 static const uint64_t nMinDiskSpace = 52428800;
 
 /** Register a wallet to receive updates from core */
-void RegisterValidationInterface(CValidationInterface* pwalletIn);
+void RegisterValidationInterface(NotificationInterface* pwalletIn);
 /** Unregister a wallet from core */
-void UnregisterValidationInterface(CValidationInterface* pwalletIn);
+void UnregisterValidationInterface(NotificationInterface* pwalletIn);
 /** Unregister all wallets from core */
 void UnregisterAllValidationInterfaces();
 /** Push an updated transaction to all registered wallets */
@@ -187,7 +189,7 @@ void UnregisterNodeSignals(CNodeSignals& nodeSignals);
  * block is made active. Note that it does not, however, guarantee that the
  * specific block passed to it has been checked for validity!
  * 
- * @param[out]  state   This may be set to an Error state if any error occurred processing it, including during validation/connection/etc of otherwise unrelated blocks during reorganisation; or it may be set to an Invalid state if pblock is itself invalid (but this is not guaranteed even when the block is checked). If you want to *possibly* get feedback on whether pblock is valid, you must also install a CValidationInterface - this will have its BlockChecked method called whenever *any* block completes validation.
+ * @param[out]  state   This may be set to an Error state if any error occurred processing it, including during validation/connection/etc of otherwise unrelated blocks during reorganisation; or it may be set to an Invalid state if pblock is itself invalid (but this is not guaranteed even when the block is checked). If you want to *possibly* get feedback on whether pblock is valid, you must also install a NotificationInterface - this will have its BlockChecked method called whenever *any* block completes validation.
  * @param[in]   pfrom   The node which we are receiving the block from; it is added to mapBlockSource and may be penalised if the block is invalid.
  * @param[in]   pblock  The block we want to process.
  * @param[out]  dbp     If pblock is stored to disk (or already there), this will be set to its location.
@@ -244,35 +246,6 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
 
-
-struct CBlockRewards {
-    CBlockRewards(CAmount nStakeReward, CAmount nMasternodeReward, CAmount nTreasuryReward,
-                 CAmount nCharityReward, CAmount nLotteryReward, CAmount nProposalsReward) :
-        nStakeReward(nStakeReward),
-        nMasternodeReward(nMasternodeReward),
-        nTreasuryReward(nTreasuryReward),
-        nCharityReward(nCharityReward),
-        nLotteryReward(nLotteryReward),
-        nProposalsReward(nProposalsReward)
-    { }
-
-    std::string ToString() const;
-
-    const CAmount nStakeReward;
-    const CAmount nMasternodeReward;
-    const CAmount nTreasuryReward;
-    const CAmount nCharityReward;
-    const CAmount nLotteryReward;
-    const CAmount nProposalsReward;
-
-    CAmount total() const
-    {
-        return nStakeReward + nMasternodeReward + nTreasuryReward + nCharityReward + nLotteryReward + nProposalsReward;
-    }
-};
-
-CBlockRewards GetBlockSubsidity(int nHeight);
-
 /** Create a new block index entry for a given block hash */
 CBlockIndex* InsertBlockIndex(uint256 hash);
 /** Abort with a message */
@@ -292,7 +265,6 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
 
 int GetInputAge(CTxIn& vin);
 int GetInputAgeIX(uint256 nTXHash, CTxIn& vin);
-bool GetCoinAge(const CTransaction& tx, unsigned int nTxTime, uint64_t& nCoinAge);
 int GetIXConfirmations(uint256 nTXHash);
 
 struct CNodeStateStats {
@@ -883,20 +855,4 @@ bool GetAddressUnspent(uint160 addressHash, int type,
                       std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &unspentOutputs);
 bool GetSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
 
-/*
-class CValidationInterface
-{
-protected:
-    virtual void SyncTransaction(const CTransaction& tx, const CBlock* pblock){};
-    virtual void EraseFromWallet(const uint256& hash){};
-    virtual void SetBestChain(const CBlockLocator& locator){};
-    virtual bool UpdatedTransaction(const uint256& hash) { return false; };
-    virtual void Inventory(const uint256& hash){};
-    virtual void ResendWalletTransactions(){};
-    virtual void BlockChecked(const CBlock&, const CValidationState&){};
-    friend void ::RegisterValidationInterface(CValidationInterface*);
-    friend void ::UnregisterValidationInterface(CValidationInterface*);
-    friend void ::UnregisterAllValidationInterfaces();
-};
-*/
 #endif // BITCOIN_MAIN_H

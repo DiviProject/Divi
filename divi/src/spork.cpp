@@ -4,12 +4,13 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "spork.h"
+
 #include "base58.h"
 #include "key.h"
 #include "main.h"
-#include "masternode-budget.h"
 #include "net.h"
 #include "protocol.h"
+#include "obfuscation.h"
 #include "sync.h"
 #include "sporkdb.h"
 #include "utiltime.h"
@@ -27,7 +28,7 @@ CSporkManager sporkManager;
 static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_2_SWIFTTX_ENABLED,                "0"},             // ON
     {SPORK_3_SWIFTTX_BLOCK_FILTERING,        "0"},             // ON
-    {SPORK_5_INSTANTSEND_MAX_VALUE,          "1000"},          // 1000 PIVX
+    {SPORK_5_INSTANTSEND_MAX_VALUE,          "1000"},          // 1000 DIVI
     {SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT, "1537971708"},    // ON
     {SPORK_9_SUPERBLOCKS_ENABLED,            "4070908800"},    // OFF
     {SPORK_10_MASTERNODE_PAY_UPDATED_NODES,  "4070908800"},    // OFF

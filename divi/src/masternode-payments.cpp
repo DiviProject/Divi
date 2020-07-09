@@ -187,6 +187,139 @@ LotteryCoinstakes CalculateLotteryWinners(const CBlock &block, const CBlockIndex
     return LotteryWinnersCalculator(chainParameters,chainActive, sporkManager,subsidyCointainer.superblockHeightValidator()).CalculateLotteryWinners(block,prevBlockIndex,nHeight);
 }
 
+CMasternodePayee::CMasternodePayee()
+{
+    scriptPubKey = CScript();
+    nVotes = 0;
+}
+
+CMasternodePayee::CMasternodePayee(CScript payee, int nVotesIn)
+{
+    scriptPubKey = payee;
+    nVotes = nVotesIn;
+}
+
+CMasternodeBlockPayees::CMasternodeBlockPayees()
+{
+    nBlockHeight = 0;
+    vecPayments.clear();
+}
+CMasternodeBlockPayees::CMasternodeBlockPayees(int nBlockHeightIn)
+{
+    nBlockHeight = nBlockHeightIn;
+    vecPayments.clear();
+}
+
+void CMasternodeBlockPayees::AddPayee(CScript payeeIn, int nIncrement)
+{
+    LOCK(cs_vecPayments);
+
+    BOOST_FOREACH (CMasternodePayee& payee, vecPayments) {
+        if (payee.scriptPubKey == payeeIn) {
+            payee.nVotes += nIncrement;
+            return;
+        }
+    }
+
+    CMasternodePayee c(payeeIn, nIncrement);
+    vecPayments.push_back(c);
+}
+
+bool CMasternodeBlockPayees::GetPayee(CScript& payee)
+{
+    LOCK(cs_vecPayments);
+
+    int nVotes = -1;
+    BOOST_FOREACH (CMasternodePayee& p, vecPayments) {
+        if (p.nVotes > nVotes) {
+            payee = p.scriptPubKey;
+            nVotes = p.nVotes;
+        }
+    }
+
+    return (nVotes > -1);
+}
+
+bool CMasternodeBlockPayees::HasPayeeWithVotes(CScript payee, int nVotesReq)
+{
+    LOCK(cs_vecPayments);
+
+    BOOST_FOREACH (CMasternodePayee& p, vecPayments) {
+        if (p.nVotes >= nVotesReq && p.scriptPubKey == payee) return true;
+    }
+
+    return false;
+}
+
+
+CMasternodePaymentWinner::CMasternodePaymentWinner()
+{
+    nBlockHeight = 0;
+    vinMasternode = CTxIn();
+    payee = CScript();
+}
+
+CMasternodePaymentWinner::CMasternodePaymentWinner(CTxIn vinIn)
+{
+    nBlockHeight = 0;
+    vinMasternode = vinIn;
+    payee = CScript();
+}
+
+uint256 CMasternodePaymentWinner::GetHash() const
+{
+    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+    ss << payee;
+    ss << nBlockHeight;
+    ss << vinMasternode.prevout;
+
+    return ss.GetHash();
+}
+
+void CMasternodePaymentWinner::AddPayee(CScript payeeIn)
+{
+    payee = payeeIn;
+}
+
+std::string CMasternodePaymentWinner::ToString()
+{
+    std::string ret = "";
+    ret += vinMasternode.ToString();
+    ret += ", " + boost::lexical_cast<std::string>(nBlockHeight);
+    ret += ", " + payee.ToString();
+    ret += ", " + boost::lexical_cast<std::string>((int)vchSig.size());
+    return ret;
+}
+
+CMasternodePayments::CMasternodePayments()
+{
+    nSyncedFromPeer = 0;
+    nLastBlockHeight = 0;
+}
+
+void CMasternodePayments::Clear()
+{
+    LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
+    mapMasternodeBlocks.clear();
+    mapMasternodePayeeVotes.clear();
+}
+
+bool CMasternodePayments::CanVote(COutPoint outMasternode, int nBlockHeight)
+{
+    LOCK(cs_mapMasternodePayeeVotes);
+
+    if (mapMasternodesLastVote.count(outMasternode.hash + outMasternode.n)) {
+        if (mapMasternodesLastVote[outMasternode.hash + outMasternode.n] == nBlockHeight) {
+            return false;
+        }
+    }
+
+    //record this masternode voted
+    mapMasternodesLastVote[outMasternode.hash + outMasternode.n] = nBlockHeight;
+    return true;
+}
+
+
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();

@@ -22,6 +22,7 @@
 
 #include <SuperblockHelpers.h>
 #include <LotteryWinnersCalculator.h>
+#include <BlockIncentivesPopulator.h>
 
 #define MNPAYMENTS_SIGNATURES_REQUIRED 6
 #define MNPAYMENTS_SIGNATURES_TOTAL 10
@@ -79,20 +80,15 @@ static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rew
 
 void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake)
 {
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    if (!pindexPrev) return;
-
-    SuperblockSubsidyContainer superblockSubsidies(Params());
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    if (heightValidator.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
-        FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
-    }
-    else if(heightValidator.IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
-        FillLotteryPayment(txNew, payments, pindexPrev);
-    }
-    else {
-        masternodePayments.FillBlockPayee(txNew, payments, fProofOfStake);
-    }
+    const CChainParams& chainParameters = Params();
+    SuperblockSubsidyContainer subsidyContainer(chainParameters);
+    return BlockIncentivesPopulator(
+        chainParameters,
+        chainActive,
+        masternodePayments,
+        subsidyContainer.superblockHeightValidator(),
+        subsidyContainer.blockSubsidiesProvider())
+        .FillBlockPayee(txNew,payments,newBlockHeight,fProofOfStake);
 }
 
 static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoinstakes vRequiredWinnersCoinstake)

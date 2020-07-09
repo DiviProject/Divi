@@ -22,7 +22,7 @@ extern CCriticalSection cs_mapMasternodePayeeVotes;
 extern CMasternodePayments masternodePayments;
 
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);
-void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake);
+void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake);
 
 LotteryCoinstakes CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
 

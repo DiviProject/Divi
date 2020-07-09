@@ -33,6 +33,6 @@ public:
         CMasternodePayments& masternodePayments,
         const I_SuperblockHeightValidator& heightValidator,
         const I_BlockSubsidyProvider& blockSubsidies);
-    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake);
+    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake);
 };
 #endif // BLOCK_INCENTIVES_POPULATOR_H

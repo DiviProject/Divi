@@ -77,7 +77,7 @@ static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rew
     }
 }
 
-void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake)
+void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return;

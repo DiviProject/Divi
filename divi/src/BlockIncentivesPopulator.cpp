@@ -63,7 +63,7 @@ void BlockIncentivesPopulator::FillLotteryPayment(CMutableTransaction &tx, const
     }
 }
 
-void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake)
+void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake)
 {
     CBlockIndex* pindexPrev = activeChain_.Tip();
     if (!pindexPrev) return;

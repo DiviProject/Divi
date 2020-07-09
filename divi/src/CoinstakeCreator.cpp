@@ -183,7 +183,10 @@ bool CoinstakeCreator::CreateCoinStake(
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
     SuperblockSubsidyContainer subsidiesContainer(Params());
-    auto blockSubsidity = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(chainActive.Tip()->nHeight + 1);
+
+    const CBlockIndex* chainTip = chainActive.Tip();
+    int newBlockHeight = chainTip->nHeight + 1;
+    auto blockSubsidity = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(newBlockHeight);
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins) 
     {
@@ -211,7 +214,7 @@ bool CoinstakeCreator::CreateCoinStake(
         txNew.vout[1].nValue = nCredit;
     }
 
-    FillBlockPayee(txNew, blockSubsidity, true);
+    FillBlockPayee(txNew, blockSubsidity, newBlockHeight, true);
 
     int nIn = 0;
     for (const CWalletTx* pcoin : vwtxPrev) {

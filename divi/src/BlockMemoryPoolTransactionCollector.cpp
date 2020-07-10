@@ -6,7 +6,6 @@
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "pow.h"
-#include "SuperblockHelpers.h"
 #include "txmempool.h"
 #include "utiltime.h"
 #include "timedata.h"
@@ -47,7 +46,6 @@ BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
 
 }
 
-
 void BlockMemoryPoolTransactionCollector::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const
 {
     block->nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
@@ -55,18 +53,6 @@ void BlockMemoryPoolTransactionCollector::UpdateTime(CBlockHeader* block, const 
     // Updating time can change work required on testnet:
     if (Params().AllowMinDifficultyBlocks())
         block->nBits = GetNextWorkRequired(pindexPrev, block,Params());
-}
-
-void BlockMemoryPoolTransactionCollector::SetBlockHeaders(CBlock& block, const bool& proofOfStake, const CBlockIndex& indexPrev, std::unique_ptr<CBlockTemplate>& pblocktemplate) const
-{
-    // Fill in header
-    block.hashPrevBlock = indexPrev.GetBlockHash();
-    if (!proofOfStake)
-        UpdateTime(&block, &indexPrev);
-    block.nBits = GetNextWorkRequired(&indexPrev, &block, Params());
-    block.nNonce = 0;
-    block.nAccumulatorCheckpoint = static_cast<uint256>(0);
-    pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(block.vtx[0]);
 }
 
 bool BlockMemoryPoolTransactionCollector::VerifyUTXOIsKnownToMemPool (const CTxIn& txin, bool& fMissingInputs)  const
@@ -145,24 +131,7 @@ void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueu
         }
     }
 }
-void BlockMemoryPoolTransactionCollector::SetCoinBaseTransaction (
-    CBlock& block, 
-    std::unique_ptr<CBlockTemplate>& pblocktemplate,
-    const bool& fProofOfStake, 
-    const int& nHeight,
-    CMutableTransaction& txNew,
-    const CAmount& nFees) const
-{
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    // Compute final coinbase transaction.
-    block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
-    if (!fProofOfStake) {
-        txNew.vout[0].nValue = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
-        txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
-        block.vtx[0] = txNew;
-        pblocktemplate->vTxFees[0] = -nFees;
-    }
-}
+
 bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
     const uint256& hash,
     const bool& fSortedByFee,
@@ -420,9 +389,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
         pblocktemplate,
         nFees);
 
-    SetCoinBaseTransaction(block, pblocktemplate, fProofOfStake, nHeight, txNew, nFees);
-    SetBlockHeaders(block, fProofOfStake, *pindexPrev, pblocktemplate);
-
+    pblocktemplate->vTxFees[0] = -nFees;
     LogPrintf("CreateNewBlock(): block tostring %s\n", block.ToString());
     return true;
 }

@@ -10,6 +10,7 @@
 #include <timedata.h>
 #include <CoinstakeCreator.h>
 #include <boost/thread/thread.hpp>
+#include <SuperblockHelpers.h>
 
 #include <BlockFactory.h>
 
@@ -163,6 +164,37 @@ void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, uns
     block->hashMerkleRoot = block->BuildMerkleTree();
 }
 
+
+void CoinMinter::SetCoinBaseTransaction (
+    std::unique_ptr<CBlockTemplate>& pblocktemplate,
+    const bool& fProofOfStake) const
+{
+    SuperblockSubsidyContainer subsidiesContainer(chainParameters_);
+    // Compute final coinbase transaction.
+    int nHeight = pblocktemplate->previousBlockIndex->nHeight+1;
+    CBlock& block = pblocktemplate->block;
+    CMutableTransaction& coinbaseTx = *pblocktemplate->coinbaseTransaction;
+    block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
+    if (!fProofOfStake) {
+        coinbaseTx.vout[0].nValue = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
+        coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
+        block.vtx[0] = coinbaseTx;
+    }
+}
+
+void CoinMinter::SetBlockHeaders(std::unique_ptr<CBlockTemplate>& pblocktemplate, const bool& proofOfStake) const
+{
+    // Fill in header
+    CBlock& block = pblocktemplate->block;
+    block.hashPrevBlock = pblocktemplate->previousBlockIndex->GetBlockHash();
+    if (!proofOfStake)
+        UpdateTime(&block, pblocktemplate->previousBlockIndex);
+    block.nBits = GetNextWorkRequired(pblocktemplate->previousBlockIndex, &block, chainParameters_);
+    block.nNonce = 0;
+    block.nAccumulatorCheckpoint = static_cast<uint256>(0);
+    pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(block.vtx[0]);
+}
+
 bool CoinMinter::createProofOfStakeBlock(
     unsigned int nExtraNonce, 
     CReserveKey& reserveKey, 
@@ -179,6 +211,8 @@ bool CoinMinter::createProofOfStakeBlock(
         return false;
 
     CBlock* block = &pblocktemplate->block;
+    SetCoinBaseTransaction(pblocktemplate, fProofOfStake);
+    SetBlockHeaders(pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     //Stake miner main
@@ -214,6 +248,8 @@ bool CoinMinter::createProofOfWorkBlock(
         return false;
 
     CBlock* block = &pblocktemplate->block;
+    SetCoinBaseTransaction(pblocktemplate, fProofOfStake);
+    SetBlockHeaders(pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     LogPrintf("Running DIVIMiner with %u transactions in block (%u bytes)\n", block->vtx.size(),

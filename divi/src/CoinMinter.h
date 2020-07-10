@@ -19,6 +19,7 @@ class CBlock;
 class CBlockIndex;
 class CBlockHeader;
 class I_BlockFactory;
+class CBlockTemplate;
 
 class CoinMinter: public I_CoinMinter
 {
@@ -43,6 +44,13 @@ class CoinMinter: public I_CoinMinter
     bool ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const;
     void IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const;
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
+
+    void SetBlockHeaders(
+        std::unique_ptr<CBlockTemplate>& pblocktemplate, 
+        const bool& proofOfStake) const;
+    void SetCoinBaseTransaction (
+        std::unique_ptr<CBlockTemplate>& pblocktemplate,
+        const bool& fProofOfStake) const;
 
     bool createProofOfStakeBlock(
         unsigned int nExtraNonce, 

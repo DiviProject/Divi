@@ -109,7 +109,7 @@ Object CallRPC(const string& strMethod, const Array& params)
             GetConfigFile().string().c_str()));
 
     // Connect to localhost
-    bool fUseSSL = GetBoolArg("-rpcssl", false);
+    bool fUseSSL = settings.GetBoolArg("-rpcssl", false);
     asio::io_service io_service;
     ssl::context context(io_service, ssl::context::sslv23);
     context.set_options(ssl::context::no_sslv2 | ssl::context::no_sslv3);
@@ -179,7 +179,7 @@ int CommandLineRPC(int argc, char* argv[])
         Array params = RPCConvertValues(strMethod, strParams);
 
         // Execute and handle connection failures with -rpcwait
-        const bool fWait = GetBoolArg("-rpcwait", false);
+        const bool fWait = settings.GetBoolArg("-rpcwait", false);
         do {
             try {
                 const Object reply = CallRPC(strMethod, params);

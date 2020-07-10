@@ -12,6 +12,8 @@ BlockFactory::BlockFactory(
     int64_t& lastCoinstakeSearchInterval
     ): wallet_(wallet)
     , lastCoinstakeSearchInterval_(lastCoinstakeSearchInterval)
+    , blockTransactionCollector_(new BlockMemoryPoolTransactionCollector(mempool,cs_main))
+    , coinstakeCreator_( new CoinstakeCreator(wallet_, lastCoinstakeSearchInterval_))
 {
 
 }

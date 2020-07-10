@@ -7,12 +7,16 @@ class CWallet;
 class CReserveKey;
 class CBlock;
 class CMutableTransaction;
+class I_BlockTransactionCollector;
+class I_CoinstakeCreator;
 
 class BlockFactory
 {
 private:
     CWallet& wallet_;
     int64_t& lastCoinstakeSearchInterval_;
+    std::shared_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
+    std::shared_ptr<I_CoinstakeCreator> coinstakeCreator_;
 private:
     void SetRequiredWork(CBlock& block);
     void SetBlockTime(CBlock& block);

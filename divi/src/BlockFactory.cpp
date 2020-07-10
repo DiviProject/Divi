@@ -8,6 +8,16 @@
 
 extern int64_t nLastCoinStakeSearchInterval;
 // Actual mining functions
+BlockFactory::BlockFactory(
+    CWallet& wallet,
+    int64_t& lastCoinstakeSearchInterval
+    ): wallet_(wallet)
+    , lastCoinstakeSearchInterval_(lastCoinstakeSearchInterval)
+{
+
+}
+
+
 void BlockFactory::SetRequiredWork(CBlock& block)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();

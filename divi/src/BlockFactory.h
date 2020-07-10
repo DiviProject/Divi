@@ -11,6 +11,9 @@ class CMutableTransaction;
 class BlockFactory
 {
 private:
+    CWallet& wallet_;
+    int64_t& lastCoinstakeSearchInterval_;
+private:
     void SetRequiredWork(CBlock& block);
     void SetBlockTime(CBlock& block);
     void SetCoinbaseTransactionAndDefaultFees(
@@ -23,6 +26,7 @@ private:
 
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake);
 public:
+    BlockFactory(CWallet& wallet, int64_t& lastCoinstakeSearchInterval);
     CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake);
 };
 #endif // BLOCK_FACTORY_H

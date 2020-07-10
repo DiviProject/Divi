@@ -12,8 +12,8 @@ BlockFactory::BlockFactory(
     int64_t& lastCoinstakeSearchInterval
     ): wallet_(wallet)
     , lastCoinstakeSearchInterval_(lastCoinstakeSearchInterval)
-    , blockTransactionCollector_(new BlockMemoryPoolTransactionCollector(mempool,cs_main))
-    , coinstakeCreator_( new CoinstakeCreator(wallet_, lastCoinstakeSearchInterval_))
+    , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(mempool,cs_main))
+    , coinstakeCreator_( std::make_shared<CoinstakeCreator>(wallet_, lastCoinstakeSearchInterval_))
 {
 
 }
@@ -58,8 +58,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
     unsigned int nTxNewTime = 0;
-    if(CoinstakeCreator(wallet_, lastCoinstakeSearchInterval_)
-        .CreateProofOfStake(
+    if(coinstakeCreator_->CreateProofOfStake(
             block.nBits, 
             block.nTime,
             nLastCoinStakeSearchTime,
@@ -98,8 +97,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
 
     // Collect memory pool transactions into the block
 
-    if(!BlockMemoryPoolTransactionCollector (mempool,cs_main)
-        .CollectTransactionsIntoBlock(
+    if(blockTransactionCollector_->CollectTransactionsIntoBlock(
             pblocktemplate,
             fProofOfStake,
             coinbaseTransaction

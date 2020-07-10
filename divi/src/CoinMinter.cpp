@@ -110,8 +110,8 @@ void CoinMinter::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) 
     block->nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
 
     // Updating time can change work required on testnet:
-    if (Params().AllowMinDifficultyBlocks())
-        block->nBits = GetNextWorkRequired(pindexPrev, block,Params());
+    if (chainParameters_.AllowMinDifficultyBlocks())
+        block->nBits = GetNextWorkRequired(pindexPrev, block,chainParameters_);
 }
 
 bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const

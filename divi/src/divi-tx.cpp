@@ -18,7 +18,7 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
-
+#include "Settings.h"
 #include <stdio.h>
 
 #include <boost/algorithm/string.hpp>
@@ -26,6 +26,7 @@
 
 using namespace boost::assign;
 using namespace std;
+extern Settings& settings;
 
 static bool fCreateBlank;
 static map<string, UniValue> registers;
@@ -44,7 +45,7 @@ static bool AppInitRawTx(int argc, char* argv[])
         return false;
     }
 
-    fCreateBlank = GetBoolArg("-create", false);
+    fCreateBlank = settings.GetBoolArg("-create", false);
 
     if (argc < 2 || ParameterIsSet("-?") || ParameterIsSet("-help")) {
         // First part of help message is specific to this utility
@@ -505,9 +506,9 @@ static void OutputTxHex(const CTransaction& tx)
 
 static void OutputTx(const CTransaction& tx)
 {
-    if (GetBoolArg("-json", false))
+    if (settings.GetBoolArg("-json", false))
         OutputTxJSON(tx);
-    else if (GetBoolArg("-txid", false))
+    else if (settings.GetBoolArg("-txid", false))
         OutputTxHash(tx);
     else
         OutputTxHex(tx);

@@ -21,12 +21,11 @@ private:
         const CMutableTransaction& coinbaseTransaction);
     void CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMutableTransaction& coinbaseTx);
     bool AppendProofOfStakeToBlock(
-        CWallet& pwallet, 
         CBlock& block);
 
-    CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake);
+    CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
     BlockFactory(CWallet& wallet, int64_t& lastCoinstakeSearchInterval);
-    CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake);
+    CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake);
 };
 #endif // BLOCK_FACTORY_H

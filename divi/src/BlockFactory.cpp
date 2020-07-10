@@ -6,7 +6,6 @@
 #include <CoinstakeCreator.h>
 #include <timedata.h>
 
-extern int64_t nLastCoinStakeSearchInterval;
 // Actual mining functions
 BlockFactory::BlockFactory(
     CWallet& wallet,
@@ -47,7 +46,6 @@ void BlockFactory::CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMut
 }
 
 bool BlockFactory::AppendProofOfStakeToBlock(
-    CWallet& pwallet, 
     CBlock& block)
 {
     CMutableTransaction txCoinStake;
@@ -58,7 +56,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
     unsigned int nTxNewTime = 0;
-    if(CoinstakeCreator(pwallet,nLastCoinStakeSearchInterval)
+    if(CoinstakeCreator(wallet_, lastCoinstakeSearchInterval_)
         .CreateProofOfStake(
             block.nBits, 
             block.nTime,
@@ -75,7 +73,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
     return false;
 }
 
-CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)
+CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake)
 {
     // Create new block
     std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
@@ -92,7 +90,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, CWal
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
 
-        if (!AppendProofOfStakeToBlock(*pwallet, block))
+        if (!AppendProofOfStakeToBlock(block))
             return NULL;
     }
 
@@ -112,12 +110,12 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, CWal
     return pblocktemplate.release();
 }
 
-CBlockTemplate* BlockFactory::CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake)
+CBlockTemplate* BlockFactory::CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake)
 {
     CPubKey pubkey;
     if (!reservekey.GetReservedKey(pubkey, false))
         return NULL;
 
     CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
-    return CreateNewBlock(scriptPubKey, pwallet, fProofOfStake);
+    return CreateNewBlock(scriptPubKey, fProofOfStake);
 }

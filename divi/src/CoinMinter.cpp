@@ -18,7 +18,7 @@ int64_t nLastCoinStakeSearchInterval = 0;
 
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake)
 {
-    return BlockFactory(*pwallet,nLastCoinStakeSearchInterval).CreateNewBlockWithKey(reservekey,pwallet,fProofOfStake);
+    return BlockFactory(*pwallet,nLastCoinStakeSearchInterval).CreateNewBlockWithKey(reservekey,fProofOfStake);
 }
 
 CoinMinter::CoinMinter(

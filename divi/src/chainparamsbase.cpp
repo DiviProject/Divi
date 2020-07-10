@@ -10,7 +10,8 @@
 #include <assert.h>
 
 #include <boost/assign/list_of.hpp>
-
+#include "Settings.h"
+extern Settings& settings;
 using namespace boost::assign;
 
 /**
@@ -118,8 +119,8 @@ void SelectBaseParams(CBaseChainParams::Network network)
 
 CBaseChainParams::Network NetworkIdFromCommandLine()
 {
-    bool fRegTest = GetBoolArg("-regtest", false);
-    bool fTestNet = GetBoolArg("-testnet", false);
+    bool fRegTest = settings.GetBoolArg("-regtest", false);
+    bool fTestNet = settings.GetBoolArg("-testnet", false);
 
     if (fTestNet && fRegTest)
         return CBaseChainParams::MAX_NETWORK_TYPES;
@@ -127,7 +128,7 @@ CBaseChainParams::Network NetworkIdFromCommandLine()
         return CBaseChainParams::REGTEST;
     if (fTestNet)
         return CBaseChainParams::TESTNET;
-	if (GetBoolArg("-testnet", false))
+	if (settings.GetBoolArg("-testnet", false))
 		return CBaseChainParams::BETATEST;
     return CBaseChainParams::MAIN;
 }

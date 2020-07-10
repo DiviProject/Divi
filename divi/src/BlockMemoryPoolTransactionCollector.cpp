@@ -410,8 +410,8 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     CAmount nFees = 0;
     CBlock& block = pblocktemplate->block;
 
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    const int nHeight = pindexPrev->nHeight + 1;
+    pblocktemplate->previousBlockIndex = chainActive.Tip();
+    const int nHeight = pblocktemplate->previousBlockIndex->nHeight + 1;
     CCoinsViewCache view(pcoinsTip);
 
     AddTransactionsToBlockIfPossible(

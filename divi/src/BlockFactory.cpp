@@ -87,7 +87,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     CBlock& block = pblocktemplate->block; // pointer for convenience
 
     // Create coinbase tx
-    CMutableTransaction coinbaseTransaction;
+    CMutableTransaction& coinbaseTransaction = *pblocktemplate->coinbaseTransaction;
     CreateCoinbaseTransaction(scriptPubKeyIn, coinbaseTransaction);
     
     SetCoinbaseTransactionAndDefaultFees(pblocktemplate, coinbaseTransaction);

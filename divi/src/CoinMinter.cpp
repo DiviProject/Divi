@@ -16,11 +16,6 @@
 
 int64_t nLastCoinStakeSearchInterval = 0;
 
-CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake)
-{
-    return BlockFactory(*pwallet,nLastCoinStakeSearchInterval).CreateNewBlockWithKey(reservekey,fProofOfStake);
-}
-
 CoinMinter::CoinMinter(
     CWallet* pwallet,
     CChain& chain,
@@ -178,7 +173,7 @@ bool CoinMinter::createProofOfStakeBlock(
     if (!pindexPrev)
         return false;
 
-    std::unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reserveKey, pwallet_, fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey,fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;
@@ -213,7 +208,7 @@ bool CoinMinter::createProofOfWorkBlock(
     if (!pindexPrev)
         return false;
 
-    std::unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reserveKey, pwallet_, fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey,fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;

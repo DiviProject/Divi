@@ -14,7 +14,6 @@
 
 #include "amount.h"
 #include "blockmap.h"
-#include "BlockTemplate.h"
 #include "BlockRewards.h"
 #include "chain.h"
 #include "chainparams.h"
@@ -44,7 +43,6 @@ class CScriptCheck;
 class NotificationInterface;
 class CValidationState;
 
-struct CBlockTemplate;
 struct CNodeStateStats;
 
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/

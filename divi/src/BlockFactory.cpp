@@ -101,7 +101,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
 
     // Collect memory pool transactions into the block
 
-    if(blockTransactionCollector_->CollectTransactionsIntoBlock(
+    if(!blockTransactionCollector_->CollectTransactionsIntoBlock(
             pblocktemplate,
             fProofOfStake,
             coinbaseTransaction

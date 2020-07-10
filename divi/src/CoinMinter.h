@@ -16,6 +16,8 @@ class CMasternodeSync;
 class CReserveKey;
 typedef std::map<unsigned int, unsigned int> HashedBlockMap;
 class CBlock;
+class CBlockIndex;
+class CBlockHeader;
 class CoinMinter: public I_CoinMinter
 {
     bool mintingIsRequested_;
@@ -36,6 +38,8 @@ class CoinMinter: public I_CoinMinter
     bool isAtProofOfStakeHeight() const;
 
     bool ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const;
+    void IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const;
+    void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
 
     bool createProofOfStakeBlock(
         unsigned int nExtraNonce, 

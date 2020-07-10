@@ -122,7 +122,7 @@ void SetCoinbaseTransactionAndDefaultFees(
     pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 }
 
-void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev)
+void CoinMinter::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const
 {
     block->nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
 
@@ -162,7 +162,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
     return true;
 }
 
-void IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce)
+void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const
 {
     // Update nExtraNonce
     static uint256 hashPrevBlock;

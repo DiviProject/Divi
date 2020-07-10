@@ -10,7 +10,13 @@ class CMutableTransaction;
 class I_BlockTransactionCollector;
 class I_CoinstakeCreator;
 
-class BlockFactory
+class I_BlockFactory
+{
+public:
+    virtual ~I_BlockFactory(){}
+    virtual CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake) = 0;
+};
+class BlockFactory: public I_BlockFactory
 {
 private:
     CWallet& wallet_;
@@ -30,6 +36,6 @@ private:
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
     BlockFactory(CWallet& wallet, int64_t& lastCoinstakeSearchInterval);
-    CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake);
+    virtual CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake);
 };
 #endif // BLOCK_FACTORY_H

@@ -18,12 +18,15 @@ typedef std::map<unsigned int, unsigned int> HashedBlockMap;
 class CBlock;
 class CBlockIndex;
 class CBlockHeader;
+class I_BlockFactory;
+
 class CoinMinter: public I_CoinMinter
 {
     bool mintingIsRequested_;
     CWallet* pwallet_;
     CChain& chain_;
     const CChainParams& chainParameters_;
+    std::shared_ptr<I_BlockFactory> blockFactory_;
     std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
     CMasternodeSync& masternodeSync_;
     HashedBlockMap& mapHashedBlocks_;

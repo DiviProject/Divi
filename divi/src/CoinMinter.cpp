@@ -32,6 +32,7 @@ CoinMinter::CoinMinter(
     , pwallet_(pwallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
+    , blockFactory_( std::make_shared<BlockFactory>(*pwallet,nLastCoinStakeSearchInterval) )
     , peerNotifier_(new PeerNotificationOfMintService(peers))
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)

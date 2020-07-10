@@ -50,19 +50,6 @@ static CBitcoinAddress CharityPaymentAddress()
     return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
 }
 
-void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake)
-{
-    const CChainParams& chainParameters = Params();
-    SuperblockSubsidyContainer subsidyContainer(chainParameters);
-    return BlockIncentivesPopulator(
-        chainParameters,
-        chainActive,
-        masternodePayments,
-        subsidyContainer.superblockHeightValidator(),
-        subsidyContainer.blockSubsidiesProvider())
-        .FillBlockPayee(txNew,payments,newBlockHeight,fProofOfStake);
-}
-
 static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoinstakes vRequiredWinnersCoinstake)
 {
     if(vRequiredWinnersCoinstake.empty()) {

@@ -7,6 +7,7 @@
 #include <utilmoneystr.h>
 #include <SuperblockHelpers.h>
 #include <Settings.h>
+#include <BlockIncentivesPopulator.h>
 
 extern Settings& settings;
 
@@ -182,11 +183,12 @@ bool CoinstakeCreator::CreateCoinStake(
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
-    SuperblockSubsidyContainer subsidiesContainer(Params());
+    const CChainParams& chainParameters = Params();
+    SuperblockSubsidyContainer subsidyContainer(chainParameters);
 
     const CBlockIndex* chainTip = chainActive.Tip();
     int newBlockHeight = chainTip->nHeight + 1;
-    auto blockSubsidity = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(newBlockHeight);
+    auto blockSubsidity = subsidyContainer.blockSubsidiesProvider().GetBlockSubsidity(newBlockHeight);
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins) 
     {
@@ -214,7 +216,13 @@ bool CoinstakeCreator::CreateCoinStake(
         txNew.vout[1].nValue = nCredit;
     }
 
-    FillBlockPayee(txNew, blockSubsidity, newBlockHeight, true);
+    BlockIncentivesPopulator(
+        chainParameters,
+        chainActive,
+        masternodePayments,
+        subsidyContainer.superblockHeightValidator(),
+        subsidyContainer.blockSubsidiesProvider())
+        .FillBlockPayee(txNew,blockSubsidity,newBlockHeight,true);
 
     int nIn = 0;
     for (const CWalletTx* pcoin : vwtxPrev) {

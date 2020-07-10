@@ -1,19 +1,113 @@
 #include <BlockFactory.h>
-#include <script.h>
+#include <script/script.h>
 #include <wallet.h>
 #include <BlockTemplate.h>
+#include <BlockMemoryPoolTransactionCollector.h>
+#include <CoinstakeCreator.h>
+#include <timedata.h>
 
-CBlockTemplate* BlockFactory::createNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)
+extern int64_t nLastCoinStakeSearchInterval;
+// Actual mining functions
+void BlockFactory::SetRequiredWork(CBlock& block)
 {
-    return nullptr;
+    CBlockIndex* pindexPrev = chainActive.Tip();
+    block.nBits = GetNextWorkRequired(pindexPrev, &block,Params());
 }
 
-CBlockTemplate* BlockFactory::createNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake)
+void BlockFactory::SetBlockTime(CBlock& block)
+{
+    block.nTime = GetAdjustedTime();
+}
+
+void BlockFactory::SetCoinbaseTransactionAndDefaultFees(
+    std::unique_ptr<CBlockTemplate>& pblocktemplate, 
+    const CMutableTransaction& coinbaseTransaction)
+{
+    pblocktemplate->block.vtx.push_back(coinbaseTransaction);
+    pblocktemplate->vTxFees.push_back(-1);   // updated at end
+    pblocktemplate->vTxSigOps.push_back(-1); // updated at end
+}
+
+void BlockFactory::CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMutableTransaction& txNew)
+{
+    txNew.vin.resize(1);
+    txNew.vin[0].prevout.SetNull();
+    txNew.vout.resize(1);
+    txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+}
+
+bool BlockFactory::AppendProofOfStakeToBlock(
+    CWallet& pwallet, 
+    CBlock& block)
+{
+    CMutableTransaction txCoinStake;
+    SetRequiredWork(block);
+    SetBlockTime(block);
+
+    // ppcoin: if coinstake available add coinstake tx
+    static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
+
+    unsigned int nTxNewTime = 0;
+    if(CoinstakeCreator(pwallet,nLastCoinStakeSearchInterval)
+        .CreateProofOfStake(
+            block.nBits, 
+            block.nTime,
+            nLastCoinStakeSearchTime,
+            txCoinStake,
+            nTxNewTime))
+    {
+        block.nTime = nTxNewTime;
+        block.vtx[0].vout[0].SetEmpty();
+        block.vtx.push_back(CTransaction(txCoinStake));
+        return true;
+    }
+
+    return false;
+}
+
+CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)
+{
+    // Create new block
+    std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
+    if (!pblocktemplate.get())
+        return NULL;
+    CBlock& block = pblocktemplate->block; // pointer for convenience
+
+    // Create coinbase tx
+    CMutableTransaction coinbaseTransaction;
+    CreateCoinbaseTransaction(scriptPubKeyIn, coinbaseTransaction);
+    
+    SetCoinbaseTransactionAndDefaultFees(pblocktemplate, coinbaseTransaction);
+
+    if (fProofOfStake) {
+        boost::this_thread::interruption_point();
+
+        if (!AppendProofOfStakeToBlock(*pwallet, block))
+            return NULL;
+    }
+
+    // Collect memory pool transactions into the block
+
+    if(!BlockMemoryPoolTransactionCollector (mempool,cs_main)
+        .CollectTransactionsIntoBlock(
+            pblocktemplate,
+            fProofOfStake,
+            coinbaseTransaction
+        ))
+    {
+        return NULL;
+    }
+
+    LogPrintf("CreateNewBlock(): releasing template %s\n", "");
+    return pblocktemplate.release();
+}
+
+CBlockTemplate* BlockFactory::CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake)
 {
     CPubKey pubkey;
     if (!reservekey.GetReservedKey(pubkey, false))
         return NULL;
 
     CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
-    return CreateNewBlock(scriptPubKey, pwallet_, fProofOfStake);
+    return CreateNewBlock(scriptPubKey, pwallet, fProofOfStake);
 }

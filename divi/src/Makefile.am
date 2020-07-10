@@ -166,6 +166,7 @@ BITCOIN_CORE_H = \
   BlockFileOpener.h \
   BlockDiskAccessor.h \
   BlockTemplate.h \
+  BlockFactory.h \
   masternode.h \
   masternode-payments.h \
   LotteryCoinstakes.h \
@@ -283,6 +284,7 @@ libbitcoin_server_a_SOURCES = \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
   main.cpp \
+  BlockFactory.cpp \
   BlockFileOpener.cpp \
   BlockDiskAccessor.cpp \
   merkleblock.cpp \

@@ -122,64 +122,6 @@ void SetCoinbaseTransactionAndDefaultFees(
     pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 }
 
-void CoinMinter::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const
-{
-    block->nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
-
-    // Updating time can change work required on testnet:
-    if (Params().AllowMinDifficultyBlocks())
-        block->nBits = GetNextWorkRequired(pindexPrev, block,Params());
-}
-
-bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
-{
-    LogPrintf("%s\n", block->ToString());
-    LogPrintf("generated %s\n", FormatMoney(block->vtx[0].vout[0].nValue));
-
-    // Found a solution
-    {
-        LOCK(cs_main);
-        if (block->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            return error("DIVIMiner : generated block is stale");
-    }
-
-    // Remove key from key pool
-    reservekey.KeepKey();
-
-    // Track how many getdata requests this block gets
-    {
-        LOCK(pwallet_->cs_wallet);
-        pwallet_->mapRequestCount[block->GetHash()] = 0;
-    }
-
-    // Process this block the same as if we had received it from another node
-    CValidationState state;
-    if (!ProcessNewBlock(state, NULL, block))
-        return error("DIVIMiner : ProcessNewBlock, block not accepted");
-
-    peerNotifier_->notifyPeers(block->GetHash());
-
-    return true;
-}
-
-void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const
-{
-    // Update nExtraNonce
-    static uint256 hashPrevBlock;
-    if (hashPrevBlock != block->hashPrevBlock) {
-        nExtraNonce = 0;
-        hashPrevBlock = block->hashPrevBlock;
-    }
-    ++nExtraNonce;
-    unsigned int nHeight = pindexPrev->nHeight + 1; // Height first in coinbase required for block.version=2
-    CMutableTransaction txCoinbase(block->vtx[0]);
-    txCoinbase.vin[0].scriptSig = (CScript() << nHeight << CScriptNum(nExtraNonce)) + COINBASE_FLAGS;
-    assert(txCoinbase.vin[0].scriptSig.size() <= 100);
-
-    block->vtx[0] = txCoinbase;
-    block->hashMerkleRoot = block->BuildMerkleTree();
-}
-
 CMutableTransaction CreateCoinbaseTransaction(const CScript& scriptPubKeyIn)
 {
     CMutableTransaction txNew;
@@ -263,6 +205,64 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
 
     CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
     return CreateNewBlock(scriptPubKey, pwallet, fProofOfStake);
+}
+
+void CoinMinter::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const
+{
+    block->nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
+
+    // Updating time can change work required on testnet:
+    if (Params().AllowMinDifficultyBlocks())
+        block->nBits = GetNextWorkRequired(pindexPrev, block,Params());
+}
+
+bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
+{
+    LogPrintf("%s\n", block->ToString());
+    LogPrintf("generated %s\n", FormatMoney(block->vtx[0].vout[0].nValue));
+
+    // Found a solution
+    {
+        LOCK(cs_main);
+        if (block->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+            return error("DIVIMiner : generated block is stale");
+    }
+
+    // Remove key from key pool
+    reservekey.KeepKey();
+
+    // Track how many getdata requests this block gets
+    {
+        LOCK(pwallet_->cs_wallet);
+        pwallet_->mapRequestCount[block->GetHash()] = 0;
+    }
+
+    // Process this block the same as if we had received it from another node
+    CValidationState state;
+    if (!ProcessNewBlock(state, NULL, block))
+        return error("DIVIMiner : ProcessNewBlock, block not accepted");
+
+    peerNotifier_->notifyPeers(block->GetHash());
+
+    return true;
+}
+
+void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const
+{
+    // Update nExtraNonce
+    static uint256 hashPrevBlock;
+    if (hashPrevBlock != block->hashPrevBlock) {
+        nExtraNonce = 0;
+        hashPrevBlock = block->hashPrevBlock;
+    }
+    ++nExtraNonce;
+    unsigned int nHeight = pindexPrev->nHeight + 1; // Height first in coinbase required for block.version=2
+    CMutableTransaction txCoinbase(block->vtx[0]);
+    txCoinbase.vin[0].scriptSig = (CScript() << nHeight << CScriptNum(nExtraNonce)) + COINBASE_FLAGS;
+    assert(txCoinbase.vin[0].scriptSig.size() <= 100);
+
+    block->vtx[0] = txCoinbase;
+    block->hashMerkleRoot = block->BuildMerkleTree();
 }
 
 bool CoinMinter::createProofOfStakeBlock(

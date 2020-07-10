@@ -9,9 +9,13 @@
 // Actual mining functions
 BlockFactory::BlockFactory(
     CWallet& wallet,
-    int64_t& lastCoinstakeSearchInterval
+    int64_t& lastCoinstakeSearchInterval,
+    CChain& chain, 
+    const CChainParams& chainParameters
     ): wallet_(wallet)
     , lastCoinstakeSearchInterval_(lastCoinstakeSearchInterval)
+    , chain_(chain)
+    , chainParameters_(chainParameters)
     , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(mempool,cs_main))
     , coinstakeCreator_( std::make_shared<CoinstakeCreator>(wallet_, lastCoinstakeSearchInterval_))
 {

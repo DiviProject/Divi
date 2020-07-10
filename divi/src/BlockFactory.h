@@ -9,6 +9,8 @@ class CBlock;
 class CMutableTransaction;
 class I_BlockTransactionCollector;
 class I_CoinstakeCreator;
+class CChain;
+class CChainParams;
 
 class I_BlockFactory
 {
@@ -21,6 +23,8 @@ class BlockFactory: public I_BlockFactory
 private:
     CWallet& wallet_;
     int64_t& lastCoinstakeSearchInterval_;
+    CChain& chain_;
+    const CChainParams& chainParameters_;
     std::shared_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
     std::shared_ptr<I_CoinstakeCreator> coinstakeCreator_;
 private:
@@ -35,7 +39,11 @@ private:
 
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
-    BlockFactory(CWallet& wallet, int64_t& lastCoinstakeSearchInterval);
+    BlockFactory(
+        CWallet& wallet, 
+        int64_t& lastCoinstakeSearchInterval,
+        CChain& chain, 
+        const CChainParams& chainParameters);
     virtual CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake);
 };
 #endif // BLOCK_FACTORY_H

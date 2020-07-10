@@ -84,7 +84,17 @@ public:
     }
 };
 
-class BlockMemoryPoolTransactionCollector
+class I_BlockTransactionCollector
+{
+public:
+    virtual ~I_BlockTransactionCollector(){}
+    virtual bool CollectTransactionsIntoBlock (
+        std::unique_ptr<CBlockTemplate>& pblocktemplate,
+        bool& fProofOfStake,
+        CMutableTransaction& txNew) const = 0;
+};
+
+class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 {
 private:
     CTxMemPool& mempool_;
@@ -164,7 +174,7 @@ public:
     BlockMemoryPoolTransactionCollector(
         CTxMemPool& mempool, 
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
-    bool CollectTransactionsIntoBlock (
+    virtual bool CollectTransactionsIntoBlock (
         std::unique_ptr<CBlockTemplate>& pblocktemplate,
         bool& fProofOfStake,
         CMutableTransaction& txNew) const;

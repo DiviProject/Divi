@@ -165,7 +165,7 @@ void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, uns
 }
 
 
-void CoinMinter::SetCoinBaseTransaction (
+void CoinMinter::SetCoinbaseRewardAndHeight (
     std::unique_ptr<CBlockTemplate>& pblocktemplate,
     const bool& fProofOfStake) const
 {
@@ -211,7 +211,7 @@ bool CoinMinter::createProofOfStakeBlock(
         return false;
 
     CBlock* block = &pblocktemplate->block;
-    SetCoinBaseTransaction(pblocktemplate, fProofOfStake);
+    SetCoinbaseRewardAndHeight(pblocktemplate, fProofOfStake);
     SetBlockHeaders(pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
@@ -248,7 +248,7 @@ bool CoinMinter::createProofOfWorkBlock(
         return false;
 
     CBlock* block = &pblocktemplate->block;
-    SetCoinBaseTransaction(pblocktemplate, fProofOfStake);
+    SetCoinbaseRewardAndHeight(pblocktemplate, fProofOfStake);
     SetBlockHeaders(pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 

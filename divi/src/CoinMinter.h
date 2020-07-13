@@ -48,7 +48,7 @@ class CoinMinter: public I_CoinMinter
     void SetBlockHeaders(
         std::unique_ptr<CBlockTemplate>& pblocktemplate, 
         const bool& proofOfStake) const;
-    void SetCoinBaseTransaction (
+    void SetCoinbaseRewardAndHeight (
         std::unique_ptr<CBlockTemplate>& pblocktemplate,
         const bool& fProofOfStake) const;
 

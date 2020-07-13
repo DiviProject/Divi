@@ -25,6 +25,7 @@ BlockFactory::BlockFactory(
 
 void BlockFactory::SetRequiredWork(CBlock& block)
 {
+    LOCK(cs_main);
     CBlockIndex* pindexPrev = chain_.Tip();
     block.nBits = GetNextWorkRequired(pindexPrev, &block,chainParameters_);
 }

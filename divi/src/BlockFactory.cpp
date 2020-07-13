@@ -29,7 +29,6 @@ BlockFactory::BlockFactory(
 
 void BlockFactory::SetRequiredWork(CBlock& block)
 {
-    LOCK(cs_main);
     CBlockIndex* pindexPrev = chain_.Tip();
     block.nBits = GetNextWorkRequired(pindexPrev, &block,chainParameters_);
 }
@@ -85,6 +84,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
 
 CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake)
 {
+    LOCK2(mainCS_,mempool_.cs);
     // Create new block
     std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
     if (!pblocktemplate.get())

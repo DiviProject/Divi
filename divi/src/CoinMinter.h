@@ -7,6 +7,8 @@
 
 #include <I_CoinMinter.h>
 
+#include <boost/thread/recursive_mutex.hpp>
+
 class CWallet;
 class CChain;
 class CChainParams;
@@ -20,6 +22,9 @@ class CBlockIndex;
 class CBlockHeader;
 class I_BlockFactory;
 class CBlockTemplate;
+class CTxMemPool;
+template <typename MutexObj>
+class AnnotatedMixin;
 
 class CoinMinter: public I_CoinMinter
 {
@@ -27,6 +32,8 @@ class CoinMinter: public I_CoinMinter
     CWallet* pwallet_;
     CChain& chain_;
     const CChainParams& chainParameters_;
+    CTxMemPool& mempool_;
+    AnnotatedMixin<boost::recursive_mutex>& mainCS_;
     std::shared_ptr<I_BlockFactory> blockFactory_;
     std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
     CMasternodeSync& masternodeSync_;
@@ -66,7 +73,9 @@ public:
         const CChainParams& chainParameters,
         std::vector<CNode*>& peers,
         CMasternodeSync& masternodeSynchronization,
-        HashedBlockMap& mapHashedBlocks);
+        HashedBlockMap& mapHashedBlocks,
+        CTxMemPool& mempool, 
+        AnnotatedMixin<boost::recursive_mutex>& mainCS);
 
     virtual bool CanMintCoins();
     virtual void sleep(uint64_t milliseconds) const;

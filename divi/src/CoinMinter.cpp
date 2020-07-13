@@ -23,12 +23,16 @@ CoinMinter::CoinMinter(
     const CChainParams& chainParameters,
     std::vector<CNode*>& peers,
     CMasternodeSync& masternodeSynchronization,
-    HashedBlockMap& mapHashedBlocks
+    HashedBlockMap& mapHashedBlocks,
+    CTxMemPool& transactionMemoryPool, 
+    AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): mintingIsRequested_(false)
     , pwallet_(pwallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
-    , blockFactory_( std::make_shared<BlockFactory>(*pwallet,nLastCoinStakeSearchInterval,chain_,chainParameters_) )
+    , mempool_(transactionMemoryPool)
+    , mainCS_(mainCS)
+    , blockFactory_( std::make_shared<BlockFactory>(*pwallet,nLastCoinStakeSearchInterval,chain_,chainParameters_, mempool_,mainCS_) )
     , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)

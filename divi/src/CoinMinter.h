@@ -54,12 +54,10 @@ class CoinMinter: public I_CoinMinter
 
     bool createProofOfStakeBlock(
         unsigned int nExtraNonce, 
-        CReserveKey& reserveKey, 
-        bool fProofOfStake) const;
+        CReserveKey& reserveKey) const;
     bool createProofOfWorkBlock(
         unsigned int nExtraNonce, 
-        CReserveKey& reserveKey, 
-        bool fProofOfStake) const;
+        CReserveKey& reserveKey) const;
 
 public:
     CoinMinter(

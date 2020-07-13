@@ -197,9 +197,9 @@ void CoinMinter::SetBlockHeaders(std::unique_ptr<CBlockTemplate>& pblocktemplate
 
 bool CoinMinter::createProofOfStakeBlock(
     unsigned int nExtraNonce, 
-    CReserveKey& reserveKey, 
-    bool fProofOfStake) const
+    CReserveKey& reserveKey) const
 {
+    constexpr const bool fProofOfStake = true;
     bool blockSuccesfullyCreated = false;
     CBlockIndex* pindexPrev = chain_.Tip();
     if (!pindexPrev)
@@ -233,9 +233,9 @@ bool CoinMinter::createProofOfStakeBlock(
 
 bool CoinMinter::createProofOfWorkBlock(
     unsigned int nExtraNonce, 
-    CReserveKey& reserveKey, 
-    bool fProofOfStake) const
+    CReserveKey& reserveKey) const
 {
+    constexpr const bool fProofOfStake = false;
     bool blockSuccesfullyCreated = false;
     unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
     CBlockIndex* pindexPrev = chain_.Tip();
@@ -317,10 +317,10 @@ bool CoinMinter::createNewBlock(
 {
     if(fProofOfStake)
     {
-        return createProofOfStakeBlock(nExtraNonce,reserveKey,fProofOfStake);
+        return createProofOfStakeBlock(nExtraNonce,reserveKey);
     }
     else
     {
-        return createProofOfWorkBlock(nExtraNonce,reserveKey,fProofOfStake);
+        return createProofOfWorkBlock(nExtraNonce,reserveKey);
     }
 }

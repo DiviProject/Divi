@@ -27,10 +27,10 @@ BlockFactory::BlockFactory(
 }
 
 
-void BlockFactory::SetRequiredWork(CBlock& block)
+void BlockFactory::SetRequiredWork(std::unique_ptr<CBlockTemplate>& pBlockTemplate)
 {
-    CBlockIndex* pindexPrev = chain_.Tip();
-    block.nBits = GetNextWorkRequired(pindexPrev, &block,chainParameters_);
+    CBlock& block = pBlockTemplate->block;
+    block.nBits = GetNextWorkRequired(pBlockTemplate->previousBlockIndex, &block,chainParameters_);
 }
 
 void BlockFactory::SetBlockTime(CBlock& block)
@@ -56,10 +56,11 @@ void BlockFactory::CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMut
 }
 
 bool BlockFactory::AppendProofOfStakeToBlock(
-    CBlock& block)
+    std::unique_ptr<CBlockTemplate>& pBlockTemplate)
 {
+    CBlock& block = pBlockTemplate->block;
     CMutableTransaction txCoinStake;
-    SetRequiredWork(block);
+    SetRequiredWork(pBlockTemplate);
     SetBlockTime(block);
 
     // ppcoin: if coinstake available add coinstake tx
@@ -90,6 +91,8 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     if (!pblocktemplate.get())
         return NULL;
     CBlock& block = pblocktemplate->block; // pointer for convenience
+    pblocktemplate->previousBlockIndex = chain_.Tip();
+    if(!pblocktemplate->previousBlockIndex) return NULL;
 
     // Create coinbase tx
     pblocktemplate->coinbaseTransaction = std::make_shared<CMutableTransaction>();
@@ -101,7 +104,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
 
-        if (!AppendProofOfStakeToBlock(block))
+        if (!AppendProofOfStakeToBlock(pblocktemplate))
             return NULL;
     }
 

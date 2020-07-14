@@ -66,7 +66,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
 {
     bool stakingRequirements =
         !(chain_.Tip()->nTime < 1471482000 || 
-        peerNotifier_->havePeersToNotify() || 
+        !peerNotifier_->havePeersToNotify() || 
         pwallet_->IsLocked() || 
         nReserveBalance >= pwallet_->GetBalance() || 
         !masternodeSync_.IsSynced());

@@ -117,7 +117,7 @@ Object CallRPC(const string& strMethod, const Array& params)
     SSLIOStreamDevice<asio::ip::tcp> d(sslStream, fUseSSL);
     iostreams::stream<SSLIOStreamDevice<asio::ip::tcp> > stream(d);
 
-    const bool fConnected = d.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", itostr(BaseParams().RPCPort())));
+    const bool fConnected = d.connect(settings.GetArg("-rpcconnect", "127.0.0.1"), settings.GetArg("-rpcport", itostr(BaseParams().RPCPort())));
     if (!fConnected)
         throw CConnectionFailed("couldn't connect to server");
 

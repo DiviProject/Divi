@@ -389,7 +389,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
         pblocktemplate,
         nFees);
 
-    pblocktemplate->vTxFees[0] = -nFees;
+    if(!fProofOfStake) pblocktemplate->vTxFees[0] = -nFees;
     LogPrintf("CreateNewBlock(): block tostring %s\n", block.ToString());
     return true;
 }

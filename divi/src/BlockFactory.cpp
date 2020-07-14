@@ -90,7 +90,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
     if (!pblocktemplate.get())
         return NULL;
-    CBlock& block = pblocktemplate->block; // pointer for convenience
+
     pblocktemplate->previousBlockIndex = chain_.Tip();
     if(!pblocktemplate->previousBlockIndex) return NULL;
 

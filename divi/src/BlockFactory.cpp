@@ -85,7 +85,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
 
 CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake)
 {
-    LOCK2(mainCS_,mempool_.cs);
+    LOCK(mainCS_);
     // Create new block
     std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
     if (!pblocktemplate.get())

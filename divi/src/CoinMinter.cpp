@@ -126,7 +126,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
 
     // Found a solution
     {
-        LOCK(cs_main);
+        LOCK(mainCS_);
         if (block->hashPrevBlock != chainActive.Tip()->GetBlockHash())
             return error("DIVIMiner : generated block is stale");
     }

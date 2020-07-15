@@ -177,4 +177,29 @@ BOOST_AUTO_TEST_CASE(boolargno)
     BOOST_CHECK(settings.GetBoolArg("-foo", false));
 }
 
+BOOST_AUTO_TEST_CASE(util_ParseParameters)
+{
+    const char *argv_test[] = {"-ignored", "-a", "-b", "-ccc=argument", "-ccc=multiple", "f", "-d=e"};
+
+    settings.ParseParameters(0, (char**)argv_test);
+    BOOST_CHECK(mapArgs.empty() && mapMultiArgs.empty());
+
+    settings.ParseParameters(1, (char**)argv_test);
+    BOOST_CHECK(mapArgs.empty() && mapMultiArgs.empty());
+
+    settings.ParseParameters(5, (char**)argv_test);
+    // expectation: -ignored is ignored (program name argument),
+    // -a, -b and -ccc end up in map, -d ignored because it is after
+    // a non-option argument (non-GNU option parsing)
+    BOOST_CHECK(mapArgs.size() == 3 && mapMultiArgs.size() == 3);
+    BOOST_CHECK(settings.ParameterIsSet("-a") && settings.ParameterIsSet("-b") && settings.ParameterIsSet("-ccc")
+                && !settings.ParameterIsSet("f") && !settings.ParameterIsSet("-d"));
+    BOOST_CHECK(settings.ParameterIsSetForMultiArgs("-a") && settings.ParameterIsSetForMultiArgs("-b") && settings.ParameterIsSetForMultiArgs("-ccc")
+                && !settings.ParameterIsSetForMultiArgs("f") && !settings.ParameterIsSetForMultiArgs("-d"));
+
+    BOOST_CHECK(settings.GetParameter("-a") == "" && settings.GetParameter("-ccc") == "multiple");
+    BOOST_CHECK(mapMultiArgs["-ccc"].size() == 2);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

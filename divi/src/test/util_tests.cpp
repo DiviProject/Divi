@@ -99,30 +99,6 @@ BOOST_AUTO_TEST_CASE(util_DateTimeStrFormat)
     BOOST_CHECK_EQUAL(DateTimeStrFormat("%a, %d %b %Y %H:%M:%S +0000", 1317425777), "Fri, 30 Sep 2011 23:36:17 +0000");
 }
 
-BOOST_AUTO_TEST_CASE(util_ParseParameters)
-{
-    const char *argv_test[] = {"-ignored", "-a", "-b", "-ccc=argument", "-ccc=multiple", "f", "-d=e"};
-
-    ParseParameters(0, (char**)argv_test);
-    BOOST_CHECK(mapArgs.empty() && mapMultiArgs.empty());
-
-    ParseParameters(1, (char**)argv_test);
-    BOOST_CHECK(mapArgs.empty() && mapMultiArgs.empty());
-
-    ParseParameters(5, (char**)argv_test);
-    // expectation: -ignored is ignored (program name argument),
-    // -a, -b and -ccc end up in map, -d ignored because it is after
-    // a non-option argument (non-GNU option parsing)
-    BOOST_CHECK(mapArgs.size() == 3 && mapMultiArgs.size() == 3);
-    BOOST_CHECK(ParameterIsSet("-a") && ParameterIsSet("-b") && ParameterIsSet("-ccc")
-                && !ParameterIsSet("f") && !ParameterIsSet("-d"));
-    BOOST_CHECK(ParameterIsSetForMultiArgs("-a") && ParameterIsSetForMultiArgs("-b") && ParameterIsSetForMultiArgs("-ccc")
-                && !ParameterIsSetForMultiArgs("f") && !ParameterIsSetForMultiArgs("-d"));
-
-    BOOST_CHECK(GetParameter("-a") == "" && GetParameter("-ccc") == "multiple");
-    BOOST_CHECK(mapMultiArgs["-ccc"].size() == 2);
-}
-
 BOOST_AUTO_TEST_CASE(util_GetArg)
 {
     ClearParameter();

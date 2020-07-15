@@ -44,6 +44,9 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
+extern int64_t nLastCoinStakeSearchInterval;
+extern bool fAddressIndex;
+extern CBlockTreeDB* pblocktree;
 Value getinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -93,7 +96,7 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
     obj.push_back(Pair("moneysupply",ValueFromAmount(chainActive.Tip()->nMoneySupply)));
-    
+
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
         obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
@@ -583,7 +586,7 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
     int start = 0;
     int end = 0;
-    
+
     if (params[0].type() == obj_type) {
         Value startValue = find_value(params[0].get_obj(), "start");
         Value endValue = find_value(params[0].get_obj(), "end");
@@ -597,11 +600,11 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!GetAddressIndex((*it).first, (*it).second, addressIndex, start, end)) {
+            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!GetAddressIndex((*it).first, (*it).second, addressIndex)) {
+            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -698,11 +701,11 @@ Value getaddressdeltas(const Array& params, bool fHelp)
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!GetAddressIndex((*it).first, (*it).second, addressIndex, start, end)) {
+            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!GetAddressIndex((*it).first, (*it).second, addressIndex)) {
+            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -790,7 +793,7 @@ Value getaddressbalance(const Array& params, bool fHelp)
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!GetAddressIndex((*it).first, (*it).second, addressIndex)) {
+        if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }
@@ -990,7 +993,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue>> unspentOutputs;
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!GetAddressUnspent((*it).first, (*it).second, unspentOutputs)) {
+        if (!GetAddressUnspent(fAddressIndex,pblocktree,(*it).first, (*it).second, unspentOutputs)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }
@@ -1036,7 +1039,7 @@ Value clearbanned(const Array& params, bool fHelp)
             "\nUnbans all nodes.\n"
             );
     CNode::ClearBanned();
-    return Value();    
+    return Value();
 
 }
 Value listbanned(const Array& params, bool fHelp)
@@ -1048,7 +1051,7 @@ Value listbanned(const Array& params, bool fHelp)
             );
     Object result;
     result.push_back(Pair("banned:",CNode::ListBanned()));
-    return result;    
+    return result;
 
 }
 

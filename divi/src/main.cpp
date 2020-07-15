@@ -1418,8 +1418,13 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
     return true;
 }
 
-bool GetAddressIndex(uint160 addressHash, int type,
-                     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex, int start, int end)
+bool GetAddressIndex(bool fAddressIndex,
+                     CBlockTreeDB* pblocktree,
+                     uint160 addressHash,
+                     int type,
+                     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
+                     int start,
+                     int end)
 {
     if (!fAddressIndex)
         return error("address index not enabled");
@@ -1430,8 +1435,12 @@ bool GetAddressIndex(uint160 addressHash, int type,
     return true;
 }
 
-bool GetAddressUnspent(uint160 addressHash, int type,
-                       std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &unspentOutputs)
+bool GetAddressUnspent(bool fAddressIndex,
+                      CBlockTreeDB* pblocktree,
+                      uint160 addressHash,
+                      int type,
+                      std::vector<std::pair<CAddressUnspentKey,
+                      CAddressUnspentValue> > &unspentOutputs)
 {
     if (!fAddressIndex)
         return error("address index not enabled");
@@ -1654,6 +1663,7 @@ std::map<COutPoint, COutPoint> mapInvalidOutPoints;
 std::map<CBigNum, CAmount> mapInvalidSerials;
 void AddInvalidSpendsToMap(const CBlock& block)
 {
+//TODO: ask geman
 }
 
 // Populate global map (mapInvalidOutPoints) of invalid/fraudulent OutPoints that are banned from being used on the chain.
@@ -1661,6 +1671,7 @@ CAmount nFilteredThroughBittrex = 0;
 bool fListPopulatedAfterLock = false;
 void PopulateInvalidOutPointMap()
 {
+//TODO: ask german
 }
 
 bool ValidOutPoint(const COutPoint out, int nHeight)
@@ -2398,12 +2409,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     return true;
 }
-
+/*TODO
 enum FlushStateMode {
     FLUSH_STATE_IF_NEEDED,
     FLUSH_STATE_PERIODIC,
     FLUSH_STATE_ALWAYS
 };
+*/
 
 /**
  * Update the on-disk chain state.

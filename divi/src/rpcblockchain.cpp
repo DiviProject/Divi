@@ -11,6 +11,7 @@
 #include "rpcserver.h"
 #include "sync.h"
 #include "util.h"
+#include "Settings.h"
 
 #include <stdint.h>
 
@@ -21,6 +22,7 @@
 using namespace json_spirit;
 using namespace std;
 
+extern Settings& settings;
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 
@@ -479,7 +481,7 @@ Value verifychain(const Array& params, bool fHelp)
             HelpExampleCli("verifychain", "") + HelpExampleRpc("verifychain", ""));
 
     int nCheckLevel = 4;
-    int nCheckDepth = GetArg("-checkblocks", 288);
+    int nCheckDepth = settings.GetArg("-checkblocks", 288);
     if (params.size() > 0)
         nCheckDepth = params[1].get_int();
 

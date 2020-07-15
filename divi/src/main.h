@@ -34,6 +34,12 @@
 #include "FeeRate.h"
 #include "libzerocoin/bignum.h"
 
+enum FlushStateMode {
+    FLUSH_STATE_IF_NEEDED,
+    FLUSH_STATE_PERIODIC,
+    FLUSH_STATE_ALWAYS
+};
+
 class CBlockIndex;
 class CBlockTreeDB;
 class CSporkDB;
@@ -168,11 +174,11 @@ void RegisterNodeSignals(CNodeSignals& nodeSignals);
 /** Unregister a network node */
 void UnregisterNodeSignals(CNodeSignals& nodeSignals);
 
-/** 
+/**
  * Process an incoming block. This only returns after the best known valid
  * block is made active. Note that it does not, however, guarantee that the
  * specific block passed to it has been checked for validity!
- * 
+ *
  * @param[out]  state   This may be set to an Error state if any error occurred processing it, including during validation/connection/etc of otherwise unrelated blocks during reorganisation; or it may be set to an Invalid state if pblock is itself invalid (but this is not guaranteed even when the block is checked). If you want to *possibly* get feedback on whether pblock is valid, you must also install a NotificationInterface - this will have its BlockChecked method called whenever *any* block completes validation.
  * @param[in]   pfrom   The node which we are receiving the block from; it is added to mapBlockSource and may be penalised if the block is invalid.
  * @param[in]   pblock  The block we want to process.
@@ -284,7 +290,7 @@ bool MoneyRange(CAmount nValueOut);
 /**
  * Check transaction inputs, and make sure any
  * pay-to-script-hash transactions are evaluating IsStandard scripts
- * 
+ *
  * Why bother? To avoid denial-of-service attacks; an attacker
  * can submit a standard HASH... OP_EQUAL transaction,
  * which will get accepted into blocks. The redemption
@@ -293,14 +299,14 @@ bool MoneyRange(CAmount nValueOut);
  *   DUP CHECKSIG DROP ... repeated 100 times... OP_1
  */
 
-/** 
+/**
  * Check for standard transaction types
  * @param[in] mapInputs    Map of previous transactions that have outputs we're spending
  * @return True if all inputs (scriptSigs) use only standard transaction forms
  */
 bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs);
 
-/** 
+/**
  * Count ECDSA signature operations the old-fashioned (pre-0.6) way
  * @return number of sigops this transaction's outputs will produce when spent
  * @see CTransaction::FetchInputs
@@ -309,7 +315,7 @@ unsigned int GetLegacySigOpCount(const CTransaction& tx);
 
 /**
  * Count ECDSA signature operations in pay-to-script-hash inputs.
- * 
+ *
  * @param[in] mapInputs Map of previous transactions that have outputs we're spending
  * @return maximum number of sigops required to validate this transaction's inputs
  * @see CTransaction::FetchInputs
@@ -370,9 +376,9 @@ public:
 };
 
 
-/** 
+/**
  * Closure representing one script verification
- * Note that this stores references to the spending transaction 
+ * Note that this stores references to the spending transaction
  */
 class CScriptCheck
 {
@@ -588,8 +594,8 @@ extern CChain chainActive;
 /** Global variable that points to the active CCoinsView (protected by cs_main) */
 extern CCoinsViewCache* pcoinsTip;
 
-/** Global variable that points to the active block tree (protected by cs_main) */
 extern CBlockTreeDB* pblocktree;
+/** Global variable that points to the active block tree (protected by cs_main) */
 
 
 /** Global variable that points to the spork database (protected by cs_main) */
@@ -808,11 +814,20 @@ struct CAddressUnspentValue {
     }
 };
 
-bool GetAddressIndex(uint160 addressHash, int type,
+bool GetAddressIndex(bool fAddressIndex,
+                     CBlockTreeDB* pblocktree,
+                     uint160 addressHash,
+                     int type,
                      std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
-                     int start = 0, int end = 0);
-bool GetAddressUnspent(uint160 addressHash, int type,
-                      std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &unspentOutputs);
+                     int start = 0,
+                     int end = 0);
+
+bool GetAddressUnspent(bool fAddressIndex,
+                      CBlockTreeDB* pblocktree,
+                      uint160 addressHash,
+                      int type,
+                      std::vector<std::pair<CAddressUnspentKey,
+                      CAddressUnspentValue> > &unspentOutputs);
 bool GetSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
 
 #endif // BITCOIN_MAIN_H

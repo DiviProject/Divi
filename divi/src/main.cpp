@@ -1414,8 +1414,13 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
     return true;
 }
 
-bool GetAddressIndex(uint160 addressHash, int type,
-                     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex, int start, int end)
+bool GetAddressIndex(bool fAddressIndex,
+                     CBlockTreeDB* pblocktree,
+                     uint160 addressHash,
+                     int type,
+                     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
+                     int start,
+                     int end)
 {
     if (!fAddressIndex)
         return error("address index not enabled");
@@ -1426,8 +1431,12 @@ bool GetAddressIndex(uint160 addressHash, int type,
     return true;
 }
 
-bool GetAddressUnspent(uint160 addressHash, int type,
-                       std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > &unspentOutputs)
+bool GetAddressUnspent(bool fAddressIndex,
+                      CBlockTreeDB* pblocktree,
+                      uint160 addressHash,
+                      int type,
+                      std::vector<std::pair<CAddressUnspentKey,
+                      CAddressUnspentValue> > &unspentOutputs)
 {
     if (!fAddressIndex)
         return error("address index not enabled");
@@ -1650,6 +1659,7 @@ std::map<COutPoint, COutPoint> mapInvalidOutPoints;
 std::map<CBigNum, CAmount> mapInvalidSerials;
 void AddInvalidSpendsToMap(const CBlock& block)
 {
+//TODO: ask geman
 }
 
 // Populate global map (mapInvalidOutPoints) of invalid/fraudulent OutPoints that are banned from being used on the chain.
@@ -1657,6 +1667,7 @@ CAmount nFilteredThroughBittrex = 0;
 bool fListPopulatedAfterLock = false;
 void PopulateInvalidOutPointMap()
 {
+//TODO: ask german
 }
 
 bool ValidOutPoint(const COutPoint out, int nHeight)
@@ -1868,7 +1879,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
         }
 
         // restore inputs
-        if (!tx.IsCoinBase() ) { 
+        if (!tx.IsCoinBase() ) {
             const CTxUndo& txundo = blockUndo.vtxundo[i - 1];
             if (txundo.vprevout.size() != tx.vin.size())
                 return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());
@@ -1945,7 +1956,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
                 return state.Abort("Failed to write address unspent index");
             }
         }
-        
+
         return fClean;
     }
 }
@@ -2051,7 +2062,7 @@ string ValueFromCAmount(const CAmount& amount)
 
 /**
  * Returns true if there are nRequired or more blocks of minVersion or above
- * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart 
+ * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart
  * and going backwards.
  */
 static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired)
@@ -2289,7 +2300,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
     SuperblockSubsidyContainer subsidiesContainer(Params());
     CBlockRewards nBaseExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
-    
+
     CBlockRewards nPoWExpectedMint(nBaseExpectedMint.nStakeReward + nFees, 0, 0, 0, 0, 0);
     const CBlockRewards &nExpectedMint = block.IsProofOfWork() ? nPoWExpectedMint : nBaseExpectedMint;
 
@@ -2394,12 +2405,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     return true;
 }
-
+/*TODO
 enum FlushStateMode {
     FLUSH_STATE_IF_NEEDED,
     FLUSH_STATE_PERIODIC,
     FLUSH_STATE_ALWAYS
 };
+*/
 
 /**
  * Update the on-disk chain state.

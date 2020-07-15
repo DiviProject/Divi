@@ -64,14 +64,16 @@ bool CoinMinter::isAtProofOfStakeHeight() const
 
 bool CoinMinter::satisfiesMintingRequirements() const
 {
-    bool stakingRequirements =
-        !(chain_.Tip()->nTime < 1471482000 || 
-        !peerNotifier_->havePeersToNotify() || 
-        pwallet_->IsLocked() || 
-        nReserveBalance >= pwallet_->GetBalance() || 
-        !masternodeSync_.IsSynced());
-    if(!stakingRequirements) nLastCoinStakeSearchInterval = 0;
-    return stakingRequirements;
+    bool stakingRequirementsAreMet =
+        !(
+            chain_.Tip()->nTime < 1471482000 ||
+            !peerNotifier_->havePeersToNotify() ||
+            pwallet_->IsLocked() ||
+            nReserveBalance >= pwallet_->GetBalance() ||
+            !masternodeSync_.IsSynced()
+        );
+    if(!stakingRequirementsAreMet) nLastCoinStakeSearchInterval = 0;
+    return stakingRequirementsAreMet;
 }
 bool CoinMinter::limitStakingSpeed() const
 {

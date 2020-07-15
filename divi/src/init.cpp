@@ -594,7 +594,7 @@ std::string LicenseInfo()
 
 static void BlockNotifyCallback(const uint256& hashNewTip)
 {
-    std::string strCmd = GetArg("-blocknotify", "");
+    std::string strCmd = settings.GetArg("-blocknotify", "");
 
     boost::replace_all(strCmd, "%s", hashNewTip.GetHex());
     boost::thread t(runCommand, strCmd); // thread runs free
@@ -749,7 +749,7 @@ void SetNetworkingParameters()
             LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
     }
 
-    nConnectTimeout = GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
+    nConnectTimeout = settings.GetArg("-timeout", DEFAULT_CONNECT_TIMEOUT);
     if (nConnectTimeout <= 0)
         nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
 
@@ -789,7 +789,7 @@ bool EnableWalletFeatures()
 bool SetMaxConnectionsAndFileDescriptors(int& nFD)
 {
     int nBind = std::max((int)ParameterIsSet("-bind") + (int)ParameterIsSet("-whitebind"), 1);
-    nMaxConnections = GetArg("-maxconnections", 125);
+    nMaxConnections = settings.GetArg("-maxconnections", 125);
     nMaxConnections = std::max(std::min(nMaxConnections, (int)(FD_SETSIZE - nBind - MIN_CORE_FILEDESCRIPTORS)), 0);
     nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS);
     if (nFD < MIN_CORE_FILEDESCRIPTORS)
@@ -832,7 +832,7 @@ void SetConsistencyChecks()
 void SetNumberOfThreadsToCheckScripts()
 {
     // -par=0 means autodetect, but nScriptCheckThreads==0 means no concurrency
-    nScriptCheckThreads = GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS);
+    nScriptCheckThreads = settings.GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS);
     if (nScriptCheckThreads <= 0)
         nScriptCheckThreads += boost::thread::hardware_concurrency();
     if (nScriptCheckThreads <= 1)
@@ -897,13 +897,13 @@ bool SetTransactionRequirements()
                 GetParameter("-maxtxfee"), ::minRelayTxFee.ToString()));
         }
     }
-    nTxConfirmTarget = GetArg("-txconfirmtarget", 1);
+    nTxConfirmTarget = settings.GetArg("-txconfirmtarget", 1);
     bSpendZeroConfChange = GetBoolArg("-spendzeroconfchange", false);
     bdisableSystemnotifications = GetBoolArg("-disablesystemnotifications", false);
     fSendFreeTransactions = GetBoolArg("-sendfreetransactions", false);
 #endif
     fIsBareMultisigStd = GetBoolArg("-permitbaremultisig", true) != 0;
-    nMaxDatacarrierBytes = GetArg("-datacarriersize", nMaxDatacarrierBytes);
+    nMaxDatacarrierBytes = settings.GetArg("-datacarriersize", nMaxDatacarrierBytes);
     return true;
 }
 
@@ -944,7 +944,7 @@ bool TryLockDataDirectory(const std::string& datadir)
 
 bool CheckWalletFileExists(std::string strDataDir)
 {
-    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+    std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     // Wallet file must be a plain filename without a directory
     if (strWalletFile != boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile))
         return InitError(strprintf(translate("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
@@ -998,10 +998,10 @@ void ClearFoldersForResync()
 bool BackupWallet(std::string strDataDir, bool fDisableWallet)
 {
 #ifdef ENABLE_WALLET
-    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+    std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     if (!fDisableWallet) {
         WalletBackupFeatureContainer walletBackupFeatureContainer(
-            GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
+            settings.GetArg("-createwalletbackups",nWalletBackups), strWalletFile, strDataDir);
         LogPrintf("backing up wallet\n");
         if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(strDataDir, strWalletFile))
         {
@@ -1052,7 +1052,7 @@ bool InitializeP2PNetwork()
     bool proxyRandomize = GetBoolArg("-proxyrandomize", true);
     // -proxy sets a proxy for all outgoing network traffic
     // -noproxy (or -proxy=0) as well as the empty string can be used to not set a proxy, this is the default
-    std::string proxyArg = GetArg("-proxy", "");
+    std::string proxyArg = settings.GetArg("-proxy", "");
     if (proxyArg != "" && proxyArg != "0") {
         CService proxyAddr;
         if (!Lookup(proxyArg.c_str(), proxyAddr, 9050, fNameLookup)) {
@@ -1073,7 +1073,7 @@ bool InitializeP2PNetwork()
     // -onion can be used to set only a proxy for .onion, or override normal proxy for .onion addresses
     // -noonion (or -onion=0) disables connecting to .onion entirely
     // An empty string is used to not override the onion proxy (in which case it defaults to -proxy set above, or none)
-    std::string onionArg = GetArg("-onion", "");
+    std::string onionArg = settings.GetArg("-onion", "");
     if (onionArg != "") {
         if (onionArg == "0") { // Handle -noonion/-onion=0
             SetReachable(NET_TOR, false); // set onions as unreachable
@@ -1138,7 +1138,7 @@ bool InitializeP2PNetwork()
 
 void PruneHDSeedParameterInteraction()
 {
-    if (ParameterIsSet("-hdseed") && IsHex(GetArg("-hdseed", "not hex")) && (ParameterIsSet("-mnemonic") || ParameterIsSet("-mnemonicpassphrase"))) {
+    if (ParameterIsSet("-hdseed") && IsHex(settings.GetArg("-hdseed", "not hex")) && (ParameterIsSet("-mnemonic") || ParameterIsSet("-mnemonicpassphrase"))) {
         ForceRemoveArg("-mnemonic");
         ForceRemoveArg("-mnemonicpassphrase");
         LogPrintf("%s: parameter interaction: can't use -hdseed and -mnemonic/-mnemonicpassphrase together, will prefer -seed\n", __func__);
@@ -1164,7 +1164,7 @@ bool SetSporkKey()
     sporkManager.SetSporkAddress(Params().SporkKey());
     if (ParameterIsSet("-sporkkey")) // spork priv key
     {
-        if (!sporkManager.SetPrivKey(GetArg("-sporkkey", "")))
+        if (!sporkManager.SetPrivKey(settings.GetArg("-sporkkey", "")))
             return InitError(translate("Unable to sign spork message, wrong key?"));
     }
     return true;
@@ -1214,7 +1214,7 @@ void CreateHardlinksForBlocks()
 
 std::pair<size_t,size_t> CalculateDBCacheSizes()
 {
-    size_t nTotalCache = (GetArg("-dbcache", nDefaultDbCache) << 20);
+    size_t nTotalCache = (settings.GetArg("-dbcache", nDefaultDbCache) << 20);
     size_t nBlockTreeDBCache = 0;
     size_t nCoinDBCache = 0;
     if (nTotalCache < (nMinDbCache << 20))
@@ -1285,7 +1285,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         // Flag sent to validation code to let it know it can skip certain checks
         fVerifyingBlocks = true;
 
-        if (!CVerifyDB().VerifyDB(pcoinsdbview, 4, GetArg("-checkblocks", 100))) {
+        if (!CVerifyDB().VerifyDB(pcoinsdbview, 4, settings.GetArg("-checkblocks", 100))) {
             strLoadError = translate("Corrupted block database detected");
             fVerifyingBlocks = false;
             return skipLoadingDueToError;
@@ -1510,7 +1510,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 // ********************************************************* Step 8: load wallet
     std::ostringstream strErrors;
 #ifdef ENABLE_WALLET
-    std::string strWalletFile = GetArg("-wallet", "wallet.dat");
+    std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     if (fDisableWallet) {
         pwalletMain = NULL;
         LogPrintf("Wallet disabled!\n");
@@ -1557,7 +1557,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         }
 
         if (GetBoolArg("-upgradewallet", fFirstRun)) {
-            int nMaxVersion = GetArg("-upgradewallet", 0);
+            int nMaxVersion = settings.GetArg("-upgradewallet", 0);
             if (nMaxVersion == 0) // the -upgradewallet without argument case
             {
                 LogPrintf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
@@ -1574,7 +1574,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         {
             // Create new keyUser and set as default key
             if (GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled()) {
-                if (GetArg("-mnemonicpassphrase", "").size() > 256) {
+                if (settings.GetArg("-mnemonicpassphrase", "").size() > 256) {
                     InitError(translate("Mnemonic passphrase is too long, must be at most 256 characters"));
                     return NULL;
                 }
@@ -1642,7 +1642,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             nWalletDBUpdated++;
 
             // Restore wallet transaction metadata after -zapwallettxes=1
-            if (GetBoolArg("-zapwallettxes", false) && GetArg("-zapwallettxes", "1") != "2") {
+            if (GetBoolArg("-zapwallettxes", false) && settings.GetArg("-zapwallettxes", "1") != "2") {
                 BOOST_FOREACH (const CWalletTx& wtxOld, vWtx) {
                     uint256 hash = wtxOld.GetHash();
                     std::map<uint256, CWalletTx>::iterator mi = pwalletMain->mapWallet.find(hash);
@@ -1706,7 +1706,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     if (fMasterNode) {
         LogPrintf("IS MASTER NODE\n");
-        strMasterNodeAddr = GetArg("-masternodeaddr", "");
+        strMasterNodeAddr = settings.GetArg("-masternodeaddr", "");
 
         LogPrintf(" addr %s\n", strMasterNodeAddr.c_str());
 
@@ -1717,7 +1717,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             }
         }
 
-        strMasterNodePrivKey = GetArg("-masternodeprivkey", "");
+        strMasterNodePrivKey = settings.GetArg("-masternodeprivkey", "");
         if (!strMasterNodePrivKey.empty()) {
             std::string errorMessage;
 
@@ -1751,7 +1751,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     nAnonymizeDiviAmount = 2;
 
     fEnableSwiftTX = false; //GetBoolArg("-enableswifttx", fEnableSwiftTX);
-    nSwiftTXDepth = GetArg("-swifttxdepth", nSwiftTXDepth);
+    nSwiftTXDepth = settings.GetArg("-swifttxdepth", nSwiftTXDepth);
     nSwiftTXDepth = std::min(std::max(nSwiftTXDepth, 0), 60);
 
     //lite mode disables all Masternode and Obfuscation related functionality
@@ -1791,7 +1791,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     // Generate coins in the background
     if (pwalletMain)
-        GenerateDivi(GetBoolArg("-gen", false), pwalletMain, GetArg("-genproclimit", 1));
+        GenerateDivi(GetBoolArg("-gen", false), pwalletMain, settings.GetArg("-genproclimit", 1));
 #endif
 
     // ********************************************************* Step 12: finished

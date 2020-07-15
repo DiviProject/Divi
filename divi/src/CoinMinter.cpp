@@ -176,14 +176,13 @@ void CoinMinter::SetCoinbaseRewardAndHeight (
     std::unique_ptr<CBlockTemplate>& pblocktemplate,
     const bool& fProofOfStake) const
 {
-    SuperblockSubsidyContainer subsidiesContainer(chainParameters_);
     // Compute final coinbase transaction.
     int nHeight = pblocktemplate->previousBlockIndex->nHeight+1;
     CBlock& block = pblocktemplate->block;
     CMutableTransaction& coinbaseTx = *pblocktemplate->coinbaseTransaction;
     block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
     if (!fProofOfStake) {
-        coinbaseTx.vout[0].nValue = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
+        coinbaseTx.vout[0].nValue = subsidyContainer_->blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
         coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
         block.vtx[0] = coinbaseTx;
     }

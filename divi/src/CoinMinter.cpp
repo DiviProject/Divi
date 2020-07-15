@@ -34,6 +34,7 @@ CoinMinter::CoinMinter(
     , mainCS_(mainCS)
     , blockFactory_( std::make_shared<BlockFactory>(*pwallet,nLastCoinStakeSearchInterval,chain_,chainParameters_, mempool_,mainCS_) )
     , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
+    , subsidyContainer_( std::make_shared<SuperblockSubsidyContainer>(chainParameters_) )
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)
     , haveMintableCoins_(false)

@@ -1,6 +1,7 @@
 #ifndef BLOCK_FACTORY_H
 #define BLOCK_FACTORY_H
 #include <memory>
+#include <boost/thread/recursive_mutex.hpp>
 class CBlockTemplate;
 class CScript;
 class CWallet;
@@ -11,6 +12,9 @@ class I_BlockTransactionCollector;
 class I_CoinstakeCreator;
 class CChain;
 class CChainParams;
+class CTxMemPool;
+template <typename MutexObj>
+class AnnotatedMixin;
 
 class I_BlockFactory
 {
@@ -25,6 +29,9 @@ private:
     int64_t& lastCoinstakeSearchInterval_;
     CChain& chain_;
     const CChainParams& chainParameters_;
+    CTxMemPool& mempool_;
+    AnnotatedMixin<boost::recursive_mutex>& mainCS_;
+
     std::shared_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
     std::shared_ptr<I_CoinstakeCreator> coinstakeCreator_;
 private:
@@ -43,7 +50,9 @@ public:
         CWallet& wallet, 
         int64_t& lastCoinstakeSearchInterval,
         CChain& chain, 
-        const CChainParams& chainParameters);
+        const CChainParams& chainParameters,
+        CTxMemPool& mempool, 
+        AnnotatedMixin<boost::recursive_mutex>& mainCS);
     virtual CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake);
 };
 #endif // BLOCK_FACTORY_H

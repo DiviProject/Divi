@@ -84,7 +84,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     boost::this_thread::interruption_point();
     LogPrintf("ThreadStakeMinter started\n");
     try {
-        static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks);
+        static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main);
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
         MinterThread(pwallet, isProofOfStake,minter);
@@ -103,7 +103,7 @@ void static ThreadPoWMinter(void* parg)
     CWallet* pwallet = (CWallet*)parg;
 
     try {
-        static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks);
+        static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main);
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);
         MinterThread(pwallet, isProofOfStake, minter);

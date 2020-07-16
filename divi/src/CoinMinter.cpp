@@ -23,12 +23,16 @@ CoinMinter::CoinMinter(
     const CChainParams& chainParameters,
     std::vector<CNode*>& peers,
     CMasternodeSync& masternodeSynchronization,
-    HashedBlockMap& mapHashedBlocks
+    HashedBlockMap& mapHashedBlocks,
+    CTxMemPool& transactionMemoryPool, 
+    AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): mintingIsRequested_(false)
     , pwallet_(pwallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
-    , blockFactory_( std::make_shared<BlockFactory>(*pwallet,nLastCoinStakeSearchInterval,chain_,chainParameters_) )
+    , mempool_(transactionMemoryPool)
+    , mainCS_(mainCS)
+    , blockFactory_( std::make_shared<BlockFactory>(*pwallet,nLastCoinStakeSearchInterval,chain_,chainParameters_, mempool_,mainCS_) )
     , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)
@@ -165,7 +169,7 @@ void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, uns
 }
 
 
-void CoinMinter::SetCoinBaseTransaction (
+void CoinMinter::SetCoinbaseRewardAndHeight (
     std::unique_ptr<CBlockTemplate>& pblocktemplate,
     const bool& fProofOfStake) const
 {
@@ -197,9 +201,9 @@ void CoinMinter::SetBlockHeaders(std::unique_ptr<CBlockTemplate>& pblocktemplate
 
 bool CoinMinter::createProofOfStakeBlock(
     unsigned int nExtraNonce, 
-    CReserveKey& reserveKey, 
-    bool fProofOfStake) const
+    CReserveKey& reserveKey) const
 {
+    constexpr const bool fProofOfStake = true;
     bool blockSuccesfullyCreated = false;
     CBlockIndex* pindexPrev = chain_.Tip();
     if (!pindexPrev)
@@ -211,7 +215,7 @@ bool CoinMinter::createProofOfStakeBlock(
         return false;
 
     CBlock* block = &pblocktemplate->block;
-    SetCoinBaseTransaction(pblocktemplate, fProofOfStake);
+    SetCoinbaseRewardAndHeight(pblocktemplate, fProofOfStake);
     SetBlockHeaders(pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
@@ -233,9 +237,9 @@ bool CoinMinter::createProofOfStakeBlock(
 
 bool CoinMinter::createProofOfWorkBlock(
     unsigned int nExtraNonce, 
-    CReserveKey& reserveKey, 
-    bool fProofOfStake) const
+    CReserveKey& reserveKey) const
 {
+    constexpr const bool fProofOfStake = false;
     bool blockSuccesfullyCreated = false;
     unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
     CBlockIndex* pindexPrev = chain_.Tip();
@@ -248,7 +252,7 @@ bool CoinMinter::createProofOfWorkBlock(
         return false;
 
     CBlock* block = &pblocktemplate->block;
-    SetCoinBaseTransaction(pblocktemplate, fProofOfStake);
+    SetCoinbaseRewardAndHeight(pblocktemplate, fProofOfStake);
     SetBlockHeaders(pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
@@ -317,10 +321,10 @@ bool CoinMinter::createNewBlock(
 {
     if(fProofOfStake)
     {
-        return createProofOfStakeBlock(nExtraNonce,reserveKey,fProofOfStake);
+        return createProofOfStakeBlock(nExtraNonce,reserveKey);
     }
     else
     {
-        return createProofOfWorkBlock(nExtraNonce,reserveKey,fProofOfStake);
+        return createProofOfWorkBlock(nExtraNonce,reserveKey);
     }
 }

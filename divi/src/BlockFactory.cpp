@@ -11,12 +11,16 @@ BlockFactory::BlockFactory(
     CWallet& wallet,
     int64_t& lastCoinstakeSearchInterval,
     CChain& chain, 
-    const CChainParams& chainParameters
+    const CChainParams& chainParameters,
+    CTxMemPool& transactionMemoryPool, 
+    AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): wallet_(wallet)
     , lastCoinstakeSearchInterval_(lastCoinstakeSearchInterval)
     , chain_(chain)
     , chainParameters_(chainParameters)
-    , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(mempool,cs_main))
+    , mempool_(transactionMemoryPool)
+    , mainCS_(mainCS)
+    , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(mempool_,mainCS_))
     , coinstakeCreator_( std::make_shared<CoinstakeCreator>(wallet_, lastCoinstakeSearchInterval_))
 {
 
@@ -80,6 +84,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
 
 CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake)
 {
+    LOCK2(mainCS_,mempool_.cs);
     // Create new block
     std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
     if (!pblocktemplate.get())
@@ -87,6 +92,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     CBlock& block = pblocktemplate->block; // pointer for convenience
 
     // Create coinbase tx
+    pblocktemplate->coinbaseTransaction = std::make_shared<CMutableTransaction>();
     CMutableTransaction& coinbaseTransaction = *pblocktemplate->coinbaseTransaction;
     CreateCoinbaseTransaction(scriptPubKeyIn, coinbaseTransaction);
     

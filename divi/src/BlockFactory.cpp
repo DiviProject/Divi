@@ -6,12 +6,11 @@
 #include <CoinstakeCreator.h>
 #include <timedata.h>
 
-extern std::map<unsigned int, unsigned int> mapHashedBlocks;
-
 // Actual mining functions
 BlockFactory::BlockFactory(
     CWallet& wallet,
     int64_t& lastCoinstakeSearchInterval,
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     CChain& chain, 
     const CChainParams& chainParameters,
     CTxMemPool& transactionMemoryPool, 
@@ -23,7 +22,7 @@ BlockFactory::BlockFactory(
     , mempool_(transactionMemoryPool)
     , mainCS_(mainCS)
     , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(mempool_,mainCS_))
-    , coinstakeCreator_( std::make_shared<CoinstakeCreator>(wallet_, lastCoinstakeSearchInterval_,mapHashedBlocks))
+    , coinstakeCreator_( std::make_shared<CoinstakeCreator>(wallet_, lastCoinstakeSearchInterval_,hashedBlockTimestamps))
 {
 
 }

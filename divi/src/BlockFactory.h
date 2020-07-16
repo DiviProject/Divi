@@ -2,6 +2,7 @@
 #define BLOCK_FACTORY_H
 #include <memory>
 #include <boost/thread/recursive_mutex.hpp>
+#include <map>
 class CBlockTemplate;
 class CScript;
 class CWallet;
@@ -49,6 +50,7 @@ public:
     BlockFactory(
         CWallet& wallet, 
         int64_t& lastCoinstakeSearchInterval,
+        std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
         CChain& chain, 
         const CChainParams& chainParameters,
         CTxMemPool& mempool, 

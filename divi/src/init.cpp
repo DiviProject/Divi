@@ -437,7 +437,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-createwalletbackups=<n>", translate("Number of automatic wallet backups (default: 20)"));
     strUsage += HelpMessageOpt("-disablewallet", translate("Do not load the wallet and disable wallet RPC calls"));
     strUsage += HelpMessageOpt("-keypool=<n>", strprintf(translate("Set key pool size to <n> (default: %u)"), 100));
-    if (GetBoolArg("-help-debug", false))
+    if (settings.GetBoolArg("-help-debug", false))
         strUsage += HelpMessageOpt("-mintxfee=<amt>", strprintf(translate("Fees (in DIV/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"),
             FormatMoney(CWallet::minTxFee.GetFeePerK())));
     strUsage += HelpMessageOpt("-paytxfee=<amt>", strprintf(translate("Fee (in DIV/kB) to add to transactions you send (default: %s)"), FormatMoney(payTxFee.GetFeePerK())));
@@ -473,7 +473,7 @@ std::string HelpMessage(HelpMessageMode mode)
 #endif
 
     strUsage += HelpMessageGroup(translate("Debugging/Testing options:"));
-    if (GetBoolArg("-help-debug", false)) {
+    if (settings.GetBoolArg("-help-debug", false)) {
         strUsage += HelpMessageOpt("-checkblockindex", strprintf("Do a full consistency check for mapBlockIndex, setBlockIndexCandidates, chainActive and mapBlocksUnlinked occasionally. Also sets -checkmempool (default: %u)", Params(CBaseChainParams::MAIN).DefaultConsistencyChecks()));
         strUsage += HelpMessageOpt("-checkmempool=<n>", strprintf("Run checks every <n> transactions (default: %u)", Params(CBaseChainParams::MAIN).DefaultConsistencyChecks()));
         strUsage += HelpMessageOpt("-checkpoints", strprintf(translate("Only accept block chain matching built-in checkpoints (default: %u)"), 1));
@@ -492,7 +492,7 @@ std::string HelpMessage(HelpMessageMode mode)
         debugCategories += ", qt";
     strUsage += HelpMessageOpt("-debug=<category>", strprintf(translate("Output debugging information (default: %u, supplying <category> is optional)"), 0) + ". " +
         translate("If <category> is not supplied, output all debugging information.") + translate("<category> can be:") + " " + debugCategories + ".");
-    if (GetBoolArg("-help-debug", false))
+    if (settings.GetBoolArg("-help-debug", false))
         strUsage += HelpMessageOpt("-nodebug", "Turn off debugging messages, same as -debug=0");
 #ifdef ENABLE_WALLET
     strUsage += HelpMessageOpt("-gen", strprintf(translate("Generate coins (default: %u)"), 0));
@@ -501,14 +501,14 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-help-debug", translate("Show all debugging options (usage: --help -help-debug)"));
     strUsage += HelpMessageOpt("-logips", strprintf(translate("Include IP addresses in debug output (default: %u)"), 0));
     strUsage += HelpMessageOpt("-logtimestamps", strprintf(translate("Prepend debug output with timestamp (default: %u)"), 1));
-    if (GetBoolArg("-help-debug", false)) {
+    if (settings.GetBoolArg("-help-debug", false)) {
         strUsage += HelpMessageOpt("-limitfreerelay=<n>", strprintf(translate("Continuously rate-limit free transactions to <n>*1000 bytes per minute (default:%u)"), 15));
         strUsage += HelpMessageOpt("-relaypriority", strprintf(translate("Require high priority for relaying free or low-fee transactions (default:%u)"), 1));
         strUsage += HelpMessageOpt("-maxsigcachesize=<n>", strprintf(translate("Limit size of signature cache to <n> entries (default: %u)"), 50000));
     }
     strUsage += HelpMessageOpt("-minrelaytxfee=<amt>", strprintf(translate("Fees (in DIV/Kb) smaller than this are considered zero fee for relaying (default: %s)"), FormatMoney(::minRelayTxFee.GetFeePerK())));
     strUsage += HelpMessageOpt("-printtoconsole", strprintf(translate("Send trace/debug info to console instead of debug.log file (default: %u)"), 0));
-    if (GetBoolArg("-help-debug", false)) {
+    if (settings.GetBoolArg("-help-debug", false)) {
         strUsage += HelpMessageOpt("-printpriority", strprintf(translate("Log transaction priority and fee per kB when mining blocks (default: %u)"), 0));
         strUsage += HelpMessageOpt("-privdb", strprintf(translate("Sets the DB_PRIVATE flag in the wallet db environment (default: %u)"), 1));
         strUsage += HelpMessageOpt("-regtest", translate("Enter regression test mode, which uses a special chain in which blocks can be solved instantly.") + " " +
@@ -523,7 +523,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageGroup(translate("Staking options:"));
     strUsage += HelpMessageOpt("-staking=<n>", strprintf(translate("Enable staking functionality (0-1, default: %u)"), 1));
     strUsage += HelpMessageOpt("-reservebalance=<amt>", translate("Keep the specified amount available for spending at all times (default: 0)"));
-    if (GetBoolArg("-help-debug", false)) {
+    if (settings.GetBoolArg("-help-debug", false)) {
         strUsage += HelpMessageOpt("-printstakemodifier", translate("Display the stake modifier calculations in the debug.log file."));
         strUsage += HelpMessageOpt("-printcoinstake", translate("Display verbose coin stake messages in the debug.log file."));
     }
@@ -547,7 +547,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageGroup(translate("Node relay options:"));
     strUsage += HelpMessageOpt("-datacarrier", strprintf(translate("Relay and mine data carrier transactions (default: %u)"), 1));
     strUsage += HelpMessageOpt("-datacarriersize", strprintf(translate("Maximum size of data in data carrier transactions we relay and mine (default: %u)"), MAX_OP_META_RELAY));
-    if (GetBoolArg("-help-debug", false)) {
+    if (settings.GetBoolArg("-help-debug", false)) {
         strUsage += HelpMessageOpt("-blockversion=<n>", "Override block version to test forking scenarios");
     }
 
@@ -667,7 +667,7 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
         }
     }
 
-    if (GetBoolArg("-stopafterblockimport", false)) {
+    if (settings.GetBoolArg("-stopafterblockimport", false)) {
         LogPrintf("Stopping after block import\n");
         StartShutdown();
     }
@@ -733,7 +733,7 @@ void SetNetworkingParameters()
             LogPrintf("InitializeDivi : parameter interaction: -proxy set -> setting -discover=0\n");
     }
 
-    if (!GetBoolArg("-listen", true)) {
+    if (!settings.GetBoolArg("-listen", true)) {
         // do not map ports or try to retrieve public IP when not listening (pointless)
         if (SoftSetBoolArg("-upnp", false))
             LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -upnp=0\n");
@@ -753,26 +753,26 @@ void SetNetworkingParameters()
     if (nConnectTimeout <= 0)
         nConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
 
-    fAlerts = GetBoolArg("-alerts", DEFAULT_ALERTS);
-    if (GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
+    fAlerts = settings.GetBoolArg("-alerts", DEFAULT_ALERTS);
+    if (settings.GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
         nLocalServices |= NODE_BLOOM;
 }
 
 bool EnableWalletFeatures()
 {
-    if (GetBoolArg("-salvagewallet", false)) {
+    if (settings.GetBoolArg("-salvagewallet", false)) {
         // Rewrite just private keys: rescan to find transactions
         if (SoftSetBoolArg("-rescan", true))
             LogPrintf("InitializeDivi : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n");
     }
 
     // -zapwallettx implies a rescan
-    if (GetBoolArg("-zapwallettxes", false)) {
+    if (settings.GetBoolArg("-zapwallettxes", false)) {
         if (SoftSetBoolArg("-rescan", true))
             LogPrintf("InitializeDivi : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
     }
 
-    if (!GetBoolArg("-enableswifttx", fEnableSwiftTX)) {
+    if (!settings.GetBoolArg("-enableswifttx", fEnableSwiftTX)) {
         if (SoftSetArg("-swifttxdepth", 0))
             LogPrintf("InitializeDivi : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
     }
@@ -803,19 +803,19 @@ bool SetMaxConnectionsAndFileDescriptors(int& nFD)
 bool CheckCriticalUnsupportedFeaturesAreNotUsed()
 {
     // Check for -debugnet
-    if (GetBoolArg("-debugnet", false))
+    if (settings.GetBoolArg("-debugnet", false))
         InitWarning(translate("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
     // Check for -socks - as this is a privacy risk to continue, exit here
     if (ParameterIsSet("-socks"))
         return InitError(translate("Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported."));
     // Check for -tor - as this is a privacy risk to continue, exit here
-    if (GetBoolArg("-tor", false))
+    if (settings.GetBoolArg("-tor", false))
         return InitError(translate("Error: Unsupported argument -tor found, use -onion."));
     // Check level must be 4 for zerocoin checks
     if (ParameterIsSet("-checklevel"))
         return InitError(translate("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
 
-    if (GetBoolArg("-benchmark", false))
+    if (settings.GetBoolArg("-benchmark", false))
         InitWarning(translate("Warning: Unsupported argument -benchmark ignored, use -debug=bench."));
     
     return true;
@@ -824,9 +824,9 @@ bool CheckCriticalUnsupportedFeaturesAreNotUsed()
 void SetConsistencyChecks()
 {
     // Checkmempool and checkblockindex default to true in regtest mode
-    mempool.setSanityCheck(GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
-    fCheckBlockIndex = GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks());
-    CCheckpointServices::fEnabled = GetBoolArg("-checkpoints", true);
+    mempool.setSanityCheck(settings.GetBoolArg("-checkmempool", Params().DefaultConsistencyChecks()));
+    fCheckBlockIndex = settings.GetBoolArg("-checkblockindex", Params().DefaultConsistencyChecks());
+    CCheckpointServices::fEnabled = settings.GetBoolArg("-checkpoints", true);
 }
 
 void SetNumberOfThreadsToCheckScripts()
@@ -844,7 +844,7 @@ void SetNumberOfThreadsToCheckScripts()
 bool WalletIsDisabled()
 {
 #ifdef ENABLE_WALLET
-    return GetBoolArg("-disablewallet", false);
+    return settings.GetBoolArg("-disablewallet", false);
 #else
     return true;
 #endif
@@ -898,28 +898,28 @@ bool SetTransactionRequirements()
         }
     }
     nTxConfirmTarget = settings.GetArg("-txconfirmtarget", 1);
-    bSpendZeroConfChange = GetBoolArg("-spendzeroconfchange", false);
-    bdisableSystemnotifications = GetBoolArg("-disablesystemnotifications", false);
-    fSendFreeTransactions = GetBoolArg("-sendfreetransactions", false);
+    bSpendZeroConfChange = settings.GetBoolArg("-spendzeroconfchange", false);
+    bdisableSystemnotifications = settings.GetBoolArg("-disablesystemnotifications", false);
+    fSendFreeTransactions = settings.GetBoolArg("-sendfreetransactions", false);
 #endif
-    fIsBareMultisigStd = GetBoolArg("-permitbaremultisig", true) != 0;
+    fIsBareMultisigStd = settings.GetBoolArg("-permitbaremultisig", true) != 0;
     nMaxDatacarrierBytes = settings.GetArg("-datacarriersize", nMaxDatacarrierBytes);
     return true;
 }
 
 void SetLoggingAndDebugSettings()
 {
-    fPrintToConsole = GetBoolArg("-printtoconsole", false);
-    fLogTimestamps = GetBoolArg("-logtimestamps", true);
-    fLogIPs = GetBoolArg("-logips", false);
+    fPrintToConsole = settings.GetBoolArg("-printtoconsole", false);
+    fLogTimestamps = settings.GetBoolArg("-logtimestamps", true);
+    fLogIPs = settings.GetBoolArg("-logips", false);
 
     fDebug = !mapMultiArgs["-debug"].empty();
     // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
     const std::vector<std::string>& categories = mapMultiArgs["-debug"];
-    if (GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
+    if (settings.GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
         fDebug = false;
 
-    if (GetBoolArg("-shrinkdebugfile", !fDebug))
+    if (settings.GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
     
     if(fPrintToConsole)
@@ -1047,9 +1047,9 @@ bool InitializeP2PNetwork()
     }
 
     // Check for host lookup allowed before parsing any network related parameters
-    fNameLookup = GetBoolArg("-dns", DEFAULT_NAME_LOOKUP);
+    fNameLookup = settings.GetBoolArg("-dns", DEFAULT_NAME_LOOKUP);
 
-    bool proxyRandomize = GetBoolArg("-proxyrandomize", true);
+    bool proxyRandomize = settings.GetBoolArg("-proxyrandomize", true);
     // -proxy sets a proxy for all outgoing network traffic
     // -noproxy (or -proxy=0) as well as the empty string can be used to not set a proxy, this is the default
     std::string proxyArg = settings.GetArg("-proxy", "");
@@ -1091,8 +1091,8 @@ bool InitializeP2PNetwork()
     }
 
     // see Step 2: parameter interactions for more information about these
-    fListen = GetBoolArg("-listen", DEFAULT_LISTEN);
-    fDiscover = GetBoolArg("-discover", true);
+    fListen = settings.GetBoolArg("-listen", DEFAULT_LISTEN);
+    fDiscover = settings.GetBoolArg("-discover", true);
 
     bool fBound = false;
     if (fListen) {
@@ -1177,7 +1177,7 @@ void WarmUpRPCAndStartRPCThreads()
      * that the server is there and will be ready later).  Warmup mode will
      * be disabled when initialisation is finished.
      */
-    if (GetBoolArg("-server", false)) {
+    if (settings.GetBoolArg("-server", false)) {
         uiInterface.InitMessage.connect(SetRPCWarmupStatus);
         StartRPCThreads();
     }
@@ -1185,7 +1185,7 @@ void WarmUpRPCAndStartRPCThreads()
 
 void CreateHardlinksForBlocks()
 {
-    fReindex = GetBoolArg("-reindex", false);
+    fReindex = settings.GetBoolArg("-reindex", false);
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
     boost::filesystem::path blocksDir = GetDataDir() / "blocks";
     if (!boost::filesystem::exists(blocksDir)) {
@@ -1222,7 +1222,7 @@ std::pair<size_t,size_t> CalculateDBCacheSizes()
     else if (nTotalCache > (nMaxDbCache << 20))
         nTotalCache = (nMaxDbCache << 20); // total cache cannot be greater than nMaxDbCache
     nBlockTreeDBCache = nTotalCache / 8;
-    if (nBlockTreeDBCache > (1 << 21) && !GetBoolArg("-txindex", true))
+    if (nBlockTreeDBCache > (1 << 21) && !settings.GetBoolArg("-txindex", true))
         nBlockTreeDBCache = (1 << 21); // block tree db cache shouldn't be larger than 2 MiB
     nTotalCache -= nBlockTreeDBCache;
     nCoinDBCache = nTotalCache / 2; // use half of the remaining cache for coindb cache
@@ -1267,7 +1267,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         }
 
         // Check for changed -txindex state
-        if (fTxIndex != GetBoolArg("-txindex", true)) {
+        if (fTxIndex != settings.GetBoolArg("-txindex", true)) {
             strLoadError = translate("You need to rebuild the database using -reindex to change -txindex");
             return skipLoadingDueToError;
         }
@@ -1276,7 +1276,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         PopulateInvalidOutPointMap();
 
         // Recalculate money supply
-        if (GetBoolArg("-reindexmoneysupply", false)) {
+        if (settings.GetBoolArg("-reindexmoneysupply", false)) {
             RecalculateDIVSupply(1);
         }
 
@@ -1337,9 +1337,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #endif
 #ifndef WIN32
 
-    if (GetBoolArg("-sysperms", false)) {
+    if (settings.GetBoolArg("-sysperms", false)) {
 #ifdef ENABLE_WALLET
-        if (!GetBoolArg("-disablewallet", false))
+        if (!settings.GetBoolArg("-disablewallet", false))
             return InitError("Error: -sysperms is not allowed in combination with enabled wallet functionality");
 #endif
     } else {
@@ -1436,7 +1436,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 5: Backup wallet and verify wallet database integrity
     BackupWallet(strDataDir, fDisableWallet);
-    if (GetBoolArg("-resync", false))
+    if (settings.GetBoolArg("-resync", false))
     {
         ClearFoldersForResync();
     }
@@ -1518,7 +1518,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         // needed to restore wallet transaction meta data after -zapwallettxes
         std::vector<CWalletTx> vWtx;
 
-        if (GetBoolArg("-zapwallettxes", false)) {
+        if (settings.GetBoolArg("-zapwallettxes", false)) {
             uiInterface.InitMessage(translate("Zapping all transactions from wallet..."));
 
             pwalletMain = new CWallet(strWalletFile);
@@ -1556,7 +1556,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
                 strErrors << translate("Error loading wallet.dat") << "\n";
         }
 
-        if (GetBoolArg("-upgradewallet", fFirstRun)) {
+        if (settings.GetBoolArg("-upgradewallet", fFirstRun)) {
             int nMaxVersion = settings.GetArg("-upgradewallet", 0);
             if (nMaxVersion == 0) // the -upgradewallet without argument case
             {
@@ -1573,7 +1573,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if (fFirstRun)
         {
             // Create new keyUser and set as default key
-            if (GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled()) {
+            if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled()) {
                 if (settings.GetArg("-mnemonicpassphrase", "").size() > 256) {
                     InitError(translate("Mnemonic passphrase is too long, must be at most 256 characters"));
                     return NULL;
@@ -1598,7 +1598,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
         }
         else if (ParameterIsSet("-usehd")) {
-            bool useHD = GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
+            bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
             if (pwalletMain->IsHDEnabled() && !useHD) {
                 InitError(strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"),
                                     pwalletMain->strWalletFile));
@@ -1612,7 +1612,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         }
 
         // Warn user every time he starts non-encrypted HD wallet
-        if (GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked()) {
+        if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked()) {
             InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
         }
 
@@ -1622,7 +1622,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         RegisterValidationInterface(pwalletMain);
 
         CBlockIndex* pindexRescan = chainActive.Tip();
-        if (GetBoolArg("-rescan", false))
+        if (settings.GetBoolArg("-rescan", false))
             pindexRescan = chainActive.Genesis();
         else {
             CWalletDB walletdb(strWalletFile);
@@ -1642,7 +1642,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             nWalletDBUpdated++;
 
             // Restore wallet transaction metadata after -zapwallettxes=1
-            if (GetBoolArg("-zapwallettxes", false) && settings.GetArg("-zapwallettxes", "1") != "2") {
+            if (settings.GetBoolArg("-zapwallettxes", false) && settings.GetArg("-zapwallettxes", "1") != "2") {
                 BOOST_FOREACH (const CWalletTx& wtxOld, vWtx) {
                     uint256 hash = wtxOld.GetHash();
                     std::map<uint256, CWalletTx>::iterator mi = pwalletMain->mapWallet.find(hash);
@@ -1697,7 +1697,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 
 
-    fMasterNode = GetBoolArg("-masternode", false);
+    fMasterNode = settings.GetBoolArg("-masternode", false);
 
     if ((fMasterNode || masternodeConfig.getCount() > -1) && fTxIndex == false) {
         return InitError("Enabling Masternode support requires turning on transaction indexing."
@@ -1735,7 +1735,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         }
     }
 
-    if (GetBoolArg("-mnconflock", true) && pwalletMain) {
+    if (settings.GetBoolArg("-mnconflock", true) && pwalletMain) {
         LOCK(pwalletMain->cs_wallet);
         LogPrintf("Locking Masternodes:\n");
         uint256 mnTxHash;
@@ -1750,12 +1750,12 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 // XX42 Remove/refactor code below. Until then provide safe defaults
     nAnonymizeDiviAmount = 2;
 
-    fEnableSwiftTX = false; //GetBoolArg("-enableswifttx", fEnableSwiftTX);
+    fEnableSwiftTX = false; //settings.GetBoolArg("-enableswifttx", fEnableSwiftTX);
     nSwiftTXDepth = settings.GetArg("-swifttxdepth", nSwiftTXDepth);
     nSwiftTXDepth = std::min(std::max(nSwiftTXDepth, 0), 60);
 
     //lite mode disables all Masternode and Obfuscation related functionality
-    fLiteMode = GetBoolArg("-litemode", false);
+    fLiteMode = settings.GetBoolArg("-litemode", false);
     if (fMasterNode && fLiteMode) {
         return InitError("You can not start a masternode in litemode");
     }
@@ -1783,7 +1783,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("mapAddressBook.size() = %u\n", pwalletMain ? pwalletMain->mapAddressBook.size() : 0);
 #endif
 
-    if (GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION))
+    if (settings.GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION))
         StartTorControl(threadGroup);
 
     StartNode(threadGroup);
@@ -1791,7 +1791,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #ifdef ENABLE_WALLET
     // Generate coins in the background
     if (pwalletMain)
-        GenerateDivi(GetBoolArg("-gen", false), pwalletMain, settings.GetArg("-genproclimit", 1));
+        GenerateDivi(settings.GetBoolArg("-gen", false), pwalletMain, settings.GetArg("-genproclimit", 1));
 #endif
 
     // ********************************************************* Step 12: finished

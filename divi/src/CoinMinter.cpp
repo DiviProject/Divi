@@ -15,8 +15,6 @@
 #include <BlockFactory.h>
 
 
-int64_t nLastCoinStakeSearchInterval = 0;
-
 CoinMinter::CoinMinter(
     CWallet* pwallet,
     CChain& chain,
@@ -25,7 +23,8 @@ CoinMinter::CoinMinter(
     CMasternodeSync& masternodeSynchronization,
     HashedBlockMap& mapHashedBlocks,
     CTxMemPool& transactionMemoryPool, 
-    AnnotatedMixin<boost::recursive_mutex>& mainCS
+    AnnotatedMixin<boost::recursive_mutex>& mainCS,
+    int64_t& lastCoinStakeSearchInterval
     ): mintingIsRequested_(false)
     , pwallet_(pwallet)
     , chain_(chain)
@@ -34,7 +33,8 @@ CoinMinter::CoinMinter(
     , mainCS_(mainCS)
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)
-    , blockFactory_( std::make_shared<BlockFactory>(*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks_,chain_,chainParameters_, mempool_,mainCS_) )
+    , lastCoinStakeSearchInterval_(lastCoinStakeSearchInterval)
+    , blockFactory_( std::make_shared<BlockFactory>(*pwallet,lastCoinStakeSearchInterval_,mapHashedBlocks_,chain_,chainParameters_, mempool_,mainCS_) )
     , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
     , subsidyContainer_( std::make_shared<SuperblockSubsidyContainer>(chainParameters_) )
     , haveMintableCoins_(false)
@@ -73,7 +73,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
             nReserveBalance >= pwallet_->GetBalance() ||
             !masternodeSync_.IsSynced()
         );
-    if(!stakingRequirementsAreMet) nLastCoinStakeSearchInterval = 0;
+    if(!stakingRequirementsAreMet) lastCoinStakeSearchInterval_ = 0;
     return stakingRequirementsAreMet;
 }
 bool CoinMinter::limitStakingSpeed() const

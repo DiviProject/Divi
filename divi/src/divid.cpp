@@ -121,7 +121,7 @@ bool AppInit(int argc, char* argv[])
             exit(1);
         }
 #ifndef WIN32
-        fDaemon = GetBoolArg("-daemon", false);
+        fDaemon = settings.GetBoolArg("-daemon", false);
         if (fDaemon) {
             fprintf(stdout, "DIVI server starting\n");
 

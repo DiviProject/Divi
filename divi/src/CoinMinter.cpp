@@ -243,7 +243,7 @@ bool CoinMinter::createProofOfWorkBlock(
 {
     constexpr const bool fProofOfStake = false;
     bool blockSuccesfullyCreated = false;
-    unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
+    unsigned int nTransactionsUpdatedLast = mempool_.GetTransactionsUpdated();
     CBlockIndex* pindexPrev = chain_.Tip();
     if (!pindexPrev)
         return false;
@@ -299,7 +299,7 @@ bool CoinMinter::createProofOfWorkBlock(
             break;
         if (block->nNonce >= 0xffff0000)
             break;
-        if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
+        if (mempool_.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
             break;
         if (pindexPrev != chain_.Tip())
             break;

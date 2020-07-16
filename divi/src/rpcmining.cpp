@@ -111,7 +111,7 @@ Value getgenerate(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getgenerate", "") + HelpExampleRpc("getgenerate", ""));
 
-    return GetBoolArg("-gen", false);
+    return settings.GetBoolArg("-gen", false);
 }
 
 

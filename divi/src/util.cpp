@@ -192,16 +192,6 @@ void ClearParameter ()
     settings.ClearParameter();
 }
 
-std::string GetArg(const std::string& strArg, const std::string& strDefault)
-{
-    return settings.GetArg(strArg, strDefault);
-}
-
-int64_t GetArg(const std::string& strArg, int64_t nDefault)
-{
-    return settings.GetArg(strArg, nDefault);
-}
-
 bool GetBoolArg(const std::string& strArg, bool fDefault)
 {
     return settings.GetBoolArg(strArg, fDefault);

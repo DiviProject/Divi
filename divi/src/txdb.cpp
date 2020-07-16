@@ -6,7 +6,6 @@
 
 #include "txdb.h"
 
-#include "main.h"
 #include "pow.h"
 #include "uint256.h"
 
@@ -381,7 +380,7 @@ bool CBlockTreeDB::ReadAddressIndex(uint160 addressHash, int type,
         ssKey.reserve(ssKey.GetSerializeSize(key));
         ssKey << key;
     }
-    
+
     leveldb::Slice slKey(&ssKey[0], ssKey.size());
     pcursor->Seek(slKey);
 
@@ -399,7 +398,7 @@ bool CBlockTreeDB::ReadAddressIndex(uint160 addressHash, int type,
                 CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
                 CAmount nValue;
                 ssValue >> nValue;
-            
+
                 addressIndex.push_back(make_pair(key.second, nValue));
                 pcursor->Next();
             } catch (const std::exception&) {

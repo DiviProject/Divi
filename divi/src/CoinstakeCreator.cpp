@@ -10,13 +10,14 @@
 #include <BlockIncentivesPopulator.h>
 
 extern Settings& settings;
-extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 
 CoinstakeCreator::CoinstakeCreator(
     CWallet& wallet,
-    int64_t& coinstakeSearchInterval
+    int64_t& coinstakeSearchInterval,
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): wallet_(wallet)
     , coinstakeSearchInterval_(coinstakeSearchInterval)
+    , hashedBlockTimestamps_(hashedBlockTimestamps)
 {
 }
 
@@ -136,7 +137,7 @@ bool CoinstakeCreator::FindStake(
     nTxNewTime = GetAdjustedTime();
 
     if (CheckStakeKernelHash(
-            mapHashedBlocks,
+            hashedBlockTimestamps_,
             nBits,
             it->second->GetBlockHeader(),
             *stakeData.first,

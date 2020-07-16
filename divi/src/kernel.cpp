@@ -20,7 +20,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
-extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 extern BlockMap mapBlockIndex;
 unsigned int nStakeMinAge = 60 * 60;
 unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
@@ -295,7 +294,17 @@ bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, uint256 bnTarget
 }
 
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
-bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTransaction txPrev, const COutPoint prevout, unsigned int& nTimeTx, unsigned int nHashDrift, bool fCheck, uint256& hashProofOfStake, bool fPrintProofOfStake)
+bool CheckStakeKernelHash(
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+    unsigned int nBits,
+    const CBlock blockFrom,
+    const CTransaction txPrev,
+    const COutPoint prevout,
+    unsigned int& nTimeTx,
+    unsigned int nHashDrift,
+    bool fCheck,
+    uint256& hashProofOfStake,
+    bool fPrintProofOfStake)
 {
     //assign new variables to make it easier to read
     int64_t nValueIn = txPrev.vout[prevout.n].nValue;
@@ -368,8 +377,8 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
         break;
     }
 
-    mapHashedBlocks.clear();
-    mapHashedBlocks[chainActive.Tip()->nHeight] = GetTime(); //store a time stamp of when we last hashed on this block
+    hashedBlockTimestamps.clear();
+    hashedBlockTimestamps[chainActive.Tip()->nHeight] = GetTime(); //store a time stamp of when we last hashed on this block
     return fSuccess;
 }
 
@@ -427,7 +436,8 @@ bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
 
     unsigned int nInterval = 0;
     unsigned int nTime = block.nTime;
-    if (!CheckStakeKernelHash(block.nBits, blockprev, txPrev, txin.prevout, nTime, nInterval, true, hashProofOfStake, fDebug))
+    std::map<unsigned int, unsigned int> hashedBlockTimestamps;
+    if (!CheckStakeKernelHash(hashedBlockTimestamps, block.nBits, blockprev, txPrev, txin.prevout, nTime, nInterval, true, hashProofOfStake, fDebug))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;

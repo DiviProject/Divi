@@ -70,7 +70,7 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const Lot
         CScript scriptPayment = vRequiredWinnersCoinstake[i].second;
         CAmount reward = i == 0 ? nBigReward : nSmallReward;
         if(!verifyPayment(scriptPayment, reward)) {
-            LogPrintf("%s: No payment for winner: %s\n", vRequiredWinnersCoinstake[i].first.ToString());
+            LogPrintf("%s: No payment for winner: %s\n", __func__, vRequiredWinnersCoinstake[i].first.ToString());
             return false;
         }
     }

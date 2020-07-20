@@ -31,6 +31,7 @@
 #include "json/json_spirit_value.h"
 #include "Settings.h"
 
+extern NotificationInterfaceRegistry registry;//TODO: rid this
 using namespace json_spirit;
 using namespace std;
 extern Settings& settings;
@@ -364,9 +365,9 @@ Value submitblock(const Array& params, bool fHelp)
 
     CValidationState state;
     submitblock_StateCatcher sc(block.GetHash());
-    RegisterValidationInterface(&sc);
+    RegisterValidationInterface(&registry,&sc);
     bool fAccepted = ProcessNewBlock(state, NULL, &block);
-    UnregisterValidationInterface(&sc);
+    UnregisterValidationInterface(&registry,&sc);
     if (fBlockPresent) {
         if (fAccepted && !sc.found)
             return "duplicate-inconclusive";

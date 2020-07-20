@@ -8,6 +8,11 @@
 #ifndef BITCOIN_MAIN_H
 #define BITCOIN_MAIN_H
 
+//TODO: tmp
+#ifndef BITCOIN_VALIDATIONINTERFACE_H
+#include "NotificationInterface.h"
+#endif // BITCOIN_VALIDATIONINTERFACE_H
+
 #if defined(HAVE_CONFIG_H)
 #include "config/divi-config.h"
 #endif
@@ -158,13 +163,13 @@ extern CBlockIndex* pindexBestHeader;
 static const uint64_t nMinDiskSpace = 52428800;
 
 /** Register a wallet to receive updates from core */
-void RegisterValidationInterface(NotificationInterface* pwalletIn);
+void RegisterValidationInterface(NotificationInterfaceRegistry * registry,NotificationInterface* pwalletIn);
 /** Unregister a wallet from core */
-void UnregisterValidationInterface(NotificationInterface* pwalletIn);
+void UnregisterValidationInterface(NotificationInterfaceRegistry * registry,NotificationInterface* pwalletIn);
 /** Unregister all wallets from core */
-void UnregisterAllValidationInterfaces();
+void UnregisterAllValidationInterfaces(NotificationInterfaceRegistry * registry);
 /** Push an updated transaction to all registered wallets */
-void SyncWithWallets(const CTransaction& tx, const CBlock* pblock = NULL);
+void SyncWithWallets(NotificationInterfaceRegistry * registry,const CTransaction& tx, const CBlock* pblock = NULL);
 
 /** Register with a network node to receive its signals */
 void RegisterNodeSignals(CNodeSignals& nodeSignals);

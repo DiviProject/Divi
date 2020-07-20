@@ -77,6 +77,7 @@ volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
 extern Settings& settings;
+extern NotificationInterfaceRegistry registry;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -303,7 +304,7 @@ void PrepareShutdown()
     boost::filesystem::remove(GetPidFile());
 #endif
 
-    UnregisterAllValidationInterfaces();
+    UnregisterAllValidationInterfaces(&registry);
 }
 
 /**
@@ -1615,7 +1616,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         LogPrintf("%s", strErrors.str());
         LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
 
-        RegisterValidationInterface(pwalletMain);
+        RegisterValidationInterface(&registry,pwalletMain);
 
         CBlockIndex* pindexRescan = chainActive.Tip();
         if (settings.GetBoolArg("-rescan", false))

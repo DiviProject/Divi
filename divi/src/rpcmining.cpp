@@ -30,6 +30,7 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 
+extern NotificationInterfaceRegistry registry;//TODO: rid this
 using namespace json_spirit;
 using namespace std;
 
@@ -162,22 +163,22 @@ Value setgenerate(const Array& params, bool fHelp)
             nHeight = nHeightStart;
             nHeightEnd = nHeightStart + nGenerate;
         }
-        
+
         Array blockHashes;
         CoinMinter minter(pwalletMain, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main);
-        while (nHeight < nHeightEnd) 
+        while (nHeight < nHeightEnd)
         {
             unsigned int nExtraNonce = 0;
             bool newBlockAdded = minter.createNewBlock(nExtraNonce,reservekey,false);
             nHeight +=  newBlockAdded;
             if(newBlockAdded)
             { // Don't keep cs_main locked
-                LOCK(cs_main); 
+                LOCK(cs_main);
                 if(nHeight == chainActive.Height())
                 {
                     blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
                 }
-            } 
+            }
         }
         return blockHashes;
     } else // Not -regtest: start generate thread, return immediately
@@ -425,9 +426,9 @@ Value submitblock(const Array& params, bool fHelp)
 
     CValidationState state;
     submitblock_StateCatcher sc(block.GetHash());
-    RegisterValidationInterface(&sc);
+    RegisterValidationInterface(&registry,&sc);
     bool fAccepted = ProcessNewBlock(state, NULL, &block);
-    UnregisterValidationInterface(&sc);
+    UnregisterValidationInterface(&registry,&sc);
     if (fBlockPresent) {
         if (fAccepted && !sc.found)
             return "duplicate-inconclusive";

@@ -23,6 +23,7 @@ CWallet* pwalletMain;
 
 extern bool fPrintToConsole;
 extern void noui_connect();
+extern NotificationInterfaceRegistry registry;//TODO: rid this
 
 struct TestingSetup {
     CCoinsViewDB *pcoinsdbview;
@@ -49,7 +50,7 @@ struct TestingSetup {
         bool fFirstRun;
         pwalletMain = new CWallet("wallet.dat");
         pwalletMain->LoadWallet(fFirstRun);
-        RegisterValidationInterface(pwalletMain);
+        RegisterValidationInterface(&registry,pwalletMain);
 #endif
         nScriptCheckThreads = 3;
         for (int i=0; i < nScriptCheckThreads-1; i++)

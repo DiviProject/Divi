@@ -193,24 +193,24 @@ std::set<int> setDirtyFileInfo;
 NotificationInterfaceRegistry registry;
 MainNotificationSignals& g_signals = registry.getSignals();
 
-void RegisterValidationInterface(NotificationInterface* pwalletIn)
+void RegisterValidationInterface(NotificationInterfaceRegistry * registry,NotificationInterface* pwalletIn)
 {
-    registry.RegisterValidationInterface(pwalletIn);
+    registry->RegisterValidationInterface(pwalletIn);
 }
 
-void UnregisterValidationInterface(NotificationInterface* pwalletIn)
+void UnregisterValidationInterface(NotificationInterfaceRegistry * registry,NotificationInterface* pwalletIn)
 {
-    registry.UnregisterValidationInterface(pwalletIn);
+    registry->UnregisterValidationInterface(pwalletIn);
 }
 
-void UnregisterAllValidationInterfaces()
+void UnregisterAllValidationInterfaces(NotificationInterfaceRegistry * registry)
 {
-    registry.UnregisterAllValidationInterfaces();
+    registry->UnregisterAllValidationInterfaces();
 }
 
-void SyncWithWallets(const CTransaction& tx, const CBlock* pblock)
+void SyncWithWallets(NotificationInterfaceRegistry * registry,const CTransaction& tx, const CBlock* pblock)
 {
-    registry.SyncWithWallets(tx, pblock);
+    registry->SyncWithWallets(tx, pblock);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1211,7 +1211,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         }
     }
 
-    SyncWithWallets(tx, NULL);
+    SyncWithWallets(&registry,tx, NULL);
 
     return true;
 }
@@ -2549,7 +2549,7 @@ bool static DisconnectTip(CValidationState& state)
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
     BOOST_FOREACH (const CTransaction& tx, block.vtx) {
-        SyncWithWallets(tx, NULL);
+        SyncWithWallets(&registry,tx, NULL);
     }
     return true;
 }
@@ -2624,11 +2624,11 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     // Tell wallet about transactions that went from mempool
     // to conflicted:
     BOOST_FOREACH (const CTransaction& tx, txConflicted) {
-        SyncWithWallets(tx, NULL);
+        SyncWithWallets(&registry,tx, NULL);
     }
     // ... and about transactions that got confirmed:
     BOOST_FOREACH (const CTransaction& tx, pblock->vtx) {
-        SyncWithWallets(tx, pblock);
+        SyncWithWallets(&registry,tx, pblock);
     }
 
     int64_t nTime6 = GetTimeMicros();

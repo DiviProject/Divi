@@ -95,7 +95,6 @@ LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock
     auto hashLastLotteryBlock = prevLotteryBlockIndex->GetBlockHash();
     // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
     using LotteryScore = uint256;
-    using LotteryCoinstake = std::pair<uint256, CScript>;
     std::vector<std::pair<LotteryScore, LotteryCoinstake>> scores;
 
     for(auto &&lotteryCoinstake : prevBlockIndex->vLotteryWinnersCoinstakes) {

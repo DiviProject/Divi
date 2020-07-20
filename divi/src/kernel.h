@@ -34,6 +34,7 @@ bool stakeTargetHit(
     uint256 bnTargetPerCoinDay,
     int64_t nTimeWeight);
 bool CheckStakeKernelHash(
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
     const CBlock blockFrom,
     const CTransaction txPrev,

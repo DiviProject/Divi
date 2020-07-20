@@ -34,6 +34,7 @@ CoinMinter::CoinMinter(
     , mainCS_(mainCS)
     , blockFactory_( std::make_shared<BlockFactory>(*pwallet,nLastCoinStakeSearchInterval,chain_,chainParameters_, mempool_,mainCS_) )
     , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
+    , subsidyContainer_( std::make_shared<SuperblockSubsidyContainer>(chainParameters_) )
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)
     , haveMintableCoins_(false)
@@ -64,14 +65,16 @@ bool CoinMinter::isAtProofOfStakeHeight() const
 
 bool CoinMinter::satisfiesMintingRequirements() const
 {
-    bool stakingRequirements =
-        !(chain_.Tip()->nTime < 1471482000 || 
-        peerNotifier_->havePeersToNotify() || 
-        pwallet_->IsLocked() || 
-        nReserveBalance >= pwallet_->GetBalance() || 
-        !masternodeSync_.IsSynced());
-    if(!stakingRequirements) nLastCoinStakeSearchInterval = 0;
-    return stakingRequirements;
+    bool stakingRequirementsAreMet =
+        !(
+            chain_.Tip()->nTime < 1471482000 ||
+            !peerNotifier_->havePeersToNotify() ||
+            pwallet_->IsLocked() ||
+            nReserveBalance >= pwallet_->GetBalance() ||
+            !masternodeSync_.IsSynced()
+        );
+    if(!stakingRequirementsAreMet) nLastCoinStakeSearchInterval = 0;
+    return stakingRequirementsAreMet;
 }
 bool CoinMinter::limitStakingSpeed() const
 {
@@ -126,7 +129,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
 
     // Found a solution
     {
-        LOCK(cs_main);
+        LOCK(mainCS_);
         if (block->hashPrevBlock != chainActive.Tip()->GetBlockHash())
             return error("DIVIMiner : generated block is stale");
     }
@@ -173,14 +176,13 @@ void CoinMinter::SetCoinbaseRewardAndHeight (
     std::unique_ptr<CBlockTemplate>& pblocktemplate,
     const bool& fProofOfStake) const
 {
-    SuperblockSubsidyContainer subsidiesContainer(chainParameters_);
     // Compute final coinbase transaction.
     int nHeight = pblocktemplate->previousBlockIndex->nHeight+1;
     CBlock& block = pblocktemplate->block;
     CMutableTransaction& coinbaseTx = *pblocktemplate->coinbaseTransaction;
     block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
     if (!fProofOfStake) {
-        coinbaseTx.vout[0].nValue = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
+        coinbaseTx.vout[0].nValue = subsidyContainer_->blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
         coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
         block.vtx[0] = coinbaseTx;
     }

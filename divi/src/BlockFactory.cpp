@@ -6,6 +6,8 @@
 #include <CoinstakeCreator.h>
 #include <timedata.h>
 
+extern std::map<unsigned int, unsigned int> mapHashedBlocks;
+
 // Actual mining functions
 BlockFactory::BlockFactory(
     CWallet& wallet,
@@ -21,16 +23,16 @@ BlockFactory::BlockFactory(
     , mempool_(transactionMemoryPool)
     , mainCS_(mainCS)
     , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(mempool_,mainCS_))
-    , coinstakeCreator_( std::make_shared<CoinstakeCreator>(wallet_, lastCoinstakeSearchInterval_))
+    , coinstakeCreator_( std::make_shared<CoinstakeCreator>(wallet_, lastCoinstakeSearchInterval_,mapHashedBlocks))
 {
 
 }
 
 
-void BlockFactory::SetRequiredWork(CBlock& block)
+void BlockFactory::SetRequiredWork(std::unique_ptr<CBlockTemplate>& pBlockTemplate)
 {
-    CBlockIndex* pindexPrev = chain_.Tip();
-    block.nBits = GetNextWorkRequired(pindexPrev, &block,chainParameters_);
+    CBlock& block = pBlockTemplate->block;
+    block.nBits = GetNextWorkRequired(pBlockTemplate->previousBlockIndex, &block,chainParameters_);
 }
 
 void BlockFactory::SetBlockTime(CBlock& block)
@@ -56,10 +58,11 @@ void BlockFactory::CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMut
 }
 
 bool BlockFactory::AppendProofOfStakeToBlock(
-    CBlock& block)
+    std::unique_ptr<CBlockTemplate>& pBlockTemplate)
 {
+    CBlock& block = pBlockTemplate->block;
     CMutableTransaction txCoinStake;
-    SetRequiredWork(block);
+    SetRequiredWork(pBlockTemplate);
     SetBlockTime(block);
 
     // ppcoin: if coinstake available add coinstake tx
@@ -84,12 +87,14 @@ bool BlockFactory::AppendProofOfStakeToBlock(
 
 CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake)
 {
-    LOCK2(mainCS_,mempool_.cs);
+    LOCK(mainCS_);
     // Create new block
     std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
     if (!pblocktemplate.get())
         return NULL;
-    CBlock& block = pblocktemplate->block; // pointer for convenience
+
+    pblocktemplate->previousBlockIndex = chain_.Tip();
+    if(!pblocktemplate->previousBlockIndex) return NULL;
 
     // Create coinbase tx
     pblocktemplate->coinbaseTransaction = std::make_shared<CMutableTransaction>();
@@ -101,7 +106,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
 
-        if (!AppendProofOfStakeToBlock(block))
+        if (!AppendProofOfStakeToBlock(pblocktemplate))
             return NULL;
     }
 

@@ -11,7 +11,14 @@ class CChainParams;
 
 bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight);
 
-class SuperblockSubsidyContainer
+class I_SuperblockSubsidyContainer
+{
+public:
+    virtual ~I_SuperblockSubsidyContainer(){};
+    virtual const I_SuperblockHeightValidator& superblockHeightValidator() const = 0;
+    virtual const I_BlockSubsidyProvider& blockSubsidiesProvider() const = 0;
+};
+class SuperblockSubsidyContainer: public I_SuperblockSubsidyContainer
 {
 private:
     const CChainParams& chainParameters_;
@@ -20,7 +27,7 @@ private:
     
 public:
     SuperblockSubsidyContainer(const CChainParams& chainParameters);
-    const I_SuperblockHeightValidator& superblockHeightValidator() const;
-    const I_BlockSubsidyProvider& blockSubsidiesProvider() const;
+    virtual const I_SuperblockHeightValidator& superblockHeightValidator() const;
+    virtual const I_BlockSubsidyProvider& blockSubsidiesProvider() const;
 };
 #endif // SUPERBLOCK_HELPERS_H

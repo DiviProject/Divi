@@ -13,9 +13,11 @@ extern Settings& settings;
 
 CoinstakeCreator::CoinstakeCreator(
     CWallet& wallet,
-    int64_t& coinstakeSearchInterval
+    int64_t& coinstakeSearchInterval,
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): wallet_(wallet)
     , coinstakeSearchInterval_(coinstakeSearchInterval)
+    , hashedBlockTimestamps_(hashedBlockTimestamps)
 {
 }
 
@@ -135,6 +137,7 @@ bool CoinstakeCreator::FindStake(
     nTxNewTime = GetAdjustedTime();
 
     if (CheckStakeKernelHash(
+            hashedBlockTimestamps_,
             nBits,
             it->second->GetBlockHeader(),
             *stakeData.first,

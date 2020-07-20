@@ -25,6 +25,7 @@ class CBlockTemplate;
 class CTxMemPool;
 template <typename MutexObj>
 class AnnotatedMixin;
+class I_SuperblockSubsidyContainer;
 
 class CoinMinter: public I_CoinMinter
 {
@@ -36,6 +37,7 @@ class CoinMinter: public I_CoinMinter
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
     std::shared_ptr<I_BlockFactory> blockFactory_;
     std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
+    std::shared_ptr<I_SuperblockSubsidyContainer> subsidyContainer_;
     CMasternodeSync& masternodeSync_;
     HashedBlockMap& mapHashedBlocks_;
     bool haveMintableCoins_;

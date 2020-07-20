@@ -6,6 +6,7 @@
 #include <set>
 #include <utility>
 #include <vector>
+#include <map>
 
 class CWallet;
 class CBlock;
@@ -29,6 +30,7 @@ class CoinstakeCreator: public I_CoinstakeCreator
 private:
     CWallet& wallet_;
     int64_t& coinstakeSearchInterval_;
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
 
     void CombineUtxos(
         const CAmount& allowedStakingAmount,
@@ -60,7 +62,8 @@ private:
 public:
     CoinstakeCreator(
         CWallet& wallet,
-        int64_t& coinstakeSearchInterval);
+        int64_t& coinstakeSearchInterval,
+        std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     virtual bool CreateProofOfStake(
         uint32_t blockBits,
         int64_t nSearchTime, 

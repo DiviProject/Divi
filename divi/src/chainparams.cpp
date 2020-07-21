@@ -453,6 +453,13 @@ public:
         pchMessageStart[1] = 0xcf;
         pchMessageStart[2] = 0x7e;
         pchMessageStart[3] = 0xac;
+
+        /* The premine on mainnet needs no tests, as it is "tested" by
+           syncing on mainnet anyway.  On regtest, it is easiest to not
+           have a special premine, as it makes the generated coins more
+           predictable.  */
+        premineAmt = 1'250 * COIN;
+
         nSubsidyHalvingInterval = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;

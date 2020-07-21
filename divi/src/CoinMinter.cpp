@@ -198,7 +198,6 @@ void CoinMinter::SetBlockHeaders(std::unique_ptr<CBlockTemplate>& pblocktemplate
     block.nBits = GetNextWorkRequired(pblocktemplate->previousBlockIndex, &block, chainParameters_);
     block.nNonce = 0;
     block.nAccumulatorCheckpoint = static_cast<uint256>(0);
-    pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(block.vtx[0]);
 }
 
 bool CoinMinter::createProofOfStakeBlock(

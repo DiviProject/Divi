@@ -143,9 +143,7 @@ private:
 
     void AddTransactionToBlock (
         const CTransaction& tx, 
-        std::unique_ptr<CBlockTemplate>& pblocktemplate,
-        const CAmount& nTxFees,
-        const unsigned int& nTxSigOps) const;
+        std::unique_ptr<CBlockTemplate>& pblocktemplate) const;
 
     std::vector<TxPriority> PrioritizeMempoolTransactions (
         const int& nHeight,
@@ -168,8 +166,7 @@ private:
     void AddTransactionsToBlockIfPossible (
         const int& nHeight,
         CCoinsViewCache& view,
-        std::unique_ptr<CBlockTemplate>& pblocktemplate,
-        CAmount& nFees) const;
+        std::unique_ptr<CBlockTemplate>& pblocktemplate) const;
 public:
     BlockMemoryPoolTransactionCollector(
         CTxMemPool& mempool, 

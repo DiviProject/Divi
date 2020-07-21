@@ -44,8 +44,6 @@ void BlockFactory::SetCoinbaseTransactionAndDefaultFees(
     const CMutableTransaction& coinbaseTransaction)
 {
     pblocktemplate->block.vtx.push_back(coinbaseTransaction);
-    pblocktemplate->vTxFees.push_back(-1);   // updated at end
-    pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 }
 
 void BlockFactory::CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMutableTransaction& txNew)

@@ -154,13 +154,9 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
 
 void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
     const CTransaction& tx, 
-    std::unique_ptr<CBlockTemplate>& pblocktemplate,
-    const CAmount& nTxFees,
-    const unsigned int& nTxSigOps) const
+    std::unique_ptr<CBlockTemplate>& pblocktemplate) const
 {  
     pblocktemplate->block.vtx.push_back(tx);
-    pblocktemplate->vTxFees.push_back(nTxFees);
-    pblocktemplate->vTxSigOps.push_back(nTxSigOps);
 }
 
 std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTransactions (
@@ -340,8 +336,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
 void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     const int& nHeight,
     CCoinsViewCache& view,
-    std::unique_ptr<CBlockTemplate>& pblocktemplate,
-    CAmount& nFees) const
+    std::unique_ptr<CBlockTemplate>& pblocktemplate) const
 {
     std::map<uint256, std::vector<COrphan*> > dependentTransactions;
 
@@ -358,13 +353,11 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     for(const PrioritizedTransactionData& txData: prioritizedTransactions)
     {
         const CTransaction& tx = *txData.tx;
-        CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
         CTxUndo txundo;
         UpdateCoins(tx, view, txundo, nHeight);
 
         // Added
-        AddTransactionToBlock(tx, pblocktemplate, nTxFees, txData.nTxSigOps);
-        nFees += nTxFees;
+        AddTransactionToBlock(tx, pblocktemplate);
     }
 }
 
@@ -376,7 +369,6 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     
     LOCK2(mainCS_, mempool_.cs);
 
-    CAmount nFees = 0;
     CBlock& block = pblocktemplate->block;
 
     pblocktemplate->previousBlockIndex = chainActive.Tip();
@@ -386,10 +378,8 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     AddTransactionsToBlockIfPossible(
         nHeight,
         view,
-        pblocktemplate,
-        nFees);
+        pblocktemplate);
 
-    if(!fProofOfStake) pblocktemplate->vTxFees[0] = -nFees;
     LogPrintf("CreateNewBlock(): block tostring %s\n", block.ToString());
     return true;
 }

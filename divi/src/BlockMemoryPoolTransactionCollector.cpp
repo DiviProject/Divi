@@ -161,10 +161,10 @@ void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
 
 std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTransactions (
     const int& nHeight,
+    std::list<COrphan>& vOrphan,
     std::map<uint256, std::vector<COrphan*> >& dependentTransactions,
     CCoinsViewCache& view) const
 {
-    std::list<COrphan> vOrphan;
     std::vector<TxPriority> vecPriority;
     vecPriority.reserve(mempool_.mapTx.size());
     for (std::map<uint256, CTxMemPoolEntry>::iterator mi = mempool_.mapTx.begin(); mi != mempool_.mapTx.end(); ++mi) {
@@ -338,10 +338,11 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     CCoinsViewCache& view,
     std::unique_ptr<CBlockTemplate>& pblocktemplate) const
 {
+    std::list<COrphan> vOrphan;
     std::map<uint256, std::vector<COrphan*> > dependentTransactions;
 
     std::vector<TxPriority> vecPriority = 
-        PrioritizeMempoolTransactions(nHeight, dependentTransactions, view);
+        PrioritizeMempoolTransactions(nHeight, vOrphan, dependentTransactions, view);
         
     std::vector<PrioritizedTransactionData> prioritizedTransactions = 
         PrioritizeTransactions(

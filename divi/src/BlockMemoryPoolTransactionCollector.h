@@ -147,6 +147,7 @@ private:
 
     std::vector<TxPriority> PrioritizeMempoolTransactions (
         const int& nHeight,
+        std::list<COrphan>& vOrphan,
         std::map<uint256, std::vector<COrphan*> >& mapDependers,
         CCoinsViewCache& view) const;
 

@@ -7,4 +7,5 @@
 
 set -ex
 
+./listtransactions.py
 ./wallet.py

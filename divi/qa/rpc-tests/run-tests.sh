@@ -8,4 +8,5 @@
 set -ex
 
 ./listtransactions.py
+./mempool_resurrect_test.py
 ./wallet.py

@@ -111,7 +111,7 @@ LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock
 
     result = prevBlockIndex->vLotteryWinnersCoinstakes;
     result.reserve(prevBlockIndex->vLotteryWinnersCoinstakes.size()+1);
-    result.push_back(std::make_pair(coinbaseTx.GetHash(), coinbaseTx.IsCoinBase()? coinbaseTx.vout[0].scriptPubKey:coinbaseTx.vout[1].scriptPubKey));
+    result.emplace_back(coinbaseTx.GetHash(), coinbaseTx.IsCoinBase()? coinbaseTx.vout[0].scriptPubKey:coinbaseTx.vout[1].scriptPubKey);
 
 
     // biggest entry at the begining

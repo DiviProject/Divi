@@ -313,6 +313,9 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         nBlockSize += nTxSize;
         nBlockSigOps += nTxSigOps;
 
+        CTxUndo txundo;
+        UpdateCoins(tx, view, txundo, nHeight);
+
         if (fPrintPriority) {
             LogPrintf("priority %.1f fee %s txid %s\n",
                     dPriority, feeRate.ToString(), tx.GetHash().ToString());
@@ -346,10 +349,6 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     for(const PrioritizedTransactionData& txData: prioritizedTransactions)
     {
         const CTransaction& tx = *txData.tx;
-        CTxUndo txundo;
-        UpdateCoins(tx, view, txundo, nHeight);
-
-        // Added
         AddTransactionToBlock(tx, blocktemplate);
     }
 }

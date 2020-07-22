@@ -37,7 +37,7 @@ static bool AppInitRawTx(int argc, char* argv[])
     //
     // Parameters
     //
-    ParseParameters(argc, argv);
+    settings.ParseParameters(argc, argv);
 
     // Check for -testnet or -regtest parameter (Params() calls are only valid after this clause)
     if (!SelectParamsFromCommandLine()) {

@@ -7,6 +7,8 @@
 
 #include "kernel.h"
 
+#include <primitives/transaction.h>
+#include <primitives/block.h>
 #include "blockmap.h"
 #include "BlockDiskAccessor.h"
 #include "chain.h"

@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 #include <uint256.h>
-#include <primitives/transaction.h>
-#include <primitives/block.h>
 #include <streams.h>
 class CBlockIndex;
+class CBlock;
+class CTransaction;
+class COutPoint;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 

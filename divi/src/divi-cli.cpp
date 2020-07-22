@@ -67,7 +67,7 @@ static bool AppInitRPC(int argc, char* argv[])
     //
     // Parameters
     //
-    ParseParameters(argc, argv);
+    settings.ParseParameters(argc, argv);
     if (argc < 2 || ParameterIsSet("-?") || ParameterIsSet("-help") || ParameterIsSet("-version")) {
         std::string strUsage = translate("Divi Core RPC client version") + " " + FormatFullVersion() + "\n";
         if (!ParameterIsSet("-version")) {

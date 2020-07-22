@@ -21,8 +21,8 @@
 #include <boost/foreach.hpp>
 
 extern BlockMap mapBlockIndex;
-unsigned int nStakeMinAge = 60 * 60;
-unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
+extern const unsigned int MINIMUM_COIN_AGE_FOR_STAKING = 60 * 60;
+constexpr const unsigned int MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING = 60 * 60 * 24 * 7 - MINIMUM_COIN_AGE_FOR_STAKING;
 extern CChain chainActive;
 
 // MODIFIER_INTERVAL: time to elapse before new modifier is computed
@@ -313,8 +313,8 @@ bool CheckStakeKernelHash(
     if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
 
-    if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
-        return error("CheckStakeKernelHash() : min age violation - nTimeBlockFrom=%d nStakeMinAge=%d nTimeTx=%d", nTimeBlockFrom, nStakeMinAge, nTimeTx);
+    if (nTimeBlockFrom + MINIMUM_COIN_AGE_FOR_STAKING > nTimeTx) // Min age requirement
+        return error("CheckStakeKernelHash() : min age violation - nTimeBlockFrom=%d MINIMUM_COIN_AGE_FOR_STAKING=%d nTimeTx=%d", nTimeBlockFrom, MINIMUM_COIN_AGE_FOR_STAKING, nTimeTx);
 
     //grab difficulty
     uint256 bnTargetPerCoinDay;
@@ -334,7 +334,7 @@ bool CheckStakeKernelHash(
     ss << nStakeModifier;
 
     //get the stake weight - weight is equal to coin amount
-    int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, nStakeMaxAge - nStakeMinAge);
+    int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
 
     //if wallet is simply checking to make sure a hash is valid
     if (fCheck) {

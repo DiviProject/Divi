@@ -277,7 +277,7 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     return true;
 }
 
-uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutIndex, uint256 prevoutHash, unsigned int nTimeBlockFrom)
+uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutIndex, const uint256& prevoutHash, unsigned int nTimeBlockFrom)
 {
     //Divi will hash in the transaction hash and the index number in order to make sure each hash is unique
     ss << nTimeBlockFrom << prevoutIndex << prevoutHash << nTimeTx;
@@ -285,21 +285,21 @@ uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutInde
 }
 
 //test hash vs target
-bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, uint256 bnTargetPerCoinDay, int64_t nTimeWeight)
+bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, const uint256& bnTargetPerCoinDay, int64_t nTimeWeight)
 {
     uint256 bnCoinDayWeight = uint256(nValueIn) * nTimeWeight / COIN / 400;
 
     // Now check if proof-of-stake hash meets target protocol
-    return (uint256(hashProofOfStake) < bnCoinDayWeight * bnTargetPerCoinDay);
+    return (hashProofOfStake < bnCoinDayWeight * bnTargetPerCoinDay);
 }
 
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
 bool CheckStakeKernelHash(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
-    const CBlock blockFrom,
-    const CTransaction txPrev,
-    const COutPoint prevout,
+    const CBlock& blockFrom,
+    const CTransaction& txPrev,
+    const COutPoint& prevout,
     unsigned int& nTimeTx,
     unsigned int nHashDrift,
     bool fCheck,
@@ -383,7 +383,7 @@ bool CheckStakeKernelHash(
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
+bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
 {
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())

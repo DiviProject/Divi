@@ -12,4 +12,6 @@ echo "$path"
 cd $path
 ./listtransactions.py
 ./mempool_resurrect_test.py
+./txn_doublespend.py
+./txn_doublespend.py --mineblock
 ./wallet.py

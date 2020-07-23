@@ -15,6 +15,7 @@
 #include <BlockFactory.h>
 
 extern const int nHashDrift;
+#include "main.h"
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,

@@ -8,6 +8,7 @@
 #include <boost/thread.hpp>
 #include <Settings.h>
 extern Settings& settings;
+#include "main.h"
 
 // Actual mining functions
 BlockFactory::BlockFactory(

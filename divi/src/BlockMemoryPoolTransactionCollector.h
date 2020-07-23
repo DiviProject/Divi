@@ -14,7 +14,7 @@
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/thread/recursive_mutex.hpp>
-
+#include <main.h>
 
 class CTransaction;
 class CTxIn;
@@ -36,7 +36,7 @@ struct PrioritizedTransactionData
     unsigned int nTxSigOps;
     PrioritizedTransactionData();
     PrioritizedTransactionData(
-        const CTransaction& transaction, 
+        const CTransaction& transaction,
         unsigned txSigOps);
 };
 
@@ -99,21 +99,21 @@ class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 private:
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
-private: 
+private:
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     bool VerifyUTXOIsKnownToMemPool (const CTxIn& txin, bool& fMissingInputs) const;
     bool CheckUTXOValidity (const CTxIn& txin, bool& fMissingInputs, const CTransaction &tx) const;
     void RecordOrphanTransaction (
         std::shared_ptr<COrphan>& porphan,
-        const CTransaction& tx, 
+        const CTransaction& tx,
         const CTxIn& txin,
         std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& mapDependers) const;
 
     void ComputeTransactionPriority (
-        double& dPriority, 
-        const CTransaction& tx, 
-        CAmount nTotalIn, 
-        COrphan* porphan, 
+        double& dPriority,
+        const CTransaction& tx,
+        CAmount nTotalIn,
+        COrphan* porphan,
         std::vector<TxPriority>& vecPriority,
         const CTransaction* mempoolTx) const;
     void AddDependingTransactionsToPriorityQueue (
@@ -132,7 +132,7 @@ private:
         const CTransaction& tx) const;
 
     void AddTransactionToBlock (
-        const CTransaction& tx, 
+        const CTransaction& tx,
         CBlockTemplate& blocktemplate) const;
 
     std::vector<TxPriority> PrioritizeMempoolTransactions (
@@ -142,7 +142,7 @@ private:
 
     void PrioritizeFeePastPrioritySize (
         std::vector<TxPriority>& vecPriority,
-        bool& fSortedByFee, 
+        bool& fSortedByFee,
         TxPriorityCompare& comparer,
         const uint64_t& nBlockSize,
         const unsigned int& nTxSize,
@@ -159,7 +159,7 @@ private:
         CBlockTemplate& blocktemplate) const;
 public:
     BlockMemoryPoolTransactionCollector(
-        CTxMemPool& mempool, 
+        CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
     virtual bool CollectTransactionsIntoBlock (
         CBlockTemplate& pblocktemplate,

@@ -28,10 +28,10 @@ BlockFactory::BlockFactory(
 }
 
 
-void BlockFactory::SetRequiredWork(std::unique_ptr<CBlockTemplate>& pBlockTemplate)
+void BlockFactory::SetRequiredWork(CBlockTemplate& pBlockTemplate)
 {
-    CBlock& block = pBlockTemplate->block;
-    block.nBits = GetNextWorkRequired(pBlockTemplate->previousBlockIndex, &block,chainParameters_);
+    CBlock& block = pBlockTemplate.block;
+    block.nBits = GetNextWorkRequired(pBlockTemplate.previousBlockIndex, &block,chainParameters_);
 }
 
 void BlockFactory::SetBlockTime(CBlock& block)
@@ -40,10 +40,10 @@ void BlockFactory::SetBlockTime(CBlock& block)
 }
 
 void BlockFactory::SetCoinbaseTransactionAndDefaultFees(
-    std::unique_ptr<CBlockTemplate>& pblocktemplate, 
+    CBlockTemplate& pblocktemplate,
     const CMutableTransaction& coinbaseTransaction)
 {
-    pblocktemplate->block.vtx.push_back(coinbaseTransaction);
+    pblocktemplate.block.vtx.push_back(coinbaseTransaction);
 }
 
 void BlockFactory::CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMutableTransaction& txNew)
@@ -55,9 +55,9 @@ void BlockFactory::CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMut
 }
 
 bool BlockFactory::AppendProofOfStakeToBlock(
-    std::unique_ptr<CBlockTemplate>& pBlockTemplate)
+    CBlockTemplate& pBlockTemplate)
 {
-    CBlock& block = pBlockTemplate->block;
+    CBlock& block = pBlockTemplate.block;
     CMutableTransaction txCoinStake;
     SetRequiredWork(pBlockTemplate);
     SetBlockTime(block);
@@ -98,19 +98,19 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     CMutableTransaction& coinbaseTransaction = *pblocktemplate->coinbaseTransaction;
     CreateCoinbaseTransaction(scriptPubKeyIn, coinbaseTransaction);
     
-    SetCoinbaseTransactionAndDefaultFees(pblocktemplate, coinbaseTransaction);
+    SetCoinbaseTransactionAndDefaultFees(*pblocktemplate, coinbaseTransaction);
 
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
 
-        if (!AppendProofOfStakeToBlock(pblocktemplate))
+        if (!AppendProofOfStakeToBlock(*pblocktemplate))
             return NULL;
     }
 
     // Collect memory pool transactions into the block
 
     if(!blockTransactionCollector_->CollectTransactionsIntoBlock(
-            pblocktemplate,
+            *pblocktemplate,
             fProofOfStake,
             coinbaseTransaction
         ))

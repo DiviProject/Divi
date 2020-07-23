@@ -13,7 +13,7 @@
 #include <SuperblockHelpers.h>
 
 #include <BlockFactory.h>
-#include "main.h"
+#include <main.h>
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,

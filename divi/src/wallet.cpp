@@ -46,7 +46,7 @@ bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
 
-extern unsigned int nStakeMinAge;
+extern const unsigned int MINIMUM_COIN_AGE_FOR_STAKING;
 /**
  * Fees smaller than this (in duffs) are considered zero fee (for transaction creation)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minTxFee 10 times higher
@@ -1613,7 +1613,7 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         int64_t nTxTime = out.tx->GetTxTime();
 
         //check for min age
-        if (GetAdjustedTime() - nTxTime < nStakeMinAge)
+        if (GetAdjustedTime() - nTxTime < MINIMUM_COIN_AGE_FOR_STAKING)
             continue;
 
         //check that it is matured
@@ -1641,7 +1641,7 @@ bool CWallet::MintableCoins()
     for (const COutput& out : vCoins) {
         int64_t nTxTime = out.tx->GetTxTime();
 
-        if (GetAdjustedTime() - nTxTime > nStakeMinAge)
+        if (GetAdjustedTime() - nTxTime > MINIMUM_COIN_AGE_FOR_STAKING)
             return true;
     }
 

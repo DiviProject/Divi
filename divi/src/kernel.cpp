@@ -7,6 +7,8 @@
 
 #include "kernel.h"
 
+#include <primitives/transaction.h>
+#include <primitives/block.h>
 #include "blockmap.h"
 #include "BlockDiskAccessor.h"
 #include "chain.h"
@@ -21,8 +23,8 @@
 #include <boost/foreach.hpp>
 
 extern BlockMap mapBlockIndex;
-unsigned int nStakeMinAge = 60 * 60;
-unsigned int nStakeMaxAge = 60 * 60 * 24 * 7;
+extern const unsigned int MINIMUM_COIN_AGE_FOR_STAKING = 60 * 60;
+constexpr const unsigned int MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING = 60 * 60 * 24 * 7 - MINIMUM_COIN_AGE_FOR_STAKING;
 extern CChain chainActive;
 
 // MODIFIER_INTERVAL: time to elapse before new modifier is computed
@@ -277,29 +279,30 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     return true;
 }
 
-uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutIndex, uint256 prevoutHash, unsigned int nTimeBlockFrom)
+uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, unsigned int prevoutIndex, const uint256& prevoutHash, unsigned int nTimeBlockFrom)
 {
     //Divi will hash in the transaction hash and the index number in order to make sure each hash is unique
-    ss << nTimeBlockFrom << prevoutIndex << prevoutHash << nTimeTx;
+    CDataStream ss(SER_GETHASH, 0);
+    ss << stakeModifier << nTimeBlockFrom << prevoutIndex << prevoutHash << nTimeTx;
     return Hash(ss.begin(), ss.end());
 }
 
 //test hash vs target
-bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, uint256 bnTargetPerCoinDay, int64_t nTimeWeight)
+bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, const uint256& bnTargetPerCoinDay, int64_t nTimeWeight)
 {
     uint256 bnCoinDayWeight = uint256(nValueIn) * nTimeWeight / COIN / 400;
 
     // Now check if proof-of-stake hash meets target protocol
-    return (uint256(hashProofOfStake) < bnCoinDayWeight * bnTargetPerCoinDay);
+    return (hashProofOfStake < bnCoinDayWeight * bnTargetPerCoinDay);
 }
 
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
 bool CheckStakeKernelHash(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
-    const CBlock blockFrom,
-    const CTransaction txPrev,
-    const COutPoint prevout,
+    const CBlock& blockFrom,
+    const CTransaction& txPrev,
+    const COutPoint& prevout,
     unsigned int& nTimeTx,
     unsigned int nHashDrift,
     bool fCheck,
@@ -313,8 +316,8 @@ bool CheckStakeKernelHash(
     if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
 
-    if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
-        return error("CheckStakeKernelHash() : min age violation - nTimeBlockFrom=%d nStakeMinAge=%d nTimeTx=%d", nTimeBlockFrom, nStakeMinAge, nTimeTx);
+    if (nTimeBlockFrom + MINIMUM_COIN_AGE_FOR_STAKING > nTimeTx) // Min age requirement
+        return error("CheckStakeKernelHash() : min age violation - nTimeBlockFrom=%d MINIMUM_COIN_AGE_FOR_STAKING=%d nTimeTx=%d", nTimeBlockFrom, MINIMUM_COIN_AGE_FOR_STAKING, nTimeTx);
 
     //grab difficulty
     uint256 bnTargetPerCoinDay;
@@ -329,16 +332,12 @@ bool CheckStakeKernelHash(
         return false;
     }
 
-    //create data stream once instead of repeating it in the loop
-    CDataStream ss(SER_GETHASH, 0);
-    ss << nStakeModifier;
-
     //get the stake weight - weight is equal to coin amount
-    int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, nStakeMaxAge - nStakeMinAge);
+    int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
 
     //if wallet is simply checking to make sure a hash is valid
     if (fCheck) {
-        hashProofOfStake = stakeHash(nTimeTx, ss, prevout.n, prevout.hash, nTimeBlockFrom);
+        hashProofOfStake = stakeHash(nStakeModifier, nTimeTx, prevout.n, prevout.hash, nTimeBlockFrom);
         return stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight);
     }
 
@@ -353,7 +352,7 @@ bool CheckStakeKernelHash(
 
         //hash this iteration
         nTryTime = nTimeTx - i;
-        hashProofOfStake = stakeHash(nTryTime, ss, prevout.n, prevout.hash, nTimeBlockFrom);
+        hashProofOfStake = stakeHash(nStakeModifier, nTryTime, prevout.n, prevout.hash, nTimeBlockFrom);
 
         // if stake hash does not meet the target then continue to next iteration
         if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight))
@@ -383,7 +382,7 @@ bool CheckStakeKernelHash(
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake)
+bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
 {
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())

@@ -34,6 +34,12 @@ def check_array_result(object_array, to_match, expected):
 class ListTransactionsTest(BitcoinTestFramework):
 
     def run_test(self):
+        # Get some coins into both nodes.
+        self.nodes[0].setgenerate(True, 5)
+        self.sync_all()
+        self.nodes[1].setgenerate(True, 5)
+        self.sync_all()
+
         # Simple send, 0 to 1:
         txid = self.nodes[0].sendtoaddress(self.nodes[1].getnewaddress(), 0.1)
         self.sync_all()
@@ -56,10 +62,7 @@ class ListTransactionsTest(BitcoinTestFramework):
         # send-to-self:
         txid = self.nodes[0].sendtoaddress(self.nodes[0].getnewaddress(), 0.2)
         check_array_result(self.nodes[0].listtransactions(),
-                           {"txid":txid, "category":"send"},
-                           {"amount":Decimal("-0.2")})
-        check_array_result(self.nodes[0].listtransactions(),
-                           {"txid":txid, "category":"receive"},
+                           {"txid":txid, "category":"move"},
                            {"amount":Decimal("0.2")})
 
         # sendmany from node1: twice to self, twice to node2:

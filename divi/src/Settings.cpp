@@ -6,28 +6,36 @@
 #include <boost/program_options/detail/config_file.hpp>
 #include <set>
 
-std::string Settings::GetArg(const std::string& strArg, const std::string& strDefault)
+std::string Settings::GetArg(const std::string& strArg, const std::string& strDefault) const
 {
     if (mapArgs_.count(strArg))
         return mapArgs_[strArg];
     return strDefault;
 }
 
-int64_t Settings::GetArg(const std::string& strArg, int64_t nDefault)
+int64_t Settings::GetArg(const std::string& strArg, int64_t nDefault) const
 {
     if (mapArgs_.count(strArg))
         return atoi64(mapArgs_[strArg]);
     return nDefault;
 }
 
-bool InterpretBool(const std::string& strValue)
+static bool InterpretBool(const std::string& strValue)
 {
     if (strValue.empty())
         return true;
     return (atoi(strValue) != 0);
 }
 
-bool Settings::GetBoolArg(const std::string& strArg, bool fDefault)
+static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
+{
+    if (strKey.length()>3 && strKey[0]=='-' && strKey[1]=='n' && strKey[2]=='o') {
+        strKey = "-" + strKey.substr(3);
+        strValue = InterpretBool(strValue) ? "0" : "1";
+    }
+}
+
+bool Settings::GetBoolArg(const std::string& strArg, bool fDefault) const
 {
     if (mapArgs_.count(strArg))
         return InterpretBool(mapArgs_[strArg]);
@@ -55,12 +63,12 @@ void Settings::ForceRemoveArg(const std::string &strArg)
     mapArgs_.erase(strArg);
 }
 
-bool Settings::ParameterIsSet (const std::string& key)
+bool Settings::ParameterIsSet (const std::string& key) const
 {
-    return mapArgs_.count(key);
+    return mapArgs_.count(key) > 0;
 }
 
-std::string Settings::GetParameter(const std::string& key)
+std::string Settings::GetParameter(const std::string& key) const
 {
     if(ParameterIsSet(key))
     {
@@ -82,24 +90,9 @@ void Settings::ClearParameter ()
     mapArgs_.clear();
 }
 
-bool Settings::ParameterIsSetForMultiArgs (const std::string& key)
+bool Settings::ParameterIsSetForMultiArgs (const std::string& key) const
 {
-    return mapMultiArgs_.count(key);
-}
-
-bool Settings::InterpretBool(const std::string& strValue)
-{
-    if (strValue.empty())
-        return true;
-    return (atoi(strValue) != 0);
-}
-
-void Settings::InterpretNegativeSetting(std::string& strKey, std::string& strValue)
-{
-    if (strKey.length()>3 && strKey[0]=='-' && strKey[1]=='n' && strKey[2]=='o') {
-        strKey = "-" + strKey.substr(3);
-        strValue = InterpretBool(strValue) ? "0" : "1";
-    }
+    return mapMultiArgs_.count(key) > 0;
 }
 
 void Settings::ParseParameters(int argc, const char* const argv[])

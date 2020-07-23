@@ -30,7 +30,7 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 
-extern NotificationInterfaceRegistry registry;//TODO: rid this
+extern NotificationInterfaceRegistry registry;
 using namespace json_spirit;
 using namespace std;
 
@@ -165,7 +165,8 @@ Value setgenerate(const Array& params, bool fHelp)
         }
 
         Array blockHashes;
-        CoinMinter minter(pwalletMain, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main);
+        int64_t coinstakeSearchInterval;
+        CoinMinter minter(pwalletMain, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,coinstakeSearchInterval);
         while (nHeight < nHeightEnd)
         {
             unsigned int nExtraNonce = 0;

@@ -75,17 +75,13 @@ bool BlockMemoryPoolTransactionCollector::CheckUTXOValidity (const CTxIn& txin, 
     return true;
 }
 void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
-    COrphan* porphan, 
-    std::list<COrphan>& vOrphan, 
+    std::shared_ptr<COrphan>& porphan,
     const CTransaction& tx, 
     const CTxIn& txin,
-    std::map<uint256, std::vector<COrphan*> >& dependentTransactions) const
+    std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions) const
 {
-    if (!porphan) {
-        // Use list for automatic deletion
-        vOrphan.push_back(COrphan(&tx));
-        porphan = &vOrphan.back();
-    }
+    if (porphan == nullptr)
+        porphan = std::make_shared<COrphan>(&tx);
     dependentTransactions[txin.prevout.hash].push_back(porphan);
     porphan->setDependsOn.insert(txin.prevout.hash);
 }
@@ -114,13 +110,13 @@ void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority (
 }
 
 void BlockMemoryPoolTransactionCollector::AddDependingTransactionsToPriorityQueue (
-    std::map<uint256, std::vector<COrphan*> >& dependentTransactions,
+    std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions,
     const uint256& hash,
     std::vector<TxPriority>& vecPriority,
     TxPriorityCompare& comparer) const
 {
     if (dependentTransactions.count(hash)) {
-        BOOST_FOREACH (COrphan* porphan, dependentTransactions[hash]) {
+        for (auto& porphan : dependentTransactions[hash]) {
             if (!porphan->setDependsOn.empty()) {
                 porphan->setDependsOn.erase(hash);
                 if (porphan->setDependsOn.empty()) {
@@ -154,30 +150,25 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
 
 void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
     const CTransaction& tx, 
-    std::unique_ptr<CBlockTemplate>& pblocktemplate,
-    const CAmount& nTxFees,
-    const unsigned int& nTxSigOps) const
+    CBlockTemplate& blocktemplate) const
 {  
-    pblocktemplate->block.vtx.push_back(tx);
-    pblocktemplate->vTxFees.push_back(nTxFees);
-    pblocktemplate->vTxSigOps.push_back(nTxSigOps);
+    blocktemplate.block.vtx.push_back(tx);
 }
 
 std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTransactions (
     const int& nHeight,
-    std::map<uint256, std::vector<COrphan*> >& dependentTransactions,
+    std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions,
     CCoinsViewCache& view) const
 {
-    std::list<COrphan> vOrphan;
     std::vector<TxPriority> vecPriority;
     vecPriority.reserve(mempool_.mapTx.size());
-    for (std::map<uint256, CTxMemPoolEntry>::iterator mi = mempool_.mapTx.begin(); mi != mempool_.mapTx.end(); ++mi) {
+    for (auto mi = mempool_.mapTx.begin(); mi != mempool_.mapTx.end(); ++mi) {
         const CTransaction& tx = mi->second.GetTx();
         if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)){
             continue;
         }
 
-        COrphan* porphan = NULL;
+        std::shared_ptr<COrphan> porphan;
         double dPriority = 0;
         CAmount nTotalIn = 0;
         bool fMissingInputs = false;
@@ -189,13 +180,11 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
                 // pool should connect to either transactions in the chain
                 // or other transactions in the memory pool.
                 if (!VerifyUTXOIsKnownToMemPool(txin, fMissingInputs)) {
-                    if (porphan)
-                        vOrphan.pop_back();
                     break;
                 }
 
                 // Has to wait for dependencies
-                RecordOrphanTransaction(porphan, vOrphan, tx, txin, dependentTransactions);
+                RecordOrphanTransaction(porphan, tx, txin, dependentTransactions);
 
                 nTotalIn += mempool_.mapTx[txin.prevout.hash].GetTx().vout[txin.prevout.n].nValue;
                 continue;
@@ -219,7 +208,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
         if (fMissingInputs) { 
             continue;
         }
-        ComputeTransactionPriority(dPriority, tx, nTotalIn, porphan, vecPriority, &mi->second.GetTx());
+        ComputeTransactionPriority(dPriority, tx, nTotalIn, porphan.get(), vecPriority, &mi->second.GetTx());
     }
     return vecPriority;
 }
@@ -258,7 +247,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     std::vector<TxPriority>& vecPriority,
     const int& nHeight,
     CCoinsViewCache& view,
-    std::map<uint256, std::vector<COrphan*> >& dependentTransactions) const
+    std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions) const
 {
     std::vector<PrioritizedTransactionData> prioritizedTransactions;
 
@@ -324,6 +313,9 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         nBlockSize += nTxSize;
         nBlockSigOps += nTxSigOps;
 
+        CTxUndo txundo;
+        UpdateCoins(tx, view, txundo, nHeight);
+
         if (fPrintPriority) {
             LogPrintf("priority %.1f fee %s txid %s\n",
                     dPriority, feeRate.ToString(), tx.GetHash().ToString());
@@ -340,10 +332,9 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
 void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     const int& nHeight,
     CCoinsViewCache& view,
-    std::unique_ptr<CBlockTemplate>& pblocktemplate,
-    CAmount& nFees) const
+    CBlockTemplate& blocktemplate) const
 {
-    std::map<uint256, std::vector<COrphan*> > dependentTransactions;
+    std::map<uint256, std::vector<std::shared_ptr<COrphan>>> dependentTransactions;
 
     std::vector<TxPriority> vecPriority = 
         PrioritizeMempoolTransactions(nHeight, dependentTransactions, view);
@@ -358,13 +349,7 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
     for(const PrioritizedTransactionData& txData: prioritizedTransactions)
     {
         const CTransaction& tx = *txData.tx;
-        CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
-        CTxUndo txundo;
-        UpdateCoins(tx, view, txundo, nHeight);
-
-        // Added
-        AddTransactionToBlock(tx, pblocktemplate, nTxFees, txData.nTxSigOps);
-        nFees += nTxFees;
+        AddTransactionToBlock(tx, blocktemplate);
     }
 }
 
@@ -376,7 +361,6 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     
     LOCK2(mainCS_, mempool_.cs);
 
-    CAmount nFees = 0;
     CBlock& block = pblocktemplate->block;
 
     pblocktemplate->previousBlockIndex = chainActive.Tip();
@@ -386,10 +370,8 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     AddTransactionsToBlockIfPossible(
         nHeight,
         view,
-        pblocktemplate,
-        nFees);
+        *pblocktemplate);
 
-    if(!fProofOfStake) pblocktemplate->vTxFees[0] = -nFees;
     LogPrintf("CreateNewBlock(): block tostring %s\n", block.ToString());
     return true;
 }

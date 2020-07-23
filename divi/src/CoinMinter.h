@@ -35,11 +35,12 @@ class CoinMinter: public I_CoinMinter
     const CChainParams& chainParameters_;
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
+    CMasternodeSync& masternodeSync_;
+    HashedBlockMap& mapHashedBlocks_;
+    int64_t& lastCoinStakeSearchInterval_;
     std::shared_ptr<I_BlockFactory> blockFactory_;
     std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
     std::shared_ptr<I_SuperblockSubsidyContainer> subsidyContainer_;
-    CMasternodeSync& masternodeSync_;
-    HashedBlockMap& mapHashedBlocks_;
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
     int64_t timeToWait_;
@@ -77,7 +78,8 @@ public:
         CMasternodeSync& masternodeSynchronization,
         HashedBlockMap& mapHashedBlocks,
         CTxMemPool& mempool, 
-        AnnotatedMixin<boost::recursive_mutex>& mainCS);
+        AnnotatedMixin<boost::recursive_mutex>& mainCS,
+        int64_t& lastCoinStakeSearchInterval);
 
     virtual bool CanMintCoins();
     virtual void sleep(uint64_t milliseconds) const;

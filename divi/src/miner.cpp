@@ -78,13 +78,25 @@ void MinterThread(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
     }
 }
 
+int64_t nLastCoinStakeSearchInterval = 0;
+bool HasRecentlyAttemptedToGenerateProofOfStake()
+{
+    bool recentlyAttemptedPoS = false;
+    if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
+        recentlyAttemptedPoS = true;
+    else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && nLastCoinStakeSearchInterval)
+        recentlyAttemptedPoS = true;
+    
+    return recentlyAttemptedPoS;
+}
+
 // ppcoin: stake minter thread
 void ThreadStakeMinter(CWallet* pwallet)
 {
     boost::this_thread::interruption_point();
     LogPrintf("ThreadStakeMinter started\n");
     try {
-        static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main);
+        static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
         MinterThread(pwallet, isProofOfStake,minter);
@@ -103,7 +115,7 @@ void static ThreadPoWMinter(void* parg)
     CWallet* pwallet = (CWallet*)parg;
 
     try {
-        static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main);
+        static CoinMinter minter(pwallet, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);
         MinterThread(pwallet, isProofOfStake, minter);

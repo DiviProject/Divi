@@ -4,5 +4,6 @@
 #include <utility>
 #include <uint256.h>
 #include <script/script.h>
-typedef std::vector<std::pair<uint256,CScript>> LotteryCoinstakes;
+typedef std::pair<uint256,CScript> LotteryCoinstake;
+typedef std::vector<LotteryCoinstake> LotteryCoinstakes;
 #endif //LOTTERY_COINSTAKES_H

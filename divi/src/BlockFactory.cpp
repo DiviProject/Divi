@@ -5,15 +5,16 @@
 #include <BlockMemoryPoolTransactionCollector.h>
 #include <CoinstakeCreator.h>
 #include <timedata.h>
+#include "main.h"
 
 // Actual mining functions
 BlockFactory::BlockFactory(
     CWallet& wallet,
     int64_t& lastCoinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
-    CChain& chain, 
+    CChain& chain,
     const CChainParams& chainParameters,
-    CTxMemPool& transactionMemoryPool, 
+    CTxMemPool& transactionMemoryPool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): wallet_(wallet)
     , lastCoinstakeSearchInterval_(lastCoinstakeSearchInterval)
@@ -40,7 +41,7 @@ void BlockFactory::SetBlockTime(CBlock& block)
 }
 
 void BlockFactory::SetCoinbaseTransactionAndDefaultFees(
-    std::unique_ptr<CBlockTemplate>& pblocktemplate, 
+    std::unique_ptr<CBlockTemplate>& pblocktemplate,
     const CMutableTransaction& coinbaseTransaction)
 {
     pblocktemplate->block.vtx.push_back(coinbaseTransaction);
@@ -67,7 +68,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
 
     unsigned int nTxNewTime = 0;
     if(coinstakeCreator_->CreateProofOfStake(
-            block.nBits, 
+            block.nBits,
             block.nTime,
             nLastCoinStakeSearchTime,
             txCoinStake,
@@ -97,7 +98,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     pblocktemplate->coinbaseTransaction = std::make_shared<CMutableTransaction>();
     CMutableTransaction& coinbaseTransaction = *pblocktemplate->coinbaseTransaction;
     CreateCoinbaseTransaction(scriptPubKeyIn, coinbaseTransaction);
-    
+
     SetCoinbaseTransactionAndDefaultFees(pblocktemplate, coinbaseTransaction);
 
     if (fProofOfStake) {

@@ -13,7 +13,7 @@
 #include <SuperblockHelpers.h>
 
 #include <BlockFactory.h>
-
+#include "main.h"
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,
@@ -22,7 +22,7 @@ CoinMinter::CoinMinter(
     std::vector<CNode*>& peers,
     CMasternodeSync& masternodeSynchronization,
     HashedBlockMap& mapHashedBlocks,
-    CTxMemPool& transactionMemoryPool, 
+    CTxMemPool& transactionMemoryPool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS,
     int64_t& lastCoinStakeSearchInterval
     ): mintingIsRequested_(false)
@@ -46,7 +46,7 @@ CoinMinter::CoinMinter(
 bool CoinMinter::hasMintableCoinForProofOfStake()
 {
     int timeWaited = GetTime() - lastTimeCheckedMintable_;
-    
+
     if(timeWaited > fiveMinutes_)
     {
         lastTimeCheckedMintable_ = GetTime();
@@ -90,7 +90,7 @@ bool CoinMinter::limitStakingSpeed() const
 
 bool CoinMinter::CanMintCoins()
 {
-    if( !hasMintableCoinForProofOfStake() || 
+    if( !hasMintableCoinForProofOfStake() ||
         !isAtProofOfStakeHeight() ||
         !satisfiesMintingRequirements() ||
         limitStakingSpeed())
@@ -201,7 +201,7 @@ void CoinMinter::SetBlockHeaders(std::unique_ptr<CBlockTemplate>& pblocktemplate
 }
 
 bool CoinMinter::createProofOfStakeBlock(
-    unsigned int nExtraNonce, 
+    unsigned int nExtraNonce,
     CReserveKey& reserveKey) const
 {
     constexpr const bool fProofOfStake = true;
@@ -237,7 +237,7 @@ bool CoinMinter::createProofOfStakeBlock(
 }
 
 bool CoinMinter::createProofOfWorkBlock(
-    unsigned int nExtraNonce, 
+    unsigned int nExtraNonce,
     CReserveKey& reserveKey) const
 {
     constexpr const bool fProofOfStake = false;
@@ -262,14 +262,14 @@ bool CoinMinter::createProofOfWorkBlock(
 
     int64_t nStart = GetTime();
     uint256 hashTarget = uint256().SetCompact(block->nBits);
-    while (true) 
+    while (true)
     {
         unsigned int nHashesDone = 0;
         blockSuccessfullyCreated = false;
         uint256 hash;
         while (true) {
             hash = block->GetHash();
-            if (hash <= hashTarget) 
+            if (hash <= hashTarget)
             {
                 // Found a solution
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
@@ -305,7 +305,7 @@ bool CoinMinter::createProofOfWorkBlock(
 
         // Update nTime every few seconds
         UpdateTime(block, pindexPrev);
-        if (chainParameters_.AllowMinDifficultyBlocks()) 
+        if (chainParameters_.AllowMinDifficultyBlocks())
         {
             // Changing block->nTime can change work required on testnet:
             hashTarget.SetCompact(block->nBits);
@@ -316,8 +316,8 @@ bool CoinMinter::createProofOfWorkBlock(
 
 
 bool CoinMinter::createNewBlock(
-    unsigned int nExtraNonce, 
-    CReserveKey& reserveKey, 
+    unsigned int nExtraNonce,
+    CReserveKey& reserveKey,
     bool fProofOfStake) const
 {
     if(fProofOfStake)

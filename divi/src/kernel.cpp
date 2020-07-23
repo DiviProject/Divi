@@ -296,6 +296,30 @@ bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, const uin
     return (hashProofOfStake < bnCoinDayWeight * bnTargetPerCoinDay);
 }
 
+
+ProofOfStakeCalculator::ProofOfStakeCalculator(
+    const COutPoint& utxoToStake,
+    const int64_t& utxoValue,
+    const uint64_t& stakeModifier,
+    unsigned int blockDifficultyBits,
+    int64_t coinAgeWeightOfUtxo
+    ): utxoToStake_(utxoToStake)
+    , utxoValue_(utxoValue)
+    , stakeModifier_(stakeModifier)
+    , targetPerCoinDay_(uint256().SetCompact(blockDifficultyBits))
+    , coinAgeWeightOfUtxo_(coinAgeWeightOfUtxo)
+{
+}
+
+bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
+    unsigned int nTimeTx,
+    unsigned int nTimeBlockFrom,
+    uint256& computedProofOfStake) const
+{
+    computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,nTimeBlockFrom);
+    return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo_);
+}
+
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
 bool CheckStakeKernelHash(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

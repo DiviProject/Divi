@@ -33,6 +33,30 @@ bool stakeTargetHit(
     int64_t nValueIn,
     const uint256& bnTargetPerCoinDay,
     int64_t nTimeWeight);
+
+class ProofOfStakeCalculator
+{
+private:
+    const COutPoint& utxoToStake_;
+    const int64_t& utxoValue_;
+    const uint64_t& stakeModifier_;
+    const uint256 targetPerCoinDay_;
+    const int64_t coinAgeWeightOfUtxo_;
+public:
+    ProofOfStakeCalculator(
+        const COutPoint& utxoToStake,
+        const int64_t& utxoValue,
+        const uint64_t& stakeModifier,
+        unsigned int blockDifficultyBits,
+        int64_t coinAgeOfUtxo);
+
+    bool computeProofOfStakeAndCheckItMeetsTarget(
+        unsigned int nTimeTx,
+        unsigned int nTimeBlockFrom,
+        uint256& computedProofOfStake) const;
+};
+
+
 bool CheckStakeKernelHash(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,

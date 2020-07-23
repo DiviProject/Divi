@@ -279,11 +279,11 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     return true;
 }
 
-uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, unsigned int prevoutIndex, const uint256& prevoutHash, unsigned int nTimeBlockFrom)
+uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, const COutPoint& prevout, unsigned int nTimeBlockFrom)
 {
     //Divi will hash in the transaction hash and the index number in order to make sure each hash is unique
     CDataStream ss(SER_GETHASH, 0);
-    ss << stakeModifier << nTimeBlockFrom << prevoutIndex << prevoutHash << nTimeTx;
+    ss << stakeModifier << nTimeBlockFrom << prevout.n << prevout.hash << nTimeTx;
     return Hash(ss.begin(), ss.end());
 }
 
@@ -337,7 +337,7 @@ bool CheckStakeKernelHash(
 
     //if wallet is simply checking to make sure a hash is valid
     if (fCheck) {
-        hashProofOfStake = stakeHash(nStakeModifier, nTimeTx, prevout.n, prevout.hash, nTimeBlockFrom);
+        hashProofOfStake = stakeHash(nStakeModifier, nTimeTx, prevout, nTimeBlockFrom);
         return stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight);
     }
 
@@ -352,7 +352,7 @@ bool CheckStakeKernelHash(
 
         //hash this iteration
         nTryTime = nTimeTx - i;
-        hashProofOfStake = stakeHash(nStakeModifier, nTryTime, prevout.n, prevout.hash, nTimeBlockFrom);
+        hashProofOfStake = stakeHash(nStakeModifier, nTryTime, prevout, nTimeBlockFrom);
 
         // if stake hash does not meet the target then continue to next iteration
         if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight))

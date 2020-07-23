@@ -26,8 +26,7 @@ bool ComputeNextStakeModifier(
 uint256 stakeHash(
     uint64_t stakeModifier,
     unsigned int nTimeTx,
-    unsigned int prevoutIndex,
-    const uint256& prevoutHash,
+    const COutPoint& prevout,
     unsigned int nTimeBlockFrom);
 bool stakeTargetHit(
     const uint256& hashProofOfStake,

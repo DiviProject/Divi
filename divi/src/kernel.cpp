@@ -279,10 +279,11 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     return true;
 }
 
-uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutIndex, const uint256& prevoutHash, unsigned int nTimeBlockFrom)
+uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, unsigned int prevoutIndex, const uint256& prevoutHash, unsigned int nTimeBlockFrom)
 {
     //Divi will hash in the transaction hash and the index number in order to make sure each hash is unique
-    ss << nTimeBlockFrom << prevoutIndex << prevoutHash << nTimeTx;
+    CDataStream ss(SER_GETHASH, 0);
+    ss << stakeModifier << nTimeBlockFrom << prevoutIndex << prevoutHash << nTimeTx;
     return Hash(ss.begin(), ss.end());
 }
 
@@ -331,16 +332,12 @@ bool CheckStakeKernelHash(
         return false;
     }
 
-    //create data stream once instead of repeating it in the loop
-    CDataStream ss(SER_GETHASH, 0);
-    ss << nStakeModifier;
-
     //get the stake weight - weight is equal to coin amount
     int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
 
     //if wallet is simply checking to make sure a hash is valid
     if (fCheck) {
-        hashProofOfStake = stakeHash(nTimeTx, ss, prevout.n, prevout.hash, nTimeBlockFrom);
+        hashProofOfStake = stakeHash(nStakeModifier, nTimeTx, prevout.n, prevout.hash, nTimeBlockFrom);
         return stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight);
     }
 
@@ -355,7 +352,7 @@ bool CheckStakeKernelHash(
 
         //hash this iteration
         nTryTime = nTimeTx - i;
-        hashProofOfStake = stakeHash(nTryTime, ss, prevout.n, prevout.hash, nTimeBlockFrom);
+        hashProofOfStake = stakeHash(nStakeModifier, nTryTime, prevout.n, prevout.hash, nTimeBlockFrom);
 
         // if stake hash does not meet the target then continue to next iteration
         if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight))

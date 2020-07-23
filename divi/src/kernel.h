@@ -24,8 +24,8 @@ bool ComputeNextStakeModifier(
 // Check whether stake kernel meets hash target
 // Sets hashProofOfStake on success return
 uint256 stakeHash(
+    uint64_t stakeModifier,
     unsigned int nTimeTx,
-    CDataStream ss,
     unsigned int prevoutIndex,
     const uint256& prevoutHash,
     unsigned int nTimeBlockFrom);

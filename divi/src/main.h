@@ -351,8 +351,6 @@ bool CheckFinalTx(const CTransaction& tx, int flags = -1);
  */
 bool IsStandardTx(const CTransaction& tx, std::string& reason);
 
-// TODO: delete : bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0, int64_t nBlockTime = 0);
-
 /** Undo information for a CBlock */
 class CBlockUndo
 {

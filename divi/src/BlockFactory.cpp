@@ -6,9 +6,10 @@
 #include <PoSTransactionCreator.h>
 #include <timedata.h>
 #include <boost/thread.hpp>
+#include <main.h>
+
 #include <Settings.h>
 extern Settings& settings;
-#include "main.h"
 
 // Actual mining functions
 BlockFactory::BlockFactory(

@@ -314,9 +314,10 @@ ProofOfStakeCalculator::ProofOfStakeCalculator(
 bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     unsigned int nTimeTx,
     unsigned int nTimeBlockFrom,
-    uint256& computedProofOfStake) const
+    uint256& computedProofOfStake,
+    bool checkOnly) const
 {
-    computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,nTimeBlockFrom);
+    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,nTimeBlockFrom);
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo_);
 }
 

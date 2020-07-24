@@ -42,7 +42,8 @@ public:
     bool computeProofOfStakeAndCheckItMeetsTarget(
         unsigned int nTimeTx,
         unsigned int nTimeBlockFrom,
-        uint256& computedProofOfStake) const;
+        uint256& computedProofOfStake,
+        bool checkOnly = false) const;
 };
 
 

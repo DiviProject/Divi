@@ -8,10 +8,13 @@
 
 #include "base58.h"
 #include "key.h"
-#include "main.h"
 #include "net.h"
 #include "sync.h"
 #include "timedata.h"
+
+#ifndef BITCOIN_CHAIN_H
+#include <chain.h>
+#endif // BITCOIN_CHAIN_H
 
 
 #include "masternodeconfig.h"
@@ -29,8 +32,11 @@ class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
 extern std::map<int64_t, uint256> mapCacheBlockHashes;
+extern CChain chainActive;
 
 bool GetBlockHash(uint256& hash, int nBlockHeight);
+
+int GetInputAge(CTxIn& vin);
 
 //
 // The Masternode Ping Class : Contains a different serialize method for sending pings from masternodes throughout the network
@@ -305,11 +311,11 @@ class CMasternodeBroadcast : public CMasternode
 public:
     CMasternodeBroadcast();
     CMasternodeBroadcast(
-        CService newAddr, 
-        CTxIn newVin, 
-        CPubKey pubKeyCollateralAddress, 
-        CPubKey pubKeyMasternode, 
-        Tier nMasternodeTier, 
+        CService newAddr,
+        CTxIn newVin,
+        CPubKey pubKeyCollateralAddress,
+        CPubKey pubKeyMasternode,
+        Tier nMasternodeTier,
         int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
@@ -349,29 +355,29 @@ class CMasternodeBroadcastFactory
 {
 public:
     /// Create Masternode broadcast, needs to be relayed manually after that
-    static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry, 
-                       std::string& strErrorRet, 
-                       CMasternodeBroadcast& mnbRet, 
+    static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry,
+                       std::string& strErrorRet,
+                       CMasternodeBroadcast& mnbRet,
                        bool fOffline = false,
                        bool deferRelay = false);
 
     static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry,
                        CPubKey pubkeyCollateralAddress,
-                       std::string& strErrorRet, 
-                       CMasternodeBroadcast& mnbRet, 
-                       bool fOffline = false); 
-private:    
+                       std::string& strErrorRet,
+                       CMasternodeBroadcast& mnbRet,
+                       bool fOffline = false);
+private:
     static void createWithoutSignatures(
-        CTxIn txin, 
+        CTxIn txin,
         CService service,
-        CPubKey pubKeyCollateralAddressNew, 
-        CPubKey pubKeyMasternodeNew, 
+        CPubKey pubKeyCollateralAddressNew,
+        CPubKey pubKeyMasternodeNew,
         CMasternode::Tier nMasternodeTier,
         bool deferRelay,
         CMasternodeBroadcast& mnbRet);
 
     static bool signPing(
-        CKey keyMasternodeNew, 
+        CKey keyMasternodeNew,
         CPubKey pubKeyMasternodeNew,
         CMasternodePing& mnp,
         std::string& strErrorRet);
@@ -388,23 +394,23 @@ private:
         CMasternodeBroadcast& mnb,
         std::string& strErrorRet);
 
-    static bool Create(CTxIn vin, 
+    static bool Create(CTxIn vin,
                         CService service,
-                        CKey keyCollateralAddressNew, 
+                        CKey keyCollateralAddressNew,
                         CPubKey pubKeyCollateralAddressNew,
-                        CKey keyMasternodeNew, 
+                        CKey keyMasternodeNew,
                         CPubKey pubKeyMasternodeNew,
                         CMasternode::Tier nMasternodeTier,
-                        std::string& strErrorRet, 
+                        std::string& strErrorRet,
                         CMasternodeBroadcast& mnbRet,
                         bool deferRelay);
     static bool checkBlockchainSync(std::string& strErrorRet, bool fOffline);
     static bool setMasternodeKeys(
-        const std::string& strKeyMasternode, 
-        std::pair<CKey,CPubKey>& masternodeKeyPair, 
+        const std::string& strKeyMasternode,
+        std::pair<CKey,CPubKey>& masternodeKeyPair,
         std::string& strErrorRet);
     static bool setMasternodeCollateralKeys(
-        const std::string& txHash, 
+        const std::string& txHash,
         const std::string& outputIndex,
         const std::string& service,
         bool collateralPrivKeyIsRemote,
@@ -413,7 +419,7 @@ private:
         std::string& error);
     static bool checkMasternodeCollateral(
         const CTxIn& txin,
-        const std::string& txHash, 
+        const std::string& txHash,
         const std::string& outputIndex,
         const std::string& service,
         CMasternode::Tier& nMasternodeTier,
@@ -422,7 +428,7 @@ private:
         const std::string& strService,
         std::string& strErrorRet);
     static bool createArgumentsFromConfig(
-        const CMasternodeConfig::CMasternodeEntry configEntry, 
+        const CMasternodeConfig::CMasternodeEntry configEntry,
         std::string& strErrorRet,
         bool fOffline,
         bool collateralPrivKeyIsRemote,

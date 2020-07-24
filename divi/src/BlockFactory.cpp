@@ -6,7 +6,9 @@
 #include <PoSTransactionCreator.h>
 #include <timedata.h>
 #include <boost/thread.hpp>
+#ifndef BITCOIN_MAIN_H
 #include <main.h>
+#endif
 
 #include <Settings.h>
 extern Settings& settings;

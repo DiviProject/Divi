@@ -19,10 +19,13 @@
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <numeric>
-
 #include <SuperblockHelpers.h>
 #include <LotteryWinnersCalculator.h>
 #include <BlockIncentivesPopulator.h>
+#ifndef BITCOIN_MAIN_H
+#include <main.h>
+#endif // BITCOIN_MAIN_H
+
 
 #define MNPAYMENTS_SIGNATURES_REQUIRED 6
 #define MNPAYMENTS_SIGNATURES_TOTAL 10
@@ -118,7 +121,7 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
     if(heightValidator.IsValidLotteryBlockHeight(nBlockHeight)) {
         return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes);
     }
-    
+
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
         LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
         return true;
@@ -326,7 +329,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::st
         int nCountNeeded;
         vRecv >> nCountNeeded;
 
-        if (netfulfilledman.HasFulfilledRequest(pfrom->addr, "mnget")) 
+        if (netfulfilledman.HasFulfilledRequest(pfrom->addr, "mnget"))
         {
             LogPrintf("%s : mnget - peer already asked me for the list\n", __func__);
             Misbehaving(pfrom->GetId(), 20);

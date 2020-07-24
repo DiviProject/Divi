@@ -11,6 +11,9 @@
 #include "sync.h"
 #include "Logging.h"
 #include <boost/lexical_cast.hpp>
+#ifndef BITCOIN_MAIN_H
+#include <main.h>
+#endif // BITCOIN_MAIN_H
 
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
@@ -519,8 +522,8 @@ bool CMasternodeBroadcastFactory::checkBlockchainSync(std::string& strErrorRet, 
     return true;
 }
 bool CMasternodeBroadcastFactory::setMasternodeKeys(
-    const std::string& strKeyMasternode, 
-    std::pair<CKey,CPubKey>& masternodeKeyPair, 
+    const std::string& strKeyMasternode,
+    std::pair<CKey,CPubKey>& masternodeKeyPair,
     std::string& strErrorRet)
 {
     if (!CObfuScationSigner::GetKeysFromSecret(strKeyMasternode, masternodeKeyPair.first, masternodeKeyPair.second)) {
@@ -531,9 +534,9 @@ bool CMasternodeBroadcastFactory::setMasternodeKeys(
     return true;
 }
 bool CMasternodeBroadcastFactory::setMasternodeCollateralKeys(
-    const std::string& txHash, 
+    const std::string& txHash,
     const std::string& outputIndex,
-    const std::string& service, 
+    const std::string& service,
     bool collateralPrivKeyIsRemote,
     CTxIn& txin,
     std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
@@ -557,7 +560,7 @@ bool CMasternodeBroadcastFactory::setMasternodeCollateralKeys(
 
 bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
     const CTxIn& txin,
-    const std::string& txHash, 
+    const std::string& txHash,
     const std::string& outputIndex,
     const std::string& service,
     CMasternode::Tier& nMasternodeTier,
@@ -595,10 +598,10 @@ bool CMasternodeBroadcastFactory::checkNetworkPort(
     int mainnetDefaultPort = Params().GetDefaultPort();
     if (service.GetPort() != mainnetDefaultPort) {
         strErrorRet = strprintf(
-            "Invalid port %u for masternode %s, only %d is supported on %s network", 
-            service.GetPort(), 
-            strService, 
-            mainnetDefaultPort, 
+            "Invalid port %u for masternode %s, only %d is supported on %s network",
+            service.GetPort(),
+            strService,
+            mainnetDefaultPort,
             Params().NetworkIDString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
@@ -607,7 +610,7 @@ bool CMasternodeBroadcastFactory::checkNetworkPort(
 }
 
 bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
-    const CMasternodeConfig::CMasternodeEntry configEntry, 
+    const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
     bool fOffline,
     bool collateralPrivKeyIsRemote,
@@ -618,14 +621,14 @@ bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
     )
 {
     std::string strService = configEntry.getIp();
-    std::string strKeyMasternode = configEntry.getPrivKey(); 
+    std::string strKeyMasternode = configEntry.getPrivKey();
     std::string strTxHash = configEntry.getTxHash();
     std::string strOutputIndex = configEntry.getOutputIndex();
     //need correct blocks to send ping
     if (!checkBlockchainSync(strErrorRet,fOffline)||
         !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
         !setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,collateralPrivKeyIsRemote,txin,masternodeCollateralKeyPair,strErrorRet) ||
-        !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet) || 
+        !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet) ||
         !checkNetworkPort(strService,strErrorRet))
     {
         return false;
@@ -635,7 +638,7 @@ bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
 
 bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEntry configEntry,
                     CPubKey pubkeyCollateralAddress,
-                    std::string& strErrorRet, 
+                    std::string& strErrorRet,
                     CMasternodeBroadcast& mnbRet,
                     bool fOffline)
 {
@@ -667,7 +670,7 @@ bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEnt
         nMasternodeTier,
         deferRelay,
         mnbRet);
-    
+
     if(!signPing(masternodeKeyPair.first,masternodeKeyPair.second,mnbRet.lastPing,strErrorRet))
     {
         mnbRet = CMasternodeBroadcast();
@@ -677,15 +680,15 @@ bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEnt
 }
 
 bool CMasternodeBroadcastFactory::Create(
-    const CMasternodeConfig::CMasternodeEntry configEntry, 
-    std::string& strErrorRet, 
-    CMasternodeBroadcast& mnbRet, 
+    const CMasternodeConfig::CMasternodeEntry configEntry,
+    std::string& strErrorRet,
+    CMasternodeBroadcast& mnbRet,
     bool fOffline,
     bool deferRelay)
 {
     const bool collateralPrivateKeyIsRemote = false;
     std::string strService = configEntry.getIp();
-    std::string strKeyMasternode = configEntry.getPrivKey(); 
+    std::string strKeyMasternode = configEntry.getPrivKey();
     std::string strTxHash = configEntry.getTxHash();
     std::string strOutputIndex = configEntry.getOutputIndex();
 
@@ -707,12 +710,12 @@ bool CMasternodeBroadcastFactory::Create(
         return false;
     }
 
-    return Create(txin, 
-                CService(strService), 
-                masternodeCollateralKeyPair.first, 
-                masternodeCollateralKeyPair.second, 
-                masternodeKeyPair.first, 
-                masternodeKeyPair.second, 
+    return Create(txin,
+                CService(strService),
+                masternodeCollateralKeyPair.first,
+                masternodeCollateralKeyPair.second,
+                masternodeKeyPair.first,
+                masternodeKeyPair.second,
                 nMasternodeTier,
                 strErrorRet,
                 mnbRet,
@@ -720,12 +723,12 @@ bool CMasternodeBroadcastFactory::Create(
 }
 
 bool CMasternodeBroadcastFactory::signPing(
-    CKey keyMasternodeNew, 
+    CKey keyMasternodeNew,
     CPubKey pubKeyMasternodeNew,
     CMasternodePing& mnp,
     std::string& strErrorRet)
 {
-    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew)) 
+    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew))
     {
         strErrorRet = strprintf("Failed to sign ping, masternode=%s", mnp.vin.prevout.hash.ToString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
@@ -739,7 +742,7 @@ bool CMasternodeBroadcastFactory::signBroadcast(
     CMasternodeBroadcast& mnb,
     std::string& strErrorRet)
 {
-    if (!mnb.Sign(keyCollateralAddressNew)) 
+    if (!mnb.Sign(keyCollateralAddressNew))
     {
         strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", mnb.vin.prevout.hash.ToString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
@@ -768,10 +771,10 @@ bool CMasternodeBroadcastFactory::provideSignatures(
 }
 
 void CMasternodeBroadcastFactory::createWithoutSignatures(
-    CTxIn txin, 
+    CTxIn txin,
     CService service,
-    CPubKey pubKeyCollateralAddressNew, 
-    CPubKey pubKeyMasternodeNew, 
+    CPubKey pubKeyCollateralAddressNew,
+    CPubKey pubKeyMasternodeNew,
     CMasternode::Tier nMasternodeTier,
     bool deferRelay,
     CMasternodeBroadcast& mnbRet)
@@ -786,14 +789,14 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
 }
 
 bool CMasternodeBroadcastFactory::Create(
-    CTxIn txin, 
-    CService service, 
-    CKey keyCollateralAddressNew, 
-    CPubKey pubKeyCollateralAddressNew, 
-    CKey keyMasternodeNew, 
-    CPubKey pubKeyMasternodeNew, 
-    CMasternode::Tier nMasternodeTier, 
-    std::string& strErrorRet, 
+    CTxIn txin,
+    CService service,
+    CKey keyCollateralAddressNew,
+    CPubKey pubKeyCollateralAddressNew,
+    CKey keyMasternodeNew,
+    CPubKey pubKeyMasternodeNew,
+    CMasternode::Tier nMasternodeTier,
+    std::string& strErrorRet,
     CMasternodeBroadcast& mnbRet,
     bool deferRelay)
 {
@@ -1137,4 +1140,23 @@ void CMasternodePing::Relay()
 {
     CInv inv(MSG_MASTERNODE_PING, GetHash());
     RelayInv(inv);
+}
+
+int GetInputAge(CTxIn& vin)
+{
+    CCoinsView viewDummy;
+    CCoinsViewCache view(&viewDummy);
+    {
+        LOCK(mempool.cs);
+        CCoinsViewMemPool viewMempool(pcoinsTip, mempool);
+        view.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
+
+        const CCoins* coins = view.AccessCoins(vin.prevout.hash);
+
+        if (coins) {
+            if (coins->nHeight < 0) return 0;
+            return (chainActive.Tip()->nHeight + 1) - coins->nHeight;
+        } else
+            return -1;
+    }
 }

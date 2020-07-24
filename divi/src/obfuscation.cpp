@@ -18,7 +18,9 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/lexical_cast.hpp>
-
+#ifndef BITCOIN_MAIN_H
+#include <main.h>
+#endif // BITCOIN_MAIN_H
 #include <algorithm>
 #include <boost/assign/list_of.hpp>
 #include <openssl/rand.h>

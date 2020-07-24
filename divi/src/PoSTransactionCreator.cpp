@@ -8,6 +8,9 @@
 #include <SuperblockHelpers.h>
 #include <Settings.h>
 #include <BlockIncentivesPopulator.h>
+#ifndef BITCOIN_MAIN_H
+#include <main.h>
+#endif
 
 extern Settings& settings;
 extern const int nHashDrift;

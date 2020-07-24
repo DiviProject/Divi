@@ -7,7 +7,6 @@
 #define OBFUSCATION_RELAY_H
 
 #include "activemasternode.h"
-#include "main.h"
 #include "masternodeman.h"
 
 

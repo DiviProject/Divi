@@ -11,11 +11,12 @@
 #include <PoSTransactionCreator.h>
 #include <boost/thread.hpp>
 #include <SuperblockHelpers.h>
-
 #include <BlockFactory.h>
 
 extern const int nHashDrift;
+#ifndef BITCOIN_MAIN_H
 #include <main.h>
+#endif
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,

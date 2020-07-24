@@ -49,7 +49,7 @@ class CoinMinter: public I_CoinMinter
     bool hasMintableCoinForProofOfStake();
     bool satisfiesMintingRequirements() const;
     bool limitStakingSpeed() const;
-    bool isAtProofOfStakeHeight() const;
+    bool nextBlockIsProofOfStake() const;
 
     bool ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const;
     void IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const;

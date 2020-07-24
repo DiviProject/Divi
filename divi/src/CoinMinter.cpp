@@ -58,7 +58,7 @@ bool CoinMinter::hasMintableCoinForProofOfStake()
     }
     return haveMintableCoins_;
 }
-bool CoinMinter::isAtProofOfStakeHeight() const
+bool CoinMinter::nextBlockIsProofOfStake() const
 {
     return chain_.Tip()->nHeight >= chainParameters_.LAST_POW_BLOCK();
 }
@@ -91,7 +91,7 @@ bool CoinMinter::limitStakingSpeed() const
 bool CoinMinter::CanMintCoins()
 {
     if( !hasMintableCoinForProofOfStake() || 
-        !isAtProofOfStakeHeight() ||
+        !nextBlockIsProofOfStake() ||
         !satisfiesMintingRequirements() ||
         limitStakingSpeed())
     {

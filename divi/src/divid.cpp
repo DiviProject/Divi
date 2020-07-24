@@ -67,7 +67,7 @@ bool AppInit(int argc, char* argv[])
     // Parameters
     //
     // If Qt is used, parameters/divi.conf are parsed in qt/divi.cpp's main()
-    ParseParameters(argc, argv);
+    settings.ParseParameters(argc, argv);
 
     // Process help and version before taking care about datadir
     if (ParameterIsSet("-?") || ParameterIsSet("-help") || ParameterIsSet("-version")) {

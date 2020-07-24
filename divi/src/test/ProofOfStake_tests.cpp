@@ -94,9 +94,6 @@ ProofOfStake createBadProofOfStake(bool& succeded)
     uint64_t stakeModifier = uint256S("0xc82c1fd2fd243fee99de9fc36e77f309d34d3e24b6e8ac84b4d00009be05ae45").Get64();
     unsigned numberOfHashAttempts = 45;
 
-    const unsigned maxStakingAge = 60*60*7*24;
-    int64_t coinAgeWeight = std::min<int64_t>(newerBlockTime - blockTimeForPreviousBlock, maxStakingAge);
-
     bool badProofOfStakeGenerated = false;
     bool goodProofOfStakeGenerated = false;
     ProofOfStake proof;

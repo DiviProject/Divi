@@ -14,7 +14,6 @@
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/thread/recursive_mutex.hpp>
-#include <main.h>
 
 class CTransaction;
 class CTxIn;

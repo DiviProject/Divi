@@ -318,7 +318,8 @@ bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     bool checkOnly) const
 {
     if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,nTimeBlockFrom);
-    return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo_);
+    auto&& coinAgeWeightOfUtxo = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
+    return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
 }
 
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here

@@ -5,10 +5,11 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "txdb.h"
-
 #include "pow.h"
 #include "uint256.h"
-
+#ifndef BITCOIN_MAIN_H
+#include <main.h>
+#endif // BITCOIN_MAIN_H
 #include <stdint.h>
 
 #include <boost/thread.hpp>

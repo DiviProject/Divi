@@ -11,6 +11,9 @@
 #include "timedata.h"
 #include "util.h"
 #include "wallet.h"
+#ifndef BITCOIN_MAIN_H
+#include <main.h>
+#endif // BITCOIN_MAIN_H
 
 
 unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
@@ -38,7 +41,7 @@ unsigned int GetBlockMinSize(unsigned int defaultBlockMinSize, unsigned int bloc
 }
 
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
-    CTxMemPool& mempool, 
+    CTxMemPool& mempool,
     CCriticalSection& mainCS
     ): mempool_(mempool)
     , mainCS_(mainCS)
@@ -76,7 +79,7 @@ bool BlockMemoryPoolTransactionCollector::CheckUTXOValidity (const CTxIn& txin, 
 }
 void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
     std::shared_ptr<COrphan>& porphan,
-    const CTransaction& tx, 
+    const CTransaction& tx,
     const CTxIn& txin,
     std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions) const
 {
@@ -87,10 +90,10 @@ void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
 }
 
 void BlockMemoryPoolTransactionCollector::ComputeTransactionPriority (
-    double& dPriority, 
-    const CTransaction& tx, 
-    CAmount nTotalIn, 
-    COrphan* porphan, 
+    double& dPriority,
+    const CTransaction& tx,
+    CAmount nTotalIn,
+    COrphan* porphan,
     std::vector<TxPriority>& vecPriority,
     const CTransaction* mempoolTx) const
 {
@@ -140,18 +143,18 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
     double dPriorityDelta = 0;
     CAmount nFeeDelta = 0;
     mempool_.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
-    
-    return (fSortedByFee && 
-        (dPriorityDelta <= 0) && 
-        (nFeeDelta <= 0) && 
-        (feeRate < ::minRelayTxFee) && 
+
+    return (fSortedByFee &&
+        (dPriorityDelta <= 0) &&
+        (nFeeDelta <= 0) &&
+        (feeRate < ::minRelayTxFee) &&
         (nBlockSize + nTxSize >= nBlockMinSize));
 }
 
 void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
-    const CTransaction& tx, 
+    const CTransaction& tx,
     CBlockTemplate& blocktemplate) const
-{  
+{
     blocktemplate.block.vtx.push_back(tx);
 }
 
@@ -205,7 +208,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
 
             dPriority += (double)nValueIn * nConf;
         }
-        if (fMissingInputs) { 
+        if (fMissingInputs) {
             continue;
         }
         ComputeTransactionPriority(dPriority, tx, nTotalIn, porphan.get(), vecPriority, &mi->second.GetTx());
@@ -215,12 +218,12 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
 
 void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize (
     std::vector<TxPriority>& vecPriority,
-    bool& fSortedByFee, 
+    bool& fSortedByFee,
     TxPriorityCompare& comparer,
     const uint64_t& nBlockSize,
     const unsigned int& nTxSize,
     const unsigned int& nBlockPrioritySize,
-    double& dPriority) const 
+    double& dPriority) const
 {
     if (!fSortedByFee &&
             ((nBlockSize + nTxSize >= nBlockPrioritySize) || !AllowFree(dPriority))) {
@@ -236,7 +239,7 @@ PrioritizedTransactionData::PrioritizedTransactionData(
 {
 }
 PrioritizedTransactionData::PrioritizedTransactionData(
-    const CTransaction& transaction, 
+    const CTransaction& transaction,
     unsigned txSigOps
     ): tx(&transaction)
     , nTxSigOps(txSigOps)
@@ -284,7 +287,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         unsigned int nTxSigOps = GetLegacySigOpCount(tx);
         // Skip free transactions if we're past the minimum block size:
         const uint256& hash = tx.GetHash();
-        if (nBlockSize + nTxSize >= nBlockMaxSize || 
+        if (nBlockSize + nTxSize >= nBlockMaxSize ||
             nBlockSigOps + nTxSigOps >= nMaxBlockSigOps||
             IsFreeTransaction(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, nBlockMinSize, tx))
         {
@@ -336,14 +339,14 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
 {
     std::map<uint256, std::vector<std::shared_ptr<COrphan>>> dependentTransactions;
 
-    std::vector<TxPriority> vecPriority = 
+    std::vector<TxPriority> vecPriority =
         PrioritizeMempoolTransactions(nHeight, dependentTransactions, view);
-        
-    std::vector<PrioritizedTransactionData> prioritizedTransactions = 
+
+    std::vector<PrioritizedTransactionData> prioritizedTransactions =
         PrioritizeTransactions(
-            vecPriority, 
-            nHeight, 
-            view, 
+            vecPriority,
+            nHeight,
+            view,
             dependentTransactions);
 
     for(const PrioritizedTransactionData& txData: prioritizedTransactions)
@@ -358,7 +361,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
     bool& fProofOfStake,
     CMutableTransaction& txNew) const
 {
-    
+
     LOCK2(mainCS_, mempool_.cs);
 
     CBlock& block = pblocktemplate->block;

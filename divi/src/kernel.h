@@ -30,14 +30,12 @@ private:
     const int64_t& utxoValue_;
     const uint64_t& stakeModifier_;
     const uint256 targetPerCoinDay_;
-    const int64_t coinAgeWeightOfUtxo_;
 public:
     ProofOfStakeCalculator(
         const COutPoint& utxoToStake,
         const int64_t& utxoValue,
         const uint64_t& stakeModifier,
-        unsigned int blockDifficultyBits,
-        int64_t coinAgeWeightOfUtxo);
+        unsigned int blockDifficultyBits);
 
     bool computeProofOfStakeAndCheckItMeetsTarget(
         unsigned int nTimeTx,

@@ -24,10 +24,9 @@ public:
         const COutPoint& utxoToStake,
         const int64_t& utxoValue,
         const uint64_t& stakeModifier,
-        unsigned int blockDifficultyBits,
-        int64_t coinAgeWeightOfUtxo)
+        unsigned int blockDifficultyBits)
     {
-        calculator_.reset(new ProofOfStakeCalculator(utxoToStake,utxoValue,stakeModifier,blockDifficultyBits,coinAgeWeightOfUtxo));
+        calculator_.reset(new ProofOfStakeCalculator(utxoToStake,utxoValue,stakeModifier,blockDifficultyBits));
     }
 
     int64_t getRandomValue() const
@@ -148,29 +147,14 @@ BOOST_AUTO_TEST_CASE(willNotCreateAnInvalidProofOfStake)
         proof.utxo,
         proof.amount,
         proof.stakeModifier,
-        proof.difficulty,
-        proof.getNominalCoinAgeWeight());
+        proof.difficulty);
     BOOST_CHECK_MESSAGE(
         calculator_->computeProofOfStakeAndCheckItMeetsTarget(
             proof.newerBlockTime,
             proof.blockTimeForPreviousBlock,
             proof.hashProof,
             true),
-        "Proof-of-stake is not nominally correct!"
-        );
-    setParameters(
-        proof.utxo,
-        proof.amount,
-        proof.stakeModifier,
-        proof.difficulty,
-        proof.getCoinAgeWeight());
-    BOOST_CHECK_MESSAGE(
-        calculator_->computeProofOfStakeAndCheckItMeetsTarget(
-            proof.newerBlockTime,
-            proof.blockTimeForPreviousBlock,
-            proof.hashProof,
-            true),
-        "Proof of stake is only (if at all) nominally correct!"
+        "Proof-of-stake is not correct!"
         );
 }
 

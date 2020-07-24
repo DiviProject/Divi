@@ -21,6 +21,9 @@
 #include <timeIntervalConstants.h>
 #include <walletBackupFeatureContainer.h>
 #include "wallet.h"
+#ifndef BITCOIN_MAIN_H
+#include <main.h>
+#endif // BITCOIN_MAIN_H
 
 #ifdef WIN32
 #include <string.h>
@@ -1459,7 +1462,7 @@ void ThreadBackupWallet()
 {
     std::string walletFileName = GetArg("-wallet", "wallet.dat");
     static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
-    while (true) 
+    while (true)
     {
         if(!pwalletMain->fFileBacked)
         {
@@ -1467,9 +1470,9 @@ void ThreadBackupWallet()
             return;
         }
         {
-            
+
             LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
-            if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName)) 
+            if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName))
             {
                 // Flush log data to the dat file
                 walletBackupFeatureContainer.GetDatabase().Dettach(walletFileName);
@@ -1479,7 +1482,7 @@ void ThreadBackupWallet()
                     walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
                     return;
                 }
-                else 
+                else
                 {
                     LogPrintf("Error: Wallet integrity check failed.");
                     return;

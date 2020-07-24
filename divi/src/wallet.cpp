@@ -6,7 +6,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
+#ifndef BITCOIN_MAIN_H
 #include <main.h>
+#endif
 #include "BlockDiskAccessor.h"
 #include "checkpoints.h"
 #include "coincontrol.h"

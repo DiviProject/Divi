@@ -6,7 +6,6 @@
 #ifndef OBFUSCATION_H
 #define OBFUSCATION_H
 
-#include "main.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"

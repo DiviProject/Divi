@@ -8,6 +8,9 @@
 #include <SuperblockHelpers.h>
 #include <Settings.h>
 #include <BlockIncentivesPopulator.h>
+#ifndef BITCOIN_MAIN_H
+#include <main.h>
+#endif
 
 extern Settings& settings;
 
@@ -23,7 +26,7 @@ CoinstakeCreator::CoinstakeCreator(
 
 bool CoinstakeCreator::SelectCoins(
     CAmount allowedStakingBalance,
-    int& nLastStakeSetUpdate, 
+    int& nLastStakeSetUpdate,
     std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins)
 {
     if (allowedStakingBalance <= 0)
@@ -64,7 +67,7 @@ bool CoinstakeCreator::SetSuportedStakingScript(
         return false;
     }
     if (fDebug && GetBoolArg("-printcoinstake", false)) LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
-    if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH) 
+    if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH)
     {
         if (fDebug && GetBoolArg("-printcoinstake", false))
             LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
@@ -109,7 +112,7 @@ void CoinstakeCreator::CombineUtxos(
     for(auto &&pcoin : vCombineCandidates)
     {
         if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS||
-            nCredit > nCombineThreshold || 
+            nCredit > nCombineThreshold ||
             nCredit + pcoin.first->vout[pcoin.second].nValue > allowedStakingAmount ||
             nCredit + pcoin.first->vout[pcoin.second].nValue > nCombineThreshold)
             break;
@@ -167,7 +170,7 @@ bool CoinstakeCreator::FindStake(
 }
 
 bool CoinstakeCreator::CreateCoinStake(
-    const CKeyStore& keystore, 
+    const CKeyStore& keystore,
     unsigned int nBits,
     int64_t nSearchInterval,
     CMutableTransaction& txNew,
@@ -193,7 +196,7 @@ bool CoinstakeCreator::CreateCoinStake(
     int newBlockHeight = chainTip->nHeight + 1;
     auto blockSubsidity = subsidyContainer.blockSubsidiesProvider().GetBlockSubsidity(newBlockHeight);
 
-    BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins) 
+    BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
     {
         if(FindStake(nBits, nTxNewTime, pcoin,txNew))
         {
@@ -207,13 +210,13 @@ bool CoinstakeCreator::CreateCoinStake(
 
     CAmount nReward = blockSubsidity.nStakeReward;
     nCredit += nReward;
-    if (nCredit > static_cast<CAmount>(wallet_.nStakeSplitThreshold) * COIN) 
+    if (nCredit > static_cast<CAmount>(wallet_.nStakeSplitThreshold) * COIN)
     {
         txNew.vout.push_back(txNew.vout.back());
         txNew.vout[1].nValue = nCredit / 2;
         txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
     }
-    else 
+    else
     {
         CombineUtxos(allowedStakingAmount,txNew,nCredit,setStakeCoins,vwtxPrev);
         txNew.vout[1].nValue = nCredit;
@@ -239,15 +242,15 @@ bool CoinstakeCreator::CreateCoinStake(
 
 bool CoinstakeCreator::CreateProofOfStake(
     uint32_t blockBits,
-    int64_t nSearchTime, 
-    int64_t& nLastCoinStakeSearchTime, 
+    int64_t nSearchTime,
+    int64_t& nLastCoinStakeSearchTime,
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
 {
 
     bool fStakeFound = false;
     if (nSearchTime >= nLastCoinStakeSearchTime) {
-        if (CreateCoinStake(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime)) 
+        if (CreateCoinStake(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime))
         {
             fStakeFound = true;
         }

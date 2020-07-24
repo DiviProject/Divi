@@ -7,7 +7,9 @@
 
 #include "base58.h"
 #include "wallet.h"
+#ifndef BITCOIN_MAIN_H
 #include <main.h>
+#endif
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
 #include "test_only.h"

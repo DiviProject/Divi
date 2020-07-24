@@ -38,6 +38,7 @@
 #include "spentindex.h"
 #include "FeeRate.h"
 #include "libzerocoin/bignum.h"
+#include <string>
 
 enum FlushStateMode {
     FLUSH_STATE_IF_NEEDED,
@@ -127,7 +128,6 @@ extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;
-extern const std::string strMessageMagic;
 extern int64_t nTimeBestReceived;
 extern CWaitableCriticalSection csBestBlock;
 extern CConditionVariable cvBlockChange;
@@ -240,6 +240,7 @@ void Misbehaving(NodeId nodeid, int howmuch);
 /** Flush all state, indexes and buffers to disk. */
 void FlushStateToDisk();
 
+const std::string strMessageMagic = "DarkNet Signed Message:\n";
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee = false, bool ignoreFees = false);

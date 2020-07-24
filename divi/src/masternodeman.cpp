@@ -12,6 +12,9 @@
 #include "Logging.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#ifndef BITCOIN_MAIN_H
+#include <main.h>
+#endif // BITCOIN_MAIN_H
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
@@ -354,13 +357,13 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
     if (fFilterSigTime && static_cast<int>(masternodeQueue.size()) < nMnCount / 3) return GetMasternodePaymentQueue(nBlockHeight, false);
 
-    
-    std::sort(masternodeQueue.begin(), masternodeQueue.end(), 
+
+    std::sort(masternodeQueue.begin(), masternodeQueue.end(),
         [&masternodeScores](const CMasternode* a, const CMasternode* b)
         {
             if(!b) return true;
             if(!a) return false;
-            
+
             uint256 aScore = masternodeScores[a];
             uint256 bScore = masternodeScores[b];
             return (aScore > bScore);
@@ -647,7 +650,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
             //local network
             bool isLocal = (pfrom->addr.IsRFC1918() || pfrom->addr.IsLocal());
 
-            if (!isLocal) 
+            if (!isLocal)
             {
                 std::map<CNetAddr, int64_t>::iterator i = mAskedUsForMasternodeList.find(pfrom->addr);
                 if (i != mAskedUsForMasternodeList.end()) {

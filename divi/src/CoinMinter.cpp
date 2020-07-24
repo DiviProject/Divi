@@ -11,9 +11,10 @@
 #include <CoinstakeCreator.h>
 #include <boost/thread/thread.hpp>
 #include <SuperblockHelpers.h>
-
 #include <BlockFactory.h>
+#ifndef BITCOIN_MAIN_H
 #include <main.h>
+#endif
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,

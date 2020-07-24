@@ -104,8 +104,6 @@ static void CheckBlockIndex();
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "DarkNet Signed Message:\n";
-
 // Internal stuff
 namespace
 {
@@ -814,25 +812,6 @@ unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& in
             nSigOps += prevout.scriptPubKey.GetSigOpCount(tx.vin[i].scriptSig);
     }
     return nSigOps;
-}
-
-int GetInputAge(CTxIn& vin)
-{
-    CCoinsView viewDummy;
-    CCoinsViewCache view(&viewDummy);
-    {
-        LOCK(mempool.cs);
-        CCoinsViewMemPool viewMempool(pcoinsTip, mempool);
-        view.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
-
-        const CCoins* coins = view.AccessCoins(vin.prevout.hash);
-
-        if (coins) {
-            if (coins->nHeight < 0) return 0;
-            return (chainActive.Tip()->nHeight + 1) - coins->nHeight;
-        } else
-            return -1;
-    }
 }
 
 int GetInputAgeIX(uint256 nTXHash, CTxIn& vin)

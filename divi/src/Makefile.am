@@ -162,6 +162,7 @@ BITCOIN_CORE_H = \
   LegacyBlockSubsidies.h \
   leveldbwrapper.h \
   limitedmap.h \
+  ValidationState.h \
   main.h \
   BlockFileOpener.h \
   BlockDiskAccessor.h \
@@ -283,6 +284,7 @@ libbitcoin_server_a_SOURCES = \
   FeeAndPriorityCalculator.cpp \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
+  ValidationState.cpp \
   main.cpp \
   BlockFactory.cpp \
   BlockFileOpener.cpp \
@@ -421,7 +423,7 @@ univalue_libbitcoin_univalue_a_SOURCES = \
 libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
   libzerocoin/bignum.h \
   libzerocoin/Denominations.h \
-  libzerocoin/Denominations.cpp 
+  libzerocoin/Denominations.cpp
 
 # common: shared between divid, and divi-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)

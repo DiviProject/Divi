@@ -34,6 +34,7 @@ class RESTTest (BitcoinTestFramework):
     FORMAT_SEPARATOR = "."
     
     def run_test(self):
+        self.nodes[0].setgenerate(True, 10)
         url = urlparse.urlparse(self.nodes[0].url)
         bb_hash = self.nodes[0].getbestblockhash()
         

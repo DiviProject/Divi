@@ -14,6 +14,7 @@ cd $path
 ./getchaintips.py
 ./listtransactions.py
 ./mempool_resurrect_test.py
+./rest.py
 ./txn_doublespend.py
 ./txn_doublespend.py --mineblock
 ./wallet.py

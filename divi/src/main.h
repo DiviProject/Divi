@@ -57,7 +57,6 @@ class CBloomFilter;
 class CInv;
 class CScriptCheck;
 class NotificationInterface;
-class CValidationState;
 
 struct CNodeStateStats;
 
@@ -236,7 +235,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlr
 /** Create a new block index entry for a given block hash */
 CBlockIndex* InsertBlockIndex(uint256 hash);
 /** Abort with a message */
-bool AbortNode(const std::string& msg, const std::string& userMessage);//TODO: as german about defaults
+bool AbortNode(const std::string& msg, const std::string& userMessage);
 /** Get statistics from node state */
 bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats);
 /** Increase a node's misbehavior score. */
@@ -355,25 +354,6 @@ bool CheckFinalTx(const CTransaction& tx, int flags = -1);
  * @return True if all outputs (scriptPubKeys) use only standard transaction forms
  */
 bool IsStandardTx(const CTransaction& tx, std::string& reason);
-
-/** Undo information for a CBlock */
-class CBlockUndo
-{
-public:
-    std::vector<CTxUndo> vtxundo; // for all but the coinbase
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(vtxundo);
-    }
-
-    bool WriteToDisk(CDiskBlockPos& pos, const uint256& hashBlock);
-    bool ReadFromDisk(const CDiskBlockPos& pos, const uint256& hashBlock);
-};
-
 
 /**
  * Closure representing one script verification

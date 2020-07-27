@@ -166,7 +166,8 @@ Value setgenerate(const Array& params, bool fHelp)
         }
         
         Array blockHashes;
-        CoinMinter minter(pwalletMain, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks);
+        int64_t coinstakeSearchInterval;
+        CoinMinter minter(pwalletMain, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,coinstakeSearchInterval);
         while (nHeight < nHeightEnd) 
         {
             unsigned int nExtraNonce = 0;

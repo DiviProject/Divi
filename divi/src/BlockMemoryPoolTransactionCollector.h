@@ -84,22 +84,30 @@ public:
     }
 };
 
-class BlockMemoryPoolTransactionCollector
+class I_BlockTransactionCollector
+{
+public:
+    virtual ~I_BlockTransactionCollector(){}
+    virtual bool CollectTransactionsIntoBlock (
+        CBlockTemplate& pblocktemplate,
+        bool& fProofOfStake,
+        CMutableTransaction& txNew) const = 0;
+};
+
+class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 {
 private:
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
 private: 
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
-    void SetBlockHeaders(CBlock& block, const bool& proofOfStake, const CBlockIndex& indexPrev, std::unique_ptr<CBlockTemplate>& pblocktemplate) const;
     bool VerifyUTXOIsKnownToMemPool (const CTxIn& txin, bool& fMissingInputs) const;
     bool CheckUTXOValidity (const CTxIn& txin, bool& fMissingInputs, const CTransaction &tx) const;
     void RecordOrphanTransaction (
-        COrphan* porphan, 
-        std::list<COrphan>& vOrphan, 
+        std::shared_ptr<COrphan>& porphan,
         const CTransaction& tx, 
         const CTxIn& txin,
-        std::map<uint256, std::vector<COrphan*> >& mapDependers) const;
+        std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& mapDependers) const;
 
     void ComputeTransactionPriority (
         double& dPriority, 
@@ -109,19 +117,11 @@ private:
         std::vector<TxPriority>& vecPriority,
         const CTransaction* mempoolTx) const;
     void AddDependingTransactionsToPriorityQueue (
-        std::map<uint256, std::vector<COrphan*> >& mapDependers,
+        std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& mapDependers,
         const uint256& hash,
         std::vector<TxPriority>& vecPriority,
         TxPriorityCompare& comparer) const;
 
-    void SetCoinBaseTransaction (
-        CBlock& block, 
-        std::unique_ptr<CBlockTemplate>& pblocktemplate,
-        const bool& fProofOfStake, 
-        const int& nHeight,
-        CMutableTransaction& txNew,
-        const CAmount& nFees) const;
-    
     bool IsFreeTransaction (
         const uint256& hash,
         const bool& fSortedByFee,
@@ -133,13 +133,11 @@ private:
 
     void AddTransactionToBlock (
         const CTransaction& tx, 
-        std::unique_ptr<CBlockTemplate>& pblocktemplate,
-        const CAmount& nTxFees,
-        const unsigned int& nTxSigOps) const;
+        CBlockTemplate& blocktemplate) const;
 
     std::vector<TxPriority> PrioritizeMempoolTransactions (
         const int& nHeight,
-        std::map<uint256, std::vector<COrphan*> >& mapDependers,
+        std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& mapDependers,
         CCoinsViewCache& view) const;
 
     void PrioritizeFeePastPrioritySize (
@@ -154,18 +152,17 @@ private:
         std::vector<TxPriority>& vecPriority,
         const int& nHeight,
         CCoinsViewCache& view,
-        std::map<uint256, std::vector<COrphan*> >& mapDependers) const;
+        std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& mapDependers) const;
     void AddTransactionsToBlockIfPossible (
         const int& nHeight,
         CCoinsViewCache& view,
-        std::unique_ptr<CBlockTemplate>& pblocktemplate,
-        CAmount& nFees) const;
+        CBlockTemplate& blocktemplate) const;
 public:
     BlockMemoryPoolTransactionCollector(
         CTxMemPool& mempool, 
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
-    bool CollectTransactionsIntoBlock (
-        std::unique_ptr<CBlockTemplate>& pblocktemplate,
+    virtual bool CollectTransactionsIntoBlock (
+        CBlockTemplate& pblocktemplate,
         bool& fProofOfStake,
         CMutableTransaction& txNew) const;
 };

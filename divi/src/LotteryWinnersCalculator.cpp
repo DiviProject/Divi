@@ -91,37 +91,40 @@ LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock
         return prevBlockIndex->vLotteryWinnersCoinstakes; // return last if we have no lotter participant in this block
     }
 
-    CBlockIndex* pblockindex = activeChain_[nLastLotteryHeight];
-    auto hashLastLotteryBlock = pblockindex->GetBlockHash();
+    CBlockIndex* prevLotteryBlockIndex = activeChain_[nLastLotteryHeight];
+    auto hashLastLotteryBlock = prevLotteryBlockIndex->GetBlockHash();
     // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
     using LotteryScore = uint256;
-    using LotteryCoinstake = std::pair<uint256, CScript>;
-    std::vector<std::pair<LotteryScore, LotteryCoinstake>> scores;
+    std::vector<LotteryScore> scores;
+    scores.reserve(prevBlockIndex->vLotteryWinnersCoinstakes.size()+1);
 
-    for(auto &&lotteryCoinstake : prevBlockIndex->vLotteryWinnersCoinstakes) {
-        scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock), lotteryCoinstake);
+    int startingWinnerIndex = 0;
+    std::map<uint256,int> transactionHashToWinnerIndex;
+    for(auto&& lotteryCoinstake : prevBlockIndex->vLotteryWinnersCoinstakes) {
+        transactionHashToWinnerIndex[lotteryCoinstake.first] = startingWinnerIndex++;
+        scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock));
     }
 
     auto newScore = CalculateLotteryScore(coinbaseTx.GetHash(), hashLastLotteryBlock);
-    scores.emplace_back(newScore, std::make_pair(coinbaseTx.GetHash(),coinbaseTx.vout[1].scriptPubKey) );
+    scores.emplace_back(newScore);
+    transactionHashToWinnerIndex[coinbaseTx.GetHash()] = startingWinnerIndex++;
+
+    result = prevBlockIndex->vLotteryWinnersCoinstakes;
+    result.reserve(prevBlockIndex->vLotteryWinnersCoinstakes.size()+1);
+    result.emplace_back(coinbaseTx.GetHash(), coinbaseTx.IsCoinBase()? coinbaseTx.vout[0].scriptPubKey:coinbaseTx.vout[1].scriptPubKey);
+
 
     // biggest entry at the begining
     if(scores.size() > 1)
     {
-        std::sort(std::begin(scores), std::end(scores), 
-            [](const std::pair<LotteryScore, LotteryCoinstake> &lhs, const std::pair<LotteryScore, LotteryCoinstake> &rhs) 
+        std::stable_sort(std::begin(result), std::end(result), 
+            [&scores,&transactionHashToWinnerIndex](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs) 
             {
-                return lhs.first > rhs.first;
+                return scores[transactionHashToWinnerIndex[lhs.first]] > scores[transactionHashToWinnerIndex[rhs.first]];
             }
         );
     }
-
-    scores.resize(std::min<size_t>(scores.size(), 11)); // don't go over 11 entries, since we will have only 11 winners
-
-    // prepare new coinstakes vector
-    for(auto &&score : scores) {
-        result.push_back(score.second);
-    }
+    result.resize( std::min( std::size_t(11), result.size()) );
 
     return result;
 }

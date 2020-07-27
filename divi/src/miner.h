@@ -28,5 +28,5 @@ void MintCoins(
     unsigned int nExtraNonce,
     CReserveKey& reservekey);
 void MinterThread(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter);
-
+bool HasRecentlyAttemptedToGenerateProofOfStake();
 #endif // BITCOIN_MINER_H

@@ -22,7 +22,10 @@
 
 #include <SuperblockHelpers.h>
 #include <LotteryWinnersCalculator.h>
+#include <BlockIncentivesPopulator.h>
 
+#define MNPAYMENTS_SIGNATURES_REQUIRED 6
+#define MNPAYMENTS_SIGNATURES_TOTAL 10
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
 
@@ -47,34 +50,6 @@ static CBitcoinAddress CharityPaymentAddress()
     return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
 }
 
-
-static void FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
-{
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
-    tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination(TreasuryPaymentAddress().Get()));
-    tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination(CharityPaymentAddress().Get()));
-}
-
-static void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
-{
-    auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
-    // when we call this we need to have exactly 11 winners
-
-    auto nLotteryReward = rewards.nLotteryReward;
-    auto nBigReward = nLotteryReward / 2;
-    auto nSmallReward = nBigReward / 10;
-
-    LogPrintf("%s : Paying lottery reward\n", __func__);
-    for(size_t i = 0; i < lotteryWinners.size(); ++i) {
-        CAmount reward = i == 0 ? nBigReward : nSmallReward;
-        const auto &winner = lotteryWinners[i];
-        LogPrintf("%s: Winner: %s\n", __func__, winner.first.ToString());
-        auto scriptLotteryWinner = winner.second;
-        tx.vout.emplace_back(reward, scriptLotteryWinner); // pay winners
-    }
-}
-
 static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoinstakes vRequiredWinnersCoinstake)
 {
     if(vRequiredWinnersCoinstake.empty()) {
@@ -95,7 +70,7 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const Lot
         CScript scriptPayment = vRequiredWinnersCoinstake[i].second;
         CAmount reward = i == 0 ? nBigReward : nSmallReward;
         if(!verifyPayment(scriptPayment, reward)) {
-            LogPrintf("%s: No payment for winner: %s\n", vRequiredWinnersCoinstake[i].first.ToString());
+            LogPrintf("%s: No payment for winner: %s\n", __func__, vRequiredWinnersCoinstake[i].first.ToString());
             return false;
         }
     }
@@ -160,31 +135,145 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
     return true;
 }
 
-
-void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake)
-{
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    if (!pindexPrev) return;
-
-    SuperblockSubsidyContainer superblockSubsidies(Params());
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    if (heightValidator.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
-        FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
-    }
-    else if(heightValidator.IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
-        FillLotteryPayment(txNew, payments, pindexPrev);
-    }
-    else {
-        masternodePayments.FillBlockPayee(txNew, payments, fProofOfStake);
-    }
-}
-
 LotteryCoinstakes CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
 {
     const CChainParams& chainParameters = Params();
     SuperblockSubsidyContainer subsidyCointainer(chainParameters);
     return LotteryWinnersCalculator(chainParameters,chainActive, sporkManager,subsidyCointainer.superblockHeightValidator()).CalculateLotteryWinners(block,prevBlockIndex,nHeight);
 }
+
+CMasternodePayee::CMasternodePayee()
+{
+    scriptPubKey = CScript();
+    nVotes = 0;
+}
+
+CMasternodePayee::CMasternodePayee(CScript payee, int nVotesIn)
+{
+    scriptPubKey = payee;
+    nVotes = nVotesIn;
+}
+
+CMasternodeBlockPayees::CMasternodeBlockPayees()
+{
+    nBlockHeight = 0;
+    vecPayments.clear();
+}
+CMasternodeBlockPayees::CMasternodeBlockPayees(int nBlockHeightIn)
+{
+    nBlockHeight = nBlockHeightIn;
+    vecPayments.clear();
+}
+
+void CMasternodeBlockPayees::AddPayee(CScript payeeIn, int nIncrement)
+{
+    LOCK(cs_vecPayments);
+
+    BOOST_FOREACH (CMasternodePayee& payee, vecPayments) {
+        if (payee.scriptPubKey == payeeIn) {
+            payee.nVotes += nIncrement;
+            return;
+        }
+    }
+
+    CMasternodePayee c(payeeIn, nIncrement);
+    vecPayments.push_back(c);
+}
+
+bool CMasternodeBlockPayees::GetPayee(CScript& payee)
+{
+    LOCK(cs_vecPayments);
+
+    int nVotes = -1;
+    BOOST_FOREACH (CMasternodePayee& p, vecPayments) {
+        if (p.nVotes > nVotes) {
+            payee = p.scriptPubKey;
+            nVotes = p.nVotes;
+        }
+    }
+
+    return (nVotes > -1);
+}
+
+bool CMasternodeBlockPayees::HasPayeeWithVotes(CScript payee, int nVotesReq)
+{
+    LOCK(cs_vecPayments);
+
+    BOOST_FOREACH (CMasternodePayee& p, vecPayments) {
+        if (p.nVotes >= nVotesReq && p.scriptPubKey == payee) return true;
+    }
+
+    return false;
+}
+
+
+CMasternodePaymentWinner::CMasternodePaymentWinner()
+{
+    nBlockHeight = 0;
+    vinMasternode = CTxIn();
+    payee = CScript();
+}
+
+CMasternodePaymentWinner::CMasternodePaymentWinner(CTxIn vinIn)
+{
+    nBlockHeight = 0;
+    vinMasternode = vinIn;
+    payee = CScript();
+}
+
+uint256 CMasternodePaymentWinner::GetHash() const
+{
+    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+    ss << payee;
+    ss << nBlockHeight;
+    ss << vinMasternode.prevout;
+
+    return ss.GetHash();
+}
+
+void CMasternodePaymentWinner::AddPayee(CScript payeeIn)
+{
+    payee = payeeIn;
+}
+
+std::string CMasternodePaymentWinner::ToString()
+{
+    std::string ret = "";
+    ret += vinMasternode.ToString();
+    ret += ", " + boost::lexical_cast<std::string>(nBlockHeight);
+    ret += ", " + payee.ToString();
+    ret += ", " + boost::lexical_cast<std::string>((int)vchSig.size());
+    return ret;
+}
+
+CMasternodePayments::CMasternodePayments()
+{
+    nSyncedFromPeer = 0;
+    nLastBlockHeight = 0;
+}
+
+void CMasternodePayments::Clear()
+{
+    LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
+    mapMasternodeBlocks.clear();
+    mapMasternodePayeeVotes.clear();
+}
+
+bool CMasternodePayments::CanVote(COutPoint outMasternode, int nBlockHeight)
+{
+    LOCK(cs_mapMasternodePayeeVotes);
+
+    if (mapMasternodesLastVote.count(outMasternode.hash + outMasternode.n)) {
+        if (mapMasternodesLastVote[outMasternode.hash + outMasternode.n] == nBlockHeight) {
+            return false;
+        }
+    }
+
+    //record this masternode voted
+    mapMasternodesLastVote[outMasternode.hash + outMasternode.n] = nBlockHeight;
+    return true;
+}
+
 
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake)
 {

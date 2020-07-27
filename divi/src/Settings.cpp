@@ -6,28 +6,36 @@
 #include <boost/program_options/detail/config_file.hpp>
 #include <set>
 
-std::string CopyableSettings::GetArg(const std::string& strArg, const std::string& strDefault)
+std::string CopyableSettings::GetArg(const std::string& strArg, const std::string& strDefault) const
 {
     if (mapArgs_.count(strArg))
         return mapArgs_[strArg];
     return strDefault;
 }
 
-int64_t CopyableSettings::GetArg(const std::string& strArg, int64_t nDefault)
+int64_t CopyableSettings::GetArg(const std::string& strArg, int64_t nDefault) const
 {
     if (mapArgs_.count(strArg))
         return atoi64(mapArgs_[strArg]);
     return nDefault;
 }
 
-bool InterpretBool(const std::string& strValue)
+static bool InterpretBool(const std::string& strValue)
 {
     if (strValue.empty())
         return true;
     return (atoi(strValue) != 0);
 }
 
-bool CopyableSettings::GetBoolArg(const std::string& strArg, bool fDefault)
+static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
+{
+    if (strKey.length()>3 && strKey[0]=='-' && strKey[1]=='n' && strKey[2]=='o') {
+        strKey = "-" + strKey.substr(3);
+        strValue = InterpretBool(strValue) ? "0" : "1";
+    }
+}
+
+bool CopyableSettings::GetBoolArg(const std::string& strArg, bool fDefault) const
 {
     if (mapArgs_.count(strArg))
         return InterpretBool(mapArgs_[strArg]);
@@ -55,12 +63,12 @@ void CopyableSettings::ForceRemoveArg(const std::string &strArg)
     mapArgs_.erase(strArg);
 }
 
-bool CopyableSettings::ParameterIsSet (const std::string& key)
+bool CopyableSettings::ParameterIsSet (const std::string& key) const
 {
-    return mapArgs_.count(key);
+    return mapArgs_.count(key) > 0;
 }
 
-std::string CopyableSettings::GetParameter(const std::string& key)
+std::string CopyableSettings::GetParameter(const std::string& key) const
 {
     if(ParameterIsSet(key))
     {
@@ -82,24 +90,9 @@ void CopyableSettings::ClearParameter ()
     mapArgs_.clear();
 }
 
-bool CopyableSettings::ParameterIsSetForMultiArgs (const std::string& key)
+bool CopyableSettings::ParameterIsSetForMultiArgs (const std::string& key) const
 {
-    return mapMultiArgs_.count(key);
-}
-
-bool CopyableSettings::InterpretBool(const std::string& strValue)
-{
-    if (strValue.empty())
-        return true;
-    return (atoi(strValue) != 0);
-}
-
-void CopyableSettings::InterpretNegativeSetting(std::string& strKey, std::string& strValue)
-{
-    if (strKey.length()>3 && strKey[0]=='-' && strKey[1]=='n' && strKey[2]=='o') {
-        strKey = "-" + strKey.substr(3);
-        strValue = InterpretBool(strValue) ? "0" : "1";
-    }
+    return mapMultiArgs_.count(key) > 0;
 }
 
 void CopyableSettings::ParseParameters(int argc, const char* const argv[])

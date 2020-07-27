@@ -166,10 +166,12 @@ BITCOIN_CORE_H = \
   BlockFileOpener.h \
   BlockDiskAccessor.h \
   BlockTemplate.h \
+  BlockFactory.h \
   masternode.h \
   masternode-payments.h \
   LotteryCoinstakes.h \
   LotteryWinnersCalculator.h \
+  BlockIncentivesPopulator.h \
   SuperblockHelpers.h \
   SuperblockHeightValidator.h \
   masternode-sync.h \
@@ -282,6 +284,7 @@ libbitcoin_server_a_SOURCES = \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
   main.cpp \
+  BlockFactory.cpp \
   BlockFileOpener.cpp \
   BlockDiskAccessor.cpp \
   merkleblock.cpp \
@@ -349,6 +352,7 @@ libbitcoin_wallet_a_SOURCES = \
   masternode.cpp \
   masternode-payments.cpp \
   LotteryWinnersCalculator.cpp \
+  BlockIncentivesPopulator.cpp \
   SuperblockHelpers.cpp \
   SuperblockHeightValidator.cpp \
   masternode-sync.cpp \

@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 #include <uint256.h>
-#include <primitives/transaction.h>
-#include <primitives/block.h>
 #include <streams.h>
 class CBlockIndex;
+class CBlock;
+class CTransaction;
+class COutPoint;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
@@ -22,22 +23,34 @@ bool ComputeNextStakeModifier(
 
 // Check whether stake kernel meets hash target
 // Sets hashProofOfStake on success return
-uint256 stakeHash(
-    unsigned int nTimeTx,
-    CDataStream ss,
-    unsigned int prevoutIndex,
-    uint256 prevoutHash,
-    unsigned int nTimeBlockFrom);
-bool stakeTargetHit(
-    uint256 hashProofOfStake,
-    int64_t nValueIn,
-    uint256 bnTargetPerCoinDay,
-    int64_t nTimeWeight);
+class ProofOfStakeCalculator
+{
+private:
+    const COutPoint& utxoToStake_;
+    const int64_t& utxoValue_;
+    const uint64_t& stakeModifier_;
+    const uint256 targetPerCoinDay_;
+public:
+    ProofOfStakeCalculator(
+        const COutPoint& utxoToStake,
+        const int64_t& utxoValue,
+        const uint64_t& stakeModifier,
+        unsigned int blockDifficultyBits);
+
+    bool computeProofOfStakeAndCheckItMeetsTarget(
+        unsigned int nTimeTx,
+        unsigned int nTimeBlockFrom,
+        uint256& computedProofOfStake,
+        bool checkOnly = false) const;
+};
+
+
 bool CheckStakeKernelHash(
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
-    const CBlock blockFrom,
-    const CTransaction txPrev,
-    const COutPoint prevout,
+    const CBlock& blockFrom,
+    const CTransaction& txPrev,
+    const COutPoint& prevout,
     unsigned int& nTimeTx,
     unsigned int nHashDrift,
     bool fCheck,
@@ -47,7 +60,7 @@ bool CheckStakeKernelHash(
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return
 bool CheckProofOfStake(
-    const CBlock block,
+    const CBlock& block,
     uint256& hashProofOfStake);
 
 // Get stake modifier checksum

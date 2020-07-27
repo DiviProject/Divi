@@ -11,12 +11,7 @@ protected:
     std::map<std::string, std::string>& mapArgs_;
     std::map<std::string, std::vector<std::string> >& mapMultiArgs_;
 
-    bool InterpretBool(const std::string& strValue);
-    
-    void InterpretNegativeSetting(std::string& strKey, std::string& strValue);
-
 public:
-
     CopyableSettings(
         std::map<std::string, std::string>& mapArgs,
         std::map<std::string, std::vector<std::string> >& mapMultiArgs
@@ -25,11 +20,11 @@ public:
     {
     }
     
-    std::string GetArg(const std::string& strArg, const std::string& strDefault);
+    std::string GetArg(const std::string& strArg, const std::string& strDefault) const;
 
-    int64_t GetArg(const std::string& strArg, int64_t nDefault);
+    int64_t GetArg(const std::string& strArg, int64_t nDefault) const;
 
-    bool GetBoolArg(const std::string& strArg, bool fDefault);
+    bool GetBoolArg(const std::string& strArg, bool fDefault) const;
 
     bool SoftSetArg(const std::string& strArg, const std::string& strValue);
 
@@ -37,15 +32,15 @@ public:
     
     void ForceRemoveArg(const std::string &strArg);
 
-    bool ParameterIsSet (const std::string& key);
+    bool ParameterIsSet (const std::string& key) const;
 
-    std::string GetParameter(const std::string& key);
+    std::string GetParameter(const std::string& key) const;
 
     void SetParameter (const std::string& key, const std::string& value);
 
     void ClearParameter (); 
 
-    bool ParameterIsSetForMultiArgs (const std::string& key);
+    bool ParameterIsSetForMultiArgs (const std::string& key) const;
 
     void ParseParameters(int argc, const char* const argv[]);
 

@@ -14,7 +14,6 @@
 
 #include "amount.h"
 #include "blockmap.h"
-#include "BlockTemplate.h"
 #include "BlockRewards.h"
 #include "chain.h"
 #include "chainparams.h"
@@ -44,7 +43,6 @@ class CScriptCheck;
 class NotificationInterface;
 class CValidationState;
 
-struct CBlockTemplate;
 struct CNodeStateStats;
 
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
@@ -139,9 +137,6 @@ extern bool fVerifyingBlocks;
 extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
 
-extern unsigned int nStakeMinAge;
-extern unsigned int nStakeMaxAge;
-extern int64_t nLastCoinStakeSearchTime;
 extern int64_t nReserveBalance;
 
 extern std::map<uint256, int64_t> mapRejectedBlocks;

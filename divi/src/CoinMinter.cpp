@@ -10,8 +10,10 @@
 #include <timedata.h>
 #include <CoinstakeCreator.h>
 #include <boost/thread/thread.hpp>
+#include <SuperblockHelpers.h>
 
-int64_t nLastCoinStakeSearchInterval = 0;
+#include <BlockFactory.h>
+
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,
@@ -19,14 +21,22 @@ CoinMinter::CoinMinter(
     const CChainParams& chainParameters,
     std::vector<CNode*>& peers,
     CMasternodeSync& masternodeSynchronization,
-    HashedBlockMap& mapHashedBlocks
+    HashedBlockMap& mapHashedBlocks,
+    CTxMemPool& transactionMemoryPool, 
+    AnnotatedMixin<boost::recursive_mutex>& mainCS,
+    int64_t& lastCoinStakeSearchInterval
     ): mintingIsRequested_(false)
     , pwallet_(pwallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
-    , peerNotifier_(new PeerNotificationOfMintService(peers))
+    , mempool_(transactionMemoryPool)
+    , mainCS_(mainCS)
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)
+    , lastCoinStakeSearchInterval_(lastCoinStakeSearchInterval)
+    , blockFactory_( std::make_shared<BlockFactory>(*pwallet,lastCoinStakeSearchInterval_,mapHashedBlocks_,chain_,chainParameters_, mempool_,mainCS_) )
+    , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
+    , subsidyContainer_( std::make_shared<SuperblockSubsidyContainer>(chainParameters_) )
     , haveMintableCoins_(false)
     , lastTimeCheckedMintable_(0)
     , timeToWait_(0)
@@ -55,14 +65,16 @@ bool CoinMinter::isAtProofOfStakeHeight() const
 
 bool CoinMinter::satisfiesMintingRequirements() const
 {
-    bool stakingRequirements =
-        !(chain_.Tip()->nTime < 1471482000 || 
-        peerNotifier_->havePeersToNotify() || 
-        pwallet_->IsLocked() || 
-        nReserveBalance >= pwallet_->GetBalance() || 
-        !masternodeSync_.IsSynced());
-    if(!stakingRequirements) nLastCoinStakeSearchInterval = 0;
-    return stakingRequirements;
+    bool stakingRequirementsAreMet =
+        !(
+            chain_.Tip()->nTime < 1471482000 ||
+            !peerNotifier_->havePeersToNotify() ||
+            pwallet_->IsLocked() ||
+            nReserveBalance >= pwallet_->GetBalance() ||
+            !masternodeSync_.IsSynced()
+        );
+    if(!stakingRequirementsAreMet) lastCoinStakeSearchInterval_ = 0;
+    return stakingRequirementsAreMet;
 }
 bool CoinMinter::limitStakingSpeed() const
 {
@@ -101,34 +113,13 @@ bool CoinMinter::mintingHasBeenRequested() const
     return mintingIsRequested_;
 }
 
-// Actual mining functions
-void SetRequiredWork(CBlock& block)
-{
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    block.nBits = GetNextWorkRequired(pindexPrev, &block,Params());
-}
-
-void SetBlockTime(CBlock& block)
-{
-    block.nTime = GetAdjustedTime();
-}
-
-void SetCoinbaseTransactionAndDefaultFees(
-    std::unique_ptr<CBlockTemplate>& pblocktemplate, 
-    const CMutableTransaction& coinbaseTransaction)
-{
-    pblocktemplate->block.vtx.push_back(coinbaseTransaction);
-    pblocktemplate->vTxFees.push_back(-1);   // updated at end
-    pblocktemplate->vTxSigOps.push_back(-1); // updated at end
-}
-
-void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev)
+void CoinMinter::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const
 {
     block->nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
 
     // Updating time can change work required on testnet:
-    if (Params().AllowMinDifficultyBlocks())
-        block->nBits = GetNextWorkRequired(pindexPrev, block,Params());
+    if (chainParameters_.AllowMinDifficultyBlocks())
+        block->nBits = GetNextWorkRequired(pindexPrev, block,chainParameters_);
 }
 
 bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
@@ -138,7 +129,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
 
     // Found a solution
     {
-        LOCK(cs_main);
+        LOCK(mainCS_);
         if (block->hashPrevBlock != chainActive.Tip()->GetBlockHash())
             return error("DIVIMiner : generated block is stale");
     }
@@ -162,7 +153,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
     return true;
 }
 
-void IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce)
+void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const
 {
     // Update nExtraNonce
     static uint256 hashPrevBlock;
@@ -180,107 +171,53 @@ void IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& n
     block->hashMerkleRoot = block->BuildMerkleTree();
 }
 
-CMutableTransaction CreateCoinbaseTransaction(const CScript& scriptPubKeyIn)
+
+void CoinMinter::SetCoinbaseRewardAndHeight (
+    CBlockTemplate& pblocktemplate,
+    const bool& fProofOfStake) const
 {
-    CMutableTransaction txNew;
-    txNew.vin.resize(1);
-    txNew.vin[0].prevout.SetNull();
-    txNew.vout.resize(1);
-    txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-    return txNew;
+    // Compute final coinbase transaction.
+    int nHeight = pblocktemplate.previousBlockIndex->nHeight+1;
+    CBlock& block = pblocktemplate.block;
+    CMutableTransaction& coinbaseTx = *pblocktemplate.coinbaseTransaction;
+    block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
+    if (!fProofOfStake) {
+        coinbaseTx.vout[0].nValue = subsidyContainer_->blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
+        coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
+        block.vtx[0] = coinbaseTx;
+    }
 }
 
-bool AppendProofOfStakeToBlock(
-    CWallet& pwallet, 
-    CBlock& block)
+void CoinMinter::SetBlockHeaders(CBlockTemplate& pblocktemplate, const bool& proofOfStake) const
 {
-    CMutableTransaction txCoinStake;
-    SetRequiredWork(block);
-    SetBlockTime(block);
-
-    // ppcoin: if coinstake available add coinstake tx
-    static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
-
-    unsigned int nTxNewTime = 0;
-    if(CoinstakeCreator(pwallet,nLastCoinStakeSearchInterval)
-        .CreateProofOfStake(
-            block.nBits, 
-            block.nTime,
-            nLastCoinStakeSearchTime,
-            txCoinStake,
-            nTxNewTime))
-    {
-        block.nTime = nTxNewTime;
-        block.vtx[0].vout[0].SetEmpty();
-        block.vtx.push_back(CTransaction(txCoinStake));
-        return true;
-    }
-
-    return false;
-}
-
-CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)
-{
-    // Create new block
-    std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
-    if (!pblocktemplate.get())
-        return NULL;
-    CBlock& block = pblocktemplate->block; // pointer for convenience
-
-    // Create coinbase tx
-    CMutableTransaction coinbaseTransaction = CreateCoinbaseTransaction(scriptPubKeyIn);
-    
-    SetCoinbaseTransactionAndDefaultFees(pblocktemplate, coinbaseTransaction);
-
-    if (fProofOfStake) {
-        boost::this_thread::interruption_point();
-
-        if (!AppendProofOfStakeToBlock(*pwallet, block))
-            return NULL;
-    }
-
-    // Collect memory pool transactions into the block
-
-    if(!BlockMemoryPoolTransactionCollector (mempool,cs_main)
-        .CollectTransactionsIntoBlock(
-            pblocktemplate,
-            fProofOfStake,
-            coinbaseTransaction
-        ))
-    {
-        return NULL;
-    }
-
-    LogPrintf("CreateNewBlock(): releasing template %s\n", "");
-    return pblocktemplate.release();
-}
-
-CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake)
-{
-    CPubKey pubkey;
-    if (!reservekey.GetReservedKey(pubkey, false))
-        return NULL;
-
-    CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
-    return CreateNewBlock(scriptPubKey, pwallet, fProofOfStake);
+    // Fill in header
+    CBlock& block = pblocktemplate.block;
+    block.hashPrevBlock = pblocktemplate.previousBlockIndex->GetBlockHash();
+    if (!proofOfStake)
+        UpdateTime(&block, pblocktemplate.previousBlockIndex);
+    block.nBits = GetNextWorkRequired(pblocktemplate.previousBlockIndex, &block, chainParameters_);
+    block.nNonce = 0;
+    block.nAccumulatorCheckpoint = static_cast<uint256>(0);
 }
 
 bool CoinMinter::createProofOfStakeBlock(
     unsigned int nExtraNonce, 
-    CReserveKey& reserveKey, 
-    bool fProofOfStake) const
+    CReserveKey& reserveKey) const
 {
-    bool blockSuccesfullyCreated = false;
+    constexpr const bool fProofOfStake = true;
+    bool blockSuccessfullyCreated = false;
     CBlockIndex* pindexPrev = chain_.Tip();
     if (!pindexPrev)
         return false;
 
-    std::unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reserveKey, pwallet_, fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey,fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;
 
     CBlock* block = &pblocktemplate->block;
+    SetCoinbaseRewardAndHeight(*pblocktemplate, fProofOfStake);
+    SetBlockHeaders(*pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     //Stake miner main
@@ -293,29 +230,31 @@ bool CoinMinter::createProofOfStakeBlock(
 
     LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", block->GetHash().ToString().c_str());
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-    blockSuccesfullyCreated = ProcessBlockFound(block, reserveKey);
+    blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
-    return blockSuccesfullyCreated;
+    return blockSuccessfullyCreated;
 }
 
 bool CoinMinter::createProofOfWorkBlock(
     unsigned int nExtraNonce, 
-    CReserveKey& reserveKey, 
-    bool fProofOfStake) const
+    CReserveKey& reserveKey) const
 {
-    bool blockSuccesfullyCreated = false;
-    unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
+    constexpr const bool fProofOfStake = false;
+    bool blockSuccessfullyCreated = false;
+    unsigned int nTransactionsUpdatedLast = mempool_.GetTransactionsUpdated();
     CBlockIndex* pindexPrev = chain_.Tip();
     if (!pindexPrev)
         return false;
 
-    std::unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reserveKey, pwallet_, fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey,fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;
 
     CBlock* block = &pblocktemplate->block;
+    SetCoinbaseRewardAndHeight(*pblocktemplate, fProofOfStake);
+    SetBlockHeaders(*pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     LogPrintf("Running DIVIMiner with %u transactions in block (%u bytes)\n", block->vtx.size(),
@@ -326,7 +265,7 @@ bool CoinMinter::createProofOfWorkBlock(
     while (true) 
     {
         unsigned int nHashesDone = 0;
-        blockSuccesfullyCreated = false;
+        blockSuccessfullyCreated = false;
         uint256 hash;
         while (true) {
             hash = block->GetHash();
@@ -336,13 +275,13 @@ bool CoinMinter::createProofOfWorkBlock(
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
                 LogPrintf("BitcoinMiner:\n");
                 LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex(), hashTarget.GetHex());
-                blockSuccesfullyCreated = ProcessBlockFound(block, reserveKey);
+                blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
                 // In regression test mode, stop mining after a block is found. This
                 // allows developers to controllably generate a block on demand.
                 if (chainParameters_.MineBlocksOnDemand())
-                    throw boost::thread_interrupted();
+                    return blockSuccessfullyCreated;
 
                 break;
             }
@@ -359,7 +298,7 @@ bool CoinMinter::createProofOfWorkBlock(
             break;
         if (block->nNonce >= 0xffff0000)
             break;
-        if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
+        if (mempool_.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
             break;
         if (pindexPrev != chain_.Tip())
             break;
@@ -372,7 +311,7 @@ bool CoinMinter::createProofOfWorkBlock(
             hashTarget.SetCompact(block->nBits);
         }
     }
-    return blockSuccesfullyCreated;
+    return blockSuccessfullyCreated;
 }
 
 
@@ -383,10 +322,10 @@ bool CoinMinter::createNewBlock(
 {
     if(fProofOfStake)
     {
-        return createProofOfStakeBlock(nExtraNonce,reserveKey,fProofOfStake);
+        return createProofOfStakeBlock(nExtraNonce,reserveKey);
     }
     else
     {
-        return createProofOfWorkBlock(nExtraNonce,reserveKey,fProofOfStake);
+        return createProofOfWorkBlock(nExtraNonce,reserveKey);
     }
 }

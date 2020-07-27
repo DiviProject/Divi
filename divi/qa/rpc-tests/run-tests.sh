@@ -10,6 +10,8 @@ set -ex
 
 echo "$path"
 cd $path
+
+./getchaintips.py
 ./listtransactions.py
 ./mempool_resurrect_test.py
 ./txn_doublespend.py

@@ -33,7 +33,7 @@ class TxnMallTest(BitcoinTestFramework):
         for i in range(3):
             self.nodes[i].setgenerate(True, 1)
             self.sync_all()
-        self.nodes[3].setgenerate(True, 5)
+        self.nodes[3].setgenerate(True, 20)
         self.sync_all()
 
         # Split the network for now.

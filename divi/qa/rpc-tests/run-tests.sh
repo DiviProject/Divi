@@ -20,6 +20,7 @@ cd $path
 ./mempool_spendcoinbase.py
 ./proxy_test.py
 ./rest.py
+./sync.py
 ./txn_doublespend.py
 ./txn_doublespend.py --mineblock
 ./wallet.py

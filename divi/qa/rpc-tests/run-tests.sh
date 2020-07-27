@@ -11,6 +11,7 @@ set -ex
 echo "$path"
 cd $path
 
+./forknotify.py
 ./getchaintips.py
 ./httpbasics.py
 ./listtransactions.py

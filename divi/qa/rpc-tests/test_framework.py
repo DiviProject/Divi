@@ -31,7 +31,8 @@ class BitcoinTestFramework(object):
 
     def setup_chain(self):
         print("Initializing test directory "+self.options.tmpdir)
-        initialize_chain(self.options.tmpdir)
+        for i in range(4):
+            datadir=initialize_datadir(self.options.tmpdir, i)
 
     def setup_nodes(self):
         return start_nodes(4, self.options.tmpdir)

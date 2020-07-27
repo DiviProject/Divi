@@ -14,6 +14,7 @@ cd $path
 ./getchaintips.py
 ./httpbasics.py
 ./listtransactions.py
+./mempool_coinbase_spends.py
 ./mempool_resurrect_test.py
 ./mempool_spendcoinbase.py
 ./proxy_test.py

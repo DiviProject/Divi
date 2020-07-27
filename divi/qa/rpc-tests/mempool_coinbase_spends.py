@@ -37,11 +37,12 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
         return signresult["hex"]
 
     def run_test(self):
-        start_count = self.nodes[0].getblockcount()
+        self.nodes[0].setgenerate(True, 3)
+        self.sync_all()
 
-        # Mine three blocks. After this, nodes[0] blocks
-        # 101, 102, and 103 are spend-able.
-        new_blocks = self.nodes[1].setgenerate(True, 4)
+        # Mine some blocks. After this, nodes[0] blocks
+        # 1, 2, and 3 are spend-able.
+        new_blocks = self.nodes[1].setgenerate(True, 20)
         self.sync_all()
 
         node0_address = self.nodes[0].getnewaddress()
@@ -53,11 +54,11 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
         # 3. Indirect (coinbase and child both in chain) : spend_103 and spend_103_1
         # Use invalidatblock to make all of the above coinbase spends invalid (immature coinbase),
         # and make sure the mempool code behaves correctly.
-        b = [ self.nodes[0].getblockhash(n) for n in range(102, 105) ]
+        b = [ self.nodes[0].getblockhash(n) for n in range(1, 4) ]
         coinbase_txids = [ self.nodes[0].getblock(h)['tx'][0] for h in b ]
-        spend_101_raw = self.create_tx(coinbase_txids[0], node1_address, 50)
-        spend_102_raw = self.create_tx(coinbase_txids[1], node0_address, 50)
-        spend_103_raw = self.create_tx(coinbase_txids[2], node0_address, 50)
+        spend_101_raw = self.create_tx(coinbase_txids[0], node1_address, 1250)
+        spend_102_raw = self.create_tx(coinbase_txids[1], node0_address, 1250)
+        spend_103_raw = self.create_tx(coinbase_txids[2], node0_address, 1250)
 
         # Broadcast and mine spend_102 and 103:
         spend_102_id = self.nodes[0].sendrawtransaction(spend_102_raw)
@@ -65,8 +66,8 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
         self.nodes[0].setgenerate(True, 1)
 
         # Create 102_1 and 103_1:
-        spend_102_1_raw = self.create_tx(spend_102_id, node1_address, 50)
-        spend_103_1_raw = self.create_tx(spend_103_id, node1_address, 50)
+        spend_102_1_raw = self.create_tx(spend_102_id, node1_address, 1250)
+        spend_103_1_raw = self.create_tx(spend_103_id, node1_address, 1250)
 
         # Broadcast and mine 103_1:
         spend_103_1_id = self.nodes[0].sendrawtransaction(spend_103_1_raw)

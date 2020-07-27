@@ -2903,11 +2903,9 @@ void RelayNewTipToNode(CNode& node, const CBlockIndex& index)
            relaying and blocks.  */
         return;
     }
-    pindexFork = chainActive.Next(pindexFork);
-    assert(pindexFork != nullptr);
     LogPrint("net", "sending multiple inv (from %d) for new chain tip %s to peer=%d\n",
              pindexFork->nHeight, index.GetBlockHash().ToString(), node.id);
-    for (; pindexFork != nullptr; pindexFork = chainActive.Next(pindexFork)) {
+    for (pindexFork = chainActive.Next(pindexFork); pindexFork != nullptr; pindexFork = chainActive.Next(pindexFork)) {
         node.PushInventory(CInv(MSG_BLOCK, pindexFork->GetBlockHash()));
         if (pindexFork->GetBlockHash() == index.GetBlockHash())
             break;

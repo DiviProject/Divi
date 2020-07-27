@@ -12,9 +12,11 @@ echo "$path"
 cd $path
 
 ./getchaintips.py
+./httpbasics.py
 ./listtransactions.py
 ./mempool_resurrect_test.py
 ./mempool_spendcoinbase.py
+./proxy_test.py
 ./rest.py
 ./txn_doublespend.py
 ./txn_doublespend.py --mineblock

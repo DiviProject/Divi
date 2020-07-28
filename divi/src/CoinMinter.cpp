@@ -17,6 +17,9 @@ extern const int nHashDrift;
 #ifndef BITCOIN_MAIN_H
 #include <main.h>
 #endif
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,

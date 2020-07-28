@@ -40,6 +40,10 @@
 #include <BlockUndo.h>
 #endif
 
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
+
 using namespace boost;
 using namespace std;
 using namespace libzerocoin;

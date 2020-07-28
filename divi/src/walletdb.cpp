@@ -23,6 +23,10 @@
 #include <boost/thread.hpp>
 #include <fstream>
 #include <Settings.h>
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
+
 extern Settings& settings;
 using namespace boost;
 using namespace std;

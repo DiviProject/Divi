@@ -17,10 +17,6 @@
 #include "config/divi-config.h"
 #endif
 
-#ifndef BITCOIN_VALIDATIONSTATE_H
-#include <ValidationState.h>
-#endif
-
 #include "amount.h"
 #include "blockmap.h"
 #include "BlockRewards.h"
@@ -57,7 +53,7 @@ class CBloomFilter;
 class CInv;
 class CScriptCheck;
 class NotificationInterface;
-
+class CValidationState;
 struct CNodeStateStats;
 
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/

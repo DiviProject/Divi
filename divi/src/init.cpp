@@ -68,6 +68,9 @@
 #include "zmq/zmqnotificationinterface.h"
 #endif
 
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;

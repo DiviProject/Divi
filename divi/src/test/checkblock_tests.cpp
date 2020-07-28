@@ -17,6 +17,9 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/test/unit_test.hpp>
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 
 
 BOOST_AUTO_TEST_SUITE(CheckBlock_tests)

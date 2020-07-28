@@ -14,6 +14,9 @@
 #ifndef BITCOIN_MAIN_H
 #include <main.h>
 #endif // BITCOIN_MAIN_H
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 
 #include "Settings.h"
 extern Settings& settings;

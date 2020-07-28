@@ -30,6 +30,9 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 #include "Settings.h"
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 
 extern NotificationInterfaceRegistry registry;//TODO: rid this
 using namespace json_spirit;

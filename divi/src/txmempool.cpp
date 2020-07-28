@@ -17,6 +17,9 @@
 
 
 #include "FeeAndPriorityCalculator.h"
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 
 using namespace std;
 

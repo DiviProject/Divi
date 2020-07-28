@@ -17,6 +17,9 @@
 #include "json/json_spirit_value.h"
 #include "utilmoneystr.h"
 #include "base58.h"
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 
 using namespace json_spirit;
 using namespace std;

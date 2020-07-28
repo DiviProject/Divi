@@ -14,6 +14,9 @@
 #ifndef BITCOIN_MAIN_H
 #include <main.h>
 #endif // BITCOIN_MAIN_H
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 
 
 unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)

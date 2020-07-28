@@ -22,7 +22,9 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
 #include <fstream>
-
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 using namespace boost;
 using namespace std;
 

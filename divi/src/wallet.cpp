@@ -28,8 +28,10 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/thread.hpp>
 #include <boost/filesystem/operations.hpp>
-
 #include "FeeAndPriorityCalculator.h"
+#ifndef BITCOIN_VALIDATIONSTATE_H
+#include <ValidationState.h>
+#endif
 
 const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator::instance();
 

@@ -21,6 +21,9 @@
 #ifndef BITCOIN_VALIDATIONSTATE_H
 #include <ValidationState.h>
 #endif
+#ifndef BITCOIN_VERIFYDB_H
+#include <verifyDb.h>
+#endif
 
 using namespace json_spirit;
 using namespace std;

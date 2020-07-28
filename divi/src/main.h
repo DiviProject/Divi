@@ -472,15 +472,6 @@ public:
     }
 };
 
-/** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
-class CVerifyDB
-{
-public:
-    CVerifyDB();
-    ~CVerifyDB();
-    bool VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth);
-};
-
 /** Find the last common block between the parameter chain and a locator. */
 CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& locator);
 

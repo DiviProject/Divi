@@ -169,7 +169,7 @@ Value setgenerate(const Array& params, bool fHelp)
         while (nHeight < nHeightEnd)
         {
             unsigned int nExtraNonce = 0;
-            bool newBlockAdded = minter.createNewBlock(nExtraNonce,reservekey,false);
+            bool newBlockAdded = minter.createNewBlock(nExtraNonce,reservekey,nHeight >= Params().LAST_POW_BLOCK());
             nHeight +=  newBlockAdded;
             if(newBlockAdded)
             { // Don't keep cs_main locked

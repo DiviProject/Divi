@@ -9,17 +9,9 @@
 #ifndef BITCOIN_BLOCKUNDO_H
 #define BITCOIN_BLOCKUNDO_H
 
-#ifndef BITCOIN_UNDO_H
 #include <undo.h>
-#endif
-
-#ifndef BITCOIN_SERIALIZE_H
 #include <serialize.h>
-#endif
-
-#ifndef BITCOIN_CHAIN_H
 #include <chain.h>
-#endif
 
 /** Undo information for a CBlock */
 class CBlockUndo

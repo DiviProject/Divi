@@ -6,25 +6,11 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_BLOCKUNDO_H
 #include <BlockUndo.h>
-#endif
-
-#ifndef BITCOIN_STREAMS_H
 #include <streams.h>
-#endif
-
-#ifndef BLOCK_FILE_OPENER_H
 #include <BlockFileOpener.h>
-#endif
-
-#ifndef BITCOIN_CLIENTVERSION_H
 #include <clientversion.h>
-#endif
-
-#ifndef BITCOIN_CHAINPARAMS_H
 #include <chainparams.h>
-#endif
 
 bool CBlockUndo::WriteToDisk(CDiskBlockPos& pos, const uint256& hashBlock)
 {

@@ -6,37 +6,14 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_VERIFYDB_H
 #include <verifyDb.h>
-#endif
-
-#ifndef BITCOIN_BLOCKUNDO_H
 #include <BlockUndo.h>
-#endif
-
-#ifndef BITCOIN_VALIDATIONSTATE_H
 #include <ValidationState.h>
-#endif
-
-#ifndef BLOCK_DISK_ACCESSOR_H
 #include <BlockDiskAccessor.h>
-#endif
-
-#ifndef BITCOIN_SYNC_H
 #include <sync.h>
-#endif
-
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif
-
-#ifndef BITCOIN_UI_INTERFACE_H
 #include <ui_interface.h>
-#endif
-
-#ifndef BITCOIN_INIT_H
 #include <init.h>
-#endif
 
 CVerifyDB::CVerifyDB()
 {

@@ -8,17 +8,9 @@
 #ifndef BITCOIN_VERIFYDB_H
 #define BITCOIN_VERIFYDB_H
 
-#ifndef BITCOIN_COINS_H
 #include <coins.h>
-#endif
-
-#ifndef LOGGING_H
 #include <Logging.h>
-#endif
-
-#ifndef BITCOIN_CHAIN_H
 #include <chain.h>
-#endif
 
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB

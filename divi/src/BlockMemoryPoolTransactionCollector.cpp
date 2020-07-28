@@ -46,15 +46,6 @@ BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
 
 }
 
-void BlockMemoryPoolTransactionCollector::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const
-{
-    block->nTime = std::max(pindexPrev->GetMedianTimePast() + 1, GetAdjustedTime());
-
-    // Updating time can change work required on testnet:
-    if (Params().AllowMinDifficultyBlocks())
-        block->nBits = GetNextWorkRequired(pindexPrev, block,Params());
-}
-
 bool BlockMemoryPoolTransactionCollector::VerifyUTXOIsKnownToMemPool (const CTxIn& txin, bool& fMissingInputs)  const
 {
     if(!mempool_.mapTx.count(txin.prevout.hash)){

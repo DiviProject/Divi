@@ -35,13 +35,8 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
-#ifndef BITCOIN_BLOCKUNDO_H
 #include <BlockUndo.h>
-#endif
-
-#ifndef BITCOIN_VALIDATIONSTATE_H
 #include <ValidationState.h>
-#endif
 
 using namespace boost;
 using namespace std;

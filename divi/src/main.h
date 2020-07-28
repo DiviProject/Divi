@@ -8,10 +8,7 @@
 #ifndef BITCOIN_MAIN_H
 #define BITCOIN_MAIN_H
 
-//TODO: tmp
-#ifndef BITCOIN_VALIDATIONINTERFACE_H
 #include "NotificationInterface.h"
-#endif // BITCOIN_VALIDATIONINTERFACE_H
 
 #if defined(HAVE_CONFIG_H)
 #include "config/divi-config.h"

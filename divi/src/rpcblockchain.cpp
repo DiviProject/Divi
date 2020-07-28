@@ -11,18 +11,12 @@
 #include "rpcserver.h"
 #include "sync.h"
 #include "util.h"
-
 #include <stdint.h>
-
 #include "json/json_spirit_value.h"
 #include "utilmoneystr.h"
 #include "base58.h"
-#ifndef BITCOIN_VALIDATIONSTATE_H
 #include <ValidationState.h>
-#endif
-#ifndef BITCOIN_VERIFYDB_H
 #include <verifyDb.h>
-#endif
 
 using namespace json_spirit;
 using namespace std;

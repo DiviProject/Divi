@@ -402,20 +402,6 @@ void UpdateBlockAvailability(NodeId nodeid, const uint256& hash)
     }
 }
 
-/** Updates information about what blocks a node is assumed to have based on
- *  a block locator it has sent.  */
-void UpdateBlockAvailability(NodeId nodeid, const CBlockLocator& locator)
-{
-    AssertLockHeld(cs_main);
-    for (const auto& hash : locator.vHave) {
-        auto it = mapBlockIndex.find(hash);
-        if (it != mapBlockIndex.end() && it->second->nChainWork > 0) {
-            UpdateBlockAvailability(nodeid, hash);
-            return;
-        }
-    }
-}
-
 /** Find the last common ancestor two blocks have.
  *  Both pa and pb must be non-NULL. */
 CBlockIndex* LastCommonAncestor(CBlockIndex* pa, CBlockIndex* pb)
@@ -2868,52 +2854,6 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
     return true;
 }
 
-namespace {
-
-/**
- * Sends inv messages to update the given node about a new chain tip we have.
- * Normally this just sends an inv for the new block; but if the node is behind
- * (or e.g. we just had a reorg), make sure to send all inv's in order from
- * what we know to be the node's best known block.
- */
-void RelayNewTipToNode(CNode& node, const CBlockIndex& index)
-{
-    const auto* state = State(node.GetId());
-
-    /* In the most common case, the node is behind just one block.  Just relay
-       the current one then; also do this if we don't know where the node is.
-       We use a direct inv message rather than PushInventory, because we always
-       want to announce the inv to peers even if they know it already (e.g. because
-       we got if from them).  This ensures that nodes keep track of an accurate
-       pindexBestKnownBlock for each other.  */
-    if (state == nullptr || state->pindexBestKnownBlock == nullptr || index.pprev->GetBlockHash() == state->pindexBestKnownBlock->GetBlockHash()) {
-        std::vector<CInv> vInv;
-        vInv.emplace_back(MSG_BLOCK, index.GetBlockHash());
-        node.PushMessage("inv", vInv);
-        return;
-    }
-
-    /* If the node is behind more than that, look for the fork point and relay
-       all inv's since then in order.  */
-    LOCK(cs_main);
-    const auto* pindexFork = chainActive.FindFork(state->pindexBestKnownBlock);
-    if (pindexFork == nullptr) {
-        /* This means that not even the genesis block is shared between us
-           and the node, in which case there's not much point anyway in
-           relaying and blocks.  */
-        return;
-    }
-    LogPrint("net", "sending multiple inv (from %d) for new chain tip %s to peer=%d\n",
-             pindexFork->nHeight, index.GetBlockHash().ToString(), node.id);
-    for (pindexFork = chainActive.Next(pindexFork); pindexFork != nullptr; pindexFork = chainActive.Next(pindexFork)) {
-        node.PushInventory(CInv(MSG_BLOCK, pindexFork->GetBlockHash()));
-        if (pindexFork->GetBlockHash() == index.GetBlockHash())
-            break;
-    }
-}
-
-} // anonymous namespace
-
 /**
  * Make the best chain active, in multiple steps. The result is either failure
  * or an activated best chain. pblock is either NULL or a pointer to a block
@@ -2951,17 +2891,18 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
 
         // Notifications/callbacks that can run without cs_main
         if (!fInitialDownload) {
+            const uint256 hashNewTip = pindexNewTip->GetBlockHash();
             // Relay inventory, but don't relay old inventory during initial block download.
             int nBlockEstimate = checkpointsVerifier.GetTotalBlocksEstimate();
             {
                 LOCK(cs_vNodes);
                 for (auto* pnode : vNodes) {
                     if (chainActive.Height() > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : nBlockEstimate))
-                        RelayNewTipToNode(*pnode, *pindexNewTip);
+                        pnode->PushInventory(CInv(MSG_BLOCK, hashNewTip));
                 }
             }
             // Notify external listeners about the new tip.
-            uiInterface.NotifyBlockTip(pindexNewTip->GetBlockHash());
+            uiInterface.NotifyBlockTip(hashNewTip);
         }
     } while (pindexMostWork != chainActive.Tip());
     CheckBlockIndex();
@@ -4976,9 +4917,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         LOCK(cs_main);
 
-        // Use the locator to (maybe) set our information of what blocks the node has.
-        UpdateBlockAvailability(pfrom->id, locator);
-
         // Find the last block the caller has in the main chain
         CBlockIndex* pindex = FindForkInGlobalIndex(chainActive, locator);
 
@@ -5013,9 +4951,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         if (IsInitialBlockDownload())
             return true;
-
-        // Use the locator to (maybe) set our information of what blocks the node has.
-        UpdateBlockAvailability(pfrom->id, locator);
 
         CBlockIndex* pindex = NULL;
         if (locator.IsNull()) {

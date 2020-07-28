@@ -699,14 +699,14 @@ bool VerifyCriticalDependenciesAreAvailable()
 
 void SetNetworkingParameters()
 {
-    if (ParameterIsSet("-bind") || ParameterIsSet("-whitebind")) {
+    if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
         // when specifying an explicit binding address, you want to listen on it
         // even when -connect or -proxy is specified
         if (SoftSetBoolArg("-listen", true))
             LogPrintf("InitializeDivi : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
     }
 
-    if (ParameterIsSet("-connect") && mapMultiArgs["-connect"].size() > 0) {
+    if (settings.ParameterIsSet("-connect") && mapMultiArgs["-connect"].size() > 0) {
         // when only connecting to trusted nodes, do not seed via DNS, or listen by default
         if (SoftSetBoolArg("-dnsseed", false))
             LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -dnsseed=0\n");
@@ -714,7 +714,7 @@ void SetNetworkingParameters()
             LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -listen=0\n");
     }
 
-    if (ParameterIsSet("-proxy")) {
+    if (settings.ParameterIsSet("-proxy")) {
         // to protect privacy, do not listen by default if a default proxy server is specified
         if (SoftSetBoolArg("-listen", false))
             LogPrintf("%s: parameter interaction: -proxy set -> setting -listen=0\n", __func__);
@@ -737,7 +737,7 @@ void SetNetworkingParameters()
             LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -listenonion=0\n");
     }
 
-    if (ParameterIsSet("-externalip")) {
+    if (settings.ParameterIsSet("-externalip")) {
         // if an explicit public IP is specified, do not try to find others
         if (SoftSetBoolArg("-discover", false))
             LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
@@ -771,7 +771,7 @@ bool EnableWalletFeatures()
             LogPrintf("InitializeDivi : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
     }
 
-    if (ParameterIsSet("-reservebalance")) {
+    if (settings.ParameterIsSet("-reservebalance")) {
         if (!ParseMoney(GetParameter("-reservebalance"), nReserveBalance)) {
             InitError(translate("Invalid amount for -reservebalance=<amount>"));
             return false;
@@ -782,7 +782,7 @@ bool EnableWalletFeatures()
 
 bool SetMaxConnectionsAndFileDescriptors(int& nFD)
 {
-    int nBind = std::max((int)ParameterIsSet("-bind") + (int)ParameterIsSet("-whitebind"), 1);
+    int nBind = std::max((int)settings.ParameterIsSet("-bind") + (int)settings.ParameterIsSet("-whitebind"), 1);
     nMaxConnections = settings.GetArg("-maxconnections", 125);
     nMaxConnections = std::max(std::min(nMaxConnections, (int)(FD_SETSIZE - nBind - MIN_CORE_FILEDESCRIPTORS)), 0);
     nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS);
@@ -800,13 +800,13 @@ bool CheckCriticalUnsupportedFeaturesAreNotUsed()
     if (settings.GetBoolArg("-debugnet", false))
         InitWarning(translate("Warning: Unsupported argument -debugnet ignored, use -debug=net."));
     // Check for -socks - as this is a privacy risk to continue, exit here
-    if (ParameterIsSet("-socks"))
+    if (settings.ParameterIsSet("-socks"))
         return InitError(translate("Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported."));
     // Check for -tor - as this is a privacy risk to continue, exit here
     if (settings.GetBoolArg("-tor", false))
         return InitError(translate("Error: Unsupported argument -tor found, use -onion."));
     // Check level must be 4 for zerocoin checks
-    if (ParameterIsSet("-checklevel"))
+    if (settings.ParameterIsSet("-checklevel"))
         return InitError(translate("Error: Unsupported argument -checklevel found. Checklevel must be level 4."));
 
     if (settings.GetBoolArg("-benchmark", false))
@@ -852,7 +852,7 @@ bool SetTransactionRequirements()
     // a transaction spammer can cheaply fill blocks using
     // 1-satoshi-fee transactions. It should be set above the real
     // cost to you of processing a transaction.
-    if (ParameterIsSet("-minrelaytxfee")) {
+    if (settings.ParameterIsSet("-minrelaytxfee")) {
         CAmount n = 0;
         if (ParseMoney(GetParameter("-minrelaytxfee"), n) && n > 0)
             ::minRelayTxFee = CFeeRate(n);
@@ -860,14 +860,14 @@ bool SetTransactionRequirements()
             return InitError(strprintf(translate("Invalid amount for -minrelaytxfee=<amount>: '%s'"), GetParameter("-minrelaytxfee")));
     }
 #ifdef ENABLE_WALLET
-    if (ParameterIsSet("-mintxfee")) {
+    if (settings.ParameterIsSet("-mintxfee")) {
         CAmount n = 0;
         if (ParseMoney(GetParameter("-mintxfee"), n) && n > 0)
             CWallet::minTxFee = CFeeRate(n);
         else
             return InitError(strprintf(translate("Invalid amount for -mintxfee=<amount>: '%s'"), GetParameter("-mintxfee")));
     }
-    if (ParameterIsSet("-paytxfee")) {
+    if (settings.ParameterIsSet("-paytxfee")) {
         CAmount nFeePerK = 0;
         if (!ParseMoney(GetParameter("-paytxfee"), nFeePerK))
             return InitError(strprintf(translate("Invalid amount for -paytxfee=<amount>: '%s'"), GetParameter("-paytxfee")));
@@ -879,7 +879,7 @@ bool SetTransactionRequirements()
                 GetParameter("-paytxfee"), ::minRelayTxFee.ToString()));
         }
     }
-    if (ParameterIsSet("-maxtxfee")) {
+    if (settings.ParameterIsSet("-maxtxfee")) {
         CAmount nMaxFee = 0;
         if (!ParseMoney(GetParameter("-maxtxfee"), nMaxFee))
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s'"), GetParameter("-maxtxfee")));
@@ -1016,7 +1016,7 @@ bool InitializeP2PNetwork()
 {
     RegisterNodeSignals(GetNodeSignals());
 
-    if (ParameterIsSet("-onlynet")) {
+    if (settings.ParameterIsSet("-onlynet")) {
         std::set<enum Network> nets;
         BOOST_FOREACH (std::string snet, mapMultiArgs["-onlynet"]) {
             enum Network net = ParseNetwork(snet);
@@ -1031,7 +1031,7 @@ bool InitializeP2PNetwork()
         }
     }
 
-    if (ParameterIsSet("-whitelist")) {
+    if (settings.ParameterIsSet("-whitelist")) {
         BOOST_FOREACH (const std::string& net, mapMultiArgs["-whitelist"]) {
             CSubNet subnet(net);
             if (!subnet.IsValid())
@@ -1090,7 +1090,7 @@ bool InitializeP2PNetwork()
 
     bool fBound = false;
     if (fListen) {
-        if (ParameterIsSet("-bind") || ParameterIsSet("-whitebind")) {
+        if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
             BOOST_FOREACH (std::string strBind, mapMultiArgs["-bind"]) {
                 CService addrBind;
                 if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
@@ -1115,7 +1115,7 @@ bool InitializeP2PNetwork()
             return InitError(translate("Failed to listen on any port. Use -listen=0 if you want this."));
     }
 
-    if (ParameterIsSet("-externalip")) {
+    if (settings.ParameterIsSet("-externalip")) {
         BOOST_FOREACH (std::string strAddr, mapMultiArgs["-externalip"]) {
             CService addrLocal(strAddr, GetListenPort(), fNameLookup);
             if (!addrLocal.IsValid())
@@ -1132,7 +1132,7 @@ bool InitializeP2PNetwork()
 
 void PruneHDSeedParameterInteraction()
 {
-    if (ParameterIsSet("-hdseed") && IsHex(settings.GetArg("-hdseed", "not hex")) && (ParameterIsSet("-mnemonic") || ParameterIsSet("-mnemonicpassphrase"))) {
+    if (settings.ParameterIsSet("-hdseed") && IsHex(settings.GetArg("-hdseed", "not hex")) && (settings.ParameterIsSet("-mnemonic") || settings.ParameterIsSet("-mnemonicpassphrase"))) {
         ForceRemoveArg("-mnemonic");
         ForceRemoveArg("-mnemonicpassphrase");
         LogPrintf("%s: parameter interaction: can't use -hdseed and -mnemonic/-mnemonicpassphrase together, will prefer -seed\n", __func__);
@@ -1156,7 +1156,7 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
 bool SetSporkKey()
 {
     sporkManager.SetSporkAddress(Params().SporkKey());
-    if (ParameterIsSet("-sporkkey")) // spork priv key
+    if (settings.ParameterIsSet("-sporkkey")) // spork priv key
     {
         if (!sporkManager.SetPrivKey(settings.GetArg("-sporkkey", "")))
             return InitError(translate("Unable to sign spork message, wrong key?"));
@@ -1591,7 +1591,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             pwalletMain->SetBestChain(chainActive.GetLocator());
 
         }
-        else if (ParameterIsSet("-usehd")) {
+        else if (settings.ParameterIsSet("-usehd")) {
             bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
             if (pwalletMain->IsHDEnabled() && !useHD) {
                 InitError(strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"),
@@ -1663,7 +1663,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 #endif // !ENABLE_WALLET
     // ********************************************************* Step 9: import blocks
 
-    if (ParameterIsSet("-blocknotify"))
+    if (settings.ParameterIsSet("-blocknotify"))
         uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
 
     // scan for better chains in the block chain database, that are not yet connected in the active best chain
@@ -1672,7 +1672,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         strErrors << "Failed to connect best block";
 
     std::vector<boost::filesystem::path> vImportFiles;
-    if (ParameterIsSet("-loadblock")) {
+    if (settings.ParameterIsSet("-loadblock")) {
         BOOST_FOREACH (std::string strFile, mapMultiArgs["-loadblock"])
             vImportFiles.push_back(strFile);
     }

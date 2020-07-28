@@ -478,9 +478,9 @@ public:
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 984952;
 
-        nLotteryBlockStartBlock = 100;
+        nLotteryBlockStartBlock = 101;
         nLotteryBlockCycle = 10; // one week
-        nTreasuryPaymentsStartBlock = 100;
+        nTreasuryPaymentsStartBlock = 102;
         nTreasuryPaymentsCycle = 50;
 
         nExtCoinType = 1;

@@ -70,10 +70,10 @@ bool AppInit(int argc, char* argv[])
     settings.ParseParameters(argc, argv);
 
     // Process help and version before taking care about datadir
-    if (ParameterIsSet("-?") || ParameterIsSet("-help") || ParameterIsSet("-version")) {
+    if (settings.ParameterIsSet("-?") || settings.ParameterIsSet("-help") || settings.ParameterIsSet("-version")) {
         std::string strUsage = translate("Divi Core Daemon") + " " + translate("version") + " " + FormatFullVersion() + "\n";
 
-        if (ParameterIsSet("-version")) {
+        if (settings.ParameterIsSet("-version")) {
             strUsage += LicenseInfo();
         } else {
             strUsage += "\n" + translate("Usage:") + "\n" +

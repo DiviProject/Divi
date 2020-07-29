@@ -16,7 +16,17 @@ class COutPoint;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
-class ProofOfStakeCalculator
+class I_ProofOfStakeCalculator
+{
+public:
+    virtual ~I_ProofOfStakeCalculator(){}
+    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
+        unsigned int nTimeTx,
+        unsigned int nTimeBlockFrom,
+        uint256& computedProofOfStake,
+        bool checkOnly = false) const = 0;
+};
+class ProofOfStakeCalculator: public I_ProofOfStakeCalculator
 {
 private:
     const COutPoint& utxoToStake_;
@@ -30,7 +40,7 @@ public:
         const uint64_t& stakeModifier,
         unsigned int blockDifficultyBits);
 
-    bool computeProofOfStakeAndCheckItMeetsTarget(
+    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
         unsigned int nTimeTx,
         unsigned int nTimeBlockFrom,
         uint256& computedProofOfStake,

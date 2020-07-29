@@ -31,3 +31,4 @@ cd $path
 ./wallet.py
 ./walletbackup.py
 ./zapwallettxes.sh ../../src
+./zmq_test.py

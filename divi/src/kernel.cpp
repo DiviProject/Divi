@@ -376,6 +376,7 @@ void ToggleUnitTestMode()
 }
 
 std::shared_ptr<I_ProofOfStakeCalculator> createProofOfStakeCalculator(
+    I_PoSStakeModifierService& stakeModifierService,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
     const CBlock& blockFrom,
@@ -400,17 +401,15 @@ std::shared_ptr<I_ProofOfStakeCalculator> createProofOfStakeCalculator(
     }
 
     //grab stake modifier
-    uint64_t nStakeModifier = 0;
-    int nStakeModifierHeight = 0;
-    int64_t nStakeModifierTime = 0;
-    if (!skipGettingStakeModifier && !GetKernelStakeModifier(blockFrom.GetHash(), nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false)) {
+    auto stakeModifierData = stakeModifierService.getStakeModifier(blockFrom.GetHash());
+    if (!skipGettingStakeModifier && !stakeModifierData.second) {
         LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
         return std::shared_ptr<I_ProofOfStakeCalculator>();
     }
 
     int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
 
-    return std::make_shared<LegacyProofOfStakeCalculator>(prevout,utxoValue,nStakeModifier,nBits,nTimeWeight);
+    return std::make_shared<LegacyProofOfStakeCalculator>(prevout,utxoValue,stakeModifierData.first,nBits,nTimeWeight);
 }
 
 std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const uint256& blockHash) const
@@ -427,6 +426,7 @@ std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const u
 
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
 bool CreateHashProofForProofOfStake(
+    I_PoSStakeModifierService& stakeModifierService,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
     const CBlock& blockFrom,
@@ -439,6 +439,7 @@ bool CreateHashProofForProofOfStake(
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
     std::shared_ptr<I_ProofOfStakeCalculator> calculator =
         createProofOfStakeCalculator(
+            stakeModifierService,
             hashedBlockTimestamps,
             nBits,
             blockFrom,
@@ -471,6 +472,29 @@ bool CreateHashProofForProofOfStake(
     hashedBlockTimestamps.clear();
     hashedBlockTimestamps[chainActive.Tip()->nHeight] = GetTime(); //store a time stamp of when we last hashed on this block
     return fSuccess;
+}
+
+bool CreateHashProofForProofOfStake(
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+    unsigned int nBits,
+    const CBlock& blockFrom,
+    const COutPoint& prevout,
+    const CAmount& utxoValue,
+    unsigned int& nTimeTx,
+    bool fCheck,
+    uint256& hashProofOfStake)
+{
+    static LegacyPoSStakeModifierService stakeModifierService;
+    return CreateHashProofForProofOfStake(
+        stakeModifierService,
+        hashedBlockTimestamps,
+        nBits,
+        blockFrom,
+        prevout,
+        utxoValue,
+        nTimeTx,
+        fCheck,
+        hashProofOfStake);
 }
 
 // Check kernel hash target and coinstake signature

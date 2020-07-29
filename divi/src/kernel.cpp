@@ -22,6 +22,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
+extern const int nHashDrift = 45;
+
 extern BlockMap mapBlockIndex;
 extern const unsigned int MINIMUM_COIN_AGE_FOR_STAKING = 60 * 60;
 constexpr const unsigned int MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING = 60 * 60 * 24 * 7 - MINIMUM_COIN_AGE_FOR_STAKING;
@@ -321,14 +323,13 @@ bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
 }
 
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
-bool CheckStakeKernelHash(
+bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
     const CBlock& blockFrom,
     const COutPoint& prevout,
     const CAmount& utxoValue,
     unsigned int& nTimeTx,
-    unsigned int nHashDrift,
     bool fCheck,
     uint256& hashProofOfStake,
     bool fPrintProofOfStake)
@@ -338,17 +339,17 @@ bool CheckStakeKernelHash(
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
 
     if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
-        return error("CheckStakeKernelHash() : nTime violation");
+        return error("CreateHashProofForProofOfStake() : nTime violation");
 
     if (nTimeBlockFrom + MINIMUM_COIN_AGE_FOR_STAKING > nTimeTx) // Min age requirement
-        return error("CheckStakeKernelHash() : min age violation - nTimeBlockFrom=%d MINIMUM_COIN_AGE_FOR_STAKING=%d nTimeTx=%d", nTimeBlockFrom, MINIMUM_COIN_AGE_FOR_STAKING, nTimeTx);
+        return error("CreateHashProofForProofOfStake() : min age violation - nTimeBlockFrom=%d MINIMUM_COIN_AGE_FOR_STAKING=%d nTimeTx=%d", nTimeBlockFrom, MINIMUM_COIN_AGE_FOR_STAKING, nTimeTx);
 
     //grab stake modifier
     uint64_t nStakeModifier = 0;
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
     if (!GetKernelStakeModifier(blockFrom.GetHash(), nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake)) {
-        LogPrintf("CheckStakeKernelHash(): failed to get kernel stake modifier \n");
+        LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
         return false;
     }
 
@@ -374,17 +375,14 @@ bool CheckStakeKernelHash(
         if (chainActive.Height() != nHeightStart)
             break;
 
-        //hash this iteration
         nTryTime = nTimeTx - i;
         hashProofOfStake = stakeHash(nStakeModifier, nTryTime, prevout, nTimeBlockFrom);
 
-        // if stake hash does not meet the target then continue to next iteration
         if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight))
             continue;
 
-        fSuccess = true; // if we make it this far then we have successfully created a stake hash
+        fSuccess = true;
         nTimeTx = nTryTime;
-
         break;
     }
 
@@ -448,7 +446,7 @@ bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
     unsigned int nInterval = 0;
     unsigned int nTime = block.nTime;
     std::map<unsigned int, unsigned int> hashedBlockTimestamps;
-    if (!CheckStakeKernelHash(hashedBlockTimestamps, block.nBits, blockprev, txin.prevout, txPrev.vout[txin.prevout.n].nValue, nTime, nInterval, true, hashProofOfStake, fDebug))
+    if (!CreateHashProofForProofOfStake(hashedBlockTimestamps, block.nBits, blockprev, txin.prevout, txPrev.vout[txin.prevout.n].nValue, nTime, true, hashProofOfStake, fDebug))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;

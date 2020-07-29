@@ -38,14 +38,13 @@ public:
 };
 
 
-bool CheckStakeKernelHash(
+bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
     const CBlock& blockFrom,
     const COutPoint& prevout,
     const CAmount& utxoValue,
     unsigned int& nTimeTx,
-    unsigned int nHashDrift,
     bool fCheck,
     uint256& hashProofOfStake,
     bool fPrintProofOfStake = false);

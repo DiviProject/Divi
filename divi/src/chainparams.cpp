@@ -460,6 +460,12 @@ public:
            predictable.  */
         premineAmt = 1'250 * COIN;
 
+        /* Add back a maturity period for coinbases as on mainnet, so that
+           we can test this works as expected.  Testnet uses a shorter
+           interval to ease with manual testing, but on regtest one can mine
+           blocks quickly anyway if needed.  */
+        nMaturity = 20;
+
         nSubsidyHalvingInterval = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;

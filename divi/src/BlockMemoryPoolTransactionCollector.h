@@ -88,7 +88,7 @@ class I_BlockTransactionCollector
 public:
     virtual ~I_BlockTransactionCollector(){}
     virtual bool CollectTransactionsIntoBlock (
-        std::unique_ptr<CBlockTemplate>& pblocktemplate,
+        CBlockTemplate& pblocktemplate,
         bool& fProofOfStake,
         CMutableTransaction& txNew) const = 0;
 };
@@ -161,7 +161,7 @@ public:
         CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
     virtual bool CollectTransactionsIntoBlock (
-        std::unique_ptr<CBlockTemplate>& pblocktemplate,
+        CBlockTemplate& pblocktemplate,
         bool& fProofOfStake,
         CMutableTransaction& txNew) const;
 };

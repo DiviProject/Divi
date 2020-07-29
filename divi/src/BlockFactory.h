@@ -36,14 +36,14 @@ private:
     std::shared_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
     std::shared_ptr<I_CoinstakeCreator> coinstakeCreator_;
 private:
-    void SetRequiredWork(std::unique_ptr<CBlockTemplate>& pblocktemplate);
+    void SetRequiredWork(CBlockTemplate& pblocktemplate);
     void SetBlockTime(CBlock& block);
     void SetCoinbaseTransactionAndDefaultFees(
-        std::unique_ptr<CBlockTemplate>& pblocktemplate, 
+        CBlockTemplate& pblocktemplate,
         const CMutableTransaction& coinbaseTransaction);
     void CreateCoinbaseTransaction(const CScript& scriptPubKeyIn, CMutableTransaction& coinbaseTx);
     bool AppendProofOfStakeToBlock(
-        std::unique_ptr<CBlockTemplate>& pBlockTemplate);
+        CBlockTemplate& pBlockTemplate);
 
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:

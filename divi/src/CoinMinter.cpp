@@ -62,9 +62,9 @@ bool CoinMinter::hasMintableCoinForProofOfStake()
     }
     return haveMintableCoins_;
 }
-bool CoinMinter::isAtProofOfStakeHeight() const
+bool CoinMinter::nextBlockIsProofOfStake() const
 {
-    return chain_.Tip()->nHeight > chainParameters_.LAST_POW_BLOCK();
+    return chain_.Tip()->nHeight >= chainParameters_.LAST_POW_BLOCK();
 }
 
 bool CoinMinter::satisfiesMintingRequirements() const
@@ -94,8 +94,8 @@ bool CoinMinter::limitStakingSpeed() const
 
 bool CoinMinter::CanMintCoins()
 {
-    if( !hasMintableCoinForProofOfStake() ||
-        !isAtProofOfStakeHeight() ||
+    if( !hasMintableCoinForProofOfStake() || 
+        !nextBlockIsProofOfStake() ||
         !satisfiesMintingRequirements() ||
         limitStakingSpeed())
     {
@@ -177,13 +177,13 @@ void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, uns
 
 
 void CoinMinter::SetCoinbaseRewardAndHeight (
-    std::unique_ptr<CBlockTemplate>& pblocktemplate,
+    CBlockTemplate& pblocktemplate,
     const bool& fProofOfStake) const
 {
     // Compute final coinbase transaction.
-    int nHeight = pblocktemplate->previousBlockIndex->nHeight+1;
-    CBlock& block = pblocktemplate->block;
-    CMutableTransaction& coinbaseTx = *pblocktemplate->coinbaseTransaction;
+    int nHeight = pblocktemplate.previousBlockIndex->nHeight+1;
+    CBlock& block = pblocktemplate.block;
+    CMutableTransaction& coinbaseTx = *pblocktemplate.coinbaseTransaction;
     block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
     if (!fProofOfStake) {
         coinbaseTx.vout[0].nValue = subsidyContainer_->blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
@@ -192,14 +192,14 @@ void CoinMinter::SetCoinbaseRewardAndHeight (
     }
 }
 
-void CoinMinter::SetBlockHeaders(std::unique_ptr<CBlockTemplate>& pblocktemplate, const bool& proofOfStake) const
+void CoinMinter::SetBlockHeaders(CBlockTemplate& pblocktemplate, const bool& proofOfStake) const
 {
     // Fill in header
-    CBlock& block = pblocktemplate->block;
-    block.hashPrevBlock = pblocktemplate->previousBlockIndex->GetBlockHash();
+    CBlock& block = pblocktemplate.block;
+    block.hashPrevBlock = pblocktemplate.previousBlockIndex->GetBlockHash();
     if (!proofOfStake)
-        UpdateTime(&block, pblocktemplate->previousBlockIndex);
-    block.nBits = GetNextWorkRequired(pblocktemplate->previousBlockIndex, &block, chainParameters_);
+        UpdateTime(&block, pblocktemplate.previousBlockIndex);
+    block.nBits = GetNextWorkRequired(pblocktemplate.previousBlockIndex, &block, chainParameters_);
     block.nNonce = 0;
     block.nAccumulatorCheckpoint = static_cast<uint256>(0);
 }
@@ -220,8 +220,8 @@ bool CoinMinter::createProofOfStakeBlock(
         return false;
 
     CBlock* block = &pblocktemplate->block;
-    SetCoinbaseRewardAndHeight(pblocktemplate, fProofOfStake);
-    SetBlockHeaders(pblocktemplate, fProofOfStake);
+    SetCoinbaseRewardAndHeight(*pblocktemplate, fProofOfStake);
+    SetBlockHeaders(*pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     //Stake miner main
@@ -257,8 +257,8 @@ bool CoinMinter::createProofOfWorkBlock(
         return false;
 
     CBlock* block = &pblocktemplate->block;
-    SetCoinbaseRewardAndHeight(pblocktemplate, fProofOfStake);
-    SetBlockHeaders(pblocktemplate, fProofOfStake);
+    SetCoinbaseRewardAndHeight(*pblocktemplate, fProofOfStake);
+    SetBlockHeaders(*pblocktemplate, fProofOfStake);
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     LogPrintf("Running DIVIMiner with %u transactions in block (%u bytes)\n", block->vtx.size(),

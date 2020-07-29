@@ -23,17 +23,28 @@ bool ComputeNextStakeModifier(
 
 // Check whether stake kernel meets hash target
 // Sets hashProofOfStake on success return
-uint256 stakeHash(
-    uint64_t stakeModifier,
-    unsigned int nTimeTx,
-    unsigned int prevoutIndex,
-    const uint256& prevoutHash,
-    unsigned int nTimeBlockFrom);
-bool stakeTargetHit(
-    const uint256& hashProofOfStake,
-    int64_t nValueIn,
-    const uint256& bnTargetPerCoinDay,
-    int64_t nTimeWeight);
+class ProofOfStakeCalculator
+{
+private:
+    const COutPoint& utxoToStake_;
+    const int64_t& utxoValue_;
+    const uint64_t& stakeModifier_;
+    const uint256 targetPerCoinDay_;
+public:
+    ProofOfStakeCalculator(
+        const COutPoint& utxoToStake,
+        const int64_t& utxoValue,
+        const uint64_t& stakeModifier,
+        unsigned int blockDifficultyBits);
+
+    bool computeProofOfStakeAndCheckItMeetsTarget(
+        unsigned int nTimeTx,
+        unsigned int nTimeBlockFrom,
+        uint256& computedProofOfStake,
+        bool checkOnly = false) const;
+};
+
+
 bool CheckStakeKernelHash(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,

@@ -23,7 +23,7 @@ class ForkNotifyTest(BitcoinTestFramework):
         with open(self.alert_filename, 'w') as f:
             pass  # Just open then close to create zero-length file
         self.nodes.append(start_node(0, self.options.tmpdir,
-                            ["-blockversion=2", "-alertnotify=echo %s >> \"" + self.alert_filename + "\""]))
+                            ["-alertnotify=echo %s >> \"" + self.alert_filename + "\""]))
         # Node1 mines block.version=211 blocks
         self.nodes.append(start_node(1, self.options.tmpdir,
                                 ["-blockversion=211"]))
@@ -33,6 +33,9 @@ class ForkNotifyTest(BitcoinTestFramework):
         self.sync_all()
 
     def run_test(self):
+        self.nodes[0].setgenerate(True, 10)
+        self.sync_all()
+
         # Mine 51 up-version blocks
         self.nodes[1].setgenerate(True, 51)
         self.sync_all()
@@ -41,6 +44,9 @@ class ForkNotifyTest(BitcoinTestFramework):
         # -alertnotify time to write
         self.nodes[1].setgenerate(True, 1)
         self.sync_all()
+
+        assert_equal(self.nodes[0].getblockheader(self.nodes[0].getblockhash(5))["version"], 4)
+        assert_equal(self.nodes[0].getblockheader(self.nodes[0].getblockhash(20))["version"], 211)
 
         with open(self.alert_filename, 'r') as f:
             alert_text = f.read()

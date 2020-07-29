@@ -360,23 +360,23 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
 }
 
 bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
-    std::unique_ptr<CBlockTemplate>& pblocktemplate,
+    CBlockTemplate& pblocktemplate,
     bool& fProofOfStake,
     CMutableTransaction& txNew) const
 {
 
     LOCK2(mainCS_, mempool_.cs);
 
-    CBlock& block = pblocktemplate->block;
+    CBlock& block = pblocktemplate.block;
 
-    pblocktemplate->previousBlockIndex = chainActive.Tip();
-    const int nHeight = pblocktemplate->previousBlockIndex->nHeight + 1;
+    pblocktemplate.previousBlockIndex = chainActive.Tip();
+    const int nHeight = pblocktemplate.previousBlockIndex->nHeight + 1;
     CCoinsViewCache view(pcoinsTip);
 
     AddTransactionsToBlockIfPossible(
         nHeight,
         view,
-        *pblocktemplate);
+        pblocktemplate);
 
     LogPrintf("CreateNewBlock(): block tostring %s\n", block.ToString());
     return true;

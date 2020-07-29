@@ -15,12 +15,6 @@ class COutPoint;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
-// Compute the hash modifier for proof-of-stake
-bool ComputeNextStakeModifier(
-    const CBlockIndex* pindexPrev,
-    uint64_t& nStakeModifier,
-    bool& fGeneratedStakeModifier);
-
 // Check whether stake kernel meets hash target
 // Sets hashProofOfStake on success return
 class ProofOfStakeCalculator
@@ -62,10 +56,6 @@ bool CheckStakeKernelHash(
 bool CheckProofOfStake(
     const CBlock& block,
     uint256& hashProofOfStake);
-
-// Get stake modifier checksum
-unsigned int GetStakeModifierChecksum(
-    const CBlockIndex* pindex);
 
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(

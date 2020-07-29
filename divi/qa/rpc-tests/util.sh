@@ -49,10 +49,12 @@ function AssertEqual {
 }
 
 # CheckBalance -datadir=... amount account minconf
+# We check that the balance is within one coin of the expected value,
+# to allow for variance due to fees.
 function CheckBalance {
   declare -i EXPECT="$2"
   B=$( $CLI $1 getbalance $3 $4 )
-  if (( $( echo "$B == $EXPECT" | bc ) == 0 ))
+  if (( $( echo "($B - $EXPECT < 1) && ($EXPECT - $B < 1)" | bc ) == 0 ))
   then
     echoerr "bad balance: $B (expected $2)"
     declare -f CleanUp > /dev/null 2>&1

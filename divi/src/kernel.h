@@ -72,4 +72,6 @@ bool CheckStakeModifierCheckpoints(
     int nHeight,
     unsigned int nStakeModifierChecksum);
 
+void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew);
+
 #endif // BITCOIN_KERNEL_H

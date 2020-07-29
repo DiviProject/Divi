@@ -21,6 +21,8 @@ cd $path
 ./mempool_resurrect_test.py
 ./mempool_spendcoinbase.py
 ./proxy_test.py
+./receivedby.py
+./reindex.py
 ./rest.py
 ./rpcbind_test.py
 ./sync.py

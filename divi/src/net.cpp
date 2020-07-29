@@ -1205,7 +1205,7 @@ void static ProcessOneShot()
 void ThreadOpenConnections()
 {
     // Connect to specific addresses
-    if (ParameterIsSet("-connect") && mapMultiArgs["-connect"].size() > 0) {
+    if (settings.ParameterIsSet("-connect") && mapMultiArgs["-connect"].size() > 0) {
         for (int64_t nLoop = 0;; nLoop++) {
             ProcessOneShot();
             BOOST_FOREACH (string strAddr, mapMultiArgs["-connect"]) {
@@ -2071,12 +2071,12 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend)
     // The -*messagestest options are intentionally not documented in the help message,
     // since they are only used during development to debug the networking code and are
     // not intended for end-users.
-    if (ParameterIsSet("-dropmessagestest") && GetRand(settings.GetArg("-dropmessagestest", 2)) == 0) {
+    if (settings.ParameterIsSet("-dropmessagestest") && GetRand(settings.GetArg("-dropmessagestest", 2)) == 0) {
         LogPrint("net", "dropmessages DROPPING SEND MESSAGE\n");
         AbortMessage();
         return;
     }
-    if (ParameterIsSet("-fuzzmessagestest"))
+    if (settings.ParameterIsSet("-fuzzmessagestest"))
         Fuzz(settings.GetArg("-fuzzmessagestest", 10));
 
     if (ssSend.size() == 0)

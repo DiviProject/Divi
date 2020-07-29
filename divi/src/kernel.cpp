@@ -322,6 +322,53 @@ bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
 }
 
+class LegacyProofOfStakeCalculator: public I_ProofOfStakeCalculator
+{
+private:
+    const COutPoint& utxoToStake_;
+    const int64_t& utxoValue_;
+    const uint64_t& stakeModifier_;
+    const uint256 targetPerCoinDay_;
+    const int64_t coinAgeWeight_;
+public:
+    LegacyProofOfStakeCalculator(
+        const COutPoint& utxoToStake,
+        const int64_t& utxoValue,
+        const uint64_t& stakeModifier,
+        unsigned int blockDifficultyBits);
+
+    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
+        unsigned int nTimeTx,
+        unsigned int nTimeBlockFrom,
+        uint256& computedProofOfStake,
+        bool checkOnly = false) const;
+};
+
+LegacyProofOfStakeCalculator::LegacyProofOfStakeCalculator(
+    const COutPoint& utxoToStake,
+    const int64_t& utxoValue,
+    const uint64_t& stakeModifier,
+    unsigned int blockDifficultyBits,
+    int64_t coinAgeWeight
+    ): utxoToStake_(utxoToStake)
+    , utxoValue_(utxoValue)
+    , stakeModifier_(stakeModifier)
+    , targetPerCoinDay_(uint256().SetCompact(blockDifficultyBits))
+    , coinAgeWeight_(coinAgeWeight)
+{
+}
+
+bool LegacyProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
+    unsigned int nTimeTx,
+    unsigned int nTimeBlockFrom,
+    uint256& computedProofOfStake,
+    bool checkOnly) const
+{
+    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,nTimeBlockFrom);
+    return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeight_);
+}
+
+
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

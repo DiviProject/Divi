@@ -19,7 +19,7 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
 
     def setup_network(self):
         # Just need one node for this test
-        args = ["-checkmempool", "-debug=mempool"]
+        args = ["-checkmempool", "-debug=mempool", "-disablesafemode"]
         self.nodes = []
         self.nodes.append(start_node(0, self.options.tmpdir, args))
         self.is_network_split = False
@@ -34,7 +34,7 @@ class MempoolCoinbaseTest(BitcoinTestFramework):
 
     def run_test(self):
         node = self.nodes[0]
-        node.setgenerate(True, 10)
+        node.setgenerate(True, 30)
         node0_address = node.getnewaddress()
 
         # Spend block 1/2/3's coinbase transactions

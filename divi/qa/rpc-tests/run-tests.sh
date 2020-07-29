@@ -10,6 +10,17 @@ set -ex
 
 echo "$path"
 cd $path
+
+./forknotify.py
+./getchaintips.py
+./httpbasics.py
 ./listtransactions.py
+./mempool_coinbase_spends.py
 ./mempool_resurrect_test.py
+./mempool_spendcoinbase.py
+./proxy_test.py
+./rest.py
+./sync.py
+./txn_doublespend.py
+./txn_doublespend.py --mineblock
 ./wallet.py

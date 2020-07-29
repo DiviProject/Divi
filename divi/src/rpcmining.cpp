@@ -164,23 +164,23 @@ Value setgenerate(const Array& params, bool fHelp)
             nHeight = nHeightStart;
             nHeightEnd = nHeightStart + nGenerate;
         }
-        
+
         Array blockHashes;
         int64_t coinstakeSearchInterval;
         CoinMinter minter(pwalletMain, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,coinstakeSearchInterval);
-        while (nHeight < nHeightEnd) 
+        while (nHeight < nHeightEnd)
         {
             unsigned int nExtraNonce = 0;
-            bool newBlockAdded = minter.createNewBlock(nExtraNonce,reservekey,false);
+            bool newBlockAdded = minter.createNewBlock(nExtraNonce,reservekey,nHeight >= Params().LAST_POW_BLOCK());
             nHeight +=  newBlockAdded;
             if(newBlockAdded)
             { // Don't keep cs_main locked
-                LOCK(cs_main); 
+                LOCK(cs_main);
                 if(nHeight == chainActive.Height())
                 {
                     blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
                 }
-            } 
+            }
         }
         return blockHashes;
     } else // Not -regtest: start generate thread, return immediately

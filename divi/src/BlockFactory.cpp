@@ -90,6 +90,12 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     if (!pblocktemplate.get())
         return NULL;
 
+    // Maybe override the block version, for fork tests.
+    if (chainParameters_.MineBlocksOnDemand()) {
+        auto& block = pblocktemplate->block;
+        block.nVersion = GetArg("-blockversion", block.nVersion);
+    }
+
     pblocktemplate->previousBlockIndex = chain_.Tip();
     if(!pblocktemplate->previousBlockIndex) return NULL;
 

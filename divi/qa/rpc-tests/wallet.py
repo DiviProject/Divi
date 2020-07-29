@@ -24,10 +24,6 @@ from util import *
 
 class WalletTest (BitcoinTestFramework):
 
-    def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
-        initialize_chain_clean(self.options.tmpdir, 3)
-
     def setup_network(self, split=False):
         args = [["-spendzeroconfchange"]] * 3
         self.nodes = start_nodes(3, self.options.tmpdir, extra_args=args)
@@ -47,7 +43,7 @@ class WalletTest (BitcoinTestFramework):
         self.sync_all()
 
         assert_equal(self.nodes[0].getbalance(), 2500)
-        assert_equal(self.nodes[1].getbalance(), 38750)
+        assert_equal(self.nodes[1].getbalance(), 15000)
         assert_equal(self.nodes[2].getbalance(), 0)
 
         # Send 701 BTC from 0 to 2 using sendtoaddress call.

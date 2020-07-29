@@ -34,10 +34,10 @@ def check_array_result(object_array, to_match, expected):
 class ListTransactionsTest(BitcoinTestFramework):
 
     def run_test(self):
-        # Get some coins into both nodes.
+        # Get some (matured) coins into both nodes.
         self.nodes[0].setgenerate(True, 5)
         self.sync_all()
-        self.nodes[1].setgenerate(True, 5)
+        self.nodes[1].setgenerate(True, 30)
         self.sync_all()
 
         # Simple send, 0 to 1:

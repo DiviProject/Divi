@@ -2893,14 +2893,15 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
 
         // Notifications/callbacks that can run without cs_main
         if (!fInitialDownload) {
-            uint256 hashNewTip = pindexNewTip->GetBlockHash();
+            const uint256 hashNewTip = pindexNewTip->GetBlockHash();
             // Relay inventory, but don't relay old inventory during initial block download.
             int nBlockEstimate = checkpointsVerifier.GetTotalBlocksEstimate();
             {
                 LOCK(cs_vNodes);
-                BOOST_FOREACH (CNode* pnode, vNodes)
-                        if (chainActive.Height() > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : nBlockEstimate))
+                for (auto* pnode : vNodes) {
+                    if (chainActive.Height() > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : nBlockEstimate))
                         pnode->PushInventory(CInv(MSG_BLOCK, hashNewTip));
+                }
             }
             // Notify external listeners about the new tip.
             uiInterface.NotifyBlockTip(hashNewTip);
@@ -4926,12 +4927,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             pindex = chainActive.Next(pindex);
         int nLimit = 500;
         LogPrint("net", "getblocks %d to %s limit %d from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop == uint256(0) ? "end" : hashStop.ToString(), nLimit, pfrom->id);
+        std::vector<CInv> vInv;
         for (; pindex; pindex = chainActive.Next(pindex)) {
-            if (pindex->GetBlockHash() == hashStop) {
-                LogPrint("net", "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
-                break;
-            }
-            pfrom->PushInventory(CInv(MSG_BLOCK, pindex->GetBlockHash()));
+            // Make sure the inv messages for the requested chain are sent
+            // in any case, even if e.g. we have already announced those
+            // blocks in the past.  This ensures that the peer will be able
+            // to sync properly and not get stuck.
+            vInv.emplace_back(MSG_BLOCK, pindex->GetBlockHash());
             if (--nLimit <= 0) {
                 // When this block is requested, we'll send an inv that'll make them
                 // getblocks the next batch of inventory.
@@ -4939,7 +4941,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 pfrom->hashContinue = pindex->GetBlockHash();
                 break;
             }
+            if (pindex->GetBlockHash() == hashStop) {
+                LogPrint("net", "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
+                break;
+            }
         }
+        if (!vInv.empty())
+            pfrom->PushMessage("inv", vInv);
     }
 
 
@@ -5664,13 +5672,14 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // Message: inventory
         //
         std::vector<CInv> vInv;
-        std::vector<CInv> vInvWait;
         {
+            std::vector<CInv> vInvWait;
+
             LOCK(pto->cs_inventory);
             vInv.reserve(pto->vInventoryToSend.size());
             vInvWait.reserve(pto->vInventoryToSend.size());
-            BOOST_FOREACH (const CInv& inv, pto->vInventoryToSend) {
-                if (pto->setInventoryKnown.count(inv))
+            for (const auto& inv : pto->vInventoryToSend) {
+                if (pto->setInventoryKnown.count(inv) > 0)
                     continue;
 
                 // trickle out tx inv to protect privacy
@@ -5698,7 +5707,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     }
                 }
             }
-            pto->vInventoryToSend = vInvWait;
+            pto->vInventoryToSend = std::move(vInvWait);
         }
         if (!vInv.empty())
             pto->PushMessage("inv", vInv);

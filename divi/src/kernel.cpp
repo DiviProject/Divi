@@ -369,6 +369,12 @@ bool LegacyProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeight_);
 }
 
+volatile bool skipGettingStakeModifier = false;
+void ToggleUnitTestMode()
+{
+    skipGettingStakeModifier = !skipGettingStakeModifier;
+}
+
 std::shared_ptr<I_ProofOfStakeCalculator> createProofOfStakeCalculator(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
@@ -397,7 +403,7 @@ std::shared_ptr<I_ProofOfStakeCalculator> createProofOfStakeCalculator(
     uint64_t nStakeModifier = 0;
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
-    if (!GetKernelStakeModifier(blockFrom.GetHash(), nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false)) {
+    if (!skipGettingStakeModifier && !GetKernelStakeModifier(blockFrom.GetHash(), nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false)) {
         LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
         return std::shared_ptr<I_ProofOfStakeCalculator>();
     }

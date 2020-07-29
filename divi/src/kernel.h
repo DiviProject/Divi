@@ -56,8 +56,7 @@ bool CreateHashProofForProofOfStake(
     const CAmount& utxoValue,
     unsigned int& nTimeTx,
     bool fCheck,
-    uint256& hashProofOfStake,
-    bool fPrintProofOfStake = false);
+    uint256& hashProofOfStake);
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return

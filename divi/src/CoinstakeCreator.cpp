@@ -144,8 +144,7 @@ bool CoinstakeCreator::FindStake(
             stakeData.first->vout[stakeData.second].nValue,
             nTxNewTime,
             false,
-            hashProofOfStake,
-            true))
+            hashProofOfStake))
     {
         if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast())
         {

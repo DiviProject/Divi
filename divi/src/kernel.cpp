@@ -379,8 +379,7 @@ bool CreateHashProofForProofOfStake(
     const CAmount& utxoValue,
     unsigned int& nTimeTx,
     bool fCheck,
-    uint256& hashProofOfStake,
-    bool fPrintProofOfStake)
+    uint256& hashProofOfStake)
 {
     //assign new variables to make it easier to read
     int64_t nValueIn = utxoValue;
@@ -396,7 +395,7 @@ bool CreateHashProofForProofOfStake(
     uint64_t nStakeModifier = 0;
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
-    if (!GetKernelStakeModifier(blockFrom.GetHash(), nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake)) {
+    if (!GetKernelStakeModifier(blockFrom.GetHash(), nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false)) {
         LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
         return false;
     }
@@ -410,20 +409,16 @@ bool CreateHashProofForProofOfStake(
     }
 
     bool fSuccess = false;
-    unsigned int nTryTime = 0;
     int nHeightStart = chainActive.Height();
     for (unsigned int i = 0; i < nHashDrift; i++) //iterate the hashing
     {
-        //new block came in, move on
         if (chainActive.Height() != nHeightStart)
             break;
 
-        nTryTime = nTimeTx - i;
-        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(nTryTime,nTimeBlockFrom,hashProofOfStake))
+        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(nTimeTx--,nTimeBlockFrom,hashProofOfStake))
             continue;
 
         fSuccess = true;
-        nTimeTx = nTryTime;
         break;
     }
 

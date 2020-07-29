@@ -385,18 +385,6 @@ bool CheckStakeKernelHash(
         fSuccess = true; // if we make it this far then we have successfully created a stake hash
         nTimeTx = nTryTime;
 
-        if (fDebug || fPrintProofOfStake) {
-            LogPrintf("CheckStakeKernelHash() : using modifier %s at height=%d timestamp=%s for block from height=%d timestamp=%s\n",
-                      boost::lexical_cast<std::string>(nStakeModifier).c_str(), nStakeModifierHeight,
-                      DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nStakeModifierTime).c_str(),
-                      mapBlockIndex[blockFrom.GetHash()]->nHeight,
-                    DateTimeStrFormat("%Y-%m-%d %H:%M:%S", blockFrom.GetBlockTime()).c_str());
-            LogPrintf("CheckStakeKernelHash() : pass protocol=%s modifier=%s nTimeBlockFrom=%u prevoutHash=%s nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s\n",
-                      "0.3",
-                      boost::lexical_cast<std::string>(nStakeModifier).c_str(),
-                      nTimeBlockFrom, prevout.hash.ToString().c_str(), nTimeBlockFrom, prevout.n, nTryTime,
-                      hashProofOfStake.ToString().c_str());
-        }
         break;
     }
 

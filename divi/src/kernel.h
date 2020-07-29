@@ -47,6 +47,19 @@ public:
         bool checkOnly = false) const;
 };
 
+class I_PoSStakeModifierService
+{
+public:
+    virtual ~I_PoSStakeModifierService(){}
+    virtual std::pair<uint64_t,bool> getStakeModifier(const uint256& blockHash) const = 0;
+};
+
+class LegacyPoSStakeModifierService: public I_PoSStakeModifierService
+{
+public:
+    LegacyPoSStakeModifierService(){}
+    virtual std::pair<uint64_t,bool> getStakeModifier(const uint256& blockHash) const;
+};
 
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

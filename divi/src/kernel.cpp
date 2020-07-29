@@ -413,6 +413,18 @@ std::shared_ptr<I_ProofOfStakeCalculator> createProofOfStakeCalculator(
     return std::make_shared<LegacyProofOfStakeCalculator>(prevout,utxoValue,nStakeModifier,nBits,nTimeWeight);
 }
 
+std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const uint256& blockHash) const
+{
+    uint64_t nStakeModifier = 0;
+    int nStakeModifierHeight = 0;
+    int64_t nStakeModifierTime = 0;
+    if (!skipGettingStakeModifier && !GetKernelStakeModifier(blockHash, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false)) {
+        LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
+        return std::make_pair(nStakeModifier,false);
+    }
+    return std::make_pair(nStakeModifier,true);
+}
+
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

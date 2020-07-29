@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <uint256.h>
 #include <streams.h>
+#include <amount.h>
 class CBlockIndex;
 class CBlock;
 class CTransaction;
@@ -15,8 +16,6 @@ class COutPoint;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
-// Check whether stake kernel meets hash target
-// Sets hashProofOfStake on success return
 class ProofOfStakeCalculator
 {
 private:
@@ -43,8 +42,8 @@ bool CheckStakeKernelHash(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
     const CBlock& blockFrom,
-    const CTransaction& txPrev,
     const COutPoint& prevout,
+    const CAmount& utxoValue,
     unsigned int& nTimeTx,
     unsigned int nHashDrift,
     bool fCheck,

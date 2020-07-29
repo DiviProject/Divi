@@ -325,8 +325,8 @@ bool CheckStakeKernelHash(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
     const CBlock& blockFrom,
-    const CTransaction& txPrev,
     const COutPoint& prevout,
+    const CAmount& utxoValue,
     unsigned int& nTimeTx,
     unsigned int nHashDrift,
     bool fCheck,
@@ -334,7 +334,7 @@ bool CheckStakeKernelHash(
     bool fPrintProofOfStake)
 {
     //assign new variables to make it easier to read
-    int64_t nValueIn = txPrev.vout[prevout.n].nValue;
+    int64_t nValueIn = utxoValue;
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
 
     if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
@@ -460,7 +460,7 @@ bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
     unsigned int nInterval = 0;
     unsigned int nTime = block.nTime;
     std::map<unsigned int, unsigned int> hashedBlockTimestamps;
-    if (!CheckStakeKernelHash(hashedBlockTimestamps, block.nBits, blockprev, txPrev, txin.prevout, nTime, nInterval, true, hashProofOfStake, fDebug))
+    if (!CheckStakeKernelHash(hashedBlockTimestamps, block.nBits, blockprev, txin.prevout, txPrev.vout[txin.prevout.n].nValue, nTime, nInterval, true, hashProofOfStake, fDebug))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;

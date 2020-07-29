@@ -29,4 +29,5 @@ cd $path
 ./txn_doublespend.py
 ./txn_doublespend.py --mineblock
 ./wallet.py
+./walletbackup.py
 ./zapwallettxes.sh ../../src

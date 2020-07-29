@@ -11,6 +11,8 @@
 #include <coins.h>
 #include <Logging.h>
 #include <chain.h>
+#include <ValidationState.h>
+#include <primitives/block.h>
 
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB

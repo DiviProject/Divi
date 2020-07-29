@@ -335,7 +335,8 @@ public:
         const COutPoint& utxoToStake,
         const int64_t& utxoValue,
         const uint64_t& stakeModifier,
-        unsigned int blockDifficultyBits);
+        unsigned int blockDifficultyBits,
+        int64_t coinAgeWeight);
 
     virtual bool computeProofOfStakeAndCheckItMeetsTarget(
         unsigned int nTimeTx,
@@ -400,17 +401,12 @@ bool CreateHashProofForProofOfStake(
         return false;
     }
 
-    //grab difficulty
-    uint256 bnTargetPerCoinDay;
-    bnTargetPerCoinDay.SetCompact(nBits);
-
-    //get the stake weight - weight is equal to coin amount
     int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
+    LegacyProofOfStakeCalculator calculator(prevout,utxoValue,nStakeModifier,nBits,nTimeWeight);
 
     //if wallet is simply checking to make sure a hash is valid
     if (fCheck) {
-        hashProofOfStake = stakeHash(nStakeModifier, nTimeTx, prevout, nTimeBlockFrom);
-        return stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight);
+        return calculator.computeProofOfStakeAndCheckItMeetsTarget(nTimeTx,nTimeBlockFrom,hashProofOfStake);
     }
 
     bool fSuccess = false;
@@ -423,9 +419,7 @@ bool CreateHashProofForProofOfStake(
             break;
 
         nTryTime = nTimeTx - i;
-        hashProofOfStake = stakeHash(nStakeModifier, nTryTime, prevout, nTimeBlockFrom);
-
-        if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay, nTimeWeight))
+        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(nTryTime,nTimeBlockFrom,hashProofOfStake))
             continue;
 
         fSuccess = true;

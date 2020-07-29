@@ -15,6 +15,7 @@ cd $path
 ./getchaintips.py
 ./httpbasics.py
 ./invalidateblock.py
+./keypool.py
 ./listtransactions.py
 ./mempool_coinbase_spends.py
 ./mempool_resurrect_test.py

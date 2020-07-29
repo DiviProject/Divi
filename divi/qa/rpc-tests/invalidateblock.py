@@ -13,11 +13,6 @@ from util import *
 
 class InvalidateTest(BitcoinTestFramework):
     
-        
-    def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
-        initialize_chain_clean(self.options.tmpdir, 3)
-                 
     def setup_network(self):
         self.nodes = []
         self.is_network_split = False 

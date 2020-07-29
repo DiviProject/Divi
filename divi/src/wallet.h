@@ -279,7 +279,7 @@ public:
         fCombineDust = false;
         nAutoCombineThreshold = 0;
     }
-    
+
     bool isMultiSendEnabled()
     {
         return fMultiSendMasternodeReward || fMultiSendStake;

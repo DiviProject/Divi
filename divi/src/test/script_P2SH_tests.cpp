@@ -17,6 +17,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "test_only.h"
+#include <scriptCheck.h>
+
 using namespace std;
 
 // Helpers:

@@ -8,6 +8,19 @@
 #include <string>
 #include <primitives/block.h>
 
+#include <gmock/gmock.h>
+using ::testing::Return;
+
+extern bool CreateHashProofForProofOfStake(
+    I_PoSStakeModifierService& stakeModifierService,
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+    unsigned int nBits,
+    const CBlock& blockFrom,
+    const COutPoint& prevout,
+    const CAmount& utxoValue,
+    unsigned int& nTimeTx,
+    bool fCheck,
+    uint256& hashProofOfStake);
 extern uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, const COutPoint& prevout, unsigned int nTimeBlockFrom);
 extern bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, const uint256& bnTargetPerCoinDay, int64_t nTimeWeight);
 extern const int nHashDrift;
@@ -159,6 +172,14 @@ BOOST_AUTO_TEST_CASE(willNotCreateAnInvalidProofOfStake)
 
 BOOST_AUTO_TEST_SUITE_END()
 
+
+class MockPoSStakeModifierService: public I_PoSStakeModifierService
+{
+public:
+    typedef std::pair<uint64_t,bool> StakeModifierAndFoundStatusPair;
+    MOCK_CONST_METHOD1(getStakeModifier, StakeModifierAndFoundStatusPair(const uint256&) );
+};
+
 BOOST_AUTO_TEST_SUITE(CreationOfHashproofs)
 
 BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfinite)
@@ -172,10 +193,13 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfinite)
     unsigned transactionTimeStart = blockHoldingUtxo.nTime + 60*60*60;
     unsigned transactionTime = transactionTimeStart;
     uint256 hashProofOfStake;
+    MockPoSStakeModifierService stakeModifierService;
+    ON_CALL(stakeModifierService,getStakeModifier).WillByDefault(Return(std::make_pair(0, true)));
     ToggleUnitTestMode();
 
     BOOST_CHECK_MESSAGE(
         !CreateHashProofForProofOfStake(
+            stakeModifierService,
             hashedBlockTimestamps,
             chainTipDifficulty,
             blockHoldingUtxo,

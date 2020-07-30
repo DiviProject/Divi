@@ -162,6 +162,7 @@ BITCOIN_CORE_H = \
   LegacyBlockSubsidies.h \
   leveldbwrapper.h \
   limitedmap.h \
+  blockFileInfo.h \
   scriptCheck.h \
   verifyDb.h \
   BlockUndo.h \
@@ -287,6 +288,7 @@ libbitcoin_server_a_SOURCES = \
   FeeAndPriorityCalculator.cpp \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
+  blockFileInfo.cpp \
   scriptCheck.cpp \
   verifyDb.cpp \
   BlockUndo.cpp \

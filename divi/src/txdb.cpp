@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <boost/thread.hpp>
+#include <blockFileInfo.h>
 
 using namespace std;
 

@@ -14,12 +14,21 @@ cd $path
 ./forknotify.py
 ./getchaintips.py
 ./httpbasics.py
+./invalidateblock.py
+./keypool.py
 ./listtransactions.py
 ./mempool_coinbase_spends.py
 ./mempool_resurrect_test.py
 ./mempool_spendcoinbase.py
 ./proxy_test.py
+./receivedby.py
+./reindex.py
 ./rest.py
+./rpcbind_test.py
+./sync.py
 ./txn_doublespend.py
 ./txn_doublespend.py --mineblock
 ./wallet.py
+./walletbackup.py
+./zapwallettxes.sh ../../src
+./zmq_test.py

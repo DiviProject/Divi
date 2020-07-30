@@ -41,14 +41,10 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 class WalletBackupTest(BitcoinTestFramework):
 
-    def setup_chain(self):
-        logging.info("Initializing test directory "+self.options.tmpdir)
-        initialize_chain_clean(self.options.tmpdir, 4)
-
     # This mirrors how the network was setup in the bash test
     def setup_network(self, split=False):
         # nodes 1, 2,3 are spenders, let's give them a keypool=100
-        extra_args = [["-keypool=100"], ["-keypool=100"], ["-keypool=100"], []]
+        extra_args = [["-keypool=100", "-spendzeroconfchange"]] * 3 + [[]]
         self.nodes = start_nodes(4, self.options.tmpdir, extra_args)
         connect_nodes(self.nodes[0], 3)
         connect_nodes(self.nodes[1], 3)
@@ -107,12 +103,12 @@ class WalletBackupTest(BitcoinTestFramework):
         sync_blocks(self.nodes)
         self.nodes[2].setgenerate(True, 1)
         sync_blocks(self.nodes)
-        self.nodes[3].setgenerate(True, 100)
+        self.nodes[3].setgenerate(True, 20)
         sync_blocks(self.nodes)
 
-        assert_equal(self.nodes[0].getbalance(), 50)
-        assert_equal(self.nodes[1].getbalance(), 50)
-        assert_equal(self.nodes[2].getbalance(), 50)
+        assert_equal(self.nodes[0].getbalance(), 1250)
+        assert_equal(self.nodes[1].getbalance(), 1250)
+        assert_equal(self.nodes[2].getbalance(), 1250)
         assert_equal(self.nodes[3].getbalance(), 0)
 
         logging.info("Creating transactions")
@@ -133,19 +129,16 @@ class WalletBackupTest(BitcoinTestFramework):
         for i in range(5):
             self.do_one_round()
 
-        # Generate 101 more blocks, so any fees paid mature
-        self.nodes[3].setgenerate(True, 101)
-        self.sync_all()
-
         balance0 = self.nodes[0].getbalance()
         balance1 = self.nodes[1].getbalance()
         balance2 = self.nodes[2].getbalance()
-        balance3 = self.nodes[3].getbalance()
-        total = balance0 + balance1 + balance2 + balance3
+        total = balance0 + balance1 + balance2
 
-        # At this point, there are 214 blocks (103 for setup, then 10 rounds, then 101.)
-        # 114 are mature, so the sum of all wallets should be 114 * 50 = 5700.
-        assert_equal(total, 5700)
+        # Fees are burnt in Divi, so we can't do an exact comparison.
+        # But the missing amount due to fees should be "small".
+        missing = 3 * 1250 - total
+        assert missing > 0, missing
+        assert missing < 2, missing
 
         ##
         # Test restoring spender wallets from backups

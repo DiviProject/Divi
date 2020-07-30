@@ -23,6 +23,7 @@ cd $path
 ./proxy_test.py
 ./receivedby.py
 ./reindex.py
+./PowToPosTransition.py
 ./rest.py
 ./rpcbind_test.py
 ./sync.py

@@ -171,6 +171,7 @@ public:
         nLotteryBlockCycle = 60 * 24 * 7; // one week
         nTreasuryPaymentsStartBlock = 101;
         nTreasuryPaymentsCycle = 60 * 24 * 7 + 1;
+        nMinCoinAgeForStaking = 60 * 60;
 
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -482,6 +483,11 @@ public:
         nLotteryBlockCycle = 10; // one week
         nTreasuryPaymentsStartBlock = 102;
         nTreasuryPaymentsCycle = 50;
+
+        /* There is no minimum coin age on regtest, so that we can easily
+           generate PoS blocks as needed (and without having to mess
+           around with mocktimes of perhaps multiple nodes in sync).  */
+        nMinCoinAgeForStaking = 0;
 
         nExtCoinType = 1;
 

@@ -98,6 +98,7 @@ public:
     int GetLotteryBlockCycle() const { return nLotteryBlockCycle; }
     int GetTreasuryPaymentsStartBlock() const { return nTreasuryPaymentsStartBlock; }
     int GetTreasuryPaymentsCycle() const { return nTreasuryPaymentsCycle; }
+    unsigned GetMinCoinAgeForStaking () const { return nMinCoinAgeForStaking; }
 
     /** Height or Time Based Activations **/
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
@@ -124,6 +125,7 @@ protected:
     int64_t nTargetTimespan;
     int64_t nTargetSpacing;
     int nLastPOWBlock;
+    unsigned nMinCoinAgeForStaking;
     int nMasternodeCountDrift;
     int nMaturity;
     CAmount nMaxMoneyOut;

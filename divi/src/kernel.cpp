@@ -25,9 +25,9 @@
 extern const int nHashDrift = 45;
 
 extern BlockMap mapBlockIndex;
-extern const unsigned int MINIMUM_COIN_AGE_FOR_STAKING = 60 * 60;
-constexpr const unsigned int MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING = 60 * 60 * 24 * 7 - MINIMUM_COIN_AGE_FOR_STAKING;
 extern CChain chainActive;
+
+static constexpr unsigned int MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING = 60 * 60 * 24 * 7 - 60 * 60;
 
 // MODIFIER_INTERVAL: time to elapse before new modifier is computed
 static const int MODIFIER_INTERVAL_RATIO = 3;
@@ -388,9 +388,9 @@ std::shared_ptr<I_ProofOfStakeCalculator> createProofOfStakeCalculator(
         return std::shared_ptr<I_ProofOfStakeCalculator>();
     }
 
-    if (nTimeBlockFrom + MINIMUM_COIN_AGE_FOR_STAKING > nTimeTx) // Min age requirement
+    if (nTimeBlockFrom + Params().GetMinCoinAgeForStaking() > nTimeTx) // Min age requirement
     {
-        error("CreateHashProofForProofOfStake() : min age violation - nTimeBlockFrom=%d MINIMUM_COIN_AGE_FOR_STAKING=%d nTimeTx=%d", nTimeBlockFrom, MINIMUM_COIN_AGE_FOR_STAKING, nTimeTx);
+        error("CreateHashProofForProofOfStake() : min age violation - nTimeBlockFrom=%d minimum coinage=%d nTimeTx=%d", nTimeBlockFrom, Params().GetMinCoinAgeForStaking(), nTimeTx);
         return std::shared_ptr<I_ProofOfStakeCalculator>();
     }
 

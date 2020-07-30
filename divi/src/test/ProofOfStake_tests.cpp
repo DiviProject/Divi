@@ -21,10 +21,10 @@ extern bool CreateHashProofForProofOfStake(
     unsigned int& nTimeTx,
     bool fCheck,
     uint256& hashProofOfStake);
+
 extern uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, const COutPoint& prevout, unsigned int nTimeBlockFrom);
 extern bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, const uint256& bnTargetPerCoinDay, int64_t nTimeWeight);
 extern const int nHashDrift;
-extern void ToggleUnitTestMode();
 class TestProofOfStakeFixture
 {
 private:
@@ -195,7 +195,6 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfinite)
     uint256 hashProofOfStake;
     MockPoSStakeModifierService stakeModifierService;
     ON_CALL(stakeModifierService,getStakeModifier).WillByDefault(Return(std::make_pair(0, true)));
-    ToggleUnitTestMode();
 
     BOOST_CHECK_MESSAGE(
         !CreateHashProofForProofOfStake(
@@ -213,7 +212,6 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfinite)
     BOOST_CHECK_MESSAGE( (transactionTimeStart-nHashDrift) == transactionTime,
         "Difference in the expected timestamps: "+std::to_string(transactionTimeStart-nHashDrift) + " vs. " +
         std::to_string(transactionTime)  );
-    ToggleUnitTestMode();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

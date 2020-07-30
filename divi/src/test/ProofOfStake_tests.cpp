@@ -182,7 +182,7 @@ public:
 
 BOOST_AUTO_TEST_SUITE(CreationOfHashproofs)
 
-BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfinite)
+BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZeroValuedStake)
 {
     CBlock blockHoldingUtxo;
     blockHoldingUtxo.nTime = GetRandInt(1<<20);

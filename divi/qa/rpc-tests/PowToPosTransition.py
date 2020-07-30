@@ -33,7 +33,7 @@ class PowToPosTransitionTest(BitcoinTestFramework):
 
         for j in range(2):
             createPoSStacks(node,node0_address,50)
-        set_node_times(self.nodes, int(datetime.utcnow().strftime('%s')) + 60*60)
+        set_node_times(self.nodes, int(datetime.utcnow().strftime('%s')) + 60*60*60)
 
         missing = targetNumberOfBlocks - node.getblockcount()
         assert missing > 0

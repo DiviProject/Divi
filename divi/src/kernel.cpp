@@ -516,18 +516,14 @@ bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
 
     const CScript &kernelScript = txPrev.vout[txin.prevout.n].scriptPubKey;
 
-    auto nValidInputs = std::count_if(std::begin(tx.vin), std::end(tx.vin), [&kernelScript](const CTxIn &txIn) {
-        CTransaction txPrev;
-        uint256 hashBlock;
-        if(GetTransaction(txIn.prevout.hash, txPrev, hashBlock)) {
-            return txPrev.vout[txIn.prevout.n].scriptPubKey == kernelScript;
-        }
-
-        return false;
-    });
-
-    if(nValidInputs != tx.vin.size()) {
-        return error("CheckProofOfStake() : Invalid inputs for stake total inputs: %d vs valid inputs %d", tx.vin.size(), nValidInputs);
+    // All other inputs (if any) must pay to the same script.
+    for (unsigned i = 1; i < tx.vin.size (); ++i) {
+        CTransaction txPrev2;
+        uint256 hashBlock2;
+        if (!GetTransaction(tx.vin[i].prevout.hash, txPrev2, hashBlock2))
+            return error("CheckProofOfStake() : INFO: read txPrev failed for input %u", i);
+        if (txPrev2.vout[tx.vin[i].prevout.n].scriptPubKey != kernelScript)
+            return error("CheckProofOfStake() : Stake input %u pays to different script", i);
     }
 
     //verify signature and script

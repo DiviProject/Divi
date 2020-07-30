@@ -417,7 +417,7 @@ std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const u
     uint64_t nStakeModifier = 0;
     int nStakeModifierHeight = 0;
     int64_t nStakeModifierTime = 0;
-    if (!skipGettingStakeModifier && !GetKernelStakeModifier(blockHash, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false)) {
+    if (!GetKernelStakeModifier(blockHash, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false)) {
         LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
         return std::make_pair(nStakeModifier,false);
     }

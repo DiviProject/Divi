@@ -456,8 +456,11 @@ bool CreateHashProofForProofOfStake(
         if (chainActive.Height() != nHeightStart)
             break;
 
-        if(!calculator->computeProofOfStakeAndCheckItMeetsTarget(nTimeTx--,nTimeBlockFrom,hashProofOfStake))
+        if(!calculator->computeProofOfStakeAndCheckItMeetsTarget(nTimeTx,nTimeBlockFrom,hashProofOfStake))
+        {
+            --nTimeTx;
             continue;
+        }
 
         fSuccess = true;
         break;

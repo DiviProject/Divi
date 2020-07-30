@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 #include <uint256.h>
-#include <streams.h>
 #include <amount.h>
+#include <map>
 class CBlockIndex;
 class CBlock;
 class CTransaction;

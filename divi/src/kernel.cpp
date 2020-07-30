@@ -16,6 +16,7 @@
 #include "script/interpreter.h"
 #include "script/SignatureCheckers.h"
 #include "script/standard.h"
+#include <streams.h>
 #include "utilstrencodings.h"
 
 #include <boost/assign/list_of.hpp>

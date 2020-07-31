@@ -43,7 +43,7 @@ class WalletBackupTest(BitcoinTestFramework):
 
     # This mirrors how the network was setup in the bash test
     def setup_network(self, split=False):
-        # nodes 1, 2,3 are spenders, let's give them a keypool=100
+        # nodes 0-2 are spenders, let's give them a keypool=100
         extra_args = [["-keypool=100", "-spendzeroconfchange"]] * 3 + [[]]
         self.nodes = start_nodes(4, self.options.tmpdir, extra_args)
         connect_nodes(self.nodes[0], 3)
@@ -56,7 +56,10 @@ class WalletBackupTest(BitcoinTestFramework):
     def one_send(self, from_node, to_address):
         if (randint(1,2) == 1):
             amount = Decimal(randint(1,10)) / Decimal(10)
-            self.nodes[from_node].sendtoaddress(to_address, amount)
+            txid = self.nodes[from_node].sendtoaddress(to_address, amount)
+            fee = Decimal(self.nodes[from_node].gettransaction(txid)["fee"])
+            assert fee < 0
+            self.fees -= Decimal(self.nodes[from_node].gettransaction(txid)["fee"])
 
     def do_one_round(self):
         a0 = self.nodes[0].getnewaddress()
@@ -74,6 +77,8 @@ class WalletBackupTest(BitcoinTestFramework):
         # Must sync mempools before mining.
         sync_mempools(self.nodes)
         self.nodes[3].setgenerate(True, 1)
+        assert_equal(self.nodes[3].getrawmempool(), [])
+        sync_blocks(self.nodes)
 
     # As above, this mirrors the original bash test.
     def start_three(self):
@@ -111,6 +116,8 @@ class WalletBackupTest(BitcoinTestFramework):
         assert_equal(self.nodes[2].getbalance(), 1250)
         assert_equal(self.nodes[3].getbalance(), 0)
 
+        self.fees = Decimal("0.000000")
+
         logging.info("Creating transactions")
         # Five rounds of sending each other transactions.
         for i in range(5):
@@ -132,13 +139,8 @@ class WalletBackupTest(BitcoinTestFramework):
         balance0 = self.nodes[0].getbalance()
         balance1 = self.nodes[1].getbalance()
         balance2 = self.nodes[2].getbalance()
-        total = balance0 + balance1 + balance2
-
-        # Fees are burnt in Divi, so we can't do an exact comparison.
-        # But the missing amount due to fees should be "small".
-        missing = 3 * 1250 - total
-        assert missing > 0, missing
-        assert missing < 2, missing
+        total = balance0 + balance1 + balance2 + self.fees
+        assert_equal(total, 3 * 1250)
 
         ##
         # Test restoring spender wallets from backups

@@ -50,8 +50,9 @@ class WalletTest (BitcoinTestFramework):
         # Second transaction will be child of first, and will require a fee
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 351)
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 350)
-        self.nodes[1].setgenerate(True, 16)
-        self.sync_all()
+        sync_mempools(self.nodes)
+        self.nodes[1].setgenerate(True, 1)
+        sync_blocks(self.nodes)
 
         # Compare the expected balances.  Give 1 coin leeway
         # for fees paid by node0 (which are burnt in Divi).

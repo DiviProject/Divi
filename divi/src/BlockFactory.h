@@ -10,7 +10,7 @@ class CReserveKey;
 class CBlock;
 class CMutableTransaction;
 class I_BlockTransactionCollector;
-class I_CoinstakeCreator;
+class I_PoSTransactionCreator;
 class CChain;
 class CChainParams;
 class CTxMemPool;
@@ -34,7 +34,7 @@ private:
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
 
     std::shared_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
-    std::shared_ptr<I_CoinstakeCreator> coinstakeCreator_;
+    std::shared_ptr<I_PoSTransactionCreator> coinstakeCreator_;
 private:
     void SetRequiredWork(CBlockTemplate& pblocktemplate);
     void SetBlockTime(CBlock& block);
@@ -48,12 +48,12 @@ private:
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
     BlockFactory(
-        CWallet& wallet, 
+        CWallet& wallet,
         int64_t& lastCoinstakeSearchInterval,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
-        CChain& chain, 
+        CChain& chain,
         const CChainParams& chainParameters,
-        CTxMemPool& mempool, 
+        CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
     virtual CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake);
 };

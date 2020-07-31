@@ -8,7 +8,7 @@
 #include <BlockMemoryPoolTransactionCollector.h>
 #include <utilmoneystr.h>
 #include <timedata.h>
-#include <CoinstakeCreator.h>
+#include <PoSTransactionCreator.h>
 #include <boost/thread/thread.hpp>
 #include <SuperblockHelpers.h>
 

@@ -1,4 +1,4 @@
-#include <CoinstakeCreator.h>
+#include <PoSTransactionCreator.h>
 
 #include <wallet.h>
 #include <kernel.h>
@@ -11,7 +11,7 @@
 
 extern Settings& settings;
 
-CoinstakeCreator::CoinstakeCreator(
+PoSTransactionCreator::PoSTransactionCreator(
     CWallet& wallet,
     int64_t& coinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
@@ -21,7 +21,7 @@ CoinstakeCreator::CoinstakeCreator(
 {
 }
 
-bool CoinstakeCreator::SelectCoins(
+bool PoSTransactionCreator::SelectCoins(
     CAmount allowedStakingBalance,
     int& nLastStakeSetUpdate,
     std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins)
@@ -52,7 +52,7 @@ void MarkTransactionAsCoinstake(CMutableTransaction& txNew)
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
 }
 
-bool CoinstakeCreator::SetSuportedStakingScript(
+bool PoSTransactionCreator::SetSuportedStakingScript(
     const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
     CMutableTransaction& txNew)
 {
@@ -80,7 +80,7 @@ bool CoinstakeCreator::SetSuportedStakingScript(
     return true;
 }
 
-void CoinstakeCreator::CombineUtxos(
+void PoSTransactionCreator::CombineUtxos(
     const CAmount& allowedStakingAmount,
     CMutableTransaction& txNew,
     CAmount& nCredit,
@@ -120,7 +120,7 @@ void CoinstakeCreator::CombineUtxos(
     }
 }
 
-bool CoinstakeCreator::FindStake(
+bool PoSTransactionCreator::FindStake(
     unsigned int nBits,
     unsigned int& nTxNewTime,
     std::pair<const CWalletTx*, unsigned int>& stakeData,
@@ -164,7 +164,7 @@ bool CoinstakeCreator::FindStake(
     return false;
 }
 
-bool CoinstakeCreator::CreateCoinstakeTransaction(
+bool PoSTransactionCreator::CreateCoinstakeTransaction(
     const CKeyStore& keystore,
     unsigned int nBits,
     int64_t nSearchInterval,
@@ -235,7 +235,7 @@ bool CoinstakeCreator::CreateCoinstakeTransaction(
     return true;
 }
 
-bool CoinstakeCreator::CreateProofOfStake(
+bool PoSTransactionCreator::CreateProofOfStake(
     uint32_t blockBits,
     int64_t nSearchTime,
     int64_t& nLastCoinStakeSearchTime,

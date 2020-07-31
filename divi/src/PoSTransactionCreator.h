@@ -14,10 +14,10 @@ class CMutableTransaction;
 class CKeyStore;
 class CWalletTx;
 
-class I_CoinstakeCreator
+class I_PoSTransactionCreator
 {
 public:
-    virtual ~I_CoinstakeCreator(){}
+    virtual ~I_PoSTransactionCreator(){}
     virtual bool CreateProofOfStake(
         uint32_t blockBits,
         int64_t nSearchTime,
@@ -25,7 +25,7 @@ public:
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime) = 0;
 };
-class CoinstakeCreator: public I_CoinstakeCreator
+class PoSTransactionCreator: public I_PoSTransactionCreator
 {
 private:
     CWallet& wallet_;
@@ -60,7 +60,7 @@ private:
         std::pair<const CWalletTx*, unsigned int>& stakeData,
         CMutableTransaction& txNew);
 public:
-    CoinstakeCreator(
+    PoSTransactionCreator(
         CWallet& wallet,
         int64_t& coinstakeSearchInterval,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);

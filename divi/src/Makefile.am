@@ -182,7 +182,7 @@ BITCOIN_CORE_H = \
   I_CoinMinter.h \
   BlockMemoryPoolTransactionCollector.h \
   CoinMinter.h \
-  CoinstakeCreator.h \
+  PoSTransactionCreator.h \
   PeerNotificationOfMintService.h \
   monthlyWalletBackupCreator.h \
   mruset.h \
@@ -289,7 +289,7 @@ libbitcoin_server_a_SOURCES = \
   BlockDiskAccessor.cpp \
   merkleblock.cpp \
   CoinMinter.cpp \
-  CoinstakeCreator.cpp \
+  PoSTransactionCreator.cpp \
   PeerNotificationOfMintService.cpp \
   miner.cpp \
   BlockMemoryPoolTransactionCollector.cpp \
@@ -421,7 +421,7 @@ univalue_libbitcoin_univalue_a_SOURCES = \
 libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
   libzerocoin/bignum.h \
   libzerocoin/Denominations.h \
-  libzerocoin/Denominations.cpp 
+  libzerocoin/Denominations.cpp
 
 # common: shared between divid, and divi-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)

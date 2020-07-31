@@ -48,13 +48,13 @@ private:
         int& nLastStakeSetUpdate,
         std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins);
 
-    bool CreateCoinstakeTransaction(
+    bool PopulateCoinstakeTransaction(
         const CKeyStore& keystore,
         unsigned int nBits,
         int64_t nSearchInterval,
         CMutableTransaction& txNew,
         unsigned int& nTxNewTime);
-    bool FindStake(
+    bool FindHashproof(
         unsigned int nBits,
         unsigned int& nTxNewTime,
         std::pair<const CWalletTx*, unsigned int>& stakeData,

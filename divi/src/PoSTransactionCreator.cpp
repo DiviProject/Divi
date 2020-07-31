@@ -120,7 +120,7 @@ void PoSTransactionCreator::CombineUtxos(
     }
 }
 
-bool PoSTransactionCreator::FindStake(
+bool PoSTransactionCreator::FindHashproof(
     unsigned int nBits,
     unsigned int& nTxNewTime,
     std::pair<const CWalletTx*, unsigned int>& stakeData,
@@ -164,7 +164,7 @@ bool PoSTransactionCreator::FindStake(
     return false;
 }
 
-bool PoSTransactionCreator::CreateCoinstakeTransaction(
+bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     const CKeyStore& keystore,
     unsigned int nBits,
     int64_t nSearchInterval,
@@ -193,7 +193,7 @@ bool PoSTransactionCreator::CreateCoinstakeTransaction(
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
     {
-        if(FindStake(nBits, nTxNewTime, pcoin,txNew))
+        if(FindHashproof(nBits, nTxNewTime, pcoin,txNew))
         {
             vwtxPrev.push_back(pcoin.first);
             nCredit += pcoin.first->vout[pcoin.second].nValue;
@@ -245,7 +245,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     bool fStakeFound = false;
     if (nSearchTime >= nLastCoinStakeSearchTime) {
-        if (CreateCoinstakeTransaction(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime))
+        if (PopulateCoinstakeTransaction(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime))
         {
             fStakeFound = true;
         }

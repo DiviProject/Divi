@@ -228,7 +228,7 @@ public:
         fDifficultyRetargeting = true;
         fMineBlocksOnDemand = false;
         fHeadersFirstSyncingActive = false;
-        
+
         nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
         strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
@@ -371,7 +371,7 @@ public:
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x78;
         premineAmt = 617222416 * COIN;
-        
+
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51474;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
@@ -400,7 +400,7 @@ public:
         genesis.nNonce = 2105601;
 
         nExtCoinType = 1;
-        
+
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000f43b54bbcae395d815b255ac4ed0693bca7987d72b873d5d4b68d73a6bd"));
@@ -457,7 +457,7 @@ public:
            syncing on mainnet anyway.  On regtest, it is easiest to not
            have a special premine, as it makes the generated coins more
            predictable.  */
-        premineAmt = 1'250 * COIN;
+        premineAmt = 1250 * COIN;
 
         /* Add back a maturity period for coinbases as on mainnet, so that
            we can test this works as expected.  Testnet uses a shorter

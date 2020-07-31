@@ -8,10 +8,7 @@
 #ifndef BITCOIN_WALLET_H
 #define BITCOIN_WALLET_H
 
-#ifndef BITCOIN_UTILSTRENCODINGS_H
 #include "utilstrencodings.h" //for atoi64
-#endif // BITCOIN_UTILSTRENCODINGS_H
-
 #include "amount.h"
 #include "base58.h"
 #include "crypter.h"
@@ -34,6 +31,7 @@
 #include <utility>
 #include <vector>
 #include <boost/foreach.hpp>
+#include <main.h>
 
 /**
  * Settings
@@ -71,16 +69,8 @@ class CHDChain;
 class CTxMemPool;
 
 bool MoneyRange(CAmount nValueOut);
+//bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
-/**
- * Check if transaction will be final in the next block to be created.
- *
- * Calls IsFinalTx() with current block height and appropriate block time.
- *
- * See consensus/consensus.h for flag definitions.
- */
-bool CheckFinalTx(const CTransaction& tx, int flags);
-bool IsFinalTx(const CTransaction& tx, int nBlockHeight=0, int64_t nBlockTime=0 );
 
 /** (client) version numbers for particular wallet features */
 enum WalletFeature {

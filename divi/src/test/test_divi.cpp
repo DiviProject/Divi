@@ -50,7 +50,7 @@ struct TestingSetup {
         bool fFirstRun;
         pwalletMain = new CWallet("wallet.dat");
         pwalletMain->LoadWallet(fFirstRun);
-        RegisterValidationInterface(&registry,pwalletMain);
+        RegisterValidationInterface(pwalletMain);
 #endif
         nScriptCheckThreads = 3;
         for (int i=0; i < nScriptCheckThreads-1; i++)

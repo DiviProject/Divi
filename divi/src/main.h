@@ -159,13 +159,13 @@ extern CBlockIndex* pindexBestHeader;
 static const uint64_t nMinDiskSpace = 52428800;
 
 /** Register a wallet to receive updates from core */
-void RegisterValidationInterface(NotificationInterfaceRegistry * registry,NotificationInterface* pwalletIn);
+void RegisterValidationInterface(NotificationInterface* pwalletIn);
 /** Unregister a wallet from core */
-void UnregisterValidationInterface(NotificationInterfaceRegistry * registry,NotificationInterface* pwalletIn);
+void UnregisterValidationInterface(NotificationInterface* pwalletIn);
 /** Unregister all wallets from core */
-void UnregisterAllValidationInterfaces(NotificationInterfaceRegistry * registry);
+void UnregisterAllValidationInterfaces();
 /** Push an updated transaction to all registered wallets */
-void SyncWithWallets(NotificationInterfaceRegistry * registry,const CTransaction& tx, const CBlock* pblock = NULL);
+void SyncWithWallets(const CTransaction& tx, const CBlock* pblock = NULL);
 
 /** Register with a network node to receive its signals */
 void RegisterNodeSignals(CNodeSignals& nodeSignals);
@@ -341,12 +341,22 @@ bool ValidOutPoint(const COutPoint out, int nHeight);
 bool RecalculateDIVSupply(int nHeightStart);
 
 
+
+/**
+ * Check if transaction will be final in the next block to be created.
+ *
+ * Calls IsFinalTx() with current block height and appropriate block time.
+ *
+ * See consensus/consensus.h for flag definitions.
+ */
 bool CheckFinalTx(const CTransaction& tx, int flags = -1);
 
 /** Check for standard transaction types
  * @return True if all outputs (scriptPubKeys) use only standard transaction forms
  */
 bool IsStandardTx(const CTransaction& tx, std::string& reason);
+
+bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0, int64_t nBlockTime = 0);
 
 /** Functions for validating blocks and updating the block tree */
 

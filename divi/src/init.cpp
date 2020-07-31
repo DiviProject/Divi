@@ -306,7 +306,7 @@ void PrepareShutdown()
     boost::filesystem::remove(GetPidFile());
 #endif
 
-    UnregisterAllValidationInterfaces(&registry);
+    UnregisterAllValidationInterfaces();
 }
 
 /**
@@ -1618,7 +1618,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         LogPrintf("%s", strErrors.str());
         LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
 
-        RegisterValidationInterface(&registry,pwalletMain);
+        RegisterValidationInterface(pwalletMain);
 
         CBlockIndex* pindexRescan = chainActive.Tip();
         if (settings.GetBoolArg("-rescan", false))

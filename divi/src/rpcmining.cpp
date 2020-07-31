@@ -366,9 +366,9 @@ Value submitblock(const Array& params, bool fHelp)
 
     CValidationState state;
     submitblock_StateCatcher sc(block.GetHash());
-    RegisterValidationInterface(&registry,&sc);
+    RegisterValidationInterface(&sc);
     bool fAccepted = ProcessNewBlock(state, NULL, &block);
-    UnregisterValidationInterface(&registry,&sc);
+    UnregisterValidationInterface(&sc);
     if (fBlockPresent) {
         if (fAccepted && !sc.found)
             return "duplicate-inconclusive";

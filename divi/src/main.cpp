@@ -199,24 +199,24 @@ std::set<int> setDirtyFileInfo;
 NotificationInterfaceRegistry registry;
 MainNotificationSignals& g_signals = registry.getSignals();
 
-void RegisterValidationInterface(NotificationInterfaceRegistry * registry,NotificationInterface* pwalletIn)
+void RegisterValidationInterface(NotificationInterface* pwalletIn)
 {
-    registry->RegisterValidationInterface(pwalletIn);
+    registry.RegisterValidationInterface(pwalletIn);
 }
 
-void UnregisterValidationInterface(NotificationInterfaceRegistry * registry,NotificationInterface* pwalletIn)
+void UnregisterValidationInterface(NotificationInterface* pwalletIn)
 {
-    registry->UnregisterValidationInterface(pwalletIn);
+    registry.UnregisterValidationInterface(pwalletIn);
 }
 
-void UnregisterAllValidationInterfaces(NotificationInterfaceRegistry * registry)
+void UnregisterAllValidationInterfaces()
 {
-    registry->UnregisterAllValidationInterfaces();
+    registry.UnregisterAllValidationInterfaces();
 }
 
-void SyncWithWallets(NotificationInterfaceRegistry * registry,const CTransaction& tx, const CBlock* pblock)
+void SyncWithWallets(const CTransaction& tx, const CBlock* pblock)
 {
-    registry->SyncWithWallets(tx, pblock);
+    SyncWithWallets(tx, pblock);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -733,6 +733,24 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
     return true;
 }
 
+bool IsFinalTx(const CTransaction& tx, int nBlockHeight, int64_t nBlockTime)
+{
+    AssertLockHeld(cs_main);
+    // Time based nLockTime implemented in 0.1.6
+    if (tx.nLockTime == 0)
+        return true;
+    if (nBlockHeight == 0)
+        nBlockHeight = chainActive.Height();
+    if (nBlockTime == 0)
+        nBlockTime = GetAdjustedTime();
+    if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
+        return true;
+    BOOST_FOREACH (const CTxIn& txin, tx.vin)
+            if (!txin.IsFinal())
+            return false;
+    return true;
+}
+
 /**
  * Check transaction inputs to mitigate two
  * potential denial-of-service attacks:
@@ -912,6 +930,36 @@ bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationSt
     }
 
     return true;
+}
+
+bool CheckFinalTx(const CTransaction& tx, int flags)
+{
+    AssertLockHeld(cs_main);
+
+    // By convention a negative value for flags indicates that the
+    // current network-enforced consensus rules should be used. In
+    // a future soft-fork scenario that would mean checking which
+    // rules would be enforced for the next block and setting the
+    // appropriate flags. At the present time no soft-forks are
+    // scheduled, so no flags are set.
+    flags = std::max(flags, 0);
+
+    // CheckFinalTx() uses chainActive.Height()+1 to evaluate
+    // nLockTime because when IsFinalTx() is called within
+    // CBlock::AcceptBlock(), the height of the block *being*
+    // evaluated is what is used. Thus if we want to know if a
+    // transaction can be part of the *next* block, we need to call
+    // IsFinalTx() with one more than chainActive.Height().
+    const int nBlockHeight = chainActive.Height() + 1;
+
+    // BIP113 will require that time-locked transactions have nLockTime set to
+    // less than the median time of the previous block they're contained in.
+    // When the next block is created its previous block will be the current
+    // chain tip, so we use that to calculate the median time passed to
+    // IsFinalTx() if LOCKTIME_MEDIAN_TIME_PAST is set.
+    const int64_t nBlockTime = (flags & LOCKTIME_MEDIAN_TIME_PAST) ? chainActive.Tip()->GetMedianTimePast() : GetAdjustedTime();
+
+    return IsFinalTx(tx, nBlockHeight, nBlockTime);
 }
 
 CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowFree)
@@ -1150,7 +1198,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         }
     }
 
-    SyncWithWallets(&registry,tx, NULL);
+    SyncWithWallets(tx, NULL);
 
     return true;
 }
@@ -2479,7 +2527,7 @@ bool static DisconnectTip(CValidationState& state)
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
     BOOST_FOREACH (const CTransaction& tx, block.vtx) {
-        SyncWithWallets(&registry,tx, NULL);
+        SyncWithWallets(tx, NULL);
     }
     return true;
 }
@@ -2554,11 +2602,11 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     // Tell wallet about transactions that went from mempool
     // to conflicted:
     BOOST_FOREACH (const CTransaction& tx, txConflicted) {
-        SyncWithWallets(&registry,tx, NULL);
+        SyncWithWallets(tx, NULL);
     }
     // ... and about transactions that got confirmed:
     BOOST_FOREACH (const CTransaction& tx, pblock->vtx) {
-        SyncWithWallets(&registry,tx, pblock);
+        SyncWithWallets(tx, pblock);
     }
 
     int64_t nTime6 = GetTimeMicros();

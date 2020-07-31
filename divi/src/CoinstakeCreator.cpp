@@ -164,7 +164,7 @@ bool CoinstakeCreator::FindStake(
     return false;
 }
 
-bool CoinstakeCreator::CreateCoinStake(
+bool CoinstakeCreator::CreateCoinstakeTransaction(
     const CKeyStore& keystore,
     unsigned int nBits,
     int64_t nSearchInterval,
@@ -245,7 +245,7 @@ bool CoinstakeCreator::CreateProofOfStake(
 
     bool fStakeFound = false;
     if (nSearchTime >= nLastCoinStakeSearchTime) {
-        if (CreateCoinStake(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime))
+        if (CreateCoinstakeTransaction(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime))
         {
             fStakeFound = true;
         }

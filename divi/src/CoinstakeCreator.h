@@ -20,8 +20,8 @@ public:
     virtual ~I_CoinstakeCreator(){}
     virtual bool CreateProofOfStake(
         uint32_t blockBits,
-        int64_t nSearchTime, 
-        int64_t& nLastCoinStakeSearchTime, 
+        int64_t nSearchTime,
+        int64_t& nLastCoinStakeSearchTime,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime) = 0;
 };
@@ -48,10 +48,10 @@ private:
         int& nLastStakeSetUpdate,
         std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins);
 
-    bool CreateCoinStake(
-        const CKeyStore& keystore, 
-        unsigned int nBits, 
-        int64_t nSearchInterval, 
+    bool CreateCoinstakeTransaction(
+        const CKeyStore& keystore,
+        unsigned int nBits,
+        int64_t nSearchInterval,
         CMutableTransaction& txNew,
         unsigned int& nTxNewTime);
     bool FindStake(
@@ -66,8 +66,8 @@ public:
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     virtual bool CreateProofOfStake(
         uint32_t blockBits,
-        int64_t nSearchTime, 
-        int64_t& nLastCoinStakeSearchTime, 
+        int64_t nSearchTime,
+        int64_t& nLastCoinStakeSearchTime,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime);
 };

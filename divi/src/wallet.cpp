@@ -6,9 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif
 #include "BlockDiskAccessor.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
@@ -29,9 +27,7 @@
 #include <boost/thread.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "FeeAndPriorityCalculator.h"
-#ifndef BITCOIN_VALIDATIONSTATE_H
 #include <ValidationState.h>
-#endif
 
 #include "Settings.h"
 extern Settings& settings;

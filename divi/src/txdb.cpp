@@ -7,11 +7,9 @@
 #include "txdb.h"
 #include "pow.h"
 #include "uint256.h"
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif // BITCOIN_MAIN_H
 #include <stdint.h>
-
+#include <coins.h>
 #include <boost/thread.hpp>
 #include <blockFileInfo.h>
 

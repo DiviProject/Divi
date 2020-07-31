@@ -21,9 +21,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
-#ifndef BITCOIN_VALIDATIONSTATE_H
 #include <ValidationState.h>
-#endif
 
 std::map<uint256, CSporkMessage> mapSporks;
 CSporkManager sporkManager;

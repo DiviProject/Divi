@@ -25,9 +25,7 @@
 #include "json/json_spirit_value.h"
 #include "spork.h"
 #include <boost/assign/list_of.hpp>
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif // BITCOIN_MAIN_H
 
 using namespace std;
 using namespace boost;

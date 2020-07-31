@@ -22,9 +22,7 @@
 #include <SuperblockHelpers.h>
 #include <LotteryWinnersCalculator.h>
 #include <BlockIncentivesPopulator.h>
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif // BITCOIN_MAIN_H
 
 
 #define MNPAYMENTS_SIGNATURES_REQUIRED 6

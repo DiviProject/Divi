@@ -11,9 +11,7 @@
 #include "sync.h"
 #include "Logging.h"
 #include <boost/lexical_cast.hpp>
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif // BITCOIN_MAIN_H
 
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;

@@ -22,9 +22,7 @@
 #include <boost/assign/list_of.hpp>
 #include "json/json_spirit_writer_template.h"
 #include "test_only.h"
-#ifndef BITCOIN_VALIDATIONSTATE_H
 #include <ValidationState.h>
-#endif
 
 using namespace std;
 using namespace json_spirit;

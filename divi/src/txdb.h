@@ -8,16 +8,12 @@
 #define BITCOIN_TXDB_H
 
 #include "leveldbwrapper.h"
-#ifndef BITCOIN_COINS_H
 #include <coins.h>
-#endif
-
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
-class CCoins;
 class uint256;
 class CBlockFileInfo;
 class CDiskBlockIndex;

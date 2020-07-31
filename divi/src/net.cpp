@@ -22,9 +22,7 @@
 #include <walletBackupFeatureContainer.h>
 #include "wallet.h"
 #include "Settings.h"
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif // BITCOIN_MAIN_H
 
 #ifdef WIN32
 #include <string.h>

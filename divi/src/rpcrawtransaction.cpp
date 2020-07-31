@@ -20,18 +20,14 @@
 #include "script/standard.h"
 #include "uint256.h"
 #include "utilmoneystr.h"
-#ifdef ENABLE_WALLET
 #include "wallet.h"
-#endif
 
 #include <stdint.h>
 
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 #include <boost/assign/list_of.hpp>
-#ifndef BITCOIN_VALIDATIONSTATE_H
 #include <ValidationState.h>
-#endif
 
 using namespace boost;
 using namespace boost::assign;

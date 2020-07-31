@@ -12,14 +12,10 @@
 #include <boost/thread.hpp>
 #include <SuperblockHelpers.h>
 #include <BlockFactory.h>
+#include <main.h>
+#include <ValidationState.h>
 
 extern const int nHashDrift;
-#ifndef BITCOIN_MAIN_H
-#include <main.h>
-#endif
-#ifndef BITCOIN_VALIDATIONSTATE_H
-#include <ValidationState.h>
-#endif
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,

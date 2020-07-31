@@ -7,9 +7,7 @@
 #include <chainparams.h>
 #include <txmempool.h>
 #include <txdb.h>
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif // BITCOIN_MAIN_H
 
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;

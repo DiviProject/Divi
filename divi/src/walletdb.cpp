@@ -14,18 +14,14 @@
 #include "util.h"
 #include "utiltime.h"
 #include "wallet.h"
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
 #include <fstream>
 #include <Settings.h>
-#ifndef BITCOIN_VALIDATIONSTATE_H
 #include <ValidationState.h>
-#endif
 
 extern Settings& settings;
 using namespace boost;

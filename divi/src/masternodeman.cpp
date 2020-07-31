@@ -12,9 +12,7 @@
 #include "Logging.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
-#ifndef BITCOIN_MAIN_H
 #include <main.h>
-#endif // BITCOIN_MAIN_H
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 

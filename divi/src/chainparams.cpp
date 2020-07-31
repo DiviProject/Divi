@@ -225,9 +225,9 @@ public:
         fAllowMinDifficultyBlocks = false;
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
+        fDifficultyRetargeting = true;
         fMineBlocksOnDemand = false;
         fHeadersFirstSyncingActive = false;
-        fSkipProofOfWorkCheck = false;
         
         nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
         strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
@@ -340,7 +340,6 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
-        fSkipProofOfWorkCheck = false;
         fHeadersFirstSyncingActive = false;
 
         nFulfilledRequestExpireTime = 60 * 60; // fulfilled requests expire in 1 hour
@@ -426,7 +425,6 @@ public:
         fRequireStandard = false;
         fMineBlocksOnDemand = false;
         fHeadersFirstSyncingActive = false;
-        fSkipProofOfWorkCheck = false;
 
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
         strSporkKey = "034ffa41e5cffdd009f3b34a3e1482ec82b514bb218b7648948b5858cc5c035adb";
@@ -505,6 +503,7 @@ public:
         fAllowMinDifficultyBlocks = true;
         fDefaultConsistencyChecks = true;
         fRequireStandard = false;
+        fDifficultyRetargeting = false;
         fMineBlocksOnDemand = true;
     }
     const CCheckpointData& Checkpoints() const
@@ -532,6 +531,7 @@ public:
         fMiningRequiresPeers = false;
         fDefaultConsistencyChecks = true;
         fAllowMinDifficultyBlocks = false;
+        fDifficultyRetargeting = true;
         fMineBlocksOnDemand = true;
     }
 
@@ -548,7 +548,6 @@ public:
     virtual void setToCheckBlockUpgradeMajority(int anToCheckBlockUpgradeMajority) { nToCheckBlockUpgradeMajority = anToCheckBlockUpgradeMajority; }
     virtual void setDefaultConsistencyChecks(bool afDefaultConsistencyChecks) { fDefaultConsistencyChecks = afDefaultConsistencyChecks; }
     virtual void setAllowMinDifficultyBlocks(bool afAllowMinDifficultyBlocks) { fAllowMinDifficultyBlocks = afAllowMinDifficultyBlocks; }
-    virtual void setSkipProofOfWorkCheck(bool afSkipProofOfWorkCheck) { fSkipProofOfWorkCheck = afSkipProofOfWorkCheck; }
 };
 static CUnitTestParams unitTestParams;
 

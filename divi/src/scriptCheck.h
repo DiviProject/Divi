@@ -8,10 +8,9 @@
 
 #include <script/script_error.h>
 #include <script/script.h>
-#include <primitives/transaction.h>
-#include <coins.h>
 
 class CTransaction;
+class CCoins;
 
 /**
  * Closure representing one script verification
@@ -28,22 +27,15 @@ private:
     ScriptError error;
 
 public:
-    CScriptCheck() : ptxTo(0), nIn(0), nFlags(0), cacheStore(false), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
-    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, bool cacheIn) : scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey),
-                                                                                                                                ptxTo(&txToIn), nIn(nInIn), nFlags(nFlagsIn), cacheStore(cacheIn), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
+    CScriptCheck();
+
+    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, bool cacheIn);
+
 
     bool operator()();
 
-    void swap(CScriptCheck& check)
-    {
-        scriptPubKey.swap(check.scriptPubKey);
-        std::swap(ptxTo, check.ptxTo);
-        std::swap(nIn, check.nIn);
-        std::swap(nFlags, check.nFlags);
-        std::swap(cacheStore, check.cacheStore);
-        std::swap(error, check.error);
-    }
+    void swap(CScriptCheck& check);
 
-    ScriptError GetScriptError() const { return error; }
+    ScriptError GetScriptError() const ;
 };
 #endif

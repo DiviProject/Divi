@@ -34,36 +34,14 @@ public:
         READWRITE(VARINT(nTimeLast));
     }
 
-    void SetNull()
-    {
-        nBlocks = 0;
-        nSize = 0;
-        nUndoSize = 0;
-        nHeightFirst = 0;
-        nHeightLast = 0;
-        nTimeFirst = 0;
-        nTimeLast = 0;
-    }
+    void SetNull();
 
-    CBlockFileInfo()
-    {
-        SetNull();
-    }
+    CBlockFileInfo();
 
     std::string ToString() const;
 
     /** update statistics (does not update nSize) */
-    void AddBlock(unsigned int nHeightIn, uint64_t nTimeIn)
-    {
-        if (nBlocks == 0 || nHeightFirst > nHeightIn)
-            nHeightFirst = nHeightIn;
-        if (nBlocks == 0 || nTimeFirst > nTimeIn)
-            nTimeFirst = nTimeIn;
-        nBlocks++;
-        if (nHeightIn > nHeightLast)
-            nHeightLast = nHeightIn;
-        if (nTimeIn > nTimeLast)
-            nTimeLast = nTimeIn;
-    }
+    void AddBlock(unsigned int nHeightIn, uint64_t nTimeIn);
+    
 };
 #endif

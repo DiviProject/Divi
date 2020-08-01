@@ -31,7 +31,6 @@
 #include <utility>
 #include <vector>
 #include <boost/foreach.hpp>
-#include <main.h>
 
 /**
  * Settings
@@ -69,7 +68,7 @@ class CHDChain;
 class CTxMemPool;
 
 bool MoneyRange(CAmount nValueOut);
-//bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 
 /** (client) version numbers for particular wallet features */

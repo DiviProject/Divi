@@ -5,6 +5,7 @@
 #include <BlockMemoryPoolTransactionCollector.h>
 #include <PoSTransactionCreator.h>
 #include <timedata.h>
+#include <boost/thread.hpp>
 
 // Actual mining functions
 BlockFactory::BlockFactory(

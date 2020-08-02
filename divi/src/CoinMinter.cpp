@@ -9,7 +9,7 @@
 #include <utilmoneystr.h>
 #include <timedata.h>
 #include <PoSTransactionCreator.h>
-#include <boost/thread/thread.hpp>
+#include <boost/thread.hpp>
 #include <SuperblockHelpers.h>
 
 #include <BlockFactory.h>

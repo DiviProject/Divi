@@ -168,8 +168,10 @@ Value setgenerate(const Array& params, bool fHelp)
         CoinMinter minter(pwalletMain, chainActive, Params(),vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,coinstakeSearchInterval);
         while (nHeight < nHeightEnd)
         {
+            const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
+
             unsigned int nExtraNonce = 0;
-            bool newBlockAdded = minter.createNewBlock(nExtraNonce,reservekey,nHeight >= Params().LAST_POW_BLOCK());
+            const bool newBlockAdded = minter.createNewBlock(nExtraNonce, reservekey, fProofOfStake);
             nHeight +=  newBlockAdded;
             if(newBlockAdded)
             { // Don't keep cs_main locked
@@ -178,6 +180,10 @@ Value setgenerate(const Array& params, bool fHelp)
                 {
                     blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
                 }
+            } else if (fProofOfStake)
+            {
+                LogPrintf("Failed to generate PoS block, sleeping\n");
+                MilliSleep(1000);
             }
         }
         return blockHashes;

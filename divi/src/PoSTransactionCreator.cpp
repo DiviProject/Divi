@@ -181,7 +181,9 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     static int nLastStakeSetUpdate = 0;
     if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
 
+    auto adjustedTime = GetAdjustedTime();
     int64_t minimumTime = chainActive.Tip()->GetMedianTimePast() + 1;
+    const int64_t maximumTime = adjustedTime + 180;
     if (Params().RetargetDifficulty())
     {
         /* Normally, we want to start with an additional offset of nHashDrift
@@ -192,8 +194,8 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
            sequence before the mock time needs to be updated.  */
         minimumTime += nHashDrift;
     }
-
-    nTxNewTime = std::max(GetAdjustedTime(), minimumTime);
+    if(minimumTime>=maximumTime) return false;
+    nTxNewTime = std::min(std::max(adjustedTime, minimumTime), maximumTime);
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;

@@ -6,6 +6,7 @@
 class I_BlockSubsidyProvider
 {
 public:
+    virtual ~I_BlockSubsidyProvider(){}
     virtual CBlockRewards GetBlockSubsidity(int nHeight) const = 0;
     virtual CAmount GetFullBlockValue(int nHeight) const = 0;
 };

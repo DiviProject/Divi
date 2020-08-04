@@ -171,6 +171,7 @@ public:
         nLotteryBlockCycle = 60 * 24 * 7; // one week
         nTreasuryPaymentsStartBlock = 101;
         nTreasuryPaymentsCycle = 60 * 24 * 7 + 1;
+        nMinCoinAgeForStaking = 60 * 60;
 
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -224,10 +225,10 @@ public:
         fAllowMinDifficultyBlocks = false;
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
+        fDifficultyRetargeting = true;
         fMineBlocksOnDemand = false;
         fHeadersFirstSyncingActive = false;
-        fSkipProofOfWorkCheck = false;
-        
+
         nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
         strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
@@ -339,7 +340,6 @@ public:
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
-        fSkipProofOfWorkCheck = false;
         fHeadersFirstSyncingActive = false;
 
         nFulfilledRequestExpireTime = 60 * 60; // fulfilled requests expire in 1 hour
@@ -371,7 +371,7 @@ public:
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x78;
         premineAmt = 617222416 * COIN;
-        
+
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51474;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
@@ -400,7 +400,7 @@ public:
         genesis.nNonce = 2105601;
 
         nExtCoinType = 1;
-        
+
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000f43b54bbcae395d815b255ac4ed0693bca7987d72b873d5d4b68d73a6bd"));
@@ -425,7 +425,6 @@ public:
         fRequireStandard = false;
         fMineBlocksOnDemand = false;
         fHeadersFirstSyncingActive = false;
-        fSkipProofOfWorkCheck = false;
 
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
         strSporkKey = "034ffa41e5cffdd009f3b34a3e1482ec82b514bb218b7648948b5858cc5c035adb";
@@ -458,7 +457,7 @@ public:
            syncing on mainnet anyway.  On regtest, it is easiest to not
            have a special premine, as it makes the generated coins more
            predictable.  */
-        premineAmt = 1'250 * COIN;
+        premineAmt = 1250 * COIN;
 
         /* Add back a maturity period for coinbases as on mainnet, so that
            we can test this works as expected.  Testnet uses a shorter
@@ -483,6 +482,11 @@ public:
         nTreasuryPaymentsStartBlock = 102;
         nTreasuryPaymentsCycle = 50;
 
+        /* There is no minimum coin age on regtest, so that we can easily
+           generate PoS blocks as needed (and without having to mess
+           around with mocktimes of perhaps multiple nodes in sync).  */
+        nMinCoinAgeForStaking = 0;
+
         nExtCoinType = 1;
 
         hashGenesisBlock = genesis.GetHash();
@@ -499,6 +503,7 @@ public:
         fAllowMinDifficultyBlocks = true;
         fDefaultConsistencyChecks = true;
         fRequireStandard = false;
+        fDifficultyRetargeting = false;
         fMineBlocksOnDemand = true;
     }
     const CCheckpointData& Checkpoints() const
@@ -526,6 +531,7 @@ public:
         fMiningRequiresPeers = false;
         fDefaultConsistencyChecks = true;
         fAllowMinDifficultyBlocks = false;
+        fDifficultyRetargeting = true;
         fMineBlocksOnDemand = true;
     }
 
@@ -542,7 +548,6 @@ public:
     virtual void setToCheckBlockUpgradeMajority(int anToCheckBlockUpgradeMajority) { nToCheckBlockUpgradeMajority = anToCheckBlockUpgradeMajority; }
     virtual void setDefaultConsistencyChecks(bool afDefaultConsistencyChecks) { fDefaultConsistencyChecks = afDefaultConsistencyChecks; }
     virtual void setAllowMinDifficultyBlocks(bool afAllowMinDifficultyBlocks) { fAllowMinDifficultyBlocks = afAllowMinDifficultyBlocks; }
-    virtual void setSkipProofOfWorkCheck(bool afSkipProofOfWorkCheck) { fSkipProofOfWorkCheck = afSkipProofOfWorkCheck; }
 };
 static CUnitTestParams unitTestParams;
 

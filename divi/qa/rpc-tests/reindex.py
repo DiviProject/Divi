@@ -15,7 +15,7 @@ class ReindexTest(BitcoinTestFramework):
 
     def setup_chain(self):
         print("Initializing test directory "+self.options.tmpdir)
-        initialize_chain_clean(self.options.tmpdir, 1)
+        initialize_datadir(self.options.tmpdir, 0)
 
     def setup_network(self):
         self.nodes = []
@@ -23,7 +23,7 @@ class ReindexTest(BitcoinTestFramework):
         self.nodes.append(start_node(0, self.options.tmpdir))
 
     def run_test(self):
-        self.nodes[0].generate(3)
+        self.nodes[0].setgenerate(True, 3)
         stop_node(self.nodes[0], 0)
         wait_bitcoinds()
         self.nodes[0]=start_node(0, self.options.tmpdir, ["-debug", "-reindex", "-checkblockindex=1"])

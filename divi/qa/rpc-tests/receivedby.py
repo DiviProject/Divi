@@ -58,6 +58,9 @@ class ReceivedByTest(BitcoinTestFramework):
         '''
         listreceivedbyaddress Test
         '''
+        self.nodes[0].setgenerate(True, 30)
+        self.sync_all()
+
         # Send from node 0 to 1
         addr = self.nodes[1].getnewaddress()
         txid = self.nodes[0].sendtoaddress(addr, 0.1)

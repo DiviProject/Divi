@@ -126,7 +126,7 @@ def main():
         print("Initializing test directory "+options.tmpdir)
         if not os.path.isdir(options.tmpdir):
             os.makedirs(options.tmpdir)
-        initialize_chain(options.tmpdir)
+        initialize_datadir(options.tmpdir, 0)
 
         run_test(options.tmpdir)
 

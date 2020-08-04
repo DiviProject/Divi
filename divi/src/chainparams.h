@@ -72,8 +72,6 @@ public:
     bool DefaultConsistencyChecks() const { return fDefaultConsistencyChecks; }
     /** Allow mining of a min-difficulty block */
     bool AllowMinDifficultyBlocks() const { return fAllowMinDifficultyBlocks; }
-    /** Skip proof-of-work check: allow mining of any difficulty block */
-    bool SkipProofOfWorkCheck() const { return fSkipProofOfWorkCheck; }
     /** Make standard checks */
     bool RequireStandard() const { return fRequireStandard; }
     int64_t TargetTimespan() const { return nTargetTimespan; }
@@ -83,6 +81,8 @@ public:
     CAmount MaxMoneyOut() const { return nMaxMoneyOut; }
     /** The masternode count that we will allow the see-saw reward payments to be off by */
     int MasternodeCountDrift() const { return nMasternodeCountDrift; }
+    /** Retarget difficulty? */
+    bool RetargetDifficulty() const { return fDifficultyRetargeting; }
     /** Make miner stop after a block is found. In RPC, don't return until nGenProcLimit blocks are generated */
     bool MineBlocksOnDemand() const { return fMineBlocksOnDemand; }
     /** Return the BIP70 network string (main, test or regtest) */
@@ -98,6 +98,7 @@ public:
     int GetLotteryBlockCycle() const { return nLotteryBlockCycle; }
     int GetTreasuryPaymentsStartBlock() const { return nTreasuryPaymentsStartBlock; }
     int GetTreasuryPaymentsCycle() const { return nTreasuryPaymentsCycle; }
+    unsigned GetMinCoinAgeForStaking () const { return nMinCoinAgeForStaking; }
 
     /** Height or Time Based Activations **/
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
@@ -124,6 +125,7 @@ protected:
     int64_t nTargetTimespan;
     int64_t nTargetSpacing;
     int nLastPOWBlock;
+    unsigned nMinCoinAgeForStaking;
     int nMasternodeCountDrift;
     int nMaturity;
     CAmount nMaxMoneyOut;
@@ -139,8 +141,8 @@ protected:
     bool fAllowMinDifficultyBlocks;
     bool fDefaultConsistencyChecks;
     bool fRequireStandard;
+    bool fDifficultyRetargeting;
     bool fMineBlocksOnDemand;
-    bool fSkipProofOfWorkCheck;
     bool fHeadersFirstSyncingActive;
     std::string strSporkKey;
     int64_t nStartMasternodePayments;
@@ -171,7 +173,6 @@ public:
     virtual void setToCheckBlockUpgradeMajority(int anToCheckBlockUpgradeMajority) = 0;
     virtual void setDefaultConsistencyChecks(bool aDefaultConsistencyChecks) = 0;
     virtual void setAllowMinDifficultyBlocks(bool aAllowMinDifficultyBlocks) = 0;
-    virtual void setSkipProofOfWorkCheck(bool aSkipProofOfWorkCheck) = 0;
 };
 
 

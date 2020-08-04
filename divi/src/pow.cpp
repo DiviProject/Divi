@@ -32,6 +32,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return chainParameters.ProofOfWorkLimit().GetCompact();
     }
 
+    if (!chainParameters.RetargetDifficulty())
+        return BlockLastSolved->nBits;
+
     if (pindexLast->nHeight > chainParameters.LAST_POW_BLOCK()) {
         uint256 bnTargetLimit = (~uint256(0) >> 24);
         int64_t nTargetSpacing = 60;
@@ -112,9 +115,6 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const CChainParams& chai
     bool fNegative;
     bool fOverflow;
     uint256 bnTarget;
-
-    if (chainParameters.SkipProofOfWorkCheck())
-        return true;
 
     bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
 

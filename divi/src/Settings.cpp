@@ -2,6 +2,8 @@
 #include <string>
 #include <utilstrencodings.h>
 #include <DataDirectory.h>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/program_options/detail/config_file.hpp>
 #include <set>

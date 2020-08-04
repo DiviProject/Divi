@@ -60,20 +60,37 @@ def run_test(nodes, tmpdir):
     nodes[0].keypoolrefill(3)
     nodes[0].walletlock()
 
+    # There are separate key pools for change addresses and normal ones.
+    # Each pot gets three now.
+    assert_equal(nodes[0].getwalletinfo()["keypoolsize"], 6)
+
     # drain the keys
     addr = set()
     addr.add(nodes[0].getrawchangeaddress())
     addr.add(nodes[0].getrawchangeaddress())
     addr.add(nodes[0].getrawchangeaddress())
-    addr.add(nodes[0].getrawchangeaddress())
-    # assert that four unique addresses were returned
-    assert(len(addr) == 4)
+    # assert that three unique addresses were returned
+    assert(len(addr) == 3)
     # the next one should fail
     try:
         addr = nodes[0].getrawchangeaddress()
         raise AssertionError('Keypool should be exhausted after three addresses')
     except JSONRPCException,e:
         assert(e.error['code']==-12)
+    assert_equal(nodes[0].getwalletinfo()["keypoolsize"], 3)
+
+    # also drain the normal addresses now
+    addr = set()
+    addr.add(nodes[0].getnewaddress())
+    addr.add(nodes[0].getnewaddress())
+    addr.add(nodes[0].getnewaddress())
+    assert(len(addr) == 3)
+    try:
+        addr = nodes[0].getnewaddress()
+        raise AssertionError('Keypool should be exhausted after three addresses')
+    except JSONRPCException,e:
+        assert(e.error['code']==-12)
+    assert_equal(nodes[0].getwalletinfo()["keypoolsize"], 0)
 
 
 def main():
@@ -98,7 +115,7 @@ def main():
         print("Initializing test directory "+options.tmpdir)
         if not os.path.isdir(options.tmpdir):
             os.makedirs(options.tmpdir)
-        initialize_chain(options.tmpdir)
+        initialize_datadir(options.tmpdir, 0)
 
         nodes = start_nodes(1, options.tmpdir)
 

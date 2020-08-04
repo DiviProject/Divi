@@ -1,4 +1,4 @@
-#include <CoinstakeCreator.h>
+#include <PoSTransactionCreator.h>
 
 #include <wallet.h>
 #include <kernel.h>
@@ -10,8 +10,9 @@
 #include <BlockIncentivesPopulator.h>
 
 extern Settings& settings;
+extern const int nHashDrift;
 
-CoinstakeCreator::CoinstakeCreator(
+PoSTransactionCreator::PoSTransactionCreator(
     CWallet& wallet,
     int64_t& coinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
@@ -21,9 +22,9 @@ CoinstakeCreator::CoinstakeCreator(
 {
 }
 
-bool CoinstakeCreator::SelectCoins(
+bool PoSTransactionCreator::SelectCoins(
     CAmount allowedStakingBalance,
-    int& nLastStakeSetUpdate, 
+    int& nLastStakeSetUpdate,
     std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins)
 {
     if (allowedStakingBalance <= 0)
@@ -52,7 +53,7 @@ void MarkTransactionAsCoinstake(CMutableTransaction& txNew)
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
 }
 
-bool CoinstakeCreator::SetSuportedStakingScript(
+bool PoSTransactionCreator::SetSuportedStakingScript(
     const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
     CMutableTransaction& txNew)
 {
@@ -64,7 +65,7 @@ bool CoinstakeCreator::SetSuportedStakingScript(
         return false;
     }
     if (fDebug && settings.GetBoolArg("-printcoinstake", false)) LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
-    if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH) 
+    if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH)
     {
         if (fDebug && settings.GetBoolArg("-printcoinstake", false))
             LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
@@ -80,7 +81,7 @@ bool CoinstakeCreator::SetSuportedStakingScript(
     return true;
 }
 
-void CoinstakeCreator::CombineUtxos(
+void PoSTransactionCreator::CombineUtxos(
     const CAmount& allowedStakingAmount,
     CMutableTransaction& txNew,
     CAmount& nCredit,
@@ -109,7 +110,7 @@ void CoinstakeCreator::CombineUtxos(
     for(auto &&pcoin : vCombineCandidates)
     {
         if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS||
-            nCredit > nCombineThreshold || 
+            nCredit > nCombineThreshold ||
             nCredit + pcoin.first->vout[pcoin.second].nValue > allowedStakingAmount ||
             nCredit + pcoin.first->vout[pcoin.second].nValue > nCombineThreshold)
             break;
@@ -120,7 +121,7 @@ void CoinstakeCreator::CombineUtxos(
     }
 }
 
-bool CoinstakeCreator::FindStake(
+bool PoSTransactionCreator::FindHashproof(
     unsigned int nBits,
     unsigned int& nTxNewTime,
     std::pair<const CWalletTx*, unsigned int>& stakeData,
@@ -134,19 +135,16 @@ bool CoinstakeCreator::FindStake(
     }
 
     uint256 hashProofOfStake = 0;
-    nTxNewTime = GetAdjustedTime();
 
-    if (CheckStakeKernelHash(
+    if (CreateHashProofForProofOfStake(
             hashedBlockTimestamps_,
             nBits,
             it->second->GetBlockHeader(),
-            *stakeData.first,
             COutPoint(stakeData.first->GetHash(), stakeData.second),
+            stakeData.first->vout[stakeData.second].nValue,
             nTxNewTime,
-            wallet_.nHashDrift,
             false,
-            hashProofOfStake,
-            true))
+            hashProofOfStake))
     {
         if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast())
         {
@@ -166,8 +164,8 @@ bool CoinstakeCreator::FindStake(
     return false;
 }
 
-bool CoinstakeCreator::CreateCoinStake(
-    const CKeyStore& keystore, 
+bool PoSTransactionCreator::PopulateCoinstakeTransaction(
+    const CKeyStore& keystore,
     unsigned int nBits,
     int64_t nSearchInterval,
     CMutableTransaction& txNew,
@@ -182,7 +180,20 @@ bool CoinstakeCreator::CreateCoinStake(
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
     if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
-    if (GetAdjustedTime() <= chainActive.Tip()->nTime) MilliSleep(10000);
+
+    int64_t minimumTime = chainActive.Tip()->GetMedianTimePast() + 1;
+    if (Params().RetargetDifficulty())
+    {
+        /* Normally, we want to start with an additional offset of nHashDrift
+           so that when working backwards in time, we are still beyond the
+           required median time.  On regtest with minimum difficulty, this is
+           not needed (as the hash target will be hit anyway); by using a
+           smaller time there, we ensure that more blocks can be mined in a
+           sequence before the mock time needs to be updated.  */
+        minimumTime += nHashDrift;
+    }
+
+    nTxNewTime = std::max(GetAdjustedTime(), minimumTime);
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
@@ -193,9 +204,9 @@ bool CoinstakeCreator::CreateCoinStake(
     int newBlockHeight = chainTip->nHeight + 1;
     auto blockSubsidity = subsidyContainer.blockSubsidiesProvider().GetBlockSubsidity(newBlockHeight);
 
-    BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins) 
+    BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
     {
-        if(FindStake(nBits, nTxNewTime, pcoin,txNew))
+        if(FindHashproof(nBits, nTxNewTime, pcoin,txNew))
         {
             vwtxPrev.push_back(pcoin.first);
             nCredit += pcoin.first->vout[pcoin.second].nValue;
@@ -207,13 +218,13 @@ bool CoinstakeCreator::CreateCoinStake(
 
     CAmount nReward = blockSubsidity.nStakeReward;
     nCredit += nReward;
-    if (nCredit > static_cast<CAmount>(wallet_.nStakeSplitThreshold) * COIN) 
+    if (nCredit > static_cast<CAmount>(wallet_.nStakeSplitThreshold) * COIN)
     {
         txNew.vout.push_back(txNew.vout.back());
         txNew.vout[1].nValue = nCredit / 2;
         txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
     }
-    else 
+    else
     {
         CombineUtxos(allowedStakingAmount,txNew,nCredit,setStakeCoins,vwtxPrev);
         txNew.vout[1].nValue = nCredit;
@@ -237,17 +248,17 @@ bool CoinstakeCreator::CreateCoinStake(
     return true;
 }
 
-bool CoinstakeCreator::CreateProofOfStake(
+bool PoSTransactionCreator::CreateProofOfStake(
     uint32_t blockBits,
-    int64_t nSearchTime, 
-    int64_t& nLastCoinStakeSearchTime, 
+    int64_t nSearchTime,
+    int64_t& nLastCoinStakeSearchTime,
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
 {
 
     bool fStakeFound = false;
     if (nSearchTime >= nLastCoinStakeSearchTime) {
-        if (CreateCoinStake(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime)) 
+        if (PopulateCoinstakeTransaction(wallet_, blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime))
         {
             fStakeFound = true;
         }

@@ -71,18 +71,41 @@ base_uint<BITS>& base_uint<BITS>::operator*=(uint32_t b32)
 }
 
 template <unsigned int BITS>
-base_uint<BITS>& base_uint<BITS>::operator*=(const base_uint& b)
+bool base_uint<BITS>::MultiplyBy(const base_uint& b)
 {
+    bool overflow = false;
+    int highestNonzeroA = 0;
+    int highestNonzeroB = 0;
+
     base_uint<BITS> a = *this;
     *this = 0;
     for (int j = 0; j < WIDTH; j++) {
+        if (a.pn[j] != 0)
+          highestNonzeroA = j;
+        if (b.pn[j] != 0)
+          highestNonzeroB = j;
+
         uint64_t carry = 0;
         for (int i = 0; i + j < WIDTH; i++) {
             uint64_t n = carry + pn[i + j] + (uint64_t)a.pn[j] * b.pn[i];
             pn[i + j] = n & 0xffffffff;
             carry = n >> 32;
         }
+
+        if (carry > 0)
+          overflow = true;
     }
+
+    if (highestNonzeroA + highestNonzeroB >= WIDTH)
+        overflow = true;
+
+    return !overflow;
+}
+
+template <unsigned int BITS>
+base_uint<BITS>& base_uint<BITS>::operator*=(const base_uint& b)
+{
+    MultiplyBy(b);
     return *this;
 }
 
@@ -248,6 +271,7 @@ template base_uint<256>& base_uint<256>::operator<<=(unsigned int);
 template base_uint<256>& base_uint<256>::operator>>=(unsigned int);
 template base_uint<256>& base_uint<256>::operator*=(uint32_t b32);
 template base_uint<256>& base_uint<256>::operator*=(const base_uint<256>& b);
+template bool base_uint<256>::MultiplyBy(const base_uint<256>& b);
 template base_uint<256>& base_uint<256>::operator/=(const base_uint<256>& b);
 template int base_uint<256>::CompareTo(const base_uint<256>&) const;
 template bool base_uint<256>::EqualTo(uint64_t) const;

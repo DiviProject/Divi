@@ -3,17 +3,20 @@
 #include <wallet.h>
 #include <BlockTemplate.h>
 #include <BlockMemoryPoolTransactionCollector.h>
-#include <CoinstakeCreator.h>
+#include <PoSTransactionCreator.h>
 #include <timedata.h>
+#include <boost/thread.hpp>
+#include <Settings.h>
+extern Settings& settings;
 
 // Actual mining functions
 BlockFactory::BlockFactory(
     CWallet& wallet,
     int64_t& lastCoinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
-    CChain& chain, 
+    CChain& chain,
     const CChainParams& chainParameters,
-    CTxMemPool& transactionMemoryPool, 
+    CTxMemPool& transactionMemoryPool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): wallet_(wallet)
     , lastCoinstakeSearchInterval_(lastCoinstakeSearchInterval)
@@ -22,7 +25,7 @@ BlockFactory::BlockFactory(
     , mempool_(transactionMemoryPool)
     , mainCS_(mainCS)
     , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(mempool_,mainCS_))
-    , coinstakeCreator_( std::make_shared<CoinstakeCreator>(wallet_, lastCoinstakeSearchInterval_,hashedBlockTimestamps))
+    , coinstakeCreator_( std::make_shared<PoSTransactionCreator>(wallet_, lastCoinstakeSearchInterval_,hashedBlockTimestamps))
 {
 
 }
@@ -67,7 +70,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
 
     unsigned int nTxNewTime = 0;
     if(coinstakeCreator_->CreateProofOfStake(
-            block.nBits, 
+            block.nBits,
             block.nTime,
             nLastCoinStakeSearchTime,
             txCoinStake,
@@ -93,7 +96,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     // Maybe override the block version, for fork tests.
     if (chainParameters_.MineBlocksOnDemand()) {
         auto& block = pblocktemplate->block;
-        block.nVersion = GetArg("-blockversion", block.nVersion);
+        block.nVersion = settings.GetArg("-blockversion", block.nVersion);
     }
 
     pblocktemplate->previousBlockIndex = chain_.Tip();
@@ -103,7 +106,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     pblocktemplate->coinbaseTransaction = std::make_shared<CMutableTransaction>();
     CMutableTransaction& coinbaseTransaction = *pblocktemplate->coinbaseTransaction;
     CreateCoinbaseTransaction(scriptPubKeyIn, coinbaseTransaction);
-    
+
     SetCoinbaseTransactionAndDefaultFees(*pblocktemplate, coinbaseTransaction);
 
     if (fProofOfStake) {

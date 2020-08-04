@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 #include <uint256.h>
-#include <streams.h>
+#include <amount.h>
+#include <map>
 class CBlockIndex;
 class CBlock;
 class CTransaction;
@@ -15,15 +16,17 @@ class COutPoint;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
-// Compute the hash modifier for proof-of-stake
-bool ComputeNextStakeModifier(
-    const CBlockIndex* pindexPrev,
-    uint64_t& nStakeModifier,
-    bool& fGeneratedStakeModifier);
-
-// Check whether stake kernel meets hash target
-// Sets hashProofOfStake on success return
-class ProofOfStakeCalculator
+class I_ProofOfStakeCalculator
+{
+public:
+    virtual ~I_ProofOfStakeCalculator(){}
+    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
+        unsigned int nTimeTx,
+        unsigned int nTimeBlockFrom,
+        uint256& computedProofOfStake,
+        bool checkOnly = false) const = 0;
+};
+class ProofOfStakeCalculator: public I_ProofOfStakeCalculator
 {
 private:
     const COutPoint& utxoToStake_;
@@ -37,25 +40,36 @@ public:
         const uint64_t& stakeModifier,
         unsigned int blockDifficultyBits);
 
-    bool computeProofOfStakeAndCheckItMeetsTarget(
+    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
         unsigned int nTimeTx,
         unsigned int nTimeBlockFrom,
         uint256& computedProofOfStake,
         bool checkOnly = false) const;
 };
 
+class I_PoSStakeModifierService
+{
+public:
+    virtual ~I_PoSStakeModifierService(){}
+    virtual std::pair<uint64_t,bool> getStakeModifier(const uint256& blockHash) const = 0;
+};
 
-bool CheckStakeKernelHash(
+class LegacyPoSStakeModifierService: public I_PoSStakeModifierService
+{
+public:
+    LegacyPoSStakeModifierService(){}
+    virtual std::pair<uint64_t,bool> getStakeModifier(const uint256& blockHash) const;
+};
+
+bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     unsigned int nBits,
     const CBlock& blockFrom,
-    const CTransaction& txPrev,
     const COutPoint& prevout,
+    const CAmount& utxoValue,
     unsigned int& nTimeTx,
-    unsigned int nHashDrift,
     bool fCheck,
-    uint256& hashProofOfStake,
-    bool fPrintProofOfStake = false);
+    uint256& hashProofOfStake);
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return
@@ -63,13 +77,11 @@ bool CheckProofOfStake(
     const CBlock& block,
     uint256& hashProofOfStake);
 
-// Get stake modifier checksum
-unsigned int GetStakeModifierChecksum(
-    const CBlockIndex* pindex);
-
 // Check stake modifier hard checkpoints
 bool CheckStakeModifierCheckpoints(
     int nHeight,
     unsigned int nStakeModifierChecksum);
+
+void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew);
 
 #endif // BITCOIN_KERNEL_H

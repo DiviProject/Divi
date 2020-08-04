@@ -11,6 +11,7 @@
 
 extern Settings& settings;
 extern const int nHashDrift;
+extern const int maximumFutureBlockDrift = 180; // seconds
 
 PoSTransactionCreator::PoSTransactionCreator(
     CWallet& wallet,
@@ -183,7 +184,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
 
     auto adjustedTime = GetAdjustedTime();
     int64_t minimumTime = chainActive.Tip()->GetMedianTimePast() + 1;
-    const int64_t maximumTime = adjustedTime + 180;
+    const int64_t maximumTime = adjustedTime + maximumFutureBlockDrift;
     if (Params().RetargetDifficulty())
     {
         /* Normally, we want to start with an additional offset of nHashDrift

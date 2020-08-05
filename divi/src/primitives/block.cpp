@@ -153,7 +153,7 @@ bool CBlock::SignBlock(const CKeyStore& keystore)
         {
             const CTxOut& txout = vtx[0].vout[i];
 
-            if (!Solver(txout.scriptPubKey, whichType, vSolutions))
+            if (!ExtractStandardScriptPubKey(txout.scriptPubKey, whichType, vSolutions))
                 continue;
 
             if (whichType == TX_PUBKEY)
@@ -178,7 +178,7 @@ bool CBlock::SignBlock(const CKeyStore& keystore)
     {
         const CTxOut& txout = vtx[1].vout[1];
 
-        if (!Solver(txout.scriptPubKey, whichType, vSolutions))
+        if (!ExtractStandardScriptPubKey(txout.scriptPubKey, whichType, vSolutions))
             return false;
 
         if (whichType == TX_PUBKEYHASH)
@@ -228,7 +228,7 @@ bool CBlock::CheckBlockSignature() const
 
     const CTxOut& txout = vtx[1].vout[1];
 
-    if (!Solver(txout.scriptPubKey, whichType, vSolutions))
+    if (!ExtractStandardScriptPubKey(txout.scriptPubKey, whichType, vSolutions))
         return false;
 
     if (whichType == TX_PUBKEY)

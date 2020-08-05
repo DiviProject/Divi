@@ -71,7 +71,7 @@ bool PoSTransactionCreator::SetSuportedStakingScript(
     CScript scriptPubKeyOut = transactionAndIndexPair.first->vout[transactionAndIndexPair.second].scriptPubKey;
     std::vector<valtype> vSolutions;
     txnouttype whichType;
-    if (!Solver(scriptPubKeyOut, whichType, vSolutions)) {
+    if (!ExtractStandardScriptPubKey(scriptPubKeyOut, whichType, vSolutions)) {
         LogPrintf("CreateCoinStake : failed to parse kernel\n");
         return false;
     }

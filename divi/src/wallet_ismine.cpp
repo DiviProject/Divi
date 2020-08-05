@@ -43,7 +43,7 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey)
 
     std::vector<valtype> vSolutions;
     txnouttype whichType;
-    if(!Solver(scriptPubKey, whichType, vSolutions)) {
+    if(!ExtractStandardScriptPubKey(scriptPubKey, whichType, vSolutions)) {
         if(keystore.HaveWatchOnly(scriptPubKey))
             return ISMINE_WATCH_ONLY;
         if(keystore.HaveMultiSig(scriptPubKey))

@@ -60,7 +60,7 @@ bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, const CS
     scriptSigRet.clear();
 
     std::vector<valtype> vSolutions;
-    if (!Solver(scriptPubKey, whichTypeRet, vSolutions))
+    if (!ExtractStandardScriptPubKey(scriptPubKey, whichTypeRet, vSolutions))
     {
         LogPrintf("*** solver solver failed \n");
         return false;
@@ -247,7 +247,7 @@ static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction
 
             txnouttype txType2;
             std::vector<std::vector<unsigned char> > vSolutions2;
-            Solver(pubKey2, txType2, vSolutions2);
+            ExtractStandardScriptPubKey(pubKey2, txType2, vSolutions2);
             sigs1.pop_back();
             sigs2.pop_back();
             CScript result = CombineSignatures(pubKey2, txTo, nIn, txType2, vSolutions2, sigs1, sigs2);
@@ -266,7 +266,7 @@ CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction& txTo,
 {
     txnouttype txType;
     std::vector<std::vector<unsigned char> > vSolutions;
-    Solver(scriptPubKey, txType, vSolutions);
+    ExtractStandardScriptPubKey(scriptPubKey, txType, vSolutions);
 
     std::vector<valtype> stack1;
     EvalScript(stack1, scriptSig1, SCRIPT_VERIFY_STRICTENC, BaseSignatureChecker());

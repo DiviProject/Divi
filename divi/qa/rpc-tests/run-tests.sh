@@ -11,6 +11,7 @@ set -ex
 echo "$path"
 cd $path
 
+./bipdersig.py
 ./forknotify.py
 ./getchaintips.py
 ./httpbasics.py
@@ -20,10 +21,10 @@ cd $path
 ./mempool_coinbase_spends.py
 ./mempool_resurrect_test.py
 ./mempool_spendcoinbase.py
+./PowToPosTransition.py
 ./proxy_test.py
 ./receivedby.py
 ./reindex.py
-./PowToPosTransition.py
 ./rest.py
 ./rpcbind_test.py
 ./sync.py

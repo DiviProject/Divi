@@ -1615,6 +1615,14 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         if (GetAdjustedTime() - nTxTime < Params().GetMinCoinAgeForStaking())
             continue;
 
+        // Make sure that the coin is large enough so that we do not end up
+        // with less than 400 DIVI seconds in coin age when spent, which will
+        // be rounded down to exact zero in the code.  Even if the minimum coin
+        // age is zero (as on regtest), the actual one used for blocks will be
+        // at least one, as the blocks are spaced with a second apart.
+        if (std::max<int64_t>(1, Params().GetMinCoinAgeForStaking()) * out.tx->vout[out.i].nValue < 400 * COIN)
+            continue;
+
         //check that it is matured
         if (out.nDepth < (out.tx->IsCoinStake() ? Params().COINBASE_MATURITY() : 10))
             continue;

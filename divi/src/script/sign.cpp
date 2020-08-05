@@ -54,7 +54,7 @@ bool SignN(const std::vector<valtype>& multisigdata, const CKeyStore& keystore, 
  * unless whichTypeRet is TX_SCRIPTHASH, in which case scriptSigRet is the redemption script.
  * Returns false if scriptPubKey could not be completely satisfied.
  */
-bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash, int nHashType,
+bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash, int nHashType,
                   CScript& scriptSigRet, txnouttype& whichTypeRet)
 {
     scriptSigRet.clear();
@@ -118,7 +118,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutabl
     uint256 hash = SignatureHash(fromPubKey, txTo, nIn, nHashType);
 
     txnouttype whichType;
-    if (!Solver(keystore, fromPubKey, hash, nHashType, txin.scriptSig, whichType))
+    if (!ConstructScriptSigOrGetRedemptionScript(keystore, fromPubKey, hash, nHashType, txin.scriptSig, whichType))
         return false;
 
     if (whichType == TX_SCRIPTHASH)
@@ -133,7 +133,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutabl
 
         txnouttype subType;
         bool fSolved =
-            Solver(keystore, subscript, hash2, nHashType, txin.scriptSig, subType) && subType != TX_SCRIPTHASH;
+            ConstructScriptSigOrGetRedemptionScript(keystore, subscript, hash2, nHashType, txin.scriptSig, subType) && subType != TX_SCRIPTHASH;
         // Append serialized subscript whether or not it is completely signed:
         txin.scriptSig << static_cast<valtype>(subscript);
         if (!fSolved) return false;

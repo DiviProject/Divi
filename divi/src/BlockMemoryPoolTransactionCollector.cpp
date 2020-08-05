@@ -11,10 +11,21 @@
 #include "timedata.h"
 #include "util.h"
 #include "wallet.h"
-#include <main.h>
 #include <ValidationState.h>
 #include "Settings.h"
+#include <defaultValues.h>
+
 extern Settings& settings;
+
+extern std::map<COutPoint, COutPoint> mapInvalidOutPoints;
+extern CFeeRate minRelayTxFee;
+extern CChain chainActive;
+extern CCoinsViewCache* pcoinsTip;
+
+unsigned int GetLegacySigOpCount(const CTransaction& tx);
+unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& mapInputs);
+bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL );
+void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
 
 unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
 {
@@ -153,7 +164,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
     const int& nHeight,
     std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions,
     CCoinsViewCache& view) const
-{
+{extern const unsigned int DEFAULT_BLOCK_MAX_SIZE ;
     std::vector<TxPriority> vecPriority;
     vecPriority.reserve(mempool_.mapTx.size());
     for (auto mi = mempool_.mapTx.begin(); mi != mempool_.mapTx.end(); ++mi) {
@@ -171,7 +182,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
             // Read prev transaction
             if (!view.HaveCoins(txin.prevout.hash)) {
                 // This should never happen; all transactions in the memory
-                // pool should connect to either transactions in the chain
+                // pool should connect to eiextern const unsigned int DEFAULT_BLOCK_MAX_SIZE ;ther transactions in the chain
                 // or other transactions in the memory pool.
                 if (!VerifyUTXOIsKnownToMemPool(txin, fMissingInputs)) {
                     break;

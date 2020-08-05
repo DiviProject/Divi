@@ -27,6 +27,7 @@ cd $path
 ./reindex.py
 ./rest.py
 ./rpcbind_test.py
+./smartfees.py
 ./sync.py
 ./txn_doublespend.py
 ./txn_doublespend.py --mineblock

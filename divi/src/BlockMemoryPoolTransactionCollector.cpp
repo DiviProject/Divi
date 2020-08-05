@@ -164,7 +164,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
     const int& nHeight,
     std::map<uint256, std::vector<std::shared_ptr<COrphan>>>& dependentTransactions,
     CCoinsViewCache& view) const
-{extern const unsigned int DEFAULT_BLOCK_MAX_SIZE ;
+{
     std::vector<TxPriority> vecPriority;
     vecPriority.reserve(mempool_.mapTx.size());
     for (auto mi = mempool_.mapTx.begin(); mi != mempool_.mapTx.end(); ++mi) {
@@ -182,7 +182,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
             // Read prev transaction
             if (!view.HaveCoins(txin.prevout.hash)) {
                 // This should never happen; all transactions in the memory
-                // pool should connect to eiextern const unsigned int DEFAULT_BLOCK_MAX_SIZE ;ther transactions in the chain
+                // pool should connect to either transactions in the chain
                 // or other transactions in the memory pool.
                 if (!VerifyUTXOIsKnownToMemPool(txin, fMissingInputs)) {
                     break;

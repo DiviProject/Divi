@@ -25,7 +25,7 @@
 #include "json/json_spirit_value.h"
 #include "spork.h"
 #include <boost/assign/list_of.hpp>
-#include <main.h>
+#include <blockmap.h>
 
 using namespace std;
 using namespace boost;
@@ -34,6 +34,12 @@ using namespace json_spirit;
 
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
+extern BlockMap mapBlockIndex;
+extern int64_t nReserveBalance;
+
+extern const std::string strMessageMagic = "DarkNet Signed Message:\n";
+
+int GetIXConfirmations(uint256 nTXHash);
 
 std::string HelpRequiringPassphrase()
 {

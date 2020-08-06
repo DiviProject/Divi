@@ -22,7 +22,6 @@
 #include <SuperblockHelpers.h>
 #include <LotteryWinnersCalculator.h>
 #include <BlockIncentivesPopulator.h>
-#include <main.h>
 
 
 #define MNPAYMENTS_SIGNATURES_REQUIRED 6
@@ -40,6 +39,9 @@ const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
 const std::string TREASURY_PAYMENT_ADDRESS_TESTNET("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
 const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
 
+int ActiveProtocol();
+void Misbehaving(NodeId pnode, int howmuch);
+extern CCriticalSection cs_main;
 
 static CBitcoinAddress TreasuryPaymentAddress()
 {

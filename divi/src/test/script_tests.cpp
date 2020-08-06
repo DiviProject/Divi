@@ -327,7 +327,26 @@ public:
 };
 }
 
-BOOST_AUTO_TEST_CASE(StakingVaultScripts)
+BOOST_AUTO_TEST_CASE(StakingVaultScriptsDetection)
+{
+    const KeyData keys;
+    auto ownerKeyHash = ToByteVector(keys.pubkey1C.GetID());
+    auto vaultKeyHash = ToByteVector(keys.pubkey2C.GetID());
+    CScript stakingVault = CreateStakingVaultScript(
+            ownerKeyHash,
+            vaultKeyHash);
+    std::pair<valtype,valtype> ownerAndVaultKeyHashes;
+    BOOST_CHECK_MESSAGE(
+        GetStakingVaultPubkeyHashes(stakingVault,ownerAndVaultKeyHashes),
+        "Failed to detect actual vault script!");
+    BOOST_CHECK_MESSAGE(
+        ownerAndVaultKeyHashes.first == ownerKeyHash &&
+        ownerAndVaultKeyHashes.second == vaultKeyHash,
+        "Recovered incorrect pubkey hash!"
+    );
+}
+
+BOOST_AUTO_TEST_CASE(StakingVaultScriptsExecution)
 {
     const KeyData keys;
 
@@ -350,6 +369,7 @@ BOOST_AUTO_TEST_CASE(StakingVaultScripts)
             ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
                             "P2PKH-vault-disabled", 0
                             ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
+
     BOOST_FOREACH(TestBuilder& test, good)
     {
         test.Test(true);

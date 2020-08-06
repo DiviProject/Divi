@@ -586,7 +586,7 @@ void StartRPCThreads()
     rpc_allow_subnets.clear();
     rpc_allow_subnets.push_back(CSubNet("127.0.0.0/8")); // always allow IPv4 local subnet
     rpc_allow_subnets.push_back(CSubNet("::1"));         // always allow IPv6 localhost
-    if (ParameterIsSetForMultiArgs("-rpcallowip")) {
+    if (settings.ParameterIsSetForMultiArgs("-rpcallowip")) {
         const vector<string>& vAllow = mapMultiArgs["-rpcallowip"];
         BOOST_FOREACH (string strAllow, vAllow) {
             CSubNet subnet(strAllow);
@@ -635,14 +635,14 @@ void StartRPCThreads()
     std::vector<ip::tcp::endpoint> vEndpoints;
     bool bBindAny = false;
     int defaultPort = settings.GetArg("-rpcport", BaseParams().RPCPort());
-    if (!ParameterIsSet("-rpcallowip")) // Default to loopback if not allowing external IPs
+    if (!settings.ParameterIsSet("-rpcallowip")) // Default to loopback if not allowing external IPs
     {
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v6::loopback(), defaultPort));
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v4::loopback(), defaultPort));
-        if (ParameterIsSet("-rpcbind")) {
+        if (settings.ParameterIsSet("-rpcbind")) {
             LogPrintf("WARNING: option -rpcbind was ignored because -rpcallowip was not specified, refusing to allow everyone to connect\n");
         }
-    } else if (ParameterIsSet("-rpcbind")) // Specific bind address
+    } else if (settings.ParameterIsSet("-rpcbind")) // Specific bind address
     {
         BOOST_FOREACH (const std::string& addr, mapMultiArgs["-rpcbind"]) {
             try {

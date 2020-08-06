@@ -12,10 +12,15 @@
 #include <boost/thread.hpp>
 #include <SuperblockHelpers.h>
 #include <BlockFactory.h>
-#include <main.h>
 #include <ValidationState.h>
+#include <txmempool.h>
 
 extern const int nHashDrift;
+extern int64_t nReserveBalance;
+extern CChain chainActive;
+extern CScript COINBASE_FLAGS;
+
+bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
 CoinMinter::CoinMinter(
     CWallet* pwallet,

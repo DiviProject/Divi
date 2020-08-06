@@ -26,7 +26,9 @@ bool GetStakingVaultPubkeyHashes(const CScript& scriptPubKey, std::pair<valtype,
     copyScript.insert(copyScript.begin()+24, OP_PUBKEYHASH);
     copyScript.erase(copyScript.begin()+1, copyScript.begin()+22);
     copyScript.insert(copyScript.begin()+1, OP_PUBKEYHASH);
-    if(copyScript == GetStakingVaultScriptTemplate())
+    if(copyScript == GetStakingVaultScriptTemplate() &&
+        scriptPubKey[1] == 0x14 &&
+        scriptPubKey[24] == 0x14)
     {
         pubkeyHashes.first.resize(20);
         pubkeyHashes.first.assign(scriptPubKey.begin()+2,scriptPubKey.begin()+22);

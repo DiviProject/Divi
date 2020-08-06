@@ -330,20 +330,41 @@ public:
 BOOST_AUTO_TEST_CASE(StakingVaultScriptsDetection)
 {
     const KeyData keys;
-    auto ownerKeyHash = ToByteVector(keys.pubkey1C.GetID());
-    auto vaultKeyHash = ToByteVector(keys.pubkey2C.GetID());
-    CScript stakingVault = CreateStakingVaultScript(
+    {
+        auto ownerKeyHash = ToByteVector(keys.pubkey1C.GetID());
+        auto vaultKeyHash = ToByteVector(keys.pubkey2C.GetID());
+        CScript stakingVault = CreateStakingVaultScript(
             ownerKeyHash,
             vaultKeyHash);
-    std::pair<valtype,valtype> ownerAndVaultKeyHashes;
-    BOOST_CHECK_MESSAGE(
-        GetStakingVaultPubkeyHashes(stakingVault,ownerAndVaultKeyHashes),
-        "Failed to detect actual vault script!");
-    BOOST_CHECK_MESSAGE(
-        ownerAndVaultKeyHashes.first == ownerKeyHash &&
-        ownerAndVaultKeyHashes.second == vaultKeyHash,
-        "Recovered incorrect pubkey hash!"
-    );
+        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
+        BOOST_CHECK_MESSAGE(
+            GetStakingVaultPubkeyHashes(stakingVault,ownerAndVaultKeyHashes),
+            "Failed to detect actual vault script!");
+        BOOST_CHECK_MESSAGE(
+            ownerAndVaultKeyHashes.first == ownerKeyHash &&
+            ownerAndVaultKeyHashes.second == vaultKeyHash,
+            "Recovered incorrect pubkey hash!"
+        );
+    }
+    {
+        auto ownerKeyHash = ToByteVector(keys.pubkey1C.GetID());
+        auto vaultKeyHash = ToByteVector(keys.pubkey2C.GetID());
+        CScript stakingVault = CreateStakingVaultScript(
+            ownerKeyHash,
+            vaultKeyHash);
+        // Warped push size should fail
+        stakingVault[1] = 0x01;
+        stakingVault[24] = 0x01;
+        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
+        BOOST_CHECK_MESSAGE(
+            !GetStakingVaultPubkeyHashes(stakingVault,ownerAndVaultKeyHashes),
+            "Failed to detect flawed vault script!");
+        BOOST_CHECK_MESSAGE(
+            ownerAndVaultKeyHashes.first == valtype() &&
+            ownerAndVaultKeyHashes.second == valtype(),
+            "Recovered incorrect pubkey hash!"
+        );
+    }
 }
 
 BOOST_AUTO_TEST_CASE(StakingVaultScriptsExecution)

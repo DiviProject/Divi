@@ -8,11 +8,13 @@
 #include <SuperblockHelpers.h>
 #include <Settings.h>
 #include <BlockIncentivesPopulator.h>
-#include <main.h>
+#include <blockmap.h>
 
 extern Settings& settings;
 extern const int nHashDrift;
 extern const int maximumFutureBlockDrift = 180; // seconds
+extern BlockMap mapBlockIndex;
+extern int64_t nReserveBalance;
 
 PoSTransactionCreator::PoSTransactionCreator(
     CWallet& wallet,

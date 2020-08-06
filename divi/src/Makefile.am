@@ -212,6 +212,7 @@ BITCOIN_CORE_H = \
   script/scriptandsigflags.h \
   script/sigcache.h \
   script/sign.h \
+  script/StakingVaultScript.h \
   script/standard.h \
   script/script_error.h \
   serialize.h \
@@ -464,6 +465,7 @@ libbitcoin_common_a_SOURCES = \
   script/StackManager.cpp \
   script/opcodes.cpp \
   script/script.cpp \
+  script/StakingVaultScript.cpp \
   script/sign.cpp \
   script/standard.cpp \
   script/script_error.cpp \

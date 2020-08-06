@@ -12,6 +12,7 @@
 #include "script/script.h"
 #include "script/script_error.h"
 #include "script/sign.h"
+#include <script/StakingVaultScript.h>
 
 #if defined(HAVE_CONSENSUS_LIB)
 #include "script/bitcoinconsensus.h"
@@ -326,10 +327,43 @@ public:
 };
 }
 
+BOOST_AUTO_TEST_CASE(StakingVaultScripts)
+{
+    const KeyData keys;
+
+    std::vector<TestBuilder> good;
+    std::vector<TestBuilder> bad;
+
+    good.push_back(TestBuilder(
+        CreateStakingVaultScript(
+            ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
+                            "P2PKH-vault-good", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
+                            ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1));
+    bad.push_back(TestBuilder(
+        CreateStakingVaultScript(
+            ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
+                            "P2PKH-vault-disabled", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
+                            ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
+    // When opcode is enabled, should work
+    good.push_back(TestBuilder(
+        CreateStakingVaultScript(
+            ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
+                            "P2PKH-vault-disabled", 0
+                            ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
+    BOOST_FOREACH(TestBuilder& test, good)
+    {
+        test.Test(true);
+    }
+    BOOST_FOREACH(TestBuilder& test, bad)
+    {
+        test.Test(false);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(script_build)
 {
-    
-    
+
+
     const KeyData keys;
 
     std::vector<TestBuilder> good;
@@ -566,7 +600,7 @@ BOOST_AUTO_TEST_CASE(script_build)
                               ).Num(0).PushSig(keys.key1).PushSig(keys.key1));
 
 
-    
+
     std::set<std::string> tests_good;
     std::set<std::string> tests_bad;
 
@@ -609,7 +643,7 @@ BOOST_AUTO_TEST_CASE(script_build)
 #endif
         strBad += str + ",\n";
     }
-    
+
 #ifdef UPDATE_JSON_TESTS
     FILE* valid = fopen("script_valid.json.gen", "w");
     fputs(strGood.c_str(), valid);
@@ -627,8 +661,8 @@ BOOST_AUTO_TEST_CASE(script_valid)
     // Inner arrays are [ "scriptSig", "scriptPubKey", "flags" ]
     // ... where scriptSig and scriptPubKey are stringified
     // scripts.
-    
-    
+
+
     Array tests = read_json(std::string(json_tests::script_valid, json_tests::script_valid + sizeof(json_tests::script_valid)));
 
     BOOST_FOREACH(Value& tv, tests)
@@ -650,13 +684,13 @@ BOOST_AUTO_TEST_CASE(script_valid)
 
         DoTest(scriptPubKey, scriptSig, scriptflags, true, strTest);
     }
-    
+
 }
 
 BOOST_AUTO_TEST_CASE(script_invalid)
 {
-    
-    
+
+
     // Scripts that should evaluate as invalid
     Array tests = read_json(std::string(json_tests::script_invalid, json_tests::script_invalid + sizeof(json_tests::script_invalid)));
 
@@ -679,7 +713,7 @@ BOOST_AUTO_TEST_CASE(script_invalid)
 
         DoTest(scriptPubKey, scriptSig, scriptflags, false, strTest);
     }
-    
+
 }
 
 BOOST_AUTO_TEST_CASE(script_PushData)
@@ -746,8 +780,8 @@ sign_multisig(CScript scriptPubKey, const CKey &key, CTransaction transaction)
 
 BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG12)
 {
-    
-    
+
+
 
     ScriptError err;
     CKey key1, key2, key3;
@@ -776,13 +810,13 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG12)
     BOOST_CHECK(!VerifyScript(badsig1, scriptPubKey12, flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
-    
+
 }
 
 BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG23)
 {
-    
-    
+
+
 
     ScriptError err;
     CKey key1, key2, key3, key4;
@@ -850,14 +884,14 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG23)
     BOOST_CHECK(!VerifyScript(badsig6, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_INVALID_STACK_OPERATION, ScriptErrorString(err));
 
-    
-}    
+
+}
 
 BOOST_AUTO_TEST_CASE(script_combineSigs)
 {
-    
-    
-    
+
+
+
     // Test the CombineSignatures function
     CBasicKeyStore keystore;
     vector<CKey> keys;
@@ -964,7 +998,7 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     combined = CombineSignatures(scriptPubKey, txTo, 0, partial3b, partial3a);
     BOOST_CHECK(combined == partial3c);
 
-    
+
 }
 
 BOOST_AUTO_TEST_CASE(script_standard_push)

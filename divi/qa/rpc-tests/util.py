@@ -69,11 +69,12 @@ def initialize_datadir(dirname, n):
     if not os.path.isdir(datadir):
         os.makedirs(datadir)
     with open(os.path.join(datadir, "divi.conf"), 'w') as f:
-        f.write("regtest=1\n");
-        f.write("rpcuser=rt\n");
-        f.write("rpcpassword=rt\n");
-        f.write("port="+str(p2p_port(n))+"\n");
-        f.write("rpcport="+str(rpc_port(n))+"\n");
+        f.write("allowunencryptedwallet=1\n")
+        f.write("regtest=1\n")
+        f.write("rpcuser=rt\n")
+        f.write("rpcpassword=rt\n")
+        f.write("port="+str(p2p_port(n))+"\n")
+        f.write("rpcport="+str(rpc_port(n))+"\n")
     return datadir
 
 def _rpchost_to_args(rpchost):

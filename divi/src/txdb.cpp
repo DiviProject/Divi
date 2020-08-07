@@ -7,17 +7,25 @@
 #include "txdb.h"
 #include "pow.h"
 #include "uint256.h"
-#include <main.h>
 #include <stdint.h>
 #include <coins.h>
 #include <boost/thread.hpp>
 #include <blockFileInfo.h>
+#include <blockmap.h>
+#include <chainparams.h>
+#include <addressindex.h>
+#include <spentindex.h>
 
 using namespace std;
 
 static const char DB_ADDRESSINDEX = 'a';
 static const char DB_SPENTINDEX = 'p';
 static const char DB_ADDRESSUNSPENTINDEX = 'u';
+
+extern BlockMap mapBlockIndex;
+extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
+
+CBlockIndex* InsertBlockIndex(uint256 hash);
 
 void static BatchWriteCoins(CLevelDBBatch& batch, const uint256& hash, const CCoins& coins)
 {

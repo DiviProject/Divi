@@ -14,7 +14,7 @@
 #include "util.h"
 #include "utiltime.h"
 #include "wallet.h"
-#include <main.h>
+//#include <main.h>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -28,7 +28,7 @@ using namespace boost;
 using namespace std;
 
 static uint64_t nAccountingEntryNumber = 0;
-
+bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationState& state);
 //
 // CWalletDB
 //

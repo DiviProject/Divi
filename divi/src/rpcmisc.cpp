@@ -47,6 +47,8 @@ using namespace std;
 extern int64_t nLastCoinStakeSearchInterval;
 extern bool fAddressIndex;
 extern CBlockTreeDB* pblocktree;
+extern const std::string strMessageMagic;
+
 Value getinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)

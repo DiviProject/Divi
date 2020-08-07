@@ -175,13 +175,13 @@ def main():
         # Specified tests can contain wildcards, but in that case the supplied
         # paths should be coherent, e.g. the same path as that provided to call
         # test_runner.py. Examples:
-        #   `test/functional/test_runner.py test/functional/wallet*`
-        #   `test/functional/test_runner.py ./test/functional/wallet*`
         #   `test_runner.py wallet*`
+        #   `test_runner.py ./wallet*`
+        #   `qa/rpc-tests/test_runner.py qa/rpc-tests/wallet*`
         #   but not:
-        #   `test/functional/test_runner.py wallet*`
+        #   `qa/rpc-tests/test_runner.py wallet*`
         # Multiple wildcards can be passed:
-        #   `test_runner.py tool* mempool*`
+        #   `test_runner.py mempool* txn*`
         for test in tests:
             script = test.split("/")[-1]
             script = script + ".py" if ".py" not in script else script
@@ -218,7 +218,7 @@ def main():
     if args.help:
         # Print help for test_runner.py, then print help of the first script (with args removed) and exit.
         parser.print_help()
-        subprocess.check_call([sys.executable, os.path.join(config["environment"]["SRCDIR"], 'test', 'functional', test_list[0].split()[0]), '-h'])
+        subprocess.check_call([os.path.join(config["environment"]["SRCDIR"], 'qa', 'rpc-tests', test_list[0].split()[0]), '-h'])
         sys.exit(0)
 
     check_script_list(src_dir=config["environment"]["SRCDIR"], fail_on_warn=args.ci)
@@ -246,7 +246,7 @@ def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, args=None, failf
         # pgrep not supported
         pass
 
-    tests_dir = src_dir + '/test/functional/'
+    tests_dir = src_dir + '/qa/rpc-tests/'
 
     #Run Tests
     job_queue = TestHandler(
@@ -435,7 +435,7 @@ def check_script_list(*, src_dir, fail_on_warn):
 
     Check that there are no scripts in the functional tests directory which are
     not being run by pull-tester.py."""
-    script_dir = src_dir + '/test/functional/'
+    script_dir = src_dir + '/qa/rpc-tests/'
     python_files = set([test_file for test_file in os.listdir(script_dir) if test_file.endswith(".py")])
     missed_tests = list(python_files - set(map(lambda x: x.split()[0], ALL_SCRIPTS + NON_SCRIPTS)))
     if len(missed_tests) != 0:

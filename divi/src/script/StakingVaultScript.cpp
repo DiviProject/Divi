@@ -18,7 +18,7 @@ CScript GetStakingVaultScriptTemplate()
 {
     return STAKING_VAULT(OP_PUBKEYHASH,OP_PUBKEYHASH);
 }
-bool GetStakingVaultPubkeyHashes(const CScript& scriptPubKey, std::pair<valtype,valtype>& pubkeyHashes)
+bool IsStakingVaultScript(const CScript& scriptPubKey)
 {
     CScript copyScript = scriptPubKey;
 
@@ -29,6 +29,17 @@ bool GetStakingVaultPubkeyHashes(const CScript& scriptPubKey, std::pair<valtype,
     if(copyScript == GetStakingVaultScriptTemplate() &&
         scriptPubKey[1] == 0x14 &&
         scriptPubKey[24] == 0x14)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+bool GetStakingVaultPubkeyHashes(const CScript& scriptPubKey, std::pair<valtype,valtype>& pubkeyHashes)
+{
+    if(IsStakingVaultScript(scriptPubKey))
     {
         pubkeyHashes.first.resize(20);
         pubkeyHashes.first.assign(scriptPubKey.begin()+2,scriptPubKey.begin()+22);

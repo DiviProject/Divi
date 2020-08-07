@@ -7,5 +7,6 @@
 typedef std::vector<unsigned char> valtype;
 CScript CreateStakingVaultScript(const valtype& ownerKeyHash, const valtype& vaultKeyHash);
 CScript GetStakingVaultScriptTemplate();
+bool IsStakingVaultScript(const CScript& scriptPubKey);
 bool GetStakingVaultPubkeyHashes(const CScript& scriptPubKey, std::pair<valtype,valtype>& pubkeyHashes);
 #endif// STAKING_VAULT_SCRIPT_H

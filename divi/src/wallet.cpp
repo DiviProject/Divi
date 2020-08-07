@@ -1632,7 +1632,7 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
 bool CWallet::MintableCoins()
 {
     CAmount nBalance = GetBalance();
-    if (ParameterIsSet("-reservebalance") && !ParseMoney(GetParameter("-reservebalance"), nReserveBalance))
+    if (settings.ParameterIsSet("-reservebalance") && !ParseMoney(GetParameter("-reservebalance"), nReserveBalance))
         return error("MintableCoins() : invalid reserve balance amount");
     if (nBalance <= nReserveBalance)
         return false;
@@ -3184,13 +3184,13 @@ void CWallet::GenerateNewHDChain()
 
     std::string strSeed = settings.GetArg("-hdseed", "not hex");
 
-    if(ParameterIsSet("-hdseed") && IsHex(strSeed)) {
+    if(settings.ParameterIsSet("-hdseed") && IsHex(strSeed)) {
         std::vector<unsigned char> vchSeed = ParseHex(strSeed);
         if (!newHdChain.SetSeed(SecureVector(vchSeed.begin(), vchSeed.end()), true))
             throw std::runtime_error(std::string(__func__) + ": SetSeed failed");
     }
     else {
-        if (ParameterIsSet("-hdseed") && !IsHex(strSeed))
+        if (settings.ParameterIsSet("-hdseed") && !IsHex(strSeed))
             LogPrintf("CWallet::GenerateNewHDChain -- Incorrect seed, generating random one instead\n");
 
         // NOTE: empty mnemonic means "generate a new one for me"

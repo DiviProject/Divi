@@ -6,7 +6,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
-#include <main.h>
 #include "BlockDiskAccessor.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
@@ -27,6 +26,9 @@
 #include <boost/filesystem/operations.hpp>
 #include "FeeAndPriorityCalculator.h"
 #include <ValidationState.h>
+#include <blockmap.h>
+#include <txmempool.h>
+#include <defaultValues.h>
 
 #include "Settings.h"
 extern Settings& settings;
@@ -61,6 +63,22 @@ int64_t nStartupTime = GetAdjustedTime();
  *
  * @{
  */
+
+extern bool fImporting ;
+extern bool fReindex ;
+extern CCriticalSection cs_main;
+extern BlockMap mapBlockIndex;
+extern CTxMemPool mempool;
+extern int64_t nTimeBestReceived;
+extern int64_t nReserveBalance;
+extern CFeeRate minRelayTxFee;
+extern CAmount maxTxFee;
+extern bool fLargeWorkForkFound;
+extern bool fLargeWorkInvalidChainFound;
+
+bool CheckFinalTx(const CTransaction& tx, int flags = -1);
+bool IsInitialBlockDownload();
+bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees);
 
 struct CompareValueOnly {
     bool operator()(const pair<CAmount, pair<const CWalletTx*, unsigned int> >& t1,

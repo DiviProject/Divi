@@ -75,6 +75,7 @@ bool CreateHashProofForProofOfStake(
 // Sets hashProofOfStake on success return
 bool CheckProofOfStake(
     const CBlock& block,
+    int blockHeight,
     uint256& hashProofOfStake);
 
 // Check stake modifier hard checkpoints

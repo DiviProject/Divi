@@ -506,7 +506,7 @@ bool CreateHashProofForProofOfStake(
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
+bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofOfStake)
 {
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())

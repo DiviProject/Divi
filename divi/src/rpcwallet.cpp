@@ -37,7 +37,7 @@ static CCriticalSection cs_nWalletUnlockTime;
 extern BlockMap mapBlockIndex;
 extern int64_t nReserveBalance;
 
-extern const std::string strMessageMagic = "DarkNet Signed Message:\n";
+extern const std::string strMessageMagic;
 
 int GetIXConfirmations(uint256 nTXHash);
 

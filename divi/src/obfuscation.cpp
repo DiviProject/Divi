@@ -23,6 +23,8 @@
 #include <boost/assign/list_of.hpp>
 #include <openssl/rand.h>
 
+extern const std::string strMessageMagic = "DarkNet Signed Message:\n";
+
 bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, CMasternode::Tier nMasternodeTier)
 {
     CScript payee2;

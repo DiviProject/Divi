@@ -94,7 +94,7 @@ BASE_SCRIPTS = [
     'txn_doublespend.py --mineblock',
     'wallet.py',
     'walletbackup.py',
-    #'zapwallettxes.sh SRCDIR/src',
+    'zapwallettxes.py',
     'zmq_test.py',
 ]
 

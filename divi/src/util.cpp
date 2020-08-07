@@ -162,16 +162,6 @@ void ParseParameters(int argc, const char* const argv[])
     settings.ParseParameters(argc, argv);
 }
 
-bool ParameterIsSet (const std::string& key)
-{
-    return settings.ParameterIsSet(key);
-}
-
-bool ParameterIsSetForMultiArgs (const std::string& key)
-{
-    return settings.ParameterIsSetForMultiArgs(key);
-}
-
 std::string GetParameter(const std::string& key)
 {
     return settings.GetParameter(key);

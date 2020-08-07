@@ -64,12 +64,6 @@ if os.name != 'nt' or sys.getwindowsversion() >= (10, 0, 14393):
 TEST_EXIT_PASSED = 0
 TEST_EXIT_SKIPPED = 77
 
-TEST_FRAMEWORK_MODULES = [
-    "address",
-    "blocktools",
-    "script",
-]
-
 EXTENDED_SCRIPTS = [
     # These tests are not run by default.
     # Longest test should go first, to favor running tests in parallel
@@ -271,14 +265,11 @@ def main():
     Help text and arguments for individual test script:''',
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--ansi', action='store_true', default=sys.stdout.isatty(), help="Use ANSI colors and dots in output (enabled by default when standard output is a TTY)")
-    parser.add_argument('--combinedlogslen', '-c', type=int, default=0, metavar='n', help='On failure, print a log (of length n lines) to the console, combined from the test framework and all test nodes.')
-    parser.add_argument('--coverage', action='store_true', help='generate a basic coverage report for the RPC interface')
     parser.add_argument('--ci', action='store_true', help='Run checks and code that are usually only enabled in a continuous integration environment')
     parser.add_argument('--exclude', '-x', help='specify a comma-separated-list of scripts to exclude.')
     parser.add_argument('--extended', action='store_true', help='run the extended test suite in addition to the basic tests')
     parser.add_argument('--help', '-h', '-?', action='store_true', help='print help text and exit')
     parser.add_argument('--jobs', '-j', type=int, default=4, help='how many test scripts to run in parallel. Default=4.')
-    parser.add_argument('--keepcache', '-k', action='store_true', help='the default behavior is to flush the cache directory on startup. --keepcache retains the cache from the previous testrun.')
     parser.add_argument('--quiet', '-q', action='store_true', help='only print dots, results summary and failure logs')
     parser.add_argument('--tmpdirprefix', '-t', default=tempfile.gettempdir(), help="Root directory for datadirs")
     parser.add_argument('--failfast', action='store_true', help='stop execution after the first test failure')
@@ -376,10 +367,6 @@ def main():
         sys.exit(0)
 
     check_script_list(src_dir=config["environment"]["SRCDIR"], fail_on_warn=args.ci)
-    check_script_prefixes()
-
-    if not args.keepcache:
-        shutil.rmtree("%s/test/cache" % config["environment"]["BUILDDIR"], ignore_errors=True)
 
     run_tests(
         test_list=test_list,
@@ -387,14 +374,12 @@ def main():
         build_dir=config["environment"]["BUILDDIR"],
         tmpdir=tmpdir,
         jobs=args.jobs,
-        enable_coverage=args.coverage,
         args=passon_args,
-        combined_logs_len=args.combinedlogslen,
         failfast=args.failfast,
         use_term_control=args.ansi,
     )
 
-def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=False, args=None, combined_logs_len=0, failfast=False, use_term_control):
+def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, args=None, failfast=False, use_term_control):
     args = args or []
 
     # Warn if divid is already running
@@ -406,39 +391,7 @@ def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=
         # pgrep not supported
         pass
 
-    # Warn if there is a cache directory
-    cache_dir = "%s/test/cache" % build_dir
-    if os.path.isdir(cache_dir):
-        print("%sWARNING!%s There is a cache directory here: %s. If tests fail unexpectedly, try deleting the cache directory." % (BOLD[1], BOLD[0], cache_dir))
-
-    # Test Framework Tests
-    print("Running Unit Tests for Test Framework Modules")
-    test_framework_tests = unittest.TestSuite()
-    for module in TEST_FRAMEWORK_MODULES:
-        test_framework_tests.addTest(unittest.TestLoader().loadTestsFromName("test_framework.{}".format(module)))
-    result = unittest.TextTestRunner(verbosity=1, failfast=True).run(test_framework_tests)
-    if not result.wasSuccessful():
-        logging.debug("Early exiting after failure in TestFramework unit tests")
-        sys.exit(False)
-
     tests_dir = src_dir + '/test/functional/'
-
-    flags = ['--cachedir={}'.format(cache_dir)] + args
-
-    if enable_coverage:
-        coverage = RPCCoverage()
-        flags.append(coverage.flag)
-        logging.debug("Initializing coverage directory at %s" % coverage.dir)
-    else:
-        coverage = None
-
-    if len(test_list) > 1 and jobs > 1:
-        # Populate cache
-        try:
-            subprocess.check_output([sys.executable, tests_dir + 'create_cache.py'] + flags + ["--tmpdir=%s/cache" % tmpdir])
-        except subprocess.CalledProcessError as e:
-            sys.stdout.buffer.write(e.output)
-            raise
 
     #Run Tests
     job_queue = TestHandler(
@@ -446,7 +399,7 @@ def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=
         tests_dir=tests_dir,
         tmpdir=tmpdir,
         test_list=test_list,
-        flags=flags,
+        flags=args,
         use_term_control=use_term_control,
     )
     start_time = time.time()
@@ -466,17 +419,6 @@ def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=
             print("%s failed, Duration: %s s\n" % (done_str, test_result.time))
             print(BOLD[1] + 'stdout:\n' + BOLD[0] + stdout + '\n')
             print(BOLD[1] + 'stderr:\n' + BOLD[0] + stderr + '\n')
-            if combined_logs_len and os.path.isdir(testdir):
-                # Print the final `combinedlogslen` lines of the combined logs
-                print('{}Combine the logs and print the last {} lines ...{}'.format(BOLD[1], combined_logs_len, BOLD[0]))
-                print('\n============')
-                print('{}Combined log for {}:{}'.format(BOLD[1], testdir, BOLD[0]))
-                print('============\n')
-                combined_logs_args = [sys.executable, os.path.join(tests_dir, 'combine_logs.py'), testdir]
-                if BOLD[0]:
-                    combined_logs_args += ['--color']
-                combined_logs, _ = subprocess.Popen(combined_logs_args, universal_newlines=True, stdout=subprocess.PIPE).communicate()
-                print("\n".join(deque(combined_logs.splitlines(), combined_logs_len)))
 
             if failfast:
                 logging.debug("Early exiting after test failure")
@@ -484,19 +426,11 @@ def run_tests(*, test_list, src_dir, build_dir, tmpdir, jobs=1, enable_coverage=
 
     print_results(test_results, max_len_name, (int(time.time() - start_time)))
 
-    if coverage:
-        coverage_passed = coverage.report_rpc_coverage()
-
-        logging.debug("Cleaning up coverage data")
-        coverage.cleanup()
-    else:
-        coverage_passed = True
-
     # Clear up the temp directory if all subdirectories are gone
     if not os.listdir(tmpdir):
         os.rmdir(tmpdir)
 
-    all_passed = all(map(lambda test_result: test_result.was_successful, test_results)) and coverage_passed
+    all_passed = all(map(lambda test_result: test_result.was_successful, test_results))
 
     # This will be a no-op unless failfast is True in which case there may be dangling
     # processes which need to be killed.
@@ -641,18 +575,6 @@ class TestResult():
         return self.status != "Failed"
 
 
-def check_script_prefixes():
-    """Check that test scripts start with one of the allowed name prefixes."""
-
-    good_prefixes_re = re.compile("^(example|feature|interface|mempool|mining|p2p|rpc|wallet|tool)_")
-    bad_script_names = [script for script in ALL_SCRIPTS if good_prefixes_re.match(script) is None]
-
-    if bad_script_names:
-        print("%sERROR:%s %d tests not meeting naming conventions:" % (BOLD[1], BOLD[0], len(bad_script_names)))
-        print("  %s" % ("\n  ".join(sorted(bad_script_names))))
-        raise AssertionError("Some tests are not following naming convention!")
-
-
 def check_script_list(*, src_dir, fail_on_warn):
     """Check scripts directory.
 
@@ -666,75 +588,6 @@ def check_script_list(*, src_dir, fail_on_warn):
         if fail_on_warn:
             # On CI this warning is an error to prevent merging incomplete commits into master
             sys.exit(1)
-
-
-class RPCCoverage():
-    """
-    Coverage reporting utilities for test_runner.
-
-    Coverage calculation works by having each test script subprocess write
-    coverage files into a particular directory. These files contain the RPC
-    commands invoked during testing, as well as a complete listing of RPC
-    commands per `divi-cli help` (`rpc_interface.txt`).
-
-    After all tests complete, the commands run are combined and diff'd against
-    the complete list to calculate uncovered RPC commands.
-
-    See also: test/functional/test_framework/coverage.py
-
-    """
-    def __init__(self):
-        self.dir = tempfile.mkdtemp(prefix="coverage")
-        self.flag = '--coveragedir=%s' % self.dir
-
-    def report_rpc_coverage(self):
-        """
-        Print out RPC commands that were unexercised by tests.
-
-        """
-        uncovered = self._get_uncovered_rpc_commands()
-
-        if uncovered:
-            print("Uncovered RPC commands:")
-            print("".join(("  - %s\n" % command) for command in sorted(uncovered)))
-            return False
-        else:
-            print("All RPC commands covered.")
-            return True
-
-    def cleanup(self):
-        return shutil.rmtree(self.dir)
-
-    def _get_uncovered_rpc_commands(self):
-        """
-        Return a set of currently untested RPC commands.
-
-        """
-        # This is shared from `test/functional/test-framework/coverage.py`
-        reference_filename = 'rpc_interface.txt'
-        coverage_file_prefix = 'coverage.'
-
-        coverage_ref_filename = os.path.join(self.dir, reference_filename)
-        coverage_filenames = set()
-        all_cmds = set()
-        covered_cmds = set()
-
-        if not os.path.isfile(coverage_ref_filename):
-            raise RuntimeError("No coverage reference found")
-
-        with open(coverage_ref_filename, 'r', encoding="utf8") as coverage_ref_file:
-            all_cmds.update([line.strip() for line in coverage_ref_file.readlines()])
-
-        for root, _, files in os.walk(self.dir):
-            for filename in files:
-                if filename.startswith(coverage_file_prefix):
-                    coverage_filenames.add(os.path.join(root, filename))
-
-        for filename in coverage_filenames:
-            with open(filename, 'r', encoding="utf8") as coverage_file:
-                covered_cmds.update([line.strip() for line in coverage_file.readlines()])
-
-        return all_cmds - covered_cmds
 
 
 if __name__ == '__main__':

@@ -17,7 +17,7 @@
 
 extern const int nHashDrift;
 extern int64_t nReserveBalance;
-extern CChain chainActive;
+
 extern CScript COINBASE_FLAGS;
 
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
@@ -137,7 +137,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
     // Found a solution
     {
         LOCK(mainCS_);
-        if (block->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+        if (block->hashPrevBlock != chain_.Tip()->GetBlockHash())
             return error("DIVIMiner : generated block is stale");
     }
 

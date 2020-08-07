@@ -96,12 +96,17 @@ class BitcoinTestFramework(object):
                           help="Root directory for datadirs")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
                           help="Print out all RPC calls as they are made")
+        parser.add_option("--portseed", dest="port_seed", default=os.getpid(), type=int,
+                          help="The seed to use for assigning port numbers (default: current process id)")
         self.add_options(parser)
         (self.options, self.args) = parser.parse_args()
 
         if self.options.trace_rpc:
             import logging
             logging.basicConfig(level=logging.DEBUG)
+
+        import util
+        util.portseed = self.options.port_seed
 
         os.environ['PATH'] = self.options.srcdir+":"+os.environ['PATH']
 

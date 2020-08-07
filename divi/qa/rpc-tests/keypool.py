@@ -103,7 +103,12 @@ def main():
                       help="Source directory containing bitcoind/bitcoin-cli (default: %default%)")
     parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
                       help="Root directory for datadirs")
+    parser.add_option("--portseed", dest="port_seed", default=os.getpid(), type=int,
+                      help="The seed to use for assigning port numbers (default: current process id)")
     (options, args) = parser.parse_args()
+
+    import util
+    util.portseed = options.port_seed
 
     os.environ['PATH'] = options.srcdir+":"+os.environ['PATH']
 

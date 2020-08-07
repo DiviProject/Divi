@@ -147,8 +147,6 @@ def main():
     configfile = os.path.abspath(os.path.dirname(__file__)) + "/../config.ini"
     config.read_file(open(configfile, encoding="utf8"))
 
-    passon_args.append("--configfile=%s" % configfile)
-
     # Set up logging
     logging_level = logging.INFO if args.quiet else logging.DEBUG
     logging.basicConfig(format='%(message)s', level=logging_level)
@@ -345,7 +343,7 @@ class TestHandler:
             tmpdir_arg = ["--tmpdir={}".format(testdir)]
             self.jobs.append((test,
                               time.time(),
-                              subprocess.Popen([sys.executable, self.tests_dir + test_argv[0]] + test_argv[1:] + self.flags + portseed_arg + tmpdir_arg,
+                              subprocess.Popen([self.tests_dir + test_argv[0]] + test_argv[1:] + self.flags + portseed_arg + tmpdir_arg,
                                                universal_newlines=True,
                                                stdout=log_stdout,
                                                stderr=log_stderr),

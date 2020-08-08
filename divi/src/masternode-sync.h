@@ -17,6 +17,8 @@
 #define MASTERNODE_SYNC_THRESHOLD 2
 
 class CMasternodeSync;
+class CNode;
+class CDataStream;
 extern CMasternodeSync masternodeSync;
 
 //

@@ -8,7 +8,6 @@
 #include "base58.h"
 #include "clientversion.h"
 #include "init.h"
-#include "main.h"
 #include "masternode-sync.h"
 #include "rpcserver.h"
 #include "spork.h"
@@ -25,6 +24,11 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 #include <boost/assign/list_of.hpp>
+#include <txdb.h>
+#include <addressindex.h>
+#include <spentindex.h>
+#include <net.h>
+#include <txmempool.h>
 
 using namespace boost;
 using namespace boost::assign;
@@ -48,6 +52,30 @@ extern int64_t nLastCoinStakeSearchInterval;
 extern bool fAddressIndex;
 extern CBlockTreeDB* pblocktree;
 extern const std::string strMessageMagic;
+extern CChain chainActive;
+extern CCriticalSection cs_main;
+extern int64_t nReserveBalance;
+extern CTxMemPool mempool;
+extern CFeeRate minRelayTxFee;
+
+bool GetAddressIndex(bool fAddressIndex,
+                     CBlockTreeDB* pblocktree,
+                     uint160 addressHash,
+                     int type,
+                     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
+                     int start = 0,
+                     int end = 0);
+
+std::string GetWarnings(std::string strFor);
+
+bool GetSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
+
+bool GetAddressUnspent(bool fAddressIndex,
+                      CBlockTreeDB* pblocktree,
+                      uint160 addressHash,
+                      int type,
+                      std::vector<std::pair<CAddressUnspentKey,
+                      CAddressUnspentValue> > &unspentOutputs);
 
 Value getinfo(const Array& params, bool fHelp)
 {

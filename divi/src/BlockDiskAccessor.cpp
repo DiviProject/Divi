@@ -7,7 +7,6 @@
 #include <chainparams.h>
 #include <txmempool.h>
 #include <txdb.h>
-//#include <main.h>
 
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;

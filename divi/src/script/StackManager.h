@@ -48,8 +48,8 @@ public:
     static const valtype vchTrue;
 
     StackOperator(
-        StackType& stack, 
-        StackType& altstack, 
+        StackType& stack,
+        StackType& altstack,
         unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         );
@@ -108,7 +108,7 @@ public:
     bool HasOp(opcodetype opcode) const;
     bool ReserveAdditionalOp();
     void PushData(const valtype& stackElement);
-    
+
     bool ConditionalNeedsClosing() const;
     bool ConditionalScopeIsBalanced() const;
     unsigned TotalStackSize() const;

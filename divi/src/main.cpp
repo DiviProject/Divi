@@ -57,6 +57,8 @@ extern Settings& settings;
 
 CCriticalSection cs_main;
 
+extern const int maximumFutureBlockDrift;
+
 BlockMap mapBlockIndex;
 std::map<uint256, uint256> mapProofOfStake;
 std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
@@ -1870,7 +1872,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
         }
 
         // restore inputs
-        if (!tx.IsCoinBase() ) { 
+        if (!tx.IsCoinBase() ) {
             const CTxUndo& txundo = blockUndo.vtxundo[i - 1];
             if (txundo.vprevout.size() != tx.vin.size())
                 return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());
@@ -1947,7 +1949,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
                 return state.Abort("Failed to write address unspent index");
             }
         }
-        
+
         return fClean;
     }
 }
@@ -2053,7 +2055,7 @@ string ValueFromCAmount(const CAmount& amount)
 
 /**
  * Returns true if there are nRequired or more blocks of minVersion or above
- * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart 
+ * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart
  * and going backwards.
  */
 static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired)
@@ -2291,7 +2293,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
     SuperblockSubsidyContainer subsidiesContainer(Params());
     CBlockRewards nBaseExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
-    
+
     CBlockRewards nPoWExpectedMint(nBaseExpectedMint.nStakeReward + nFees, 0, 0, 0, 0, 0);
     const CBlockRewards &nExpectedMint = block.IsProofOfWork() ? nPoWExpectedMint : nBaseExpectedMint;
 
@@ -3198,7 +3200,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     // Check timestamp
     LogPrint("debug", "%s: block=%s  is proof of stake=%d\n", __func__, block.GetHash().ToString().c_str(), block.IsProofOfStake());
-    if (block.GetBlockTime() > GetAdjustedTime() + (block.IsProofOfStake() ? 180 : 7200)) // 3 minute future drift for PoS
+    if (block.GetBlockTime() > GetAdjustedTime() + (block.IsProofOfStake() ? maximumFutureBlockDrift : 7200)) // 3 minute future drift for PoS
         return state.Invalid(error("CheckBlock() : block timestamp too far in the future"),
                              REJECT_INVALID, "time-too-new");
 

@@ -7,7 +7,7 @@ typedef std::vector<unsigned char> valtype;
 
 #define STAKING_VAULT(ownerKeyHash,vaultKeyHash) \
     CScript() << OP_IF << ownerKeyHash \
-    << OP_ELSE << OP_NOP10 << vaultKeyHash << OP_ENDIF \
+    << OP_ELSE << OP_REQUIRE_COINSTAKE << vaultKeyHash << OP_ENDIF \
     <<  OP_OVER << OP_HASH160 << OP_EQUALVERIFY << OP_CHECKSIG
 
 CScript CreateStakingVaultScript(const valtype& ownerKeyHash, const valtype& vaultKeyHash)

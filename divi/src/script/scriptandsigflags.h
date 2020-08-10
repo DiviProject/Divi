@@ -50,7 +50,11 @@ enum
     // discouraged NOPs fails the script. This verification flag will never be
     // a mandatory flag applied to scripts in a block. NOPs that are not
     // executed, e.g.  within an unexecuted IF ENDIF block, are *not* rejected.
-    SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS  = (1U << 7)
+    SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS  = (1U << 7),
 
+    // Enable NOP10: OP_REQUIRE_COINSTAKE
+    //
+    // Require transaction be a coinstake to be spendable
+    SCRIPT_REQUIRE_COINSTAKE  = (1U << 8)
 };
 #endif //SCRIPT_AND_SIG_FLAGS_H

@@ -33,6 +33,8 @@ CScript ParseScript(std::string s)
     if (mapOpNames.empty()) {
         mapOpNames["OP_RETURN"] = opcodetype::OP_META;
         mapOpNames["RETURN"] = opcodetype::OP_META;
+        mapOpNames["OP_NOP10"] = opcodetype::OP_REQUIRE_COINSTAKE;
+        mapOpNames["NOP10"] = opcodetype::OP_REQUIRE_COINSTAKE;
 
         for (int op = 0; op <= OP_NOP10; op++) {
             // Allow OP_RESERVED to get into mapOpNames

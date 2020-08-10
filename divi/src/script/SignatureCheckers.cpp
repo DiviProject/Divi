@@ -312,3 +312,8 @@ bool TransactionSignatureChecker::CheckSig(const std::vector<unsigned char>& vch
 
     return true;
 }
+
+bool TransactionSignatureChecker::CheckCoinstake() const
+{
+    return txTo->IsCoinStake();
+}

@@ -39,6 +39,7 @@ BITCOIN_TESTS =\
   test/base58_tests.cpp \
   test/base64_tests.cpp \
   test/BIP9ActivationManager_tests.cpp \
+  test/BlockSignature_tests.cpp \
   test/CachedBIP9ActivationStateTracker_tests.cpp \
   test/checkblock_tests.cpp \
   test/Checkpoints_tests.cpp \

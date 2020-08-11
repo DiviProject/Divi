@@ -1608,7 +1608,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         }
 
         // Warn user every time he starts non-encrypted HD wallet
-        if (!settings.GetBoolArg("-allowunencryptedwallet", false) && settingsGetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked()) {
+        if (!settings.GetBoolArg("-allowunencryptedwallet", false) && settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked()) {
             InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
         }
 

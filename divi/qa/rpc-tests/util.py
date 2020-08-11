@@ -23,10 +23,12 @@ import re
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
+portseed = os.getpid()
+
 def p2p_port(n):
-    return 11000 + n + os.getpid()%999
+    return 11000 + n + 10 * (portseed % 99)
 def rpc_port(n):
-    return 12000 + n + os.getpid()%999
+    return 12000 + n + 10 * (portseed % 99)
 
 def check_json_precision():
     """Make sure json library being used does not lose precision converting BTC values"""
@@ -67,11 +69,12 @@ def initialize_datadir(dirname, n):
     if not os.path.isdir(datadir):
         os.makedirs(datadir)
     with open(os.path.join(datadir, "divi.conf"), 'w') as f:
-        f.write("regtest=1\n");
-        f.write("rpcuser=rt\n");
-        f.write("rpcpassword=rt\n");
-        f.write("port="+str(p2p_port(n))+"\n");
-        f.write("rpcport="+str(rpc_port(n))+"\n");
+        f.write("allowunencryptedwallet=1\n")
+        f.write("regtest=1\n")
+        f.write("rpcuser=rt\n")
+        f.write("rpcpassword=rt\n")
+        f.write("port="+str(p2p_port(n))+"\n")
+        f.write("rpcport="+str(rpc_port(n))+"\n")
     return datadir
 
 def _rpchost_to_args(rpchost):

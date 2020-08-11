@@ -92,16 +92,28 @@ class BitcoinTestFramework(object):
                           help="Leave bitcoinds and test.* datadir on exit or error")
         parser.add_option("--srcdir", dest="srcdir", default="../../src",
                           help="Source directory containing bitcoind/bitcoin-cli (default: %default%)")
-        parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
+        parser.add_option("--tmpdir", dest="tmpdir", default="",
                           help="Root directory for datadirs")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
                           help="Print out all RPC calls as they are made")
+        parser.add_option("--portseed", dest="port_seed", default=os.getpid(), type=int,
+                          help="The seed to use for assigning port numbers (default: current process id)")
         self.add_options(parser)
         (self.options, self.args) = parser.parse_args()
+
+        # We do not want to set the default value to a new temporary folder
+        # explicitly in the parser, as that will then always create the
+        # directory (even if another one is specified).  Hence we use an empty
+        # default value, and only create one if needed.
+        if not self.options.tmpdir:
+            self.options.tmpdir = tempfile.mkdtemp(prefix="test")
 
         if self.options.trace_rpc:
             import logging
             logging.basicConfig(level=logging.DEBUG)
+
+        import util
+        util.portseed = self.options.port_seed
 
         os.environ['PATH'] = self.options.srcdir+":"+os.environ['PATH']
 

@@ -233,7 +233,7 @@ void DeallocateShallowDatabases()
     delete pcoinsdbview;
     delete pblocktree;
     delete pSporkDB;
-    
+
     pcoinsTip = NULL;
     pcoinscatcher = NULL;
     pcoinsdbview = NULL;
@@ -391,7 +391,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-txindex", strprintf(translate("Maintain a full transaction index, used by the getrawtransaction rpc call (default: %u)"), 0));
     strUsage += HelpMessageOpt("-addressindex", strprintf(translate("Maintain a full address index, used to query for the balance, txids and unspent outputs for addresses (default: %u)"), DEFAULT_ADDRESSINDEX));
     strUsage += HelpMessageOpt("-forcestart", translate("Attempt to force blockchain corruption recovery") + " " + translate("on startup"));
-    
+
     strUsage += HelpMessageGroup(translate("Connection options:"));
     strUsage += HelpMessageOpt("-addnode=<ip>", translate("Add a node to connect to and attempt to keep the connection open"));
     strUsage += HelpMessageOpt("-banscore=<n>", strprintf(translate("Threshold for disconnecting misbehaving peers (default: %u)"), 100));
@@ -792,7 +792,7 @@ bool SetMaxConnectionsAndFileDescriptors(int& nFD)
         return InitError(translate("Not enough file descriptors available."));
     if (nFD - MIN_CORE_FILEDESCRIPTORS < nMaxConnections)
         nMaxConnections = nFD - MIN_CORE_FILEDESCRIPTORS;
-    
+
     return true;
 }
 
@@ -813,7 +813,7 @@ bool CheckCriticalUnsupportedFeaturesAreNotUsed()
 
     if (settings.GetBoolArg("-benchmark", false))
         InitWarning(translate("Warning: Unsupported argument -benchmark ignored, use -debug=bench."));
-    
+
     return true;
 }
 
@@ -917,7 +917,7 @@ void SetLoggingAndDebugSettings()
 
     if (settings.GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
-    
+
     if(fPrintToConsole)
     {
         setvbuf(stdout, NULL, _IOLBF, 0);
@@ -944,7 +944,7 @@ bool CheckWalletFileExists(std::string strDataDir)
     // Wallet file must be a plain filename without a directory
     if (strWalletFile != boost::filesystem::basename(strWalletFile) + boost::filesystem::extension(strWalletFile))
         return InitError(strprintf(translate("Wallet %s resides outside data directory %s"), strWalletFile, strDataDir));
-    
+
     return true;
 }
 
@@ -966,7 +966,7 @@ void ClearFoldersForResync()
     boost::filesystem::path blocksDir = GetDataDir() / "blocks";
     boost::filesystem::path chainstateDir = GetDataDir() / "chainstate";
     boost::filesystem::path sporksDir = GetDataDir() / "sporks";
-    
+
     LogPrintf("Deleting blockchain folders blocks, chainstate and sporks\n");
     // We delete in 4 individual steps in case one of the folder is missing already
     try {
@@ -1001,10 +1001,10 @@ bool BackupWallet(std::string strDataDir, bool fDisableWallet)
         LogPrintf("backing up wallet\n");
         if(walletBackupFeatureContainer.GetWalletIntegrityVerifier().CheckWalletIntegrity(strDataDir, strWalletFile))
         {
-            return walletBackupFeatureContainer.GetBackupCreator().BackupWallet() && 
+            return walletBackupFeatureContainer.GetBackupCreator().BackupWallet() &&
                 walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
         }
-        else 
+        else
         {
             LogPrintf("Error: Wallet integrity check failed.");
             return false;
@@ -1128,7 +1128,7 @@ bool InitializeP2PNetwork()
 
     BOOST_FOREACH (std::string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
-    
+
     return true;
 }
 

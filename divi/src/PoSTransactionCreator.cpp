@@ -33,14 +33,16 @@ bool PoSTransactionCreator::SelectCoins(
 
     if (GetTime() - nLastStakeSetUpdate > wallet_.nStakeSetUpdateTime) {
         setStakeCoins.clear();
-        if (!wallet_.SelectStakeCoins(setStakeCoins, allowedStakingBalance))
-            return false;
+        if (!wallet_.SelectStakeCoins(setStakeCoins, allowedStakingBalance)) {
+            return error("failed to select coins for staking");
+        }
 
         nLastStakeSetUpdate = GetTime();
     }
 
-    if (setStakeCoins.empty())
-        return false;
+    if (setStakeCoins.empty()) {
+        return error("no coins available for staking");
+    }
 
     return true;
 }

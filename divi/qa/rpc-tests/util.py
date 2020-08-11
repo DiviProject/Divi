@@ -23,10 +23,12 @@ import re
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
+portseed = os.getpid()
+
 def p2p_port(n):
-    return 11000 + n + os.getpid()%999
+    return 11000 + n + 10 * (portseed % 99)
 def rpc_port(n):
-    return 12000 + n + os.getpid()%999
+    return 12000 + n + 10 * (portseed % 99)
 
 def check_json_precision():
     """Make sure json library being used does not lose precision converting BTC values"""
@@ -67,11 +69,12 @@ def initialize_datadir(dirname, n):
     if not os.path.isdir(datadir):
         os.makedirs(datadir)
     with open(os.path.join(datadir, "divi.conf"), 'w') as f:
-        f.write("regtest=1\n");
-        f.write("rpcuser=rt\n");
-        f.write("rpcpassword=rt\n");
-        f.write("port="+str(p2p_port(n))+"\n");
-        f.write("rpcport="+str(rpc_port(n))+"\n");
+        f.write("allowunencryptedwallet=1\n")
+        f.write("regtest=1\n")
+        f.write("rpcuser=rt\n")
+        f.write("rpcpassword=rt\n")
+        f.write("port="+str(p2p_port(n))+"\n")
+        f.write("rpcport="+str(rpc_port(n))+"\n")
     return datadir
 
 def _rpchost_to_args(rpchost):
@@ -165,7 +168,6 @@ def find_output(node, txid, amount):
             return i
     raise RuntimeError("find_output txid %s : %s not found"%(txid,str(amount)))
 
-
 def gather_inputs(from_node, amount_needed, confirmations_required=1):
     """
     Return a random set of unspent txouts that are enough to pay amount_needed
@@ -199,66 +201,6 @@ def make_change(from_node, amount_in, amount_out, fee):
     if change > 0:
         outputs[from_node.getnewaddress()] = change
     return outputs
-
-def send_zeropri_transaction(from_node, to_node, amount, fee):
-    """
-    Create&broadcast a zero-priority transaction.
-    Returns (txid, hex-encoded-txdata)
-    Ensures transaction is zero-priority by first creating a send-to-self,
-    then using it's output
-    """
-
-    # Create a send-to-self with confirmed inputs:
-    self_address = from_node.getnewaddress()
-    (total_in, inputs) = gather_inputs(from_node, amount+fee*2)
-    outputs = make_change(from_node, total_in, amount+fee, fee)
-    outputs[self_address] = float(amount+fee)
-
-    self_rawtx = from_node.createrawtransaction(inputs, outputs)
-    self_signresult = from_node.signrawtransaction(self_rawtx)
-    self_txid = from_node.sendrawtransaction(self_signresult["hex"], True)
-
-    vout = find_output(from_node, self_txid, amount+fee)
-    # Now immediately spend the output to create a 1-input, 1-output
-    # zero-priority transaction:
-    inputs = [ { "txid" : self_txid, "vout" : vout } ]
-    outputs = { to_node.getnewaddress() : float(amount) }
-
-    rawtx = from_node.createrawtransaction(inputs, outputs)
-    signresult = from_node.signrawtransaction(rawtx)
-    txid = from_node.sendrawtransaction(signresult["hex"], True)
-
-    return (txid, signresult["hex"])
-
-def random_zeropri_transaction(nodes, amount, min_fee, fee_increment, fee_variants):
-    """
-    Create a random zero-priority transaction.
-    Returns (txid, hex-encoded-transaction-data, fee)
-    """
-    from_node = random.choice(nodes)
-    to_node = random.choice(nodes)
-    fee = min_fee + fee_increment*random.randint(0,fee_variants)
-    (txid, txhex) = send_zeropri_transaction(from_node, to_node, amount, fee)
-    return (txid, txhex, fee)
-
-def random_transaction(nodes, amount, min_fee, fee_increment, fee_variants):
-    """
-    Create a random transaction.
-    Returns (txid, hex-encoded-transaction-data, fee)
-    """
-    from_node = random.choice(nodes)
-    to_node = random.choice(nodes)
-    fee = min_fee + fee_increment*random.randint(0,fee_variants)
-
-    (total_in, inputs) = gather_inputs(from_node, amount+fee)
-    outputs = make_change(from_node, total_in, amount, fee)
-    outputs[to_node.getnewaddress()] = float(amount)
-
-    rawtx = from_node.createrawtransaction(inputs, outputs)
-    signresult = from_node.signrawtransaction(rawtx)
-    txid = from_node.sendrawtransaction(signresult["hex"], True)
-
-    return (txid, signresult["hex"], fee)
 
 def assert_equal(thing1, thing2):
     if thing1 != thing2:

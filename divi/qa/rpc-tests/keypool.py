@@ -17,7 +17,6 @@ import tempfile
 import traceback
 
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
-from test_framework import BitcoinTestFramework
 from util import *
 
 
@@ -42,65 +41,109 @@ def check_array_result(object_array, to_match, expected):
     if num_matched == 0:
         raise AssertionError("No objects matched %s"%(str(to_match)))
 
+def run_test(nodes, tmpdir):
+    # Encrypt wallet and wait to terminate
+    nodes[0].encryptwallet('test')
+    bitcoind_processes[0].wait()
+    # Restart node 0
+    nodes[0] = start_node(0, tmpdir)
+    # Keep creating keys
+    addr = nodes[0].getnewaddress()
+    try:
+        addr = nodes[0].getnewaddress()
+        raise AssertionError('Keypool should be exhausted after one address')
+    except JSONRPCException,e:
+        assert(e.error['code']==-12)
 
-class KeypoolTest (BitcoinTestFramework):
+    # put three new keys in the keypool
+    nodes[0].walletpassphrase('test', 12000)
+    nodes[0].keypoolrefill(3)
+    nodes[0].walletlock()
 
-    def setup_network(self):
-        self.nodes = start_nodes(1, self.options.tmpdir)
+    # There are separate key pools for change addresses and normal ones.
+    # Each pot gets three now.
+    assert_equal(nodes[0].getwalletinfo()["keypoolsize"], 6)
 
-    def run_test(self):
-        # Encrypt wallet and wait to terminate
-        self.nodes[0].encryptwallet('test')
+    # drain the keys
+    addr = set()
+    addr.add(nodes[0].getrawchangeaddress())
+    addr.add(nodes[0].getrawchangeaddress())
+    addr.add(nodes[0].getrawchangeaddress())
+    # assert that three unique addresses were returned
+    assert(len(addr) == 3)
+    # the next one should fail
+    try:
+        addr = nodes[0].getrawchangeaddress()
+        raise AssertionError('Keypool should be exhausted after three addresses')
+    except JSONRPCException,e:
+        assert(e.error['code']==-12)
+    assert_equal(nodes[0].getwalletinfo()["keypoolsize"], 3)
+
+    # also drain the normal addresses now
+    addr = set()
+    addr.add(nodes[0].getnewaddress())
+    addr.add(nodes[0].getnewaddress())
+    addr.add(nodes[0].getnewaddress())
+    assert(len(addr) == 3)
+    try:
+        addr = nodes[0].getnewaddress()
+        raise AssertionError('Keypool should be exhausted after three addresses')
+    except JSONRPCException,e:
+        assert(e.error['code']==-12)
+    assert_equal(nodes[0].getwalletinfo()["keypoolsize"], 0)
+
+
+def main():
+    import optparse
+
+    parser = optparse.OptionParser(usage="%prog [options]")
+    parser.add_option("--nocleanup", dest="nocleanup", default=False, action="store_true",
+                      help="Leave bitcoinds and test.* datadir on exit or error")
+    parser.add_option("--srcdir", dest="srcdir", default="../../src",
+                      help="Source directory containing bitcoind/bitcoin-cli (default: %default%)")
+    parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
+                      help="Root directory for datadirs")
+    (options, args) = parser.parse_args()
+
+    os.environ['PATH'] = options.srcdir+":"+os.environ['PATH']
+
+    check_json_precision()
+
+    success = False
+    nodes = []
+    try:
+        print("Initializing test directory "+options.tmpdir)
+        if not os.path.isdir(options.tmpdir):
+            os.makedirs(options.tmpdir)
+        initialize_datadir(options.tmpdir, 0)
+
+        nodes = start_nodes(1, options.tmpdir)
+
+        run_test(nodes, options.tmpdir)
+
+        success = True
+
+    except AssertionError as e:
+        print("Assertion failed: "+e.message)
+    except JSONRPCException as e:
+        print("JSONRPC error: "+e.error['message'])
+        traceback.print_tb(sys.exc_info()[2])
+    except Exception as e:
+        print("Unexpected exception caught during testing: "+str(sys.exc_info()[0]))
+        traceback.print_tb(sys.exc_info()[2])
+
+    if not options.nocleanup:
+        print("Cleaning up")
+        stop_nodes(nodes)
         wait_bitcoinds()
-        # Restart node 0
-        self.setup_network()
-        node = self.nodes[0]
+        shutil.rmtree(options.tmpdir)
 
-        # Keep creating keys
-        addr = node.getnewaddress()
-        try:
-            addr = node.getnewaddress()
-            raise AssertionError('Keypool should be exhausted after one address')
-        except JSONRPCException,e:
-            assert(e.error['code']==-12)
-
-        # put three new keys in the keypool
-        node.walletpassphrase('test', 12000)
-        node.keypoolrefill(3)
-        node.walletlock()
-
-        # There are separate key pools for change addresses and normal ones.
-        # Each pot gets three now.
-        assert_equal(node.getwalletinfo()["keypoolsize"], 6)
-
-        # drain the keys
-        addr = set()
-        addr.add(node.getrawchangeaddress())
-        addr.add(node.getrawchangeaddress())
-        addr.add(node.getrawchangeaddress())
-        # assert that three unique addresses were returned
-        assert(len(addr) == 3)
-        # the next one should fail
-        try:
-            addr = node.getrawchangeaddress()
-            raise AssertionError('Keypool should be exhausted after three addresses')
-        except JSONRPCException,e:
-            assert(e.error['code']==-12)
-        assert_equal(node.getwalletinfo()["keypoolsize"], 3)
-
-        # also drain the normal addresses now
-        addr = set()
-        addr.add(node.getnewaddress())
-        addr.add(node.getnewaddress())
-        addr.add(node.getnewaddress())
-        assert(len(addr) == 3)
-        try:
-            addr = node.getnewaddress()
-            raise AssertionError('Keypool should be exhausted after three addresses')
-        except JSONRPCException,e:
-            assert(e.error['code']==-12)
-        assert_equal(node.getwalletinfo()["keypoolsize"], 0)
-
+    if success:
+        print("Tests successful")
+        sys.exit(0)
+    else:
+        print("Failed")
+        sys.exit(1)
 
 if __name__ == '__main__':
-    KeypoolTest ().main ()
+    main()

@@ -6,6 +6,8 @@
 #include <PoSTransactionCreator.h>
 #include <timedata.h>
 #include <boost/thread.hpp>
+#include <Settings.h>
+extern Settings& settings;
 
 // Actual mining functions
 BlockFactory::BlockFactory(
@@ -94,7 +96,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     // Maybe override the block version, for fork tests.
     if (chainParameters_.MineBlocksOnDemand()) {
         auto& block = pblocktemplate->block;
-        block.nVersion = GetArg("-blockversion", block.nVersion);
+        block.nVersion = settings.GetArg("-blockversion", block.nVersion);
     }
 
     pblocktemplate->previousBlockIndex = chain_.Tip();

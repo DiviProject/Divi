@@ -162,21 +162,6 @@ void ParseParameters(int argc, const char* const argv[])
     settings.ParseParameters(argc, argv);
 }
 
-bool ParameterIsSet (const std::string& key)
-{
-    return settings.ParameterIsSet(key);
-}
-
-bool ParameterIsSetForMultiArgs (const std::string& key)
-{
-    return settings.ParameterIsSetForMultiArgs(key);
-}
-
-std::string GetParameter(const std::string& key)
-{
-    return settings.GetParameter(key);
-}
-
 void ForceRemoveArg(const std::string &strArg)
 {
     settings.ForceRemoveArg(strArg);
@@ -190,16 +175,6 @@ void SetParameter (const std::string& key, const std::string& value)
 void ClearParameter () 
 {
     settings.ClearParameter();
-}
-
-std::string GetArg(const std::string& strArg, const std::string& strDefault)
-{
-    return settings.GetArg(strArg, strDefault);
-}
-
-int64_t GetArg(const std::string& strArg, int64_t nDefault)
-{
-    return settings.GetArg(strArg, nDefault);
 }
 
 bool GetBoolArg(const std::string& strArg, bool fDefault)
@@ -240,14 +215,14 @@ boost::filesystem::path GetConfigFile()
 
 boost::filesystem::path GetMasternodeConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-mnconf", "masternode.conf"));
+    boost::filesystem::path pathConfigFile(settings.GetArg("-mnconf", "masternode.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir() / pathConfigFile;
     return pathConfigFile;
 }
 #ifndef WIN32
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "divid.pid"));
+    boost::filesystem::path pathPidFile(settings.GetArg("-pid", "divid.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }

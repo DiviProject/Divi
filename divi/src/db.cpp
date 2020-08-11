@@ -22,7 +22,8 @@
 #include <boost/version.hpp>
 
 #include <openssl/rand.h>
-
+#include "Settings.h"
+extern Settings& settings;
 
 unsigned int nWalletDBUpdated;
 
@@ -101,7 +102,7 @@ void CDB::Flush()
     if (fReadOnly)
         nMinutes = 1;
 
-    CDB::bitdb.dbenv.txn_checkpoint(nMinutes ? GetArg("-dblogsize", 100) * 1024 : 0, nMinutes, 0);
+    CDB::bitdb.dbenv.txn_checkpoint(nMinutes ? settings.GetArg("-dblogsize", 100) * 1024 : 0, nMinutes, 0);
 }
 
 void CDB::Close()

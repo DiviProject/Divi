@@ -4,7 +4,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chain.h"
+#include "Settings.h"
 
+extern Settings& settings;
 using namespace std;
 
 /**
@@ -76,4 +78,13 @@ uint256 CBlockIndex::GetBlockTrust() const
         uint256 bnPoWTrust = ((~uint256(0) >> 20) / (bnTarget + 1));
         return bnPoWTrust > 1 ? bnPoWTrust : 1;
     }
+}
+
+unsigned int CBlockIndex::GetStakeEntropyBit() const
+{
+    unsigned int nEntropyBit = ((GetBlockHash().Get64()) & 1);
+    if (fDebug || settings.GetBoolArg("-printstakemodifier", false))
+        LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight, GetBlockHash().ToString().c_str(), nEntropyBit);
+
+    return nEntropyBit;
 }

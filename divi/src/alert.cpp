@@ -12,7 +12,7 @@
 #include "timedata.h"
 #include "ui_interface.h"
 #include "util.h"
-
+#include "Settings.h"
 #include <algorithm>
 #include <map>
 #include <stdint.h>
@@ -22,6 +22,7 @@
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
+extern Settings& settings;
 using namespace std;
 
 map<uint256, CAlert> mapAlerts;
@@ -235,7 +236,7 @@ bool CAlert::ProcessAlert(bool fThread)
 
 void CAlert::Notify(const std::string& strMessage, bool fThread)
 {
-    std::string strCmd = GetArg("-alertnotify", "");
+    std::string strCmd = settings.GetArg("-alertnotify", "");
     if (strCmd.empty()) return;
 
     // Alert text should be plain ascii coming from a trusted source, but to

@@ -67,13 +67,13 @@ bool AppInit(int argc, char* argv[])
     // Parameters
     //
     // If Qt is used, parameters/divi.conf are parsed in qt/divi.cpp's main()
-    ParseParameters(argc, argv);
+    settings.ParseParameters(argc, argv);
 
     // Process help and version before taking care about datadir
-    if (ParameterIsSet("-?") || ParameterIsSet("-help") || ParameterIsSet("-version")) {
+    if (settings.ParameterIsSet("-?") || settings.ParameterIsSet("-help") || settings.ParameterIsSet("-version")) {
         std::string strUsage = translate("Divi Core Daemon") + " " + translate("version") + " " + FormatFullVersion() + "\n";
 
-        if (ParameterIsSet("-version")) {
+        if (settings.ParameterIsSet("-version")) {
             strUsage += LicenseInfo();
         } else {
             strUsage += "\n" + translate("Usage:") + "\n" +
@@ -121,7 +121,7 @@ bool AppInit(int argc, char* argv[])
             exit(1);
         }
 #ifndef WIN32
-        fDaemon = GetBoolArg("-daemon", false);
+        fDaemon = settings.GetBoolArg("-daemon", false);
         if (fDaemon) {
             fprintf(stdout, "DIVI server starting\n");
 

@@ -15,7 +15,7 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
-
+#include "Settings.h"
 #include "json/json_spirit_writer_template.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
@@ -31,7 +31,7 @@ using namespace boost;
 using namespace boost::asio;
 using namespace json_spirit;
 using namespace std;
-
+extern Settings& settings;
 static std::string strRPCUserColonPass;
 
 static bool fRPCRunning = false;
@@ -586,7 +586,7 @@ void StartRPCThreads()
     rpc_allow_subnets.clear();
     rpc_allow_subnets.push_back(CSubNet("127.0.0.0/8")); // always allow IPv4 local subnet
     rpc_allow_subnets.push_back(CSubNet("::1"));         // always allow IPv6 localhost
-    if (ParameterIsSetForMultiArgs("-rpcallowip")) {
+    if (settings.ParameterIsSetForMultiArgs("-rpcallowip")) {
         const vector<string>& vAllow = mapMultiArgs["-rpcallowip"];
         BOOST_FOREACH (string strAllow, vAllow) {
             CSubNet subnet(strAllow);
@@ -605,9 +605,9 @@ void StartRPCThreads()
         strAllowed += subnet.ToString() + " ";
     LogPrint("rpc", "Allowing RPC connections from: %s\n", strAllowed);
 
-    strRPCUserColonPass = GetParameter("-rpcuser") + ":" + GetParameter("-rpcpassword");
-    if (((GetParameter("-rpcpassword") == "") ||
-            (GetParameter("-rpcuser") == GetParameter("-rpcpassword"))) &&
+    strRPCUserColonPass = settings.GetParameter("-rpcuser") + ":" + settings.GetParameter("-rpcpassword");
+    if (((settings.GetParameter("-rpcpassword") == "") ||
+            (settings.GetParameter("-rpcuser") == settings.GetParameter("-rpcpassword"))) &&
         Params().RequireRPCPassword()) {
         unsigned char rand_pwd[32];
         GetRandBytes(rand_pwd, 32);
@@ -634,15 +634,15 @@ void StartRPCThreads()
 
     std::vector<ip::tcp::endpoint> vEndpoints;
     bool bBindAny = false;
-    int defaultPort = GetArg("-rpcport", BaseParams().RPCPort());
-    if (!ParameterIsSet("-rpcallowip")) // Default to loopback if not allowing external IPs
+    int defaultPort = settings.GetArg("-rpcport", BaseParams().RPCPort());
+    if (!settings.ParameterIsSet("-rpcallowip")) // Default to loopback if not allowing external IPs
     {
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v6::loopback(), defaultPort));
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v4::loopback(), defaultPort));
-        if (ParameterIsSet("-rpcbind")) {
+        if (settings.ParameterIsSet("-rpcbind")) {
             LogPrintf("WARNING: option -rpcbind was ignored because -rpcallowip was not specified, refusing to allow everyone to connect\n");
         }
-    } else if (ParameterIsSet("-rpcbind")) // Specific bind address
+    } else if (settings.ParameterIsSet("-rpcbind")) // Specific bind address
     {
         BOOST_FOREACH (const std::string& addr, mapMultiArgs["-rpcbind"]) {
             try {
@@ -706,7 +706,7 @@ void StartRPCThreads()
     }
 
     rpc_worker_group = new boost::thread_group();
-    for (int i = 0; i < GetArg("-rpcthreads", 4); i++)
+    for (int i = 0; i < settings.GetArg("-rpcthreads", 4); i++)
         rpc_worker_group->create_thread(boost::bind(&asio::io_service::run, rpc_io_service));
     fRPCRunning = true;
 }
@@ -954,7 +954,7 @@ void ServiceConnection(AcceptedConnection* conn)
         ReadHTTPMessage(conn->stream(), mapHeaders, strRequest, nProto, MAX_SIZE);
 
         // HTTP Keep-Alive is false; close connection immediately
-        if ((mapHeaders["connection"] == "close") || (!GetBoolArg("-rpckeepalive", true)))
+        if ((mapHeaders["connection"] == "close") || (!settings.GetBoolArg("-rpckeepalive", true)))
             fRun = false;
 
         // Process via JSON-RPC API
@@ -963,7 +963,7 @@ void ServiceConnection(AcceptedConnection* conn)
                 break;
 
             // Process via HTTP REST API
-        } else if (strURI.substr(0, 6) == "/rest/" && GetBoolArg("-rest", false)) {
+        } else if (strURI.substr(0, 6) == "/rest/" && settings.GetBoolArg("-rest", false)) {
             if (!HTTPReq_REST(conn, strURI, mapHeaders, fRun))
                 break;
 
@@ -987,7 +987,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
 
     // Observe safe mode
     string strWarning = GetWarnings("rpc");
-    if (strWarning != "" && !GetBoolArg("-disablesafemode", false) &&
+    if (strWarning != "" && !settings.GetBoolArg("-disablesafemode", false) &&
         !pcmd->okSafeMode)
         throw JSONRPCError(RPC_FORBIDDEN_BY_SAFE_MODE, string("Safe mode: ") + strWarning);
 

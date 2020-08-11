@@ -29,9 +29,11 @@
 
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
+#include "Settings.h"
 
 using namespace json_spirit;
 using namespace std;
+extern Settings& settings;
 
 /**
  * Return average network hashes per second based on the last 'lookup' blocks,
@@ -109,7 +111,7 @@ Value getgenerate(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getgenerate", "") + HelpExampleRpc("getgenerate", ""));
 
-    return GetBoolArg("-gen", false);
+    return settings.GetBoolArg("-gen", false);
 }
 
 
@@ -241,7 +243,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("blocks", (int)chainActive.Height()));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
-    obj.push_back(Pair("genproclimit", (int)GetArg("-genproclimit", -1)));
+    obj.push_back(Pair("genproclimit", (int)settings.GetArg("-genproclimit", -1)));
     obj.push_back(Pair("networkhashps", getnetworkhashps(params, false)));
     obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));

@@ -67,10 +67,10 @@ bool PoSTransactionCreator::SetSuportedStakingScript(
         LogPrintf("CreateCoinStake : failed to parse kernel\n");
         return false;
     }
-    if (fDebug && GetBoolArg("-printcoinstake", false)) LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
+    if (fDebug && settings.GetBoolArg("-printcoinstake", false)) LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
     if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH)
     {
-        if (fDebug && GetBoolArg("-printcoinstake", false))
+        if (fDebug && settings.GetBoolArg("-printcoinstake", false))
             LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
         return false; // only support pay to public key and pay to address
     }
@@ -78,7 +78,7 @@ bool PoSTransactionCreator::SetSuportedStakingScript(
     txNew.vin.push_back(CTxIn(transactionAndIndexPair.first->GetHash(), transactionAndIndexPair.second));
     txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
-    if (fDebug && GetBoolArg("-printcoinstake", false))
+    if (fDebug && settings.GetBoolArg("-printcoinstake", false))
         LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
 
     return true;
@@ -154,7 +154,7 @@ bool PoSTransactionCreator::FindHashproof(
             LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
             return false;
         }
-        if (fDebug && GetBoolArg("-printcoinstake", false))
+        if (fDebug && settings.GetBoolArg("-printcoinstake", false))
             LogPrintf("CreateCoinStake : kernel found\n");
 
         if(!SetSuportedStakingScript(stakeData,txNew))

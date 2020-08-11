@@ -64,10 +64,10 @@ static bool AppInitRPC(int argc, char* argv[])
     //
     // Parameters
     //
-    ParseParameters(argc, argv);
-    if (argc < 2 || ParameterIsSet("-?") || ParameterIsSet("-help") || ParameterIsSet("-version")) {
+    settings.ParseParameters(argc, argv);
+    if (argc < 2 ||settings.ParameterIsSet("-?") ||settings.ParameterIsSet("-help") ||settings.ParameterIsSet("-version")) {
         std::string strUsage = translate("Divi Core RPC client version") + " " + FormatFullVersion() + "\n";
-        if (!ParameterIsSet("-version")) {
+        if (settings.ParameterIsSet("-version")) {
             strUsage += "\n" + translate("Usage:") + "\n" +
                         "  divi-cli [options] <command> [params]  " + translate("Send command to Divi Core") + "\n" +
                         "  divi-cli [options] help                " + translate("List commands") + "\n" +
@@ -80,7 +80,7 @@ static bool AppInitRPC(int argc, char* argv[])
         return false;
     }
     if (!boost::filesystem::is_directory(GetDataDir(false))) {
-        fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", GetParameter("-datadir").c_str());
+        fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", settings.GetParameter("-datadir").c_str());
         return false;
     }
     try {
@@ -99,7 +99,7 @@ static bool AppInitRPC(int argc, char* argv[])
 
 Object CallRPC(const string& strMethod, const Array& params)
 {
-    if (GetParameter("-rpcuser") == "" && GetParameter("-rpcpassword") == "")
+    if (settings.GetParameter("-rpcuser") == "" && settings.GetParameter("-rpcpassword") == "")
         throw runtime_error(strprintf(
             translate("You must set rpcpassword=<password> in the configuration file:\n%s\n"
               "If the file does not exist, create it with owner-readable-only file permissions."),
@@ -107,12 +107,12 @@ Object CallRPC(const string& strMethod, const Array& params)
 
     // Connect to localhost
     basic_socket_iostream<ip::tcp> stream;
-    stream.connect(GetArg("-rpcconnect", "127.0.0.1"), GetArg("-rpcport", itostr(BaseParams().RPCPort())));
+    stream.connect(settings.GetArg("-rpcconnect", "127.0.0.1"), settings.GetArg("-rpcport", itostr(BaseParams().RPCPort())));
     if (!stream)
         throw CConnectionFailed("couldn't connect to server");
 
     // HTTP basic authentication
-    string strUserPass64 = EncodeBase64(GetParameter("-rpcuser") + ":" + GetParameter("-rpcpassword"));
+    string strUserPass64 = EncodeBase64(settings.GetParameter("-rpcuser") + ":" + settings.GetParameter("-rpcpassword"));
     map<string, string> mapRequestHeaders;
     mapRequestHeaders["Authorization"] = string("Basic ") + strUserPass64;
 
@@ -169,7 +169,7 @@ int CommandLineRPC(int argc, char* argv[])
         Array params = RPCConvertValues(strMethod, strParams);
 
         // Execute and handle connection failures with -rpcwait
-        const bool fWait = GetBoolArg("-rpcwait", false);
+        const bool fWait = settings.GetBoolArg("-rpcwait", false);
         do {
             try {
                 const Object reply = CallRPC(strMethod, params);

@@ -12,11 +12,13 @@
 #include "util.h"
 #include "wallet.h"
 
+#include "Settings.h"
+extern Settings& settings;
 
 unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
 {
     // Largest block you're willing to create:
-    unsigned int blockMaxSize = GetArg("-blockmaxsize", defaultMaxBlockSize);
+    unsigned int blockMaxSize = settings.GetArg("-blockmaxsize", defaultMaxBlockSize);
     // Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
     unsigned int blockMaxSizeNetwork = maxBlockSizeCurrent;
     blockMaxSize = std::max((unsigned int)1000, std::min((blockMaxSizeNetwork - 1000), blockMaxSize));
@@ -25,14 +27,14 @@ unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxB
 
 unsigned int GetBlockPrioritySize(unsigned int defaultBlockPrioritySize, unsigned int blockMaxSize)
 {
-    unsigned int blockPrioritySize = GetArg("-blockprioritysize", defaultBlockPrioritySize);
+    unsigned int blockPrioritySize = settings.GetArg("-blockprioritysize", defaultBlockPrioritySize);
     blockPrioritySize = std::min(blockMaxSize, blockPrioritySize);
     return blockPrioritySize;
 }
 
 unsigned int GetBlockMinSize(unsigned int defaultBlockMinSize, unsigned int blockMaxSize)
 {
-    unsigned int blockMinSize = GetArg("-blockminsize", defaultBlockMinSize);
+    unsigned int blockMinSize = settings.GetArg("-blockminsize", defaultBlockMinSize);
     blockMinSize = std::min(blockMaxSize, blockMinSize);
     return blockMinSize;
 }
@@ -259,7 +261,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     TxPriorityCompare comparer(fSortedByFee);
     std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
 
-    bool fPrintPriority = GetBoolArg("-printpriority", false);
+    bool fPrintPriority = settings.GetBoolArg("-printpriority", false);
     while (!vecPriority.empty()) {
         // Take highest priority transaction off the priority queue:
         double dPriority = vecPriority.front().get<0>();

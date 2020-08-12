@@ -209,40 +209,15 @@ public:
 
     void Check(bool forceCheck = false);
 
-    bool IsBroadcastedWithin(int seconds)
-    {
-        return (GetAdjustedTime() - sigTime) < seconds;
-    }
+    bool IsBroadcastedWithin(int seconds);
 
-    bool IsPingedWithin(int seconds, int64_t now = -1)
-    {
-        now == -1 ? now = GetAdjustedTime() : now;
+    bool IsPingedWithin(int seconds, int64_t now = -1);
 
-        return (lastPing == CMasternodePing()) ? false : now - lastPing.sigTime < seconds;
-    }
+    void Disable();
 
-    void Disable()
-    {
-        sigTime = 0;
-        lastPing = CMasternodePing();
-    }
+    bool IsEnabled();
 
-    bool IsEnabled()
-    {
-        return activeState == MASTERNODE_ENABLED;
-    }
-
-    int GetMasternodeInputAge()
-    {
-        if (chainActive.Tip() == NULL) return 0;
-
-        if (cacheInputAge == 0) {
-            cacheInputAge = GetInputAge(vin);
-            cacheInputAgeBlock = chainActive.Tip()->nHeight;
-        }
-
-        return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
-    }
+    int GetMasternodeInputAge();
 
     static CAmount GetTierCollateralAmount(Tier tier);
     static Tier GetTierByCollateralAmount(CAmount nCollateral);
@@ -251,18 +226,7 @@ public:
 
     std::string GetStatus();
 
-    std::string Status()
-    {
-        std::string strStatus = "ACTIVE";
-
-        if (activeState == CMasternode::MASTERNODE_ENABLED) strStatus = "ENABLED";
-        if (activeState == CMasternode::MASTERNODE_EXPIRED) strStatus = "EXPIRED";
-        if (activeState == CMasternode::MASTERNODE_VIN_SPENT) strStatus = "VIN_SPENT";
-        if (activeState == CMasternode::MASTERNODE_REMOVE) strStatus = "REMOVE";
-        if (activeState == CMasternode::MASTERNODE_POS_ERROR) strStatus = "POS_ERROR";
-
-        return strStatus;
-    }
+    std::string Status();
 
     int64_t GetLastPaid();
     bool IsValidNetAddr();

@@ -240,6 +240,54 @@ CMasternode& CMasternode::operator=(CMasternode from)
     swap(*this, from);
     return *this;
 }
+
+bool CMasternode::IsBroadcastedWithin(int seconds)
+{
+    return (GetAdjustedTime() - sigTime) < seconds;
+}
+
+bool CMasternode::IsPingedWithin(int seconds, int64_t now)
+{
+    now == -1 ? now = GetAdjustedTime() : now;
+
+    return (lastPing == CMasternodePing()) ? false : now - lastPing.sigTime < seconds;
+}
+
+void CMasternode::Disable()
+{
+    sigTime = 0;
+    lastPing = CMasternodePing();
+}
+
+bool CMasternode::IsEnabled()
+{
+    return activeState == MASTERNODE_ENABLED;
+}
+
+int CMasternode::GetMasternodeInputAge()
+{
+    if (chainActive.Tip() == NULL) return 0;
+
+    if (cacheInputAge == 0) {
+        cacheInputAge = GetInputAge(vin);
+        cacheInputAgeBlock = chainActive.Tip()->nHeight;
+    }
+
+    return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
+}
+
+std::string CMasternode::Status()
+{
+    std::string strStatus = "ACTIVE";
+
+    if (activeState == CMasternode::MASTERNODE_ENABLED) strStatus = "ENABLED";
+    if (activeState == CMasternode::MASTERNODE_EXPIRED) strStatus = "EXPIRED";
+    if (activeState == CMasternode::MASTERNODE_VIN_SPENT) strStatus = "VIN_SPENT";
+    if (activeState == CMasternode::MASTERNODE_REMOVE) strStatus = "REMOVE";
+    if (activeState == CMasternode::MASTERNODE_POS_ERROR) strStatus = "POS_ERROR";
+
+    return strStatus;
+}
 //
 // When a new masternode broadcast is sent, update our information
 //

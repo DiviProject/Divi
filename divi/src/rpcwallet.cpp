@@ -8,6 +8,7 @@
 #include "amount.h"
 #include "base58.h"
 #include "core_io.h"
+#include <chain.h>
 #include "init.h"
 #include "rpcserver.h"
 #include "timedata.h"
@@ -36,6 +37,7 @@ int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
 extern BlockMap mapBlockIndex;
 extern int64_t nReserveBalance;
+extern CChain chainActive;
 
 extern const std::string strMessageMagic;
 

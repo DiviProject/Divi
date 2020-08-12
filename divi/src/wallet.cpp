@@ -8,6 +8,7 @@
 #include "wallet.h"
 #include "BlockDiskAccessor.h"
 #include "checkpoints.h"
+#include <chain.h>
 #include "coincontrol.h"
 #include "kernel.h"
 #include "masternode-payments.h"
@@ -32,6 +33,7 @@
 
 #include "Settings.h"
 extern Settings& settings;
+extern CChain chainActive;
 
 const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator::instance();
 

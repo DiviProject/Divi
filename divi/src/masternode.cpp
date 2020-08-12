@@ -5,6 +5,7 @@
 
 #include "masternode.h"
 #include "addrman.h"
+#include <chain.h>
 #include "BlockDiskAccessor.h"
 #include "masternodeman.h"
 #include "obfuscation.h"
@@ -13,10 +14,12 @@
 #include <boost/lexical_cast.hpp>
 #include <main.h>
 
+
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
 // cache block hashes as we calculate them
 std::map<int64_t, uint256> mapCacheBlockHashes;
+extern CChain chainActive;
 
 
 const int TIER_COPPER_BASE_COLLATERAL   = 100000;

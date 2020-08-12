@@ -9,12 +9,14 @@
 #include <Settings.h>
 #include <BlockIncentivesPopulator.h>
 #include <blockmap.h>
+#include <chain.h>
 
 extern Settings& settings;
 extern const int nHashDrift;
 extern const int maximumFutureBlockDrift = 180; // seconds
 extern BlockMap mapBlockIndex;
 extern int64_t nReserveBalance;
+extern CChain chainActive;
 
 PoSTransactionCreator::PoSTransactionCreator(
     CWallet& wallet,

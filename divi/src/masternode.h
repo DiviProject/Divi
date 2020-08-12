@@ -12,10 +12,6 @@
 #include "sync.h"
 #include "timedata.h"
 
-#ifndef BITCOIN_CHAIN_H
-#include <chain.h>
-#endif // BITCOIN_CHAIN_H
-
 
 #include "masternodeconfig.h"
 
@@ -32,7 +28,6 @@ class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
 extern std::map<int64_t, uint256> mapCacheBlockHashes;
-extern CChain chainActive;
 
 bool GetBlockHash(uint256& hash, int nBlockHeight);
 

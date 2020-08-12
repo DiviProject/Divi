@@ -6,6 +6,7 @@
 #include "masternode-payments.h"
 #include "addrman.h"
 #include "BlockDiskAccessor.h"
+#include <chain.h>
 #include "chainparamsbase.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"
@@ -42,6 +43,7 @@ const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4z
 int ActiveProtocol();
 void Misbehaving(NodeId pnode, int howmuch);
 extern CCriticalSection cs_main;
+extern CChain chainActive;
 
 static CBitcoinAddress TreasuryPaymentAddress()
 {

@@ -295,7 +295,7 @@ uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, const COutPoint&
 //test hash vs target
 bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, const uint256& bnTargetPerCoinDay, int64_t nTimeWeight)
 {
-    const uint256 bnCoinDayWeight = uint256(nValueIn) * nTimeWeight / COIN / 400;
+    const uint256 bnCoinDayWeight = (uint256(nValueIn) * nTimeWeight) / COIN / 400;
 
     uint256 target = bnTargetPerCoinDay;
     if (!target.MultiplyBy(bnCoinDayWeight)) {

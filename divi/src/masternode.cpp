@@ -234,6 +234,12 @@ void CMasternode::swap(CMasternode& first, CMasternode& second) // nothrow
     swap(first.nLastScanningErrorBlockHeight, second.nLastScanningErrorBlockHeight);
     swap(first.nTier, second.nTier);
 }
+
+CMasternode& CMasternode::operator=(CMasternode from)
+{
+    swap(*this, from);
+    return *this;
+}
 //
 // When a new masternode broadcast is sent, update our information
 //

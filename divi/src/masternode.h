@@ -165,11 +165,8 @@ public:
 
     void swap(CMasternode& first, CMasternode& second); // nothrow
 
-    CMasternode& operator=(CMasternode from)
-    {
-        swap(*this, from);
-        return *this;
-    }
+    CMasternode& operator=(CMasternode from);
+
     friend bool operator==(const CMasternode& a, const CMasternode& b)
     {
         return a.vin == b.vin;

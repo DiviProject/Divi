@@ -18,7 +18,7 @@
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
 // cache block hashes as we calculate them
-std::map<int64_t, uint256> mapCacheBlockHashes;
+static std::map<int64_t, uint256> mapCacheBlockHashes;
 extern CChain chainActive;
 
 

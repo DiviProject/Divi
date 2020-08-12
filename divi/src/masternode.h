@@ -27,7 +27,6 @@ class CMasternode;
 class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
-extern std::map<int64_t, uint256> mapCacheBlockHashes;
 
 bool GetBlockHash(uint256& hash, int nBlockHeight);
 

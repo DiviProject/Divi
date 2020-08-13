@@ -408,37 +408,35 @@ BOOST_AUTO_TEST_CASE(StakingVaultScriptsExecution)
     std::vector<TestBuilder> good;
     std::vector<TestBuilder> bad;
 
+    CScript baseVaultScript = CreateStakingVaultScript(
+            ToByteVector(keys.pubkey1C.GetID()),
+            ToByteVector(keys.pubkey2C.GetID()));
     good.push_back(TestBuilder(
-        CreateStakingVaultScript(
-            ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
-                            "Owner spend", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
-                            ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1));
+        baseVaultScript,
+        "Owner spend", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
+        ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1));
     bad.push_back(TestBuilder(
-        CreateStakingVaultScript(
-            ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
-                            "Vault spend disabled", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
-                            ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
+        baseVaultScript,
+        "Vault spend disabled", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
+        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
     // When opcode is enabled, should work
     good.push_back(TestBuilder(
-        CreateStakingVaultScript(
-            ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
-                            "Vault spend if opcode as NO-OP", 0
-                            ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
+        baseVaultScript,
+        "Vault spend if opcode as NO-OP", 0
+        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
     bad.push_back(TestBuilder(
-        CreateStakingVaultScript(
-            ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
-                            "Vault spend but not coinstake", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
-                            ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
+        baseVaultScript,
+        "Vault spend but not coinstake", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
+        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
     good.push_back(TestBuilder(
-        CreateStakingVaultScript(
-            ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
-                            "Owner spend regardless", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
-                            ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1));
+        baseVaultScript,
+        "Owner spend regardless", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
+        ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1));
     good.push_back(TestBuilder(
-        CreateStakingVaultScript(
-            ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
-                            "Vault spend with coinstake", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
-                            ).RequireCoinstakeSpend().PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
+        baseVaultScript,
+        "Vault spend with coinstake", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
+        ).RequireCoinstakeSpend().PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
+
 
     BOOST_FOREACH(TestBuilder& test, good)
     {

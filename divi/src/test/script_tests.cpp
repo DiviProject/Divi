@@ -79,7 +79,7 @@ CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey)
     return txCredit;
 }
 
-CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMutableTransaction& txCredit)
+CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMutableTransaction& txCredit, bool coinstakeSpend = false)
 {
     CMutableTransaction txSpend;
     txSpend.nVersion = 1;
@@ -92,6 +92,11 @@ CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMu
     txSpend.vin[0].nSequence = std::numeric_limits<unsigned int>::max();
     txSpend.vout[0].scriptPubKey = CScript();
     txSpend.vout[0].nValue = 0;
+    if(coinstakeSpend)
+    {
+        txSpend.vout[0].SetEmpty();
+        txSpend.vout.insert(txSpend.vout.end(),CTxOut());
+    }
 
     return txSpend;
 }
@@ -326,6 +331,19 @@ public:
     }
 };
 }
+
+BOOST_AUTO_TEST_CASE(willProduceCoinstakeSpend)
+{
+    auto tx = BuildSpendingTransaction(CScript(), CMutableTransaction(),true);
+    BOOST_CHECK_MESSAGE(tx.vin.size() > 0,"first fail");
+    BOOST_CHECK_MESSAGE(!tx.vin[0].prevout.IsNull(), "second fail");
+    BOOST_CHECK_MESSAGE(tx.vout.size() >= 2,"third fail");
+    BOOST_CHECK_MESSAGE(tx.vout[0].IsEmpty(),"fourth fail");
+    BOOST_CHECK_MESSAGE(
+        CTransaction(tx).IsCoinStake(),
+        "Non-coinstake!");
+}
+
 
 BOOST_AUTO_TEST_CASE(StakingVaultScriptsDetection)
 {

@@ -437,6 +437,41 @@ BOOST_AUTO_TEST_CASE(StakingVaultScriptsExecution)
         "Vault spend with coinstake", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
         ).RequireCoinstakeSpend().PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
 
+    // P2SH(staking vault)
+    good.push_back(TestBuilder(
+        baseVaultScript,
+        "P2SH Owner spend",
+        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_VERIFY_P2SH,
+        true
+        ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1).PushRedeem());
+    bad.push_back(TestBuilder(
+        baseVaultScript,
+        "P2SH Vault spend disabled",
+        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_VERIFY_P2SH,
+        true
+        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0).PushRedeem());
+    good.push_back(TestBuilder(
+        baseVaultScript,
+        "P2SH Vault spend if opcode as NO-OP", 0, true
+        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0).PushRedeem());
+    bad.push_back(TestBuilder(
+        baseVaultScript,
+        "P2SH Vault spend but not coinstake",
+        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE | SCRIPT_VERIFY_P2SH,
+        true
+        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0).PushRedeem());
+    good.push_back(TestBuilder(
+        baseVaultScript,
+        "P2SH Owner spend regardless",
+        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE | SCRIPT_VERIFY_P2SH,
+        true
+        ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1).PushRedeem());
+    good.push_back(TestBuilder(
+        baseVaultScript,
+        "P2SH Vault spend with coinstake",
+        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE | SCRIPT_VERIFY_P2SH,
+        true
+        ).RequireCoinstakeSpend().PushSig(keys.key2).Push(keys.pubkey2C).Num(0).PushRedeem());
 
     BOOST_FOREACH(TestBuilder& test, good)
     {

@@ -203,6 +203,7 @@ private:
     std::vector<unsigned char> push;
     std::string comment;
     int flags;
+    bool requireCoinstakeSpend;
 
     void DoPush()
     {
@@ -220,7 +221,16 @@ private:
     }
 
 public:
-    TestBuilder(const CScript& redeemScript, const std::string& comment_, int flags_, bool P2SH = false) : scriptPubKey(redeemScript), havePush(false), comment(comment_), flags(flags_)
+    TestBuilder(
+        const CScript& redeemScript,
+        const std::string& comment_,
+        int flags_,
+        bool P2SH = false
+        ) : scriptPubKey(redeemScript)
+        , havePush(false)
+        , comment(comment_)
+        , flags(flags_)
+        , requireCoinstakeSpend(false)
     {
         if (P2SH) {
             creditTx = BuildCreditingTransaction(CScript() << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL);
@@ -300,11 +310,16 @@ public:
         return *this;
     }
 
+    TestBuilder& RequireCoinstakeSpend()
+    {
+        requireCoinstakeSpend = true;
+        return *this;
+    }
     TestBuilder& Test(bool expect)
     {
         TestBuilder copy = *this; // Make a copy so we can rollback the push.
         DoPush();
-        DoTest(creditTx.vout[0].scriptPubKey, spendTx.vin[0].scriptSig, flags, expect, comment);
+        DoTest(creditTx.vout[0].scriptPubKey, spendTx.vin[0].scriptSig, flags, expect, comment,requireCoinstakeSpend);
         *this = copy;
         return *this;
     }

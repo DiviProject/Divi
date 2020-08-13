@@ -187,6 +187,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
 
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
+    const CChainParams& chainParameters = Params();
     if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
 
     auto adjustedTime = GetAdjustedTime();
@@ -207,7 +208,6 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
-    const CChainParams& chainParameters = Params();
     SuperblockSubsidyContainer subsidyContainer(chainParameters);
 
     const CBlockIndex* chainTip = chainActive.Tip();

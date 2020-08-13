@@ -29,6 +29,7 @@ PoSTransactionCreator::PoSTransactionCreator(
 }
 
 bool PoSTransactionCreator::SelectCoins(
+    const CChainParams& chainParameters,
     CAmount allowedStakingBalance,
     int& nLastStakeSetUpdate,
     std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins)
@@ -36,7 +37,9 @@ bool PoSTransactionCreator::SelectCoins(
     if (allowedStakingBalance <= 0)
         return false;
 
-    if (GetTime() - nLastStakeSetUpdate > wallet_.nStakeSetUpdateTime) {
+    if (chainParameters.NetworkID() == CBaseChainParams::REGTEST ||
+        GetTime() - nLastStakeSetUpdate > wallet_.nStakeSetUpdateTime)
+    {
         setStakeCoins.clear();
         if (!wallet_.SelectStakeCoins(setStakeCoins, allowedStakingBalance)) {
             return error("failed to select coins for staking");
@@ -188,7 +191,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
     const CChainParams& chainParameters = Params();
-    if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
+    if(!SelectCoins(chainParameters, allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
 
     auto adjustedTime = GetAdjustedTime();
     int64_t minimumTime = chainActive.Tip()->GetMedianTimePast() + 1;

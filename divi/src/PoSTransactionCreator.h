@@ -13,6 +13,7 @@ class CBlock;
 class CMutableTransaction;
 class CKeyStore;
 class CWalletTx;
+class CChainParams;
 
 class I_PoSTransactionCreator
 {
@@ -44,6 +45,7 @@ private:
         CMutableTransaction& txNew);
 
     bool SelectCoins(
+        const CChainParams& chainParameters,
         CAmount allowedStakingBalance,
         int& nLastStakeSetUpdate,
         std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins);

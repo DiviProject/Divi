@@ -410,18 +410,18 @@ BOOST_AUTO_TEST_CASE(StakingVaultScriptsExecution)
     good.push_back(TestBuilder(
         CreateStakingVaultScript(
             ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
-                            "P2PKH-vault-good", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
+                            "Owner spend", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
                             ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1));
     bad.push_back(TestBuilder(
         CreateStakingVaultScript(
             ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
-                            "P2PKH-vault-disabled", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
+                            "Vault spend disabled", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
                             ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
     // When opcode is enabled, should work
     good.push_back(TestBuilder(
         CreateStakingVaultScript(
             ToByteVector(keys.pubkey1C.GetID()),ToByteVector(keys.pubkey2C.GetID())),
-                            "P2PKH-vault-disabled", 0
+                            "Vault spend if opcode as NO-OP", 0
                             ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
 
     BOOST_FOREACH(TestBuilder& test, good)

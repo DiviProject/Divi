@@ -23,7 +23,7 @@ def createPoSStacks(nodes, all_nodes):
 
     # Make sure all nodes have matured coins.
     for n in nodes:
-      n.setgenerate(True, 10)
+      n.setgenerate(True, 20)
       sync_blocks(nodes)
     nodes[0].setgenerate(True, 20)
 

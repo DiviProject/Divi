@@ -801,6 +801,34 @@ public:
     }
 };
 
+struct CoinstakeCheckOp: public StackOperator
+{
+private:
+    const BaseSignatureChecker& checker_;
+public:
+    CoinstakeCheckOp(
+        StackType& stack,
+        StackType& altstack,
+        unsigned& flags,
+        ConditionalScopeStackManager& conditionalManager,
+        const BaseSignatureChecker& checker
+        ): StackOperator(stack,altstack,flags,conditionalManager)
+        , checker_(checker)
+    {}
+
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    {
+        bool success = checker_.CheckCoinstake();
+        stack_.push_back(success ? vchTrue : vchFalse);
+        if(!success)
+            return Helpers::set_error(serror,SCRIPT_ERR_VERIFY);
+        else
+            stack_.pop_back();
+        return true;
+    }
+};
+
+
 const std::set<opcodetype> StackOperationManager::upgradableOpCodes =
     {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
 const std::set<opcodetype> StackOperationManager::simpleValueOpCodes =
@@ -846,6 +874,7 @@ StackOperationManager::StackOperationManager(
     , numericBoundsOp_(std::make_shared<NumericBoundsOp>(stack_,altstack_,flags_,conditionalManager_))
     , hashingOp_(std::make_shared<HashingOp>(stack_,altstack_,flags_,conditionalManager_))
     , checksigOp_(std::make_shared<SignatureCheckOp>(stack_,altstack_,flags_,conditionalManager_,opCount_,checker_))
+    , checkCoinstakeOp_(std::make_shared<CoinstakeCheckOp>(stack_,altstack_,flags_,conditionalManager_,checker_))
 {
     InitMapping();
 }
@@ -888,7 +917,8 @@ void StackOperationManager::InitMapping()
     {
         stackOperationMapping_.insert({opcode, checksigOp_.get() });
     }
-    
+    if(flags_ & SCRIPT_REQUIRE_COINSTAKE) stackOperationMapping_[OP_REQUIRE_COINSTAKE] = checkCoinstakeOp_.get();
+
     stackOperationMapping_.insert({OP_META, metadataOp_.get()});
     stackOperationMapping_.insert({OP_WITHIN, numericBoundsOp_.get()});
 }

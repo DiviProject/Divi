@@ -96,6 +96,8 @@ private:
     std::shared_ptr<StackOperator> numericBoundsOp_;
     std::shared_ptr<StackOperator> hashingOp_;
     std::shared_ptr<StackOperator> checksigOp_;
+    std::shared_ptr<StackOperator> checkCoinstakeOp_;
+
     void InitMapping();
 public:
     StackOperationManager(

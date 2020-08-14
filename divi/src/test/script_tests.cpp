@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE(willProduceCoinstakeSpend)
 }
 
 
-BOOST_AUTO_TEST_CASE(StakingVaultScriptsDetection)
+BOOST_AUTO_TEST_CASE(willDetectStakingVaultScripts)
 {
     const KeyData keys;
     {
@@ -401,7 +401,7 @@ BOOST_AUTO_TEST_CASE(StakingVaultScriptsDetection)
     }
 }
 
-BOOST_AUTO_TEST_CASE(StakingVaultSignatureVerify)
+BOOST_AUTO_TEST_CASE(willVerifyStakingVaultSignatureAccordingToSpendingConditions)
 {
     const KeyData keys;
     CScript baseVaultScript = CreateStakingVaultScript(
@@ -438,7 +438,7 @@ BOOST_AUTO_TEST_CASE(StakingVaultSignatureVerify)
     attemptSpend(keystore,false,false,true,"Non-Coinstake OwnerSpend");
 }
 
-BOOST_AUTO_TEST_CASE(StakingVaultScriptsExecution)
+BOOST_AUTO_TEST_CASE(willExecuteStakingVaultScriptsAsExpected)
 {
     const KeyData keys;
 

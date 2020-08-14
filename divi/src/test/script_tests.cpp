@@ -401,6 +401,43 @@ BOOST_AUTO_TEST_CASE(StakingVaultScriptsDetection)
     }
 }
 
+BOOST_AUTO_TEST_CASE(StakingVaultSignatureVerify)
+{
+    const KeyData keys;
+    CScript baseVaultScript = CreateStakingVaultScript(
+            ToByteVector(keys.pubkey1C.GetID()),
+            ToByteVector(keys.pubkey2C.GetID()));
+
+    auto creditTx = BuildCreditingTransaction(baseVaultScript);
+
+    CBasicKeyStore keystore;
+    keystore.AddKey(keys.key1C);
+    keystore.AddKey(keys.key2C);
+
+    auto attemptSpend = [creditTx,baseVaultScript](
+            CKeyStore& keystore,
+            bool spendingTxIsCoinstake,
+            bool spenderIsVault,
+            bool expect,
+            std::string message){
+        auto spendTx = BuildSpendingTransaction(CScript(), creditTx,spendingTxIsCoinstake);
+        BOOST_CHECK_MESSAGE(spendTx.vin.size() > 0, "Missing inputs on the spending tx!");
+        BOOST_CHECK_MESSAGE(SignVaultSpend(keystore,baseVaultScript,spendTx,0,!spenderIsVault),"Failed to create scriptsig!"); // Will try to spend as vault
+
+        unsigned flags = SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE;
+        ScriptError err;
+        BOOST_CHECK_MESSAGE(
+            expect==VerifyScript(spendTx.vin[0].scriptSig, creditTx.vout[0].scriptPubKey, flags, MutableTransactionSignatureChecker(&spendTx, 0), &err),
+            message);
+        BOOST_CHECK_MESSAGE(expect==(err == SCRIPT_ERR_OK), std::string(ScriptErrorString(err)) + ": " + message);
+    };
+
+    attemptSpend(keystore,true,true,true,"Coinstake VaultSpend");
+    attemptSpend(keystore,false,true,false,"Non-Coinstake VaultSpend");
+    attemptSpend(keystore,true,false,true, "Coinstake OwnerSpend");
+    attemptSpend(keystore,false,false,true,"Non-Coinstake OwnerSpend");
+}
+
 BOOST_AUTO_TEST_CASE(StakingVaultScriptsExecution)
 {
     const KeyData keys;

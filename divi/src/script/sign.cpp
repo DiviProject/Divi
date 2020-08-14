@@ -12,6 +12,7 @@
 #include "uint256.h"
 #include "Logging.h"
 #include <script/SignatureCheckers.h>
+#include <script/StakingVaultScript.h>
 
 #include <boost/foreach.hpp>
 
@@ -48,6 +49,61 @@ bool SignN(const std::vector<valtype>& multisigdata, const CKeyStore& keystore, 
     return nSigned==nRequired;
 }
 
+bool SignVaultSpend(
+    const CKeyStore& keystore,
+    const CScript& vaultScriptPubKey,
+    uint256 hash,
+    int nHashType,
+    CScript& scriptSigRet,
+    bool spendAsOwner)
+{
+    std::pair<valtype,valtype> pubkeyHashes;
+    if(!GetStakingVaultPubkeyHashes(vaultScriptPubKey,pubkeyHashes))
+    {
+        return false;
+    }
+    else
+    {
+        CKeyID ownerKeyID(uint160(pubkeyHashes.first));
+        CKeyID vaultKeyID(uint160(pubkeyHashes.second));
+        if (!spendAsOwner && keystore.HaveKey(vaultKeyID))
+        {
+            if(!Sign1(vaultKeyID, keystore, hash, nHashType, scriptSigRet))
+            {
+                return false;
+            }
+
+            CPubKey vaultKey;
+            keystore.GetPubKey(vaultKeyID,vaultKey);
+            scriptSigRet << ToByteVector(vaultKey) << OP_FALSE;
+            return true;
+        }
+        if (spendAsOwner && keystore.HaveKey(ownerKeyID))
+        {
+            if(!Sign1(ownerKeyID, keystore, hash, nHashType, scriptSigRet)){
+                return false;
+            }
+
+            CPubKey ownerKey;
+            keystore.GetPubKey(ownerKeyID,ownerKey);
+            scriptSigRet << ToByteVector(ownerKey) << OP_TRUE;
+            return true;
+        }
+    }
+    return false;
+}
+bool SignVaultSpend(
+    const CKeyStore &keystore,
+    const CScript& fromPubKey,
+    CMutableTransaction& txTo,
+    unsigned int nIn,
+    bool spendAsOwner)
+{
+    if(!(nIn < txTo.vin.size())) return false;
+    CTxIn& txin = txTo.vin[nIn];
+    uint256 hash = SignatureHash(fromPubKey, txTo, nIn, SIGHASH_ALL);
+    return SignVaultSpend(keystore,fromPubKey,hash,SIGHASH_ALL,txin.scriptSig,spendAsOwner);
+}
 /**
  * Sign scriptPubKey with private keys stored in keystore, given transaction hash and hash type.
  * Signatures are returned in scriptSigRet (or returns false if scriptPubKey can't be signed),

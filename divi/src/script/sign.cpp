@@ -116,16 +116,16 @@ bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, const CS
     scriptSigRet.clear();
 
     std::vector<valtype> vSolutions;
-    if (!ExtractStandardScriptPubKey(scriptPubKey, whichTypeRet, vSolutions))
-    {
-        LogPrintf("*** solver solver failed \n");
-        return false;
-    }
+    ExtractStandardScriptPubKey(scriptPubKey, whichTypeRet, vSolutions);
 
     CKeyID keyID;
     switch (whichTypeRet)
     {
     case TX_NONSTANDARD:
+    {
+        LogPrintf("*** solver solver failed \n");
+        return false;
+    }
     case TX_NULL_DATA:
     {
         LogPrintf("*** null data \n");

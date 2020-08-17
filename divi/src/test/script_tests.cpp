@@ -399,6 +399,46 @@ BOOST_AUTO_TEST_CASE(willDetectStakingVaultScripts)
             "Recovered incorrect pubkey hash!"
         );
     }
+    {   // Too few bytes
+        CScript notAStakingVault = CScript() << OP_TRUE;
+        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
+        BOOST_CHECK_MESSAGE(
+            !GetStakingVaultPubkeyHashes(notAStakingVault,ownerAndVaultKeyHashes),
+            "Failed to detect non-vault script!");
+        BOOST_CHECK_MESSAGE(
+            ownerAndVaultKeyHashes.first == valtype() &&
+            ownerAndVaultKeyHashes.second == valtype(),
+            "Recovered incorrect pubkey hash!"
+        );
+    }
+    {
+        // Too many bytes
+        auto randomBytes = ToByteVector(GetRandHash().GetHex());
+        CScript notAStakingVault(randomBytes.begin(),randomBytes.end());
+        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
+        BOOST_CHECK_MESSAGE(
+            !GetStakingVaultPubkeyHashes(notAStakingVault,ownerAndVaultKeyHashes),
+            "Failed to detect non-vault script!");
+        BOOST_CHECK_MESSAGE(
+            ownerAndVaultKeyHashes.first == valtype() &&
+            ownerAndVaultKeyHashes.second == valtype(),
+            "Recovered incorrect pubkey hash!"
+        );
+    }
+    {
+        // Right number wrong value
+        auto randomBytes = ToByteVector(GetRandHash().GetHex());
+        CScript notAStakingVault(randomBytes.begin(),randomBytes.begin()+50);
+        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
+        BOOST_CHECK_MESSAGE(
+            !GetStakingVaultPubkeyHashes(notAStakingVault,ownerAndVaultKeyHashes),
+            "Failed to detect non-vault script!");
+        BOOST_CHECK_MESSAGE(
+            ownerAndVaultKeyHashes.first == valtype() &&
+            ownerAndVaultKeyHashes.second == valtype(),
+            "Recovered incorrect pubkey hash!"
+        );
+    }
 }
 
 BOOST_AUTO_TEST_CASE(willVerifyStakingVaultSignatureAccordingToSpendingConditions)

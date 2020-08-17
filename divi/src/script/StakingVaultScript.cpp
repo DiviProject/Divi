@@ -20,15 +20,20 @@ CScript GetStakingVaultScriptTemplate()
 }
 bool IsStakingVaultScript(const CScript& scriptPubKey)
 {
+    static const CScript stakingVaultScriptTemplate = GetStakingVaultScriptTemplate();
+    static const unsigned stakingVaultScriptSize = stakingVaultScriptTemplate.size()+2*20;
+    if(scriptPubKey.size() != stakingVaultScriptSize) return false;
     CScript copyScript = scriptPubKey;
+    bool keyPushSizeMatch =
+        copyScript[1] == 0x14 &&
+        copyScript[24] == 0x14;
 
     copyScript.erase(copyScript.begin()+24,copyScript.begin()+45);
     copyScript.insert(copyScript.begin()+24, OP_PUBKEYHASH);
     copyScript.erase(copyScript.begin()+1, copyScript.begin()+22);
     copyScript.insert(copyScript.begin()+1, OP_PUBKEYHASH);
-    if(copyScript == GetStakingVaultScriptTemplate() &&
-        scriptPubKey[1] == 0x14 &&
-        scriptPubKey[24] == 0x14)
+    if(copyScript ==  stakingVaultScriptTemplate &&
+        keyPushSizeMatch)
     {
         return true;
     }

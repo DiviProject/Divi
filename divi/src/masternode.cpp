@@ -13,7 +13,7 @@
 #include "Logging.h"
 #include <boost/lexical_cast.hpp>
 #include <main.h>
-
+#include <init.h>
 
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;

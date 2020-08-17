@@ -76,6 +76,7 @@ struct ListenSocket {
 //
 // Global state variables
 //
+extern CWallet* pwalletMain;
 bool fDiscover = true;
 bool fListen = true;
 uint64_t nLocalServices = NODE_NETWORK;

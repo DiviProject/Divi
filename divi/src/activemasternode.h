@@ -6,7 +6,7 @@
 #ifndef ACTIVEMASTERNODE_H
 #define ACTIVEMASTERNODE_H
 
-#include "key.h"
+#include "pubkey.h"
 #include "masternodeconfig.h"
 #include "net.h"
 #include "obfuscation.h"

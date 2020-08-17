@@ -11,7 +11,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/foreach.hpp>
+
 class CMasternodeConfig;
 extern CMasternodeConfig masternodeConfig;
 
@@ -90,28 +90,13 @@ public:
         }
     };
 
-    CMasternodeConfig()
-    {
-        entries = std::vector<CMasternodeEntry>();
-    }
+    CMasternodeConfig();
 
     void clear();
     bool read(std::string& strErr);
     void add(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex);
-
-    std::vector<CMasternodeEntry>& getEntries()
-    {
-        return entries;
-    }
-
-    int getCount()
-    {
-        int c = -1;
-        BOOST_FOREACH (CMasternodeEntry e, entries) {
-            if (e.getAlias() != "") c++;
-        }
-        return c;
-    }
+    std::vector<CMasternodeEntry>& getEntries();
+    int getCount();
 
 private:
     std::vector<CMasternodeEntry> entries;

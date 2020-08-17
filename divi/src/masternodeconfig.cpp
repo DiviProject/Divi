@@ -9,6 +9,8 @@
 #include "util.h"
 #include "ui_interface.h"
 #include <base58.h>
+#include <boost/foreach.hpp>
+
 // clang-format on
 
 CMasternodeConfig masternodeConfig;
@@ -87,4 +89,23 @@ bool CMasternodeConfig::CMasternodeEntry::castOutputIndex(int &n)
     }
 
     return true;
+}
+
+
+CMasternodeConfig::CMasternodeConfig()
+{
+    entries = std::vector<CMasternodeEntry>();
+}\
+std::vector<CMasternodeConfig::CMasternodeEntry>& CMasternodeConfig::getEntries()
+{
+    return entries;
+}
+
+int CMasternodeConfig::getCount()
+{
+    int c = -1;
+    BOOST_FOREACH (CMasternodeEntry e, entries) {
+        if (e.getAlias() != "") c++;
+    }
+    return c;
 }

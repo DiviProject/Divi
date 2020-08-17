@@ -8,7 +8,6 @@
 
 #include "init.h"
 #include "key.h"
-#include "masternode.h"
 #include "masternodeconfig.h"
 #include "net.h"
 #include "obfuscation.h"
@@ -21,6 +20,8 @@
 #define ACTIVE_MASTERNODE_INPUT_TOO_NEW 2
 #define ACTIVE_MASTERNODE_NOT_CAPABLE 3
 #define ACTIVE_MASTERNODE_STARTED 4
+
+class CMasternodeBroadcast;
 
 // Responsible for activating the Masternode and pinging the network
 class CActiveMasternode

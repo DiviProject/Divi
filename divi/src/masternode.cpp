@@ -23,13 +23,6 @@ static std::map<int64_t, uint256> mapCacheBlockHashes;
 extern CChain chainActive;
 
 
-const int TIER_COPPER_BASE_COLLATERAL   = 100000;
-const int TIER_SILVER_BASE_COLLATERAL   = 300000;
-const int TIER_GOLD_BASE_COLLATERAL     = 1000000;
-const int TIER_PLATINUM_BASE_COLLATERAL = 3000000;
-const int TIER_DIAMOND_BASE_COLLATERAL  = 10000000;
-
-
 static CAmount getCollateralAmount(MasternodeTier tier)
 {
   if(tier >= MasternodeTier::COPPER && tier < MasternodeTier::INVALID)
@@ -42,19 +35,13 @@ static CAmount getCollateralAmount(MasternodeTier tier)
   }
 }
 
-CAmount CMasternode::GetTierCollateralAmount(MasternodeTier tier)
+CAmount CMasternode::GetTierCollateralAmount(const MasternodeTier tier)
 {
-    switch(tier)
-    {
-    case MasternodeTier::COPPER:   return TIER_COPPER_BASE_COLLATERAL * COIN;
-    case MasternodeTier::SILVER:   return TIER_SILVER_BASE_COLLATERAL * COIN;
-    case MasternodeTier::GOLD:     return TIER_GOLD_BASE_COLLATERAL * COIN;
-    case MasternodeTier::PLATINUM: return TIER_PLATINUM_BASE_COLLATERAL * COIN;
-    case MasternodeTier::DIAMOND:  return TIER_DIAMOND_BASE_COLLATERAL * COIN;
-    case MasternodeTier::INVALID: break;
-    }
-
-    return 0;
+    const auto& collateralMap = Params().MasternodeCollateralMap();
+    const auto mit = collateralMap.find(tier);
+    if (mit == collateralMap.end())
+        return 0;
+    return mit->second;
 }
 
 static size_t GetHashRoundsForTierMasternodes(MasternodeTier tier)
@@ -384,24 +371,11 @@ void CMasternode::Check(bool forceCheck)
     activeState = MASTERNODE_ENABLED; // OK
 }
 
-MasternodeTier CMasternode::GetTierByCollateralAmount(CAmount nCollateral)
+MasternodeTier CMasternode::GetTierByCollateralAmount(const CAmount nCollateral)
 {
-    if(TIER_COPPER_BASE_COLLATERAL * COIN == nCollateral) {
-        return MasternodeTier::COPPER;
-    }
-    else if(TIER_SILVER_BASE_COLLATERAL * COIN == nCollateral) {
-        return MasternodeTier::SILVER;
-    }
-    else if(TIER_GOLD_BASE_COLLATERAL * COIN == nCollateral) {
-        return MasternodeTier::GOLD;
-    }
-    else if(TIER_PLATINUM_BASE_COLLATERAL * COIN == nCollateral) {
-        return MasternodeTier::PLATINUM;
-    }
-    else if(TIER_DIAMOND_BASE_COLLATERAL * COIN == nCollateral) {
-        return MasternodeTier::DIAMOND;
-    }
-
+    for (const auto& entry : Params().MasternodeCollateralMap())
+        if (entry.second == nCollateral)
+            return entry.first;
     return MasternodeTier::INVALID;
 }
 

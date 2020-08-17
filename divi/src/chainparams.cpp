@@ -96,17 +96,20 @@ void MineGenesis(CBlock genesis)
     std::fflush(stdout);
 }
 
+namespace
+{
+
 //   What makes a good checkpoint block?
 // + Is surrounded by blocks with reasonable timestamps
 //   (no blocks before with a timestamp after, none after with
 //    timestamp before)
 // + Contains no strange transactions
-static MapCheckpoints mapCheckpoints =
+const MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
         (0, uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"))
         (100, uint256("0x000000275b2b4a8af2c93ebdfd36ef8dd8c8ec710072bcc388ecbf5d0c8d3f9d"));
 
-static const CCheckpointData data = {
+const CCheckpointData data = {
     &mapCheckpoints,
     1538069980, // * UNIX timestamp of last checkpoint block
     100,    // * total number of transactions between genesis and last checkpoint
@@ -114,21 +117,42 @@ static const CCheckpointData data = {
     2000        // * estimated number of transactions per day after checkpoint
 };
 
-static MapCheckpoints mapCheckpointsTestnet =
+const MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of(0, uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
-static const CCheckpointData dataTestnet = {
+const CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
     1537971708,
     0,
     250};
 
-static MapCheckpoints mapCheckpointsRegtest =
+const MapCheckpoints mapCheckpointsRegtest =
         boost::assign::map_list_of(0, uint256("0x79ba0d9d15d36edee8d07cc300379ec65ab7e12765acd883e870aa618dbcc1a8"));
-static const CCheckpointData dataRegtest = {
+const CCheckpointData dataRegtest = {
     &mapCheckpointsRegtest,
     1518723178,
     0,
     100};
+
+const CChainParams::MNCollateralMapType mnCollateralsMainnet = {
+    {MasternodeTier::COPPER,    100000 * COIN},
+    {MasternodeTier::SILVER,    300000 * COIN},
+    {MasternodeTier::GOLD,     1000000 * COIN},
+    {MasternodeTier::PLATINUM, 3000000 * COIN},
+    {MasternodeTier::DIAMOND, 10000000 * COIN},
+};
+
+/* Masternode collaterals are significantly cheaper on regtest, so
+   that it is easy to generate them in tests without having to
+   mine hundreds of blocks.  */
+const CChainParams::MNCollateralMapType mnCollateralsRegtest = {
+    {MasternodeTier::COPPER,    100 * COIN},
+    {MasternodeTier::SILVER,    300 * COIN},
+    {MasternodeTier::GOLD,     1000 * COIN},
+    {MasternodeTier::PLATINUM, 3000 * COIN},
+    {MasternodeTier::DIAMOND, 10000 * COIN},
+};
+
+} // anonymous namespace
 
 class CMainParams : public CChainParams
 {
@@ -172,6 +196,7 @@ public:
         nTreasuryPaymentsStartBlock = 101;
         nTreasuryPaymentsCycle = 60 * 24 * 7 + 1;
         nMinCoinAgeForStaking = 60 * 60;
+        mnCollateralMap = &mnCollateralsMainnet;
 
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -487,6 +512,8 @@ public:
            around with mocktimes of perhaps multiple nodes in sync).  */
         nMinCoinAgeForStaking = 0;
 
+        mnCollateralMap = &mnCollateralsRegtest;
+
         nExtCoinType = 1;
 
         hashGenesisBlock = genesis.GetHash();
@@ -533,6 +560,7 @@ public:
         fAllowMinDifficultyBlocks = false;
         fDifficultyRetargeting = true;
         fMineBlocksOnDemand = true;
+        mnCollateralMap = &mnCollateralsMainnet;
     }
 
     const CCheckpointData& Checkpoints() const

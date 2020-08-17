@@ -71,7 +71,7 @@ void CActiveMasternode::ManageStatus()
             service = CService(strMasterNodeAddr);
         }
 
-        if (service.GetPort() != Params().GetDefaultPort()) 
+        if (service.GetPort() != Params().GetDefaultPort())
         {
             notCapableReason = strprintf("Invalid port: %u - only 51472 is supported on mainnet.", service.GetPort());
             LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
@@ -170,7 +170,7 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
 }
 
 bool CActiveMasternode::Register(
-    const CMasternodeConfig::CMasternodeEntry& configEntry, 
+    const CMasternodeConfig::CMasternodeEntry& configEntry,
     std::string& errorMessage,
     CMasternodeBroadcast& mnb,
     bool deferRelay)
@@ -216,7 +216,7 @@ bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
     {
         LogPrintf("CActiveMasternode::Register() - Deferring Relay vin = %s\n", mnb.vin.ToString());
     }
-    
+
 
     return true;
 }
@@ -224,7 +224,7 @@ bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
 // when starting a Masternode, this can enable to run as a hot wallet with no funds
 bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newService)
 {
-    if (!fMasterNode_) 
+    if (!fMasterNode_)
     {
         return false;
     }
@@ -251,7 +251,7 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
     {
         return false;
     }
-    
+
     //The values below are needed for signing mnping messages going forward
     status = ACTIVE_MASTERNODE_STARTED;
     vin = newVin;

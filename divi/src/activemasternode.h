@@ -65,7 +65,7 @@ public:
 
     /// Register remote Masternode
     static bool Register(
-        const CMasternodeConfig::CMasternodeEntry& configEntry, 
+        const CMasternodeConfig::CMasternodeEntry& configEntry,
         std::string& errorMessage,
         CMasternodeBroadcast& mnb,
         bool deferRelay = false);

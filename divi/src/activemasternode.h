@@ -9,7 +9,6 @@
 #include "pubkey.h"
 #include "masternodeconfig.h"
 #include "obfuscation.h"
-#include "sync.h"
 #include "wallet.h"
 
 

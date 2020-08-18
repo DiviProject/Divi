@@ -11,6 +11,7 @@
 #include "net.h"
 #include "protocol.h"
 #include "spork.h"
+#include "sync.h"
 
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 extern CWallet* pwalletMain;

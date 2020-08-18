@@ -9,6 +9,7 @@
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "net.h"
+#include "obfuscation.h"
 #include "protocol.h"
 #include "spork.h"
 #include "sync.h"

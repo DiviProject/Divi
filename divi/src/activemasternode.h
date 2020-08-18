@@ -8,7 +8,6 @@
 
 #include "pubkey.h"
 #include "masternodeconfig.h"
-#include "obfuscation.h"
 #include "wallet.h"
 
 

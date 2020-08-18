@@ -240,9 +240,13 @@ bool CMasternode::IsBroadcastedWithin(int seconds)
 
 bool CMasternode::IsPingedWithin(int seconds, int64_t now)
 {
-    now == -1 ? now = GetAdjustedTime() : now;
+    if (now == -1)
+        now = GetAdjustedTime();
 
-    return (lastPing == CMasternodePing()) ? false : now - lastPing.sigTime < seconds;
+    if (lastPing == CMasternodePing())
+        return false;
+
+    return now - lastPing.sigTime < seconds;
 }
 
 void CMasternode::Disable()
@@ -318,15 +322,15 @@ uint256 CMasternode::CalculateScore(int mod, int64_t nBlockHeight)
 {
     if (chainActive.Tip() == NULL) return 0;
 
-    uint256 hash = 0;
-    uint256 aux = vin.prevout.hash + vin.prevout.n;
+    const uint256 aux = vin.prevout.hash + vin.prevout.n;
 
+    uint256 hash;
     if (!GetBlockHash(hash, nBlockHeight)) {
         LogPrint("masternode","CalculateScore ERROR - nHeight %d - Returned 0\n", nBlockHeight);
         return 0;
     }
 
-    size_t nHashRounds = GetHashRoundsForTierMasternodes(static_cast<MasternodeTier>(nTier));
+    const size_t nHashRounds = GetHashRoundsForTierMasternodes(static_cast<MasternodeTier>(nTier));
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
     ss << hash;

@@ -82,6 +82,7 @@ BASE_SCRIPTS = [
     'mempool_coinbase_spends.py',
     'mempool_resurrect_test.py',
     'mempool_spendcoinbase.py',
+    'mncollateral.py',
     'proxy_test.py',
     'receivedby.py',
     'reindex.py',
@@ -103,6 +104,7 @@ ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS
 
 NON_SCRIPTS = [
     # These are script files that live in the functional tests directory, but are not test scripts.
+    'masternode.py',
     'netutil.py',
     'test_framework.py',
     'test_runner.py',

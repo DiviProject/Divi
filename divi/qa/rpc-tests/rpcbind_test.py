@@ -40,7 +40,7 @@ class RpcBindTest(BitcoinTestFramework):
         if allow_ips:
             base_args += ['-rpcallowip=' + x for x in allow_ips]
         binds = ['-rpcbind='+addr for addr in addresses]
-        nodes = start_nodes(1, self.options.tmpdir, [base_args + binds], connect_to)
+        nodes = start_nodes(1, self.options.tmpdir, [base_args + binds], rpchost=connect_to)
         try:
             pid = bitcoind_processes[0].pid
             assert_equal(set(get_bind_addrs(pid)), set(expected))

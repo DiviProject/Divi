@@ -8,6 +8,7 @@
 #include "masternode.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
+#include "net.h"
 #include "protocol.h"
 #include "spork.h"
 

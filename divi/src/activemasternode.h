@@ -6,8 +6,8 @@
 #ifndef ACTIVEMASTERNODE_H
 #define ACTIVEMASTERNODE_H
 
-#include "pubkey.h"
-#include "masternodeconfig.h"
+#include <pubkey.h>
+#include <masternodeconfig.h>
 #include <netbase.h>
 #include <primitives/transaction.h>
 #include <sync.h>

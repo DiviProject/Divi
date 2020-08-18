@@ -40,6 +40,7 @@
 #include <ValidationState.h>
 #include <scriptCheck.h>
 #include <blockFileInfo.h>
+#include <wallet.h>
 
 using namespace boost;
 using namespace std;

@@ -8,8 +8,9 @@
 
 #include "pubkey.h"
 #include "masternodeconfig.h"
-#include "wallet.h"
-
+#include <netbase.h>
+#include <primitives/transaction.h>
+#include <sync.h>
 
 #define ACTIVE_MASTERNODE_INITIAL 0 // initial state
 #define ACTIVE_MASTERNODE_SYNC_IN_PROCESS 1

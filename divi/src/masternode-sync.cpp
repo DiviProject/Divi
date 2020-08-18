@@ -15,6 +15,7 @@
 #include "Logging.h"
 #include "addrman.h"
 #include "netfulfilledman.h"
+#include <ui_interface.h>
 // clang-format on
 
 #include <algorithm>

@@ -25,6 +25,8 @@
 
 std::map<uint256, CSporkMessage> mapSporks;
 CSporkManager sporkManager;
+extern CAmount nTransactionValueMultiplier;
+extern unsigned int nTransactionSizeMultiplier;
 
 static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_2_SWIFTTX_ENABLED,                "0"},             // ON

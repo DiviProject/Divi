@@ -12,7 +12,8 @@
 #include "obfuscation.h"
 #include "protocol.h"
 #include "spork.h"
-#include "sync.h"
+#include "wallet.h"
+
 
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 extern CWallet* pwalletMain;

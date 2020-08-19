@@ -650,25 +650,6 @@ bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
     return true;
 }
 
-bool CMasternodeBroadcastFactory::checkNetworkPort(
-    const std::string& strService,
-    std::string& strErrorRet)
-{
-    CService service = CService(strService);
-    int mainnetDefaultPort = Params().GetDefaultPort();
-    if (service.GetPort() != mainnetDefaultPort) {
-        strErrorRet = strprintf(
-            "Invalid port %u for masternode %s, only %d is supported on %s network",
-            service.GetPort(),
-            strService,
-            mainnetDefaultPort,
-            Params().NetworkIDString());
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
-        return false;
-    }
-    return true;
-}
-
 bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
     const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
@@ -688,8 +669,7 @@ bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
     if (!checkBlockchainSync(strErrorRet,fOffline)||
         !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
         !setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,collateralPrivKeyIsRemote,txin,masternodeCollateralKeyPair,strErrorRet) ||
-        !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet) ||
-        !checkNetworkPort(strService,strErrorRet))
+        !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet))
     {
         return false;
     }
@@ -927,8 +907,6 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
         nDos = 100;
         return false;
     }
-
-    if(addr.GetPort() != Params().GetDefaultPort()) return false;
 
     //search existing Masternode list, this is where we update existing Masternodes with new mnb broadcasts
     CMasternode* pmn = mnodeman.Find(vin);

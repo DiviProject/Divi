@@ -353,9 +353,6 @@ private:
         const std::string& service,
         MasternodeTier& nMasternodeTier,
         std::string& strErrorRet);
-    static bool checkNetworkPort(
-        const std::string& strService,
-        std::string& strErrorRet);
     static bool createArgumentsFromConfig(
         const CMasternodeConfig::CMasternodeEntry configEntry,
         std::string& strErrorRet,

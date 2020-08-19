@@ -168,9 +168,12 @@ Value fundmasternode(const Array& params, bool fHelp)
     if (!pwalletMain->GetKey(keyID, vchSecret))
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + CBitcoinAddress(keyID).ToString() + " is not known");
 
+    if (mnAddress.find(':') == std::string::npos)
+        mnAddress += ":" + std::to_string(Params().GetDefaultPort());
+
     auto tokens = {
         alias,
-        mnAddress + ":" + std::to_string(Params().GetDefaultPort()),
+        mnAddress,
         CBitcoinSecret(vchSecret).ToString(),
         txHash.ToString(),
         std::to_string(outputIndex)

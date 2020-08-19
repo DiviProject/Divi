@@ -73,7 +73,8 @@ class MnCollateralTest (BitcoinTestFramework):
     self.mine_blocks (1)
     self.check_balance (1000, "alloc->gold")
     self.check_balance (1250)
-    cfg = fund_masternode (node, "spent", "gold", txid, "1.2.3.4")
+    cfg = fund_masternode (node, "spent", "gold", txid, "1.2.3.4:1024")
+    assert_equal (cfg.ip, "1.2.3.4:1024")
     assert_equal (node.gettxout (cfg.txid, cfg.vout)["value"], 1000)
 
     # Restart with the config line added.

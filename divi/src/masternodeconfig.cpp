@@ -62,16 +62,6 @@ bool CMasternodeConfig::read(std::string& strErr)
             }
         }
 
-        if (Params().GetDefaultPort() != CService(ip).GetPort())
-        {
-            strErr = translate("Invalid port detected in masternode.conf") + "\n" +
-                        strprintf(translate("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
-                        strprintf(translate("(must be %d for %s)"), Params().GetDefaultPort(), Params().NetworkIDString());
-            streamConfig.close();
-            return false;
-        }
-
-
         add(alias, ip, privKey, txHash, outputIndex);
     }
 

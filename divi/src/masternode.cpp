@@ -959,7 +959,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
     }
 
     if (IsCoinSpent(vin.prevout, getCollateralAmount(nTier) )) {
-        LogPrintf("mnb - coin is already spent\n");
+        LogPrint("masternode", "mnb - coin is already spent\n");
         return false;
     }
 

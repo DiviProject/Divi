@@ -83,6 +83,7 @@ BASE_SCRIPTS = [
     'mempool_resurrect_test.py',
     'mempool_spendcoinbase.py',
     'mncollateral.py',
+    'mnoperation.py',
     'proxy_test.py',
     'receivedby.py',
     'reindex.py',

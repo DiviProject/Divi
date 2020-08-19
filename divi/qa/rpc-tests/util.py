@@ -42,7 +42,7 @@ def sync_blocks(rpc_connections):
     Wait until everybody has the same block count
     """
     while True:
-        counts = [ x.getblockcount() for x in rpc_connections ]
+        counts = [ x.getblockcount() for x in rpc_connections if x ]
         if counts == [ counts[0] ]*len(counts):
             break
         time.sleep(0.1)
@@ -56,8 +56,10 @@ def sync_mempools(rpc_connections):
         pool = set(rpc_connections[0].getrawmempool())
         num_match = 1
         for i in range(1, len(rpc_connections)):
-            if set(rpc_connections[i].getrawmempool()) == pool:
-                num_match = num_match+1
+            if not rpc_connections[i]:
+                num_match += 1
+            elif set(rpc_connections[i].getrawmempool()) == pool:
+                num_match += 1
         if num_match == len(rpc_connections):
             break
         time.sleep(0.1)
@@ -138,12 +140,14 @@ def stop_node(node, i):
 
 def stop_nodes(nodes):
     for node in nodes:
-        node.stop()
+        if node:
+            node.stop()
     del nodes[:] # Emptying array closes connections as a side effect
 
 def set_node_times(nodes, t):
     for node in nodes:
-        node.setmocktime(t)
+        if node:
+            node.setmocktime(t)
 
 def wait_bitcoinds():
     # Wait for all bitcoinds to cleanly exit

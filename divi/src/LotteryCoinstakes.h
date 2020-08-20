@@ -25,6 +25,10 @@ public:
 
     bool IsValid() const;
     void MarkAsShallowStorage();
+    int height() const;
+    const LotteryCoinstakes& getLotteryCoinstakes() const;
+    void updateShallowDataStore(LotteryCoinstakeData& other);
+    void clear();
 
     ADD_SERIALIZE_METHODS;
     template <typename Stream, typename Operation>
@@ -49,10 +53,5 @@ public:
         }
         READWRITE(heightOfDataStorage);
     }
-
-    int height() const;
-    const LotteryCoinstakes& getLotteryCoinstakes() const;
-    void updateShallowDataStore(LotteryCoinstakeData& other);
-    void clear();
 };
 #endif //LOTTERY_COINSTAKES_H

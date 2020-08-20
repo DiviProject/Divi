@@ -15,6 +15,9 @@
 
 using namespace std;
 
+boost::condition_variable cvMockTimeChanged;
+boost::mutex csMockTime;
+
 static int64_t nMockTime = 0; //! For unit testing
 
 int64_t GetTime()
@@ -26,7 +29,9 @@ int64_t GetTime()
 
 void SetMockTime(int64_t nMockTimeIn)
 {
+    boost::unique_lock<boost::mutex> lock(csMockTime);
     nMockTime = nMockTimeIn;
+    cvMockTimeChanged.notify_all();
 }
 
 int64_t GetTimeMillis()

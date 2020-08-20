@@ -26,6 +26,8 @@
 #include <base58.h>
 #include <base58address.h>
 
+#include <chrono>
+
 extern const std::string strMessageMagic = "DarkNet Signed Message:\n";
 
 bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier)
@@ -115,30 +117,42 @@ void ThreadCheckObfuScationPool()
     // Make this thread recognisable as the wallet flushing thread
     RenameThread("divi-obfuscation");
 
-    unsigned int c = 0;
+    int64_t nTimeManageStatus = 0;
+    int64_t nTimeConnections = 0;
 
     while (true) {
-        MilliSleep(1000);
-        //LogPrintf("ThreadCheckObfuScationPool::check timeout\n");
+        int64_t now;
+        {
+            boost::unique_lock<boost::mutex> lock(csMockTime);
+            cvMockTimeChanged.wait_for(lock, boost::chrono::seconds(1));
+            now = GetTime();
+        }
 
         // try to sync from all available nodes, one step at a time
+        //
+        // this function keeps track of its own "last call" time and
+        // ignores calls if they are too early
         masternodeSync.Process();
 
-        if (masternodeSync.IsBlockchainSynced()) {
-            c++;
+        if (!masternodeSync.IsBlockchainSynced())
+            continue;
 
-            // check if we should activate or ping every few minutes,
-            // start right after sync is considered to be done
-            if (c % MASTERNODE_PING_SECONDS == 1) activeMasternode.ManageStatus();
+        // check if we should activate or ping every few minutes,
+        // start right after sync is considered to be done
+        if (now >= nTimeManageStatus + MASTERNODE_PING_SECONDS) {
+            nTimeManageStatus = now;
+            activeMasternode.ManageStatus();
+        }
 
-            if (c % 60 == 0) {
-                mnodeman.CheckAndRemoveInnactive();
-                mnodeman.ProcessMasternodeConnections();
-                masternodePayments.CheckAndRemove();
-                CleanTransactionLocksList();
-            }
+        if (now >= nTimeConnections + 60) {
+            nTimeConnections = now;
+            mnodeman.CheckAndRemoveInnactive();
+            mnodeman.ProcessMasternodeConnections();
+            masternodePayments.CheckAndRemove();
+            CleanTransactionLocksList();
+        }
 
-            //if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
+        //if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
 
 //            obfuScationPool.CheckTimeout();
 //            obfuScationPool.CheckForCompleteQueue();
@@ -146,6 +160,5 @@ void ThreadCheckObfuScationPool()
 //            if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
 //                obfuScationPool.DoAutomaticDenominating();
 //            }
-        }
     }
 }

@@ -25,7 +25,7 @@ extern CMasternodePayments masternodePayments;
 
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);
 
-LotteryCoinstakes CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
+LotteryCoinstakeData CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
 
 class CMasternodePayee
 {

@@ -121,7 +121,7 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
     }
 
     if(heightValidator.IsValidLotteryBlockHeight(nBlockHeight)) {
-        return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes);
+        return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
     }
 
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
@@ -140,7 +140,7 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
     return true;
 }
 
-LotteryCoinstakes CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
+LotteryCoinstakeData CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
 {
     const CChainParams& chainParameters = Params();
     SuperblockSubsidyContainer subsidyCointainer(chainParameters);

@@ -13,6 +13,7 @@
 #include <BlockDiskAccessor.h>
 #include <I_SuperblockHeightValidator.h>
 
+
 LotteryWinnersCalculator::LotteryWinnersCalculator(
     const CChainParams& chainParameters,
     CChain& activeChain,
@@ -68,39 +69,38 @@ bool LotteryWinnersCalculator::IsCoinstakeValidForLottery(const CTransaction &tx
     return nAmount > minimumCoinstakeForTicket(nHeight) * COIN; // only if stake is more than 10k
 }
 
-LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight) const
+LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight) const
 {
-    LotteryCoinstakes result;
+    LotteryCoinstakeData defaultValue = (prevBlockIndex)?prevBlockIndex->vLotteryWinnersCoinstakes : LotteryCoinstakeData();
+    if(nHeight!=0) defaultValue.MarkAsShallowStorage();
     // if that's a block when lottery happens, reset score for whole cycle
     if(superblockHeightValidator_.IsValidLotteryBlockHeight(nHeight))
-        return result;
+        return defaultValue;
 
     if(!prevBlockIndex)
-        return result;
+        return defaultValue;
 
     const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(nHeight);
     int nLastLotteryHeight = std::max(chainParameters_.GetLotteryBlockStartBlock(),  lotteryBlockPaymentCycle* ((nHeight - 1) / lotteryBlockPaymentCycle) );
 
     if(nHeight <= nLastLotteryHeight) {
-        return result;
+        return defaultValue;
     }
 
     const auto& coinbaseTx = (nHeight > chainParameters_.LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
-
     if(!IsCoinstakeValidForLottery(coinbaseTx, nHeight)) {
-        return prevBlockIndex->vLotteryWinnersCoinstakes; // return last if we have no lotter participant in this block
+        return defaultValue; // return last if we have no lotter participant in this block
     }
-
     CBlockIndex* prevLotteryBlockIndex = activeChain_[nLastLotteryHeight];
     auto hashLastLotteryBlock = prevLotteryBlockIndex->GetBlockHash();
     // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
     using LotteryScore = uint256;
     std::vector<LotteryScore> scores;
-    scores.reserve(prevBlockIndex->vLotteryWinnersCoinstakes.size()+1);
-
+    LotteryCoinstakes coinstakes = prevBlockIndex->vLotteryWinnersCoinstakes.getLotteryCoinstakes();
+    scores.reserve(coinstakes.size()+1);
     int startingWinnerIndex = 0;
     std::map<uint256,int> transactionHashToWinnerIndex;
-    for(auto&& lotteryCoinstake : prevBlockIndex->vLotteryWinnersCoinstakes) {
+    for(auto&& lotteryCoinstake : coinstakes) {
         transactionHashToWinnerIndex[lotteryCoinstake.first] = startingWinnerIndex++;
         scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock));
     }
@@ -109,22 +109,28 @@ LotteryCoinstakes LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock
     scores.emplace_back(newScore);
     transactionHashToWinnerIndex[coinbaseTx.GetHash()] = startingWinnerIndex++;
 
-    result = prevBlockIndex->vLotteryWinnersCoinstakes;
-    result.reserve(prevBlockIndex->vLotteryWinnersCoinstakes.size()+1);
+    LotteryCoinstakes result = coinstakes;
+    result.reserve(coinstakes.size()+1);
     result.emplace_back(coinbaseTx.GetHash(), coinbaseTx.IsCoinBase()? coinbaseTx.vout[0].scriptPubKey:coinbaseTx.vout[1].scriptPubKey);
-
 
     // biggest entry at the begining
     if(scores.size() > 1)
     {
-        std::stable_sort(std::begin(result), std::end(result), 
-            [&scores,&transactionHashToWinnerIndex](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs) 
+        std::stable_sort(std::begin(result), std::end(result),
+            [&scores,&transactionHashToWinnerIndex](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs)
             {
                 return scores[transactionHashToWinnerIndex[lhs.first]] > scores[transactionHashToWinnerIndex[rhs.first]];
             }
         );
     }
+    bool shouldUpdateCoinstakeData = (result.size()>0)? transactionHashToWinnerIndex[result.back().first] != 11 : false;
     result.resize( std::min( std::size_t(11), result.size()) );
-
-    return result;
+    if(shouldUpdateCoinstakeData)
+    {
+        return LotteryCoinstakeData(nHeight,result);
+    }
+    else
+    {
+        return defaultValue;
+    }
 }

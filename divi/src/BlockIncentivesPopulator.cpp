@@ -46,7 +46,7 @@ void BlockIncentivesPopulator::FillTreasuryPayment(CMutableTransaction &tx, int 
 
 void BlockIncentivesPopulator::FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
 {
-    auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes;
+    auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes.getLotteryCoinstakes();
     // when we call this we need to have exactly 11 winners
 
     auto nLotteryReward = rewards.nLotteryReward;

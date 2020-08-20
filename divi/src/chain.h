@@ -178,13 +178,13 @@ public:
 
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     uint32_t nSequenceId;
-    
+
     //! zerocoin specific fields
     std::map<libzerocoin::CoinDenomination, int64_t> mapZerocoinSupply;
     std::vector<libzerocoin::CoinDenomination> vMintDenominationsInBlock;
 
-    LotteryCoinstakes vLotteryWinnersCoinstakes;
-    
+    LotteryCoinstakeData vLotteryWinnersCoinstakes;
+
     void SetNull()
     {
         phashBlock = NULL;
@@ -259,7 +259,7 @@ public:
 
         vLotteryWinnersCoinstakes.clear();
     }
-    
+
 
     CDiskBlockPos GetBlockPos() const
     {
@@ -294,7 +294,7 @@ public:
         block.nAccumulatorCheckpoint = nAccumulatorCheckpoint;
         return block;
     }
-    
+
     uint256 GetBlockHash() const
     {
         return *phashBlock;

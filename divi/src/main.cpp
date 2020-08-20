@@ -2978,6 +2978,8 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
         pindexNew->pprev = (*miPrev).second;
         pindexNew->nHeight = pindexNew->pprev->nHeight + 1;
         pindexNew->BuildSkip();
+        pindexNew->vLotteryWinnersCoinstakes.updateShallowDataStore(
+                    pindexNew->GetAncestor(pindexNew->vLotteryWinnersCoinstakes.height())->vLotteryWinnersCoinstakes );
 
         //update previous block pointer
         pindexNew->pprev->pnext = pindexNew;
@@ -3951,7 +3953,6 @@ bool InitBlockIndex()
             return error("LoadBlockIndex() : failed to initialize block database: %s", e.what());
         }
     }
-
     return true;
 }
 

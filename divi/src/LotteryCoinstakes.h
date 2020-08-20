@@ -18,29 +18,13 @@ public:
 
 public:
 
-    LotteryCoinstakeData(
-        ): storage(std::make_shared<LotteryCoinstakes>())
-        , heightOfDataStorage(0)
-        , storageIsLocal(true)
-    {
-    }
+    LotteryCoinstakeData();
     LotteryCoinstakeData(
         int height,
-        const LotteryCoinstakes& coinstakes
-        ): storage(std::make_shared<LotteryCoinstakes>(coinstakes))
-        , heightOfDataStorage(height)
-        , storageIsLocal(true)
-    {
-    }
+        const LotteryCoinstakes& coinstakes);
 
-    bool IsValid() const
-    {
-        return static_cast<bool>(storage.get());
-    }
-    void MarkAsShallowStorage()
-    {
-        storageIsLocal = false;
-    }
+    bool IsValid() const;
+    void MarkAsShallowStorage();
 
     ADD_SERIALIZE_METHODS;
     template <typename Stream, typename Operation>
@@ -66,29 +50,9 @@ public:
         READWRITE(heightOfDataStorage);
     }
 
-    int height() const
-    {
-        return heightOfDataStorage;
-    }
-
-    const LotteryCoinstakes& getLotteryCoinstakes() const
-    {
-        return *storage;
-    }
-    void updateShallowDataStore(LotteryCoinstakeData& other)
-    {
-        if(!storageIsLocal && other.storageIsLocal && other.height() == heightOfDataStorage)
-        {
-            storage.reset();
-            storage = other.storage;
-        }
-    }
-
-    void clear()
-    {
-        heightOfDataStorage =0;
-        storageIsLocal = true;
-        storage = std::make_shared<LotteryCoinstakes>();
-    }
+    int height() const;
+    const LotteryCoinstakes& getLotteryCoinstakes() const;
+    void updateShallowDataStore(LotteryCoinstakeData& other);
+    void clear();
 };
 #endif //LOTTERY_COINSTAKES_H

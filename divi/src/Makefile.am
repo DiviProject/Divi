@@ -364,6 +364,7 @@ libbitcoin_wallet_a_SOURCES = \
   masternode.cpp \
   masternode-payments.cpp \
   LotteryWinnersCalculator.cpp \
+  LotteryCoinstakes.cpp \
   BlockIncentivesPopulator.cpp \
   SuperblockHelpers.cpp \
   SuperblockHeightValidator.cpp \

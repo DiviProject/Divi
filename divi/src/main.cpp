@@ -2978,8 +2978,6 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
         pindexNew->pprev = (*miPrev).second;
         pindexNew->nHeight = pindexNew->pprev->nHeight + 1;
         pindexNew->BuildSkip();
-        pindexNew->vLotteryWinnersCoinstakes.updateShallowDataStore(
-                    pindexNew->GetAncestor(pindexNew->vLotteryWinnersCoinstakes.height())->vLotteryWinnersCoinstakes );
 
         //update previous block pointer
         pindexNew->pprev->pnext = pindexNew;
@@ -3747,8 +3745,12 @@ bool static LoadBlockIndexDB(string& strError)
             setBlockIndexCandidates.insert(pindex);
         if (pindex->nStatus & BLOCK_FAILED_MASK && (!pindexBestInvalid || pindex->nChainWork > pindexBestInvalid->nChainWork))
             pindexBestInvalid = pindex;
-        if (pindex->pprev)
+        if (pindex->pprev){
             pindex->BuildSkip();
+            CBlockIndex* pAncestor = pindex->GetAncestor(pindex->vLotteryWinnersCoinstakes.height());
+            pindex->vLotteryWinnersCoinstakes.updateShallowDataStore(
+                pAncestor->vLotteryWinnersCoinstakes );
+        }
         if (pindex->IsValid(BLOCK_VALID_TREE) && (pindexBestHeader == NULL || CBlockIndexWorkComparator()(pindexBestHeader, pindex)))
             pindexBestHeader = pindex;
     }

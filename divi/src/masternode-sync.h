@@ -52,8 +52,8 @@ public:
 
     CMasternodeSync();
 
-    void AddedMasternodeList(uint256 hash);
-    void AddedMasternodeWinner(uint256 hash);
+    void AddedMasternodeList(const uint256& hash);
+    void AddedMasternodeWinner(const uint256& hash);
     void GetNextAsset();
     std::string GetSyncStatus();
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);

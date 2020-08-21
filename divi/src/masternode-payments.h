@@ -128,13 +128,14 @@ private:
     int nSyncedFromPeer;
     int nLastBlockHeight;
 
+    std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
+    std::map<int, CMasternodeBlockPayees> mapMasternodeBlocks;
+    std::map<uint256, int> mapMasternodesLastVote; //prevout.hash + prevout.n, nBlockHeight
+
     CCriticalSection cs_mapMasternodeBlocks;
     CCriticalSection cs_mapMasternodePayeeVotes;
 
 public:
-    std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
-    std::map<int, CMasternodeBlockPayees> mapMasternodeBlocks;
-    std::map<uint256, int> mapMasternodesLastVote; //prevout.hash + prevout.n, nBlockHeight
 
     CMasternodePayments();
 
@@ -158,6 +159,30 @@ public:
     std::string GetRequiredPaymentsString(int nBlockHeight);
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake);
     std::string ToString() const;
+
+    /** Retrieves the payment winner for the given hash.  Returns null
+     *  if there is no entry for that hash.  */
+    const CMasternodePaymentWinner* GetPaymentWinnerForHash(const uint256& hash) const {
+        return const_cast<CMasternodePayments*>(this)->GetPaymentWinnerForHash(hash);
+    }
+    CMasternodePaymentWinner* GetPaymentWinnerForHash(const uint256& hash) {
+        const auto mit = mapMasternodePayeeVotes.find(hash);
+        if (mit == mapMasternodePayeeVotes.end())
+            return nullptr;
+        return &mit->second;
+    }
+
+    /** Retrieves the payees for the given block.  Returns null if there is
+     *  no matching entry.  */
+    const CMasternodeBlockPayees* GetPayeesForHeight(const unsigned height) const {
+        return const_cast<CMasternodePayments*>(this)->GetPayeesForHeight(height);
+    }
+    CMasternodeBlockPayees* GetPayeesForHeight(const unsigned height) {
+        const auto mit = mapMasternodeBlocks.find(height);
+        if (mit == mapMasternodeBlocks.end())
+            return nullptr;
+        return &mit->second;
+    }
 
     ADD_SERIALIZE_METHODS;
 

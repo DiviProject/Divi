@@ -361,7 +361,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::st
             nHeight = chainActive.Tip()->nHeight;
         }
 
-        if (masternodePayments.mapMasternodePayeeVotes.count(winner.GetHash())) {
+        if (masternodePayments.GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
             LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash().ToString().c_str(), nHeight);
             masternodeSync.AddedMasternodeWinner(winner.GetHash());
             return;
@@ -429,9 +429,9 @@ bool CMasternodePaymentWinner::Sign(CKey& keyMasternode, CPubKey& pubKeyMasterno
 
 bool CMasternodePayments::GetBlockPayee(int nBlockHeight, CScript& payee)
 {
-    if (mapMasternodeBlocks.count(nBlockHeight)) {
-        return mapMasternodeBlocks[nBlockHeight].GetPayee(payee);
-    }
+    auto* payees = GetPayeesForHeight(nBlockHeight);
+    if (payees != nullptr)
+        return payees->GetPayee(payee);
 
     return false;
 }
@@ -455,13 +455,9 @@ bool CMasternodePayments::IsScheduled(CMasternode& mn, int nNotBlockHeight)
     CScript payee;
     for (int64_t h = nHeight; h <= nHeight + 8; h++) {
         if (h == nNotBlockHeight) continue;
-        if (mapMasternodeBlocks.count(h)) {
-            if (mapMasternodeBlocks[h].GetPayee(payee)) {
-                if (mnpayee == payee) {
-                    return true;
-                }
-            }
-        }
+        auto* payees = GetPayeesForHeight(h);
+        if (payees != nullptr && payees->GetPayee(payee) && payee == mnpayee)
+            return true;
     }
 
     return false;
@@ -474,22 +470,25 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
         return false;
     }
 
+    CMasternodeBlockPayees* payees;
     {
         LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
 
-        if (mapMasternodePayeeVotes.count(winnerIn.GetHash())) {
+        if (GetPaymentWinnerForHash(winnerIn.GetHash()) != nullptr)
             return false;
-        }
 
-        mapMasternodePayeeVotes[winnerIn.GetHash()] = winnerIn;
+        auto ins = mapMasternodePayeeVotes.emplace(winnerIn.GetHash(), winnerIn);
+        assert(ins.second);
 
-        if (!mapMasternodeBlocks.count(winnerIn.nBlockHeight)) {
+        payees = GetPayeesForHeight(winnerIn.nBlockHeight);
+        if (payees == nullptr) {
             CMasternodeBlockPayees blockPayees(winnerIn.nBlockHeight);
-            mapMasternodeBlocks.emplace(winnerIn.nBlockHeight, std::move(blockPayees));
+            auto mit = mapMasternodeBlocks.emplace(winnerIn.nBlockHeight, std::move(blockPayees)).first;
+            payees = &mit->second;
         }
     }
 
-    mapMasternodeBlocks[winnerIn.nBlockHeight].AddPayee(winnerIn.payee, 1);
+    payees->AddPayee(winnerIn.payee, 1);
 
     return true;
 }
@@ -570,9 +569,9 @@ std::string CMasternodePayments::GetRequiredPaymentsString(int nBlockHeight)
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    if (mapMasternodeBlocks.count(nBlockHeight)) {
-        return mapMasternodeBlocks[nBlockHeight].GetRequiredPaymentsString();
-    }
+    auto* payees = GetPayeesForHeight(nBlockHeight);
+    if (payees != nullptr)
+        return payees->GetRequiredPaymentsString();
 
     return "Unknown";
 }
@@ -581,9 +580,9 @@ bool CMasternodePayments::IsTransactionValid(const CTransaction& txNew, int nBlo
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    if (mapMasternodeBlocks.count(nBlockHeight)) {
-        return mapMasternodeBlocks[nBlockHeight].IsTransactionValid(txNew);
-    }
+    auto* payees = GetPayeesForHeight(nBlockHeight);
+    if (payees != nullptr)
+        return payees->IsTransactionValid(txNew);
 
     return true;
 }

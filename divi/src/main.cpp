@@ -4280,7 +4280,7 @@ bool static AlreadyHave(const CInv& inv)
     case MSG_SPORK:
         return mapSporks.count(inv.hash);
     case MSG_MASTERNODE_WINNER:
-        if (masternodePayments.mapMasternodePayeeVotes.count(inv.hash)) {
+        if (masternodePayments.GetPaymentWinnerForHash(inv.hash) != nullptr) {
             masternodeSync.AddedMasternodeWinner(inv.hash);
             return true;
         }
@@ -4424,10 +4424,11 @@ void static ProcessGetData(CNode* pfrom)
                     }
                 }
                 if (!pushed && inv.type == MSG_MASTERNODE_WINNER) {
-                    if (masternodePayments.mapMasternodePayeeVotes.count(inv.hash)) {
+                    const auto* winner = masternodePayments.GetPaymentWinnerForHash(inv.hash);
+                    if (winner != nullptr) {
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
-                        ss << masternodePayments.mapMasternodePayeeVotes[inv.hash];
+                        ss << *winner;
                         pfrom->PushMessage("mnw", ss);
                         pushed = true;
                     }

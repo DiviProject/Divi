@@ -293,7 +293,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBloc
     CScript payee;
 
     //spork
-    if (!masternodePayments.GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
+    if (!GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
         //no masternode detected
         CMasternode* winningNode = mnodeman.GetCurrentMasterNode(1);
         if (winningNode) {
@@ -343,7 +343,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
         }
 
         netfulfilledman.AddFulfilledRequest(pfrom->addr, "mnget");
-        masternodePayments.Sync(pfrom, nCountNeeded);
+        Sync(pfrom, nCountNeeded);
         LogPrint("mnpayments", "mnget - Sent Masternode winners to peer %i\n", pfrom->GetId());
     } else if (strCommand == "mnw") { //Masternode Payments Declare Winner
         //this is required in litemodef
@@ -359,7 +359,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
             nHeight = chainActive.Tip()->nHeight;
         }
 
-        if (masternodePayments.GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
+        if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
             LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash().ToString().c_str(), nHeight);
             masternodeSync.AddedMasternodeWinner(winner.GetHash());
             return;
@@ -377,7 +377,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
             return;
         }
 
-        if (!masternodePayments.CanVote(winner.vinMasternode.prevout, winner.nBlockHeight)) {
+        if (!CanVote(winner.vinMasternode.prevout, winner.nBlockHeight)) {
             //  LogPrint("masternode","mnw - masternode already voted - %s\n", winner.vinMasternode.prevout.ToStringShort());
             return;
         }
@@ -396,7 +396,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
 
         //   LogPrint("mnpayments", "mnw - winning vote - Addr %s Height %d bestHeight %d - %s\n", address2.ToString().c_str(), winner.nBlockHeight, nHeight, winner.vinMasternode.prevout.ToStringShort());
 
-        if (masternodePayments.AddWinningMasternode(winner)) {
+        if (AddWinningMasternode(winner)) {
             winner.Relay();
             masternodeSync.AddedMasternodeWinner(winner.GetHash());
         }

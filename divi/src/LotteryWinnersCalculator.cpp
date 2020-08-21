@@ -109,25 +109,24 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CBl
     scores.emplace_back(newScore);
     transactionHashToWinnerIndex[coinbaseTx.GetHash()] = startingWinnerIndex++;
 
-    LotteryCoinstakes result = coinstakes;
-    result.reserve(coinstakes.size()+1);
-    result.emplace_back(coinbaseTx.GetHash(), coinbaseTx.IsCoinBase()? coinbaseTx.vout[0].scriptPubKey:coinbaseTx.vout[1].scriptPubKey);
+    coinstakes.reserve(coinstakes.size()+1);
+    coinstakes.emplace_back(coinbaseTx.GetHash(), coinbaseTx.IsCoinBase()? coinbaseTx.vout[0].scriptPubKey:coinbaseTx.vout[1].scriptPubKey);
 
     // biggest entry at the begining
     if(scores.size() > 1)
     {
-        std::stable_sort(std::begin(result), std::end(result),
+        std::stable_sort(std::begin(coinstakes), std::end(coinstakes),
             [&scores,&transactionHashToWinnerIndex](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs)
             {
                 return scores[transactionHashToWinnerIndex[lhs.first]] > scores[transactionHashToWinnerIndex[rhs.first]];
             }
         );
     }
-    bool shouldUpdateCoinstakeData = (result.size()>0)? transactionHashToWinnerIndex[result.back().first] != 11 : false;
-    result.resize( std::min( std::size_t(11), result.size()) );
+    bool shouldUpdateCoinstakeData = (coinstakes.size()>0)? transactionHashToWinnerIndex[coinstakes.back().first] != 11 : false;
+    coinstakes.resize( std::min( std::size_t(11), coinstakes.size()) );
     if(shouldUpdateCoinstakeData)
     {
-        return LotteryCoinstakeData(nHeight,result);
+        return LotteryCoinstakeData(nHeight,coinstakes);
     }
     else
     {

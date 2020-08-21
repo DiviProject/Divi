@@ -249,7 +249,7 @@ void CMasternode::Disable()
     lastPing = CMasternodePing();
 }
 
-bool CMasternode::IsEnabled()
+bool CMasternode::IsEnabled() const
 {
     return activeState == MASTERNODE_ENABLED;
 }

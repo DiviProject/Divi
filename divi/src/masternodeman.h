@@ -62,13 +62,13 @@ public:
     }
 
     CMasternodeMan();
-    CMasternodeMan(CMasternodeMan& other);
+    CMasternodeMan(const CMasternodeMan& other);
 
     /// Add an entry
-    bool Add(CMasternode& mn);
+    bool Add(const CMasternode& mn);
 
     /// Ask (source) node for mnb
-    void AskForMN(CNode* pnode, CTxIn& vin);
+    void AskForMN(CNode* pnode, const CTxIn& vin);
 
     /// Check all Masternodes
     void Check();
@@ -80,7 +80,7 @@ public:
     /// Clear Masternode vector
     void Clear();
 
-    int CountEnabled(int protocolVersion = -1);
+    int CountEnabled(int protocolVersion = -1) const;
 
     void CountNetworks(int protocolVersion, int& ipv4, int& ipv6, int& onion);
 
@@ -115,14 +115,14 @@ public:
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     /// Return the number of (unique) Masternodes
-    int size() { return vMasternodes.size(); }
+    int size() const { return vMasternodes.size(); }
 
     /// Return the number of Masternodes older than (default) 8000 seconds
     int stable_size ();
 
     std::string ToString() const;
 
-    void Remove(CTxIn vin);
+    void Remove(const CTxIn& vin);
 
     /// Update masternode list and maps using provided CMasternodeBroadcast
     void UpdateMasternodeList(CMasternodeBroadcast mnb);

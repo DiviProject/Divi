@@ -207,7 +207,7 @@ public:
 
     void Disable();
 
-    bool IsEnabled();
+    bool IsEnabled() const;
 
     int GetMasternodeInputAge();
 

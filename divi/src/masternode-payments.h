@@ -18,9 +18,6 @@ class CMasternodePayments;
 class CMasternodePaymentWinner;
 class CMasternodeBlockPayees;
 
-extern CCriticalSection cs_vecPayments;
-extern CCriticalSection cs_mapMasternodeBlocks;
-extern CCriticalSection cs_mapMasternodePayeeVotes;
 extern CMasternodePayments masternodePayments;
 
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);
@@ -49,12 +46,22 @@ public:
 // Keep track of votes for payees from masternodes
 class CMasternodeBlockPayees
 {
+private:
+    CCriticalSection cs_vecPayments;
+
 public:
     int nBlockHeight;
     std::vector<CMasternodePayee> vecPayments;
 
     CMasternodeBlockPayees();
     CMasternodeBlockPayees(int nBlockHeightIn);
+
+    CMasternodeBlockPayees(const CMasternodeBlockPayees& o)
+      : nBlockHeight(o.nBlockHeight), vecPayments(o.vecPayments)
+    {}
+    CMasternodeBlockPayees(CMasternodeBlockPayees&& o)
+      : nBlockHeight(o.nBlockHeight), vecPayments(std::move(o.vecPayments))
+    {}
 
     void AddPayee(CScript payeeIn, int nIncrement);
 
@@ -120,6 +127,9 @@ class CMasternodePayments
 private:
     int nSyncedFromPeer;
     int nLastBlockHeight;
+
+    CCriticalSection cs_mapMasternodeBlocks;
+    CCriticalSection cs_mapMasternodePayeeVotes;
 
 public:
     std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;

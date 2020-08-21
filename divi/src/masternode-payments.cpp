@@ -27,39 +27,39 @@
 #include <base58address.h>
 #include <chainparams.h>
 
-#define MNPAYMENTS_SIGNATURES_REQUIRED 6
-#define MNPAYMENTS_SIGNATURES_TOTAL 10
-
 extern std::string strMasterNodePrivKey;
-/** Object for who's going to get paid on which blocks */
-CMasternodePayments masternodePayments;
-
-CCriticalSection cs_vecPayments;
-CCriticalSection cs_mapMasternodeBlocks;
-CCriticalSection cs_mapMasternodePayeeVotes;
-
-const std::string TREASURY_PAYMENT_ADDRESS("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");
-const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
-
-const std::string TREASURY_PAYMENT_ADDRESS_TESTNET("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
-const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
 
 int ActiveProtocol();
 void Misbehaving(NodeId pnode, int howmuch);
 extern CCriticalSection cs_main;
 extern CChain chainActive;
 
-static CBitcoinAddress TreasuryPaymentAddress()
+/** Object for who's going to get paid on which blocks */
+CMasternodePayments masternodePayments;
+
+namespace
+{
+
+constexpr int MNPAYMENTS_SIGNATURES_REQUIRED = 6;
+constexpr int MNPAYMENTS_SIGNATURES_TOTAL = 10;
+
+constexpr const char* TREASURY_PAYMENT_ADDRESS = "DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn";
+constexpr const char* CHARITY_PAYMENT_ADDRESS = "DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq";
+
+constexpr const char* TREASURY_PAYMENT_ADDRESS_TESTNET = "xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd";
+constexpr const char* CHARITY_PAYMENT_ADDRESS_TESTNET = "y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5";
+
+CBitcoinAddress TreasuryPaymentAddress()
 {
     return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET);
 }
 
-static CBitcoinAddress CharityPaymentAddress()
+CBitcoinAddress CharityPaymentAddress()
 {
     return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
 }
 
-static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoinstakes vRequiredWinnersCoinstake)
+bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoinstakes vRequiredWinnersCoinstake)
 {
     if(vRequiredWinnersCoinstake.empty()) {
         return true;
@@ -87,7 +87,7 @@ static bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const Lot
     return true;
 }
 
-static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
+bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 {
     SuperblockSubsidyContainer subsidiesContainer(Params());
     auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
@@ -115,6 +115,8 @@ static bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 
     return true;
 }
+
+} // anonymous namespace
 
 bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex)
 {
@@ -473,7 +475,7 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
     }
 
     {
-        LOCK2(cs_mapMasternodePayeeVotes, cs_mapMasternodeBlocks);
+        LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
 
         if (mapMasternodePayeeVotes.count(winnerIn.GetHash())) {
             return false;
@@ -483,7 +485,7 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
 
         if (!mapMasternodeBlocks.count(winnerIn.nBlockHeight)) {
             CMasternodeBlockPayees blockPayees(winnerIn.nBlockHeight);
-            mapMasternodeBlocks[winnerIn.nBlockHeight] = blockPayees;
+            mapMasternodeBlocks.emplace(winnerIn.nBlockHeight, std::move(blockPayees));
         }
     }
 
@@ -588,7 +590,7 @@ bool CMasternodePayments::IsTransactionValid(const CTransaction& txNew, int nBlo
 
 void CMasternodePayments::CheckAndRemove()
 {
-    LOCK2(cs_mapMasternodePayeeVotes, cs_mapMasternodeBlocks);
+    LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
 
     int nHeight;
     {

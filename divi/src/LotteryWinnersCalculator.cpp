@@ -75,7 +75,11 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CBl
     if(nHeight!=0) defaultValue.MarkAsShallowStorage();
     // if that's a block when lottery happens, reset score for whole cycle
     if(superblockHeightValidator_.IsValidLotteryBlockHeight(nHeight))
+    {
+        defaultValue.clear();
+        defaultValue.heightOfDataStorage = nHeight;
         return defaultValue;
+    }
 
     if(!prevBlockIndex)
         return defaultValue;

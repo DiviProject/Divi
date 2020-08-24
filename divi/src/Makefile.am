@@ -100,6 +100,7 @@ BITCOIN_CORE_H = \
   addressindex.h \
   amount.h \
   base58.h \
+  base58data.h \
   BIP9Deployment.h \
   BIP9ActivationManager.h \
   BIP9ActivationFeatureContainer.h \
@@ -443,6 +444,7 @@ libbitcoin_common_a_SOURCES = \
   allocators.cpp \
   FeeRate.cpp \
   base58.cpp \
+  base58data.cpp \
   bip38.cpp \
   bip39.cpp \
   chainparams.cpp \

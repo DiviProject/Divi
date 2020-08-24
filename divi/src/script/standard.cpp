@@ -18,8 +18,6 @@ typedef std::vector<unsigned char> valtype;
 
 unsigned nMaxDatacarrierBytes = MAX_OP_META_RELAY;
 
-CScriptID::CScriptID(const CScript& in) : uint160(Hash160(in.begin(), in.end())) {}
-
 const char* GetTxnOutputType(txnouttype t)
 {
     switch (t)

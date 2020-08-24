@@ -123,6 +123,7 @@ BITCOIN_CORE_H = \
   coincontrol.h \
   coins.h \
   compat.h \
+  destination.h \
   compat/endian.h \
   compat/byteswap.h \
   compat/sanity.h \
@@ -451,6 +452,7 @@ libbitcoin_common_a_SOURCES = \
   coins.cpp \
   FeeAndPriorityCalculator.cpp \
   compressor.cpp \
+  destination.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \
   core_read.cpp \

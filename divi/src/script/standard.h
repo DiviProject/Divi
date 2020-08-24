@@ -11,36 +11,8 @@
 #include "script/scriptandsigflags.h"
 #include "uint256.h"
 
-#include <boost/variant.hpp>
-
 #include <stdint.h>
-
-class CKeyID;
-class CScript;
-
-/** A reference to a CScript: the Hash160 of its serialization (see script.h) */
-class CScriptID : public uint160
-{
-public:
-    CScriptID() : uint160() {}
-    CScriptID(const CScript& in);
-    CScriptID(const uint160& in) : uint160(in) {}
-};
-
-class CNoDestination {
-public:
-    friend bool operator==(const CNoDestination &a, const CNoDestination &b) { return true; }
-    friend bool operator<(const CNoDestination &a, const CNoDestination &b) { return true; }
-};
-
-/**
- * A txout script template with a specific destination. It is either:
- *  * CNoDestination: no destination set
- *  * CKeyID: TX_PUBKEYHASH destination
- *  * CScriptID: TX_SCRIPTHASH destination
- *  A CTxDestination is the internal data type encoded in a CBitcoinAddress
- */
-typedef boost::variant<CNoDestination, CKeyID, CScriptID> CTxDestination;
+#include <destination.h>
 
 static const unsigned int MAX_OP_META_RELAY = 603;      //!< bytes (+1 for OP_META, +2 for the pushdata opcodes)
 extern unsigned nMaxDatacarrierBytes;

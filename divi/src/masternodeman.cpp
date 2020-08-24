@@ -19,30 +19,6 @@
 /** Masternode manager */
 CMasternodeMan mnodeman;
 
-struct CompareLastPaid {
-    bool operator()(const std::pair<int64_t, CTxIn>& t1,
-        const std::pair<int64_t, CTxIn>& t2) const
-    {
-        return t1.first < t2.first;
-    }
-};
-
-struct CompareScoreTxIn {
-    bool operator()(const std::pair<int64_t, CTxIn>& t1,
-        const std::pair<int64_t, CTxIn>& t2) const
-    {
-        return t1.first < t2.first;
-    }
-};
-
-struct CompareScoreMN {
-    bool operator()(const std::pair<int64_t, CMasternode>& t1,
-        const std::pair<int64_t, CMasternode>& t2) const
-    {
-        return t1.first < t2.first;
-    }
-};
-
 //    pathMN = GetDataDir() / "mncache.dat";
 //    strMagicMessage = "MasternodeCache";
 
@@ -432,130 +408,106 @@ CMasternode* CMasternodeMan::GetCurrentMasterNode(int mod, int64_t nBlockHeight,
     return winner;
 }
 
+void CMasternodeMan::CollectRankedMasternodes(const int64_t nBlockHeight, const int minProtocol,
+                                              const int64_t nMinAge, const bool fOnlyActive,
+                                              std::vector<std::pair<int64_t, CMasternode*>>& vecEnabled,
+                                              std::vector<CMasternode*>& vecDisabled)
+{
+    vecEnabled.clear();
+    vecDisabled.clear();
+
+    for (auto& mn : vMasternodes) {
+        if (mn.protocolVersion < minProtocol) {
+            LogPrint("masternode", "Skipping Masternode with obsolete version %d\n", mn.protocolVersion);
+            continue;
+        }
+
+        if (nMinAge > 0) {
+            const int64_t nAge = GetAdjustedTime() - mn.sigTime;
+            if (nAge < nMinAge) {
+                LogPrint("masternode", "Skipping just activated Masternode. Age: %ld\n", nAge);
+                continue;
+            }
+        }
+
+        if (fOnlyActive) {
+            mn.Check ();
+            if (!mn.IsEnabled ()) {
+                vecDisabled.push_back(&mn);
+                continue;
+            }
+        }
+
+        const uint256 n = mn.CalculateScore(1, nBlockHeight);
+        const int64_t n2 = n.GetCompact(false);
+        vecEnabled.emplace_back(n2, &mn);
+    }
+
+    const auto compareByScore = [] (const std::pair<int64_t, CMasternode*>& a, const std::pair<int64_t, CMasternode*>& b)
+        {
+            return a.first > b.first;
+        };
+    std::sort(vecEnabled.begin(), vecEnabled.end(), compareByScore);
+}
+
 int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol, bool fOnlyActive)
 {
-    std::vector<std::pair<int64_t, CTxIn> > vecMasternodeScores;
-    int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;
-    int64_t nMasternode_Age = 0;
-
     const int minimumBlockHeightAtWhichLastRankGetsUpdated = 747360;
     int rankForNodesNotFound = -1;
     if(minimumBlockHeightAtWhichLastRankGetsUpdated <= nBlockHeight)
-    {
         rankForNodesNotFound = vMasternodes.size() + 1;
-    }
+
     //make sure we know about this block
     uint256 hash = 0;
     if (!GetBlockHash(hash, nBlockHeight)) return rankForNodesNotFound;
 
-    // scan for winner
-    for (auto& mn : vMasternodes) {
-        if (mn.protocolVersion < minProtocol) {
-            LogPrint("masternode","Skipping Masternode with obsolete version %d\n", mn.protocolVersion);
-            continue;                                                       // Skip obsolete versions
-        }
-
-        if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
-            nMasternode_Age = GetAdjustedTime() - mn.sigTime;
-            if ((nMasternode_Age) < nMasternode_Min_Age) {
-                if (fDebug) LogPrint("masternode","Skipping just activated Masternode. Age: %ld\n", nMasternode_Age);
-                continue;                                                   // Skip masternodes younger than (default) 1 hour
-            }
-        }
-        if (fOnlyActive) {
-            mn.Check();
-            if (!mn.IsEnabled()) continue;
-        }
-        uint256 n = mn.CalculateScore(1, nBlockHeight);
-        int64_t n2 = n.GetCompact(false);
-
-        vecMasternodeScores.push_back(std::make_pair(n2, mn.vin));
-    }
-
-    sort(vecMasternodeScores.rbegin(), vecMasternodeScores.rend(), CompareScoreTxIn());
+    std::vector<std::pair<int64_t, CMasternode*>> vecEnabled;
+    std::vector<CMasternode*> vecDisabled;
+    CollectRankedMasternodes(nBlockHeight, minProtocol, MN_WINNER_MINIMUM_AGE, fOnlyActive, vecEnabled, vecDisabled);
 
     int rank = 0;
-    for (const auto& entry : vecMasternodeScores) {
+    for (const auto& entry : vecEnabled) {
         rank++;
-        if (entry.second.prevout == vin.prevout) {
+        if (entry.second->vin.prevout == vin.prevout)
             return rank;
-        }
     }
 
     return rankForNodesNotFound;
 }
 
-std::vector<std::pair<int, CMasternode> > CMasternodeMan::GetMasternodeRanks(int64_t nBlockHeight, int minProtocol)
+std::vector<std::pair<int64_t, CMasternode>> CMasternodeMan::GetMasternodeRanks(int64_t nBlockHeight, int minProtocol)
 {
     if (!masternodeSync.IsMasternodeListSynced())
-        return std::vector<std::pair<int, CMasternode>>();
-
-    std::vector<std::pair<int64_t, CMasternode> > vecMasternodeScores;
-    std::vector<std::pair<int, CMasternode> > vecMasternodeRanks;
+        return {};
 
     //make sure we know about this block
-    uint256 hash = 0;
-    if (!GetBlockHash(hash, nBlockHeight)) return vecMasternodeRanks;
+    uint256 hash;
+    if (!GetBlockHash(hash, nBlockHeight))
+        return {};
 
-    // scan for winner
-    std::vector<std::pair<int64_t, CMasternode> > vecDisabledMasternodeScores;
-    for (auto& mn : vMasternodes) {
-        mn.Check();
+    std::vector<std::pair<int64_t, CMasternode*>> vecEnabled;
+    std::vector<CMasternode*> vecDisabled;
+    CollectRankedMasternodes(nBlockHeight, minProtocol, -1, true, vecEnabled, vecDisabled);
 
-        if (mn.protocolVersion < minProtocol) continue;
+    std::vector<std::pair<int64_t, CMasternode>> res;
+    for (unsigned i = 0; i < vecEnabled.size(); ++i)
+        res.emplace_back(vecEnabled[i].first, *vecEnabled[i].second);
+    for (const auto* entry : vecDisabled)
+        res.emplace_back(9999, *entry);
 
-        if (!mn.IsEnabled()) {
-            vecDisabledMasternodeScores.push_back(std::make_pair(9999, mn));
-            continue;
-        }
-
-        uint256 n = mn.CalculateScore(1, nBlockHeight);
-        int64_t n2 = n.GetCompact(false);
-
-        vecMasternodeScores.push_back(std::make_pair(n2, mn));
-    }
-
-    sort(vecMasternodeScores.rbegin(), vecMasternodeScores.rend(), CompareScoreMN());
-    vecMasternodeScores.insert(vecMasternodeScores.end(),vecDisabledMasternodeScores.begin(),vecDisabledMasternodeScores.end());
-
-    int rank = 0;
-    for (const auto& entry : vecMasternodeScores) {
-        rank++;
-        vecMasternodeRanks.push_back(std::make_pair(rank, entry.second));
-    }
-
-    return vecMasternodeRanks;
+    return res;
 }
 
 CMasternode* CMasternodeMan::GetMasternodeByRank(int nRank, int64_t nBlockHeight, int minProtocol, bool fOnlyActive)
 {
-    std::vector<std::pair<int64_t, CTxIn> > vecMasternodeScores;
+    std::vector<std::pair<int64_t, CMasternode*>> vecEnabled;
+    std::vector<CMasternode*> vecDisabled;
+    CollectRankedMasternodes(nBlockHeight, minProtocol, -1, fOnlyActive, vecEnabled, vecDisabled);
 
-    // scan for winner
-    BOOST_FOREACH (CMasternode& mn, vMasternodes) {
-        if (mn.protocolVersion < minProtocol) continue;
-        if (fOnlyActive) {
-            mn.Check();
-            if (!mn.IsEnabled()) continue;
-        }
+    if (nRank >= 1 && nRank <= vecEnabled.size())
+        return vecEnabled[nRank - 1].second;
 
-        uint256 n = mn.CalculateScore(1, nBlockHeight);
-        int64_t n2 = n.GetCompact(false);
-
-        vecMasternodeScores.push_back(std::make_pair(n2, mn.vin));
-    }
-
-    sort(vecMasternodeScores.rbegin(), vecMasternodeScores.rend(), CompareScoreTxIn());
-
-    int rank = 0;
-    for (const auto& entry : vecMasternodeScores) {
-        rank++;
-        if (rank == nRank) {
-            return Find(entry.second);
-        }
-    }
-
-    return NULL;
+    return nullptr;
 }
 
 void CMasternodeMan::ProcessMasternodeConnections()

@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(sign)
     // scriptSig:    <sig> <sig...> <serialized_script>
     // scriptPubKey: HASH160 <hash> EQUAL
 
-    // Test SignSignature() (and therefore the version of ExtractStandardScriptPubKey() that signs transactions)
+    // Test SignSignature() (and therefore the version of ExtractScriptPubKeyFormat() that signs transactions)
     CBasicKeyStore keystore;
     CKey key[4];
     for (int i = 0; i < 4; i++)

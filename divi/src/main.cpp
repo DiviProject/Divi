@@ -755,7 +755,7 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
         txnouttype whichType;
         // get the scriptPubKey corresponding to this input:
         const CScript& prevScript = prev.scriptPubKey;
-        if (!ExtractStandardScriptPubKey(prevScript, whichType, vSolutions))
+        if (!ExtractScriptPubKeyFormat(prevScript, whichType, vSolutions))
             return false;
         int nArgsExpected = ScriptSigArgsExpected(whichType, vSolutions);
         if (nArgsExpected < 0)
@@ -777,7 +777,7 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
             CScript subscript(stack.back().begin(), stack.back().end());
             std::vector<std::vector<unsigned char> > vSolutions2;
             txnouttype whichType2;
-            if (ExtractStandardScriptPubKey(subscript, whichType2, vSolutions2)) {
+            if (ExtractScriptPubKeyFormat(subscript, whichType2, vSolutions2)) {
                 int tmpExpected = ScriptSigArgsExpected(whichType2, vSolutions2);
                 if (tmpExpected < 0)
                     return false;

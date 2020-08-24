@@ -14,6 +14,7 @@
 
 
 #include "masternodeconfig.h"
+#include "masternode-tier.h"
 
 #define MASTERNODE_MIN_CONFIRMATIONS 15
 #define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
@@ -125,15 +126,6 @@ public:
         MASTERNODE_POS_ERROR
     };
 
-    enum Tier {
-        MASTERNODE_TIER_COPPER,
-        MASTERNODE_TIER_SILVER,
-        MASTERNODE_TIER_GOLD,
-        MASTERNODE_TIER_PLATINUM,
-        MASTERNODE_TIER_DIAMOND,
-        MASTERNODE_TIER_INVALID
-    };
-
     CTxIn vin;
     CService addr;
     CPubKey pubKeyCollateralAddress;
@@ -149,7 +141,7 @@ public:
     int nActiveState;
     int nScanningErrorCount;
     int nLastScanningErrorBlockHeight;
-    int nTier;
+    MasternodeTier nTier;
     CMasternodePing lastPing;
 
     CMasternode();
@@ -194,7 +186,13 @@ public:
         READWRITE(allowFreeTx);
         READWRITE(nScanningErrorCount);
         READWRITE(nLastScanningErrorBlockHeight);
-        READWRITE(nTier);
+
+        int tier;
+        if (!ser_action.ForRead ())
+            tier = static_cast<int> (nTier);
+        READWRITE(tier);
+        if (ser_action.ForRead ())
+            nTier = static_cast<MasternodeTier> (tier);
     }
 
     int64_t SecondsSincePayment();
@@ -213,10 +211,10 @@ public:
 
     int GetMasternodeInputAge();
 
-    static CAmount GetTierCollateralAmount(Tier tier);
-    static Tier GetTierByCollateralAmount(CAmount nCollateral);
-    static bool IsTierValid(Tier tier);
-    static std::string TierToString(Tier tier);
+    static CAmount GetTierCollateralAmount(MasternodeTier tier);
+    static MasternodeTier GetTierByCollateralAmount(CAmount nCollateral);
+    static bool IsTierValid(MasternodeTier tier);
+    static std::string TierToString(MasternodeTier tier);
 
     std::string GetStatus();
 
@@ -240,7 +238,7 @@ public:
         CTxIn newVin,
         CPubKey pubKeyCollateralAddress,
         CPubKey pubKeyMasternode,
-        Tier nMasternodeTier,
+        MasternodeTier nMasternodeTier,
         int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
@@ -263,7 +261,13 @@ public:
         READWRITE(sigTime);
         READWRITE(protocolVersion);
         READWRITE(lastPing);
-        READWRITE(nTier);
+
+        int tier;
+        if (!ser_action.ForRead ())
+            tier = static_cast<int> (nTier);
+        READWRITE(tier);
+        if (ser_action.ForRead ())
+            nTier = static_cast<MasternodeTier> (tier);
     }
 
     uint256 GetHash() const
@@ -297,7 +301,7 @@ private:
         CService service,
         CPubKey pubKeyCollateralAddressNew,
         CPubKey pubKeyMasternodeNew,
-        CMasternode::Tier nMasternodeTier,
+        MasternodeTier nMasternodeTier,
         bool deferRelay,
         CMasternodeBroadcast& mnbRet);
 
@@ -325,7 +329,7 @@ private:
                         CPubKey pubKeyCollateralAddressNew,
                         CKey keyMasternodeNew,
                         CPubKey pubKeyMasternodeNew,
-                        CMasternode::Tier nMasternodeTier,
+                        MasternodeTier nMasternodeTier,
                         std::string& strErrorRet,
                         CMasternodeBroadcast& mnbRet,
                         bool deferRelay);
@@ -347,7 +351,7 @@ private:
         const std::string& txHash,
         const std::string& outputIndex,
         const std::string& service,
-        CMasternode::Tier& nMasternodeTier,
+        MasternodeTier& nMasternodeTier,
         std::string& strErrorRet);
     static bool checkNetworkPort(
         const std::string& strService,
@@ -360,7 +364,7 @@ private:
         CTxIn& txin,
         std::pair<CKey,CPubKey>& masternodeKeyPair,
         std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
-        CMasternode::Tier& nMasternodeTier);
+        MasternodeTier& nMasternodeTier);
 };
 
 #endif

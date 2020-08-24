@@ -180,6 +180,7 @@ BITCOIN_CORE_H = \
   BlockIncentivesPopulator.h \
   SuperblockHelpers.h \
   SuperblockHeightValidator.h \
+  masternode-tier.h \
   masternode-sync.h \
   masternodeman.h \
   masternodeconfig.h \

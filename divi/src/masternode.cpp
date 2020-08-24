@@ -30,12 +30,11 @@ const int TIER_PLATINUM_BASE_COLLATERAL = 3000000;
 const int TIER_DIAMOND_BASE_COLLATERAL  = 10000000;
 
 
-static CAmount getCollateralAmount(int tier)
+static CAmount getCollateralAmount(MasternodeTier tier)
 {
-  if(tier >= static_cast<int>(CMasternode::Tier::MASTERNODE_TIER_COPPER) &&
-    tier < static_cast<int>(CMasternode::Tier::MASTERNODE_TIER_INVALID) )
+  if(tier >= MasternodeTier::COPPER && tier < MasternodeTier::INVALID)
   {
-    return CMasternode::GetTierCollateralAmount(static_cast<CMasternode::Tier>(tier));
+    return CMasternode::GetTierCollateralAmount(tier);
   }
   else
   {
@@ -43,31 +42,31 @@ static CAmount getCollateralAmount(int tier)
   }
 }
 
-CAmount CMasternode::GetTierCollateralAmount(CMasternode::Tier tier)
+CAmount CMasternode::GetTierCollateralAmount(MasternodeTier tier)
 {
     switch(tier)
     {
-    case MASTERNODE_TIER_COPPER:   return TIER_COPPER_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_SILVER:   return TIER_SILVER_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_GOLD:     return TIER_GOLD_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_PLATINUM: return TIER_PLATINUM_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_DIAMOND:  return TIER_DIAMOND_BASE_COLLATERAL * COIN;
-    case MASTERNODE_TIER_INVALID: break;
+    case MasternodeTier::COPPER:   return TIER_COPPER_BASE_COLLATERAL * COIN;
+    case MasternodeTier::SILVER:   return TIER_SILVER_BASE_COLLATERAL * COIN;
+    case MasternodeTier::GOLD:     return TIER_GOLD_BASE_COLLATERAL * COIN;
+    case MasternodeTier::PLATINUM: return TIER_PLATINUM_BASE_COLLATERAL * COIN;
+    case MasternodeTier::DIAMOND:  return TIER_DIAMOND_BASE_COLLATERAL * COIN;
+    case MasternodeTier::INVALID: break;
     }
 
     return 0;
 }
 
-static size_t GetHashRoundsForTierMasternodes(CMasternode::Tier tier)
+static size_t GetHashRoundsForTierMasternodes(MasternodeTier tier)
 {
     switch(tier)
     {
-    case CMasternode::MASTERNODE_TIER_COPPER:   return 20;
-    case CMasternode::MASTERNODE_TIER_SILVER:   return 63;
-    case CMasternode::MASTERNODE_TIER_GOLD:     return 220;
-    case CMasternode::MASTERNODE_TIER_PLATINUM: return 690;
-    case CMasternode::MASTERNODE_TIER_DIAMOND:  return 2400;
-    case CMasternode::MASTERNODE_TIER_INVALID: break;
+    case MasternodeTier::COPPER:   return 20;
+    case MasternodeTier::SILVER:   return 63;
+    case MasternodeTier::GOLD:     return 220;
+    case MasternodeTier::PLATINUM: return 690;
+    case MasternodeTier::DIAMOND:  return 2400;
+    case MasternodeTier::INVALID: break;
     }
 
     return 0;
@@ -165,7 +164,7 @@ CMasternode::CMasternode()
     nScanningErrorCount = 0;
     nLastScanningErrorBlockHeight = 0;
     lastTimeChecked = 0;
-    nTier = MASTERNODE_TIER_INVALID;
+    nTier = MasternodeTier::INVALID;
 }
 
 CMasternode::CMasternode(const CMasternode& other)
@@ -338,7 +337,7 @@ uint256 CMasternode::CalculateScore(int mod, int64_t nBlockHeight)
         return 0;
     }
 
-    size_t nHashRounds = GetHashRoundsForTierMasternodes(static_cast<CMasternode::Tier>(nTier));
+    size_t nHashRounds = GetHashRoundsForTierMasternodes(static_cast<MasternodeTier>(nTier));
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
     ss << hash;
@@ -385,52 +384,52 @@ void CMasternode::Check(bool forceCheck)
     activeState = MASTERNODE_ENABLED; // OK
 }
 
-CMasternode::Tier CMasternode::GetTierByCollateralAmount(CAmount nCollateral)
+MasternodeTier CMasternode::GetTierByCollateralAmount(CAmount nCollateral)
 {
     if(TIER_COPPER_BASE_COLLATERAL * COIN == nCollateral) {
-        return MASTERNODE_TIER_COPPER;
+        return MasternodeTier::COPPER;
     }
     else if(TIER_SILVER_BASE_COLLATERAL * COIN == nCollateral) {
-        return MASTERNODE_TIER_SILVER;
+        return MasternodeTier::SILVER;
     }
     else if(TIER_GOLD_BASE_COLLATERAL * COIN == nCollateral) {
-        return MASTERNODE_TIER_GOLD;
+        return MasternodeTier::GOLD;
     }
     else if(TIER_PLATINUM_BASE_COLLATERAL * COIN == nCollateral) {
-        return MASTERNODE_TIER_PLATINUM;
+        return MasternodeTier::PLATINUM;
     }
     else if(TIER_DIAMOND_BASE_COLLATERAL * COIN == nCollateral) {
-        return MASTERNODE_TIER_DIAMOND;
+        return MasternodeTier::DIAMOND;
     }
 
-    return MASTERNODE_TIER_INVALID;
+    return MasternodeTier::INVALID;
 }
 
-bool CMasternode::IsTierValid(CMasternode::Tier tier)
+bool CMasternode::IsTierValid(MasternodeTier tier)
 {
     switch(tier)
     {
-    case MASTERNODE_TIER_COPPER:
-    case MASTERNODE_TIER_SILVER:
-    case MASTERNODE_TIER_GOLD:
-    case MASTERNODE_TIER_PLATINUM:
-    case MASTERNODE_TIER_DIAMOND: return true;
-    case MASTERNODE_TIER_INVALID: break;
+    case MasternodeTier::COPPER:
+    case MasternodeTier::SILVER:
+    case MasternodeTier::GOLD:
+    case MasternodeTier::PLATINUM:
+    case MasternodeTier::DIAMOND: return true;
+    case MasternodeTier::INVALID: break;
     }
 
     return false;
 }
 
-std::string CMasternode::TierToString(CMasternode::Tier tier)
+std::string CMasternode::TierToString(MasternodeTier tier)
 {
     switch(tier)
     {
-    case MASTERNODE_TIER_COPPER: return "COPPER";
-    case MASTERNODE_TIER_SILVER: return "SILVER";
-    case MASTERNODE_TIER_GOLD: return "GOLD";
-    case MASTERNODE_TIER_PLATINUM: return "PLATINUM";
-    case MASTERNODE_TIER_DIAMOND: return "DIAMOND";
-    case MASTERNODE_TIER_INVALID: break;
+    case MasternodeTier::COPPER: return "COPPER";
+    case MasternodeTier::SILVER: return "SILVER";
+    case MasternodeTier::GOLD: return "GOLD";
+    case MasternodeTier::PLATINUM: return "PLATINUM";
+    case MasternodeTier::DIAMOND: return "DIAMOND";
+    case MasternodeTier::INVALID: break;
     }
 
     return "INVALID";
@@ -548,10 +547,10 @@ CMasternodeBroadcast::CMasternodeBroadcast()
     protocolVersion = PROTOCOL_VERSION;
     nScanningErrorCount = 0;
     nLastScanningErrorBlockHeight = 0;
-    nTier = MASTERNODE_TIER_INVALID;
+    nTier = MasternodeTier::INVALID;
 }
 
-CMasternodeBroadcast::CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey pubKeyCollateralAddressNew, CPubKey pubKeyMasternodeNew, Tier nMasternodeTier, int protocolVersionIn)
+CMasternodeBroadcast::CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey pubKeyCollateralAddressNew, CPubKey pubKeyMasternodeNew, const MasternodeTier nMasternodeTier, int protocolVersionIn)
 {
     vin = newVin;
     addr = newAddr;
@@ -643,10 +642,10 @@ bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
     const std::string& txHash,
     const std::string& outputIndex,
     const std::string& service,
-    CMasternode::Tier& nMasternodeTier,
+    MasternodeTier& nMasternodeTier,
     std::string& strErrorRet)
 {
-    nMasternodeTier = CMasternode::Tier::MASTERNODE_TIER_INVALID;
+    nMasternodeTier = MasternodeTier::INVALID;
     auto walletTx = pwalletMain->GetWalletTx(txin.prevout.hash);
     uint256 blockHash;
     CTransaction fundingTx;
@@ -697,7 +696,7 @@ bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
     CTxIn& txin,
     std::pair<CKey,CPubKey>& masternodeKeyPair,
     std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
-    CMasternode::Tier& nMasternodeTier
+    MasternodeTier& nMasternodeTier
     )
 {
     std::string strService = configEntry.getIp();
@@ -727,7 +726,7 @@ bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEnt
     CTxIn txin;
     std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
     std::pair<CKey,CPubKey> masternodeKeyPair;
-    CMasternode::Tier nMasternodeTier;
+    MasternodeTier nMasternodeTier;
 
     if(!createArgumentsFromConfig(
         configEntry,
@@ -775,7 +774,7 @@ bool CMasternodeBroadcastFactory::Create(
     CTxIn txin;
     std::pair<CKey,CPubKey> masternodeCollateralKeyPair;
     std::pair<CKey,CPubKey> masternodeKeyPair;
-    CMasternode::Tier nMasternodeTier;
+    MasternodeTier nMasternodeTier;
 
     if(!createArgumentsFromConfig(
         configEntry,
@@ -855,7 +854,7 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
     CService service,
     CPubKey pubKeyCollateralAddressNew,
     CPubKey pubKeyMasternodeNew,
-    CMasternode::Tier nMasternodeTier,
+    const MasternodeTier nMasternodeTier,
     bool deferRelay,
     CMasternodeBroadcast& mnbRet)
 {
@@ -875,7 +874,7 @@ bool CMasternodeBroadcastFactory::Create(
     CPubKey pubKeyCollateralAddressNew,
     CKey keyMasternodeNew,
     CPubKey pubKeyMasternodeNew,
-    CMasternode::Tier nMasternodeTier,
+    const MasternodeTier nMasternodeTier,
     std::string& strErrorRet,
     CMasternodeBroadcast& mnbRet,
     bool deferRelay)
@@ -903,8 +902,8 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
         return false;
     }
 
-    if(!CMasternode::IsTierValid(static_cast<CMasternode::Tier>(nTier))) {
-        LogPrintf("%s : mnb - Invalid tier: %d\n", __func__, nTier);
+    if(!CMasternode::IsTierValid(static_cast<MasternodeTier>(nTier))) {
+        LogPrintf("%s : mnb - Invalid tier: %d\n", __func__, static_cast<int>(nTier));
         nDos = 20;
         return false;
     }

@@ -593,7 +593,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
         // make sure the vout that was signed is related to the transaction that spawned the Masternode
         //  - this is expensive, so it's only done once per Masternode
-        if (!CObfuScationSigner::IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<CMasternode::Tier>(mnb.nTier))) {
+        if (!CObfuScationSigner::IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<MasternodeTier>(mnb.nTier))) {
             LogPrintf("%s : mnb - Got mismatched pubkey and vin\n", __func__);
             Misbehaving(pfrom->GetId(), 33);
             return;

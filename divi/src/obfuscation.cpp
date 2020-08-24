@@ -25,7 +25,7 @@
 
 extern const std::string strMessageMagic = "DarkNet Signed Message:\n";
 
-bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, CMasternode::Tier nMasternodeTier)
+bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier)
 {
     CScript payee2;
     payee2 = GetScriptForDestination(pubkey.GetID());

@@ -31,27 +31,27 @@ static T readFromHex(std::string hexString)
     return object;
 }
 
-static CMasternode::Tier GetMasternodeTierFromString(std::string str)
+static MasternodeTier GetMasternodeTierFromString(std::string str)
 {
     boost::algorithm::to_lower(str); // modifies str
 
     if(str == "copper") {
-        return CMasternode::MASTERNODE_TIER_COPPER;
+        return MasternodeTier::COPPER;
     }
     else if(str == "silver") {
-        return CMasternode::MASTERNODE_TIER_SILVER;
+        return MasternodeTier::SILVER;
     }
     else if(str == "gold") {
-        return CMasternode::MASTERNODE_TIER_GOLD;
+        return MasternodeTier::GOLD;
     }
     else if(str == "platinum") {
-        return CMasternode::MASTERNODE_TIER_PLATINUM;
+        return MasternodeTier::PLATINUM;
     }
     else if(str == "diamond") {
-        return CMasternode::MASTERNODE_TIER_DIAMOND;
+        return MasternodeTier::DIAMOND;
     }
 
-    return CMasternode::MASTERNODE_TIER_INVALID;
+    return MasternodeTier::INVALID;
 }
 
 Value debug(const Array& params, bool fHelp)
@@ -366,7 +366,7 @@ Value listmasternodes(const Array& params, bool fHelp)
             obj.push_back(Pair("lastseen", (int64_t)mn->lastPing.sigTime));
             obj.push_back(Pair("activetime", (int64_t)(mn->lastPing.sigTime - mn->sigTime)));
             obj.push_back(Pair("lastpaid", (int64_t)mn->GetLastPaid()));
-            obj.push_back(Pair("tier", CMasternode::TierToString(static_cast<CMasternode::Tier>(mn->nTier))));
+            obj.push_back(Pair("tier", CMasternode::TierToString(static_cast<MasternodeTier>(mn->nTier))));
 
             ret.push_back(obj);
         }

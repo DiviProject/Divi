@@ -36,15 +36,12 @@ private:
     // which Masternodes we've asked for
     std::map<COutPoint, int64_t> mWeAskedForMasternodeListEntry;
 
-    /** Collects all masternodes matching filter criteria (e.g. a minimum
-     *  protocol version, age or being active) into a vector sorted by
-     *  their rank.  Masternodes that match the criteria except for being
-     *  active are added to a vector of disabled nodes instead.
-     *  The vectors will be filled with pointers into our vMasternodes
-     *  elements.  */
-    void CollectRankedMasternodes(int64_t nBlockHeight, int minProtocol, int64_t nMinAge, bool fOnlyActive,
-                                  std::vector<std::pair<int64_t, CMasternode*>>& vecMasternodes,
-                                  std::vector<CMasternode*>& vecDisabled);
+    /** Collects all masternodes matching filter criteria (having a minimum
+     *  age, protocol and being active) into a vector sorted by
+     *  their rank.  The vectors will be filled with pointers into our
+     * vMasternodes elements.  */
+    void CollectRankedMasternodes(int64_t nBlockHeight, int minProtocol, int64_t nMinAge,
+                                  std::vector<std::pair<int64_t, CMasternode*>>& vecMasternodes);
 
 public:
     // Keep track of all broadcasts I've seen
@@ -116,7 +113,7 @@ public:
         return vMasternodes;
     }
 
-    int GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol = 0, bool fOnlyActive = true);
+    int GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol);
 
     void ProcessMasternodeConnections();
 

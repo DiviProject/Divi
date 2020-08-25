@@ -408,13 +408,10 @@ CMasternode* CMasternodeMan::GetCurrentMasterNode(int mod, int64_t nBlockHeight,
     return winner;
 }
 
-void CMasternodeMan::CollectRankedMasternodes(const int64_t nBlockHeight, const int minProtocol,
-                                              const int64_t nMinAge, const bool fOnlyActive,
-                                              std::vector<std::pair<int64_t, CMasternode*>>& vecEnabled,
-                                              std::vector<CMasternode*>& vecDisabled)
+void CMasternodeMan::CollectRankedMasternodes(const int64_t nBlockHeight, const int minProtocol, const int64_t nMinAge,
+                                              std::vector<std::pair<int64_t, CMasternode*>>& vecEnabled)
 {
     vecEnabled.clear();
-    vecDisabled.clear();
 
     for (auto& mn : vMasternodes) {
         if (mn.protocolVersion < minProtocol) {
@@ -422,21 +419,15 @@ void CMasternodeMan::CollectRankedMasternodes(const int64_t nBlockHeight, const 
             continue;
         }
 
-        if (nMinAge > 0) {
-            const int64_t nAge = GetAdjustedTime() - mn.sigTime;
-            if (nAge < nMinAge) {
-                LogPrint("masternode", "Skipping just activated Masternode. Age: %ld\n", nAge);
-                continue;
-            }
+        const int64_t nAge = GetAdjustedTime() - mn.sigTime;
+        if (nAge < nMinAge) {
+            LogPrint("masternode", "Skipping just activated Masternode. Age: %ld\n", nAge);
+            continue;
         }
 
-        if (fOnlyActive) {
-            mn.Check ();
-            if (!mn.IsEnabled ()) {
-                vecDisabled.push_back(&mn);
-                continue;
-            }
-        }
+        mn.Check ();
+        if (!mn.IsEnabled ())
+            continue;
 
         const uint256 n = mn.CalculateScore(1, nBlockHeight);
         const int64_t n2 = n.GetCompact(false);
@@ -450,7 +441,7 @@ void CMasternodeMan::CollectRankedMasternodes(const int64_t nBlockHeight, const 
     std::sort(vecEnabled.begin(), vecEnabled.end(), compareByScore);
 }
 
-int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol, bool fOnlyActive)
+int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol)
 {
     const int minimumBlockHeightAtWhichLastRankGetsUpdated = 747360;
     int rankForNodesNotFound = -1;
@@ -462,8 +453,7 @@ int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, in
     if (!GetBlockHash(hash, nBlockHeight)) return rankForNodesNotFound;
 
     std::vector<std::pair<int64_t, CMasternode*>> vecEnabled;
-    std::vector<CMasternode*> vecDisabled;
-    CollectRankedMasternodes(nBlockHeight, minProtocol, MN_WINNER_MINIMUM_AGE, fOnlyActive, vecEnabled, vecDisabled);
+    CollectRankedMasternodes(nBlockHeight, minProtocol, MN_WINNER_MINIMUM_AGE, vecEnabled);
 
     int rank = 0;
     for (const auto& entry : vecEnabled) {

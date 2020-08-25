@@ -22,6 +22,8 @@
 #include <algorithm>
 #include <boost/assign/list_of.hpp>
 #include <openssl/rand.h>
+#include <base58.h>
+#include <base58address.h>
 
 extern const std::string strMessageMagic = "DarkNet Signed Message:\n";
 

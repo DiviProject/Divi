@@ -6,13 +6,8 @@
 #ifndef SWIFTTX_H
 #define SWIFTTX_H
 
-#include "base58.h"
-#include "key.h"
-#include "net.h"
-#include "spork.h"
-#include "sync.h"
-#include "util.h"
-
+#include <primitives/transaction.h>
+#include <string>
 /*
     At 15 signatures, 1/2 of the masternode network can be owned by
     one party without comprimising the security of SwiftX
@@ -25,8 +20,8 @@
 #define SWIFTTX_SIGNATURES_REQUIRED 6
 #define SWIFTTX_SIGNATURES_TOTAL 10
 
-using namespace boost;
-
+class CDataStream;
+class CNode;
 class CConsensusVote;
 class CTransaction;
 class CTransactionLock;

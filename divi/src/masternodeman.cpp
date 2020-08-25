@@ -441,28 +441,19 @@ void CMasternodeMan::CollectRankedMasternodes(const int64_t nBlockHeight, const 
     std::sort(vecEnabled.begin(), vecEnabled.end(), compareByScore);
 }
 
-int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol)
+unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol)
 {
-    const int minimumBlockHeightAtWhichLastRankGetsUpdated = 747360;
-    int rankForNodesNotFound = -1;
-    if(minimumBlockHeightAtWhichLastRankGetsUpdated <= nBlockHeight)
-        rankForNodesNotFound = vMasternodes.size() + 1;
-
-    //make sure we know about this block
-    uint256 hash = 0;
-    if (!GetBlockHash(hash, nBlockHeight)) return rankForNodesNotFound;
-
     std::vector<std::pair<int64_t, CMasternode*>> vecEnabled;
     CollectRankedMasternodes(nBlockHeight, minProtocol, MN_WINNER_MINIMUM_AGE, vecEnabled);
 
-    int rank = 0;
+    unsigned rank = 0;
     for (const auto& entry : vecEnabled) {
         rank++;
         if (entry.second->vin.prevout == vin.prevout)
             return rank;
     }
 
-    return rankForNodesNotFound;
+    return static_cast<unsigned>(-1);
 }
 
 void CMasternodeMan::ProcessMasternodeConnections()

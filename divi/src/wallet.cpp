@@ -2742,6 +2742,18 @@ set<CTxDestination> CWallet::GetAccountAddresses(string strAccount) const
     return result;
 }
 
+CReserveKey::CReserveKey(CWallet* pwalletIn)
+{
+    nIndex = -1;
+    pwallet = pwalletIn;
+    fInternal = false;
+}
+
+CReserveKey::~CReserveKey()
+{
+    ReturnKey();
+}
+
 bool CReserveKey::GetReservedKey(CPubKey& pubkey, bool fInternalIn)
 {
     if (nIndex == -1)
@@ -3202,6 +3214,34 @@ CWalletKey::CWalletKey(int64_t nExpires)
 {
     nTimeCreated = (nExpires ? GetTime() : 0);
     nTimeExpires = nExpires;
+}
+
+CMerkleTx::CMerkleTx()
+{
+    Init();
+}
+
+CMerkleTx::CMerkleTx(const CTransaction& txIn) : CTransaction(txIn)
+{
+    Init();
+}
+
+void CMerkleTx::Init()
+{
+    hashBlock = 0;
+    nIndex = -1;
+    fMerkleVerified = false;
+}
+
+int CMerkleTx::GetDepthInMainChain(bool enableIX) const
+{
+    const CBlockIndex* pindexRet;
+    return GetDepthInMainChain(pindexRet, enableIX);
+}
+bool CMerkleTx::IsInMainChain() const
+{
+    const CBlockIndex* pindexRet;
+    return GetDepthInMainChainINTERNAL(pindexRet) > 0;
 }
 
 int CMerkleTx::SetMerkleBranch(const CBlock& block)

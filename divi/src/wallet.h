@@ -512,17 +512,8 @@ protected:
     CPubKey vchPubKey;
     bool fInternal;
 public:
-    CReserveKey(CWallet* pwalletIn)
-    {
-        nIndex = -1;
-        pwallet = pwalletIn;
-        fInternal = false;
-    }
-
-    ~CReserveKey()
-    {
-        ReturnKey();
-    }
+    CReserveKey(CWallet* pwalletIn);
+    ~CReserveKey();
 
     void ReturnKey();
     bool GetReservedKey(CPubKey &pubkey, bool fInternalIn);
@@ -569,24 +560,10 @@ public:
 
     // memory only
     mutable bool fMerkleVerified;
+    CMerkleTx();
+    CMerkleTx(const CTransaction& txIn);
 
-
-    CMerkleTx()
-    {
-        Init();
-    }
-
-    CMerkleTx(const CTransaction& txIn) : CTransaction(txIn)
-    {
-        Init();
-    }
-
-    void Init()
-    {
-        hashBlock = 0;
-        nIndex = -1;
-        fMerkleVerified = false;
-    }
+    void Init();
 
     ADD_SERIALIZE_METHODS;
 
@@ -602,7 +579,6 @@ public:
 
     int SetMerkleBranch(const CBlock& block);
 
-
     /**
      * Return depth of transaction in blockchain:
      * -1  : not in blockchain, and not in memory pool (conflicted transaction)
@@ -610,16 +586,8 @@ public:
      * >=1 : this many blocks deep in the main chain
      */
     int GetDepthInMainChain(const CBlockIndex*& pindexRet, bool enableIX = true) const;
-    int GetDepthInMainChain(bool enableIX = true) const
-    {
-        const CBlockIndex* pindexRet;
-        return GetDepthInMainChain(pindexRet, enableIX);
-    }
-    bool IsInMainChain() const
-    {
-        const CBlockIndex* pindexRet;
-        return GetDepthInMainChainINTERNAL(pindexRet) > 0;
-    }
+    int GetDepthInMainChain(bool enableIX = true) const;
+    bool IsInMainChain() const;
     int GetBlocksToMaturity() const;
     bool AcceptToMemoryPool(bool fLimitFree = true, bool fRejectInsaneFee = true, bool ignoreFees = false);
     int GetTransactionLockSignatures() const;

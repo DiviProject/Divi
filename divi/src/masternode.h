@@ -6,11 +6,11 @@
 #ifndef MASTERNODE_H
 #define MASTERNODE_H
 
-#include "base58.h"
 #include "key.h"
 #include "net.h"
 #include "sync.h"
 #include "timedata.h"
+#include <primitives/transaction.h>
 
 
 #include "masternodeconfig.h"

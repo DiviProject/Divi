@@ -6,14 +6,14 @@
 #ifndef MASTERNODE_PAYMENTS_H
 #define MASTERNODE_PAYMENTS_H
 
-#ifndef BLOCK_REWARDS_H
 #include <BlockRewards.h>
-#endif // BLOCK_REWARDS_H
-#include "key.h"
-#include "masternode.h"
+#include <key.h>
+#include <masternode.h>
 #include <boost/lexical_cast.hpp>
-#include "LotteryCoinstakes.h"
+#include <LotteryCoinstakes.h>
+#include <primitives/transaction.h>
 
+class CBlock;
 class CMasternodePayments;
 class CMasternodePaymentWinner;
 class CMasternodeBlockPayees;

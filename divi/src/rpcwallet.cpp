@@ -19,6 +19,7 @@
 #include "walletdb.h"
 #include "masternode-payments.h"
 #include "SuperblockHelpers.h"
+#include <script/standard.h>
 
 #include <stdint.h>
 

@@ -10,6 +10,7 @@
 #include "checkpoints.h"
 #include <chain.h>
 #include "coincontrol.h"
+#include <chainparams.h>
 #include "kernel.h"
 #include "masternode-payments.h"
 #include "net.h"

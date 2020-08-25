@@ -10,6 +10,7 @@
 #include <BlockIncentivesPopulator.h>
 #include <blockmap.h>
 #include <chain.h>
+#include <chainparams.h>
 
 extern Settings& settings;
 extern const int nHashDrift;

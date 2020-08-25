@@ -15,6 +15,7 @@
 #include "rpcserver.h"
 #include "utilmoneystr.h"
 #include "script/standard.h"
+#include <base58.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
@@ -189,7 +190,7 @@ Value verifymasternodesetup(const Array&params, bool fHelp)
             "4. masternodePubKey     (string, required) Masternode pubkey. \n"
 			"\nResult:\n"
 			"\"expected_message\"			    (bool) Expected masternode-broadcast message\n");
-    
+
     Object result;
     try
     {
@@ -246,7 +247,7 @@ Value setupmasternode(const Array& params, bool fHelp)
     {
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key for address " + CBitcoinAddress(keyID).ToString() + " is not known");
     }
-    
+
     std::string alias = params[0].get_str();
     std::string txHash = params[1].get_str();
     std::string outputIndex = params[2].get_str();
@@ -269,13 +270,13 @@ Value setupmasternode(const Array& params, bool fHelp)
     result.push_back(Pair("protocol_version", PROTOCOL_VERSION ));
     result.push_back(Pair("message_to_sign", HexStr(mnb.getMessageToSign()) ));
     result.push_back(Pair("config_line",
-        config.getAlias()+" "+ 
-        ipAndPort +" "+ 
+        config.getAlias()+" "+
+        ipAndPort +" "+
         CBitcoinSecret(masternodeKey).ToString()+" "
         +txHash+" "+outputIndex));
     ss << mnb;
     result.push_back(Pair("broadcast_data", HexStr(ss.str()) ));
-    return result;    
+    return result;
 }
 
 Value getpoolinfo(const Array& params, bool fHelp)
@@ -459,13 +460,13 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
 
     Object result;
     CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params[0].get_str());
-    if(params.size()==2) 
+    if(params.size()==2)
     {
         mnb.sig = ParseHex(params[1].get_str());
     }
 
     int nDoS = 0;
-    if(mnb.CheckAndUpdate(nDoS) && 
+    if(mnb.CheckAndUpdate(nDoS) &&
         mnb.CheckInputsAndAdd(nDoS))
     {
         mnb.Relay();
@@ -504,7 +505,7 @@ Value startmasternode(const Array& params, bool fHelp)
             std::string strError;
             CMasternodeBroadcast mnb;
             if(CActiveMasternode::Register(
-                configEntry, 
+                configEntry,
                 strError,
                 mnb,
                 deferRelay))
@@ -518,7 +519,7 @@ Value startmasternode(const Array& params, bool fHelp)
                 }
                 fFound = true;
             }
-            
+
             if(!fFound)
             {
                 result.push_back(Pair("status", "failed"));

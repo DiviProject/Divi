@@ -8,6 +8,7 @@
 #include <boost/thread.hpp>
 #include <pow.h>
 #include <chain.h>
+#include <chainparams.h>
 
 #include <Settings.h>
 extern Settings& settings;

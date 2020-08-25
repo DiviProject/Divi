@@ -12,6 +12,7 @@
 #include <protocol.h>
 #include <spork.h>
 #include <wallet.h>
+#include <chainparams.h>
 
 
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);

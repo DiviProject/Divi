@@ -172,7 +172,7 @@ void SetParameter (const std::string& key, const std::string& value)
     settings.SetParameter(key, value);
 }
 
-void ClearParameter () 
+void ClearParameter ()
 {
     settings.ClearParameter();
 }

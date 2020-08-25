@@ -8,29 +8,29 @@
 #ifndef BITCOIN_WALLET_H
 #define BITCOIN_WALLET_H
 
-#include "utilstrencodings.h" //for atoi64
-#include "amount.h"
-#include "base58.h"
-#include "crypter.h"
-#include "key.h"
-#include "keystore.h"
-#include "primitives/block.h"
-#include "primitives/transaction.h"
-#include "ui_interface.h"
-#include "util.h"
-#include "NotificationInterface.h"
-#include "wallet_ismine.h"
-#include "walletdb.h"
-#include "FeeRate.h"
-#include <algorithm>
-#include <map>
-#include <set>
-#include <stdexcept>
-#include <stdint.h>
-#include <string>
-#include <utility>
-#include <vector>
+#include <amount.h>
+#include <primitives/transaction.h>
+#include <base58address.h>
+#include <pubkey.h>
+#include <uint256.h>
+#include <crypter.h>
+#include <wallet_ismine.h>
+#include <walletdb.h>
+#include <ui_interface.h>
+#include <FeeRate.h>
 #include <boost/foreach.hpp>
+#include <utilstrencodings.h>
+#include <tinyformat.h>
+#include <NotificationInterface.h>
+
+class CKeyMetadata;
+class CKey;
+class CBlock;
+class CScript;
+class CTransaction;
+class CBlockIndex;
+
+extern bool fMasterNode;
 
 /**
  * Settings
@@ -66,6 +66,7 @@ class CScript;
 class CWalletTx;
 class CHDChain;
 class CTxMemPool;
+class CWalletDB;
 
 bool MoneyRange(CAmount nValueOut);
 bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
@@ -156,7 +157,13 @@ public:
 class CWallet : public CCryptoKeyStore, public NotificationInterface
 {
 private:
-    bool SelectCoins(const CAmount& nTargetValue, std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet, CAmount& nValueRet, const CCoinControl* coinControl = NULL, AvailableCoinsType coin_type = ALL_COINS, bool useIX = true) const;
+    bool SelectCoins(
+        const CAmount& nTargetValue,
+        std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet,
+        CAmount& nValueRet,
+        const CCoinControl* coinControl = NULL,
+        AvailableCoinsType coin_type = ALL_COINS,
+        bool useIX = true) const;
     //it was public bool SelectCoins(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_COINS, bool useIX = true) const;
 
     CWalletDB* pwalletdbEncryption;

@@ -109,8 +109,8 @@ using namespace std;
 
 // Masternode
 bool fMasterNode = false;
-string strMasterNodePrivKey = "";
-string strMasterNodeAddr = "";
+extern std::string strMasterNodePrivKey = "";
+extern std::string strMasterNodeAddr = "";
 bool fLiteMode = false;
 // SwiftX
 bool fEnableSwiftTX = true;

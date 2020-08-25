@@ -29,6 +29,8 @@
 
 #define MNPAYMENTS_SIGNATURES_REQUIRED 6
 #define MNPAYMENTS_SIGNATURES_TOTAL 10
+
+extern std::string strMasterNodePrivKey;
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
 

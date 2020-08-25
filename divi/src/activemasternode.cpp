@@ -16,7 +16,8 @@
 
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 extern CWallet* pwalletMain;
-
+extern std::string strMasterNodeAddr;
+extern std::string strMasterNodePrivKey;
 //
 // Bootup the Masternode, look for a 10000 PIVX input and register on the network
 //

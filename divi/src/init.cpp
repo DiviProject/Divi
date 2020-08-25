@@ -80,6 +80,8 @@ volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
 extern Settings& settings;
 extern NotificationInterfaceRegistry registry;
+extern std::string strMasterNodeAddr;
+extern std::string strMasterNodePrivKey;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;

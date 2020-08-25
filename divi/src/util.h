@@ -40,7 +40,6 @@ extern int nSwiftTXDepth;
 extern int nAnonymizeDiviAmount;
 extern int nLiquidityProvider;
 extern int64_t enforceMasternodePaymentsTime;
-extern std::string strMasterNodeAddr;
 extern int keysLoaded;
 extern bool fSucessfullyLoaded;
 

@@ -33,7 +33,6 @@ class CBitcoinAddress;
 #define MASTERNODE_REJECTED 0
 #define MASTERNODE_RESET -1
 
-extern std::string strMasterNodePrivKey;
 
 /** Helper object for signing and checking signatures
  */

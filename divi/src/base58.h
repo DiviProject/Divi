@@ -14,11 +14,9 @@
 #ifndef BITCOIN_BASE58_H
 #define BITCOIN_BASE58_H
 
-#include "chainparams.h"
-#include "key.h"
-#include "pubkey.h"
-#include "script/script.h"
-#include "script/standard.h"
+#include <chainparams.h>
+#include <key.h>
+#include <pubkey.h>
 
 #include <string>
 #include <vector>

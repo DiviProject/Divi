@@ -11,6 +11,7 @@
 #include <masternode-payments.h>
 #include <I_SuperblockHeightValidator.h>
 #include <I_BlockSubsidyProvider.h>
+#include <script/standard.h>
 
 
 const std::string TREASURY_PAYMENT_ADDRESS("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");

@@ -23,7 +23,7 @@
 #include <SuperblockHelpers.h>
 #include <LotteryWinnersCalculator.h>
 #include <BlockIncentivesPopulator.h>
-
+#include <script/standard.h>
 
 #define MNPAYMENTS_SIGNATURES_REQUIRED 6
 #define MNPAYMENTS_SIGNATURES_TOTAL 10

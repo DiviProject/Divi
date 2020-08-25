@@ -475,41 +475,6 @@ int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, in
     return rankForNodesNotFound;
 }
 
-std::vector<std::pair<int64_t, CMasternode>> CMasternodeMan::GetMasternodeRanks(int64_t nBlockHeight, int minProtocol)
-{
-    if (!masternodeSync.IsMasternodeListSynced())
-        return {};
-
-    //make sure we know about this block
-    uint256 hash;
-    if (!GetBlockHash(hash, nBlockHeight))
-        return {};
-
-    std::vector<std::pair<int64_t, CMasternode*>> vecEnabled;
-    std::vector<CMasternode*> vecDisabled;
-    CollectRankedMasternodes(nBlockHeight, minProtocol, -1, true, vecEnabled, vecDisabled);
-
-    std::vector<std::pair<int64_t, CMasternode>> res;
-    for (unsigned i = 0; i < vecEnabled.size(); ++i)
-        res.emplace_back(vecEnabled[i].first, *vecEnabled[i].second);
-    for (const auto* entry : vecDisabled)
-        res.emplace_back(9999, *entry);
-
-    return res;
-}
-
-CMasternode* CMasternodeMan::GetMasternodeByRank(int nRank, int64_t nBlockHeight, int minProtocol, bool fOnlyActive)
-{
-    std::vector<std::pair<int64_t, CMasternode*>> vecEnabled;
-    std::vector<CMasternode*> vecDisabled;
-    CollectRankedMasternodes(nBlockHeight, minProtocol, -1, fOnlyActive, vecEnabled, vecDisabled);
-
-    if (nRank >= 1 && nRank <= vecEnabled.size())
-        return vecEnabled[nRank - 1].second;
-
-    return nullptr;
-}
-
 void CMasternodeMan::ProcessMasternodeConnections()
 {
     //we don't care about this for regtest

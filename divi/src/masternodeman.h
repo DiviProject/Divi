@@ -36,13 +36,6 @@ private:
     // which Masternodes we've asked for
     std::map<COutPoint, int64_t> mWeAskedForMasternodeListEntry;
 
-    /** Collects all masternodes matching filter criteria (having a minimum
-     *  age, protocol and being active) into a vector sorted by
-     *  their rank.  The vectors will be filled with pointers into our
-     * vMasternodes elements.  */
-    void CollectRankedMasternodes(int64_t nBlockHeight, int minProtocol, int64_t nMinAge,
-                                  std::vector<std::pair<int64_t, CMasternode*>>& vecMasternodes);
-
 public:
     // Keep track of all broadcasts I've seen
     std::map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;

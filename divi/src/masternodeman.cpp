@@ -408,52 +408,71 @@ CMasternode* CMasternodeMan::GetCurrentMasterNode(int mod, int64_t nBlockHeight,
     return winner;
 }
 
-void CMasternodeMan::CollectRankedMasternodes(const int64_t nBlockHeight, const int minProtocol, const int64_t nMinAge,
-                                              std::vector<std::pair<int64_t, CMasternode*>>& vecEnabled)
+namespace
 {
-    vecEnabled.clear();
 
-    for (auto& mn : vMasternodes) {
-        if (mn.protocolVersion < minProtocol) {
-            LogPrint("masternode", "Skipping Masternode with obsolete version %d\n", mn.protocolVersion);
-            continue;
-        }
-
-        const int64_t nAge = GetAdjustedTime() - mn.sigTime;
-        if (nAge < nMinAge) {
-            LogPrint("masternode", "Skipping just activated Masternode. Age: %ld\n", nAge);
-            continue;
-        }
-
-        mn.Check ();
-        if (!mn.IsEnabled ())
-            continue;
-
-        const uint256 n = mn.CalculateScore(1, nBlockHeight);
-        const int64_t n2 = n.GetCompact(false);
-        vecEnabled.emplace_back(n2, &mn);
+/** Checks if the given masternode is deemed "ok" based on the minimum
+ *  masternode age for winners, the minimum protocol version and being active
+ *  at all.  If so, returns true and sets its score.  */
+bool CheckAndGetScore(CMasternode& mn,
+                      const int64_t nBlockHeight, const int minProtocol,
+                      int64_t& score)
+{
+    if (mn.protocolVersion < minProtocol) {
+        LogPrint("masternode", "Skipping Masternode with obsolete version %d\n", mn.protocolVersion);
+        return false;
     }
 
-    const auto compareByScore = [] (const std::pair<int64_t, CMasternode*>& a, const std::pair<int64_t, CMasternode*>& b)
-        {
-            return a.first > b.first;
-        };
-    std::sort(vecEnabled.begin(), vecEnabled.end(), compareByScore);
+    const int64_t nAge = GetAdjustedTime() - mn.sigTime;
+    if (nAge < MN_WINNER_MINIMUM_AGE) {
+        LogPrint("masternode", "Skipping just activated Masternode. Age: %ld\n", nAge);
+        return false;
+    }
+
+    mn.Check ();
+    if (!mn.IsEnabled ())
+        return false;
+
+    const uint256 n = mn.CalculateScore(1, nBlockHeight);
+    score = n.GetCompact(false);
+
+    return true;
 }
+
+} // anonymous namespace
 
 unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol)
 {
-    std::vector<std::pair<int64_t, CMasternode*>> vecEnabled;
-    CollectRankedMasternodes(nBlockHeight, minProtocol, MN_WINNER_MINIMUM_AGE, vecEnabled);
+    int64_t mnScore;
+    bool found = false;
+    for (auto& mn : vMasternodes) {
+        if (mn.vin.prevout != vin.prevout)
+            continue;
 
-    unsigned rank = 0;
-    for (const auto& entry : vecEnabled) {
-        rank++;
-        if (entry.second->vin.prevout == vin.prevout)
-            return rank;
+        if (!CheckAndGetScore(mn, nBlockHeight, minProtocol, mnScore))
+            return static_cast<unsigned>(-1);
+
+        found = true;
+        break;
     }
 
-    return static_cast<unsigned>(-1);
+    if (!found)
+        return static_cast<unsigned>(-1);
+
+    unsigned rank = 1;
+    for (auto& mn : vMasternodes) {
+        if (mn.vin.prevout == vin.prevout)
+            continue;
+
+        int64_t otherScore;
+        if (!CheckAndGetScore(mn, nBlockHeight, minProtocol, otherScore))
+            continue;
+
+        if (otherScore > mnScore)
+            ++rank;
+    }
+
+    return rank;
 }
 
 void CMasternodeMan::ProcessMasternodeConnections()

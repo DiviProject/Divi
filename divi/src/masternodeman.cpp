@@ -16,6 +16,12 @@
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
+/** Maximum nCheckNum that we allow for ranking masternodes.
+ *  In practice, we only need to check if a node is in the top 10
+ *  (or rather, top-20 to give some leeway before punishing nodes
+ *  with wrong claims).  */
+static constexpr unsigned MAX_RANKING_CHECK_NUM = 20;
+
 /** Masternode manager */
 CMasternodeMan mnodeman;
 
@@ -441,8 +447,10 @@ bool CheckAndGetScore(CMasternode& mn,
 
 } // anonymous namespace
 
-unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol)
+unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol, const unsigned nCheckNum)
 {
+    assert(nCheckNum <= MAX_RANKING_CHECK_NUM);
+
     int64_t mnScore;
     bool found = false;
     for (auto& mn : vMasternodes) {
@@ -470,8 +478,12 @@ unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeigh
 
         if (otherScore > mnScore)
             ++rank;
+
+        if (rank > nCheckNum)
+            return nCheckNum + 1;
     }
 
+    assert(rank <= nCheckNum);
     return rank;
 }
 

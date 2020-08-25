@@ -108,8 +108,12 @@ public:
 
     /** Returns the given masternode's rank among all active and with the
      *  given minimum protocol version.  Returns (unsigned)-1 if the node is not
-     *  found or not active itself.  */
-    unsigned GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol);
+     *  found or not active itself.
+     *
+     *  If the given node is not in the top-"nCheckNum" masternodes by rank, then
+     *  nCheckNum + 1 is returned (instead of the exact rank).  */
+    unsigned GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol,
+                               unsigned nCheckNum);
 
     void ProcessMasternodeConnections();
 

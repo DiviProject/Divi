@@ -14,11 +14,12 @@
 #include <wallet.h>
 #include <chainparams.h>
 
-
-CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 extern CWallet* pwalletMain;
 extern std::string strMasterNodeAddr;
 extern std::string strMasterNodePrivKey;
+extern bool fMasterNode;
+CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
+
 //
 // Bootup the Masternode, look for a 10000 PIVX input and register on the network
 //

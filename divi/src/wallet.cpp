@@ -35,6 +35,7 @@
 #include "Settings.h"
 extern Settings& settings;
 extern CChain chainActive;
+extern bool fMasterNode;
 
 const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator::instance();
 
@@ -3330,3 +3331,61 @@ bool IsFinalTx(const CTransaction& tx, int nBlockHeight, int64_t nBlockTime)
     return true;
 }
 
+CAmount CWalletTx::GetUnlockedCredit() const
+{
+    if (pwallet == 0)
+        return 0;
+
+    // Must wait until coinbase is safely deep enough in the chain before valuing it
+    if (GetBlocksToMaturity() > 0)
+        return 0;
+
+    CAmount nCredit = 0;
+    uint256 hashTx = GetHash();
+    for (unsigned int i = 0; i < vout.size(); i++) {
+        const CTxOut& txout = vout[i];
+
+        if (pwallet->IsSpent(hashTx, i) || pwallet->IsLockedCoin(hashTx, i)) continue;
+        if (fMasterNode && vout[i].nValue == 10000 * COIN) continue; // do not count MN-like outputs
+
+        nCredit += pwallet->GetCredit(txout, ISMINE_SPENDABLE);
+        if (!MoneyRange(nCredit))
+            throw std::runtime_error("CWalletTx::GetUnlockedCredit() : value out of range");
+    }
+
+    return nCredit;
+}
+
+CAmount CWalletTx::GetLockedCredit() const
+{
+    if (pwallet == 0)
+        return 0;
+
+    // Must wait until coinbase is safely deep enough in the chain before valuing it
+    if (IsCoinBase() && GetBlocksToMaturity() > 0)
+        return 0;
+
+    CAmount nCredit = 0;
+    uint256 hashTx = GetHash();
+    for (unsigned int i = 0; i < vout.size(); i++) {
+        const CTxOut& txout = vout[i];
+
+        // Skip spent coins
+        if (pwallet->IsSpent(hashTx, i)) continue;
+
+        // Add locked coins
+        if (pwallet->IsLockedCoin(hashTx, i)) {
+            nCredit += pwallet->GetCredit(txout, ISMINE_SPENDABLE);
+        }
+
+        // Add masternode collaterals which are handled likc locked coins
+        if (fMasterNode && vout[i].nValue == 10000 * COIN) {
+            nCredit += pwallet->GetCredit(txout, ISMINE_SPENDABLE);
+        }
+
+        if (!MoneyRange(nCredit))
+            throw std::runtime_error("CWalletTx::GetLockedCredit() : value out of range");
+    }
+
+    return nCredit;
+}

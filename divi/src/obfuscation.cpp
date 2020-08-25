@@ -5,6 +5,7 @@
 
 #include "obfuscation.h"
 
+#include "activemasternode.h"
 #include "BlockDiskAccessor.h"
 #include "coincontrol.h"
 #include "init.h"

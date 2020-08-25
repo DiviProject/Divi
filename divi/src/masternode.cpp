@@ -4,6 +4,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "masternode.h"
+
+#include "activemasternode.h"
 #include "addrman.h"
 #include <chain.h>
 #include "BlockDiskAccessor.h"

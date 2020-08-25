@@ -6,7 +6,6 @@
 #ifndef MASTERNODEMAN_H
 #define MASTERNODEMAN_H
 
-#include "base58.h"
 #include "key.h"
 #include "masternode.h"
 #include "net.h"

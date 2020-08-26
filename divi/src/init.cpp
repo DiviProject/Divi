@@ -74,6 +74,17 @@
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
 int nWalletBackups = 20;
+
+/**
+ * Wallet Settings
+ */
+extern CAmount nTransactionValueMultiplier;
+extern unsigned int nTransactionSizeMultiplier;
+extern unsigned int nTxConfirmTarget;
+extern bool bSpendZeroConfChange;
+extern bool bdisableSystemnotifications;
+extern bool fSendFreeTransactions;
+extern bool fPayAtLeastCustomFee;
 extern CFeeRate payTxFee;
 #endif
 volatile bool fFeeEstimatesInitialized = false;

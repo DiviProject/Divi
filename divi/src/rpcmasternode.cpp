@@ -16,11 +16,15 @@
 #include "utilmoneystr.h"
 #include "script/standard.h"
 #include <base58.h>
+#include <wallet.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 using namespace json_spirit;
+
+extern void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false);
+extern CBitcoinAddress GetAccountAddress(std::string strAccount, bool bForceNew = false);
 
 template <typename T>
 static T readFromHex(std::string hexString)

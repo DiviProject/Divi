@@ -17,6 +17,7 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #include "walletdb.h"
+extern CFeeRate payTxFee;
 #endif
 
 #include <stdint.h>

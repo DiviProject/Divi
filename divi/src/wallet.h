@@ -33,7 +33,6 @@ class CBlockIndex;
 /**
  * Settings
  */
-extern CFeeRate payTxFee;
 extern CAmount nTransactionValueMultiplier;
 extern unsigned int nTransactionSizeMultiplier;
 extern unsigned int nTxConfirmTarget;

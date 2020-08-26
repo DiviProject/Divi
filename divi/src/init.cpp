@@ -74,6 +74,7 @@
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
 int nWalletBackups = 20;
+extern CFeeRate payTxFee;
 #endif
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown

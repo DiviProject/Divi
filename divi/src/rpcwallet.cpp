@@ -34,6 +34,7 @@ using namespace boost;
 using namespace boost::assign;
 using namespace json_spirit;
 
+extern CFeeRate payTxFee;
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
 extern BlockMap mapBlockIndex;

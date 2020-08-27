@@ -11,6 +11,8 @@
 #include "net.h"
 #include "sync.h"
 
+#include <memory>
+
 #define MASTERNODES_DUMP_SECONDS (15 * 60)
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 
@@ -35,6 +37,11 @@ private:
     std::map<CNetAddr, int64_t> mWeAskedForMasternodeList;
     // which Masternodes we've asked for
     std::map<COutPoint, int64_t> mWeAskedForMasternodeListEntry;
+
+    // Cache of the most recent masternode ranks, so we can efficiently check
+    // if some masternode is in the top-20 for a recent block height.
+    class RankingCache;
+    std::unique_ptr<RankingCache> rankingCache;
 
 public:
     // Keep track of all broadcasts I've seen
@@ -62,7 +69,8 @@ public:
     }
 
     CMasternodeMan();
-    CMasternodeMan(const CMasternodeMan& other);
+    CMasternodeMan(const CMasternodeMan& other) = delete;
+    ~CMasternodeMan();
 
     /// Add an entry
     bool Add(const CMasternode& mn);

@@ -7,12 +7,15 @@
 #include "activemasternode.h"
 #include "addrman.h"
 #include "masternode.h"
+#include "mruset.h"
 #include "obfuscation.h"
 #include "spork.h"
 #include "Logging.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <main.h>
+
+#include <array>
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
@@ -22,15 +25,110 @@
  *  with wrong claims).  */
 static constexpr unsigned MAX_RANKING_CHECK_NUM = 20;
 
+/** Number of entries (blocks) we keep in the cache of ranked masternodes.  */
+static constexpr unsigned RANKING_CACHE_SIZE = 2'500;
+
 /** Masternode manager */
 CMasternodeMan mnodeman;
 
 //    pathMN = GetDataDir() / "mncache.dat";
 //    strMagicMessage = "MasternodeCache";
 
+namespace
+{
+
+/**
+ * An entry in the ranking cache.  We use mruset to hold the cache,
+ * which means that even though it is conceptually a map, we represent
+ * it as a set, i.e. instances of this class are both the key and value
+ * in one, and compare based on the key.
+ */
+struct RankingCacheEntry
+{
+
+  using value_type = std::array<uint256, MAX_RANKING_CHECK_NUM>;
+
+  /** The block height this is for, i.e. the key.  */
+  int64_t height;
+
+  /** The list of best masternodes by rank (represented through
+   *  their vin prevout hashes).  */
+  value_type bestVins;
+
+  RankingCacheEntry() = default;
+  RankingCacheEntry(RankingCacheEntry&&) = default;
+  RankingCacheEntry(const RankingCacheEntry&) = default;
+
+  void operator=(const RankingCacheEntry&) = delete;
+
+};
+
+bool operator==(const RankingCacheEntry& a, const RankingCacheEntry& b)
+{
+  return a.height == b.height;
+}
+
+bool operator<(const RankingCacheEntry& a, const RankingCacheEntry& b)
+{
+  return a.height < b.height;
+}
+
+} // anonymous namespace
+
+/**
+ * Internal helper class that represents the cache of the best MAX_RANKING_NUM
+ * nodes for recent block heights.
+ */
+class CMasternodeMan::RankingCache
+{
+
+private:
+
+  /** The best nodes for the last couple of blocks.  */
+  mruset<RankingCacheEntry> entries;
+
+public:
+
+  RankingCache()
+    : entries(RANKING_CACHE_SIZE)
+  {}
+
+  RankingCache(const RankingCache&) = delete;
+  void operator=(const RankingCache&) = delete;
+
+  /** Looks up an entry by block height and returns it, or a null
+   *  pointer if there is no matching entry.  */
+  const RankingCacheEntry::value_type* Find(const int64_t height) const
+  {
+    RankingCacheEntry entry;
+    entry.height = height;
+
+    auto mit = entries.find(entry);
+    if (mit == entries.end())
+      return nullptr;
+
+    return &mit->bestVins;
+  }
+
+  /** Inserts an entry into the cache.  */
+  void Insert(const int64_t height, const RankingCacheEntry::value_type& bestVins)
+  {
+    RankingCacheEntry entry;
+    entry.height = height;
+    entry.bestVins = bestVins;
+
+    auto ins = entries.insert(std::move(entry));
+    assert(ins.second);
+  }
+
+};
+
+CMasternodeMan::~CMasternodeMan() = default;
+
 CMasternodeMan::CMasternodeMan()
 {
     nDsqCount = 0;
+    rankingCache = std::make_unique<RankingCache>();
 }
 
 bool CMasternodeMan::Add(const CMasternode& mn)
@@ -451,40 +549,42 @@ unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeigh
 {
     assert(nCheckNum <= MAX_RANKING_CHECK_NUM);
 
-    int64_t mnScore;
-    bool found = false;
-    for (auto& mn : vMasternodes) {
-        if (mn.vin.prevout != vin.prevout)
-            continue;
+    const RankingCacheEntry::value_type* cacheEntry;
+    RankingCacheEntry::value_type newEntry;
 
-        if (!CheckAndGetScore(mn, nBlockHeight, minProtocol, mnScore))
-            return static_cast<unsigned>(-1);
+    cacheEntry = rankingCache->Find(nBlockHeight);
+    if (cacheEntry == nullptr) {
+        std::vector<std::pair<int64_t, uint256>> rankedNodes;
+        for (auto& mn : vMasternodes) {
+            int64_t score;
+            if (!CheckAndGetScore(mn, nBlockHeight, minProtocol, score))
+              continue;
 
-        found = true;
-        break;
+            rankedNodes.emplace_back(score, mn.vin.prevout.hash);
+        }
+
+        std::sort(rankedNodes.begin(), rankedNodes.end(),
+            [] (const std::pair<int64_t, uint256>& a, const std::pair<int64_t, uint256>& b)
+            {
+                return a.first > b.first;
+            });
+
+        for (unsigned i = 0; i < newEntry.size(); ++i)
+            if (i < rankedNodes.size())
+                newEntry[i] = rankedNodes[i].second;
+            else
+                newEntry[i].SetNull();
+
+        rankingCache->Insert(nBlockHeight, newEntry);
+        cacheEntry = &newEntry;
     }
 
-    if (!found)
-        return static_cast<unsigned>(-1);
+    assert(cacheEntry != nullptr);
+    for (unsigned i = 0; i < cacheEntry->size(); ++i)
+        if ((*cacheEntry)[i] == vin.prevout.hash)
+            return i + 1;
 
-    unsigned rank = 1;
-    for (auto& mn : vMasternodes) {
-        if (mn.vin.prevout == vin.prevout)
-            continue;
-
-        int64_t otherScore;
-        if (!CheckAndGetScore(mn, nBlockHeight, minProtocol, otherScore))
-            continue;
-
-        if (otherScore > mnScore)
-            ++rank;
-
-        if (rank > nCheckNum)
-            return nCheckNum + 1;
-    }
-
-    assert(rank <= nCheckNum);
-    return rank;
+    return static_cast<unsigned>(-1);
 }
 
 void CMasternodeMan::ProcessMasternodeConnections()

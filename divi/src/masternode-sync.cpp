@@ -244,23 +244,6 @@ void CMasternodeSync::Process()
     }
 
     BOOST_FOREACH (CNode* pnode, vSporkSyncedNodes) {
-        if (Params().NetworkID() == CBaseChainParams::REGTEST) {
-            if (RequestedMasternodeAttempt <= 2) {
-                pnode->PushMessage("getsporks"); //get current network sporks
-            } else if (RequestedMasternodeAttempt < 4) {
-                mnodeman.DsegUpdate(pnode);
-            } else if (RequestedMasternodeAttempt < 6) {
-                int nMnCount = mnodeman.size();
-                pnode->PushMessage("mnget", nMnCount); //sync payees
-                uint256 n = 0;
-                pnode->PushMessage("mnvs", n); //sync masternode votes
-            } else {
-                RequestedMasternodeAssets = MASTERNODE_SYNC_FINISHED;
-            }
-            RequestedMasternodeAttempt++;
-            return;
-        }
-
         //set to synced
         if (RequestedMasternodeAssets == MASTERNODE_SYNC_SPORKS) {
             // this has to be safe to do, because we will get here only if we have 3 peers

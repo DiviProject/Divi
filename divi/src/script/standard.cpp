@@ -9,6 +9,7 @@
 #include "script/script.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include <script/StakingVaultScript.h>
 
 #include <boost/foreach.hpp>
 
@@ -26,6 +27,7 @@ const char* GetTxnOutputType(txnouttype t)
     case TX_PUBKEY: return "pubkey";
     case TX_PUBKEYHASH: return "pubkeyhash";
     case TX_SCRIPTHASH: return "scripthash";
+    case TX_VAULT: return "vault";
     case TX_MULTISIG: return "multisig";
     case TX_NULL_DATA: return "nulldata";
     }
@@ -49,6 +51,9 @@ bool ExtractScriptPubKeyFormat(const CScript& scriptPubKey, txnouttype& typeRet,
 
         // Sender provides N pubkeys, receivers provides M signatures
         mTemplates.insert(std::make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
+
+        // Sender provides 2 pubkey hashes, 1-owner & 1-manager, receivers provides exactly 1 of the two signatures
+        mTemplates.insert(std::make_pair(TX_VAULT, GetStakingVaultScriptTemplate() ));
     }
 
     // Shortcut for pay-to-script-hash, which are more constrained than the other types:
@@ -174,6 +179,8 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
         return vSolutions[0][0] + 1;
     case TX_SCRIPTHASH:
         return 1; // doesn't include args needed by the script
+    case TX_VAULT:
+            return 3; // signature, pubkey, bool_flag
     }
     return -1;
 }
@@ -226,6 +233,7 @@ bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)
         addressRet = CScriptID(uint160(vSolutions[0]));
         return true;
     }
+
     // Multisig txns have more than one address...
     return false;
 }
@@ -242,10 +250,14 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::
         return false;
     }
 
-    if (typeRet == TX_MULTISIG)
+    if (typeRet == TX_MULTISIG ||
+        typeRet == TX_VAULT)
     {
-        nRequiredRet = vSolutions.front()[0];
-        for (unsigned int i = 1; i < vSolutions.size()-1; i++)
+        nRequiredRet = (typeRet != TX_VAULT)? vSolutions.front()[0] : 1;
+        const unsigned solutionsStartIndex = (typeRet != TX_VAULT)? 1u: 0u;
+        const unsigned solutionsEndIndex = vSolutions.size() - solutionsStartIndex;
+        for (unsigned int i = solutionsStartIndex;
+            i < solutionsEndIndex; i++)
         {
             CPubKey pubKey(vSolutions[i]);
             if (!pubKey.IsValid())

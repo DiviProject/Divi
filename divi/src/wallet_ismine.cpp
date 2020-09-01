@@ -77,6 +77,15 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey)
         }
         break;
     }
+    case TX_VAULT: {
+        keyID = CKeyID(uint160(vSolutions[0]));
+        if(keystore.HaveKey(keyID))
+            return ISMINE_SPENDABLE;
+        keyID = CKeyID(uint160(vSolutions[1]));
+        if(keystore.HaveKey(keyID))
+            return ISMINE_SPENDABLE;
+        break;
+    }
     case TX_MULTISIG: {
         // Only consider transactions "mine" if we own ALL the
         // keys involved. multi-signature transactions that are

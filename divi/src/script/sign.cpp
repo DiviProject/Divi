@@ -153,6 +153,14 @@ bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, const CS
             scriptSigRet << ToByteVector(vch);
         }
         return true;
+    case TX_VAULT:
+        return SignVaultSpend(
+            keystore,
+            scriptPubKey,
+            hash,
+            nHashType,
+            scriptSigRet,
+            false);
     case TX_SCRIPTHASH:
         return keystore.GetCScript(uint160(vSolutions[0]), scriptSigRet);
 
@@ -194,6 +202,12 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutabl
         // Append serialized subscript whether or not it is completely signed:
         txin.scriptSig << static_cast<valtype>(subscript);
         if (!fSolved) return false;
+
+        whichType = subType;
+    }
+    if(whichType == TX_VAULT)
+    {
+        flags |= SCRIPT_REQUIRE_COINSTAKE;
     }
 
     // Test solution
@@ -281,6 +295,7 @@ static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction
     {
     case TX_NONSTANDARD:
     case TX_NULL_DATA:
+    case TX_VAULT:
         // Don't know anything about this, assume bigger one is correct:
         if (sigs1.size() >= sigs2.size())
             return PushAll(sigs1);

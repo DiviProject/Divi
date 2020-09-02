@@ -633,6 +633,16 @@ bool CMasternodePaymentWinner::IsValid(CNode* pnode, std::string& strError) cons
         return false;
     }
 
+    /* Before accepting a payment as valid, explicitly check that the
+       masternode is active.  GetMasternodeRank includes this check, but
+       has a cache on results so double-checking doesn't hurt.  */
+    pmn->Check();
+    if (!pmn->IsEnabled()) {
+        strError = strprintf("Masternode %s is not active", vinMasternode.prevout.hash.ToString());
+        LogPrint("masternode", "CMasternodePaymentWinner::IsValid - %s\n", strError);
+        return false;
+    }
+
     const unsigned n = mnodeman.GetMasternodeRank(vinMasternode, nBlockHeight - 100, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
 
     if (n > MNPAYMENTS_SIGNATURES_TOTAL) {

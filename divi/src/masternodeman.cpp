@@ -758,6 +758,12 @@ void CMasternodeMan::UpdateMasternodeList(CMasternodeBroadcast mnb)
     }
 }
 
+void
+CMasternodeMan::ResetRankingCache()
+{
+    rankingCache = std::make_unique<RankingCache>();
+}
+
 std::string CMasternodeMan::ToString() const
 {
     std::ostringstream info;

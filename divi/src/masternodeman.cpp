@@ -26,7 +26,7 @@
 static constexpr unsigned MAX_RANKING_CHECK_NUM = 20;
 
 /** Number of entries (blocks) we keep in the cache of ranked masternodes.  */
-static constexpr unsigned RANKING_CACHE_SIZE = 2'500;
+static constexpr unsigned RANKING_CACHE_SIZE = 2500;
 
 /** Masternode manager */
 CMasternodeMan mnodeman;
@@ -125,10 +125,10 @@ public:
 
 CMasternodeMan::~CMasternodeMan() = default;
 
-CMasternodeMan::CMasternodeMan()
+CMasternodeMan::CMasternodeMan(
+    ): nDsqCount(0)
+    , rankingCache(new RankingCache)
 {
-    nDsqCount = 0;
-    rankingCache = std::make_unique<RankingCache>();
 }
 
 bool CMasternodeMan::Add(const CMasternode& mn)
@@ -761,7 +761,7 @@ void CMasternodeMan::UpdateMasternodeList(CMasternodeBroadcast mnb)
 void
 CMasternodeMan::ResetRankingCache()
 {
-    rankingCache = std::make_unique<RankingCache>();
+    rankingCache.reset(new RankingCache);
 }
 
 std::string CMasternodeMan::ToString() const

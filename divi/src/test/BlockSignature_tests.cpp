@@ -72,13 +72,13 @@ public:
         scriptSig << sig << ToByteVector(redeeemScript);
         return scriptSig;
     }
-    void addStakingP2SHCoinstake(const CScript& redeemScript)
+    void addStakingCoinstake(const CScript& redeemScript, bool isP2SH = true)
     {
-        CScript p2shScript = ConvertToP2SH(redeemScript);
+        CScript outputScript = (isP2SH)? ConvertToP2SH(redeemScript):redeemScript;
         vaultKeyStore.AddCScript(redeemScript);
 
         coinstake.vin.push_back( CTxIn(uint256S("0x25"),0, createDummyVaultScriptSig(redeemScript)) );
-        coinstake.vout.push_back( CTxOut(0,p2shScript) );
+        coinstake.vout.push_back( CTxOut(0,outputScript) );
 
         block.vtx.emplace_back();
         block.vtx.push_back(coinstake);
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(willDisallowP2SHStakingVaultCoinstakeInBlock)
             ToByteVector(ownerPKey.GetID()),
             ToByteVector(vaultPKey.GetID()));
 
-    addStakingP2SHCoinstake(redeemScript);
+    addStakingCoinstake(redeemScript);
     // Preconditions
     BOOST_CHECK_MESSAGE(block.IsProofOfStake(),"Block isnt PoS!");
     // Test

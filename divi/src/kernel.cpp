@@ -390,7 +390,6 @@ std::shared_ptr<I_ProofOfStakeCalculator> createProofOfStakeCalculator(
     unsigned int& nTimeTx)
 {
     //assign new variables to make it easier to read
-    int64_t nValueIn = utxoValue;
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
 
     if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
@@ -553,7 +552,6 @@ bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofO
     if (!ReadBlockFromDisk(blockprev, pindex->GetBlockPos()))
         return error("CheckProofOfStake(): INFO: failed to find block");
 
-    unsigned int nInterval = 0;
     unsigned int nTime = block.nTime;
     std::map<unsigned int, unsigned int> hashedBlockTimestamps;
     if (!CreateHashProofForProofOfStake(hashedBlockTimestamps, block.nBits, blockprev, txin.prevout, txPrev.vout[txin.prevout.n].nValue, nTime, true, hashProofOfStake))

@@ -419,8 +419,13 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
         // //check protocol version
         if (mn.protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) continue;
 
-        //it's in the list (up to 8 entries ahead of current block to allow propagation) -- so let's skip it
-        if (masternodePayments.IsScheduled(mn, nBlockHeight)) continue;
+        // It's in the list (up to 8 entries ahead of current block to allow propagation) -- so let's skip it
+        // On regtest, we ignore this criterion, because it makes it hard to do
+        // proper testing with a very small number of masternodes (which would
+        // be scheduled and skipped all the time).
+        if (Params().NetworkID() != CBaseChainParams::REGTEST) {
+            if (masternodePayments.IsScheduled(mn, nBlockHeight)) continue;
+        }
 
         //it's too new, wait for a cycle
         if (fFilterSigTime && mn.sigTime + (nMnCount * 2.6 * 60) > GetAdjustedTime()) continue;

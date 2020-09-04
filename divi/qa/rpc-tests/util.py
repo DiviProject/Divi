@@ -45,7 +45,7 @@ def sync_blocks(rpc_connections):
         counts = [ x.getblockcount() for x in rpc_connections ]
         if counts == [ counts[0] ]*len(counts):
             break
-        time.sleep(1)
+        time.sleep(0.1)
 
 def sync_mempools(rpc_connections):
     """
@@ -60,7 +60,7 @@ def sync_mempools(rpc_connections):
                 num_match = num_match+1
         if num_match == len(rpc_connections):
             break
-        time.sleep(1)
+        time.sleep(0.1)
 
 bitcoind_processes = {}
 

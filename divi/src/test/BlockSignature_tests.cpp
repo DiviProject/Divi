@@ -48,7 +48,6 @@ public:
     }
 public:
 
-
     BlockSignatureTestFixture(
         ): block()
         , coinstake()
@@ -84,25 +83,12 @@ public:
         block.vtx.emplace_back();
         block.vtx.push_back(coinstake);
     }
-
-    void addMaliciousP2SHCoinstake(const CScript& redeemScript,const CScript& maliciousVaultScript)
-    {
-        CScript p2shScript = ConvertToP2SH(maliciousVaultScript);
-        vaultKeyStore.AddCScript(redeemScript);
-        vaultKeyStore.AddCScript(maliciousVaultScript);
-
-        coinstake.vin.push_back( CTxIn(uint256S("0x25"),0, createDummyVaultScriptSig(redeemScript)) );
-        coinstake.vout.push_back( CTxOut(0,p2shScript) );
-
-        block.vtx.emplace_back();
-        block.vtx.push_back(coinstake);
-    }
 };
 
 
 BOOST_FIXTURE_TEST_SUITE(BlockSignatureTests, BlockSignatureTestFixture)
 
-BOOST_AUTO_TEST_CASE(willAllowP2SHStakingVaultCoinstakeInBlock)
+BOOST_AUTO_TEST_CASE(willDisallowP2SHStakingVaultCoinstakeInBlock)
 {
     CScript redeemScript = CreateStakingVaultScript(
             ToByteVector(ownerPKey.GetID()),
@@ -112,25 +98,8 @@ BOOST_AUTO_TEST_CASE(willAllowP2SHStakingVaultCoinstakeInBlock)
     // Preconditions
     BOOST_CHECK_MESSAGE(block.IsProofOfStake(),"Block isnt PoS!");
     // Test
-    BOOST_CHECK_MESSAGE(block.SignBlock(vaultKeyStore),"Failed to sign block!");
-    BOOST_CHECK_MESSAGE(block.CheckBlockSignature(),"Failed to verify signature!");
-}
-BOOST_AUTO_TEST_CASE(willDisAllowPaymentToDifferentVaultAddressInBlock)
-{
-    CScript redeemScript = CreateStakingVaultScript(
-            ToByteVector(ownerPKey.GetID()),
-            ToByteVector(vaultPKey.GetID()));
-    auto maliciousVaultKey = AddKeyPair(vaultKeyStore);
-    CScript maliciousScript = CreateStakingVaultScript(
-        ToByteVector(maliciousVaultKey.GetID()),
-        ToByteVector(vaultPKey.GetID()));
-
-    addMaliciousP2SHCoinstake(redeemScript,maliciousScript);
-    // Preconditions
-    BOOST_CHECK_MESSAGE(block.IsProofOfStake(),"Block isnt PoS!");
-    // Test
-    BOOST_CHECK_MESSAGE(block.SignBlock(vaultKeyStore),"Failed to sign block!");
-    BOOST_CHECK_MESSAGE(!block.CheckBlockSignature(),"Verified malicious signature!");
+    BOOST_CHECK_MESSAGE(!block.SignBlock(vaultKeyStore),"Disallowed block txoutput in PoS!");
+    BOOST_CHECK_MESSAGE(!block.CheckBlockSignature(),"Verified  disallowed signature type!");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

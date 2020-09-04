@@ -12,7 +12,6 @@
 #include "tinyformat.h"
 #include "utilstrencodings.h"
 #include "Logging.h"
-#include <script/StakingVaultScript.h>
 
 uint256 CBlockHeader::GetHash() const
 {
@@ -142,26 +141,6 @@ void CBlock::print() const
     LogPrintf("%s", ToString());
 }
 
-static bool SignStakingScriptHash(const CKeyStore& keystore, const CScript& redeemScript, const uint256& blockHash, std::vector<unsigned char>& vchBlockSig)
-{
-    // Only staking vaults at the moment
-    std::pair<valtype,valtype> pubkeyHashes;
-    if(GetStakingVaultPubkeyHashes(redeemScript, pubkeyHashes))
-    {
-        // Vault key
-        CKey vaultKey;
-        keystore.GetKey(CKeyID(uint160(pubkeyHashes.second)),vaultKey);
-        if (vaultKey.SignCompact(blockHash, vchBlockSig))
-        {
-            return true;
-        }
-        return false;
-    }
-    else
-    {
-        return false;
-    }
-}
 // ppcoin: sign block
 bool CBlock::SignBlock(const CKeyStore& keystore)
 {
@@ -233,35 +212,10 @@ bool CBlock::SignBlock(const CKeyStore& keystore)
 
             return true;
         }
-        else if(whichType == TX_SCRIPTHASH)
-        {
-            LogPrintf("Signing block using staking vault...\n");
-            CScript redeemScript;
-            if(!keystore.GetCScript(uint160(vSolutions[0]), redeemScript)) return false;
-
-            return SignStakingScriptHash(keystore,redeemScript,GetHash(),vchBlockSig);
-        }
     }
 
     LogPrintf("Sign failed\n");
     return false;
-}
-
-static bool VerifyStakingScriptHash(const CScript& redeemScript, CScriptID expectedScriptId, const CPubKey& signingKey)
-{
-    // Only staking vaults at the moment
-    if(redeemScript.size() < 50) return false;
-    CScript vaultScript(redeemScript.end()-50,redeemScript.end());
-    if(expectedScriptId != CScriptID(vaultScript)) return false;
-    std::pair<valtype,valtype> pubkeyHashes;
-    if(GetStakingVaultPubkeyHashes(vaultScript, pubkeyHashes))
-    {
-        return signingKey.GetID() == CKeyID(uint160(pubkeyHashes.second));
-    }
-    else
-    {
-        return false;
-    }
 }
 
 bool CBlock::CheckBlockSignature() const
@@ -305,20 +259,6 @@ bool CBlock::CheckBlockSignature() const
         }
 
         return keyID == pubkeyFromSig.GetID();
-    }
-    else if(whichType == TX_SCRIPTHASH)
-    {
-
-        if (vchBlockSig.empty())
-            return false;
-
-        CScript scriptSig = vtx[1].vin[0].scriptSig;
-        CPubKey signingKey;
-        if(!signingKey.RecoverCompact(GetHash(), vchBlockSig)) {
-            return false;
-        }
-
-        return VerifyStakingScriptHash(scriptSig,uint160(vSolutions[0]),signingKey);
     }
 
     return false;

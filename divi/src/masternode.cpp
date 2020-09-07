@@ -91,7 +91,7 @@ static bool IsCoinSpent(const COutPoint &outpoint, const CAmount expectedCollate
 
 
 //Get the last hash that matches the modulus given. Processed in reverse order
-bool GetBlockHash(uint256& hash, int nBlockHeight)
+bool GetMnBlockHash(uint256& hash, int nBlockHeight)
 {
     // cache block hashes as we calculate them
     static std::map<int64_t, uint256> mapCacheBlockHashes;
@@ -325,7 +325,7 @@ uint256 CMasternode::CalculateScore(int64_t nBlockHeight)
     const uint256 aux = vin.prevout.hash + vin.prevout.n;
 
     uint256 hash;
-    if (!GetBlockHash(hash, nBlockHeight)) {
+    if (!GetMnBlockHash(hash, nBlockHeight)) {
         LogPrint("masternode","CalculateScore ERROR - nHeight %d - Returned 0\n", nBlockHeight);
         return 0;
     }

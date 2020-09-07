@@ -466,7 +466,7 @@ bool CMasternodePayments::IsScheduled(const CMasternode& mn, int nNotBlockHeight
 bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& winnerIn)
 {
     uint256 blockHash = 0;
-    if (!GetBlockHash(blockHash, winnerIn.nBlockHeight - 100)) {
+    if (!GetMnBlockHash(blockHash, winnerIn.nBlockHeight - 100)) {
         return false;
     }
 

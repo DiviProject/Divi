@@ -29,7 +29,7 @@ class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
 
-bool GetBlockHash(uint256& hash, int nBlockHeight);
+bool GetMnBlockHash(uint256& hash, int nBlockHeight);
 
 int GetInputAge(CTxIn& vin);
 

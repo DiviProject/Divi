@@ -434,7 +434,7 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
         if (mn.GetMasternodeInputAge() < nMnCount) continue;
 
         masternodeQueue.push_back(&mn);
-        masternodeScores[&mn] = mn.CalculateScore(1,nBlockHeight - 100);
+        masternodeScores[&mn] = mn.CalculateScore(nBlockHeight - 100);
     }
 
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
@@ -493,7 +493,7 @@ CMasternode* CMasternodeMan::FindRandomNotInVec(std::vector<CTxIn>& vecToExclude
     return NULL;
 }
 
-CMasternode* CMasternodeMan::GetCurrentMasterNode(int mod, int64_t nBlockHeight, int minProtocol)
+CMasternode* CMasternodeMan::GetCurrentMasterNode(int64_t nBlockHeight, int minProtocol)
 {
     int64_t score = 0;
     CMasternode* winner = NULL;
@@ -504,7 +504,7 @@ CMasternode* CMasternodeMan::GetCurrentMasterNode(int mod, int64_t nBlockHeight,
         if (mn.protocolVersion < minProtocol || !mn.IsEnabled()) continue;
 
         // calculate the score for each Masternode
-        uint256 n = mn.CalculateScore(mod, nBlockHeight);
+        uint256 n = mn.CalculateScore(nBlockHeight);
         int64_t n2 = n.GetCompact(false);
 
         // determine the winner
@@ -542,7 +542,7 @@ bool CheckAndGetScore(CMasternode& mn,
     if (!mn.IsEnabled ())
         return false;
 
-    const uint256 n = mn.CalculateScore(1, nBlockHeight);
+    const uint256 n = mn.CalculateScore(nBlockHeight);
     score = n.GetCompact(false);
 
     return true;

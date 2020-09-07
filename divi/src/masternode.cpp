@@ -20,8 +20,6 @@
 
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
-// cache block hashes as we calculate them
-static std::map<int64_t, uint256> mapCacheBlockHashes;
 extern CChain chainActive;
 
 
@@ -95,6 +93,9 @@ static bool IsCoinSpent(const COutPoint &outpoint, const CAmount expectedCollate
 //Get the last hash that matches the modulus given. Processed in reverse order
 bool GetBlockHash(uint256& hash, int nBlockHeight)
 {
+    // cache block hashes as we calculate them
+    static std::map<int64_t, uint256> mapCacheBlockHashes;
+
     if (chainActive.Tip() == NULL) return false;
 
     if (nBlockHeight == 0)
@@ -105,17 +106,16 @@ bool GetBlockHash(uint256& hash, int nBlockHeight)
         return true;
     }
 
-    const CBlockIndex* BlockLastSolved = chainActive.Tip();
     const CBlockIndex* BlockReading = chainActive.Tip();
 
-    if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || chainActive.Tip()->nHeight + 1 < nBlockHeight) return false;
+    if (BlockReading == NULL || BlockReading->nHeight == 0 || chainActive.Tip()->nHeight + 1 < nBlockHeight) return false;
 
     int nBlocksAgo = 0;
     if (nBlockHeight > 0) nBlocksAgo = (chainActive.Tip()->nHeight + 1) - nBlockHeight;
     assert(nBlocksAgo >= 0);
 
     int n = 0;
-    for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++) {
+    while (BlockReading && BlockReading->nHeight > 0) {
         if (n >= nBlocksAgo) {
             hash = BlockReading->GetBlockHash();
             mapCacheBlockHashes[nBlockHeight] = hash;
@@ -123,10 +123,10 @@ bool GetBlockHash(uint256& hash, int nBlockHeight)
         }
         n++;
 
-        if (BlockReading->pprev == NULL) {
-            assert(BlockReading);
-            break;
-        }
+        /* Since BlockReading->nHeight > 0 per our while condition, we are
+           always above the genesis block and thus there must be a previous
+           block pointer.  */
+        assert(BlockReading->pprev != nullptr);
         BlockReading = BlockReading->pprev;
     }
 

@@ -90,16 +90,10 @@ static bool IsCoinSpent(const COutPoint &outpoint, const CAmount expectedCollate
 }
 
 
-//Get the last hash that matches the modulus given. Processed in reverse order
-bool GetMnBlockHash(uint256& hash, int nBlockHeight)
+bool GetBlockHashForScoring(uint256& hash, int nBlockHeight)
 {
-    if (chainActive.Tip() == nullptr)
-        return false;
-
-    if (nBlockHeight == 0)
-        nBlockHeight = chainActive.Tip()->nHeight;
-
-    const auto* pindex = chainActive[nBlockHeight - 1];
+    /* chainActive's operator[] handles out-of-bounds by returning null.  */
+    const auto* pindex = chainActive[nBlockHeight - 101];
     if (pindex == nullptr)
         return false;
 
@@ -292,26 +286,16 @@ static uint256 CalculateScoreHelper(CHashWriter hashWritter, int round)
 // the proof of work for that block. The further away they are the better, the furthest will win the election
 // and get paid this block
 //
-uint256 CMasternode::CalculateScore(int64_t nBlockHeight)
+uint256 CMasternode::CalculateScore(const uint256& seedHash) const
 {
-    if (chainActive.Tip() == NULL) return 0;
-
     const uint256 aux = vin.prevout.hash + vin.prevout.n;
-
-    uint256 hash;
-    if (!GetMnBlockHash(hash, nBlockHeight)) {
-        LogPrint("masternode","CalculateScore ERROR - nHeight %d - Returned 0\n", nBlockHeight);
-        return 0;
-    }
-
     const size_t nHashRounds = GetHashRoundsForTierMasternodes(static_cast<MasternodeTier>(nTier));
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-    ss << hash;
+    ss << seedHash;
     ss << aux;
 
     uint256 r;
-
     for(size_t i = 0; i < nHashRounds; ++i) {
         r = std::max(CalculateScoreHelper(ss, i), r);
     }

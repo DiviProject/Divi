@@ -29,7 +29,10 @@ class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
 
-bool GetMnBlockHash(uint256& hash, int nBlockHeight);
+/** Returns the block hash that is used in the masternode scoring / ranking
+ *  logic for the winner of block nBlockHeight.  (It is the hash of the
+ *  block nBlockHeight-101, but that's an implementation detail.)  */
+bool GetBlockHashForScoring(uint256& hash, int nBlockHeight);
 
 int GetInputAge(CTxIn& vin);
 
@@ -162,7 +165,10 @@ public:
         return !(a.vin == b.vin);
     }
 
-    uint256 CalculateScore(int64_t nBlockHeight);
+    /** Calculates the score of the current masternode, based on the given
+     *  seed hash.  It should be the result of GetBlockHashForScoring of
+     *  the target block height.  */
+    uint256 CalculateScore(const uint256& seedHash) const;
 
     ADD_SERIALIZE_METHODS;
 

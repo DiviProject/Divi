@@ -410,6 +410,10 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
     std::vector< CMasternode* > masternodeQueue;
     std::map<const CMasternode*, uint256> masternodeScores;
 
+    uint256 seedHash;
+    if (!GetBlockHashForScoring(seedHash, nBlockHeight))
+        return {};
+
     int nMnCount = CountEnabled();
     BOOST_FOREACH (CMasternode& mn, vMasternodes)
     {
@@ -434,7 +438,7 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
         if (mn.GetMasternodeInputAge() < nMnCount) continue;
 
         masternodeQueue.push_back(&mn);
-        masternodeScores[&mn] = mn.CalculateScore(nBlockHeight - 100);
+        masternodeScores[&mn] = mn.CalculateScore(seedHash);
     }
 
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
@@ -500,7 +504,7 @@ namespace
  *  masternode age for winners, the minimum protocol version and being active
  *  at all.  If so, returns true and sets its score.  */
 bool CheckAndGetScore(CMasternode& mn,
-                      const int64_t nBlockHeight, const int minProtocol,
+                      const uint256& seedHash, const int minProtocol,
                       int64_t& score)
 {
     if (mn.protocolVersion < minProtocol) {
@@ -518,7 +522,7 @@ bool CheckAndGetScore(CMasternode& mn,
     if (!mn.IsEnabled ())
         return false;
 
-    const uint256 n = mn.CalculateScore(nBlockHeight);
+    const uint256 n = mn.CalculateScore(seedHash);
     score = n.GetCompact(false);
 
     return true;
@@ -536,12 +540,16 @@ unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeigh
     cacheEntry = rankingCache->Find(nBlockHeight);
     if (cacheEntry == nullptr) {
         std::vector<std::pair<int64_t, uint256>> rankedNodes;
-        for (auto& mn : vMasternodes) {
-            int64_t score;
-            if (!CheckAndGetScore(mn, nBlockHeight, minProtocol, score))
-              continue;
 
-            rankedNodes.emplace_back(score, mn.vin.prevout.hash);
+        uint256 seedHash;
+        if (GetBlockHashForScoring(seedHash, nBlockHeight)) {
+            for (auto& mn : vMasternodes) {
+                int64_t score;
+                if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
+                  continue;
+
+                rankedNodes.emplace_back(score, mn.vin.prevout.hash);
+            }
         }
 
         std::sort(rankedNodes.begin(), rankedNodes.end(),

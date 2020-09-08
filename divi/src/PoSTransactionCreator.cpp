@@ -65,13 +65,11 @@ void MarkTransactionAsCoinstake(CMutableTransaction& txNew)
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
 }
 
-bool PoSTransactionCreator::SetSuportedStakingScript(
-    const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
-    CMutableTransaction& txNew)
+bool IsSupportedScript(
+    const CScript& scriptPubKeyOut)
 {
-    CScript scriptPubKeyOut = transactionAndIndexPair.first->vout[transactionAndIndexPair.second].scriptPubKey;
-    std::vector<valtype> vSolutions;
     txnouttype whichType;
+    std::vector<valtype> vSolutions;
     if (!ExtractScriptPubKeyFormat(scriptPubKeyOut, whichType, vSolutions)) {
         LogPrintf("CreateCoinStake : failed to parse kernel\n");
         return false;
@@ -83,12 +81,15 @@ bool PoSTransactionCreator::SetSuportedStakingScript(
             LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
         return false; // only support pay to public key and pay to address
     }
+    return true;
+}
 
+bool PoSTransactionCreator::SetSuportedStakingScript(
+    const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
+    CMutableTransaction& txNew)
+{
     txNew.vin.push_back(CTxIn(transactionAndIndexPair.first->GetHash(), transactionAndIndexPair.second));
-    txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
-
-    if (fDebug && settings.GetBoolArg("-printcoinstake", false))
-        LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
+    txNew.vout.push_back(CTxOut(0, transactionAndIndexPair.first->vout[transactionAndIndexPair.second].scriptPubKey ));
 
     return true;
 }
@@ -220,6 +221,10 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
     {
+        if(!IsSupportedScript(pcoin.first->vout[pcoin.second].scriptPubKey))
+        {
+            continue;
+        }
         if(FindHashproof(nBits, nTxNewTime, pcoin,txNew))
         {
             vwtxPrev.push_back(pcoin.first);

@@ -106,9 +106,6 @@ public:
     /// Find a random entry
     CMasternode* FindRandomNotInVec(std::vector<CTxIn>& vecToExclude, int protocolVersion = -1);
 
-    /// Get the current winner for this block
-    CMasternode* GetCurrentMasterNode(int64_t nBlockHeight, int minProtocol);
-
     std::vector<CMasternode> GetFullMasternodeVector() const
     {
         LOCK(cs);

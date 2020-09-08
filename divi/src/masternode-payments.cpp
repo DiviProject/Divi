@@ -295,9 +295,10 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBloc
     CScript payee;
 
     //spork
-    if (!GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
-        //no masternode detected
-        CMasternode* winningNode = mnodeman.GetCurrentMasterNode(0, 0);
+    const int nBlockHeight = pindexPrev->nHeight + 1;
+    if (!GetBlockPayee(nBlockHeight, payee)) {
+        // No masternode detected, fall back to our own queue.
+        const CMasternode* winningNode = mnodeman.GetNextMasternodeInQueueForPayment(nBlockHeight, true);
         if (winningNode) {
             payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
         } else {

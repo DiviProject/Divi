@@ -432,6 +432,8 @@ public:
     // respect current settings
     int GetInputObfuscationRounds(CTxIn in) const;
 
+    isminetype IsMine(const CScript& scriptPubKey) const;
+    isminetype IsMine(const CTxDestination& dest) const;
     isminetype IsMine(const CTxIn& txin) const;
     CAmount GetDebit(const CTxIn& txin, const isminefilter& filter) const;
     isminetype IsMine(const CTxOut& txout) const;

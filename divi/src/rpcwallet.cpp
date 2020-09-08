@@ -232,7 +232,7 @@ Value setaccount(const Array& params, bool fHelp)
         strAccount = AccountFromValue(params[1]);
 
     // Only add the account if the address is yours.
-    if (IsMine(*pwalletMain, address.Get())) {
+    if (pwalletMain->IsMine(address.Get()) ) {
         // Detect when changing the account of an address that is the 'unused current key' of another account:
         if (pwalletMain->mapAddressBook.count(address.Get())) {
             string strOldAccount = pwalletMain->mapAddressBook[address.Get()].name;
@@ -549,7 +549,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
     CScript scriptPubKey = GetScriptForDestination(address.Get());
-    if (!IsMine(*pwalletMain, scriptPubKey))
+    if (!pwalletMain->IsMine(scriptPubKey))
         return (double)0.0;
 
     // Minimum confirmations
@@ -610,7 +610,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout) {
             CTxDestination address;
-            if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*pwalletMain, address) && setAddress.count(address))
+            if (ExtractDestination(txout.scriptPubKey, address) && pwalletMain->IsMine(address) && setAddress.count(address))
                 if (wtx.GetDepthInMainChain() >= nMinDepth)
                     nAmount += txout.nValue;
         }
@@ -1015,7 +1015,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
             if (!ExtractDestination(txout.scriptPubKey, address))
                 continue;
 
-            isminefilter mine = IsMine(*pwalletMain, address);
+            isminefilter mine = pwalletMain->IsMine(address);
             if (!(mine & filter))
                 continue;
 
@@ -1192,7 +1192,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
         CTxDestination address;
         if (ExtractDestination(wtx.vout[1].scriptPubKey, address)) {
 
-            if (!IsMine(*pwalletMain, address)) {
+            if (!pwalletMain->IsMine(address)) {
                 const CBlockIndex *index = nullptr;
                 if(wtx.GetDepthInMainChain(index, true) > 0 && index)
                 {
@@ -1201,7 +1201,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
                     for (unsigned int i = 1; i < wtx.vout.size(); i++) {
                         CTxDestination outAddress;
                         if (ExtractDestination(wtx.vout[i].scriptPubKey, outAddress)) {
-                            if (IsMine(*pwalletMain, outAddress)) {
+                            if (pwalletMain->IsMine(outAddress)) {
 
                                 auto strAccountForAddress = GetAccountAddress(outAddress);
 
@@ -1304,7 +1304,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
             if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
                 BOOST_FOREACH (const COutputEntry& s, listSent) {
                     Object entry;
-                    if (involvesWatchonly || (::IsMine(*pwalletMain, s.destination) & ISMINE_WATCH_ONLY))
+                    if (involvesWatchonly || (pwalletMain->IsMine(s.destination) & ISMINE_WATCH_ONLY))
                         entry.push_back(Pair("involvesWatchonly", true));
                     entry.push_back(Pair("account", strSentAccount));
                     MaybePushAddress(entry, s.destination);
@@ -1327,7 +1327,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
                         account = pwalletMain->mapAddressBook[r.destination].name;
                     if (fAllAccounts || (account == strAccount)) {
                         Object entry;
-                        if (involvesWatchonly || (::IsMine(*pwalletMain, r.destination) & ISMINE_WATCH_ONLY))
+                        if (involvesWatchonly || (pwalletMain->IsMine(r.destination) & ISMINE_WATCH_ONLY))
                             entry.push_back(Pair("involvesWatchonly", true));
                         entry.push_back(Pair("account", account));
                         MaybePushAddress(entry, r.destination);
@@ -1509,7 +1509,7 @@ Value listaccounts(const Array& params, bool fHelp)
 
     map<string, CAmount> mapAccountBalances;
     BOOST_FOREACH (const PAIRTYPE(CTxDestination, CAddressBookData) & entry, pwalletMain->mapAddressBook) {
-        if (IsMine(*pwalletMain, entry.first) & includeWatchonly) // This address belongs to me
+        if (pwalletMain->IsMine(entry.first) & includeWatchonly) // This address belongs to me
             mapAccountBalances[entry.second.name] = 0;
     }
 

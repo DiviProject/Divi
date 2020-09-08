@@ -152,9 +152,17 @@ bool CWallet::CanSupportFeature(enum WalletFeature wf)
     return nWalletMaxVersion >= wf;
 }
 
+isminetype CWallet::IsMine(const CScript& scriptPubKey) const
+{
+    return ::IsMine(*this, scriptPubKey);
+}
+isminetype CWallet::IsMine(const CTxDestination& dest) const
+{
+    return ::IsMine(*this, dest);
+}
 isminetype CWallet::IsMine(const CTxOut& txout) const
 {
-    return ::IsMine(*this, txout.scriptPubKey);
+    return IsMine(txout.scriptPubKey);
 }
 
 CAmount CWallet::GetCredit(const CTxOut& txout, const isminefilter& filter) const

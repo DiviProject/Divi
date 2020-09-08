@@ -184,7 +184,10 @@ Value importaddress(const Array& params, bool fHelp)
         fRescan = params[2].get_bool();
 
     {
-        if (::IsMine(*pwalletMain, script) == ISMINE_SPENDABLE)
+        if(!pwalletMain)
+            throw JSONRPCError(RPC_WALLET_ERROR,"Wallet is not enabled in this build");
+
+        if (pwalletMain->IsMine(script) == ISMINE_SPENDABLE)
             throw JSONRPCError(RPC_WALLET_ERROR, "The wallet already contains the private key for this address or script");
 
         // add to address book or update label

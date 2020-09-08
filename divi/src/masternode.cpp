@@ -93,44 +93,18 @@ static bool IsCoinSpent(const COutPoint &outpoint, const CAmount expectedCollate
 //Get the last hash that matches the modulus given. Processed in reverse order
 bool GetMnBlockHash(uint256& hash, int nBlockHeight)
 {
-    // cache block hashes as we calculate them
-    static std::map<int64_t, uint256> mapCacheBlockHashes;
-
-    if (chainActive.Tip() == NULL) return false;
+    if (chainActive.Tip() == nullptr)
+        return false;
 
     if (nBlockHeight == 0)
         nBlockHeight = chainActive.Tip()->nHeight;
 
-    if (mapCacheBlockHashes.count(nBlockHeight)) {
-        hash = mapCacheBlockHashes[nBlockHeight];
-        return true;
-    }
+    const auto* pindex = chainActive[nBlockHeight - 1];
+    if (pindex == nullptr)
+        return false;
 
-    const CBlockIndex* BlockReading = chainActive.Tip();
-
-    if (BlockReading == NULL || BlockReading->nHeight == 0 || chainActive.Tip()->nHeight + 1 < nBlockHeight) return false;
-
-    int nBlocksAgo = 0;
-    if (nBlockHeight > 0) nBlocksAgo = (chainActive.Tip()->nHeight + 1) - nBlockHeight;
-    assert(nBlocksAgo >= 0);
-
-    int n = 0;
-    while (BlockReading && BlockReading->nHeight > 0) {
-        if (n >= nBlocksAgo) {
-            hash = BlockReading->GetBlockHash();
-            mapCacheBlockHashes[nBlockHeight] = hash;
-            return true;
-        }
-        n++;
-
-        /* Since BlockReading->nHeight > 0 per our while condition, we are
-           always above the genesis block and thus there must be a previous
-           block pointer.  */
-        assert(BlockReading->pprev != nullptr);
-        BlockReading = BlockReading->pprev;
-    }
-
-    return false;
+    hash = pindex->GetBlockHash();
+    return true;
 }
 
 CMasternode::CMasternode()

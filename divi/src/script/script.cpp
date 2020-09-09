@@ -4,6 +4,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "script.h"
+
+#include "pubkey.h"
 #include "tinyformat.h"
 #include "utilstrencodings.h"
 
@@ -19,6 +21,12 @@ inline std::string ValueString(const std::vector<unsigned char>& vch)
 
 using namespace std;
 
+
+CScript& CScript::operator<<(const CPubKey& key)
+{
+    std::vector<unsigned char> vchKey = key.Raw();
+    return (*this) << vchKey;
+}
 
 unsigned int CScript::GetSigOpCount(bool fAccurate) const
 {

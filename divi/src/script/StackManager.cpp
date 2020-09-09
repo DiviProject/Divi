@@ -6,13 +6,13 @@
 
 #include <script/opcodes.h>
 #include <vector>
-#include <script/script.h>
-#include <script/script_error.h>
 #include <script/scriptandsigflags.h>
 #include <algorithm>
 #include <memory>
 
 #include <script/SignatureCheckers.h>
+#include <serialize.h>
+#include <hash.h>
 
 #define MAXIMUM_NUMBER_OF_OPCODES 201
 

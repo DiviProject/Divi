@@ -1,9 +1,13 @@
+#ifndef STACK_MANAGER_H
+#define STACK_MANAGER_H
 #include <script/opcodes.h>
 #include <vector>
 #include <script/script.h>
 #include <script/script_error.h>
 #include <algorithm>
 #include <memory>
+#include <set>
+#include <map>
 
 
 class BaseSignatureChecker;
@@ -117,3 +121,4 @@ public:
 
     bool OpcodeIsDisabled(const opcodetype& opcode) const;
 };
+#endif // STACK_MANAGER_H

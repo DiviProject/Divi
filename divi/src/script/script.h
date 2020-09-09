@@ -9,7 +9,6 @@
 #include <assert.h>
 #include <climits>
 #include <limits>
-#include "pubkey.h"
 #include <stdexcept>
 #include <stdint.h>
 #include <string.h>
@@ -17,6 +16,9 @@
 #include <vector>
 
 #include <script/opcodes.h>
+
+
+class CPubKey;
 
 typedef std::vector<unsigned char> valtype;
 
@@ -99,7 +101,7 @@ public:
     inline CScriptNum& operator+=( const CScriptNum& rhs)       { return operator+=(rhs.m_value);  }
     inline CScriptNum& operator-=( const CScriptNum& rhs)       { return operator-=(rhs.m_value);  }
 
-    inline CScriptNum operator-()                         const
+    inline CScriptNum operator-() const
     {
         assert(m_value != std::numeric_limits<int64_t>::min());
         return CScriptNum(-m_value);
@@ -294,11 +296,7 @@ public:
         return *this;
     }
 
-    CScript& operator<<(const CPubKey& key)
-    {
-        std::vector<unsigned char> vchKey = key.Raw();
-        return (*this) << vchKey;
-    }
+    CScript& operator<<(const CPubKey& key);
 
 
     bool GetOp(iterator& pc, opcodetype& opcodeRet, std::vector<unsigned char>& vchRet)

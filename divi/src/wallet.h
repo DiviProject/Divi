@@ -70,8 +70,8 @@ enum WalletFeature {
 };
 
 enum AvailableCoinsType {
-    ALL_COINS = 1,                    // find masternode outputs including locked ones (use with caution)
-    STAKABLE_COINS = 6                          // UTXO's that are valid for staking
+    ALL_COINS,                    // find masternode outputs including locked ones (use with caution)
+    STAKABLE_COINS                          // UTXO's that are valid for staking
 };
 
 struct CompactTallyItem {

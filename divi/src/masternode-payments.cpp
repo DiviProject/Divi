@@ -120,16 +120,16 @@ bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 
 } // anonymous namespace
 
-bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex)
+bool IsBlockPayeeValid(const CTransaction &txNew, const CBlockIndex* pindex)
 {
     SuperblockSubsidyContainer superblockSubsidies(Params());
     const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    if(heightValidator.IsValidTreasuryBlockHeight(nBlockHeight)) {
-        return IsValidTreasuryPayment(txNew, nBlockHeight);
+    if(heightValidator.IsValidTreasuryBlockHeight(pindex->nHeight)) {
+        return IsValidTreasuryPayment(txNew, pindex->nHeight);
     }
 
-    if(heightValidator.IsValidLotteryBlockHeight(nBlockHeight)) {
-        return IsValidLotteryPayment(txNew, nBlockHeight, prevIndex->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
+    if(heightValidator.IsValidLotteryBlockHeight(pindex->nHeight)) {
+        return IsValidLotteryPayment(txNew, pindex->nHeight, pindex->pprev->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
     }
 
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
@@ -137,7 +137,7 @@ bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex 
         return true;
     }
     //check for masternode payee
-    if (masternodePayments.IsTransactionValid(txNew, nBlockHeight))
+    if (masternodePayments.IsTransactionValid(txNew, pindex->nHeight))
         return true;
     LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew.ToString().c_str());
 

@@ -118,8 +118,8 @@ public:
      *
      *  If the given node is not in the top-"nCheckNum" masternodes by rank, then
      *  nCheckNum + 1 is returned (instead of the exact rank).  */
-    unsigned GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol,
-                               unsigned nCheckNum);
+    unsigned GetMasternodeRank(const CTxIn& vin, const uint256& seedHash,
+                               int minProtocol, unsigned nCheckNum);
 
     void ProcessMasternodeConnections();
 

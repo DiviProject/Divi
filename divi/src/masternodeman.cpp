@@ -48,8 +48,8 @@ struct RankingCacheEntry
 
   using value_type = std::array<uint256, MAX_RANKING_CHECK_NUM>;
 
-  /** The block height this is for, i.e. the key.  */
-  int64_t height;
+  /** The scoring hash this is for, i.e. the key.  */
+  uint256 seedHash;
 
   /** The list of best masternodes by rank (represented through
    *  their vin prevout hashes).  */
@@ -65,12 +65,12 @@ struct RankingCacheEntry
 
 bool operator==(const RankingCacheEntry& a, const RankingCacheEntry& b)
 {
-  return a.height == b.height;
+  return a.seedHash == b.seedHash;
 }
 
 bool operator<(const RankingCacheEntry& a, const RankingCacheEntry& b)
 {
-  return a.height < b.height;
+  return a.seedHash < b.seedHash;
 }
 
 } // anonymous namespace
@@ -96,12 +96,12 @@ public:
   RankingCache(const RankingCache&) = delete;
   void operator=(const RankingCache&) = delete;
 
-  /** Looks up an entry by block height and returns it, or a null
+  /** Looks up an entry by seed hash and returns it, or a null
    *  pointer if there is no matching entry.  */
-  const RankingCacheEntry::value_type* Find(const int64_t height) const
+  const RankingCacheEntry::value_type* Find(const uint256& hash) const
   {
     RankingCacheEntry entry;
-    entry.height = height;
+    entry.seedHash = hash;
 
     auto mit = entries.find(entry);
     if (mit == entries.end())
@@ -111,10 +111,10 @@ public:
   }
 
   /** Inserts an entry into the cache.  */
-  void Insert(const int64_t height, const RankingCacheEntry::value_type& bestVins)
+  void Insert(const uint256& hash, const RankingCacheEntry::value_type& bestVins)
   {
     RankingCacheEntry entry;
-    entry.height = height;
+    entry.seedHash = hash;
     entry.bestVins = bestVins;
 
     auto ins = entries.insert(std::move(entry));
@@ -530,26 +530,23 @@ bool CheckAndGetScore(CMasternode& mn,
 
 } // anonymous namespace
 
-unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, int minProtocol, const unsigned nCheckNum)
+unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, const uint256& seedHash, int minProtocol, const unsigned nCheckNum)
 {
     assert(nCheckNum <= MAX_RANKING_CHECK_NUM);
 
     const RankingCacheEntry::value_type* cacheEntry;
     RankingCacheEntry::value_type newEntry;
 
-    cacheEntry = rankingCache->Find(nBlockHeight);
+    cacheEntry = rankingCache->Find(seedHash);
     if (cacheEntry == nullptr) {
         std::vector<std::pair<int64_t, uint256>> rankedNodes;
 
-        uint256 seedHash;
-        if (GetBlockHashForScoring(seedHash, nBlockHeight)) {
-            for (auto& mn : vMasternodes) {
-                int64_t score;
-                if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
-                  continue;
+        for (auto& mn : vMasternodes) {
+            int64_t score;
+            if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
+              continue;
 
-                rankedNodes.emplace_back(score, mn.vin.prevout.hash);
-            }
+            rankedNodes.emplace_back(score, mn.vin.prevout.hash);
         }
 
         std::sort(rankedNodes.begin(), rankedNodes.end(),
@@ -564,7 +561,7 @@ unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeigh
             else
                 newEntry[i].SetNull();
 
-        rankingCache->Insert(nBlockHeight, newEntry);
+        rankingCache->Insert(seedHash, newEntry);
         cacheEntry = &newEntry;
     }
 

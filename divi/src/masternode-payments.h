@@ -48,13 +48,13 @@ class CMasternodeBlockPayees
 {
 private:
     mutable CCriticalSection cs_vecPayments;
+    int nBlockHeight;
 
 public:
-    int nBlockHeight;
     std::vector<CMasternodePayee> vecPayments;
 
     CMasternodeBlockPayees();
-    CMasternodeBlockPayees(int nBlockHeightIn);
+    explicit CMasternodeBlockPayees(int nBlockHeightIn);
 
     CMasternodeBlockPayees(const CMasternodeBlockPayees& o)
       : nBlockHeight(o.nBlockHeight), vecPayments(o.vecPayments)
@@ -87,12 +87,32 @@ class CMasternodePaymentWinner
 public:
     CTxIn vinMasternode;
 
+private:
+    /* Masternode payment blocks are uniquely identified by the seed hash used
+       for their scoring computation.  This seed hash is based on the block
+       height, but one block height might have multiple hashes in case of a
+       reorg (so the hash is the more robust identifier).  We use the block
+       height for messages sent on the wire because that's what the protocol
+       is, but translate them to the seed hash and use the seed has instead
+       for internal storage and processing.  The block height is also used
+       to check freshness, e.g. when only accepting payment messages for
+       somewhat recent blocks.  */
+    uint256 seedHash;
     int nBlockHeight;
+
+public:
     CScript payee;
     std::vector<unsigned char> vchSig;
 
-    CMasternodePaymentWinner();
-    CMasternodePaymentWinner(const CTxIn& vinIn);
+    CMasternodePaymentWinner()
+      : nBlockHeight(0)
+    {
+        seedHash.SetNull();
+    }
+
+    explicit CMasternodePaymentWinner(const CTxIn& vinIn, const int height, const uint256& hash)
+      : vinMasternode(vinIn), seedHash(hash), nBlockHeight(height)
+    {}
 
     uint256 GetHash() const;
 
@@ -103,6 +123,18 @@ public:
 
     void AddPayee(const CScript& payeeIn);
 
+    inline int GetHeight() const
+    {
+        return nBlockHeight;
+    }
+
+    const uint256& GetScoreHash() const;
+
+    /** Computes the score hash from our height.  This has to be called
+     *  explicitly after deserialising and before GetScoreHash() can
+     *  be used.  Returns false if the hash could not be found.  */
+    bool ComputeScoreHash();
+
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
@@ -112,6 +144,16 @@ public:
         READWRITE(nBlockHeight);
         READWRITE(payee);
         READWRITE(vchSig);
+        if (ser_action.ForRead()) {
+            /* After parsing from a stream, the seedHash field is not set
+               and must not be accessed (e.g. through GetScoreHash) until
+               ComputeScoreHash() has been called explicitly in a place
+               that is convenient.  We do this (rather than computing here
+               right away) to prevent potential DoS vectors where we might
+               want to perform some more validation before doing the
+               expensive computation.  */
+            seedHash.SetNull();
+        }
     }
 
     std::string ToString() const;

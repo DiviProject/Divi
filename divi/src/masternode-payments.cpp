@@ -220,18 +220,14 @@ bool CMasternodeBlockPayees::HasPayeeWithVotes(const CScript& payee, int nVotesR
 }
 
 
-CMasternodePaymentWinner::CMasternodePaymentWinner()
+bool CMasternodePaymentWinner::ComputeScoreHash()
 {
-    nBlockHeight = 0;
-    vinMasternode = CTxIn();
-    payee = CScript();
-}
+    if (GetBlockHashForScoring(seedHash, nBlockHeight))
+        return true;
 
-CMasternodePaymentWinner::CMasternodePaymentWinner(const CTxIn& vinIn)
-{
-    nBlockHeight = 0;
-    vinMasternode = vinIn;
-    payee = CScript();
+    LogPrint("masternode", "Failed to get scoring hash for winner of height %d\n", nBlockHeight);
+    seedHash.SetNull();
+    return false;
 }
 
 uint256 CMasternodePaymentWinner::GetHash() const
@@ -247,6 +243,13 @@ uint256 CMasternodePaymentWinner::GetHash() const
 void CMasternodePaymentWinner::AddPayee(const CScript& payeeIn)
 {
     payee = payeeIn;
+}
+
+const uint256&
+CMasternodePaymentWinner::GetScoreHash() const
+{
+    assert(!seedHash.IsNull());
+    return seedHash;
 }
 
 std::string CMasternodePaymentWinner::ToString() const
@@ -369,8 +372,13 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
         }
 
         int nFirstBlock = nHeight - (mnodeman.CountEnabled() * 1.25);
-        if (winner.nBlockHeight < nFirstBlock || winner.nBlockHeight > nHeight + 20) {
-            LogPrint("mnpayments", "mnw - winner out of range - FirstBlock %d Height %d bestHeight %d\n", nFirstBlock, winner.nBlockHeight, nHeight);
+        if (winner.GetHeight() < nFirstBlock || winner.GetHeight() > nHeight + 20) {
+            LogPrint("mnpayments", "mnw - winner out of range - FirstBlock %d Height %d bestHeight %d\n", nFirstBlock, winner.GetHeight(), nHeight);
+            return;
+        }
+
+        if (!winner.ComputeScoreHash()) {
+            LogPrint("mnpayments", "mnw - could not compute score hash for height %d\n", winner.GetHeight());
             return;
         }
 
@@ -380,7 +388,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
             return;
         }
 
-        if (!CanVote(winner.vinMasternode.prevout, winner.nBlockHeight)) {
+        if (!CanVote(winner.vinMasternode.prevout, winner.GetHeight())) {
             //  LogPrint("masternode","mnw - masternode already voted - %s\n", winner.vinMasternode.prevout.ToStringShort());
             return;
         }
@@ -476,10 +484,10 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
         auto ins = mapMasternodePayeeVotes.emplace(winnerIn.GetHash(), winnerIn);
         assert(ins.second);
 
-        payees = GetPayeesForHeight(winnerIn.nBlockHeight);
+        payees = GetPayeesForHeight(winnerIn.GetHeight());
         if (payees == nullptr) {
-            CMasternodeBlockPayees blockPayees(winnerIn.nBlockHeight);
-            auto mit = mapMasternodeBlocks.emplace(winnerIn.nBlockHeight, std::move(blockPayees)).first;
+            CMasternodeBlockPayees blockPayees(winnerIn.GetHeight());
+            auto mit = mapMasternodeBlocks.emplace(winnerIn.GetHeight(), std::move(blockPayees)).first;
             payees = &mit->second;
         }
     }
@@ -601,11 +609,11 @@ void CMasternodePayments::CheckAndRemove()
     while (it != mapMasternodePayeeVotes.end()) {
         CMasternodePaymentWinner winner = (*it).second;
 
-        if (nHeight - winner.nBlockHeight > nLimit) {
-            LogPrint("mnpayments", "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.nBlockHeight);
+        if (nHeight - winner.GetHeight() > nLimit) {
+            LogPrint("mnpayments", "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.GetHeight());
             masternodeSync.mapSeenSyncMNW.erase((*it).first);
             mapMasternodePayeeVotes.erase(it++);
-            mapMasternodeBlocks.erase(winner.nBlockHeight);
+            mapMasternodeBlocks.erase(winner.GetHeight());
         } else {
             ++it;
         }
@@ -639,13 +647,7 @@ bool CMasternodePaymentWinner::IsValid(CNode* pnode, std::string& strError) cons
         return false;
     }
 
-    uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, nBlockHeight)) {
-        strError = strprintf("Failed to get scoring hash for height %d", nBlockHeight);
-        LogPrint("masternode", "CMasternodePaymentWinner::IsValid - %s\n", strError);
-        return false;
-    }
-
+    assert(!seedHash.IsNull());
     const unsigned n = mnodeman.GetMasternodeRank(vinMasternode, seedHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
 
     if (n > MNPAYMENTS_SIGNATURES_TOTAL) {
@@ -699,7 +701,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
 
     if (nBlockHeight <= nLastBlockHeight) return false;
 
-    CMasternodePaymentWinner newWinner(activeMasternode.vin);
+    CMasternodePaymentWinner newWinner(activeMasternode.vin, nBlockHeight, seedHash);
 
     LogPrint("masternode","CMasternodePayments::ProcessBlock() Start nHeight %d - vin %s. \n", nBlockHeight, activeMasternode.vin.prevout.hash.ToString());
 
@@ -709,8 +711,6 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
     if (pmn != NULL) {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");
 
-        newWinner.nBlockHeight = nBlockHeight;
-
         CScript payee = GetScriptForDestination(pmn->pubKeyCollateralAddress.GetID());
         newWinner.AddPayee(payee);
 
@@ -718,7 +718,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
         ExtractDestination(payee, address1);
         CBitcoinAddress address2(address1);
 
-        LogPrint("masternode","CMasternodePayments::ProcessBlock() Winner payee %s nHeight %d. \n", address2.ToString().c_str(), newWinner.nBlockHeight);
+        LogPrint("masternode","CMasternodePayments::ProcessBlock() Winner payee %s nHeight %d. \n", address2.ToString().c_str(), newWinner.GetHeight());
     } else {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Failed to find masternode to pay\n");
     }
@@ -790,7 +790,7 @@ void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
     while (it != mapMasternodePayeeVotes.end()) {
         CMasternodePaymentWinner winner = (*it).second;
-        if (winner.nBlockHeight >= nHeight - nCountNeeded && winner.nBlockHeight <= nHeight + 20) {
+        if (winner.GetHeight() >= nHeight - nCountNeeded && winner.GetHeight() <= nHeight + 20) {
             node->PushInventory(CInv(MSG_MASTERNODE_WINNER, winner.GetHash()));
             nInvCount++;
         }

@@ -72,6 +72,7 @@ EXTENDED_SCRIPTS = [
 BASE_SCRIPTS = [
     # Scripts that are run by default.
     # Longest test should go first, to favor running tests in parallel
+    'StakingVaultFunding.py',
     'bipdersig.py',
     'forknotify.py',
     'getchaintips.py',

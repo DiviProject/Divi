@@ -170,12 +170,16 @@ private:
     int nSyncedFromPeer;
     int nLastBlockHeight;
 
+    /** Map from the inventory hashes of mnw's to the corresponding data.  */
     std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
-    std::map<int, CMasternodeBlockPayees> mapMasternodeBlocks;
+    /** Map from score hashes of blocks to the corresponding winners.  */
+    std::map<uint256, CMasternodeBlockPayees> mapMasternodeBlocks;
     std::map<uint256, int> mapMasternodesLastVote; //prevout.hash + prevout.n, nBlockHeight
 
     mutable CCriticalSection cs_mapMasternodeBlocks;
     mutable CCriticalSection cs_mapMasternodePayeeVotes;
+
+    bool GetBlockPayee(const uint256& seedHash, CScript& payee) const;
 
 public:
 
@@ -189,15 +193,14 @@ public:
     void Sync(CNode* node, int nCountNeeded);
     void CheckAndRemove();
 
-    bool GetBlockPayee(int nBlockHeight, CScript& payee) const;
-    bool IsTransactionValid(const CTransaction& txNew, int nBlockHeight) const;
+    bool IsTransactionValid(const CTransaction& txNew, const uint256& seedHash) const;
     bool IsScheduled(const CMasternode& mn, int nNotBlockHeight) const;
 
     bool CanVote(const COutPoint& outMasternode, int nBlockHeight);
 
     int GetMinMasternodePaymentsProto() const;
     void ProcessMessageMasternodePayments(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
-    std::string GetRequiredPaymentsString(int nBlockHeight) const;
+    std::string GetRequiredPaymentsString(const uint256& seedHash) const;
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const;
     std::string ToString() const;
 
@@ -215,11 +218,11 @@ public:
 
     /** Retrieves the payees for the given block.  Returns null if there is
      *  no matching entry.  */
-    const CMasternodeBlockPayees* GetPayeesForHeight(const unsigned height) const {
-        return const_cast<CMasternodePayments*>(this)->GetPayeesForHeight(height);
+    const CMasternodeBlockPayees* GetPayeesForScoreHash(const uint256& hash) const {
+        return const_cast<CMasternodePayments*>(this)->GetPayeesForScoreHash(hash);
     }
-    CMasternodeBlockPayees* GetPayeesForHeight(const unsigned height) {
-        const auto mit = mapMasternodeBlocks.find(height);
+    CMasternodeBlockPayees* GetPayeesForScoreHash(const uint256& hash) {
+        const auto mit = mapMasternodeBlocks.find(hash);
         if (mit == mapMasternodeBlocks.end())
             return nullptr;
         return &mit->second;

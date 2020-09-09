@@ -419,7 +419,11 @@ int64_t CMasternode::GetLastPaid()
         }
         n++;
 
-        auto* masternodePayees = masternodePayments.GetPayeesForHeight(BlockReading->nHeight);
+        uint256 seedHash;
+        if (!GetBlockHashForScoring(seedHash, BlockReading->nHeight))
+            continue;
+
+        auto* masternodePayees = masternodePayments.GetPayeesForScoreHash(seedHash);
         if (masternodePayees != nullptr) {
             /*
                 Search for this payee, with at least 2 votes. This will aid in consensus allowing the network

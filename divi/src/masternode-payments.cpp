@@ -136,8 +136,26 @@ bool IsBlockPayeeValid(const CTransaction &txNew, const CBlockIndex* pindex)
         LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
         return true;
     }
+
+    /* For the first 100 blocks after genesis, there is no scoring hash (as
+       the block used for it would be before genesis).  In this case, just
+       ignore any payment checks.  On mainnet, those blocks are long enshrined
+       into blockchain history anyway.  On regtest, this allows proper
+       functioning.  */
+    if (pindex->nHeight <= 100) {
+        LogPrint("masternode", "%s : not checking payments for height %d\n",
+                 __func__, pindex->nHeight);
+        return true;
+    }
+
     //check for masternode payee
-    if (masternodePayments.IsTransactionValid(txNew, pindex->nHeight))
+    uint256 seedHash;
+    if (!GetBlockHashForScoring(seedHash, pindex->nHeight)) {
+        LogPrint("masternode", "%s : failed to get scoring hash for height %d\n",
+                 __func__, pindex->nHeight);
+        return false;
+    }
+    if (masternodePayments.IsTransactionValid(txNew, seedHash))
         return true;
     LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew.ToString().c_str());
 
@@ -299,7 +317,12 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBloc
 
     //spork
     const int nBlockHeight = pindexPrev->nHeight + 1;
-    if (!GetBlockPayee(nBlockHeight, payee)) {
+    uint256 seedHash;
+    if (!GetBlockHashForScoring(seedHash, nBlockHeight)) {
+        LogPrint("masternode", "FillBlockPayee - failed to get score hash for height %d\n", nBlockHeight);
+        return;
+    }
+    if (!GetBlockPayee(seedHash, payee)) {
         // No masternode detected, fall back to our own queue.
         const CMasternode* winningNode = mnodeman.GetNextMasternodeInQueueForPayment(nBlockHeight, true);
         if (winningNode) {
@@ -436,9 +459,9 @@ bool CMasternodePaymentWinner::Sign(const CKey& keyMasternode, const CPubKey& pu
     return true;
 }
 
-bool CMasternodePayments::GetBlockPayee(int nBlockHeight, CScript& payee) const
+bool CMasternodePayments::GetBlockPayee(const uint256& seedHash, CScript& payee) const
 {
-    auto* payees = GetPayeesForHeight(nBlockHeight);
+    auto* payees = GetPayeesForScoreHash(seedHash);
     if (payees != nullptr)
         return payees->GetPayee(payee);
 
@@ -464,7 +487,9 @@ bool CMasternodePayments::IsScheduled(const CMasternode& mn, int nNotBlockHeight
     CScript payee;
     for (int64_t h = nHeight; h <= nHeight + 8; h++) {
         if (h == nNotBlockHeight) continue;
-        auto* payees = GetPayeesForHeight(h);
+        uint256 seedHash;
+        if (!GetBlockHashForScoring(seedHash, h)) continue;
+        auto* payees = GetPayeesForScoreHash(seedHash);
         if (payees != nullptr && payees->GetPayee(payee) && payee == mnpayee)
             return true;
     }
@@ -484,10 +509,10 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
         auto ins = mapMasternodePayeeVotes.emplace(winnerIn.GetHash(), winnerIn);
         assert(ins.second);
 
-        payees = GetPayeesForHeight(winnerIn.GetHeight());
+        payees = GetPayeesForScoreHash(winnerIn.GetScoreHash());
         if (payees == nullptr) {
             CMasternodeBlockPayees blockPayees(winnerIn.GetHeight());
-            auto mit = mapMasternodeBlocks.emplace(winnerIn.GetHeight(), std::move(blockPayees)).first;
+            auto mit = mapMasternodeBlocks.emplace(winnerIn.GetScoreHash(), std::move(blockPayees)).first;
             payees = &mit->second;
         }
     }
@@ -569,22 +594,22 @@ std::string CMasternodeBlockPayees::GetRequiredPaymentsString() const
     return ret;
 }
 
-std::string CMasternodePayments::GetRequiredPaymentsString(int nBlockHeight) const
+std::string CMasternodePayments::GetRequiredPaymentsString(const uint256& seedHash) const
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    auto* payees = GetPayeesForHeight(nBlockHeight);
+    auto* payees = GetPayeesForScoreHash(seedHash);
     if (payees != nullptr)
         return payees->GetRequiredPaymentsString();
 
     return "Unknown";
 }
 
-bool CMasternodePayments::IsTransactionValid(const CTransaction& txNew, int nBlockHeight) const
+bool CMasternodePayments::IsTransactionValid(const CTransaction& txNew, const uint256& seedHash) const
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    auto* payees = GetPayeesForHeight(nBlockHeight);
+    auto* payees = GetPayeesForScoreHash(seedHash);
     if (payees != nullptr)
         return payees->IsTransactionValid(txNew);
 
@@ -613,7 +638,7 @@ void CMasternodePayments::CheckAndRemove()
             LogPrint("mnpayments", "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.GetHeight());
             masternodeSync.mapSeenSyncMNW.erase((*it).first);
             mapMasternodePayeeVotes.erase(it++);
-            mapMasternodeBlocks.erase(winner.GetHeight());
+            mapMasternodeBlocks.erase(winner.GetScoreHash());
         } else {
             ++it;
         }

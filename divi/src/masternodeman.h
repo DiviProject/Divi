@@ -111,6 +111,7 @@ public:
 
     std::vector<CMasternode> GetFullMasternodeVector() const
     {
+        LOCK(cs);
         return vMasternodes;
     }
 

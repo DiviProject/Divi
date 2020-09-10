@@ -48,23 +48,25 @@ class CMasternodeBlockPayees
 {
 private:
     mutable CCriticalSection cs_vecPayments;
+
     int nBlockHeight;
+    std::vector<CMasternodePayee> vecPayments;
+    std::set<COutPoint> voters;
 
 public:
-    std::vector<CMasternodePayee> vecPayments;
-
     CMasternodeBlockPayees();
     explicit CMasternodeBlockPayees(int nBlockHeightIn);
 
     CMasternodeBlockPayees(const CMasternodeBlockPayees& o)
-      : nBlockHeight(o.nBlockHeight), vecPayments(o.vecPayments)
+      : nBlockHeight(o.nBlockHeight), vecPayments(o.vecPayments), voters(o.voters)
     {}
     CMasternodeBlockPayees(CMasternodeBlockPayees&& o)
-      : nBlockHeight(o.nBlockHeight), vecPayments(std::move(o.vecPayments))
+      : nBlockHeight(o.nBlockHeight), vecPayments(std::move(o.vecPayments)), voters(std::move(o.voters))
     {}
 
-    void AddPayee(const CScript& payeeIn, int nIncrement);
+    void CountVote(const COutPoint& voter, const CScript& payeeIn);
 
+    bool CanVote(const COutPoint& voter) const;
     bool GetPayee(CScript& payee) const;
     bool HasPayeeWithVotes(const CScript& payee, int nVotesReq) const;
 
@@ -78,6 +80,7 @@ public:
     {
         READWRITE(nBlockHeight);
         READWRITE(vecPayments);
+        READWRITE(voters);
     }
 };
 
@@ -174,7 +177,6 @@ private:
     std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
     /** Map from score hashes of blocks to the corresponding winners.  */
     std::map<uint256, CMasternodeBlockPayees> mapMasternodeBlocks;
-    std::map<uint256, int> mapMasternodesLastVote; //prevout.hash + prevout.n, nBlockHeight
 
     mutable CCriticalSection cs_mapMasternodeBlocks;
     mutable CCriticalSection cs_mapMasternodePayeeVotes;
@@ -199,7 +201,7 @@ public:
     bool IsTransactionValid(const CTransaction& txNew, const uint256& seedHash) const;
     bool IsScheduled(const CMasternode& mn, int nNotBlockHeight) const;
 
-    bool CanVote(const COutPoint& outMasternode, int nBlockHeight);
+    bool CanVote(const COutPoint& outMasternode, const uint256& seedHash);
 
     int GetMinMasternodePaymentsProto() const;
     void ProcessMessageMasternodePayments(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);

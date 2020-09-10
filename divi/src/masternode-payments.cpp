@@ -196,19 +196,28 @@ CMasternodeBlockPayees::CMasternodeBlockPayees(int nBlockHeightIn)
     vecPayments.clear();
 }
 
-void CMasternodeBlockPayees::AddPayee(const CScript& payeeIn, int nIncrement)
+void CMasternodeBlockPayees::CountVote(const COutPoint& voter, const CScript& payeeIn)
 {
     LOCK(cs_vecPayments);
 
-    BOOST_FOREACH (CMasternodePayee& payee, vecPayments) {
+    const auto ins = voters.insert(voter);
+    assert(ins.second);
+
+    for (auto& payee : vecPayments) {
         if (payee.scriptPubKey == payeeIn) {
-            payee.nVotes += nIncrement;
+            ++payee.nVotes;
             return;
         }
     }
 
-    CMasternodePayee c(payeeIn, nIncrement);
+    CMasternodePayee c(payeeIn, 1);
     vecPayments.push_back(c);
+}
+
+bool CMasternodeBlockPayees::CanVote(const COutPoint& voter) const
+{
+    LOCK(cs_vecPayments);
+    return voters.count(voter) == 0;
 }
 
 bool CMasternodeBlockPayees::GetPayee(CScript& payee) const
@@ -293,17 +302,15 @@ void CMasternodePayments::Clear()
     mapMasternodePayeeVotes.clear();
 }
 
-bool CMasternodePayments::CanVote(const COutPoint& outMasternode, int nBlockHeight)
+bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256& seedHash)
 {
     LOCK(cs_mapMasternodePayeeVotes);
 
-    const auto mit = mapMasternodesLastVote.find(outMasternode.hash + outMasternode.n);
-    if (mit != mapMasternodesLastVote.end() && mit->second == nBlockHeight)
-        return false;
+    const auto* payees = GetPayeesForScoreHash(seedHash);
+    if (payees == nullptr)
+        return true;
 
-    //record this masternode voted
-    mapMasternodesLastVote[outMasternode.hash + outMasternode.n] = nBlockHeight;
-    return true;
+    return payees->CanVote(outMasternode);
 }
 
 
@@ -410,7 +417,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
             return;
         }
 
-        if (!CanVote(winner.vinMasternode.prevout, winner.GetHeight())) {
+        if (!CanVote(winner.vinMasternode.prevout, winner.GetScoreHash())) {
             //  LogPrint("masternode","mnw - masternode already voted - %s\n", winner.vinMasternode.prevout.ToStringShort());
             return;
         }
@@ -518,7 +525,7 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
         }
     }
 
-    payees->AddPayee(winnerIn.payee, 1);
+    payees->CountVote(winnerIn.vinMasternode.prevout, winnerIn.payee);
 
     return true;
 }

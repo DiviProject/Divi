@@ -2202,21 +2202,6 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*
             (bSpendZeroConfChange && SelectCoinsMinConf(nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet)));
 }
 
-bool CWallet::ConvertList(std::vector<CTxIn> vCoins, std::vector<CAmount>& vecAmounts)
-{
-    BOOST_FOREACH (CTxIn i, vCoins) {
-        if (mapWallet.count(i.prevout.hash)) {
-            CWalletTx& wtx = mapWallet[i.prevout.hash];
-            if (i.prevout.n < wtx.vout.size()) {
-                vecAmounts.push_back(wtx.vout[i.prevout.n].nValue);
-            }
-        } else {
-            LogPrintf("ConvertList -- Couldn't find transaction\n");
-        }
-    }
-    return true;
-}
-
 bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                                 CWalletTx& wtxNew,
                                 CReserveKey& reservekey,

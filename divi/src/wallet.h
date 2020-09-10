@@ -388,7 +388,6 @@ public:
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
     int GenerateObfuscationOutputs(int nTotalValue, std::vector<CTxOut>& vout);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
-    bool ConvertList(std::vector<CTxIn> vCoins, std::vector<int64_t>& vecAmounts);
     bool IsMasternodeReward(const CTransaction& tx, uint32_t n) const;
     bool MultiSend();
     void AutoCombineDust();

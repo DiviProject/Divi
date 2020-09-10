@@ -404,15 +404,11 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 //
 // Deterministically select the oldest/best masternode to pay on the network
 //
-std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHeight, bool fFilterSigTime)
+std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight, bool fFilterSigTime)
 {
     LOCK(cs);
     std::vector< CMasternode* > masternodeQueue;
     std::map<const CMasternode*, uint256> masternodeScores;
-
-    uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, nBlockHeight))
-        return {};
 
     int nMnCount = CountEnabled();
     BOOST_FOREACH (CMasternode& mn, vMasternodes)
@@ -442,7 +438,7 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
     }
 
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
-    if (fFilterSigTime && static_cast<int>(masternodeQueue.size()) < nMnCount / 3) return GetMasternodePaymentQueue(nBlockHeight, false);
+    if (fFilterSigTime && static_cast<int>(masternodeQueue.size()) < nMnCount / 3) return GetMasternodePaymentQueue(seedHash, nBlockHeight, false);
 
 
     std::sort(masternodeQueue.begin(), masternodeQueue.end(),
@@ -458,9 +454,20 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(int nBlockHe
     return masternodeQueue;
 }
 
-CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool fFilterSigTime)
+std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const CBlockIndex* pindex, const int offset, bool fFilterSigTime)
 {
-    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(nBlockHeight,fFilterSigTime);
+    uint256 seedHash;
+    if (!GetBlockHashForScoring(seedHash, pindex, offset))
+        return {};
+
+    const int64_t nBlockHeight = pindex->nHeight + offset;
+
+    return GetMasternodePaymentQueue(seedHash, nBlockHeight, fFilterSigTime);
+}
+
+CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime)
+{
+    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(pindex, offset, fFilterSigTime);
 
     return (!mnQueue.empty())? mnQueue.front() : NULL;
 }

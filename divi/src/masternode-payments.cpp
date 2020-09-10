@@ -150,7 +150,7 @@ bool IsBlockPayeeValid(const CTransaction &txNew, const CBlockIndex* pindex)
 
     //check for masternode payee
     uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, pindex->nHeight)) {
+    if (!GetBlockHashForScoring(seedHash, pindex, 0)) {
         LogPrint("masternode", "%s : failed to get scoring hash for height %d\n",
                  __func__, pindex->nHeight);
         return false;
@@ -316,15 +316,14 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBloc
     CScript payee;
 
     //spork
-    const int nBlockHeight = pindexPrev->nHeight + 1;
     uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, nBlockHeight)) {
-        LogPrint("masternode", "FillBlockPayee - failed to get score hash for height %d\n", nBlockHeight);
+    if (!GetBlockHashForScoring(seedHash, pindexPrev, 1)) {
+        LogPrint("masternode", "FillBlockPayee - failed to get score hash\n");
         return;
     }
     if (!GetBlockPayee(seedHash, payee)) {
         // No masternode detected, fall back to our own queue.
-        const CMasternode* winningNode = mnodeman.GetNextMasternodeInQueueForPayment(nBlockHeight, true);
+        const CMasternode* winningNode = mnodeman.GetNextMasternodeInQueueForPayment(pindexPrev, 1, true);
         if (winningNode) {
             payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
         } else {
@@ -474,21 +473,23 @@ bool CMasternodePayments::IsScheduled(const CMasternode& mn, int nNotBlockHeight
 {
     LOCK(cs_mapMasternodeBlocks);
 
-    int nHeight;
+    CBlockIndex* tip = nullptr;
     {
         TRY_LOCK(cs_main, locked);
-        if (!locked || chainActive.Tip() == NULL) return false;
-        nHeight = chainActive.Tip()->nHeight;
+        if (!locked) return false;
+        tip = chainActive.Tip();
     }
+    if (tip == nullptr)
+        return false;
 
     CScript mnpayee;
     mnpayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
 
     CScript payee;
-    for (int64_t h = nHeight; h <= nHeight + 8; h++) {
-        if (h == nNotBlockHeight) continue;
+    for (int64_t h = 0; h <= 8; ++h) {
+        if (tip->nHeight + h == nNotBlockHeight) continue;
         uint256 seedHash;
-        if (!GetBlockHashForScoring(seedHash, h)) continue;
+        if (!GetBlockHashForScoring(seedHash, tip, h)) continue;
         auto* payees = GetPayeesForScoreHash(seedHash);
         if (payees != nullptr && payees->GetPayee(payee) && payee == mnpayee)
             return true;
@@ -688,27 +689,23 @@ bool CMasternodePaymentWinner::IsValid(CNode* pnode, std::string& strError) cons
 
     if(!masternodeSync.IsSynced()){ return true;}
 
-    std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(nBlockHeight,true);
-    std::vector<CMasternode*>::iterator it = std::find(mnQueue.begin(),mnQueue.end(), mnodeman.Find(payee));
-    if(it != mnQueue.end())
-    {
-        return (std::distance(mnQueue.begin(),it) < 2*MNPAYMENTS_SIGNATURES_TOTAL)? true : false;
-    }
-    else
-    {
+    std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(seedHash, nBlockHeight, true);
+    auto it = std::find(mnQueue.begin(),mnQueue.end(), mnodeman.Find(payee));
+    if(it == mnQueue.end())
         return false;
-    }
+    return (std::distance(mnQueue.begin(), it) < 2 * MNPAYMENTS_SIGNATURES_TOTAL);
 }
 
-bool CMasternodePayments::ProcessBlock(int nBlockHeight)
+bool CMasternodePayments::ProcessBlock(const CBlockIndex* pindex, const int offset)
 {
     if (!fMasterNode) return false;
+    const int64_t nBlockHeight = pindex->nHeight + offset;
 
     //reference node - hybrid mode
 
     uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, nBlockHeight)) {
-        LogPrint("mnpayments", "CMasternodePayments::ProcessBlock - failed to look up seed hash for height %d\n", nBlockHeight);
+    if (!GetBlockHashForScoring(seedHash, pindex, offset)) {
+        LogPrint("mnpayments", "CMasternodePayments::ProcessBlock - failed to compute seed hash\n");
         return false;
     }
 
@@ -731,7 +728,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
     LogPrint("masternode","CMasternodePayments::ProcessBlock() Start nHeight %d - vin %s. \n", nBlockHeight, activeMasternode.vin.prevout.hash.ToString());
 
     // pay to the oldest MN that still had no payment but its input is old enough and it was active long enough
-    CMasternode* pmn = mnodeman.GetNextMasternodeInQueueForPayment(nBlockHeight, true);
+    CMasternode* pmn = mnodeman.GetNextMasternodeInQueueForPayment(pindex, offset, true);
 
     if (pmn != NULL) {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");

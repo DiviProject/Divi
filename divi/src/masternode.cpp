@@ -92,12 +92,22 @@ static bool IsCoinSpent(const COutPoint &outpoint, const CAmount expectedCollate
 
 bool GetBlockHashForScoring(uint256& hash, int nBlockHeight)
 {
-    /* chainActive's operator[] handles out-of-bounds by returning null.  */
-    const auto* pindex = chainActive[nBlockHeight - 101];
+    const auto* tip = chainActive.Tip();
+    if (tip == nullptr)
+        return false;
+    return GetBlockHashForScoring(hash, tip, nBlockHeight - tip->nHeight);
+}
+
+bool GetBlockHashForScoring(uint256& hash, const CBlockIndex* pindex, const int offset)
+{
     if (pindex == nullptr)
         return false;
 
-    hash = pindex->GetBlockHash();
+    const auto* pindexAncestor = pindex->GetAncestor(pindex->nHeight + offset - 101);
+    if (pindexAncestor == nullptr)
+        return false;
+
+    hash = pindexAncestor->GetBlockHash();
     return true;
 }
 
@@ -420,7 +430,7 @@ int64_t CMasternode::GetLastPaid()
         n++;
 
         uint256 seedHash;
-        if (!GetBlockHashForScoring(seedHash, BlockReading->nHeight))
+        if (!GetBlockHashForScoring(seedHash, BlockReading, 0))
             continue;
 
         auto* masternodePayees = masternodePayments.GetPayeesForScoreHash(seedHash);

@@ -34,6 +34,16 @@ class CMasternodePing;
  *  block nBlockHeight-101, but that's an implementation detail.)  */
 bool GetBlockHashForScoring(uint256& hash, int nBlockHeight);
 
+/** Returns the scoring hash corresponding to the given CBlockIndex
+ *  offset by N.  In other words, that is used to compute the winner
+ *  that should be payed in block pindex->nHeight+N.
+ *
+ *  In contrast to GetBlockHashForScoring, this works entirely independent
+ *  of chainActive, and is guaranteed to look into the correct ancestor
+ *  chain independent of potential reorgs.  */
+bool GetBlockHashForScoring(uint256& hash,
+                            const CBlockIndex* pindex, const int offset);
+
 int GetInputAge(CTxIn& vin);
 
 //

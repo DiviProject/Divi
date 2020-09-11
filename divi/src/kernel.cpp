@@ -11,12 +11,16 @@
 #include <primitives/block.h>
 #include "blockmap.h"
 #include "BlockDiskAccessor.h"
+#include "BlockRewards.h"
 #include "chain.h"
 #include "chainparams.h"
+#include "coins.h"
 #include "script/interpreter.h"
 #include "script/SignatureCheckers.h"
 #include "script/standard.h"
+#include "script/StakingVaultScript.h"
 #include <streams.h>
+#include "utilmoneystr.h"
 #include "utilstrencodings.h"
 
 #include <boost/assign/list_of.hpp>
@@ -329,6 +333,48 @@ bool CheckProofOfStake(const CBlock& block, CBlockIndex* pindexPrev, uint256& ha
     if (!ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",
             block.vtx[1].GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
+
+    return true;
+}
+
+bool CheckCoinstakeForVaults(const CTransaction& tx, const CBlockRewards& expectedRewards,
+                             const CCoinsViewCache& view)
+{
+    if (!tx.IsCoinStake())
+        return error("%s: transaction is not a coinstake", __func__);
+
+    CAmount nValueIn = 0;
+    bool foundVault = false;
+    CScript vaultScript;
+    for (const auto& in : tx.vin) {
+        const auto& prevOut = view.GetOutputFor(in);
+        nValueIn += prevOut.nValue;
+        if (!IsStakingVaultScript(prevOut.scriptPubKey))
+            continue;
+
+        if (foundVault) {
+            /* CheckProofOfStake already verifies that all inputs used are
+               from a single script.  */
+            assert(vaultScript == prevOut.scriptPubKey);
+        } else {
+            foundVault = true;
+            vaultScript = prevOut.scriptPubKey;
+        }
+    }
+
+    if (!foundVault)
+        return true;
+
+    assert(tx.vout.size() >= 2);
+    const CTxOut& rewardOut = tx.vout[1];
+
+    if (rewardOut.scriptPubKey != vaultScript)
+        return error("%s: output is not sent back to the vault input script", __func__);
+
+    const CAmount expectedOutput = nValueIn + expectedRewards.nStakeReward;
+    if (rewardOut.nValue < expectedOutput)
+        return error("%s: expected output to be at least %s, got only %s",
+                     __func__, FormatMoney(expectedOutput), FormatMoney(rewardOut.nValue));
 
     return true;
 }

@@ -85,6 +85,83 @@ bool IsInitialBlockDownload();
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees);
 
 
+
+void SpentOutputTracker::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterator> range)
+{
+    // We want all the wallet transactions in range to have the same metadata as
+    // the oldest (smallest nOrderPos).
+    // So: find smallest nOrderPos:
+
+    int nMinOrderPos = std::numeric_limits<int>::max();
+    const CWalletTx* copyFrom = NULL;
+    for (TxSpends::iterator it = range.first; it != range.second; ++it) {
+        const uint256& hash = it->second;
+        int n = mapWallet_[hash].nOrderPos;
+        if (n < nMinOrderPos) {
+            nMinOrderPos = n;
+            copyFrom = &mapWallet_[hash];
+        }
+    }
+    // Now copy data from copyFrom to rest:
+    for (TxSpends::iterator it = range.first; it != range.second; ++it) {
+        const uint256& hash = it->second;
+        CWalletTx* copyTo = &mapWallet_[hash];
+        if (copyFrom == copyTo) continue;
+        copyTo->mapValue = copyFrom->mapValue;
+        copyTo->vOrderForm = copyFrom->vOrderForm;
+        // fTimeReceivedIsTxTime not copied on purpose
+        // nTimeReceived not copied on purpose
+        copyTo->nTimeSmart = copyFrom->nTimeSmart;
+        copyTo->fFromMe = copyFrom->fFromMe;
+        copyTo->strFromAccount = copyFrom->strFromAccount;
+        // nOrderPos not copied on purpose
+        // cached members not copied on purpose
+    }
+}
+
+/**
+ * Outpoint is spent if any non-conflicted transaction
+ * spends it:
+ */
+bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
+{
+    const COutPoint outpoint(hash, n);
+    pair<TxSpends::const_iterator, TxSpends::const_iterator> range;
+    range = mapTxSpends.equal_range(outpoint);
+    for (TxSpends::const_iterator it = range.first; it != range.second; ++it) {
+        const uint256& wtxid = it->second;
+        std::map<uint256, CWalletTx>::const_iterator mit = mapWallet_.find(wtxid);
+        if (mit != mapWallet_.end() && mit->second.GetDepthInMainChain() >= 0)
+            return true; // Spent
+    }
+    return false;
+}
+
+void SpentOutputTracker::AddToSpends(const COutPoint& outpoint, const uint256& wtxid)
+{
+    mapTxSpends.insert(std::make_pair(outpoint, wtxid));
+    pair<TxSpends::iterator, TxSpends::iterator> range;
+    range = mapTxSpends.equal_range(outpoint);
+    SyncMetaData(range);
+}
+
+
+void SpentOutputTracker::AddToSpends(const uint256& wtxid)
+{
+    assert(mapWallet_.count(wtxid));
+    CWalletTx& thisTx = mapWallet_[wtxid];
+    if (thisTx.IsCoinBase()) // Coinbases don't spend anything!
+        return;
+
+    BOOST_FOREACH (const CTxIn& txin, thisTx.vin)
+            AddToSpends(txin.prevout, wtxid);
+}
+
+
+
+
+
+
 CWallet::CWallet()
 {
     SetNull();

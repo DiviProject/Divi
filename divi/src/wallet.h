@@ -136,6 +136,31 @@ public:
     StringMap destdata;
 };
 
+
+class SpentOutputTracker
+{
+private:
+    std::map<uint256, CWalletTx>& mapWallet_;
+public:
+    SpentOutputTracker(
+        std::map<uint256, CWalletTx>& mapWallet
+        ): mapWallet_(mapWallet)
+        , mapTxSpends()
+    {
+    }
+    /**
+     * Used to keep track of spent outpoints, and
+     * detect and report conflicts (double-spends or
+     * mutated transactions where the mutant gets mined).
+     */
+    typedef std::multimap<COutPoint, uint256> TxSpends;
+    TxSpends mapTxSpends;
+    void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
+    void AddToSpends(const uint256& wtxid);
+    void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
+    bool IsSpent(const uint256& hash, unsigned int n) const;
+};
+
 /**
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.

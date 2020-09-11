@@ -167,67 +167,12 @@ public:
  */
 class CWallet : public CCryptoKeyStore, public NotificationInterface
 {
-private:
-    bool SelectCoins(
-        const CAmount& nTargetValue,
-        std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet,
-        CAmount& nValueRet,
-        const CCoinControl* coinControl = NULL,
-        AvailableCoinsType coin_type = ALL_COINS,
-        bool useIX = true) const;
-    //it was public bool SelectCoins(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_COINS, bool useIX = true) const;
-
-    CWalletDB* pwalletdbEncryption;
-
-    //! the current wallet version: clients below this version are not able to load the wallet
-    int nWalletVersion;
-
-    //! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
-    int nWalletMaxVersion;
-
-    int64_t nNextResend;
-    int64_t nLastResend;
-
-    void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
-
-    std::set<int64_t> setInternalKeyPool;
-    std::set<int64_t> setExternalKeyPool;
-
-
-    /**
-     * Used to keep track of spent outpoints, and
-     * detect and report conflicts (double-spends or
-     * mutated transactions where the mutant gets mined).
-     */
-    typedef std::multimap<COutPoint, uint256> TxSpends;
-    TxSpends mapTxSpends;
-    void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
-    void AddToSpends(const uint256& wtxid);
-
-    void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
-
-    bool walletStakingOnly;
 public:
-    bool MintableCoins();
-    bool SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount) const;
-
-    /*
-     * Main wallet lock.
-     * This lock protects all the fields added by CWallet
-     *   except for:
-     *      fFileBacked (immutable after instantiation)
-     *      strWalletFile (immutable after instantiation)
-     */
-    mutable CCriticalSection cs_wallet;
-
+    int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
+    int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
     bool fFileBacked;
-    bool IsUnlockedForStakingOnly() const;
-    bool IsFullyUnlocked() const;
-    void LockFully();
     std::string strWalletFile;
     bool fBackupMints;
-
-    void LoadKeyPool(int nIndex, const CKeyPool &keypool);
 
     std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
 
@@ -251,6 +196,65 @@ public:
     //Auto Combine Inputs
     bool fCombineDust;
     CAmount nAutoCombineThreshold;
+    std::map<uint256, CWalletTx> mapWallet;
+    int64_t nOrderPosNext;
+    std::map<uint256, int> mapRequestCount;
+    std::map<CTxDestination, CAddressBookData> mapAddressBook;
+    CPubKey vchDefaultKey;
+    std::set<COutPoint> setLockedCoins;
+    int64_t nTimeFirstKey;
+    std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
+    static CFeeRate minTxFee;
+private:
+    int64_t nNextResend;
+    int64_t nLastResend;
+    CWalletDB* pwalletdbEncryption;
+    std::set<int64_t> setInternalKeyPool;
+    std::set<int64_t> setExternalKeyPool;
+    bool walletStakingOnly;
+private:
+    bool SelectCoins(
+        const CAmount& nTargetValue,
+        std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet,
+        CAmount& nValueRet,
+        const CCoinControl* coinControl = NULL,
+        AvailableCoinsType coin_type = ALL_COINS,
+        bool useIX = true) const;
+    //it was public bool SelectCoins(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_COINS, bool useIX = true) const;
+    void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
+
+    /**
+     * Used to keep track of spent outpoints, and
+     * detect and report conflicts (double-spends or
+     * mutated transactions where the mutant gets mined).
+     */
+    typedef std::multimap<COutPoint, uint256> TxSpends;
+    TxSpends mapTxSpends;
+    void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
+    void AddToSpends(const uint256& wtxid);
+
+    void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
+
+public:
+    bool MintableCoins();
+    bool SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount) const;
+
+    /*
+     * Main wallet lock.
+     * This lock protects all the fields added by CWallet
+     *   except for:
+     *      fFileBacked (immutable after instantiation)
+     *      strWalletFile (immutable after instantiation)
+     */
+    mutable CCriticalSection cs_wallet;
+
+    bool IsUnlockedForStakingOnly() const;
+    bool IsFullyUnlocked() const;
+    void LockFully();
+
+    void LoadKeyPool(int nIndex, const CKeyPool &keypool);
+
+
 
     CWallet();
     CWallet(std::string strWalletFileIn);
@@ -260,20 +264,6 @@ public:
     bool isMultiSendEnabled();
     void setMultiSendDisabled();
 
-    std::map<uint256, CWalletTx> mapWallet;
-
-    int64_t nOrderPosNext;
-    std::map<uint256, int> mapRequestCount;
-
-    std::map<CTxDestination, CAddressBookData> mapAddressBook;
-
-    CPubKey vchDefaultKey;
-
-    std::set<COutPoint> setLockedCoins;
-
-    int64_t nTimeFirstKey;
-
-    std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;
 
@@ -417,7 +407,6 @@ public:
     bool MultiSend();
     void AutoCombineDust();
 
-    static CFeeRate minTxFee;
     static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool);
 
     bool NewKeyPool();

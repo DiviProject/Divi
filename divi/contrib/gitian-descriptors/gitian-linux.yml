@@ -111,6 +111,8 @@ script: |
   done
 
   cd divi/divi
+  git diff-index --quiet HEAD -- || echo "This build has weird diffs"
+  echo "$(git diff)"
   BASEPREFIX=`pwd`/depends
   # Build dependencies for each host
   for i in $HOSTS; do

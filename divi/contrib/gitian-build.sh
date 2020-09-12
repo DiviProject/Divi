@@ -20,7 +20,7 @@ commit=false
 url=https://github.com/divicoin/divi
 proc=2
 mem=2000
-lxc=true
+lxc=false
 osslTarUrl=http://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
 osslPatchUrl=https://bitcoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
 scriptName=$(basename -- "$0")
@@ -185,7 +185,7 @@ if [[ $lxc = true ]]
 then
     export USE_LXC=1
     export LXC_BRIDGE=lxcbr0
-    sudo ifconfig lxcbr0 up 10.0.2.2
+    ifconfig lxcbr0 up 10.0.2.2
 fi
 
 # Check for OSX SDK
@@ -236,7 +236,7 @@ echo ${COMMIT}
 # Setup build environment
 if [[ $setup = true ]]
 then
-    sudo apt-get install ruby apache2 git apt-cacher-ng python-vm-builder qemu-kvm qemu-utils
+    apt-get install ruby apache2 git apt-cacher-ng python-vm-builder qemu-kvm qemu-utils
     git clone https://github.com/divicoin/gitian.sigs.git
     git clone https://github.com/divicoin/divi-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git

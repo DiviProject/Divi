@@ -184,15 +184,6 @@ public:
     uint64_t nStakeSplitThreshold;
     int nStakeSetUpdateTime;
 
-    //MultiSend
-    std::vector<std::pair<std::string, int> > vMultiSend;
-    bool fMultiSendStake;
-    bool fMultiSendMasternodeReward;
-    bool fMultiSendNotify;
-    std::string strMultiSendChangeAddress;
-    int nLastMultiSendHeight;
-    std::vector<std::string> vDisabledAddresses;
-
     //Auto Combine Inputs
     bool fCombineDust;
     CAmount nAutoCombineThreshold;
@@ -261,9 +252,6 @@ public:
     ~CWallet();
 
     void SetNull();
-    bool isMultiSendEnabled();
-    void setMultiSendDisabled();
-
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;
 
@@ -404,7 +392,6 @@ public:
     int GenerateObfuscationOutputs(int nTotalValue, std::vector<CTxOut>& vout);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
     bool IsMasternodeReward(const CTransaction& tx, uint32_t n) const;
-    bool MultiSend();
     void AutoCombineDust();
 
     static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool);

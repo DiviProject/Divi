@@ -17,6 +17,9 @@ namespace
  * activation times.
  */
 const std::unordered_map<Fork, int64_t> ACTIVATION_TIMES = {
+  /* FIXME: Set real activation height for staking vaults once
+     the schedule has been finalised.  */
+  {Fork::StakingVaults, 2000000000},
   {Fork::TestByTimestamp, 1000000000},
 };
 

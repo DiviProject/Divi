@@ -14,6 +14,7 @@
 #include "BlockSigning.h"
 #include "checkpoints.h"
 #include "checkqueue.h"
+#include "ForkActivation.h"
 #include "init.h"
 #include "kernel.h"
 #include "masternode-payments.h"
@@ -1792,7 +1793,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                              REJECT_INVALID, "bad-txns-BIP30");
     }
 
+    const ActivationState as(pindex);
+
     unsigned int flags = MANDATORY_SCRIPT_VERIFY_FLAGS;
+    if (as.IsActive(Fork::StakingVaults))
+        flags |= SCRIPT_REQUIRE_COINSTAKE;
 
     CBlockUndo blockundo;
 
@@ -1813,6 +1818,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount nValueOut = 0;
     CAmount nValueIn = 0;
     unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
+
+    const SuperblockSubsidyContainer subsidiesContainer(Params());
+    CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
 
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
@@ -1886,6 +1894,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             control.Add(vChecks);
         }
 
+        // Enforce additional rules for coinstakes after the vault fork is active.
+        if (as.IsActive(Fork::StakingVaults) && tx.IsCoinStake()) {
+            if (!CheckCoinstakeForVaults(tx, nExpectedMint, view)) {
+                return state.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),
+                                 REJECT_INVALID, "bad-coinstake-vault-spend");
+            }
+        }
+
         if (fAddressIndex) {
             for (unsigned int k = 0; k < tx.vout.size(); k++) {
                 const CTxOut &out = tx.vout[k];
@@ -1937,11 +1953,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    CBlockRewards nBaseExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
-
-    CBlockRewards nPoWExpectedMint(nBaseExpectedMint.nStakeReward + nFees, 0, 0, 0, 0, 0);
-    const CBlockRewards &nExpectedMint = block.IsProofOfWork() ? nPoWExpectedMint : nBaseExpectedMint;
+    if (block.IsProofOfWork())
+        nExpectedMint.nStakeReward += nFees;
 
     const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 

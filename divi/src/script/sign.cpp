@@ -183,7 +183,6 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutabl
     if (!ConstructScriptSigOrGetRedemptionScript(keystore, fromPubKey, hash, nHashType, txin.scriptSig, whichType))
         return false;
 
-    unsigned flags = STANDARD_SCRIPT_VERIFY_FLAGS;
     if (whichType == TX_SCRIPTHASH)
     {
         // Solver returns the subscript that need to be evaluated;
@@ -203,13 +202,10 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutabl
 
         whichType = subType;
     }
-    if(whichType == TX_VAULT)
-    {
-        flags |= SCRIPT_REQUIRE_COINSTAKE;
-    }
 
     // Test solution
-    return VerifyScript(txin.scriptSig, fromPubKey, flags, MutableTransactionSignatureChecker(&txTo, nIn));
+    return VerifyScript(txin.scriptSig, fromPubKey, STANDARD_SCRIPT_VERIFY_FLAGS,
+                        MutableTransactionSignatureChecker(&txTo, nIn));
 }
 
 bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CMutableTransaction& txTo, unsigned int nIn, int nHashType)

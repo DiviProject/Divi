@@ -14,12 +14,12 @@ struct CBlockRewards {
 
     std::string ToString() const;
 
-    const CAmount nStakeReward;
-    const CAmount nMasternodeReward;
-    const CAmount nTreasuryReward;
-    const CAmount nCharityReward;
-    const CAmount nLotteryReward;
-    const CAmount nProposalsReward;
+    CAmount nStakeReward;
+    CAmount nMasternodeReward;
+    CAmount nTreasuryReward;
+    CAmount nCharityReward;
+    CAmount nLotteryReward;
+    CAmount nProposalsReward;
 
     CAmount total() const;
 };

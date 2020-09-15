@@ -3355,14 +3355,6 @@ void CWallet::AutoCombineDust()
     }
 }
 
-bool CWallet::IsMasternodeReward(const CTransaction& tx, uint32_t n) const
-{
-    if(!tx.IsCoinStake())
-        return false;
-
-    return (n == tx.vout.size() - 1) && (tx.vout[1].scriptPubKey != tx.vout[n].scriptPubKey);
-}
-
 CKeyPool::CKeyPool()
 {
     nTime = GetTime();

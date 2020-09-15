@@ -194,9 +194,6 @@ public:
     uint64_t nStakeSplitThreshold;
     int nStakeSetUpdateTime;
 
-    //Auto Combine Inputs
-    bool fCombineDust;
-    CAmount nAutoCombineThreshold;
     std::map<uint256, CWalletTx> mapWallet;
     int64_t nOrderPosNext;
     std::map<uint256, int> mapRequestCount;
@@ -401,7 +398,6 @@ public:
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
     int GenerateObfuscationOutputs(int nTotalValue, std::vector<CTxOut>& vout);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
-    void AutoCombineDust();
 
     static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool);
 

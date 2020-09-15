@@ -112,8 +112,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"reservebalance", 0},
         {"reservebalance", 1},
         {"setstakesplitthreshold", 0},
-        {"autocombinerewards", 0},
-        {"autocombinerewards", 1},
 
         {"getaddresstxids", 0},
         {"getaddressdeltas", 0},

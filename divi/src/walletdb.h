@@ -109,7 +109,6 @@ public:
 
     // presstab
     bool WriteStakeSplitThreshold(uint64_t nStakeSplitThreshold);
-    bool WriteAutoCombineSettings(bool fEnable, CAmount nCombineThreshold);
 
     bool WriteDefaultKey(const CPubKey& vchPubKey);
 

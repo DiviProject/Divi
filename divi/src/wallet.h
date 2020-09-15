@@ -161,6 +161,16 @@ public:
     bool IsSpent(const uint256& hash, unsigned int n) const;
 };
 
+class WalletDustCombiner
+{
+private:
+    CWallet& wallet_;
+    CAmount combineThreshold_;
+public:
+    WalletDustCombiner(CWallet& wallet, const CAmount& combineThreshold): wallet_(wallet), combineThreshold_(combineThreshold) {}
+    void CombineDust();
+};
+
 /**
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.

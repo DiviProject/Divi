@@ -3241,7 +3241,7 @@ bool CWallet::GetDestData(const CTxDestination& dest, const std::string& key, st
     return false;
 }
 
-void WalletDustCombiner::CombineDust()
+void WalletDustCombiner::CombineDust(CAmount combineThreshold)
 {
     if (IsInitialBlockDownload() || wallet_.IsLocked()) {
         return;
@@ -3262,7 +3262,7 @@ void WalletDustCombiner::CombineDust()
             if (out.tx->IsCoinStake() && out.tx->GetDepthInMainChain() < Params().COINBASE_MATURITY() + 1)
                 continue;
 
-            if (out.Value() > combineThreshold_ * COIN)
+            if (out.Value() > combineThreshold * COIN)
                 continue;
 
             COutPoint outpt(out.tx->GetHash(), out.i);

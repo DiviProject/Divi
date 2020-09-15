@@ -165,10 +165,9 @@ class WalletDustCombiner
 {
 private:
     CWallet& wallet_;
-    CAmount combineThreshold_;
 public:
-    WalletDustCombiner(CWallet& wallet, const CAmount& combineThreshold): wallet_(wallet), combineThreshold_(combineThreshold) {}
-    void CombineDust();
+    WalletDustCombiner(CWallet& wallet): wallet_(wallet){}
+    void CombineDust(CAmount combineThreshold);
 };
 
 /**

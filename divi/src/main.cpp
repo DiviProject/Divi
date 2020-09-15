@@ -3455,10 +3455,9 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         // If turned on Auto Combine will scan wallet for dust to combine
         if (settings.ParameterIsSet("-combinethreshold"))
         {
-            static WalletDustCombiner dustCombiner(
-                *pwalletMain,
-                settings.GetArg("-combinethreshold",std::numeric_limits<int64_t>::max() ));
-            dustCombiner.CombineDust();
+            static WalletDustCombiner dustCombiner(*pwalletMain);
+            dustCombiner.CombineDust(
+                settings.GetArg("-combinethreshold",std::numeric_limits<int64_t>::max() ) );
         }
     }
 

@@ -110,7 +110,7 @@ bool SignVaultSpend(
  * unless whichTypeRet is TX_SCRIPTHASH, in which case scriptSigRet is the redemption script.
  * Returns false if scriptPubKey could not be completely satisfied.
  */
-bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash, int nHashType,
+static bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash, int nHashType,
                   CScript& scriptSigRet, txnouttype& whichTypeRet)
 {
     scriptSigRet.clear();
@@ -154,13 +154,11 @@ bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, const CS
         }
         return true;
     case TX_VAULT:
-        return SignVaultSpend(
-            keystore,
-            scriptPubKey,
-            hash,
-            nHashType,
-            scriptSigRet,
-            false);
+        // If we can sign as owner, do that.  Otherwise try signing as the
+        // staker (which may or may not be valid in the end).
+        if (SignVaultSpend(keystore, scriptPubKey, hash, nHashType, scriptSigRet, true))
+            return true;
+        return SignVaultSpend(keystore, scriptPubKey, hash, nHashType, scriptSigRet, false);
     case TX_SCRIPTHASH:
         return keystore.GetCScript(uint160(vSolutions[0]), scriptSigRet);
 

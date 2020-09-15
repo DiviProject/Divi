@@ -195,8 +195,8 @@ public:
     int nStakeSetUpdateTime;
 
     std::map<uint256, CWalletTx> mapWallet;
+
     int64_t nOrderPosNext;
-    std::map<uint256, int> mapRequestCount;
     std::map<CTxDestination, CAddressBookData> mapAddressBook;
     CPubKey vchDefaultKey;
     std::set<COutPoint> setLockedCoins;

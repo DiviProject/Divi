@@ -144,12 +144,6 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
     // Remove key from key pool
     reservekey.KeepKey();
 
-    // Track how many getdata requests this block gets
-    {
-        LOCK(pwallet_->cs_wallet);
-        pwallet_->mapRequestCount[block->GetHash()] = 0;
-    }
-
     // Process this block the same as if we had received it from another node
     CValidationState state;
     if (!ProcessNewBlock(state, NULL, block))

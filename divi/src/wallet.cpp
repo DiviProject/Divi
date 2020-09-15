@@ -275,12 +275,7 @@ CAmount CWallet::GetChange(const CTransaction& tx) const
 
 void CWallet::Inventory(const uint256& hash)
 {
-    {
-        LOCK(cs_wallet);
-        std::map<uint256, int>::iterator mi = mapRequestCount.find(hash);
-        if (mi != mapRequestCount.end())
-            (*mi).second++;
-    }
+    // Do nothing since wallet doesn't use tracked inventory
 }
 int CWallet::GetVersion()
 {
@@ -2475,9 +2470,6 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
             if (fFileBacked)
                 delete pwalletdb;
         }
-
-        // Track how many getdata requests our transaction gets
-        mapRequestCount[wtxNew.GetHash()] = 0;
 
         // Broadcast
         if (!wtxNew.AcceptToMemoryPool(false)) {

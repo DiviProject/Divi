@@ -8,10 +8,8 @@
 #
 
 from test_framework import BitcoinTestFramework
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+from bitcoinrpc.authproxy import JSONRPCException
 from util import *
-import os
-import shutil
 
 from PowToPosTransition import createPoSStacks, generatePoSBlocks
 
@@ -71,7 +69,7 @@ class BIP66Test(BitcoinTestFramework):
         if (self.nodes[0].getblockcount() != cnt + 1051):
             raise AssertionError("Failed to mine a version=3 block")
 
-        # Mine 1 old-version blocks
+        # Mine 1 old-version block
         try:
             generatePoSBlocks(self.nodes, 1, 1)
             raise AssertionError("Succeeded to mine a version=2 block after 950 version=3 blocks")
@@ -81,7 +79,7 @@ class BIP66Test(BitcoinTestFramework):
         if (self.nodes[0].getblockcount() != cnt + 1051):
             raise AssertionError("Accepted a version=2 block after 950 version=3 blocks")
 
-        # Mine 1 new-version blocks
+        # Mine 1 new-version block
         generatePoSBlocks(self.nodes, 2, 1)
         self.sync_all()
         if (self.nodes[0].getblockcount() != cnt + 1052):

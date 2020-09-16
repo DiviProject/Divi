@@ -136,6 +136,10 @@ public:
     StringMap destdata;
 };
 
+struct WalletTransactionRecord
+{
+    std::map<uint256, CWalletTx> mapWallet;
+};
 
 class SpentOutputTracker
 {
@@ -161,6 +165,7 @@ public:
      */
     std::pair<CWalletTx*,bool> Spend(const CWalletTx& newlyAddedTransaction);
     bool IsSpent(const uint256& hash, unsigned int n) const;
+    std::set<uint256> GetConflictingTxHashes(const CWalletTx& tx) const;
 };
 
 class WalletDustCombiner
@@ -178,6 +183,11 @@ public:
  */
 class CWallet : public CCryptoKeyStore, public NotificationInterface
 {
+private:
+    WalletTransactionRecord transactionRecord_;
+    SpentOutputTracker outputTracker_;
+public:
+    std::map<uint256, CWalletTx>& mapWallet;
 public:
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
@@ -190,8 +200,6 @@ public:
     typedef std::map<unsigned int, CMasterKey> MasterKeyMap;
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
-
-    std::map<uint256, CWalletTx> mapWallet;
 
     int64_t nOrderPosNext;
     std::map<CTxDestination, CAddressBookData> mapAddressBook;
@@ -209,7 +217,6 @@ private:
     bool walletStakingOnly;
 
     typedef std::multimap<COutPoint, uint256> TxSpends;
-    TxSpends mapTxSpends;
 private:
     bool SelectCoins(
         const CAmount& nTargetValue,

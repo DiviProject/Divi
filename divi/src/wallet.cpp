@@ -200,6 +200,7 @@ CWallet::CWallet(std::string strWalletFileIn): CWallet()
 CWallet::~CWallet()
 {
     delete pwalletdbEncryption;
+    pwalletdbEncryption = NULL;
 }
 
 void CWallet::SetNull()

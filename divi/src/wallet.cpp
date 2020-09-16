@@ -1276,8 +1276,6 @@ bool CWallet::IsChange(const CTxOut& txout) const
             return true;
 
         LOCK(cs_wallet);
-//        if (!mapAddressBook.count(address))
-//            return true;
         if(txout.scriptPubKey.IsPayToPublicKeyHash()) {
             auto keyID = boost::get<CKeyID>(address);
             if(mapHdPubKeys.count(keyID)) {

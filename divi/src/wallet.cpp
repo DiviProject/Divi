@@ -158,19 +158,33 @@ void SpentOutputTracker::AddToSpends(const uint256& wtxid)
 }
 
 
-
-
-
-
-CWallet::CWallet()
+CWallet::CWallet(
+    ): nWalletVersion()
+    , fFileBacked()
+    , strWalletFile()
+    , fBackupMints()
+    , mapKeyMetadata()
+    , mapMasterKeys()
+    , nMasterKeyMaxID()
+    , mapWallet()
+    , nOrderPosNext()
+    , mapAddressBook()
+    , vchDefaultKey()
+    , setLockedCoins()
+    , mapHdPubKeys()
+    , nNextResend()
+    , nLastResend()
+    , pwalletdbEncryption(NULL)
+    , setInternalKeyPool()
+    , setExternalKeyPool()
+    , walletStakingOnly()
+    , mapTxSpends()
 {
     SetNull();
 }
 
-CWallet::CWallet(std::string strWalletFileIn)
+CWallet::CWallet(std::string strWalletFileIn): CWallet()
 {
-    SetNull();
-
     strWalletFile = strWalletFileIn;
     fFileBacked = true;
 }

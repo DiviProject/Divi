@@ -137,6 +137,14 @@ bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
     return false;
 }
 
+std::pair<CWalletTx*,bool> SpentOutputTracker::Spend(const CWalletTx& newlyAddedTransaction)
+{
+    uint256 hash = newlyAddedTransaction.GetHash();
+    std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = mapWallet_.insert(std::make_pair(hash, newlyAddedTransaction));
+    if(ret.second) AddToSpends(hash);
+    return std::make_pair(&(ret.first->second),ret.second);
+}
+
 void SpentOutputTracker::AddToSpends(const COutPoint& outpoint, const uint256& wtxid)
 {
     mapTxSpends.insert(std::make_pair(outpoint, wtxid));

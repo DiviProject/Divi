@@ -39,7 +39,7 @@ bool PoSTransactionCreator::SelectCoins(
         return false;
 
     if (chainParameters.NetworkID() == CBaseChainParams::REGTEST ||
-        GetTime() - nLastStakeSetUpdate > wallet_.nStakeSetUpdateTime)
+        GetTime() - nLastStakeSetUpdate > settings.GetArg("-stakeupdatetime",300))
     {
         setStakeCoins.clear();
         if (!wallet_.SelectStakeCoins(setStakeCoins, allowedStakingBalance)) {
@@ -101,7 +101,7 @@ void PoSTransactionCreator::CombineUtxos(
     std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins,
     std::vector<const CWalletTx*>& walletTransactions)
 {
-    const CAmount nCombineThreshold = (wallet_.nStakeSplitThreshold / 2) * COIN;
+    const CAmount nCombineThreshold = (settings.GetArg("-stakesplitthreshold",100000) / 2) * COIN;
     using Entry = std::pair<const CWalletTx*, unsigned int>;
     std::vector<Entry> vCombineCandidates;
     for(auto &&pcoin : setStakeCoins)
@@ -229,7 +229,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
 
     CAmount nReward = blockSubsidity.nStakeReward;
     nCredit += nReward;
-    if (nCredit > static_cast<CAmount>(wallet_.nStakeSplitThreshold) * COIN)
+    if (nCredit > static_cast<CAmount>(settings.GetArg("-stakesplitthreshold",100000)) * COIN)
     {
         txNew.vout.push_back(txNew.vout.back());
         txNew.vout[1].nValue = nCredit / 2;

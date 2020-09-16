@@ -194,9 +194,6 @@ void CWallet::SetNull()
     walletStakingOnly = false;
     fBackupMints = false;
 
-    // Stake Settings
-    nStakeSplitThreshold = 100000;
-    nStakeSetUpdateTime = 300; // 5 minutes
 }
 
 bool CWallet::CanSupportFeature(enum WalletFeature wf)

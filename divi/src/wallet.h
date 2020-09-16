@@ -189,10 +189,6 @@ public:
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
 
-    // Stake Settings
-    uint64_t nStakeSplitThreshold;
-    int nStakeSetUpdateTime;
-
     std::map<uint256, CWalletTx> mapWallet;
 
     int64_t nOrderPosNext;

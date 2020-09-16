@@ -107,9 +107,6 @@ public:
 
     bool WriteOrderPosNext(int64_t nOrderPosNext);
 
-    // presstab
-    bool WriteStakeSplitThreshold(uint64_t nStakeSplitThreshold);
-
     bool WriteDefaultKey(const CPubKey& vchPubKey);
 
     bool ReadPool(int64_t nPool, CKeyPool& keypool);

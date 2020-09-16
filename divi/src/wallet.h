@@ -141,6 +141,12 @@ class SpentOutputTracker
 {
 private:
     std::map<uint256, CWalletTx>& mapWallet_;
+protected:
+    typedef std::multimap<COutPoint, uint256> TxSpends;
+    TxSpends mapTxSpends;
+    void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
+    void AddToSpends(const uint256& wtxid);
+    void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
 public:
     SpentOutputTracker(
         std::map<uint256, CWalletTx>& mapWallet
@@ -153,11 +159,6 @@ public:
      * detect and report conflicts (double-spends or
      * mutated transactions where the mutant gets mined).
      */
-    typedef std::multimap<COutPoint, uint256> TxSpends;
-    TxSpends mapTxSpends;
-    void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
-    void AddToSpends(const uint256& wtxid);
-    void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
     bool IsSpent(const uint256& hash, unsigned int n) const;
 };
 

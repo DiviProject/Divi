@@ -226,7 +226,7 @@ static CScript PushAll(const std::vector<valtype>& values)
 {
     CScript result;
     BOOST_FOREACH(const valtype& v, values)
-        result << v;
+        result.PushMinimal(v);
     return result;
 }
 

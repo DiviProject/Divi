@@ -22,6 +22,7 @@ class CBlockIndex;
 class CBlockHeader;
 class I_BlockFactory;
 class CBlockTemplate;
+class CTransaction;
 class CTxMemPool;
 template <typename MutexObj>
 class AnnotatedMixin;
@@ -29,6 +30,8 @@ class I_SuperblockSubsidyContainer;
 
 class CoinMinter: public I_CoinMinter
 {
+    static constexpr int64_t fiveMinutes_ = 5 * 60;
+
     bool mintingIsRequested_;
     CWallet* pwallet_;
     CChain& chain_;
@@ -44,7 +47,6 @@ class CoinMinter: public I_CoinMinter
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
     int64_t timeToWait_;
-    static const int64_t constexpr fiveMinutes_ = 5 * 60;
 
     bool hasMintableCoinForProofOfStake();
     bool satisfiesMintingRequirements() const;
@@ -86,10 +88,17 @@ public:
     virtual void setMintingRequestStatus(bool newStatus);
     virtual bool mintingHasBeenRequested() const;
 
-    virtual bool createNewBlock(
+    bool createNewBlock(
         unsigned int nExtraNonce, 
         CReserveKey& reserveKey, 
-        bool fProofOfStake) const;
+        bool fProofOfStake) const override;
+
+    /** Sets the block factory instance used.  */
+    void setBlockFactory(std::shared_ptr<I_BlockFactory> blockFactory)
+    {
+        blockFactory_ = std::move(blockFactory);
+    }
+
 };
 
 #endif // COIN_MINTER_H

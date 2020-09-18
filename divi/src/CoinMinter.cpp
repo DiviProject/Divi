@@ -217,7 +217,7 @@ bool CoinMinter::createProofOfStakeBlock(
     if (!pindexPrev)
         return false;
 
-    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey,fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;
@@ -254,7 +254,7 @@ bool CoinMinter::createProofOfWorkBlock(
     if (!pindexPrev)
         return false;
 
-    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey,fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;
@@ -321,18 +321,13 @@ bool CoinMinter::createProofOfWorkBlock(
     return blockSuccessfullyCreated;
 }
 
-
 bool CoinMinter::createNewBlock(
     unsigned int nExtraNonce,
     CReserveKey& reserveKey,
     bool fProofOfStake) const
 {
     if(fProofOfStake)
-    {
-        return createProofOfStakeBlock(nExtraNonce,reserveKey);
-    }
-    else
-    {
-        return createProofOfWorkBlock(nExtraNonce,reserveKey);
-    }
+        return createProofOfStakeBlock(nExtraNonce, reserveKey);
+
+    return createProofOfWorkBlock(nExtraNonce, reserveKey);
 }

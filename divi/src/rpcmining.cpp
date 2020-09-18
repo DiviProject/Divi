@@ -7,6 +7,8 @@
 
 #include "amount.h"
 #include "base58.h"
+#include "BlockFactory.h"
+#include "BlockTemplate.h"
 #include "chainparams.h"
 #include "core_io.h"
 #include "init.h"
@@ -35,6 +37,8 @@
 extern NotificationInterfaceRegistry registry;//TODO: rid this
 using namespace json_spirit;
 using namespace std;
+using namespace boost;
+using namespace boost::assign;
 extern Settings& settings;
 
 /**
@@ -195,6 +199,107 @@ Value setgenerate(const Array& params, bool fHelp)
     }
 
     return Value::null;
+}
+
+namespace
+{
+
+/** Custom BlockFactory that allows more control over the generated block,
+ *  to implement the extra options needed with generateblock.  */
+class ExtendedBlockFactory : public BlockFactory
+{
+
+private:
+
+    /** A list of extra transactions to include in generated blocks, in addition
+     *  to the normal mempool collection logic (and without explicit
+     *  verififaction).  */
+    std::vector<CTransaction> extraTransactions_;
+
+public:
+
+    using BlockFactory::BlockFactory;
+
+    CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake) override
+    {
+        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockFactory::CreateNewBlockWithKey(reserveKey, fProofOfStake));
+        for (const auto& tx : extraTransactions_)
+            pblocktemplate->block.vtx.push_back(tx);
+        return pblocktemplate.release();
+    }
+
+    /** Adds a transaction to be added in addition to standard mempool
+     *  collection for the next block that will be created successfully.  */
+    void addExtraTransaction(const CTransaction& tx)
+    {
+        extraTransactions_.push_back(tx);
+    }
+
+};
+
+} // anonymous namespace
+
+Value generateblock(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 1)
+        throw runtime_error(
+            "generateblock ( options )\n"
+            "\nTry to generate a single block with some extra options.\n"
+            "This is intended for regtest mode and testing.\n"
+            "\nArguments:\n"
+            "1. options          (object, optional) extra options for generating the block\n"
+            "    {\n"
+            "      \"extratx\" : [\"hex\", ...]    (array of strings, optional) transactions to include as hex\n"
+            "    }\n"
+            "\nResult\n"
+            "blockhash     (string) hash of the generated block\n"
+            "\nExamples:\n" +
+            HelpExampleCli("generateblock", "") + HelpExampleRpc("generateblock", ""));
+
+    RPCTypeCheck(params, list_of(obj_type), true);
+    Object options;
+    if (params.size() > 0)
+        options = params[0].get_obj();
+    RPCTypeCheck(options, map_list_of("extratx", array_type), true);
+
+    if (pwalletMain == NULL)
+        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
+
+    int nHeight = 0;
+    CReserveKey reservekey(pwalletMain);
+
+    { // Don't keep cs_main locked
+        LOCK(cs_main);
+        nHeight = chainActive.Height();
+    }
+
+    int64_t coinstakeSearchInterval;
+    CoinMinter minter(pwalletMain, chainActive, Params(), vNodes, masternodeSync, mapHashedBlocks, mempool, cs_main, coinstakeSearchInterval);
+
+    auto factory = std::make_shared<ExtendedBlockFactory>(*pwalletMain, coinstakeSearchInterval, mapHashedBlocks, chainActive, Params(), mempool, cs_main);
+    minter.setBlockFactory(factory);
+
+    const Value& extraTx = find_value(options, "extratx");
+    if (extraTx.type() != null_type)
+        for (const Value& val : extraTx.get_array()) {
+            CTransaction tx;
+            if (!DecodeHexTx(tx, val.get_str()))
+                throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+            factory->addExtraTransaction(tx);
+        }
+
+    const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
+
+    unsigned int nExtraNonce = 0;
+    const bool newBlockAdded = minter.createNewBlock(nExtraNonce, reservekey, fProofOfStake);
+
+    // Don't keep cs_main locked
+    LOCK(cs_main);
+
+    if (!newBlockAdded || chainActive.Height() != nHeight + 1)
+        throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
+
+    return chainActive.Tip()->GetBlockHash().GetHex();
 }
 
 double dHashesPerSec;

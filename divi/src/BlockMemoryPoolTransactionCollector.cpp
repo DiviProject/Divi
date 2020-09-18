@@ -359,11 +359,8 @@ void BlockMemoryPoolTransactionCollector::AddTransactionsToBlockIfPossible (
 }
 
 bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
-    CBlockTemplate& pblocktemplate,
-    bool& fProofOfStake,
-    CMutableTransaction& txNew) const
+    CBlockTemplate& pblocktemplate) const
 {
-
     LOCK2(mainCS_, mempool_.cs);
 
     CBlock& block = pblocktemplate.block;

@@ -97,6 +97,7 @@ BASE_SCRIPTS = [
     'sync.py',
     'txn_doublespend.py',
     'txn_doublespend.py --mineblock',
+    'vaultfork.py',
     'wallet.py',
     'walletbackup.py',
     'zapwallettxes.py',

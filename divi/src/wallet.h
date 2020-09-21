@@ -232,6 +232,8 @@ private:
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
 public:
+    bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);
+
     bool MintableCoins();
     bool SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount) const;
 

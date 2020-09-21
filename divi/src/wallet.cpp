@@ -3649,3 +3649,33 @@ CAmount CWalletTx::GetLockedCredit() const
 
     return nCredit;
 }
+
+bool CWallet::MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment)
+{
+    CWalletDB walletdb(strWalletFile);
+    if (!walletdb.TxnBegin()) return false;
+    int64_t nNow = GetAdjustedTime();
+
+    // Debit
+    CAccountingEntry debit;
+    debit.nOrderPos = IncOrderPosNext(&walletdb);
+    debit.strAccount = from;
+    debit.nCreditDebit = -amount;
+    debit.nTime = nNow;
+    debit.strOtherAccount = to;
+    debit.strComment = comment;
+    walletdb.WriteAccountingEntry(debit);
+
+    // Credit
+    CAccountingEntry credit;
+    credit.nOrderPos = IncOrderPosNext(&walletdb);
+    credit.strAccount = to;
+    credit.nCreditDebit = amount;
+    credit.nTime = nNow;
+    credit.strOtherAccount = from;
+    credit.strComment = comment;
+    walletdb.WriteAccountingEntry(credit);
+    if (!walletdb.TxnCommit()) return false;
+
+    return true;
+}

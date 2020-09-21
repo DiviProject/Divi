@@ -216,6 +216,9 @@ private:
      *  verififaction).  */
     std::vector<CTransaction> extraTransactions_;
 
+    /** If set, use this transaction as coinstake instead of a generated one.  */
+    std::unique_ptr<CTransaction> customCoinstake_;
+
 public:
 
     using BlockFactory::BlockFactory;
@@ -223,8 +226,20 @@ public:
     CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake) override
     {
         std::unique_ptr<CBlockTemplate> pblocktemplate(BlockFactory::CreateNewBlockWithKey(reserveKey, fProofOfStake));
+        CBlock& block = pblocktemplate->block;
+
         for (const auto& tx : extraTransactions_)
-            pblocktemplate->block.vtx.push_back(tx);
+            block.vtx.push_back(tx);
+
+        if (customCoinstake_ != nullptr) {
+            if (!block.IsProofOfStake())
+                throw std::runtime_error("trying to set custom coinstake on PoW block");
+            assert(block.vtx.size() >= 2);
+            CTransaction& coinstake = block.vtx[1];
+            assert(coinstake.IsCoinStake());
+            coinstake = *customCoinstake_;
+        }
+
         return pblocktemplate.release();
     }
 
@@ -233,6 +248,15 @@ public:
     void addExtraTransaction(const CTransaction& tx)
     {
         extraTransactions_.push_back(tx);
+    }
+
+    /** Sets a transaction to use as coinstake on the generated block.
+     *  It is up to the caller to ensure that it actually meets the hash
+     *  target, e.g. because a large enough coinage and the minimal difficulty
+     *  on regtest meet the target always.  */
+    void setCustomCoinstake(const CTransaction& tx)
+    {
+        customCoinstake_ = std::make_unique<CTransaction>(tx);
     }
 
 };
@@ -249,7 +273,8 @@ Value generateblock(const Array& params, bool fHelp)
             "\nArguments:\n"
             "1. options          (object, optional) extra options for generating the block\n"
             "    {\n"
-            "      \"extratx\" : [\"hex\", ...]    (array of strings, optional) transactions to include as hex\n"
+            "      \"extratx\" : [\"hex\", ...],   (array of strings, optional) transactions to include as hex\n"
+            "      \"coinstake\" : \"hex\"         (string, optional) coinstake transaction to use as hex\n"
             "    }\n"
             "\nResult\n"
             "blockhash     (string) hash of the generated block\n"
@@ -260,7 +285,7 @@ Value generateblock(const Array& params, bool fHelp)
     Object options;
     if (params.size() > 0)
         options = params[0].get_obj();
-    RPCTypeCheck(options, map_list_of("extratx", array_type), true);
+    RPCTypeCheck(options, map_list_of("extratx", array_type)("coinstake", str_type), true);
 
     if (pwalletMain == NULL)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
@@ -287,6 +312,16 @@ Value generateblock(const Array& params, bool fHelp)
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
             factory->addExtraTransaction(tx);
         }
+
+    const Value& coinstake = find_value(options, "coinstake");
+    if (coinstake.type() != null_type) {
+        CTransaction tx;
+        if (!DecodeHexTx(tx, coinstake.get_str()))
+            throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+        if (!tx.IsCoinStake())
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "TX is not a coinstake");
+        factory->setCustomCoinstake(tx);
+    }
 
     const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
 

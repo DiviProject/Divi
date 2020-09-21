@@ -22,7 +22,6 @@ class CBlockIndex;
 class CBlockHeader;
 class I_BlockFactory;
 class CBlockTemplate;
-class CTransaction;
 class CTxMemPool;
 template <typename MutexObj>
 class AnnotatedMixin;

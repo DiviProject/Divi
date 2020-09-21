@@ -20,7 +20,7 @@ class AnnotatedMixin;
 class I_BlockFactory
 {
 public:
-    virtual ~I_BlockFactory(){}
+    virtual ~I_BlockFactory() = default;
     virtual CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake) = 0;
 };
 class BlockFactory: public I_BlockFactory
@@ -32,7 +32,7 @@ private:
 
     std::shared_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
     std::shared_ptr<I_PoSTransactionCreator> coinstakeCreator_;
-private:
+
     void SetRequiredWork(CBlockTemplate& pblocktemplate);
     void SetBlockTime(CBlock& block);
     void SetCoinbaseTransactionAndDefaultFees(
@@ -52,6 +52,7 @@ public:
         const CChainParams& chainParameters,
         CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
-    virtual CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake);
+
+    CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake) override;
 };
 #endif // BLOCK_FACTORY_H

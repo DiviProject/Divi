@@ -62,13 +62,13 @@ bool BlockFactory::AppendProofOfStakeToBlock(
     CBlockTemplate& pBlockTemplate)
 {
     CBlock& block = pBlockTemplate.block;
-    CMutableTransaction txCoinStake;
     SetRequiredWork(pBlockTemplate);
     SetBlockTime(block);
 
     // ppcoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
+    CMutableTransaction txCoinStake;
     unsigned int nTxNewTime = 0;
     if(coinstakeCreator_->CreateProofOfStake(
             block.nBits,
@@ -118,7 +118,6 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     }
 
     // Collect memory pool transactions into the block
-
     if(!blockTransactionCollector_->CollectTransactionsIntoBlock(*pblocktemplate))
     {
         return NULL;

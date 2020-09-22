@@ -1658,10 +1658,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             if (settings.GetBoolArg("-zapwallettxes", false) && settings.GetArg("-zapwallettxes", "1") != "2") {
                 BOOST_FOREACH (const CWalletTx& wtxOld, vWtx) {
                     uint256 hash = wtxOld.GetHash();
-                    std::map<uint256, CWalletTx>::iterator mi = pwalletMain->mapWallet.find(hash);
-                    if (mi != pwalletMain->mapWallet.end()) {
+                    CWalletTx* copyTo = const_cast<CWalletTx*>(pwalletMain->GetWalletTx(hash));
+                    if (copyTo != nullptr) {
                         const CWalletTx* copyFrom = &wtxOld;
-                        CWalletTx* copyTo = &mi->second;
                         copyTo->mapValue = copyFrom->mapValue;
                         copyTo->vOrderForm = copyFrom->vOrderForm;
                         copyTo->nTimeReceived = copyFrom->nTimeReceived;
@@ -1792,7 +1791,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("chainActive.Height() = %d\n", chainActive.Height());
 #ifdef ENABLE_WALLET
     LogPrintf("setKeyPool.size() = %u\n", pwalletMain ? pwalletMain->GetKeyPoolSize() : 0);
-    LogPrintf("mapWallet.size() = %u\n", pwalletMain ? pwalletMain->mapWallet.size() : 0);
     LogPrintf("mapAddressBook.size() = %u\n", pwalletMain ? pwalletMain->mapAddressBook.size() : 0);
 #endif
 

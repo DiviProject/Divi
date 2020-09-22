@@ -138,7 +138,9 @@ public:
 
 struct WalletTransactionRecord
 {
+    mutable CCriticalSection walletTxRecord;
     std::map<uint256, CWalletTx> mapWallet;
+    const CWalletTx* GetWalletTx(const uint256& hash) const;
 };
 
 class SpentOutputTracker

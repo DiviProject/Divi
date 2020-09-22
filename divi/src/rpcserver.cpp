@@ -88,12 +88,14 @@ static inline int64_t roundint64(double d)
     return (int64_t)(d > 0 ? d + 0.5 : d - 0.5);
 }
 
-CAmount AmountFromValue(const Value& value)
+CAmount AmountFromValue(const Value& value, const bool allowZero)
 {
-    double dAmount = value.get_real();
-    if (dAmount <= 0.0 || dAmount >  Params().MaxMoneyOut())
+    const double dAmount = value.get_real();
+    if (dAmount < 0.0 || dAmount >  Params().MaxMoneyOut())
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
-    CAmount nAmount = roundint64(dAmount * COIN);
+    const CAmount nAmount = roundint64(dAmount * COIN);
+    if (!allowZero && nAmount == 0)
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     if (!MoneyRange(nAmount))
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     return nAmount;

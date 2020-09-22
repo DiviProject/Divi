@@ -421,11 +421,15 @@ Value createrawtransaction(const Array& params, bool fHelp)
             "       }\n"
             "       ,...\n"
             "     ]\n"
-            "2. \"addresses\"           (string, required) a json object with addresses as keys and amounts as values\n"
-            "    {\n"
-            "      \"address\": x.xxx   (numeric, required) The key is the divi address, the value is the DIVI amount\n"
-            "      ,...\n"
-            "    }\n"
+            "2. \"outputs\"             (array, required) array or json object with outputs\n"
+            "    [\n"
+            "      {\n"
+            "        \"address\": x.xxx   (numeric, required) The key is the divi address, the value is the DIVI amount\n"
+            "      }, ...\n"
+            "      {\n"
+            "        \"hex\": x.xxx       (numeric, required) The key is a hex-serialised script, the value is the DIVI amount\n"
+            "      }, ...\n"
+            "    ]\n"
 
             "\nResult:\n"
             "\"transaction\"            (string) hex string of the transaction\n"
@@ -433,14 +437,25 @@ Value createrawtransaction(const Array& params, bool fHelp)
             "\nExamples\n" +
             HelpExampleCli("createrawtransaction", "\"[{\\\"txid\\\":\\\"myid\\\",\\\"vout\\\":0}]\" \"{\\\"address\\\":0.01}\"") + HelpExampleRpc("createrawtransaction", "\"[{\\\"txid\\\":\\\"myid\\\",\\\"vout\\\":0}]\", \"{\\\"address\\\":0.01}\""));
 
-    RPCTypeCheck(params, list_of(array_type)(obj_type));
+    RPCTypeCheck(params, list_of(array_type));
 
     Array inputs = params[0].get_array();
-    Object sendTo = params[1].get_obj();
+
+    Array sendTo;
+    if (params[1].type() == array_type)
+        sendTo = params[1].get_array();
+    else if (params[1].type() == obj_type) {
+        for (const Pair& s : params[1].get_obj()) {
+            Object cur;
+            cur.push_back(s);
+            sendTo.push_back(cur);
+        }
+    } else
+        throw JSONRPCError(RPC_TYPE_ERROR, "outputs must be array or object");
 
     CMutableTransaction rawTx;
 
-    BOOST_FOREACH (const Value& input, inputs) {
+    for (const Value& input : inputs) {
         const Object& o = input.get_obj();
 
         uint256 txid = ParseHashO(o, "txid");
@@ -457,20 +472,35 @@ Value createrawtransaction(const Array& params, bool fHelp)
     }
 
     set<CBitcoinAddress> setAddress;
-    BOOST_FOREACH (const Pair& s, sendTo) {
-        CBitcoinAddress address(s.name_);
-        if (!address.IsValid())
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid DIVI address: ") + s.name_);
+    for (const Value& entry : sendTo) {
+        if (entry.type() != obj_type)
+            throw JSONRPCError(RPC_TYPE_ERROR, "output entries must be objects");
+        const Object o = entry.get_obj();
+        if (o.size() != 1)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "output entries must have a single element");
 
-        if (setAddress.count(address))
-            throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + s.name_);
-        setAddress.insert(address);
+        for (const Pair& s : o) {
+            const CAmount nAmount = AmountFromValue(s.value_, true);
+            CScript scriptPubKey;
 
-        CScript scriptPubKey = GetScriptForDestination(address.Get());
-        CAmount nAmount = AmountFromValue(s.value_);
+            if (IsHex(s.name_) || s.name_ == "") {
+                const auto raw = ParseHex(s.name_);
+                scriptPubKey = CScript(raw.begin(), raw.end());
+            } else {
+                CBitcoinAddress address(s.name_);
+                if (!address.IsValid())
+                    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid DIVI address: ") + s.name_);
 
-        CTxOut out(nAmount, scriptPubKey);
-        rawTx.vout.push_back(out);
+                if (setAddress.count(address))
+                    throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + s.name_);
+                setAddress.insert(address);
+
+                scriptPubKey = GetScriptForDestination(address.Get());
+            }
+
+            CTxOut out(nAmount, scriptPubKey);
+            rawTx.vout.push_back(out);
+        }
     }
 
     return EncodeHexTx(rawTx);

@@ -87,6 +87,7 @@ BASE_SCRIPTS = [
     'receivedby.py',
     'reindex.py',
     'PowToPosTransition.py',
+    'rawtransactions.py',
     'rest.py',
     'rpcbind_test.py',
     'smartfees.py',

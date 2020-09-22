@@ -349,10 +349,7 @@ std::string COutput::ToString() const
 const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const
 {
     LOCK(cs_wallet);
-    std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(hash);
-    if (it == mapWallet.end())
-        return NULL;
-    return &(it->second);
+    return WalletTransactionRecord::GetWalletTx(hash);
 }
 
 CPubKey CWallet::GenerateNewKey(uint32_t nAccountIndex, bool fInternal)
@@ -820,12 +817,11 @@ set<uint256> CWallet::GetConflicts(const uint256& txid) const
 {
     AssertLockHeld(cs_wallet);
 
-    std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(txid);
-    if (it == mapWallet.end())
+    const CWalletTx* txPtr = GetWalletTx(txid);
+    if (txPtr == nullptr)
         return set<uint256>();
-    const CWalletTx& wtx = it->second;
 
-   return outputTracker_.GetConflictingTxHashes(wtx);
+   return outputTracker_.GetConflictingTxHashes(*txPtr);
 }
 
 /**
@@ -1213,9 +1209,9 @@ isminetype CWallet::IsMine(const CTxIn& txin) const
 {
     {
         LOCK(cs_wallet);
-        map<uint256, CWalletTx>::const_iterator mi = mapWallet.find(txin.prevout.hash);
-        if (mi != mapWallet.end()) {
-            const CWalletTx& prev = (*mi).second;
+        const CWalletTx* txPtr = GetWalletTx(txin.prevout.hash);
+        if (txPtr != nullptr) {
+            const CWalletTx& prev = *txPtr;
             if (txin.prevout.n < prev.vout.size())
                 return IsMine(prev.vout[txin.prevout.n]);
         }
@@ -1227,9 +1223,9 @@ CAmount CWallet::GetDebit(const CTxIn& txin, const isminefilter& filter) const
 {
     {
         LOCK(cs_wallet);
-        map<uint256, CWalletTx>::const_iterator mi = mapWallet.find(txin.prevout.hash);
-        if (mi != mapWallet.end()) {
-            const CWalletTx& prev = (*mi).second;
+        const CWalletTx* txPtr = GetWalletTx(txin.prevout.hash);
+        if (txPtr != nullptr) {
+            const CWalletTx& prev = *txPtr;
             if (txin.prevout.n < prev.vout.size())
                 if (IsMine(prev.vout[txin.prevout.n]) & filter)
                     return prev.vout[txin.prevout.n].nValue;
@@ -3034,8 +3030,8 @@ bool CWallet::UpdatedTransaction(const uint256& hashTx)
     {
         LOCK(cs_wallet);
         // Only notify UI if this transaction is in this wallet
-        map<uint256, CWalletTx>::const_iterator mi = mapWallet.find(hashTx);
-        if (mi != mapWallet.end()) {
+        const CWalletTx* txPtr = GetWalletTx(hashTx);
+        if (txPtr != nullptr) {
             NotifyTransactionChanged(this, hashTx, CT_UPDATED);
             return true;
         }
@@ -3053,8 +3049,8 @@ void CWallet::LockCoin(const COutPoint& output)
 {
     AssertLockHeld(cs_wallet); // setLockedCoins
     setLockedCoins.insert(output);
-    std::map<uint256, CWalletTx>::iterator it = mapWallet.find(output.hash);
-    if (it != mapWallet.end()) it->second.MarkDirty(); // recalculate all credits for this tx
+    CWalletTx* txPtr = const_cast<CWalletTx*>(GetWalletTx(output.hash));
+    if (txPtr != nullptr) txPtr->MarkDirty(); // recalculate all credits for this tx
 }
 
 void CWallet::UnlockCoin(const COutPoint& output)

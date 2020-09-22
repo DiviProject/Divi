@@ -1164,7 +1164,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
 {
     {
         AssertLockHeld(cs_wallet);
-        bool fExisted = mapWallet.count(tx.GetHash()) != 0;
+        bool fExisted = GetWalletTx(tx.GetHash()) != nullptr;
         if (fExisted && !fUpdate) return false;
         if (fExisted || IsMine(tx) || IsFromMe(tx)) {
             CWalletTx wtx(this, tx);
@@ -1187,8 +1187,9 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock)
     // available of the outputs it spends. So force those to be
     // recomputed, also:
     BOOST_FOREACH (const CTxIn& txin, tx.vin) {
-        if (mapWallet.count(txin.prevout.hash))
-            mapWallet[txin.prevout.hash].MarkDirty();
+        CWalletTx* wtx = const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
+        if (wtx != nullptr)
+            wtx->MarkDirty();
     }
 }
 
@@ -2480,12 +2481,11 @@ CAmount CWallet::GetMinimumFee(const CAmount &nTransactionValue, unsigned int nT
 CAmount CWallet::GetTotalValue(std::vector<CTxIn> vCoins)
 {
     CAmount nTotalValue = 0;
-    CWalletTx wtx;
     BOOST_FOREACH (CTxIn i, vCoins) {
-        if (mapWallet.count(i.prevout.hash)) {
-            CWalletTx& wtx = mapWallet[i.prevout.hash];
-            if (i.prevout.n < wtx.vout.size()) {
-                nTotalValue += wtx.vout[i.prevout.n].nValue;
+        const CWalletTx* wtx = GetWalletTx(i.prevout.hash);
+        if (wtx != nullptr) {
+            if (i.prevout.n < wtx->vout.size()) {
+                nTotalValue += wtx->vout[i.prevout.n].nValue;
             }
         } else {
             LogPrintf("GetTotalValue -- Couldn't find transaction\n");

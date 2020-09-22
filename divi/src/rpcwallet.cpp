@@ -1709,9 +1709,10 @@ Value gettransaction(const Array& params, bool fHelp)
             filter = filter | ISMINE_WATCH_ONLY;
 
     Object entry;
-    if (!pwalletMain->mapWallet.count(hash))
+    const CWalletTx* txPtr = pwalletMain->GetWalletTx(hash);
+    if (txPtr == nullptr)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
-    const CWalletTx& wtx = pwalletMain->mapWallet[hash];
+    const CWalletTx& wtx = *txPtr;
 
     CAmount nCredit = wtx.GetCredit(filter);
     CAmount nDebit = wtx.GetDebit(filter);

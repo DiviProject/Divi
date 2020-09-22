@@ -349,8 +349,20 @@ std::string COutput::ToString() const
 const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const
 {
     LOCK(cs_wallet);
-    return WalletTransactionRecord::GetWalletTx(hash);
+    return transactionRecord_.GetWalletTx(hash);
 }
+std::vector<CWalletTx*> CWallet::GetWalletTransactionReferences() const
+{
+    LOCK(cs_wallet);
+    std::vector<CWalletTx*> transactions;
+    transactions.reserve(mapWallet.size());
+    for (std::map<uint256, CWalletTx>::iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
+    {
+        transactions.push_back(&(it->second));
+    }
+    return transactions;
+}
+
 
 CPubKey CWallet::GenerateNewKey(uint32_t nAccountIndex, bool fInternal)
 {

@@ -191,7 +191,6 @@ class CWallet : public CCryptoKeyStore, public NotificationInterface
 private:
     WalletTransactionRecord transactionRecord_;
     SpentOutputTracker outputTracker_;
-public:
     std::map<uint256, CWalletTx>& mapWallet;
 public:
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
@@ -265,6 +264,7 @@ public:
     void SetNull();
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;
+    std::vector<CWalletTx*> GetWalletTransactionReferences() const;
 
     //! check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf);

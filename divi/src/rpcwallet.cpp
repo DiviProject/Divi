@@ -137,10 +137,12 @@ CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
     // Check if the current key has been used
     if (account.vchPubKey.IsValid()) {
         CScript scriptPubKey = GetScriptForDestination(account.vchPubKey.GetID());
-        for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin();
-             it != pwalletMain->mapWallet.end() && account.vchPubKey.IsValid();
-             ++it) {
-            const CWalletTx& wtx = (*it).second;
+        std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+        for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin();
+             it != walletTransactions.end() && account.vchPubKey.IsValid();
+             ++it)
+        {
+            const CWalletTx& wtx = *(*it);
             BOOST_FOREACH (const CTxOut& txout, wtx.vout)
                     if (txout.scriptPubKey == scriptPubKey)
                     bKeyUsed = true;
@@ -622,8 +624,10 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
 
     // Tally
     CAmount nAmount = 0;
-    for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it) {
-        const CWalletTx& wtx = (*it).second;
+    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    {
+        const CWalletTx& wtx = *(*it);
         if (wtx.IsCoinBase() || !IsFinalTx(wtx))
             continue;
 
@@ -666,8 +670,10 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
 
     // Tally
     CAmount nAmount = 0;
-    for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it) {
-        const CWalletTx& wtx = (*it).second;
+    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    {
+        const CWalletTx& wtx = *(*it);
         if (wtx.IsCoinBase() || !IsFinalTx(wtx))
             continue;
 
@@ -688,8 +694,10 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
     CAmount nBalance = 0;
 
     // Tally wallet transactions
-    for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it) {
-        const CWalletTx& wtx = (*it).second;
+    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    {
+        const CWalletTx& wtx = *(*it);
         if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < 0)
             continue;
 
@@ -753,8 +761,10 @@ Value getbalance(const Array& params, bool fHelp)
         // (GetBalance() sums up all unspent TxOuts)
         // getbalance and "getbalance * 1 true" should return the same number
         CAmount nBalance = 0;
-        for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it) {
-            const CWalletTx& wtx = (*it).second;
+        std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+        for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+        {
+            const CWalletTx& wtx = *(*it);
             if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < 0)
                 continue;
 
@@ -1035,8 +1045,10 @@ Value ListReceived(const Array& params, bool fByAccounts)
 
     // Tally
     map<CBitcoinAddress, tallyitem> mapTally;
-    for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it) {
-        const CWalletTx& wtx = (*it).second;
+    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    {
+        const CWalletTx& wtx = *(*it);
 
         if (wtx.IsCoinBase() || !IsFinalTx(wtx))
             continue;
@@ -1549,8 +1561,10 @@ Value listaccounts(const Array& params, bool fHelp)
             mapAccountBalances[entry.second.name] = 0;
     }
 
-    for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it) {
-        const CWalletTx& wtx = (*it).second;
+    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    {
+        const CWalletTx& wtx = *(*it);
         CAmount nFee;
         string strSentAccount;
         list<COutputEntry> listReceived;
@@ -1647,8 +1661,10 @@ Value listsinceblock(const Array& params, bool fHelp)
 
     Array transactions;
 
-    for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); it++) {
-        CWalletTx tx = (*it).second;
+    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    {
+        CWalletTx tx = *(*it);
 
         if (depth == -1 || tx.GetDepthInMainChain(false) < depth)
             ListTransactions(tx, "*", 0, true, transactions, filter);
@@ -2175,7 +2191,7 @@ Value getwalletinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
     obj.push_back(Pair("unconfirmed_balance", ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
     obj.push_back(Pair("immature_balance",    ValueFromAmount(pwalletMain->GetImmatureBalance())));
-    obj.push_back(Pair("txcount", (int)pwalletMain->mapWallet.size()));
+    obj.push_back(Pair("txcount", (int)pwalletMain->GetWalletTransactionReferences().size()));
     obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
     obj.push_back(Pair("keypoolsize", (int)pwalletMain->GetKeyPoolSize()));
     if (pwalletMain->IsCrypted())

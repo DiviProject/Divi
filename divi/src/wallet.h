@@ -220,6 +220,9 @@ private:
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
 
+public:
+    int64_t& GetNextTransactionIndexAvailable() const;
+
 private:
     bool SelectCoins(
         const CAmount& nTargetValue,

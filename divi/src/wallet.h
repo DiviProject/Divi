@@ -220,7 +220,6 @@ private:
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
 
-    typedef std::multimap<COutPoint, uint256> TxSpends;
 private:
     bool SelectCoins(
         const CAmount& nTargetValue,

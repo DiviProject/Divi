@@ -303,15 +303,15 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
             } else if (!WriteAccountingEntry(pacentry->nEntryNo, *pacentry))
                 return DB_LOAD_FAIL;
         } else {
-            int64_t nOrderPosOff = 0;
+            int64_t numberOfSmallerPreviouslyUsedIndices = 0;
             BOOST_FOREACH (const int64_t& previouslyUsedIndex, previouslyUsedTransactionIndices) {
                 if (transactionOrderIndex >= previouslyUsedIndex)
-                    ++nOrderPosOff;
+                    ++numberOfSmallerPreviouslyUsedIndices;
             }
-            transactionOrderIndex += nOrderPosOff;
+            transactionOrderIndex += numberOfSmallerPreviouslyUsedIndices;
             orderedTransactionIndex = std::max(orderedTransactionIndex, transactionOrderIndex + 1);
 
-            if (!nOrderPosOff)
+            if (!numberOfSmallerPreviouslyUsedIndices)
                 continue;
 
             // Since we're changing the order, write it back

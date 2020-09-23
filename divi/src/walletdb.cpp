@@ -287,7 +287,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
 
     int64_t& orderedTransactionIndex = pwallet->GetNextTransactionIndexAvailable();
     orderedTransactionIndex = 0;
-    std::vector<int64_t> nOrderPosOffsets;
+    std::vector<int64_t> previouslyUsedTransactionIndices;
     for (TxItems::iterator it = txByTime.begin(); it != txByTime.end(); ++it) {
         CWalletTx* const pwtx = (*it).second.first;
         CAccountingEntry* const pacentry = (*it).second.second;
@@ -295,7 +295,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
 
         if (nOrderPos == -1) {
             nOrderPos = orderedTransactionIndex++;
-            nOrderPosOffsets.push_back(nOrderPos);
+            previouslyUsedTransactionIndices.push_back(nOrderPos);
 
             if (pwtx) {
                 if (!WriteTx(pwtx->GetHash(), *pwtx))
@@ -304,7 +304,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
                 return DB_LOAD_FAIL;
         } else {
             int64_t nOrderPosOff = 0;
-            BOOST_FOREACH (const int64_t& nOffsetStart, nOrderPosOffsets) {
+            BOOST_FOREACH (const int64_t& nOffsetStart, previouslyUsedTransactionIndices) {
                 if (nOrderPos >= nOffsetStart)
                     ++nOrderPosOff;
             }

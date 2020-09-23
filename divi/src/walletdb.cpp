@@ -304,8 +304,8 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
                 return DB_LOAD_FAIL;
         } else {
             int64_t nOrderPosOff = 0;
-            BOOST_FOREACH (const int64_t& nOffsetStart, previouslyUsedTransactionIndices) {
-                if (transactionOrderIndex >= nOffsetStart)
+            BOOST_FOREACH (const int64_t& previouslyUsedIndex, previouslyUsedTransactionIndices) {
+                if (transactionOrderIndex >= previouslyUsedIndex)
                     ++nOrderPosOff;
             }
             transactionOrderIndex += nOrderPosOff;

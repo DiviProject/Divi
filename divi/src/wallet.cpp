@@ -814,11 +814,6 @@ set<uint256> CWallet::GetConflicts(const uint256& txid) const
    return outputTracker_.GetConflictingTxHashes(wtx);
 }
 
-void CWallet::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterator> range)
-{
-    outputTracker_.SyncMetaData(range);
-}
-
 /**
  * Outpoint is spent if any non-conflicted transaction
  * spends it:
@@ -826,11 +821,6 @@ void CWallet::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterator> range)
 bool CWallet::IsSpent(const uint256& hash, unsigned int n) const
 {
     return outputTracker_.IsSpent(hash,n);
-}
-
-void CWallet::AddToSpends(const COutPoint& outpoint, const uint256& wtxid)
-{
-    outputTracker_.AddToSpends(outpoint,wtxid);
 }
 
 void CWallet::AddToSpends(const uint256& wtxid)

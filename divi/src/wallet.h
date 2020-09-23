@@ -233,10 +233,7 @@ private:
      * detect and report conflicts (double-spends or
      * mutated transactions where the mutant gets mined).
      */
-    void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
     void AddToSpends(const uint256& wtxid);
-
-    void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
 
 public:
     bool MintableCoins();

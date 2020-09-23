@@ -829,11 +829,6 @@ bool CWallet::IsSpent(const uint256& hash, unsigned int n) const
     return outputTracker_.IsSpent(hash,n);
 }
 
-void CWallet::AddToSpends(const uint256& wtxid)
-{
-    outputTracker_.AddToSpends(wtxid);
-}
-
 bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash, std::string strOutputIndex)
 {
     // wait for reindex and/or import to finish

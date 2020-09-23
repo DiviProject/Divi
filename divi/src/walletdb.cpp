@@ -154,10 +154,10 @@ bool CWalletDB::ReadBestBlock(CBlockLocator& locator)
     return Read(std::string("bestblock"), locator);
 }
 
-bool CWalletDB::WriteOrderPosNext(int64_t nOrderPosNext)
+bool CWalletDB::WriteOrderPosNext(int64_t orderedTransactionIndex)
 {
     nWalletDBUpdated++;
-    return Write(std::string("orderposnext"), nOrderPosNext);
+    return Write(std::string("orderposnext"), orderedTransactionIndex);
 }
 
 bool CWalletDB::WriteDefaultKey(const CPubKey& vchPubKey)
@@ -285,8 +285,8 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
         txByTime.insert(std::make_pair(entry.nTime, TxPair((CWalletTx*)0, &entry)));
     }
 
-    int64_t& nOrderPosNext = pwallet->nOrderPosNext;
-    nOrderPosNext = 0;
+    int64_t& orderedTransactionIndex = pwallet->orderedTransactionIndex;
+    orderedTransactionIndex = 0;
     std::vector<int64_t> nOrderPosOffsets;
     for (TxItems::iterator it = txByTime.begin(); it != txByTime.end(); ++it) {
         CWalletTx* const pwtx = (*it).second.first;
@@ -294,7 +294,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
         int64_t& nOrderPos = (pwtx != 0) ? pwtx->nOrderPos : pacentry->nOrderPos;
 
         if (nOrderPos == -1) {
-            nOrderPos = nOrderPosNext++;
+            nOrderPos = orderedTransactionIndex++;
             nOrderPosOffsets.push_back(nOrderPos);
 
             if (pwtx) {
@@ -309,7 +309,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
                     ++nOrderPosOff;
             }
             nOrderPos += nOrderPosOff;
-            nOrderPosNext = std::max(nOrderPosNext, nOrderPos + 1);
+            orderedTransactionIndex = std::max(orderedTransactionIndex, nOrderPos + 1);
 
             if (!nOrderPosOff)
                 continue;
@@ -322,7 +322,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
                 return DB_LOAD_FAIL;
         }
     }
-    WriteOrderPosNext(nOrderPosNext);
+    WriteOrderPosNext(orderedTransactionIndex);
 
     return DB_LOAD_OK;
 }
@@ -542,7 +542,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                 return false;
             }
         } else if (strType == "orderposnext") {
-            ssValue >> pwallet->nOrderPosNext;
+            ssValue >> pwallet->orderedTransactionIndex;
         } else if (strType == "destdata") {
             std::string strAddress, strKey, strValue;
             ssKey >> strAddress;

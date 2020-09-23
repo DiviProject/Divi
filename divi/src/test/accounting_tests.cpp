@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(acc_orderupgrade)
 
     GetResults(walletdb, results);
 
-    BOOST_CHECK(pwalletMain->nOrderPosNext == 3);
+    BOOST_CHECK(pwalletMain->orderedTransactionIndex == 3);
     BOOST_CHECK(2 == results.size());
     BOOST_CHECK(results[0].nTime == 1333333333);
     BOOST_CHECK(results[0].strComment == accountComments[0]);
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(acc_orderupgrade)
     GetResults(walletdb, results);
 
     BOOST_CHECK(results.size() == 3);
-    BOOST_CHECK(pwalletMain->nOrderPosNext == 4);
+    BOOST_CHECK(pwalletMain->orderedTransactionIndex == 4);
     BOOST_CHECK(results[0].nTime == 1333333333);
     BOOST_CHECK(1 == vpwtx[0]->nOrderPos);
     BOOST_CHECK(results[2].nTime == 1333333336);
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(acc_orderupgrade)
     GetResults(walletdb, results);
 
     BOOST_CHECK(results.size() == 3);
-    BOOST_CHECK(pwalletMain->nOrderPosNext == 6);
+    BOOST_CHECK(pwalletMain->orderedTransactionIndex == 6);
     BOOST_CHECK(0 == vpwtx[2]->nOrderPos);
     BOOST_CHECK(results[1].nTime == 1333333333);
     BOOST_CHECK(2 == vpwtx[0]->nOrderPos);
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(acc_orderupgrade)
     GetResults(walletdb, results);
 
     BOOST_CHECK(results.size() == 4);
-    BOOST_CHECK(pwalletMain->nOrderPosNext == 7);
+    BOOST_CHECK(pwalletMain->orderedTransactionIndex == 7);
     BOOST_CHECK(0 == vpwtx[2]->nOrderPos);
     BOOST_CHECK(results[1].nTime == 1333333333);
     BOOST_CHECK(2 == vpwtx[0]->nOrderPos);

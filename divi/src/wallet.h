@@ -205,7 +205,7 @@ public:
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
 
-    int64_t nOrderPosNext;
+    int64_t orderedTransactionIndex;
     std::map<CTxDestination, CAddressBookData> mapAddressBook;
     CPubKey vchDefaultKey;
     std::set<COutPoint> setLockedCoins;

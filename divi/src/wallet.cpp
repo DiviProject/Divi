@@ -206,7 +206,7 @@ CWallet::CWallet(
     , mapKeyMetadata()
     , mapMasterKeys()
     , nMasterKeyMaxID()
-    , nOrderPosNext()
+    , orderedTransactionIndex()
     , mapAddressBook()
     , vchDefaultKey()
     , setLockedCoins()
@@ -240,7 +240,7 @@ void CWallet::SetNull()
     fFileBacked = false;
     nMasterKeyMaxID = 0;
     pwalletdbEncryption = NULL;
-    nOrderPosNext = 0;
+    orderedTransactionIndex = 0;
     nNextResend = 0;
     nLastResend = 0;
     nTimeFirstKey = 0;
@@ -1025,12 +1025,12 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
 
 int64_t CWallet::IncOrderPosNext(CWalletDB* pwalletdb)
 {
-    AssertLockHeld(cs_wallet); // nOrderPosNext
-    int64_t nRet = nOrderPosNext++;
+    AssertLockHeld(cs_wallet); // orderedTransactionIndex
+    int64_t nRet = orderedTransactionIndex++;
     if (pwalletdb) {
-        pwalletdb->WriteOrderPosNext(nOrderPosNext);
+        pwalletdb->WriteOrderPosNext(orderedTransactionIndex);
     } else {
-        CWalletDB(strWalletFile).WriteOrderPosNext(nOrderPosNext);
+        CWalletDB(strWalletFile).WriteOrderPosNext(orderedTransactionIndex);
     }
     return nRet;
 }
@@ -1072,11 +1072,11 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
     uint256 hash = wtxIn.GetHash();
 
     if (fFromLoadWallet) {
-        outputTracker_.UpdateSpends(wtxIn, nOrderPosNext, false).first->BindWallet(this);
+        outputTracker_.UpdateSpends(wtxIn, orderedTransactionIndex, false).first->BindWallet(this);
     } else {
         LOCK(cs_wallet);
         // Inserts only if not already there, returns tx inserted or tx found
-        std::pair<CWalletTx*, bool> ret = outputTracker_.UpdateSpends(wtxIn,nOrderPosNext,true);
+        std::pair<CWalletTx*, bool> ret = outputTracker_.UpdateSpends(wtxIn,orderedTransactionIndex,true);
         bool fInsertedNew = ret.second;
         CWalletTx& wtx = *ret.first;
         wtx.BindWallet(this);

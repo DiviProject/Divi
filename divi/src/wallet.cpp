@@ -137,11 +137,18 @@ bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
     return false;
 }
 
-std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(const CWalletTx& newlyAddedTransaction)
+std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
+    const CWalletTx& newlyAddedTransaction,
+    int64_t orderedTransactionIndex,
+    bool updateTransactionOrdering)
 {
     uint256 hash = newlyAddedTransaction.GetHash();
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = mapWallet_.insert(std::make_pair(hash, newlyAddedTransaction));
-    if(ret.second) AddToSpends(hash);
+    if(ret.second)
+    {
+        if(updateTransactionOrdering) (*ret.first).second.nOrderPos = orderedTransactionIndex;
+        AddToSpends(hash);
+    }
     return std::make_pair(&(ret.first->second),ret.second);
 }
 
@@ -1054,16 +1061,14 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
     uint256 hash = wtxIn.GetHash();
 
     if (fFromLoadWallet) {
-        mapWallet[hash] = wtxIn;
-        mapWallet[hash].BindWallet(this);
-        AddToSpends(hash);
+        outputTracker_.UpdateSpends(wtxIn, nOrderPosNext, false).first->BindWallet(this);
     } else {
         LOCK(cs_wallet);
         // Inserts only if not already there, returns tx inserted or tx found
-        pair<map<uint256, CWalletTx>::iterator, bool> ret = mapWallet.insert(std::make_pair(hash, wtxIn));
-        CWalletTx& wtx = (*ret.first).second;
-        wtx.BindWallet(this);
+        std::pair<CWalletTx*, bool> ret = outputTracker_.UpdateSpends(wtxIn,nOrderPosNext,true);
         bool fInsertedNew = ret.second;
+        CWalletTx& wtx = *ret.first;
+        wtx.BindWallet(this);
         if (fInsertedNew) {
             wtx.nTimeReceived = GetAdjustedTime();
             wtx.nOrderPos = IncOrderPosNext();
@@ -1106,7 +1111,6 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
                               wtxIn.GetHash().ToString(),
                               wtxIn.hashBlock.ToString());
             }
-            AddToSpends(hash);
         }
 
         bool fUpdated = false;

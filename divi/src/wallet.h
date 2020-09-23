@@ -163,7 +163,10 @@ public:
      * detect and report conflicts (double-spends or
      * mutated transactions where the mutant gets mined).
      */
-    std::pair<CWalletTx*,bool> UpdateSpends(const CWalletTx& newlyAddedTransaction);
+    std::pair<CWalletTx*,bool> UpdateSpends(
+        const CWalletTx& newlyAddedTransaction,
+        int64_t orderedTransactionIndex,
+        bool updateTransactionOrdering);
     bool IsSpent(const uint256& hash, unsigned int n) const;
     std::set<uint256> GetConflictingTxHashes(const CWalletTx& tx) const;
 };

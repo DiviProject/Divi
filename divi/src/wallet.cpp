@@ -803,7 +803,6 @@ bool CWallet::SetMaxVersion(int nVersion)
 
 set<uint256> CWallet::GetConflicts(const uint256& txid) const
 {
-    set<uint256> result;
     AssertLockHeld(cs_wallet);
 
     std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(txid);

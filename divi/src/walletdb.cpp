@@ -682,7 +682,17 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         pwallet->nTimeFirstKey = 1; // 0 would be considered 'no value'
 
     BOOST_FOREACH (uint256 hash, wss.vWalletUpgrade)
-        WriteTx(hash, *(pwallet->GetWalletTx(hash)) );
+    {
+        const CWalletTx* txPtr = pwallet->GetWalletTx(hash);
+        if(!txPtr)
+        {
+            LogPrintf("Trying to write unknown transaction to database!\nHash: %s",hash.ToString());
+        }
+        else
+        {
+            WriteTx(hash, *txPtr );
+        }
+    }
 
     // Rewrite encrypted wallets of versions 0.4.0 and 0.5.0rc:
     if (wss.fIsEncrypted && (wss.nFileVersion == 40000 || wss.nFileVersion == 50000))

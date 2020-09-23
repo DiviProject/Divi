@@ -2429,8 +2429,13 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
                     // notify only once
                     if (updated_hahes.find(txin.prevout.hash) != updated_hahes.end()) continue;
 
-                    CWalletTx& coin = *const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
-                    coin.BindWallet(this);
+                    CWalletTx* coinPtr = const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
+                    if(!coinPtr)
+                    {
+                        LogPrintf("%s: Spending inputs not recorded in wallet - %s\n", __func__, txin.prevout.hash.ToString());
+                        assert(coinPtr);
+                    }
+                    coinPtr->BindWallet(this);
                     NotifyTransactionChanged(this, txin.prevout.hash, CT_UPDATED);
                     updated_hahes.insert(txin.prevout.hash);
                 }
@@ -2865,7 +2870,9 @@ set<set<CTxDestination> > CWallet::GetAddressGroupings()
                 CTxDestination address;
                 if (!IsMine(txin)) /* If this input isn't mine, ignore it */
                     continue;
-                if (!ExtractDestination(GetWalletTx(txin.prevout.hash)->vout[txin.prevout.n].scriptPubKey, address))
+                const CWalletTx* previousTxPtr = GetWalletTx(txin.prevout.hash);
+                if(!previousTxPtr) continue;
+                if (!ExtractDestination(previousTxPtr->vout[txin.prevout.n].scriptPubKey, address))
                     continue;
                 grouping.insert(address);
                 any_mine = true;

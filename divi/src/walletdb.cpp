@@ -291,11 +291,11 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
     for (TxItems::iterator it = txByTime.begin(); it != txByTime.end(); ++it) {
         CWalletTx* const pwtx = (*it).second.first;
         CAccountingEntry* const pacentry = (*it).second.second;
-        int64_t& nOrderPos = (pwtx != 0) ? pwtx->nOrderPos : pacentry->nOrderPos;
+        int64_t& transactionOrderIndex = (pwtx != 0) ? pwtx->nOrderPos : pacentry->nOrderPos;
 
-        if (nOrderPos == -1) {
-            nOrderPos = orderedTransactionIndex++;
-            previouslyUsedTransactionIndices.push_back(nOrderPos);
+        if (transactionOrderIndex == -1) {
+            transactionOrderIndex = orderedTransactionIndex++;
+            previouslyUsedTransactionIndices.push_back(transactionOrderIndex);
 
             if (pwtx) {
                 if (!WriteTx(pwtx->GetHash(), *pwtx))
@@ -305,11 +305,11 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
         } else {
             int64_t nOrderPosOff = 0;
             BOOST_FOREACH (const int64_t& nOffsetStart, previouslyUsedTransactionIndices) {
-                if (nOrderPos >= nOffsetStart)
+                if (transactionOrderIndex >= nOffsetStart)
                     ++nOrderPosOff;
             }
-            nOrderPos += nOrderPosOff;
-            orderedTransactionIndex = std::max(orderedTransactionIndex, nOrderPos + 1);
+            transactionOrderIndex += nOrderPosOff;
+            orderedTransactionIndex = std::max(orderedTransactionIndex, transactionOrderIndex + 1);
 
             if (!nOrderPosOff)
                 continue;

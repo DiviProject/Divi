@@ -4,6 +4,7 @@
 
 #include "BlockSigning.h"
 
+#include "ForkActivation.h"
 #include "keystore.h"
 #include "primitives/block.h"
 #include "script/standard.h"
@@ -81,6 +82,16 @@ SignBlock (const CKeyStore& keystore, CBlock& block)
 
             return true;
         }
+        else if(whichType == TX_VAULT)
+        {
+            const CKeyID keyID = CKeyID(uint160(vSolutions[1]));
+
+            CKey key;
+            if (!keystore.GetKey(keyID, key))
+                return false;
+
+            return key.SignCompact(block.GetHash(), block.vchBlockSig);
+        }
     }
 
     LogPrintf("%s - Sign failed\n", __func__);
@@ -103,27 +114,42 @@ CheckBlockSignature (const CBlock& block)
         return false;
     }
 
+    if (block.vchBlockSig.empty())
+        return false;
+
+    /* FIXME:  Once the staking vault fork has passed, we can get rid of
+       this condition here and just always accept vault signatures in addition
+       to the other types.  But initially we need to properly activate the
+       change to avoid an uncontrolled fork.  */
+    const bool acceptVault = ActivationState(block).IsActive(Fork::StakingVaults);
+
     if (whichType == TX_PUBKEY)
     {
-        valtype& vchPubKey = vSolutions[0];
-        CPubKey pubkey(vchPubKey);
+        const auto& vchPubKey = vSolutions[0];
+        const CPubKey pubkey(vchPubKey);
         if (!pubkey.IsValid())
           return false;
-
-        if (block.vchBlockSig.empty())
-            return false;
 
         return pubkey.Verify(block.GetHash(), block.vchBlockSig);
     }
     else if(whichType == TX_PUBKEYHASH)
     {
-        valtype& vchPubKey = vSolutions[0];
-        CKeyID keyID = CKeyID(uint160(vchPubKey));
+        const auto& vchPubKey = vSolutions[0];
+        const CKeyID keyID = CKeyID(uint160(vchPubKey));
+
         CPubKey pubkeyFromSig;
-
-        if (block.vchBlockSig.empty())
+        if(!pubkeyFromSig.RecoverCompact(block.GetHash(), block.vchBlockSig)) {
             return false;
+        }
 
+        return keyID == pubkeyFromSig.GetID();
+    }
+    else if (acceptVault && whichType == TX_VAULT)
+    {
+        const auto& vchPubKey = vSolutions[1];
+        const CKeyID keyID = CKeyID(uint160(vchPubKey));
+
+        CPubKey pubkeyFromSig;
         if(!pubkeyFromSig.RecoverCompact(block.GetHash(), block.vchBlockSig)) {
             return false;
         }

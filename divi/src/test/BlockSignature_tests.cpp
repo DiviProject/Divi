@@ -103,4 +103,25 @@ BOOST_AUTO_TEST_CASE(willDisallowP2SHStakingVaultCoinstakeInBlock)
     BOOST_CHECK_MESSAGE(!CheckBlockSignature(block),"Verified  disallowed signature type!");
 }
 
+BOOST_AUTO_TEST_CASE(stakingVaultSignature)
+{
+    CScript redeemScript = CreateStakingVaultScript(
+            ToByteVector(ownerPKey.GetID()),
+            ToByteVector(vaultPKey.GetID()));
+
+    addStakingCoinstake(redeemScript, false);
+    // Preconditions
+    BOOST_CHECK_MESSAGE(block.IsProofOfStake(), "Block isnt PoS!");
+    // Test
+    BOOST_CHECK_MESSAGE(!SignBlock(ownerKeyStore, block), "Owner key could sign block");
+
+    block.nTime = 2000000000;
+    BOOST_CHECK_MESSAGE(SignBlock(vaultKeyStore, block), "Failed to sign block with vault key");
+    BOOST_CHECK_MESSAGE(CheckBlockSignature(block), "Failed to verify vault block signature");
+
+    block.nTime = 1000000000;
+    BOOST_CHECK_MESSAGE(SignBlock(vaultKeyStore, block), "Failed to sign block with vault key");
+    BOOST_CHECK_MESSAGE(!CheckBlockSignature(block), "Verified  disallowed signature type!");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

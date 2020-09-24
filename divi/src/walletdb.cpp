@@ -262,11 +262,6 @@ void CWalletDB::ListAccountCreditDebit(const string& strAccount, list<CAccountin
     pcursor->close();
 }
 
-DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
-{
-    return pwallet->ReorderTransactionsByTimestamp();
-}
-
 class CWalletScanState
 {
 public:
@@ -644,7 +639,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
     if (wss.fAnyUnordered)
     {
         LogPrintf("Transaction reordering required during wallet load...\n");
-        result = ReorderTransactions(pwallet);
+        result = pwallet->ReorderTransactionsByTimestamp();
     }
     return result;
 }

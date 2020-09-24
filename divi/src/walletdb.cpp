@@ -477,7 +477,9 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
                 return false;
             }
         } else if (strType == "orderposnext") {
-            ssValue >> pwallet->orderedTransactionIndex;
+            int64_t txIndex;
+            ssValue >> txIndex;
+            pwallet->UpdateNextTransactionIndexAvailable(txIndex);
         } else if (strType == "destdata") {
             std::string strAddress, strKey, strValue;
             ssKey >> strAddress;

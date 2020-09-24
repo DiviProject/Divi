@@ -192,6 +192,7 @@ private:
     WalletTransactionRecord transactionRecord_;
     SpentOutputTracker outputTracker_;
     std::map<uint256, CWalletTx>& mapWallet;
+    int64_t orderedTransactionIndex;
 public:
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletMaxVersion;//! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
@@ -205,7 +206,6 @@ public:
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
 
-    int64_t orderedTransactionIndex;
     std::map<CTxDestination, CAddressBookData> mapAddressBook;
     CPubKey vchDefaultKey;
     std::set<COutPoint> setLockedCoins;

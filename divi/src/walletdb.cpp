@@ -702,8 +702,10 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         WriteVersion(CLIENT_VERSION);
 
     if (wss.fAnyUnordered)
+    {
+        LogPrintf("Transaction reordering required during wallet load...\n");
         result = ReorderTransactions(pwallet);
-
+    }
     return result;
 }
 

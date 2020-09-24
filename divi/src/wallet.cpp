@@ -214,7 +214,7 @@ std::set<uint256> SpentOutputTracker::GetConflictingTxHashes(const CWalletTx& tx
 
 CWallet::CWallet(
     ): transactionRecord_()
-    , outputTracker_(transactionRecord_.mapWallet)
+    , outputTracker_(transactionRecord_, transactionRecord_.mapWallet)
     , mapWallet(transactionRecord_.mapWallet)
     , orderedTransactionIndex()
     , nWalletVersion()

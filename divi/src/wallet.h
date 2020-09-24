@@ -148,6 +148,7 @@ struct WalletTransactionRecord
 class SpentOutputTracker
 {
 private:
+    WalletTransactionRecord& transactionRecord_;
     std::map<uint256, CWalletTx>& mapWallet_;
 protected:
     typedef std::multimap<COutPoint, uint256> TxSpends;
@@ -157,8 +158,10 @@ protected:
     void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
 public:
     SpentOutputTracker(
+        WalletTransactionRecord& transactionRecord,
         std::map<uint256, CWalletTx>& mapWallet
-        ): mapWallet_(mapWallet)
+        ): transactionRecord_(transactionRecord)
+        , mapWallet_(mapWallet)
         , mapTxSpends()
     {
     }

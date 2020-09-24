@@ -194,7 +194,6 @@ class CWallet : public CCryptoKeyStore, public NotificationInterface
 private:
     WalletTransactionRecord transactionRecord_;
     SpentOutputTracker outputTracker_;
-    std::map<uint256, CWalletTx>& mapWallet;
     int64_t orderedTransactionIndex;
 public:
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet

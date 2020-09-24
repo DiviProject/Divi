@@ -2162,9 +2162,13 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     return true;
 }
 
-int64_t& CWallet::GetNextTransactionIndexAvailable() const
+int64_t CWallet::GetNextTransactionIndexAvailable() const
 {
     return orderedTransactionIndex;
+}
+void CWallet::UpdateNextTransactionIndexAvailable(int64_t transactionIndex)
+{
+    orderedTransactionIndex = transactionIndex;
 }
 
 bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*, unsigned int> >& setCoinsRet, CAmount& nValueRet, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX) const

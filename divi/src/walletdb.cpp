@@ -285,7 +285,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
         txByTime.insert(std::make_pair(entry.nTime, TxPair((CWalletTx*)0, &entry)));
     }
 
-    int64_t& orderedTransactionIndex = pwallet->GetNextTransactionIndexAvailable();
+    int64_t orderedTransactionIndex = pwallet->GetNextTransactionIndexAvailable();
     orderedTransactionIndex = 0;
     std::vector<int64_t> newIndicesOfPreviouslyUnorderedTransactions;
     for (TxItems::iterator it = txByTime.begin(); it != txByTime.end(); ++it) {
@@ -323,7 +323,7 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
         }
     }
     WriteOrderPosNext(orderedTransactionIndex);
-
+    pwallet->UpdateNextTransactionIndexAvailable(orderedTransactionIndex);
     return DB_LOAD_OK;
 }
 

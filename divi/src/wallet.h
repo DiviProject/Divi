@@ -221,7 +221,8 @@ private:
     bool walletStakingOnly;
 
 public:
-    int64_t& GetNextTransactionIndexAvailable() const;
+    int64_t GetNextTransactionIndexAvailable() const;
+    void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);
 
 private:
     bool SelectCoins(

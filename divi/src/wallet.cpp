@@ -105,6 +105,11 @@ std::vector<CWalletTx*> WalletTransactionRecord::GetWalletTransactionReferences(
     return transactions;
 }
 
+std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord::AddTransaction(uint256 hash, const CWalletTx& newlyAddedTransaction)
+{
+   return  mapWallet.insert(std::make_pair(hash, newlyAddedTransaction));
+};
+
 
 void SpentOutputTracker::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterator> range)
 {

@@ -142,6 +142,7 @@ struct WalletTransactionRecord
     std::map<uint256, CWalletTx> mapWallet;
     const CWalletTx* GetWalletTx(const uint256& hash) const;
     std::vector<CWalletTx*> GetWalletTransactionReferences() const;
+    std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(uint256 hash, const CWalletTx& newlyAddedTransaction);
 };
 
 class SpentOutputTracker

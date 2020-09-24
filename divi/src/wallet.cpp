@@ -1076,10 +1076,10 @@ CWallet::TxItems CWallet::OrderedTxItems(std::list<CAccountingEntry>& acentries,
 
 void CWallet::RecomputeCachedQuantities()
 {
+    LOCK(cs_wallet);
+    BOOST_FOREACH (PAIRTYPE(const uint256, CWalletTx) & item, mapWallet)
     {
-        LOCK(cs_wallet);
-        BOOST_FOREACH (PAIRTYPE(const uint256, CWalletTx) & item, mapWallet)
-                item.second.RecomputeCachedQuantities();
+        item.second.RecomputeCachedQuantities();
     }
 }
 

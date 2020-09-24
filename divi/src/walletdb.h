@@ -123,6 +123,7 @@ public:
     /// Erase destination data tuple from wallet database
     bool EraseDestData(const std::string& address, const std::string& key);
 
+    bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);
     bool WriteAccountingEntry(const CAccountingEntry& acentry);
     CAmount GetAccountCreditDebit(const std::string& strAccount);
     void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& acentries);
@@ -144,8 +145,6 @@ public:
 private:
     CWalletDB(const CWalletDB&);
     void operator=(const CWalletDB&);
-
-    bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);
 };
 
 void ThreadFlushWalletDB(const std::string& strWalletFile);

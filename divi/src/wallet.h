@@ -221,6 +221,7 @@ private:
     bool walletStakingOnly;
 
 public:
+    DBErrors ReorderTransactionsByTimestamp();
     int64_t GetNextTransactionIndexAvailable() const;
     void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);
 

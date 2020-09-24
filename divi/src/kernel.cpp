@@ -15,6 +15,7 @@
 #include "chain.h"
 #include "chainparams.h"
 #include "coins.h"
+#include "ForkActivation.h"
 #include "script/interpreter.h"
 #include "script/SignatureCheckers.h"
 #include "script/standard.h"
@@ -300,7 +301,17 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
     }
 
     //verify signature and script
-    if (!VerifyScript(txin.scriptSig, txPrev.vout[txin.prevout.n].scriptPubKey, POS_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&tx, 0)))
+    // FIXME: Before the staking-vault fork was implemented, the flags used
+    // here disallowed upgradable NOPs (including OP_REQUIRE_COINSTAKE).
+    // This restriction is lifted with the fork, but the change needs to be
+    // properly activated.  Once the fork has passed, this can be cleaned up
+    // by instead applying the post-fork flags unconditionally retroactively.
+    unsigned flags = POS_SCRIPT_VERIFY_FLAGS;
+    if (!ActivationState (block).IsActive(Fork::StakingVaults)) {
+        flags &= ~SCRIPT_REQUIRE_COINSTAKE;
+        flags |= SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS;
+    }
+    if (!VerifyScript(txin.scriptSig, txPrev.vout[txin.prevout.n].scriptPubKey, flags, TransactionSignatureChecker(&tx, 0)))
         return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.GetHash().ToString().c_str());
 
     CBlockIndex* pindex = NULL;

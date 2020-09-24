@@ -149,7 +149,6 @@ class SpentOutputTracker
 {
 private:
     WalletTransactionRecord& transactionRecord_;
-    std::map<uint256, CWalletTx>& mapWallet_;
 protected:
     typedef std::multimap<COutPoint, uint256> TxSpends;
     TxSpends mapTxSpends;
@@ -161,7 +160,6 @@ public:
         WalletTransactionRecord& transactionRecord,
         std::map<uint256, CWalletTx>& mapWallet
         ): transactionRecord_(transactionRecord)
-        , mapWallet_(mapWallet)
         , mapTxSpends()
     {
     }

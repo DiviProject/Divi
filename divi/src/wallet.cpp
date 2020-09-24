@@ -87,12 +87,24 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
 const CWalletTx* WalletTransactionRecord::GetWalletTx(const uint256& hash) const
 {
-    LOCK(walletTxRecord);
+    LOCK(cs_walletTxRecord);
     std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(hash);
     if (it == mapWallet.end())
         return NULL;
     return &(it->second);
 }
+std::vector<CWalletTx*> WalletTransactionRecord::GetWalletTransactionReferences() const
+{
+    LOCK(cs_walletTxRecord);
+    std::vector<CWalletTx*> transactions;
+    transactions.reserve(mapWallet.size());
+    for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.cbegin(); it != mapWallet.cend(); ++it)
+    {
+        transactions.push_back(const_cast<CWalletTx*>( &(it->second) ) );
+    }
+    return transactions;
+}
+
 
 void SpentOutputTracker::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterator> range)
 {
@@ -354,13 +366,7 @@ const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const
 std::vector<CWalletTx*> CWallet::GetWalletTransactionReferences() const
 {
     LOCK(cs_wallet);
-    std::vector<CWalletTx*> transactions;
-    transactions.reserve(mapWallet.size());
-    for (std::map<uint256, CWalletTx>::iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
-    {
-        transactions.push_back(&(it->second));
-    }
-    return transactions;
+    return transactionRecord_.GetWalletTransactionReferences();
 }
 
 

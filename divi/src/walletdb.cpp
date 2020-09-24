@@ -264,67 +264,7 @@ void CWalletDB::ListAccountCreditDebit(const string& strAccount, list<CAccountin
 
 DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
 {
-    LOCK(pwallet->cs_wallet);
-    // Old wallets didn't have any defined order for transactions
-    // Probably a bad idea to change the output of this
-
-    // First: get all CWalletTx and CAccountingEntry into a sorted-by-time multimap.
-    typedef pair<CWalletTx*, CAccountingEntry*> TxPair;
-    typedef multimap<int64_t, TxPair> TxItems;
-    TxItems txByTime;
-
-    std::vector<CWalletTx*> walletTransactionPtrs = pwallet->GetWalletTransactionReferences();
-    for (auto it = walletTransactionPtrs.begin(); it != walletTransactionPtrs.end(); ++it)
-    {
-        CWalletTx* wtx = *it;
-        txByTime.insert(std::make_pair(wtx->nTimeReceived, TxPair(wtx, (CAccountingEntry*)0)));
-    }
-    list<CAccountingEntry> acentries;
-    ListAccountCreditDebit("", acentries);
-    BOOST_FOREACH (CAccountingEntry& entry, acentries) {
-        txByTime.insert(std::make_pair(entry.nTime, TxPair((CWalletTx*)0, &entry)));
-    }
-
-    int64_t orderedTransactionIndex = pwallet->GetNextTransactionIndexAvailable();
-    orderedTransactionIndex = 0;
-    std::vector<int64_t> newIndicesOfPreviouslyUnorderedTransactions;
-    for (TxItems::iterator it = txByTime.begin(); it != txByTime.end(); ++it) {
-        CWalletTx* const pwtx = (*it).second.first;
-        CAccountingEntry* const pacentry = (*it).second.second;
-        int64_t& transactionOrderIndex = (pwtx != 0) ? pwtx->nOrderPos : pacentry->nOrderPos;
-
-        if (transactionOrderIndex == -1) {
-            transactionOrderIndex = orderedTransactionIndex++;
-            newIndicesOfPreviouslyUnorderedTransactions.push_back(transactionOrderIndex);
-
-            if (pwtx) {
-                if (!WriteTx(pwtx->GetHash(), *pwtx))
-                    return DB_LOAD_FAIL;
-            } else if (!WriteAccountingEntry(pacentry->nEntryNo, *pacentry))
-                return DB_LOAD_FAIL;
-        } else {
-            int64_t numberOfSmallerPreviouslyUsedIndices = 0;
-            BOOST_FOREACH (const int64_t& previouslyUsedIndex, newIndicesOfPreviouslyUnorderedTransactions) {
-                if (transactionOrderIndex >= previouslyUsedIndex)
-                    ++numberOfSmallerPreviouslyUsedIndices;
-            }
-            transactionOrderIndex += numberOfSmallerPreviouslyUsedIndices;
-            orderedTransactionIndex = std::max(orderedTransactionIndex, transactionOrderIndex + 1);
-
-            if (!numberOfSmallerPreviouslyUsedIndices)
-                continue;
-
-            // Since we're changing the order, write it back
-            if (pwtx) {
-                if (!WriteTx(pwtx->GetHash(), *pwtx))
-                    return DB_LOAD_FAIL;
-            } else if (!WriteAccountingEntry(pacentry->nEntryNo, *pacentry))
-                return DB_LOAD_FAIL;
-        }
-    }
-    pwallet->UpdateNextTransactionIndexAvailable(orderedTransactionIndex);
-    WriteOrderPosNext(orderedTransactionIndex);
-    return DB_LOAD_OK;
+    return pwallet->ReorderTransactionsByTimestamp();
 }
 
 class CWalletScanState

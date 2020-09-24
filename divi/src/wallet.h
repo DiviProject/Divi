@@ -157,8 +157,7 @@ protected:
     void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
 public:
     SpentOutputTracker(
-        WalletTransactionRecord& transactionRecord,
-        std::map<uint256, CWalletTx>& mapWallet
+        WalletTransactionRecord& transactionRecord
         ): transactionRecord_(transactionRecord)
         , mapTxSpends()
     {

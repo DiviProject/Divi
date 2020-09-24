@@ -322,8 +322,8 @@ DBErrors CWalletDB::ReorderTransactions(CWallet* pwallet)
                 return DB_LOAD_FAIL;
         }
     }
-    WriteOrderPosNext(orderedTransactionIndex);
     pwallet->UpdateNextTransactionIndexAvailable(orderedTransactionIndex);
+    WriteOrderPosNext(orderedTransactionIndex);
     return DB_LOAD_OK;
 }
 

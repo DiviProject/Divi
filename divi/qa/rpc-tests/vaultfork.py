@@ -115,6 +115,42 @@ class VaultForkTest (BitcoinTestFramework):
         generatePoSBlocks (self.nodes, 1, 1)
         assert_equal (self.nodes[0].getbalance ("unvaulted 2"), 9)
 
+        print ("Trying to steal as the staker...")
+        vault = self.fund_vault (self.nodes[0], self.nodes[1], 10_000)
+        generatePoSBlocks (self.nodes, 1, 20)
+        # Lottery blocks are every 10th on regtest, and treasury blocks
+        # the ones after them (eqv 1 mod 10).  We want to avoid them
+        # so that we do not have to deal with the rewards payment.
+        while (self.nodes[1].getblockcount () + 1) % 10 in [0, 1]:
+            generatePoSBlocks (self.nodes, 1, 1)
+        bestBlock = self.nodes[1].getblockheader (self.nodes[1].getbestblockhash ())
+        set_node_times(self.nodes, bestBlock["time"] + 1_000)
+        addr = self.nodes[1].getnewaddress ("stolen by staking")
+        # Correct staking rewards for the current block.
+        stakingRewards = 456
+        outputs = [
+            {"": 0},
+            {addr: 10_000 + stakingRewards},
+        ]
+        stake = self.nodes[1].createrawtransaction ([vault], outputs)
+        stake = self.nodes[1].signrawtransaction (stake)
+        assert_equal (stake["complete"], True)
+        assert_raises (JSONRPCException, self.nodes[1].generateblock,
+                       {"coinstake": stake["hex"]})
+        assert_equal (self.nodes[1].getbalance ("stolen by staking"), 0)
+
+        print ("Staking properly with the vault...")
+        vaultOut = self.nodes[1].gettxout (vault["txid"], vault["vout"])
+        vaultScript = vaultOut["scriptPubKey"]["hex"]
+        outputs = [
+            {"": 0},
+            {vaultScript: 10_000 + stakingRewards},
+        ]
+        stake = self.nodes[1].createrawtransaction ([vault], outputs)
+        stake = self.nodes[1].signrawtransaction (stake)
+        assert_equal (stake["complete"], True)
+        self.nodes[1].generateblock ({"coinstake": stake["hex"]})
+
 
 if __name__ == '__main__':
     VaultForkTest ().main ()

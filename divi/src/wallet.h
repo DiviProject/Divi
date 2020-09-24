@@ -370,7 +370,7 @@ public:
      */
     TxItems OrderedTxItems(std::list<CAccountingEntry>& acentries, std::string strAccount = "");
 
-    void MarkDirty();
+    void RecomputeCachedQuantities();
     bool AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet = false);
     void SyncTransaction(const CTransaction& tx, const CBlock* pblock);
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pblock, bool fUpdate);
@@ -693,7 +693,7 @@ public:
     }
 
     //! make sure balances are recalculated
-    void MarkDirty();
+    void RecomputeCachedQuantities();
     void BindWallet(CWallet* pwalletIn);
 
     //! filter decides which addresses will count towards the debit

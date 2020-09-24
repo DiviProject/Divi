@@ -1074,12 +1074,12 @@ CWallet::TxItems CWallet::OrderedTxItems(std::list<CAccountingEntry>& acentries,
     return txOrdered;
 }
 
-void CWallet::MarkDirty()
+void CWallet::RecomputeCachedQuantities()
 {
     {
         LOCK(cs_wallet);
         BOOST_FOREACH (PAIRTYPE(const uint256, CWalletTx) & item, mapWallet)
-                item.second.MarkDirty();
+                item.second.RecomputeCachedQuantities();
     }
 }
 
@@ -1167,7 +1167,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
                 return false;
 
         // Break debit/credit balance caches:
-        wtx.MarkDirty();
+        wtx.RecomputeCachedQuantities();
 
         // Notify UI of new or updated transaction
         NotifyTransactionChanged(this, hash, fInsertedNew ? CT_NEW : CT_UPDATED);
@@ -1217,7 +1217,7 @@ void CWallet::SyncTransaction(const CTransaction& tx, const CBlock* pblock)
     BOOST_FOREACH (const CTxIn& txin, tx.vin) {
         CWalletTx* wtx = const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
         if (wtx != nullptr)
-            wtx->MarkDirty();
+            wtx->RecomputeCachedQuantities();
     }
 }
 
@@ -1500,7 +1500,7 @@ void CWalletTx::Init(const CWallet* pwalletIn)
 }
 
 //! make sure balances are recalculated
-void CWalletTx::MarkDirty()
+void CWalletTx::RecomputeCachedQuantities()
 {
     fCreditCached = false;
     fAvailableCreditCached = false;
@@ -1519,7 +1519,7 @@ void CWalletTx::MarkDirty()
 void CWalletTx::BindWallet(CWallet* pwalletIn)
 {
     pwallet = pwalletIn;
-    MarkDirty();
+    RecomputeCachedQuantities();
 }
 
 //! filter decides which addresses will count towards the debit
@@ -3147,7 +3147,7 @@ void CWallet::LockCoin(const COutPoint& output)
     AssertLockHeld(cs_wallet); // setLockedCoins
     setLockedCoins.insert(output);
     CWalletTx* txPtr = const_cast<CWalletTx*>(GetWalletTx(output.hash));
-    if (txPtr != nullptr) txPtr->MarkDirty(); // recalculate all credits for this tx
+    if (txPtr != nullptr) txPtr->RecomputeCachedQuantities(); // recalculate all credits for this tx
 }
 
 void CWallet::UnlockCoin(const COutPoint& output)

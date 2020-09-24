@@ -121,16 +121,20 @@ void SpentOutputTracker::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterato
     const CWalletTx* copyFrom = NULL;
     for (TxSpends::iterator it = range.first; it != range.second; ++it) {
         const uint256& hash = it->second;
-        int n = mapWallet_[hash].nOrderPos;
-        if (n < nMinOrderPos) {
-            nMinOrderPos = n;
-            copyFrom = &mapWallet_[hash];
+        const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(hash);
+        if (transactionPtr) {
+            int n = transactionPtr->nOrderPos;
+            if(n < nMinOrderPos)
+            {
+                nMinOrderPos = n;
+                copyFrom = transactionPtr;
+            }
         }
     }
     // Now copy data from copyFrom to rest:
     for (TxSpends::iterator it = range.first; it != range.second; ++it) {
         const uint256& hash = it->second;
-        CWalletTx* copyTo = &mapWallet_[hash];
+        CWalletTx* copyTo = const_cast<CWalletTx*>(transactionRecord_.GetWalletTx(hash));
         if (copyFrom == copyTo) continue;
         copyTo->mapValue = copyFrom->mapValue;
         copyTo->vOrderForm = copyFrom->vOrderForm;
@@ -155,8 +159,8 @@ bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
     range = mapTxSpends.equal_range(outpoint);
     for (TxSpends::const_iterator it = range.first; it != range.second; ++it) {
         const uint256& wtxid = it->second;
-        std::map<uint256, CWalletTx>::const_iterator mit = mapWallet_.find(wtxid);
-        if (mit != mapWallet_.end() && mit->second.GetDepthInMainChain() >= 0)
+        const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(wtxid);
+        if (transactionPtr && transactionPtr->GetDepthInMainChain() >= 0)
             return true; // Spent
     }
     return false;
@@ -168,7 +172,7 @@ std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
     bool updateTransactionOrdering)
 {
     uint256 hash = newlyAddedTransaction.GetHash();
-    std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = mapWallet_.insert(std::make_pair(hash, newlyAddedTransaction));
+    std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = transactionRecord_.AddTransaction(hash, newlyAddedTransaction);
     if(ret.second)
     {
         if(updateTransactionOrdering) (*ret.first).second.nOrderPos = orderedTransactionIndex;
@@ -188,8 +192,9 @@ void SpentOutputTracker::AddToSpends(const COutPoint& outpoint, const uint256& w
 
 void SpentOutputTracker::AddToSpends(const uint256& wtxid)
 {
-    assert(mapWallet_.count(wtxid));
-    CWalletTx& thisTx = mapWallet_[wtxid];
+    CWalletTx* transactionPtr = const_cast<CWalletTx*>(transactionRecord_.GetWalletTx(wtxid));
+    assert(transactionPtr);
+    CWalletTx& thisTx = *transactionPtr;
     if (thisTx.IsCoinBase()) // Coinbases don't spend anything!
         return;
 

@@ -143,23 +143,25 @@ void SpentOutputTracker::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterato
 
     int nMinOrderPos = std::numeric_limits<int>::max();
     const CWalletTx* copyFrom = NULL;
+    uint256 hashFrom(0);
     for (TxSpends::iterator it = range.first; it != range.second; ++it) {
-        const uint256& hash = it->second;
-        const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(hash);
+        const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(it->second);
         if (transactionPtr) {
             int n = transactionPtr->nOrderPos;
             if(n < nMinOrderPos)
             {
                 nMinOrderPos = n;
                 copyFrom = transactionPtr;
+                hashFrom = it->second;
             }
         }
     }
     // Now copy data from copyFrom to rest:
-    for (TxSpends::iterator it = range.first; it != range.second; ++it) {
+    for (TxSpends::iterator it = range.first; it != range.second; ++it)
+    {
         const uint256& hash = it->second;
+        if(hashFrom == hash) continue;
         CWalletTx* copyTo = const_cast<CWalletTx*>(transactionRecord_.GetWalletTx(hash));
-        if (copyFrom == copyTo) continue;
         copyTo->mapValue = copyFrom->mapValue;
         copyTo->vOrderForm = copyFrom->vOrderForm;
         // fTimeReceivedIsTxTime not copied on purpose

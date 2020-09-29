@@ -280,12 +280,14 @@ void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransac
         if (copyTo != nullptr)
         {
             const CWalletTx* copyFrom = &wtxOld;
+
             copyTo->mapValue = copyFrom->mapValue;
             copyTo->vOrderForm = copyFrom->vOrderForm;
-            copyTo->nTimeReceived = copyFrom->nTimeReceived;
             copyTo->nTimeSmart = copyFrom->nTimeSmart;
             copyTo->fFromMe = copyFrom->fFromMe;
             copyTo->strFromAccount = copyFrom->strFromAccount;
+
+            copyTo->nTimeReceived = copyFrom->nTimeReceived;
             copyTo->nOrderPos = copyFrom->nOrderPos;
             copyTo->WriteToDisk();
         }

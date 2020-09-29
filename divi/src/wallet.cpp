@@ -192,13 +192,12 @@ void SpentOutputTracker::AddToSpends(const COutPoint& outpoint, const uint256& w
 
 void SpentOutputTracker::AddToSpends(const uint256& wtxid)
 {
-    CWalletTx* transactionPtr = const_cast<CWalletTx*>(transactionRecord_.GetWalletTx(wtxid));
+    const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(wtxid);
     assert(transactionPtr);
-    CWalletTx& thisTx = *transactionPtr;
-    if (thisTx.IsCoinBase()) // Coinbases don't spend anything!
+    if (transactionPtr->IsCoinBase()) // Coinbases don't spend anything!
         return;
 
-    BOOST_FOREACH (const CTxIn& txin, thisTx.vin)
+    BOOST_FOREACH (const CTxIn& txin, transactionPtr->vin)
             AddToSpends(txin.prevout, wtxid);
 }
 

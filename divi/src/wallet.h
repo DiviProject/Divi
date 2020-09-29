@@ -141,7 +141,7 @@ struct WalletTransactionRecord
     mutable CCriticalSection cs_walletTxRecord;
     std::map<uint256, CWalletTx> mapWallet;
     const CWalletTx* GetWalletTx(const uint256& hash) const;
-    std::vector<CWalletTx*> GetWalletTransactionReferences() const;
+    std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(uint256 hash, const CWalletTx& newlyAddedTransaction);
 };
 
@@ -269,7 +269,7 @@ public:
     void SetNull();
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;
-    std::vector<CWalletTx*> GetWalletTransactionReferences() const;
+    std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
 
     //! check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf);

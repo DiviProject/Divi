@@ -137,8 +137,8 @@ CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
     // Check if the current key has been used
     if (account.vchPubKey.IsValid()) {
         CScript scriptPubKey = GetScriptForDestination(account.vchPubKey.GetID());
-        std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-        for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin();
+        std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+        for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin();
              it != walletTransactions.end() && account.vchPubKey.IsValid();
              ++it)
         {
@@ -624,8 +624,8 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
 
     // Tally
     CAmount nAmount = 0;
-    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
         if (wtx.IsCoinBase() || !IsFinalTx(wtx))
@@ -670,8 +670,8 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
 
     // Tally
     CAmount nAmount = 0;
-    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
         if (wtx.IsCoinBase() || !IsFinalTx(wtx))
@@ -694,8 +694,8 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
     CAmount nBalance = 0;
 
     // Tally wallet transactions
-    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
         if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < 0)
@@ -761,8 +761,8 @@ Value getbalance(const Array& params, bool fHelp)
         // (GetBalance() sums up all unspent TxOuts)
         // getbalance and "getbalance * 1 true" should return the same number
         CAmount nBalance = 0;
-        std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-        for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+        std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+        for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
         {
             const CWalletTx& wtx = *(*it);
             if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < 0)
@@ -1045,8 +1045,8 @@ Value ListReceived(const Array& params, bool fByAccounts)
 
     // Tally
     map<CBitcoinAddress, tallyitem> mapTally;
-    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
 
@@ -1561,8 +1561,8 @@ Value listaccounts(const Array& params, bool fHelp)
             mapAccountBalances[entry.second.name] = 0;
     }
 
-    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
         CAmount nFee;
@@ -1661,8 +1661,8 @@ Value listsinceblock(const Array& params, bool fHelp)
 
     Array transactions;
 
-    std::vector<CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
-    for (std::vector<CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
+    std::vector<const CWalletTx*> walletTransactions = pwalletMain->GetWalletTransactionReferences();
+    for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         CWalletTx tx = *(*it);
 

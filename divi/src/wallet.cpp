@@ -93,14 +93,14 @@ const CWalletTx* WalletTransactionRecord::GetWalletTx(const uint256& hash) const
         return NULL;
     return &(it->second);
 }
-std::vector<CWalletTx*> WalletTransactionRecord::GetWalletTransactionReferences() const
+std::vector<const CWalletTx*> WalletTransactionRecord::GetWalletTransactionReferences() const
 {
     LOCK(cs_walletTxRecord);
-    std::vector<CWalletTx*> transactions;
+    std::vector<const CWalletTx*> transactions;
     transactions.reserve(mapWallet.size());
     for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.cbegin(); it != mapWallet.cend(); ++it)
     {
-        transactions.push_back(const_cast<CWalletTx*>( &(it->second) ) );
+        transactions.push_back( &(it->second) );
     }
     return transactions;
 }
@@ -372,7 +372,7 @@ const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const
     LOCK(cs_wallet);
     return transactionRecord_.GetWalletTx(hash);
 }
-std::vector<CWalletTx*> CWallet::GetWalletTransactionReferences() const
+std::vector<const CWalletTx*> CWallet::GetWalletTransactionReferences() const
 {
     LOCK(cs_wallet);
     return transactionRecord_.GetWalletTransactionReferences();
@@ -2189,10 +2189,10 @@ DBErrors CWallet::ReorderTransactionsByTimestamp()
     typedef multimap<int64_t, TxPair> TxItems;
     TxItems txByTime;
 
-    std::vector<CWalletTx*> walletTransactionPtrs = GetWalletTransactionReferences();
+    std::vector<const CWalletTx*> walletTransactionPtrs = GetWalletTransactionReferences();
     for (auto it = walletTransactionPtrs.begin(); it != walletTransactionPtrs.end(); ++it)
     {
-        CWalletTx* wtx = *it;
+        CWalletTx* wtx = const_cast<CWalletTx*>(*it);
         txByTime.insert(std::make_pair(wtx->nTimeReceived, TxPair(wtx, (CAccountingEntry*)0)));
     }
     list<CAccountingEntry> acentries;

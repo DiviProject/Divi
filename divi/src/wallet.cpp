@@ -85,9 +85,17 @@ bool IsInitialBlockDownload();
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees);
 
 
+WalletTransactionRecord::WalletTransactionRecord(
+    CCriticalSection& requiredWalletLock
+    ): cs_walletTxRecord(requiredWalletLock)
+    , mapWallet()
+{
+
+}
+
 const CWalletTx* WalletTransactionRecord::GetWalletTx(const uint256& hash) const
 {
-    LOCK(cs_walletTxRecord);
+    AssertLockHeld(cs_walletTxRecord);
     std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(hash);
     if (it == mapWallet.end())
         return NULL;
@@ -95,7 +103,7 @@ const CWalletTx* WalletTransactionRecord::GetWalletTx(const uint256& hash) const
 }
 std::vector<const CWalletTx*> WalletTransactionRecord::GetWalletTransactionReferences() const
 {
-    LOCK(cs_walletTxRecord);
+    AssertLockHeld(cs_walletTxRecord);
     std::vector<const CWalletTx*> transactions;
     transactions.reserve(mapWallet.size());
     for (std::map<uint256, CWalletTx>::const_iterator it = mapWallet.cbegin(); it != mapWallet.cend(); ++it)
@@ -107,13 +115,13 @@ std::vector<const CWalletTx*> WalletTransactionRecord::GetWalletTransactionRefer
 
 std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord::AddTransaction(uint256 hash, const CWalletTx& newlyAddedTransaction)
 {
-    LOCK(cs_walletTxRecord);
+    AssertLockHeld(cs_walletTxRecord);
     return  mapWallet.insert(std::make_pair(hash, newlyAddedTransaction));
 };
 
 void WalletTransactionRecord::UpdateMetadata(const uint256& hashOfTransactionToUpdate, const CWalletTx& updatedTransaction, bool updateDiskAndTimestamp)
 {
-    LOCK(cs_walletTxRecord);
+    AssertLockHeld(cs_walletTxRecord);
     CWalletTx* wtxToUpdate = const_cast<CWalletTx*>(GetWalletTx(hashOfTransactionToUpdate));
     if (wtxToUpdate != nullptr)
     {
@@ -234,7 +242,8 @@ std::set<uint256> SpentOutputTracker::GetConflictingTxHashes(const CWalletTx& tx
 }
 
 CWallet::CWallet(
-    ): transactionRecord_()
+    ): cs_wallet()
+    , transactionRecord_(cs_wallet)
     , outputTracker_(transactionRecord_)
     , orderedTransactionIndex()
     , nWalletVersion()

@@ -138,8 +138,12 @@ public:
 
 struct WalletTransactionRecord
 {
-    mutable CCriticalSection cs_walletTxRecord;
+private:
+    CCriticalSection& cs_walletTxRecord;
+public:
     std::map<uint256, CWalletTx> mapWallet;
+
+    WalletTransactionRecord(CCriticalSection& requiredWalletLock);
     const CWalletTx* GetWalletTx(const uint256& hash) const;
     std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(uint256 hash, const CWalletTx& newlyAddedTransaction);
@@ -191,6 +195,15 @@ public:
  */
 class CWallet : public CCryptoKeyStore, public NotificationInterface
 {
+public:
+    /*
+     * Main wallet lock.
+     * This lock protects all the fields added by CWallet
+     *   except for:
+     *      fFileBacked (immutable after instantiation)
+     *      strWalletFile (immutable after instantiation)
+     */
+    mutable CCriticalSection cs_wallet;
 private:
     WalletTransactionRecord transactionRecord_;
     SpentOutputTracker outputTracker_;
@@ -246,15 +259,6 @@ public:
     bool SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount) const;
 
     bool IsSpent(const uint256& hash, unsigned int n) const;
-
-    /*
-     * Main wallet lock.
-     * This lock protects all the fields added by CWallet
-     *   except for:
-     *      fFileBacked (immutable after instantiation)
-     *      strWalletFile (immutable after instantiation)
-     */
-    mutable CCriticalSection cs_wallet;
 
     bool IsUnlockedForStakingOnly() const;
     bool IsFullyUnlocked() const;

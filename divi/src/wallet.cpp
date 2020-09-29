@@ -111,6 +111,29 @@ std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord:
     return  mapWallet.insert(std::make_pair(hash, newlyAddedTransaction));
 };
 
+void WalletTransactionRecord::UpdateMetadata(const uint256& hashOfTransactionToUpdate, const CWalletTx& updatedTransaction, bool updateDiskAndTimestamp)
+{
+    LOCK(cs_walletTxRecord);
+    CWalletTx* wtxToUpdate = const_cast<CWalletTx*>(GetWalletTx(hashOfTransactionToUpdate));
+    if (wtxToUpdate != nullptr)
+    {
+        const CWalletTx* copyFrom = &updatedTransaction;
+
+        wtxToUpdate->mapValue = copyFrom->mapValue;
+        wtxToUpdate->vOrderForm = copyFrom->vOrderForm;
+        wtxToUpdate->nTimeSmart = copyFrom->nTimeSmart;
+        wtxToUpdate->fFromMe = copyFrom->fFromMe;
+        wtxToUpdate->strFromAccount = copyFrom->strFromAccount;
+
+        if(updateDiskAndTimestamp)
+        {
+            wtxToUpdate->nTimeReceived = copyFrom->nTimeReceived;
+            wtxToUpdate->nOrderPos = copyFrom->nOrderPos;
+            wtxToUpdate->WriteToDisk();
+        }
+    }
+}
+
 
 void SpentOutputTracker::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterator> range)
 {

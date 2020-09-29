@@ -143,6 +143,7 @@ struct WalletTransactionRecord
     const CWalletTx* GetWalletTx(const uint256& hash) const;
     std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(uint256 hash, const CWalletTx& newlyAddedTransaction);
+    void UpdateMetadata(const uint256& hashOfTransactionToUpdate, const CWalletTx& updatedTransaction, bool updateDiskAndTimestamp);
 };
 
 class SpentOutputTracker

@@ -270,6 +270,28 @@ void CWallet::SetNull()
 
 }
 
+void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions)
+{
+    LOCK(cs_wallet);
+    for (const CWalletTx& wtxOld: oldTransactions)
+    {
+        uint256 hash = wtxOld.GetHash();
+        CWalletTx* copyTo = const_cast<CWalletTx*>(transactionRecord_.GetWalletTx(hash));
+        if (copyTo != nullptr)
+        {
+            const CWalletTx* copyFrom = &wtxOld;
+            copyTo->mapValue = copyFrom->mapValue;
+            copyTo->vOrderForm = copyFrom->vOrderForm;
+            copyTo->nTimeReceived = copyFrom->nTimeReceived;
+            copyTo->nTimeSmart = copyFrom->nTimeSmart;
+            copyTo->fFromMe = copyFrom->fFromMe;
+            copyTo->strFromAccount = copyFrom->strFromAccount;
+            copyTo->nOrderPos = copyFrom->nOrderPos;
+            copyTo->WriteToDisk();
+        }
+    }
+}
+
 bool CWallet::CanSupportFeature(enum WalletFeature wf)
 {
     AssertLockHeld(cs_wallet);

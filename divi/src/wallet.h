@@ -226,6 +226,7 @@ public:
     int64_t GetNextTransactionIndexAvailable() const;
     void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);
 
+    void UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions);
 private:
     bool SelectCoins(
         const CAmount& nTargetValue,

@@ -1656,21 +1656,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
             // Restore wallet transaction metadata after -zapwallettxes=1
             if (settings.GetBoolArg("-zapwallettxes", false) && settings.GetArg("-zapwallettxes", "1") != "2") {
-                BOOST_FOREACH (const CWalletTx& wtxOld, vWtx) {
-                    uint256 hash = wtxOld.GetHash();
-                    CWalletTx* copyTo = const_cast<CWalletTx*>(pwalletMain->GetWalletTx(hash));
-                    if (copyTo != nullptr) {
-                        const CWalletTx* copyFrom = &wtxOld;
-                        copyTo->mapValue = copyFrom->mapValue;
-                        copyTo->vOrderForm = copyFrom->vOrderForm;
-                        copyTo->nTimeReceived = copyFrom->nTimeReceived;
-                        copyTo->nTimeSmart = copyFrom->nTimeSmart;
-                        copyTo->fFromMe = copyFrom->fFromMe;
-                        copyTo->strFromAccount = copyFrom->strFromAccount;
-                        copyTo->nOrderPos = copyFrom->nOrderPos;
-                        copyTo->WriteToDisk();
-                    }
-                }
+                pwalletMain->UpdateTransactionMetadata(vWtx);
             }
         }
         fVerifyingBlocks = false;

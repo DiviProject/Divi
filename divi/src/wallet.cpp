@@ -161,16 +161,7 @@ void SpentOutputTracker::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterato
     {
         const uint256& hash = it->second;
         if(hashFrom == hash) continue;
-        CWalletTx* copyTo = const_cast<CWalletTx*>(transactionRecord_.GetWalletTx(hash));
-        copyTo->mapValue = copyFrom->mapValue;
-        copyTo->vOrderForm = copyFrom->vOrderForm;
-        // fTimeReceivedIsTxTime not copied on purpose
-        // nTimeReceived not copied on purpose
-        copyTo->nTimeSmart = copyFrom->nTimeSmart;
-        copyTo->fFromMe = copyFrom->fFromMe;
-        copyTo->strFromAccount = copyFrom->strFromAccount;
-        // nOrderPos not copied on purpose
-        // cached members not copied on purpose
+        transactionRecord_.UpdateMetadata(hash,*copyFrom,false);
     }
 }
 
@@ -301,21 +292,7 @@ void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransac
     for (const CWalletTx& wtxOld: oldTransactions)
     {
         uint256 hash = wtxOld.GetHash();
-        CWalletTx* copyTo = const_cast<CWalletTx*>(transactionRecord_.GetWalletTx(hash));
-        if (copyTo != nullptr)
-        {
-            const CWalletTx* copyFrom = &wtxOld;
-
-            copyTo->mapValue = copyFrom->mapValue;
-            copyTo->vOrderForm = copyFrom->vOrderForm;
-            copyTo->nTimeSmart = copyFrom->nTimeSmart;
-            copyTo->fFromMe = copyFrom->fFromMe;
-            copyTo->strFromAccount = copyFrom->strFromAccount;
-
-            copyTo->nTimeReceived = copyFrom->nTimeReceived;
-            copyTo->nOrderPos = copyFrom->nOrderPos;
-            copyTo->WriteToDisk();
-        }
+        transactionRecord_.UpdateMetadata(hash,wtxOld,true);
     }
 }
 

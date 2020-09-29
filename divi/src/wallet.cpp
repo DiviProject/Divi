@@ -107,7 +107,8 @@ std::vector<const CWalletTx*> WalletTransactionRecord::GetWalletTransactionRefer
 
 std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord::AddTransaction(uint256 hash, const CWalletTx& newlyAddedTransaction)
 {
-   return  mapWallet.insert(std::make_pair(hash, newlyAddedTransaction));
+    LOCK(cs_walletTxRecord);
+    return  mapWallet.insert(std::make_pair(hash, newlyAddedTransaction));
 };
 
 

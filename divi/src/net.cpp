@@ -1676,8 +1676,8 @@ void StartNode(boost::thread_group& threadGroup)
     // Dump network addresses
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
 
-    // ppcoin:mint proof-of-stake blocks in the background
-    if (settings.GetBoolArg("-staking", true))
+    // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
+    if (settings.GetBoolArg("-staking", true) && Params().NetworkID() != CBaseChainParams::REGTEST)
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "stakemint", &ThreadStakeMinter, pwalletMain));
 
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "backup", &ThreadBackupWallet, NUMBER_OF_SECONDS_IN_A_DAY * 1000));

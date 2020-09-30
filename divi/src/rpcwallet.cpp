@@ -2263,32 +2263,3 @@ Value reservebalance(const Array& params, bool fHelp)
     result.push_back(Pair("amount", ValueFromAmount(nReserveBalance)));
     return result;
 }
-
-Array printAddresses()
-{
-    std::vector<COutput> vCoins;
-    pwalletMain->AvailableCoins(vCoins);
-    std::map<std::string, double> mapAddresses;
-    BOOST_FOREACH (const COutput& out, vCoins) {
-        CTxDestination utxoAddress;
-        ExtractDestination(out.tx->vout[out.i].scriptPubKey, utxoAddress);
-        std::string strAdd = CBitcoinAddress(utxoAddress).ToString();
-
-        if (mapAddresses.find(strAdd) == mapAddresses.end()) //if strAdd is not already part of the map
-            mapAddresses[strAdd] = (double)out.tx->vout[out.i].nValue / (double)COIN;
-        else
-            mapAddresses[strAdd] += (double)out.tx->vout[out.i].nValue / (double)COIN;
-    }
-
-    Array ret;
-    for (map<std::string, double>::const_iterator it = mapAddresses.begin(); it != mapAddresses.end(); ++it) {
-        Object obj;
-        const std::string* strAdd = &(*it).first;
-        const double* nBalance = &(*it).second;
-        obj.push_back(Pair("Address ", *strAdd));
-        obj.push_back(Pair("Balance ", *nBalance));
-        ret.push_back(obj);
-    }
-
-    return ret;
-}

@@ -24,7 +24,14 @@ enum isminetype {
 /** used for bitflags of isminetype */
 typedef uint8_t isminefilter;
 
+enum VaultType {
+    NON_VAULT = 0,
+    OWNED_VAULT = 1,
+    MANAGED_VAULT = 2
+};
+
 isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey);
+isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultType& VaultType);
 isminetype IsMine(const CKeyStore& keystore, const CTxDestination& dest);
 
 #endif // BITCOIN_WALLET_ISMINE_H

@@ -36,6 +36,13 @@ isminetype IsMine(const CKeyStore& keystore, const CTxDestination& dest)
 
 isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey)
 {
+    VaultType vaultType;
+    return IsMine(keystore,scriptPubKey,vaultType);
+}
+
+isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultType& vaultType)
+{
+    vaultType = NON_VAULT;
     if(keystore.HaveWatchOnly(scriptPubKey))
         return ISMINE_WATCH_ONLY;
     if(keystore.HaveMultiSig(scriptPubKey))
@@ -71,7 +78,7 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey)
         CScriptID scriptID = CScriptID(uint160(vSolutions[0]));
         CScript subscript;
         if(keystore.GetCScript(scriptID, subscript)) {
-            isminetype ret = IsMine(keystore, subscript);
+            isminetype ret = IsMine(keystore, subscript,vaultType);
             if(ret != ISMINE_NO)
                 return ret;
         }
@@ -80,10 +87,16 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey)
     case TX_VAULT: {
         keyID = CKeyID(uint160(vSolutions[0]));
         if(keystore.HaveKey(keyID))
+        {
+            vaultType = OWNED_VAULT;
             return ISMINE_SPENDABLE;
+        }
         keyID = CKeyID(uint160(vSolutions[1]));
         if(keystore.HaveKey(keyID))
+        {
+            vaultType = MANAGED_VAULT;
             return ISMINE_SPENDABLE;
+        }
         break;
     }
     case TX_MULTISIG: {

@@ -1980,7 +1980,8 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
 
                 if (!found) continue;
 
-                isminetype mine = IsMine(pcoin->vout[i]);
+                VaultType vaultType;
+                isminetype mine = ::IsMine(*this,pcoin->vout[i].scriptPubKey,vaultType);
                 if (IsSpent(wtxid, i))
                     continue;
                 if (mine == ISMINE_NO)

@@ -22,14 +22,11 @@ BlockFactory::BlockFactory(
     const CChainParams& chainParameters,
     CTxMemPool& transactionMemoryPool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS
-    ): wallet_(wallet)
-    , lastCoinstakeSearchInterval_(lastCoinstakeSearchInterval)
-    , chain_(chain)
+    ): chain_(chain)
     , chainParameters_(chainParameters)
-    , mempool_(transactionMemoryPool)
     , mainCS_(mainCS)
-    , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(mempool_,mainCS_))
-    , coinstakeCreator_( std::make_shared<PoSTransactionCreator>(wallet_, lastCoinstakeSearchInterval_,hashedBlockTimestamps))
+    , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(transactionMemoryPool, mainCS_))
+    , coinstakeCreator_( std::make_shared<PoSTransactionCreator>(wallet, lastCoinstakeSearchInterval, hashedBlockTimestamps))
 {
 
 }

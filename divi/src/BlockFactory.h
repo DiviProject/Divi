@@ -26,11 +26,8 @@ public:
 class BlockFactory: public I_BlockFactory
 {
 private:
-    CWallet& wallet_;
-    int64_t& lastCoinstakeSearchInterval_;
     CChain& chain_;
     const CChainParams& chainParameters_;
-    CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
 
     std::shared_ptr<I_BlockTransactionCollector> blockTransactionCollector_;

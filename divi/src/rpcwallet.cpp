@@ -308,7 +308,7 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
 }
 
 
-void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false)
+void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false, bool spendFromVaults = false)
 {
     // Check amount
     if (nValue <= 0)
@@ -327,7 +327,9 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
     // Create and send the transaction
     CReserveKey reservekey(pwalletMain);
     CAmount nFeeRequired;
-    if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError, NULL, ALL_SPENDABLE_COINS, fUseIX, (CAmount)0)) {
+    AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
+    if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError, NULL, coinTypeFilter, fUseIX, (CAmount)0))
+    {
         if (nValue + nFeeRequired > pwalletMain->GetSpendableBalance())
             strError = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!", FormatMoney(nFeeRequired));
         LogPrintf("SendMoney() : %s\n", strError);
@@ -337,11 +339,11 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
         throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
 }
 
-void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false)
+void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false, bool spendFromVaults = false)
 {
     // Parse DIVI address
     CScript scriptPubKey = GetScriptForDestination(address);
-    SendMoney(scriptPubKey, nValue, wtxNew, fUseIX);
+    SendMoney(scriptPubKey, nValue, wtxNew, fUseIX, spendFromVaults);
 }
 
 Value getcoinavailability(const Array& params, bool fHelp)

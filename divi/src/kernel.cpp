@@ -413,7 +413,7 @@ std::shared_ptr<I_ProofOfStakeCalculator> createProofOfStakeCalculator(
 
     int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
 
-    return std::make_shared<LegacyProofOfStakeCalculator>(prevout,utxoValue,stakeModifierData.first,nBits,nTimeWeight);
+    return std::make_shared<ProofOfStakeCalculator>(prevout,utxoValue,stakeModifierData.first,nBits);
 }
 
 std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const uint256& blockHash) const

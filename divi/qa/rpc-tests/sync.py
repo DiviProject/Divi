@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #
-# Test sync 
+# Test sync
 #
 
 from test_framework import BitcoinTestFramework
@@ -16,37 +16,51 @@ import random
 from threading import Thread
 from Queue import Queue
 
-def mineSingleBlock(miningQueue,nodeId,nblocks):
+def mineSingleBlock(miningQueue):
     while not miningQueue.empty():
-        nodeToWorkOn = miningQueue.get()
-        try:
-            nodeToWorkOn.setgenerate(True,nblocks)
-        except Exception as e:
-            print('Failed on node id: {0} -- reason: {1}'.format(nodeId,str(e)))
-        miningQueue.task_done()
+        taskObject = miningQueue.get()
+        taskCompleted = False
+        nodeToWorkOn = taskObject[0]
+        blockCount = taskObject[1]
+        while not taskCompleted:
+            try:
+                if blockCount > 0:
+                    nodeToWorkOn.setgenerate(True,1)
+                    blockCount -= 1
+                else:
+                    taskCompleted = True
+                    miningQueue.task_done()
+            except Exception as e:
+                # This exception is due to a failure to mine this specific block
+                dummyExceptionHandling = str(e)
     return True
 
 class SyncTest(BitcoinTestFramework):
-    
+
     def run_test(self):
         # Mine 51 up blocks - by randomly asking nodes
         nodeIdsToGenerateNextBlock = [random.randrange(len(self.nodes)) for j in range(51)]
         numberOfBlocksPerNode = {i: nodeIdsToGenerateNextBlock.count(i) for i in nodeIdsToGenerateNextBlock}
 
-        nodeMiningQueue = Queue(maxsize = 0)
-        
+        nodeMiningQueues = [ Queue() ] * len(self.nodes)
+
         for nodeId in range(len(self.nodes)):
-            nodeMiningQueue.put((self.nodes[nodeId]))
+            nodeMiningQueues[nodeId].put((self.nodes[nodeId],numberOfBlocksPerNode[nodeId]))
 
         for nodeThreadIndex in range(len(self.nodes)):
-            worker = Thread(target=mineSingleBlock,args=[nodeMiningQueue,nodeThreadIndex,numberOfBlocksPerNode[nodeThreadIndex]] )
+            worker = Thread(target=mineSingleBlock,args=[nodeMiningQueues[nodeThreadIndex]] )
             worker.setDaemon(True)
             worker.start()
-        
-        nodeMiningQueue.join()
 
+        for qObj in nodeMiningQueues:
+            qObj.join()
+
+        sync_blocks(self.nodes)
         self.nodes[1].setgenerate(True, 50)
+        sync_blocks(self.nodes)
         bestBlockHash = self.nodes[0].getbestblockhash()
+        print("Block count totals {}".format(self.nodes[0].getblockcount()) )
+
         for node in self.nodes[:1]:
             assert_equal(node.getbestblockhash() , bestBlockHash)
 

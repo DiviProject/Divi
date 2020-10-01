@@ -195,21 +195,13 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     const CChainParams& chainParameters = Params();
     if(!SelectCoins(chainParameters, allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
 
+    const CChainParams& chainParameters = Params();
     auto adjustedTime = GetAdjustedTime();
+
     int64_t minimumTime = chainActive.Tip()->GetMedianTimePast() + 1;
-    const int64_t maximumTime = adjustedTime + maximumFutureBlockDrift;
-    if (Params().RetargetDifficulty())
-    {
-        /* Normally, we want to start with an additional offset of nHashDrift
-           so that when working backwards in time, we are still beyond the
-           required median time.  On regtest with minimum difficulty, this is
-           not needed (as the hash target will be hit anyway); by using a
-           smaller time there, we ensure that more blocks can be mined in a
-           sequence before the mock time needs to be updated.  */
-        minimumTime += nHashDrift;
-    }
-    if(minimumTime>=maximumTime) return false;
-    nTxNewTime = std::min(std::max(adjustedTime, minimumTime), maximumTime);
+    const int64_t maximumTime = minimumTime + maximumFutureBlockDrift - 1;
+    int64_t drift = chainParameters.RetargetDifficulty()? nHashDrift: 0;
+    nTxNewTime = std::min(std::max(adjustedTime, minimumTime+drift), maximumTime);
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;

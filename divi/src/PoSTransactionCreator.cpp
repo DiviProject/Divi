@@ -195,9 +195,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     const CChainParams& chainParameters = Params();
     if(!SelectCoins(chainParameters, allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
 
-    const CChainParams& chainParameters = Params();
     auto adjustedTime = GetAdjustedTime();
-
     int64_t minimumTime = chainActive.Tip()->GetMedianTimePast() + 1;
     const int64_t maximumTime = minimumTime + maximumFutureBlockDrift - 1;
     int64_t drift = chainParameters.RetargetDifficulty()? nHashDrift: 0;

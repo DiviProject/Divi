@@ -74,7 +74,7 @@ class MnStatusTest (BitcoinTestFramework):
       [self.cfg[1].line],
     ]
 
-    args = self.base_args
+    args = self.base_args[:]
     if n == 1 or n == 2:
       args.append ("-masternode")
       args.append ("-masternodeprivkey=%s" % self.cfg[n - 1].privkey)
@@ -172,7 +172,11 @@ class MnStatusTest (BitcoinTestFramework):
       assert_equal (data["message"], "Masternode successfully started")
 
     # Check list of masternodes on node 3.
-    lst = self.nodes[3].listmasternodes ()
+    lst = self.nodes[3].listmasternodes()
+    while len(lst) < 2:
+      time.sleep(1)
+      lst = self.nodes[3].listmasternodes()
+
     assert_equal (len (lst), 2)
     assert_equal (lst[0]["tier"], "COPPER")
     assert_equal (lst[1]["tier"], "SILVER")
@@ -194,6 +198,36 @@ class MnStatusTest (BitcoinTestFramework):
     for n in [1, 2, 3]:
       status = self.nodes[n].mnsync ("status")
       assert_equal (status["RequestedMasternodeAssets"], 999)
+
+  def verify_number_of_votes_exist_and_tally_winners(self,startBlockHeight, endBlockHeight, expected_votes, expected_address = None):
+    heightSet = set()
+    winnerTally = collections.Counter ()
+    expectedNumberOfBlocks = endBlockHeight - startBlockHeight+1
+    for nodeId in [3,4,5,6]:
+      winnerListsByNode = self.nodes[nodeId].getmasternodewinners (str (expectedNumberOfBlocks))
+      for winner in winnerListsByNode:
+        if winner["nHeight"] < startBlockHeight or winner["nHeight"] > endBlockHeight:
+          continue
+        if expected_address is not None:
+          if winner["winner"]["address"] != expected_address:
+            continue
+        isInsertable = winner["nHeight"] not in heightSet
+        if winner["winner"]["nVotes"] == expected_votes and isInsertable:
+          heightSet.add(winner["nHeight"])
+          winnerTally[winner["winner"]["address"]] += 1
+        if len(heightSet) == expectedNumberOfBlocks:
+          break
+      if len(heightSet) == expectedNumberOfBlocks:
+        break
+
+    for height in range(startBlockHeight, endBlockHeight+1):
+      try:
+        heightSet.remove(height)
+      except:
+        assert_equal("Height without enough votes (on ANY of the 4 helper nodes) found: height {}".format(height),"")
+
+    return winnerTally
+
 
   def payments_both_active (self):
     print ("Masternode payments with both active...")
@@ -220,20 +254,22 @@ class MnStatusTest (BitcoinTestFramework):
 
     # Check the masternode winners for those 50 blocks.  It should be
     # our two masternodes, randomly, with two votes each.
-    winnersData = self.nodes[3].getmasternodewinners (str (endHeight - startHeight + 1))
-    winners = collections.Counter ()
-    for d in winnersData:
-      if d["nHeight"] < startHeight or d["nHeight"] > endHeight:
-        continue
-      winners[d["winner"]["address"]] += 1
-      assert_equal (d["winner"]["nVotes"], 2)
+    # In case of an out-of-sync message we need to fall back to another node
+    winners = self.verify_number_of_votes_exist_and_tally_winners(startHeight,endHeight, 2)
 
     addr1 = self.nodes[1].getmasternodestatus ()["addr"]
     addr2 = self.nodes[2].getmasternodestatus ()["addr"]
     assert_equal (len (winners), 2)
     assert_greater_than (winners[addr1], 0)
     assert_greater_than (winners[addr2], 0)
-    assert_greater_than (winners[addr2], 2 * winners[addr1])
+
+    # On average, addr2 would win twice as much as addr1 but this
+    # test runs a single instance so an assertion will fail with
+    # a relatively high probability.
+    total_wins = winners[addr1]+winners[addr2]
+    minimum_expected_wins_for_addr2 = 0.50 * total_wins
+    assert_greater_than (winners[addr2], minimum_expected_wins_for_addr2)
+    assert_greater_than (minimum_expected_wins_for_addr2, winners[addr1])
 
   def payments_one_active (self):
     print ("Masternode payments with one active...")
@@ -259,12 +295,7 @@ class MnStatusTest (BitcoinTestFramework):
     endHeight = self.nodes[3].getblockcount ()
 
     addr = self.nodes[1].getmasternodestatus ()["addr"]
-    winnersData = self.nodes[3].getmasternodewinners (str (endHeight - startHeight + 1))
-    for d in winnersData:
-      if d["nHeight"] < startHeight or d["nHeight"] > endHeight:
-        continue
-      assert_equal (d["winner"]["address"], addr)
-      assert_equal (d["winner"]["nVotes"], 1)
+    self.verify_number_of_votes_exist_and_tally_winners(startHeight,endHeight,1,addr)
 
   def check_rewards (self):
     print ("Checking rewards in wallet...")

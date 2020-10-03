@@ -11,6 +11,8 @@
 #include <gmock/gmock.h>
 using ::testing::Return;
 
+static constexpr unsigned int MaximumCoinAgeForStaking = 60 * 60 * 24 * 7 - 60 * 60;
+
 extern bool CreateHashProofForProofOfStake(
     I_PoSStakeModifierService& stakeModifierService,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
@@ -30,18 +32,27 @@ class TestProofOfStakeFixture
 private:
     static FastRandomContext context_;
 public:
-    std::shared_ptr<ProofOfStakeCalculator> calculator_;
+    std::shared_ptr<I_ProofOfStakeCalculator> calculator_;
     TestProofOfStakeFixture(
         ): calculator_()
     {
     }
-    void setParameters(
+    void setParametersNewCalculator(
         const COutPoint& utxoToStake,
         const int64_t& utxoValue,
         const uint64_t& stakeModifier,
         unsigned int blockDifficultyBits)
     {
         calculator_.reset(new ProofOfStakeCalculator(utxoToStake,utxoValue,stakeModifier,blockDifficultyBits));
+    }
+    void setParametersOldCalculator(
+        const COutPoint& utxoToStake,
+        const int64_t& utxoValue,
+        const uint64_t& stakeModifier,
+        unsigned int blockDifficultyBits,
+        int64_t coinAgeWeight)
+    {
+        calculator_.reset(new LegacyProofOfStakeCalculator(utxoToStake,utxoValue,stakeModifier,blockDifficultyBits,coinAgeWeight));
     }
 
     int64_t getRandomValue() const
@@ -70,32 +81,29 @@ struct ProofOfStake
     uint64_t stakeModifier;
     uint256 hashProof;
 
-    int64_t getCoinAgeWeight() const
+    std::shared_ptr<I_ProofOfStakeCalculator> oldCalculator_;
+    std::shared_ptr<I_ProofOfStakeCalculator> newCalculator_;
+
+    void resetCalculators()
     {
-        return std::min<int64_t>(newerBlockTime - blockTimeForPreviousBlock, unsigned(60*60*7*24));
-    }
-    int64_t getNominalCoinAgeWeight() const
-    {
-        return std::min<int64_t>(newerBlockTime + timeOffsetForNewerBlock - blockTimeForPreviousBlock, unsigned(60*60*7*24));
+        int64_t coinAgeWeight = std::min<int64_t>(newerBlockTime - blockTimeForPreviousBlock, MaximumCoinAgeForStaking);
+        oldCalculator_.reset(new LegacyProofOfStakeCalculator(utxo,amount,stakeModifier,difficulty,coinAgeWeight));
+        newCalculator_.reset(new ProofOfStakeCalculator(utxo,amount,stakeModifier,difficulty));
     }
 
     void updateHashProof()
     {
-        hashProof = stakeHash(stakeModifier,newerBlockTime,utxo,blockTimeForPreviousBlock);
+        hashProof = stakeHash(stakeModifier,newerBlockTime-timeOffsetForNewerBlock,utxo,blockTimeForPreviousBlock);
     }
 
     bool oldCheck()
     {
-        auto&& coinAgeWeightOfUtxo = getNominalCoinAgeWeight();
-        uint256 targetPerCoinDay = uint256().SetCompact(difficulty);
-        return stakeTargetHit(hashProof,amount,targetPerCoinDay, coinAgeWeightOfUtxo);
+        return oldCalculator_->computeProofOfStakeAndCheckItMeetsTarget(newerBlockTime-timeOffsetForNewerBlock,blockTimeForPreviousBlock,hashProof,true);
     }
 
     bool check()
     {
-        auto&& coinAgeWeightOfUtxo = getCoinAgeWeight();
-        uint256 targetPerCoinDay = uint256().SetCompact(difficulty);
-        return stakeTargetHit(hashProof,amount,targetPerCoinDay, coinAgeWeightOfUtxo);
+       return newCalculator_->computeProofOfStakeAndCheckItMeetsTarget(newerBlockTime-timeOffsetForNewerBlock,blockTimeForPreviousBlock,hashProof,true);
     }
 };
 
@@ -111,9 +119,9 @@ ProofOfStake createBadProofOfStake(bool& succeded)
 
     bool badProofOfStakeGenerated = false;
     bool goodProofOfStakeGenerated = false;
-    ProofOfStake proof;
+    ProofOfStake proof, contrastingProof;
     unsigned currentTried = 0;
-    unsigned maxTries = 10000;
+    unsigned maxTries = 100000;
     uint256 misleadingProofOfStake;
 
     while(!badProofOfStakeGenerated && currentTried < maxTries)
@@ -121,22 +129,26 @@ ProofOfStake createBadProofOfStake(bool& succeded)
         goodProofOfStakeGenerated = false;
         for( unsigned offset = 0; offset < numberOfHashAttempts; offset++ )
         {
-            proof = ProofOfStake{utxo,amount,difficulty,blockTimeForPreviousBlock,newerBlockTime-offset,offset,stakeModifier,misleadingProofOfStake};
+            proof = ProofOfStake{utxo,amount,difficulty,blockTimeForPreviousBlock,newerBlockTime,offset,stakeModifier,misleadingProofOfStake,{},{}};
             proof.updateHashProof();
+            proof.resetCalculators();
             if(proof.oldCheck())
             {
+                contrastingProof = ProofOfStake{utxo,amount,difficulty,blockTimeForPreviousBlock,newerBlockTime-offset,0,stakeModifier,misleadingProofOfStake,{},{}};
+                contrastingProof.updateHashProof();
+                contrastingProof.resetCalculators();
                 goodProofOfStakeGenerated = true;
-                if(!proof.check())
+                if(contrastingProof.oldCheck() && !proof.check())
                 {
                     badProofOfStakeGenerated = true;
+                    proof = contrastingProof;
                     break;
                 }
             }
         }
         if(!badProofOfStakeGenerated )
         {
-            ++newerBlockTime;
-            ++blockTimeForPreviousBlock;
+            newerBlockTime += numberOfHashAttempts;
             currentTried += goodProofOfStakeGenerated;
         }
         else
@@ -154,20 +166,38 @@ BOOST_AUTO_TEST_CASE(willNotCreateAnInvalidProofOfStake)
 {
     bool successfulCreationOfBadProofOfStake = false;
     ProofOfStake proof = createBadProofOfStake(successfulCreationOfBadProofOfStake);
-    BOOST_CHECK_MESSAGE(successfulCreationOfBadProofOfStake, "Failed to reproduce failure mode!");
-    setParameters(
-        proof.utxo,
-        proof.amount,
-        proof.stakeModifier,
-        proof.difficulty);
-    BOOST_CHECK_MESSAGE(
-        calculator_->computeProofOfStakeAndCheckItMeetsTarget(
-            proof.newerBlockTime,
-            proof.blockTimeForPreviousBlock,
-            proof.hashProof,
-            true),
-        "Proof-of-stake is not correct!"
-        );
+    if(successfulCreationOfBadProofOfStake)
+    {
+        setParametersOldCalculator(
+            proof.utxo,
+            proof.amount,
+            proof.stakeModifier,
+            proof.difficulty,
+            std::min<int64_t>(proof.newerBlockTime - proof.blockTimeForPreviousBlock, MaximumCoinAgeForStaking )
+            );
+        BOOST_CHECK_MESSAGE(
+            calculator_->computeProofOfStakeAndCheckItMeetsTarget(
+                proof.newerBlockTime,
+                proof.blockTimeForPreviousBlock,
+                proof.hashProof,
+                true),
+            "Proof-of-stake is not correct!"
+            );
+        setParametersNewCalculator(
+            proof.utxo,
+            proof.amount,
+            proof.stakeModifier,
+            proof.difficulty);
+        BOOST_CHECK_MESSAGE(
+            !calculator_->computeProofOfStakeAndCheckItMeetsTarget(
+                proof.newerBlockTime,
+                proof.blockTimeForPreviousBlock,
+                proof.hashProof,
+                true),
+            "Proof-of-stake is not correct!"
+            );
+        BOOST_CHECK_MESSAGE(false,"Failed at creating backward compatible proof of stake!");
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

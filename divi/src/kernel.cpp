@@ -329,32 +329,9 @@ bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     bool checkOnly) const
 {
     if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,nTimeBlockFrom);
-    auto&& coinAgeWeightOfUtxo = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
+    int64_t coinAgeWeightOfUtxo = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
 }
-
-class LegacyProofOfStakeCalculator: public I_ProofOfStakeCalculator
-{
-private:
-    const COutPoint& utxoToStake_;
-    const int64_t& utxoValue_;
-    const uint64_t& stakeModifier_;
-    const uint256 targetPerCoinDay_;
-    const int64_t coinAgeWeight_;
-public:
-    LegacyProofOfStakeCalculator(
-        const COutPoint& utxoToStake,
-        const int64_t& utxoValue,
-        const uint64_t& stakeModifier,
-        unsigned int blockDifficultyBits,
-        int64_t coinAgeWeight);
-
-    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
-        unsigned int nTimeTx,
-        unsigned int nTimeBlockFrom,
-        uint256& computedProofOfStake,
-        bool checkOnly = false) const;
-};
 
 LegacyProofOfStakeCalculator::LegacyProofOfStakeCalculator(
     const COutPoint& utxoToStake,

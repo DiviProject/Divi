@@ -47,6 +47,29 @@ public:
         bool checkOnly = false) const;
 };
 
+class LegacyProofOfStakeCalculator: public I_ProofOfStakeCalculator
+{
+private:
+    const COutPoint& utxoToStake_;
+    const int64_t& utxoValue_;
+    const uint64_t& stakeModifier_;
+    const uint256 targetPerCoinDay_;
+    const int64_t coinAgeWeight_;
+public:
+    LegacyProofOfStakeCalculator(
+        const COutPoint& utxoToStake,
+        const int64_t& utxoValue,
+        const uint64_t& stakeModifier,
+        unsigned int blockDifficultyBits,
+        int64_t coinAgeWeight);
+
+    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
+        unsigned int nTimeTx,
+        unsigned int nTimeBlockFrom,
+        uint256& computedProofOfStake,
+        bool checkOnly = false) const;
+};
+
 class I_PoSStakeModifierService
 {
 public:

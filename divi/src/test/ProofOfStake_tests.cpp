@@ -162,7 +162,7 @@ ProofOfStake createBadProofOfStake(bool& succeded)
 
 BOOST_FIXTURE_TEST_SUITE(ProofOfStakeTests,TestProofOfStakeFixture)
 
-BOOST_AUTO_TEST_CASE(willNotCreateAnInvalidProofOfStake)
+BOOST_AUTO_TEST_CASE(willNotCreateAnInvalidProofOfStake, SKIP_TEST)
 {
     bool successfulCreationOfBadProofOfStake = false;
     ProofOfStake proof = createBadProofOfStake(successfulCreationOfBadProofOfStake);

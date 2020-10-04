@@ -148,18 +148,18 @@ bool PoSTransactionCreator::FindHashproof(
     }
 
     uint256 hashProofOfStake = 0;
-
+    unsigned int blockTimeUpdate = nTxNewTime;
     if (CreateHashProofForProofOfStake(
             hashedBlockTimestamps_,
             nBits,
             it->second->GetBlockHeader(),
             COutPoint(stakeData.first->GetHash(), stakeData.second),
             stakeData.first->vout[stakeData.second].nValue,
-            nTxNewTime,
+            blockTimeUpdate,
             false,
             hashProofOfStake))
     {
-        if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast())
+        if (blockTimeUpdate <= chainActive.Tip()->GetMedianTimePast())
         {
             LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
             return false;
@@ -171,7 +171,7 @@ bool PoSTransactionCreator::FindHashproof(
         {
             return false;
         }
-
+        nTxNewTime = blockTimeUpdate;
         return true;
     }
     return false;

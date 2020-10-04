@@ -149,11 +149,13 @@ bool PoSTransactionCreator::FindHashproof(
 
     uint256 hashProofOfStake = 0;
     unsigned int blockTimeUpdate = nTxNewTime;
+    CBlock blockHoldingStakeUtxo = it->second->GetBlockHeader();
+    COutPoint utxo(stakeData.first->GetHash(), stakeData.second);
     if (CreateHashProofForProofOfStake(
             hashedBlockTimestamps_,
             nBits,
-            it->second->GetBlockHeader(),
-            COutPoint(stakeData.first->GetHash(), stakeData.second),
+            blockHoldingStakeUtxo,
+            utxo,
             stakeData.first->vout[stakeData.second].nValue,
             blockTimeUpdate,
             false,

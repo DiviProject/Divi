@@ -73,8 +73,11 @@ void WalletTxToJSON(const CWalletTx& wtx, Object& entry)
     uint256 hash = wtx.GetHash();
     entry.push_back(Pair("txid", hash.GetHex()));
     Array conflicts;
-    BOOST_FOREACH (const uint256& conflict, wtx.GetConflicts())
-            conflicts.push_back(conflict.GetHex());
+    if(pwalletMain)
+    {
+        BOOST_FOREACH (const uint256& conflict, pwalletMain->GetConflicts(hash))
+                conflicts.push_back(conflict.GetHex());
+    }
     entry.push_back(Pair("walletconflicts", conflicts));
     entry.push_back(Pair("time", wtx.GetTxTime()));
     entry.push_back(Pair("timereceived", (int64_t)wtx.nTimeReceived));

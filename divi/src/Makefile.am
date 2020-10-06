@@ -187,6 +187,7 @@ BITCOIN_CORE_H = \
   masternodeman.h \
   masternodeconfig.h \
   merkleblock.h \
+  merkletx.h \
   miner.h \
   I_CoinMinter.h \
   BlockMemoryPoolTransactionCollector.h \
@@ -303,6 +304,7 @@ libbitcoin_server_a_SOURCES = \
   BlockFileOpener.cpp \
   BlockDiskAccessor.cpp \
   merkleblock.cpp \
+  merkletx.cpp \
   CoinMinter.cpp \
   PoSTransactionCreator.cpp \
   PeerNotificationOfMintService.cpp \
@@ -378,6 +380,7 @@ libbitcoin_wallet_a_SOURCES = \
   rpcwallet.cpp \
   kernel.cpp \
   wallet.cpp \
+  merkletx.cpp \
   wallet_ismine.cpp \
   walletdb.cpp \
   $(BITCOIN_CORE_H)

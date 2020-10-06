@@ -83,6 +83,10 @@ extern bool fLargeWorkInvalidChainFound;
 bool CheckFinalTx(const CTransaction& tx, int flags = -1);
 bool IsInitialBlockDownload();
 
+bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite)
+{
+    return CWalletDB(walletPtr->strWalletFile).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
+}
 
 WalletTransactionRecord::WalletTransactionRecord(
     CCriticalSection& requiredWalletLock
@@ -136,7 +140,6 @@ void WalletTransactionRecord::UpdateMetadata(const uint256& hashOfTransactionToU
         {
             wtxToUpdate->nTimeReceived = copyFrom->nTimeReceived;
             wtxToUpdate->nOrderPos = copyFrom->nOrderPos;
-            wtxToUpdate->WriteToDisk();
         }
     }
 }
@@ -301,6 +304,7 @@ void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransac
     {
         uint256 hash = wtxOld.GetHash();
         transactionRecord_.UpdateMetadata(hash,wtxOld,true);
+        WriteTxToDisk(this,*GetWalletTx(hash));
     }
 }
 
@@ -1196,7 +1200,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
 
         // Write to disk
         if (fInsertedNew || fUpdated)
-            if (!wtx.WriteToDisk())
+            if (!WriteTxToDisk(this,wtx))
                 return false;
 
         // Break debit/credit balance caches:

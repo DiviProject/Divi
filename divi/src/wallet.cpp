@@ -3165,6 +3165,33 @@ unsigned int CWallet::GetKeyPoolSize() const
     return setInternalKeyPool.size() + setExternalKeyPool.size();
 }
 
+bool CWallet::IsTrusted(const CWalletTx& walletTransaction) const
+{
+    // Quick answer in most cases
+    if (!IsFinalTx(walletTransaction))
+        return false;
+    int nDepth = walletTransaction.GetDepthInMainChain();
+    if (nDepth >= 1)
+        return true;
+    if (nDepth < 0)
+        return false;
+    if (!bSpendZeroConfChange || !walletTransaction.IsFromMe(ISMINE_ALL)) // using wtx's cached debit
+        return false;
+
+    // Trusted if all inputs are from us and are in the mempool:
+    BOOST_FOREACH (const CTxIn& txin, walletTransaction.vin) {
+        // Transactions not sent by us: not trusted
+        const CWalletTx* parent = GetWalletTx(txin.prevout.hash);
+        if (parent == NULL)
+            return false;
+        const CTxOut& parentOut = parent->vout[txin.prevout.n];
+        if (IsMine(parentOut) != ISMINE_SPENDABLE)
+            return false;
+    }
+    return true;
+
+}
+
 void CWallet::LockCoin(const COutPoint& output)
 {
     AssertLockHeld(cs_wallet); // setLockedCoins

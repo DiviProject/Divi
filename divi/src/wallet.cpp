@@ -1818,7 +1818,7 @@ CAmount CWallet::GetBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (pcoin->IsTrusted())
+            if (IsTrusted(*pcoin))
                 nTotal += pcoin->GetAvailableCredit();
         }
     }
@@ -1836,7 +1836,7 @@ CAmount CWallet::GetUnlockedCoins() const
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
 
-            if (pcoin->IsTrusted() && pcoin->GetDepthInMainChain() > 0)
+            if (IsTrusted(*pcoin) && pcoin->GetDepthInMainChain() > 0)
                 nTotal += pcoin->GetUnlockedCredit();
         }
     }
@@ -1854,7 +1854,7 @@ CAmount CWallet::GetLockedCoins() const
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
 
-            if (pcoin->IsTrusted() && pcoin->GetDepthInMainChain() > 0)
+            if (IsTrusted(*pcoin) && pcoin->GetDepthInMainChain() > 0)
                 nTotal += pcoin->GetLockedCredit();
         }
     }
@@ -1870,7 +1870,7 @@ CAmount CWallet::GetUnconfirmedBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin) || (!pcoin->IsTrusted() && pcoin->GetDepthInMainChain() == 0))
+            if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetDepthInMainChain() == 0))
                 nTotal += pcoin->GetAvailableCredit();
         }
     }
@@ -1897,7 +1897,7 @@ CAmount CWallet::GetWatchOnlyBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (pcoin->IsTrusted())
+            if (IsTrusted(*pcoin))
                 nTotal += pcoin->GetAvailableWatchOnlyCredit();
         }
     }
@@ -1912,7 +1912,7 @@ CAmount CWallet::GetUnconfirmedWatchOnlyBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin) || (!pcoin->IsTrusted() && pcoin->GetDepthInMainChain() == 0))
+            if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetDepthInMainChain() == 0))
                 nTotal += pcoin->GetAvailableWatchOnlyCredit();
         }
     }
@@ -1948,7 +1948,7 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
             if (!CheckFinalTx(*pcoin))
                 continue;
 
-            if (fOnlyConfirmed && !pcoin->IsTrusted())
+            if (fOnlyConfirmed && !IsTrusted(*pcoin))
                 continue;
 
             if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
@@ -2939,7 +2939,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
         BOOST_FOREACH (PAIRTYPE(uint256, CWalletTx) walletEntry, transactionRecord_.mapWallet) {
             CWalletTx* pcoin = &walletEntry.second;
 
-            if (!IsFinalTx(*pcoin) || !pcoin->IsTrusted())
+            if (!IsFinalTx(*pcoin) || !IsTrusted(*pcoin))
                 continue;
 
             if (pcoin->IsCoinBase() && pcoin->GetBlocksToMaturity() > 0)

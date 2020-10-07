@@ -489,15 +489,14 @@ bool CMasternodePayments::IsScheduled(const CMasternode& mn, int nNotBlockHeight
     if (tip == nullptr)
         return false;
 
-    CScript mnpayee;
-    mnpayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
+    const CScript mnpayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
 
-    CScript payee;
     for (int64_t h = 0; h <= 8; ++h) {
         if (tip->nHeight + h == nNotBlockHeight) continue;
         uint256 seedHash;
         if (!GetBlockHashForScoring(seedHash, tip, h)) continue;
         auto* payees = GetPayeesForScoreHash(seedHash);
+        CScript payee;
         if (payees != nullptr && payees->GetPayee(payee) && payee == mnpayee)
             return true;
     }
@@ -740,14 +739,11 @@ bool CMasternodePayments::ProcessBlock(const CBlockIndex* pindex, const int offs
     if (pmn != NULL) {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");
 
-        CScript payee = GetScriptForDestination(pmn->pubKeyCollateralAddress.GetID());
-        newWinner.AddPayee(payee);
+        const CTxDestination dest(pmn->pubKeyCollateralAddress.GetID());
+        newWinner.AddPayee(GetScriptForDestination(dest));
 
-        CTxDestination address1;
-        ExtractDestination(payee, address1);
-        CBitcoinAddress address2(address1);
-
-        LogPrint("masternode","CMasternodePayments::ProcessBlock() Winner payee %s nHeight %d. \n", address2.ToString().c_str(), newWinner.GetHeight());
+        const CBitcoinAddress address(dest);
+        LogPrint("masternode","CMasternodePayments::ProcessBlock() Winner payee %s nHeight %d. \n", address.ToString().c_str(), newWinner.GetHeight());
     } else {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Failed to find masternode to pay\n");
     }

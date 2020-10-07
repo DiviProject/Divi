@@ -80,7 +80,7 @@ public:
     bool CheckAndUpdate(CMasternode& mn, int& nDos, bool fRequireEnabled = true) const;
     std::string getMessageToSign() const;
     bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
-    void Relay();
+    void Relay() const;
 
     uint256 GetHash() const
     {
@@ -129,6 +129,9 @@ private:
     mutable CCriticalSection cs;
     int64_t lastTimeChecked;
 
+    mutable int cacheInputAge;
+    mutable int cacheInputAgeBlock;
+
 public:
     enum state {
         MASTERNODE_PRE_ENABLED,
@@ -149,8 +152,6 @@ public:
     std::vector<unsigned char> sig;
     int activeState;
     int64_t sigTime; //mnb message time
-    int cacheInputAge;
-    int cacheInputAgeBlock;
     bool unitTest;
     bool allowFreeTx;
     int protocolVersion;
@@ -214,33 +215,33 @@ public:
             nTier = static_cast<MasternodeTier> (tier);
     }
 
-    int64_t SecondsSincePayment();
+    int64_t SecondsSincePayment() const;
 
     bool UpdateFromNewBroadcast(CMasternodeBroadcast &mnb);
 
     void Check(bool forceCheck = false);
 
-    bool IsBroadcastedWithin(int seconds);
+    bool IsBroadcastedWithin(int seconds) const;
 
-    bool IsPingedWithin(int seconds, int64_t now = -1);
+    bool IsPingedWithin(int seconds, int64_t now = -1) const;
 
     void Disable();
 
     bool IsEnabled() const;
 
-    int GetMasternodeInputAge();
+    int GetMasternodeInputAge() const;
 
     static CAmount GetTierCollateralAmount(MasternodeTier tier);
     static MasternodeTier GetTierByCollateralAmount(CAmount nCollateral);
     static bool IsTierValid(MasternodeTier tier);
     static std::string TierToString(MasternodeTier tier);
 
-    std::string GetStatus();
+    std::string GetStatus() const;
 
-    std::string Status();
+    std::string Status() const;
 
-    int64_t GetLastPaid();
-    bool IsValidNetAddr();
+    int64_t GetLastPaid() const;
+    bool IsValidNetAddr() const;
 };
 
 
@@ -251,7 +252,7 @@ public:
 class CMasternodeBroadcast : public CMasternode
 {
 public:
-    CMasternodeBroadcast();
+    CMasternodeBroadcast() = default;
     CMasternodeBroadcast(
         CService newAddr,
         CTxIn newVin,

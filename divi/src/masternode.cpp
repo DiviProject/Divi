@@ -211,12 +211,12 @@ CMasternode& CMasternode::operator=(CMasternode from)
     return *this;
 }
 
-bool CMasternode::IsBroadcastedWithin(int seconds)
+bool CMasternode::IsBroadcastedWithin(int seconds) const
 {
     return (GetAdjustedTime() - sigTime) < seconds;
 }
 
-bool CMasternode::IsPingedWithin(int seconds, int64_t now)
+bool CMasternode::IsPingedWithin(int seconds, int64_t now) const
 {
     if (now == -1)
         now = GetAdjustedTime();
@@ -238,7 +238,7 @@ bool CMasternode::IsEnabled() const
     return activeState == MASTERNODE_ENABLED;
 }
 
-int CMasternode::GetMasternodeInputAge()
+int CMasternode::GetMasternodeInputAge() const
 {
     if (chainActive.Tip() == NULL) return 0;
 
@@ -250,7 +250,7 @@ int CMasternode::GetMasternodeInputAge()
     return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
 }
 
-std::string CMasternode::Status()
+std::string CMasternode::Status() const
 {
     std::string strStatus = "ACTIVE";
 
@@ -383,11 +383,8 @@ std::string CMasternode::TierToString(MasternodeTier tier)
     return "INVALID";
 }
 
-int64_t CMasternode::SecondsSincePayment()
+int64_t CMasternode::SecondsSincePayment() const
 {
-    CScript pubkeyScript;
-    pubkeyScript = GetScriptForDestination(pubKeyCollateralAddress.GetID());
-
     int64_t sec = (GetAdjustedTime() - GetLastPaid());
     int64_t month = 60 * 60 * 24 * 30;
     if (sec < month) return sec; //if it's less than 30 days, give seconds
@@ -401,7 +398,7 @@ int64_t CMasternode::SecondsSincePayment()
     return month + hash.GetCompact(false);
 }
 
-int64_t CMasternode::GetLastPaid()
+int64_t CMasternode::GetLastPaid() const
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (pindexPrev == NULL) return false;
@@ -454,7 +451,7 @@ int64_t CMasternode::GetLastPaid()
     return 0;
 }
 
-std::string CMasternode::GetStatus()
+std::string CMasternode::GetStatus() const
 {
     switch (nActiveState) {
     case CMasternode::MASTERNODE_PRE_ENABLED:
@@ -476,31 +473,12 @@ std::string CMasternode::GetStatus()
     }
 }
 
-bool CMasternode::IsValidNetAddr()
+bool CMasternode::IsValidNetAddr() const
 {
     // TODO: regtest is fine with any addresses for now,
     // should probably be a bit smarter if one day we start to implement tests for this
     return Params().NetworkID() == CBaseChainParams::REGTEST ||
             (IsReachable(addr) && addr.IsRoutable());
-}
-
-CMasternodeBroadcast::CMasternodeBroadcast()
-{
-    vin = CTxIn();
-    addr = CService();
-    pubKeyCollateralAddress = CPubKey();
-    sig = std::vector<unsigned char>();
-    activeState = MASTERNODE_ENABLED;
-    sigTime = GetAdjustedTime();
-    lastPing = CMasternodePing();
-    cacheInputAge = 0;
-    cacheInputAgeBlock = 0;
-    unitTest = false;
-    allowFreeTx = true;
-    protocolVersion = PROTOCOL_VERSION;
-    nScanningErrorCount = 0;
-    nLastScanningErrorBlockHeight = 0;
-    nTier = MasternodeTier::INVALID;
 }
 
 CMasternodeBroadcast::CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubKey pubKeyCollateralAddressNew, CPubKey pubKeyMasternodeNew, const MasternodeTier nMasternodeTier, int protocolVersionIn)
@@ -509,39 +487,13 @@ CMasternodeBroadcast::CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubK
     addr = newAddr;
     pubKeyCollateralAddress = pubKeyCollateralAddressNew;
     pubKeyMasternode = pubKeyMasternodeNew;
-    sig = std::vector<unsigned char>();
-    activeState = MASTERNODE_ENABLED;
-    sigTime = GetAdjustedTime();
-    lastPing = CMasternodePing();
-    cacheInputAge = 0;
-    cacheInputAgeBlock = 0;
-    unitTest = false;
-    allowFreeTx = true;
     protocolVersion = protocolVersionIn;
-    nScanningErrorCount = 0;
-    nLastScanningErrorBlockHeight = 0;
     nTier = nMasternodeTier;
 }
 
 CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
-{
-    vin = mn.vin;
-    addr = mn.addr;
-    pubKeyCollateralAddress = mn.pubKeyCollateralAddress;
-    pubKeyMasternode = mn.pubKeyMasternode;
-    sig = mn.sig;
-    activeState = mn.activeState;
-    sigTime = mn.sigTime;
-    lastPing = mn.lastPing;
-    cacheInputAge = mn.cacheInputAge;
-    cacheInputAgeBlock = mn.cacheInputAgeBlock;
-    unitTest = mn.unitTest;
-    allowFreeTx = mn.allowFreeTx;
-    protocolVersion = mn.protocolVersion;
-    nScanningErrorCount = mn.nScanningErrorCount;
-    nLastScanningErrorBlockHeight = mn.nLastScanningErrorBlockHeight;
-    nTier = mn.nTier;
-}
+  : CMasternode(mn)
+{}
 
 
 bool CMasternodeBroadcastFactory::checkBlockchainSync(std::string& strErrorRet, bool fOffline)
@@ -1101,7 +1053,7 @@ bool CMasternodePing::CheckAndUpdate(CMasternode& mn, int& nDos, bool fRequireEn
     return false;
 }
 
-void CMasternodePing::Relay()
+void CMasternodePing::Relay() const
 {
     CInv inv(MSG_MASTERNODE_PING, GetHash());
     RelayInv(inv);

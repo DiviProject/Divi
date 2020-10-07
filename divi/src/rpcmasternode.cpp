@@ -97,12 +97,14 @@ Value allocatefunds(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid masternode tier");
     }
 
-	CWalletTx wtx;
+    EnsureWalletIsUnlocked();
+
+    CWalletTx wtx;
     SendMoney(acctAddr.Get(), CMasternode::GetTierCollateralAmount(nMasternodeTier), wtx);
 
-	Object obj;
+    Object obj;
     obj.push_back(Pair("txhash", wtx.GetHash().GetHex()));
-	return obj;
+    return obj;
 }
 
 Value fundmasternode(const Array& params, bool fHelp)
@@ -154,8 +156,8 @@ Value fundmasternode(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_VERIFY_ERROR, "Couldn't verify transaction");
     }
 
-    if (!pwalletMain->IsLocked())
-        pwalletMain->TopUpKeyPool();
+    EnsureWalletIsUnlocked();
+    pwalletMain->TopUpKeyPool();
 
     // Generate a new key that is added to wallet
     CBitcoinAddress address = GetAccountAddress("reserved->" + alias);
@@ -242,6 +244,8 @@ Value setupmasternode(const Array& params, bool fHelp)
             "\"broadcast_data\"			    (string) funding transaction id necessary for next step.\n");
 
     Object result;
+
+    EnsureWalletIsUnlocked();
 
     CBitcoinAddress address = GetAccountAddress("reserved->" + params[0].get_str() );
     CKeyID keyID;
@@ -507,6 +511,8 @@ Value startmasternode(const Array& params, bool fHelp)
 
     std::string alias = params[0].get_str();
     bool deferRelay = (params.size() == 1)? false: params[1].get_bool();
+
+    EnsureWalletIsUnlocked();
 
     Object result;
     bool fFound = false;

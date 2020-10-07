@@ -842,30 +842,8 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
         return false;
     }
 
-    std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
-    std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
-    std::string strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
-
     if (protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) {
         LogPrint("masternode","mnb - ignoring outdated Masternode %s protocol version %d\n", vin.prevout.hash.ToString(), protocolVersion);
-        return false;
-    }
-
-    CScript pubkeyScript;
-    pubkeyScript = GetScriptForDestination(pubKeyCollateralAddress.GetID());
-
-    if (pubkeyScript.size() != 25) {
-        LogPrintf("%s : mnb - pubkey the wrong size\n", __func__);
-        nDos = 100;
-        return false;
-    }
-
-    CScript pubkeyScript2;
-    pubkeyScript2 = GetScriptForDestination(pubKeyMasternode.GetID());
-
-    if (pubkeyScript2.size() != 25) {
-        LogPrintf("%s : mnb - pubkey2 the wrong size\n", __func__);
-        nDos = 100;
         return false;
     }
 
@@ -873,6 +851,8 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
         LogPrint("masternode","mnb - Ignore Not Empty ScriptSig %s\n", vin.prevout.hash.ToString());
         return false;
     }
+
+    const std::string strMessage = getMessageToSign();
 
     std::string errorMessage = "";
     if (!CObfuScationSigner::VerifyMessage(pubKeyCollateralAddress, sig, strMessage, errorMessage)) {
@@ -887,16 +867,15 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
     // no such masternode, nothing to update
     if (pmn == NULL)
         return true;
-    else {
-        // this broadcast older than we have, it's bad.
-        if (pmn->sigTime > sigTime) {
-            LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (existing broadcast is at %d)\n",
-                     sigTime, vin.prevout.hash.ToString(), pmn->sigTime);
-            return false;
-        }
-        // masternode is not enabled yet/already, nothing to update
-        if (!pmn->IsEnabled()) return true;
+
+    // this broadcast older than we have, it's bad.
+    if (pmn->sigTime > sigTime) {
+        LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (existing broadcast is at %d)\n",
+                 sigTime, vin.prevout.hash.ToString(), pmn->sigTime);
+        return false;
     }
+    // masternode is not enabled yet/already, nothing to update
+    if (!pmn->IsEnabled()) return true;
 
     // mn.pubkey = pubkey, IsVinAssociatedWithPubkey is validated once below,
     //   after that they just need to match
@@ -969,8 +948,7 @@ std::string CMasternodeBroadcast::getMessageToSign() const
     std::string vchPubKey(pubKeyCollateralAddress.begin(), pubKeyCollateralAddress.end());
     std::string vchPubKey2(pubKeyMasternode.begin(), pubKeyMasternode.end());
 
-    std::string strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
-    return strMessage;
+    return addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
 }
 
 bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning)
@@ -978,7 +956,7 @@ bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress, bool updateTimeBefor
     std::string errorMessage;
 
     if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
-    std::string strMessage = getMessageToSign();
+    const std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, sig, keyCollateralAddress)) {
         LogPrint("masternode","CMasternodeBroadcast::Sign() - Error: %s\n", errorMessage);
@@ -1033,7 +1011,7 @@ bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool 
     std::string errorMessage;
 
     if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
-    std::string strMessage = getMessageToSign();
+    const std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
         LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage);
@@ -1074,7 +1052,7 @@ bool CMasternodePing::CheckAndUpdate(CMasternode& mn, int& nDos, bool fRequireEn
         // update only if there is no known ping for this masternode or
         // last ping was more then MASTERNODE_MIN_MNP_SECONDS-60 ago comparing to this one
         if (!mn.IsPingedWithin(MASTERNODE_MIN_MNP_SECONDS - 60, sigTime)) {
-            std::string strMessage = vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
+            const std::string strMessage = getMessageToSign();
 
             std::string errorMessage = "";
             if (!CObfuScationSigner::VerifyMessage(mn.pubKeyMasternode, vchSig, strMessage, errorMessage)) {

@@ -695,11 +695,15 @@ bool CMasternodePaymentWinner::IsValid(CNode* pnode, std::string& strError) cons
 
     if(!masternodeSync.IsSynced()){ return true;}
 
-    std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(seedHash, nBlockHeight, true);
-    auto it = std::find(mnQueue.begin(),mnQueue.end(), mnodeman.Find(payee));
-    if(it == mnQueue.end())
-        return false;
-    return (std::distance(mnQueue.begin(), it) < 2 * MNPAYMENTS_SIGNATURES_TOTAL);
+    /* Make sure that the payee is in our own payment queue near the top.  */
+    const std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(seedHash, nBlockHeight, true);
+    for (int i = 0; i < std::min<int>(2 * MNPAYMENTS_SIGNATURES_TOTAL, mnQueue.size()); ++i) {
+        const auto& mn = *mnQueue[i];
+        const CScript mnPayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
+        if (mnPayee == payee)
+            return true;
+    }
+    return false;
 }
 
 bool CMasternodePayments::ProcessBlock(const CBlockIndex* pindex, const int offset)

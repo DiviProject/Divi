@@ -147,8 +147,13 @@ public:
         READWRITE(nBlockHeight);
         READWRITE(payee);
         READWRITE(vchSig);
-        if (ser_action.ForRead()) {
-            /* After parsing from a stream, the seedHash field is not set
+
+        if (nType == SER_DISK) {
+            /* For saving in the on-disk cache files, we include the
+               seed hash as well.  */
+            READWRITE(seedHash);
+        } else if (ser_action.ForRead()) {
+            /* After parsing from network, the seedHash field is not set
                and must not be accessed (e.g. through GetScoreHash) until
                ComputeScoreHash() has been called explicitly in a place
                that is convenient.  We do this (rather than computing here

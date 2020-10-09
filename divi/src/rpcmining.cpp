@@ -256,7 +256,7 @@ public:
      *  on regtest meet the target always.  */
     void setCustomCoinstake(const CTransaction& tx)
     {
-        customCoinstake_ = std::make_unique<CTransaction>(tx);
+        customCoinstake_.reset(new CTransaction(tx));
     }
 
 };

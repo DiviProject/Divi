@@ -54,7 +54,10 @@ case $host in
   ;;
 esac
 dnl Require C++11 compiler (no GNU extensions)
+dnl We also want to enforce just C++11 (not allowing anything above,
+dnl like C++14-only features).
 AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory])
+CXXFLAGS="${CXXFLAGS} -std=c++11"
 
 dnl Unless the user specified OBJCXX, force it to be the same as CXX. This ensures
 dnl that we get the same -std flags for both.

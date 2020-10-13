@@ -1582,7 +1582,7 @@ CAmount CWalletTx::GetDebitInWallet(const isminefilter& filter,const CWallet& wa
     return debit;
 }
 
-CAmount CWalletTx::GetCredit(const isminefilter& filter) const
+CAmount CWalletTx::GetCreditInWallet(const isminefilter& filter, const CWallet& wallet) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it
     if (IsCoinBase() && GetBlocksToMaturity() > 0)
@@ -1594,7 +1594,7 @@ CAmount CWalletTx::GetCredit(const isminefilter& filter) const
         if (fCreditCached)
             credit += nCreditCached;
         else {
-            nCreditCached = pwallet->GetCredit(*this, ISMINE_SPENDABLE);
+            nCreditCached = wallet.GetCredit(*this, ISMINE_SPENDABLE);
             fCreditCached = true;
             credit += nCreditCached;
         }
@@ -1603,12 +1603,17 @@ CAmount CWalletTx::GetCredit(const isminefilter& filter) const
         if (fWatchCreditCached)
             credit += nWatchCreditCached;
         else {
-            nWatchCreditCached = pwallet->GetCredit(*this, ISMINE_WATCH_ONLY);
+            nWatchCreditCached = wallet.GetCredit(*this, ISMINE_WATCH_ONLY);
             fWatchCreditCached = true;
             credit += nWatchCreditCached;
         }
     }
     return credit;
+}
+
+CAmount CWalletTx::GetCredit(const isminefilter& filter) const
+{
+    return pwallet? GetCreditInWallet(filter,*pwallet): 0;
 }
 
 CAmount CWalletTx::GetImmatureCredit(bool fUseCache) const

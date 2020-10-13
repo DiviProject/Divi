@@ -1337,7 +1337,7 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived,
     strSentAccount = strFromAccount;
 
     // Compute fee:
-    CAmount nDebit = GetDebit(filter);
+    CAmount nDebit = GetDebitInWallet(filter,*pwallet);
     if (nDebit > 0) // debit>0 means we signed/sent this transaction
     {
         CAmount nValueOut = GetValueOut();
@@ -1582,11 +1582,6 @@ CAmount CWalletTx::GetDebitInWallet(const isminefilter& filter,const CWallet& wa
     return debit;
 }
 
-CAmount CWalletTx::GetDebit(const isminefilter& filter) const
-{
-    return pwallet? GetDebitInWallet(filter,*pwallet): 0;
-}
-
 CAmount CWalletTx::GetCredit(const isminefilter& filter) const
 {
     // Must wait until coinbase is safely deep enough in the chain before valuing it
@@ -1705,7 +1700,7 @@ CAmount CWalletTx::GetChange() const
 }
 bool CWalletTx::IsFromMe(const isminefilter& filter) const
 {
-    return (GetDebit(filter) > 0);
+    return (GetDebitInWallet(filter,*pwallet) > 0);
 }
 
 bool CWalletTx::InMempool() const

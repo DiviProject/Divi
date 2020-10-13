@@ -658,7 +658,6 @@ public:
 
     //! filter decides which addresses will count towards the debit
     CAmount GetDebitInWallet(const isminefilter& filter, const CWallet& wallet) const;
-    CAmount GetDebit(const isminefilter& filter) const;
     CAmount GetCredit(const isminefilter& filter) const;
     CAmount GetImmatureCredit(bool fUseCache = true) const;
     CAmount GetAvailableCredit(bool fUseCache = true) const;

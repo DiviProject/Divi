@@ -1237,7 +1237,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
     if (wtx.IsCoinStake()) {
         wtx.GetComputedTxTime();
         CAmount nCredit = wtx.GetCredit(ISMINE_ALL);
-        CAmount nDebit = wtx.GetDebit(ISMINE_ALL);
+        CAmount nDebit = wtx.GetDebitInWallet(ISMINE_ALL,wallet);
         CAmount nNet = nCredit - nDebit;
 
         CTxDestination address;
@@ -1329,8 +1329,8 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
         {
             Object entry;
             entry.push_back(Pair("category", "move"));
-            auto nFee = wtx.GetDebit(ISMINE_SPENDABLE) - wtx.GetCredit(ISMINE_SPENDABLE);
-            entry.push_back(Pair("amount", ValueFromAmount(wtx.GetDebit(ISMINE_SPENDABLE) - wtx.GetChange() - nFee)));
+            auto nFee = wtx.GetDebitInWallet(ISMINE_SPENDABLE,wallet) - wtx.GetCredit(ISMINE_SPENDABLE);
+            entry.push_back(Pair("amount", ValueFromAmount(wtx.GetDebitInWallet(ISMINE_SPENDABLE,wallet) - wtx.GetChange() - nFee)));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
 
             Array addresses;
@@ -1734,7 +1734,7 @@ Value gettransaction(const Array& params, bool fHelp)
     const CWalletTx& wtx = *txPtr;
 
     CAmount nCredit = wtx.GetCredit(filter);
-    CAmount nDebit = wtx.GetDebit(filter);
+    CAmount nDebit = wtx.GetDebitInWallet(filter,*pwalletMain);
     CAmount nNet = nCredit - nDebit;
     CAmount nFee = (wtx.IsFromMe(filter) ? wtx.GetValueOut() - nDebit : 0);
 

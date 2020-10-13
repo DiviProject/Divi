@@ -349,18 +349,45 @@ bool CWallet::IsMine(const CTransaction& tx) const
 /** should probably be renamed to IsRelevantToMe */
 bool CWallet::IsFromMe(const CTransaction& tx) const
 {
-    return (GetDebit(tx, ISMINE_ALL) > 0);
+    return (ComputeDebit(tx, ISMINE_ALL) > 0);
 }
-CAmount CWallet::GetDebit(const CTransaction& tx, const isminefilter& filter) const
+CAmount CWallet::ComputeDebit(const CTransaction& tx, const isminefilter& filter) const
 {
     CAmount nDebit = 0;
     BOOST_FOREACH (const CTxIn& txin, tx.vin) {
         nDebit += GetDebit(txin, filter);
         if (!MoneyRange(nDebit))
-            throw std::runtime_error("CWallet::GetDebit() : value out of range");
+            throw std::runtime_error("CWallet::ComputeDebit() : value out of range");
     }
     return nDebit;
 }
+CAmount CWallet::GetDebit(const CWalletTx& tx, const isminefilter& filter) const
+{
+    if (tx.vin.empty())
+        return 0;
+
+    CAmount debit = 0;
+    if (filter & ISMINE_SPENDABLE) {
+        if (tx.fDebitCached)
+            debit += tx.nDebitCached;
+        else {
+            tx.nDebitCached = ComputeDebit(tx, ISMINE_SPENDABLE);
+            tx.fDebitCached = true;
+            debit += tx.nDebitCached;
+        }
+    }
+    if (filter & ISMINE_WATCH_ONLY) {
+        if (tx.fWatchDebitCached)
+            debit += tx.nWatchDebitCached;
+        else {
+            tx.nWatchDebitCached = ComputeDebit(tx, ISMINE_WATCH_ONLY);
+            tx.fWatchDebitCached = true;
+            debit += tx.nWatchDebitCached;
+        }
+    }
+    return debit;
+}
+
 CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter) const
 {
     CAmount nCredit = 0;
@@ -1557,29 +1584,7 @@ void CWalletTx::BindWallet(CWallet* pwalletIn)
 //! filter decides which addresses will count towards the debit
 CAmount CWalletTx::GetDebitInWallet(const isminefilter& filter,const CWallet& wallet) const
 {
-    if (vin.empty())
-        return 0;
-
-    CAmount debit = 0;
-    if (filter & ISMINE_SPENDABLE) {
-        if (fDebitCached)
-            debit += nDebitCached;
-        else {
-            nDebitCached = wallet.GetDebit(*this, ISMINE_SPENDABLE);
-            fDebitCached = true;
-            debit += nDebitCached;
-        }
-    }
-    if (filter & ISMINE_WATCH_ONLY) {
-        if (fWatchDebitCached)
-            debit += nWatchDebitCached;
-        else {
-            nWatchDebitCached = wallet.GetDebit(*this, ISMINE_WATCH_ONLY);
-            fWatchDebitCached = true;
-            debit += nWatchDebitCached;
-        }
-    }
-    return debit;
+    return wallet.GetDebit(*this,filter);
 }
 
 CAmount CWalletTx::GetCreditInWallet(const isminefilter& filter, const CWallet& wallet) const

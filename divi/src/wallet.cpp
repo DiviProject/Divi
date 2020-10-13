@@ -1611,11 +1611,6 @@ CAmount CWalletTx::GetCreditInWallet(const isminefilter& filter, const CWallet& 
     return credit;
 }
 
-CAmount CWalletTx::GetCredit(const isminefilter& filter) const
-{
-    return pwallet? GetCreditInWallet(filter,*pwallet): 0;
-}
-
 CAmount CWalletTx::GetImmatureCredit(bool fUseCache) const
 {
     if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0 && IsInMainChain()) {

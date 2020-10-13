@@ -1549,12 +1549,13 @@ void CWalletTx::RecomputeCachedQuantities()
 
 void CWalletTx::BindWallet(CWallet* pwalletIn)
 {
+    assert(pwalletIn);
     pwallet = pwalletIn;
     RecomputeCachedQuantities();
 }
 
 //! filter decides which addresses will count towards the debit
-CAmount CWalletTx::GetDebit(const isminefilter& filter) const
+CAmount CWalletTx::GetDebitInWallet(const isminefilter& filter,const CWallet& wallet) const
 {
     if (vin.empty())
         return 0;
@@ -1564,7 +1565,7 @@ CAmount CWalletTx::GetDebit(const isminefilter& filter) const
         if (fDebitCached)
             debit += nDebitCached;
         else {
-            nDebitCached = pwallet->GetDebit(*this, ISMINE_SPENDABLE);
+            nDebitCached = wallet.GetDebit(*this, ISMINE_SPENDABLE);
             fDebitCached = true;
             debit += nDebitCached;
         }
@@ -1573,12 +1574,17 @@ CAmount CWalletTx::GetDebit(const isminefilter& filter) const
         if (fWatchDebitCached)
             debit += nWatchDebitCached;
         else {
-            nWatchDebitCached = pwallet->GetDebit(*this, ISMINE_WATCH_ONLY);
+            nWatchDebitCached = wallet.GetDebit(*this, ISMINE_WATCH_ONLY);
             fWatchDebitCached = true;
             debit += nWatchDebitCached;
         }
     }
     return debit;
+}
+
+CAmount CWalletTx::GetDebit(const isminefilter& filter) const
+{
+    return pwallet? GetDebitInWallet(filter,*pwallet): 0;
 }
 
 CAmount CWalletTx::GetCredit(const isminefilter& filter) const

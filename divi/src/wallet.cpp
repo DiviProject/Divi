@@ -122,7 +122,11 @@ std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord:
     return  mapWallet.insert(std::make_pair(hash, newlyAddedTransaction));
 };
 
-void WalletTransactionRecord::UpdateMetadata(const uint256& hashOfTransactionToUpdate, const CWalletTx& updatedTransaction, bool updateDiskAndTimestamp)
+void WalletTransactionRecord::UpdateMetadata(
+    const uint256& hashOfTransactionToUpdate,
+    const CWalletTx& updatedTransaction,
+    bool updateDiskAndTimestamp,
+    const CWallet* walletPtr)
 {
     AssertLockHeld(cs_walletTxRecord);
     CWalletTx* wtxToUpdate = const_cast<CWalletTx*>(GetWalletTx(hashOfTransactionToUpdate));
@@ -140,6 +144,7 @@ void WalletTransactionRecord::UpdateMetadata(const uint256& hashOfTransactionToU
         {
             wtxToUpdate->nTimeReceived = copyFrom->nTimeReceived;
             wtxToUpdate->nOrderPos = copyFrom->nOrderPos;
+            if(walletPtr) WriteTxToDisk(walletPtr,*wtxToUpdate);
         }
     }
 }
@@ -303,8 +308,7 @@ void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransac
     for (const CWalletTx& wtxOld: oldTransactions)
     {
         uint256 hash = wtxOld.GetHash();
-        transactionRecord_.UpdateMetadata(hash,wtxOld,true);
-        WriteTxToDisk(this,*GetWalletTx(hash));
+        transactionRecord_.UpdateMetadata(hash,wtxOld,true,this);
     }
 }
 

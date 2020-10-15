@@ -1979,21 +1979,13 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
 
                 if (!found) continue;
 
-                VaultType vaultType;
-                isminetype mine = ::IsMine(*this,pcoin->vout[i].scriptPubKey,vaultType);
-                if (IsSpent(wtxid, i))
-                    continue;
-                if (mine == ISMINE_NO)
-                    continue;
-                if (mine == ISMINE_WATCH_ONLY)
-                    continue;
 
-                if (IsLockedCoin((*it).first, i))
+                isminetype mine = IsMine(pcoin->vout[i].scriptPubKey);
+
+                if(!CanBeSpent(pcoin,wtxid,i,coinControl,fIncludeZeroValue,mine))
+                {
                     continue;
-                if (pcoin->vout[i].nValue <= 0 && !fIncludeZeroValue)
-                    continue;
-                if (coinControl && coinControl->HasSelected() && !coinControl->fAllowOtherInputs && !coinControl->IsSelected((*it).first, i))
-                    continue;
+                }
 
                 bool fIsSpendable = false;
                 if ((mine & ISMINE_SPENDABLE) != ISMINE_NO || (mine & ISMINE_MULTISIG) != ISMINE_NO)

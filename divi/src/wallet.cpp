@@ -1930,8 +1930,10 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 
     return true;
 }
-bool CWallet::CanBeSpent(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, isminetype mine) const
+bool CWallet::CanBeSpent(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable) const
 {
+    isminetype mine = IsMine(pcoin->vout[i].scriptPubKey);
+
     if (IsSpent(wtxid, i))
         return false;
     if (mine == ISMINE_NO)
@@ -1946,6 +1948,7 @@ bool CWallet::CanBeSpent(const CWalletTx* pcoin, const uint256& wtxid, unsigned 
     if (coinControl && coinControl->HasSelected() && !coinControl->fAllowOtherInputs && !coinControl->IsSelected(wtxid, i))
         return false;
 
+    fIsSpendable = (mine & ISMINE_SPENDABLE) != ISMINE_NO || (mine & ISMINE_MULTISIG) != ISMINE_NO;
     return true;
 }
 void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, bool fUseIX, CAmount nExactValue) const
@@ -1968,15 +1971,12 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
                 bool found = (nExactValue>0)? pcoin->vout[i].nValue == nExactValue : true;
                 if (!found) continue;
 
-
-                isminetype mine = IsMine(pcoin->vout[i].scriptPubKey);
-
-                if(!CanBeSpent(pcoin,wtxid,i,coinControl,fIncludeZeroValue,mine))
+                bool fIsSpendable = false;
+                if(!CanBeSpent(pcoin,wtxid,i,coinControl,fIncludeZeroValue,fIsSpendable))
                 {
                     continue;
                 }
 
-                bool fIsSpendable = (mine & ISMINE_SPENDABLE) != ISMINE_NO || (mine & ISMINE_MULTISIG) != ISMINE_NO;
                 vCoins.emplace_back(COutput(pcoin, i, nDepth, fIsSpendable));
             }
         }

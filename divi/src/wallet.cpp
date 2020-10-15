@@ -1930,6 +1930,24 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 
     return true;
 }
+bool CWallet::CanBeSpent(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, isminetype mine) const
+{
+    if (IsSpent(wtxid, i))
+        return false;
+    if (mine == ISMINE_NO)
+        return false;
+    if (mine == ISMINE_WATCH_ONLY)
+        return false;
+
+    if (IsLockedCoin(wtxid, i))
+        return false;
+    if (pcoin->vout[i].nValue <= 0 && !fIncludeZeroValue)
+        return false;
+    if (coinControl && coinControl->HasSelected() && !coinControl->fAllowOtherInputs && !coinControl->IsSelected(wtxid, i))
+        return false;
+
+    return true;
+}
 void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, bool fUseIX, CAmount nExactValue) const
 {
     vCoins.clear();

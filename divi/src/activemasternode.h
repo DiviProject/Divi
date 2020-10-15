@@ -30,9 +30,6 @@ private:
     /// Ping Masternode
     bool SendMasternodePing(std::string& errorMessage);
 
-    /// Register any Masternode
-    static bool Register(CMasternodeBroadcast &mnb, bool deferRelay = false);
-
     CMasternodeConfig& masternodeConfigurations_;
 
     bool& fMasterNode_;
@@ -61,12 +58,8 @@ public:
     void ManageStatus();
     std::string GetStatus();
 
-    /// Register remote Masternode
-    static bool Register(
-        const CMasternodeConfig::CMasternodeEntry& configEntry,
-        std::string& errorMessage,
-        CMasternodeBroadcast& mnb,
-        bool deferRelay = false);
+    /// Register any Masternode
+    static bool Register(CMasternodeBroadcast &mnb, bool deferRelay = false);
 
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);

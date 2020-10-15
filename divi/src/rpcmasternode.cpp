@@ -475,24 +475,18 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
             "\nResult:\n"
             "\"status\"	(string) status of broadcast\n");
 
-    Object result;
     CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params[0].get_str());
     if(params.size()==2)
     {
         mnb.sig = ParseHex(params[1].get_str());
     }
 
-    int nDoS = 0;
-    if(mnb.CheckAndUpdate(nDoS) &&
-        mnb.CheckInputsAndAdd(nDoS))
-    {
-        mnb.Relay();
+    Object result;
+    if (CActiveMasternode::Register(mnb, false))
         result.push_back(Pair("status", "success"));
-    }
     else
-    {
         result.push_back(Pair("status","failed"));
-    }
+
     return result;
 }
 
@@ -516,18 +510,25 @@ Value startmasternode(const Array& params, bool fHelp)
 
     Object result;
     bool fFound = false;
-    for(auto &&configEntry : masternodeConfig.getEntries())
+    for(const auto& configEntry : masternodeConfig.getEntries())
     {
         if(configEntry.getAlias() == alias)
         {
             fFound = true;
             std::string strError;
             CMasternodeBroadcast mnb;
-            if(CActiveMasternode::Register(
-                configEntry,
-                strError,
-                mnb,
-                deferRelay))
+
+            if(!CMasternodeBroadcastFactory::Create(
+                    configEntry,
+                    strError,
+                    mnb,
+                    false,
+                    deferRelay))
+            {
+                break;
+            }
+
+            if(CActiveMasternode::Register(mnb, deferRelay))
             {
                 result.push_back(Pair("status", "success"));
                 if(deferRelay)

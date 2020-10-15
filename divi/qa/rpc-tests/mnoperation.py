@@ -158,7 +158,10 @@ class MnStatusTest (BitcoinTestFramework):
     # cold node online.
     self.nodes[0].startmasternode ("mn1")
     time.sleep (0.1)
-    self.nodes[0].startmasternode ("mn2")
+    broadcast = self.nodes[0].startmasternode ("mn2", True)
+    assert_equal (broadcast["status"], "success")
+    res = self.nodes[2].broadcaststartmasternode (broadcast["broadcastData"])
+    assert_equal (res["status"], "success")
     time.sleep (0.1)
     self.stop_node (0)
     time.sleep (0.1)

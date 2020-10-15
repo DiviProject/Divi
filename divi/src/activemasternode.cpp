@@ -169,28 +169,14 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
     }
 }
 
-bool CActiveMasternode::Register(
-    const CMasternodeConfig::CMasternodeEntry& configEntry,
-    std::string& errorMessage,
-    CMasternodeBroadcast& mnb,
-    bool deferRelay)
-{
-    if(!CMasternodeBroadcastFactory::Create(
-            configEntry,
-            errorMessage,
-            mnb,
-            false,
-            deferRelay))
-    {
-        return false;
-    }
-
-    addrman.Add(CAddress(mnb.addr), CNetAddr("127.0.0.1"), 2 * 60 * 60);
-    return Register(mnb,deferRelay);
-}
-
 bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
 {
+    int nDoS = 0;
+    if(!mnb.CheckAndUpdate(nDoS) || !mnb.CheckInputsAndAdd(nDoS))
+        return false;
+
+    addrman.Add(CAddress(mnb.addr), CNetAddr("127.0.0.1"), 2 * 60 * 60);
+
     auto mnp = mnb.lastPing;
     mnodeman.mapSeenMasternodePing.insert(std::make_pair(mnp.GetHash(), mnp));
 

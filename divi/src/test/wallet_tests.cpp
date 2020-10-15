@@ -453,10 +453,9 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
     BOOST_CHECK(!fIsSpendable);/**/
 }
 
-
 BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
 {
-    CWallet otherWallet("willAllowSpendingNotLockedCoin.dat");
+    CWallet otherWallet("willAllowSpendingLockedCoinAfterUnlock.dat");
     populateWalletWithKeys(otherWallet);
     CScript defaultScript = GetScriptForDestination(otherWallet.vchDefaultKey.GetID());
 

@@ -35,6 +35,17 @@ void populateWalletWithKeys(CWallet& wallet)
     wallet.SetDefaultKey(newDefaultKey);
 }
 
+CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& index)
+{
+    CMutableTransaction tx;
+    index = 5;
+    tx.nLockTime = 0;        // so all transactions get different hashes
+    tx.vout.resize(10);
+    tx.vout[index].nValue = 100*COIN;
+    tx.vout[index].scriptPubKey = defaultScript;
+    tx.vin.resize(1);
+    return tx;
+}
 
 BOOST_AUTO_TEST_SUITE(wallet_tests)
 
@@ -336,14 +347,8 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingUnlockedCoin)
     populateWalletWithKeys(otherWallet);
     CScript defaultScript = GetScriptForDestination(otherWallet.vchDefaultKey.GetID());
 
-
-    CMutableTransaction tx;
-    unsigned index = 5;
-    tx.nLockTime = 0;        // so all transactions get different hashes
-    tx.vout.resize(10);
-    tx.vout[index].nValue = 100*COIN;
-    tx.vout[index].scriptPubKey = defaultScript;
-    tx.vin.resize(1);
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
     CWalletTx wtx(&otherWallet, tx);
 
 
@@ -360,13 +365,8 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
     populateWalletWithKeys(otherWallet);
     CScript defaultScript = GetScriptForDestination(otherWallet.vchDefaultKey.GetID());
 
-    CMutableTransaction tx;
-    unsigned index = 5;
-    tx.nLockTime = 0;        // so all transactions get different hashes
-    tx.vout.resize(10);
-    tx.vout[index].nValue = 100*COIN;
-    tx.vout[index].scriptPubKey = defaultScript;
-    tx.vin.resize(1);
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
     CWalletTx wtx(&otherWallet, tx);
 
 
@@ -387,13 +387,8 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromKeyOutsideWallet)
     CPubKey nonWalletPubKey = key.GetPubKey();
     CScript defaultScript = GetScriptForDestination(nonWalletPubKey.GetID());
 
-    CMutableTransaction tx;
-    unsigned index = 5;
-    tx.nLockTime = 0;        // so all transactions get different hashes
-    tx.vout.resize(10);
-    tx.vout[index].nValue = 100*COIN;
-    tx.vout[index].scriptPubKey = defaultScript;
-    tx.vin.resize(1);
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
     CWalletTx wtx(&otherWallet, tx);
 
 
@@ -412,13 +407,8 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
     CScript defaultScript = GetScriptForDestination(nonWalletPubKey.GetID());
 
 
-    CMutableTransaction tx;
-    unsigned index = 5;
-    tx.nLockTime = 0;        // so all transactions get different hashes
-    tx.vout.resize(10);
-    tx.vout[index].nValue = 100*COIN;
-    tx.vout[index].scriptPubKey = defaultScript;
-    tx.vin.resize(1);
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
     CWalletTx wtx(&otherWallet, tx);
 
 
@@ -436,13 +426,8 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
     CScript defaultScript = GetScriptForDestination(otherWallet.vchDefaultKey.GetID());
 
 
-    CMutableTransaction tx;
-    unsigned index = 5;
-    tx.nLockTime = 0;        // so all transactions get different hashes
-    tx.vout.resize(10);
-    tx.vout[index].nValue = 100*COIN;
-    tx.vout[index].scriptPubKey = defaultScript;
-    tx.vin.resize(1);
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
     CWalletTx wtx(&otherWallet, tx);
 
 
@@ -460,13 +445,8 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
     CScript defaultScript = GetScriptForDestination(otherWallet.vchDefaultKey.GetID());
 
 
-    CMutableTransaction tx;
-    unsigned index = 5;
-    tx.nLockTime = 0;        // so all transactions get different hashes
-    tx.vout.resize(10);
-    tx.vout[index].nValue = 100*COIN;
-    tx.vout[index].scriptPubKey = defaultScript;
-    tx.vin.resize(1);
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
     CWalletTx wtx(&otherWallet, tx);
 
 

@@ -1965,18 +1965,7 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
             }
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++) {
-                bool found = false;
-
-                if(nExactValue > 0)
-                {
-                    found = pcoin->vout[i].nValue == nExactValue;
-                }
-                else
-                {
-                    found = true;
-                }
-
-
+                bool found = (nExactValue>0)? pcoin->vout[i].nValue == nExactValue : true;
                 if (!found) continue;
 
 

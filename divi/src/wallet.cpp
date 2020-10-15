@@ -1940,24 +1940,11 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
             const uint256& wtxid = it->first;
             const CWalletTx* pcoin = &(*it).second;
 
-            if (!CheckFinalTx(*pcoin))
+            int nDepth = 0;
+            if(!SatisfiesMinimumDepthRequirements(pcoin,nDepth,fOnlyConfirmed,fUseIX))
+            {
                 continue;
-
-            if (fOnlyConfirmed && !IsTrusted(*pcoin))
-                continue;
-
-            if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
-                continue;
-
-            int nDepth = pcoin->GetDepthInMainChain(false);
-            // do not use IX for inputs that have less then 6 blockchain confirmations
-            if (fUseIX && nDepth < 6)
-                continue;
-
-            // We should not consider coins which aren't at least in our mempool
-            // It's possible for these to be conflicted via ancestors which we may never be able to detect
-            if (nDepth == 0 && !pcoin->InMempool())
-                continue;
+            }
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++) {
                 bool found = false;

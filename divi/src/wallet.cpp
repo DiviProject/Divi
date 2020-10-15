@@ -1907,6 +1907,29 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
 /**
  * populate vCoins with vector of available COutputs.
  */
+bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed, bool fUseIX) const
+{
+    if (!CheckFinalTx(*pcoin))
+        return false;
+
+    if (fOnlyConfirmed && !IsTrusted(*pcoin))
+        return false;
+
+    if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
+        return false;
+
+    nDepth = pcoin->GetDepthInMainChain(false);
+    // do not use IX for inputs that have less then 6 blockchain confirmations
+    if (fUseIX && nDepth < 6)
+        return false;
+
+    // We should not consider coins which aren't at least in our mempool
+    // It's possible for these to be conflicted via ancestors which we may never be able to detect
+    if (nDepth == 0 && !pcoin->InMempool())
+        return false;
+
+    return true;
+}
 void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, bool fUseIX, CAmount nExactValue) const
 {
     vCoins.clear();

@@ -281,7 +281,7 @@ public:
 
     //! check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf);
-
+    bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed, bool fUseIX) const;
     void AvailableCoins(std::vector<COutput>& vCoins,
                         bool fOnlyConfirmed = true,
                         const CCoinControl* coinControl = NULL,

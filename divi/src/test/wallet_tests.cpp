@@ -378,4 +378,78 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
     BOOST_CHECK(!fIsSpendable);/**/
 }
 
+BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromKeyOutsideWallet)
+{
+    CWallet otherWallet("willNotAllowSpendingFromKeyOutsideWallet.dat");
+    populateWalletWithKeys(otherWallet);
+
+    CKey key; key.MakeNewKey(true);
+    CPubKey nonWalletPubKey = key.GetPubKey();
+    CScript defaultScript = GetScriptForDestination(nonWalletPubKey.GetID());
+
+    CMutableTransaction tx;
+    unsigned index = 5;
+    tx.nLockTime = 0;        // so all transactions get different hashes
+    tx.vout.resize(10);
+    tx.vout[index].nValue = 100*COIN;
+    tx.vout[index].scriptPubKey = defaultScript;
+    tx.vin.resize(1);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+    bool fIsSpendable = false;
+    BOOST_CHECK(!otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(!fIsSpendable);/**/
+}
+BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
+{
+    CWallet otherWallet("willNotAllowSpendingFromWatchOnlyAddress.dat");
+    populateWalletWithKeys(otherWallet);
+
+    CKey key; key.MakeNewKey(true);
+    CPubKey nonWalletPubKey = key.GetPubKey();
+    CScript defaultScript = GetScriptForDestination(nonWalletPubKey.GetID());
+
+
+    CMutableTransaction tx;
+    unsigned index = 5;
+    tx.nLockTime = 0;        // so all transactions get different hashes
+    tx.vout.resize(10);
+    tx.vout[index].nValue = 100*COIN;
+    tx.vout[index].scriptPubKey = defaultScript;
+    tx.vin.resize(1);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+    otherWallet.AddWatchOnly(defaultScript);
+    bool fIsSpendable = false;
+    BOOST_CHECK(!otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(!fIsSpendable);/**/
+}
+
+BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
+{
+    CWallet otherWallet("willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned.dat");
+    populateWalletWithKeys(otherWallet);
+    CScript defaultScript = GetScriptForDestination(otherWallet.vchDefaultKey.GetID());
+
+
+    CMutableTransaction tx;
+    unsigned index = 5;
+    tx.nLockTime = 0;        // so all transactions get different hashes
+    tx.vout.resize(10);
+    tx.vout[index].nValue = 100*COIN;
+    tx.vout[index].scriptPubKey = defaultScript;
+    tx.vin.resize(1);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+    otherWallet.AddWatchOnly(defaultScript);
+    bool fIsSpendable = false;
+    BOOST_CHECK(!otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(!fIsSpendable);/**/
+}
 BOOST_AUTO_TEST_SUITE_END()

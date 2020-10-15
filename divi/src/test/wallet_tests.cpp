@@ -3,6 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
+#include <script/standard.h>
 
 #include <set>
 #include <stdint.h>
@@ -22,6 +23,18 @@
 using namespace std;
 
 typedef set<pair<const CWalletTx*,unsigned int> > CoinSet;
+
+void populateWalletWithKeys(CWallet& wallet)
+{
+    bool firstLoad = true;
+    CPubKey newDefaultKey;
+    wallet.LoadWallet(firstLoad);
+    wallet.GenerateNewHDChain();
+    wallet.SetMinVersion(FEATURE_HD);
+    wallet.GetKeyFromPool(newDefaultKey, false);
+    wallet.SetDefaultKey(newDefaultKey);
+}
+
 
 BOOST_AUTO_TEST_SUITE(wallet_tests)
 
@@ -311,11 +324,58 @@ BOOST_AUTO_TEST_CASE(check_if_charging_correct_amount_per_kilobyte)
     CFeeRate feeRate = CFeeRate( 1 );
 
     CAmount actualFee = feeRate.GetFee( kilobytes );
-    
+
     CAmount expectedFee = 1;
-    
+
     BOOST_CHECK_EQUAL(actualFee, expectedFee);
 }
 
+BOOST_AUTO_TEST_CASE(willAllowSpendingNotLockedCoin)
+{
+    CWallet otherWallet("willAllowSpendingNotLockedCoin.dat");
+    populateWalletWithKeys(otherWallet);
+    CScript defaultScript = GetScriptForDestination(otherWallet.vchDefaultKey.GetID());
+
+
+    CMutableTransaction tx;
+    unsigned index = 5;
+    tx.nLockTime = 0;        // so all transactions get different hashes
+    tx.vout.resize(10);
+    tx.vout[index].nValue = 100*COIN;
+    tx.vout[index].scriptPubKey = defaultScript;
+    tx.vin.resize(1);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(fIsSpendable);
+}
+
+BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
+{
+    CWallet otherWallet("willNotAllowSpendingLockedCoin.dat");
+    populateWalletWithKeys(otherWallet);
+    CScript defaultScript = GetScriptForDestination(otherWallet.vchDefaultKey.GetID());
+
+    CMutableTransaction tx;
+    unsigned index = 5;
+    tx.nLockTime = 0;        // so all transactions get different hashes
+    tx.vout.resize(10);
+    tx.vout[index].nValue = 100*COIN;
+    tx.vout[index].scriptPubKey = defaultScript;
+    tx.vin.resize(1);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+    otherWallet.LockCoin(COutPoint(wtx.GetHash(),index));
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(!otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(!fIsSpendable);/**/
+}
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -35,13 +35,13 @@ void populateWalletWithKeys(CWallet& wallet)
     wallet.SetDefaultKey(newDefaultKey);
 }
 
-CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& index)
+CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& index, unsigned numberOfCoins = 100u)
 {
     CMutableTransaction tx;
     index = 5;
     tx.nLockTime = 0;        // so all transactions get different hashes
     tx.vout.resize(10);
-    tx.vout[index].nValue = 100*COIN;
+    tx.vout[index].nValue = numberOfCoins*COIN;
     tx.vout[index].scriptPubKey = defaultScript;
     tx.vin.resize(1);
     return tx;

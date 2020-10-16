@@ -13,6 +13,8 @@
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <script/StakingVaultScript.h>
+
 // how many times to run all the tests to have a chance to catch errors that only show up with particular random shuffles
 #define RUN_TESTS 100
 
@@ -480,5 +482,137 @@ BOOST_AUTO_TEST_CASE(willMakeNoDistinctionBetweenAllCoinsAndStakableCoins)
     BOOST_CHECK(otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,STAKABLE_COINS));
     BOOST_CHECK(fIsSpendable);
 }
+
+BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndSpendableCoinsSelected)
+{
+    CWallet otherWallet("willDisallowSelectingVaultFundsIfManagedAndSpendableCoinsSelected.dat");
+    populateWalletWithKeys(otherWallet);
+    CKey ownerKey;
+    ownerKey.MakeNewKey(true);
+    CScript defaultScript =  CreateStakingVaultScript(
+        ToByteVector(ownerKey.GetPubKey().GetID()),
+        ToByteVector(otherWallet.vchDefaultKey.GetID()) );
+
+
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(!otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,ALL_SPENDABLE_COINS));
+}
+
+BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnerAndSpendableCoinsSelected)
+{
+    CWallet otherWallet("willDisallowSelectingVaultFundsIfOwnerAndSpendableCoinsSelected.dat");
+    populateWalletWithKeys(otherWallet);
+    CKey managerKey;
+    managerKey.MakeNewKey(true);
+    CScript defaultScript =  CreateStakingVaultScript(
+        ToByteVector(otherWallet.vchDefaultKey.GetID()),
+        ToByteVector(managerKey.GetPubKey().GetID()) );
+
+
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(!otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,ALL_SPENDABLE_COINS));
+}
+
+BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnedAndStakableCoinsSelected)
+{
+    CWallet otherWallet("willDisallowSelectingVaultFundsIfOwnedAndStakableCoinsSelected.dat");
+    populateWalletWithKeys(otherWallet);
+    CKey managerKey;
+    managerKey.MakeNewKey(true);
+    CScript defaultScript =  CreateStakingVaultScript(
+        ToByteVector(otherWallet.vchDefaultKey.GetID()),
+        ToByteVector(managerKey.GetPubKey().GetID()) );
+
+
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(!otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,STAKABLE_COINS));
+}
+BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfManagedAndStakableCoinsSelected)
+{
+    CWallet otherWallet("willAllowSelectingVaultFundsIfManagedAndStakableCoinsSelected.dat");
+    populateWalletWithKeys(otherWallet);
+    CKey ownerKey;
+    ownerKey.MakeNewKey(true);
+    CScript defaultScript =  CreateStakingVaultScript(
+        ToByteVector(ownerKey.GetPubKey().GetID()),
+        ToByteVector(otherWallet.vchDefaultKey.GetID()) );
+
+
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,STAKABLE_COINS));
+}
+
+BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsSelected)
+{
+    CWallet otherWallet("willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsSelected.dat");
+    populateWalletWithKeys(otherWallet);
+    CKey ownerKey;
+    ownerKey.MakeNewKey(true);
+    CScript defaultScript =  CreateStakingVaultScript(
+        ToByteVector(ownerKey.GetPubKey().GetID()),
+        ToByteVector(otherWallet.vchDefaultKey.GetID()) );
+
+
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(!otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,OWNED_VAULT_COINS));
+}
+
+BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfOwnerAndOwnedVaultCoinsSelected)
+{
+    CWallet otherWallet("willAllowSelectingVaultFundsIfOwnerAndOwnedVaultCoinsSelected.dat");
+    populateWalletWithKeys(otherWallet);
+    CKey managerKey;
+    managerKey.MakeNewKey(true);
+    CScript defaultScript =  CreateStakingVaultScript(
+        ToByteVector(otherWallet.vchDefaultKey.GetID()),
+        ToByteVector(managerKey.GetPubKey().GetID()) );
+
+
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,OWNED_VAULT_COINS));
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

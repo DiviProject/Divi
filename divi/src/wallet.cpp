@@ -1932,7 +1932,16 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 }
 bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable, AvailableCoinsType coinType) const
 {
-    isminetype mine = IsMine(pcoin->vout[i].scriptPubKey);
+    VaultType vaultType;
+    isminetype mine = ::IsMine(*this, pcoin->vout[i].scriptPubKey, vaultType);
+    if(vaultType == MANAGED_VAULT && coinType != STAKABLE_COINS)
+    {
+        return false;
+    }
+    if(vaultType == OWNED_VAULT && coinType != OWNED_VAULT_COINS)
+    {
+        return false;
+    }
 
     if (IsSpent(wtxid, i))
         return false;

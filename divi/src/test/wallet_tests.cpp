@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingUnlockedCoin)
     otherWallet.AddToWallet(wtx);
 
     bool fIsSpendable = false;
-    BOOST_CHECK(otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
     BOOST_CHECK(fIsSpendable);
 }
 
@@ -374,7 +374,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
     otherWallet.LockCoin(COutPoint(wtx.GetHash(),index));
 
     bool fIsSpendable = false;
-    BOOST_CHECK(!otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(!otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
     BOOST_CHECK(!fIsSpendable);/**/
 }
 
@@ -394,7 +394,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromKeyOutsideWallet)
 
     otherWallet.AddToWallet(wtx);
     bool fIsSpendable = false;
-    BOOST_CHECK(!otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(!otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
     BOOST_CHECK(!fIsSpendable);/**/
 }
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
@@ -415,7 +415,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
     otherWallet.AddToWallet(wtx);
     otherWallet.AddWatchOnly(defaultScript);
     bool fIsSpendable = false;
-    BOOST_CHECK(!otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(!otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
     BOOST_CHECK(!fIsSpendable);/**/
 }
 
@@ -434,7 +434,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
     otherWallet.AddToWallet(wtx);
     otherWallet.AddWatchOnly(defaultScript);
     bool fIsSpendable = false;
-    BOOST_CHECK(!otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(!otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
     BOOST_CHECK(!fIsSpendable);/**/
 }
 
@@ -455,7 +455,7 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
     otherWallet.UnlockCoin(COutPoint(wtx.GetHash(),index));
 
     bool fIsSpendable = false;
-    BOOST_CHECK(otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
+    BOOST_CHECK(otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable));
     BOOST_CHECK(fIsSpendable);
 }
 
@@ -474,10 +474,10 @@ BOOST_AUTO_TEST_CASE(willMakeNoDistinctionBetweenAllCoinsAndStakableCoins)
     otherWallet.AddToWallet(wtx);
 
     bool fIsSpendable = false;
-    BOOST_CHECK(otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,ALL_SPENDABLE_COINS));
+    BOOST_CHECK(otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,ALL_SPENDABLE_COINS));
     BOOST_CHECK(fIsSpendable);
     fIsSpendable = false;
-    BOOST_CHECK(otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,STAKABLE_COINS));
+    BOOST_CHECK(otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,STAKABLE_COINS));
     BOOST_CHECK(fIsSpendable);
 }
 

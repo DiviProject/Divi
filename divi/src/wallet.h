@@ -281,7 +281,7 @@ public:
 
     //! check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf);
-    bool CanBeSpent(
+    bool IsAvailableForSpending(
         const CWalletTx* pcoin,
         const uint256& wtxid,
         unsigned int i,

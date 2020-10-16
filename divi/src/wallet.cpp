@@ -1930,7 +1930,7 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 
     return true;
 }
-bool CWallet::CanBeSpent(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable, AvailableCoinsType coinType) const
+bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable, AvailableCoinsType coinType) const
 {
     isminetype mine = IsMine(pcoin->vout[i].scriptPubKey);
 
@@ -1972,7 +1972,7 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
                 if (!found) continue;
 
                 bool fIsSpendable = false;
-                if(!CanBeSpent(pcoin,wtxid,i,coinControl,fIncludeZeroValue,fIsSpendable,nCoinType))
+                if(!IsAvailableForSpending(pcoin,wtxid,i,coinControl,fIncludeZeroValue,fIsSpendable,nCoinType))
                 {
                     continue;
                 }

@@ -124,6 +124,15 @@ public:
 
     void ProcessMasternodeConnections();
 
+    /** Processes a masternode broadcast.  It is verified first, and then
+     *  the masternode updated or added accordingly.
+     *
+     *  If pfrom is null, we assume this is a startmasternode or broadcaststartmasternode
+     *  command.  Otherwise, we apply any potential DoS banscore.
+     *
+     *  Returns true if all was valid, and false if not.  */
+    bool ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb);
+
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     /// Return the number of (unique) Masternodes

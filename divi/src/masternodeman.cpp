@@ -587,6 +587,52 @@ void CMasternodeMan::ProcessMasternodeConnections()
         return;
 }
 
+bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
+{
+    if (mapSeenMasternodeBroadcast.count(mnb.GetHash())) { //seen
+        masternodeSync.AddedMasternodeList(mnb.GetHash());
+        return true;
+    }
+
+    const auto& mnp = mnb.lastPing;
+    mnodeman.mapSeenMasternodePing.emplace(mnp.GetHash(), mnp);
+    mapSeenMasternodeBroadcast.insert(std::make_pair(mnb.GetHash(), mnb));
+
+    int nDoS = 0;
+    if (!mnb.CheckAndUpdate(nDoS)) {
+        if (nDoS > 0 && pfrom != nullptr)
+            Misbehaving(pfrom->GetId(), nDoS);
+        return false;
+    }
+
+    // make sure the vout that was signed is related to the transaction that spawned the Masternode
+    //  - this is expensive, so it's only done once per Masternode
+    if (!CObfuScationSigner::IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<MasternodeTier>(mnb.nTier))) {
+        LogPrintf("%s : mnb - Got mismatched pubkey and vin\n", __func__);
+        if (pfrom != nullptr)
+            Misbehaving(pfrom->GetId(), 33);
+        return false;
+    }
+
+    // make sure it's still unspent
+    //  - this is checked later by .check() in many places and by ThreadCheckObfuScationPool()
+    if (mnb.CheckInputsAndAdd(nDoS)) {
+        // use this as a peer
+        CNetAddr addr("127.0.0.1");
+        if (pfrom != nullptr)
+            addr = pfrom->addr;
+        addrman.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
+        masternodeSync.AddedMasternodeList(mnb.GetHash());
+    } else {
+        LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());
+        if (nDoS > 0 && pfrom != nullptr)
+            Misbehaving(pfrom->GetId(), nDoS);
+        return false;
+    }
+
+    return true;
+}
+
 void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
@@ -597,42 +643,8 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
     if (strCommand == "mnb") { //Masternode Broadcast
         CMasternodeBroadcast mnb;
         vRecv >> mnb;
-
-        if (mapSeenMasternodeBroadcast.count(mnb.GetHash())) { //seen
-            masternodeSync.AddedMasternodeList(mnb.GetHash());
-            return;
-        }
-        mapSeenMasternodeBroadcast.insert(std::make_pair(mnb.GetHash(), mnb));
-
-        int nDoS = 0;
-        if (!mnb.CheckAndUpdate(nDoS)) {
-            if (nDoS > 0)
-                Misbehaving(pfrom->GetId(), nDoS);
-
-            //failed
-            return;
-        }
-
-        // make sure the vout that was signed is related to the transaction that spawned the Masternode
-        //  - this is expensive, so it's only done once per Masternode
-        if (!CObfuScationSigner::IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<MasternodeTier>(mnb.nTier))) {
-            LogPrintf("%s : mnb - Got mismatched pubkey and vin\n", __func__);
-            Misbehaving(pfrom->GetId(), 33);
-            return;
-        }
-
-        // make sure it's still unspent
-        //  - this is checked later by .check() in many places and by ThreadCheckObfuScationPool()
-        if (mnb.CheckInputsAndAdd(nDoS)) {
-            // use this as a peer
-            addrman.Add(CAddress(mnb.addr), pfrom->addr, 2 * 60 * 60);
-            masternodeSync.AddedMasternodeList(mnb.GetHash());
-        } else {
-            LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());
-
-            if (nDoS > 0)
-                Misbehaving(pfrom->GetId(), nDoS);
-        }
+        if (!ProcessBroadcast(pfrom, mnb))
+          return;
     }
 
     else if (strCommand == "mnp") { //Masternode Ping

@@ -72,7 +72,7 @@ enum WalletFeature {
 };
 
 enum AvailableCoinsType {
-    ALL_COINS,                    // find masternode outputs including locked ones (use with caution)
+    ALL_SPENDABLE_COINS,                    // find masternode outputs including locked ones (use with caution)
     STAKABLE_COINS                          // UTXO's that are valid for staking
 };
 
@@ -249,9 +249,9 @@ private:
         std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet,
         CAmount& nValueRet,
         const CCoinControl* coinControl = NULL,
-        AvailableCoinsType coin_type = ALL_COINS,
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
         bool useIX = true) const;
-    //it was public bool SelectCoins(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_COINS, bool useIX = true) const;
+    //it was public bool SelectCoins(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_SPENDABLE_COINS, bool useIX = true) const;
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
 public:
@@ -288,13 +288,13 @@ public:
         const CCoinControl* coinControl,
         bool fIncludeZeroValue,
         bool& fIsSpendable,
-        AvailableCoinsType coinType = AvailableCoinsType::ALL_COINS) const;
+        AvailableCoinsType coinType = AvailableCoinsType::ALL_SPENDABLE_COINS) const;
     bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed, bool fUseIX) const;
     void AvailableCoins(std::vector<COutput>& vCoins,
                         bool fOnlyConfirmed = true,
                         const CCoinControl* coinControl = NULL,
                         bool fIncludeZeroValue = false,
-                        AvailableCoinsType nCoinType = ALL_COINS,
+                        AvailableCoinsType nCoinType = ALL_SPENDABLE_COINS,
                         bool fUseIX = false,
                         CAmount nExactValue = CAmount(0)) const;
     std::map<CBitcoinAddress, std::vector<COutput> > AvailableCoinsByAddress(bool fConfirmed = true, CAmount maxCoinValue = 0);
@@ -413,10 +413,10 @@ public:
         CAmount& nFeeRet,
         std::string& strFailReason,
         const CCoinControl* coinControl = NULL,
-        AvailableCoinsType coin_type = ALL_COINS,
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
         bool useIX = false,
         CAmount nFeePay = 0);
-    bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl = NULL, AvailableCoinsType coin_type = ALL_COINS, bool useIX = false, CAmount nFeePay = 0);
+    bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl = NULL, AvailableCoinsType coin_type = ALL_SPENDABLE_COINS, bool useIX = false, CAmount nFeePay = 0);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
     int GenerateObfuscationOutputs(int nTotalValue, std::vector<CTxOut>& vout);

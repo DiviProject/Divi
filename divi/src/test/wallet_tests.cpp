@@ -474,7 +474,7 @@ BOOST_AUTO_TEST_CASE(willMakeNoDistinctionBetweenAllCoinsAndStakableCoins)
     otherWallet.AddToWallet(wtx);
 
     bool fIsSpendable = false;
-    BOOST_CHECK(otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,ALL_COINS));
+    BOOST_CHECK(otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,ALL_SPENDABLE_COINS));
     BOOST_CHECK(fIsSpendable);
     fIsSpendable = false;
     BOOST_CHECK(otherWallet.CanBeSpent(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,STAKABLE_COINS));

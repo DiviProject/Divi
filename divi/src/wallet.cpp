@@ -2366,7 +2366,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 CAmount nValueIn = 0;
 
                 if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type, useIX)) {
-                    if (coin_type == ALL_COINS) {
+                    if (coin_type == ALL_SPENDABLE_COINS) {
                         strFailReason = translate("Insufficient funds.");
                     } else {
                         strFailReason = translate("Unable to locate enough Obfuscation denominated funds for this transaction.");
@@ -3384,10 +3384,10 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
 
         //get the fee amount
         CWalletTx wtxdummy;
-        wallet_.CreateTransaction(vecSend, wtxdummy, keyChange, nFeeRet, strErr, coinControl, ALL_COINS, false, CAmount(0));
+        wallet_.CreateTransaction(vecSend, wtxdummy, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS, false, CAmount(0));
         vecSend[0].second = nTotalRewardsValue - nFeeRet - 500;
 
-        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, nFeeRet, strErr, coinControl, ALL_COINS, false, CAmount(0))) {
+        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS, false, CAmount(0))) {
             LogPrintf("CombineDust createtransaction failed, reason: %s\n", strErr);
             continue;
         }

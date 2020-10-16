@@ -344,6 +344,38 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
     SendMoney(scriptPubKey, nValue, wtxNew, fUseIX);
 }
 
+Value getcoinavailability(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error("");
+
+    Object result;
+    if(!pwalletMain)
+    {
+        result.push_back(Pair("Error","No wallet available at this time"));
+    }
+    auto outputValueAdder = [](const std::vector<COutput>& outputsToTotal)
+        {
+            CAmount totalValue = 0;
+            for(const COutput& output: outputsToTotal)
+            {
+                totalValue += output.Value();
+            }
+            return totalValue;
+        };
+    std::vector<COutput> outputs;
+    pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::OWNED_VAULT_COINS);
+    result.push_back( Pair("Vaulted", ValueFromAmount(outputValueAdder(outputs))  ) );
+    outputs.clear();
+    pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::STAKABLE_COINS);
+    result.push_back( Pair("Stakable", ValueFromAmount(outputValueAdder(outputs)) ) );
+    outputs.clear();
+    pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::ALL_SPENDABLE_COINS);
+    result.push_back( Pair("Spendable", ValueFromAmount(outputValueAdder(outputs)) ) );
+
+    return result;
+}
+
 Value fundvault(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 4)

@@ -407,6 +407,7 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "sendmany", &sendmany, false, false, true},
         {"wallet", "sendtoaddress", &sendtoaddress, false, false, true},
         {"wallet", "fundvault", &fundvault, false, false, true},
+        {"wallet", "getcoinavailability", &getcoinavailability, false, false, true},
         {"wallet", "sendtoaddressix", &sendtoaddressix, false, false, true},
         {"wallet", "setaccount", &setaccount, true, false, true},
         {"wallet", "settxfee", &settxfee, true, false, true},

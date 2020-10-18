@@ -17,33 +17,38 @@ from datetime import datetime
 from PowToPosTransition import generatePoSBlocks
 
 
-def createVaultPoSStacks(nodes, all_nodes):
+def createVaultPoSStacks(nodes):
     """Makes sure all listed nodes have a stack of coins that is
     suitable for staking indefinitely.
 
     Ideally this should be done right on top of a clean chain."""
 
     # Make sure all nodes have matured coins.
-    for n in nodes:
-      n.setgenerate(True, 20)
+    mintingNode = nodes[0]
+    for node in [nodes[0],nodes[2]]:
+      node.setgenerate(True, 25)
       sync_blocks(nodes)
-    nodes[0].setgenerate(True, 20)
+    mintingNode.setgenerate(True, 20)
 
     # Split those coins up into many pieces that can each be used
     # individually for staking.
     parts = 20
     value = 400
-    mintingNode = nodes[0]
-    for vaultNode in [all_nodes[1]]:
-      for _ in range(parts):
-        mintingNode.fundvault(vaultNode.getnewaddress(),value)
+    for _ in range(parts):
+      mintingNode.sendtoaddress(mintingNode.getnewaddress(),value)
 
     # Make sure to get all those transactions mined.
     sync_mempools(nodes)
     while len(nodes[0].getrawmempool()) > 0:
       nodes[0].setgenerate(True, 1)
-    sync_blocks(all_nodes)
+    sync_blocks(nodes)
 
+def assert_strict_within(value, lower, upper):
+  assert_greater_than(upper,value)
+  assert_greater_than(value,lower)
+
+def assert_near(value, target, tolerance):
+  assert_strict_within(value, target-tolerance, target+tolerance)
 class StakingVaultFunding(BitcoinTestFramework):
 
     def setup_network(self):
@@ -59,7 +64,7 @@ class StakingVaultFunding(BitcoinTestFramework):
     def run_test(self):
         miningNode = self.nodes[0]
         vaultNode = self.nodes[1]
-        createVaultPoSStacks([miningNode], self.nodes)
+        createVaultPoSStacks(self.nodes)
         self.sync_all()
         powBlocks = 100
         # Mine missing PoW blocks
@@ -67,15 +72,42 @@ class StakingVaultFunding(BitcoinTestFramework):
         missingBlocks = max(powBlocks - cnt,0)
         generatePoSBlocks([miningNode], 0, missingBlocks)
 
+        self.sync_all()
+        sync_blocks(self.nodes)
+        self.nodes[2].setgenerate(True,20)
+        sync_blocks(self.nodes)
+
         # Send funds to vault
         self.sync_all()
-        assert_equal(vaultNode.getbalance(), 8000.0)
-        walletInfo = miningNode.getwalletinfo()
-        totalMiningNodeBalance = float(walletInfo["immature_balance"]) + float(walletInfo["balance"])
-        feeTolerance = 1.0
-        perBlockReward = 1250.0
-        assert totalMiningNodeBalance > perBlockReward*powBlocks - feeTolerance
-        assert totalMiningNodeBalance <= perBlockReward*powBlocks
+        totalMined = 1250.0*float(powBlocks-25)
+        intendedVaultedAmount = 8000.0
+        miningNodeAllocations = miningNode.getcoinavailability()
+        managedFunds = miningNodeAllocations["Stakable"] - miningNodeAllocations["Spendable"]
+        assert_near(miningNodeAllocations["Spendable"], totalMined,1.0)
+        assert_near(miningNodeAllocations["Stakable"], totalMined,1.0)
+        assert_near(miningNodeAllocations["Vaulted"], 0.0,1e-10)
+        assert_equal(miningNodeAllocations["Spendable"]+managedFunds+miningNodeAllocations["Vaulted"], miningNode.getbalance())
+        miningNode.fundvault(vaultNode.getnewaddress(),intendedVaultedAmount)
+
+        self.sync_all()
+        sync_blocks(self.nodes)
+        self.nodes[2].setgenerate(True,1)
+        sync_blocks(self.nodes)
+
+        miningNodeAllocations = miningNode.getcoinavailability()
+        managedFunds = miningNodeAllocations["Stakable"] - miningNodeAllocations["Spendable"]
+        assert_near(miningNodeAllocations["Spendable"], totalMined - intendedVaultedAmount,5.0)
+        assert_near(miningNodeAllocations["Stakable"], totalMined - intendedVaultedAmount,5.0)
+        assert_near(miningNodeAllocations["Vaulted"], intendedVaultedAmount,1e-10)
+        assert_equal(miningNodeAllocations["Spendable"] +managedFunds+ miningNodeAllocations["Vaulted"], miningNode.getbalance())
+
+        vaultNodeAllocations = vaultNode.getcoinavailability()
+        managedFunds = vaultNodeAllocations["Stakable"] - vaultNodeAllocations["Spendable"]
+        assert_near(vaultNodeAllocations["Spendable"], 0.0,1e-10)
+        assert_near(vaultNodeAllocations["Stakable"], intendedVaultedAmount,1e-10)
+        assert_near(vaultNodeAllocations["Vaulted"], 0.0,1e-10)
+        assert_equal(vaultNodeAllocations["Spendable"] +managedFunds+ vaultNodeAllocations["Vaulted"], vaultNode.getbalance())
+
 
 
 if __name__ == '__main__':

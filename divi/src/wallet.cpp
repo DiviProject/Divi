@@ -1934,8 +1934,15 @@ bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, const uint256& wtxi
 {
     VaultType vaultType;
     isminetype mine = ::IsMine(*this, pcoin->vout[i].scriptPubKey, vaultType);
-    if( (vaultType == MANAGED_VAULT && coinType != STAKABLE_COINS) ||
-        (vaultType == OWNED_VAULT && coinType != OWNED_VAULT_COINS))
+    if( coinType == STAKABLE_COINS && vaultType == OWNED_VAULT)
+    {
+        return false;
+    }
+    else if( coinType == ALL_SPENDABLE_COINS && vaultType != NON_VAULT)
+    {
+        return false;
+    }
+    else if( coinType == OWNED_VAULT_COINS && vaultType != OWNED_VAULT)
     {
         return false;
     }

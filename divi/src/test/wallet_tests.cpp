@@ -614,5 +614,25 @@ BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfOwnerAndOwnedVaultCoinsSelect
     BOOST_CHECK(otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,OWNED_VAULT_COINS));
 }
 
+BOOST_AUTO_TEST_CASE(willDisallowSelectingNonVaultFundsIfOwnedVaultCoinsRequested)
+{
+    CWallet otherWallet("willDisallowSelectingNonVaultFundsIfOwnedVaultCoinsRequested.dat");
+    populateWalletWithKeys(otherWallet);
+    CScript defaultScript = GetScriptForDestination(otherWallet.vchDefaultKey.GetID());
+
+    unsigned index=0;
+    CMutableTransaction tx = createDefaultTransaction(defaultScript,index);
+    CWalletTx wtx(&otherWallet, tx);
+
+
+    otherWallet.AddToWallet(wtx);
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(!otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,OWNED_VAULT_COINS));
+    BOOST_CHECK(!fIsSpendable);
+    fIsSpendable = false;
+    BOOST_CHECK(otherWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),index,nullptr,false,fIsSpendable,ALL_SPENDABLE_COINS));
+    BOOST_CHECK(fIsSpendable);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

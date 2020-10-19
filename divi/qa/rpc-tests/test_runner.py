@@ -109,6 +109,7 @@ NON_SCRIPTS = [
     # These are script files that live in the functional tests directory, but are not test scripts.
     'authproxy.py',
     'masternode.py',
+    'messages.py',
     'netutil.py',
     'test_framework.py',
     'test_runner.py',

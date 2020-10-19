@@ -421,12 +421,14 @@ CAmount CWallet::GetDebit(const CWalletTx& tx, const isminefilter& filter) const
     return debit;
 }
 
-CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter, TransactionCreditFilters creditFilter) const
+CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter, int creditFilterFlags) const
 {
     CAmount nCredit = 0;
     uint256 hash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
-        if(creditFilter == REQUIRE_UNSPENT && IsSpent(hash,i)) continue;
+        if( (creditFilterFlags & REQUIRE_UNSPENT) && IsSpent(hash,i)) continue;
+        if( (creditFilterFlags & REQUIRE_UNLOCKED) && IsLockedCoin(hash,i)) continue;
+        if( (creditFilterFlags & REQUIRE_LOCKED) && !IsLockedCoin(hash,i)) continue;
         nCredit += GetCredit(tx.vout[i], filter);
         if (!MoneyRange(nCredit))
             throw std::runtime_error("CWallet::GetCredit() : value out of range");
@@ -1706,7 +1708,7 @@ CAmount CWalletTx::GetAvailableWatchOnlyCredit(const bool& fUseCache) const
     if (fUseCache && fAvailableWatchCreditCached)
         return nAvailableWatchCreditCached;
 
-    CAmount nCredit = pwallet->GetCredit(txout, ISMINE_WATCH_ONLY,REQUIRE_UNSPENT);
+    CAmount nCredit = pwallet->GetCredit(*this, ISMINE_WATCH_ONLY,REQUIRE_UNSPENT);
     nAvailableWatchCreditCached = nCredit;
     fAvailableWatchCreditCached = true;
     return nCredit;
@@ -3604,19 +3606,7 @@ CAmount CWalletTx::GetUnlockedCredit() const
     if (GetBlocksToMaturity() > 0)
         return 0;
 
-    CAmount nCredit = 0;
-    uint256 hashTx = GetHash();
-    for (unsigned int i = 0; i < vout.size(); i++) {
-        const CTxOut& txout = vout[i];
-
-        if (pwallet->IsSpent(hashTx, i) || pwallet->IsLockedCoin(hashTx, i)) continue;
-        if (fMasterNode && vout[i].nValue == 10000 * COIN) continue; // do not count MN-like outputs
-
-        nCredit += pwallet->GetCredit(txout, ISMINE_SPENDABLE);
-        if (!MoneyRange(nCredit))
-            throw std::runtime_error("CWalletTx::GetUnlockedCredit() : value out of range");
-    }
-
+    CAmount nCredit = pwallet->GetCredit(*this, ISMINE_SPENDABLE, REQUIRE_UNSPENT | REQUIRE_UNLOCKED);
     return nCredit;
 }
 
@@ -3629,28 +3619,7 @@ CAmount CWalletTx::GetLockedCredit() const
     if (IsCoinBase() && GetBlocksToMaturity() > 0)
         return 0;
 
-    CAmount nCredit = 0;
-    uint256 hashTx = GetHash();
-    for (unsigned int i = 0; i < vout.size(); i++) {
-        const CTxOut& txout = vout[i];
-
-        // Skip spent coins
-        if (pwallet->IsSpent(hashTx, i)) continue;
-
-        // Add locked coins
-        if (pwallet->IsLockedCoin(hashTx, i)) {
-            nCredit += pwallet->GetCredit(txout, ISMINE_SPENDABLE);
-        }
-
-        // Add masternode collaterals which are handled likc locked coins
-        if (fMasterNode && vout[i].nValue == 10000 * COIN) {
-            nCredit += pwallet->GetCredit(txout, ISMINE_SPENDABLE);
-        }
-
-        if (!MoneyRange(nCredit))
-            throw std::runtime_error("CWalletTx::GetLockedCredit() : value out of range");
-    }
-
+    CAmount nCredit = pwallet->GetCredit(*this,ISMINE_SPENDABLE,REQUIRE_UNSPENT | REQUIRE_LOCKED);
     return nCredit;
 }
 

@@ -482,7 +482,7 @@ public:
     bool IsFromMe(const CTransaction& tx) const;
     CAmount ComputeDebit(const CTransaction& tx, const isminefilter& filter) const;
     CAmount GetDebit(const CWalletTx& tx, const isminefilter& filter) const;
-    CAmount GetCredit(const CTransaction& tx, const isminefilter& filter, TransactionCreditFilters creditFilter = REQUIRE_NOTHING) const;
+    CAmount GetCredit(const CTransaction& tx, const isminefilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
     CAmount GetChange(const CTransaction& tx) const;
     void SetBestChain(const CBlockLocator& loc);
 

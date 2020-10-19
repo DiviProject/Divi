@@ -475,7 +475,7 @@ public:
     bool IsFromMe(const CTransaction& tx) const;
     CAmount ComputeDebit(const CTransaction& tx, const isminefilter& filter) const;
     CAmount GetDebit(const CWalletTx& tx, const isminefilter& filter) const;
-    CAmount GetCredit(const CTransaction& tx, const isminefilter& filter) const;
+    CAmount GetCredit(const CTransaction& tx, const isminefilter& filter, bool skipSpent = false) const;
     CAmount GetChange(const CTransaction& tx) const;
     void SetBestChain(const CBlockLocator& loc);
 

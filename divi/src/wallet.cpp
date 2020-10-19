@@ -421,11 +421,13 @@ CAmount CWallet::GetDebit(const CWalletTx& tx, const isminefilter& filter) const
     return debit;
 }
 
-CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter) const
+CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter, bool skipSpent) const
 {
     CAmount nCredit = 0;
-    BOOST_FOREACH (const CTxOut& txout, tx.vout) {
-        nCredit += GetCredit(txout, filter);
+    uint256 hash = tx.GetHash();
+    for (unsigned int i = 0; i < tx.vout.size(); i++) {
+        if(skipSpent && IsSpent(hash,i)) continue;
+        nCredit += GetCredit(tx.vout[i], filter);
         if (!MoneyRange(nCredit))
             throw std::runtime_error("CWallet::GetCredit() : value out of range");
     }

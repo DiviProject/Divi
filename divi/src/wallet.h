@@ -196,6 +196,13 @@ public:
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.
  */
+enum TransactionCreditFilters
+{
+    REQUIRE_NOTHING = 0,
+    REQUIRE_UNSPENT = 1,
+    REQUIRE_LOCKED = 1 << 1,
+    REQUIRE_UNLOCKED  = 1 << 2
+};
 class CWallet : public CCryptoKeyStore, public NotificationInterface
 {
 public:
@@ -475,7 +482,7 @@ public:
     bool IsFromMe(const CTransaction& tx) const;
     CAmount ComputeDebit(const CTransaction& tx, const isminefilter& filter) const;
     CAmount GetDebit(const CWalletTx& tx, const isminefilter& filter) const;
-    CAmount GetCredit(const CTransaction& tx, const isminefilter& filter, bool skipSpent = false) const;
+    CAmount GetCredit(const CTransaction& tx, const isminefilter& filter, TransactionCreditFilters creditFilter = REQUIRE_NOTHING) const;
     CAmount GetChange(const CTransaction& tx) const;
     void SetBestChain(const CBlockLocator& loc);
 

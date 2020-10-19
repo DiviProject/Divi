@@ -421,12 +421,12 @@ CAmount CWallet::GetDebit(const CWalletTx& tx, const isminefilter& filter) const
     return debit;
 }
 
-CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter, bool skipSpent) const
+CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter, TransactionCreditFilters creditFilter) const
 {
     CAmount nCredit = 0;
     uint256 hash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
-        if(skipSpent && IsSpent(hash,i)) continue;
+        if(creditFilter == REQUIRE_UNSPENT && IsSpent(hash,i)) continue;
         nCredit += GetCredit(tx.vout[i], filter);
         if (!MoneyRange(nCredit))
             throw std::runtime_error("CWallet::GetCredit() : value out of range");
@@ -1676,7 +1676,7 @@ CAmount CWalletTx::GetAvailableCredit(bool fUseCache) const
     if (fUseCache && fAvailableCreditCached)
         return nAvailableCreditCached;
 
-    CAmount nCredit = pwallet->GetCredit(*this,ISMINE_SPENDABLE, true);
+    CAmount nCredit = pwallet->GetCredit(*this,ISMINE_SPENDABLE, REQUIRE_UNSPENT);
     nAvailableCreditCached = nCredit;
     fAvailableCreditCached = true;
     return nCredit;
@@ -1706,7 +1706,7 @@ CAmount CWalletTx::GetAvailableWatchOnlyCredit(const bool& fUseCache) const
     if (fUseCache && fAvailableWatchCreditCached)
         return nAvailableWatchCreditCached;
 
-    CAmount nCredit = pwallet->GetCredit(txout, ISMINE_WATCH_ONLY,true);
+    CAmount nCredit = pwallet->GetCredit(txout, ISMINE_WATCH_ONLY,REQUIRE_UNSPENT);
     nAvailableWatchCreditCached = nCredit;
     fAvailableWatchCreditCached = true;
     return nCredit;

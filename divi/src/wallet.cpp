@@ -1961,17 +1961,8 @@ bool FilterAvailableTypeByOwnershipType(const CKeyStore& keystore, const CScript
 
 bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable, AvailableCoinsType coinType) const
 {
-    VaultType vaultType;
-    isminetype mine = ::IsMine(*this, pcoin->vout[i].scriptPubKey, vaultType);
-    if( coinType == STAKABLE_COINS && vaultType == OWNED_VAULT)
-    {
-        return false;
-    }
-    else if( coinType == ALL_SPENDABLE_COINS && vaultType != NON_VAULT)
-    {
-        return false;
-    }
-    else if( coinType == OWNED_VAULT_COINS && vaultType != OWNED_VAULT)
+    isminetype mine;
+    if(!IsAvailableType(*this,pcoin->vout[i].scriptPubKey,coinType,mine))
     {
         return false;
     }

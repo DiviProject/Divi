@@ -1812,6 +1812,10 @@ void CWallet::ResendWalletTransactions()
  * @{
  */
 
+CAmount CWallet::GetStakingBalance() const
+{
+    return GetBalance() - nReserveBalance;
+}
 CAmount CWallet::GetBalance() const
 {
     CAmount nTotal = 0;

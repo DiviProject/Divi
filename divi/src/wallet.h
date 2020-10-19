@@ -394,6 +394,7 @@ public:
     void ReacceptWalletTransactions();
     void ResendWalletTransactions();
     CAmount GetBalance() const;
+    CAmount GetSpendableBalance() const;
     CAmount GetStakingBalance() const;
 
     CAmount GetLockedCoins() const;

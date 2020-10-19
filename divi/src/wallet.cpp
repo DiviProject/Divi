@@ -1816,6 +1816,12 @@ CAmount CWallet::GetStakingBalance() const
 {
     return GetBalance() - nReserveBalance;
 }
+
+CAmount CWallet::GetSpendableBalance() const
+{
+    return GetBalance();
+}
+
 CAmount CWallet::GetBalance() const
 {
     CAmount nTotal = 0;

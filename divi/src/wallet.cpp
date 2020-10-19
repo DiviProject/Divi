@@ -83,6 +83,35 @@ extern bool fLargeWorkInvalidChainFound;
 bool CheckFinalTx(const CTransaction& tx, int flags = -1);
 bool IsInitialBlockDownload();
 
+
+bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine)
+{
+    VaultType vaultType;
+    mine = ::IsMine(keystore, scriptPubKey, vaultType);
+    if( coinType == STAKABLE_COINS && vaultType == OWNED_VAULT)
+    {
+        return false;
+    }
+    else if( coinType == ALL_SPENDABLE_COINS && vaultType != NON_VAULT)
+    {
+        return false;
+    }
+    else if( coinType == OWNED_VAULT_COINS && vaultType != OWNED_VAULT)
+    {
+        return false;
+    }
+    return true;
+}
+bool FilterAvailableTypeByOwnershipType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype requiredOwnershipType)
+{
+    isminetype recoveredOwnershipType;
+    if(!IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType))
+    {
+        return false;
+    }
+    return requiredOwnershipType & recoveredOwnershipType;
+}
+
 bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite)
 {
     return CWalletDB(walletPtr->strWalletFile).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
@@ -1929,34 +1958,6 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
         return false;
 
     return true;
-}
-
-bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine)
-{
-    VaultType vaultType;
-    mine = ::IsMine(keystore, scriptPubKey, vaultType);
-    if( coinType == STAKABLE_COINS && vaultType == OWNED_VAULT)
-    {
-        return false;
-    }
-    else if( coinType == ALL_SPENDABLE_COINS && vaultType != NON_VAULT)
-    {
-        return false;
-    }
-    else if( coinType == OWNED_VAULT_COINS && vaultType != OWNED_VAULT)
-    {
-        return false;
-    }
-    return true;
-}
-bool FilterAvailableTypeByOwnershipType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype requiredOwnershipType)
-{
-    isminetype recoveredOwnershipType;
-    if(!IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType))
-    {
-        return false;
-    }
-    return requiredOwnershipType & recoveredOwnershipType;
 }
 
 bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable, AvailableCoinsType coinType) const

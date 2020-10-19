@@ -189,7 +189,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     if (settings.ParameterIsSet("-reservebalance") && !ParseMoney(settings.GetParameter("-reservebalance"), nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
 
-    CAmount allowedStakingAmount = wallet_.GetBalance() - nReserveBalance;
+    CAmount allowedStakingAmount = wallet_.GetStakingBalance();
     MarkTransactionAsCoinstake(txNew);
 
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;

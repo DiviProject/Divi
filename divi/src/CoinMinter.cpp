@@ -77,7 +77,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
             chain_.Tip()->nTime < 1471482000 ||
             !peerNotifier_->havePeersToNotify() ||
             pwallet_->IsLocked() ||
-            nReserveBalance >= pwallet_->GetBalance() ||
+            pwallet_->GetStakingBalance() <= 0 ||
             !masternodeSync_.IsSynced()
         );
     if(!stakingRequirementsAreMet) lastCoinStakeSearchInterval_ = 0;

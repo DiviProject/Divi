@@ -102,6 +102,11 @@ bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, Ava
     }
     return true;
 }
+bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType)
+{
+    isminetype recoveredOwnershipType;
+    return IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType);
+}
 bool FilterAvailableTypeByOwnershipType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype requiredOwnershipType)
 {
     isminetype recoveredOwnershipType;

@@ -201,7 +201,8 @@ enum TransactionCreditFilters
     REQUIRE_NOTHING = 0,
     REQUIRE_UNSPENT = 1,
     REQUIRE_LOCKED = 1 << 1,
-    REQUIRE_UNLOCKED  = 1 << 2
+    REQUIRE_UNLOCKED  = 1 << 2,
+    REQUIRE_AVAILABLE_TYPE  = 1 << 3,
 };
 class CWallet : public CCryptoKeyStore, public NotificationInterface
 {
@@ -401,6 +402,7 @@ public:
     void ReacceptWalletTransactions();
     void ResendWalletTransactions();
     CAmount GetBalance() const;
+    CAmount GetBalanceByCoinType(AvailableCoinsType coinType) const;
     CAmount GetSpendableBalance() const;
     CAmount GetStakingBalance() const;
 

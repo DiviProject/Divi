@@ -434,7 +434,18 @@ CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter, i
         if( (creditFilterFlags & REQUIRE_UNSPENT) && IsSpent(hash,i)) continue;
         if( (creditFilterFlags & REQUIRE_UNLOCKED) && IsLockedCoin(hash,i)) continue;
         if( (creditFilterFlags & REQUIRE_LOCKED) && !IsLockedCoin(hash,i)) continue;
-        nCredit += GetCredit(tx.vout[i], filter);
+
+        const CTxOut& out = tx.vout[i];
+        if( (creditFilterFlags & REQUIRE_AVAILABLE_TYPE) )
+        {
+            AvailableCoinsType coinType = static_cast<AvailableCoinsType>( creditFilterFlags >> 4);
+            if(!IsAvailableType(*this,out.scriptPubKey, coinType))
+            {
+                continue;
+            }
+        }
+
+        nCredit += GetCredit(out, filter);
         if (!MoneyRange(nCredit))
             throw std::runtime_error("CWallet::GetCredit() : value out of range");
     }
@@ -1821,6 +1832,26 @@ CAmount CWallet::GetBalance() const
             const CWalletTx* pcoin = &(*it).second;
             if (IsTrusted(*pcoin))
                 nTotal += pcoin->GetAvailableCredit();
+        }
+    }
+
+    return nTotal;
+}
+
+CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
+{
+    CAmount nTotal = 0;
+    {
+        LOCK2(cs_main, cs_wallet);
+        for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
+            const CWalletTx* pcoin = &(*it).second;
+            if (IsTrusted(*pcoin))
+            {
+                int coinTypeEncoding = static_cast<int>(coinType) << 4;
+                int additionalFilterFlags = REQUIRE_UNSPENT | REQUIRE_AVAILABLE_TYPE | coinTypeEncoding;
+                nTotal += GetCredit(*pcoin,ISMINE_SPENDABLE, additionalFilterFlags);
+            }
+
         }
     }
 

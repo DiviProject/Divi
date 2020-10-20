@@ -122,8 +122,7 @@ CMasternode::CMasternode()
     activeState = MASTERNODE_ENABLED;
     sigTime = GetAdjustedTime();
     lastPing = CMasternodePing();
-    cacheInputAge = 0;
-    cacheInputAgeBlock = 0;
+    collateralBlock.SetNull();
     allowFreeTx = true;
     nActiveState = MASTERNODE_ENABLED;
     protocolVersion = PROTOCOL_VERSION;
@@ -144,8 +143,7 @@ CMasternode::CMasternode(const CMasternode& other)
     activeState = other.activeState;
     sigTime = other.sigTime;
     lastPing = other.lastPing;
-    cacheInputAge = other.cacheInputAge;
-    cacheInputAgeBlock = other.cacheInputAgeBlock;
+    collateralBlock = other.collateralBlock;
     allowFreeTx = other.allowFreeTx;
     nActiveState = MASTERNODE_ENABLED;
     protocolVersion = other.protocolVersion;
@@ -166,8 +164,7 @@ CMasternode::CMasternode(const CMasternodeBroadcast& mnb)
     activeState = MASTERNODE_ENABLED;
     sigTime = mnb.sigTime;
     lastPing = mnb.lastPing;
-    cacheInputAge = 0;
-    cacheInputAgeBlock = 0;
+    collateralBlock = mnb.collateralBlock;
     allowFreeTx = true;
     nActiveState = MASTERNODE_ENABLED;
     protocolVersion = mnb.protocolVersion;
@@ -192,8 +189,7 @@ void CMasternode::swap(CMasternode& first, CMasternode& second) // nothrow
     swap(first.activeState, second.activeState);
     swap(first.sigTime, second.sigTime);
     swap(first.lastPing, second.lastPing);
-    swap(first.cacheInputAge, second.cacheInputAge);
-    swap(first.cacheInputAgeBlock, second.cacheInputAgeBlock);
+    swap(first.collateralBlock, second.collateralBlock);
     swap(first.allowFreeTx, second.allowFreeTx);
     swap(first.protocolVersion, second.protocolVersion);
     swap(first.nScanningErrorCount, second.nScanningErrorCount);
@@ -244,14 +240,18 @@ bool CMasternode::IsEnabled() const
 
 int CMasternode::GetMasternodeInputAge() const
 {
-    if (chainActive.Tip() == NULL) return 0;
+    LOCK(cs_main);
 
-    if (cacheInputAge == 0) {
-        cacheInputAge = GetInputAge(vin);
-        cacheInputAgeBlock = chainActive.Tip()->nHeight;
-    }
+    const auto* pindex = GetCollateralBlock();
+    if (pindex == nullptr)
+        return 0;
 
-    return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
+    assert(chainActive.Contains(pindex));
+
+    const unsigned tipHeight = chainActive.Height();
+    assert(tipHeight >= pindex->nHeight);
+
+    return tipHeight - pindex->nHeight + 1;
 }
 
 std::string CMasternode::Status() const
@@ -738,12 +738,12 @@ bool CMasternodeBroadcastFactory::provideSignatures(
 namespace
 {
 
-CMasternodePing createDelayedMasternodePing(const CTxIn& newVin)
+CMasternodePing createDelayedMasternodePing(const CMasternodeBroadcast& mnb)
 {
     CMasternodePing ping;
     const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
-    ping.vin = newVin;
-    const int depthOfTx = GetInputAge(ping.vin);
+    ping.vin = mnb.vin;
+    const int depthOfTx = mnb.GetMasternodeInputAge();
     const int offset = std::min( std::max(0, depthOfTx), 12 );
     const auto* block = chainActive[chainActive.Height() - offset];
     ping.blockHash = block->GetBlockHash();
@@ -771,7 +771,7 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
 
     mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
     const CMasternodePing mnp = (deferRelay
-                                    ? createDelayedMasternodePing(txin)
+                                    ? createDelayedMasternodePing(mnbRet)
                                     : CMasternodePing(txin));
     mnbRet.lastPing = mnp;
     mnbRet.sigTime = mnp.sigTime;
@@ -868,6 +868,38 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
     return true;
 }
 
+const CBlockIndex* CMasternode::GetCollateralBlock() const
+{
+    LOCK(cs_main);
+
+    if (!collateralBlock.IsNull()) {
+        const auto mi = mapBlockIndex.find(collateralBlock);
+        if (mi != mapBlockIndex.end() && chainActive.Contains(mi->second))
+            return mi->second;
+    }
+
+    uint256 hashBlock;
+    CTransaction tx;
+    if (!GetTransaction(vin.prevout.hash, tx, hashBlock, true)) {
+        collateralBlock.SetNull();
+        return nullptr;
+    }
+
+    const auto mi = mapBlockIndex.find(hashBlock);
+    if (mi == mapBlockIndex.end() || mi->second == nullptr) {
+        collateralBlock.SetNull();
+        return nullptr;
+    }
+
+    if (!chainActive.Contains(mi->second)) {
+        collateralBlock.SetNull();
+        return nullptr;
+    }
+
+    collateralBlock = hashBlock;
+    return mi->second;
+}
+
 bool CMasternodeBroadcast::CheckInputs(int& nDoS) const
 {
     // we are a masternode with the same vin (i.e. already activated) and this mnb is ours (matches our Masternode privkey)
@@ -889,25 +921,30 @@ bool CMasternodeBroadcast::CheckInputs(int& nDoS) const
 
     LogPrint("masternode", "mnb - Accepted Masternode entry\n");
 
-    if (GetInputAge(vin) < MASTERNODE_MIN_CONFIRMATIONS) {
+    const CBlockIndex* pindexConf;
+    {
+        LOCK(cs_main);
+        const auto* pindexCollateral = GetCollateralBlock();
+        if (pindexCollateral == nullptr)
+            pindexConf = nullptr;
+        else {
+            assert(chainActive.Contains(pindexCollateral));
+            pindexConf = chainActive[pindexCollateral->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1];
+            assert(pindexConf == nullptr || pindexConf->GetAncestor(pindexCollateral->nHeight) == pindexCollateral);
+        }
+    }
+
+    if (pindexConf == nullptr) {
         LogPrint("masternode","mnb - Input must have at least %d confirmations\n", MASTERNODE_MIN_CONFIRMATIONS);
         return false;
     }
 
     // verify that sig time is legit in past
     // should be at least not earlier than block when 1000 PIV tx got MASTERNODE_MIN_CONFIRMATIONS
-    uint256 hashBlock = 0;
-    CTransaction tx2;
-    GetTransaction(vin.prevout.hash, tx2, hashBlock, true);
-    BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
-    if (mi != mapBlockIndex.end() && (*mi).second) {
-        CBlockIndex* pMNIndex = (*mi).second;                                                        // block for 1000 DIVI tx -> 1 confirmation
-        CBlockIndex* pConfIndex = chainActive[pMNIndex->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1]; // block where tx got MASTERNODE_MIN_CONFIRMATIONS
-        if (pConfIndex->GetBlockTime() > sigTime) {
-            LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (%i conf block is at %d)\n",
-                     sigTime, vin.prevout.hash.ToString(), MASTERNODE_MIN_CONFIRMATIONS, pConfIndex->GetBlockTime());
-            return false;
-        }
+    if (pindexConf->GetBlockTime() > sigTime) {
+        LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (%i conf block is at %d)\n",
+                 sigTime, vin.prevout.hash.ToString(), MASTERNODE_MIN_CONFIRMATIONS, pindexConf->GetBlockTime());
+        return false;
     }
 
     return true;
@@ -1067,23 +1104,4 @@ void CMasternodePing::Relay() const
 {
     CInv inv(MSG_MASTERNODE_PING, GetHash());
     RelayInv(inv);
-}
-
-int GetInputAge(const CTxIn& vin)
-{
-    CCoinsView viewDummy;
-    CCoinsViewCache view(&viewDummy);
-    {
-        LOCK(mempool.cs);
-        CCoinsViewMemPool viewMempool(pcoinsTip, mempool);
-        view.SetBackend(viewMempool); // temporarily switch cache backend to db+mempool view
-
-        const CCoins* coins = view.AccessCoins(vin.prevout.hash);
-
-        if (coins) {
-            if (coins->nHeight < 0) return 0;
-            return (chainActive.Tip()->nHeight + 1) - coins->nHeight;
-        } else
-            return -1;
-    }
 }

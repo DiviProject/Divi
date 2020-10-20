@@ -44,8 +44,6 @@ bool GetBlockHashForScoring(uint256& hash, int nBlockHeight);
 bool GetBlockHashForScoring(uint256& hash,
                             const CBlockIndex* pindex, const int offset);
 
-int GetInputAge(const CTxIn& vin);
-
 //
 // The Masternode Ping Class : Contains a different serialize method for sending pings from masternodes throughout the network
 //
@@ -128,8 +126,16 @@ private:
     mutable CCriticalSection cs;
     int64_t lastTimeChecked;
 
-    mutable int cacheInputAge;
-    mutable int cacheInputAgeBlock;
+protected:
+
+    /** Cached block hash of where the collateral output of this
+     *  masternode got included.  */
+    mutable uint256 collateralBlock;
+
+    /** Looks up and returns the block index when the collateral got
+     *  included in the currently active chain.  If it is not yet confirmed
+     *  then this returns nullptr.  */
+    const CBlockIndex* GetCollateralBlock() const;
 
 public:
     enum state {
@@ -162,7 +168,6 @@ public:
     CMasternode();
     CMasternode(const CMasternode& other);
     CMasternode(const CMasternodeBroadcast& mnb);
-
 
     void swap(CMasternode& first, CMasternode& second); // nothrow
 
@@ -198,8 +203,7 @@ public:
         READWRITE(protocolVersion);
         READWRITE(activeState);
         READWRITE(lastPing);
-        READWRITE(cacheInputAge);
-        READWRITE(cacheInputAgeBlock);
+        READWRITE(collateralBlock);
         READWRITE(allowFreeTx);
         READWRITE(nScanningErrorCount);
         READWRITE(nLastScanningErrorBlockHeight);
@@ -285,8 +289,10 @@ public:
         if (!ser_action.ForRead ())
             tier = static_cast<int> (nTier);
         READWRITE(tier);
-        if (ser_action.ForRead ())
+        if (ser_action.ForRead ()) {
             nTier = static_cast<MasternodeTier> (tier);
+            collateralBlock.SetNull();
+        }
     }
 
     uint256 GetHash() const

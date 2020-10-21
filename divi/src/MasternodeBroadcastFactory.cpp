@@ -348,7 +348,23 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
                                     ? createDelayedMasternodePing(mnbRet)
                                     : createCurrentPing(txin));
     mnbRet.lastPing = mnp;
-    mnbRet.sigTime = mnp.sigTime;
+
+    /* We have to ensure that the sigtime of the broadcast itself is later
+       than when the collateral gets its 15 confirmations (and it might not
+       even be confirmed once yet).  */
+    const auto* pindexConf = ComputeMasternodeConfirmationBlockIndex(mnbRet);
+    if (pindexConf == nullptr) {
+        /* The signature time is accepted on the network up to one hour
+           into the future; we use 45 minutes here to ensure this is still
+           fine even with some clock drift.  That will also be more than
+           enough to be later than the confirmation block time assuming the
+           collateral is going to be mined "now".  */
+        mnbRet.sigTime = GetAdjustedTime() + 45 * 60;
+        LogPrint("masternode", "Using future sigtime for masternode broadcast: %d\n", mnbRet.sigTime);
+    } else {
+        mnbRet.sigTime = pindexConf->GetBlockTime();
+        LogPrint("masternode", "Using collateral confirmation time for broadcast: %d\n", mnbRet.sigTime);
+    }
 }
 
 bool CMasternodeBroadcastFactory::Create(

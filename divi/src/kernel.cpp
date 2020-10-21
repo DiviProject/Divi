@@ -357,40 +357,21 @@ bool LegacyProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeight_);
 }
 
-std::shared_ptr<I_ProofOfStakeCalculator> createProofOfStakeCalculator(
-    I_PoSStakeModifierService& stakeModifierService,
-    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
-    unsigned int nBits,
-    const CBlock& blockFrom,
-    const COutPoint& prevout,
-    const CAmount& utxoValue,
-    unsigned int& nTimeTx)
-{
-    //assign new variables to make it easier to read
-    unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
 
+bool ProofOfStakeTimeRequirementsAreMet(
+    unsigned int nTimeBlockFrom,
+    unsigned int nTimeTx)
+{
     if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
     {
-        error("CreateHashProofForProofOfStake() : nTime violation");
-        return std::shared_ptr<I_ProofOfStakeCalculator>();
+        return error("CreateHashProofForProofOfStake() : nTime violation");
     }
 
     if (nTimeBlockFrom + Params().GetMinCoinAgeForStaking() > nTimeTx) // Min age requirement
     {
-        error("CreateHashProofForProofOfStake() : min age violation - nTimeBlockFrom=%d minimum coinage=%d nTimeTx=%d", nTimeBlockFrom, Params().GetMinCoinAgeForStaking(), nTimeTx);
-        return std::shared_ptr<I_ProofOfStakeCalculator>();
+        return error("CreateHashProofForProofOfStake() : min age violation - nTimeBlockFrom=%d minimum coinage=%d nTimeTx=%d", nTimeBlockFrom, Params().GetMinCoinAgeForStaking(), nTimeTx);
     }
-
-    //grab stake modifier
-    auto stakeModifierData = stakeModifierService.getStakeModifier(blockFrom.GetHash());
-    if (!stakeModifierData.second) {
-        LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
-        return std::shared_ptr<I_ProofOfStakeCalculator>();
-    }
-
-    int64_t nTimeWeight = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
-
-    return std::make_shared<ProofOfStakeCalculator>(prevout,utxoValue,stakeModifierData.first,nBits);
+    return true;
 }
 
 std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const uint256& blockHash) const
@@ -418,15 +399,14 @@ bool CreateHashProofForProofOfStake(
     uint256& hashProofOfStake)
 {
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
+    if(!ProofOfStakeTimeRequirementsAreMet(nTimeBlockFrom,nTimeTx)) return false;
+    auto stakeModifierData = stakeModifierService.getStakeModifier(blockFrom.GetHash());
+    if (!stakeModifierData.second)
+    {
+        return error("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
+    }
     std::shared_ptr<I_ProofOfStakeCalculator> calculator =
-        createProofOfStakeCalculator(
-            stakeModifierService,
-            hashedBlockTimestamps,
-            nBits,
-            blockFrom,
-            prevout,
-            utxoValue,
-            nTimeTx);
+        std::make_shared<ProofOfStakeCalculator>(prevout,utxoValue,stakeModifierData.first,nBits);
 
     if(!calculator.get())
         return false;

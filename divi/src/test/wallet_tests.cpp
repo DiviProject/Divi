@@ -14,6 +14,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <script/StakingVaultScript.h>
+#include <random.h>
 
 // how many times to run all the tests to have a chance to catch errors that only show up with particular random shuffles
 #define RUN_TESTS 100
@@ -39,10 +40,11 @@ void populateWalletWithKeys(CWallet& wallet)
 
 CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& index, unsigned numberOfCoins = 100u)
 {
+    int numberOfIndices = GetRand(10)+1;
+    index = GetRand(numberOfIndices);
     CMutableTransaction tx;
-    index = 5;
     tx.nLockTime = 0;        // so all transactions get different hashes
-    tx.vout.resize(10);
+    tx.vout.resize(numberOfIndices);
     tx.vout[index].nValue = numberOfCoins*COIN;
     tx.vout[index].scriptPubKey = defaultScript;
     tx.vin.resize(1);

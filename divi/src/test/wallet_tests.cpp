@@ -377,6 +377,23 @@ public:
         assert(txPtr);
         return *txPtr;
     }
+
+    CScript vaultScriptAsOwner() const
+    {
+        CKey managerKey;
+        managerKey.MakeNewKey(true);
+        return CreateStakingVaultScript(
+            ToByteVector(currentWallet.vchDefaultKey.GetID()),
+            ToByteVector(managerKey.GetPubKey().GetID()));
+    }
+    CScript vaultScriptAsManager() const
+    {
+        CKey ownerKey;
+        ownerKey.MakeNewKey(true);
+        return CreateStakingVaultScript(
+            ToByteVector(ownerKey.GetPubKey().GetID()),
+            ToByteVector(currentWallet.vchDefaultKey.GetID()) );
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(WalletCoinManagementTests,WalletCoinManagementTestFixture)

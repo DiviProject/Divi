@@ -505,57 +505,55 @@ Value startmasternode(const Array& params, bool fHelp)
             "\nResult:\n"
             "\"status\"	(string) status of masternode\n");
 
-    std::string alias = params[0].get_str();
-    bool deferRelay = (params.size() == 1)? false: params[1].get_bool();
+    const std::string alias = params[0].get_str();
+    const bool deferRelay = (params.size() == 1)? false: params[1].get_bool();
 
     EnsureWalletIsUnlocked();
 
-    Object result;
-    bool fFound = false;
     for(const auto& configEntry : masternodeConfig.getEntries())
     {
-        if(configEntry.getAlias() == alias)
+        if(configEntry.getAlias() != alias)
+            continue;
+
+        Object result;
+        std::string strError;
+        CMasternodeBroadcast mnb;
+
+        if(!CMasternodeBroadcastFactory::Create(
+                configEntry,
+                strError,
+                mnb,
+                false,
+                deferRelay))
         {
-            fFound = true;
-            std::string strError;
-            CMasternodeBroadcast mnb;
-
-            if(!CMasternodeBroadcastFactory::Create(
-                    configEntry,
-                    strError,
-                    mnb,
-                    false,
-                    deferRelay))
-            {
-                break;
-            }
-
-            if(CActiveMasternode::Register(mnb, deferRelay))
-            {
-                result.push_back(Pair("status", "success"));
-                if(deferRelay)
-                {
-                    CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
-                    ss << mnb;
-                    result.push_back(Pair("broadcastData", HexStr(ss.str()) ));
-                }
-                fFound = true;
-            }
-
-            if(!fFound)
-            {
-                result.push_back(Pair("status", "failed"));
-                result.push_back(Pair("error", strError));
-            }
-
-            break;
+            result.push_back(Pair("status", "failed"));
+            result.push_back(Pair("error", strError));
+            return result;
         }
+
+        if (deferRelay)
+        {
+            CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
+            ss << mnb;
+
+            result.push_back(Pair("status", "success"));
+            result.push_back(Pair("broadcastData", HexStr(ss.str())));
+
+            return result;
+        }
+
+        if(!CActiveMasternode::Register(mnb, deferRelay))
+        {
+            result.push_back(Pair("status", "failed"));
+            result.push_back(Pair("error", strError));
+            return result;
+        }
+
+        result.push_back(Pair("status", "success"));
+        return result;
     }
 
-    if(!fFound)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid alias, couldn't find MN. Check your masternode.conf file");
-
-    return result;
+    throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid alias, couldn't find MN. Check your masternode.conf file");
 }
 
 Value createmasternodekey(const Array& params, bool fHelp)

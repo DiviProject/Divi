@@ -380,16 +380,26 @@ public:
 
     CScript vaultScriptAsOwner() const
     {
-        CKey managerKey;
-        managerKey.MakeNewKey(true);
+        static bool managerKeyGenerated = false;
+        static CKey managerKey;
+        if(!managerKeyGenerated)
+        {
+            managerKey.MakeNewKey(true);
+            managerKeyGenerated = true;
+        }
         return CreateStakingVaultScript(
             ToByteVector(currentWallet.vchDefaultKey.GetID()),
             ToByteVector(managerKey.GetPubKey().GetID()));
     }
     CScript vaultScriptAsManager() const
     {
-        CKey ownerKey;
-        ownerKey.MakeNewKey(true);
+        static bool ownerKeyGenerated = false;
+        static CKey ownerKey;
+        if(!ownerKeyGenerated)
+        {
+            ownerKey.MakeNewKey(true);
+            ownerKeyGenerated = true;
+        }
         return CreateStakingVaultScript(
             ToByteVector(ownerKey.GetPubKey().GetID()),
             ToByteVector(currentWallet.vchDefaultKey.GetID()) );

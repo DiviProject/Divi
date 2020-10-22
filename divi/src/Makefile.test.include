@@ -83,6 +83,7 @@ BITCOIN_TESTS =\
   test/util_tests.cpp \
   test/versionbits_tests.cpp \
   test/googletestenabled_test.cpp \
+  test/wallet_coinmanagement_tests.cpp \
   test/walletbackupcreator_tests.cpp \
   test/WalletIntegrityVerifier_tests.cpp \
   test/CoinMinting_tests.cpp \

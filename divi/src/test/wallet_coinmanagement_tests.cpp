@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <boost/foreach.hpp>
-#include <boost/test/unit_test.hpp>
+#include <test/test_only.h>
 
 #include <script/StakingVaultScript.h>
 #include <random.h>
@@ -27,10 +27,11 @@ std::unique_ptr<CWallet> populateWalletWithKeys(std::string walletName)
 
 CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& index, unsigned numberOfCoins)
 {
+    static int nextLockTime = 0;
     int numberOfIndices = GetRand(10)+1;
     index = GetRand(numberOfIndices);
     CMutableTransaction tx;
-    tx.nLockTime = 0;        // so all transactions get different hashes
+    tx.nLockTime = nextLockTime++;        // so all transactions get different hashes
     tx.vout.resize(numberOfIndices);
     tx.vout[index].nValue = numberOfCoins*COIN;
     tx.vout[index].scriptPubKey = defaultScript;

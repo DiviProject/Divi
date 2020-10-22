@@ -40,7 +40,7 @@ std::unique_ptr<CWallet> populateWalletWithKeys(std::string walletName)
     return std::move(walletPtr);
 }
 
-CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& index, unsigned numberOfCoins = 100u)
+CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& index, unsigned numberOfCoins)
 {
     int numberOfIndices = GetRand(10)+1;
     index = GetRand(numberOfIndices);
@@ -368,9 +368,9 @@ public:
 
     }
 
-    const CWalletTx& AddDefaultTxToWallet(CScript scriptToPayTo, unsigned& outputIndex)
+    const CWalletTx& AddDefaultTxToWallet(CScript scriptToPayTo, unsigned& outputIndex,unsigned numberOfCoins = 100u)
     {
-        CMutableTransaction tx = createDefaultTransaction(scriptToPayTo,outputIndex);
+        CMutableTransaction tx = createDefaultTransaction(scriptToPayTo,outputIndex,numberOfCoins);
         CWalletTx wtx(&currentWallet, tx);
         currentWallet.AddToWallet(wtx);
         const CWalletTx* txPtr = currentWallet.GetWalletTx(wtx.GetHash());

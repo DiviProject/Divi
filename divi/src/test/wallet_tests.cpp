@@ -503,11 +503,7 @@ BOOST_AUTO_TEST_CASE(willMakeNoDistinctionBetweenAllCoinsAndStakableCoins)
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndSpendableCoinsSelected)
 {
-    CKey ownerKey;
-    ownerKey.MakeNewKey(true);
-    CScript defaultScript =  CreateStakingVaultScript(
-        ToByteVector(ownerKey.GetPubKey().GetID()),
-        ToByteVector(currentWallet.vchDefaultKey.GetID()) );
+    CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 
@@ -517,12 +513,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndSpendableCoinsSe
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnerAndSpendableCoinsSelected)
 {
-    CKey managerKey;
-    managerKey.MakeNewKey(true);
-    CScript defaultScript =  CreateStakingVaultScript(
-        ToByteVector(currentWallet.vchDefaultKey.GetID()),
-        ToByteVector(managerKey.GetPubKey().GetID()) );
-
+    CScript defaultScript =  vaultScriptAsOwner();
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 
@@ -532,12 +523,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnerAndSpendableCoinsSele
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnedAndStakableCoinsSelected)
 {
-    CKey managerKey;
-    managerKey.MakeNewKey(true);
-    CScript defaultScript =  CreateStakingVaultScript(
-        ToByteVector(currentWallet.vchDefaultKey.GetID()),
-        ToByteVector(managerKey.GetPubKey().GetID()) );
-
+    CScript defaultScript =  vaultScriptAsOwner();
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 
@@ -546,12 +532,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfOwnedAndStakableCoinsSelec
 }
 BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfManagedAndStakableCoinsSelected)
 {
-    CKey ownerKey;
-    ownerKey.MakeNewKey(true);
-    CScript defaultScript =  CreateStakingVaultScript(
-        ToByteVector(ownerKey.GetPubKey().GetID()),
-        ToByteVector(currentWallet.vchDefaultKey.GetID()) );
-
+    CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 
@@ -561,12 +542,7 @@ BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfManagedAndStakableCoinsSelect
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsSelected)
 {
-    CKey ownerKey;
-    ownerKey.MakeNewKey(true);
-    CScript defaultScript =  CreateStakingVaultScript(
-        ToByteVector(ownerKey.GetPubKey().GetID()),
-        ToByteVector(currentWallet.vchDefaultKey.GetID()) );
-
+    CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 
@@ -576,12 +552,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsS
 
 BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfOwnerAndOwnedVaultCoinsSelected)
 {
-    CKey managerKey;
-    managerKey.MakeNewKey(true);
-    CScript defaultScript =  CreateStakingVaultScript(
-        ToByteVector(currentWallet.vchDefaultKey.GetID()),
-        ToByteVector(managerKey.GetPubKey().GetID()) );
-
+    CScript defaultScript =  vaultScriptAsOwner();
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 

@@ -87,13 +87,14 @@ class StakingVaultFunding(BitcoinTestFramework):
         assert_near(miningNodeAllocations["Stakable"], totalMined,1.0)
         assert_near(miningNodeAllocations["Vaulted"], 0.0,1e-10)
         assert_equal(miningNodeAllocations["Spendable"]+managedFunds+miningNodeAllocations["Vaulted"], miningNode.getbalance())
-        miningNode.fundvault(vaultNode.getnewaddress(),intendedVaultedAmount)
+        vaultFundingData = miningNode.fundvault(vaultNode.getnewaddress(),intendedVaultedAmount)
 
         self.sync_all()
         sync_blocks(self.nodes)
         self.nodes[2].setgenerate(True,1)
         sync_blocks(self.nodes)
 
+        # Miner node has funds as expected and sends to a vault node
         miningNodeAllocations = miningNode.getcoinavailability()
         managedFunds = miningNodeAllocations["Stakable"] - miningNodeAllocations["Spendable"]
         assert_near(miningNodeAllocations["Spendable"], totalMined - intendedVaultedAmount,5.0)
@@ -101,6 +102,17 @@ class StakingVaultFunding(BitcoinTestFramework):
         assert_near(miningNodeAllocations["Vaulted"], intendedVaultedAmount,1e-10)
         assert_equal(miningNodeAllocations["Spendable"] +managedFunds+ miningNodeAllocations["Vaulted"], miningNode.getbalance())
 
+        # Vault node has not accepted the responsibility to stake on behalf of the Miner node
+        vaultNodeAllocations = vaultNode.getcoinavailability()
+        assert_near(vaultNodeAllocations["Spendable"], 0.0,1e-10)
+        assert_near(vaultNodeAllocations["Stakable"], 0.0,1e-10)
+        assert_near(vaultNodeAllocations["Vaulted"], 0.0,1e-10)
+        assert_equal(0.0, vaultNode.getbalance())
+
+        # Vault node has now accepted the responsibility to stake on behalf of the Miner node
+        vaultScript = vaultFundingData["script"]
+        txhash = vaultFundingData["txhash"]
+        vaultNode.addvaultscript(vaultScript,txhash)
         vaultNodeAllocations = vaultNode.getcoinavailability()
         managedFunds = vaultNodeAllocations["Stakable"] - vaultNodeAllocations["Spendable"]
         assert_near(vaultNodeAllocations["Spendable"], 0.0,1e-10)

@@ -29,6 +29,7 @@
 #include "spork.h"
 #include <boost/assign/list_of.hpp>
 #include <blockmap.h>
+#include <BlockDiskAccessor.h>
 
 using namespace std;
 using namespace boost;
@@ -432,7 +433,72 @@ Value fundvault(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
     SendMoney(vaultScript, nAmount, wtx);
 
-    return wtx.GetHash().GetHex();
+    Object fundingAttemptResult;
+    fundingAttemptResult.push_back(Pair("txhash", wtx.GetHash().GetHex()));
+    fundingAttemptResult.push_back(Pair("script", HexStr(vaultScript)) );
+    return fundingAttemptResult;
+}
+
+Value addvaultscript(const Array& params, bool fHelp)
+{
+     if (fHelp || params.size() != 2)
+        throw runtime_error("Add vault script - WIP");
+
+    Object result;
+
+    auto scriptInRawHex = ParseHex(params[0].get_str());
+    CScript script(scriptInRawHex.begin(), scriptInRawHex.end());
+    uint256 txhash = uint256(params[1].get_str());
+    CTransaction tx;
+    uint256 blockHash;
+    if(!GetTransaction(txhash,tx,blockHash,true))
+    {
+        LogPrintf("AddingVaultScript: Failed to find tx when adding vault script!\n");
+        result.push_back(Pair("succeeded", false));
+        return result;
+    }
+
+    const CBlockIndex* blockSearchStart = chainActive.Tip();
+    while (blockSearchStart->pprev)
+    {
+        if(blockSearchStart->GetBlockHash() == blockHash) break;
+        blockSearchStart = blockSearchStart->pprev;
+    }
+    if(!blockSearchStart->pprev)
+    {
+        LogPrintf("AddingVaultScript: Failed to find matching block index!\n");
+        result.push_back(Pair("succeeded", false));
+        return result;
+    }
+
+    std::pair<valtype,valtype> vaultPubKeyIDs;
+    if(GetStakingVaultPubkeyHashes(script,vaultPubKeyIDs))
+    {
+        CKeyID managerKeyID(uint160(vaultPubKeyIDs.second));
+        if(pwalletMain->HaveKey(managerKeyID) )
+        {
+            pwalletMain->AddCScript(script);
+            CBlock block;
+            ReadBlockFromDisk(block, blockSearchStart);
+            pwalletMain->SyncTransaction(tx, &block);
+            auto wtx = pwalletMain->GetWalletTx(tx.GetHash());
+            if(!wtx)
+            {
+                throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Unable to sync TX!");
+            }
+            result.push_back(Pair("succeeded", true));
+            return result;
+        }
+        else
+        {
+            throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Do not have correct key!");
+        }
+    }
+    else
+    {
+        throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Script is not a vault!");
+    }
+    return result;
 }
 
 Value sendtoaddress(const Array& params, bool fHelp)

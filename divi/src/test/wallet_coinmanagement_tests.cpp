@@ -194,6 +194,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndSpendableCoinsSe
     CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
+    currentWallet.AddCScript(defaultScript);
 
     bool fIsSpendable = false;
     BOOST_CHECK(!currentWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),outputIndex,nullptr,false,fIsSpendable,ALL_SPENDABLE_COINS));
@@ -223,9 +224,21 @@ BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfManagedAndStakableCoinsSelect
     CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
+    currentWallet.AddCScript(defaultScript);
 
     bool fIsSpendable = false;
     BOOST_CHECK(currentWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),outputIndex,nullptr,false,fIsSpendable,STAKABLE_COINS));
+}
+BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedButScriptNotAdded)
+{
+    CScript defaultScript =  vaultScriptAsManager();
+    unsigned outputIndex=0;
+    const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
+
+    bool fIsSpendable = false;
+    BOOST_CHECK(!currentWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),outputIndex,nullptr,false,fIsSpendable,STAKABLE_COINS));
+    BOOST_CHECK(!currentWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),outputIndex,nullptr,false,fIsSpendable,ALL_SPENDABLE_COINS));
+    BOOST_CHECK(!currentWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),outputIndex,nullptr,false,fIsSpendable,OWNED_VAULT_COINS));
 }
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsSelected)
@@ -233,6 +246,7 @@ BOOST_AUTO_TEST_CASE(willDisallowSelectingVaultFundsIfManagedAndOwnedVaultCoinsS
     CScript defaultScript =  vaultScriptAsManager();
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
+    currentWallet.AddCScript(defaultScript);
 
     bool fIsSpendable = false;
     BOOST_CHECK(!currentWallet.IsAvailableForSpending(&wtx,wtx.GetHash(),outputIndex,nullptr,false,fIsSpendable,OWNED_VAULT_COINS));

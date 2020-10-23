@@ -95,7 +95,8 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultT
         if(keystore.HaveKey(keyID))
         {
             vaultType = MANAGED_VAULT;
-            return ISMINE_SPENDABLE;
+            CScriptID scriptID = CScriptID(scriptPubKey);
+            return keystore.HaveCScript(scriptID) ? ISMINE_SPENDABLE : ISMINE_NO;
         }
         break;
     }

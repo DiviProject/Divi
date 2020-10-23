@@ -87,6 +87,7 @@ struct FixedScripts
     const CScript nonstandard;
     const CScript nulldata;
     const CScript vault;
+    const CScript vaultAsManager;
     std::vector<CScript> allScriptTypes;
     std::vector<std::vector<CKey>> neededKeys;
 
@@ -98,6 +99,7 @@ struct FixedScripts
         , nonstandard(CScript() << OP_TRUE << OP_DROP << OP_FALSE)
         , nulldata(CScript() << OP_META << ToByteVector(std::string("Some random message")) )
         , vault(CScriptCreator::Vault(keyChain.pubkeys_[0].GetID(),keyChain.pubkeys_[1].GetID()))
+        , vaultAsManager(CScriptCreator::Vault(keyChain.pubkeys_[2].GetID(),keyChain.pubkeys_[1].GetID()))
         , allScriptTypes()
         , neededKeys()
     {
@@ -122,7 +124,7 @@ struct FixedScripts
         allScriptTypes.push_back(vault);
         neededKeys.emplace_back(std::vector<CKey>({keyChain.keys_[0]}));
 
-        allScriptTypes.push_back(vault);
+        allScriptTypes.push_back(vaultAsManager);
         neededKeys.emplace_back(std::vector<CKey>({keyChain.keys_[1]}));
     }
 };
@@ -168,7 +170,8 @@ BOOST_AUTO_TEST_CASE(willDetectScriptsAreOwnedWhenTheNeededKeysAreAvailable)
             keyStore.AddKey(key);
         }
         if(fixedScripts.allScriptTypes[testCaseIndex] != fixedScripts.nulldata &&
-            fixedScripts.allScriptTypes[testCaseIndex] != fixedScripts.nonstandard)
+            fixedScripts.allScriptTypes[testCaseIndex] != fixedScripts.nonstandard &&
+            fixedScripts.allScriptTypes[testCaseIndex] != fixedScripts.vaultAsManager)
         {
             auto result = IsMine(keyStore, fixedScripts.allScriptTypes[testCaseIndex]);
             BOOST_CHECK_MESSAGE(result!=ISMINE_NO,
@@ -195,6 +198,15 @@ BOOST_AUTO_TEST_CASE(willDetectWhenVaultIsOwnedOrManagedAndDefaultToOwnedWhenBot
 
         VaultType vaultOwnershipType;
         IsMine(keyStore,vaultScript,vaultOwnershipType);
+        BOOST_CHECK_MESSAGE(vaultOwnershipType == MANAGED_VAULT, "Did not detect managed vault for which responsability wasnt accepted");
+    }
+    {
+        CBasicKeyStore keyStore;
+        keyStore.AddKey(keychain.keys_[1]);
+        keyStore.AddCScript(vaultScript);
+
+        VaultType vaultOwnershipType;
+        IsMine(keyStore,vaultScript,vaultOwnershipType);
         BOOST_CHECK_MESSAGE(vaultOwnershipType == MANAGED_VAULT, "Did not detect managed vault");
     }
     {
@@ -206,6 +218,28 @@ BOOST_AUTO_TEST_CASE(willDetectWhenVaultIsOwnedOrManagedAndDefaultToOwnedWhenBot
         IsMine(keyStore,vaultScript,vaultOwnershipType);
         BOOST_CHECK_MESSAGE(vaultOwnershipType == OWNED_VAULT, "Did not default to owned when vault is both owned and managed");
     }
+}
+
+BOOST_AUTO_TEST_CASE(willFailToOwnAManagedVaultForWhichResponsibilityHasNotBeenAccepted)
+{
+    TestKeys keychain;
+    CScript vaultScript = CScriptCreator::Vault(keychain.pubkeys_[0].GetID(),keychain.pubkeys_[1].GetID());
+    CBasicKeyStore keyStore;
+    keyStore.AddKey(keychain.keys_[1]);
+
+    VaultType vaultOwnershipType;
+    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript,vaultOwnershipType) == ISMINE_NO, "Detected managed vault for which responsability wasnt accepted");
+}
+BOOST_AUTO_TEST_CASE(willOwnAManagedVaultForWhichResponsibilityHasBeenAccepted)
+{
+    TestKeys keychain;
+    CScript vaultScript = CScriptCreator::Vault(keychain.pubkeys_[0].GetID(),keychain.pubkeys_[1].GetID());
+    CBasicKeyStore keyStore;
+    keyStore.AddKey(keychain.keys_[1]);
+    keyStore.AddCScript(vaultScript);
+
+    VaultType vaultOwnershipType;
+    BOOST_CHECK_MESSAGE( IsMine(keyStore,vaultScript,vaultOwnershipType) == ISMINE_SPENDABLE, "Did not detect managed vault");
 }
 
 BOOST_AUTO_TEST_CASE(willDetectThatP2PKScriptsAreNotVaults)

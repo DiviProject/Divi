@@ -92,29 +92,26 @@ public:
 
     CScript vaultScriptAsOwner() const
     {
-        static bool managerKeyGenerated = false;
-        static CKey managerKey;
-        if(!managerKeyGenerated)
-        {
-            managerKey.MakeNewKey(true);
-            managerKeyGenerated = true;
-        }
+        CKey managerKey;
+        managerKey.MakeNewKey(true);
         return CreateStakingVaultScript(
             ToByteVector(currentWallet.vchDefaultKey.GetID()),
             ToByteVector(managerKey.GetPubKey().GetID()));
     }
     CScript vaultScriptAsManager() const
     {
-        static bool ownerKeyGenerated = false;
-        static CKey ownerKey;
-        if(!ownerKeyGenerated)
-        {
-            ownerKey.MakeNewKey(true);
-            ownerKeyGenerated = true;
-        }
+        CKey ownerKey;
+        ownerKey.MakeNewKey(true);
         return CreateStakingVaultScript(
             ToByteVector(ownerKey.GetPubKey().GetID()),
             ToByteVector(currentWallet.vchDefaultKey.GetID()) );
+    }
+
+    CPubKey getNewKey()
+    {
+        CPubKey nextKeyGenerated;
+        currentWallet.GetKeyFromPool(nextKeyGenerated, false);
+        return nextKeyGenerated;
     }
 };
 
@@ -122,7 +119,7 @@ BOOST_FIXTURE_TEST_SUITE(WalletCoinManagementTests,WalletCoinManagementTestFixtu
 
 BOOST_AUTO_TEST_CASE(willAllowSpendingUnlockedCoin)
 {
-    CScript defaultScript = GetScriptForDestination(currentWallet.vchDefaultKey.GetID());
+    CScript defaultScript = GetScriptForDestination(getNewKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 
@@ -133,7 +130,7 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingUnlockedCoin)
 
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingLockedCoin)
 {
-    CScript defaultScript = GetScriptForDestination(currentWallet.vchDefaultKey.GetID());
+    CScript defaultScript = GetScriptForDestination(getNewKey().GetID());
 
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
@@ -175,7 +172,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddress)
 
 BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
 {
-    CScript defaultScript = GetScriptForDestination(currentWallet.vchDefaultKey.GetID());
+    CScript defaultScript = GetScriptForDestination(getNewKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
     currentWallet.AddWatchOnly(defaultScript);
@@ -187,7 +184,7 @@ BOOST_AUTO_TEST_CASE(willNotAllowSpendingFromWatchOnlyAddressEvenIfOwned)
 
 BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
 {
-    CScript defaultScript = GetScriptForDestination(currentWallet.vchDefaultKey.GetID());
+    CScript defaultScript = GetScriptForDestination(getNewKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 
@@ -201,7 +198,7 @@ BOOST_AUTO_TEST_CASE(willAllowSpendingLockedCoinAfterUnlock)
 
 BOOST_AUTO_TEST_CASE(willMakeNoDistinctionBetweenAllCoinsAndStakableCoins)
 {
-    CScript defaultScript = GetScriptForDestination(currentWallet.vchDefaultKey.GetID());
+    CScript defaultScript = GetScriptForDestination(getNewKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 
@@ -288,7 +285,7 @@ BOOST_AUTO_TEST_CASE(willAllowSelectingVaultFundsIfOwnerAndOwnedVaultCoinsSelect
 
 BOOST_AUTO_TEST_CASE(willDisallowSelectingNonVaultFundsIfOwnedVaultCoinsRequested)
 {
-    CScript defaultScript = GetScriptForDestination(currentWallet.vchDefaultKey.GetID());
+    CScript defaultScript = GetScriptForDestination(getNewKey().GetID());
     unsigned outputIndex=0;
     const CWalletTx& wtx = AddDefaultTxToWallet(defaultScript,outputIndex);
 

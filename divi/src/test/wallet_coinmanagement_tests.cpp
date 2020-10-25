@@ -12,13 +12,37 @@
 #include <script/StakingVaultScript.h>
 #include <random.h>
 
+static const CHDChain& getHDWalletSeedForTesting()
+{
+    static CCriticalSection cs_testing;
+    static bool toBeConstructed = true;
+    static CHDChain hdchain;
+    LOCK(cs_testing);
+
+    if(toBeConstructed)
+    {
+        std::string walletName = "wallet_coinmanagement_tests.dat";
+        std::unique_ptr<CWallet> walletPtr(new CWallet(walletName));
+        bool firstLoad = true;
+        CPubKey newDefaultKey;
+        walletPtr->LoadWallet(firstLoad);
+        walletPtr->GenerateNewHDChain();
+        walletPtr->GetHDChain(hdchain);
+
+        toBeConstructed = false;
+    }
+    return hdchain;
+}
+
+
 std::unique_ptr<CWallet> populateWalletWithKeys(std::string walletName)
 {
     std::unique_ptr<CWallet> walletPtr(new CWallet(walletName));
     bool firstLoad = true;
     CPubKey newDefaultKey;
     walletPtr->LoadWallet(firstLoad);
-    walletPtr->GenerateNewHDChain();
+    //walletPtr->GenerateNewHDChain();
+    walletPtr->SetHDChain(getHDWalletSeedForTesting(),false);
     walletPtr->SetMinVersion(FEATURE_HD);
     walletPtr->GetKeyFromPool(newDefaultKey, false);
     walletPtr->SetDefaultKey(newDefaultKey);

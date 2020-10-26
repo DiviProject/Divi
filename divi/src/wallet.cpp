@@ -304,6 +304,7 @@ CWallet::CWallet(
     , setInternalKeyPool()
     , setExternalKeyPool()
     , walletStakingOnly()
+    , defaultKeyPoolTopUp(0)
 {
     SetNull();
 }
@@ -2816,7 +2817,9 @@ bool CWallet::TopUpKeyPool(unsigned int kpSize)
         if (kpSize > 0)
             nTargetSize = kpSize;
         else
-            nTargetSize = std::max(settings.GetArg("-keypool", DEFAULT_KEYPOOL_SIZE), (int64_t) 0);
+            nTargetSize = std::max(
+                defaultKeyPoolTopUp? defaultKeyPoolTopUp: settings.GetArg("-keypool", DEFAULT_KEYPOOL_SIZE),
+                (int64_t) 0);
 
         // count amount of available keys (internal, external)
         // make sure the keypool of external and internal keys fits the user selected target (-keypool)

@@ -245,8 +245,8 @@ private:
     std::set<int64_t> setInternalKeyPool;
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
-
 public:
+    int64_t defaultKeyPoolTopUp;
     DBErrors ReorderTransactionsByTimestamp();
     int64_t GetNextTransactionIndexAvailable() const;
     void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);

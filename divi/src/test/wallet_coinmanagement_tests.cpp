@@ -38,6 +38,7 @@ static const CHDChain& getHDWalletSeedForTesting()
 std::unique_ptr<CWallet> populateWalletWithKeys(std::string walletName)
 {
     std::unique_ptr<CWallet> walletPtr(new CWallet(walletName));
+    walletPtr->defaultKeyPoolTopUp = (int64_t)3;
     bool firstLoad = true;
     CPubKey newDefaultKey;
     walletPtr->LoadWallet(firstLoad);

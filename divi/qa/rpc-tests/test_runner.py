@@ -90,6 +90,7 @@ BASE_SCRIPTS = [
     'MnAreSafeToRestart.py',
     'mncollateral.py',
     'mnoperation.py',
+    'mnvaults.py',
     'op_meta.py',
     'proxy_test.py',
     'receivedby.py',

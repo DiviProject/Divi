@@ -23,8 +23,8 @@ static const CHDChain& getHDWalletSeedForTesting()
     {
         std::string walletName = "wallet_coinmanagement_tests.dat";
         std::unique_ptr<CWallet> walletPtr(new CWallet(walletName));
+        walletPtr->defaultKeyPoolTopUp = (int64_t)1;
         bool firstLoad = true;
-        CPubKey newDefaultKey;
         walletPtr->LoadWallet(firstLoad);
         walletPtr->GenerateNewHDChain();
         walletPtr->GetHDChain(hdchain);

@@ -740,7 +740,7 @@ bool CMasternodeBroadcastFactory::signPing(
     CMasternodePing& mnp,
     std::string& strErrorRet)
 {
-    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew))
+    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew,false))
     {
         strErrorRet = strprintf("Failed to sign ping, masternode=%s", mnp.vin.prevout.hash.ToString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
@@ -754,7 +754,7 @@ bool CMasternodeBroadcastFactory::signBroadcast(
     CMasternodeBroadcast& mnb,
     std::string& strErrorRet)
 {
-    if (!mnb.Sign(keyCollateralAddressNew))
+    if (!mnb.Sign(keyCollateralAddressNew,false))
     {
         strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", mnb.vin.prevout.hash.ToString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
@@ -798,6 +798,7 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
     CMasternodePing mnp = (deferRelay)? CMasternodePing::createDelayedMasternodePing(txin): CMasternodePing(txin);
     mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
     mnbRet.lastPing = mnp;
+    mnbRet.sigTime = mnp.sigTime;
 }
 
 bool CMasternodeBroadcastFactory::Create(
@@ -994,11 +995,11 @@ std::string CMasternodeBroadcast::getMessageToSign() const
     return strMessage;
 }
 
-bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress)
+bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning)
 {
     std::string errorMessage;
 
-    sigTime = GetAdjustedTime();
+    if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
     std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, sig, keyCollateralAddress)) {
@@ -1049,11 +1050,11 @@ std::string CMasternodePing::getMessageToSign() const
     return vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
 }
 
-bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
+bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning)
 {
     std::string errorMessage;
 
-    sigTime = GetAdjustedTime();
+    if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
     std::string strMessage = getMessageToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {

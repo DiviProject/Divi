@@ -76,7 +76,7 @@ public:
 
     bool CheckAndUpdate(int& nDos, bool fRequireEnabled = true);
     std::string getMessageToSign() const;
-    bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
+    bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
     void Relay();
 
     uint256 GetHash() const
@@ -260,7 +260,7 @@ public:
 
     bool CheckAndUpdate(int& nDoS);
     bool CheckInputsAndAdd(int& nDos);
-    bool Sign(CKey& keyCollateralAddress);
+    bool Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
     void Relay() const;
     std::string getMessageToSign() const;
 

@@ -247,6 +247,7 @@ private:
     bool walletStakingOnly;
 public:
     int64_t defaultKeyPoolTopUp;
+    bool allowSpendingZeroConfirmationOutputs;
     DBErrors ReorderTransactionsByTimestamp();
     int64_t GetNextTransactionIndexAvailable() const;
     void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);

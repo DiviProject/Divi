@@ -305,6 +305,7 @@ CWallet::CWallet(
     , setExternalKeyPool()
     , walletStakingOnly()
     , defaultKeyPoolTopUp(0)
+    , allowSpendingZeroConfirmationOutputs(bSpendZeroConfChange)
 {
     SetNull();
 }
@@ -2350,7 +2351,7 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*
 
     return (SelectCoinsMinConf(nTargetValue, 1, 6, vCoins, setCoinsRet, nValueRet) ||
             SelectCoinsMinConf(nTargetValue, 1, 1, vCoins, setCoinsRet, nValueRet) ||
-            (bSpendZeroConfChange && SelectCoinsMinConf(nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet)));
+            (allowSpendingZeroConfirmationOutputs && SelectCoinsMinConf(nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet)));
 }
 
 bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
@@ -3222,7 +3223,7 @@ bool CWallet::IsTrusted(const CWalletTx& walletTransaction) const
         return true;
     if (nDepth < 0)
         return false;
-    if (!bSpendZeroConfChange || !walletTransaction.IsFromMe(ISMINE_ALL)) // using wtx's cached debit
+    if (!allowSpendingZeroConfirmationOutputs || !walletTransaction.IsFromMe(ISMINE_ALL)) // using wtx's cached debit
         return false;
 
     // Trusted if all inputs are from us and are in the mempool:

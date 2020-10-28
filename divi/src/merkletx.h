@@ -50,8 +50,8 @@ public:
      *  0  : in memory pool, waiting to be included in a block
      * >=1 : this many blocks deep in the main chain
      */
-    int GetDepthInMainChain(const CBlockIndex*& pindexRet, bool enableIX = true) const;
-    int GetDepthInMainChain(bool enableIX = true) const;
+    int GetNumberOfBlockConfirmations(const CBlockIndex*& pindexRet, bool enableIX = true) const;
+    int GetNumberOfBlockConfirmations(bool enableIX = true) const;
     bool IsInMainChain() const;
     int GetBlocksToMaturity() const;
     bool AcceptToMemoryPool(bool fLimitFree = true, bool fRejectInsaneFee = true, bool ignoreFees = false);

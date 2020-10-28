@@ -46,10 +46,10 @@ void CMerkleTx::Init()
     fMerkleVerified = false;
 }
 
-int CMerkleTx::GetDepthInMainChain(bool enableIX) const
+int CMerkleTx::GetNumberOfBlockConfirmations(bool enableIX) const
 {
     const CBlockIndex* pindexRet;
-    return GetDepthInMainChain(pindexRet, enableIX);
+    return GetNumberOfBlockConfirmations(pindexRet, enableIX);
 }
 bool CMerkleTx::IsInMainChain() const
 {
@@ -115,7 +115,7 @@ int CMerkleTx::GetNumberOfBlockConfirmationsINTERNAL(const CBlockIndex*& pindexR
     return activeChain_.Height() - pindex->nHeight + 1;
 }
 
-int CMerkleTx::GetDepthInMainChain(const CBlockIndex*& pindexRet, bool enableIX) const
+int CMerkleTx::GetNumberOfBlockConfirmations(const CBlockIndex*& pindexRet, bool enableIX) const
 {
     AssertLockHeld(cs_main);
     int nResult = GetNumberOfBlockConfirmationsINTERNAL(pindexRet);
@@ -138,7 +138,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
-    return std::max(0, (Params().COINBASE_MATURITY() + 1) - GetDepthInMainChain());
+    return std::max(0, (Params().COINBASE_MATURITY() + 1) - GetNumberOfBlockConfirmations());
 }
 
 

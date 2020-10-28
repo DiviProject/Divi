@@ -226,7 +226,7 @@ bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
     for (TxSpends::const_iterator it = range.first; it != range.second; ++it) {
         const uint256& wtxid = it->second;
         const CWalletTx* transactionPtr = transactionRecord_.GetWalletTx(wtxid);
-        if (transactionPtr && transactionPtr->GetDepthInMainChain() >= 0)
+        if (transactionPtr && transactionPtr->GetNumberOfBlockConfirmations() >= 0)
             return true; // Spent
     }
     return false;
@@ -1004,7 +1004,7 @@ bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& 
             return false;
         }
 
-        return GetVinAndKeysFromOutput(COutput(walletTx, nOutputIndex, walletTx->GetDepthInMainChain(), true), txinRet, pubKeyRet, keyRet);
+        return GetVinAndKeysFromOutput(COutput(walletTx, nOutputIndex, walletTx->GetNumberOfBlockConfirmations(), true), txinRet, pubKeyRet, keyRet);
     }
     else
     {
@@ -1543,7 +1543,7 @@ void CWallet::ReacceptWalletTransactions()
         CWalletTx& wtx = item.second;
         assert(wtx.GetHash() == wtxid);
 
-        int nDepth = wtx.GetDepthInMainChain();
+        int nDepth = wtx.GetNumberOfBlockConfirmations();
 
         if (!wtx.IsCoinBase() && !wtx.IsCoinStake() && nDepth < 0) {
             // Try to add to memory pool
@@ -1756,7 +1756,7 @@ bool CWalletTx::InMempool() const
 void CWalletTx::RelayWalletTransaction(std::string strCommand)
 {
     if (!IsCoinBase()) {
-        if (GetDepthInMainChain() == 0) {
+        if (GetNumberOfBlockConfirmations() == 0) {
             uint256 hash = GetHash();
             LogPrintf("Relaying wtx %s\n", hash.ToString());
 
@@ -1870,7 +1870,7 @@ CAmount CWallet::GetUnlockedCoins() const
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
 
-            if (IsTrusted(*pcoin) && pcoin->GetDepthInMainChain() > 0)
+            if (IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() > 0)
                 nTotal += pcoin->GetUnlockedCredit();
         }
     }
@@ -1888,7 +1888,7 @@ CAmount CWallet::GetLockedCoins() const
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
 
-            if (IsTrusted(*pcoin) && pcoin->GetDepthInMainChain() > 0)
+            if (IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() > 0)
                 nTotal += pcoin->GetLockedCredit();
         }
     }
@@ -1904,7 +1904,7 @@ CAmount CWallet::GetUnconfirmedBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetDepthInMainChain() == 0))
+            if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
                 nTotal += pcoin->GetAvailableCredit();
         }
     }
@@ -1946,7 +1946,7 @@ CAmount CWallet::GetUnconfirmedWatchOnlyBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetDepthInMainChain() == 0))
+            if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
                 nTotal += pcoin->GetAvailableWatchOnlyCredit();
         }
     }
@@ -1980,7 +1980,7 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
     if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
         return false;
 
-    nDepth = pcoin->GetDepthInMainChain(false);
+    nDepth = pcoin->GetNumberOfBlockConfirmations(false);
     // do not use IX for inputs that have less then 6 blockchain confirmations
     if (fUseIX && nDepth < 6)
         return false;
@@ -2453,7 +2453,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     //reflecting an assumption the user would accept a bit more delay for
                     //a chance at a free transaction.
                     //But mempool inputs might still be in the mempool, so their age stays 0
-                    int age = pcoin.first->GetDepthInMainChain();
+                    int age = pcoin.first->GetNumberOfBlockConfirmations();
                     if (age != 0)
                         age += 1;
                     dPriority += (double)nCredit * age;
@@ -2993,7 +2993,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
             if (pcoin->IsCoinBase() && pcoin->GetBlocksToMaturity() > 0)
                 continue;
 
-            int nDepth = pcoin->GetDepthInMainChain();
+            int nDepth = pcoin->GetNumberOfBlockConfirmations();
             if (nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? 0 : 1))
                 continue;
 
@@ -3218,7 +3218,7 @@ bool CWallet::IsTrusted(const CWalletTx& walletTransaction) const
     // Quick answer in most cases
     if (!IsFinalTx(walletTransaction))
         return false;
-    int nDepth = walletTransaction.GetDepthInMainChain();
+    int nDepth = walletTransaction.GetNumberOfBlockConfirmations();
     if (nDepth >= 1)
         return true;
     if (nDepth < 0)
@@ -3423,7 +3423,7 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
         CAmount nTotalRewardsValue = 0;
         BOOST_FOREACH (const COutput& out, vCoins) {
             //no coins should get this far if they dont have proper maturity, this is double checking
-            if (out.tx->IsCoinStake() && out.tx->GetDepthInMainChain() < Params().COINBASE_MATURITY() + 1)
+            if (out.tx->IsCoinStake() && out.tx->GetNumberOfBlockConfirmations() < Params().COINBASE_MATURITY() + 1)
                 continue;
 
             if (out.Value() > combineThreshold * COIN)

@@ -60,7 +60,7 @@ void EnsureWalletIsUnlocked()
 
 void WalletTxToJSON(const CWalletTx& wtx, Object& entry)
 {
-    int confirms = wtx.GetDepthInMainChain(false);
+    int confirms = wtx.GetNumberOfBlockConfirmations(false);
     int confirmsTotal = GetIXConfirmations(wtx.GetHash()) + confirms;
     entry.push_back(Pair("confirmations", confirmsTotal));
     entry.push_back(Pair("bcconfirmations", confirms));
@@ -736,7 +736,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout)
                 if (txout.scriptPubKey == scriptPubKey)
-                if (wtx.GetDepthInMainChain() >= nMinDepth)
+                if (wtx.GetNumberOfBlockConfirmations() >= nMinDepth)
                 nAmount += txout.nValue;
     }
 
@@ -783,7 +783,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
         BOOST_FOREACH (const CTxOut& txout, wtx.vout) {
             CTxDestination address;
             if (ExtractDestination(txout.scriptPubKey, address) && pwalletMain->IsMine(address) && setAddress.count(address))
-                if (wtx.GetDepthInMainChain() >= nMinDepth)
+                if (wtx.GetNumberOfBlockConfirmations() >= nMinDepth)
                     nAmount += txout.nValue;
         }
     }
@@ -801,13 +801,13 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
-        if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < 0)
+        if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetNumberOfBlockConfirmations() < 0)
             continue;
 
         CAmount nReceived, nSent, nFee;
         wtx.GetAccountAmounts(strAccount, nReceived, nSent, nFee, filter);
 
-        if (nReceived != 0 && wtx.GetDepthInMainChain() >= nMinDepth)
+        if (nReceived != 0 && wtx.GetNumberOfBlockConfirmations() >= nMinDepth)
             nBalance += nReceived;
         nBalance -= nSent + nFee;
     }
@@ -868,7 +868,7 @@ Value getbalance(const Array& params, bool fHelp)
         for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
         {
             const CWalletTx& wtx = *(*it);
-            if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < 0)
+            if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetNumberOfBlockConfirmations() < 0)
                 continue;
 
             CAmount allFee;
@@ -876,7 +876,7 @@ Value getbalance(const Array& params, bool fHelp)
             list<COutputEntry> listReceived;
             list<COutputEntry> listSent;
             wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount, filter);
-            if (wtx.GetDepthInMainChain() >= nMinDepth) {
+            if (wtx.GetNumberOfBlockConfirmations() >= nMinDepth) {
                 BOOST_FOREACH (const COutputEntry& r, listReceived)
                         nBalance += r.amount;
             }
@@ -1156,8 +1156,8 @@ Value ListReceived(const Array& params, bool fByAccounts)
         if (wtx.IsCoinBase() || !IsFinalTx(wtx))
             continue;
 
-        int nDepth = wtx.GetDepthInMainChain();
-        int nBCDepth = wtx.GetDepthInMainChain(false);
+        int nDepth = wtx.GetNumberOfBlockConfirmations();
+        int nBCDepth = wtx.GetNumberOfBlockConfirmations(false);
         if (nDepth < nMinDepth)
             continue;
 
@@ -1345,7 +1345,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
 
             if (!pwalletMain->IsMine(address)) {
                 const CBlockIndex *index = nullptr;
-                if(wtx.GetDepthInMainChain(index, true) > 0 && index)
+                if(wtx.GetNumberOfBlockConfirmations(index, true) > 0 && index)
                 {
                     bool isLotteryPayment = heightValidator.IsValidLotteryBlockHeight(index->nHeight);
                     //if the address is not yours then it means you have a tx sent to you in someone elses coinstake tx
@@ -1471,7 +1471,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
             }
 
             // Received
-            if (listReceived.size() > 0 && wtx.GetDepthInMainChain() >= nMinDepth) {
+            if (listReceived.size() > 0 && wtx.GetNumberOfBlockConfirmations() >= nMinDepth) {
                 BOOST_FOREACH (const COutputEntry& r, listReceived) {
                     string account;
                     if (pwalletMain->mapAddressBook.count(r.destination))
@@ -1483,7 +1483,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
                         entry.push_back(Pair("account", account));
                         MaybePushAddress(entry, r.destination);
                         if (wtx.IsCoinBase()) {
-                            if (wtx.GetDepthInMainChain() < 1)
+                            if (wtx.GetNumberOfBlockConfirmations() < 1)
                                 entry.push_back(Pair("category", "orphan"));
                             else if (wtx.GetBlocksToMaturity() > 0)
                                 entry.push_back(Pair("category", "immature"));
@@ -1672,7 +1672,7 @@ Value listaccounts(const Array& params, bool fHelp)
         string strSentAccount;
         list<COutputEntry> listReceived;
         list<COutputEntry> listSent;
-        int nDepth = wtx.GetDepthInMainChain();
+        int nDepth = wtx.GetNumberOfBlockConfirmations();
         if (wtx.GetBlocksToMaturity() > 0 || nDepth < 0)
             continue;
         wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, includeWatchonly);
@@ -1769,7 +1769,7 @@ Value listsinceblock(const Array& params, bool fHelp)
     {
         CWalletTx tx = *(*it);
 
-        if (depth == -1 || tx.GetDepthInMainChain(false) < depth)
+        if (depth == -1 || tx.GetNumberOfBlockConfirmations(false) < depth)
             ListTransactions(*pwalletMain, tx, "*", 0, true, transactions, filter);
     }
 

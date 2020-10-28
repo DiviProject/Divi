@@ -338,7 +338,7 @@ BOOST_AUTO_TEST_CASE(willFindThatTransactionsByDefaultHaveNegativeDepth)
     CScript normalScript = GetScriptForDestination(currentWallet.vchDefaultKey.GetID());
     unsigned outputIndex=0;
     auto normalTx = AddDefaultTxToWallet(normalScript,outputIndex,100);
-    BOOST_CHECK_MESSAGE(normalTx.GetDepthInMainChain()==-1,"Found wallet transaction has non-negative depth in empty chain!");
+    BOOST_CHECK_MESSAGE(normalTx.GetNumberOfBlockConfirmations()==-1,"Found wallet transaction has non-negative depth in empty chain!");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

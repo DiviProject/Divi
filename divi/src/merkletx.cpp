@@ -54,7 +54,7 @@ int CMerkleTx::GetDepthInMainChain(bool enableIX) const
 bool CMerkleTx::IsInMainChain() const
 {
     const CBlockIndex* pindexRet;
-    return GetDepthInMainChainINTERNAL(pindexRet) > 0;
+    return GetNumberOfBlockConfirmationsINTERNAL(pindexRet) > 0;
 }
 
 int CMerkleTx::SetMerkleBranch(const CBlock& block)
@@ -90,7 +90,7 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
     return activeChain_.Height() - pindex->nHeight + 1;
 }
 
-int CMerkleTx::GetDepthInMainChainINTERNAL(const CBlockIndex*& pindexRet) const
+int CMerkleTx::GetNumberOfBlockConfirmationsINTERNAL(const CBlockIndex*& pindexRet) const
 {
     if (hashBlock == 0 || nIndex == -1)
         return 0;
@@ -118,7 +118,7 @@ int CMerkleTx::GetDepthInMainChainINTERNAL(const CBlockIndex*& pindexRet) const
 int CMerkleTx::GetDepthInMainChain(const CBlockIndex*& pindexRet, bool enableIX) const
 {
     AssertLockHeld(cs_main);
-    int nResult = GetDepthInMainChainINTERNAL(pindexRet);
+    int nResult = GetNumberOfBlockConfirmationsINTERNAL(pindexRet);
     if (nResult == 0 && !mempool.exists(GetHash()))
         return -1; // Not in chain, not in mempool
 

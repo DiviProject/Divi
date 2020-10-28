@@ -15,7 +15,7 @@ protected:
     const CChain& activeChain_;
     const BlockMap& blockIndices_;
 private:
-    int GetDepthInMainChainINTERNAL(const CBlockIndex*& pindexRet) const;
+    int GetNumberOfBlockConfirmationsINTERNAL(const CBlockIndex*& pindexRet) const;
 
 public:
     uint256 hashBlock;

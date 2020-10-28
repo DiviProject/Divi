@@ -11,6 +11,8 @@
 
 #include <script/StakingVaultScript.h>
 #include <random.h>
+#include <chain.h>
+#include <blockmap.h>
 
 static const CHDChain& getHDWalletSeedForTesting()
 {
@@ -71,11 +73,15 @@ public:
     const std::string walletName;
 private:
     std::unique_ptr<CWallet> walletManager_;
+    CChain activeChain_;
+    BlockMap blockIndices_;
 public:
     CWallet& currentWallet;
     WalletCoinManagementTestFixture(
         ): walletName(std::string("currentWallet")+std::to_string(walletCounter++)+std::string(".dat") )
         , walletManager_( populateWalletWithKeys(walletName) )
+        , activeChain_()
+        , blockIndices_()
         , currentWallet(*walletManager_)
     {
 
@@ -84,7 +90,8 @@ public:
     const CWalletTx& AddDefaultTxToWallet(CScript scriptToPayTo, unsigned& outputIndex,unsigned numberOfCoins = 100u)
     {
         CMutableTransaction tx = createDefaultTransaction(scriptToPayTo,outputIndex,numberOfCoins);
-        CWalletTx wtx(&currentWallet, tx);
+        CMerkleTx merkleTx(tx,activeChain_,blockIndices_);
+        CWalletTx wtx(&currentWallet, merkleTx);
         currentWallet.AddToWallet(wtx);
         const CWalletTx* txPtr = currentWallet.GetWalletTx(wtx.GetHash());
         assert(txPtr);

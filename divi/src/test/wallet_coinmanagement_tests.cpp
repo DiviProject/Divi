@@ -115,6 +115,12 @@ public:
         assert(txPtr);
         return *txPtr;
     }
+    void FakeAddingTransactionToChain(const uint256& txHash)
+    {
+        CWalletTx* txPtr = const_cast<CWalletTx*>( currentWallet.GetWalletTx(txHash) );
+        txPtr->hashBlock = extendFakeChainAndGetTipBlockHash();
+        txPtr->fMerkleVerified = true;
+    }
 
     CScript vaultScriptAsOwner() const
     {

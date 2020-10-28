@@ -60,6 +60,11 @@ CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& ind
     CMutableTransaction tx;
     tx.nLockTime = nextLockTime++;        // so all transactions get different hashes
     tx.vout.resize(numberOfIndices);
+    for(CTxOut& output: tx.vout)
+    {
+        output.nValue = 1;
+        output.scriptPubKey = CScript() << OP_TRUE;
+    }
     tx.vout[index].nValue = numberOfCoins*COIN;
     tx.vout[index].scriptPubKey = defaultScript;
     tx.vin.resize(1);

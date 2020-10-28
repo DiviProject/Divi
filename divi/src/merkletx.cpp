@@ -19,13 +19,22 @@ extern CChain chainActive;
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees);
 
 
+CMerkleTx::CMerkleTx(
+    const CTransaction& txIn,
+    const CChain& activeChain,
+    const BlockMap& blockIndices
+    ): CTransaction(txIn)
+    , activeChain_(activeChain)
+    , blockIndices_(blockIndices)
+{
+}
 
-CMerkleTx::CMerkleTx()
+CMerkleTx::CMerkleTx(): activeChain_(chainActive), blockIndices_(mapBlockIndex)
 {
     Init();
 }
 
-CMerkleTx::CMerkleTx(const CTransaction& txIn) : CTransaction(txIn)
+CMerkleTx::CMerkleTx(const CTransaction& txIn) : CTransaction(txIn), activeChain_(chainActive), blockIndices_(mapBlockIndex)
 {
     Init();
 }

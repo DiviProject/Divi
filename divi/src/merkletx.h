@@ -6,9 +6,14 @@
 
 class CBlockIndex;
 class CBlock;
+class CChain;
+class BlockMap;
 
 class CMerkleTx : public CTransaction
 {
+protected:
+    const CChain& activeChain_;
+    const BlockMap& blockIndices_;
 private:
     int GetDepthInMainChainINTERNAL(const CBlockIndex*& pindexRet) const;
 
@@ -19,6 +24,7 @@ public:
 
     // memory only
     mutable bool fMerkleVerified;
+    CMerkleTx(const CTransaction& txIn,const CChain& activeChain, const BlockMap& blockIndices);
     CMerkleTx();
     CMerkleTx(const CTransaction& txIn);
 

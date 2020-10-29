@@ -406,4 +406,18 @@ BOOST_AUTO_TEST_CASE(willFindStakingBalanceMatchesBalanceWhenOwnWalletFundsAreNo
     BOOST_CHECK_EQUAL_MESSAGE(currentWallet.GetStakingBalance(), 10100*COIN,"Staking balance was not the expected amount");
 }
 
+BOOST_AUTO_TEST_CASE(willHaveAStakingBalanceFromAVaultThatIsntSpendable)
+{
+    CScript managedVaultScript = vaultScriptAsManager();
+    currentWallet.AddCScript(managedVaultScript);
+
+    unsigned outputIndex=0;
+    const CWalletTx& managedVaultTx = AddDefaultTxToWallet(managedVaultScript,outputIndex,10000);
+    FakeAddTransactionToChain(managedVaultTx.GetHash());
+
+    BOOST_CHECK_EQUAL_MESSAGE(currentWallet.GetBalance(), 10000*COIN,"Total balance was not the expected amount");
+    BOOST_CHECK_EQUAL_MESSAGE(currentWallet.GetStakingBalance(), 10000*COIN,"Staking balance was not the expected amount");
+    BOOST_CHECK_EQUAL_MESSAGE(currentWallet.GetSpendableBalance(), 0*COIN,"Spendable balance was not the expected amount");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

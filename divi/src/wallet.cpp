@@ -1822,7 +1822,7 @@ CAmount CWallet::GetStakingBalance() const
 
 CAmount CWallet::GetSpendableBalance() const
 {
-    return GetBalance();
+    return GetBalanceByCoinType(ALL_SPENDABLE_COINS);
 }
 
 CAmount CWallet::GetBalance() const

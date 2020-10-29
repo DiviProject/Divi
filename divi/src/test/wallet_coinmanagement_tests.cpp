@@ -68,6 +68,9 @@ CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& ind
     tx.vout[index].nValue = numberOfCoins*COIN;
     tx.vout[index].scriptPubKey = defaultScript;
     tx.vin.resize(1);
+    {// Avoid flagging as a coinbase tx
+        tx.vin[0].prevout = COutPoint(GetRandHash(),static_cast<uint32_t>(GetRand(100)) );
+    }
     return tx;
 }
 

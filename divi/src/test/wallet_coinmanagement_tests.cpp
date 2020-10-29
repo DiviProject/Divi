@@ -78,31 +78,35 @@ public:
     const std::string walletName;
 private:
     std::unique_ptr<CWallet> walletManager_;
+    const int32_t version;
+    int32_t timestamp;
     CChain activeChain_;
     BlockMap blockIndices_;
     FakeBlockIndexChain fakeChain_;
 public:
     CWallet& currentWallet;
+
+    uint256 extendFakeChainAndGetTipBlockHash()
+    {
+        uint256 hash;
+        fakeChain_.extendBy(1,timestamp++,version);
+        CBlockIndex* newTip = const_cast<CBlockIndex*>(fakeChain_.tip());
+        hash = GetRandHash();
+        activeChain_.SetTip(newTip);
+        blockIndices_.insert(std::make_pair(hash, newTip));
+        return hash;
+    }
     WalletCoinManagementTestFixture(
         ): walletName(std::string("currentWallet")+std::to_string(walletCounter++)+std::string(".dat") )
         , walletManager_( populateWalletWithKeys(walletName) )
+        , version(0x01)
+        , timestamp(1600000000)
         , activeChain_()
         , blockIndices_()
         , fakeChain_()
         , currentWallet(*walletManager_)
     {
-    }
-
-    uint256 extendFakeChainAndGetTipBlockHash()
-    {
-        const int32_t version = 0x01;
-        static int32_t timestamp =1600000000;
-        fakeChain_.extendBy(1,timestamp++,version);
-        CBlockIndex* newTip = const_cast<CBlockIndex*>(fakeChain_.tip());
-        uint256 hash = newTip->GetBlockHash();
-        activeChain_.SetTip(newTip);
-        blockIndices_.insert(std::make_pair(hash, newTip));
-        return hash;
+        extendFakeChainAndGetTipBlockHash(); // Fake genesis block
     }
 
     const CWalletTx& AddDefaultTxToWallet(CScript scriptToPayTo, unsigned& outputIndex,unsigned numberOfCoins = 100u)
@@ -115,7 +119,7 @@ public:
         assert(txPtr);
         return *txPtr;
     }
-    void FakeAddingTransactionToChain(const uint256& txHash)
+    void FakeAddTransactionToChain(const uint256& txHash)
     {
         CWalletTx* txPtr = const_cast<CWalletTx*>( currentWallet.GetWalletTx(txHash) );
         txPtr->hashBlock = extendFakeChainAndGetTipBlockHash();

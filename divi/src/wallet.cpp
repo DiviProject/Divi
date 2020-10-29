@@ -1817,7 +1817,7 @@ void CWallet::ResendWalletTransactions()
 
 CAmount CWallet::GetStakingBalance() const
 {
-    return GetBalance() - nReserveBalance;
+    return GetBalanceByCoinType(STAKABLE_COINS) - nReserveBalance;
 }
 
 CAmount CWallet::GetSpendableBalance() const

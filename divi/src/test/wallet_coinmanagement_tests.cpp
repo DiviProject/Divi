@@ -341,4 +341,20 @@ BOOST_AUTO_TEST_CASE(willFindThatTransactionsByDefaultHaveNegativeDepth)
     BOOST_CHECK_MESSAGE(normalTx.GetNumberOfBlockConfirmations()==-1,"Found wallet transaction has non-negative depth in empty chain!");
 }
 
+BOOST_AUTO_TEST_CASE(willFindThatTransactionsWillHaveDepthAccordingToLengthOfChain)
+{
+    CScript normalScript = GetScriptForDestination(currentWallet.vchDefaultKey.GetID());
+    unsigned outputIndex=0;
+    const CWalletTx& normalTx = AddDefaultTxToWallet(normalScript,outputIndex,100);
+    FakeAddTransactionToChain(normalTx.GetHash());
+
+    int someNumberOfBlocksToAdd = GetRand(25)+1;
+    int startingNumberOfConfirmations = 1;
+    for(int numberOfAdditionalBlocks = 0; numberOfAdditionalBlocks < someNumberOfBlocksToAdd ; ++numberOfAdditionalBlocks )
+    {
+        BOOST_CHECK_EQUAL(normalTx.GetNumberOfBlockConfirmations(),startingNumberOfConfirmations+numberOfAdditionalBlocks);
+        extendFakeChainAndGetTipBlockHash();
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

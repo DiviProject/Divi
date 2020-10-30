@@ -1652,14 +1652,17 @@ void CWalletTx::BindWallet(CWallet* pwalletIn)
     RecomputeCachedQuantities();
 }
 
-CAmount CWalletTx::GetImmatureCredit(bool fUseCache) const
+CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache) const
 {
-    if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0 && IsInMainChain()) {
-        if (fUseCache && fImmatureCreditCached)
-            return nImmatureCreditCached;
-        nImmatureCreditCached = pwallet->ComputeCredit(*this, ISMINE_SPENDABLE);
-        fImmatureCreditCached = true;
-        return nImmatureCreditCached;
+    if ((walletTransaction.IsCoinBase() || walletTransaction.IsCoinStake()) &&
+        walletTransaction.GetBlocksToMaturity() > 0 &&
+        walletTransaction.IsInMainChain())
+    {
+        if (fUseCache && walletTransaction.fImmatureCreditCached)
+            return walletTransaction.nImmatureCreditCached;
+        walletTransaction.nImmatureCreditCached = ComputeCredit(walletTransaction, ISMINE_SPENDABLE);
+        walletTransaction.fImmatureCreditCached = true;
+        return walletTransaction.nImmatureCreditCached;
     }
 
     return 0;
@@ -1854,7 +1857,7 @@ CAmount CWallet::GetImmatureBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            nTotal += pcoin->GetImmatureCredit();
+            nTotal += GetImmatureCredit(*pcoin);
         }
     }
     return nTotal;

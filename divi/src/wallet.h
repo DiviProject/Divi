@@ -670,7 +670,6 @@ public:
     void BindWallet(CWallet* pwalletIn);
 
     //! filter decides which addresses will count towards the debit
-    CAmount GetCreditInWallet(const isminefilter& filter, const CWallet& wallet) const;
     CAmount GetImmatureCredit(bool fUseCache = true) const;
     CAmount GetAvailableCredit(bool fUseCache = true) const;
 

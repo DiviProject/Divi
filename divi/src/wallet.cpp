@@ -1848,43 +1848,6 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
     return nTotal;
 }
 
-CAmount CWallet::GetUnlockedCoins() const
-{
-    if (fLiteMode) return 0;
-
-    CAmount nTotal = 0;
-    {
-        LOCK2(cs_main, cs_wallet);
-        for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
-            const CWalletTx* pcoin = &(*it).second;
-
-            if (IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() > 0)
-                nTotal += pcoin->GetUnlockedCredit();
-        }
-    }
-
-    return nTotal;
-}
-
-CAmount CWallet::GetLockedCoins() const
-{
-    if (fLiteMode) return 0;
-
-    CAmount nTotal = 0;
-    {
-        LOCK2(cs_main, cs_wallet);
-        for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
-            const CWalletTx* pcoin = &(*it).second;
-
-            if (IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() > 0)
-                nTotal += pcoin->GetLockedCredit();
-        }
-    }
-
-    return nTotal;
-}
-
-
 CAmount CWallet::GetUnconfirmedBalance() const
 {
     CAmount nTotal = 0;
@@ -3624,32 +3587,6 @@ bool IsFinalTx(const CTransaction& tx, int nBlockHeight, int64_t nBlockTime)
             if (!txin.IsFinal())
             return false;
     return true;
-}
-
-CAmount CWalletTx::GetUnlockedCredit() const
-{
-    if (pwallet == 0)
-        return 0;
-
-    // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (GetBlocksToMaturity() > 0)
-        return 0;
-
-    CAmount nCredit = pwallet->GetCredit(*this, ISMINE_SPENDABLE, REQUIRE_UNSPENT | REQUIRE_UNLOCKED);
-    return nCredit;
-}
-
-CAmount CWalletTx::GetLockedCredit() const
-{
-    if (pwallet == 0)
-        return 0;
-
-    // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (IsCoinBase() && GetBlocksToMaturity() > 0)
-        return 0;
-
-    CAmount nCredit = pwallet->GetCredit(*this,ISMINE_SPENDABLE,REQUIRE_UNSPENT | REQUIRE_LOCKED);
-    return nCredit;
 }
 
 bool CWallet::MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment)

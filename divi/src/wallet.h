@@ -407,8 +407,6 @@ public:
     CAmount GetSpendableBalance() const;
     CAmount GetStakingBalance() const;
 
-    CAmount GetLockedCoins() const;
-    CAmount GetUnlockedCoins() const;
     CAmount GetUnconfirmedBalance() const;
     CAmount GetImmatureBalance() const;
     CAmount GetAnonymizableBalance() const;
@@ -676,11 +674,6 @@ public:
     CAmount GetImmatureCredit(bool fUseCache = true) const;
     CAmount GetAvailableCredit(bool fUseCache = true) const;
 
-    // Return sum of unlocked coins
-    CAmount GetUnlockedCredit() const;
-
-        // Return sum of unlocked coins
-    CAmount GetLockedCredit() const;
     CAmount GetImmatureWatchOnlyCredit(const bool& fUseCache = true) const;
     CAmount GetAvailableWatchOnlyCredit(const bool& fUseCache = true) const;
     CAmount GetChange() const;

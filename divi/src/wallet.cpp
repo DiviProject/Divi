@@ -453,6 +453,35 @@ CAmount CWallet::ComputeCredit(const CTransaction& tx, const isminefilter& filte
     return nCredit;
 }
 
+CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const isminefilter& filter) const
+{
+    // Must wait until coinbase is safely deep enough in the chain before valuing it
+    if (walletTransaction.IsCoinBase() && walletTransaction.GetBlocksToMaturity() > 0)
+        return 0;
+
+    CAmount credit = 0;
+    if (filter & ISMINE_SPENDABLE) {
+        // GetBalance can assume transactions in mapWallet won't change
+        if (walletTransaction.fCreditCached)
+            credit += walletTransaction.nCreditCached;
+        else {
+            walletTransaction.nCreditCached = ComputeCredit(walletTransaction, ISMINE_SPENDABLE);
+            walletTransaction.fCreditCached = true;
+            credit += walletTransaction.nCreditCached;
+        }
+    }
+    if (filter & ISMINE_WATCH_ONLY) {
+        if (walletTransaction.fWatchCreditCached)
+            credit += walletTransaction.nWatchCreditCached;
+        else {
+            walletTransaction.nWatchCreditCached = ComputeCredit(walletTransaction, ISMINE_WATCH_ONLY);
+            walletTransaction.fWatchCreditCached = true;
+            credit += walletTransaction.nWatchCreditCached;
+        }
+    }
+    return credit;
+}
+
 CAmount CWallet::GetChange(const CTransaction& tx) const
 {
     CAmount nChange = 0;

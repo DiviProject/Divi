@@ -407,6 +407,7 @@ public:
     CAmount GetSpendableBalance() const;
     CAmount GetStakingBalance() const;
 
+    CAmount GetChange(const CWalletTx& walletTransaction) const;
     CAmount GetAvailableWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache = true) const;
     CAmount GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache = true) const;
     CAmount GetAvailableCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
@@ -481,7 +482,7 @@ public:
     isminetype IsMine(const CTxOut& txout) const;
     CAmount ComputeCredit(const CTxOut& txout, const isminefilter& filter) const;
     bool IsChange(const CTxOut& txout) const;
-    CAmount GetChange(const CTxOut& txout) const;
+    CAmount ComputeChange(const CTxOut& txout) const;
     bool IsMine(const CTransaction& tx) const;
     /** should probably be renamed to IsRelevantToMe */
     bool IsFromMe(const CTransaction& tx) const;
@@ -489,7 +490,7 @@ public:
     CAmount GetDebit(const CWalletTx& tx, const isminefilter& filter) const;
     CAmount ComputeCredit(const CTransaction& tx, const isminefilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
     CAmount GetCredit(const CWalletTx& walletTransaction, const isminefilter& filter) const;
-    CAmount GetChange(const CTransaction& tx) const;
+    CAmount ComputeChange(const CTransaction& tx) const;
     void SetBestChain(const CBlockLocator& loc);
 
     DBErrors LoadWallet(bool& fFirstRunRet);
@@ -674,8 +675,6 @@ public:
     void BindWallet(CWallet* pwalletIn);
 
     //! filter decides which addresses will count towards the debit
-    CAmount GetChange() const;
-
     void GetAmounts(std::list<COutputEntry>& listReceived,
         std::list<COutputEntry>& listSent,
         CAmount& nFee,

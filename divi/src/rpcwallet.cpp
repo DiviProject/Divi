@@ -1429,7 +1429,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
             Object entry;
             entry.push_back(Pair("category", "move"));
             auto nFee = wallet.GetDebit(wtx,ISMINE_ALL) - wallet.GetCredit(wtx,ISMINE_SPENDABLE);
-            entry.push_back(Pair("amount", ValueFromAmount( wallet.GetDebit(wtx,ISMINE_ALL) - wtx.GetChange() - nFee)));
+            entry.push_back(Pair("amount", ValueFromAmount( wallet.GetDebit(wtx,ISMINE_ALL) - wallet.GetChange(wtx) - nFee)));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
 
             Array addresses;

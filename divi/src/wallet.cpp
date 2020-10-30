@@ -371,10 +371,10 @@ CAmount CWallet::ComputeCredit(const CTxOut& txout, const isminefilter& filter) 
         throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
     return ((IsMine(txout) & filter) ? txout.nValue : 0);
 }
-CAmount CWallet::GetChange(const CTxOut& txout) const
+CAmount CWallet::ComputeChange(const CTxOut& txout) const
 {
     if (!MoneyRange(txout.nValue))
-        throw std::runtime_error("CWallet::GetChange() : value out of range");
+        throw std::runtime_error("CWallet::ComputeChange() : value out of range");
     return (IsChange(txout) ? txout.nValue : 0);
 }
 bool CWallet::IsMine(const CTransaction& tx) const
@@ -481,13 +481,13 @@ CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const isminefilte
     return credit;
 }
 
-CAmount CWallet::GetChange(const CTransaction& tx) const
+CAmount CWallet::ComputeChange(const CTransaction& tx) const
 {
     CAmount nChange = 0;
     BOOST_FOREACH (const CTxOut& txout, tx.vout) {
-        nChange += GetChange(txout);
+        nChange += ComputeChange(txout);
         if (!MoneyRange(nChange))
-            throw std::runtime_error("CWallet::GetChange() : value out of range");
+            throw std::runtime_error("CWallet::ComputeChange() : value out of range");
     }
     return nChange;
 }
@@ -1709,13 +1709,13 @@ CAmount CWallet::GetAvailableWatchOnlyCredit(const CWalletTx& walletTransaction,
     walletTransaction.fAvailableWatchCreditCached = true;
     return nCredit;
 }
-CAmount CWalletTx::GetChange() const
+CAmount CWallet::GetChange(const CWalletTx& walletTransaction) const
 {
-    if (fChangeCached)
-        return nChangeCached;
-    nChangeCached = pwallet->GetChange(*this);
-    fChangeCached = true;
-    return nChangeCached;
+    if (walletTransaction.fChangeCached)
+        return walletTransaction.nChangeCached;
+    walletTransaction.nChangeCached = ComputeChange(walletTransaction);
+    walletTransaction.fChangeCached = true;
+    return walletTransaction.nChangeCached;
 }
 bool CWalletTx::IsFromMe(const isminefilter& filter) const
 {

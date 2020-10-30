@@ -74,7 +74,6 @@ extern CCriticalSection cs_main;
 extern BlockMap mapBlockIndex;
 extern CTxMemPool mempool;
 extern int64_t nTimeBestReceived;
-extern int64_t nReserveBalance;
 extern CFeeRate minRelayTxFee;
 extern CAmount maxTxFee;
 extern bool fLargeWorkForkFound;
@@ -1805,7 +1804,7 @@ void CWallet::ResendWalletTransactions()
 
 CAmount CWallet::GetStakingBalance() const
 {
-    return GetBalanceByCoinType(STAKABLE_COINS) - nReserveBalance;
+    return GetBalanceByCoinType(STAKABLE_COINS);
 }
 
 CAmount CWallet::GetSpendableBalance() const
@@ -2125,8 +2124,6 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
 
 bool CWallet::MintableCoins()
 {
-    if (settings.ParameterIsSet("-reservebalance") && !ParseMoney(settings.GetParameter("-reservebalance"), nReserveBalance))
-        return error("MintableCoins() : invalid reserve balance amount");
     if (GetStakingBalance() <= 0)
         return false;
 

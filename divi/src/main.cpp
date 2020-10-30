@@ -85,7 +85,6 @@ bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
 bool fAlerts = DEFAULT_ALERTS;
 
-int64_t nReserveBalance = 0;
 
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 

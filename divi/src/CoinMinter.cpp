@@ -16,7 +16,6 @@
 #include <txmempool.h>
 
 extern const int nHashDrift;
-extern int64_t nReserveBalance;
 
 extern CScript COINBASE_FLAGS;
 

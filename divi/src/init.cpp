@@ -541,7 +541,6 @@ std::string HelpMessage(HelpMessageMode mode)
 #ifdef ENABLE_WALLET
     strUsage += HelpMessageGroup(translate("Staking options:"));
     strUsage += HelpMessageOpt("-staking=<n>", strprintf(translate("Enable staking functionality (0-1, default: %u)"), 1));
-    strUsage += HelpMessageOpt("-reservebalance=<amt>", translate("Keep the specified amount available for spending at all times (default: 0)"));
     if (settings.GetBoolArg("-help-debug", false)) {
         strUsage += HelpMessageOpt("-printstakemodifier", translate("Display the stake modifier calculations in the debug.log file."));
         strUsage += HelpMessageOpt("-printcoinstake", translate("Display verbose coin stake messages in the debug.log file."));
@@ -790,12 +789,6 @@ bool EnableWalletFeatures()
             LogPrintf("InitializeDivi : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
     }
 
-    if (settings.ParameterIsSet("-reservebalance")) {
-        if (!ParseMoney(settings.GetParameter("-reservebalance"), nReserveBalance)) {
-            InitError(translate("Invalid amount for -reservebalance=<amount>"));
-            return false;
-        }
-    }
     return true;
 }
 

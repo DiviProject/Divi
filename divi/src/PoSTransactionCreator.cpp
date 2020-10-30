@@ -16,7 +16,6 @@ extern Settings& settings;
 extern const int nHashDrift;
 extern const int maximumFutureBlockDrift = 180; // seconds
 extern BlockMap mapBlockIndex;
-extern int64_t nReserveBalance;
 extern CChain chainActive;
 
 PoSTransactionCreator::PoSTransactionCreator(
@@ -186,9 +185,6 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     CMutableTransaction& txNew,
     unsigned int& nTxNewTime)
 {
-    if (settings.ParameterIsSet("-reservebalance") && !ParseMoney(settings.GetParameter("-reservebalance"), nReserveBalance))
-        return error("CreateCoinStake : invalid reserve balance amount");
-
     CAmount allowedStakingAmount = wallet_.GetStakingBalance();
     MarkTransactionAsCoinstake(txNew);
 

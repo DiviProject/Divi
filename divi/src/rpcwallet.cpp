@@ -40,7 +40,6 @@ extern CFeeRate payTxFee;
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
 extern BlockMap mapBlockIndex;
-extern int64_t nReserveBalance;
 extern CChain chainActive;
 
 extern const std::string strMessageMagic;
@@ -2322,47 +2321,4 @@ Value getwalletinfo(const Array& params, bool fHelp)
         obj.push_back(Pair("hdaccounts", accounts));
     }
     return obj;
-}
-
-// ppcoin: reserve balance from being staked for network protection
-Value reservebalance(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() > 2)
-        throw runtime_error(
-                "reservebalance ( reserve amount )\n"
-                "\nShow or set the reserve amount not participating in network protection\n"
-                "If no parameters provided current setting is printed.\n"
-
-                "\nArguments:\n"
-                "1. reserve     (boolean, optional) is true or false to turn balance reserve on or off.\n"
-                "2. amount      (numeric, optional) is a real and rounded to cent.\n"
-
-                "\nResult:\n"
-                "{\n"
-                "  \"reserve\": true|false,     (boolean) Status of the reserve balance\n"
-                "  \"amount\": x.xxxx       (numeric) Amount reserved\n"
-                "\nExamples:\n" +
-                HelpExampleCli("reservebalance", "true 5000") + HelpExampleRpc("reservebalance", "true 5000"));
-
-    if (params.size() > 0) {
-        bool fReserve = params[0].get_bool();
-        if (fReserve) {
-            if (params.size() == 1)
-                throw runtime_error("must provide amount to reserve balance.\n");
-            CAmount nAmount = AmountFromValue(params[1]);
-            nAmount = (nAmount / CENT) * CENT; // round to cent
-            if (nAmount < 0)
-                throw runtime_error("amount cannot be negative.\n");
-            nReserveBalance = nAmount;
-        } else {
-            if (params.size() > 1)
-                throw runtime_error("cannot specify amount to turn off reserve.\n");
-            nReserveBalance = 0;
-        }
-    }
-
-    Object result;
-    result.push_back(Pair("reserve", (nReserveBalance > 0)));
-    result.push_back(Pair("amount", ValueFromAmount(nReserveBalance)));
-    return result;
 }

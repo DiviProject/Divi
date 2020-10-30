@@ -55,7 +55,6 @@ extern CBlockTreeDB* pblocktree;
 extern const std::string strMessageMagic;
 extern CChain chainActive;
 extern CCriticalSection cs_main;
-extern int64_t nReserveBalance;
 extern CTxMemPool mempool;
 extern CFeeRate minRelayTxFee;
 

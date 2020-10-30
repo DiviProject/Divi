@@ -1683,14 +1683,14 @@ CAmount CWallet::GetAvailableCredit(const CWalletTx& walletTransaction, bool fUs
     return nCredit;
 }
 
-CAmount CWalletTx::GetImmatureWatchOnlyCredit(const bool& fUseCache) const
+CAmount CWallet::GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache) const
 {
-    if (IsCoinBase() && GetBlocksToMaturity() > 0 && IsInMainChain()) {
-        if (fUseCache && fImmatureWatchCreditCached)
-            return nImmatureWatchCreditCached;
-        nImmatureWatchCreditCached = pwallet->ComputeCredit(*this, ISMINE_WATCH_ONLY);
-        fImmatureWatchCreditCached = true;
-        return nImmatureWatchCreditCached;
+    if (walletTransaction.IsCoinBase() && walletTransaction.GetBlocksToMaturity() > 0 && walletTransaction.IsInMainChain()) {
+        if (fUseCache && walletTransaction.fImmatureWatchCreditCached)
+            return walletTransaction.nImmatureWatchCreditCached;
+        walletTransaction.nImmatureWatchCreditCached = ComputeCredit(walletTransaction, ISMINE_WATCH_ONLY);
+        walletTransaction.fImmatureWatchCreditCached = true;
+        return walletTransaction.nImmatureWatchCreditCached;
     }
 
     return 0;
@@ -1896,7 +1896,7 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            nTotal += pcoin->GetImmatureWatchOnlyCredit();
+            nTotal += GetImmatureWatchOnlyCredit(*pcoin);
         }
     }
     return nTotal;

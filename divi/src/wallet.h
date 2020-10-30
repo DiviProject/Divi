@@ -407,6 +407,7 @@ public:
     CAmount GetSpendableBalance() const;
     CAmount GetStakingBalance() const;
 
+    CAmount GetAvailableWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache = true) const;
     CAmount GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache = true) const;
     CAmount GetAvailableCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
     CAmount GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
@@ -673,7 +674,6 @@ public:
     void BindWallet(CWallet* pwalletIn);
 
     //! filter decides which addresses will count towards the debit
-    CAmount GetAvailableWatchOnlyCredit(const bool& fUseCache = true) const;
     CAmount GetChange() const;
 
     void GetAmounts(std::list<COutputEntry>& listReceived,

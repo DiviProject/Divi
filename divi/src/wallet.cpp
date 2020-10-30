@@ -1695,21 +1695,18 @@ CAmount CWallet::GetImmatureWatchOnlyCredit(const CWalletTx& walletTransaction, 
 
     return 0;
 }
-CAmount CWalletTx::GetAvailableWatchOnlyCredit(const bool& fUseCache) const
+CAmount CWallet::GetAvailableWatchOnlyCredit(const CWalletTx& walletTransaction, const bool& fUseCache) const
 {
-    if (pwallet == 0)
-        return 0;
-
     // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (IsCoinBase() && GetBlocksToMaturity() > 0)
+    if (walletTransaction.IsCoinBase() && walletTransaction.GetBlocksToMaturity() > 0)
         return 0;
 
-    if (fUseCache && fAvailableWatchCreditCached)
-        return nAvailableWatchCreditCached;
+    if (fUseCache && walletTransaction.fAvailableWatchCreditCached)
+        return walletTransaction.nAvailableWatchCreditCached;
 
-    CAmount nCredit = pwallet->ComputeCredit(*this, ISMINE_WATCH_ONLY,REQUIRE_UNSPENT);
-    nAvailableWatchCreditCached = nCredit;
-    fAvailableWatchCreditCached = true;
+    CAmount nCredit = ComputeCredit(walletTransaction, ISMINE_WATCH_ONLY,REQUIRE_UNSPENT);
+    walletTransaction.nAvailableWatchCreditCached = nCredit;
+    walletTransaction.fAvailableWatchCreditCached = true;
     return nCredit;
 }
 CAmount CWalletTx::GetChange() const
@@ -1868,7 +1865,7 @@ CAmount CWallet::GetWatchOnlyBalance() const
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             if (IsTrusted(*pcoin))
-                nTotal += pcoin->GetAvailableWatchOnlyCredit();
+                nTotal += GetAvailableWatchOnlyCredit(*pcoin);
         }
     }
 
@@ -1883,7 +1880,7 @@ CAmount CWallet::GetUnconfirmedWatchOnlyBalance() const
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
-                nTotal += pcoin->GetAvailableWatchOnlyCredit();
+                nTotal += GetAvailableWatchOnlyCredit(*pcoin);
         }
     }
     return nTotal;

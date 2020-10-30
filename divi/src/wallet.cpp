@@ -366,10 +366,10 @@ isminetype CWallet::IsMine(const CTxOut& txout) const
     return IsMine(txout.scriptPubKey);
 }
 
-CAmount CWallet::GetCredit(const CTxOut& txout, const isminefilter& filter) const
+CAmount CWallet::ComputeCredit(const CTxOut& txout, const isminefilter& filter) const
 {
     if (!MoneyRange(txout.nValue))
-        throw std::runtime_error("CWallet::GetCredit() : value out of range");
+        throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
     return ((IsMine(txout) & filter) ? txout.nValue : 0);
 }
 CAmount CWallet::GetChange(const CTxOut& txout) const
@@ -427,7 +427,7 @@ CAmount CWallet::GetDebit(const CWalletTx& tx, const isminefilter& filter) const
     return debit;
 }
 
-CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter, int creditFilterFlags) const
+CAmount CWallet::ComputeCredit(const CTransaction& tx, const isminefilter& filter, int creditFilterFlags) const
 {
     CAmount nCredit = 0;
     uint256 hash = tx.GetHash();
@@ -446,12 +446,13 @@ CAmount CWallet::GetCredit(const CTransaction& tx, const isminefilter& filter, i
             }
         }
 
-        nCredit += GetCredit(out, filter);
+        nCredit += ComputeCredit(out, filter);
         if (!MoneyRange(nCredit))
-            throw std::runtime_error("CWallet::GetCredit() : value out of range");
+            throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
     }
     return nCredit;
 }
+
 CAmount CWallet::GetChange(const CTransaction& tx) const
 {
     CAmount nChange = 0;
@@ -1635,7 +1636,7 @@ CAmount CWalletTx::GetCreditInWallet(const isminefilter& filter, const CWallet& 
         if (fCreditCached)
             credit += nCreditCached;
         else {
-            nCreditCached = wallet.GetCredit(*this, ISMINE_SPENDABLE);
+            nCreditCached = wallet.ComputeCredit(*this, ISMINE_SPENDABLE);
             fCreditCached = true;
             credit += nCreditCached;
         }
@@ -1644,7 +1645,7 @@ CAmount CWalletTx::GetCreditInWallet(const isminefilter& filter, const CWallet& 
         if (fWatchCreditCached)
             credit += nWatchCreditCached;
         else {
-            nWatchCreditCached = wallet.GetCredit(*this, ISMINE_WATCH_ONLY);
+            nWatchCreditCached = wallet.ComputeCredit(*this, ISMINE_WATCH_ONLY);
             fWatchCreditCached = true;
             credit += nWatchCreditCached;
         }
@@ -1657,7 +1658,7 @@ CAmount CWalletTx::GetImmatureCredit(bool fUseCache) const
     if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0 && IsInMainChain()) {
         if (fUseCache && fImmatureCreditCached)
             return nImmatureCreditCached;
-        nImmatureCreditCached = pwallet->GetCredit(*this, ISMINE_SPENDABLE);
+        nImmatureCreditCached = pwallet->ComputeCredit(*this, ISMINE_SPENDABLE);
         fImmatureCreditCached = true;
         return nImmatureCreditCached;
     }
@@ -1677,7 +1678,7 @@ CAmount CWalletTx::GetAvailableCredit(bool fUseCache) const
     if (fUseCache && fAvailableCreditCached)
         return nAvailableCreditCached;
 
-    CAmount nCredit = pwallet->GetCredit(*this,ISMINE_SPENDABLE, REQUIRE_UNSPENT);
+    CAmount nCredit = pwallet->ComputeCredit(*this,ISMINE_SPENDABLE, REQUIRE_UNSPENT);
     nAvailableCreditCached = nCredit;
     fAvailableCreditCached = true;
     return nCredit;
@@ -1688,7 +1689,7 @@ CAmount CWalletTx::GetImmatureWatchOnlyCredit(const bool& fUseCache) const
     if (IsCoinBase() && GetBlocksToMaturity() > 0 && IsInMainChain()) {
         if (fUseCache && fImmatureWatchCreditCached)
             return nImmatureWatchCreditCached;
-        nImmatureWatchCreditCached = pwallet->GetCredit(*this, ISMINE_WATCH_ONLY);
+        nImmatureWatchCreditCached = pwallet->ComputeCredit(*this, ISMINE_WATCH_ONLY);
         fImmatureWatchCreditCached = true;
         return nImmatureWatchCreditCached;
     }
@@ -1707,7 +1708,7 @@ CAmount CWalletTx::GetAvailableWatchOnlyCredit(const bool& fUseCache) const
     if (fUseCache && fAvailableWatchCreditCached)
         return nAvailableWatchCreditCached;
 
-    CAmount nCredit = pwallet->GetCredit(*this, ISMINE_WATCH_ONLY,REQUIRE_UNSPENT);
+    CAmount nCredit = pwallet->ComputeCredit(*this, ISMINE_WATCH_ONLY,REQUIRE_UNSPENT);
     nAvailableWatchCreditCached = nCredit;
     fAvailableWatchCreditCached = true;
     return nCredit;
@@ -1833,7 +1834,7 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
                 int coinTypeEncoding = static_cast<int>(coinType) << 4;
                 int additionalFilterFlags = REQUIRE_UNSPENT | REQUIRE_AVAILABLE_TYPE | coinTypeEncoding;
                 if(coinType==STAKABLE_COINS) additionalFilterFlags |= REQUIRE_UNLOCKED;
-                nTotal += GetCredit(*pcoin,ISMINE_SPENDABLE, additionalFilterFlags);
+                nTotal += ComputeCredit(*pcoin,ISMINE_SPENDABLE, additionalFilterFlags);
             }
 
         }

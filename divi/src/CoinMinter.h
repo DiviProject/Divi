@@ -30,6 +30,7 @@ class I_SuperblockSubsidyContainer;
 class CoinMinter: public I_CoinMinter
 {
     static constexpr int64_t fiveMinutes_ = 5 * 60;
+    std::shared_ptr<I_BlockFactory> blockFactory_;
 
     bool mintingIsRequested_;
     CWallet* pwallet_;
@@ -40,7 +41,6 @@ class CoinMinter: public I_CoinMinter
     CMasternodeSync& masternodeSync_;
     HashedBlockMap& mapHashedBlocks_;
     int64_t& lastCoinStakeSearchInterval_;
-    std::shared_ptr<I_BlockFactory> blockFactory_;
     std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
     std::shared_ptr<I_SuperblockSubsidyContainer> subsidyContainer_;
     bool haveMintableCoins_;
@@ -64,10 +64,10 @@ class CoinMinter: public I_CoinMinter
         const bool& fProofOfStake) const;
 
     bool createProofOfStakeBlock(
-        unsigned int nExtraNonce, 
+        unsigned int nExtraNonce,
         CReserveKey& reserveKey) const;
     bool createProofOfWorkBlock(
-        unsigned int nExtraNonce, 
+        unsigned int nExtraNonce,
         CReserveKey& reserveKey) const;
 
 public:
@@ -78,7 +78,7 @@ public:
         std::vector<CNode*>& peers,
         CMasternodeSync& masternodeSynchronization,
         HashedBlockMap& mapHashedBlocks,
-        CTxMemPool& mempool, 
+        CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS,
         int64_t& lastCoinStakeSearchInterval);
 
@@ -88,8 +88,8 @@ public:
     virtual bool mintingHasBeenRequested() const;
 
     bool createNewBlock(
-        unsigned int nExtraNonce, 
-        CReserveKey& reserveKey, 
+        unsigned int nExtraNonce,
+        CReserveKey& reserveKey,
         bool fProofOfStake) const override;
 
     /** Sets the block factory instance used.  */

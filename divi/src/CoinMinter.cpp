@@ -32,7 +32,8 @@ CoinMinter::CoinMinter(
     CTxMemPool& transactionMemoryPool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS,
     int64_t& lastCoinStakeSearchInterval
-    ): mintingIsRequested_(false)
+    ): blockFactory_( std::make_shared<BlockFactory>(*pwallet,lastCoinStakeSearchInterval,mapHashedBlocks,chain,chainParameters, transactionMemoryPool,mainCS) )
+    , mintingIsRequested_(false)
     , pwallet_(pwallet)
     , chain_(chain)
     , chainParameters_(chainParameters)
@@ -41,7 +42,6 @@ CoinMinter::CoinMinter(
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)
     , lastCoinStakeSearchInterval_(lastCoinStakeSearchInterval)
-    , blockFactory_( std::make_shared<BlockFactory>(*pwallet,lastCoinStakeSearchInterval_,mapHashedBlocks_,chain_,chainParameters_, mempool_,mainCS_) )
     , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
     , subsidyContainer_( std::make_shared<SuperblockSubsidyContainer>(chainParameters_) )
     , haveMintableCoins_(false)

@@ -461,4 +461,28 @@ BOOST_AUTO_TEST_CASE(willEnsureBalancesAreAsExpected)
     BOOST_CHECK_EQUAL_MESSAGE(currentWallet.GetBalanceByCoinType(OWNED_VAULT_COINS), ownedVaultTxValue,"Owned vault balance was not the expected amount");
 }
 
+BOOST_AUTO_TEST_CASE(willEnsureLockedCoinsDoNotCountTowardStakableBalance)
+{
+    CScript normalScript = GetScriptForDestination(currentWallet.vchDefaultKey.GetID());
+    CScript ownedVaultScript = vaultScriptAsOwner();
+    CScript managedVaultScript = vaultScriptAsManager();
+    currentWallet.AddCScript(managedVaultScript);
+
+
+    CAmount firstNormalTxValue = (GetRand(1000)+1)*COIN;
+    CAmount secondNormalTxValue = (GetRand(1000)+1)*COIN;
+
+    unsigned firstTxOutputIndex=0;
+    const CWalletTx& firstNormalTx = AddDefaultTxToWallet(normalScript,firstTxOutputIndex,firstNormalTxValue);
+    unsigned secondTxOutputIndex=0;
+    const CWalletTx& secondNormalTx = AddDefaultTxToWallet(normalScript,secondTxOutputIndex,secondNormalTxValue);
+    FakeAddTransactionToChain(firstNormalTx.GetHash());
+    FakeAddTransactionToChain(secondNormalTx.GetHash());
+
+    currentWallet.LockCoin(COutPoint(firstNormalTx.GetHash(),firstTxOutputIndex));
+
+    BOOST_CHECK_EQUAL_MESSAGE(currentWallet.GetBalance(), firstNormalTxValue+secondNormalTxValue,"Total balance was not the expected amount");
+    BOOST_CHECK_EQUAL_MESSAGE(currentWallet.GetStakingBalance(), secondNormalTxValue,"Staking balance was not the expected amount");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

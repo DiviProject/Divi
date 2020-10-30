@@ -1838,6 +1838,7 @@ CAmount CWallet::GetBalanceByCoinType(AvailableCoinsType coinType) const
             {
                 int coinTypeEncoding = static_cast<int>(coinType) << 4;
                 int additionalFilterFlags = REQUIRE_UNSPENT | REQUIRE_AVAILABLE_TYPE | coinTypeEncoding;
+                if(coinType==STAKABLE_COINS) additionalFilterFlags |= REQUIRE_UNLOCKED;
                 nTotal += GetCredit(*pcoin,ISMINE_SPENDABLE, additionalFilterFlags);
             }
 

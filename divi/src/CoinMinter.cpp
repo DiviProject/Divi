@@ -33,7 +33,7 @@ CoinMinter::CoinMinter(
     CTxMemPool& transactionMemoryPool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS,
     int64_t& lastCoinStakeSearchInterval
-    ): blockFactory_( std::make_shared<BlockFactory>(*pwallet,lastCoinStakeSearchInterval,mapHashedBlocks,chain,chainParameters, transactionMemoryPool,mainCS) )
+    ): blockFactory_( blockFactory )
     , mintingIsRequested_(false)
     , pwallet_(pwallet)
     , chain_(chain)
@@ -212,7 +212,7 @@ bool CoinMinter::createProofOfStakeBlock(
     if (!pindexPrev)
         return false;
 
-    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;
@@ -249,7 +249,7 @@ bool CoinMinter::createProofOfWorkBlock(
     if (!pindexPrev)
         return false;
 
-    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake));
+    std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;

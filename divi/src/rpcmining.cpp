@@ -302,11 +302,8 @@ Value generateblock(const Array& params, bool fHelp)
 
     int64_t coinstakeSearchInterval;
     const CChainParams& chainParameters = Params();
-    BlockFactory blockFactory(*pwalletMain,coinstakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
+    ExtendedBlockFactory blockFactory(*pwalletMain,coinstakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
     CoinMinter minter(blockFactory,pwalletMain, chainActive, chainParameters, vNodes, masternodeSync, mapHashedBlocks, mempool, cs_main, coinstakeSearchInterval);
-
-    auto factory = std::make_shared<ExtendedBlockFactory>(*pwalletMain, coinstakeSearchInterval, mapHashedBlocks, chainActive, Params(), mempool, cs_main);
-    minter.setBlockFactory(factory);
 
     const Value& extraTx = find_value(options, "extratx");
     if (extraTx.type() != null_type)
@@ -314,7 +311,7 @@ Value generateblock(const Array& params, bool fHelp)
             CTransaction tx;
             if (!DecodeHexTx(tx, val.get_str()))
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
-            factory->addExtraTransaction(tx);
+            blockFactory.addExtraTransaction(tx);
         }
 
     const Value& coinstake = find_value(options, "coinstake");
@@ -324,7 +321,7 @@ Value generateblock(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
         if (!tx.IsCoinStake())
             throw JSONRPCError(RPC_INVALID_PARAMETER, "TX is not a coinstake");
-        factory->setCustomCoinstake(tx);
+        blockFactory.setCustomCoinstake(tx);
     }
 
     const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());

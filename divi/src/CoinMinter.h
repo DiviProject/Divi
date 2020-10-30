@@ -30,7 +30,7 @@ class I_SuperblockSubsidyContainer;
 class CoinMinter: public I_CoinMinter
 {
     static constexpr int64_t fiveMinutes_ = 5 * 60;
-    std::shared_ptr<I_BlockFactory> blockFactory_;
+    I_BlockFactory& blockFactory_;
 
     bool mintingIsRequested_;
     CWallet* pwallet_;
@@ -92,13 +92,6 @@ public:
         unsigned int nExtraNonce,
         CReserveKey& reserveKey,
         bool fProofOfStake) const override;
-
-    /** Sets the block factory instance used.  */
-    void setBlockFactory(std::shared_ptr<I_BlockFactory> blockFactory)
-    {
-        blockFactory_ = std::move(blockFactory);
-    }
-
 };
 
 #endif // COIN_MINTER_H

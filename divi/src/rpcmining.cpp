@@ -208,11 +208,11 @@ namespace
 
 /** Custom BlockFactory that allows more control over the generated block,
  *  to implement the extra options needed with generateblock.  */
-class ExtendedBlockFactory : public BlockFactory
+class ExtendedBlockFactory : public I_BlockFactory
 {
 
 private:
-
+    std::unique_ptr<BlockFactory> blockFactory_;
     /** A list of extra transactions to include in generated blocks, in addition
      *  to the normal mempool collection logic (and without explicit
      *  verififaction).  */
@@ -222,12 +222,21 @@ private:
     std::unique_ptr<CTransaction> customCoinstake_;
 
 public:
-
-    using BlockFactory::BlockFactory;
+    ExtendedBlockFactory(
+        CWallet& wallet,
+        int64_t& lastCoinstakeSearchInterval,
+        std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+        CChain& chain,
+        const CChainParams& chainParameters,
+        CTxMemPool& mempool,
+        AnnotatedMixin<boost::recursive_mutex>& mainCS
+        ): blockFactory_(new BlockFactory(wallet, lastCoinstakeSearchInterval,hashedBlockTimestamps,chain,chainParameters,mempool,mainCS))
+    {
+    }
 
     CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake) override
     {
-        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockFactory::CreateNewBlockWithKey(reserveKey, fProofOfStake));
+        std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_->CreateNewBlockWithKey(reserveKey, fProofOfStake));
         CBlock& block = pblocktemplate->block;
 
         for (const auto& tx : extraTransactions_)

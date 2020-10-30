@@ -82,7 +82,6 @@ extern bool fLargeWorkInvalidChainFound;
 bool CheckFinalTx(const CTransaction& tx, int flags = -1);
 bool IsInitialBlockDownload();
 
-
 bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine)
 {
     VaultType vaultType;
@@ -1726,15 +1725,6 @@ bool CWalletTx::IsFromMe(const isminefilter& filter) const
     return (pwallet->GetDebit(*this,filter) > 0);
 }
 
-bool CWalletTx::InMempool() const
-{
-    LOCK(mempool.cs);
-    if (mempool.exists(GetHash())) {
-        return true;
-    }
-    return false;
-}
-
 void CWalletTx::RelayWalletTransaction(std::string strCommand)
 {
     if (!IsCoinBase()) {
@@ -1933,7 +1923,7 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 
     // We should not consider coins which aren't at least in our mempool
     // It's possible for these to be conflicted via ancestors which we may never be able to detect
-    if (nDepth == 0 && !pcoin->InMempool())
+    if (nDepth == 0 && !mempool.exists(pcoin->GetHash()) )
         return false;
 
     return true;

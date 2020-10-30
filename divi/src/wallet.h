@@ -684,7 +684,6 @@ public:
         const isminefilter& filter) const;
     void GetAccountAmounts(const std::string& strAccount, CAmount& nReceived, CAmount& nSent, CAmount& nFee, const isminefilter& filter) const;
     bool IsFromMe(const isminefilter& filter) const;
-    bool InMempool() const;
 
     int64_t GetTxTime() const;
     int64_t GetComputedTxTime() const;

@@ -175,7 +175,7 @@ Value setgenerate(const Array& params, bool fHelp)
         int64_t coinstakeSearchInterval;
         const CChainParams& chainParameters = Params();
         BlockFactory blockFactory(*pwalletMain,coinstakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
-        CoinMinter minter(pwalletMain, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,coinstakeSearchInterval);
+        CoinMinter minter(blockFactory,pwalletMain, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,coinstakeSearchInterval);
         while (nHeight < nHeightEnd)
         {
             const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
@@ -303,7 +303,7 @@ Value generateblock(const Array& params, bool fHelp)
     int64_t coinstakeSearchInterval;
     const CChainParams& chainParameters = Params();
     BlockFactory blockFactory(*pwalletMain,coinstakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
-    CoinMinter minter(pwalletMain, chainActive, chainParameters, vNodes, masternodeSync, mapHashedBlocks, mempool, cs_main, coinstakeSearchInterval);
+    CoinMinter minter(blockFactory,pwalletMain, chainActive, chainParameters, vNodes, masternodeSync, mapHashedBlocks, mempool, cs_main, coinstakeSearchInterval);
 
     auto factory = std::make_shared<ExtendedBlockFactory>(*pwalletMain, coinstakeSearchInterval, mapHashedBlocks, chainActive, Params(), mempool, cs_main);
     minter.setBlockFactory(factory);

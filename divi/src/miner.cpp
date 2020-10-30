@@ -99,7 +99,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     try {
         static const CChainParams& chainParameters = Params();
         static BlockFactory blockFactory(*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
-        static CoinMinter minter(pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
+        static CoinMinter minter(blockFactory, pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
         MinterThread(pwallet, isProofOfStake,minter);
@@ -120,7 +120,7 @@ void static ThreadPoWMinter(void* parg)
     try {
         static const CChainParams& chainParameters = Params();
         static BlockFactory blockFactory(*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
-        static CoinMinter minter(pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
+        static CoinMinter minter(blockFactory,pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);
         MinterThread(pwallet, isProofOfStake, minter);

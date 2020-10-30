@@ -594,10 +594,6 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
         return true;
     }
 
-    const auto& mnp = mnb.lastPing;
-    mnodeman.mapSeenMasternodePing.emplace(mnp.GetHash(), mnp);
-    mapSeenMasternodeBroadcast.insert(std::make_pair(mnb.GetHash(), mnb));
-
     int nDoS = 0;
     if (!mnb.CheckAndUpdate(nDoS)) {
         if (nDoS > 0 && pfrom != nullptr)
@@ -630,6 +626,10 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
         return false;
     }
 
+    const auto& mnp = mnb.lastPing;
+    mnodeman.mapSeenMasternodePing.emplace(mnp.GetHash(), mnp);
+    mapSeenMasternodeBroadcast.insert(std::make_pair(mnb.GetHash(), mnb));
+
     return true;
 }
 
@@ -654,10 +654,12 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         LogPrint("masternode", "mnp - Masternode ping, vin: %s\n", mnp.vin.prevout.hash.ToString());
 
         if (mapSeenMasternodePing.count(mnp.GetHash())) return; //seen
-        mapSeenMasternodePing.insert(std::make_pair(mnp.GetHash(), mnp));
 
         int nDoS = 0;
-        if (mnp.CheckAndUpdate(nDoS)) return;
+        if (mnp.CheckAndUpdate(nDoS)) {
+            mapSeenMasternodePing.emplace(mnp.GetHash(), mnp);
+            return;
+        }
 
         if (nDoS > 0) {
             // if anything significant failed, mark that node

@@ -11,10 +11,8 @@
 #include <obfuscation.h>
 #include <protocol.h>
 #include <spork.h>
-#include <wallet.h>
 #include <chainparams.h>
 
-extern CWallet* pwalletMain;
 extern std::string strMasterNodeAddr;
 extern std::string strMasterNodePrivKey;
 extern bool fMasterNode;
@@ -56,17 +54,7 @@ void CActiveMasternode::ManageStatus()
         status = ACTIVE_MASTERNODE_NOT_CAPABLE;
         notCapableReason = "";
 
-        if (pwalletMain->IsLocked()) {
-            notCapableReason = "Wallet is locked.";
-            LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
-            return;
-        }
-
-        if (pwalletMain->GetSpendableBalance() == 0) {
-            notCapableReason = "Hot node, waiting for remote activation.";
-            LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
-            return;
-        }
+        LogPrintf("CActiveMasternode::ManageStatus() - failed to activate masternode. Check the local wallet\n");
 
         if (strMasterNodeAddr.empty()) {
             if (!GetLocal(service)) {

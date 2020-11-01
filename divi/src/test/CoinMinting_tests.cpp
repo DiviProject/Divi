@@ -2,7 +2,6 @@
 
 #include <MockCoinMinter.h>
 #include <miner.h>
-#include <wallet.h>
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -56,8 +55,6 @@ BOOST_AUTO_TEST_CASE(willSuccesfullyTransitionFromNonMintableToMintableInProofOf
 
     bool proofOfStake = true;
     unsigned int extraNonce = 0u;
-    std::shared_ptr<CWallet> testWallet(new CWallet());
-    CReserveKey reserveKey(*testWallet.get());
 
     MintCoins(
         proofOfStake,

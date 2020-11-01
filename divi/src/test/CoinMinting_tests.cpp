@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(willSuccesfullyTransitionFromNonMintableToMintableInProofOf
         );
 
     EXPECT_CALL(minter, sleep(_)).Times(1);
-    EXPECT_CALL(minter, createNewBlock(_,_,_)).Times(9);
+    EXPECT_CALL(minter, createNewBlock(_,_)).Times(9);
 
     bool proofOfStake = true;
     unsigned int extraNonce = 0u;
@@ -62,8 +62,7 @@ BOOST_AUTO_TEST_CASE(willSuccesfullyTransitionFromNonMintableToMintableInProofOf
     MintCoins(
         proofOfStake,
         minter,
-        extraNonce,
-        reserveKey);
+        extraNonce);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

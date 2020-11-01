@@ -1,7 +1,6 @@
 #ifndef I_COIN_MINTER_H
 #define I_COIN_MINTER_H
 #include <stdint.h>
-class CReserveKey;
 
 class I_CoinMinter
 {
@@ -13,8 +12,7 @@ public:
     virtual bool mintingHasBeenRequested() const = 0;
 
     virtual bool createNewBlock(
-        unsigned int nExtraNonce, 
-        CReserveKey& reserveKey, 
+        unsigned int nExtraNonce,
         bool fProofOfStake) const = 0;
 };
 

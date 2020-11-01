@@ -35,8 +35,7 @@ bool fGenerateDivi = false;
 void MintCoins(
     bool fProofOfStake,
     I_CoinMinter& minter,
-    unsigned int nExtraNonce,
-    CReserveKey& reservekey)
+    unsigned int nExtraNonce)
 {
     while (minter.mintingHasBeenRequested())
     {
@@ -46,25 +45,24 @@ void MintCoins(
         }
         else
         {
-            minter.createNewBlock(nExtraNonce,reservekey,fProofOfStake);
+            minter.createNewBlock(nExtraNonce,fProofOfStake);
         }
     }
 
 }
-void MinterThread(CWallet& wallet, bool fProofOfStake, I_CoinMinter& minter)
+void MinterThread(bool fProofOfStake, I_CoinMinter& minter)
 {
     LogPrintf("DIVIMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("divi-miner");
 
     // Each thread has its own key and counter
-    CReserveKey reservekey(wallet);
     unsigned int nExtraNonce = 0;
 
     while(true) {
 
         try {
-            MintCoins(fProofOfStake,minter,nExtraNonce, reservekey);
+            MintCoins(fProofOfStake,minter,nExtraNonce);
         }
         catch (const boost::thread_interrupted&)
         {
@@ -102,7 +100,7 @@ void ThreadStakeMinter(CWallet* pwallet)
         static CoinMinter minter(blockFactory, pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
-        MinterThread(*pwallet, isProofOfStake,minter);
+        MinterThread(isProofOfStake,minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
         LogPrintf("ThreadStakeMinter() exception \n");
@@ -123,7 +121,7 @@ void static ThreadPoWMinter(void* parg)
         static CoinMinter minter(blockFactory,pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);
-        MinterThread(*pwallet, isProofOfStake, minter);
+        MinterThread(isProofOfStake, minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
         LogPrintf("ThreadPoWMinter() exception: %s\n");

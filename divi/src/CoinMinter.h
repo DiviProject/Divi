@@ -90,7 +90,6 @@ public:
 
     bool createNewBlock(
         unsigned int nExtraNonce,
-        CReserveKey& reserveKey,
         bool fProofOfStake) const override;
 };
 

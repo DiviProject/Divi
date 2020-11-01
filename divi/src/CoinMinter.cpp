@@ -317,9 +317,9 @@ bool CoinMinter::createProofOfWorkBlock(
 
 bool CoinMinter::createNewBlock(
     unsigned int nExtraNonce,
-    CReserveKey& reserveKey,
     bool fProofOfStake) const
 {
+    CReserveKey reserveKey(*pwallet_);
     if(fProofOfStake)
         return createProofOfStakeBlock(nExtraNonce, reserveKey);
 

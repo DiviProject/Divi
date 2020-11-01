@@ -11,7 +11,6 @@
 class CBlock;
 class CBlockHeader;
 class CBlockIndex;
-class CReserveKey;
 class CScript;
 class CWallet;
 class I_CoinMinter;
@@ -25,8 +24,7 @@ void ThreadStakeMinter(CWallet* pwallet);
 void MintCoins(
     bool fProofOfStake,
     I_CoinMinter& minter,
-    unsigned int nExtraNonce,
-    CReserveKey& reservekey);
-void MinterThread(CWallet& wallet, bool fProofOfStake, I_CoinMinter& minter);
+    unsigned int nExtraNonce);
+void MinterThread(bool fProofOfStake, I_CoinMinter& minter);
 bool HasRecentlyAttemptedToGenerateProofOfStake();
 #endif // BITCOIN_MINER_H

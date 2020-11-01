@@ -162,7 +162,6 @@ Value setgenerate(const Array& params, bool fHelp)
         int nHeightEnd = 0;
         int nHeight = 0;
         int nGenerate = (nGenProcLimit > 0 ? nGenProcLimit : 1);
-        CReserveKey reservekey(*pwalletMain);
 
         { // Don't keep cs_main locked
             LOCK(cs_main);
@@ -181,7 +180,7 @@ Value setgenerate(const Array& params, bool fHelp)
             const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
 
             unsigned int nExtraNonce = 0;
-            const bool newBlockAdded = minter.createNewBlock(nExtraNonce, reservekey, fProofOfStake);
+            const bool newBlockAdded = minter.createNewBlock(nExtraNonce, fProofOfStake);
             nHeight +=  newBlockAdded;
 
             if (!newBlockAdded)
@@ -302,7 +301,6 @@ Value generateblock(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
 
     int nHeight = 0;
-    CReserveKey reservekey(*pwalletMain);
 
     { // Don't keep cs_main locked
         LOCK(cs_main);
@@ -336,7 +334,7 @@ Value generateblock(const Array& params, bool fHelp)
     const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
 
     unsigned int nExtraNonce = 0;
-    const bool newBlockAdded = minter.createNewBlock(nExtraNonce, reservekey, fProofOfStake);
+    const bool newBlockAdded = minter.createNewBlock(nExtraNonce, fProofOfStake);
 
     // Don't keep cs_main locked
     LOCK(cs_main);

@@ -10,9 +10,6 @@
 #include "amount.h"
 #include "main.h"
 #include "masternode-sync.h"
-#ifdef ENABLE_WALLET
-#include "wallet.h"
-#endif
 #include <BlockFactory.h>
 #include "CoinMinter.h"
 

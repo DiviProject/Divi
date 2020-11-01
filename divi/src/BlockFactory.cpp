@@ -1,6 +1,5 @@
 #include <BlockFactory.h>
 #include <script/script.h>
-#include <wallet.h>
 #include <BlockTemplate.h>
 #include <BlockMemoryPoolTransactionCollector.h>
 #include <PoSTransactionCreator.h>
@@ -9,6 +8,7 @@
 #include <pow.h>
 #include <chain.h>
 #include <chainparams.h>
+#include <reservekey.h>
 
 #include <Settings.h>
 extern Settings& settings;

@@ -162,7 +162,7 @@ Value setgenerate(const Array& params, bool fHelp)
         int nHeightEnd = 0;
         int nHeight = 0;
         int nGenerate = (nGenProcLimit > 0 ? nGenProcLimit : 1);
-        CReserveKey reservekey(pwalletMain);
+        CReserveKey reservekey(*pwalletMain);
 
         { // Don't keep cs_main locked
             LOCK(cs_main);
@@ -302,7 +302,7 @@ Value generateblock(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
 
     int nHeight = 0;
-    CReserveKey reservekey(pwalletMain);
+    CReserveKey reservekey(*pwalletMain);
 
     { // Don't keep cs_main locked
         LOCK(cs_main);

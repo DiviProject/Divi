@@ -3045,55 +3045,6 @@ set<CTxDestination> CWallet::GetAccountAddresses(string strAccount) const
     return result;
 }
 
-CReserveKey::CReserveKey(CWallet* pwalletIn)
-{
-    nIndex = -1;
-    pwallet = pwalletIn;
-    fInternal = false;
-}
-
-CReserveKey::~CReserveKey()
-{
-    ReturnKey();
-}
-
-bool CReserveKey::GetReservedKey(CPubKey& pubkey, bool fInternalIn)
-{
-    if (nIndex == -1)
-    {
-        CKeyPool keypool;
-        pwallet->ReserveKeyFromKeyPool(nIndex, keypool, fInternalIn);
-        if (nIndex != -1) {
-            vchPubKey = keypool.vchPubKey;
-        }
-        else {
-            return false;
-        }
-        fInternal = keypool.fInternal;
-    }
-    assert(vchPubKey.IsValid());
-    pubkey = vchPubKey;
-    return true;
-}
-
-void CReserveKey::KeepKey()
-{
-    if (nIndex != -1) {
-        pwallet->KeepKey(nIndex);
-    }
-    nIndex = -1;
-    vchPubKey = CPubKey();
-}
-
-void CReserveKey::ReturnKey()
-{
-    if (nIndex != -1) {
-        pwallet->ReturnKey(nIndex, fInternal);
-    }
-    nIndex = -1;
-    vchPubKey = CPubKey();
-}
-
 static void LoadReserveKeysToSet(std::set<CKeyID>& setAddress, const std::set<int64_t>& setKeyPool, CWalletDB& walletdb)
 {
     BOOST_FOREACH(const int64_t& id, setKeyPool)
@@ -3380,7 +3331,7 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
 
         // Create the transaction and commit it to the network
         CWalletTx wtx;
-        CReserveKey keyChange(&wallet_); // this change address does not end up being used, because change is returned with coin control switch
+        CReserveKey keyChange(wallet_); // this change address does not end up being used, because change is returned with coin control switch
         string strErr;
         CAmount nFeeRet = 0;
 

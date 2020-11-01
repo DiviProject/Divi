@@ -23,7 +23,8 @@
 #include <tinyformat.h>
 #include <NotificationInterface.h>
 #include <merkletx.h>
-
+#include <keypool.h>
+#include <reservekey.h>
 
 class CKeyMetadata;
 class CKey;
@@ -84,42 +85,6 @@ struct CompactTallyItem {
     CompactTallyItem()
     {
         nAmount = 0;
-    }
-};
-
-/** A key pool entry */
-class CKeyPool
-{
-public:
-    int64_t nTime;
-    CPubKey vchPubKey;
-    bool fInternal; // for change outputs
-
-    CKeyPool();
-    CKeyPool(const CPubKey& vchPubKeyIn, bool fInternalIn);
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        if (!(nType & SER_GETHASH))
-            READWRITE(nVersion);
-        READWRITE(nTime);
-        READWRITE(vchPubKey);
-        if (ser_action.ForRead()) {
-            try {
-                READWRITE(fInternal);
-            }
-            catch (std::ios_base::failure&) {
-                /* flag as external address if we can't read the internal boolean
-                   (this will be the case for any wallet before the HD chain split version) */
-                fInternal = false;
-            }
-        }
-        else {
-            READWRITE(fInternal);
-        }
     }
 };
 
@@ -204,7 +169,7 @@ enum TransactionCreditFilters
     REQUIRE_UNLOCKED  = 1 << 2,
     REQUIRE_AVAILABLE_TYPE  = 1 << 3,
 };
-class CWallet : public CCryptoKeyStore, public NotificationInterface
+class CWallet : public CCryptoKeyStore, public NotificationInterface, public I_KeypoolReserver
 {
 public:
     /*
@@ -442,13 +407,12 @@ public:
 
     bool NewKeyPool();
     bool TopUpKeyPool(unsigned int kpSize = 0);
-    void ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool, bool fInternal);
-    void KeepKey(int64_t nIndex);
-    void ReturnKey(int64_t nIndex, bool fInternal);
     bool GetKeyFromPool(CPubKey& key, bool fInternal);
     int64_t GetOldestKeyPoolTime();
     void GetAllReserveKeys(std::set<CKeyID>& setAddress) const;
-
+    void ReserveKeyFromKeyPool(int64_t& nIndex, CKeyPool& keypool, bool fInternal) override;
+    void KeepKey(int64_t nIndex) override;
+    void ReturnKey(int64_t nIndex, bool fInternal) override;
     /**
      * HD Wallet Functions
      */
@@ -535,25 +499,6 @@ public:
 
     /** MultiSig address added */
     boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
-};
-
-
-/** A key allocated from the key pool. */
-class CReserveKey
-{
-protected:
-    CWallet* pwallet;
-    int64_t nIndex;
-    CPubKey vchPubKey;
-    bool fInternal;
-public:
-    CReserveKey(CWallet* pwalletIn);
-    ~CReserveKey();
-
-    void ReturnKey();
-    bool GetReservedKey(CPubKey &pubkey, bool fInternalIn);
-    void KeepKey();
-    void KeepScript() { KeepKey(); }
 };
 
 typedef std::map<std::string, std::string> mapValue_t;

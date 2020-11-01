@@ -23,10 +23,10 @@ void GenerateDivi(bool fGenerate, CWallet* pwallet, int nThreads);
 void ThreadStakeMinter(CWallet* pwallet);
 
 void MintCoins(
-    bool fProofOfStake, 
+    bool fProofOfStake,
     I_CoinMinter& minter,
     unsigned int nExtraNonce,
     CReserveKey& reservekey);
-void MinterThread(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter);
+void MinterThread(CWallet& wallet, bool fProofOfStake, I_CoinMinter& minter);
 bool HasRecentlyAttemptedToGenerateProofOfStake();
 #endif // BITCOIN_MINER_H

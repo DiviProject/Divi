@@ -247,6 +247,8 @@ BITCOIN_CORE_H = \
   versionbits.h \
   version.h \
   wallet.h \
+  keypool.h \
+  reservekey.h \
   walletBackupCreator.h \
   walletBackupFeatureContainer.h \
   WalletIntegrityVerifier.h \
@@ -363,6 +365,7 @@ libbitcoin_wallet_a_SOURCES = \
   DatabaseWrapper.cpp \
   crypto/aes.cpp \
   crypter.cpp \
+  keypool.cpp \
   swifttx.cpp \
   LegacyBlockSubsidies.cpp \
   masternode.cpp \
@@ -376,6 +379,7 @@ libbitcoin_wallet_a_SOURCES = \
   masternodeconfig.cpp \
   masternodeman.cpp \
   netfulfilledman.cpp \
+  reservekey.cpp \
   rpcdump.cpp \
   rpcwallet.cpp \
   kernel.cpp \

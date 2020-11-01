@@ -51,14 +51,14 @@ void MintCoins(
     }
 
 }
-void MinterThread(CWallet* pwallet, bool fProofOfStake, I_CoinMinter& minter)
+void MinterThread(CWallet& wallet, bool fProofOfStake, I_CoinMinter& minter)
 {
     LogPrintf("DIVIMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("divi-miner");
 
     // Each thread has its own key and counter
-    CReserveKey reservekey(pwallet);
+    CReserveKey reservekey(wallet);
     unsigned int nExtraNonce = 0;
 
     while(true) {
@@ -102,7 +102,7 @@ void ThreadStakeMinter(CWallet* pwallet)
         static CoinMinter minter(blockFactory, pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
-        MinterThread(pwallet, isProofOfStake,minter);
+        MinterThread(*pwallet, isProofOfStake,minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
         LogPrintf("ThreadStakeMinter() exception \n");
@@ -123,7 +123,7 @@ void static ThreadPoWMinter(void* parg)
         static CoinMinter minter(blockFactory,pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);
-        MinterThread(pwallet, isProofOfStake, minter);
+        MinterThread(*pwallet, isProofOfStake, minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
         LogPrintf("ThreadPoWMinter() exception: %s\n");

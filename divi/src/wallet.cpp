@@ -1668,21 +1668,18 @@ CAmount CWallet::GetImmatureCredit(const CWalletTx& walletTransaction, bool fUse
     return 0;
 }
 
-CAmount CWalletTx::GetAvailableCredit(bool fUseCache) const
+CAmount CWallet::GetAvailableCredit(const CWalletTx& walletTransaction, bool fUseCache) const
 {
-    if (pwallet == 0)
-        return 0;
-
     // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (GetBlocksToMaturity() > 0)
+    if (walletTransaction.GetBlocksToMaturity() > 0)
         return 0;
 
-    if (fUseCache && fAvailableCreditCached)
-        return nAvailableCreditCached;
+    if (fUseCache && walletTransaction.fAvailableCreditCached)
+        return walletTransaction.nAvailableCreditCached;
 
-    CAmount nCredit = pwallet->ComputeCredit(*this,ISMINE_SPENDABLE, REQUIRE_UNSPENT);
-    nAvailableCreditCached = nCredit;
-    fAvailableCreditCached = true;
+    CAmount nCredit = ComputeCredit(walletTransaction,ISMINE_SPENDABLE, REQUIRE_UNSPENT);
+    walletTransaction.nAvailableCreditCached = nCredit;
+    walletTransaction.fAvailableCreditCached = true;
     return nCredit;
 }
 
@@ -1808,7 +1805,7 @@ CAmount CWallet::GetBalance() const
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             if (IsTrusted(*pcoin))
-                nTotal += pcoin->GetAvailableCredit();
+                nTotal += GetAvailableCredit(*pcoin);
         }
     }
 
@@ -1844,7 +1841,7 @@ CAmount CWallet::GetUnconfirmedBalance() const
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_.mapWallet.begin(); it != transactionRecord_.mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
             if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
-                nTotal += pcoin->GetAvailableCredit();
+                nTotal += GetAvailableCredit(*pcoin);
         }
     }
     return nTotal;

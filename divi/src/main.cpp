@@ -40,8 +40,8 @@
 #include <ValidationState.h>
 #include <scriptCheck.h>
 #include <blockFileInfo.h>
-#include <wallet.h>
 #include <walletdustcombiner.h>
+#include <WalletLoggingHelper.h>
 
 using namespace boost;
 using namespace std;
@@ -85,7 +85,7 @@ bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
 bool fAlerts = DEFAULT_ALERTS;
-
+bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
@@ -1415,9 +1415,6 @@ void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txund
     inputs.ModifyCoins(tx.GetHash())->FromTx(tx, nHeight);
 }
 
-CBitcoinAddress addressExp1("DQZzqnSR6PXxagep1byLiRg9ZurCZ5KieQ");
-CBitcoinAddress addressExp2("DTQYdnNqKuEHXyNeeYhPQGGGdqHbXYwjpj");
-
 std::map<COutPoint, COutPoint> mapInvalidOutPoints;
 std::map<CBigNum, CAmount> mapInvalidSerials;
 void AddInvalidSpendsToMap(const CBlock& block)
@@ -1814,15 +1811,6 @@ static int64_t nTimeIndex = 0;
 static int64_t nTimeCallbacks = 0;
 static int64_t nTimeTotal = 0;
 
-string ValueFromCAmount(const CAmount& amount)
-{
-    bool sign = amount < 0;
-    int64_t n_abs = (sign ? -amount : amount);
-    int64_t quotient = n_abs / COIN;
-    int64_t remainder = n_abs % COIN;
-    return strprintf("%s%d.%08d", sign ? "-" : "", quotient, remainder);
-}
-
 /**
  * Returns true if there are nRequired or more blocks of minVersion or above
  * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart
@@ -1848,7 +1836,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return false;
     LogPrintStr("block " + to_string(pindex->nHeight));
     LogPrintStr("; time = " + to_string(pindex->nTime));
-    if (pwalletMain) LogPrintStr("; balance = " + ValueFromCAmount(pwalletMain->GetBalance()) + "\n"); else LogPrintStr("no wallet\n");
+    LogWalletBalance(pwalletMain);
 
     // verify that the view's current state corresponds to the previous block
     uint256 hashPrevBlock = pindex->pprev == NULL ? uint256(0) : pindex->pprev->GetBlockHash();

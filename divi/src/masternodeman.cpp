@@ -612,23 +612,45 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
 
     // make sure it's still unspent
     //  - this is checked later by .check() in many places and by ThreadCheckObfuScationPool()
-    if (mnb.CheckInputsAndAdd(nDoS)) {
-        // use this as a peer
-        CNetAddr addr("127.0.0.1");
-        if (pfrom != nullptr)
-            addr = pfrom->addr;
-        addrman.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
-        masternodeSync.AddedMasternodeList(mnb.GetHash());
-    } else {
+    if (!mnb.CheckInputs(nDoS)) {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());
         if (nDoS > 0 && pfrom != nullptr)
             Misbehaving(pfrom->GetId(), nDoS);
         return false;
     }
 
+    // use this as a peer
+    CNetAddr addr("127.0.0.1");
+    if (pfrom != nullptr)
+        addr = pfrom->addr;
+    addrman.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
+    masternodeSync.AddedMasternodeList(mnb.GetHash());
+
     const auto& mnp = mnb.lastPing;
     mnodeman.mapSeenMasternodePing.emplace(mnp.GetHash(), mnp);
     mapSeenMasternodeBroadcast.insert(std::make_pair(mnb.GetHash(), mnb));
+
+    // If the masternode already is in our list and is enabled, nothing
+    // remains to be done.  If it is not enabled, we remove the old masternode
+    // first before adding it back in.
+    const CMasternode* pmn = Find(mnb.vin);
+    if (pmn != nullptr) {
+        if (pmn->IsEnabled())
+            return true;
+        Remove(mnb.vin);
+    }
+
+    LogPrint("masternode","mnb - Got NEW Masternode entry - %s - %lli \n", mnb.vin.prevout.hash.ToString(), mnb.sigTime);
+    Add(CMasternode(mnb));
+
+    // if it matches our Masternode privkey, then we've been remotely activated
+    if (mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode && mnb.protocolVersion == PROTOCOL_VERSION) {
+        activeMasternode.EnableHotColdMasterNode(mnb.vin, mnb.addr);
+    }
+
+    const bool isLocal = mnb.addr.IsRFC1918() || mnb.addr.IsLocal();
+    if (!isLocal || Params().NetworkID() == CBaseChainParams::REGTEST)
+        mnb.Relay();
 
     return true;
 }

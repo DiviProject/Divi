@@ -913,7 +913,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
     return true;
 }
 
-bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
+bool CMasternodeBroadcast::CheckInputs(int& nDoS) const
 {
     // we are a masternode with the same vin (i.e. already activated) and this mnb is ours (matches our Masternode privkey)
     // so nothing to do here for us
@@ -921,15 +921,10 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
         return true;
 
     // search existing Masternode list
-    CMasternode* pmn = mnodeman.Find(vin);
-
-    if (pmn != NULL) {
-        // nothing to do here if we already know about this masternode and it's enabled
-        if (pmn->IsEnabled()) return true;
-        // if it's not enabled, remove old MN first and continue
-        else
-            mnodeman.Remove(pmn->vin);
-    }
+    // nothing to do here if we already know about this masternode and it's enabled
+    const CMasternode* pmn = mnodeman.Find(vin);
+    if (pmn != nullptr && pmn->IsEnabled())
+        return true;
 
     if (IsCoinSpent(vin.prevout, getCollateralAmount(nTier) )) {
         LogPrint("masternode", "mnb - coin is already spent\n");
@@ -941,9 +936,6 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
 
     if (GetInputAge(vin) < MASTERNODE_MIN_CONFIRMATIONS) {
         LogPrint("masternode","mnb - Input must have at least %d confirmations\n", MASTERNODE_MIN_CONFIRMATIONS);
-        // maybe we miss few blocks, let this mnb to be checked again later
-        mnodeman.mapSeenMasternodeBroadcast.erase(GetHash());
-        masternodeSync.mapSeenSyncMNB.erase(GetHash());
         return false;
     }
 
@@ -962,20 +954,6 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
             return false;
         }
     }
-
-    LogPrint("masternode","mnb - Got NEW Masternode entry - %s - %lli \n", vin.prevout.hash.ToString(), sigTime);
-    CMasternode mn(*this);
-    mnodeman.Add(mn);
-
-    // if it matches our Masternode privkey, then we've been remotely activated
-    if (pubKeyMasternode == activeMasternode.pubKeyMasternode && protocolVersion == PROTOCOL_VERSION) {
-        activeMasternode.EnableHotColdMasterNode(vin, addr);
-    }
-
-    bool isLocal = addr.IsRFC1918() || addr.IsLocal();
-    if (Params().NetworkID() == CBaseChainParams::REGTEST) isLocal = false;
-
-    if (!isLocal) Relay();
 
     return true;
 }
@@ -1153,7 +1131,7 @@ void CMasternodePing::Relay()
     RelayInv(inv);
 }
 
-int GetInputAge(CTxIn& vin)
+int GetInputAge(const CTxIn& vin)
 {
     CCoinsView viewDummy;
     CCoinsViewCache view(&viewDummy);

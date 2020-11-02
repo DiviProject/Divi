@@ -44,7 +44,7 @@ bool GetBlockHashForScoring(uint256& hash, int nBlockHeight);
 bool GetBlockHashForScoring(uint256& hash,
                             const CBlockIndex* pindex, const int offset);
 
-int GetInputAge(CTxIn& vin);
+int GetInputAge(const CTxIn& vin);
 
 //
 // The Masternode Ping Class : Contains a different serialize method for sending pings from masternodes throughout the network
@@ -259,7 +259,7 @@ public:
     CMasternodeBroadcast(const CMasternode& mn);
 
     bool CheckAndUpdate(int& nDoS);
-    bool CheckInputsAndAdd(int& nDos);
+    bool CheckInputs(int& nDos) const;
     bool Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
     void Relay() const;
     std::string getMessageToSign() const;

@@ -746,25 +746,6 @@ void CMasternodeMan::Remove(const CTxIn& vin)
     }
 }
 
-void CMasternodeMan::UpdateMasternodeList(CMasternodeBroadcast mnb)
-{
-    LOCK(cs);
-    mapSeenMasternodePing.insert(std::make_pair(mnb.lastPing.GetHash(), mnb.lastPing));
-    mapSeenMasternodeBroadcast.insert(std::make_pair(mnb.GetHash(), mnb));
-
-    LogPrint("masternode","CMasternodeMan::UpdateMasternodeList -- masternode=%s\n", mnb.vin.prevout.ToStringShort());
-
-    CMasternode* pmn = Find(mnb.vin);
-    if (pmn == NULL) {
-        CMasternode mn(mnb);
-        if (Add(mn)) {
-            masternodeSync.AddedMasternodeList(mnb.GetHash());
-        }
-    } else if (pmn->UpdateFromNewBroadcast(mnb)) {
-        masternodeSync.AddedMasternodeList(mnb.GetHash());
-    }
-}
-
 void
 CMasternodeMan::ResetRankingCache()
 {

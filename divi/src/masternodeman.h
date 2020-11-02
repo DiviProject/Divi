@@ -145,9 +145,6 @@ public:
 
     void Remove(const CTxIn& vin);
 
-    /// Update masternode list and maps using provided CMasternodeBroadcast
-    void UpdateMasternodeList(CMasternodeBroadcast mnb);
-
     void ResetRankingCache();
 };
 

@@ -171,6 +171,7 @@ BITCOIN_CORE_H = \
   BlockUndo.h \
   ValidationState.h \
   main.h \
+  walletdustcombiner.h \
   BlockFileOpener.h \
   BlockDiskAccessor.h \
   BlockTemplate.h \
@@ -302,6 +303,7 @@ libbitcoin_server_a_SOURCES = \
   BlockUndo.cpp \
   ValidationState.cpp \
   main.cpp \
+  walletdustcombiner.cpp \
   BlockFactory.cpp \
   BlockFileOpener.cpp \
   BlockDiskAccessor.cpp \

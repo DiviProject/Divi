@@ -80,7 +80,6 @@ extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
 
 bool CheckFinalTx(const CTransaction& tx, int flags = -1);
-bool IsInitialBlockDownload();
 
 bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine)
 {
@@ -3285,75 +3284,6 @@ bool CWallet::GetDestData(const CTxDestination& dest, const std::string& key, st
         }
     }
     return false;
-}
-
-void WalletDustCombiner::CombineDust(CAmount combineThreshold)
-{
-    if (IsInitialBlockDownload() || wallet_.IsLocked()) {
-        return;
-    }
-
-    map<CBitcoinAddress, std::vector<COutput> > mapCoinsByAddress = wallet_.AvailableCoinsByAddress(true, 0);
-
-    //coins are sectioned by address. This combination code only wants to combine inputs that belong to the same address
-    for (map<CBitcoinAddress, std::vector<COutput> >::iterator it = mapCoinsByAddress.begin(); it != mapCoinsByAddress.end(); it++) {
-        std::vector<COutput> vCoins, vRewardCoins;
-        vCoins = it->second;
-
-        //find masternode rewards that need to be combined
-        CCoinControl* coinControl = new CCoinControl();
-        CAmount nTotalRewardsValue = 0;
-        BOOST_FOREACH (const COutput& out, vCoins) {
-            //no coins should get this far if they dont have proper maturity, this is double checking
-            if (out.tx->IsCoinStake() && out.tx->GetNumberOfBlockConfirmations() < Params().COINBASE_MATURITY() + 1)
-                continue;
-
-            if (out.Value() > combineThreshold * COIN)
-                continue;
-
-            COutPoint outpt(out.tx->GetHash(), out.i);
-            coinControl->Select(outpt);
-            vRewardCoins.push_back(out);
-            nTotalRewardsValue += out.Value();
-        }
-
-        //if no inputs found then return
-        if (!coinControl->HasSelected())
-            continue;
-
-        //we cannot combine one coin with itself
-        if (vRewardCoins.size() <= 1)
-            continue;
-
-        std::vector<std::pair<CScript, CAmount> > vecSend;
-        CScript scriptPubKey = GetScriptForDestination(it->first.Get());
-        vecSend.push_back(std::make_pair(scriptPubKey, nTotalRewardsValue));
-
-        // Create the transaction and commit it to the network
-        CWalletTx wtx;
-        CReserveKey keyChange(wallet_); // this change address does not end up being used, because change is returned with coin control switch
-        string strErr;
-        CAmount nFeeRet = 0;
-
-        //get the fee amount
-        CWalletTx wtxdummy;
-        wallet_.CreateTransaction(vecSend, wtxdummy, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS, false, CAmount(0));
-        vecSend[0].second = nTotalRewardsValue - nFeeRet - 500;
-
-        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS, false, CAmount(0))) {
-            LogPrintf("CombineDust createtransaction failed, reason: %s\n", strErr);
-            continue;
-        }
-
-        if (!wallet_.CommitTransaction(wtx, keyChange)) {
-            LogPrintf("CombineDust transaction commit failed\n");
-            continue;
-        }
-
-        LogPrintf("CombineDust sent transaction\n");
-
-        delete coinControl;
-    }
 }
 
 CKeyPool::CKeyPool()

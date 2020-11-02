@@ -148,15 +148,6 @@ public:
     std::set<uint256> GetConflictingTxHashes(const CWalletTx& tx) const;
 };
 
-class WalletDustCombiner
-{
-private:
-    CWallet& wallet_;
-public:
-    WalletDustCombiner(CWallet& wallet): wallet_(wallet){}
-    void CombineDust(CAmount combineThreshold);
-};
-
 /**
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.

@@ -81,10 +81,6 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(nHeight);
     int nLastLotteryHeight = std::max(startOfLotteryBlocks_,  lotteryBlockPaymentCycle* ((nHeight - 1) / lotteryBlockPaymentCycle) );
 
-    if(nHeight <= nLastLotteryHeight) {
-        return defaultValue;
-    }
-
     if(!IsCoinstakeValidForLottery(coinMintTransaction, nHeight)) {
         return defaultValue; // return last if we have no lotter participant in this block
     }

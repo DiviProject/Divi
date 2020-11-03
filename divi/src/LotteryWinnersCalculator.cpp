@@ -75,15 +75,13 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     if(nHeight <= 0) return LotteryCoinstakeData();
     if(superblockHeightValidator_.IsValidLotteryBlockHeight(nHeight)) return LotteryCoinstakeData(nHeight);
     if(nHeight <= startOfLotteryBlocks_) return previousBlockLotteryCoinstakeData.getShallowCopy();
+    if(!IsCoinstakeValidForLottery(coinMintTransaction, nHeight)) return previousBlockLotteryCoinstakeData.getShallowCopy();
 
     LotteryCoinstakeData defaultValue = previousBlockLotteryCoinstakeData.getShallowCopy();
 
     const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(nHeight);
     int nLastLotteryHeight = std::max(startOfLotteryBlocks_,  lotteryBlockPaymentCycle* ((nHeight - 1) / lotteryBlockPaymentCycle) );
 
-    if(!IsCoinstakeValidForLottery(coinMintTransaction, nHeight)) {
-        return defaultValue; // return last if we have no lotter participant in this block
-    }
     CBlockIndex* prevLotteryBlockIndex = activeChain_[nLastLotteryHeight];
     auto hashLastLotteryBlock = prevLotteryBlockIndex->GetBlockHash();
     // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score

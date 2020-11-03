@@ -168,9 +168,10 @@ bool IsBlockPayeeValid(const CTransaction &txNew, const CBlockIndex* pindex)
 
 LotteryCoinstakeData CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
 {
-    const CChainParams& chainParameters = Params();
-    SuperblockSubsidyContainer subsidyCointainer(chainParameters);
-    return LotteryWinnersCalculator(chainParameters,chainActive, sporkManager,subsidyCointainer.superblockHeightValidator()).CalculateLotteryWinners(block,prevBlockIndex,nHeight);
+    static const CChainParams& chainParameters = Params();
+    static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
+    static LotteryWinnersCalculator calculator(chainParameters,chainActive, sporkManager,subsidyCointainer.superblockHeightValidator());
+    return calculator.CalculateLotteryWinners(block,prevBlockIndex,nHeight);
 }
 
 CMasternodePayee::CMasternodePayee()

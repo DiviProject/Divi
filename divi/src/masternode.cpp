@@ -124,7 +124,6 @@ CMasternode::CMasternode()
     lastPing = CMasternodePing();
     cacheInputAge = 0;
     cacheInputAgeBlock = 0;
-    unitTest = false;
     allowFreeTx = true;
     nActiveState = MASTERNODE_ENABLED;
     protocolVersion = PROTOCOL_VERSION;
@@ -147,7 +146,6 @@ CMasternode::CMasternode(const CMasternode& other)
     lastPing = other.lastPing;
     cacheInputAge = other.cacheInputAge;
     cacheInputAgeBlock = other.cacheInputAgeBlock;
-    unitTest = other.unitTest;
     allowFreeTx = other.allowFreeTx;
     nActiveState = MASTERNODE_ENABLED;
     protocolVersion = other.protocolVersion;
@@ -170,7 +168,6 @@ CMasternode::CMasternode(const CMasternodeBroadcast& mnb)
     lastPing = mnb.lastPing;
     cacheInputAge = 0;
     cacheInputAgeBlock = 0;
-    unitTest = false;
     allowFreeTx = true;
     nActiveState = MASTERNODE_ENABLED;
     protocolVersion = mnb.protocolVersion;
@@ -197,7 +194,6 @@ void CMasternode::swap(CMasternode& first, CMasternode& second) // nothrow
     swap(first.lastPing, second.lastPing);
     swap(first.cacheInputAge, second.cacheInputAge);
     swap(first.cacheInputAgeBlock, second.cacheInputAgeBlock);
-    swap(first.unitTest, second.unitTest);
     swap(first.allowFreeTx, second.allowFreeTx);
     swap(first.protocolVersion, second.protocolVersion);
     swap(first.nScanningErrorCount, second.nScanningErrorCount);
@@ -335,13 +331,10 @@ void CMasternode::Check(bool forceCheck)
         return;
     }
 
-    if (!unitTest) {
-        if (IsCoinSpent(vin.prevout, getCollateralAmount(nTier))) {
-            activeState = MASTERNODE_VIN_SPENT;
-            return;
-        }
+    if (IsCoinSpent(vin.prevout, getCollateralAmount(nTier))) {
+        activeState = MASTERNODE_VIN_SPENT;
+        return;
     }
-
     activeState = MASTERNODE_ENABLED; // OK
 }
 

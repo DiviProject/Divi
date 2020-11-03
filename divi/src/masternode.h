@@ -152,7 +152,6 @@ public:
     std::vector<unsigned char> sig;
     int activeState;
     int64_t sigTime; //mnb message time
-    bool unitTest;
     bool allowFreeTx;
     int protocolVersion;
     int nActiveState;
@@ -202,7 +201,6 @@ public:
         READWRITE(lastPing);
         READWRITE(cacheInputAge);
         READWRITE(cacheInputAgeBlock);
-        READWRITE(unitTest);
         READWRITE(allowFreeTx);
         READWRITE(nScanningErrorCount);
         READWRITE(nLastScanningErrorBlockHeight);

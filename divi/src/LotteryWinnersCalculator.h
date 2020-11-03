@@ -24,6 +24,6 @@ public:
         const I_SuperblockHeightValidator& superblockHeightValidator);
     uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock) const;
     bool IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight) const;
-    LotteryCoinstakeData CalculateLotteryWinners(const CTransaction& coinMintTransaction, const LotteryCoinstakeData& previousBlockLotteryCoinstakeData, int nHeight) const;
+    LotteryCoinstakeData CalculateUpdatedLotteryWinners(const CTransaction& coinMintTransaction, const LotteryCoinstakeData& previousBlockLotteryCoinstakeData, int nHeight) const;
 };
 #endif // LOTTERY_WINNERS_CALCULATOR_H

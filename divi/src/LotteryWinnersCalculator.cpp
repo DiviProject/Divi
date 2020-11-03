@@ -68,7 +68,10 @@ bool LotteryWinnersCalculator::IsCoinstakeValidForLottery(const CTransaction &tx
     return nAmount > minimumCoinstakeForTicket(nHeight) * COIN; // only if stake is more than 10k
 }
 
-LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CTransaction& coinMintTransaction, const LotteryCoinstakeData& previousBlockLotteryCoinstakeData, int nHeight) const
+LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
+    const CTransaction& coinMintTransaction,
+    const LotteryCoinstakeData& previousBlockLotteryCoinstakeData,
+    int nHeight) const
 {
     LotteryCoinstakeData defaultValue = previousBlockLotteryCoinstakeData;
     if(nHeight!=0) defaultValue.MarkAsShallowStorage();

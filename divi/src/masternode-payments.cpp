@@ -174,7 +174,7 @@ LotteryCoinstakeData CalculateLotteryWinners(const CBlock &block, const CBlockIn
     static LotteryCoinstakeData emptyData;
     const LotteryCoinstakeData& previousBlockLotteryCoinstakeData = prevBlockIndex? prevBlockIndex->vLotteryWinnersCoinstakes : emptyData;
     const CTransaction& coinMintingTransaction  = (nHeight > chainParameters.LAST_POW_BLOCK() )? block.vtx[1] : block.vtx[0];
-    return calculator.CalculateLotteryWinners(coinMintingTransaction,previousBlockLotteryCoinstakeData,nHeight);
+    return calculator.CalculateUpdatedLotteryWinners(coinMintingTransaction,previousBlockLotteryCoinstakeData,nHeight);
 }
 
 CMasternodePayee::CMasternodePayee()

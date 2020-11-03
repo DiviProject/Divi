@@ -21,7 +21,7 @@ public:
     LotteryCoinstakeData();
     LotteryCoinstakeData(
         int height,
-        const LotteryCoinstakes& coinstakes);
+        const LotteryCoinstakes& coinstakes = LotteryCoinstakes());
 
     bool IsValid() const;
     void MarkAsShallowStorage();

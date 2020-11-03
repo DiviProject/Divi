@@ -49,3 +49,10 @@ void LotteryCoinstakeData::clear()
     storageIsLocal = true;
     storage = std::make_shared<LotteryCoinstakes>();
 }
+
+LotteryCoinstakeData LotteryCoinstakeData::getShallowCopy() const
+{
+    LotteryCoinstakeData copy = *this;
+    copy.MarkAsShallowStorage();
+    return copy;
+}

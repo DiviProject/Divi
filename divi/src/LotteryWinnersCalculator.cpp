@@ -74,9 +74,9 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
 {
     if(nHeight <= 0) return LotteryCoinstakeData();
     if(superblockHeightValidator_.IsValidLotteryBlockHeight(nHeight)) return LotteryCoinstakeData(nHeight);
+    if(nHeight <= startOfLotteryBlocks_) return previousBlockLotteryCoinstakeData.getShallowCopy();
 
-    LotteryCoinstakeData defaultValue = previousBlockLotteryCoinstakeData;
-    defaultValue.MarkAsShallowStorage();
+    LotteryCoinstakeData defaultValue = previousBlockLotteryCoinstakeData.getShallowCopy();
 
     const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(nHeight);
     int nLastLotteryHeight = std::max(startOfLotteryBlocks_,  lotteryBlockPaymentCycle* ((nHeight - 1) / lotteryBlockPaymentCycle) );

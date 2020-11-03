@@ -29,6 +29,7 @@ public:
     const LotteryCoinstakes& getLotteryCoinstakes() const;
     void updateShallowDataStore(LotteryCoinstakeData& other);
     void clear();
+    LotteryCoinstakeData getShallowCopy() const;
 
     ADD_SERIALIZE_METHODS;
     template <typename Stream, typename Operation>

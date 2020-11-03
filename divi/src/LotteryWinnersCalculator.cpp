@@ -5,7 +5,6 @@
 #include <uint256.h>
 #include <primitives/transaction.h>
 #include <chain.h>
-#include <chainparams.h>
 #include <timedata.h>
 #include <numeric>
 #include <spork.h>
@@ -14,11 +13,11 @@
 
 
 LotteryWinnersCalculator::LotteryWinnersCalculator(
-    const CChainParams& chainParameters,
+    int startOfLotteryBlocks,
     CChain& activeChain,
     CSporkManager& sporkManager,
     const I_SuperblockHeightValidator& superblockHeightValidator
-    ): chainParameters_(chainParameters)
+    ): startOfLotteryBlocks_(startOfLotteryBlocks)
     , activeChain_(activeChain)
     , sporkManager_(sporkManager)
     , superblockHeightValidator_(superblockHeightValidator)
@@ -85,7 +84,7 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     if(nHeight==0) return defaultValue;
 
     const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(nHeight);
-    int nLastLotteryHeight = std::max(chainParameters_.GetLotteryBlockStartBlock(),  lotteryBlockPaymentCycle* ((nHeight - 1) / lotteryBlockPaymentCycle) );
+    int nLastLotteryHeight = std::max(startOfLotteryBlocks_,  lotteryBlockPaymentCycle* ((nHeight - 1) / lotteryBlockPaymentCycle) );
 
     if(nHeight <= nLastLotteryHeight) {
         return defaultValue;

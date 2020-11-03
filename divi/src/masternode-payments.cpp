@@ -170,7 +170,7 @@ LotteryCoinstakeData CalculateLotteryWinners(const CBlock &block, const CBlockIn
 {
     static const CChainParams& chainParameters = Params();
     static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
-    static LotteryWinnersCalculator calculator(chainParameters,chainActive, sporkManager,subsidyCointainer.superblockHeightValidator());
+    static LotteryWinnersCalculator calculator(chainParameters.GetLotteryBlockStartBlock(),chainActive, sporkManager,subsidyCointainer.superblockHeightValidator());
     static LotteryCoinstakeData emptyData;
     const LotteryCoinstakeData& previousBlockLotteryCoinstakeData = prevBlockIndex? prevBlockIndex->vLotteryWinnersCoinstakes : emptyData;
     const CTransaction& coinMintingTransaction  = (nHeight > chainParameters.LAST_POW_BLOCK() )? block.vtx[1] : block.vtx[0];

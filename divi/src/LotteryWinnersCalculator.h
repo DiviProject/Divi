@@ -4,21 +4,20 @@
 
 class uint256;
 class CTransaction;
-class CChainParams;
 class CChain;
 class CSporkManager;
 class I_SuperblockHeightValidator;
 class LotteryWinnersCalculator
 {
 private:
-    const CChainParams& chainParameters_;
+    const int startOfLotteryBlocks_;
     CChain& activeChain_;
     CSporkManager& sporkManager_;
     const I_SuperblockHeightValidator& superblockHeightValidator_;
     int minimumCoinstakeForTicket(int nHeight) const;
 public:
     LotteryWinnersCalculator(
-        const CChainParams& chainParameters,
+        int startOfLotteryBlocks,
         CChain& activeChain,
         CSporkManager& sporkManager,
         const I_SuperblockHeightValidator& superblockHeightValidator);

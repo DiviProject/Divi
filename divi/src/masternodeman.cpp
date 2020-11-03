@@ -126,8 +126,8 @@ public:
 CMasternodeMan::~CMasternodeMan() = default;
 
 CMasternodeMan::CMasternodeMan(
-    ): nDsqCount(0)
-    , rankingCache(new RankingCache)
+    ): rankingCache(new RankingCache)
+    , nDsqCount(0)
 {
 }
 

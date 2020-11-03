@@ -4,7 +4,6 @@
 #include <hash.h>
 #include <uint256.h>
 #include <primitives/transaction.h>
-#include <primitives/block.h>
 #include <chain.h>
 #include <chainparams.h>
 #include <timedata.h>
@@ -69,9 +68,9 @@ bool LotteryWinnersCalculator::IsCoinstakeValidForLottery(const CTransaction &tx
     return nAmount > minimumCoinstakeForTicket(nHeight) * COIN; // only if stake is more than 10k
 }
 
-LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight) const
+LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CTransaction& coinMintTransaction, const LotteryCoinstakeData& previousBlockLotteryCoinstakeData, int nHeight) const
 {
-    LotteryCoinstakeData defaultValue = (prevBlockIndex)?prevBlockIndex->vLotteryWinnersCoinstakes : LotteryCoinstakeData();
+    LotteryCoinstakeData defaultValue = previousBlockLotteryCoinstakeData;
     if(nHeight!=0) defaultValue.MarkAsShallowStorage();
     // if that's a block when lottery happens, reset score for whole cycle
     if(superblockHeightValidator_.IsValidLotteryBlockHeight(nHeight))
@@ -80,9 +79,7 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CBl
         defaultValue.heightOfDataStorage = nHeight;
         return defaultValue;
     }
-
-    if(!prevBlockIndex)
-        return defaultValue;
+    if(nHeight==0) return defaultValue;
 
     const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(nHeight);
     int nLastLotteryHeight = std::max(chainParameters_.GetLotteryBlockStartBlock(),  lotteryBlockPaymentCycle* ((nHeight - 1) / lotteryBlockPaymentCycle) );
@@ -91,8 +88,7 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CBl
         return defaultValue;
     }
 
-    const auto& coinbaseTx = (nHeight > chainParameters_.LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
-    if(!IsCoinstakeValidForLottery(coinbaseTx, nHeight)) {
+    if(!IsCoinstakeValidForLottery(coinMintTransaction, nHeight)) {
         return defaultValue; // return last if we have no lotter participant in this block
     }
     CBlockIndex* prevLotteryBlockIndex = activeChain_[nLastLotteryHeight];
@@ -100,7 +96,7 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CBl
     // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
     using LotteryScore = uint256;
     std::vector<LotteryScore> scores;
-    LotteryCoinstakes coinstakes = prevBlockIndex->vLotteryWinnersCoinstakes.getLotteryCoinstakes();
+    LotteryCoinstakes coinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
     scores.reserve(coinstakes.size()+1);
     int startingWinnerIndex = 0;
     std::map<uint256,int> transactionHashToWinnerIndex;
@@ -109,12 +105,12 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateLotteryWinners(const CBl
         scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock));
     }
 
-    auto newScore = CalculateLotteryScore(coinbaseTx.GetHash(), hashLastLotteryBlock);
+    auto newScore = CalculateLotteryScore(coinMintTransaction.GetHash(), hashLastLotteryBlock);
     scores.emplace_back(newScore);
-    transactionHashToWinnerIndex[coinbaseTx.GetHash()] = startingWinnerIndex++;
+    transactionHashToWinnerIndex[coinMintTransaction.GetHash()] = startingWinnerIndex++;
 
     coinstakes.reserve(coinstakes.size()+1);
-    coinstakes.emplace_back(coinbaseTx.GetHash(), coinbaseTx.IsCoinBase()? coinbaseTx.vout[0].scriptPubKey:coinbaseTx.vout[1].scriptPubKey);
+    coinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
 
     // biggest entry at the begining
     if(scores.size() > 1)

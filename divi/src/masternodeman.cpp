@@ -587,6 +587,19 @@ void CMasternodeMan::ProcessMasternodeConnections()
         return;
 }
 
+void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
+{
+    mapSeenMasternodePing[mnp.GetHash()] = mnp;
+
+    const auto* pmn = Find(mnp.vin);
+    if (pmn != nullptr) {
+        const uint256 mnbHash = CMasternodeBroadcast(*pmn).GetHash();
+        auto mit = mapSeenMasternodeBroadcast.find(mnbHash);
+        if (mit != mapSeenMasternodeBroadcast.end())
+          mit->second.lastPing = mnp;
+    }
+}
+
 bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
 {
     if (mapSeenMasternodeBroadcast.count(mnb.GetHash())) { //seen
@@ -619,16 +632,22 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
         return false;
     }
 
+    // Also check that the attached ping is valid.
+    CMasternode mn(mnb);
+    mn.lastPing = CMasternodePing();
+    if (!mnb.lastPing.CheckAndUpdate(mn, nDoS)) {
+        LogPrintf("%s : mnb - attached ping is invalid\n", __func__);
+        if (pfrom != nullptr)
+            Misbehaving(pfrom->GetId(), nDoS);
+        return false;
+    }
+
     // use this as a peer
     CNetAddr addr("127.0.0.1");
     if (pfrom != nullptr)
         addr = pfrom->addr;
     addrman.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
     masternodeSync.AddedMasternodeList(mnb.GetHash());
-
-    const auto& mnp = mnb.lastPing;
-    mnodeman.mapSeenMasternodePing.emplace(mnp.GetHash(), mnp);
-    mapSeenMasternodeBroadcast.insert(std::make_pair(mnb.GetHash(), mnb));
 
     // If the masternode already is in our list and is enabled, nothing
     // remains to be done.  If it is not enabled, we remove the old masternode
@@ -641,7 +660,10 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     }
 
     LogPrint("masternode","mnb - Got NEW Masternode entry - %s - %lli \n", mnb.vin.prevout.hash.ToString(), mnb.sigTime);
-    Add(CMasternode(mnb));
+    Add(mn);
+
+    mapSeenMasternodeBroadcast[mnb.GetHash()] = mnb;
+    RecordSeenPing(mnb.lastPing);
 
     // if it matches our Masternode privkey, then we've been remotely activated
     if (mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode && mnb.protocolVersion == PROTOCOL_VERSION) {
@@ -653,6 +675,35 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
         mnb.Relay();
 
     return true;
+}
+
+bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
+{
+    if (mapSeenMasternodePing.count(mnp.GetHash())) return true; //seen
+
+    auto* pmn = Find(mnp.vin);
+    int nDoS = 0;
+    if (pmn != nullptr && mnp.CheckAndUpdate(*pmn, nDoS)) {
+        RecordSeenPing(mnp);
+        mnp.Relay();
+        return true;
+    }
+
+    if (nDoS > 0) {
+        // if anything significant failed, mark that node
+        if (pfrom != nullptr)
+            Misbehaving(pfrom->GetId(), nDoS);
+    } else {
+        // if the masternode is known, don't ask for the mnb, just return
+        if (pmn != nullptr) return false;
+    }
+
+    // something significant is broken or mn is unknown,
+    // we might have to ask for a masternode entry once
+    if (pfrom != nullptr)
+        AskForMN(pfrom, mnp.vin);
+
+    return false;
 }
 
 void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
@@ -674,29 +725,8 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         vRecv >> mnp;
 
         LogPrint("masternode", "mnp - Masternode ping, vin: %s\n", mnp.vin.prevout.hash.ToString());
-
-        if (mapSeenMasternodePing.count(mnp.GetHash())) return; //seen
-
-        int nDoS = 0;
-        if (mnp.CheckAndUpdate(nDoS)) {
-            mapSeenMasternodePing.emplace(mnp.GetHash(), mnp);
+        if (!ProcessPing(pfrom, mnp))
             return;
-        }
-
-        if (nDoS > 0) {
-            // if anything significant failed, mark that node
-            Misbehaving(pfrom->GetId(), nDoS);
-        } else {
-            // if nothing significant failed, search existing Masternode list
-            CMasternode* pmn = Find(mnp.vin);
-            // if it's known, don't ask for the mnb, just return
-            if (pmn != NULL) return;
-        }
-
-        // something significant is broken or mn is unknown,
-        // we might have to ask for a masternode entry once
-        AskForMN(pfrom, mnp.vin);
-
     } else if (strCommand == "dseg") { //Get Masternode list or specific entry
 
         CTxIn vin;

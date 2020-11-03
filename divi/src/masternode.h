@@ -74,7 +74,10 @@ public:
         READWRITE(vchSig);
     }
 
-    bool CheckAndUpdate(int& nDos, bool fRequireEnabled = true);
+    /** Verifies if the ping is valid for the given masternode.
+     *  If it is, the method returns true and updates the last
+     *  ping stored with the masternode.  */
+    bool CheckAndUpdate(CMasternode& mn, int& nDos, bool fRequireEnabled = true) const;
     std::string getMessageToSign() const;
     bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
     void Relay();

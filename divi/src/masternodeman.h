@@ -124,6 +124,14 @@ public:
 
     void ProcessMasternodeConnections();
 
+    /** Records a ping in the list of our seen ping messages, and also updates the
+     *  list of known broadcasts if the ping corresponds to one we know (i.e. updates
+     *  the ping contained in the seen broadcast).
+     *
+     *  This method assumes that the ping has already been checked and is valid.
+     */
+    void RecordSeenPing(const CMasternodePing& mnp);
+
     /** Processes a masternode broadcast.  It is verified first, and then
      *  the masternode updated or added accordingly.
      *
@@ -132,6 +140,15 @@ public:
      *
      *  Returns true if all was valid, and false if not.  */
     bool ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb);
+
+    /** Processes a masternode ping.  It is verified first, and if valid,
+     *  used to update our state and inserted into mapSeenMasternodePing.
+     *
+     *  If pfrom is null, we assume this is from a local RPC command.  Otherwise
+     *  we apply potential DoS banscores.
+     *
+     *  Returns true if the ping message was valid.  */
+    bool ProcessPing(CNode* pfrom, CMasternodePing& mnp);
 
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 

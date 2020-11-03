@@ -18,15 +18,14 @@ static const unsigned int MAX_OP_META_RELAY = 603;      //!< bytes (+1 for OP_ME
 extern unsigned nMaxDatacarrierBytes;
 
 /**
- * Mandatory script verification flags that all new blocks must comply with for
- * them to be valid. (but old blocks may not comply with) Currently just P2SH,
- * but in the future other flags may be added, such as a soft-fork to enforce
- * strict DER encoding.
+ * Mandatory script verification flags that all blocks must comply with for
+ * them to be valid.
  *
  * Failing one of these tests may trigger a DoS ban - see CheckInputs() for
  * details.
  */
-static const unsigned int MANDATORY_SCRIPT_VERIFY_FLAGS = SCRIPT_VERIFY_P2SH;
+static const unsigned int MANDATORY_SCRIPT_VERIFY_FLAGS = SCRIPT_VERIFY_P2SH |
+                                                          SCRIPT_VERIFY_DERSIG;
 
 /**
  * Standard script verification flags that standard transactions will comply

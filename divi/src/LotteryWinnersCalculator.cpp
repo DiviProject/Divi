@@ -74,25 +74,13 @@ uint256 LotteryWinnersCalculator::GetLastLotteryBlockHashBeforeHeight(int blockH
     return activeChain_[nLastLotteryHeight]->GetBlockHash();
 }
 
-LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
-    const CTransaction& coinMintTransaction,
-    const LotteryCoinstakeData& previousBlockLotteryCoinstakeData,
-    int nHeight) const
+bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockHash, LotteryCoinstakes& updatedCoinstakes) const
 {
-    if(nHeight <= 0) return LotteryCoinstakeData();
-    if(superblockHeightValidator_.IsValidLotteryBlockHeight(nHeight)) return LotteryCoinstakeData(nHeight);
-    if(nHeight <= startOfLotteryBlocks_) return previousBlockLotteryCoinstakeData.getShallowCopy();
-    if(!IsCoinstakeValidForLottery(coinMintTransaction, nHeight)) return previousBlockLotteryCoinstakeData.getShallowCopy();
-
-    auto hashLastLotteryBlock = GetLastLotteryBlockHashBeforeHeight(nHeight);
-    LotteryCoinstakes updatedCoinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
-    updatedCoinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
-
     using LotteryScore = uint256;
     std::vector<LotteryScore> scores;
     scores.reserve(updatedCoinstakes.size());
     for(auto&& lotteryCoinstake : updatedCoinstakes) {
-        scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock));
+        scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, lastLotteryBlockHash));
     }
 
     // biggest entry at the begining
@@ -118,7 +106,25 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
             updatedCoinstakes.pop_back();
         }
     }
-    if(shouldUpdateCoinstakeData)
+    return shouldUpdateCoinstakeData;
+}
+
+LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
+    const CTransaction& coinMintTransaction,
+    const LotteryCoinstakeData& previousBlockLotteryCoinstakeData,
+    int nHeight) const
+{
+    if(nHeight <= 0) return LotteryCoinstakeData();
+    if(superblockHeightValidator_.IsValidLotteryBlockHeight(nHeight)) return LotteryCoinstakeData(nHeight);
+    if(nHeight <= startOfLotteryBlocks_) return previousBlockLotteryCoinstakeData.getShallowCopy();
+    if(!IsCoinstakeValidForLottery(coinMintTransaction, nHeight)) return previousBlockLotteryCoinstakeData.getShallowCopy();
+
+    auto hashLastLotteryBlock = GetLastLotteryBlockHashBeforeHeight(nHeight);
+    LotteryCoinstakes updatedCoinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
+    updatedCoinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
+
+
+    if(UpdateCoinstakes(hashLastLotteryBlock,updatedCoinstakes))
     {
         updatedCoinstakes.resize( std::min( std::size_t(11), updatedCoinstakes.size()) );
         return LotteryCoinstakeData(nHeight,updatedCoinstakes);

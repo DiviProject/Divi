@@ -93,27 +93,36 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     coinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
 
     scores.reserve(coinstakes.size());
-    int startingWinnerIndex = 0;
-    std::map<uint256,int> initialLotteryRanksByTransactionHash;
     for(auto&& lotteryCoinstake : coinstakes) {
-        initialLotteryRanksByTransactionHash[lotteryCoinstake.first] = startingWinnerIndex++;
         scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock));
     }
 
     // biggest entry at the begining
+    bool shouldUpdateCoinstakeData = true;
     if(scores.size() > 1)
     {
-        std::stable_sort(std::begin(coinstakes), std::end(coinstakes),
-            [&scores,&initialLotteryRanksByTransactionHash](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs)
+        std::vector<unsigned> initialRanks(scores.size());
+        std::iota(initialRanks.begin(),initialRanks.end(),0);
+
+        std::stable_sort(std::begin(initialRanks), std::end(initialRanks),
+            [&scores](const unsigned& lhs, const unsigned& rhs)
             {
-                return scores[initialLotteryRanksByTransactionHash[lhs.first]] > scores[initialLotteryRanksByTransactionHash[rhs.first]];
+                return scores[lhs] > scores[rhs];
             }
         );
+        shouldUpdateCoinstakeData = initialRanks.back() != 11;
+
+        if(shouldUpdateCoinstakeData)
+        {
+            auto it = std::find(initialRanks.begin(), initialRanks.end(), scores.size()-1);
+            coinstakes.insert(
+                coinstakes.begin() + std::distance(initialRanks.begin(),it), coinstakes.back() );
+            coinstakes.pop_back();
+        }
     }
-    bool shouldUpdateCoinstakeData = (coinstakes.size()>0)? initialLotteryRanksByTransactionHash[coinstakes.back().first] != 11 : false;
-    coinstakes.resize( std::min( std::size_t(11), coinstakes.size()) );
     if(shouldUpdateCoinstakeData)
     {
+        coinstakes.resize( std::min( std::size_t(11), coinstakes.size()) );
         return LotteryCoinstakeData(nHeight,coinstakes);
     }
     else

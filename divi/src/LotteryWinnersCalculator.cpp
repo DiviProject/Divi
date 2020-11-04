@@ -115,12 +115,10 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     if(nHeight <= startOfLotteryBlocks_) return previousBlockLotteryCoinstakeData.getShallowCopy();
     if(!IsCoinstakeValidForLottery(coinMintTransaction, nHeight)) return previousBlockLotteryCoinstakeData.getShallowCopy();
 
-    auto hashLastLotteryBlock = GetLastLotteryBlockHashBeforeHeight(nHeight);
     LotteryCoinstakes updatedCoinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
     updatedCoinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
 
-
-    if(UpdateCoinstakes(hashLastLotteryBlock,updatedCoinstakes))
+    if(UpdateCoinstakes(GetLastLotteryBlockHashBeforeHeight(nHeight),updatedCoinstakes))
     {
         return LotteryCoinstakeData(nHeight,updatedCoinstakes);
     }

@@ -266,7 +266,7 @@ Value setupmasternode(const Array& params, bool fHelp)
     CPubKey pubkeyCollateralAddress;
     pubkeyCollateralAddress.Set(pubkeyStr.begin(),pubkeyStr.end());
 
-    std::string ipAndPort = params[4].get_str() + std::to_string(Params().GetDefaultPort());
+    std::string ipAndPort = params[4].get_str() +":"+ std::to_string(Params().GetDefaultPort());
 
     CMasternodeConfig::CMasternodeEntry config(alias,ipAndPort,CBitcoinSecret(masternodeKey).ToString(),txHash,outputIndex);
 

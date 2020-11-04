@@ -90,20 +90,15 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     using LotteryScore = uint256;
     std::vector<LotteryScore> scores;
     LotteryCoinstakes coinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
-    scores.reserve(coinstakes.size()+1);
+    coinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
+
+    scores.reserve(coinstakes.size());
     int startingWinnerIndex = 0;
     std::map<uint256,int> initialLotteryRanksByTransactionHash;
     for(auto&& lotteryCoinstake : coinstakes) {
         initialLotteryRanksByTransactionHash[lotteryCoinstake.first] = startingWinnerIndex++;
         scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock));
     }
-
-    auto newScore = CalculateLotteryScore(coinMintTransaction.GetHash(), hashLastLotteryBlock);
-    scores.emplace_back(newScore);
-    initialLotteryRanksByTransactionHash[coinMintTransaction.GetHash()] = startingWinnerIndex++;
-
-    coinstakes.reserve(coinstakes.size()+1);
-    coinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
 
     // biggest entry at the begining
     if(scores.size() > 1)

@@ -92,15 +92,15 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     LotteryCoinstakes coinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
     scores.reserve(coinstakes.size()+1);
     int startingWinnerIndex = 0;
-    std::map<uint256,int> transactionHashToWinnerIndex;
+    std::map<uint256,int> initialLotteryRanksByTransactionHash;
     for(auto&& lotteryCoinstake : coinstakes) {
-        transactionHashToWinnerIndex[lotteryCoinstake.first] = startingWinnerIndex++;
+        initialLotteryRanksByTransactionHash[lotteryCoinstake.first] = startingWinnerIndex++;
         scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock));
     }
 
     auto newScore = CalculateLotteryScore(coinMintTransaction.GetHash(), hashLastLotteryBlock);
     scores.emplace_back(newScore);
-    transactionHashToWinnerIndex[coinMintTransaction.GetHash()] = startingWinnerIndex++;
+    initialLotteryRanksByTransactionHash[coinMintTransaction.GetHash()] = startingWinnerIndex++;
 
     coinstakes.reserve(coinstakes.size()+1);
     coinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
@@ -109,13 +109,13 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     if(scores.size() > 1)
     {
         std::stable_sort(std::begin(coinstakes), std::end(coinstakes),
-            [&scores,&transactionHashToWinnerIndex](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs)
+            [&scores,&initialLotteryRanksByTransactionHash](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs)
             {
-                return scores[transactionHashToWinnerIndex[lhs.first]] > scores[transactionHashToWinnerIndex[rhs.first]];
+                return scores[initialLotteryRanksByTransactionHash[lhs.first]] > scores[initialLotteryRanksByTransactionHash[rhs.first]];
             }
         );
     }
-    bool shouldUpdateCoinstakeData = (coinstakes.size()>0)? transactionHashToWinnerIndex[coinstakes.back().first] != 11 : false;
+    bool shouldUpdateCoinstakeData = (coinstakes.size()>0)? initialLotteryRanksByTransactionHash[coinstakes.back().first] != 11 : false;
     coinstakes.resize( std::min( std::size_t(11), coinstakes.size()) );
     if(shouldUpdateCoinstakeData)
     {

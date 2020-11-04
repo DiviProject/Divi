@@ -87,11 +87,11 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     auto hashLastLotteryBlock = GetLastLotteryBlockHashBeforeHeight(nHeight);
 
     // lotteryWinnersCoinstakes has hashes of coinstakes, let calculate old scores + new score
-    using LotteryScore = uint256;
-    std::vector<LotteryScore> scores;
     LotteryCoinstakes coinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
     coinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
 
+    using LotteryScore = uint256;
+    std::vector<LotteryScore> scores;
     scores.reserve(coinstakes.size());
     for(auto&& lotteryCoinstake : coinstakes) {
         scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, hashLastLotteryBlock));

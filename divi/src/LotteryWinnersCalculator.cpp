@@ -76,36 +76,32 @@ uint256 LotteryWinnersCalculator::GetLastLotteryBlockHashBeforeHeight(int blockH
 
 bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockHash, LotteryCoinstakes& updatedCoinstakes) const
 {
-    using LotteryScore = uint256;
-    std::vector<LotteryScore> scores;
-    scores.reserve(updatedCoinstakes.size());
-    for(auto&& lotteryCoinstake : updatedCoinstakes) {
-        scores.emplace_back(CalculateLotteryScore(lotteryCoinstake.first, lastLotteryBlockHash));
+    struct RankAwareScore
+    {
+        uint256 score;
+        size_t rank;
+    };
+    std::map<uint256,RankAwareScore> rankedScoreAwareCoinstakes;
+    for(const auto& lotteryCoinstake : updatedCoinstakes)
+    {
+        RankAwareScore rankedScore = {
+            CalculateLotteryScore(lotteryCoinstake.first, lastLotteryBlockHash), rankedScoreAwareCoinstakes.size() };
+        rankedScoreAwareCoinstakes.emplace(lotteryCoinstake.first, std::move(rankedScore));
     }
 
     // biggest entry at the begining
     bool shouldUpdateCoinstakeData = true;
-    if(scores.size() > 1)
+    if(rankedScoreAwareCoinstakes.size() > 1)
     {
-        std::vector<unsigned> initialRanks(scores.size());
-        std::iota(initialRanks.begin(),initialRanks.end(),0);
-
-        std::stable_sort(std::begin(initialRanks), std::end(initialRanks),
-            [&scores](const unsigned& lhs, const unsigned& rhs)
+        std::stable_sort(std::begin(updatedCoinstakes), std::end(updatedCoinstakes),
+            [&rankedScoreAwareCoinstakes](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs)
             {
-                return scores[lhs] > scores[rhs];
+                return rankedScoreAwareCoinstakes[lhs.first].score > rankedScoreAwareCoinstakes[rhs.first].score;
             }
         );
-        shouldUpdateCoinstakeData = initialRanks.back() != 11;
-
-        if(shouldUpdateCoinstakeData)
-        {
-            auto it = std::find(initialRanks.begin(), initialRanks.end(), scores.size()-1);
-            updatedCoinstakes.insert(
-                updatedCoinstakes.begin() + std::distance(initialRanks.begin(),it), updatedCoinstakes.back() );
-            updatedCoinstakes.pop_back();
-        }
+        shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes[updatedCoinstakes.back().first].rank != 11;
     }
+    if( updatedCoinstakes.size() > 11) updatedCoinstakes.pop_back();
     return shouldUpdateCoinstakeData;
 }
 
@@ -126,7 +122,6 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
 
     if(UpdateCoinstakes(hashLastLotteryBlock,updatedCoinstakes))
     {
-        updatedCoinstakes.resize( std::min( std::size_t(11), updatedCoinstakes.size()) );
         return LotteryCoinstakeData(nHeight,updatedCoinstakes);
     }
     else

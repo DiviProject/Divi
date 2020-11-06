@@ -937,7 +937,9 @@ CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
     CMasternodePing ping;
     const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
     ping.vin = newVin;
-    auto block = chainActive[chainActive.Height() -12];
+    int depthOfTx = GetInputAge(ping.vin);
+    int offset = std::min( std::max(0, depthOfTx), 12 );
+    auto block = chainActive[chainActive.Height()-offset];
     ping.blockHash = block->GetBlockHash();
     ping.sigTime = std::max(block->GetBlockTime() + offsetTimeBy45BlocksInSeconds, GetAdjustedTime());
     ping.vchSig = std::vector<unsigned char>();

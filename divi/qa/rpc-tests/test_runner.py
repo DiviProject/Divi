@@ -92,6 +92,7 @@ BASE_SCRIPTS = [
     'rawtransactions.py',
     'rest.py',
     'rpcbind_test.py',
+    'remotestart.py',
     'smartfees.py',
     'sync.py',
     'txn_doublespend.py',

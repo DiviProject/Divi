@@ -30,6 +30,7 @@
 #include <boost/assign/list_of.hpp>
 #include <blockmap.h>
 #include <BlockDiskAccessor.h>
+#include <obfuscation.h>
 
 using namespace std;
 using namespace boost;
@@ -649,13 +650,13 @@ Value signmessage(const Array& params, bool fHelp)
 
     string strAddress = params[0].get_str();
     string strMessage = params[1].get_str();
-    if(params.size()==3)
+    if(params.size()>2)
     {
         string format = static_cast<string>(params[2].get_str());
         if(std::strcmp(format.c_str(),"hex")==0)
         {
             valtype decodedHex = ParseHex(strMessage);
-            strMessage = string(decodedHex.begin(),decodedHex.end());
+            strMessage = std::string(decodedHex.begin(),decodedHex.end());
         }
         else if(std::strcmp(format.c_str(),"b64")==0)
         {
@@ -674,13 +675,12 @@ Value signmessage(const Array& params, bool fHelp)
     if (!pwalletMain->GetKey(keyID, key))
         throw JSONRPCError(RPC_WALLET_ERROR, "Private key not available");
 
-    CHashWriter ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
-    ss << strMessage;
-
     std::vector<unsigned char> vchSig;
-    if (!key.SignCompact(ss.GetHash(), vchSig))
+    std::string errMsg;
+    if(!CObfuScationSigner::SignMessage(strMessage,errMsg,vchSig,key))
+    {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Sign failed");
+    }
 
     if(params.size()==4)
     {

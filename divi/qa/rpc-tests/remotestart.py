@@ -69,16 +69,17 @@ class MnRemoteStartTest (BitcoinTestFramework):
     self.is_network_split = False
 
   def attempt_mnsync(self, ticks=100):
-    print ("Running masternode sync...")
-
+    print ("Attempting masternode sync...")
     # Use mocktime ticks to advance the sync status
     # of the node quickly.
     for _ in range (ticks):
       self.advance_time ()
 
+    result = []
     for n in [1, 2, 3]:
       status = self.nodes[n].mnsync ("status")
-      return (status["RequestedMasternodeAssets"], 999)
+      result.append(status["RequestedMasternodeAssets"] == 999)
+    return all(result)
 
   def start_node (self, n, startMN = False):
     """Starts node n (0..2) with the proper arguments
@@ -141,11 +142,9 @@ class MnRemoteStartTest (BitcoinTestFramework):
     sync_blocks (self.nodes)
     self.mine_blocks (25)
     assert_equal (self.nodes[0].getbalance (), 6250)
-    tickCount =0
-    tickDelta=10
-    while not self.attempt_mnsync(tickDelta):
-        tickCount +=tickDelta
-        assert_greater_than(100,tickCount)
+
+    # Achive masternode synchronization with peers
+    assert self.attempt_mnsync()
 
     id1 = self.nodes[0].allocatefunds ("masternode", "mn1", "copper")["txhash"]
     id2 = self.nodes[0].allocatefunds ("masternode", "mn2", "silver")["txhash"]
@@ -201,9 +200,9 @@ class MnRemoteStartTest (BitcoinTestFramework):
         copyOfData = str(self.setup[i-1].broadcast_data)
         self.stop_node(i)
         self.start_node (i,True)
-        result = self.nodes[i].broadcaststartmasternode(copyOfData, copyOfSig)
+        result = self.nodes[0].broadcaststartmasternode(copyOfData, copyOfSig)
         assert_equal(result["status"], "success")
-
+    self.attempt_mnsync()
     for i in [1, 2]:
       data = self.nodes[i].getmasternodestatus ()
       assert_equal (data["status"], 4)

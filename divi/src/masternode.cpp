@@ -222,6 +222,14 @@ bool CMasternode::TimeSinceLastPingIsWithin(int seconds, int64_t now) const
 
     return now - lastPing.sigTime < seconds;
 }
+bool CMasternode::IsTooEarlyToReceivePingUpdate(int64_t now) const
+{
+    return TimeSinceLastPingIsWithin(MASTERNODE_MIN_MNP_SECONDS - 60, now);
+}
+bool CMasternode::IsTooEarlyToSendPingUpdate(int64_t now) const
+{
+    return TimeSinceLastPingIsWithin(MASTERNODE_PING_SECONDS, now);
+}
 
 void CMasternode::Disable()
 {
@@ -998,7 +1006,7 @@ bool CMasternodePing::CheckAndUpdate(CMasternode& mn, int& nDos, bool fRequireEn
         // LogPrint("masternode","mnping - Found corresponding mn for vin: %s\n", vin.ToString());
         // update only if there is no known ping for this masternode or
         // last ping was more then MASTERNODE_MIN_MNP_SECONDS-60 ago comparing to this one
-        if (!mn.TimeSinceLastPingIsWithin(MASTERNODE_MIN_MNP_SECONDS - 60, sigTime)) {
+        if (!mn.IsTooEarlyToReceivePingUpdate(sigTime)) {
             const std::string strMessage = getMessageToSign();
 
             std::string errorMessage = "";

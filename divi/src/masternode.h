@@ -221,7 +221,7 @@ public:
 
     bool IsBroadcastedWithin(int seconds) const;
 
-    bool IsPingedWithin(int seconds, int64_t now = -1) const;
+    bool TimeSinceLastPingIsWithin(int seconds, int64_t now = -1) const;
 
     void Disable();
 

@@ -212,7 +212,7 @@ bool CMasternode::IsBroadcastedWithin(int seconds) const
     return (GetAdjustedTime() - sigTime) < seconds;
 }
 
-bool CMasternode::IsPingedWithin(int seconds, int64_t now) const
+bool CMasternode::TimeSinceLastPingIsWithin(int seconds, int64_t now) const
 {
     if (now == -1)
         now = GetAdjustedTime();
@@ -321,12 +321,12 @@ void CMasternode::Check(bool forceCheck)
     if (activeState == MASTERNODE_VIN_SPENT) return;
 
 
-    if (!IsPingedWithin(MASTERNODE_REMOVAL_SECONDS)) {
+    if (!TimeSinceLastPingIsWithin(MASTERNODE_REMOVAL_SECONDS)) {
         activeState = MASTERNODE_REMOVE;
         return;
     }
 
-    if (!IsPingedWithin(MASTERNODE_EXPIRATION_SECONDS)) {
+    if (!TimeSinceLastPingIsWithin(MASTERNODE_EXPIRATION_SECONDS)) {
         activeState = MASTERNODE_EXPIRED;
         return;
     }
@@ -998,7 +998,7 @@ bool CMasternodePing::CheckAndUpdate(CMasternode& mn, int& nDos, bool fRequireEn
         // LogPrint("masternode","mnping - Found corresponding mn for vin: %s\n", vin.ToString());
         // update only if there is no known ping for this masternode or
         // last ping was more then MASTERNODE_MIN_MNP_SECONDS-60 ago comparing to this one
-        if (!mn.IsPingedWithin(MASTERNODE_MIN_MNP_SECONDS - 60, sigTime)) {
+        if (!mn.TimeSinceLastPingIsWithin(MASTERNODE_MIN_MNP_SECONDS - 60, sigTime)) {
             const std::string strMessage = getMessageToSign();
 
             std::string errorMessage = "";

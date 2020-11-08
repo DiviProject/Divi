@@ -250,13 +250,13 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
 
 // The stake modifier used to hash for a stake kernel is chosen as the stake
 // modifier about a selection interval later than the coin generating the kernel
-bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int& nStakeModifierHeight, int64_t& nStakeModifierTime, bool fPrintProofOfStake)
+bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier)
 {
+    int64_t nStakeModifierTime = 0;
     nStakeModifier = 0;
     if (!mapBlockIndex.count(hashBlockFrom))
         return error("GetKernelStakeModifier() : block not indexed");
     const CBlockIndex* pindexFrom = mapBlockIndex[hashBlockFrom];
-    nStakeModifierHeight = pindexFrom->nHeight;
     nStakeModifierTime = pindexFrom->GetBlockTime();
     int64_t nStakeModifierSelectionInterval = GetStakeModifierSelectionInterval();
     const CBlockIndex* pindex = pindexFrom;
@@ -266,7 +266,6 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     while (nStakeModifierTime < pindexFrom->GetBlockTime() + nStakeModifierSelectionInterval) {
         if (!pindexNext) {
             // Should never happen
-            nStakeModifierHeight = pindexFrom->nHeight;
             nStakeModifierTime = pindexFrom->GetBlockTime();
             if(pindex->GeneratedStakeModifier())
                 nStakeModifier = pindex->nStakeModifier;
@@ -276,7 +275,6 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
         pindex = pindexNext;
         pindexNext = chainActive[pindexNext->nHeight + 1];
         if (pindex->GeneratedStakeModifier()) {
-            nStakeModifierHeight = pindex->nHeight;
             nStakeModifierTime = pindex->GetBlockTime();
         }
     }
@@ -377,9 +375,7 @@ bool ProofOfStakeTimeRequirementsAreMet(
 std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const uint256& blockHash) const
 {
     uint64_t nStakeModifier = 0;
-    int nStakeModifierHeight = 0;
-    int64_t nStakeModifierTime = 0;
-    if (!GetKernelStakeModifier(blockHash, nStakeModifier, nStakeModifierHeight, nStakeModifierTime, false)) {
+    if (!GetKernelStakeModifier(blockHash, nStakeModifier)) {
         LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
         return std::make_pair(nStakeModifier,false);
     }

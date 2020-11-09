@@ -252,8 +252,6 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
 // modifier about a selection interval later than the coin generating the kernel
 bool LegacyPoSStakeModifierService::GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& stakeModifier) const
 {
-    if (!blockIndexByHash_.count(hashBlockFrom))
-        return error("GetKernelStakeModifier() : block not indexed");
     const CBlockIndex& stakeTransactionBlockIndex = *(blockIndexByHash_.find(hashBlockFrom)->second);
     int64_t timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();
     const int64_t timeWindowForSelectingStakeModifier = GetStakeModifierSelectionInterval();
@@ -378,10 +376,13 @@ LegacyPoSStakeModifierService::LegacyPoSStakeModifierService(
 std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const uint256& blockHash) const
 {
     uint64_t nStakeModifier = 0;
-    if (!GetKernelStakeModifier(blockHash, nStakeModifier)) {
+    if (!blockIndexByHash_.count(blockHash))
+    {
+        error("GetKernelStakeModifier() : block not indexed");
         LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
         return std::make_pair(nStakeModifier,false);
     }
+    GetKernelStakeModifier(blockHash, nStakeModifier);
     return std::make_pair(nStakeModifier,true);
 }
 

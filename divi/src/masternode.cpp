@@ -735,6 +735,27 @@ bool CMasternodeBroadcastFactory::provideSignatures(
     return true;
 }
 
+namespace
+{
+
+CMasternodePing createDelayedMasternodePing(const CTxIn& newVin)
+{
+    CMasternodePing ping;
+    const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
+    ping.vin = newVin;
+    const int depthOfTx = GetInputAge(ping.vin);
+    const int offset = std::min( std::max(0, depthOfTx), 12 );
+    const auto* block = chainActive[chainActive.Height() - offset];
+    ping.blockHash = block->GetBlockHash();
+    ping.sigTime = std::max(block->GetBlockTime() + offsetTimeBy45BlocksInSeconds, GetAdjustedTime());
+    ping.vchSig = std::vector<unsigned char>();
+    LogPrint("masternode","mnp - relay block-time & sigtime: %d vs. %d\n", block->GetBlockTime(), ping.sigTime);
+
+    return ping;
+}
+
+} // anonymous namespace
+
 void CMasternodeBroadcastFactory::createWithoutSignatures(
     CTxIn txin,
     CService service,
@@ -748,8 +769,10 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
              CBitcoinAddress(pubKeyCollateralAddressNew.GetID()).ToString(),
              pubKeyMasternodeNew.GetID().ToString());
 
-    CMasternodePing mnp = (deferRelay)? CMasternodePing::createDelayedMasternodePing(txin): CMasternodePing(txin);
     mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
+    const CMasternodePing mnp = (deferRelay
+                                    ? createDelayedMasternodePing(txin)
+                                    : CMasternodePing(txin));
     mnbRet.lastPing = mnp;
     mnbRet.sigTime = mnp.sigTime;
 }
@@ -938,22 +961,6 @@ CMasternodePing::CMasternodePing(CTxIn& newVin)
     blockHash = chainActive[chainActive.Height() - 12]->GetBlockHash();
     sigTime = GetAdjustedTime();
     vchSig = std::vector<unsigned char>();
-}
-
-CMasternodePing CMasternodePing::createDelayedMasternodePing(CTxIn& newVin)
-{
-    CMasternodePing ping;
-    const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
-    ping.vin = newVin;
-    int depthOfTx = GetInputAge(ping.vin);
-    int offset = std::min( std::max(0, depthOfTx), 12 );
-    auto block = chainActive[chainActive.Height()-offset];
-    ping.blockHash = block->GetBlockHash();
-    ping.sigTime = std::max(block->GetBlockTime() + offsetTimeBy45BlocksInSeconds, GetAdjustedTime());
-    ping.vchSig = std::vector<unsigned char>();
-    LogPrint("masternode","mnp - relay block-time & sigtime: %d vs. %d\n", block->GetBlockTime(), ping.sigTime);
-
-    return ping;
 }
 
 std::string CMasternodePing::getMessageToSign() const

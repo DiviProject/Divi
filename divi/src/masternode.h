@@ -61,7 +61,6 @@ public:
 
     CMasternodePing();
     CMasternodePing(CTxIn& newVin);
-    static CMasternodePing createDelayedMasternodePing(CTxIn& newVin);
 
     ADD_SERIALIZE_METHODS;
 

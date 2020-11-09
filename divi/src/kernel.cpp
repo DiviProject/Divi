@@ -375,13 +375,13 @@ LegacyPoSStakeModifierService::LegacyPoSStakeModifierService(
 
 std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const uint256& blockHash) const
 {
-    uint64_t nStakeModifier = 0;
     if (!blockIndexByHash_.count(blockHash))
     {
         error("GetKernelStakeModifier() : block not indexed");
         LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
-        return std::make_pair(nStakeModifier,false);
+        return std::make_pair(0,false);
     }
+    uint64_t nStakeModifier = 0;
     GetKernelStakeModifier(blockHash, nStakeModifier);
     return std::make_pair(nStakeModifier,true);
 }

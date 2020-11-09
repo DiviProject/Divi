@@ -518,7 +518,12 @@ bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofO
 
     unsigned int nTime = block.nTime;
     std::map<unsigned int, unsigned int> hashedBlockTimestamps;
-    const StakingData stakingData;
+    StakingData stakingData(
+        block.nBits,
+        blockprev.GetBlockTime(),
+        blockprev.GetHash(),
+        txin.prevout,
+        txPrev.vout[txin.prevout.n].nValue);
     if (!CreateHashProofForProofOfStake(hashedBlockTimestamps,stakingData, block.nBits, blockprev, txin.prevout, txPrev.vout[txin.prevout.n].nValue, nTime, true, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 

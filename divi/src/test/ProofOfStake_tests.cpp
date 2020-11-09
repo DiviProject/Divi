@@ -228,7 +228,12 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZ
     MockPoSStakeModifierService stakeModifierService;
     ON_CALL(stakeModifierService,getStakeModifier).WillByDefault(Return(std::make_pair(0, true)));
 
-    const StakingData stakingData;
+    StakingData stakingData(
+        chainTipDifficulty,
+        blockHoldingUtxo.nTime,
+        blockHoldingUtxo.GetHash(),
+        utxo,
+        value);
     BOOST_CHECK_MESSAGE(
         !CreateHashProofForProofOfStake(
             stakeModifierService,

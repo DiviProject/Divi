@@ -140,7 +140,7 @@ bool PoSTransactionCreator::FindHashproof(
     std::pair<const CWalletTx*, unsigned int>& stakeData,
     CMutableTransaction& txNew)
 {
-    BlockMap::iterator it = mapBlockIndex.find(stakeData.first->hashBlock);
+    BlockMap::const_iterator it = mapBlockIndex.find(stakeData.first->hashBlock);
     if (it == mapBlockIndex.end())
     {
         if (fDebug) LogPrintf("CreateCoinStake() failed to find block index \n");
@@ -151,7 +151,14 @@ bool PoSTransactionCreator::FindHashproof(
     unsigned int blockTimeUpdate = nTxNewTime;
     CBlock blockHoldingStakeUtxo = it->second->GetBlockHeader();
     COutPoint utxo(stakeData.first->GetHash(), stakeData.second);
-    const StakingData stakingData;
+
+    const CBlockIndex* blockIndexHoldingStakeUtxo = it->second;
+    StakingData stakingData(
+        nBits,
+        static_cast<unsigned>(blockIndexHoldingStakeUtxo->GetBlockTime()),
+        blockIndexHoldingStakeUtxo->GetBlockHash(),
+        COutPoint(stakeData.first->GetHash(), stakeData.second),
+        stakeData.first->vout[stakeData.second].nValue);
     if (CreateHashProofForProofOfStake(
             hashedBlockTimestamps_,
             stakingData,

@@ -258,12 +258,12 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier)
         return error("GetKernelStakeModifier() : block not indexed");
     const CBlockIndex* pindexFrom = mapBlockIndex[hashBlockFrom];
     nStakeModifierTime = pindexFrom->GetBlockTime();
-    const int64_t nStakeModifierSelectionInterval = GetStakeModifierSelectionInterval();
+    const int64_t timeWindowForSelectingStakeModifier = GetStakeModifierSelectionInterval();
     const CBlockIndex* pindex = pindexFrom;
     CBlockIndex* pindexNext = chainActive[pindexFrom->nHeight + 1];
 
     // loop to find the stake modifier later by a selection interval
-    while (nStakeModifierTime < pindexFrom->GetBlockTime() + nStakeModifierSelectionInterval) {
+    while (nStakeModifierTime < pindexFrom->GetBlockTime() + timeWindowForSelectingStakeModifier) {
         if (!pindexNext) {
             // Should never happen
             nStakeModifierTime = pindexFrom->GetBlockTime();

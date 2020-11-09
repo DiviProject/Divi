@@ -400,7 +400,7 @@ bool CreateHashProofForProofOfStake(
 {
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
     if(!ProofOfStakeTimeRequirementsAreMet(nTimeBlockFrom,nTimeTx)) return false;
-    auto stakeModifierData = stakeModifierService.getStakeModifier(blockFrom.GetHash());
+    std::pair<uint64_t,bool> stakeModifierData = stakeModifierService.getStakeModifier(blockFrom.GetHash());
     if (!stakeModifierData.second)
     {
         return error("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");

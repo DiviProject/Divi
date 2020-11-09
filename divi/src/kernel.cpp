@@ -256,17 +256,17 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier)
     nStakeModifier = 0;
     if (!mapBlockIndex.count(hashBlockFrom))
         return error("GetKernelStakeModifier() : block not indexed");
-    const CBlockIndex& pindexFrom = *mapBlockIndex[hashBlockFrom];
-    timeStampOfSelectedBlock = pindexFrom.GetBlockTime();
+    const CBlockIndex& stakeTransactionBlockIndex = *mapBlockIndex[hashBlockFrom];
+    timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();
     const int64_t timeWindowForSelectingStakeModifier = GetStakeModifierSelectionInterval();
-    const CBlockIndex* pindex = &pindexFrom;
-    CBlockIndex* pindexNext = chainActive[pindexFrom.nHeight + 1];
+    const CBlockIndex* pindex = &stakeTransactionBlockIndex;
+    CBlockIndex* pindexNext = chainActive[stakeTransactionBlockIndex.nHeight + 1];
 
     // loop to find the stake modifier later by a selection interval
-    while (timeStampOfSelectedBlock < pindexFrom.GetBlockTime() + timeWindowForSelectingStakeModifier) {
+    while (timeStampOfSelectedBlock < stakeTransactionBlockIndex.GetBlockTime() + timeWindowForSelectingStakeModifier) {
         if (!pindexNext) {
             // Should never happen
-            timeStampOfSelectedBlock = pindexFrom.GetBlockTime();
+            timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();
             if(pindex->GeneratedStakeModifier())
                 nStakeModifier = pindex->nStakeModifier;
             return true;

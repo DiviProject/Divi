@@ -22,6 +22,7 @@
 #include <boost/assign/list_of.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
+#include <StakingData.h>
 
 #include <Settings.h>
 extern const int nHashDrift = 45;
@@ -393,6 +394,7 @@ std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const u
 bool CreateHashProofForProofOfStake(
     I_PoSStakeModifierService& stakeModifierService,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+    const StakingData& stakingData,
     unsigned int nBits,
     const CBlock& blockFrom,
     const COutPoint& prevout,
@@ -443,6 +445,7 @@ bool CreateHashProofForProofOfStake(
 
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+    const StakingData& stakingData,
     unsigned int nBits,
     const CBlock& blockFrom,
     const COutPoint& prevout,
@@ -455,6 +458,7 @@ bool CreateHashProofForProofOfStake(
     return CreateHashProofForProofOfStake(
         stakeModifierService,
         hashedBlockTimestamps,
+        stakingData,
         nBits,
         blockFrom,
         prevout,
@@ -514,7 +518,8 @@ bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofO
 
     unsigned int nTime = block.nTime;
     std::map<unsigned int, unsigned int> hashedBlockTimestamps;
-    if (!CreateHashProofForProofOfStake(hashedBlockTimestamps, block.nBits, blockprev, txin.prevout, txPrev.vout[txin.prevout.n].nValue, nTime, true, hashProofOfStake))
+    const StakingData stakingData;
+    if (!CreateHashProofForProofOfStake(hashedBlockTimestamps,stakingData, block.nBits, blockprev, txin.prevout, txPrev.vout[txin.prevout.n].nValue, nTime, true, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;

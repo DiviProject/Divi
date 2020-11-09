@@ -7,6 +7,7 @@
 #include <primitives/transaction.h>
 #include <string>
 #include <primitives/block.h>
+#include <StakingData.h>
 
 #include <gmock/gmock.h>
 using ::testing::Return;
@@ -16,6 +17,7 @@ static constexpr unsigned int MaximumCoinAgeForStaking = 60 * 60 * 24 * 7 - 60 *
 extern bool CreateHashProofForProofOfStake(
     I_PoSStakeModifierService& stakeModifierService,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+    const StakingData& stakingData,
     unsigned int nBits,
     const CBlock& blockFrom,
     const COutPoint& prevout,
@@ -226,10 +228,12 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZ
     MockPoSStakeModifierService stakeModifierService;
     ON_CALL(stakeModifierService,getStakeModifier).WillByDefault(Return(std::make_pair(0, true)));
 
+    const StakingData stakingData;
     BOOST_CHECK_MESSAGE(
         !CreateHashProofForProofOfStake(
             stakeModifierService,
             hashedBlockTimestamps,
+            stakingData,
             chainTipDifficulty,
             blockHoldingUtxo,
             utxo,

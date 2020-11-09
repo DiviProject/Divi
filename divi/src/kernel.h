@@ -15,6 +15,7 @@ class CTransaction;
 class COutPoint;
 class BlockMap;
 class CChain;
+struct StakingData;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
@@ -93,6 +94,7 @@ public:
 
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+    const StakingData& stakingData,
     unsigned int nBits,
     const CBlock& blockFrom,
     const COutPoint& prevout,

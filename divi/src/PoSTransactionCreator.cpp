@@ -11,6 +11,7 @@
 #include <blockmap.h>
 #include <chain.h>
 #include <chainparams.h>
+#include <StakingData.h>
 
 extern Settings& settings;
 extern const int nHashDrift;
@@ -150,8 +151,10 @@ bool PoSTransactionCreator::FindHashproof(
     unsigned int blockTimeUpdate = nTxNewTime;
     CBlock blockHoldingStakeUtxo = it->second->GetBlockHeader();
     COutPoint utxo(stakeData.first->GetHash(), stakeData.second);
+    const StakingData stakingData;
     if (CreateHashProofForProofOfStake(
             hashedBlockTimestamps_,
+            stakingData,
             nBits,
             blockHoldingStakeUtxo,
             utxo,

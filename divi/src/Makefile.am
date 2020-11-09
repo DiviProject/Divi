@@ -158,6 +158,7 @@ BITCOIN_CORE_H = \
   I_BlockSubsidyProvider.h \
   datacachemanager.h \
   kernel.h \
+  StakingData.h \
   swifttx.h \
   key.h \
   keystore.h \

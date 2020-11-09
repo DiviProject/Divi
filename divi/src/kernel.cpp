@@ -395,23 +395,24 @@ bool CreateHashProofForProofOfStake(
     I_PoSStakeModifierService& stakeModifierService,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int nBits,
-    const CBlock& blockFrom,
-    const COutPoint& prevout,
-    const CAmount& utxoValue,
     unsigned int& nTimeTx,
     bool fCheck,
     uint256& hashProofOfStake)
 {
-    unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
+    const unsigned int& nTimeBlockFrom = stakingData.blockTimeOfFirstConfirmationBlock_;
     if(!ProofOfStakeTimeRequirementsAreMet(nTimeBlockFrom,nTimeTx)) return false;
-    std::pair<uint64_t,bool> stakeModifierData = stakeModifierService.getStakeModifier(blockFrom.GetHash());
+    std::pair<uint64_t,bool> stakeModifierData =
+        stakeModifierService.getStakeModifier(stakingData.blockHashOfFirstConfirmationBlock_);
     if (!stakeModifierData.second)
     {
         return error("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
     }
     std::shared_ptr<I_ProofOfStakeCalculator> calculator =
-        std::make_shared<ProofOfStakeCalculator>(prevout,utxoValue,stakeModifierData.first,nBits);
+        std::make_shared<ProofOfStakeCalculator>(
+            stakingData.utxoBeingStaked_,
+            stakingData.utxoValue_,
+            stakeModifierData.first,
+            stakingData.nBits_);
 
     if(!calculator.get())
         return false;
@@ -446,10 +447,6 @@ bool CreateHashProofForProofOfStake(
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int nBits,
-    const CBlock& blockFrom,
-    const COutPoint& prevout,
-    const CAmount& utxoValue,
     unsigned int& nTimeTx,
     bool fCheck,
     uint256& hashProofOfStake)
@@ -459,10 +456,6 @@ bool CreateHashProofForProofOfStake(
         stakeModifierService,
         hashedBlockTimestamps,
         stakingData,
-        nBits,
-        blockFrom,
-        prevout,
-        utxoValue,
         nTimeTx,
         fCheck,
         hashProofOfStake);
@@ -524,7 +517,7 @@ bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofO
         blockprev.GetHash(),
         txin.prevout,
         txPrev.vout[txin.prevout.n].nValue);
-    if (!CreateHashProofForProofOfStake(hashedBlockTimestamps,stakingData, block.nBits, blockprev, txin.prevout, txPrev.vout[txin.prevout.n].nValue, nTime, true, hashProofOfStake))
+    if (!CreateHashProofForProofOfStake(hashedBlockTimestamps,stakingData, nTime, true, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;

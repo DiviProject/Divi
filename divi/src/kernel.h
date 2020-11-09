@@ -95,10 +95,6 @@ public:
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int nBits,
-    const CBlock& blockFrom,
-    const COutPoint& prevout,
-    const CAmount& utxoValue,
     unsigned int& nTimeTx,
     bool fCheck,
     uint256& hashProofOfStake);

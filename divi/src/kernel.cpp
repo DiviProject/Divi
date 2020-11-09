@@ -252,21 +252,21 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
 // modifier about a selection interval later than the coin generating the kernel
 bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier)
 {
-    int64_t nStakeModifierTime = 0;
+    int64_t timeStampOfSelectedBlock = 0;
     nStakeModifier = 0;
     if (!mapBlockIndex.count(hashBlockFrom))
         return error("GetKernelStakeModifier() : block not indexed");
     const CBlockIndex* pindexFrom = mapBlockIndex[hashBlockFrom];
-    nStakeModifierTime = pindexFrom->GetBlockTime();
+    timeStampOfSelectedBlock = pindexFrom->GetBlockTime();
     const int64_t timeWindowForSelectingStakeModifier = GetStakeModifierSelectionInterval();
     const CBlockIndex* pindex = pindexFrom;
     CBlockIndex* pindexNext = chainActive[pindexFrom->nHeight + 1];
 
     // loop to find the stake modifier later by a selection interval
-    while (nStakeModifierTime < pindexFrom->GetBlockTime() + timeWindowForSelectingStakeModifier) {
+    while (timeStampOfSelectedBlock < pindexFrom->GetBlockTime() + timeWindowForSelectingStakeModifier) {
         if (!pindexNext) {
             // Should never happen
-            nStakeModifierTime = pindexFrom->GetBlockTime();
+            timeStampOfSelectedBlock = pindexFrom->GetBlockTime();
             if(pindex->GeneratedStakeModifier())
                 nStakeModifier = pindex->nStakeModifier;
             return true;
@@ -275,7 +275,7 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier)
         pindex = pindexNext;
         pindexNext = chainActive[pindexNext->nHeight + 1];
         if (pindex->GeneratedStakeModifier()) {
-            nStakeModifierTime = pindex->GetBlockTime();
+            timeStampOfSelectedBlock = pindex->GetBlockTime();
         }
     }
     nStakeModifier = pindex->nStakeModifier;

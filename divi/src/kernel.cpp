@@ -252,9 +252,9 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
 // modifier about a selection interval later than the coin generating the kernel
 bool LegacyPoSStakeModifierService::GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& stakeModifier) const
 {
-    if (!mapBlockIndex.count(hashBlockFrom))
+    if (!blockIndexByHash_.count(hashBlockFrom))
         return error("GetKernelStakeModifier() : block not indexed");
-    const CBlockIndex& stakeTransactionBlockIndex = *mapBlockIndex[hashBlockFrom];
+    const CBlockIndex& stakeTransactionBlockIndex = *(blockIndexByHash_.find(hashBlockFrom)->second);
     int64_t timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();
     const int64_t timeWindowForSelectingStakeModifier = GetStakeModifierSelectionInterval();
     const CBlockIndex* pindex = &stakeTransactionBlockIndex;

@@ -252,12 +252,10 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
 // modifier about a selection interval later than the coin generating the kernel
 bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& stakeModifier)
 {
-    int64_t timeStampOfSelectedBlock = 0;
-    stakeModifier = 0;
     if (!mapBlockIndex.count(hashBlockFrom))
         return error("GetKernelStakeModifier() : block not indexed");
     const CBlockIndex& stakeTransactionBlockIndex = *mapBlockIndex[hashBlockFrom];
-    timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();
+    int64_t timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();
     const int64_t timeWindowForSelectingStakeModifier = GetStakeModifierSelectionInterval();
     const CBlockIndex* pindex = &stakeTransactionBlockIndex;
     CBlockIndex* pindexNext = chainActive[stakeTransactionBlockIndex.nHeight + 1];

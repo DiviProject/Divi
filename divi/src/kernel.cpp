@@ -370,7 +370,10 @@ bool ProofOfStakeTimeRequirementsAreMet(
 }
 
 LegacyPoSStakeModifierService::LegacyPoSStakeModifierService(
-    BlockMap& blockIndexByHash): blockIndexByHash_(blockIndexByHash)
+    const BlockMap& blockIndexByHash,
+    const CChain& activeChain
+    ): blockIndexByHash_(blockIndexByHash)
+    , activeChain_(activeChain)
 {
 }
 
@@ -448,7 +451,7 @@ bool CreateHashProofForProofOfStake(
     bool fCheck,
     uint256& hashProofOfStake)
 {
-    static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex);
+    static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
     return CreateHashProofForProofOfStake(
         stakeModifierService,
         hashedBlockTimestamps,

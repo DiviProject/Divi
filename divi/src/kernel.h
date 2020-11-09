@@ -13,6 +13,7 @@ class CBlockIndex;
 class CBlock;
 class CTransaction;
 class COutPoint;
+class BlockMap;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
@@ -79,8 +80,10 @@ public:
 
 class LegacyPoSStakeModifierService: public I_PoSStakeModifierService
 {
+private:
+    const BlockMap& blockIndexByHash_;
 public:
-    LegacyPoSStakeModifierService(){}
+    LegacyPoSStakeModifierService(BlockMap& blockIndexByHash);
     virtual std::pair<uint64_t,bool> getStakeModifier(const uint256& blockHash) const;
 };
 

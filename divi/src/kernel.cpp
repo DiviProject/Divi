@@ -370,6 +370,11 @@ bool ProofOfStakeTimeRequirementsAreMet(
     return true;
 }
 
+LegacyPoSStakeModifierService::LegacyPoSStakeModifierService(
+    BlockMap& blockIndexByHash): blockIndexByHash_(blockIndexByHash)
+{
+}
+
 std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const uint256& blockHash) const
 {
     uint64_t nStakeModifier = 0;
@@ -442,7 +447,7 @@ bool CreateHashProofForProofOfStake(
     bool fCheck,
     uint256& hashProofOfStake)
 {
-    static LegacyPoSStakeModifierService stakeModifierService;
+    static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex);
     return CreateHashProofForProofOfStake(
         stakeModifierService,
         hashedBlockTimestamps,

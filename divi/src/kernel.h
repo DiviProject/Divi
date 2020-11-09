@@ -83,7 +83,7 @@ class LegacyPoSStakeModifierService: public I_PoSStakeModifierService
 private:
     const BlockMap& blockIndexByHash_;
 
-    bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& stakeModifier) const;
+    uint64_t GetKernelStakeModifier(uint256 hashBlockFrom) const;
 public:
     LegacyPoSStakeModifierService(BlockMap& blockIndexByHash);
     virtual std::pair<uint64_t,bool> getStakeModifier(const uint256& blockHash) const;

@@ -250,7 +250,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
 
 // The stake modifier used to hash for a stake kernel is chosen as the stake
 // modifier about a selection interval later than the coin generating the kernel
-bool LegacyPoSStakeModifierService::GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& stakeModifier) const
+uint64_t LegacyPoSStakeModifierService::GetKernelStakeModifier(uint256 hashBlockFrom) const
 {
     const CBlockIndex& stakeTransactionBlockIndex = *(blockIndexByHash_.find(hashBlockFrom)->second);
     int64_t timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();
@@ -264,8 +264,10 @@ bool LegacyPoSStakeModifierService::GetKernelStakeModifier(uint256 hashBlockFrom
             // Should never happen
             timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();
             if(pindex->GeneratedStakeModifier())
-                stakeModifier = pindex->nStakeModifier;
-            return true;
+            {
+                return pindex->nStakeModifier;
+            }
+            return 0;
         }
 
         pindex = pindexNext;
@@ -274,8 +276,7 @@ bool LegacyPoSStakeModifierService::GetKernelStakeModifier(uint256 hashBlockFrom
             timeStampOfSelectedBlock = pindex->GetBlockTime();
         }
     }
-    stakeModifier = pindex->nStakeModifier;
-    return true;
+    return pindex->nStakeModifier;
 }
 
 uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, const COutPoint& prevout, unsigned int nTimeBlockFrom)
@@ -381,8 +382,7 @@ std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const u
         LogPrintf("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
         return std::make_pair(0,false);
     }
-    uint64_t nStakeModifier = 0;
-    GetKernelStakeModifier(blockHash, nStakeModifier);
+    uint64_t nStakeModifier = GetKernelStakeModifier(blockHash);
     return std::make_pair(nStakeModifier,true);
 }
 

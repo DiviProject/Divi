@@ -282,12 +282,12 @@ bool ProofOfStakeTimeRequirementsAreMet(
 {
     if (hashproofTimestamp < coinstakeStartTime) // Transaction timestamp violation
     {
-        return error("CreateHashProofForProofOfStake() : nTime violation");
+        return error("%s : nTime violation", __func__);
     }
 
     if (coinstakeStartTime + Params().GetMinCoinAgeForStaking() > hashproofTimestamp) // Min age requirement
     {
-        return error("CreateHashProofForProofOfStake() : min age violation - coinstakeStartTime=%d minimum coinage=%d hashproofTimestamp=%d", coinstakeStartTime, Params().GetMinCoinAgeForStaking(), hashproofTimestamp);
+        return error("%s : min age violation - coinstakeStartTime=%d minimum coinage=%d hashproofTimestamp=%d",__func__, coinstakeStartTime, Params().GetMinCoinAgeForStaking(), hashproofTimestamp);
     }
     return true;
 }
@@ -305,7 +305,7 @@ bool CreateProofOfStakeCalculator(
         stakeModifierService.getStakeModifier(stakingData.blockHashOfFirstConfirmationBlock_);
     if (!stakeModifierData.second)
     {
-        return error("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
+        return error("%s: failed to get kernel stake modifier \n",__func__);
     }
     calculator =
         std::make_shared<ProofOfStakeCalculator>(

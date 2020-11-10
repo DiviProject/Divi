@@ -24,8 +24,8 @@ class I_ProofOfStakeCalculator
 public:
     virtual ~I_ProofOfStakeCalculator(){}
     virtual bool computeProofOfStakeAndCheckItMeetsTarget(
-        unsigned int nTimeTx,
-        unsigned int nTimeBlockFrom,
+        unsigned int hashproofTimestamp,
+        unsigned int coinstakeStartTim,
         uint256& computedProofOfStake,
         bool checkOnly = false) const = 0;
 };
@@ -44,8 +44,8 @@ public:
         unsigned int blockDifficultyBits);
 
     virtual bool computeProofOfStakeAndCheckItMeetsTarget(
-        unsigned int nTimeTx,
-        unsigned int nTimeBlockFrom,
+        unsigned int hashproofTimestamp,
+        unsigned int coinstakeStartTim,
         uint256& computedProofOfStake,
         bool checkOnly = false) const;
 };
@@ -67,8 +67,8 @@ public:
         int64_t coinAgeWeight);
 
     virtual bool computeProofOfStakeAndCheckItMeetsTarget(
-        unsigned int nTimeTx,
-        unsigned int nTimeBlockFrom,
+        unsigned int hashproofTimestamp,
+        unsigned int coinstakeStartTim,
         uint256& computedProofOfStake,
         bool checkOnly = false) const;
 };
@@ -95,7 +95,7 @@ public:
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int& nTimeTx,
+    unsigned int& hashproofTimestamp,
     bool fCheck,
     uint256& hashProofOfStake);
 

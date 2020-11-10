@@ -317,6 +317,34 @@ bool ProofOfStakeTimeRequirementsAreMet(
     return true;
 }
 
+bool CreateProofOfStakeCalculator(
+    const I_PoSStakeModifierService& stakeModifierService,
+    const StakingData& stakingData,
+    const unsigned& initialHashproofTimestamp,
+    std::shared_ptr<I_ProofOfStakeCalculator>& calculator)
+{
+    if(!ProofOfStakeTimeRequirementsAreMet(stakingData.blockTimeOfFirstConfirmationBlock_,initialHashproofTimestamp))
+        return false;
+
+    std::pair<uint64_t,bool> stakeModifierData =
+        stakeModifierService.getStakeModifier(stakingData.blockHashOfFirstConfirmationBlock_);
+    if (!stakeModifierData.second)
+    {
+        return error("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
+    }
+    calculator =
+        std::make_shared<ProofOfStakeCalculator>(
+            stakingData.utxoBeingStaked_,
+            stakingData.utxoValue_,
+            stakeModifierData.first,
+            stakingData.nBits_);
+
+    if(!calculator.get())
+        return false;
+
+    return true;
+}
+
 //instead of looping outside and reinitializing variables many times, we will give a hashproofTimestamp and also search interval so that we can do all the hashing here
 bool CreateHashProofForProofOfStake(
     I_PoSStakeModifierService& stakeModifierService,
@@ -327,21 +355,8 @@ bool CreateHashProofForProofOfStake(
     uint256& hashProofOfStake)
 {
     const unsigned int& coinstakeStartTime = stakingData.blockTimeOfFirstConfirmationBlock_;
-    if(!ProofOfStakeTimeRequirementsAreMet(coinstakeStartTime,hashproofTimestamp)) return false;
-    std::pair<uint64_t,bool> stakeModifierData =
-        stakeModifierService.getStakeModifier(stakingData.blockHashOfFirstConfirmationBlock_);
-    if (!stakeModifierData.second)
-    {
-        return error("CreateHashProofForProofOfStake(): failed to get kernel stake modifier \n");
-    }
-    std::shared_ptr<I_ProofOfStakeCalculator> calculator =
-        std::make_shared<ProofOfStakeCalculator>(
-            stakingData.utxoBeingStaked_,
-            stakingData.utxoValue_,
-            stakeModifierData.first,
-            stakingData.nBits_);
-
-    if(!calculator.get())
+    std::shared_ptr<I_ProofOfStakeCalculator> calculator;
+    if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
         return false;
 
     //if wallet is simply checking to make sure a hash is valid

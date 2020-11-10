@@ -13,12 +13,17 @@
 using ::testing::Return;
 
 extern bool CreateHashProofForProofOfStake(
-    I_PoSStakeModifierService& stakeModifierService,
+    const I_ProofOfStakeCalculator& calculator,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     unsigned int& nTimeTx,
-    bool fCheck,
     uint256& hashProofOfStake);
+
+extern bool CreateProofOfStakeCalculator(
+    const I_PoSStakeModifierService& stakeModifierService,
+    const StakingData& stakingData,
+    const unsigned& initialHashproofTimestamp,
+    std::shared_ptr<I_ProofOfStakeCalculator>& calculator);
 
 extern const int nHashDrift;
 
@@ -51,13 +56,15 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZ
         blockHoldingUtxo.GetHash(),
         utxo,
         value);
+
+    std::shared_ptr<I_ProofOfStakeCalculator> calculator;
+    assert(CreateProofOfStakeCalculator(stakeModifierService,stakingData,transactionTime,calculator));
     BOOST_CHECK_MESSAGE(
         !CreateHashProofForProofOfStake(
-            stakeModifierService,
+            *calculator,
             hashedBlockTimestamps,
             stakingData,
             transactionTime,
-            false,
             hashProofOfStake),
         "Proof of stake should not valid\n");
 

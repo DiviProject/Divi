@@ -322,23 +322,12 @@ bool CreateProofOfStakeCalculator(
 
 //instead of looping outside and reinitializing variables many times, we will give a hashproofTimestamp and also search interval so that we can do all the hashing here
 bool CreateHashProofForProofOfStake(
-    I_PoSStakeModifierService& stakeModifierService,
+    const I_ProofOfStakeCalculator& calculator,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     unsigned int& hashproofTimestamp,
-    bool fCheck,
     uint256& hashProofOfStake)
 {
-    const unsigned int& coinstakeStartTime = stakingData.blockTimeOfFirstConfirmationBlock_;
-    std::shared_ptr<I_ProofOfStakeCalculator> calculator;
-    if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
-        return false;
-
-    //if wallet is simply checking to make sure a hash is valid
-    if (fCheck) {
-        return calculator->computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,coinstakeStartTime,hashProofOfStake);
-    }
-
     bool fSuccess = false;
     int nHeightStart = chainActive.Height();
     for (unsigned int i = 0; i < nHashDrift; i++) //iterate the hashing
@@ -346,7 +335,8 @@ bool CreateHashProofForProofOfStake(
         if (chainActive.Height() != nHeightStart)
             break;
 
-        if(!calculator->computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,coinstakeStartTime,hashProofOfStake))
+        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(
+                hashproofTimestamp,stakingData.blockTimeOfFirstConfirmationBlock_,hashProofOfStake))
         {
             --hashproofTimestamp;
             continue;
@@ -369,12 +359,21 @@ bool CreateHashProofForProofOfStake(
     uint256& hashProofOfStake)
 {
     static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
+    std::shared_ptr<I_ProofOfStakeCalculator> calculator;
+    if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
+        return false;
+
+    if(fCheck)
+    {
+        return calculator->computeProofOfStakeAndCheckItMeetsTarget(
+            hashproofTimestamp,stakingData.blockTimeOfFirstConfirmationBlock_,hashProofOfStake);
+    }
+
     return CreateHashProofForProofOfStake(
-        stakeModifierService,
+        *calculator,
         hashedBlockTimestamps,
         stakingData,
         hashproofTimestamp,
-        fCheck,
         hashProofOfStake);
 }
 

@@ -4664,7 +4664,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         bool ignoreFees = false;
         CTxIn vin;
         std::vector<unsigned char> vchSig;
-        int64_t sigTime;
 
         if (strCommand == "tx") {
             vRecv >> tx;

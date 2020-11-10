@@ -24,6 +24,7 @@
 #include <boost/foreach.hpp>
 #include <StakingData.h>
 #include <LegacyPoSStakeModifierService.h>
+#include <StakeModifierIntervalHelpers.h>
 
 #include <Settings.h>
 extern const int nHashDrift = 45;
@@ -33,12 +34,6 @@ extern CChain chainActive;
 extern Settings& settings;
 
 static constexpr unsigned int MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING = 60 * 60 * 24 * 7 - 60 * 60;
-
-// MODIFIER_INTERVAL: time to elapse before new modifier is computed
-static const int MODIFIER_INTERVAL_RATIO = 3;
-// MODIFIER_INTERVAL_RATIO:
-// ratio of group interval length between the last group and the first group
-static const unsigned int MODIFIER_INTERVAL = 60;
 
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
@@ -61,24 +56,6 @@ static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModi
     nStakeModifier = pindex->nStakeModifier;
     nModifierTime = pindex->GetBlockTime();
     return true;
-}
-
-// Get selection interval section (in seconds)
-static int64_t GetStakeModifierSelectionIntervalSection(int nSection)
-{
-    assert(nSection >= 0 && nSection < 64);
-    int64_t a = MODIFIER_INTERVAL * 63 / (63 + ((63 - nSection) * (MODIFIER_INTERVAL_RATIO - 1)));
-    return a;
-}
-
-// Get stake modifier selection interval (in seconds)
-static int64_t GetStakeModifierSelectionInterval()
-{
-    int64_t nSelectionInterval = 0;
-    for (int nSection = 0; nSection < 64; nSection++) {
-        nSelectionInterval += GetStakeModifierSelectionIntervalSection(nSection);
-    }
-    return nSelectionInterval;
 }
 
 // select a block from the candidate blocks in vSortedByTimestamp, excluding

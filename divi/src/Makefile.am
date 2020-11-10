@@ -159,6 +159,7 @@ BITCOIN_CORE_H = \
   I_PoSStakeModifierService.h \
   datacachemanager.h \
   kernel.h \
+  StakeModifierIntervalHelpers.h \
   StakingData.h \
   swifttx.h \
   key.h \

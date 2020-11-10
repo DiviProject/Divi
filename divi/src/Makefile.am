@@ -164,6 +164,7 @@ BITCOIN_CORE_H = \
   key.h \
   keystore.h \
   LegacyBlockSubsidies.h \
+  LegacyPoSStakeModifierService.h \
   leveldbwrapper.h \
   limitedmap.h \
   defaultValues.h \
@@ -389,6 +390,7 @@ libbitcoin_wallet_a_SOURCES = \
   rpcdump.cpp \
   rpcwallet.cpp \
   kernel.cpp \
+  LegacyPoSStakeModifierService.cpp \
   wallet.cpp \
   merkletx.cpp \
   wallet_ismine.cpp \

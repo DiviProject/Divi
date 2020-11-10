@@ -74,18 +74,6 @@ public:
         bool checkOnly = false) const;
 };
 
-class LegacyPoSStakeModifierService: public I_PoSStakeModifierService
-{
-private:
-    const BlockMap& blockIndexByHash_;
-    const CChain& activeChain_;
-
-    uint64_t GetKernelStakeModifier(uint256 hashBlockFrom) const;
-public:
-    LegacyPoSStakeModifierService(const BlockMap& blockIndexByHash, const CChain& activeChain);
-    virtual std::pair<uint64_t,bool> getStakeModifier(const uint256& blockHash) const;
-};
-
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,

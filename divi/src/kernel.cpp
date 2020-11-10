@@ -354,7 +354,7 @@ bool CreateHashProofForProofOfStake(
 static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
 bool ComputeAndVerifyProofOfStake(
     const StakingData& stakingData,
-    unsigned int& hashproofTimestamp,
+    const unsigned int& hashproofTimestamp,
     uint256& hashProofOfStake)
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;

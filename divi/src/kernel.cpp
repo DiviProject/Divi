@@ -280,11 +280,11 @@ uint64_t LegacyPoSStakeModifierService::GetKernelStakeModifier(uint256 hashBlock
     return pindex->nStakeModifier;
 }
 
-uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, const COutPoint& prevout, unsigned int nTimeBlockFrom)
+uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, const COutPoint& prevout, unsigned int coinstakeStartTime)
 {
     //Divi will hash in the transaction hash and the index number in order to make sure each hash is unique
     CDataStream ss(SER_GETHASH, 0);
-    ss << stakeModifier << nTimeBlockFrom << prevout.n << prevout.hash << nTimeTx;
+    ss << stakeModifier << coinstakeStartTime << prevout.n << prevout.hash << nTimeTx;
     return Hash(ss.begin(), ss.end());
 }
 
@@ -320,12 +320,12 @@ ProofOfStakeCalculator::ProofOfStakeCalculator(
 
 bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     unsigned int nTimeTx,
-    unsigned int nTimeBlockFrom,
+    unsigned int coinstakeStartTime,
     uint256& computedProofOfStake,
     bool checkOnly) const
 {
-    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,nTimeBlockFrom);
-    int64_t coinAgeWeightOfUtxo = std::min<int64_t>(nTimeTx - nTimeBlockFrom, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
+    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,coinstakeStartTime);
+    int64_t coinAgeWeightOfUtxo = std::min<int64_t>(nTimeTx - coinstakeStartTime, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
 }
 
@@ -345,27 +345,27 @@ LegacyProofOfStakeCalculator::LegacyProofOfStakeCalculator(
 
 bool LegacyProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     unsigned int nTimeTx,
-    unsigned int nTimeBlockFrom,
+    unsigned int coinstakeStartTime,
     uint256& computedProofOfStake,
     bool checkOnly) const
 {
-    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,nTimeBlockFrom);
+    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,coinstakeStartTime);
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeight_);
 }
 
 
 bool ProofOfStakeTimeRequirementsAreMet(
-    unsigned int nTimeBlockFrom,
+    unsigned int coinstakeStartTime,
     unsigned int nTimeTx)
 {
-    if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
+    if (nTimeTx < coinstakeStartTime) // Transaction timestamp violation
     {
         return error("CreateHashProofForProofOfStake() : nTime violation");
     }
 
-    if (nTimeBlockFrom + Params().GetMinCoinAgeForStaking() > nTimeTx) // Min age requirement
+    if (coinstakeStartTime + Params().GetMinCoinAgeForStaking() > nTimeTx) // Min age requirement
     {
-        return error("CreateHashProofForProofOfStake() : min age violation - nTimeBlockFrom=%d minimum coinage=%d nTimeTx=%d", nTimeBlockFrom, Params().GetMinCoinAgeForStaking(), nTimeTx);
+        return error("CreateHashProofForProofOfStake() : min age violation - coinstakeStartTime=%d minimum coinage=%d nTimeTx=%d", coinstakeStartTime, Params().GetMinCoinAgeForStaking(), nTimeTx);
     }
     return true;
 }
@@ -399,8 +399,8 @@ bool CreateHashProofForProofOfStake(
     bool fCheck,
     uint256& hashProofOfStake)
 {
-    const unsigned int& nTimeBlockFrom = stakingData.blockTimeOfFirstConfirmationBlock_;
-    if(!ProofOfStakeTimeRequirementsAreMet(nTimeBlockFrom,nTimeTx)) return false;
+    const unsigned int& coinstakeStartTime = stakingData.blockTimeOfFirstConfirmationBlock_;
+    if(!ProofOfStakeTimeRequirementsAreMet(coinstakeStartTime,nTimeTx)) return false;
     std::pair<uint64_t,bool> stakeModifierData =
         stakeModifierService.getStakeModifier(stakingData.blockHashOfFirstConfirmationBlock_);
     if (!stakeModifierData.second)
@@ -419,7 +419,7 @@ bool CreateHashProofForProofOfStake(
 
     //if wallet is simply checking to make sure a hash is valid
     if (fCheck) {
-        return calculator->computeProofOfStakeAndCheckItMeetsTarget(nTimeTx,nTimeBlockFrom,hashProofOfStake);
+        return calculator->computeProofOfStakeAndCheckItMeetsTarget(nTimeTx,coinstakeStartTime,hashProofOfStake);
     }
 
     bool fSuccess = false;
@@ -429,7 +429,7 @@ bool CreateHashProofForProofOfStake(
         if (chainActive.Height() != nHeightStart)
             break;
 
-        if(!calculator->computeProofOfStakeAndCheckItMeetsTarget(nTimeTx,nTimeBlockFrom,hashProofOfStake))
+        if(!calculator->computeProofOfStakeAndCheckItMeetsTarget(nTimeTx,coinstakeStartTime,hashProofOfStake))
         {
             --nTimeTx;
             continue;

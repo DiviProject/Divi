@@ -276,31 +276,6 @@ bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
 }
 
-LegacyProofOfStakeCalculator::LegacyProofOfStakeCalculator(
-    const COutPoint& utxoToStake,
-    const int64_t& utxoValue,
-    const uint64_t& stakeModifier,
-    unsigned int blockDifficultyBits,
-    int64_t coinAgeWeight
-    ): utxoToStake_(utxoToStake)
-    , utxoValue_(utxoValue)
-    , stakeModifier_(stakeModifier)
-    , targetPerCoinDay_(uint256().SetCompact(blockDifficultyBits))
-    , coinAgeWeight_(coinAgeWeight)
-{
-}
-
-bool LegacyProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
-    unsigned int hashproofTimestamp,
-    unsigned int coinstakeStartTime,
-    uint256& computedProofOfStake,
-    bool checkOnly) const
-{
-    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,hashproofTimestamp, utxoToStake_,coinstakeStartTime);
-    return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeight_);
-}
-
-
 bool ProofOfStakeTimeRequirementsAreMet(
     unsigned int coinstakeStartTime,
     unsigned int hashproofTimestamp)

@@ -351,6 +351,7 @@ bool CreateHashProofForProofOfStake(
     return fSuccess;
 }
 
+static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
@@ -358,7 +359,6 @@ bool CreateHashProofForProofOfStake(
     bool fCheck,
     uint256& hashProofOfStake)
 {
-    static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
     if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
         return false;

@@ -280,11 +280,11 @@ uint64_t LegacyPoSStakeModifierService::GetKernelStakeModifier(uint256 hashBlock
     return pindex->nStakeModifier;
 }
 
-uint256 stakeHash(uint64_t stakeModifier, unsigned int nTimeTx, const COutPoint& prevout, unsigned int coinstakeStartTime)
+uint256 stakeHash(uint64_t stakeModifier, unsigned int hashproofTimestamp, const COutPoint& prevout, unsigned int coinstakeStartTime)
 {
     //Divi will hash in the transaction hash and the index number in order to make sure each hash is unique
     CDataStream ss(SER_GETHASH, 0);
-    ss << stakeModifier << coinstakeStartTime << prevout.n << prevout.hash << nTimeTx;
+    ss << stakeModifier << coinstakeStartTime << prevout.n << prevout.hash << hashproofTimestamp;
     return Hash(ss.begin(), ss.end());
 }
 
@@ -319,13 +319,13 @@ ProofOfStakeCalculator::ProofOfStakeCalculator(
 }
 
 bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
-    unsigned int nTimeTx,
+    unsigned int hashproofTimestamp,
     unsigned int coinstakeStartTime,
     uint256& computedProofOfStake,
     bool checkOnly) const
 {
-    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,coinstakeStartTime);
-    int64_t coinAgeWeightOfUtxo = std::min<int64_t>(nTimeTx - coinstakeStartTime, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
+    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,hashproofTimestamp, utxoToStake_,coinstakeStartTime);
+    int64_t coinAgeWeightOfUtxo = std::min<int64_t>(hashproofTimestamp - coinstakeStartTime, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
 }
 
@@ -344,28 +344,28 @@ LegacyProofOfStakeCalculator::LegacyProofOfStakeCalculator(
 }
 
 bool LegacyProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
-    unsigned int nTimeTx,
+    unsigned int hashproofTimestamp,
     unsigned int coinstakeStartTime,
     uint256& computedProofOfStake,
     bool checkOnly) const
 {
-    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,nTimeTx, utxoToStake_,coinstakeStartTime);
+    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,hashproofTimestamp, utxoToStake_,coinstakeStartTime);
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeight_);
 }
 
 
 bool ProofOfStakeTimeRequirementsAreMet(
     unsigned int coinstakeStartTime,
-    unsigned int nTimeTx)
+    unsigned int hashproofTimestamp)
 {
-    if (nTimeTx < coinstakeStartTime) // Transaction timestamp violation
+    if (hashproofTimestamp < coinstakeStartTime) // Transaction timestamp violation
     {
         return error("CreateHashProofForProofOfStake() : nTime violation");
     }
 
-    if (coinstakeStartTime + Params().GetMinCoinAgeForStaking() > nTimeTx) // Min age requirement
+    if (coinstakeStartTime + Params().GetMinCoinAgeForStaking() > hashproofTimestamp) // Min age requirement
     {
-        return error("CreateHashProofForProofOfStake() : min age violation - coinstakeStartTime=%d minimum coinage=%d nTimeTx=%d", coinstakeStartTime, Params().GetMinCoinAgeForStaking(), nTimeTx);
+        return error("CreateHashProofForProofOfStake() : min age violation - coinstakeStartTime=%d minimum coinage=%d hashproofTimestamp=%d", coinstakeStartTime, Params().GetMinCoinAgeForStaking(), hashproofTimestamp);
     }
     return true;
 }
@@ -390,17 +390,17 @@ std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const u
     return std::make_pair(nStakeModifier,true);
 }
 
-//instead of looping outside and reinitializing variables many times, we will give a nTimeTx and also search interval so that we can do all the hashing here
+//instead of looping outside and reinitializing variables many times, we will give a hashproofTimestamp and also search interval so that we can do all the hashing here
 bool CreateHashProofForProofOfStake(
     I_PoSStakeModifierService& stakeModifierService,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int& nTimeTx,
+    unsigned int& hashproofTimestamp,
     bool fCheck,
     uint256& hashProofOfStake)
 {
     const unsigned int& coinstakeStartTime = stakingData.blockTimeOfFirstConfirmationBlock_;
-    if(!ProofOfStakeTimeRequirementsAreMet(coinstakeStartTime,nTimeTx)) return false;
+    if(!ProofOfStakeTimeRequirementsAreMet(coinstakeStartTime,hashproofTimestamp)) return false;
     std::pair<uint64_t,bool> stakeModifierData =
         stakeModifierService.getStakeModifier(stakingData.blockHashOfFirstConfirmationBlock_);
     if (!stakeModifierData.second)
@@ -419,7 +419,7 @@ bool CreateHashProofForProofOfStake(
 
     //if wallet is simply checking to make sure a hash is valid
     if (fCheck) {
-        return calculator->computeProofOfStakeAndCheckItMeetsTarget(nTimeTx,coinstakeStartTime,hashProofOfStake);
+        return calculator->computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,coinstakeStartTime,hashProofOfStake);
     }
 
     bool fSuccess = false;
@@ -429,9 +429,9 @@ bool CreateHashProofForProofOfStake(
         if (chainActive.Height() != nHeightStart)
             break;
 
-        if(!calculator->computeProofOfStakeAndCheckItMeetsTarget(nTimeTx,coinstakeStartTime,hashProofOfStake))
+        if(!calculator->computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,coinstakeStartTime,hashProofOfStake))
         {
-            --nTimeTx;
+            --hashproofTimestamp;
             continue;
         }
 
@@ -447,7 +447,7 @@ bool CreateHashProofForProofOfStake(
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int& nTimeTx,
+    unsigned int& hashproofTimestamp,
     bool fCheck,
     uint256& hashProofOfStake)
 {
@@ -456,7 +456,7 @@ bool CreateHashProofForProofOfStake(
         stakeModifierService,
         hashedBlockTimestamps,
         stakingData,
-        nTimeTx,
+        hashproofTimestamp,
         fCheck,
         hashProofOfStake);
 }

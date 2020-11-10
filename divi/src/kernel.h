@@ -9,6 +9,7 @@
 #include <uint256.h>
 #include <amount.h>
 #include <map>
+#include <I_PoSStakeModifierService.h>
 class CBlockIndex;
 class CBlock;
 class CTransaction;
@@ -71,13 +72,6 @@ public:
         unsigned int coinstakeStartTim,
         uint256& computedProofOfStake,
         bool checkOnly = false) const;
-};
-
-class I_PoSStakeModifierService
-{
-public:
-    virtual ~I_PoSStakeModifierService(){}
-    virtual std::pair<uint64_t,bool> getStakeModifier(const uint256& blockHash) const = 0;
 };
 
 class LegacyPoSStakeModifierService: public I_PoSStakeModifierService

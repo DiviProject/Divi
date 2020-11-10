@@ -156,6 +156,7 @@ BITCOIN_CORE_H = \
   I_BIP9ActivationTrackerFactory.h \
   I_SuperblockHeightValidator.h \
   I_BlockSubsidyProvider.h \
+  I_PoSStakeModifierService.h \
   datacachemanager.h \
   kernel.h \
   StakingData.h \

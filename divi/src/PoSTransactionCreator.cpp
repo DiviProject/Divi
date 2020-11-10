@@ -159,7 +159,6 @@ bool PoSTransactionCreator::FindHashproof(
             hashedBlockTimestamps_,
             stakingData,
             blockTimeUpdate,
-            false,
             hashProofOfStake))
     {
         if (blockTimeUpdate <= chainActive.Tip()->GetMedianTimePast())

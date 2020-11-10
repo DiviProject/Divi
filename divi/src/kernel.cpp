@@ -352,22 +352,26 @@ bool CreateHashProofForProofOfStake(
 }
 
 static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
-bool CreateHashProofForProofOfStake(
-    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+bool ComputeAndVerifyProofOfStake(
     const StakingData& stakingData,
     unsigned int& hashproofTimestamp,
-    bool fCheck,
     uint256& hashProofOfStake)
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
     if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
         return false;
-
-    if(fCheck)
-    {
-        return calculator->computeProofOfStakeAndCheckItMeetsTarget(
-            hashproofTimestamp,stakingData.blockTimeOfFirstConfirmationBlock_,hashProofOfStake);
-    }
+    return calculator->computeProofOfStakeAndCheckItMeetsTarget(
+        hashproofTimestamp, stakingData.blockTimeOfFirstConfirmationBlock_,hashProofOfStake);
+}
+bool CreateHashProofForProofOfStake(
+    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
+    const StakingData& stakingData,
+    unsigned int& hashproofTimestamp,
+    uint256& hashProofOfStake)
+{
+    std::shared_ptr<I_ProofOfStakeCalculator> calculator;
+    if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
+        return false;
 
     return CreateHashProofForProofOfStake(
         *calculator,
@@ -426,14 +430,13 @@ bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofO
         return error("CheckProofOfStake(): INFO: failed to find block");
 
     unsigned int nTime = block.nTime;
-    std::map<unsigned int, unsigned int> hashedBlockTimestamps;
     StakingData stakingData(
         block.nBits,
         blockprev.GetBlockTime(),
         blockprev.GetHash(),
         txin.prevout,
         txPrev.vout[txin.prevout.n].nValue);
-    if (!CreateHashProofForProofOfStake(hashedBlockTimestamps,stakingData, nTime, true, hashProofOfStake))
+    if (!ComputeAndVerifyProofOfStake(stakingData, nTime, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;

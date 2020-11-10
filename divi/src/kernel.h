@@ -55,7 +55,6 @@ bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     unsigned int& hashproofTimestamp,
-    bool fCheck,
     uint256& hashProofOfStake);
 
 // Check kernel hash target and coinstake signature

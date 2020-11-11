@@ -3,6 +3,7 @@
 #include <amount.h>
 #include <primitives/transaction.h>
 #include <hash.h>
+#include <StakingData.h>
 
 static constexpr unsigned int MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING = 60 * 60 * 24 * 7 - 60 * 60;
 
@@ -33,16 +34,13 @@ static bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, co
 
 
 ProofOfStakeCalculator::ProofOfStakeCalculator(
-    const COutPoint& utxoToStake,
-    const int64_t& utxoValue,
-    const uint64_t& stakeModifier,
-    unsigned int blockDifficultyBits,
-    unsigned int coinstakeStartTime
-    ): utxoToStake_(utxoToStake)
-    , utxoValue_(utxoValue)
+    const StakingData& stakingData,
+    const uint64_t stakeModifier
+    ): utxoToStake_(stakingData.utxoBeingStaked_)
+    , utxoValue_(stakingData.utxoValue_)
     , stakeModifier_(stakeModifier)
-    , targetPerCoinDay_(uint256().SetCompact(blockDifficultyBits))
-    , coinstakeStartTime_(coinstakeStartTime)
+    , targetPerCoinDay_(uint256().SetCompact(stakingData.nBits_))
+    , coinstakeStartTime_(stakingData.blockTimeOfFirstConfirmationBlock_)
 {
 }
 

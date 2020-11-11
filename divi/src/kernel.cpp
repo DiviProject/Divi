@@ -292,13 +292,7 @@ bool CreateProofOfStakeCalculator(
     {
         return error("%s: failed to get kernel stake modifier \n",__func__);
     }
-    calculator =
-        std::make_shared<ProofOfStakeCalculator>(
-            stakingData.utxoBeingStaked_,
-            stakingData.utxoValue_,
-            stakeModifierData.first,
-            stakingData.nBits_,
-            stakingData.blockTimeOfFirstConfirmationBlock_);
+    calculator = std::make_shared<ProofOfStakeCalculator>(stakingData, stakeModifierData.first);
 
     if(!calculator.get())
         return false;

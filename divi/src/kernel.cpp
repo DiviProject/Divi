@@ -353,12 +353,17 @@ bool CreateHashproofTimestamp(
     if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
         return false;
 
-    return CreateHashProofForProofOfStake(
+    if(!CreateHashProofForProofOfStake(
         *calculator,
         hashedBlockTimestamps,
         stakingData,
         hashproofTimestamp,
-        hashProofOfStake);
+        hashProofOfStake))
+    {
+        return false;
+    }
+
+    return true;
 }
 
 // Check kernel hash target and coinstake signature

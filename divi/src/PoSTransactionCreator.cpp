@@ -162,8 +162,7 @@ bool PoSTransactionCreator::FindHashproof(
             hashProofOfStake);
     if (hashproofResult.succeeded())
     {
-
-        if (blockTimeUpdate <= chainActive.Tip()->GetMedianTimePast())
+        if (hashproofResult.timestamp() <= chainActive.Tip()->GetMedianTimePast())
         {
             LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
             return false;
@@ -175,7 +174,7 @@ bool PoSTransactionCreator::FindHashproof(
         {
             return false;
         }
-        nTxNewTime = blockTimeUpdate;
+        nTxNewTime = hashproofResult.timestamp();
         return true;
     }
     return false;

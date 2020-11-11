@@ -157,6 +157,7 @@ BITCOIN_CORE_H = \
   I_SuperblockHeightValidator.h \
   I_BlockSubsidyProvider.h \
   I_PoSStakeModifierService.h \
+  I_ProofOfStakeCalculator.h \
   datacachemanager.h \
   kernel.h \
   StakeModifierIntervalHelpers.h \

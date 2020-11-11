@@ -10,6 +10,7 @@
 #include <amount.h>
 #include <map>
 #include <I_PoSStakeModifierService.h>
+#include <I_ProofOfStakeCalculator.h>
 class CBlockIndex;
 class CBlock;
 class CTransaction;
@@ -20,15 +21,6 @@ struct StakingData;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
-class I_ProofOfStakeCalculator
-{
-public:
-    virtual ~I_ProofOfStakeCalculator(){}
-    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
-        unsigned int hashproofTimestamp,
-        uint256& computedProofOfStake,
-        bool checkOnly = false) const = 0;
-};
 class ProofOfStakeCalculator: public I_ProofOfStakeCalculator
 {
 private:

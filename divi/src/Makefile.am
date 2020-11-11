@@ -319,6 +319,9 @@ libbitcoin_server_a_SOURCES = \
   merkletx.cpp \
   CoinMinter.cpp \
   PoSTransactionCreator.cpp \
+  kernel.cpp \
+  ProofOfStakeCalculator.cpp \
+  LegacyPoSStakeModifierService.cpp \
   PeerNotificationOfMintService.cpp \
   miner.cpp \
   BlockMemoryPoolTransactionCollector.cpp \
@@ -392,9 +395,6 @@ libbitcoin_wallet_a_SOURCES = \
   reservekey.cpp \
   rpcdump.cpp \
   rpcwallet.cpp \
-  kernel.cpp \
-  ProofOfStakeCalculator.cpp \
-  LegacyPoSStakeModifierService.cpp \
   wallet.cpp \
   merkletx.cpp \
   wallet_ismine.cpp \

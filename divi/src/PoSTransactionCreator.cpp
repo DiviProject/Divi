@@ -147,19 +147,13 @@ bool PoSTransactionCreator::FindHashproof(
         return false;
     }
 
-    uint256 hashProofOfStake = 0;
-    unsigned int blockTimeUpdate = nTxNewTime;
     StakingData stakingData(
         nBits,
         static_cast<unsigned>(it->second->GetBlockTime()),
         it->second->GetBlockHash(),
         COutPoint(stakeData.first->GetHash(), stakeData.second),
         stakeData.first->vout[stakeData.second].nValue);
-    HashproofCreationResult hashproofResult = CreateHashproofTimestamp(
-            hashedBlockTimestamps_,
-            stakingData,
-            blockTimeUpdate,
-            hashProofOfStake);
+    HashproofCreationResult hashproofResult = CreateHashproofTimestamp(hashedBlockTimestamps_, stakingData,nTxNewTime);
     if (hashproofResult.succeeded())
     {
         if (hashproofResult.timestamp() <= chainActive.Tip()->GetMedianTimePast())

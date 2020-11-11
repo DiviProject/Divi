@@ -61,8 +61,7 @@ public:
 HashproofCreationResult CreateHashproofTimestamp(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int& hashproofTimestamp,
-    uint256& hashProofOfStake);
+    const unsigned initialTimestamp);
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return

@@ -346,13 +346,14 @@ bool ComputeAndVerifyProofOfStake(
 HashproofCreationResult CreateHashproofTimestamp(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int& hashproofTimestamp,
-    uint256& hashProofOfStake)
+    const unsigned initialTimestamp)
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
-    if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
+    if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,initialTimestamp,calculator))
         return HashproofCreationResult::FailedSetup();
 
+    unsigned hashproofTimestamp = initialTimestamp;
+    uint256 hashProofOfStake = 0;
     if(!CreateHashProofForProofOfStake(
         *calculator,
         hashedBlockTimestamps,

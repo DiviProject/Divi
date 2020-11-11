@@ -155,7 +155,7 @@ bool PoSTransactionCreator::FindHashproof(
         it->second->GetBlockHash(),
         COutPoint(stakeData.first->GetHash(), stakeData.second),
         stakeData.first->vout[stakeData.second].nValue);
-    if (CreateHashProofForProofOfStake(
+    if (CreateHashproofTimestamp(
             hashedBlockTimestamps_,
             stakingData,
             blockTimeUpdate,

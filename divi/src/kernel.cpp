@@ -343,7 +343,7 @@ bool ComputeAndVerifyProofOfStake(
     return calculator->computeProofOfStakeAndCheckItMeetsTarget(
         hashproofTimestamp, hashProofOfStake);
 }
-bool CreateHashProofForProofOfStake(
+bool CreateHashproofTimestamp(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     unsigned int& hashproofTimestamp,

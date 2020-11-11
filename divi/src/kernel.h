@@ -19,7 +19,7 @@ struct StakingData;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
-bool CreateHashProofForProofOfStake(
+bool CreateHashproofTimestamp(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     unsigned int& hashproofTimestamp,

@@ -226,6 +226,42 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     return true;
 }
 
+
+// Get stake modifier checksum
+unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex)
+{
+    assert(pindex->pprev || pindex->GetBlockHash() == Params().HashGenesisBlock());
+    // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
+    CDataStream ss(SER_GETHASH, 0);
+    if (pindex->pprev)
+        ss << pindex->pprev->nStakeModifierChecksum;
+    ss << pindex->nFlags << pindex->hashProofOfStake << pindex->nStakeModifier;
+    uint256 hashChecksum = Hash(ss.begin(), ss.end());
+    hashChecksum >>= (256 - 32);
+    return hashChecksum.Get64();
+}
+
+// Check stake modifier hard checkpoints
+bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum)
+{
+    if (mapStakeModifierCheckpoints.count(nHeight)) {
+        return nStakeModifierChecksum == mapStakeModifierCheckpoints[nHeight];
+    }
+    return true;
+}
+
+void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew)
+{
+    uint64_t nStakeModifier = 0;
+    bool fGeneratedStakeModifier = false;
+    if (!ComputeNextStakeModifier(pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
+        LogPrintf("AddToBlockIndex() : ComputeNextStakeModifier() failed \n");
+    pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
+    pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
+    if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
+        LogPrintf("AddToBlockIndex() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, boost::lexical_cast<std::string>(nStakeModifier));
+}
+
 bool ProofOfStakeTimeRequirementsAreMet(
     unsigned int coinstakeStartTime,
     unsigned int hashproofTimestamp)
@@ -391,39 +427,4 @@ bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofO
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;
-}
-
-// Get stake modifier checksum
-unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex)
-{
-    assert(pindex->pprev || pindex->GetBlockHash() == Params().HashGenesisBlock());
-    // Hash previous checksum with flags, hashProofOfStake and nStakeModifier
-    CDataStream ss(SER_GETHASH, 0);
-    if (pindex->pprev)
-        ss << pindex->pprev->nStakeModifierChecksum;
-    ss << pindex->nFlags << pindex->hashProofOfStake << pindex->nStakeModifier;
-    uint256 hashChecksum = Hash(ss.begin(), ss.end());
-    hashChecksum >>= (256 - 32);
-    return hashChecksum.Get64();
-}
-
-// Check stake modifier hard checkpoints
-bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum)
-{
-    if (mapStakeModifierCheckpoints.count(nHeight)) {
-        return nStakeModifierChecksum == mapStakeModifierCheckpoints[nHeight];
-    }
-    return true;
-}
-
-void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew)
-{
-    uint64_t nStakeModifier = 0;
-    bool fGeneratedStakeModifier = false;
-    if (!ComputeNextStakeModifier(pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
-        LogPrintf("AddToBlockIndex() : ComputeNextStakeModifier() failed \n");
-    pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
-    pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
-    if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
-        LogPrintf("AddToBlockIndex() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, boost::lexical_cast<std::string>(nStakeModifier));
 }

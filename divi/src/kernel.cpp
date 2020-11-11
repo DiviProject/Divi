@@ -305,9 +305,9 @@ bool CreateHashProofForProofOfStake(
     const I_ProofOfStakeCalculator& calculator,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int& hashproofTimestamp,
-    uint256& hashProofOfStake)
+    unsigned int& hashproofTimestamp)
 {
+    uint256 hashproof = 0;
     bool fSuccess = false;
     int nHeightStart = chainActive.Height();
     for (unsigned int i = 0; i < nHashDrift; i++) //iterate the hashing
@@ -315,8 +315,7 @@ bool CreateHashProofForProofOfStake(
         if (chainActive.Height() != nHeightStart)
             break;
 
-        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(
-                hashproofTimestamp,hashProofOfStake))
+        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,hashproof))
         {
             --hashproofTimestamp;
             continue;
@@ -353,13 +352,11 @@ HashproofCreationResult CreateHashproofTimestamp(
         return HashproofCreationResult::FailedSetup();
 
     unsigned hashproofTimestamp = initialTimestamp;
-    uint256 hashProofOfStake = 0;
     if(!CreateHashProofForProofOfStake(
         *calculator,
         hashedBlockTimestamps,
         stakingData,
-        hashproofTimestamp,
-        hashProofOfStake))
+        hashproofTimestamp))
     {
         return HashproofCreationResult::FailedGeneration();
     }

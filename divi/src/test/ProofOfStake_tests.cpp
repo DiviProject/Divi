@@ -18,8 +18,7 @@ extern bool CreateHashProofForProofOfStake(
     const I_ProofOfStakeCalculator& calculator,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
-    unsigned int& nTimeTx,
-    uint256& hashProofOfStake);
+    unsigned int& nTimeTx);
 
 extern bool CreateProofOfStakeCalculator(
     const I_PoSStakeModifierService& stakeModifierService,
@@ -48,7 +47,6 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZ
     CAmount value = 0*COIN;
     unsigned transactionTimeStart = blockHoldingUtxo.nTime + 60*60*60;
     unsigned transactionTime = transactionTimeStart;
-    uint256 hashProofOfStake;
     MockPoSStakeModifierService stakeModifierService;
     ON_CALL(stakeModifierService,getStakeModifier).WillByDefault(Return(std::make_pair(0, true)));
 
@@ -66,8 +64,7 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZ
             *calculator,
             hashedBlockTimestamps,
             stakingData,
-            transactionTime,
-            hashProofOfStake),
+            transactionTime),
         "Proof of stake should not valid\n");
 
     BOOST_CHECK_MESSAGE( (transactionTimeStart-nHashDrift) == transactionTime,

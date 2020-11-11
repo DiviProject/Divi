@@ -261,6 +261,39 @@ void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew)
         LogPrintf("AddToBlockIndex() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, boost::lexical_cast<std::string>(nStakeModifier));
 }
 
+// Start of Proof-of-Stake Computations
+HashproofCreationResult::HashproofCreationResult(
+    unsigned timestamp,
+    bool status
+    ): hashproofTimestamp(timestamp)
+    , prerequisitsWereMetForGeneration(status)
+{
+}
+HashproofCreationResult HashproofCreationResult::Success(unsigned timestamp)
+{
+    return HashproofCreationResult(timestamp, true);
+}
+HashproofCreationResult HashproofCreationResult::FailedGeneration()
+{
+    return HashproofCreationResult(0, true);
+}
+HashproofCreationResult HashproofCreationResult::FailedSetup()
+{
+    return HashproofCreationResult(0, false);
+}
+bool HashproofCreationResult::succeeded() const
+{
+    return hashproofTimestamp != 0 && prerequisitsWereMetForGeneration;
+}
+bool HashproofCreationResult::failedAtSetup() const
+{
+    return !prerequisitsWereMetForGeneration;
+}
+const unsigned& HashproofCreationResult::timestamp() const
+{
+    return hashproofTimestamp;
+}
+
 bool ProofOfStakeTimeRequirementsAreMet(
     unsigned int coinstakeStartTime,
     unsigned int hashproofTimestamp)

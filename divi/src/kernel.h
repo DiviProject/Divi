@@ -22,40 +22,16 @@ static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 class HashproofCreationResult
 {
 private:
-    HashproofCreationResult(
-        unsigned timestamp,
-        bool status
-        ): hashproofTimestamp(timestamp)
-        , prerequisitsWereMetForGeneration(status)
-    {
-    }
+    HashproofCreationResult(unsigned timestamp, bool status);
     const unsigned hashproofTimestamp;
     const bool prerequisitsWereMetForGeneration;
 public:
-    static HashproofCreationResult Success(unsigned timestamp)
-    {
-        return HashproofCreationResult(timestamp, true);
-    }
-    static HashproofCreationResult FailedGeneration()
-    {
-        return HashproofCreationResult(0, true);
-    }
-    static HashproofCreationResult FailedSetup()
-    {
-        return HashproofCreationResult(0, false);
-    }
-    bool succeeded() const
-    {
-        return hashproofTimestamp != 0 && prerequisitsWereMetForGeneration;
-    }
-    bool failedAtSetup() const
-    {
-        return !prerequisitsWereMetForGeneration;
-    }
-    const unsigned& timestamp() const
-    {
-        return hashproofTimestamp;
-    }
+    static HashproofCreationResult Success(unsigned timestamp);
+    static HashproofCreationResult FailedGeneration();
+    static HashproofCreationResult FailedSetup();
+    bool succeeded() const;
+    bool failedAtSetup() const;
+    const unsigned& timestamp() const;
 };
 
 HashproofCreationResult CreateHashproofTimestamp(

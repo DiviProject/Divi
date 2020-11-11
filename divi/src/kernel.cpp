@@ -257,22 +257,23 @@ ProofOfStakeCalculator::ProofOfStakeCalculator(
     const COutPoint& utxoToStake,
     const int64_t& utxoValue,
     const uint64_t& stakeModifier,
-    unsigned int blockDifficultyBits
+    unsigned int blockDifficultyBits,
+    unsigned int coinstakeStartTime
     ): utxoToStake_(utxoToStake)
     , utxoValue_(utxoValue)
     , stakeModifier_(stakeModifier)
     , targetPerCoinDay_(uint256().SetCompact(blockDifficultyBits))
+    , coinstakeStartTime_(coinstakeStartTime)
 {
 }
 
 bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
     unsigned int hashproofTimestamp,
-    unsigned int coinstakeStartTime,
     uint256& computedProofOfStake,
     bool checkOnly) const
 {
-    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,hashproofTimestamp, utxoToStake_,coinstakeStartTime);
-    int64_t coinAgeWeightOfUtxo = std::min<int64_t>(hashproofTimestamp - coinstakeStartTime, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
+    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,hashproofTimestamp, utxoToStake_,coinstakeStartTime_);
+    int64_t coinAgeWeightOfUtxo = std::min<int64_t>(hashproofTimestamp - coinstakeStartTime_, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
     return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
 }
 
@@ -312,7 +313,8 @@ bool CreateProofOfStakeCalculator(
             stakingData.utxoBeingStaked_,
             stakingData.utxoValue_,
             stakeModifierData.first,
-            stakingData.nBits_);
+            stakingData.nBits_,
+            stakingData.blockTimeOfFirstConfirmationBlock_);
 
     if(!calculator.get())
         return false;
@@ -336,7 +338,7 @@ bool CreateHashProofForProofOfStake(
             break;
 
         if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(
-                hashproofTimestamp,stakingData.blockTimeOfFirstConfirmationBlock_,hashProofOfStake))
+                hashproofTimestamp,hashProofOfStake))
         {
             --hashproofTimestamp;
             continue;
@@ -361,7 +363,7 @@ bool ComputeAndVerifyProofOfStake(
     if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
         return false;
     return calculator->computeProofOfStakeAndCheckItMeetsTarget(
-        hashproofTimestamp, stakingData.blockTimeOfFirstConfirmationBlock_,hashProofOfStake);
+        hashproofTimestamp, hashProofOfStake);
 }
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

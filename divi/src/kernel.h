@@ -26,7 +26,6 @@ public:
     virtual ~I_ProofOfStakeCalculator(){}
     virtual bool computeProofOfStakeAndCheckItMeetsTarget(
         unsigned int hashproofTimestamp,
-        unsigned int coinstakeStartTim,
         uint256& computedProofOfStake,
         bool checkOnly = false) const = 0;
 };
@@ -37,16 +36,17 @@ private:
     const int64_t& utxoValue_;
     const uint64_t& stakeModifier_;
     const uint256 targetPerCoinDay_;
+    const unsigned int coinstakeStartTime_;
 public:
     ProofOfStakeCalculator(
         const COutPoint& utxoToStake,
         const int64_t& utxoValue,
         const uint64_t& stakeModifier,
-        unsigned int blockDifficultyBits);
+        unsigned int blockDifficultyBits,
+        unsigned int coinstakeStartTime);
 
     virtual bool computeProofOfStakeAndCheckItMeetsTarget(
         unsigned int hashproofTimestamp,
-        unsigned int coinstakeStartTim,
         uint256& computedProofOfStake,
         bool checkOnly = false) const;
 };

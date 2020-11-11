@@ -17,27 +17,6 @@ class BlockMap;
 class CChain;
 struct StakingData;
 
-static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
-
-class HashproofCreationResult
-{
-private:
-    HashproofCreationResult(unsigned timestamp, bool status);
-    const unsigned hashproofTimestamp;
-    const bool prerequisitsWereMetForGeneration;
-public:
-    static HashproofCreationResult Success(unsigned timestamp);
-    static HashproofCreationResult FailedGeneration();
-    static HashproofCreationResult FailedSetup();
-    bool succeeded() const;
-    bool failedAtSetup() const;
-    const unsigned& timestamp() const;
-};
-
-HashproofCreationResult CreateHashproofTimestamp(
-    const StakingData& stakingData,
-    const unsigned initialTimestamp);
-
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return
 bool CheckProofOfStake(

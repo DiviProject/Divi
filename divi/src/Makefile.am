@@ -161,6 +161,7 @@ BITCOIN_CORE_H = \
   ProofOfStakeCalculator.h \
   datacachemanager.h \
   kernel.h \
+  ProofOfStakeGenerator.h \
   StakeModifierIntervalHelpers.h \
   StakingData.h \
   swifttx.h \
@@ -320,6 +321,7 @@ libbitcoin_server_a_SOURCES = \
   CoinMinter.cpp \
   PoSTransactionCreator.cpp \
   kernel.cpp \
+  ProofOfStakeGenerator.cpp \
   ProofOfStakeCalculator.cpp \
   LegacyPoSStakeModifierService.cpp \
   PeerNotificationOfMintService.cpp \

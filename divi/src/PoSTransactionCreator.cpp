@@ -1,7 +1,7 @@
 #include <PoSTransactionCreator.h>
 
 #include <wallet.h>
-#include <kernel.h>
+#include <ProofOfStakeGenerator.h>
 #include <masternode-payments.h>
 #include <script/sign.h>
 #include <utilmoneystr.h>
@@ -15,6 +15,7 @@
 
 extern Settings& settings;
 extern const int nHashDrift;
+extern const unsigned int MAX_KERNEL_COMBINED_INPUTS;
 extern const int maximumFutureBlockDrift = 180; // seconds
 extern BlockMap mapBlockIndex;
 extern CChain chainActive;

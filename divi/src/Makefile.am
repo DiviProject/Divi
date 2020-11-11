@@ -158,6 +158,7 @@ BITCOIN_CORE_H = \
   I_BlockSubsidyProvider.h \
   I_PoSStakeModifierService.h \
   I_ProofOfStakeCalculator.h \
+  ProofOfStakeCalculator.h \
   datacachemanager.h \
   kernel.h \
   StakeModifierIntervalHelpers.h \
@@ -392,6 +393,7 @@ libbitcoin_wallet_a_SOURCES = \
   rpcdump.cpp \
   rpcwallet.cpp \
   kernel.cpp \
+  ProofOfStakeCalculator.cpp \
   LegacyPoSStakeModifierService.cpp \
   wallet.cpp \
   merkletx.cpp \

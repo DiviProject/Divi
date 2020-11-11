@@ -25,6 +25,7 @@
 #include <StakingData.h>
 #include <LegacyPoSStakeModifierService.h>
 #include <StakeModifierIntervalHelpers.h>
+#include <ProofOfStakeCalculator.h>
 
 #include <Settings.h>
 extern const int nHashDrift = 45;
@@ -32,8 +33,6 @@ extern const int nHashDrift = 45;
 extern BlockMap mapBlockIndex;
 extern CChain chainActive;
 extern Settings& settings;
-
-static constexpr unsigned int MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING = 60 * 60 * 24 * 7 - 60 * 60;
 
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
@@ -225,56 +224,6 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     nStakeModifier = nStakeModifierNew;
     fGeneratedStakeModifier = true;
     return true;
-}
-
-uint256 stakeHash(uint64_t stakeModifier, unsigned int hashproofTimestamp, const COutPoint& prevout, unsigned int coinstakeStartTime)
-{
-    //Divi will hash in the transaction hash and the index number in order to make sure each hash is unique
-    CDataStream ss(SER_GETHASH, 0);
-    ss << stakeModifier << coinstakeStartTime << prevout.n << prevout.hash << hashproofTimestamp;
-    return Hash(ss.begin(), ss.end());
-}
-
-//test hash vs target
-bool stakeTargetHit(const uint256& hashProofOfStake, int64_t nValueIn, const uint256& bnTargetPerCoinDay, int64_t nTimeWeight)
-{
-    const uint256 bnCoinDayWeight = (uint256(nValueIn) * nTimeWeight) / COIN / 400;
-
-    uint256 target = bnTargetPerCoinDay;
-    if (!target.MultiplyBy(bnCoinDayWeight)) {
-        // In regtest with minimal difficulty, it may happen that the
-        // modification overflows the uint256, in which case it just means
-        // that the target will always be hit.
-        return true;
-    }
-
-    // Now check if proof-of-stake hash meets target protocol
-    return hashProofOfStake < target;
-}
-
-
-ProofOfStakeCalculator::ProofOfStakeCalculator(
-    const COutPoint& utxoToStake,
-    const int64_t& utxoValue,
-    const uint64_t& stakeModifier,
-    unsigned int blockDifficultyBits,
-    unsigned int coinstakeStartTime
-    ): utxoToStake_(utxoToStake)
-    , utxoValue_(utxoValue)
-    , stakeModifier_(stakeModifier)
-    , targetPerCoinDay_(uint256().SetCompact(blockDifficultyBits))
-    , coinstakeStartTime_(coinstakeStartTime)
-{
-}
-
-bool ProofOfStakeCalculator::computeProofOfStakeAndCheckItMeetsTarget(
-    unsigned int hashproofTimestamp,
-    uint256& computedProofOfStake,
-    bool checkOnly) const
-{
-    if(!checkOnly) computedProofOfStake = stakeHash(stakeModifier_,hashproofTimestamp, utxoToStake_,coinstakeStartTime_);
-    int64_t coinAgeWeightOfUtxo = std::min<int64_t>(hashproofTimestamp - coinstakeStartTime_, MAXIMUM_COIN_AGE_WEIGHT_FOR_STAKING);
-    return stakeTargetHit(computedProofOfStake,utxoValue_,targetPerCoinDay_, coinAgeWeightOfUtxo);
 }
 
 bool ProofOfStakeTimeRequirementsAreMet(

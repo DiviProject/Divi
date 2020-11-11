@@ -9,8 +9,6 @@
 #include <uint256.h>
 #include <amount.h>
 #include <map>
-#include <I_PoSStakeModifierService.h>
-#include <I_ProofOfStakeCalculator.h>
 class CBlockIndex;
 class CBlock;
 class CTransaction;
@@ -20,28 +18,6 @@ class CChain;
 struct StakingData;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
-
-class ProofOfStakeCalculator: public I_ProofOfStakeCalculator
-{
-private:
-    const COutPoint& utxoToStake_;
-    const int64_t& utxoValue_;
-    const uint64_t& stakeModifier_;
-    const uint256 targetPerCoinDay_;
-    const unsigned int coinstakeStartTime_;
-public:
-    ProofOfStakeCalculator(
-        const COutPoint& utxoToStake,
-        const int64_t& utxoValue,
-        const uint64_t& stakeModifier,
-        unsigned int blockDifficultyBits,
-        unsigned int coinstakeStartTime);
-
-    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
-        unsigned int hashproofTimestamp,
-        uint256& computedProofOfStake,
-        bool checkOnly = false) const;
-};
 
 bool CreateHashProofForProofOfStake(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

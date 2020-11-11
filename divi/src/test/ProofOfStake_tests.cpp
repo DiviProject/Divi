@@ -8,6 +8,8 @@
 #include <string>
 #include <primitives/block.h>
 #include <StakingData.h>
+#include <ProofOfStakeCalculator.h>
+#include <I_PoSStakeModifierService.h>
 
 #include <gmock/gmock.h>
 using ::testing::Return;

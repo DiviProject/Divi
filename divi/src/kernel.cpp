@@ -362,7 +362,8 @@ bool CreateHashProofForProofOfStake(
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofOfStake)
+bool CheckProofOfStakeContextAndRecoverStakingData(
+    const CBlock& block, int blockHeight, StakingData& stakingData)
 {
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())
@@ -409,15 +410,23 @@ bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofO
     if (!ReadBlockFromDisk(blockprev, pindex->GetBlockPos()))
         return error("CheckProofOfStake(): INFO: failed to find block");
 
-    unsigned int nTime = block.nTime;
-    StakingData stakingData(
+    stakingData = StakingData(
         block.nBits,
         blockprev.GetBlockTime(),
         blockprev.GetHash(),
         txin.prevout,
         txPrev.vout[txin.prevout.n].nValue);
-    if (!ComputeAndVerifyProofOfStake(stakingData, nTime, hashProofOfStake))
-        return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
+
+    return true;
+}
+bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofOfStake)
+{
+    StakingData stakingData;
+    if(!CheckProofOfStakeContextAndRecoverStakingData(block,blockHeight,stakingData))
+        return false;
+    if (!ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
+        return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",
+            block.vtx[1].GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 
     return true;
 }

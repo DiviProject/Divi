@@ -11,6 +11,7 @@ struct StakingData
     COutPoint utxoBeingStaked_;
     CAmount utxoValue_;
 
+    StakingData() = default;
     StakingData(
         unsigned int nBits,
         unsigned int blockTimeOfFirstConfirmationBlock,

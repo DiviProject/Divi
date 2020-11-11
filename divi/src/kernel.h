@@ -19,7 +19,46 @@ struct StakingData;
 
 static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
-bool CreateHashproofTimestamp(
+class HashproofCreationResult
+{
+private:
+    HashproofCreationResult(
+        unsigned timestamp,
+        bool status
+        ): hashproofTimestamp(timestamp)
+        , prerequisitsWereMetForGeneration(status)
+    {
+    }
+    const unsigned hashproofTimestamp;
+    const bool prerequisitsWereMetForGeneration;
+public:
+    static HashproofCreationResult Success(unsigned timestamp)
+    {
+        return HashproofCreationResult(timestamp, true);
+    }
+    static HashproofCreationResult FailedGeneration()
+    {
+        return HashproofCreationResult(0, true);
+    }
+    static HashproofCreationResult FailedSetup()
+    {
+        return HashproofCreationResult(0, false);
+    }
+    bool succeeded() const
+    {
+        return hashproofTimestamp != 0 && prerequisitsWereMetForGeneration;
+    }
+    bool failedToGenerateProof() const
+    {
+        return hashproofTimestamp == 0 && prerequisitsWereMetForGeneration;
+    }
+    const unsigned& timestamp() const
+    {
+        return hashproofTimestamp;
+    }
+};
+
+HashproofCreationResult CreateHashproofTimestamp(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     unsigned int& hashproofTimestamp,

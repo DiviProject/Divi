@@ -343,7 +343,7 @@ bool ComputeAndVerifyProofOfStake(
     return calculator->computeProofOfStakeAndCheckItMeetsTarget(
         hashproofTimestamp, hashProofOfStake);
 }
-bool CreateHashproofTimestamp(
+HashproofCreationResult CreateHashproofTimestamp(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     unsigned int& hashproofTimestamp,
@@ -351,7 +351,7 @@ bool CreateHashproofTimestamp(
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
     if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
-        return false;
+        return HashproofCreationResult::FailedSetup();
 
     if(!CreateHashProofForProofOfStake(
         *calculator,
@@ -360,10 +360,10 @@ bool CreateHashproofTimestamp(
         hashproofTimestamp,
         hashProofOfStake))
     {
-        return false;
+        return HashproofCreationResult::FailedGeneration();
     }
 
-    return true;
+    return HashproofCreationResult::Success(hashproofTimestamp);
 }
 
 // Check kernel hash target and coinstake signature

@@ -155,12 +155,14 @@ bool PoSTransactionCreator::FindHashproof(
         it->second->GetBlockHash(),
         COutPoint(stakeData.first->GetHash(), stakeData.second),
         stakeData.first->vout[stakeData.second].nValue);
-    if (CreateHashproofTimestamp(
+    HashproofCreationResult hashproofResult = CreateHashproofTimestamp(
             hashedBlockTimestamps_,
             stakingData,
             blockTimeUpdate,
-            hashProofOfStake))
+            hashProofOfStake);
+    if (hashproofResult.succeeded())
     {
+
         if (blockTimeUpdate <= chainActive.Tip()->GetMedianTimePast())
         {
             LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");

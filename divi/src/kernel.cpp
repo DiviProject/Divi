@@ -303,7 +303,6 @@ bool CreateProofOfStakeCalculator(
 //instead of looping outside and reinitializing variables many times, we will give a hashproofTimestamp and also search interval so that we can do all the hashing here
 bool CreateHashProofForProofOfStake(
     const I_ProofOfStakeCalculator& calculator,
-    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     unsigned int& hashproofTimestamp)
 {
@@ -325,8 +324,6 @@ bool CreateHashProofForProofOfStake(
         break;
     }
 
-    hashedBlockTimestamps.clear();
-    hashedBlockTimestamps[chainActive.Tip()->nHeight] = GetTime(); //store a time stamp of when we last hashed on this block
     return fSuccess;
 }
 
@@ -343,7 +340,6 @@ bool ComputeAndVerifyProofOfStake(
         hashproofTimestamp, hashProofOfStake);
 }
 HashproofCreationResult CreateHashproofTimestamp(
-    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     const unsigned initialTimestamp)
 {
@@ -354,7 +350,6 @@ HashproofCreationResult CreateHashproofTimestamp(
     unsigned hashproofTimestamp = initialTimestamp;
     if(!CreateHashProofForProofOfStake(
         *calculator,
-        hashedBlockTimestamps,
         stakingData,
         hashproofTimestamp))
     {

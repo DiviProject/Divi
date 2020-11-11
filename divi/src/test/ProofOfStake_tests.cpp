@@ -16,7 +16,6 @@ using ::testing::Return;
 
 extern bool CreateHashProofForProofOfStake(
     const I_ProofOfStakeCalculator& calculator,
-    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     unsigned int& nTimeTx);
 
@@ -42,7 +41,6 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZ
     CBlock blockHoldingUtxo;
     blockHoldingUtxo.nTime = GetRandInt(1<<20);
     unsigned chainTipDifficulty = 0x1000001;
-    std::map<unsigned int, unsigned int> hashedBlockTimestamps;
     COutPoint utxo(GetRandHash(),GetRandInt(10));
     CAmount value = 0*COIN;
     unsigned transactionTimeStart = blockHoldingUtxo.nTime + 60*60*60;
@@ -62,7 +60,6 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZ
     BOOST_CHECK_MESSAGE(
         !CreateHashProofForProofOfStake(
             *calculator,
-            hashedBlockTimestamps,
             stakingData,
             transactionTime),
         "Proof of stake should not valid\n");

@@ -48,9 +48,9 @@ public:
     {
         return hashproofTimestamp != 0 && prerequisitsWereMetForGeneration;
     }
-    bool failedToGenerateProof() const
+    bool failedAtSetup() const
     {
-        return hashproofTimestamp == 0 && prerequisitsWereMetForGeneration;
+        return !prerequisitsWereMetForGeneration;
     }
     const unsigned& timestamp() const
     {
@@ -59,7 +59,6 @@ public:
 };
 
 HashproofCreationResult CreateHashproofTimestamp(
-    std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     const StakingData& stakingData,
     const unsigned initialTimestamp);
 

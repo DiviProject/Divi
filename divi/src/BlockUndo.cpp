@@ -11,6 +11,7 @@
 #include <BlockFileOpener.h>
 #include <clientversion.h>
 #include <chainparams.h>
+#include <hash.h>
 
 bool CBlockUndo::WriteToDisk(CDiskBlockPos& pos, const uint256& hashBlock)
 {

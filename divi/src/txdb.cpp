@@ -16,6 +16,8 @@
 #include <addressindex.h>
 #include <spentindex.h>
 
+#include <boost/scoped_ptr.hpp>
+
 using namespace std;
 
 static const char DB_ADDRESSINDEX = 'a';

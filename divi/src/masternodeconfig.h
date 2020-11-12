@@ -95,7 +95,7 @@ public:
     void clear();
     bool read(std::string& strErr);
     void add(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex);
-    std::vector<CMasternodeEntry>& getEntries();
+    const std::vector<CMasternodeEntry>& getEntries() const;
     int getCount();
 
 private:

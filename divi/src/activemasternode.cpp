@@ -21,8 +21,8 @@ extern bool fMasterNode;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
 CActiveMasternode::CActiveMasternode(
-    CMasternodeConfig& masternodeConfigurations,
-    bool& masterNodeEnabled
+    const CMasternodeConfig& masternodeConfigurations,
+    const bool& masterNodeEnabled
     ): masternodeConfigurations_(masternodeConfigurations)
     , fMasterNode_(masterNodeEnabled)
 {

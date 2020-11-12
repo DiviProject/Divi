@@ -85,8 +85,8 @@ bool CMasternodeConfig::CMasternodeEntry::castOutputIndex(int &n)
 CMasternodeConfig::CMasternodeConfig()
 {
     entries = std::vector<CMasternodeEntry>();
-}\
-std::vector<CMasternodeConfig::CMasternodeEntry>& CMasternodeConfig::getEntries()
+}
+const std::vector<CMasternodeConfig::CMasternodeEntry>& CMasternodeConfig::getEntries() const
 {
     return entries;
 }

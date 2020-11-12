@@ -26,13 +26,10 @@ class CActiveMasternode
 private:
     // critical section to protect the inner data structures
     mutable CCriticalSection cs;
-
-    /// Ping Masternode
     bool SendMasternodePing(std::string& errorMessage);
+    const CMasternodeConfig& masternodeConfigurations_;
+    const bool& fMasterNode_;
 
-    CMasternodeConfig& masternodeConfigurations_;
-
-    bool& fMasterNode_;
 public:
     // Initialized by init.cpp
     // Keys for the main Masternode
@@ -45,7 +42,7 @@ public:
     int status;
     std::string notCapableReason;
 
-    CActiveMasternode( CMasternodeConfig& masternodeConfigurations, bool& masterNodeEnabled);
+    CActiveMasternode(const CMasternodeConfig& masternodeConfigurations,const bool& masterNodeEnabled);
 
     /// Manage status of main Masternode
     void ManageStatus();

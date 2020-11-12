@@ -12,6 +12,7 @@
 #include <boost/thread.hpp>
 #include <SuperblockHelpers.h>
 #include <BlockFactory.h>
+#include <BlockSigning.h>
 #include <ValidationState.h>
 #include <txmempool.h>
 
@@ -224,7 +225,7 @@ bool CoinMinter::createProofOfStakeBlock(
     //Stake miner main
     LogPrintf("CPUMiner : proof-of-stake block found %s \n", block->GetHash().ToString().c_str());
 
-    if (!block->SignBlock(*pwallet_)) {
+    if (!SignBlock(*pwallet_, *block)) {
         LogPrintf("BitcoinMiner(): Signing new block failed \n");
         return false;
     }

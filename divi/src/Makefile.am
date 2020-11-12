@@ -113,6 +113,7 @@ BITCOIN_CORE_H = \
   blockmap.h\
   BlockSubsidyProvider.h \
   BlockRewards.h \
+  BlockSigning.h \
   chain.h \
   chainparams.h \
   chainparamsbase.h \
@@ -296,6 +297,7 @@ libbitcoin_server_a_SOURCES = \
   BIP9ActivationManager.cpp \
   BIP9ActivationFeatureContainer.cpp \
   BlockRewards.cpp \
+  BlockSigning.cpp \
   CachedBIP9ActivationStateTracker.cpp \
   bloom.cpp \
   chain.cpp \

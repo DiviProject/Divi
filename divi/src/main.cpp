@@ -10,6 +10,7 @@
 #include "alert.h"
 #include "BlockFileOpener.h"
 #include "BlockDiskAccessor.h"
+#include "BlockSigning.h"
 #include "checkpoints.h"
 #include "checkqueue.h"
 #include "init.h"
@@ -3379,7 +3380,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     //    return error("ProcessNewBlock() : duplicate proof-of-stake (%s, %d) for block %s", pblock->GetProofOfStake().first.ToString().c_str(), pblock->GetProofOfStake().second, pblock->GetHash().ToString().c_str());
 
     // NovaCoin: check proof-of-stake block signature
-    if (!pblock->CheckBlockSignature())
+    if (!CheckBlockSignature(*pblock))
         return error("ProcessNewBlock() : bad proof-of-stake block signature");
 
     if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {

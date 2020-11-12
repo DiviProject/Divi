@@ -1,3 +1,4 @@
+#include <BlockSigning.h>
 #include <primitives/block.h>
 #include <primitives/transaction.h>
 #include <utilstrencodings.h>
@@ -98,8 +99,8 @@ BOOST_AUTO_TEST_CASE(willDisallowP2SHStakingVaultCoinstakeInBlock)
     // Preconditions
     BOOST_CHECK_MESSAGE(block.IsProofOfStake(),"Block isnt PoS!");
     // Test
-    BOOST_CHECK_MESSAGE(!block.SignBlock(vaultKeyStore),"Disallowed block txoutput in PoS!");
-    BOOST_CHECK_MESSAGE(!block.CheckBlockSignature(),"Verified  disallowed signature type!");
+    BOOST_CHECK_MESSAGE(!SignBlock(vaultKeyStore, block),"Disallowed block txoutput in PoS!");
+    BOOST_CHECK_MESSAGE(!CheckBlockSignature(block),"Verified  disallowed signature type!");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -12,15 +12,22 @@
 #include <protocol.h>
 #include <spork.h>
 #include <chainparams.h>
+#include <masternodeconfig.h>
+
 
 extern std::string strMasterNodeAddr;
 extern std::string strMasterNodePrivKey;
 extern bool fMasterNode;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
-//
-// Bootup the Masternode, look for a 10000 PIVX input and register on the network
-//
+CActiveMasternode::CActiveMasternode(
+    CMasternodeConfig& masternodeConfigurations,
+    bool& masterNodeEnabled
+    ): masternodeConfigurations_(masternodeConfigurations)
+    , fMasterNode_(masterNodeEnabled)
+{
+    status = ACTIVE_MASTERNODE_INITIAL;
+}
 void CActiveMasternode::ManageStatus()
 {
     std::string errorMessage;

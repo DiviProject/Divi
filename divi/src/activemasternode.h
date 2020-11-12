@@ -7,7 +7,6 @@
 #define ACTIVEMASTERNODE_H
 
 #include <pubkey.h>
-#include <masternodeconfig.h>
 #include <netbase.h>
 #include <primitives/transaction.h>
 #include <sync.h>
@@ -19,6 +18,7 @@
 #define ACTIVE_MASTERNODE_STARTED 4
 
 class CMasternodeBroadcast;
+class CMasternodeConfig;
 
 // Responsible for activating the Masternode and pinging the network
 class CActiveMasternode
@@ -45,14 +45,7 @@ public:
     int status;
     std::string notCapableReason;
 
-    CActiveMasternode(
-        CMasternodeConfig& masternodeConfigurations,
-        bool& masterNodeEnabled
-        ): masternodeConfigurations_(masternodeConfigurations)
-        , fMasterNode_(masterNodeEnabled)
-    {
-        status = ACTIVE_MASTERNODE_INITIAL;
-    }
+    CActiveMasternode( CMasternodeConfig& masternodeConfigurations, bool& masterNodeEnabled);
 
     /// Manage status of main Masternode
     void ManageStatus();

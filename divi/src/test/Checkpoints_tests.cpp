@@ -39,9 +39,9 @@ public:
     }
 
     void addCheckpoint(
-        int blockIndex, 
-        uint256 hash, 
-        int64_t checkpointTime = 0, 
+        int blockIndex,
+        uint256 hash,
+        int64_t checkpointTime = 0,
         int64_t transactionsAtCheckpoint = 0)
     {
         const double transactionsPerDay = 86400.0;
@@ -51,7 +51,7 @@ public:
 
         data_.nTimeLastCheckpoint = checkpointTime;
         data_.nTransactionsLastCheckpoint = transactionsAtCheckpoint;
-        data_.fTransactionsPerDay = 
+        data_.fTransactionsPerDay =
             (data_.nTransactionsLastCheckpoint>0)? data_.nTransactionsLastCheckpoint/static_cast<double>(data_.nTimeLastCheckpoint/transactionsPerDay): int64_t(0);
     }
 
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(allCheckpointsWillBeAccountedFor)
 }
 
 BOOST_AUTO_TEST_CASE(randomCheckpointsWillBeCorrectlyHandled)
-{   
+{
     unsigned checkpointCount = static_cast<unsigned>(abs(GetRandInt(25)))+10u;
     TestCase testSetup(checkpointCount);
     CCheckpointServices checkpointsService( testSetup.checkpoint_data() );
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(deliberatlyIncorrectCheckpointsWillBeCorrectlyHandled)
         uint256 correctHash = checkpoint.second;
         while(checkpoint.second == correctHash)
         {
-            checkpoint.second = GetRandHash();
+            checkpoint.second = ~checkpoint.second;
         }
         BOOST_CHECK(!checkpointsService.CheckBlock(checkpoint.first,checkpoint.second));
     }
@@ -164,10 +164,10 @@ BOOST_AUTO_TEST_CASE(willFindCorrectBlockInMap)
     sharedBlockIndex->phashBlock = &blockHash;
     sharedBlockIndex->nHeight = GetRandInt(800);
     TestCase testSetup;
-    testSetup.mapCheckpoints_.insert( 
+    testSetup.mapCheckpoints_.insert(
         std::make_pair(static_cast<int>(sharedBlockIndex->nHeight),sharedBlockIndex->GetBlockHash()) );
     testSetup.data_ = CCheckpointData({&testSetup.mapCheckpoints_,0,0,0});
-    
+
     BlockMap map;
     map.insert( std::make_pair(sharedBlockIndex->GetBlockHash(),sharedBlockIndex.get()) );
 

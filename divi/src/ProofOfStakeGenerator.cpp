@@ -114,6 +114,12 @@ bool CreateHashProofForProofOfStake(
 }
 
 static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
+ProofOfStakeGenerator::ProofOfStakeGenerator(
+    const I_PoSStakeModifierService& stakeModifierService
+    ): stakeModifierService_(stakeModifierService)
+{
+}
+
 bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(
     const StakingData& stakingData,
     const unsigned int& hashproofTimestamp,
@@ -145,7 +151,7 @@ HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
     return HashproofCreationResult::Success(hashproofTimestamp);
 }
 
-static ProofOfStakeGenerator proofGenerator;
+static ProofOfStakeGenerator proofGenerator(stakeModifierService);
 bool ComputeAndVerifyProofOfStake(
     const StakingData& stakingData,
     const unsigned int& hashproofTimestamp,

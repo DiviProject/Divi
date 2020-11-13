@@ -2,7 +2,7 @@
 #define PROOF_OF_STAKE_GENERATOR_H
 class StakingData;
 class uint256;
-
+class I_PoSStakeModifierService;
 enum HashproofGenerationState
 {
     FAILED_SETUP,
@@ -26,7 +26,10 @@ public:
 
 class ProofOfStakeGenerator
 {
+private:
+    const I_PoSStakeModifierService& stakeModifierService_;
 public:
+    ProofOfStakeGenerator(const I_PoSStakeModifierService& stakeModifierService);
     HashproofCreationResult CreateHashproofTimestamp(
         const StakingData& stakingData,
         const unsigned initialTimestamp);

@@ -47,6 +47,41 @@ const unsigned& HashproofCreationResult::timestamp() const
     return hashproofTimestamp_;
 }
 
+
+//instead of looping outside and reinitializing variables many times, we will give a hashproofTimestamp and also search interval so that we can do all the hashing here
+bool CreateHashProofForProofOfStake(
+    const I_ProofOfStakeCalculator& calculator,
+    const StakingData& stakingData,
+    unsigned int& hashproofTimestamp)
+{
+    uint256 hashproof = 0;
+    bool fSuccess = false;
+    int nHeightStart = chainActive.Height();
+    for (unsigned int i = 0; i < nHashDrift; i++) //iterate the hashing
+    {
+        if (chainActive.Height() != nHeightStart)
+            break;
+
+        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,hashproof))
+        {
+            --hashproofTimestamp;
+            continue;
+        }
+
+        fSuccess = true;
+        break;
+    }
+
+    return fSuccess;
+}
+
+ProofOfStakeGenerator::ProofOfStakeGenerator(
+    const I_PoSStakeModifierService& stakeModifierService
+    ): stakeModifierService_(stakeModifierService)
+{
+}
+
+
 bool ProofOfStakeTimeRequirementsAreMet(
     unsigned int coinstakeStartTime,
     unsigned int hashproofTimestamp)
@@ -84,39 +119,6 @@ bool CreateProofOfStakeCalculator(
         return false;
 
     return true;
-}
-
-//instead of looping outside and reinitializing variables many times, we will give a hashproofTimestamp and also search interval so that we can do all the hashing here
-bool CreateHashProofForProofOfStake(
-    const I_ProofOfStakeCalculator& calculator,
-    const StakingData& stakingData,
-    unsigned int& hashproofTimestamp)
-{
-    uint256 hashproof = 0;
-    bool fSuccess = false;
-    int nHeightStart = chainActive.Height();
-    for (unsigned int i = 0; i < nHashDrift; i++) //iterate the hashing
-    {
-        if (chainActive.Height() != nHeightStart)
-            break;
-
-        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,hashproof))
-        {
-            --hashproofTimestamp;
-            continue;
-        }
-
-        fSuccess = true;
-        break;
-    }
-
-    return fSuccess;
-}
-
-ProofOfStakeGenerator::ProofOfStakeGenerator(
-    const I_PoSStakeModifierService& stakeModifierService
-    ): stakeModifierService_(stakeModifierService)
-{
 }
 
 bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(

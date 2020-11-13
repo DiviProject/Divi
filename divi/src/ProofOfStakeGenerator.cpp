@@ -55,7 +55,6 @@ bool CreateHashProofForProofOfStake(
     unsigned int& hashproofTimestamp)
 {
     uint256 hashproof = 0;
-    bool fSuccess = false;
     int nHeightStart = chainActive.Height();
     for (unsigned int i = 0; i < nHashDrift; i++) //iterate the hashing
     {
@@ -67,12 +66,13 @@ bool CreateHashProofForProofOfStake(
             --hashproofTimestamp;
             continue;
         }
-
-        fSuccess = true;
-        break;
+        else
+        {
+            return true;
+        }
     }
 
-    return fSuccess;
+    return false;
 }
 
 ProofOfStakeGenerator::ProofOfStakeGenerator(

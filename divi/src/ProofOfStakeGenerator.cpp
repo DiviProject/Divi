@@ -92,9 +92,10 @@ bool ProofOfStakeGenerator::ProofOfStakeTimeRequirementsAreMet(
         return error("%s : nTime violation", __func__);
     }
 
-    if (coinstakeStartTime + Params().GetMinCoinAgeForStaking() > hashproofTimestamp) // Min age requirement
+    if (coinstakeStartTime + minimumCoinAgeForStaking_ > hashproofTimestamp) // Min age requirement
     {
-        return error("%s : min age violation - coinstakeStartTime=%d minimum coinage=%d hashproofTimestamp=%d",__func__, coinstakeStartTime, Params().GetMinCoinAgeForStaking(), hashproofTimestamp);
+        return error("%s : min age violation - coinstakeStartTime=%d minimum coinage=%d hashproofTimestamp=%d",
+            __func__, coinstakeStartTime, minimumCoinAgeForStaking_, hashproofTimestamp);
     }
     return true;
 }

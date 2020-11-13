@@ -17,34 +17,34 @@ extern const int nHashDrift = 45;
 // Start of Proof-of-Stake Computations
 HashproofCreationResult::HashproofCreationResult(
     unsigned timestamp,
-    bool status
-    ): hashproofTimestamp(timestamp)
-    , prerequisitsWereMetForGeneration(status)
+    HashproofGenerationState state
+    ): hashproofTimestamp_(timestamp)
+    , state_(state)
 {
 }
 HashproofCreationResult HashproofCreationResult::Success(unsigned timestamp)
 {
-    return HashproofCreationResult(timestamp, true);
+    return HashproofCreationResult(timestamp, SUCCESS);
 }
 HashproofCreationResult HashproofCreationResult::FailedGeneration()
 {
-    return HashproofCreationResult(0, true);
+    return HashproofCreationResult(0, FAILED_GENERATION);
 }
 HashproofCreationResult HashproofCreationResult::FailedSetup()
 {
-    return HashproofCreationResult(0, false);
+    return HashproofCreationResult(0, FAILED_SETUP);
 }
 bool HashproofCreationResult::succeeded() const
 {
-    return hashproofTimestamp != 0 && prerequisitsWereMetForGeneration;
+    return state_==SUCCESS;
 }
 bool HashproofCreationResult::failedAtSetup() const
 {
-    return !prerequisitsWereMetForGeneration;
+    return state_==FAILED_SETUP;
 }
 const unsigned& HashproofCreationResult::timestamp() const
 {
-    return hashproofTimestamp;
+    return hashproofTimestamp_;
 }
 
 bool ProofOfStakeTimeRequirementsAreMet(

@@ -2,12 +2,19 @@
 #define PROOF_OF_STAKE_GENERATOR_H
 class StakingData;
 class uint256;
+
+enum HashproofGenerationState
+{
+    FAILED_SETUP,
+    FAILED_GENERATION,
+    SUCCESS
+};
 class HashproofCreationResult
 {
 private:
-    HashproofCreationResult(unsigned timestamp, bool status);
-    const unsigned hashproofTimestamp;
-    const bool prerequisitsWereMetForGeneration;
+    HashproofCreationResult(unsigned timestamp, HashproofGenerationState status);
+    const unsigned hashproofTimestamp_;
+    HashproofGenerationState state_;
 public:
     static HashproofCreationResult Success(unsigned timestamp);
     static HashproofCreationResult FailedGeneration();

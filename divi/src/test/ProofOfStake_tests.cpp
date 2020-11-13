@@ -10,6 +10,8 @@
 #include <StakingData.h>
 #include <ProofOfStakeCalculator.h>
 #include <I_PoSStakeModifierService.h>
+#include <ProofOfStakeGenerator.h>
+
 
 #include <gmock/gmock.h>
 using ::testing::Return;
@@ -69,4 +71,33 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZ
         std::to_string(transactionTime)  );
 }
 
+BOOST_AUTO_TEST_CASE(willDetermineThatASuccessHashproofCreationResultSucceeded)
+{
+    BOOST_CHECK(HashproofCreationResult::Success(0).succeeded());
+    BOOST_CHECK(HashproofCreationResult::Success(1).succeeded());
+}
+BOOST_AUTO_TEST_CASE(willDetermineThatASuccessHashproofCreationResultDidNotFailAtSetup)
+{
+    BOOST_CHECK(!HashproofCreationResult::Success(0).failedAtSetup());
+    BOOST_CHECK(!HashproofCreationResult::Success(1).failedAtSetup());
+}
+
+BOOST_AUTO_TEST_CASE(willDetermineThatAFailedGenerationHashproofCreationResultCannotSuccedOrFailAtSetup)
+{
+    HashproofCreationResult result = HashproofCreationResult::FailedGeneration();
+    BOOST_CHECK( !result.succeeded() && !result.failedAtSetup() );
+}
+BOOST_AUTO_TEST_CASE(willDetermineThatANonSuccessHashproofCreationResultDidNotSucceeded)
+{
+    BOOST_CHECK(!HashproofCreationResult::FailedSetup().succeeded());
+    BOOST_CHECK(!HashproofCreationResult::FailedGeneration().succeeded());
+}
+
+BOOST_AUTO_TEST_CASE(willRecoverCorrectTimestampIfSuccessAndRecoverZeroOtherwise)
+{
+    uint32_t randomTimestamp = GetRandInt(100000);
+    BOOST_CHECK(HashproofCreationResult::Success(randomTimestamp).timestamp() == randomTimestamp);
+    BOOST_CHECK(HashproofCreationResult::FailedSetup().timestamp() == 0u);
+    BOOST_CHECK(HashproofCreationResult::FailedGeneration().timestamp() == 0u);
+}
 BOOST_AUTO_TEST_SUITE_END()

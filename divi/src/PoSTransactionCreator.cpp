@@ -187,12 +187,20 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     CMutableTransaction& txNew,
     unsigned int& nTxNewTime)
 {
+    static const CChainParams& chainParameters = Params();
+    static SuperblockSubsidyContainer subsidyContainer(chainParameters);
+    static BlockIncentivesPopulator incentives(
+        chainParameters,
+        chainActive,
+        masternodePayments,
+        subsidyContainer.superblockHeightValidator(),
+        subsidyContainer.blockSubsidiesProvider());
+
     CAmount allowedStakingAmount = wallet_.GetStakingBalance();
     MarkTransactionAsCoinstake(txNew);
 
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
-    const CChainParams& chainParameters = Params();
     if(!SelectCoins(chainParameters, allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
 
     auto adjustedTime = GetAdjustedTime();
@@ -203,7 +211,6 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
-    SuperblockSubsidyContainer subsidyContainer(chainParameters);
 
     const CBlockIndex* chainTip = chainActive.Tip();
     int chainTipHeight = chainTip->nHeight;
@@ -245,13 +252,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
         txNew.vout[1].nValue = nCredit;
     }
 
-    BlockIncentivesPopulator(
-        chainParameters,
-        chainActive,
-        masternodePayments,
-        subsidyContainer.superblockHeightValidator(),
-        subsidyContainer.blockSubsidiesProvider())
-        .FillBlockPayee(txNew,blockSubsidity,newBlockHeight,true);
+    incentives.FillBlockPayee(txNew,blockSubsidity,newBlockHeight,true);
 
     int nIn = 0;
     for (const CWalletTx* pcoin : vwtxPrev) {

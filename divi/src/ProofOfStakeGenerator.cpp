@@ -114,7 +114,7 @@ bool CreateHashProofForProofOfStake(
 }
 
 static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
-bool ComputeAndVerifyProofOfStake(
+bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(
     const StakingData& stakingData,
     const unsigned int& hashproofTimestamp,
     uint256& hashProofOfStake)
@@ -125,7 +125,7 @@ bool ComputeAndVerifyProofOfStake(
     return calculator->computeProofOfStakeAndCheckItMeetsTarget(
         hashproofTimestamp, hashProofOfStake);
 }
-HashproofCreationResult CreateHashproofTimestamp(
+HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
     const StakingData& stakingData,
     const unsigned initialTimestamp)
 {
@@ -143,4 +143,19 @@ HashproofCreationResult CreateHashproofTimestamp(
     }
 
     return HashproofCreationResult::Success(hashproofTimestamp);
+}
+
+static ProofOfStakeGenerator proofGenerator;
+bool ComputeAndVerifyProofOfStake(
+    const StakingData& stakingData,
+    const unsigned int& hashproofTimestamp,
+    uint256& hashProofOfStake)
+{
+    return proofGenerator.ComputeAndVerifyProofOfStake(stakingData,hashproofTimestamp,hashProofOfStake);
+}
+HashproofCreationResult CreateHashproofTimestamp(
+    const StakingData& stakingData,
+    const unsigned initialTimestamp)
+{
+    return proofGenerator.CreateHashproofTimestamp(stakingData,initialTimestamp);
 }

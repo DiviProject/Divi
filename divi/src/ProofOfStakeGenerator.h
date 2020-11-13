@@ -24,6 +24,17 @@ public:
     const unsigned& timestamp() const;
 };
 
+class ProofOfStakeGenerator
+{
+public:
+    HashproofCreationResult CreateHashproofTimestamp(
+        const StakingData& stakingData,
+        const unsigned initialTimestamp);
+    bool ComputeAndVerifyProofOfStake(
+        const StakingData& stakingData,
+        const unsigned int& hashproofTimestamp,
+        uint256& hashProofOfStake);
+};
 HashproofCreationResult CreateHashproofTimestamp(
     const StakingData& stakingData,
     const unsigned initialTimestamp);

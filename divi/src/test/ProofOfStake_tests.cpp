@@ -15,17 +15,12 @@
 
 #include <gmock/gmock.h>
 using ::testing::Return;
+using ::testing::_;
 
 extern bool CreateHashProofForProofOfStake(
     const I_ProofOfStakeCalculator& calculator,
     const StakingData& stakingData,
     unsigned int& nTimeTx);
-
-extern bool CreateProofOfStakeCalculator(
-    const I_PoSStakeModifierService& stakeModifierService,
-    const StakingData& stakingData,
-    const unsigned& initialHashproofTimestamp,
-    std::shared_ptr<I_ProofOfStakeCalculator>& calculator);
 
 extern const int nHashDrift;
 
@@ -35,33 +30,37 @@ public:
     typedef std::pair<uint64_t,bool> StakeModifierAndFoundStatusPair;
     MOCK_CONST_METHOD1(getStakeModifier, StakeModifierAndFoundStatusPair(const uint256&) );
 };
+class MockProofOfStakeCalculator: public I_ProofOfStakeCalculator
+{
+public:
+    MOCK_CONST_METHOD3(computeProofOfStakeAndCheckItMeetsTarget_impl, bool(unsigned int, const uint256&, bool) );
+    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
+        unsigned int hashproofTimestamp,
+        uint256& computedProofOfStake,
+        bool checkOnly = false) const
+    {
+        return computeProofOfStakeAndCheckItMeetsTarget_impl(hashproofTimestamp, computedProofOfStake, checkOnly);
+    }
+};
+
 
 BOOST_AUTO_TEST_SUITE(CreationOfHashproofs)
 
-BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesWhenDifficultyIsInfiniteDueToZeroValuedStake)
+BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesIfCalculatorRepeatedlyFails)
 {
-    CBlock blockHoldingUtxo;
-    blockHoldingUtxo.nTime = GetRandInt(1<<20);
+    uint32_t blockTimeOfFirstUTXOConfirmation = GetRandInt(1<<20);
     unsigned chainTipDifficulty = 0x1000001;
-    COutPoint utxo(GetRandHash(),GetRandInt(10));
-    CAmount value = 0*COIN;
-    unsigned transactionTimeStart = blockHoldingUtxo.nTime + 60*60*60;
+    unsigned transactionTimeStart = blockTimeOfFirstUTXOConfirmation + 60*60*60;
     unsigned transactionTime = transactionTimeStart;
-    MockPoSStakeModifierService stakeModifierService;
-    ON_CALL(stakeModifierService,getStakeModifier).WillByDefault(Return(std::make_pair(0, true)));
+    COutPoint utxo(GetRandHash(),GetRandInt(10));
+    uint256 blockHash = GetRandHash();
+    StakingData stakingData(chainTipDifficulty, blockTimeOfFirstUTXOConfirmation, blockHash, utxo, 0*COIN);
 
-    StakingData stakingData(
-        chainTipDifficulty,
-        blockHoldingUtxo.nTime,
-        blockHoldingUtxo.GetHash(),
-        utxo,
-        value);
-
-    std::shared_ptr<I_ProofOfStakeCalculator> calculator;
-    assert(CreateProofOfStakeCalculator(stakeModifierService,stakingData,transactionTime,calculator));
+    MockProofOfStakeCalculator calculator;
+    ON_CALL(calculator, computeProofOfStakeAndCheckItMeetsTarget_impl(_,_,_) ).WillByDefault(Return(false));
     BOOST_CHECK_MESSAGE(
         !CreateHashProofForProofOfStake(
-            *calculator,
+            calculator,
             stakingData,
             transactionTime),
         "Proof of stake should not valid\n");

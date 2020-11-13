@@ -81,10 +81,9 @@ ProofOfStakeGenerator::ProofOfStakeGenerator(
 {
 }
 
-
-bool ProofOfStakeTimeRequirementsAreMet(
+bool ProofOfStakeGenerator::ProofOfStakeTimeRequirementsAreMet(
     unsigned int coinstakeStartTime,
-    unsigned int hashproofTimestamp)
+    unsigned int hashproofTimestamp) const
 {
     if (hashproofTimestamp < coinstakeStartTime) // Transaction timestamp violation
     {
@@ -98,17 +97,16 @@ bool ProofOfStakeTimeRequirementsAreMet(
     return true;
 }
 
-bool CreateProofOfStakeCalculator(
-    const I_PoSStakeModifierService& stakeModifierService,
+bool ProofOfStakeGenerator::CreateProofOfStakeCalculator(
     const StakingData& stakingData,
     const unsigned& initialHashproofTimestamp,
-    std::shared_ptr<I_ProofOfStakeCalculator>& calculator)
+    std::shared_ptr<I_ProofOfStakeCalculator>& calculator) const
 {
     if(!ProofOfStakeTimeRequirementsAreMet(stakingData.blockTimeOfFirstConfirmationBlock_,initialHashproofTimestamp))
         return false;
 
     std::pair<uint64_t,bool> stakeModifierData =
-        stakeModifierService.getStakeModifier(stakingData.blockHashOfFirstConfirmationBlock_);
+        stakeModifierService_.getStakeModifier(stakingData.blockHashOfFirstConfirmationBlock_);
     if (!stakeModifierData.second)
     {
         return error("%s: failed to get kernel stake modifier \n",__func__);
@@ -127,7 +125,7 @@ bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(
     uint256& hashProofOfStake)
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
-    if(!CreateProofOfStakeCalculator(stakeModifierService_, stakingData,hashproofTimestamp,calculator))
+    if(!CreateProofOfStakeCalculator(stakingData,hashproofTimestamp,calculator))
         return false;
     return calculator->computeProofOfStakeAndCheckItMeetsTarget(
         hashproofTimestamp, hashProofOfStake);
@@ -137,7 +135,7 @@ HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
     const unsigned initialTimestamp)
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
-    if(!CreateProofOfStakeCalculator(stakeModifierService_, stakingData,initialTimestamp,calculator))
+    if(!CreateProofOfStakeCalculator(stakingData,initialTimestamp,calculator))
         return HashproofCreationResult::FailedSetup();
 
     unsigned hashproofTimestamp = initialTimestamp;

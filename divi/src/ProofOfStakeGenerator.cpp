@@ -113,7 +113,6 @@ bool CreateHashProofForProofOfStake(
     return fSuccess;
 }
 
-static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
 ProofOfStakeGenerator::ProofOfStakeGenerator(
     const I_PoSStakeModifierService& stakeModifierService
     ): stakeModifierService_(stakeModifierService)
@@ -126,7 +125,7 @@ bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(
     uint256& hashProofOfStake)
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
-    if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,hashproofTimestamp,calculator))
+    if(!CreateProofOfStakeCalculator(stakeModifierService_, stakingData,hashproofTimestamp,calculator))
         return false;
     return calculator->computeProofOfStakeAndCheckItMeetsTarget(
         hashproofTimestamp, hashProofOfStake);
@@ -136,7 +135,7 @@ HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
     const unsigned initialTimestamp)
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
-    if(!CreateProofOfStakeCalculator(stakeModifierService, stakingData,initialTimestamp,calculator))
+    if(!CreateProofOfStakeCalculator(stakeModifierService_, stakingData,initialTimestamp,calculator))
         return HashproofCreationResult::FailedSetup();
 
     unsigned hashproofTimestamp = initialTimestamp;
@@ -151,6 +150,7 @@ HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
     return HashproofCreationResult::Success(hashproofTimestamp);
 }
 
+static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
 static ProofOfStakeGenerator proofGenerator(stakeModifierService);
 bool ComputeAndVerifyProofOfStake(
     const StakingData& stakingData,

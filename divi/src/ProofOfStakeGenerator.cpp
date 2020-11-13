@@ -76,8 +76,10 @@ bool CreateHashProofForProofOfStake(
 }
 
 ProofOfStakeGenerator::ProofOfStakeGenerator(
-    const I_PoSStakeModifierService& stakeModifierService
+    const I_PoSStakeModifierService& stakeModifierService,
+    unsigned minimumCoinAgeForStaking
     ): stakeModifierService_(stakeModifierService)
+    , minimumCoinAgeForStaking_(minimumCoinAgeForStaking)
 {
 }
 
@@ -150,18 +152,23 @@ HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
     return HashproofCreationResult::Success(hashproofTimestamp);
 }
 
-static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
-static ProofOfStakeGenerator proofGenerator(stakeModifierService);
+static ProofOfStakeGenerator& instanceOfProofOfStakeGeneration()
+{
+    static unsigned _minimumCoinAgeForStaking = Params().GetMinCoinAgeForStaking();
+    static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
+    static ProofOfStakeGenerator proofGenerator(stakeModifierService, _minimumCoinAgeForStaking);
+    return proofGenerator;
+}
 bool ComputeAndVerifyProofOfStake(
     const StakingData& stakingData,
     const unsigned int& hashproofTimestamp,
     uint256& hashProofOfStake)
 {
-    return proofGenerator.ComputeAndVerifyProofOfStake(stakingData,hashproofTimestamp,hashProofOfStake);
+    return instanceOfProofOfStakeGeneration().ComputeAndVerifyProofOfStake(stakingData,hashproofTimestamp,hashProofOfStake);
 }
 HashproofCreationResult CreateHashproofTimestamp(
     const StakingData& stakingData,
     const unsigned initialTimestamp)
 {
-    return proofGenerator.CreateHashproofTimestamp(stakingData,initialTimestamp);
+    return instanceOfProofOfStakeGeneration().CreateHashproofTimestamp(stakingData,initialTimestamp);
 }

@@ -32,6 +32,8 @@ class ProofOfStakeGenerator
 {
 private:
     const I_PoSStakeModifierService& stakeModifierService_;
+    unsigned minimumCoinAgeForStaking_;
+
     bool ProofOfStakeTimeRequirementsAreMet(
         unsigned int coinstakeStartTime,
         unsigned int hashproofTimestamp) const;
@@ -40,7 +42,9 @@ private:
         const unsigned& initialHashproofTimestamp,
         std::shared_ptr<I_ProofOfStakeCalculator>& calculator) const;
 public:
-    ProofOfStakeGenerator(const I_PoSStakeModifierService& stakeModifierService);
+    ProofOfStakeGenerator(
+        const I_PoSStakeModifierService& stakeModifierService,
+        unsigned minimumCoinAgeForStaking);
     HashproofCreationResult CreateHashproofTimestamp(
         const StakingData& stakingData,
         const unsigned initialTimestamp);

@@ -21,6 +21,6 @@ public:
     virtual bool computeProofOfStakeAndCheckItMeetsTarget(
         unsigned int hashproofTimestamp,
         uint256& computedProofOfStake,
-        bool checkOnly = false) const;
+        bool checkOnly) const;
 };
 #endif// PROOF_OF_STAKE_CALCULATOR_H

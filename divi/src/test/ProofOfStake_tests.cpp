@@ -11,7 +11,7 @@
 #include <ProofOfStakeCalculator.h>
 #include <I_PoSStakeModifierService.h>
 #include <ProofOfStakeGenerator.h>
-
+#include <I_ProofOfStakeCalculator.h>
 
 #include <gmock/gmock.h>
 using ::testing::Return;
@@ -33,14 +33,7 @@ public:
 class MockProofOfStakeCalculator: public I_ProofOfStakeCalculator
 {
 public:
-    MOCK_CONST_METHOD3(computeProofOfStakeAndCheckItMeetsTarget_impl, bool(unsigned int, const uint256&, bool) );
-    virtual bool computeProofOfStakeAndCheckItMeetsTarget(
-        unsigned int hashproofTimestamp,
-        uint256& computedProofOfStake,
-        bool checkOnly = false) const
-    {
-        return computeProofOfStakeAndCheckItMeetsTarget_impl(hashproofTimestamp, computedProofOfStake, checkOnly);
-    }
+    MOCK_CONST_METHOD3( computeProofOfStakeAndCheckItMeetsTarget, bool(unsigned int, uint256&, bool) );
 };
 
 
@@ -57,7 +50,7 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesIfCalculatorRepeatedlyFails)
     StakingData stakingData(chainTipDifficulty, blockTimeOfFirstUTXOConfirmation, blockHash, utxo, 0*COIN);
 
     MockProofOfStakeCalculator calculator;
-    ON_CALL(calculator, computeProofOfStakeAndCheckItMeetsTarget_impl(_,_,_) ).WillByDefault(Return(false));
+    ON_CALL(calculator, computeProofOfStakeAndCheckItMeetsTarget(_,_,_) ).WillByDefault(Return(false));
     BOOST_CHECK_MESSAGE(
         !CreateHashProofForProofOfStake(
             calculator,

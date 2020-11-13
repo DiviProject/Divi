@@ -62,7 +62,7 @@ bool CreateHashProofForProofOfStake(
         if (chainActive.Height() != nHeightStart)
             break;
 
-        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,hashproof))
+        if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,hashproof,false))
         {
             --hashproofTimestamp;
             continue;
@@ -128,7 +128,7 @@ bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(
     if(!CreateProofOfStakeCalculator(stakingData,hashproofTimestamp,calculator))
         return false;
     return calculator->computeProofOfStakeAndCheckItMeetsTarget(
-        hashproofTimestamp, hashProofOfStake);
+        hashproofTimestamp, hashProofOfStake,false);
 }
 HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
     const StakingData& stakingData,

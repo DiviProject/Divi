@@ -8,6 +8,6 @@ public:
     virtual bool computeProofOfStakeAndCheckItMeetsTarget(
         unsigned int hashproofTimestamp,
         uint256& computedProofOfStake,
-        bool checkOnly = false) const = 0;
+        bool checkOnly) const = 0;
 };
 #endif// I_PROOF_OF_STAKE_CALCULATOR_H

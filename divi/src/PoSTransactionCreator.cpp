@@ -206,7 +206,8 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     SuperblockSubsidyContainer subsidyContainer(chainParameters);
 
     const CBlockIndex* chainTip = chainActive.Tip();
-    int newBlockHeight = chainTip->nHeight + 1;
+    int chainTipHeight = chainTip->nHeight;
+    int newBlockHeight = chainTipHeight + 1;
     auto blockSubsidity = subsidyContainer.blockSubsidiesProvider().GetBlockSubsidity(newBlockHeight);
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
@@ -215,12 +216,17 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
         {
             continue;
         }
-        if(FindHashproof(nBits, nTxNewTime, pcoin,txNew))
+
+        if(FindHashproof(nBits, nTxNewTime, pcoin,txNew) )
         {
-            vwtxPrev.push_back(pcoin.first);
-            nCredit += pcoin.first->vout[pcoin.second].nValue;
+            if(chainActive.Height() == chainTipHeight)
+            {
+                vwtxPrev.push_back(pcoin.first);
+                nCredit += pcoin.first->vout[pcoin.second].nValue;
+            }
             break;
         }
+
     }
     if (nCredit == 0 || nCredit > allowedStakingAmount)
         return false;

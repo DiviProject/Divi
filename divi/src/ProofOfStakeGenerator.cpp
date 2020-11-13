@@ -55,12 +55,8 @@ bool CreateHashProofForProofOfStake(
     unsigned int& hashproofTimestamp)
 {
     uint256 hashproof = 0;
-    int nHeightStart = chainActive.Height();
     for (unsigned int i = 0; i < nHashDrift; i++) //iterate the hashing
     {
-        if (chainActive.Height() != nHeightStart)
-            break;
-
         if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,hashproof,false))
         {
             --hashproofTimestamp;

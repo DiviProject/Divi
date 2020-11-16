@@ -10,9 +10,8 @@
 #include "amount.h"
 #include "main.h"
 #include "masternode-sync.h"
-#include <BlockFactory.h>
-#include "CoinMinter.h"
 #include <CoinMintingModule.h>
+#include <I_CoinMinter.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>

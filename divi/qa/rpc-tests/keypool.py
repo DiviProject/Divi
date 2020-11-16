@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -61,7 +61,7 @@ class KeypoolTest (BitcoinTestFramework):
         try:
             addr = node.getnewaddress()
             raise AssertionError('Keypool should be exhausted after one address')
-        except JSONRPCException,e:
+        except JSONRPCException as e:
             assert(e.error['code']==-12)
 
         # put three new keys in the keypool
@@ -84,7 +84,7 @@ class KeypoolTest (BitcoinTestFramework):
         try:
             addr = node.getrawchangeaddress()
             raise AssertionError('Keypool should be exhausted after three addresses')
-        except JSONRPCException,e:
+        except JSONRPCException as e:
             assert(e.error['code']==-12)
         assert_equal(node.getwalletinfo()["keypoolsize"], 3)
 
@@ -97,7 +97,7 @@ class KeypoolTest (BitcoinTestFramework):
         try:
             addr = node.getnewaddress()
             raise AssertionError('Keypool should be exhausted after three addresses')
-        except JSONRPCException,e:
+        except JSONRPCException as e:
             assert(e.error['code']==-12)
         assert_equal(node.getwalletinfo()["keypoolsize"], 0)
 

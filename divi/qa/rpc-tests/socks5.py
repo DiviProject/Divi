@@ -5,7 +5,7 @@
 Dummy Socks5 server for testing.
 '''
 from __future__ import print_function, division, unicode_literals
-import socket, threading, Queue
+import socket, threading, queue
 import traceback, sys
 
 ### Protocol constants
@@ -99,12 +99,12 @@ class Socks5Connection(object):
                 raise IOError('Unhandled command %i in connect request' % cmd)
 
             if atyp == AddressType.IPV4:
-                addr = recvall(self.conn, 4)
+                addr = recvall(self.conn, 4).decode("ascii")
             elif atyp == AddressType.DOMAINNAME:
                 n = recvall(self.conn, 1)[0]
-                addr = str(recvall(self.conn, n))
+                addr = recvall(self.conn, n).decode("ascii")
             elif atyp == AddressType.IPV6:
-                addr = recvall(self.conn, 16)
+                addr = recvall(self.conn, 16).decode("ascii")
             else:
                 raise IOError('Unknown address type %i' % atyp)
             port_hi,port_lo = recvall(self.conn, 2)
@@ -117,7 +117,7 @@ class Socks5Connection(object):
             self.serv.queue.put(cmdin)
             print('Proxy: ', cmdin)
             # Fall through to disconnect
-        except Exception,e:
+        except Exception as e:
             traceback.print_exc(file=sys.stderr)
             self.serv.queue.put(e)
         finally:
@@ -132,7 +132,7 @@ class Socks5Server(object):
         self.s.listen(5)
         self.running = False
         self.thread = None
-        self.queue = Queue.Queue() # report connections and exceptions to client
+        self.queue = queue.Queue() # report connections and exceptions to client
 
     def run(self):
         while self.running:

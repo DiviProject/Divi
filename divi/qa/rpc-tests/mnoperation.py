@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2020 The DIVI developers
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -26,7 +26,7 @@ import time
 class MnStatusTest (BitcoinTestFramework):
 
   def __init__ (self):
-    super (MnStatusTest, self).__init__ ()
+    super ().__init__ ()
     self.base_args = ["-debug"]
 
   def setup_chain (self):

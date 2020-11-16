@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -14,7 +14,7 @@ import os
 import shutil
 import random
 from threading import Thread
-from Queue import Queue
+from queue import Queue
 
 def mineSingleBlock(miningQueue):
     while not miningQueue.empty():

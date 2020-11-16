@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -66,7 +66,7 @@ class RpcBindTest(BitcoinTestFramework):
             wait_bitcoinds()
 
     def run_test(self):
-        assert(sys.platform == 'linux2') # due to OS-specific network stats queries, this test works only on Linux
+        assert(sys.platform == 'linux') # due to OS-specific network stats queries, this test works only on Linux
         # find the first non-loopback interface for testing
         non_loopback_ip = None
         for name,ip in all_interfaces():
@@ -109,7 +109,7 @@ class RpcBindTest(BitcoinTestFramework):
         try:
             self.run_allowip_test(['1.1.1.1'], non_loopback_ip, defaultport)
             assert(not 'Connection not denied by rpcallowip as expected')
-        except ValueError:
+        except JSONRPCException:
             pass
 
 

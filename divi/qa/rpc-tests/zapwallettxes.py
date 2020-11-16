@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2014 The Bitcoin Core developers
 # Copyright (c) 2020 The DIVI developers
 # Distributed under the MIT/X11 software license, see the accompanying

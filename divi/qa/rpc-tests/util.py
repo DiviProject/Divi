@@ -117,7 +117,13 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
                           _rpchost_to_args(rpchost)  +
                           ["-rpcwait", "getblockcount"], stdout=devnull)
     devnull.close()
-    url = "http://rt:rt@%s:%d" % (rpchost or '127.0.0.1', rpc_port(i))
+    url = "http://rt:rt@"
+    if rpchost and re.match(".*:\\d+$", rpchost):
+      url += rpchost
+    elif rpchost:
+      url += "%s:%d" % (rpchost, rpc_port(i))
+    else:
+      url += "127.0.0.1:%d" % rpc_port(i)
     proxy = AuthServiceProxy(url)
     proxy.url = url # store URL on proxy for info
     return proxy

@@ -14,8 +14,9 @@ clean)
    find -type f ! -iname "sha256checksums" -exec sha256sum "{}" + > sha256checksums &&
    echo "8f68957bdf5f62b25e4187c3dc3ac994b24230f7d130165754235ea9e405ceb1  sha256checksums" | sha256sum -c  &&
    rm sha256checksums && popd &&
-   tar -cJf MacOSX10.9.sdk.tar.xz ./ &&
-   rm -r MacOSX10.9.sdk &&
+   mkdir tmp && mv MacOSX10.9.sdk tmp/MacOSX10.9.sdk &&
+   tar -cJf MacOSX10.9.sdk.tar.xz ./tmp/ &&
+   rm -rf ./tmp &&
    git clone -q https://github.com/raspberrypi/tools.git &&
    tar -czf raspberrypi-tools.tar.gz ./tools &&
    rm -rf ./tools &&

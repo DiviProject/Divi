@@ -15,7 +15,7 @@ clean)
    git clone -q https://github.com/raspberrypi/tools.git &&
    tar -czf raspberrypi-tools.tar.gz ./tools &&
    rm -rf ./tools &&
-   git clone -q https://github.com/devrandom/gitian-builder.git /blddv/gitian-builder/ &&
+   git clone -q https://github.com/DiviProject/gitian-builder.git /blddv/gitian-builder/ &&
    sed -i -e "s/RUN echo 'Acquire::http { Proxy /# RUN echo 'Acquire::http { Proxy /g" /blddv/gitian-builder/bin/make-base-vm &&
    cd /blddv/gitian-builder/ && git add . &&
    git config --global user.email "DevelopmentDivi" &&

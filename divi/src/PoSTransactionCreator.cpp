@@ -12,6 +12,7 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <StakingData.h>
+#include <LegacyPoSStakeModifierService.h>
 
 extern Settings& settings;
 extern const int nHashDrift;
@@ -34,6 +35,8 @@ PoSTransactionCreator::PoSTransactionCreator(
         masternodePayments,
         superblockSubsidies_->superblockHeightValidator(),
         superblockSubsidies_->blockSubsidiesProvider()))
+    , stakeModifierService_(std::make_shared<LegacyPoSStakeModifierService>(mapBlockIndex,activeChain_))
+    , proofGenerator_(std::make_shared<ProofOfStakeGenerator>(*stakeModifierService_, chainParameters_.GetMinCoinAgeForStaking()) )
     , wallet_(wallet)
     , coinstakeSearchInterval_(coinstakeSearchInterval)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
@@ -163,7 +166,7 @@ bool PoSTransactionCreator::FindHashproof(
         it->second->GetBlockHash(),
         COutPoint(stakeData.first->GetHash(), stakeData.second),
         stakeData.first->vout[stakeData.second].nValue);
-    HashproofCreationResult hashproofResult = CreateHashproofTimestamp(stakingData,nTxNewTime);
+    HashproofCreationResult hashproofResult = proofGenerator_->CreateHashproofTimestamp(stakingData,nTxNewTime);
     if(!hashproofResult.failedAtSetup())
     {
         hashedBlockTimestamps_.clear();

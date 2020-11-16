@@ -18,6 +18,8 @@ class CChainParams;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class CChain;
+class I_PoSStakeModifierService;
+class ProofOfStakeGenerator;
 
 class I_PoSTransactionCreator
 {
@@ -37,6 +39,8 @@ private:
     CChain& activeChain_;
     std::shared_ptr<SuperblockSubsidyContainer> superblockSubsidies_;
     std::shared_ptr<BlockIncentivesPopulator> incentives_;
+    std::shared_ptr<I_PoSStakeModifierService> stakeModifierService_;
+    std::shared_ptr<ProofOfStakeGenerator> proofGenerator_;
     CWallet& wallet_;
     int64_t& coinstakeSearchInterval_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;

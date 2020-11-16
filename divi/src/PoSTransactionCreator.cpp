@@ -18,14 +18,22 @@ extern const int nHashDrift;
 extern const unsigned int MAX_KERNEL_COMBINED_INPUTS;
 extern const int maximumFutureBlockDrift = 180; // seconds
 extern BlockMap mapBlockIndex;
-extern CChain chainActive;
 
 PoSTransactionCreator::PoSTransactionCreator(
     const CChainParams& chainParameters,
+    CChain& activeChain,
     CWallet& wallet,
     int64_t& coinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): chainParameters_(chainParameters)
+    , activeChain_(activeChain)
+    , superblockSubsidies_( std::make_shared<SuperblockSubsidyContainer>(chainParameters_))
+    , incentives_(std::make_shared<BlockIncentivesPopulator>(
+        chainParameters_,
+        activeChain_,
+        masternodePayments,
+        superblockSubsidies_->superblockHeightValidator(),
+        superblockSubsidies_->blockSubsidiesProvider()))
     , wallet_(wallet)
     , coinstakeSearchInterval_(coinstakeSearchInterval)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
@@ -33,7 +41,6 @@ PoSTransactionCreator::PoSTransactionCreator(
 }
 
 bool PoSTransactionCreator::SelectCoins(
-    const CChainParams& chainParameters,
     CAmount allowedStakingBalance,
     int& nLastStakeSetUpdate,
     std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins)
@@ -41,7 +48,7 @@ bool PoSTransactionCreator::SelectCoins(
     if (allowedStakingBalance <= 0)
         return false;
 
-    if (chainParameters.NetworkID() == CBaseChainParams::REGTEST ||
+    if (chainParameters_.NetworkID() == CBaseChainParams::REGTEST ||
         GetTime() - nLastStakeSetUpdate > settings.GetArg("-stakeupdatetime",300))
     {
         setStakeCoins.clear();
@@ -160,11 +167,11 @@ bool PoSTransactionCreator::FindHashproof(
     if(!hashproofResult.failedAtSetup())
     {
         hashedBlockTimestamps_.clear();
-        hashedBlockTimestamps_[chainActive.Height()] = GetTime();
+        hashedBlockTimestamps_[activeChain_.Height()] = GetTime();
     }
     if (hashproofResult.succeeded())
     {
-        if (hashproofResult.timestamp() <= chainActive.Tip()->GetMedianTimePast())
+        if (hashproofResult.timestamp() <= activeChain_.Tip()->GetMedianTimePast())
         {
             LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
             return false;
@@ -189,35 +196,26 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     CMutableTransaction& txNew,
     unsigned int& nTxNewTime)
 {
-    static const CChainParams& chainParameters = Params();
-    static SuperblockSubsidyContainer subsidyContainer(chainParameters);
-    static BlockIncentivesPopulator incentives(
-        chainParameters,
-        chainActive,
-        masternodePayments,
-        subsidyContainer.superblockHeightValidator(),
-        subsidyContainer.blockSubsidiesProvider());
-
     CAmount allowedStakingAmount = wallet_.GetStakingBalance();
     MarkTransactionAsCoinstake(txNew);
 
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
-    if(!SelectCoins(chainParameters, allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
+    if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
 
     auto adjustedTime = GetAdjustedTime();
-    int64_t minimumTime = chainActive.Tip()->GetMedianTimePast() + 1;
+    int64_t minimumTime = activeChain_.Tip()->GetMedianTimePast() + 1;
     const int64_t maximumTime = minimumTime + maximumFutureBlockDrift - 1;
-    int64_t drift = chainParameters.RetargetDifficulty()? nHashDrift: 0;
+    int64_t drift = chainParameters_.RetargetDifficulty()? nHashDrift: 0;
     nTxNewTime = std::min(std::max(adjustedTime, minimumTime+drift), maximumTime);
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
 
-    const CBlockIndex* chainTip = chainActive.Tip();
+    const CBlockIndex* chainTip = activeChain_.Tip();
     int chainTipHeight = chainTip->nHeight;
     int newBlockHeight = chainTipHeight + 1;
-    auto blockSubsidity = subsidyContainer.blockSubsidiesProvider().GetBlockSubsidity(newBlockHeight);
+    auto blockSubsidity = superblockSubsidies_->blockSubsidiesProvider().GetBlockSubsidity(newBlockHeight);
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
     {
@@ -228,7 +226,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
 
         if(FindHashproof(nBits, nTxNewTime, pcoin,txNew) )
         {
-            if(chainActive.Height() == chainTipHeight)
+            if(activeChain_.Height() == chainTipHeight)
             {
                 vwtxPrev.push_back(pcoin.first);
                 nCredit += pcoin.first->vout[pcoin.second].nValue;
@@ -254,7 +252,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
         txNew.vout[1].nValue = nCredit;
     }
 
-    incentives.FillBlockPayee(txNew,blockSubsidity,newBlockHeight,true);
+    incentives_->FillBlockPayee(txNew,blockSubsidity,newBlockHeight,true);
 
     int nIn = 0;
     for (const CWalletTx* pcoin : vwtxPrev) {

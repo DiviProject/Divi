@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 #include <map>
+#include <memory>
 
 class CWallet;
 class CBlock;
@@ -14,6 +15,9 @@ class CMutableTransaction;
 class CKeyStore;
 class CWalletTx;
 class CChainParams;
+class SuperblockSubsidyContainer;
+class BlockIncentivesPopulator;
+class CChain;
 
 class I_PoSTransactionCreator
 {
@@ -30,6 +34,9 @@ class PoSTransactionCreator: public I_PoSTransactionCreator
 {
 private:
     const CChainParams& chainParameters_;
+    CChain& activeChain_;
+    std::shared_ptr<SuperblockSubsidyContainer> superblockSubsidies_;
+    std::shared_ptr<BlockIncentivesPopulator> incentives_;
     CWallet& wallet_;
     int64_t& coinstakeSearchInterval_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
@@ -46,7 +53,6 @@ private:
         CMutableTransaction& txNew);
 
     bool SelectCoins(
-        const CChainParams& chainParameters,
         CAmount allowedStakingBalance,
         int& nLastStakeSetUpdate,
         std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins);
@@ -65,6 +71,7 @@ private:
 public:
     PoSTransactionCreator(
         const CChainParams& chainParameters,
+        CChain& activeChain,
         CWallet& wallet,
         int64_t& coinstakeSearchInterval,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);

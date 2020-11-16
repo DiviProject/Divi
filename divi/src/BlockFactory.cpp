@@ -27,7 +27,7 @@ BlockFactory::BlockFactory(
     , chainParameters_(chainParameters)
     , mainCS_(mainCS)
     , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(transactionMemoryPool, mainCS_))
-    , coinstakeCreator_( std::make_shared<PoSTransactionCreator>(chainParameters_, wallet, lastCoinstakeSearchInterval, hashedBlockTimestamps))
+    , coinstakeCreator_( std::make_shared<PoSTransactionCreator>(chainParameters_,chain_, wallet, lastCoinstakeSearchInterval, hashedBlockTimestamps))
 {
 
 }

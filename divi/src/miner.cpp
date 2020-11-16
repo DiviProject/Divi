@@ -12,6 +12,7 @@
 #include "masternode-sync.h"
 #include <BlockFactory.h>
 #include "CoinMinter.h"
+#include <CoinMintingModule.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -92,9 +93,9 @@ void ThreadStakeMinter(CWallet* pwallet)
     boost::this_thread::interruption_point();
     LogPrintf("ThreadStakeMinter started\n");
     try {
-        static const CChainParams& chainParameters = Params();
-        static BlockFactory blockFactory(*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
-        static CoinMinter minter(blockFactory, pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
+        static CoinMintingModule mintingModule(
+            cs_main,Params(),chainActive,masternodeSync,mempool,vNodes,*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks);
+        static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
         MinterThread(isProofOfStake,minter);
@@ -113,9 +114,9 @@ void static ThreadPoWMinter(void* parg)
     CWallet* pwallet = (CWallet*)parg;
 
     try {
-        static const CChainParams& chainParameters = Params();
-        static BlockFactory blockFactory(*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
-        static CoinMinter minter(blockFactory,pwallet, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,nLastCoinStakeSearchInterval);
+        static CoinMintingModule mintingModule(
+            cs_main,Params(),chainActive,masternodeSync,mempool,vNodes,*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks);
+        static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);
         MinterThread(isProofOfStake, minter);

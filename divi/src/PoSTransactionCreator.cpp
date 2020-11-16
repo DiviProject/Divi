@@ -21,10 +21,12 @@ extern BlockMap mapBlockIndex;
 extern CChain chainActive;
 
 PoSTransactionCreator::PoSTransactionCreator(
+    const CChainParams& chainParameters,
     CWallet& wallet,
     int64_t& coinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
-    ): wallet_(wallet)
+    ): chainParameters_(chainParameters)
+    , wallet_(wallet)
     , coinstakeSearchInterval_(coinstakeSearchInterval)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
 {

@@ -29,6 +29,7 @@ public:
 class PoSTransactionCreator: public I_PoSTransactionCreator
 {
 private:
+    const CChainParams& chainParameters_;
     CWallet& wallet_;
     int64_t& coinstakeSearchInterval_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
@@ -63,6 +64,7 @@ private:
         CMutableTransaction& txNew);
 public:
     PoSTransactionCreator(
+        const CChainParams& chainParameters,
         CWallet& wallet,
         int64_t& coinstakeSearchInterval,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);

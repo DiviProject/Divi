@@ -14,12 +14,14 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     CTxMemPool& mempool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): blockFactory_(new BlockFactory(wallet, lastCoinstakeSearchInterval,hashedBlockTimestamps,chain,chainParameters,mempool,mainCS))
+    , extraTransactions_()
+    , customCoinstake_()
 {
 }
 ExtendedBlockFactory::~ExtendedBlockFactory()
 {
-    blockFactory_.reset();
     customCoinstake_.reset();
+    blockFactory_.reset();
 }
 
 CBlockTemplate* ExtendedBlockFactory::CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake)

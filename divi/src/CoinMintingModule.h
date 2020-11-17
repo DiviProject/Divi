@@ -18,8 +18,8 @@ class I_CoinMinter;
 
 class CoinMintingModule
 {
-    std::shared_ptr<I_BlockFactory> blockFactory_;
-    std::shared_ptr<I_CoinMinter> coinMinter_;
+    std::unique_ptr<I_BlockFactory> blockFactory_;
+    std::unique_ptr<I_CoinMinter> coinMinter_;
 public:
     CoinMintingModule(
         AnnotatedMixin<boost::recursive_mutex>& mainCS,
@@ -31,6 +31,7 @@ public:
         CWallet& wallet,
         int64_t lastCoinStakeSearchInterval,
         BlockTimestampsByHeight hashedBlockTimestampsByHeight);
+    ~CoinMintingModule();
 
     I_BlockFactory& blockFactory() const;
     I_CoinMinter& coinMinter() const;

@@ -58,7 +58,7 @@ CoinMintingModule::CoinMintingModule(
             chainParameters,
             mempool,
             mainCS))
-    , coinMinter_(std::make_shared<CoinMinter>(
+    , coinMinter_( new CoinMinter(
         *blockFactory_,
         &wallet,
         activeChain,
@@ -71,7 +71,11 @@ CoinMintingModule::CoinMintingModule(
         lastCoinStakeSearchInterval))
 {
 }
-
+CoinMintingModule::~CoinMintingModule()
+{
+    coinMinter_.reset();
+    blockFactory_.reset();
+}
 I_BlockFactory& CoinMintingModule::blockFactory() const
 {
     return *blockFactory_;

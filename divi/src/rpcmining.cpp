@@ -23,6 +23,7 @@
 #include "wallet.h"
 #endif
 #include <CoinMinter.h>
+#include <CoinMintingModule.h>
 #include <masternode-sync.h>
 
 #include <stdint.h>
@@ -172,9 +173,10 @@ Value setgenerate(const Array& params, bool fHelp)
 
         Array blockHashes;
         int64_t coinstakeSearchInterval;
-        const CChainParams& chainParameters = Params();
-        BlockFactory blockFactory(*pwalletMain,coinstakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
-        CoinMinter minter(blockFactory,pwalletMain, chainActive, chainParameters,vNodes,masternodeSync,mapHashedBlocks,mempool,cs_main,coinstakeSearchInterval);
+        CoinMintingModule mintingModule(cs_main, Params(), chainActive,masternodeSync,mempool,vNodes,*pwalletMain, coinstakeSearchInterval,mapHashedBlocks);
+        I_CoinMinter& minter = mintingModule.coinMinter();
+        I_BlockFactory& blockFactory = mintingModule.blockFactory();
+
         while (nHeight < nHeightEnd)
         {
             const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());

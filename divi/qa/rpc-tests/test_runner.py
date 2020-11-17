@@ -113,6 +113,7 @@ NON_SCRIPTS = [
     'netutil.py',
     'test_framework.py',
     'test_runner.py',
+    'script.py',
     'socks5.py',
     'util.py',
     'util.sh',

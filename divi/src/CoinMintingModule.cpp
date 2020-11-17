@@ -2,6 +2,42 @@
 #include <BlockFactory.h>
 #include <CoinMinter.h>
 #include <sync.h>
+#include <ExtendedBlockFactory.h>
+#include <chainparams.h>
+
+I_BlockFactory* BlockFactorySelector(
+    CWallet& wallet,
+    int64_t& lastCoinStakeSearchInterval,
+    BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
+    CChain& activeChain,
+    const CChainParams& chainParameters,
+    CTxMemPool& mempool,
+    AnnotatedMixin<boost::recursive_mutex>& mainCS)
+{
+    if(chainParameters.NetworkID()==CBaseChainParams::Network::REGTEST)
+    {
+        return new ExtendedBlockFactory(
+            wallet,
+            lastCoinStakeSearchInterval,
+            hashedBlockTimestampsByHeight,
+            activeChain,
+            chainParameters,
+            mempool,
+            mainCS);
+    }
+    else
+    {
+        return new BlockFactory(
+            wallet,
+            lastCoinStakeSearchInterval,
+            hashedBlockTimestampsByHeight,
+            activeChain,
+            chainParameters,
+            mempool,
+            mainCS);
+    }
+    assert(false);
+}
 
 CoinMintingModule::CoinMintingModule(
     AnnotatedMixin<boost::recursive_mutex>& mainCS,
@@ -13,14 +49,15 @@ CoinMintingModule::CoinMintingModule(
     CWallet& wallet,
     int64_t lastCoinStakeSearchInterval,
     BlockTimestampsByHeight hashedBlockTimestampsByHeight
-    ): blockFactory_(std::make_shared<BlockFactory>(
-        wallet,
-        lastCoinStakeSearchInterval,
-        hashedBlockTimestampsByHeight,
-        activeChain,
-        chainParameters,
-        mempool,
-        mainCS))
+    ): blockFactory_(
+        BlockFactorySelector(
+            wallet,
+            lastCoinStakeSearchInterval,
+            hashedBlockTimestampsByHeight,
+            activeChain,
+            chainParameters,
+            mempool,
+            mainCS))
     , coinMinter_(std::make_shared<CoinMinter>(
         *blockFactory_,
         &wallet,

@@ -7,8 +7,6 @@
 
 #include "amount.h"
 #include "base58.h"
-#include "BlockFactory.h"
-#include "BlockTemplate.h"
 #include "chainparams.h"
 #include "core_io.h"
 #include "init.h"
@@ -22,8 +20,9 @@
 #include "db.h"
 #include "wallet.h"
 #endif
-#include <CoinMinter.h>
+#include <I_CoinMinter.h>
 #include <CoinMintingModule.h>
+#include <ExtendedBlockFactory.h>
 #include <masternode-sync.h>
 
 #include <stdint.h>
@@ -172,10 +171,9 @@ Value setgenerate(const Array& params, bool fHelp)
         }
 
         Array blockHashes;
-        int64_t coinstakeSearchInterval;
+        int64_t coinstakeSearchInterval = 0;
         CoinMintingModule mintingModule(cs_main, Params(), chainActive,masternodeSync,mempool,vNodes,*pwalletMain, coinstakeSearchInterval,mapHashedBlocks);
         I_CoinMinter& minter = mintingModule.coinMinter();
-        I_BlockFactory& blockFactory = mintingModule.blockFactory();
 
         while (nHeight < nHeightEnd)
         {
@@ -238,10 +236,11 @@ Value generateblock(const Array& params, bool fHelp)
         nHeight = chainActive.Height();
     }
 
-    int64_t coinstakeSearchInterval;
-    const CChainParams& chainParameters = Params();
-    ExtendedBlockFactory blockFactory(*pwalletMain,coinstakeSearchInterval,mapHashedBlocks,chainActive,chainParameters, mempool,cs_main);
-    CoinMinter minter(blockFactory,pwalletMain, chainActive, chainParameters, vNodes, masternodeSync, mapHashedBlocks, mempool, cs_main, coinstakeSearchInterval);
+    int64_t coinstakeSearchInterval = 0;
+    CoinMintingModule mintingModule(cs_main, Params(), chainActive,masternodeSync,mempool,vNodes,*pwalletMain, coinstakeSearchInterval,mapHashedBlocks);
+    I_CoinMinter& minter = mintingModule.coinMinter();
+    ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
+    assert(blockFactory);
 
     const Value& extraTx = find_value(options, "extratx");
     if (extraTx.type() != null_type)
@@ -249,7 +248,7 @@ Value generateblock(const Array& params, bool fHelp)
             CTransaction tx;
             if (!DecodeHexTx(tx, val.get_str()))
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
-            blockFactory.addExtraTransaction(tx);
+            blockFactory->addExtraTransaction(tx);
         }
 
     const Value& coinstake = find_value(options, "coinstake");
@@ -259,7 +258,7 @@ Value generateblock(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
         if (!tx.IsCoinStake())
             throw JSONRPCError(RPC_INVALID_PARAMETER, "TX is not a coinstake");
-        blockFactory.setCustomCoinstake(tx);
+        blockFactory->setCustomCoinstake(tx);
     }
 
     const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());

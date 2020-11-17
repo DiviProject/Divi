@@ -185,6 +185,7 @@ BITCOIN_CORE_H = \
   BlockDiskAccessor.h \
   BlockTemplate.h \
   I_BlockFactory.h \
+  ExtendedBlockFactory.h \
   BlockFactory.h \
   masternode.h \
   masternode-payments.h \
@@ -318,6 +319,7 @@ libbitcoin_server_a_SOURCES = \
   WalletLoggingHelper.cpp \
   walletdustcombiner.cpp \
   BlockFactory.cpp \
+  ExtendedBlockFactory.cpp \
   BlockFileOpener.cpp \
   BlockDiskAccessor.cpp \
   merkleblock.cpp \

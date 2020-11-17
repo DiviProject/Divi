@@ -3,6 +3,7 @@
 #include <memory>
 #include <boost/thread/recursive_mutex.hpp>
 #include <map>
+#include <I_BlockFactory.h>
 class CBlockTemplate;
 class CScript;
 class CWallet;
@@ -17,12 +18,6 @@ class CTxMemPool;
 template <typename MutexObj>
 class AnnotatedMixin;
 
-class I_BlockFactory
-{
-public:
-    virtual ~I_BlockFactory() = default;
-    virtual CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake) = 0;
-};
 class BlockFactory: public I_BlockFactory
 {
 private:

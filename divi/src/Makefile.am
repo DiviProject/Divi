@@ -184,6 +184,7 @@ BITCOIN_CORE_H = \
   BlockFileOpener.h \
   BlockDiskAccessor.h \
   BlockTemplate.h \
+  I_BlockFactory.h \
   BlockFactory.h \
   masternode.h \
   masternode-payments.h \

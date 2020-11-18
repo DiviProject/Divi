@@ -12,7 +12,7 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <StakingData.h>
-#include <LegacyPoSStakeModifierService.h>
+#include <I_PoSStakeModifierService.h>
 
 extern Settings& settings;
 extern const int nHashDrift;
@@ -33,8 +33,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     , activeChain_(activeChain)
     , blockSubsidies_( blockSubsidies )
     , incentives_(incentives)
-    , stakeModifierService_(std::make_shared<LegacyPoSStakeModifierService>(mapBlockIndex,activeChain_))
-    , proofGenerator_(std::make_shared<ProofOfStakeGenerator>(*stakeModifierService_, chainParameters_.GetMinCoinAgeForStaking()) )
+    , proofGenerator_(std::make_shared<ProofOfStakeGenerator>(stakeModifierService, chainParameters_.GetMinCoinAgeForStaking()) )
     , wallet_(wallet)
     , coinstakeSearchInterval_(coinstakeSearchInterval)
     , hashedBlockTimestamps_(hashedBlockTimestamps)

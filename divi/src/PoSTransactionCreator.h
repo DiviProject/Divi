@@ -40,7 +40,6 @@ private:
     CChain& activeChain_;
     const I_BlockSubsidyProvider& blockSubsidies_;
     const BlockIncentivesPopulator& incentives_;
-    std::shared_ptr<I_PoSStakeModifierService> stakeModifierService_;
     std::shared_ptr<ProofOfStakeGenerator> proofGenerator_;
     CWallet& wallet_;
     int64_t& coinstakeSearchInterval_;

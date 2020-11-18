@@ -63,7 +63,6 @@ private:
         std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins);
 
     bool PopulateCoinstakeTransaction(
-        const CKeyStore& keystore,
         unsigned int nBits,
         int64_t nSearchInterval,
         CMutableTransaction& txNew,

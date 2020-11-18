@@ -15,7 +15,6 @@
 #include <defaultValues.h>
 extern Settings& settings;
 
-extern std::map<COutPoint, COutPoint> mapInvalidOutPoints;
 extern CFeeRate minRelayTxFee;
 extern CChain chainActive;
 extern CCoinsViewCache* pcoinsTip;
@@ -112,15 +111,7 @@ bool BlockMemoryPoolTransactionCollector::VerifyUTXOIsKnownToMemPool (const CTxI
     }
     return true;
 }
-bool BlockMemoryPoolTransactionCollector::CheckUTXOValidity (const CTxIn& txin, bool& fMissingInputs, const CTransaction &tx)  const
-{
-    if (mapInvalidOutPoints.count(txin.prevout)) {
-        LogPrintf("%s : found invalid input %s in tx %s", __func__, txin.prevout.ToString(), tx.GetHash().ToString());
-        fMissingInputs = true;
-        return false;
-    }
-    return true;
-}
+
 void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
     std::shared_ptr<COrphan>& porphan,
     const CTransaction& tx,
@@ -235,11 +226,6 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
 
                 nTotalIn += mempool_.mapTx[txin.prevout.hash].GetTx().vout[txin.prevout.n].nValue;
                 continue;
-            }
-
-            //Check for invalid/fraudulent inputs. They shouldn't make it through mempool, but check anyways.
-            if(!CheckUTXOValidity(txin, fMissingInputs, tx)) {
-                break;
             }
 
             const CCoins* coins = view.AccessCoins(txin.prevout.hash);

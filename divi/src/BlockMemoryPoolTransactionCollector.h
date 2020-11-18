@@ -51,7 +51,6 @@ private:
 private:
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     bool VerifyUTXOIsKnownToMemPool (const CTxIn& txin, bool& fMissingInputs) const;
-    bool CheckUTXOValidity (const CTxIn& txin, bool& fMissingInputs, const CTransaction &tx) const;
     void RecordOrphanTransaction (
         std::shared_ptr<COrphan>& porphan,
         const CTransaction& tx,

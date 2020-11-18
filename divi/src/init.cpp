@@ -1278,9 +1278,6 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
             return skipLoadingDueToError;
         }
 
-        // Populate list of invalid/fraudulent outpoints that are banned from the chain
-        PopulateInvalidOutPointMap();
-
         // Recalculate money supply
         if (settings.GetBoolArg("-reindexmoneysupply", false)) {
             RecalculateDIVSupply(1);

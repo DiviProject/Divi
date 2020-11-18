@@ -727,22 +727,6 @@ Value getinvalid (const Array& params, bool fHelp)
         strCommand = params[0].get_str();
     }
 
-    if (strCommand == "serials") {
-        Array ret;
-        CAmount nSerialTotal = 0;
-        for (auto it : mapInvalidSerials) {
-            Object objSerial;
-            objSerial.emplace_back(Pair(it.first.GetHex(), FormatMoney(it.second)));
-            nSerialTotal += it.second;
-            ret.emplace_back(objSerial);
-        }
-
-        Object objTotal;
-        objTotal.emplace_back(Pair("total_value", FormatMoney(nSerialTotal)));
-        ret.emplace_back(objTotal);
-        return ret;
-    }
-
     bool fShowAll = false;
     if (strCommand == "all")
         fShowAll = true;
@@ -754,71 +738,6 @@ Value getinvalid (const Array& params, bool fHelp)
     map<COutPoint, int> mapMixedValid;
 
     Array ret;
-    for (auto it : mapInvalidOutPoints) {
-        COutPoint out = it.first;
-        //Get the tx that the outpoint is from
-        CTransaction tx;
-        uint256 hashBlock;
-        if (!GetTransaction(out.hash, tx, hashBlock, true)) {
-            continue;
-        }
-
-        Object objTx;
-        objTx.emplace_back(Pair("inv_out", it.first.ToString()));
-
-        CAmount nValue = tx.vout[out.n].nValue;
-        objTx.emplace_back(Pair("value", FormatMoney(nValue)));
-
-        //Search the txin's to see if any of them are "valid".
-        Object objMixedValid;
-
-        //if some of the other inputs are valid
-        for(CTxIn in2 : tx.vin) {
-            //See if this is already accounted for
-            if(mapInvalidOutPoints.count(in2.prevout) || mapMixedValid.count(in2.prevout))
-                continue;
-
-            CTransaction txPrev;
-            uint256 hashBlock;
-            if(!GetTransaction(in2.prevout.hash, txPrev, hashBlock, true))
-                continue;
-
-            //This is a valid outpoint that mixed with an invalid outpoint. Investigate this person.
-            //Information leakage, not covering their tracks well enough
-            CAmount nValid = txPrev.vout[in2.prevout.n].nValue;
-            objMixedValid.emplace_back(Pair(FormatMoney(nValid), in2.prevout.ToString()));
-
-            nMixedValid += nValid;
-            mapMixedValid[in2.prevout] = 1;
-        }
-
-        //Check whether this bad outpoint has been spent
-        bool fSpent = false;
-        CCoinsViewCache cache(pcoinsTip);
-        const CCoins* coins = cache.AccessCoins(out.hash);
-        if (!coins || !coins->IsAvailable(out.n))
-            fSpent = true;
-
-        objTx.emplace_back(Pair("spent", fSpent));
-        if (!objMixedValid.empty())
-            objTx.emplace_back(Pair("mixed_with_valid", objMixedValid));
-
-        CScript scriptPubKey = tx.vout[out.n].scriptPubKey;
-        if (!fSpent) {
-            CTxDestination dest;
-            if (!ExtractDestination(scriptPubKey, dest)) {
-                continue;
-            }
-            CBitcoinAddress address(dest);
-            mapBanAddress[address] += nValue;
-            nUnspent += nValue;
-        }
-
-        if (fSpent && !fShowAll)
-            continue;
-
-        ret.emplace_back(objTx);
-    }
 
     Object objAddresses;
     for (auto it : mapBanAddress)

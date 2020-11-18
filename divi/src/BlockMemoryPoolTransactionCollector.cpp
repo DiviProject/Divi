@@ -13,7 +13,6 @@
 #include <ValidationState.h>
 #include "Settings.h"
 #include <defaultValues.h>
-
 extern Settings& settings;
 
 extern std::map<COutPoint, COutPoint> mapInvalidOutPoints;
@@ -21,6 +20,7 @@ extern CFeeRate minRelayTxFee;
 extern CChain chainActive;
 extern CCoinsViewCache* pcoinsTip;
 
+class CScriptCheck;
 unsigned int GetLegacySigOpCount(const CTransaction& tx);
 unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& mapInputs);
 bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL );

@@ -19,15 +19,10 @@
 
 class CTransaction;
 class CTxIn;
-class CMutableTransaction;
-class CWallet;
 class CBlock;
 class CCoinsViewCache;
 class CBlockIndex;
 class CTxMemPool;
-class CScriptCheck;
-class CTxUndo;
-class CValidationState;
 
 template <typename MutexObj>
 class AnnotatedMixin;

@@ -4,8 +4,10 @@
 #include <sync.h>
 #include <ExtendedBlockFactory.h>
 #include <chainparams.h>
+#include <BlockMemoryPoolTransactionCollector.h>
 
 I_BlockFactory* BlockFactorySelector(
+    I_BlockTransactionCollector& blockTransactionCollector,
     CWallet& wallet,
     int64_t& lastCoinStakeSearchInterval,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
@@ -17,6 +19,7 @@ I_BlockFactory* BlockFactorySelector(
     if(chainParameters.NetworkID()==CBaseChainParams::Network::REGTEST)
     {
         return new ExtendedBlockFactory(
+            blockTransactionCollector,
             wallet,
             lastCoinStakeSearchInterval,
             hashedBlockTimestampsByHeight,
@@ -28,6 +31,7 @@ I_BlockFactory* BlockFactorySelector(
     else
     {
         return new BlockFactory(
+            blockTransactionCollector,
             wallet,
             lastCoinStakeSearchInterval,
             hashedBlockTimestampsByHeight,
@@ -49,8 +53,10 @@ CoinMintingModule::CoinMintingModule(
     CWallet& wallet,
     int64_t lastCoinStakeSearchInterval,
     BlockTimestampsByHeight hashedBlockTimestampsByHeight
-    ): blockFactory_(
+    ): blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(mempool,mainCS))
+    , blockFactory_(
         BlockFactorySelector(
+            *blockTransactionCollector_,
             wallet,
             lastCoinStakeSearchInterval,
             hashedBlockTimestampsByHeight,
@@ -75,6 +81,7 @@ CoinMintingModule::~CoinMintingModule()
 {
     coinMinter_.reset();
     blockFactory_.reset();
+    blockTransactionCollector_.reset();
 }
 I_BlockFactory& CoinMintingModule::blockFactory() const
 {

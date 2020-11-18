@@ -16,6 +16,7 @@ template <typename MutexObj>
 class AnnotatedMixin;
 class CBlockTemplate;
 class CReserveKey;
+class I_BlockTransactionCollector;
 
 class ExtendedBlockFactory : public I_BlockFactory
 {
@@ -26,6 +27,7 @@ private:
 
 public:
     ExtendedBlockFactory(
+        I_BlockTransactionCollector& blockTransactionCollector,
         CWallet& wallet,
         int64_t& lastCoinstakeSearchInterval,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

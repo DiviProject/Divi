@@ -40,6 +40,7 @@ private:
     CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake);
 public:
     BlockFactory(
+        I_BlockTransactionCollector& blockTransactionCollector,
         CWallet& wallet,
         int64_t& lastCoinstakeSearchInterval,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

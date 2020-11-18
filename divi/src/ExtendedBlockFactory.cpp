@@ -6,6 +6,7 @@
 #include <sync.h>
 
 ExtendedBlockFactory::ExtendedBlockFactory(
+    I_BlockTransactionCollector& blockTransactionCollector,
     CWallet& wallet,
     int64_t& lastCoinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
@@ -13,7 +14,7 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     const CChainParams& chainParameters,
     CTxMemPool& mempool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS
-    ): blockFactory_(new BlockFactory(wallet, lastCoinstakeSearchInterval,hashedBlockTimestamps,chain,chainParameters,mempool,mainCS))
+    ): blockFactory_(new BlockFactory(blockTransactionCollector, wallet, lastCoinstakeSearchInterval,hashedBlockTimestamps,chain,chainParameters,mempool,mainCS))
     , extraTransactions_()
     , customCoinstake_()
 {

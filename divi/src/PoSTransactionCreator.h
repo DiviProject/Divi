@@ -21,6 +21,7 @@ class CChain;
 class I_PoSStakeModifierService;
 class ProofOfStakeGenerator;
 class I_BlockSubsidyProvider;
+class BlockMap;
 
 class I_PoSTransactionCreator
 {
@@ -38,6 +39,7 @@ class PoSTransactionCreator: public I_PoSTransactionCreator
 private:
     const CChainParams& chainParameters_;
     CChain& activeChain_;
+    const BlockMap& mapBlockIndex_;
     const I_BlockSubsidyProvider& blockSubsidies_;
     const BlockIncentivesPopulator& incentives_;
     std::shared_ptr<ProofOfStakeGenerator> proofGenerator_;
@@ -75,6 +77,7 @@ public:
     PoSTransactionCreator(
         const CChainParams& chainParameters,
         CChain& activeChain,
+        const BlockMap& mapBlockIndex,
         const I_PoSStakeModifierService& stakeModifierService,
         const I_BlockSubsidyProvider& blockSubsidies,
         const BlockIncentivesPopulator& incentives,

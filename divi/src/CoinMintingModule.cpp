@@ -65,6 +65,7 @@ CoinMintingModule::CoinMintingModule(
     , coinstakeTransactionCreator_( new PoSTransactionCreator(
         chainParameters,
         activeChain,
+        mapBlockIndex,
         *stakeModifierService_,
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockIncentivesPopulator_,

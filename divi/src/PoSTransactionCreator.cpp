@@ -18,11 +18,11 @@ extern Settings& settings;
 extern const int nHashDrift;
 extern const unsigned int MAX_KERNEL_COMBINED_INPUTS;
 extern const int maximumFutureBlockDrift = 180; // seconds
-extern BlockMap mapBlockIndex;
 
 PoSTransactionCreator::PoSTransactionCreator(
     const CChainParams& chainParameters,
     CChain& activeChain,
+    const BlockMap& mapBlockIndex,
     const I_PoSStakeModifierService& stakeModifierService,
     const I_BlockSubsidyProvider& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
@@ -31,6 +31,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): chainParameters_(chainParameters)
     , activeChain_(activeChain)
+    , mapBlockIndex_(mapBlockIndex)
     , blockSubsidies_( blockSubsidies )
     , incentives_(incentives)
     , proofGenerator_(std::make_shared<ProofOfStakeGenerator>(stakeModifierService, chainParameters_.GetMinCoinAgeForStaking()) )
@@ -150,8 +151,8 @@ bool PoSTransactionCreator::FindHashproof(
     std::pair<const CWalletTx*, unsigned int>& stakeData,
     CMutableTransaction& txNew)
 {
-    BlockMap::const_iterator it = mapBlockIndex.find(stakeData.first->hashBlock);
-    if (it == mapBlockIndex.end())
+    BlockMap::const_iterator it = mapBlockIndex_.find(stakeData.first->hashBlock);
+    if (it == mapBlockIndex_.end())
     {
         if (fDebug) LogPrintf("CreateCoinStake() failed to find block index \n");
         return false;

@@ -5,11 +5,7 @@
 #include "FeeAndPriorityCalculator.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
-#include "pow.h"
 #include "txmempool.h"
-#include "utiltime.h"
-#include "timedata.h"
-#include "util.h"
 #include <ValidationState.h>
 #include "Settings.h"
 #include <defaultValues.h>

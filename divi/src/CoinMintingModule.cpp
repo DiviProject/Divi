@@ -47,7 +47,7 @@ CoinMintingModule::CoinMintingModule(
     int64_t& lastCoinStakeSearchInterval,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight
     ): blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
-    , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(mempool,mainCS))
+    , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(activeChain,mempool,mainCS))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(chainParameters,activeChain,wallet,lastCoinStakeSearchInterval,hashedBlockTimestampsByHeight))
     , blockFactory_(
         BlockFactorySelector(

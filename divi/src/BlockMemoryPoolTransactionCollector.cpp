@@ -16,7 +16,6 @@
 extern Settings& settings;
 
 extern CFeeRate minRelayTxFee;
-extern CChain chainActive;
 extern CCoinsViewCache* pcoinsTip;
 
 class CScriptCheck;
@@ -93,9 +92,11 @@ public:
 };
 
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
+    CChain& activeChain,
     CTxMemPool& mempool,
     CCriticalSection& mainCS
-    ): mempool_(mempool)
+    ): activeChain_(activeChain)
+    , mempool_(mempool)
     , mainCS_(mainCS)
 {
 
@@ -393,7 +394,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
 
     CBlock& block = pblocktemplate.block;
 
-    pblocktemplate.previousBlockIndex = chainActive.Tip();
+    pblocktemplate.previousBlockIndex = activeChain_.Tip();
     const int nHeight = pblocktemplate.previousBlockIndex->nHeight + 1;
     CCoinsViewCache view(pcoinsTip);
 

@@ -42,10 +42,12 @@ class COrphan;
 // We want to sort transactions by priority and fee rate, so:
 typedef boost::tuple<double, CFeeRate, const CTransaction*> TxPriority;
 class TxPriorityCompare;
+class CChain;
 
 class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 {
 private:
+    CChain& activeChain_;
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
 private:
@@ -107,6 +109,7 @@ private:
         CBlockTemplate& blocktemplate) const;
 public:
     BlockMemoryPoolTransactionCollector(
+        CChain& activeChain,
         CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
     bool CollectTransactionsIntoBlock (

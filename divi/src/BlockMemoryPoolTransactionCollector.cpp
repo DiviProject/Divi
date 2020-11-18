@@ -51,6 +51,48 @@ unsigned int GetBlockMinSize(unsigned int defaultBlockMinSize, unsigned int bloc
     return blockMinSize;
 }
 
+//
+// Unconfirmed transactions in the memory pool often depend on other
+// transactions in the memory pool. When we select transactions from the
+// pool, we select by highest priority or fee rate, so we might consider
+// transactions that depend on transactions that aren't yet in the block.
+// The COrphan class keeps track of these 'temporary orphans' while
+// CreateBlock is figuring out which transactions to include.
+//
+class COrphan
+{
+public:
+    const CTransaction* ptx;
+    std::set<uint256> setDependsOn;
+    CFeeRate feeRate;
+    double dPriority;
+
+    COrphan(const CTransaction* ptxIn) : ptx(ptxIn), feeRate(0), dPriority(0)
+    {
+    }
+};
+
+class TxPriorityCompare
+{
+    bool byFee;
+
+public:
+    TxPriorityCompare(bool _byFee) : byFee(_byFee) {}
+
+    bool operator()(const TxPriority& a, const TxPriority& b)
+    {
+        if (byFee) {
+            if (a.get<1>() == b.get<1>())
+                return a.get<0>() < b.get<0>();
+            return a.get<1>() < b.get<1>();
+        } else {
+            if (a.get<0>() == b.get<0>())
+                return a.get<1>() < b.get<1>();
+            return a.get<0>() < b.get<0>();
+        }
+    }
+};
+
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     CTxMemPool& mempool,
     CCriticalSection& mainCS

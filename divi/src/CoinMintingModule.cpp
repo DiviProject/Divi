@@ -43,8 +43,8 @@ CoinMintingModule::CoinMintingModule(
     CTxMemPool& mempool,
     std::vector<CNode*>& peers,
     CWallet& wallet,
-    int64_t lastCoinStakeSearchInterval,
-    BlockTimestampsByHeight hashedBlockTimestampsByHeight
+    int64_t& lastCoinStakeSearchInterval,
+    BlockTimestampsByHeight& hashedBlockTimestampsByHeight
     ): blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(mempool,mainCS))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(chainParameters,activeChain,wallet,lastCoinStakeSearchInterval,hashedBlockTimestampsByHeight))
     , blockFactory_(

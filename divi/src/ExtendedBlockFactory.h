@@ -11,7 +11,6 @@ class CTransaction;
 class CWallet;
 class CChain;
 class CChainParams;
-class CTxMemPool;
 template <typename MutexObj>
 class AnnotatedMixin;
 class CBlockTemplate;
@@ -33,7 +32,6 @@ public:
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
         CChain& chain,
         const CChainParams& chainParameters,
-        CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
     ~ExtendedBlockFactory();
 

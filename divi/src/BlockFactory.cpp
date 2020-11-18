@@ -22,7 +22,6 @@ BlockFactory::BlockFactory(
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
     CChain& chain,
     const CChainParams& chainParameters,
-    CTxMemPool& transactionMemoryPool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): chain_(chain)
     , chainParameters_(chainParameters)

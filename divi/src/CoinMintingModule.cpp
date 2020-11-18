@@ -13,7 +13,6 @@ I_BlockFactory* BlockFactorySelector(
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
     CChain& activeChain,
     const CChainParams& chainParameters,
-    CTxMemPool& mempool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS)
 {
     if(chainParameters.NetworkID()==CBaseChainParams::Network::REGTEST)
@@ -25,7 +24,6 @@ I_BlockFactory* BlockFactorySelector(
             hashedBlockTimestampsByHeight,
             activeChain,
             chainParameters,
-            mempool,
             mainCS);
     }
     else
@@ -37,7 +35,6 @@ I_BlockFactory* BlockFactorySelector(
             hashedBlockTimestampsByHeight,
             activeChain,
             chainParameters,
-            mempool,
             mainCS);
     }
     assert(false);
@@ -62,7 +59,6 @@ CoinMintingModule::CoinMintingModule(
             hashedBlockTimestampsByHeight,
             activeChain,
             chainParameters,
-            mempool,
             mainCS))
     , coinMinter_( new CoinMinter(
         *blockFactory_,

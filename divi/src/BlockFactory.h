@@ -14,7 +14,6 @@ class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
 class CChain;
 class CChainParams;
-class CTxMemPool;
 template <typename MutexObj>
 class AnnotatedMixin;
 
@@ -46,7 +45,6 @@ public:
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
         CChain& chain,
         const CChainParams& chainParameters,
-        CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);
 
     CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake) override;

@@ -23,18 +23,15 @@ extern BlockMap mapBlockIndex;
 PoSTransactionCreator::PoSTransactionCreator(
     const CChainParams& chainParameters,
     CChain& activeChain,
+    const I_BlockSubsidyProvider& blockSubsidies,
+    const BlockIncentivesPopulator& incentives,
     CWallet& wallet,
     int64_t& coinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): chainParameters_(chainParameters)
     , activeChain_(activeChain)
-    , superblockSubsidies_( std::make_shared<SuperblockSubsidyContainer>(chainParameters_))
-    , incentives_(std::make_shared<BlockIncentivesPopulator>(
-        chainParameters_,
-        activeChain_,
-        masternodePayments,
-        superblockSubsidies_->superblockHeightValidator(),
-        superblockSubsidies_->blockSubsidiesProvider()))
+    , blockSubsidies_( blockSubsidies )
+    , incentives_(incentives)
     , stakeModifierService_(std::make_shared<LegacyPoSStakeModifierService>(mapBlockIndex,activeChain_))
     , proofGenerator_(std::make_shared<ProofOfStakeGenerator>(*stakeModifierService_, chainParameters_.GetMinCoinAgeForStaking()) )
     , wallet_(wallet)
@@ -218,7 +215,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     const CBlockIndex* chainTip = activeChain_.Tip();
     int chainTipHeight = chainTip->nHeight;
     int newBlockHeight = chainTipHeight + 1;
-    auto blockSubsidity = superblockSubsidies_->blockSubsidiesProvider().GetBlockSubsidity(newBlockHeight);
+    auto blockSubsidity = blockSubsidies_.GetBlockSubsidity(newBlockHeight);
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
     {
@@ -255,7 +252,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
         txNew.vout[1].nValue = nCredit;
     }
 
-    incentives_->FillBlockPayee(txNew,blockSubsidity,newBlockHeight,true);
+    incentives_.FillBlockPayee(txNew,blockSubsidity,newBlockHeight,true);
 
     int nIn = 0;
     for (const CWalletTx* pcoin : vwtxPrev) {

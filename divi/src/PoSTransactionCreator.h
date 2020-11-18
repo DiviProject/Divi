@@ -15,12 +15,12 @@ class CMutableTransaction;
 class CKeyStore;
 class CWalletTx;
 class CChainParams;
-class SuperblockSubsidyContainer;
+class I_SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class CChain;
 class I_PoSStakeModifierService;
 class ProofOfStakeGenerator;
-
+class I_BlockSubsidyProvider;
 class I_PoSTransactionCreator
 {
 public:
@@ -37,8 +37,8 @@ class PoSTransactionCreator: public I_PoSTransactionCreator
 private:
     const CChainParams& chainParameters_;
     CChain& activeChain_;
-    std::shared_ptr<SuperblockSubsidyContainer> superblockSubsidies_;
-    std::shared_ptr<BlockIncentivesPopulator> incentives_;
+    const I_BlockSubsidyProvider& blockSubsidies_;
+    const BlockIncentivesPopulator& incentives_;
     std::shared_ptr<I_PoSStakeModifierService> stakeModifierService_;
     std::shared_ptr<ProofOfStakeGenerator> proofGenerator_;
     CWallet& wallet_;
@@ -76,6 +76,8 @@ public:
     PoSTransactionCreator(
         const CChainParams& chainParameters,
         CChain& activeChain,
+        const I_BlockSubsidyProvider& blockSubsidies,
+        const BlockIncentivesPopulator& incentives,
         CWallet& wallet,
         int64_t& coinstakeSearchInterval,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);

@@ -7,6 +7,10 @@
 #include <BlockMemoryPoolTransactionCollector.h>
 #include <PoSTransactionCreator.h>
 #include <SuperblockHelpers.h>
+#include <BlockIncentivesPopulator.h>
+#include <LegacyPoSStakeModifierService.h>
+
+#include <masternode-payments.h>
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
@@ -47,8 +51,21 @@ CoinMintingModule::CoinMintingModule(
     int64_t& lastCoinStakeSearchInterval,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight
     ): blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
+    , blockIncentivesPopulator_(new BlockIncentivesPopulator(
+        chainParameters,
+        activeChain,
+        masternodePayments,
+        blockSubsidyContainer_->superblockHeightValidator(),
+        blockSubsidyContainer_->blockSubsidiesProvider()))
     , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(activeChain,mempool,mainCS))
-    , coinstakeTransactionCreator_( new PoSTransactionCreator(chainParameters,activeChain,wallet,lastCoinStakeSearchInterval,hashedBlockTimestampsByHeight))
+    , coinstakeTransactionCreator_( new PoSTransactionCreator(
+        chainParameters,
+        activeChain,
+        blockSubsidyContainer_->blockSubsidiesProvider(),
+        *blockIncentivesPopulator_,
+        wallet,
+        lastCoinStakeSearchInterval,
+        hashedBlockTimestampsByHeight))
     , blockFactory_(
         BlockFactorySelector(
             *blockTransactionCollector_,
@@ -70,14 +87,17 @@ CoinMintingModule::CoinMintingModule(
         lastCoinStakeSearchInterval))
 {
 }
+
 CoinMintingModule::~CoinMintingModule()
 {
     coinMinter_.reset();
     blockFactory_.reset();
     coinstakeTransactionCreator_.reset();
     blockTransactionCollector_.reset();
+    blockIncentivesPopulator_.reset();
     blockSubsidyContainer_.reset();
 }
+
 I_BlockFactory& CoinMintingModule::blockFactory() const
 {
     return *blockFactory_;

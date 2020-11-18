@@ -18,10 +18,12 @@ class I_CoinMinter;
 class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
 class SuperblockSubsidyContainer;
+class BlockIncentivesPopulator;
 
 class CoinMintingModule
 {
     std::unique_ptr<SuperblockSubsidyContainer> blockSubsidyContainer_;
+    std::unique_ptr<BlockIncentivesPopulator> blockIncentivesPopulator_;
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
     std::unique_ptr<I_PoSTransactionCreator> coinstakeTransactionCreator_;
     std::unique_ptr<I_BlockFactory> blockFactory_;

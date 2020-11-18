@@ -1,8 +1,8 @@
 #include <BlockFactory.h>
 #include <script/script.h>
 #include <BlockTemplate.h>
-#include <BlockMemoryPoolTransactionCollector.h>
-#include <PoSTransactionCreator.h>
+#include <I_BlockTransactionCollector.h>
+#include <I_PoSTransactionCreator.h>
 #include <timedata.h>
 #include <boost/thread.hpp>
 #include <pow.h>

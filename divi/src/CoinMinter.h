@@ -30,7 +30,9 @@ class I_BlockSubsidyProvider;
 class CoinMinter: public I_CoinMinter
 {
     static constexpr int64_t fiveMinutes_ = 5 * 60;
+    const I_BlockSubsidyProvider& blockSubsidies_;
     I_BlockFactory& blockFactory_;
+    std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
 
     bool mintingIsRequested_;
     CWallet* pwallet_;
@@ -41,8 +43,6 @@ class CoinMinter: public I_CoinMinter
     CMasternodeSync& masternodeSync_;
     HashedBlockMap& mapHashedBlocks_;
     int64_t& lastCoinStakeSearchInterval_;
-    std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
-    const I_BlockSubsidyProvider& blockSubsidies_;
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
     int64_t timeToWait_;

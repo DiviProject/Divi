@@ -27,7 +27,7 @@ BlockFactory::BlockFactory(
     ): chain_(chain)
     , chainParameters_(chainParameters)
     , mainCS_(mainCS)
-    , blockTransactionCollector_(std::make_shared<BlockMemoryPoolTransactionCollector>(transactionMemoryPool, mainCS_))
+    , blockTransactionCollector_(blockTransactionCollector)
     , coinstakeCreator_( std::make_shared<PoSTransactionCreator>(chainParameters_,chain_, wallet, lastCoinstakeSearchInterval, hashedBlockTimestamps))
 {
 
@@ -120,7 +120,7 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
     }
 
     // Collect memory pool transactions into the block
-    if(!blockTransactionCollector_->CollectTransactionsIntoBlock(*pblocktemplate))
+    if(!blockTransactionCollector_.CollectTransactionsIntoBlock(*pblocktemplate))
     {
         return NULL;
     }

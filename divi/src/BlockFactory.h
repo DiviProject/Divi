@@ -25,7 +25,7 @@ private:
     const CChainParams& chainParameters_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
 
-    std::shared_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
+    I_BlockTransactionCollector& blockTransactionCollector_;
     std::shared_ptr<I_PoSTransactionCreator> coinstakeCreator_;
 
     void SetRequiredWork(CBlockTemplate& pblocktemplate);

@@ -6,6 +6,7 @@
 #include <chainparams.h>
 #include <BlockMemoryPoolTransactionCollector.h>
 #include <PoSTransactionCreator.h>
+#include <SuperblockHelpers.h>
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
@@ -45,7 +46,8 @@ CoinMintingModule::CoinMintingModule(
     CWallet& wallet,
     int64_t& lastCoinStakeSearchInterval,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight
-    ): blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(mempool,mainCS))
+    ): blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
+    , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(mempool,mainCS))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(chainParameters,activeChain,wallet,lastCoinStakeSearchInterval,hashedBlockTimestampsByHeight))
     , blockFactory_(
         BlockFactorySelector(
@@ -55,6 +57,7 @@ CoinMintingModule::CoinMintingModule(
             chainParameters,
             mainCS))
     , coinMinter_( new CoinMinter(
+        *blockSubsidyContainer_,
         *blockFactory_,
         &wallet,
         activeChain,
@@ -71,7 +74,9 @@ CoinMintingModule::~CoinMintingModule()
 {
     coinMinter_.reset();
     blockFactory_.reset();
+    coinstakeTransactionCreator_.reset();
     blockTransactionCollector_.reset();
+    blockSubsidyContainer_.reset();
 }
 I_BlockFactory& CoinMintingModule::blockFactory() const
 {

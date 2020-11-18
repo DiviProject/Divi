@@ -23,6 +23,7 @@ extern CScript COINBASE_FLAGS;
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
 CoinMinter::CoinMinter(
+    I_SuperblockSubsidyContainer& subsidyContainer,
     I_BlockFactory& blockFactory,
     CWallet* pwallet,
     CChain& chain,

@@ -72,6 +72,7 @@ class CoinMinter: public I_CoinMinter
 
 public:
     CoinMinter(
+        I_SuperblockSubsidyContainer& subsidyContainer,
         I_BlockFactory& blockFactory,
         CWallet* pwallet,
         CChain& chain,

@@ -108,6 +108,7 @@ ALL_SCRIPTS = EXTENDED_SCRIPTS + BASE_SCRIPTS
 
 NON_SCRIPTS = [
     # These are script files that live in the functional tests directory, but are not test scripts.
+    'authproxy.py',
     'masternode.py',
     'netutil.py',
     'test_framework.py',

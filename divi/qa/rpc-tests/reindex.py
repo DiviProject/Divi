@@ -7,7 +7,7 @@
 # Test -reindex with CheckBlockIndex
 #
 from test_framework import BitcoinTestFramework
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 import os.path
 

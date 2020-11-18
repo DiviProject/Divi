@@ -6,7 +6,7 @@
 # Test the raw transactions API.
 
 from test_framework import BitcoinTestFramework
-from bitcoinrpc.authproxy import JSONRPCException
+from authproxy import JSONRPCException
 from util import *
 
 

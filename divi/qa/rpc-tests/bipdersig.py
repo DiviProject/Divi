@@ -8,7 +8,7 @@
 #
 
 from test_framework import BitcoinTestFramework
-from bitcoinrpc.authproxy import JSONRPCException
+from authproxy import JSONRPCException
 from util import *
 
 from PowToPosTransition import createPoSStacks, generatePoSBlocks

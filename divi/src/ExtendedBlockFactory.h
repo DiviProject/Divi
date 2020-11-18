@@ -8,7 +8,6 @@
 
 class BlockFactory;
 class CTransaction;
-class CWallet;
 class CChain;
 class CChainParams;
 template <typename MutexObj>
@@ -29,9 +28,6 @@ public:
     ExtendedBlockFactory(
         I_BlockTransactionCollector& blockTransactionCollector,
         I_PoSTransactionCreator& coinstakeCreator,
-        CWallet& wallet,
-        int64_t& lastCoinstakeSearchInterval,
-        std::map<unsigned int, unsigned int>& hashedBlockTimestamps,
         CChain& chain,
         const CChainParams& chainParameters,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);

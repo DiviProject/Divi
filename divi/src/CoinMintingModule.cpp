@@ -10,9 +10,6 @@
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
-    CWallet& wallet,
-    int64_t& lastCoinStakeSearchInterval,
-    BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
     CChain& activeChain,
     const CChainParams& chainParameters,
     AnnotatedMixin<boost::recursive_mutex>& mainCS)
@@ -22,9 +19,6 @@ I_BlockFactory* BlockFactorySelector(
         return new ExtendedBlockFactory(
             blockTransactionCollector,
             coinstakeCreator,
-            wallet,
-            lastCoinStakeSearchInterval,
-            hashedBlockTimestampsByHeight,
             activeChain,
             chainParameters,
             mainCS);
@@ -34,9 +28,6 @@ I_BlockFactory* BlockFactorySelector(
         return new BlockFactory(
             blockTransactionCollector,
             coinstakeCreator,
-            wallet,
-            lastCoinStakeSearchInterval,
-            hashedBlockTimestampsByHeight,
             activeChain,
             chainParameters,
             mainCS);
@@ -60,9 +51,6 @@ CoinMintingModule::CoinMintingModule(
         BlockFactorySelector(
             *blockTransactionCollector_,
             *coinstakeTransactionCreator_,
-            wallet,
-            lastCoinStakeSearchInterval,
-            hashedBlockTimestampsByHeight,
             activeChain,
             chainParameters,
             mainCS))

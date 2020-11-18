@@ -17,6 +17,8 @@ RUN apt-get install libboost-all-dev -y
 RUN apt-get install libssl1.0-dev -y
 RUN apt-get install libevent-dev -y
 RUN apt-get install libdb4.8-dev libdb4.8++-dev -y
+RUN apt-get install libzmq3-dev -y
+RUN apt-get install python3-zmq -y
 
 WORKDIR /app
 COPY . .
@@ -25,6 +27,7 @@ WORKDIR /app/src/GMock
 RUN autoreconf -fvi
 
 WORKDIR /app
+RUN make distclean || true
 RUN ./autogen.sh
 RUN ./configure --disable-tests --without-gui
 RUN make

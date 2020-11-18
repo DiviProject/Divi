@@ -28,7 +28,7 @@ BlockFactory::BlockFactory(
     , chainParameters_(chainParameters)
     , mainCS_(mainCS)
     , blockTransactionCollector_(blockTransactionCollector)
-    , coinstakeCreator_( std::make_shared<PoSTransactionCreator>(chainParameters_,chain_, wallet, lastCoinstakeSearchInterval, hashedBlockTimestamps))
+    , coinstakeCreator_( coinstakeCreator)
 {
 
 }
@@ -72,7 +72,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
 
     CMutableTransaction txCoinStake;
     unsigned int nTxNewTime = 0;
-    if(coinstakeCreator_->CreateProofOfStake(
+    if(coinstakeCreator_.CreateProofOfStake(
             block.nBits,
             block.nTime,
             nLastCoinStakeSearchTime,

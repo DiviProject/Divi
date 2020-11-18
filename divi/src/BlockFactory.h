@@ -25,7 +25,7 @@ private:
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
 
     I_BlockTransactionCollector& blockTransactionCollector_;
-    std::shared_ptr<I_PoSTransactionCreator> coinstakeCreator_;
+    I_PoSTransactionCreator& coinstakeCreator_;
 
     void SetRequiredWork(CBlockTemplate& pblocktemplate);
     void SetBlockTime(CBlock& block);

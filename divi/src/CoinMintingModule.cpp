@@ -12,6 +12,9 @@
 
 #include <masternode-payments.h>
 
+#include <blockmap.h>
+extern BlockMap mapBlockIndex;
+
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
@@ -50,7 +53,8 @@ CoinMintingModule::CoinMintingModule(
     CWallet& wallet,
     int64_t& lastCoinStakeSearchInterval,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight
-    ): blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
+    ): stakeModifierService_(new LegacyPoSStakeModifierService(mapBlockIndex,activeChain))
+    , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
         chainParameters,
         activeChain,
@@ -61,6 +65,7 @@ CoinMintingModule::CoinMintingModule(
     , coinstakeTransactionCreator_( new PoSTransactionCreator(
         chainParameters,
         activeChain,
+        *stakeModifierService_,
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockIncentivesPopulator_,
         wallet,

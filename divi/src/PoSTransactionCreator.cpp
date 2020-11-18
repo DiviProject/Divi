@@ -23,6 +23,7 @@ extern BlockMap mapBlockIndex;
 PoSTransactionCreator::PoSTransactionCreator(
     const CChainParams& chainParameters,
     CChain& activeChain,
+    const I_PoSStakeModifierService& stakeModifierService,
     const I_BlockSubsidyProvider& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
     CWallet& wallet,

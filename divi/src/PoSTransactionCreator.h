@@ -21,6 +21,7 @@ class CChain;
 class I_PoSStakeModifierService;
 class ProofOfStakeGenerator;
 class I_BlockSubsidyProvider;
+
 class I_PoSTransactionCreator
 {
 public:
@@ -76,6 +77,7 @@ public:
     PoSTransactionCreator(
         const CChainParams& chainParameters,
         CChain& activeChain,
+        const I_PoSStakeModifierService& stakeModifierService,
         const I_BlockSubsidyProvider& blockSubsidies,
         const BlockIncentivesPopulator& incentives,
         CWallet& wallet,

@@ -42,7 +42,7 @@ class CoinMinter: public I_CoinMinter
     HashedBlockMap& mapHashedBlocks_;
     int64_t& lastCoinStakeSearchInterval_;
     std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
-    std::shared_ptr<I_SuperblockSubsidyContainer> subsidyContainer_;
+    I_SuperblockSubsidyContainer& subsidyContainer_;
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
     int64_t timeToWait_;

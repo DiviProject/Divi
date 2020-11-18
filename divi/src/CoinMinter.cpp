@@ -10,11 +10,12 @@
 #include <timedata.h>
 #include <PoSTransactionCreator.h>
 #include <boost/thread.hpp>
-#include <SuperblockHelpers.h>
 #include <BlockFactory.h>
 #include <BlockSigning.h>
 #include <ValidationState.h>
 #include <txmempool.h>
+#include <I_SuperblockSubsidyContainer.h>
+#include <I_BlockSubsidyProvider.h>
 
 extern const int nHashDrift;
 
@@ -45,7 +46,7 @@ CoinMinter::CoinMinter(
     , mapHashedBlocks_(mapHashedBlocks)
     , lastCoinStakeSearchInterval_(lastCoinStakeSearchInterval)
     , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
-    , subsidyContainer_( std::make_shared<SuperblockSubsidyContainer>(chainParameters_) )
+    , subsidyContainer_( subsidyContainer )
     , haveMintableCoins_(false)
     , lastTimeCheckedMintable_(0)
     , timeToWait_(0)
@@ -185,7 +186,7 @@ void CoinMinter::SetCoinbaseRewardAndHeight (
     CMutableTransaction& coinbaseTx = *pblocktemplate.coinbaseTransaction;
     block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
     if (!fProofOfStake) {
-        coinbaseTx.vout[0].nValue = subsidyContainer_->blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
+        coinbaseTx.vout[0].nValue = subsidyContainer_.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
         coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
         block.vtx[0] = coinbaseTx;
     }

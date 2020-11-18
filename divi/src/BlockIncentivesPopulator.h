@@ -23,8 +23,8 @@ private:
     const std::string charityPaymentAddress_;
 
 private:
-    void FillTreasuryPayment(CMutableTransaction &tx, int nHeight);
-    void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex);
+    void FillTreasuryPayment(CMutableTransaction &tx, int nHeight) const;
+    void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex) const;
 
 public:
     BlockIncentivesPopulator(
@@ -33,6 +33,6 @@ public:
         CMasternodePayments& masternodePayments,
         const I_SuperblockHeightValidator& heightValidator,
         const I_BlockSubsidyProvider& blockSubsidies);
-    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake);
+    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake) const;
 };
 #endif // BLOCK_INCENTIVES_POPULATOR_H

@@ -38,14 +38,14 @@ BlockIncentivesPopulator::BlockIncentivesPopulator(
 {
 }
 
-void BlockIncentivesPopulator::FillTreasuryPayment(CMutableTransaction &tx, int nHeight)
+void BlockIncentivesPopulator::FillTreasuryPayment(CMutableTransaction &tx, int nHeight) const
 {
     auto rewards = blockSubsidies_.GetBlockSubsidity(nHeight);
     tx.vout.emplace_back(rewards.nTreasuryReward, GetScriptForDestination( CBitcoinAddress(treasuryPaymentAddress_).Get()));
     tx.vout.emplace_back(rewards.nCharityReward, GetScriptForDestination( CBitcoinAddress(charityPaymentAddress_).Get()));
 }
 
-void BlockIncentivesPopulator::FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex)
+void BlockIncentivesPopulator::FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex) const
 {
     auto lotteryWinners = currentBlockIndex->vLotteryWinnersCoinstakes.getLotteryCoinstakes();
     // when we call this we need to have exactly 11 winners
@@ -64,7 +64,7 @@ void BlockIncentivesPopulator::FillLotteryPayment(CMutableTransaction &tx, const
     }
 }
 
-void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake)
+void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake) const
 {
     CBlockIndex* pindexPrev = activeChain_.Tip();
     if (!pindexPrev) return;

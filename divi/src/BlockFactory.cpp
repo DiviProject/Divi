@@ -17,6 +17,7 @@ extern Settings& settings;
 // Actual mining functions
 BlockFactory::BlockFactory(
     I_BlockTransactionCollector& blockTransactionCollector,
+    I_PoSTransactionCreator& coinstakeCreator,
     CWallet& wallet,
     int64_t& lastCoinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

@@ -16,6 +16,7 @@ class AnnotatedMixin;
 class CBlockTemplate;
 class CReserveKey;
 class I_BlockTransactionCollector;
+class I_PoSTransactionCreator;
 
 class ExtendedBlockFactory : public I_BlockFactory
 {
@@ -27,6 +28,7 @@ private:
 public:
     ExtendedBlockFactory(
         I_BlockTransactionCollector& blockTransactionCollector,
+        I_PoSTransactionCreator& coinstakeCreator,
         CWallet& wallet,
         int64_t& lastCoinstakeSearchInterval,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps,

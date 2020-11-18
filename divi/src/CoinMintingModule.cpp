@@ -5,9 +5,11 @@
 #include <ExtendedBlockFactory.h>
 #include <chainparams.h>
 #include <BlockMemoryPoolTransactionCollector.h>
+#include <PoSTransactionCreator.h>
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
+    I_PoSTransactionCreator& coinstakeCreator,
     CWallet& wallet,
     int64_t& lastCoinStakeSearchInterval,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
@@ -19,6 +21,7 @@ I_BlockFactory* BlockFactorySelector(
     {
         return new ExtendedBlockFactory(
             blockTransactionCollector,
+            coinstakeCreator,
             wallet,
             lastCoinStakeSearchInterval,
             hashedBlockTimestampsByHeight,
@@ -30,6 +33,7 @@ I_BlockFactory* BlockFactorySelector(
     {
         return new BlockFactory(
             blockTransactionCollector,
+            coinstakeCreator,
             wallet,
             lastCoinStakeSearchInterval,
             hashedBlockTimestampsByHeight,
@@ -51,9 +55,11 @@ CoinMintingModule::CoinMintingModule(
     int64_t lastCoinStakeSearchInterval,
     BlockTimestampsByHeight hashedBlockTimestampsByHeight
     ): blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(mempool,mainCS))
+    , coinstakeTransactionCreator_( new PoSTransactionCreator(chainParameters,activeChain,wallet,lastCoinStakeSearchInterval,hashedBlockTimestampsByHeight))
     , blockFactory_(
         BlockFactorySelector(
             *blockTransactionCollector_,
+            *coinstakeTransactionCreator_,
             wallet,
             lastCoinStakeSearchInterval,
             hashedBlockTimestampsByHeight,

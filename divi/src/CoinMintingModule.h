@@ -16,10 +16,12 @@ template <typename MutexObj>
 class AnnotatedMixin;
 class I_CoinMinter;
 class I_BlockTransactionCollector;
+class I_PoSTransactionCreator;
 
 class CoinMintingModule
 {
     std::unique_ptr<I_BlockTransactionCollector> blockTransactionCollector_;
+    std::unique_ptr<I_PoSTransactionCreator> coinstakeTransactionCreator_;
     std::unique_ptr<I_BlockFactory> blockFactory_;
     std::unique_ptr<I_CoinMinter> coinMinter_;
 public:

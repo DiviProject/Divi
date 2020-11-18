@@ -15,6 +15,8 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 
+#include <I_BlockTransactionCollector.h>
+
 class CTransaction;
 class CTxIn;
 class CMutableTransaction;
@@ -45,14 +47,6 @@ class COrphan;
 // We want to sort transactions by priority and fee rate, so:
 typedef boost::tuple<double, CFeeRate, const CTransaction*> TxPriority;
 class TxPriorityCompare;
-
-class I_BlockTransactionCollector
-{
-public:
-    virtual ~I_BlockTransactionCollector(){}
-    virtual bool CollectTransactionsIntoBlock (
-        CBlockTemplate& pblocktemplate) const = 0;
-};
 
 class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 {

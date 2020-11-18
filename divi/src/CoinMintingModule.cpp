@@ -101,6 +101,7 @@ CoinMintingModule::~CoinMintingModule()
     blockTransactionCollector_.reset();
     blockIncentivesPopulator_.reset();
     blockSubsidyContainer_.reset();
+    stakeModifierService_.reset();
 }
 
 I_BlockFactory& CoinMintingModule::blockFactory() const

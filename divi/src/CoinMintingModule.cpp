@@ -57,7 +57,7 @@ CoinMintingModule::CoinMintingModule(
             chainParameters,
             mainCS))
     , coinMinter_( new CoinMinter(
-        *blockSubsidyContainer_,
+        blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockFactory_,
         &wallet,
         activeChain,

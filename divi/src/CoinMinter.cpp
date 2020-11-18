@@ -14,7 +14,6 @@
 #include <BlockSigning.h>
 #include <ValidationState.h>
 #include <txmempool.h>
-#include <I_SuperblockSubsidyContainer.h>
 #include <I_BlockSubsidyProvider.h>
 
 extern const int nHashDrift;
@@ -24,7 +23,7 @@ extern CScript COINBASE_FLAGS;
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
 CoinMinter::CoinMinter(
-    I_SuperblockSubsidyContainer& subsidyContainer,
+    const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockFactory& blockFactory,
     CWallet* pwallet,
     CChain& chain,
@@ -46,7 +45,7 @@ CoinMinter::CoinMinter(
     , mapHashedBlocks_(mapHashedBlocks)
     , lastCoinStakeSearchInterval_(lastCoinStakeSearchInterval)
     , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
-    , subsidyContainer_( subsidyContainer )
+    , blockSubsidies_( blockSubsidies )
     , haveMintableCoins_(false)
     , lastTimeCheckedMintable_(0)
     , timeToWait_(0)
@@ -186,7 +185,7 @@ void CoinMinter::SetCoinbaseRewardAndHeight (
     CMutableTransaction& coinbaseTx = *pblocktemplate.coinbaseTransaction;
     block.vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
     if (!fProofOfStake) {
-        coinbaseTx.vout[0].nValue = subsidyContainer_.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nStakeReward;
+        coinbaseTx.vout[0].nValue = blockSubsidies_.GetBlockSubsidity(nHeight).nStakeReward;
         coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
         block.vtx[0] = coinbaseTx;
     }

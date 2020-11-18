@@ -25,7 +25,7 @@ class CBlockTemplate;
 class CTxMemPool;
 template <typename MutexObj>
 class AnnotatedMixin;
-class I_SuperblockSubsidyContainer;
+class I_BlockSubsidyProvider;
 
 class CoinMinter: public I_CoinMinter
 {
@@ -42,7 +42,7 @@ class CoinMinter: public I_CoinMinter
     HashedBlockMap& mapHashedBlocks_;
     int64_t& lastCoinStakeSearchInterval_;
     std::shared_ptr<PeerNotificationOfMintService> peerNotifier_;
-    I_SuperblockSubsidyContainer& subsidyContainer_;
+    const I_BlockSubsidyProvider& blockSubsidies_;
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
     int64_t timeToWait_;
@@ -72,7 +72,7 @@ class CoinMinter: public I_CoinMinter
 
 public:
     CoinMinter(
-        I_SuperblockSubsidyContainer& subsidyContainer,
+        const I_BlockSubsidyProvider& blockSubsidies,
         I_BlockFactory& blockFactory,
         CWallet* pwallet,
         CChain& chain,

@@ -88,7 +88,8 @@ BITCOIN_TESTS =\
   test/WalletIntegrityVerifier_tests.cpp \
   test/CoinMinting_tests.cpp \
   test/ProofOfStake_tests.cpp \
-  test/IsMine_tests.cpp
+  test/IsMine_tests.cpp \
+  test/PoSStakeModifierService_tests.cpp
 
 if ENABLE_WALLET
 BITCOIN_TESTS += \

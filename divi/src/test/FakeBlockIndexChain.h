@@ -6,7 +6,7 @@ class CBlockIndex;
 struct FakeBlockIndexChain
 {
 private:
-    std::vector<const CBlockIndex*> fakeChain;
+    std::vector<CBlockIndex*> fakeChain;
 public:
     void resetFakeChain();
     FakeBlockIndexChain();
@@ -23,9 +23,9 @@ public:
         unsigned totalNumberOfBlocks,
         int32_t time,
         int32_t version,
-        std::vector<const CBlockIndex*>& currentChain
+        std::vector<CBlockIndex*>& currentChain
         );
-    const CBlockIndex* at(unsigned int) const;
-    const CBlockIndex* tip() const;
+    CBlockIndex* at(unsigned int) const;
+    CBlockIndex* tip() const;
 };
 #endif //FAKE_BLOCK_INDEX_CHAIN_H

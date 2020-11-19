@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(willFindStateInCacheIfPresent)
 
 BOOST_AUTO_TEST_CASE(willDeferToCachedStateAtApropriateHeight)
 {
-    
+
     BIP9Deployment bip = createViableBipDeployment();
     ThresholdConditionCache cache;
     FakeBlockIndexChain fakeChain;
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(willDeferToCachedStateAtApropriateHeight)
 
 BOOST_AUTO_TEST_CASE(willDeferToCachedStateInMostRecentStartingBlockIfMedianBlockTimesAreNotLessThanStartTime)
 {
-    
+
     BIP9Deployment bip = createViableBipDeployment();
     ThresholdConditionCache cache;
     FakeBlockIndexChain fakeChain;
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(willNotChangeStateIfMedianBlockTimesArentMonotoneIncreasing
     ThresholdConditionCache cache;
     FakeBlockIndexChain fakeChain;
     CachedBIP9ActivationStateTracker activationStateTracker(bip,cache);
-    
+
     fakeChain.extendBy(bip.nPeriod, bip.nStartTime - 1, 0); // Stays In Defined
     fakeChain.extendBy(bip.nPeriod, bip.nStartTime, 0); // Moves to started
     fakeChain.extendBy(bip.nPeriod, bip.nStartTime,  VERSIONBITS_TOP_BITS | ( (int32_t)1 << bip.bit) ); // Moves To LOCKED_IN
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(willDetectBlockSignalsForBip)
     fakeChain.extendBy(1, 0,  VERSIONBITS_TOP_BITS | bipMask );
     fakeChain.extendBy(1, 0, VERSIONBITS_TOP_BITS | ( bipMask << 1 ) );
     fakeChain.extendBy(1, 0, VERSIONBITS_TOP_BITS | ( bipMask << 1 ) | bipMask );
-    
+
     BOOST_CHECK(!activationStateTracker.bipIsSignaledFor(fakeChain.at(0)));
     BOOST_CHECK(activationStateTracker.bipIsSignaledFor(fakeChain.at(1)));
     BOOST_CHECK(!activationStateTracker.bipIsSignaledFor(fakeChain.at(2)));
@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE(willTransitionFromDefinedOrStartedStateToFailedStateIfMedia
 
         BOOST_CHECK(activationStateTracker.update(fakeChain.at(bip.nPeriod)));
         BOOST_CHECK(activationStateTracker.getLastCachedStatePriorToBlockIndex(fakeChain.at(bip.nPeriod))==ThresholdState::FAILED);
-    }    
+    }
     {
         BIP9Deployment bip = createViableBipDeployment();
         ThresholdConditionCache cache;
@@ -359,7 +359,7 @@ BOOST_AUTO_TEST_CASE(willOverrideTransitionToOtherStateIfMedianBlockTimeIsAtLeas
 
         BOOST_CHECK(activationStateTracker.update(fakeChain.at(bip.nPeriod)));
         BOOST_CHECK(activationStateTracker.getLastCachedStatePriorToBlockIndex(fakeChain.at(bip.nPeriod))==ThresholdState::FAILED);
-    } 
+    }
     {
         BIP9Deployment bip = createViableBipDeployment();
         int32_t bipMask = ( (int32_t)1 << bip.bit);
@@ -530,7 +530,7 @@ struct TestCachedBIP9ActivationStateTracker: public CachedBIP9ActivationStateTra
     TestCachedBIP9ActivationStateTracker(
         const BIP9Deployment& bip,
         ThresholdConditionCache& thresholdCache
-        ): CachedBIP9ActivationStateTracker(bip,thresholdCache) 
+        ): CachedBIP9ActivationStateTracker(bip,thresholdCache)
     {
     }
 
@@ -549,7 +549,7 @@ private:
     ThresholdConditionCache cache;
 public:
     std::shared_ptr<I_BIP9ActivationStateTracker> tracker;
-    std::vector<const CBlockIndex*> fakeChain;
+    std::vector<CBlockIndex*> fakeChain;
     int testCounter;
 
     void clearFakeChain()
@@ -616,7 +616,7 @@ public:
 
         ThresholdState result = tracker->getLastCachedStatePriorToBlockIndex(blockToUpdate);
         BOOST_CHECK_MESSAGE(
-            result == state, 
+            result == state,
             "Comparing: (statecode)" << static_cast<int>(result)
             << " vs " << static_cast<int>(state) << " || testCounter: " << testCounter);
         testCounter++;
@@ -683,13 +683,13 @@ BOOST_AUTO_TEST_CASE(willTransitionFromDefinedToStartedToFailedDueToTimeout)
 
     TestWrapper test;
     test.TestDefined();
-    test.Mine(1, TestTime(1), 0).TestDefined();         
+    test.Mine(1, TestTime(1), 0).TestDefined();
     test.Mine(1000, TestTime(10000) - 1, 0x100).TestDefined();// One second more and it would be defined
     test.Mine(2000, TestTime(10000), 0x100).TestStarted();   // So that's what happens the next period
     test.Mine(2051, TestTime(10010), 0).TestStarted();   // 51 old blocks
     test.Mine(2950, TestTime(10020), 0x100).TestStarted();   // 899 new blocks
     test.Mine(3000, TestTime(20000), 0).TestFailed();   // 50 old blocks (so 899 out of the past 1000)
-    test.Mine(4000, TestTime(20010), 0x100).TestFailed();  
+    test.Mine(4000, TestTime(20010), 0x100).TestFailed();
 }
 
 BOOST_AUTO_TEST_CASE(willFailToTransitionIntoALockedInStateDueToTimeoutEvenIfBipIsSignaled)
@@ -703,10 +703,10 @@ BOOST_AUTO_TEST_CASE(willFailToTransitionIntoALockedInStateDueToTimeoutEvenIfBip
     test.Mine(2000, TestTime(10000), 0x101).TestStarted();   // So that's what happens the next period
     test.Mine(2999, TestTime(30000), 0x100).TestStarted();   // 999 new blocks
     test.Mine(3000, TestTime(30000), 0x100).TestFailed();   // 1 new block (so 1000 out of the past 1000 are new)
-    test.Mine(3999, TestTime(30001), 0).TestFailed();  
-    test.Mine(4000, TestTime(30002), 0).TestFailed();  
-    test.Mine(14333, TestTime(30003), 0).TestFailed();  
-    test.Mine(24000, TestTime(40000), 0).TestFailed();  
+    test.Mine(3999, TestTime(30001), 0).TestFailed();
+    test.Mine(4000, TestTime(30002), 0).TestFailed();
+    test.Mine(14333, TestTime(30003), 0).TestFailed();
+    test.Mine(24000, TestTime(40000), 0).TestFailed();
 }
 
 BOOST_AUTO_TEST_CASE(willTransitionFromDefinedToActiveNormally)
@@ -732,10 +732,10 @@ BOOST_AUTO_TEST_CASE(willRemainInStartedStateUntilTimeoutAndRemainInFailedStateA
     using namespace TestHelpers;
 
     TestWrapper test;
-    test.TestDefined();   
-    test.Mine(999, TestTime(999), 0).TestDefined();   
-    test.Mine(1000, TestTime(1000), 0).TestDefined();   
-    test.Mine(2000, TestTime(2000), 0).TestDefined();   
+    test.TestDefined();
+    test.Mine(999, TestTime(999), 0).TestDefined();
+    test.Mine(1000, TestTime(1000), 0).TestDefined();
+    test.Mine(2000, TestTime(2000), 0).TestDefined();
     test.Mine(3000, TestTime(10000), 0).TestStarted();
     test.Mine(4000, TestTime(10000), 0).TestStarted();
     test.Mine(5000, TestTime(10000), 0).TestStarted();

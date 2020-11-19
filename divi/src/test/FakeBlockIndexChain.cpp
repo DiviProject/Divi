@@ -2,7 +2,7 @@
 #include <chain.h>
 void FakeBlockIndexChain::resetFakeChain()
 {
-    for(const CBlockIndex* ptr: fakeChain)
+    for(CBlockIndex* ptr: fakeChain)
     {
         if(ptr) delete ptr;
     }
@@ -39,27 +39,27 @@ void FakeBlockIndexChain::extendFakeBlockIndexChain(
     unsigned totalNumberOfBlocks,
     int32_t time,
     int32_t version,
-    std::vector<const CBlockIndex*>& currentChain
+    std::vector<CBlockIndex*>& currentChain
     )
 {
     while(currentChain.size() < totalNumberOfBlocks)
     {
         CBlockIndex* pindex = new CBlockIndex();
         pindex->nHeight = currentChain.size();
-        pindex->pprev = currentChain.size() > 0 ? const_cast<CBlockIndex*>(currentChain.back()) : nullptr;
+        pindex->pprev = currentChain.size() > 0 ? currentChain.back(): nullptr;
         pindex->nTime = time;
         pindex->nVersion = version;
         pindex->BuildSkip();
-        currentChain.push_back(const_cast<const CBlockIndex*>(pindex) );
+        currentChain.push_back(pindex);
     }
 }
 
-const CBlockIndex* FakeBlockIndexChain::at(unsigned height) const
+CBlockIndex* FakeBlockIndexChain::at(unsigned height) const
 {
     return fakeChain[height];
 }
 
- const CBlockIndex* FakeBlockIndexChain::tip() const
+ CBlockIndex* FakeBlockIndexChain::tip() const
  {
      return fakeChain.empty()? NULL: fakeChain.back();
  }

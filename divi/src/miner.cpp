@@ -12,6 +12,7 @@
 #include "masternode-sync.h"
 #include <CoinMintingModule.h>
 #include <I_CoinMinter.h>
+#include <Logging.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -26,6 +27,8 @@
 //
 // Internal miner
 //
+void SetThreadPriority(int nPriority);
+void RenameThread(const char* name);
 bool fGenerateDivi = false;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now

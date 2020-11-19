@@ -30,11 +30,14 @@
 #include <blockmap.h>
 #include <txmempool.h>
 #include <defaultValues.h>
+#include <utiltime.h>
+#include <Logging.h>
 
 #include "Settings.h"
 extern Settings& settings;
 extern CChain chainActive;
 extern bool fMasterNode;
+void runCommand(std::string strCommand);
 
 const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator::instance();
 

@@ -12,6 +12,7 @@
 #include <clientversion.h>
 #include <chainparams.h>
 #include <hash.h>
+#include <Logging.h>
 
 bool CBlockUndo::WriteToDisk(CDiskBlockPos& pos, const uint256& hashBlock)
 {

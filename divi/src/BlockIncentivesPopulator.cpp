@@ -12,6 +12,7 @@
 #include <I_SuperblockHeightValidator.h>
 #include <I_BlockSubsidyProvider.h>
 #include <script/standard.h>
+#include <Logging.h>
 
 
 const std::string TREASURY_PAYMENT_ADDRESS("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");

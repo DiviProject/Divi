@@ -2,6 +2,7 @@
 #include <blockmap.h>
 #include <chain.h>
 #include <StakeModifierIntervalHelpers.h>
+#include <Logging.h>
 
 LegacyPoSStakeModifierService::LegacyPoSStakeModifierService(
     const BlockMap& blockIndexByHash,

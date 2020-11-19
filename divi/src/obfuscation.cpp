@@ -27,7 +27,8 @@
 #include <base58address.h>
 
 #include <chrono>
-
+void RenameThread(const char* name);
+extern bool fLiteMode;
 extern const std::string strMessageMagic = "DarkNet Signed Message:\n";
 
 bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier)

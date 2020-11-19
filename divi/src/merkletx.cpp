@@ -8,6 +8,8 @@
 #include <swifttx.h>
 #include <spork.h>
 #include <blockmap.h>
+#include <Logging.h>
+#include <utiltime.h>
 
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
@@ -15,6 +17,8 @@ extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
 extern BlockMap mapBlockIndex;
 extern CChain chainActive;
+extern bool fEnableSwiftTX;
+extern int nSwiftTXDepth;
 
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees);
 

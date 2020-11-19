@@ -23,9 +23,10 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 #include <StakingData.h>
-#include <LegacyPoSStakeModifierService.h>
 #include <StakeModifierIntervalHelpers.h>
 #include <ProofOfStakeGenerator.h>
+#include <Logging.h>
+#include <utiltime.h>
 
 #include <Settings.h>
 extern const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
@@ -33,6 +34,7 @@ extern const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 extern BlockMap mapBlockIndex;
 extern Settings& settings;
 
+extern bool fDebug;
 // Modifier interval: time to elapse before new modifier is computed
 // Set to 3-hour for production network and 20-minute for test network
 int nStakeTargetSpacing = 60;

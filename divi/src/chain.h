@@ -11,7 +11,6 @@
 #include "primitives/block.h"
 #include "tinyformat.h"
 #include "uint256.h"
-#include "util.h"
 #include "libzerocoin/Denominations.h"
 #include "LotteryCoinstakes.h"
 

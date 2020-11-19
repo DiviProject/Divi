@@ -15,11 +15,13 @@
 #include <ValidationState.h>
 #include <txmempool.h>
 #include <I_BlockSubsidyProvider.h>
+#include <Logging.h>
 
 extern const int nHashDrift;
 
 extern CScript COINBASE_FLAGS;
 
+void SetThreadPriority(int nPriority);
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
 CoinMinter::CoinMinter(

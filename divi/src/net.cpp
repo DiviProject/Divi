@@ -23,6 +23,10 @@
 #include "wallet.h"
 #include "Settings.h"
 #include <main.h>
+#include <Logging.h>
+#include <DataDirectory.h>
+#include <utiltime.h>
+#include <util.h>
 
 #ifdef WIN32
 #include <string.h>

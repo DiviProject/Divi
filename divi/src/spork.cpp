@@ -23,6 +23,7 @@
 #include <boost/lexical_cast.hpp>
 #include <ValidationState.h>
 
+extern bool fLiteMode;
 std::map<uint256, CSporkMessage> mapSporks;
 CSporkManager sporkManager;
 extern CAmount nTransactionValueMultiplier;

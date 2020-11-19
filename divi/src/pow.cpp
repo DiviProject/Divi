@@ -11,6 +11,7 @@
 #include "main.h"
 #include "primitives/block.h"
 #include "uint256.h"
+#include <Logging.h>
 
 #include <math.h>
 

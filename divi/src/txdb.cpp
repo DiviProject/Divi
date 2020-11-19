@@ -15,6 +15,7 @@
 #include <chainparams.h>
 #include <addressindex.h>
 #include <spentindex.h>
+#include <DataDirectory.h>
 
 #include <boost/scoped_ptr.hpp>
 

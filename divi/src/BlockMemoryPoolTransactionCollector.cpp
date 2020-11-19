@@ -7,12 +7,15 @@
 #include "primitives/transaction.h"
 #include "txmempool.h"
 #include <ValidationState.h>
-#include "Settings.h"
 #include <defaultValues.h>
+#include <Logging.h>
+
+#include <Settings.h>
 extern Settings& settings;
 
 extern CFeeRate minRelayTxFee;
 extern CCoinsViewCache* pcoinsTip;
+extern bool fDebug;
 
 class CScriptCheck;
 unsigned int GetLegacySigOpCount(const CTransaction& tx);

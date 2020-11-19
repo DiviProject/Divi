@@ -2,6 +2,7 @@
 
 #include <boost/filesystem.hpp>
 #include <DataDirectory.h>
+#include <Logging.h>
 
 boost::filesystem::path GetBlockPosFilename(const CDiskBlockPos& pos, const char* prefix)
 {

@@ -30,6 +30,9 @@
 #include <chainparams.h>
 
 extern std::string strMasterNodePrivKey;
+extern bool fLiteMode;
+extern bool fMasterNode;
+
 
 int ActiveProtocol();
 void Misbehaving(NodeId pnode, int howmuch);

@@ -14,8 +14,11 @@
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <main.h>
+#include <utiltime.h>
 
 #include <array>
+
+extern bool fLiteMode;
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 

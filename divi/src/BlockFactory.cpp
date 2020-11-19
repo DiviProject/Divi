@@ -10,6 +10,7 @@
 #include <chainparams.h>
 #include <reservekey.h>
 #include <sync.h>
+#include <Logging.h>
 
 #include <Settings.h>
 extern Settings& settings;

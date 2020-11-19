@@ -17,10 +17,13 @@
 #include <main.h>
 #include <init.h>
 #include <wallet.h>
+#include <utiltime.h>
+
 
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
 extern CChain chainActive;
+extern bool fMasterNode;
 
 
 static CAmount getCollateralAmount(MasternodeTier tier)

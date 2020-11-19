@@ -13,11 +13,14 @@
 #include <chainparams.h>
 #include <StakingData.h>
 #include <I_PoSStakeModifierService.h>
+#include <Logging.h>
+#include <utiltime.h>
 
 extern Settings& settings;
 extern const int nHashDrift;
 extern const unsigned int MAX_KERNEL_COMBINED_INPUTS;
 extern const int maximumFutureBlockDrift = 180; // seconds
+extern bool fDebug;
 
 PoSTransactionCreator::PoSTransactionCreator(
     const CChainParams& chainParameters,

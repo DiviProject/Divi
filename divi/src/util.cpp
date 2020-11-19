@@ -161,12 +161,6 @@ void ParseParameters(int argc, const char* const argv[])
 {
     settings.ParseParameters(argc, argv);
 }
-
-void ForceRemoveArg(const std::string &strArg)
-{
-    settings.ForceRemoveArg(strArg);
-}
-
 void SetParameter (const std::string& key, const std::string& value)
 {
     settings.SetParameter(key, value);

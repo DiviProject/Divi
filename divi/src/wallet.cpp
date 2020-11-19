@@ -3351,9 +3351,9 @@ void CWallet::GenerateNewHDChain()
         throw std::runtime_error(std::string(__func__) + ": SetHDChain failed");
 
     // clean up
-    ForceRemoveArg("-hdseed");
-    ForceRemoveArg("-mnemonic");
-    ForceRemoveArg("-mnemonicpassphrase");
+    settings.ForceRemoveArg("-hdseed");
+    settings.ForceRemoveArg("-mnemonic");
+    settings.ForceRemoveArg("-mnemonicpassphrase");
 }
 
 bool CWallet::SetHDChain(const CHDChain& chain, bool memonly)

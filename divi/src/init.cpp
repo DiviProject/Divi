@@ -1145,8 +1145,8 @@ bool InitializeP2PNetwork()
 void PruneHDSeedParameterInteraction()
 {
     if (settings.ParameterIsSet("-hdseed") && IsHex(settings.GetArg("-hdseed", "not hex")) && (settings.ParameterIsSet("-mnemonic") || settings.ParameterIsSet("-mnemonicpassphrase"))) {
-        ForceRemoveArg("-mnemonic");
-        ForceRemoveArg("-mnemonicpassphrase");
+        settings.ForceRemoveArg("-mnemonic");
+        settings.ForceRemoveArg("-mnemonicpassphrase");
         LogPrintf("%s: parameter interaction: can't use -hdseed and -mnemonic/-mnemonicpassphrase together, will prefer -seed\n", __func__);
     }
 }

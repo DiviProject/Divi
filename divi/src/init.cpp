@@ -524,6 +524,7 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-limitfreerelay=<n>", strprintf(translate("Continuously rate-limit free transactions to <n>*1000 bytes per minute (default:%u)"), 15));
         strUsage += HelpMessageOpt("-relaypriority", strprintf(translate("Require high priority for relaying free or low-fee transactions (default:%u)"), 1));
         strUsage += HelpMessageOpt("-maxsigcachesize=<n>", strprintf(translate("Limit size of signature cache to <n> entries (default: %u)"), 50000));
+        strUsage += HelpMessageOpt("-acceptnonstandard", translate("Relay non-standard transactions"));
     }
     strUsage += HelpMessageOpt("-minrelaytxfee=<amt>", strprintf(translate("Fees (in DIV/Kb) smaller than this are considered zero fee for relaying (default: %s)"), FormatMoney(::minRelayTxFee.GetFeePerK())));
     strUsage += HelpMessageOpt("-printtoconsole", strprintf(translate("Send trace/debug info to console instead of debug.log file (default: %u)"), 0));

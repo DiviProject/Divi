@@ -40,6 +40,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     , wallet_(wallet)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
     , timestampOfLastUpdateToStakableCoins_(0)
+    , hashproofTimestampMinimumValue_(0)
 {
 }
 
@@ -202,11 +203,12 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
     if(!SelectCoins(allowedStakingAmount,setStakeCoins)) return false;
 
-    auto adjustedTime = GetAdjustedTime();
-    int64_t minimumTime = activeChain_.Tip()->GetMedianTimePast() + 1;
+    int64_t adjustedTime = GetAdjustedTime();
+    int64_t minimumTime = std::max(activeChain_.Tip()->GetMedianTimePast() + 1, hashproofTimestampMinimumValue_);
     const int64_t maximumTime = minimumTime + maximumFutureBlockDrift - 1;
     int64_t drift = chainParameters_.RetargetDifficulty()? nHashDrift: 0;
     nTxNewTime = std::min(std::max(adjustedTime, minimumTime+drift), maximumTime);
+    int64_t miminumTimestampOnFailureToProduceHashproof = nTxNewTime;
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
@@ -216,6 +218,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     int newBlockHeight = chainTipHeight + 1;
     auto blockSubsidity = blockSubsidies_.GetBlockSubsidity(newBlockHeight);
 
+    bool foundHashproof = false;
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
     {
         if(!IsSupportedScript(pcoin.first->vout[pcoin.second].scriptPubKey))
@@ -225,6 +228,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
 
         if(FindHashproof(nBits, nTxNewTime, pcoin,txNew) )
         {
+            foundHashproof = true;
             if(activeChain_.Height() == chainTipHeight)
             {
                 vwtxPrev.push_back(pcoin.first);
@@ -234,6 +238,8 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
         }
 
     }
+    if(!foundHashproof) hashproofTimestampMinimumValue_ = miminumTimestampOnFailureToProduceHashproof;
+
     if (nCredit == 0 || nCredit > allowedStakingAmount)
         return false;
 

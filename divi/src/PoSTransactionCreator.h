@@ -32,7 +32,7 @@ private:
     const BlockMap& mapBlockIndex_;
     const I_BlockSubsidyProvider& blockSubsidies_;
     const BlockIncentivesPopulator& incentives_;
-    std::shared_ptr<ProofOfStakeGenerator> proofGenerator_;
+    std::unique_ptr<ProofOfStakeGenerator> proofGenerator_;
     CWallet& wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
     int64_t timestampOfLastUpdateToStakableCoins_;
@@ -72,6 +72,7 @@ public:
         const BlockIncentivesPopulator& incentives,
         CWallet& wallet,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
+    ~PoSTransactionCreator();
     virtual bool CreateProofOfStake(
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,

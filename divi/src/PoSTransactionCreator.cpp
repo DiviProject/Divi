@@ -36,12 +36,17 @@ PoSTransactionCreator::PoSTransactionCreator(
     , mapBlockIndex_(mapBlockIndex)
     , blockSubsidies_( blockSubsidies )
     , incentives_(incentives)
-    , proofGenerator_(std::make_shared<ProofOfStakeGenerator>(stakeModifierService, chainParameters_.GetMinCoinAgeForStaking()) )
+    , proofGenerator_(new ProofOfStakeGenerator(stakeModifierService, chainParameters_.GetMinCoinAgeForStaking()) )
     , wallet_(wallet)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
     , timestampOfLastUpdateToStakableCoins_(0)
     , hashproofTimestampMinimumValue_(0)
 {
+}
+
+PoSTransactionCreator::~PoSTransactionCreator()
+{
+    proofGenerator_.reset();
 }
 
 bool PoSTransactionCreator::SelectCoins(

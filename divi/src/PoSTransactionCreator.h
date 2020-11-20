@@ -35,7 +35,7 @@ private:
     std::shared_ptr<ProofOfStakeGenerator> proofGenerator_;
     CWallet& wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
-    int nLastStakeSetUpdate;
+    int timestampOfLastUpdateToStakableCoins_;
 
     void CombineUtxos(
         const CAmount& allowedStakingAmount,

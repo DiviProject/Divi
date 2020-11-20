@@ -39,7 +39,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     , proofGenerator_(std::make_shared<ProofOfStakeGenerator>(stakeModifierService, chainParameters_.GetMinCoinAgeForStaking()) )
     , wallet_(wallet)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
-    , nLastStakeSetUpdate(0)
+    , timestampOfLastUpdateToStakableCoins_(0)
 {
 }
 
@@ -51,14 +51,14 @@ bool PoSTransactionCreator::SelectCoins(
         return false;
 
     if (chainParameters_.NetworkID() == CBaseChainParams::REGTEST ||
-        GetTime() - nLastStakeSetUpdate > settings.GetArg("-stakeupdatetime",300))
+        GetTime() - timestampOfLastUpdateToStakableCoins_ > settings.GetArg("-stakeupdatetime",300))
     {
         setStakeCoins.clear();
         if (!wallet_.SelectStakeCoins(setStakeCoins, allowedStakingBalance)) {
             return error("failed to select coins for staking");
         }
 
-        nLastStakeSetUpdate = GetTime();
+        timestampOfLastUpdateToStakableCoins_ = GetTime();
     }
 
     if (setStakeCoins.empty()) {
@@ -259,7 +259,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
             return error("CreateCoinStake : failed to sign coinstake");
     }
 
-    nLastStakeSetUpdate = 0; //this will trigger stake set to repopulate next round
+    timestampOfLastUpdateToStakableCoins_ = 0; //this will trigger stake set to repopulate next round
     return true;
 }
 

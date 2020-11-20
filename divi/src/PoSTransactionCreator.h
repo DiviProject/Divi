@@ -55,7 +55,6 @@ private:
 
     bool PopulateCoinstakeTransaction(
         unsigned int nBits,
-        int64_t nSearchInterval,
         CMutableTransaction& txNew,
         unsigned int& nTxNewTime);
     bool FindHashproof(

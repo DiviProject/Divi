@@ -195,7 +195,6 @@ bool PoSTransactionCreator::FindHashproof(
 
 bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     unsigned int nBits,
-    int64_t nSearchInterval,
     CMutableTransaction& txNew,
     unsigned int& nTxNewTime)
 {
@@ -277,7 +276,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     bool fStakeFound = false;
     if (nSearchTime >= nLastCoinStakeSearchTime) {
-        if (PopulateCoinstakeTransaction(blockBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime))
+        if (PopulateCoinstakeTransaction(blockBits, txCoinStake, nTxNewTime))
         {
             fStakeFound = true;
         }

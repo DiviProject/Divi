@@ -65,9 +65,6 @@ bool BlockFactory::AppendProofOfStakeToBlock(
     SetRequiredWork(pBlockTemplate);
     SetBlockTime(block);
 
-    // ppcoin: if coinstake available add coinstake tx
-    static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
-
     CMutableTransaction txCoinStake;
     unsigned int nTxNewTime = block.nTime;
     if(coinstakeCreator_.CreateProofOfStake(

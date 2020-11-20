@@ -22,6 +22,33 @@ extern const unsigned int MAX_KERNEL_COMBINED_INPUTS;
 extern const int maximumFutureBlockDrift = 180; // seconds
 extern bool fDebug;
 
+class StakedCoins
+{
+private:
+    std::set<std::pair<const CWalletTx*, unsigned int>> underlyingSet_;
+    int64_t timestampOfLastUpdate_;
+public:
+    StakedCoins(): underlyingSet_(), timestampOfLastUpdate_(0)
+    {
+    }
+    const int64_t& timestamp() const
+    {
+        return timestampOfLastUpdate_;
+    }
+    void updateTimestamp()
+    {
+        timestampOfLastUpdate_ = GetTime();
+    }
+    void resetTimestamp()
+    {
+        timestampOfLastUpdate_ = 0;
+    }
+    std::set<std::pair<const CWalletTx*, unsigned int>>& asSet()
+    {
+        return underlyingSet_;
+    }
+};
+
 PoSTransactionCreator::PoSTransactionCreator(
     const CChainParams& chainParameters,
     CChain& activeChain,
@@ -37,37 +64,36 @@ PoSTransactionCreator::PoSTransactionCreator(
     , blockSubsidies_( blockSubsidies )
     , incentives_(incentives)
     , proofGenerator_(new ProofOfStakeGenerator(stakeModifierService, chainParameters_.GetMinCoinAgeForStaking()) )
+    , stakedCoins_(new StakedCoins())
     , wallet_(wallet)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
-    , timestampOfLastUpdateToStakableCoins_(0)
     , hashproofTimestampMinimumValue_(0)
 {
 }
 
 PoSTransactionCreator::~PoSTransactionCreator()
 {
+    stakedCoins_.reset();
     proofGenerator_.reset();
 }
 
-bool PoSTransactionCreator::SelectCoins(
-    CAmount allowedStakingBalance,
-    std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins)
+bool PoSTransactionCreator::SelectCoins(CAmount allowedStakingBalance)
 {
     if (allowedStakingBalance <= 0)
         return false;
 
     if (chainParameters_.NetworkID() == CBaseChainParams::REGTEST ||
-        GetTime() - timestampOfLastUpdateToStakableCoins_ > settings.GetArg("-stakeupdatetime",300))
+        GetTime() - stakedCoins_->timestamp() > settings.GetArg("-stakeupdatetime",300))
     {
-        setStakeCoins.clear();
-        if (!wallet_.SelectStakeCoins(setStakeCoins, allowedStakingBalance)) {
+        stakedCoins_->asSet().clear();
+        if (!wallet_.SelectStakeCoins(stakedCoins_->asSet(), allowedStakingBalance)) {
             return error("failed to select coins for staking");
         }
 
-        timestampOfLastUpdateToStakableCoins_ = GetTime();
+        stakedCoins_->updateTimestamp();
     }
 
-    if (setStakeCoins.empty()) {
+    if (stakedCoins_->asSet().empty()) {
         return error("no coins available for staking");
     }
 
@@ -116,13 +142,12 @@ void PoSTransactionCreator::CombineUtxos(
     const CAmount& allowedStakingAmount,
     CMutableTransaction& txNew,
     CAmount& nCredit,
-    std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins,
     std::vector<const CWalletTx*>& walletTransactions)
 {
     const CAmount nCombineThreshold = (settings.GetArg("-stakesplitthreshold",100000) / 2) * COIN;
     using Entry = std::pair<const CWalletTx*, unsigned int>;
     std::vector<Entry> vCombineCandidates;
-    for(auto &&pcoin : setStakeCoins)
+    for(const Entry& pcoin : stakedCoins_->asSet())
     {
         if (pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey &&
                 pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
@@ -155,7 +180,7 @@ void PoSTransactionCreator::CombineUtxos(
 bool PoSTransactionCreator::FindHashproof(
     unsigned int nBits,
     unsigned int& nTxNewTime,
-    std::pair<const CWalletTx*, unsigned int>& stakeData,
+    const std::pair<const CWalletTx*, unsigned int>& stakeData,
     CMutableTransaction& txNew)
 {
     BlockMap::const_iterator it = mapBlockIndex_.find(stakeData.first->hashBlock);
@@ -205,8 +230,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     CAmount allowedStakingAmount = wallet_.GetStakingBalance();
     MarkTransactionAsCoinstake(txNew);
 
-    static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
-    if(!SelectCoins(allowedStakingAmount,setStakeCoins)) return false;
+    if(!SelectCoins(allowedStakingAmount)) return false;
 
     int64_t adjustedTime = GetAdjustedTime();
     int64_t minimumTime = std::max(activeChain_.Tip()->GetMedianTimePast() + 1, hashproofTimestampMinimumValue_);
@@ -224,7 +248,8 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     auto blockSubsidity = blockSubsidies_.GetBlockSubsidity(newBlockHeight);
 
     bool foundHashproof = false;
-    BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
+    using Entry = std::pair<const CWalletTx*, unsigned int>;
+    for (const Entry& pcoin: stakedCoins_->asSet())
     {
         if(!IsSupportedScript(pcoin.first->vout[pcoin.second].scriptPubKey))
         {
@@ -258,7 +283,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     }
     else
     {
-        CombineUtxos(allowedStakingAmount,txNew,nCredit,setStakeCoins,vwtxPrev);
+        CombineUtxos(allowedStakingAmount,txNew,nCredit,vwtxPrev);
         txNew.vout[1].nValue = nCredit;
     }
 
@@ -270,7 +295,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
             return error("CreateCoinStake : failed to sign coinstake");
     }
 
-    timestampOfLastUpdateToStakableCoins_ = 0; //this will trigger stake set to repopulate next round
+    stakedCoins_->resetTimestamp(); //this will trigger stake set to repopulate next round
     return true;
 }
 

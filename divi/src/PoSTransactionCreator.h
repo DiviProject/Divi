@@ -23,6 +23,7 @@ class I_PoSStakeModifierService;
 class ProofOfStakeGenerator;
 class I_BlockSubsidyProvider;
 class BlockMap;
+class StakedCoins;
 
 class PoSTransactionCreator: public I_PoSTransactionCreator
 {
@@ -33,25 +34,22 @@ private:
     const I_BlockSubsidyProvider& blockSubsidies_;
     const BlockIncentivesPopulator& incentives_;
     std::unique_ptr<ProofOfStakeGenerator> proofGenerator_;
+    std::unique_ptr<StakedCoins> stakedCoins_;
     CWallet& wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
-    int64_t timestampOfLastUpdateToStakableCoins_;
     int64_t hashproofTimestampMinimumValue_;
 
     void CombineUtxos(
         const CAmount& allowedStakingAmount,
         CMutableTransaction& txNew,
         CAmount& nCredit,
-        std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins,
         std::vector<const CWalletTx*>& walletTransactions);
 
     bool SetSuportedStakingScript(
         const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
         CMutableTransaction& txNew);
 
-    bool SelectCoins(
-        CAmount allowedStakingBalance,
-        std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins);
+    bool SelectCoins(CAmount allowedStakingBalance);
 
     bool PopulateCoinstakeTransaction(
         unsigned int nBits,
@@ -60,7 +58,7 @@ private:
     bool FindHashproof(
         unsigned int nBits,
         unsigned int& nTxNewTime,
-        std::pair<const CWalletTx*, unsigned int>& stakeData,
+        const std::pair<const CWalletTx*, unsigned int>& stakeData,
         CMutableTransaction& txNew);
 public:
     PoSTransactionCreator(

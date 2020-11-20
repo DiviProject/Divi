@@ -239,6 +239,8 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     nTxNewTime = std::min(std::max(adjustedTime, minimumTime+drift), maximumTime);
     int64_t miminumTimestampOnFailureToProduceHashproof = nTxNewTime;
 
+    if(hashproofTimestampMinimumValue_ >= maximumTime) return false;
+
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
 

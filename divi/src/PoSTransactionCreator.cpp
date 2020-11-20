@@ -39,12 +39,12 @@ PoSTransactionCreator::PoSTransactionCreator(
     , proofGenerator_(std::make_shared<ProofOfStakeGenerator>(stakeModifierService, chainParameters_.GetMinCoinAgeForStaking()) )
     , wallet_(wallet)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
+    , nLastStakeSetUpdate(0)
 {
 }
 
 bool PoSTransactionCreator::SelectCoins(
     CAmount allowedStakingBalance,
-    int& nLastStakeSetUpdate,
     std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins)
 {
     if (allowedStakingBalance <= 0)
@@ -200,8 +200,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     MarkTransactionAsCoinstake(txNew);
 
     static std::set<std::pair<const CWalletTx*, unsigned int> > setStakeCoins;
-    static int nLastStakeSetUpdate = 0;
-    if(!SelectCoins(allowedStakingAmount,nLastStakeSetUpdate,setStakeCoins)) return false;
+    if(!SelectCoins(allowedStakingAmount,setStakeCoins)) return false;
 
     auto adjustedTime = GetAdjustedTime();
     int64_t minimumTime = activeChain_.Tip()->GetMedianTimePast() + 1;
@@ -269,7 +268,6 @@ bool PoSTransactionCreator::CreateProofOfStake(
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
 {
-
     bool fStakeFound = false;
     if (PopulateCoinstakeTransaction(blockBits, txCoinStake, nTxNewTime))
     {

@@ -35,6 +35,7 @@ private:
     std::shared_ptr<ProofOfStakeGenerator> proofGenerator_;
     CWallet& wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
+    int nLastStakeSetUpdate;
 
     void CombineUtxos(
         const CAmount& allowedStakingAmount,
@@ -49,7 +50,6 @@ private:
 
     bool SelectCoins(
         CAmount allowedStakingBalance,
-        int& nLastStakeSetUpdate,
         std::set<std::pair<const CWalletTx*, unsigned int> >& setStakeCoins);
 
     bool PopulateCoinstakeTransaction(

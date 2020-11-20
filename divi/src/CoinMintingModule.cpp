@@ -70,7 +70,6 @@ CoinMintingModule::CoinMintingModule(
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockIncentivesPopulator_,
         wallet,
-        lastCoinStakeSearchInterval,
         hashedBlockTimestampsByHeight))
     , blockFactory_(
         BlockFactorySelector(

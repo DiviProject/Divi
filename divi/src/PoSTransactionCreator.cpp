@@ -30,7 +30,6 @@ PoSTransactionCreator::PoSTransactionCreator(
     const I_BlockSubsidyProvider& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
     CWallet& wallet,
-    int64_t& coinstakeSearchInterval,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): chainParameters_(chainParameters)
     , activeChain_(activeChain)
@@ -39,7 +38,6 @@ PoSTransactionCreator::PoSTransactionCreator(
     , incentives_(incentives)
     , proofGenerator_(std::make_shared<ProofOfStakeGenerator>(stakeModifierService, chainParameters_.GetMinCoinAgeForStaking()) )
     , wallet_(wallet)
-    , coinstakeSearchInterval_(coinstakeSearchInterval)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
 {
 }
@@ -280,7 +278,6 @@ bool PoSTransactionCreator::CreateProofOfStake(
         {
             fStakeFound = true;
         }
-        coinstakeSearchInterval_ = nSearchTime - nLastCoinStakeSearchTime;
         nLastCoinStakeSearchTime = nSearchTime;
     }
     return fStakeFound;

@@ -34,7 +34,6 @@ private:
     const BlockIncentivesPopulator& incentives_;
     std::shared_ptr<ProofOfStakeGenerator> proofGenerator_;
     CWallet& wallet_;
-    int64_t& coinstakeSearchInterval_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
 
     void CombineUtxos(
@@ -71,7 +70,6 @@ public:
         const I_BlockSubsidyProvider& blockSubsidies,
         const BlockIncentivesPopulator& incentives,
         CWallet& wallet,
-        int64_t& coinstakeSearchInterval,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     virtual bool CreateProofOfStake(
         uint32_t blockBits,

@@ -266,19 +266,14 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
 
 bool PoSTransactionCreator::CreateProofOfStake(
     uint32_t blockBits,
-    int64_t nSearchTime,
-    int64_t& nLastCoinStakeSearchTime,
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
 {
 
     bool fStakeFound = false;
-    if (nSearchTime >= nLastCoinStakeSearchTime) {
-        if (PopulateCoinstakeTransaction(blockBits, txCoinStake, nTxNewTime))
-        {
-            fStakeFound = true;
-        }
-        nLastCoinStakeSearchTime = nSearchTime;
+    if (PopulateCoinstakeTransaction(blockBits, txCoinStake, nTxNewTime))
+    {
+        fStakeFound = true;
     }
     return fStakeFound;
 }

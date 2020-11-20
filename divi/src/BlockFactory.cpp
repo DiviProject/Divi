@@ -69,11 +69,9 @@ bool BlockFactory::AppendProofOfStakeToBlock(
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
     CMutableTransaction txCoinStake;
-    unsigned int nTxNewTime = 0;
+    unsigned int nTxNewTime = block.nTime;
     if(coinstakeCreator_.CreateProofOfStake(
             block.nBits,
-            block.nTime,
-            nLastCoinStakeSearchTime,
             txCoinStake,
             nTxNewTime))
     {

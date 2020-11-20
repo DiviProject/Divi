@@ -8,8 +8,6 @@ public:
     virtual ~I_PoSTransactionCreator(){}
     virtual bool CreateProofOfStake(
         uint32_t blockBits,
-        int64_t nSearchTime,
-        int64_t& nLastCoinStakeSearchTime,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime) = 0;
 };

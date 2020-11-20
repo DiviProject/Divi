@@ -73,8 +73,6 @@ public:
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     virtual bool CreateProofOfStake(
         uint32_t blockBits,
-        int64_t nSearchTime,
-        int64_t& nLastCoinStakeSearchTime,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime);
 };

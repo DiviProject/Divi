@@ -222,13 +222,13 @@ bool PoSTransactionCreator::FindHashproof(
     return false;
 }
 
-bool PoSTransactionCreator::PopulateCoinstakeTransaction(
-    unsigned int nBits,
-    CMutableTransaction& txNew,
+bool PoSTransactionCreator::CreateProofOfStake(
+    uint32_t blockBits,
+    CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
 {
     CAmount allowedStakingAmount = wallet_.GetStakingBalance();
-    MarkTransactionAsCoinstake(txNew);
+    MarkTransactionAsCoinstake(txCoinStake);
 
     if(!SelectCoins(allowedStakingAmount)) return false;
 
@@ -258,7 +258,7 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
             continue;
         }
 
-        if(FindHashproof(nBits, nTxNewTime, pcoin,txNew) )
+        if(FindHashproof(blockBits, nTxNewTime, pcoin,txCoinStake) )
         {
             foundHashproof = true;
             if(activeChain_.Height() == chainTipHeight)
@@ -279,32 +279,24 @@ bool PoSTransactionCreator::PopulateCoinstakeTransaction(
     nCredit += nReward;
     if (nCredit > static_cast<CAmount>(settings.GetArg("-stakesplitthreshold",100000)) * COIN)
     {
-        txNew.vout.push_back(txNew.vout.back());
-        txNew.vout[1].nValue = nCredit / 2;
-        txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
+        txCoinStake.vout.push_back(txCoinStake.vout.back());
+        txCoinStake.vout[1].nValue = nCredit / 2;
+        txCoinStake.vout[2].nValue = nCredit - txCoinStake.vout[1].nValue;
     }
     else
     {
-        CombineUtxos(allowedStakingAmount,txNew,nCredit,vwtxPrev);
-        txNew.vout[1].nValue = nCredit;
+        CombineUtxos(allowedStakingAmount,txCoinStake,nCredit,vwtxPrev);
+        txCoinStake.vout[1].nValue = nCredit;
     }
 
-    incentives_.FillBlockPayee(txNew,blockSubsidity,newBlockHeight,true);
+    incentives_.FillBlockPayee(txCoinStake,blockSubsidity,newBlockHeight,true);
 
     int nIn = 0;
     for (const CWalletTx* pcoin : vwtxPrev) {
-        if (!SignSignature(wallet_, *pcoin, txNew, nIn++))
+        if (!SignSignature(wallet_, *pcoin, txCoinStake, nIn++))
             return error("CreateCoinStake : failed to sign coinstake");
     }
 
     stakedCoins_->resetTimestamp(); //this will trigger stake set to repopulate next round
     return true;
-}
-
-bool PoSTransactionCreator::CreateProofOfStake(
-    uint32_t blockBits,
-    CMutableTransaction& txCoinStake,
-    unsigned int& nTxNewTime)
-{
-    return PopulateCoinstakeTransaction(blockBits, txCoinStake, nTxNewTime);
 }

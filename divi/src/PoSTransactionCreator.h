@@ -51,10 +51,6 @@ private:
 
     bool SelectCoins(CAmount allowedStakingBalance);
 
-    bool PopulateCoinstakeTransaction(
-        unsigned int nBits,
-        CMutableTransaction& txNew,
-        unsigned int& nTxNewTime);
     bool FindHashproof(
         unsigned int nBits,
         unsigned int& nTxNewTime,

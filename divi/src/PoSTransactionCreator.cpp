@@ -260,7 +260,6 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     const CBlockIndex* chainTip = activeChain_.Tip();
     int newBlockHeight = chainTip->nHeight + 1;
-    auto blockSubsidity = blockSubsidies_.GetBlockSubsidity(newBlockHeight);
 
     std::pair<const CWalletTx*, CAmount> successfullyStakableUTXO =
         FindProofOfStake(blockBits,txCoinStake,nTxNewTime);
@@ -276,8 +275,8 @@ bool PoSTransactionCreator::CreateProofOfStake(
     if (nCredit == 0 || nCredit > allowedStakingAmount)
         return false;
 
-    CAmount nReward = blockSubsidity.nStakeReward;
-    nCredit += nReward;
+    CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
+    nCredit += blockSubdidy.nStakeReward;
     if (nCredit > static_cast<CAmount>(settings.GetArg("-stakesplitthreshold",100000)) * COIN)
     {
         txCoinStake.vout.push_back(txCoinStake.vout.back());
@@ -290,7 +289,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
         txCoinStake.vout[1].nValue = nCredit;
     }
 
-    incentives_.FillBlockPayee(txCoinStake,blockSubsidity,newBlockHeight,true);
+    incentives_.FillBlockPayee(txCoinStake,blockSubdidy,chainTip->nHeight + 1,true);
 
     int nIn = 0;
     for (const CWalletTx* pcoin : vwtxPrev) {

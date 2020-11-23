@@ -178,6 +178,7 @@ void PoSTransactionCreator::CombineUtxos(
 }
 
 bool PoSTransactionCreator::FindHashproof(
+    const CBlockIndex* chainTip,
     unsigned int nBits,
     unsigned int& nTxNewTime,
     const std::pair<const CWalletTx*, unsigned int>& stakeData,
@@ -200,11 +201,11 @@ bool PoSTransactionCreator::FindHashproof(
     if(!hashproofResult.failedAtSetup())
     {
         hashedBlockTimestamps_.clear();
-        hashedBlockTimestamps_[activeChain_.Height()] = GetTime();
+        hashedBlockTimestamps_[chainTip->nHeight] = GetTime();
     }
     if (hashproofResult.succeeded())
     {
-        if (hashproofResult.timestamp() <= activeChain_.Tip()->GetMedianTimePast())
+        if (hashproofResult.timestamp() <= chainTip->GetMedianTimePast())
         {
             LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
             return false;
@@ -223,6 +224,7 @@ bool PoSTransactionCreator::FindHashproof(
 }
 
 std::pair<const CWalletTx*, CAmount> PoSTransactionCreator::FindProofOfStake(
+    const CBlockIndex* chainTip,
     uint32_t blockBits,
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
@@ -234,7 +236,7 @@ std::pair<const CWalletTx*, CAmount> PoSTransactionCreator::FindProofOfStake(
         {
             continue;
         }
-        if(FindHashproof(blockBits, nTxNewTime, pcoin,txCoinStake) )
+        if(FindHashproof(chainTip,blockBits, nTxNewTime, pcoin,txCoinStake) )
         {
             return std::make_pair(pcoin.first,pcoin.first->vout[pcoin.second].nValue);
         }
@@ -243,6 +245,7 @@ std::pair<const CWalletTx*, CAmount> PoSTransactionCreator::FindProofOfStake(
 }
 
 bool PoSTransactionCreator::CreateProofOfStake(
+    const CBlockIndex* chainTip,
     uint32_t blockBits,
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
@@ -253,16 +256,13 @@ bool PoSTransactionCreator::CreateProofOfStake(
     if(!SelectCoins(allowedStakingAmount)) return false;
 
     int64_t adjustedTime = GetAdjustedTime();
-    int64_t minimumTime = activeChain_.Tip()->GetMedianTimePast() + 1;
+    int64_t minimumTime = chainTip->GetMedianTimePast() + 1;
     const int64_t maximumTime = minimumTime + maximumFutureBlockDrift - 1;
     int64_t drift = chainParameters_.RetargetDifficulty()? nHashDrift: 0;
     nTxNewTime = std::min(std::max(adjustedTime, minimumTime+drift), maximumTime);
 
-    const CBlockIndex* chainTip = activeChain_.Tip();
-    int newBlockHeight = chainTip->nHeight + 1;
-
     std::pair<const CWalletTx*, CAmount> successfullyStakableUTXO =
-        FindProofOfStake(blockBits,txCoinStake,nTxNewTime);
+        FindProofOfStake(chainTip, blockBits,txCoinStake,nTxNewTime);
 
     CAmount nCredit = successfullyStakableUTXO.second;
     std::vector<const CWalletTx*> vwtxPrev(1, successfullyStakableUTXO.first);

@@ -7,6 +7,7 @@ class I_PoSTransactionCreator
 public:
     virtual ~I_PoSTransactionCreator(){}
     virtual bool CreateProofOfStake(
+        const CBlockIndex* chainTip,
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime) = 0;

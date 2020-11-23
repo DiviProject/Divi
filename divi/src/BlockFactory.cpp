@@ -68,6 +68,7 @@ bool BlockFactory::AppendProofOfStakeToBlock(
     CMutableTransaction txCoinStake;
     unsigned int nTxNewTime = block.nTime;
     if(coinstakeCreator_.CreateProofOfStake(
+            pBlockTemplate.previousBlockIndex,
             block.nBits,
             txCoinStake,
             nTxNewTime))

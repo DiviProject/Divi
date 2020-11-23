@@ -52,12 +52,14 @@ private:
     bool SelectCoins(CAmount allowedStakingBalance);
 
     bool FindHashproof(
+        const CBlockIndex* chainTip,
         unsigned int nBits,
         unsigned int& nTxNewTime,
         const std::pair<const CWalletTx*, unsigned int>& stakeData,
         CMutableTransaction& txNew);
 
     std::pair<const CWalletTx*, CAmount> FindProofOfStake(
+        const CBlockIndex* chainTip,
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime);
@@ -73,6 +75,7 @@ public:
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     ~PoSTransactionCreator();
     virtual bool CreateProofOfStake(
+        const CBlockIndex* chainTip,
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime);

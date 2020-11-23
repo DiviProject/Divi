@@ -244,7 +244,7 @@ std::pair<const CWalletTx*, CAmount> PoSTransactionCreator::FindProofOfStake(
     return std::make_pair(nullptr,0);
 }
 
-void PoSTransactionCreator::AppendIncentivesToTransaction(
+void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
     const CBlockIndex* chainTip,
     CMutableTransaction& txCoinStake,
     CAmount allowedStakingAmount,
@@ -295,7 +295,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
         return false;
     }
 
-    AppendIncentivesToTransaction(
+    AppendBlockRewardPayoutsToTransaction(
         chainTip,txCoinStake,allowedStakingAmount,successfullyStakableUTXO,vwtxPrev);
 
     int nIn = 0;

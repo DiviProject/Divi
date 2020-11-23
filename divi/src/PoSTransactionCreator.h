@@ -64,7 +64,7 @@ private:
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime);
 
-    void AppendIncentivesToTransaction(
+    void AppendBlockRewardPayoutsToTransaction(
         const CBlockIndex* chainTip,
         CMutableTransaction& txCoinStake,
         CAmount allowedStakingAmount,

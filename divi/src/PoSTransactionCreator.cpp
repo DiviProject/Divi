@@ -196,7 +196,8 @@ bool PoSTransactionCreator::FindHashproof(
         static_cast<unsigned>(it->second->GetBlockTime()),
         it->second->GetBlockHash(),
         COutPoint(stakeData.first->GetHash(), stakeData.second),
-        stakeData.first->vout[stakeData.second].nValue);
+        stakeData.first->vout[stakeData.second].nValue,
+        chainTip->GetBlockHash());
     HashproofCreationResult hashproofResult = proofGenerator_->CreateHashproofTimestamp(stakingData,nTxNewTime);
     if(!hashproofResult.failedAtSetup())
     {

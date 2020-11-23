@@ -316,7 +316,8 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
         blockprev.GetBlockTime(),
         blockprev.GetHash(),
         txin.prevout,
-        txPrev.vout[txin.prevout.n].nValue);
+        txPrev.vout[txin.prevout.n].nValue,
+        pindexPrev->GetBlockHash());
 
     return true;
 }

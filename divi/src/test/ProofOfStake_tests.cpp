@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesIfCalculatorRepeatedlyFails)
     unsigned transactionTime = transactionTimeStart;
     COutPoint utxo(GetRandHash(),GetRandInt(10));
     uint256 blockHash = GetRandHash();
-    StakingData stakingData(chainTipDifficulty, blockTimeOfFirstUTXOConfirmation, blockHash, utxo, 0*COIN);
+    StakingData stakingData(chainTipDifficulty, blockTimeOfFirstUTXOConfirmation, blockHash, utxo, 0*COIN, 0);
 
     MockProofOfStakeCalculator calculator;
     ON_CALL(calculator, computeProofOfStakeAndCheckItMeetsTarget(_,_,_) ).WillByDefault(Return(false));

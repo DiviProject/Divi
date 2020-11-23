@@ -10,6 +10,7 @@ struct StakingData
     uint256 blockHashOfFirstConfirmationBlock_;
     COutPoint utxoBeingStaked_;
     CAmount utxoValue_;
+    uint256 blockHashOfChainTipBlock_;
 
     StakingData() = default;
     StakingData(
@@ -17,12 +18,14 @@ struct StakingData
         unsigned int blockTimeOfFirstConfirmationBlock,
         uint256 blockHashOfFirstConfirmationBlock,
         COutPoint utxoBeingStaked,
-        CAmount utxoValue
+        CAmount utxoValue,
+        uint256 blockHashOfChainTipBlock
         ): nBits_(nBits)
         , blockTimeOfFirstConfirmationBlock_(blockTimeOfFirstConfirmationBlock)
         , blockHashOfFirstConfirmationBlock_(blockHashOfFirstConfirmationBlock)
         , utxoBeingStaked_(utxoBeingStaked)
         , utxoValue_(utxoValue)
+        , blockHashOfChainTipBlock_(blockHashOfChainTipBlock)
     {
     }
 };

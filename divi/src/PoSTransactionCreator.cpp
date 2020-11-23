@@ -233,13 +233,11 @@ bool PoSTransactionCreator::CreateProofOfStake(
     if(!SelectCoins(allowedStakingAmount)) return false;
 
     int64_t adjustedTime = GetAdjustedTime();
-    int64_t minimumTime = std::max(activeChain_.Tip()->GetMedianTimePast() + 1, hashproofTimestampMinimumValue_);
+    int64_t minimumTime = activeChain_.Tip()->GetMedianTimePast() + 1;
     const int64_t maximumTime = minimumTime + maximumFutureBlockDrift - 1;
     int64_t drift = chainParameters_.RetargetDifficulty()? nHashDrift: 0;
     nTxNewTime = std::min(std::max(adjustedTime, minimumTime+drift), maximumTime);
-    int64_t miminumTimestampOnFailureToProduceHashproof = nTxNewTime;
 
-    if(hashproofTimestampMinimumValue_ >= maximumTime) return false;
 
     std::vector<const CWalletTx*> vwtxPrev;
     CAmount nCredit = 0;
@@ -249,7 +247,6 @@ bool PoSTransactionCreator::CreateProofOfStake(
     int newBlockHeight = chainTipHeight + 1;
     auto blockSubsidity = blockSubsidies_.GetBlockSubsidity(newBlockHeight);
 
-    bool foundHashproof = false;
     using Entry = std::pair<const CWalletTx*, unsigned int>;
     for (const Entry& pcoin: stakedCoins_->asSet())
     {
@@ -260,7 +257,6 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
         if(FindHashproof(blockBits, nTxNewTime, pcoin,txCoinStake) )
         {
-            foundHashproof = true;
             if(activeChain_.Height() == chainTipHeight)
             {
                 vwtxPrev.push_back(pcoin.first);
@@ -270,7 +266,6 @@ bool PoSTransactionCreator::CreateProofOfStake(
         }
 
     }
-    if(!foundHashproof) hashproofTimestampMinimumValue_ = miminumTimestampOnFailureToProduceHashproof;
 
     if (nCredit == 0 || nCredit > allowedStakingAmount)
         return false;

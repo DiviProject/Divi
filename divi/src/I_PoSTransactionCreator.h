@@ -2,6 +2,8 @@
 #define I_POS_TRANSACTION_CREATOR_H
 #include <stdint.h>
 class CMutableTransaction;
+class CBlockIndex;
+
 class I_PoSTransactionCreator
 {
 public:

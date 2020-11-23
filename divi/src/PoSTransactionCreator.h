@@ -63,6 +63,13 @@ private:
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,
         unsigned int& nTxNewTime);
+
+    void AppendIncentivesToTransaction(
+        const CBlockIndex* chainTip,
+        CMutableTransaction& txCoinStake,
+        CAmount allowedStakingAmount,
+        const std::pair<const CWalletTx*, CAmount>& stakeData,
+        std::vector<const CWalletTx*>& vwtxPrev);
 public:
     PoSTransactionCreator(
         const CChainParams& chainParameters,

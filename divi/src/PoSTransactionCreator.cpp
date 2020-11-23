@@ -244,6 +244,30 @@ std::pair<const CWalletTx*, CAmount> PoSTransactionCreator::FindProofOfStake(
     return std::make_pair(nullptr,0);
 }
 
+void PoSTransactionCreator::AppendIncentivesToTransaction(
+    const CBlockIndex* chainTip,
+    CMutableTransaction& txCoinStake,
+    CAmount allowedStakingAmount,
+    const std::pair<const CWalletTx*, CAmount>& stakeData,
+    std::vector<const CWalletTx*>& vwtxPrev)
+{
+    CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
+    CAmount nCredit = stakeData.second + blockSubdidy.nStakeReward;
+    if (nCredit > static_cast<CAmount>(settings.GetArg("-stakesplitthreshold",100000)) * COIN)
+    {
+        txCoinStake.vout.push_back(txCoinStake.vout.back());
+        txCoinStake.vout[1].nValue = nCredit / 2;
+        txCoinStake.vout[2].nValue = nCredit - txCoinStake.vout[1].nValue;
+    }
+    else
+    {
+        CombineUtxos(allowedStakingAmount,txCoinStake,nCredit,vwtxPrev);
+        txCoinStake.vout[1].nValue = nCredit;
+    }
+
+    incentives_.FillBlockPayee(txCoinStake,blockSubdidy,chainTip->nHeight + 1,true);
+}
+
 bool PoSTransactionCreator::CreateProofOfStake(
     const CBlockIndex* chainTip,
     uint32_t blockBits,
@@ -271,21 +295,8 @@ bool PoSTransactionCreator::CreateProofOfStake(
         return false;
     }
 
-    CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
-    nCredit += blockSubdidy.nStakeReward;
-    if (nCredit > static_cast<CAmount>(settings.GetArg("-stakesplitthreshold",100000)) * COIN)
-    {
-        txCoinStake.vout.push_back(txCoinStake.vout.back());
-        txCoinStake.vout[1].nValue = nCredit / 2;
-        txCoinStake.vout[2].nValue = nCredit - txCoinStake.vout[1].nValue;
-    }
-    else
-    {
-        CombineUtxos(allowedStakingAmount,txCoinStake,nCredit,vwtxPrev);
-        txCoinStake.vout[1].nValue = nCredit;
-    }
-
-    incentives_.FillBlockPayee(txCoinStake,blockSubdidy,chainTip->nHeight + 1,true);
+    AppendIncentivesToTransaction(
+        chainTip,txCoinStake,allowedStakingAmount,successfullyStakableUTXO,vwtxPrev);
 
     int nIn = 0;
     for (const CWalletTx* pcoin : vwtxPrev) {

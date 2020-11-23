@@ -213,10 +213,7 @@ bool PoSTransactionCreator::FindHashproof(
         if (fDebug && settings.GetBoolArg("-printcoinstake", false))
             LogPrintf("CreateCoinStake : kernel found\n");
 
-        if(!SetSuportedStakingScript(stakeData,txNew))
-        {
-            return false;
-        }
+        SetSuportedStakingScript(stakeData,txNew);
         nTxNewTime = hashproofResult.timestamp();
         return true;
     }

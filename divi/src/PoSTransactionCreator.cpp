@@ -266,14 +266,10 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     CAmount nCredit = successfullyStakableUTXO.second;
     std::vector<const CWalletTx*> vwtxPrev(1, successfullyStakableUTXO.first);
-    if( successfullyStakableUTXO.first == nullptr)
+    if( successfullyStakableUTXO.first == nullptr || nCredit == 0 || nCredit > allowedStakingAmount)
     {
         return false;
     }
-
-
-    if (nCredit == 0 || nCredit > allowedStakingAmount)
-        return false;
 
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
     nCredit += blockSubdidy.nStakeReward;

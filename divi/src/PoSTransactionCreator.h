@@ -56,6 +56,11 @@ private:
         unsigned int& nTxNewTime,
         const std::pair<const CWalletTx*, unsigned int>& stakeData,
         CMutableTransaction& txNew);
+
+    std::pair<const CWalletTx*, CAmount> FindProofOfStake(
+        uint32_t blockBits,
+        CMutableTransaction& txCoinStake,
+        unsigned int& nTxNewTime);
 public:
     PoSTransactionCreator(
         const CChainParams& chainParameters,

@@ -222,6 +222,26 @@ bool PoSTransactionCreator::FindHashproof(
     return false;
 }
 
+std::pair<const CWalletTx*, CAmount> PoSTransactionCreator::FindProofOfStake(
+    uint32_t blockBits,
+    CMutableTransaction& txCoinStake,
+    unsigned int& nTxNewTime)
+{
+    using Entry = std::pair<const CWalletTx*, unsigned int>;
+    for (const Entry& pcoin: stakedCoins_->asSet())
+    {
+        if(!IsSupportedScript(pcoin.first->vout[pcoin.second].scriptPubKey))
+        {
+            continue;
+        }
+        if(FindHashproof(blockBits, nTxNewTime, pcoin,txCoinStake) )
+        {
+            return std::make_pair(pcoin.first,pcoin.first->vout[pcoin.second].nValue);
+        }
+    }
+    return std::make_pair(nullptr,0);
+}
+
 bool PoSTransactionCreator::CreateProofOfStake(
     uint32_t blockBits,
     CMutableTransaction& txCoinStake,
@@ -238,34 +258,20 @@ bool PoSTransactionCreator::CreateProofOfStake(
     int64_t drift = chainParameters_.RetargetDifficulty()? nHashDrift: 0;
     nTxNewTime = std::min(std::max(adjustedTime, minimumTime+drift), maximumTime);
 
-
-    std::vector<const CWalletTx*> vwtxPrev;
-    CAmount nCredit = 0;
-
     const CBlockIndex* chainTip = activeChain_.Tip();
-    int chainTipHeight = chainTip->nHeight;
-    int newBlockHeight = chainTipHeight + 1;
+    int newBlockHeight = chainTip->nHeight + 1;
     auto blockSubsidity = blockSubsidies_.GetBlockSubsidity(newBlockHeight);
 
-    using Entry = std::pair<const CWalletTx*, unsigned int>;
-    for (const Entry& pcoin: stakedCoins_->asSet())
+    std::pair<const CWalletTx*, CAmount> successfullyStakableUTXO =
+        FindProofOfStake(blockBits,txCoinStake,nTxNewTime);
+
+    CAmount nCredit = successfullyStakableUTXO.second;
+    std::vector<const CWalletTx*> vwtxPrev(1, successfullyStakableUTXO.first);
+    if( successfullyStakableUTXO.first == nullptr)
     {
-        if(!IsSupportedScript(pcoin.first->vout[pcoin.second].scriptPubKey))
-        {
-            continue;
-        }
-
-        if(FindHashproof(blockBits, nTxNewTime, pcoin,txCoinStake) )
-        {
-            if(activeChain_.Height() == chainTipHeight)
-            {
-                vwtxPrev.push_back(pcoin.first);
-                nCredit += pcoin.first->vout[pcoin.second].nValue;
-            }
-            break;
-        }
-
+        return false;
     }
+
 
     if (nCredit == 0 || nCredit > allowedStakingAmount)
         return false;

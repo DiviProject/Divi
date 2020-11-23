@@ -226,6 +226,7 @@ std::pair<const CWalletTx*, CAmount> PoSTransactionCreator::FindProofOfStake(
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
 {
+    constexpr std::pair<const CWalletTx*, CAmount> proofOfStakeNotFound = std::make_pair(nullptr,0);
     using Entry = std::pair<const CWalletTx*, unsigned int>;
     for (const Entry& pcoin: stakedCoins_->asSet())
     {
@@ -233,12 +234,17 @@ std::pair<const CWalletTx*, CAmount> PoSTransactionCreator::FindProofOfStake(
         {
             continue;
         }
+        if(chainTip->nHeight != activeChain_.Height())
+        {
+            return proofOfStakeNotFound;
+        }
         if(FindHashproof(chainTip,blockBits, nTxNewTime, pcoin,txCoinStake) )
         {
             return std::make_pair(pcoin.first,pcoin.first->vout[pcoin.second].nValue);
         }
     }
-    return std::make_pair(nullptr,0);
+    hashproofTimestampMinimumValue_ = nTxNewTime;
+    return proofOfStakeNotFound;
 }
 
 void PoSTransactionCreator::SplitOrCombineUTXOS(
@@ -300,10 +306,6 @@ bool PoSTransactionCreator::CreateProofOfStake(
     std::vector<const CWalletTx*> vwtxPrev(1, successfullyStakableUTXO.first);
     if( successfullyStakableUTXO.first == nullptr || nCredit == 0 || nCredit > allowedStakingAmount)
     {
-        if(successfullyStakableUTXO.first == nullptr)
-        {
-            hashproofTimestampMinimumValue_ = nTxNewTime;
-        }
         return false;
     }
 

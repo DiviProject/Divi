@@ -290,9 +290,11 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     int64_t adjustedTime = GetAdjustedTime();
     int64_t minimumTime = chainTip->GetMedianTimePast() + 1;
-    const int64_t maximumTime = minimumTime + maximumFutureBlockDrift - 1;
-    int64_t drift = chainParameters_.RetargetDifficulty()? nHashDrift: 0;
-    nTxNewTime = std::min(std::max(adjustedTime, minimumTime+drift), maximumTime);
+    const int64_t maximumTime = adjustedTime + maximumFutureBlockDrift - 1;
+    minimumTime += chainParameters_.RetargetDifficulty()? nHashDrift: 0;
+    minimumTime = std::max(hashproofTimestampMinimumValue_,minimumTime);
+    if(maximumTime <= minimumTime) return false;
+    nTxNewTime = std::min(std::max(adjustedTime, minimumTime), maximumTime);
 
     std::pair<const CWalletTx*, CAmount> successfullyStakableUTXO =
         FindProofOfStake(chainTip, blockBits,txCoinStake,nTxNewTime);
@@ -301,6 +303,10 @@ bool PoSTransactionCreator::CreateProofOfStake(
     std::vector<const CWalletTx*> vwtxPrev(1, successfullyStakableUTXO.first);
     if( successfullyStakableUTXO.first == nullptr || nCredit == 0 || nCredit > allowedStakingAmount)
     {
+        if(successfullyStakableUTXO.first == nullptr)
+        {
+            hashproofTimestampMinimumValue_ = nTxNewTime;
+        }
         return false;
     }
 

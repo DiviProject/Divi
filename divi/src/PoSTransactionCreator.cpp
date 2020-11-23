@@ -244,7 +244,7 @@ std::pair<const CWalletTx*, CAmount> PoSTransactionCreator::FindProofOfStake(
     return std::make_pair(nullptr,0);
 }
 
-void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
+void PoSTransactionCreator::SplitOrCombineUTXOS(
     const CBlockIndex* chainTip,
     CMutableTransaction& txCoinStake,
     CAmount allowedStakingAmount,
@@ -264,7 +264,16 @@ void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
         CombineUtxos(allowedStakingAmount,txCoinStake,nCredit,vwtxPrev);
         txCoinStake.vout[1].nValue = nCredit;
     }
+}
 
+void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
+    const CBlockIndex* chainTip,
+    CMutableTransaction& txCoinStake,
+    CAmount allowedStakingAmount,
+    const std::pair<const CWalletTx*, CAmount>& stakeData,
+    std::vector<const CWalletTx*>& vwtxPrev)
+{
+    CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
     incentives_.FillBlockPayee(txCoinStake,blockSubdidy,chainTip->nHeight + 1,true);
 }
 
@@ -295,6 +304,8 @@ bool PoSTransactionCreator::CreateProofOfStake(
         return false;
     }
 
+    SplitOrCombineUTXOS(
+        chainTip,txCoinStake,allowedStakingAmount,successfullyStakableUTXO,vwtxPrev);
     AppendBlockRewardPayoutsToTransaction(
         chainTip,txCoinStake,allowedStakingAmount,successfullyStakableUTXO,vwtxPrev);
 

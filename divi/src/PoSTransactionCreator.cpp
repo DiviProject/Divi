@@ -306,10 +306,5 @@ bool PoSTransactionCreator::CreateProofOfStake(
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
 {
-    bool fStakeFound = false;
-    if (PopulateCoinstakeTransaction(blockBits, txCoinStake, nTxNewTime))
-    {
-        fStakeFound = true;
-    }
-    return fStakeFound;
+    return PopulateCoinstakeTransaction(blockBits, txCoinStake, nTxNewTime);
 }

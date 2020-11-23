@@ -264,7 +264,7 @@ void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew)
 
 // Check kernel hash target and coinstake signature
 bool CheckProofOfStakeContextAndRecoverStakingData(
-    const CBlock& block, int blockHeight, StakingData& stakingData)
+    const CBlock& block, CBlockIndex* pindexPrev, StakingData& stakingData)
 {
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())
@@ -320,10 +320,10 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
 
     return true;
 }
-bool CheckProofOfStake(const CBlock& block, int blockHeight, uint256& hashProofOfStake)
+bool CheckProofOfStake(const CBlock& block, CBlockIndex* pindexPrev, uint256& hashProofOfStake)
 {
     StakingData stakingData;
-    if(!CheckProofOfStakeContextAndRecoverStakingData(block,blockHeight,stakingData))
+    if(!CheckProofOfStakeContextAndRecoverStakingData(block,pindexPrev,stakingData))
         return false;
     if (!ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",

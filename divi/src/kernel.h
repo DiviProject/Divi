@@ -21,7 +21,7 @@ struct StakingData;
 // Sets hashProofOfStake on success return
 bool CheckProofOfStake(
     const CBlock& block,
-    int blockHeight,
+    CBlockIndex* pindexPrev,
     uint256& hashProofOfStake);
 
 // Check stake modifier hard checkpoints

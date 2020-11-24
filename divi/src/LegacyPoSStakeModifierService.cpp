@@ -1,8 +1,10 @@
 #include <LegacyPoSStakeModifierService.h>
+#include <uint256.h>
 #include <blockmap.h>
 #include <chain.h>
 #include <StakeModifierIntervalHelpers.h>
 #include <Logging.h>
+#include <StakingData.h>
 
 LegacyPoSStakeModifierService::LegacyPoSStakeModifierService(
     const BlockMap& blockIndexByHash,
@@ -12,8 +14,9 @@ LegacyPoSStakeModifierService::LegacyPoSStakeModifierService(
 {
 }
 
-std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const uint256& blockHash) const
+std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const StakingData& stakingData) const
 {
+    const uint256& blockHash = stakingData.blockHashOfFirstConfirmationBlock_;
     if (!blockIndexByHash_.count(blockHash))
     {
         LogPrintf("%s: failed to get kernel stake modifier - block not indexed\n", __func__);
@@ -23,7 +26,7 @@ std::pair<uint64_t,bool> LegacyPoSStakeModifierService::getStakeModifier(const u
     return std::make_pair(nStakeModifier,true);
 }
 
-uint64_t LegacyPoSStakeModifierService::GetKernelStakeModifier(uint256 hashBlockFrom) const
+uint64_t LegacyPoSStakeModifierService::GetKernelStakeModifier(const uint256& hashBlockFrom) const
 {
     const CBlockIndex& stakeTransactionBlockIndex = *(blockIndexByHash_.find(hashBlockFrom)->second);
     int64_t timeStampOfSelectedBlock = stakeTransactionBlockIndex.GetBlockTime();

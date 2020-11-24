@@ -28,7 +28,7 @@ class MockPoSStakeModifierService: public I_PoSStakeModifierService
 {
 public:
     typedef std::pair<uint64_t,bool> StakeModifierAndFoundStatusPair;
-    MOCK_CONST_METHOD1(getStakeModifier, StakeModifierAndFoundStatusPair(const uint256&) );
+    MOCK_CONST_METHOD1(getStakeModifier, StakeModifierAndFoundStatusPair(const StakingData&) );
 };
 class MockProofOfStakeCalculator: public I_ProofOfStakeCalculator
 {

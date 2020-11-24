@@ -104,8 +104,7 @@ bool ProofOfStakeGenerator::CreateProofOfStakeCalculator(
     if(!ProofOfStakeTimeRequirementsAreMet(stakingData.blockTimeOfFirstConfirmationBlock_,initialHashproofTimestamp))
         return false;
 
-    std::pair<uint64_t,bool> stakeModifierData =
-        stakeModifierService_.getStakeModifier(stakingData.blockHashOfFirstConfirmationBlock_);
+    std::pair<uint64_t,bool> stakeModifierData = stakeModifierService_.getStakeModifier(stakingData);
     if (!stakeModifierData.second)
     {
         return error("%s: failed to get kernel stake modifier \n",__func__);

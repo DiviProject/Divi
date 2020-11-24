@@ -8,36 +8,6 @@
 #include <memory>
 #include <StakeModifierIntervalHelpers.h>
 #include <StakingData.h>
-class FakeBlockIndexWithHashes
-{
-private:
-    uint256 randomBlockHashSeed_;
-    unsigned numberOfBlocks_;
-    FakeBlockIndexChain fakeBlockIndexChain_;
-public:
-    BlockMap blockIndexByHash;
-    CChain activeChain;
-    FakeBlockIndexWithHashes(
-        unsigned numberOfBlocks,
-        unsigned blockStartTime,
-        unsigned versionNumber
-        ): randomBlockHashSeed_(uint256S("135bd924226929c2f4267f5e5c653d2a4ae0018187588dc1f016ceffe525fad2"))
-        , numberOfBlocks_(numberOfBlocks)
-        , fakeBlockIndexChain_()
-        , blockIndexByHash()
-        , activeChain()
-    {
-        for(unsigned blockHeight = 0; blockHeight < numberOfBlocks; ++blockHeight)
-        {
-            fakeBlockIndexChain_.extendBy(1,blockStartTime+60*blockHeight,versionNumber);
-            CHashWriter hasher(SER_GETHASH,0);
-            hasher << randomBlockHashSeed_ << blockHeight;
-            BlockMap::iterator it = blockIndexByHash.insert(std::make_pair(hasher.GetHash(), fakeBlockIndexChain_.tip() )).first;
-            fakeBlockIndexChain_.tip()->phashBlock = &(it->first);
-        }
-        activeChain.SetTip(fakeBlockIndexChain_.tip());
-    }
-};
 class TestSetup
 {
 private:
@@ -64,13 +34,13 @@ public:
                 versionNumber));
         stakeModifierService_.reset(
             new LegacyPoSStakeModifierService(
-                fakeBlockIndexWithHashes_->blockIndexByHash,
-                fakeBlockIndexWithHashes_->activeChain));
+                *(fakeBlockIndexWithHashes_->blockIndexByHash),
+                *(fakeBlockIndexWithHashes_->activeChain) ));
     }
 
     const CChain& getActiveChain() const
     {
-        return fakeBlockIndexWithHashes_->activeChain;
+        return *(fakeBlockIndexWithHashes_->activeChain);
     }
 
     static StakingData fromBlockHash(const uint256& blockhash)

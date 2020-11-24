@@ -12,6 +12,7 @@
 #include <I_PoSStakeModifierService.h>
 #include <ProofOfStakeGenerator.h>
 #include <I_ProofOfStakeCalculator.h>
+#include <MockPoSStakeModifierService.h>
 
 #include <gmock/gmock.h>
 using ::testing::Return;
@@ -24,12 +25,6 @@ extern bool CreateHashProofForProofOfStake(
 
 extern const int nHashDrift;
 
-class MockPoSStakeModifierService: public I_PoSStakeModifierService
-{
-public:
-    typedef std::pair<uint64_t,bool> StakeModifierAndFoundStatusPair;
-    MOCK_CONST_METHOD1(getStakeModifier, StakeModifierAndFoundStatusPair(const StakingData&) );
-};
 class MockProofOfStakeCalculator: public I_ProofOfStakeCalculator
 {
 public:

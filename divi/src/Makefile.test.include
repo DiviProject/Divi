@@ -59,6 +59,7 @@ BITCOIN_TESTS =\
   test/MockCoinMinter.h \
   test/MockSuperblockHeightValidator.h \
   test/MockBlockSubsidyProvider.h \
+  test/MockPoSStakeModifierService.h \
   test/monthlywalletbackupcreator_tests.cpp \
   test/ActiveMasternode_tests.cpp \
   test/filteredBoostFileSystem_tests.cpp \

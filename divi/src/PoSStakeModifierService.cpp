@@ -4,9 +4,11 @@
 #include <blockmap.h>
 
 PoSStakeModifierService::PoSStakeModifierService(
+    const I_PoSStakeModifierService& decorated,
     const BlockMap& blockIndexByHash,
     const CChain& activeChain
-    ): blockIndexByHash_(blockIndexByHash)
+    ): decoratedStakeModifierService_(decorated)
+    , blockIndexByHash_(blockIndexByHash)
     , activeChain_(activeChain)
 {
 }

@@ -8,18 +8,21 @@
 #include <memory>
 #include <StakeModifierIntervalHelpers.h>
 #include <StakingData.h>
+#include <MockPoSStakeModifierService.h>
 
 class TestSetup
 {
 private:
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashes_;
 public:
+    std::unique_ptr<MockPoSStakeModifierService> mockStakeModifierService_;
     std::unique_ptr<PoSStakeModifierService> stakeModifierService_;
     const uint64_t genesisStakeModifier;
     const uint64_t firstBlockStakeModifier;
     uint256 someHash;
     TestSetup(
         ): fakeBlockIndexWithHashes_()
+        , mockStakeModifierService_(new MockPoSStakeModifierService)
         , stakeModifierService_()
         , genesisStakeModifier(0)
         , firstBlockStakeModifier(0x12345)
@@ -39,6 +42,7 @@ public:
                 versionNumber));
         stakeModifierService_.reset(
             new PoSStakeModifierService(
+                *mockStakeModifierService_,
                 *(fakeBlockIndexWithHashes_->blockIndexByHash),
                 *(fakeBlockIndexWithHashes_->activeChain)));
 
@@ -49,13 +53,6 @@ public:
     const CChain& getActiveChain() const
     {
         return *(fakeBlockIndexWithHashes_->activeChain);
-    }
-
-    static StakingData fromBlockHash(const uint256& blockhash)
-    {
-        StakingData stakingData;
-        stakingData.blockHashOfFirstConfirmationBlock_ = blockhash;
-        return stakingData;
     }
     uint64_t getLastStakeModifier(CBlockIndex* currentIndex) const
     {
@@ -78,33 +75,22 @@ public:
 
 BOOST_FIXTURE_TEST_SUITE(PoSStakeModifierServiceTests,TestSetup)
 
-
-BOOST_AUTO_TEST_CASE(willFailToGetValidStakeModifierOnAnEmptyChain)
+BOOST_AUTO_TEST_CASE(willFailWhenChainTipBlockHashIsUnknown)
 {
-    std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(someHash));
-    BOOST_CHECK(!stakeModifierQuery.second);
-    BOOST_CHECK(stakeModifierQuery.first == uint64_t(0));
-}
-
-BOOST_AUTO_TEST_CASE(willFailToGetValidStakeModifierForAnUnknownHash)
-{
-    Init(200); // Initialize to 200 blocks;
-    std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(someHash));
-    BOOST_CHECK(!stakeModifierQuery.second);
-    BOOST_CHECK(stakeModifierQuery.first == uint64_t(0));
-}
-
-BOOST_AUTO_TEST_CASE(willReturnTheLower64bitsOfTheHashOfTheChainTipBlockHashAndTheLastGeneratedStakeModifier,SKIP_TEST)
-{
-    Init(200); // Initialize to 200 blocks;
-
-    CBlockIndex* blockIndex = getActiveChain().Tip();
-    uint64_t expectedStakeModifier = getExpectedStakeModifier(blockIndex);
     StakingData stakingData;
-    stakingData.blockHashOfChainTipBlock_ = blockIndex->GetBlockHash();
     std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(stakingData);
-    BOOST_CHECK(stakeModifierQuery.second);
-    BOOST_CHECK(stakeModifierQuery.first == expectedStakeModifier);
+    BOOST_CHECK(!stakeModifierQuery.second);
+    BOOST_CHECK(stakeModifierQuery.first == 0);
+}
+BOOST_AUTO_TEST_CASE(willFailWhenChainTipBlockHashIsKnownButFirstConfirmationBlockHashIsUnknown)
+{
+    Init(200);
+    StakingData stakingData;
+    stakingData.blockHashOfFirstConfirmationBlock_  = 0;
+    stakingData.blockHashOfChainTipBlock_  = getActiveChain().Tip()->GetBlockHash();
+    std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(stakingData);
+    BOOST_CHECK(!stakeModifierQuery.second);
+    BOOST_CHECK(stakeModifierQuery.first == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -66,6 +66,7 @@ static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModi
 // already selected blocks in vSelectedBlocks, and with timestamp up to
 // nSelectionIntervalStop.
 static bool SelectBlockFromCandidates(
+        const CBlockIndex* previousBlockIndexPtr,
         std::vector<std::pair<int64_t, uint256> >& vSortedByTimestamp,
         std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
         int64_t nSelectionIntervalStop,
@@ -178,7 +179,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
         nSelectionIntervalStop += GetStakeModifierSelectionIntervalSection(nRound);
 
         // select a block from the candidates of current round
-        if (!SelectBlockFromCandidates(vSortedByTimestamp, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier, &pindex))
+        if (!SelectBlockFromCandidates(pindexPrev, vSortedByTimestamp, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier, &pindex))
             return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         // write the entropy bit of the selected block

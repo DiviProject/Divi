@@ -28,5 +28,14 @@ struct StakingData
         , blockHashOfChainTipBlock_(blockHashOfChainTipBlock)
     {
     }
+    bool operator==(const StakingData& other) const
+    {
+        return nBits_== other.nBits_ &&
+            blockTimeOfFirstConfirmationBlock_== other.blockTimeOfFirstConfirmationBlock_ &&
+            blockHashOfFirstConfirmationBlock_== other.blockHashOfFirstConfirmationBlock_ &&
+            utxoBeingStaked_== other.utxoBeingStaked_ &&
+            utxoValue_== other.utxoValue_ &&
+            blockHashOfChainTipBlock_== other.blockHashOfChainTipBlock_;
+    }
 };
 #endif// STAKING_DATA_H

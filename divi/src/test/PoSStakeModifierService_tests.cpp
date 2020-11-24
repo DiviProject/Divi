@@ -10,19 +10,23 @@
 #include <StakingData.h>
 #include <MockPoSStakeModifierService.h>
 
+using ::testing::NiceMock;
+using ::testing::Exactly;
+using ::testing::Return;
+using ::testing::_;
 class TestSetup
 {
 private:
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashes_;
 public:
-    std::unique_ptr<MockPoSStakeModifierService> mockStakeModifierService_;
+    std::unique_ptr<NiceMock<MockPoSStakeModifierService>> mockStakeModifierService_;
     std::unique_ptr<PoSStakeModifierService> stakeModifierService_;
     const uint64_t genesisStakeModifier;
     const uint64_t firstBlockStakeModifier;
     uint256 someHash;
     TestSetup(
         ): fakeBlockIndexWithHashes_()
-        , mockStakeModifierService_(new MockPoSStakeModifierService)
+        , mockStakeModifierService_(new NiceMock<MockPoSStakeModifierService>)
         , stakeModifierService_()
         , genesisStakeModifier(0)
         , firstBlockStakeModifier(0x12345)
@@ -78,6 +82,7 @@ BOOST_FIXTURE_TEST_SUITE(PoSStakeModifierServiceTests,TestSetup)
 BOOST_AUTO_TEST_CASE(willFailWhenChainTipBlockHashIsUnknown)
 {
     StakingData stakingData;
+
     std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(stakingData);
     BOOST_CHECK(!stakeModifierQuery.second);
     BOOST_CHECK(stakeModifierQuery.first == 0);
@@ -88,9 +93,75 @@ BOOST_AUTO_TEST_CASE(willFailWhenChainTipBlockHashIsKnownButFirstConfirmationBlo
     StakingData stakingData;
     stakingData.blockHashOfFirstConfirmationBlock_  = 0;
     stakingData.blockHashOfChainTipBlock_  = getActiveChain().Tip()->GetBlockHash();
+
     std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(stakingData);
     BOOST_CHECK(!stakeModifierQuery.second);
     BOOST_CHECK(stakeModifierQuery.first == 0);
+}
+BOOST_AUTO_TEST_CASE(willNotQueryDecoratedStakeModifierServiceIfChainTipBlockHashIsUnknown)
+{
+    Init(200);
+    StakingData stakingData;
+    EXPECT_CALL(*mockStakeModifierService_,getStakeModifier(stakingData)).Times(Exactly(0));
+
+    stakeModifierService_->getStakeModifier(stakingData);
+}
+BOOST_AUTO_TEST_CASE(willQueryDecoratedStakeModifierServiceIfChainTipBlockHashIsKnown)
+{
+    Init(200);
+    StakingData stakingData;
+    stakingData.blockHashOfChainTipBlock_  = getActiveChain().Tip()->GetBlockHash();
+    EXPECT_CALL(*mockStakeModifierService_,getStakeModifier(stakingData)).Times(Exactly(1));
+
+    stakeModifierService_->getStakeModifier(stakingData);
+}
+
+BOOST_AUTO_TEST_CASE(willDelegateToDecoradtedStakeModifierServiceBefore2021)
+{
+    typedef std::pair<uint64_t,bool> StakeModifierQueryResult;
+    unsigned unixTimestampDecember31st2020Midnight = 1609459199;
+    uint64_t defaultStakeModifier = 0x6e657779656172;
+    StakeModifierQueryResult defaultStakeModifierQueryResult = {defaultStakeModifier, true};
+
+    Init(100, unixTimestampDecember31st2020Midnight - 3600);
+    ON_CALL(*mockStakeModifierService_,getStakeModifier(_)).WillByDefault(Return(defaultStakeModifierQueryResult));
+    StakingData stakingData;
+    CBlockIndex* currentBlockIndex = getActiveChain().Tip();
+    while(currentBlockIndex)
+    {
+        if(currentBlockIndex->GetBlockTime() <= unixTimestampDecember31st2020Midnight)
+        {
+            stakingData.blockHashOfChainTipBlock_ = currentBlockIndex->GetBlockHash();
+            StakeModifierQueryResult queryResult = stakeModifierService_->getStakeModifier(stakingData);
+            if(queryResult.first != defaultStakeModifierQueryResult.first ||
+               queryResult.second != defaultStakeModifierQueryResult.second)
+            {
+                BOOST_CHECK(false);
+                break;
+            }
+        }
+
+        currentBlockIndex = currentBlockIndex->pprev;
+    }
+}
+
+BOOST_AUTO_TEST_CASE(willSwitchToGettingLastSetStakeModifierFromChainTipAfter2020)
+{
+    typedef std::pair<uint64_t,bool> StakeModifierQueryResult;
+    unsigned unixTimestampDecember31st2020Midnight = 1609459199;
+    uint64_t defaultStakeModifier = 0x6e657779656172;
+    StakeModifierQueryResult defaultStakeModifierQueryResult = {defaultStakeModifier, true};
+
+    Init(100, unixTimestampDecember31st2020Midnight);
+    ON_CALL(*mockStakeModifierService_,getStakeModifier(_)).WillByDefault(Return(defaultStakeModifierQueryResult));
+    StakingData stakingData;
+    stakingData.blockHashOfChainTipBlock_  = getActiveChain().Tip()->GetBlockHash();
+
+
+    StakeModifierQueryResult queryResult = stakeModifierService_->getStakeModifier(stakingData);
+    uint64_t expectedStakeModifier = getLastStakeModifier(getActiveChain().Tip());
+    BOOST_CHECK(queryResult.first == expectedStakeModifier);
+    BOOST_CHECK(queryResult.second);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -95,11 +95,7 @@ static bool SelectBlockFromCandidates(
             continue;
 
         // compute the selection hash by hashing an input that is unique to that block
-        uint256 hashProof;
-        if(fModifierV2)
-            hashProof = pindex->GetBlockHash();
-        else
-            hashProof = pindex->IsProofOfStake() ? 0 : pindex->GetBlockHash();
+        uint256 hashProof = pindex->IsProofOfStake() ? 0 : pindex->GetBlockHash();
 
         CDataStream ss(SER_GETHASH, 0);
         ss << hashProof << nStakeModifierPrev;

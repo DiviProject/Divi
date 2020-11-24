@@ -7,6 +7,7 @@
 #include <utility>
 #include <memory>
 #include <StakeModifierIntervalHelpers.h>
+#include <StakingData.h>
 class FakeBlockIndexWithHashes
 {
 private:
@@ -71,20 +72,27 @@ public:
     {
         return fakeBlockIndexWithHashes_->activeChain;
     }
+
+    static StakingData fromBlockHash(const uint256& blockhash)
+    {
+        StakingData stakingData;
+        stakingData.blockHashOfFirstConfirmationBlock_ = blockhash;
+        return stakingData;
+    }
 };
 
-BOOST_FIXTURE_TEST_SUITE(PoSStakeModifierServiceTests,TestSetup)
+BOOST_FIXTURE_TEST_SUITE(LegacyPoSStakeModifierServiceTests,TestSetup)
 
 BOOST_AUTO_TEST_CASE(willFailToGetValidStakeModifierOnAnEmptyChain)
 {
-    std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(someHash);
+    std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(someHash));
     BOOST_CHECK(!stakeModifierQuery.second);
     BOOST_CHECK(stakeModifierQuery.first == uint64_t(0));
 }
 BOOST_AUTO_TEST_CASE(willFailToGetValidStakeModifierForAnUnknownHash)
 {
     Init(200); // Initialize to 200 blocks;
-    std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(someHash);
+    std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(someHash));
     BOOST_CHECK(!stakeModifierQuery.second);
     BOOST_CHECK(stakeModifierQuery.first == uint64_t(0));
 }
@@ -95,7 +103,7 @@ BOOST_AUTO_TEST_CASE(willReturnStakeModifierOfZeroWhenAskedForTheChainTipsStakeM
     CBlockIndex* chainTip = getActiveChain().Tip();
     assert(chainTip);
     {
-        std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(chainTip->GetBlockHash());
+        std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(chainTip->GetBlockHash()));
         BOOST_CHECK(stakeModifierQuery.second);
         BOOST_CHECK(stakeModifierQuery.first == uint64_t(0));
     }
@@ -108,7 +116,7 @@ BOOST_AUTO_TEST_CASE(willReturnStakeModifierForTheChainTipsStakeModifierWhenItsS
     {
         uint64_t stakeModifier = 0x26929c2;
         chainTip->SetStakeModifier(stakeModifier,true);
-        std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(chainTip->GetBlockHash());
+        std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(chainTip->GetBlockHash()));
         BOOST_CHECK(stakeModifierQuery.second);
         BOOST_CHECK(stakeModifierQuery.first == stakeModifier);
     }
@@ -134,11 +142,11 @@ BOOST_AUTO_TEST_CASE(willReturnStakeModifierForLastStakeModifierSetOrDefaultToZe
     uint64_t stakeModifier = 0x26929c2;
     blockIndexWithStakeModifierSet->SetStakeModifier(stakeModifier,true);
     {
-        std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(oldBlockIndex->GetBlockHash());
+        std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(oldBlockIndex->GetBlockHash()));
         BOOST_CHECK(stakeModifierQuery.second);
         BOOST_CHECK_EQUAL(stakeModifierQuery.first, stakeModifier);
 
-        stakeModifierQuery = stakeModifierService_->getStakeModifier(blockIndexOnePastStakeModifierSet->GetBlockHash());
+        stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(blockIndexOnePastStakeModifierSet->GetBlockHash()));
         BOOST_CHECK(stakeModifierQuery.second);
         BOOST_CHECK_EQUAL(stakeModifierQuery.first, uint64_t(0));
     }
@@ -163,17 +171,17 @@ BOOST_AUTO_TEST_CASE(willGetEarliestStakeModifierSetThatIsOutsideTheSelectionInt
     CBlockIndex* onePastPredecesor = chainTip->GetAncestor(predecesor->nHeight+1);
 
     {
-        std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(predecesor->GetBlockHash());
+        std::pair<uint64_t,bool> stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(predecesor->GetBlockHash()));
         BOOST_CHECK(stakeModifierQuery.second);
         BOOST_CHECK_EQUAL(stakeModifierQuery.first, uint64_t(blockIndexWithStakeModifierSet->nHeight) );
 
-        stakeModifierQuery = stakeModifierService_->getStakeModifier(onePastPredecesor->GetBlockHash());
+        stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(onePastPredecesor->GetBlockHash()));
         BOOST_CHECK(stakeModifierQuery.second);
         BOOST_CHECK_EQUAL(stakeModifierQuery.first, uint64_t(0));
 
         uint64_t stakeModifier = 0x26929c2;
         chainTip->SetStakeModifier(stakeModifier,true);
-        stakeModifierQuery = stakeModifierService_->getStakeModifier(onePastPredecesor->GetBlockHash());
+        stakeModifierQuery = stakeModifierService_->getStakeModifier(fromBlockHash(onePastPredecesor->GetBlockHash()));
         BOOST_CHECK(stakeModifierQuery.second);
         BOOST_CHECK_EQUAL(stakeModifierQuery.first, stakeModifier);
     }

@@ -92,6 +92,7 @@ BITCOIN_TESTS =\
   test/CoinMinting_tests.cpp \
   test/ProofOfStake_tests.cpp \
   test/IsMine_tests.cpp \
+  test/PoSStakeModifierService_tests.cpp \
   test/LegacyPoSStakeModifierService_tests.cpp
 
 if ENABLE_WALLET

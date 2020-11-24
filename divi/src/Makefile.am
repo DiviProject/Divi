@@ -171,6 +171,7 @@ BITCOIN_CORE_H = \
   keystore.h \
   LegacyBlockSubsidies.h \
   LegacyPoSStakeModifierService.h \
+  PoSStakeModifierService.h \
   leveldbwrapper.h \
   limitedmap.h \
   defaultValues.h \
@@ -336,6 +337,7 @@ libbitcoin_server_a_SOURCES = \
   ProofOfStakeGenerator.cpp \
   ProofOfStakeCalculator.cpp \
   LegacyPoSStakeModifierService.cpp \
+  PoSStakeModifierService.cpp \
   PeerNotificationOfMintService.cpp \
   miner.cpp \
   BlockMemoryPoolTransactionCollector.cpp \

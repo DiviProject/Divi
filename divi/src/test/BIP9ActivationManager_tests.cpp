@@ -15,12 +15,12 @@ using ::testing::Invoke;
 using ::testing::_;
 using ::testing::Ref;
 
-struct TestContainer
+struct BIP9ActivationManagerTestFixture
 {
     std::shared_ptr<MockBIP9ActivationTrackerFactory> factory_;
     std::shared_ptr<BIP9ActivationManager> manager_;
 
-    TestContainer(
+    BIP9ActivationManagerTestFixture(
         ): factory_(std::make_shared<MockBIP9ActivationTrackerFactory>())
         , manager_(std::make_shared<BIP9ActivationManager>(*factory_))
     {
@@ -31,7 +31,7 @@ struct TestContainer
     {
         ON_CALL(*factory_, create(_,_))
             .WillByDefault(
-                Invoke( 
+                Invoke(
                     [](const BIP9Deployment& a, ThresholdConditionCache& b)-> I_BIP9ActivationStateTracker*
                     {
                         auto mock = new NiceMock<MockBIP9ActivationStateTracker>();
@@ -45,7 +45,7 @@ struct TestContainer
     {
         ON_CALL(*factory_, create(_,_))
             .WillByDefault(
-                Invoke( 
+                Invoke(
                     [](const BIP9Deployment& a, ThresholdConditionCache& b)-> I_BIP9ActivationStateTracker*
                     {
                         return NULL;
@@ -55,7 +55,7 @@ struct TestContainer
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(BIP9ActivationManager_tests,TestContainer)
+BOOST_FIXTURE_TEST_SUITE(BIP9ActivationManager_tests,BIP9ActivationManagerTestFixture)
 
 BOOST_AUTO_TEST_CASE(willHaveNoBIPsEnabledByDefaultOnConstruction)
 {
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(willNotRecognizeAddedBIPOnFactoryFailure)
 {
     setFailingFactory();
     BIP9Deployment bip("MyUnrecognizedBIP", 1, (int64_t)1500000,(int64_t)1600000,1000,900);
-    
+
     manager_->addBIP(bip);
     BOOST_CHECK(manager_->getBIPStatus(bip.deploymentName) == BIP9ActivationManager::UNKNOWN_BIP);
 }
@@ -89,10 +89,10 @@ BOOST_AUTO_TEST_CASE(willNotAllowAddingBIPsWithOverlappingBits)
 {
     BIP9Deployment first("MySegwitVariant", 1, (int64_t)1500000,(int64_t)1600000,1000,900);
     BIP9Deployment second("MyOtherSegwitVariant", 1, (int64_t)1500000,(int64_t)1600000,1000,900);
-    
+
     manager_->addBIP(first);
     BOOST_CHECK(manager_->getBIPStatus(first.deploymentName) == BIP9ActivationManager::IN_PROGRESS);
-    
+
     manager_->addBIP(second);
     BOOST_CHECK(manager_->getBIPStatus(second.deploymentName) == BIP9ActivationManager::UNKNOWN_BIP);
 }
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(willStateBIPIsEnabledIfTrackerIsInActiveState)
 
         ON_CALL(*factory_, create(_,_))
             .WillByDefault(
-                Invoke( 
+                Invoke(
                     [chainTip, state](const BIP9Deployment& a, ThresholdConditionCache& b)-> I_BIP9ActivationStateTracker*
                     {
                         auto mock = new MockBIP9ActivationStateTracker();
@@ -128,11 +128,11 @@ BOOST_AUTO_TEST_CASE(willStateBIPIsEnabledIfTrackerIsInActiveState)
                     }
                 )
             );
-        
+
         manager_->addBIP(firstBIP);
         if(state==ThresholdState::ACTIVE)
         {
-            BOOST_CHECK(manager_->networkEnabledBIP(firstBIP.deploymentName,chainTip));  
+            BOOST_CHECK(manager_->networkEnabledBIP(firstBIP.deploymentName,chainTip));
         }
         else
         {

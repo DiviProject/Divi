@@ -8,14 +8,14 @@
 #include <memory>
 #include <StakeModifierIntervalHelpers.h>
 #include <StakingData.h>
-class TestSetup
+class LegacyPoSStakeModifierServiceFixture
 {
 private:
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashes_;
 public:
     std::unique_ptr<LegacyPoSStakeModifierService> stakeModifierService_;
     uint256 someHash;
-    TestSetup(
+    LegacyPoSStakeModifierServiceFixture(
         ): fakeBlockIndexWithHashes_()
         , stakeModifierService_()
         , someHash(uint256S("135bd924226929c2f4267f5e5c653d2a4ae0018187588dc1f016ceffe525fad2"))
@@ -51,7 +51,7 @@ public:
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(LegacyPoSStakeModifierServiceTests,TestSetup)
+BOOST_FIXTURE_TEST_SUITE(LegacyPoSStakeModifierServiceTests,LegacyPoSStakeModifierServiceFixture)
 
 BOOST_AUTO_TEST_CASE(willFailToGetValidStakeModifierOnAnEmptyChain)
 {

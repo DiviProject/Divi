@@ -72,7 +72,6 @@ static bool SelectBlockFromCandidates(
         uint64_t nStakeModifierPrev,
         const CBlockIndex** pindexSelected)
 {
-    bool fFirstRun = true;
     bool fSelected = false;
     uint256 hashBest = 0;
     *pindexSelected = (const CBlockIndex*)0;
@@ -83,11 +82,6 @@ static bool SelectBlockFromCandidates(
         const CBlockIndex* pindex = mapBlockIndex[item.second];
         if (fSelected && pindex->GetBlockTime() > nSelectionIntervalStop)
             break;
-
-        //if the lowest block height (vSortedByTimestamp[0]) is >= switch height, use new modifier calc
-        if (fFirstRun){
-            fFirstRun = false;
-        }
 
         if (mapSelectedBlocks.count(pindex->GetBlockHash()) > 0)
             continue;

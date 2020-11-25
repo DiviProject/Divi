@@ -74,6 +74,51 @@ uint256 LotteryWinnersCalculator::GetLastLotteryBlockHashBeforeHeight(int blockH
     return activeChain_[nLastLotteryHeight]->GetBlockHash();
 }
 
+bool LotteryWinnersCalculator::IsPaymentScriptVetoed(const CScript& paymentScript, const int blockHeight) const
+{
+    const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(blockHeight);
+    const int nLastLotteryHeight = std::max(startOfLotteryBlocks_,  lotteryBlockPaymentCycle* ((blockHeight - 1) / lotteryBlockPaymentCycle) );
+    constexpr int numberOfLotteryCyclesToVetoFor = 3;
+    for (int lotteryCycleCount = 0; lotteryCycleCount < numberOfLotteryCyclesToVetoFor; ++lotteryCycleCount)
+    {
+        CBlockIndex* blockIndexPreceedingPriorLotteryBlock = activeChain_[ nLastLotteryHeight-lotteryBlockPaymentCycle*lotteryCycleCount-1];
+        if(!blockIndexPreceedingPriorLotteryBlock)
+        {
+            return false;
+        }
+        const LotteryCoinstakes& previousWinners = blockIndexPreceedingPriorLotteryBlock->vLotteryWinnersCoinstakes.getLotteryCoinstakes();
+        LotteryCoinstakes::const_iterator it = std::find_if(previousWinners.begin(),previousWinners.end(),
+            [&paymentScript](const LotteryCoinstake& coinstake){
+                return coinstake.second == paymentScript;
+            });
+        if(it != previousWinners.end()) return true;
+    }
+    return false;
+}
+
+bool RemoveDuplicateWinners(const CScript& duplicateToCheckFor, LotteryCoinstakes& updatedCoinstakes)
+{
+    if(updatedCoinstakes.size()>1)
+    {
+        LotteryCoinstakes::iterator iteratorToFirstInstance = std::find_if(updatedCoinstakes.begin(),updatedCoinstakes.end(),
+            [&duplicateToCheckFor](const LotteryCoinstake& coinstake)
+            {
+                return coinstake.second == duplicateToCheckFor;
+            } );
+        LotteryCoinstakes::iterator iteratorToSecondInstance = std::find_if(std::next(iteratorToFirstInstance),updatedCoinstakes.end(),
+            [&duplicateToCheckFor](const LotteryCoinstake& coinstake)
+            {
+                return coinstake.second == duplicateToCheckFor;
+            } );
+        if(iteratorToSecondInstance != updatedCoinstakes.end())
+        {
+            updatedCoinstakes.erase(iteratorToSecondInstance);
+            return true;
+        }
+    }
+    return false;
+}
+
 bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockHash, LotteryCoinstakes& updatedCoinstakes) const
 {
     struct RankAwareScore
@@ -88,9 +133,10 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockH
             CalculateLotteryScore(lotteryCoinstake.first, lastLotteryBlockHash), rankedScoreAwareCoinstakes.size() };
         rankedScoreAwareCoinstakes.emplace(lotteryCoinstake.first, std::move(rankedScore));
     }
+    const CScript newestPaymentScript = updatedCoinstakes.back().second;
 
     // biggest entry at the begining
-    bool shouldUpdateCoinstakeData = true;
+    bool shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes.size() > 0;
     if(rankedScoreAwareCoinstakes.size() > 1)
     {
         std::stable_sort(std::begin(updatedCoinstakes), std::end(updatedCoinstakes),
@@ -101,6 +147,7 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockH
         );
         shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes[updatedCoinstakes.back().first].rank != 11;
     }
+    if(RemoveDuplicateWinners(newestPaymentScript, updatedCoinstakes)) shouldUpdateCoinstakeData = true;
     if( updatedCoinstakes.size() > 11) updatedCoinstakes.pop_back();
     return shouldUpdateCoinstakeData;
 }
@@ -117,6 +164,11 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
 
     LotteryCoinstakes updatedCoinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
     updatedCoinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
+
+    if(IsPaymentScriptVetoed(updatedCoinstakes.back().second,nHeight))
+    {
+        return previousBlockLotteryCoinstakeData.getShallowCopy();
+    }
 
     if(UpdateCoinstakes(GetLastLotteryBlockHashBeforeHeight(nHeight),updatedCoinstakes))
     {

@@ -57,18 +57,6 @@ const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex
     }
     return pindex;
 }
-static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModifier, int64_t& nModifierTime)
-{
-    if (!pindex)
-        return error("GetLastStakeModifier: null pindex");
-
-    pindex = GetLastBlockIndexWithGeneratedStakeModifier(pindex);
-    if (!pindex->GeneratedStakeModifier())
-        return error("GetLastStakeModifier: no generation at genesis block");
-    nStakeModifier = pindex->nStakeModifier;
-    nModifierTime = pindex->GetBlockTime();
-    return true;
-}
 
 // select a block from the candidate blocks in vSortedByTimestamp, excluding
 // already selected blocks in vSelectedBlocks, and with timestamp up to
@@ -153,12 +141,12 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
 
     // First find current stake modifier and its generation block time
     // if it's not old enough, return the same stake modifier
-    int64_t nModifierTime = 0;
-    if (!GetLastStakeModifier(pindexPrev, nStakeModifier, nModifierTime))
-        return error("ComputeNextStakeModifier: unable to get last modifier");
+    const CBlockIndex* indexWhereLastStakeModifierWasSet = GetLastBlockIndexWithGeneratedStakeModifier(pindexPrev);
+    if (!indexWhereLastStakeModifierWasSet || !indexWhereLastStakeModifierWasSet->GeneratedStakeModifier())
+        return error("ComputeNextStakeModifier: unable to get last modifier prior to blockhash %s\n",pindexPrev->GetBlockHash().ToString());
 
-    if (settings.GetBoolArg("-printstakemodifier", false))
-        LogPrintf("ComputeNextStakeModifier: prev modifier= %s time=%s\n", boost::lexical_cast<std::string>(nStakeModifier).c_str(), DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nModifierTime).c_str());
+    int64_t nModifierTime = indexWhereLastStakeModifierWasSet->GetBlockTime();
+    nStakeModifier = indexWhereLastStakeModifierWasSet->nStakeModifier;
 
     if (nModifierTime / MODIFIER_INTERVAL >= pindexPrev->GetBlockTime() / MODIFIER_INTERVAL)
         return true;

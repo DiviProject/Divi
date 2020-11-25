@@ -7,11 +7,9 @@ constexpr uint64_t unixTimestampForDec31stMidnight = 1609459199;
 
 PoSStakeModifierService::PoSStakeModifierService(
     const I_PoSStakeModifierService& decorated,
-    const BlockMap& blockIndexByHash,
-    const CChain& activeChain
+    const BlockMap& blockIndexByHash
     ): decoratedStakeModifierService_(decorated)
     , blockIndexByHash_(blockIndexByHash)
-    , activeChain_(activeChain)
 {
 }
 

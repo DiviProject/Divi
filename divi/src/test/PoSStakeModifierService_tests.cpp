@@ -47,8 +47,7 @@ public:
         stakeModifierService_.reset(
             new PoSStakeModifierService(
                 *mockStakeModifierService_,
-                *(fakeBlockIndexWithHashes_->blockIndexByHash),
-                *(fakeBlockIndexWithHashes_->activeChain)));
+                *(fakeBlockIndexWithHashes_->blockIndexByHash) ));
 
         if(numberOfBlocks>0) getActiveChain()[0]->SetStakeModifier(genesisStakeModifier, true);
         if(numberOfBlocks>1) getActiveChain()[1]->SetStakeModifier(firstBlockStakeModifier, true);

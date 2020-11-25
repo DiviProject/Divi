@@ -14,7 +14,7 @@ using ::testing::NiceMock;
 using ::testing::Exactly;
 using ::testing::Return;
 using ::testing::_;
-class TestSetup
+class PoSStakeModifierServiceTestFixture
 {
 private:
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashes_;
@@ -24,7 +24,7 @@ public:
     const uint64_t genesisStakeModifier;
     const uint64_t firstBlockStakeModifier;
     uint256 someHash;
-    TestSetup(
+    PoSStakeModifierServiceTestFixture(
         ): fakeBlockIndexWithHashes_()
         , mockStakeModifierService_(new NiceMock<MockPoSStakeModifierService>)
         , stakeModifierService_()
@@ -77,7 +77,7 @@ public:
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(PoSStakeModifierServiceTests,TestSetup)
+BOOST_FIXTURE_TEST_SUITE(PoSStakeModifierServiceTests,PoSStakeModifierServiceTestFixture)
 
 BOOST_AUTO_TEST_CASE(willFailWhenChainTipBlockHashIsUnknown)
 {

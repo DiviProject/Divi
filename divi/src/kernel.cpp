@@ -121,6 +121,28 @@ static bool SelectBlockFromCandidates(
 // block. This is to make it difficult for an attacker to gain control of
 // additional bits in the stake modifier, even after generating a chain of
 // blocks.
+std::vector<std::pair<int64_t, uint256> > GetRecentBlocksSortedByIncreasingTimestamp(
+    const CBlockIndex* pindexPrev,
+    int64_t& nSelectionIntervalStop)
+{
+    // Sort candidate blocks by timestamp
+    std::vector<std::pair<int64_t, uint256> > vSortedByTimestamp;
+    vSortedByTimestamp.reserve(64);
+    int64_t nSelectionInterval = GetStakeModifierSelectionInterval();
+    int64_t nSelectionIntervalStart = (pindexPrev->GetBlockTime() / MODIFIER_INTERVAL) * MODIFIER_INTERVAL - nSelectionInterval;
+    const CBlockIndex* pindex = pindexPrev;
+
+    while (pindex && pindex->GetBlockTime() >= nSelectionIntervalStart) {
+        vSortedByTimestamp.push_back(std::make_pair(pindex->GetBlockTime(), pindex->GetBlockHash()));
+        pindex = pindex->pprev;
+    }
+
+    std::reverse(vSortedByTimestamp.begin(), vSortedByTimestamp.end());
+    std::sort(vSortedByTimestamp.begin(), vSortedByTimestamp.end());
+
+    nSelectionIntervalStop = nSelectionIntervalStart;
+    return vSortedByTimestamp;
+}
 bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeModifier, bool& fGeneratedStakeModifier)
 {
     nStakeModifier = 0;
@@ -148,24 +170,11 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     if (nModifierTime / MODIFIER_INTERVAL >= pindexPrev->GetBlockTime() / MODIFIER_INTERVAL)
         return true;
 
-    // Sort candidate blocks by timestamp
-    std::vector<std::pair<int64_t, uint256> > vSortedByTimestamp;
-    vSortedByTimestamp.reserve(64);
-    int64_t nSelectionInterval = GetStakeModifierSelectionInterval();
-    int64_t nSelectionIntervalStart = (pindexPrev->GetBlockTime() / MODIFIER_INTERVAL) * MODIFIER_INTERVAL - nSelectionInterval;
-    const CBlockIndex* pindex = pindexPrev;
-
-    while (pindex && pindex->GetBlockTime() >= nSelectionIntervalStart) {
-        vSortedByTimestamp.push_back(std::make_pair(pindex->GetBlockTime(), pindex->GetBlockHash()));
-        pindex = pindex->pprev;
-    }
-
-    int nHeightFirstCandidate = pindex ? (pindex->nHeight + 1) : 0;
-    std::reverse(vSortedByTimestamp.begin(), vSortedByTimestamp.end());
-    std::sort(vSortedByTimestamp.begin(), vSortedByTimestamp.end());
-
     uint64_t nStakeModifierNew = 0;
-    int64_t nSelectionIntervalStop = nSelectionIntervalStart;
+    int64_t nSelectionIntervalStop = 0;
+    std::vector<std::pair<int64_t, uint256> > vSortedByTimestamp = GetRecentBlocksSortedByIncreasingTimestamp(pindexPrev,nSelectionIntervalStop);
+
+    const CBlockIndex* pindex = nullptr;
     std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
     for (int nRound = 0; nRound < std::min(64, (int)vSortedByTimestamp.size()); nRound++) {
         nSelectionIntervalStop += GetStakeModifierSelectionIntervalSection(nRound);

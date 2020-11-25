@@ -60,8 +60,8 @@ const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex
 // nSelectionIntervalStop.
 static bool SelectBlockFromCandidates(
         const CBlockIndex* previousBlockIndexPtr,
-        std::vector<std::pair<int64_t, uint256> >& vSortedByTimestamp,
-        std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
+        const std::vector<std::pair<int64_t, uint256> >& vSortedByTimestamp,
+        const std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
         int64_t nSelectionIntervalStop,
         uint64_t nStakeModifierPrev,
         const CBlockIndex** pindexSelected)

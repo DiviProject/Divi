@@ -59,7 +59,6 @@ const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex
 // already selected blocks in vSelectedBlocks, and with timestamp up to
 // nSelectionIntervalStop.
 static bool SelectBlockFromCandidates(
-        const CBlockIndex* previousBlockIndexPtr,
         const std::vector<std::pair<int64_t, uint256> >& vSortedByTimestamp,
         const std::map<uint256, const CBlockIndex*>& mapSelectedBlocks,
         int64_t nSelectionIntervalStop,
@@ -178,14 +177,25 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     std::map<uint256, const CBlockIndex*> mapSelectedBlocks;
     for (int nRound = 0; nRound < std::min(64, (int)vSortedByTimestamp.size()); nRound++) {
         nSelectionIntervalStop += GetStakeModifierSelectionIntervalSection(nRound);
-        if (!SelectBlockFromCandidates(pindexPrev, vSortedByTimestamp, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier, &pindex))
+        if (!SelectBlockFromCandidates(vSortedByTimestamp, mapSelectedBlocks, nSelectionIntervalStop, nStakeModifier, &pindex))
             return error("ComputeNextStakeModifier: unable to select block at round %d", nRound);
 
         nStakeModifierNew |= (((uint64_t)pindex->GetStakeEntropyBit()) << nRound);
         mapSelectedBlocks.insert(std::make_pair(pindex->GetBlockHash(), pindex));
     }
 
-    nStakeModifier = nStakeModifierNew;
+    constexpr uint64_t unixTimestampForDec31stMidnight = 1609459199;
+    if(pindexPrev->GetBlockTime() > unixTimestampForDec31stMidnight)
+    {
+        CHashWriter hasher(SER_GETHASH,0);
+        hasher << pindexPrev->GetBlockHash() << nStakeModifierNew;
+        nStakeModifier = hasher.GetHash().GetLow64();
+    }
+    else
+    {
+        nStakeModifier = nStakeModifierNew;
+    }
+
     fGeneratedStakeModifier = true;
     return true;
 }

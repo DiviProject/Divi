@@ -49,12 +49,20 @@ static std::map<int, unsigned int> mapStakeModifierCheckpoints =
         boost::assign::map_list_of(0, 0xfd11f4e7u);
 
 // Get the last stake modifier and its generation time from a given block
+const CBlockIndex* GetLastBlockIndexWithGeneratedStakeModifier(const CBlockIndex* pindex)
+{
+    while (pindex && pindex->pprev && !pindex->GeneratedStakeModifier())
+    {
+        pindex = pindex->pprev;
+    }
+    return pindex;
+}
 static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModifier, int64_t& nModifierTime)
 {
     if (!pindex)
         return error("GetLastStakeModifier: null pindex");
-    while (pindex && pindex->pprev && !pindex->GeneratedStakeModifier())
-        pindex = pindex->pprev;
+
+    pindex = GetLastBlockIndexWithGeneratedStakeModifier(pindex);
     if (!pindex->GeneratedStakeModifier())
         return error("GetLastStakeModifier: no generation at genesis block");
     nStakeModifier = pindex->nStakeModifier;

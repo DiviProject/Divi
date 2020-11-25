@@ -23,6 +23,7 @@ class I_PoSStakeModifierService;
 
 class CoinMintingModule
 {
+    std::unique_ptr<I_PoSStakeModifierService> legacyStakeModifierService_;
     std::unique_ptr<I_PoSStakeModifierService> stakeModifierService_;
     std::unique_ptr<SuperblockSubsidyContainer> blockSubsidyContainer_;
     std::unique_ptr<BlockIncentivesPopulator> blockIncentivesPopulator_;

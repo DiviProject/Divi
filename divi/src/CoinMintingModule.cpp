@@ -9,6 +9,7 @@
 #include <SuperblockHelpers.h>
 #include <BlockIncentivesPopulator.h>
 #include <LegacyPoSStakeModifierService.h>
+#include <PoSStakeModifierService.h>
 
 #include <masternode-payments.h>
 
@@ -53,7 +54,8 @@ CoinMintingModule::CoinMintingModule(
     CWallet& wallet,
     int64_t& lastCoinStakeSearchInterval,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight
-    ): stakeModifierService_(new LegacyPoSStakeModifierService(mapBlockIndex,activeChain))
+    ): legacyStakeModifierService_(new LegacyPoSStakeModifierService(mapBlockIndex,activeChain))
+    , stakeModifierService_(new PoSStakeModifierService(*legacyStakeModifierService_, mapBlockIndex))
     , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
         chainParameters,
@@ -102,6 +104,7 @@ CoinMintingModule::~CoinMintingModule()
     blockIncentivesPopulator_.reset();
     blockSubsidyContainer_.reset();
     stakeModifierService_.reset();
+    legacyStakeModifierService_.reset();
 }
 
 I_BlockFactory& CoinMintingModule::blockFactory() const

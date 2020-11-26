@@ -18,6 +18,7 @@ using ::testing::Invoke;
 class LotteryWinnersCalculatorTestFixture
 {
 private:
+    unsigned dummyScriptIndex_;
     unsigned lastUpdatedLotteryCoinstakesHeight_;
     std::unique_ptr<NiceMock<MockSuperblockHeightValidator>> heightValidator_;
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashes_;
@@ -27,7 +28,8 @@ public:
     const int lotteryStartBlock;
     std::unique_ptr<LotteryWinnersCalculator> calculator_;
     LotteryWinnersCalculatorTestFixture(
-        ): lastUpdatedLotteryCoinstakesHeight_(0)
+        ): dummyScriptIndex_(0u)
+        , lastUpdatedLotteryCoinstakesHeight_(0)
         , heightValidator_(new NiceMock<MockSuperblockHeightValidator>)
         , fakeBlockIndexWithHashes_()
         , sporkManager_()
@@ -109,6 +111,17 @@ public:
     {
         return fakeBlockIndexWithHashes_->activeChain->operator[](blockHeight)->vLotteryWinnersCoinstakes.getLotteryCoinstakes();
     }
+
+    CScript constructDistinctDummyScript()
+    {
+        CScript dummyScript = CScript() << OP_TRUE;
+        for(unsigned countOfDistinctDummyScripts = 0; countOfDistinctDummyScripts < dummyScriptIndex_; ++countOfDistinctDummyScripts)
+        {
+            dummyScript << OP_FALSE;
+        }
+        ++dummyScriptIndex_;
+        return dummyScript;
+    }
 };
 
 BOOST_FIXTURE_TEST_SUITE(LotteryWinnersCalculatorTests, LotteryWinnersCalculatorTestFixture)
@@ -118,9 +131,9 @@ BOOST_AUTO_TEST_CASE(willEnsureThatASingleWinnerOfAllStakesCannotWinLotteryMoreT
     SetDefaultLotteryStartAndCycleLength(100, 10);
     InitializeChainToFixedBlockCount(110);
 
-    CScript initialScript = CScript() << OP_TRUE;
+    CScript initialScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(100,initialScript);
-    CScript singleWinnerScript = CScript() << OP_TRUE << OP_FALSE;
+    CScript singleWinnerScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(10,singleWinnerScript);
 
     std::map<CScript,unsigned> paymentScripts;
@@ -136,10 +149,10 @@ BOOST_AUTO_TEST_CASE(willEnsureThatWinningALotteryTwiceCannotOccurByInterleaving
     SetDefaultLotteryStartAndCycleLength(100, 10);
     InitializeChainToFixedBlockCount(111);
 
-    CScript initialScript = CScript() << OP_TRUE;
+    CScript initialScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(101,initialScript);
-    CScript firstWinnerScript = CScript() << OP_TRUE << OP_FALSE;
-    CScript secondWinnerScript = CScript() << OP_TRUE << OP_FALSE << OP_FALSE;
+    CScript firstWinnerScript = constructDistinctDummyScript();
+    CScript secondWinnerScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(1,firstWinnerScript);
     UpdateNextLotteryBlocks(1,secondWinnerScript);
     UpdateNextLotteryBlocks(1,firstWinnerScript);
@@ -159,9 +172,9 @@ BOOST_AUTO_TEST_CASE(willEnsureThatWinningALotteryForbidsWinningForTheNextThreeL
     SetDefaultLotteryStartAndCycleLength(100, 10);
     InitializeChainToFixedBlockCount(151);
 
-    CScript initialScript = CScript() << OP_TRUE;
+    CScript initialScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(101,initialScript);
-    CScript firstWinnerScript = CScript() << OP_TRUE << OP_FALSE;
+    CScript firstWinnerScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(50,firstWinnerScript);
 
     BOOST_CHECK(getLotteryCoinstakes(110-1).size()==1);

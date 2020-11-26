@@ -96,10 +96,11 @@ bool LotteryWinnersCalculator::IsPaymentScriptVetoed(const CScript& paymentScrip
     return false;
 }
 
-bool RemoveDuplicateWinners(const CScript& duplicateToCheckFor, LotteryCoinstakes& updatedCoinstakes)
+bool RemoveDuplicateWinners(const LotteryCoinstake& newestCoinstake, LotteryCoinstakes& updatedCoinstakes)
 {
     if(updatedCoinstakes.size()>1)
     {
+        const CScript& duplicateToCheckFor = newestCoinstake.second;
         LotteryCoinstakes::iterator iteratorToFirstInstance = std::find_if(updatedCoinstakes.begin(),updatedCoinstakes.end(),
             [&duplicateToCheckFor](const LotteryCoinstake& coinstake)
             {
@@ -112,8 +113,9 @@ bool RemoveDuplicateWinners(const CScript& duplicateToCheckFor, LotteryCoinstake
             } );
         if(iteratorToSecondInstance != updatedCoinstakes.end())
         {
+            bool newestCoinstakeIsKept = newestCoinstake.first != iteratorToSecondInstance->first;
             updatedCoinstakes.erase(iteratorToSecondInstance);
-            return true;
+            return newestCoinstakeIsKept;
         }
     }
     return false;
@@ -133,7 +135,7 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockH
             CalculateLotteryScore(lotteryCoinstake.first, lastLotteryBlockHash), rankedScoreAwareCoinstakes.size() };
         rankedScoreAwareCoinstakes.emplace(lotteryCoinstake.first, std::move(rankedScore));
     }
-    const CScript newestPaymentScript = updatedCoinstakes.back().second;
+    const LotteryCoinstake newestCoinstake = updatedCoinstakes.back();
 
     // biggest entry at the begining
     bool shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes.size() > 0;
@@ -147,7 +149,7 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockH
         );
         shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes[updatedCoinstakes.back().first].rank != 11;
     }
-    if(RemoveDuplicateWinners(newestPaymentScript, updatedCoinstakes)) shouldUpdateCoinstakeData = true;
+    if(RemoveDuplicateWinners(newestCoinstake, updatedCoinstakes)) shouldUpdateCoinstakeData = true;
     if( updatedCoinstakes.size() > 11) updatedCoinstakes.pop_back();
     return shouldUpdateCoinstakeData;
 }

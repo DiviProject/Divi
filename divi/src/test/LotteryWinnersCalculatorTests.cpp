@@ -126,47 +126,6 @@ public:
 
 BOOST_FIXTURE_TEST_SUITE(LotteryWinnersCalculatorTests, LotteryWinnersCalculatorTestFixture)
 
-BOOST_AUTO_TEST_CASE(willEnsureThatASingleWinnerOfAllStakesCannotWinLotteryMoreThanOnceEveryLottery)
-{
-    SetDefaultLotteryStartAndCycleLength(100, 10);
-    InitializeChainToFixedBlockCount(110);
-
-    CScript initialScript = constructDistinctDummyScript();
-    UpdateNextLotteryBlocks(100,initialScript);
-    CScript singleWinnerScript = constructDistinctDummyScript();
-    UpdateNextLotteryBlocks(10,singleWinnerScript);
-
-    std::map<CScript,unsigned> paymentScripts;
-    for(const auto& txHashAndPaymentScript: getLotteryCoinstakes(110-1))
-    {
-        ++paymentScripts[txHashAndPaymentScript.second];
-    }
-    BOOST_CHECK(paymentScripts[singleWinnerScript]==1);
-}
-
-BOOST_AUTO_TEST_CASE(willEnsureThatWinningALotteryTwiceCannotOccurByInterleavingWins)
-{
-    SetDefaultLotteryStartAndCycleLength(100, 10);
-    InitializeChainToFixedBlockCount(111);
-
-    CScript initialScript = constructDistinctDummyScript();
-    UpdateNextLotteryBlocks(101,initialScript);
-    CScript firstWinnerScript = constructDistinctDummyScript();
-    CScript secondWinnerScript = constructDistinctDummyScript();
-    UpdateNextLotteryBlocks(1,firstWinnerScript);
-    UpdateNextLotteryBlocks(1,secondWinnerScript);
-    UpdateNextLotteryBlocks(1,firstWinnerScript);
-    UpdateNextLotteryBlocks(7,secondWinnerScript);
-
-    std::map<CScript,unsigned> paymentScripts;
-    for(const auto& txHashAndPaymentScript: getLotteryCoinstakes(110-1))
-    {
-        ++paymentScripts[txHashAndPaymentScript.second];
-    }
-    BOOST_CHECK(paymentScripts[firstWinnerScript]==1);
-    BOOST_CHECK(paymentScripts[secondWinnerScript]==1);
-}
-
 BOOST_AUTO_TEST_CASE(willEnsureThatWinningALotteryForbidsWinningForTheNextThreeLotteries)
 {
     SetDefaultLotteryStartAndCycleLength(100, 10);
@@ -177,11 +136,63 @@ BOOST_AUTO_TEST_CASE(willEnsureThatWinningALotteryForbidsWinningForTheNextThreeL
     CScript firstWinnerScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(50,firstWinnerScript);
 
-    BOOST_CHECK(getLotteryCoinstakes(110-1).size()==1);
+    BOOST_CHECK(getLotteryCoinstakes(110-1).size()>0);
     BOOST_CHECK(getLotteryCoinstakes(120-1).size()==0);
     BOOST_CHECK(getLotteryCoinstakes(130-1).size()==0);
     BOOST_CHECK(getLotteryCoinstakes(140-1).size()==0);
-    BOOST_CHECK(getLotteryCoinstakes(150-1).size()==1);
+    BOOST_CHECK(getLotteryCoinstakes(150-1).size()>0);
 }
 
+BOOST_AUTO_TEST_CASE(willAllowRepeatedWinnersOnlyIfNoNewWinnersAreAvailable)
+{
+    SetDefaultLotteryStartAndCycleLength(100, 50);
+    InitializeChainToFixedBlockCount(151);
+
+    CScript initialScript = constructDistinctDummyScript();
+    UpdateNextLotteryBlocks(101,initialScript);
+    CScript firstWinnerScript = constructDistinctDummyScript();
+    UpdateNextLotteryBlocks(40,firstWinnerScript);
+    for(unsigned winnerCount = 0; winnerCount < 9; ++winnerCount)
+    {
+        UpdateNextLotteryBlocks(1,constructDistinctDummyScript());
+    }
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(150-1).size(),11u);
+}
+BOOST_AUTO_TEST_CASE(willRemoveLowestScoringDuplicateIfNewWinnersAreAvailable)
+{
+    SetDefaultLotteryStartAndCycleLength(100, 50);
+    InitializeChainToFixedBlockCount(151);
+
+    CScript initialScript = constructDistinctDummyScript();
+    UpdateNextLotteryBlocks(101,initialScript);
+    CScript firstWinnerScript = constructDistinctDummyScript();
+    UpdateNextLotteryBlocks(40,firstWinnerScript);
+    const LotteryCoinstakes& singleWinnerCoinstakes = getLotteryCoinstakes(140);
+    std::set<uint256> coinstakeTxHashesOfSingleWinnerCoinstakes;
+    for(const LotteryCoinstake& coinstake: singleWinnerCoinstakes)
+    {
+        assert(coinstake.second == firstWinnerScript);
+        coinstakeTxHashesOfSingleWinnerCoinstakes.insert(coinstake.first);
+    }
+
+    for(unsigned winnerCount = 0; winnerCount < 9; ++winnerCount)
+    {
+        UpdateNextLotteryBlocks(1,constructDistinctDummyScript());
+        const LotteryCoinstakes& updatedCoinstakes = getLotteryCoinstakes(140+winnerCount+1);
+        const LotteryCoinstake& coinstakeToRemove = *(singleWinnerCoinstakes.rbegin()+winnerCount);
+        auto it = std::find_if(updatedCoinstakes.begin(),updatedCoinstakes.end(),
+            [&coinstakeToRemove](const LotteryCoinstake& coinstake)
+            {
+                return coinstake.first == coinstakeToRemove.first &&
+                        coinstake.second == coinstakeToRemove.second;
+            });
+        if(it != updatedCoinstakes.end())
+        {
+            BOOST_CHECK_MESSAGE(false,
+                "Failed To Remove Lowest Scoring Coinstake: Expecting reverse index " +
+                std::to_string(winnerCount) + " || Got reverse index: " + std::to_string( static_cast<int>(std::distance(it,updatedCoinstakes.end())-1))  );
+            break;
+        }
+    }
+}
 BOOST_AUTO_TEST_SUITE_END()

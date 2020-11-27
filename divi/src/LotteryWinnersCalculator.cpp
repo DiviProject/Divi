@@ -127,13 +127,18 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockH
     {
         uint256 score;
         size_t rank;
+        bool isDuplicateScript;
     };
     std::map<uint256,RankAwareScore> rankedScoreAwareCoinstakes;
+    std::set<CScript> paymentScripts;
     for(const auto& lotteryCoinstake : updatedCoinstakes)
     {
         RankAwareScore rankedScore = {
-            CalculateLotteryScore(lotteryCoinstake.first, lastLotteryBlockHash), rankedScoreAwareCoinstakes.size() };
+            CalculateLotteryScore(lotteryCoinstake.first,
+            lastLotteryBlockHash), rankedScoreAwareCoinstakes.size(),
+            paymentScripts.count(lotteryCoinstake.second)>0  };
         rankedScoreAwareCoinstakes.emplace(lotteryCoinstake.first, std::move(rankedScore));
+        paymentScripts.insert(lotteryCoinstake.second);
     }
     const LotteryCoinstake newestCoinstake = updatedCoinstakes.back();
 
@@ -149,8 +154,24 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockH
         );
         shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes[updatedCoinstakes.back().first].rank != 11;
     }
-    if(RemoveDuplicateWinners(newestCoinstake, updatedCoinstakes)) shouldUpdateCoinstakeData = true;
-    if( updatedCoinstakes.size() > 11) updatedCoinstakes.pop_back();
+    if( updatedCoinstakes.size() > 11)
+    {
+        LotteryCoinstakes::reverse_iterator rIteratorToLastDuplicate =
+            std::find_if(updatedCoinstakes.rbegin(),updatedCoinstakes.rend(),
+            [&rankedScoreAwareCoinstakes](const LotteryCoinstake& coinstake)
+            {
+                return rankedScoreAwareCoinstakes[coinstake.first].isDuplicateScript;
+            });
+        if(rIteratorToLastDuplicate != updatedCoinstakes.rend())
+        {
+            updatedCoinstakes.erase((rIteratorToLastDuplicate+1).base());
+            shouldUpdateCoinstakeData = true;
+        }
+        else
+        {
+            updatedCoinstakes.pop_back();
+        }
+    }
     return shouldUpdateCoinstakeData;
 }
 

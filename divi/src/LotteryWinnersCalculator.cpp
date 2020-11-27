@@ -117,6 +117,28 @@ static void SortCoinstakesByScore(const RankedScoreAwareCoinstakes& rankedScoreA
     }
 }
 
+static void SelectTopElevenBestCoinstakes(const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes, LotteryCoinstakes& updatedCoinstakes, bool& shouldUpdateCoinstakeData)
+{
+    if( updatedCoinstakes.size() > 11)
+    {
+        LotteryCoinstakes::reverse_iterator rIteratorToLastDuplicate =
+            std::find_if(updatedCoinstakes.rbegin(),updatedCoinstakes.rend(),
+            [&rankedScoreAwareCoinstakes](const LotteryCoinstake& coinstake)
+            {
+                return rankedScoreAwareCoinstakes.find(coinstake.first)->second.isDuplicateScript;
+            });
+        if(rIteratorToLastDuplicate != updatedCoinstakes.rend())
+        {
+            updatedCoinstakes.erase((rIteratorToLastDuplicate+1).base());
+            shouldUpdateCoinstakeData = true;
+        }
+        else
+        {
+            updatedCoinstakes.pop_back();
+        }
+    }
+}
+
 bool RemoveDuplicateWinners(const LotteryCoinstake& newestCoinstake, LotteryCoinstakes& updatedCoinstakes)
 {
     if(updatedCoinstakes.size()>1)
@@ -165,25 +187,7 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockH
     {
         shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes[updatedCoinstakes.back().first].rank != 11;
     }
-
-    if( updatedCoinstakes.size() > 11)
-    {
-        LotteryCoinstakes::reverse_iterator rIteratorToLastDuplicate =
-            std::find_if(updatedCoinstakes.rbegin(),updatedCoinstakes.rend(),
-            [&rankedScoreAwareCoinstakes](const LotteryCoinstake& coinstake)
-            {
-                return rankedScoreAwareCoinstakes[coinstake.first].isDuplicateScript;
-            });
-        if(rIteratorToLastDuplicate != updatedCoinstakes.rend())
-        {
-            updatedCoinstakes.erase((rIteratorToLastDuplicate+1).base());
-            shouldUpdateCoinstakeData = true;
-        }
-        else
-        {
-            updatedCoinstakes.pop_back();
-        }
-    }
+    SelectTopElevenBestCoinstakes(rankedScoreAwareCoinstakes,updatedCoinstakes,shouldUpdateCoinstakeData);
     return shouldUpdateCoinstakeData;
 }
 

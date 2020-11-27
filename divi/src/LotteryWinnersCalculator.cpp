@@ -104,6 +104,19 @@ struct RankAwareScore
 };
 typedef std::map<uint256,RankAwareScore> RankedScoreAwareCoinstakes;
 
+static void SortCoinstakesByScore(const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes, LotteryCoinstakes& updatedCoinstakes)
+{
+    if(rankedScoreAwareCoinstakes.size() > 1)
+    {
+        std::stable_sort(std::begin(updatedCoinstakes), std::end(updatedCoinstakes),
+            [&rankedScoreAwareCoinstakes](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs)
+            {
+                return rankedScoreAwareCoinstakes.find(lhs.first)->second.score > rankedScoreAwareCoinstakes.find(rhs.first)->second.score;
+            }
+        );
+    }
+}
+
 bool RemoveDuplicateWinners(const LotteryCoinstake& newestCoinstake, LotteryCoinstakes& updatedCoinstakes)
 {
     if(updatedCoinstakes.size()>1)
@@ -147,16 +160,12 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockH
 
     // biggest entry at the begining
     bool shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes.size() > 0;
+    SortCoinstakesByScore(rankedScoreAwareCoinstakes,updatedCoinstakes);
     if(rankedScoreAwareCoinstakes.size() > 1)
     {
-        std::stable_sort(std::begin(updatedCoinstakes), std::end(updatedCoinstakes),
-            [&rankedScoreAwareCoinstakes](const LotteryCoinstake& lhs, const LotteryCoinstake& rhs)
-            {
-                return rankedScoreAwareCoinstakes[lhs.first].score > rankedScoreAwareCoinstakes[rhs.first].score;
-            }
-        );
         shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes[updatedCoinstakes.back().first].rank != 11;
     }
+
     if( updatedCoinstakes.size() > 11)
     {
         LotteryCoinstakes::reverse_iterator rIteratorToLastDuplicate =

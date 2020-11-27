@@ -144,31 +144,6 @@ void LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
     }
 }
 
-bool RemoveDuplicateWinners(const LotteryCoinstake& newestCoinstake, LotteryCoinstakes& updatedCoinstakes)
-{
-    if(updatedCoinstakes.size()>1)
-    {
-        const CScript& duplicateToCheckFor = newestCoinstake.second;
-        LotteryCoinstakes::iterator iteratorToFirstInstance = std::find_if(updatedCoinstakes.begin(),updatedCoinstakes.end(),
-            [&duplicateToCheckFor](const LotteryCoinstake& coinstake)
-            {
-                return coinstake.second == duplicateToCheckFor;
-            } );
-        LotteryCoinstakes::iterator iteratorToSecondInstance = std::find_if(std::next(iteratorToFirstInstance),updatedCoinstakes.end(),
-            [&duplicateToCheckFor](const LotteryCoinstake& coinstake)
-            {
-                return coinstake.second == duplicateToCheckFor;
-            } );
-        if(iteratorToSecondInstance != updatedCoinstakes.end())
-        {
-            bool newestCoinstakeIsKept = newestCoinstake.first != iteratorToSecondInstance->first;
-            updatedCoinstakes.erase(iteratorToSecondInstance);
-            return newestCoinstakeIsKept;
-        }
-    }
-    return false;
-}
-
 bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockHash, LotteryCoinstakes& updatedCoinstakes) const
 {
 

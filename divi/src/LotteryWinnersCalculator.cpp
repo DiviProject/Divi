@@ -102,7 +102,9 @@ struct RankAwareScore
     size_t rank;
     bool isDuplicateScript;
 };
-typedef std::map<uint256,RankAwareScore> RankedScoreAwareCoinstakes;
+struct RankedScoreAwareCoinstakes: public std::map<uint256,RankAwareScore>
+{
+};
 
 static void SortCoinstakesByScore(const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes, LotteryCoinstakes& updatedCoinstakes)
 {
@@ -117,7 +119,10 @@ static void SortCoinstakesByScore(const RankedScoreAwareCoinstakes& rankedScoreA
     }
 }
 
-static void SelectTopElevenBestCoinstakes(const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes, LotteryCoinstakes& updatedCoinstakes, bool& shouldUpdateCoinstakeData)
+void LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
+    const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes,
+    LotteryCoinstakes& updatedCoinstakes,
+    bool& shouldUpdateCoinstakeData) const
 {
     if( updatedCoinstakes.size() > 11)
     {

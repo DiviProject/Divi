@@ -7,6 +7,7 @@ class CTransaction;
 class CChain;
 class CSporkManager;
 class I_SuperblockHeightValidator;
+struct RankedScoreAwareCoinstakes;
 class LotteryWinnersCalculator
 {
 private:
@@ -16,6 +17,10 @@ private:
     const I_SuperblockHeightValidator& superblockHeightValidator_;
     int minimumCoinstakeForTicket(int nHeight) const;
     bool IsPaymentScriptVetoed(const CScript& paymentScript, const int blockHeight) const;
+    void SelectTopElevenBestCoinstakes(
+        const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes,
+        LotteryCoinstakes& updatedCoinstakes,
+        bool& shouldUpdateCoinstakeData) const;
 public:
     LotteryWinnersCalculator(
         int startOfLotteryBlocks,

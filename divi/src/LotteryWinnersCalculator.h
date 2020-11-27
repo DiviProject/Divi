@@ -2,7 +2,7 @@
 #define LOTTERY_WINNERS_CALCULATOR_H
 #include <LotteryCoinstakes.h>
 
-class uint256;
+class CBlockIndex;
 class CTransaction;
 class CChain;
 class CSporkManager;
@@ -18,6 +18,7 @@ private:
     int minimumCoinstakeForTicket(int nHeight) const;
     bool IsPaymentScriptVetoed(const CScript& paymentScript, const int blockHeight) const;
     void SelectTopElevenBestCoinstakes(
+        bool trimDuplicates,
         const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes,
         LotteryCoinstakes& updatedCoinstakes,
         bool& shouldUpdateCoinstakeData) const;
@@ -29,8 +30,8 @@ public:
         const I_SuperblockHeightValidator& superblockHeightValidator);
     uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock) const;
     bool IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight) const;
-    uint256 GetLastLotteryBlockHashBeforeHeight(int blockHeight) const;
-    bool UpdateCoinstakes(const uint256& lastLotteryBlockHash, LotteryCoinstakes& updatedCoinstakes) const;
+    CBlockIndex* GetLastLotteryBlockIndexBeforeHeight(int blockHeight) const;
+    bool UpdateCoinstakes(CBlockIndex* lastLotteryBlockIndex, LotteryCoinstakes& updatedCoinstakes) const;
     LotteryCoinstakeData CalculateUpdatedLotteryWinners(const CTransaction& coinMintTransaction, const LotteryCoinstakeData& previousBlockLotteryCoinstakeData, int nHeight) const;
 };
 #endif // LOTTERY_WINNERS_CALCULATOR_H

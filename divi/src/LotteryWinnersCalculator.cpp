@@ -11,6 +11,7 @@
 #include <BlockDiskAccessor.h>
 #include <I_SuperblockHeightValidator.h>
 
+constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
 
 LotteryWinnersCalculator::LotteryWinnersCalculator(
     int startOfLotteryBlocks,
@@ -67,11 +68,11 @@ bool LotteryWinnersCalculator::IsCoinstakeValidForLottery(const CTransaction &tx
     return nAmount > minimumCoinstakeForTicket(nHeight) * COIN; // only if stake is more than 10k
 }
 
-uint256 LotteryWinnersCalculator::GetLastLotteryBlockHashBeforeHeight(int blockHeight) const
+CBlockIndex* LotteryWinnersCalculator::GetLastLotteryBlockIndexBeforeHeight(int blockHeight) const
 {
     const int lotteryBlockPaymentCycle = superblockHeightValidator_.GetLotteryBlockPaymentCycle(blockHeight);
     const int nLastLotteryHeight = std::max(startOfLotteryBlocks_,  lotteryBlockPaymentCycle* ((blockHeight - 1) / lotteryBlockPaymentCycle) );
-    return activeChain_[nLastLotteryHeight]->GetBlockHash();
+    return activeChain_[nLastLotteryHeight];
 }
 
 bool LotteryWinnersCalculator::IsPaymentScriptVetoed(const CScript& paymentScript, const int blockHeight) const
@@ -120,13 +121,14 @@ static void SortCoinstakesByScore(const RankedScoreAwareCoinstakes& rankedScoreA
 }
 
 void LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
+    bool trimDuplicates,
     const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes,
     LotteryCoinstakes& updatedCoinstakes,
     bool& shouldUpdateCoinstakeData) const
 {
     if( updatedCoinstakes.size() > 11)
     {
-        LotteryCoinstakes::reverse_iterator rIteratorToLastDuplicate =
+        LotteryCoinstakes::reverse_iterator rIteratorToLastDuplicate = (!trimDuplicates)? updatedCoinstakes.rend() :
             std::find_if(updatedCoinstakes.rbegin(),updatedCoinstakes.rend(),
             [&rankedScoreAwareCoinstakes](const LotteryCoinstake& coinstake)
             {
@@ -144,9 +146,9 @@ void LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
     }
 }
 
-bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockHash, LotteryCoinstakes& updatedCoinstakes) const
+bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockIndex, LotteryCoinstakes& updatedCoinstakes) const
 {
-
+    const uint256& lastLotteryBlockHash = lastLotteryBlockIndex->GetBlockHash();
     RankedScoreAwareCoinstakes rankedScoreAwareCoinstakes;
     std::set<CScript> paymentScripts;
     for(const auto& lotteryCoinstake : updatedCoinstakes)
@@ -167,7 +169,12 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(const uint256& lastLotteryBlockH
     {
         shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes[updatedCoinstakes.back().first].rank != 11;
     }
-    SelectTopElevenBestCoinstakes(rankedScoreAwareCoinstakes,updatedCoinstakes,shouldUpdateCoinstakeData);
+
+    SelectTopElevenBestCoinstakes(
+        lastLotteryBlockIndex->GetBlockTime() > unixTimestampForDec31stMidnight,
+        rankedScoreAwareCoinstakes,
+        updatedCoinstakes,
+        shouldUpdateCoinstakeData);
     return shouldUpdateCoinstakeData;
 }
 
@@ -184,12 +191,14 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     LotteryCoinstakes updatedCoinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
     updatedCoinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
 
-    if(IsPaymentScriptVetoed(updatedCoinstakes.back().second,nHeight))
+    CBlockIndex* lastLotteryBlockIndex = GetLastLotteryBlockIndexBeforeHeight(nHeight);
+    if(lastLotteryBlockIndex->GetBlockTime() > unixTimestampForDec31stMidnight &&
+        IsPaymentScriptVetoed(updatedCoinstakes.back().second,nHeight))
     {
         return previousBlockLotteryCoinstakeData.getShallowCopy();
     }
 
-    if(UpdateCoinstakes(GetLastLotteryBlockHashBeforeHeight(nHeight),updatedCoinstakes))
+    if(UpdateCoinstakes(lastLotteryBlockIndex,updatedCoinstakes))
     {
         return LotteryCoinstakeData(nHeight,updatedCoinstakes);
     }

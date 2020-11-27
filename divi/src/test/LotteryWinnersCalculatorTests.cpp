@@ -15,6 +15,8 @@
 using ::testing::NiceMock;
 using ::testing::_;
 using ::testing::Invoke;
+
+constexpr uint64_t unixTimestampForDec31stMidnight = 1609459199;
 class LotteryWinnersCalculatorTestFixture
 {
 private:
@@ -39,9 +41,9 @@ public:
     {
     }
 
-    void InitializeChainToFixedBlockCount(unsigned numberOfBlocks)
+    void InitializeChainToFixedBlockCount(unsigned numberOfBlocks, unsigned blockTimeStart = unixTimestampForDec31stMidnight+1)
     {
-        fakeBlockIndexWithHashes_.reset(new FakeBlockIndexWithHashes(numberOfBlocks,0,4));
+        fakeBlockIndexWithHashes_.reset(new FakeBlockIndexWithHashes(numberOfBlocks,blockTimeStart,4));
         calculator_.reset(new LotteryWinnersCalculator(lotteryStartBlock,*fakeBlockIndexWithHashes_->activeChain,sporkManager_,*heightValidator_));
     }
 
@@ -141,6 +143,29 @@ BOOST_AUTO_TEST_CASE(willEnsureThatWinningALotteryForbidsWinningForTheNextThreeL
     BOOST_CHECK(getLotteryCoinstakes(130-1).size()==0);
     BOOST_CHECK(getLotteryCoinstakes(140-1).size()==0);
     BOOST_CHECK(getLotteryCoinstakes(150-1).size()>0);
+}
+
+BOOST_AUTO_TEST_CASE(willEnsureThatBefore2021ThereAreNoVetosToRepeatedWinning)
+{
+    SetDefaultLotteryStartAndCycleLength(100, 20);
+    InitializeChainToFixedBlockCount(301,unixTimestampForDec31stMidnight-60*201);
+
+    CScript initialScript = constructDistinctDummyScript();
+    UpdateNextLotteryBlocks(101,initialScript);
+    CScript firstWinnerScript = constructDistinctDummyScript();
+    UpdateNextLotteryBlocks(200,firstWinnerScript);
+
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(120-1).size(),11);
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(140-1).size(),11);
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(160-1).size(),11);
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(180-1).size(),11);
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(200-1).size(),11);
+
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(220-1).size(),11);
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(240-1).size(),0);
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(260-1).size(),0);
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(280-1).size(),0);
+    BOOST_CHECK_EQUAL(getLotteryCoinstakes(300-1).size(),11);
 }
 
 BOOST_AUTO_TEST_CASE(willAllowRepeatedWinnersOnlyIfNoNewWinnersAreAvailable)

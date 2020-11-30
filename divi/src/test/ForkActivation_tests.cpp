@@ -20,7 +20,7 @@ namespace
  * add new blocks with data as needed and then check the activation
  * status against it.
  */
-class TestContainer
+class ForkActivationTestContainer
 {
 
 private:
@@ -33,7 +33,7 @@ private:
 
 public:
 
-  TestContainer()
+  ForkActivationTestContainer()
   {
     /* We always start with a genesis block of version 1, just as
        in the real blockchain.  */
@@ -86,7 +86,7 @@ public:
 
 } // anonymous namespace
 
-BOOST_FIXTURE_TEST_SUITE(ActivationState_tests, TestContainer)
+BOOST_FIXTURE_TEST_SUITE(ActivationState_tests, ForkActivationTestContainer)
 
 BOOST_AUTO_TEST_CASE(activationByTimestamp)
 {

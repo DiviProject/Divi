@@ -153,7 +153,11 @@ BOOST_AUTO_TEST_CASE(willEnsureThatBefore2021ThereAreNoVetosToRepeatedWinning)
     CScript initialScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(101,initialScript);
     CScript firstWinnerScript = constructDistinctDummyScript();
-    UpdateNextLotteryBlocks(200,firstWinnerScript);
+    UpdateNextLotteryBlocks(189,firstWinnerScript);
+    for(unsigned count =0; count < 10; ++count)
+    {
+        UpdateNextLotteryBlocks(1,constructDistinctDummyScript());
+    }
 
     BOOST_CHECK_EQUAL(getLotteryCoinstakes(120-1).size(),11);
     BOOST_CHECK_EQUAL(getLotteryCoinstakes(140-1).size(),11);
@@ -166,6 +170,13 @@ BOOST_AUTO_TEST_CASE(willEnsureThatBefore2021ThereAreNoVetosToRepeatedWinning)
     BOOST_CHECK_EQUAL(getLotteryCoinstakes(260-1).size(),0);
     BOOST_CHECK_EQUAL(getLotteryCoinstakes(280-1).size(),0);
     BOOST_CHECK_EQUAL(getLotteryCoinstakes(300-1).size(),11);
+
+    std::set<CScript> uniquePayments;
+    for(const auto& coinstake: getLotteryCoinstakes(300-1))
+    {
+        uniquePayments.insert(coinstake.second);
+    }
+    BOOST_CHECK_EQUAL(uniquePayments.size(), 11);
 }
 
 BOOST_AUTO_TEST_CASE(willAllowRepeatedWinnersOnlyIfNoNewWinnersAreAvailable)

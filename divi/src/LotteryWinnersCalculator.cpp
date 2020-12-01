@@ -12,8 +12,6 @@
 #include <I_SuperblockHeightValidator.h>
 #include <ForkActivation.h>
 
-constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
-
 LotteryWinnersCalculator::LotteryWinnersCalculator(
     int startOfLotteryBlocks,
     CChain& activeChain,

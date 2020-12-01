@@ -10,6 +10,7 @@
 #include <spork.h>
 #include <BlockDiskAccessor.h>
 #include <I_SuperblockHeightValidator.h>
+#include <ForkActivation.h>
 
 constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
 
@@ -148,7 +149,8 @@ void LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
 
 bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockIndex, int nextBlockHeight, LotteryCoinstakes& updatedCoinstakes) const
 {
-    if(lastLotteryBlockIndex->GetBlockTime() > unixTimestampForDec31stMidnight &&
+    ActivationState activations(lastLotteryBlockIndex);
+    if(activations.IsActive(Fork::UniformLotteryWinners) &&
         IsPaymentScriptVetoed(updatedCoinstakes.back().second,nextBlockHeight))
     {
         return false;
@@ -177,7 +179,7 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockInd
     }
 
     SelectTopElevenBestCoinstakes(
-        lastLotteryBlockIndex->GetBlockTime() > unixTimestampForDec31stMidnight,
+        activations.IsActive(Fork::UniformLotteryWinners),
         rankedScoreAwareCoinstakes,
         updatedCoinstakes,
         shouldUpdateCoinstakeData);

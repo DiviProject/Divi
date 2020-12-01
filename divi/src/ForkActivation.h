@@ -28,6 +28,7 @@ enum class Fork
   /* Test forks not actually deployed / active but used for unit tests.  */
   TestByTimestamp,
   HardenedStakeModifier,
+  UniformLotteryWinners = HardenedStakeModifier,
 
 };
 

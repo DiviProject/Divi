@@ -41,7 +41,7 @@ public:
     {
     }
 
-    void InitializeChainToFixedBlockCount(unsigned numberOfBlocks, unsigned blockTimeStart = unixTimestampForDec31stMidnight+1)
+    void InitializeChainToFixedBlockCount(unsigned numberOfBlocks, unsigned blockTimeStart)
     {
         fakeBlockIndexWithHashes_.reset(new FakeBlockIndexWithHashes(numberOfBlocks,blockTimeStart,4));
         calculator_.reset(new LotteryWinnersCalculator(lotteryStartBlock,*fakeBlockIndexWithHashes_->activeChain,sporkManager_,*heightValidator_));
@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_SUITE(LotteryWinnersCalculatorTests, LotteryWinnersCalculator
 BOOST_AUTO_TEST_CASE(willEnsureThatWinningALotteryForbidsWinningForTheNextThreeLotteries)
 {
     SetDefaultLotteryStartAndCycleLength(100, 10);
-    InitializeChainToFixedBlockCount(151);
+    InitializeChainToFixedBlockCount(151,unixTimestampForDec31stMidnight+1);
 
     CScript initialScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(101,initialScript);
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(willEnsureThatBefore2021ThereAreNoVetosToRepeatedWinning)
 BOOST_AUTO_TEST_CASE(willAllowRepeatedWinnersOnlyIfNoNewWinnersAreAvailable)
 {
     SetDefaultLotteryStartAndCycleLength(100, 50);
-    InitializeChainToFixedBlockCount(151);
+    InitializeChainToFixedBlockCount(151,unixTimestampForDec31stMidnight+1);
 
     CScript initialScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(101,initialScript);
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE(willAllowRepeatedWinnersOnlyIfNoNewWinnersAreAvailable)
 BOOST_AUTO_TEST_CASE(willRemoveLowestScoringDuplicateIfNewWinnersAreAvailable)
 {
     SetDefaultLotteryStartAndCycleLength(100, 50);
-    InitializeChainToFixedBlockCount(151);
+    InitializeChainToFixedBlockCount(151,unixTimestampForDec31stMidnight+1);
 
     CScript initialScript = constructDistinctDummyScript();
     UpdateNextLotteryBlocks(101,initialScript);

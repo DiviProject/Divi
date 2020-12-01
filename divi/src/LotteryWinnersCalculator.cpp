@@ -121,12 +121,17 @@ static void SortCoinstakesByScore(const RankedScoreAwareCoinstakes& rankedScoreA
     }
 }
 
-void LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
+bool LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
     bool trimDuplicates,
     const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes,
-    LotteryCoinstakes& updatedCoinstakes,
-    bool& shouldUpdateCoinstakeData) const
+    LotteryCoinstakes& updatedCoinstakes) const
 {
+    bool shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes.size() > 0;
+    if(rankedScoreAwareCoinstakes.size() > 1)
+    {
+        shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes.find(updatedCoinstakes.back().first)->second.rank != 11;
+    }
+
     if( updatedCoinstakes.size() > 11)
     {
         LotteryCoinstakes::reverse_iterator rIteratorToLastDuplicate = (!trimDuplicates)? updatedCoinstakes.rend() :
@@ -145,6 +150,8 @@ void LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
             updatedCoinstakes.pop_back();
         }
     }
+
+    return shouldUpdateCoinstakeData;
 }
 
 RankedScoreAwareCoinstakes computeRankedScoreAwareCoinstakes(const uint256& lastLotteryBlockHash, const LotteryCoinstakes& updatedCoinstakes)
@@ -176,19 +183,12 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockInd
         computeRankedScoreAwareCoinstakes(lastLotteryBlockIndex->GetBlockHash(), updatedCoinstakes);
 
     // biggest entry at the begining
-    bool shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes.size() > 0;
     SortCoinstakesByScore(rankedScoreAwareCoinstakes,updatedCoinstakes);
-    if(rankedScoreAwareCoinstakes.size() > 1)
-    {
-        shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes[updatedCoinstakes.back().first].rank != 11;
-    }
 
-    SelectTopElevenBestCoinstakes(
+    return SelectTopElevenBestCoinstakes(
         activations.IsActive(Fork::UniformLotteryWinners),
         rankedScoreAwareCoinstakes,
-        updatedCoinstakes,
-        shouldUpdateCoinstakeData);
-    return shouldUpdateCoinstakeData;
+        updatedCoinstakes);
 }
 
 LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(

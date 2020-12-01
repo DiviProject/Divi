@@ -17,11 +17,10 @@ private:
     const I_SuperblockHeightValidator& superblockHeightValidator_;
     int minimumCoinstakeForTicket(int nHeight) const;
     bool IsPaymentScriptVetoed(const CScript& paymentScript, const int blockHeight) const;
-    void SelectTopElevenBestCoinstakes(
+    bool SelectTopElevenBestCoinstakes(
         bool trimDuplicates,
         const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes,
-        LotteryCoinstakes& updatedCoinstakes,
-        bool& shouldUpdateCoinstakeData) const;
+        LotteryCoinstakes& updatedCoinstakes) const;
 public:
     LotteryWinnersCalculator(
         int startOfLotteryBlocks,

@@ -11,7 +11,7 @@
 
 namespace
 {
-
+constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
 /**
  * For forks that get activated at a certain block time, the associated
  * activation times.
@@ -21,6 +21,7 @@ const std::unordered_map<Fork, int64_t> ACTIVATION_TIMES = {
      the schedule has been finalised.  */
   {Fork::StakingVaults, 2000000000},
   {Fork::TestByTimestamp, 1000000000},
+  {Fork::HardenedStakeModifier, unixTimestampForDec31stMidnight},
 };
 
 } // anonymous namespace

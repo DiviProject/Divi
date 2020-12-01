@@ -2,8 +2,8 @@
 #include <uint256.h>
 #include <StakingData.h>
 #include <blockmap.h>
+#include <ForkActivation.h>
 
-constexpr uint64_t unixTimestampForDec31stMidnight = 1609459199;
 
 PoSStakeModifierService::PoSStakeModifierService(
     const I_PoSStakeModifierService& decorated,
@@ -19,8 +19,9 @@ std::pair<uint64_t,bool> PoSStakeModifierService::getStakeModifier(const Staking
     {
         return std::pair<uint64_t,bool>();
     }
+
     CBlockIndex* nominalChainTip = blockIndexByHash_.find(stakingData.blockHashOfChainTipBlock_)->second;
-    if(nominalChainTip->GetBlockTime() > unixTimestampForDec31stMidnight)
+    if(ActivationState(nominalChainTip).IsActive(Fork::HardenedStakeModifier))
     {
         while(nominalChainTip && !nominalChainTip->GeneratedStakeModifier())
         {

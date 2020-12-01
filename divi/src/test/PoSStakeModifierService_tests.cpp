@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(willDelegateToDecoradtedStakeModifierServiceBefore2021)
     CBlockIndex* currentBlockIndex = getActiveChain().Tip();
     while(currentBlockIndex)
     {
-        if(currentBlockIndex->GetBlockTime() <= unixTimestampDecember31st2020Midnight)
+        if(currentBlockIndex->GetBlockTime() < unixTimestampDecember31st2020Midnight)
         {
             stakingData.blockHashOfChainTipBlock_ = currentBlockIndex->GetBlockHash();
             StakeModifierQueryResult queryResult = stakeModifierService_->getStakeModifier(stakingData);

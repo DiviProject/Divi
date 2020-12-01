@@ -15,7 +15,7 @@
 #include "chain.h"
 #include "chainparams.h"
 #include "coins.h"
-#include "ForkActivation.h"
+#include <ForkActivation.h>
 #include "script/interpreter.h"
 #include "script/SignatureCheckers.h"
 #include "script/standard.h"
@@ -184,8 +184,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
         mapSelectedBlocks.insert(std::make_pair(pindex->GetBlockHash(), pindex));
     }
 
-    constexpr uint64_t unixTimestampForDec31stMidnight = 1609459199;
-    if(pindexPrev->GetBlockTime() > unixTimestampForDec31stMidnight)
+    if(ActivationState(pindexPrev).IsActive(Fork::HardenedStakeModifier))
     {
         CHashWriter hasher(SER_GETHASH,0);
         hasher << pindexPrev->GetBlockHash() << nStakeModifierNew;

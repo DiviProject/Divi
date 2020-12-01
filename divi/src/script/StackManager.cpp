@@ -80,7 +80,7 @@ bool ConditionalScopeStackManager::TryCLoseScope()
 StackOperator::StackOperator(
     StackType& stack,
     StackType& altstack,
-    unsigned& flags,
+    const unsigned& flags,
     ConditionalScopeStackManager& conditionalManager
     ): stack_(stack)
     , altstack_(altstack)
@@ -119,7 +119,7 @@ struct DisabledOp: public StackOperator
     DisabledOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {
@@ -140,7 +140,7 @@ struct PushValueOp: public StackOperator
     PushValueOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
@@ -158,7 +158,7 @@ struct ConditionalOp: public StackOperator
     ConditionalOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
@@ -211,7 +211,7 @@ struct StackModificationOp: public StackOperator
     StackModificationOp(
     StackType& stack,
     StackType& altstack,
-    unsigned& flags,
+    const unsigned& flags,
     ConditionalScopeStackManager& conditionalManager
     ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
@@ -435,7 +435,7 @@ struct EqualityVerificationOp: public StackOperator
     EqualityVerificationOp(
     StackType& stack,
     StackType& altstack,
-    unsigned& flags,
+    const unsigned& flags,
     ConditionalScopeStackManager& conditionalManager
     ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
@@ -484,7 +484,7 @@ struct MetadataOp: public StackOperator
     MetadataOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
@@ -500,7 +500,7 @@ struct UnaryNumericOp: public StackOperator
     UnaryNumericOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
@@ -532,7 +532,7 @@ struct BinaryNumericOp: public StackOperator
     BinaryNumericOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
@@ -590,7 +590,7 @@ struct NumericBoundsOp: public StackOperator
     NumericBoundsOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
@@ -619,7 +619,7 @@ struct HashingOp: public StackOperator
     HashingOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
@@ -657,7 +657,7 @@ public:
     SignatureCheckOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager,
         unsigned& opCount,
         const BaseSignatureChecker& checker
@@ -809,7 +809,7 @@ public:
     CoinstakeCheckOp(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager,
         const BaseSignatureChecker& checker
         ): StackOperator(stack,altstack,flags,conditionalManager)
@@ -859,7 +859,7 @@ const std::set<opcodetype> checkSigOpcodes =
     static bool ApplyOpcode(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager,
         const BaseSignatureChecker& checker,
         opcodetype opcode,
@@ -916,7 +916,7 @@ const std::set<opcodetype> checkSigOpcodes =
     static bool ApplyOpcode(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager,
         unsigned& opCount,
         const BaseSignatureChecker& checker,

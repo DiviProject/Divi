@@ -42,7 +42,7 @@ struct StackOperator
 protected:
     StackType& stack_;
     StackType& altstack_;
-    unsigned& flags_;
+    const unsigned& flags_;
     ConditionalScopeStackManager& conditionalManager_;
     bool fRequireMinimal_;
 public:
@@ -54,7 +54,7 @@ public:
     StackOperator(
         StackType& stack,
         StackType& altstack,
-        unsigned& flags,
+        const unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         );
 

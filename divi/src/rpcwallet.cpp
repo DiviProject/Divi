@@ -73,6 +73,7 @@ void WalletTxToJSON(const CWalletTx& wtx, Object& entry)
     }
     uint256 hash = wtx.GetHash();
     entry.push_back(Pair("txid", hash.GetHex()));
+    entry.push_back(Pair("baretxid", wtx.GetBareTxid().GetHex()));
     Array conflicts;
     if(pwalletMain)
     {
@@ -1731,6 +1732,7 @@ Value listtransactions(const Array& params, bool fHelp)
                 "    \"blockindex\": n,          (numeric) The block index containing the transaction. Available for 'send' and 'receive'\n"
                 "                                          category of transactions.\n"
                 "    \"txid\": \"transactionid\", (string) The transaction id. Available for 'send' and 'receive' category of transactions.\n"
+                "    \"baretxid\" : \"baretxid\", (string) The bare txid (without signatures)\n"
                 "    \"time\": xxx,              (numeric) The transaction time in seconds since epoch (midnight Jan 1 1970 GMT).\n"
                 "    \"timereceived\": xxx,      (numeric) The time received in seconds since epoch (midnight Jan 1 1970 GMT). Available \n"
                 "                                          for 'send' and 'receive' category of transactions.\n"
@@ -1899,6 +1901,7 @@ Value listsinceblock(const Array& params, bool fHelp)
                 "    \"blockindex\": n,          (numeric) The block index containing the transaction. Available for 'send' and 'receive' category of transactions.\n"
                 "    \"blocktime\": xxx,         (numeric) The block time in seconds since epoch (1 Jan 1970 GMT).\n"
                 "    \"txid\": \"transactionid\",  (string) The transaction id. Available for 'send' and 'receive' category of transactions.\n"
+                "    \"baretxid\" : \"baretxid\",  (string) The bare txid (without signatures)\n"
                 "    \"time\": xxx,              (numeric) The transaction time in seconds since epoch (Jan 1 1970 GMT).\n"
                 "    \"timereceived\": xxx,      (numeric) The time received in seconds since epoch (Jan 1 1970 GMT). Available for 'send' and 'receive' category of transactions.\n"
                 "    \"comment\": \"...\",       (string) If a comment is associated with the transaction.\n"
@@ -1974,6 +1977,7 @@ Value gettransaction(const Array& params, bool fHelp)
                 "  \"blockindex\" : xx,       (numeric) The block index\n"
                 "  \"blocktime\" : ttt,       (numeric) The time in seconds since epoch (1 Jan 1970 GMT)\n"
                 "  \"txid\" : \"transactionid\",   (string) The transaction id.\n"
+                "  \"baretxid\" : \"baretxid\",    (string) The bare txid (without signatures)\n"
                 "  \"time\" : ttt,            (numeric) The transaction time in seconds since epoch (1 Jan 1970 GMT)\n"
                 "  \"timereceived\" : ttt,    (numeric) The time received in seconds since epoch (1 Jan 1970 GMT)\n"
                 "  \"details\" : [\n"

@@ -172,18 +172,8 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockInd
         return false;
     }
 
-    const uint256& lastLotteryBlockHash = lastLotteryBlockIndex->GetBlockHash();
-    RankedScoreAwareCoinstakes rankedScoreAwareCoinstakes;
-    std::set<CScript> paymentScripts;
-    for(const auto& lotteryCoinstake : updatedCoinstakes)
-    {
-        RankAwareScore rankedScore = {
-            CalculateLotteryScore(lotteryCoinstake.first,
-            lastLotteryBlockHash), rankedScoreAwareCoinstakes.size(),
-            paymentScripts.count(lotteryCoinstake.second)>0  };
-        rankedScoreAwareCoinstakes.emplace(lotteryCoinstake.first, std::move(rankedScore));
-        paymentScripts.insert(lotteryCoinstake.second);
-    }
+    RankedScoreAwareCoinstakes rankedScoreAwareCoinstakes =
+        computeRankedScoreAwareCoinstakes(lastLotteryBlockIndex->GetBlockHash(), updatedCoinstakes);
 
     // biggest entry at the begining
     bool shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes.size() > 0;

@@ -125,7 +125,7 @@ struct DisabledOp: public StackOperator
     {
     }
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         if (flags_ & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
         {
@@ -145,7 +145,7 @@ struct PushValueOp: public StackOperator
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         CScriptNum bn((int)opcode - (int)(OP_1 - 1));
         stack_.push_back(bn.getvch());
@@ -163,7 +163,7 @@ struct ConditionalOp: public StackOperator
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         switch(opcode)
         {
@@ -216,7 +216,7 @@ struct StackModificationOp: public StackOperator
     ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         switch(opcode)
         {
@@ -440,7 +440,7 @@ struct EqualityVerificationOp: public StackOperator
     ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         if(opcode == OP_VERIFY)
         {
@@ -489,7 +489,7 @@ struct MetadataOp: public StackOperator
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         return Helpers::set_error(serror, SCRIPT_ERR_OP_META);
     }
@@ -505,7 +505,7 @@ struct UnaryNumericOp: public StackOperator
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         if (stack_.size() < 1)
             return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
@@ -537,7 +537,7 @@ struct BinaryNumericOp: public StackOperator
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         // (x1 x2 -- out)
         if (stack_.size() < 2)
@@ -595,7 +595,7 @@ struct NumericBoundsOp: public StackOperator
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         // (x min max -- out)
         if (stack_.size() < 3)
@@ -624,7 +624,7 @@ struct HashingOp: public StackOperator
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         // (in -- hash)
         if (stack_.size() < 1)
@@ -666,7 +666,7 @@ public:
         , checker_(checker)
     {}
 
-    virtual bool operator()(opcodetype opcode, CScript scriptCode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, CScript scriptCode, ScriptError* serror) override
     {
         // Subset of script starting at the most recent codeseparator
         //CScript scriptCode(pbegincodehash, pend);
@@ -816,7 +816,7 @@ public:
         , checker_(checker)
     {}
 
-    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
+    bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         bool success = checker_.CheckCoinstake();
         stack_.push_back(success ? vchTrue : vchFalse);

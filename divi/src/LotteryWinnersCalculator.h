@@ -17,7 +17,7 @@ private:
     const I_SuperblockHeightValidator& superblockHeightValidator_;
     int minimumCoinstakeForTicket(int nHeight) const;
     bool IsPaymentScriptVetoed(const CScript& paymentScript, const int blockHeight) const;
-    bool SelectTopElevenBestCoinstakes(
+    bool TopElevenBestCoinstakesNeedUpdating(
         bool trimDuplicates,
         const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes,
         LotteryCoinstakes& updatedCoinstakes) const;

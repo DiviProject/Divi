@@ -121,7 +121,7 @@ static void SortCoinstakesByScore(const RankedScoreAwareCoinstakes& rankedScoreA
     }
 }
 
-bool LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
+bool LotteryWinnersCalculator::TopElevenBestCoinstakesNeedUpdating(
     bool trimDuplicates,
     const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes,
     LotteryCoinstakes& updatedCoinstakes) const
@@ -185,7 +185,7 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockInd
     // biggest entry at the begining
     SortCoinstakesByScore(rankedScoreAwareCoinstakes,updatedCoinstakes);
 
-    return SelectTopElevenBestCoinstakes(
+    return TopElevenBestCoinstakesNeedUpdating(
         activations.IsActive(Fork::UniformLotteryWinners),
         rankedScoreAwareCoinstakes,
         updatedCoinstakes);

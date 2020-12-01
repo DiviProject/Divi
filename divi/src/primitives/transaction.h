@@ -221,6 +221,16 @@ public:
         return hash;
     }
 
+    /** Returns the "bare transaction ID".  This is a hash of the transaction
+     *  as per GetHash, but it does not include any of the signature data
+     *  (i.e. all scriptSig's are set empty).
+     *
+     *  This means that it commits to the data relevant for the transaction,
+     *  without being affected by malleability.  This transaction ID is used
+     *  to refer to outputs from follow-up transactions after activating
+     *  "segwit light".  */
+    uint256 GetBareTxid () const;
+
     // Return sum of txouts.
     CAmount GetValueOut() const;
     // GetValueIn() is a method on CCoinsViewCache, because
@@ -276,6 +286,11 @@ struct CMutableTransaction
      * fly, as opposed to GetHash() in CTransaction, which uses a cached result.
      */
     uint256 GetHash() const;
+
+    uint256 GetBareTxid() const
+    {
+        return CTransaction(*this).GetBareTxid();
+    }
 
     std::string ToString() const;
 

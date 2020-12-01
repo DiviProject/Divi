@@ -168,7 +168,6 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockInd
         rankedScoreAwareCoinstakes.emplace(lotteryCoinstake.first, std::move(rankedScore));
         paymentScripts.insert(lotteryCoinstake.second);
     }
-    const LotteryCoinstake newestCoinstake = updatedCoinstakes.back();
 
     // biggest entry at the begining
     bool shouldUpdateCoinstakeData = rankedScoreAwareCoinstakes.size() > 0;

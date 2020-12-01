@@ -147,6 +147,22 @@ void LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
     }
 }
 
+RankedScoreAwareCoinstakes computeRankedScoreAwareCoinstakes(const uint256& lastLotteryBlockHash, const LotteryCoinstakes& updatedCoinstakes)
+{
+    RankedScoreAwareCoinstakes rankedScoreAwareCoinstakes;
+    std::set<CScript> paymentScripts;
+    for(const auto& lotteryCoinstake : updatedCoinstakes)
+    {
+        RankAwareScore rankedScore = {
+            LotteryWinnersCalculator::CalculateLotteryScore(lotteryCoinstake.first, lastLotteryBlockHash),
+            rankedScoreAwareCoinstakes.size(),
+            paymentScripts.count(lotteryCoinstake.second)>0  };
+        rankedScoreAwareCoinstakes.emplace(lotteryCoinstake.first, std::move(rankedScore));
+        paymentScripts.insert(lotteryCoinstake.second);
+    }
+    return rankedScoreAwareCoinstakes;
+}
+
 bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockIndex, int nextBlockHeight, LotteryCoinstakes& updatedCoinstakes) const
 {
     ActivationState activations(lastLotteryBlockIndex);

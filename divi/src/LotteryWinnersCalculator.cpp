@@ -170,8 +170,9 @@ RankedScoreAwareCoinstakes computeRankedScoreAwareCoinstakes(const uint256& last
     return rankedScoreAwareCoinstakes;
 }
 
-bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockIndex, int nextBlockHeight, LotteryCoinstakes& updatedCoinstakes) const
+bool LotteryWinnersCalculator::UpdateCoinstakes(int nextBlockHeight, LotteryCoinstakes& updatedCoinstakes) const
 {
+    CBlockIndex* lastLotteryBlockIndex = GetLastLotteryBlockIndexBeforeHeight(nextBlockHeight);
     ActivationState activations(lastLotteryBlockIndex);
     if(activations.IsActive(Fork::UniformLotteryWinners) &&
         IsPaymentScriptVetoed(updatedCoinstakes.back().second,nextBlockHeight))
@@ -202,8 +203,7 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     LotteryCoinstakes updatedCoinstakes = previousBlockLotteryCoinstakeData.getLotteryCoinstakes();
     updatedCoinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
 
-    CBlockIndex* lastLotteryBlockIndex = GetLastLotteryBlockIndexBeforeHeight(nHeight);
-    if(UpdateCoinstakes(lastLotteryBlockIndex,nHeight,updatedCoinstakes))
+    if(UpdateCoinstakes(nHeight,updatedCoinstakes))
     {
         return LotteryCoinstakeData(nHeight,updatedCoinstakes);
     }

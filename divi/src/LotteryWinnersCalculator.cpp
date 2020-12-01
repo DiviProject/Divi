@@ -181,8 +181,6 @@ bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockInd
 
     RankedScoreAwareCoinstakes rankedScoreAwareCoinstakes =
         computeRankedScoreAwareCoinstakes(lastLotteryBlockIndex->GetBlockHash(), updatedCoinstakes);
-
-    // biggest entry at the begining
     SortCoinstakesByScore(rankedScoreAwareCoinstakes,updatedCoinstakes);
 
     return TopElevenBestCoinstakesNeedUpdating(

@@ -82,7 +82,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
 
     set_error(serror, SCRIPT_ERR_UNKNOWN_ERROR);
     if (script.size() > 10000)
-    {    
+    {
         return set_error(serror, SCRIPT_ERR_SCRIPT_SIZE);
     }
 
@@ -128,12 +128,12 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                     case OP_CHECKSIG: case OP_CHECKSIGVERIFY: case OP_CHECKMULTISIG: case OP_CHECKMULTISIGVERIFY:
                     {
                         CScript scriptCode(pbegincodehash, pend);
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,scriptCode,serror)) return false;
+                        if(!stackManager.ApplyOp(opcode,scriptCode,serror)) return false;
                     }
                     break;
                     default:
                     {
-                        if(!stackManager.GetOp(opcode)->operator()(opcode,serror)) return false;
+                        if(!stackManager.ApplyOp(opcode,serror)) return false;
                     }
                 }
             }

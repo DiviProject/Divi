@@ -861,7 +861,6 @@ StackOperationManager::StackOperationManager(
     , flags_(flags)
     , opCount_(0u)
     , conditionalManager_()
-    , defaultOperation_(stack,altstack_,flags,conditionalManager_)
     , stackOperationMapping_()
     , disableOp_(std::make_shared<DisabledOp>(stack_,altstack_,flags_,conditionalManager_))
     , pushValueOp_(std::make_shared<PushValueOp>(stack_,altstack_,flags_,conditionalManager_))
@@ -923,15 +922,27 @@ void StackOperationManager::InitMapping()
     stackOperationMapping_.insert({OP_WITHIN, numericBoundsOp_.get()});
 }
 
-StackOperator* StackOperationManager::GetOp(opcodetype opcode)
+bool StackOperationManager::ApplyOp(opcodetype opcode,ScriptError* serror)
 {
     auto it = stackOperationMapping_.find(opcode);
     if(it != stackOperationMapping_.end())
     {
-        return it->second;
+        return it->second->operator()(opcode,serror);
     }
-    return &defaultOperation_;
+    Helpers::set_error(serror,SCRIPT_ERR_BAD_OPCODE);
+    return false;
 }
+bool StackOperationManager::ApplyOp(opcodetype opcode,const CScript& scriptCode,ScriptError* serror)
+{
+    auto it = stackOperationMapping_.find(opcode);
+    if(it != stackOperationMapping_.end())
+    {
+        return it->second->operator()(opcode,scriptCode,serror);
+    }
+    Helpers::set_error(serror,SCRIPT_ERR_INVALID_STACK_OPERATION);
+    return false;
+}
+
 
 bool StackOperationManager::HasOp(opcodetype opcode) const
 {

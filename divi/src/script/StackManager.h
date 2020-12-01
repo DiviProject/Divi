@@ -86,7 +86,6 @@ private:
     unsigned opCount_;
 
     ConditionalScopeStackManager conditionalManager_;
-    StackOperator defaultOperation_;
     std::map<opcodetype, StackOperator*> stackOperationMapping_;
 
     std::shared_ptr<StackOperator> disableOp_;
@@ -110,7 +109,8 @@ public:
         unsigned flags
         );
 
-    StackOperator* GetOp(opcodetype opcode);
+    bool ApplyOp(opcodetype opcode,ScriptError* serror);
+    bool ApplyOp(opcodetype opcode,const CScript& scriptCode,ScriptError* serror);
     bool HasOp(opcodetype opcode) const;
     bool ReserveAdditionalOp();
     void PushData(const valtype& stackElement);

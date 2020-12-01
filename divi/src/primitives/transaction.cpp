@@ -104,6 +104,14 @@ void CTransaction::UpdateHash() const
     *const_cast<uint256*>(&hash) = SerializeHash(*this);
 }
 
+uint256 CTransaction::GetBareTxid () const
+{
+    CMutableTransaction withoutSigs(*this);
+    for (auto& in : withoutSigs.vin)
+      in.scriptSig.clear();
+    return withoutSigs.GetHash();
+}
+
 CTransaction::CTransaction() : hash(), nVersion(CTransaction::CURRENT_VERSION), vin(), vout(), nLockTime(0) { }
 
 CTransaction::CTransaction(const CMutableTransaction &tx) : nVersion(tx.nVersion), vin(tx.vin), vout(tx.vout), nLockTime(tx.nLockTime) {

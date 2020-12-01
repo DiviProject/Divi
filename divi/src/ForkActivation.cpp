@@ -22,6 +22,7 @@ const std::unordered_map<Fork, int64_t> ACTIVATION_TIMES = {
   {Fork::StakingVaults, 2000000000},
   {Fork::TestByTimestamp, 1000000000},
   {Fork::HardenedStakeModifier, unixTimestampForDec31stMidnight},
+  {Fork::UniformLotteryWinners, unixTimestampForDec31stMidnight},
 };
 
 } // anonymous namespace

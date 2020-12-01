@@ -31,7 +31,7 @@ public:
     uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock) const;
     bool IsCoinstakeValidForLottery(const CTransaction &tx, int nHeight) const;
     CBlockIndex* GetLastLotteryBlockIndexBeforeHeight(int blockHeight) const;
-    bool UpdateCoinstakes(CBlockIndex* lastLotteryBlockIndex, LotteryCoinstakes& updatedCoinstakes) const;
+    bool UpdateCoinstakes(CBlockIndex* lastLotteryBlockIndex,int nextBlockHeight, LotteryCoinstakes& updatedCoinstakes) const;
     LotteryCoinstakeData CalculateUpdatedLotteryWinners(const CTransaction& coinMintTransaction, const LotteryCoinstakeData& previousBlockLotteryCoinstakeData, int nHeight) const;
 };
 #endif // LOTTERY_WINNERS_CALCULATOR_H

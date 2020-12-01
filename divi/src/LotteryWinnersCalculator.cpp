@@ -146,8 +146,14 @@ void LotteryWinnersCalculator::SelectTopElevenBestCoinstakes(
     }
 }
 
-bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockIndex, LotteryCoinstakes& updatedCoinstakes) const
+bool LotteryWinnersCalculator::UpdateCoinstakes(CBlockIndex* lastLotteryBlockIndex, int nextBlockHeight, LotteryCoinstakes& updatedCoinstakes) const
 {
+    if(lastLotteryBlockIndex->GetBlockTime() > unixTimestampForDec31stMidnight &&
+        IsPaymentScriptVetoed(updatedCoinstakes.back().second,nextBlockHeight))
+    {
+        return false;
+    }
+
     const uint256& lastLotteryBlockHash = lastLotteryBlockIndex->GetBlockHash();
     RankedScoreAwareCoinstakes rankedScoreAwareCoinstakes;
     std::set<CScript> paymentScripts;
@@ -192,13 +198,7 @@ LotteryCoinstakeData LotteryWinnersCalculator::CalculateUpdatedLotteryWinners(
     updatedCoinstakes.emplace_back(coinMintTransaction.GetHash(), coinMintTransaction.IsCoinBase()? coinMintTransaction.vout[0].scriptPubKey:coinMintTransaction.vout[1].scriptPubKey);
 
     CBlockIndex* lastLotteryBlockIndex = GetLastLotteryBlockIndexBeforeHeight(nHeight);
-    if(lastLotteryBlockIndex->GetBlockTime() > unixTimestampForDec31stMidnight &&
-        IsPaymentScriptVetoed(updatedCoinstakes.back().second,nHeight))
-    {
-        return previousBlockLotteryCoinstakeData.getShallowCopy();
-    }
-
-    if(UpdateCoinstakes(lastLotteryBlockIndex,updatedCoinstakes))
+    if(UpdateCoinstakes(lastLotteryBlockIndex,nHeight,updatedCoinstakes))
     {
         return LotteryCoinstakeData(nHeight,updatedCoinstakes);
     }

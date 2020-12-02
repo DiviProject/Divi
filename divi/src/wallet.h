@@ -173,7 +173,7 @@ public:
      */
     mutable CCriticalSection cs_wallet;
 private:
-    WalletTransactionRecord transactionRecord_;
+    std::unique_ptr<WalletTransactionRecord> transactionRecord_;
     SpentOutputTracker outputTracker_;
     int64_t orderedTransactionIndex;
 public:

@@ -21,6 +21,7 @@
 #include <fstream>
 #include <Settings.h>
 #include <ValidationState.h>
+#include <WalletTx.h>
 
 extern Settings& settings;
 using namespace boost;

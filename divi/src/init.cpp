@@ -47,6 +47,7 @@
 #include "db.h"
 #include "wallet.h"
 #include "walletdb.h"
+#include <WalletTx.h>
 #endif
 
 #include <fstream>

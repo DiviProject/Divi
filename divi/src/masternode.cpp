@@ -18,6 +18,7 @@
 #include <init.h>
 #include <wallet.h>
 #include <utiltime.h>
+#include <WalletTx.h>
 
 
 // keep track of the scanning errors I've seen

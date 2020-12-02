@@ -4,6 +4,7 @@
 
 #include "wallet.h"
 #include <script/standard.h>
+#include <WalletTx.h>
 
 #include <set>
 #include <stdint.h>

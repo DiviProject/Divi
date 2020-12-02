@@ -21,7 +21,7 @@
 #include "SuperblockHelpers.h"
 #include <script/standard.h>
 #include <script/StakingVaultScript.h>
-
+#include <WalletTx.h>
 #include <stdint.h>
 
 #include "json/json_spirit_utils.h"

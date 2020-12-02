@@ -1,4 +1,5 @@
-#include "wallet.h"
+#include <wallet.h>
+#include <WalletTx.h>
 #include <script/standard.h>
 
 #include <set>

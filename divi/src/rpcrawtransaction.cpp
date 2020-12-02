@@ -21,6 +21,7 @@
 #include "uint256.h"
 #include "utilmoneystr.h"
 #include "wallet.h"
+#include <WalletTx.h>
 
 #include <stdint.h>
 

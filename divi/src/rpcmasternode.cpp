@@ -17,6 +17,7 @@
 #include "script/standard.h"
 #include <base58.h>
 #include <wallet.h>
+#include <WalletTx.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>

@@ -265,6 +265,8 @@ BITCOIN_CORE_H = \
   versionbits.h \
   version.h \
   wallet.h \
+  WalletTx.h \
+  WalletTransactionRecord.h \
   StakableCoin.h \
   keypool.h \
   reservekey.h \
@@ -413,6 +415,8 @@ libbitcoin_wallet_a_SOURCES = \
   rpcdump.cpp \
   rpcwallet.cpp \
   wallet.cpp \
+  WalletTx.cpp \
+  WalletTransactionRecord.cpp \
   merkletx.cpp \
   wallet_ismine.cpp \
   walletdb.cpp \

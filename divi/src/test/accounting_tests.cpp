@@ -4,6 +4,7 @@
 
 #include "wallet.h"
 #include "walletdb.h"
+#include <WalletTx.h>
 
 #include <stdint.h>
 

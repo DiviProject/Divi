@@ -3,6 +3,7 @@
 #include <Logging.h>
 #include <coincontrol.h>
 #include <chainparams.h>
+#include <WalletTx.h>
 
 bool IsInitialBlockDownload();
 

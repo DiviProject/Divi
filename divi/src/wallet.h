@@ -33,6 +33,8 @@ class CScript;
 class CTransaction;
 class CBlockIndex;
 struct StakableCoin;
+class WalletTransactionRecord;
+class SpentOutputTracker;
 
 //! -paytxfee default
 static const CAmount DEFAULT_TRANSACTION_FEE = 0;
@@ -104,9 +106,6 @@ public:
     typedef std::map<std::string, std::string> StringMap;
     StringMap destdata;
 };
-
-class WalletTransactionRecord;
-class SpentOutputTracker;
 
 /**
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,

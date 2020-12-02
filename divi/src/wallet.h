@@ -32,6 +32,7 @@ class CBlock;
 class CScript;
 class CTransaction;
 class CBlockIndex;
+struct StakableCoin;
 
 //! -paytxfee default
 static const CAmount DEFAULT_TRANSACTION_FEE = 0;
@@ -224,7 +225,7 @@ public:
     bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);
 
     bool MintableCoins();
-    bool SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount) const;
+    bool SelectStakeCoins(std::set<StakableCoin>& setCoins, CAmount nTargetAmount) const;
 
     bool IsSpent(const uint256& hash, unsigned int n) const;
 

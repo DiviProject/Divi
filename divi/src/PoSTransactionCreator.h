@@ -14,7 +14,7 @@ class CWallet;
 class CBlock;
 class CMutableTransaction;
 class CKeyStore;
-class CWalletTx;
+class CTransaction;
 class CChainParams;
 class I_SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
@@ -24,6 +24,7 @@ class ProofOfStakeGenerator;
 class I_BlockSubsidyProvider;
 class BlockMap;
 class StakedCoins;
+struct StakableCoin;
 
 class PoSTransactionCreator: public I_PoSTransactionCreator
 {
@@ -43,10 +44,10 @@ private:
         const CAmount& allowedStakingAmount,
         CMutableTransaction& txNew,
         CAmount& nCredit,
-        std::vector<const CWalletTx*>& walletTransactions);
+        std::vector<const CTransaction*>& walletTransactions);
 
     bool SetSuportedStakingScript(
-        const std::pair<const CWalletTx*, unsigned int>& transactionAndIndexPair,
+        const StakableCoin& stakableCoin,
         CMutableTransaction& txNew);
 
     bool SelectCoins(CAmount allowedStakingBalance);
@@ -55,10 +56,10 @@ private:
         const CBlockIndex* chainTip,
         unsigned int nBits,
         unsigned int& nTxNewTime,
-        const std::pair<const CWalletTx*, unsigned int>& stakeData,
+        const StakableCoin& stakeData,
         CMutableTransaction& txNew);
 
-    std::pair<const CWalletTx*, CAmount> FindProofOfStake(
+    StakableCoin FindProofOfStake(
         const CBlockIndex* chainTip,
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,
@@ -66,16 +67,13 @@ private:
 
     void AppendBlockRewardPayoutsToTransaction(
         const CBlockIndex* chainTip,
-        CMutableTransaction& txCoinStake,
-        CAmount allowedStakingAmount,
-        const std::pair<const CWalletTx*, CAmount>& stakeData,
-        std::vector<const CWalletTx*>& vwtxPrev);
+        CMutableTransaction& txCoinStake);
     void SplitOrCombineUTXOS(
         const CBlockIndex* chainTip,
         CMutableTransaction& txCoinStake,
         CAmount allowedStakingAmount,
-        const std::pair<const CWalletTx*, CAmount>& stakeData,
-        std::vector<const CWalletTx*>& vwtxPrev);
+        const StakableCoin& stakeData,
+        std::vector<const CTransaction*>& vwtxPrev);
 public:
     PoSTransactionCreator(
         const CChainParams& chainParameters,

@@ -32,6 +32,7 @@
 #include <defaultValues.h>
 #include <utiltime.h>
 #include <Logging.h>
+#include <StakableCoin.h>
 
 #include "Settings.h"
 extern Settings& settings;
@@ -2041,7 +2042,7 @@ static void ApproximateBestSubset(std::vector<pair<CAmount, pair<const CWalletTx
     }
 }
 
-bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int> >& setCoins, CAmount nTargetAmount) const
+bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins, CAmount nTargetAmount) const
 {
     std::vector<COutput> vCoins;
     AvailableCoins(vCoins, true, NULL, false, STAKABLE_COINS);
@@ -2063,7 +2064,7 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
             continue;
 
         //add to our stake set
-        setCoins.insert(std::make_pair(out.tx, out.i));
+        setCoins.insert(StakableCoin(out.tx, out.i,out.tx->hashBlock));
         nAmountSelected += out.tx->vout[out.i].nValue;
     }
     return true;

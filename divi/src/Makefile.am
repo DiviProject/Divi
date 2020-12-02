@@ -265,6 +265,7 @@ BITCOIN_CORE_H = \
   versionbits.h \
   version.h \
   wallet.h \
+  StakableCoin.h \
   keypool.h \
   reservekey.h \
   walletBackupCreator.h \

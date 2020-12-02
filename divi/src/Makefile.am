@@ -244,6 +244,7 @@ BITCOIN_CORE_H = \
   spentindex.h \
   streams.h \
   sync.h \
+  SpentOutputTracker.h \
   ThresholdConditionCache.h \
   threadsafety.h \
   timedata.h \
@@ -407,6 +408,7 @@ libbitcoin_wallet_a_SOURCES = \
   BlockIncentivesPopulator.cpp \
   SuperblockHelpers.cpp \
   SuperblockHeightValidator.cpp \
+  SpentOutputTracker.cpp \
   masternode-sync.cpp \
   masternodeconfig.cpp \
   masternodeman.cpp \

@@ -106,36 +106,7 @@ public:
 };
 
 class WalletTransactionRecord;
-
-class SpentOutputTracker
-{
-private:
-    WalletTransactionRecord& transactionRecord_;
-protected:
-    typedef std::multimap<COutPoint, uint256> TxSpends;
-    TxSpends mapTxSpends;
-    void AddToSpends(const COutPoint& outpoint, const uint256& wtxid);
-    void AddToSpends(const uint256& wtxid);
-    void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
-public:
-    SpentOutputTracker(
-        WalletTransactionRecord& transactionRecord
-        ): transactionRecord_(transactionRecord)
-        , mapTxSpends()
-    {
-    }
-    /**
-     * Used to keep track of spent outpoints, and
-     * detect and report conflicts (double-spends or
-     * mutated transactions where the mutant gets mined).
-     */
-    std::pair<CWalletTx*,bool> UpdateSpends(
-        const CWalletTx& newlyAddedTransaction,
-        int64_t orderedTransactionIndex,
-        bool updateTransactionOrdering);
-    bool IsSpent(const uint256& hash, unsigned int n) const;
-    std::set<uint256> GetConflictingTxHashes(const CWalletTx& tx) const;
-};
+class SpentOutputTracker;
 
 /**
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,

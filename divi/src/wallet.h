@@ -164,7 +164,7 @@ public:
     std::string strWalletFile;
 private:
     std::unique_ptr<WalletTransactionRecord> transactionRecord_;
-    SpentOutputTracker outputTracker_;
+    std::unique_ptr<SpentOutputTracker> outputTracker_;
     int64_t orderedTransactionIndex;
 public:
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet

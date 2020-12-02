@@ -227,7 +227,7 @@ CWallet::CWallet(
     , fFileBacked()
     , strWalletFile()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
-    , outputTracker_(*transactionRecord_)
+    , outputTracker_( new SpentOutputTracker(*transactionRecord_) )
     , orderedTransactionIndex()
     , nWalletVersion()
     , fBackupMints()
@@ -260,6 +260,7 @@ CWallet::~CWallet()
 {
     delete pwalletdbEncryption;
     pwalletdbEncryption = NULL;
+    outputTracker_.reset();
     transactionRecord_.reset();
 }
 
@@ -939,7 +940,7 @@ set<uint256> CWallet::GetConflicts(const uint256& txid) const
     if (txPtr == nullptr)
         return set<uint256>();
 
-   return outputTracker_.GetConflictingTxHashes(*txPtr);
+   return outputTracker_->GetConflictingTxHashes(*txPtr);
 }
 
 /**
@@ -948,7 +949,7 @@ set<uint256> CWallet::GetConflicts(const uint256& txid) const
  */
 bool CWallet::IsSpent(const uint256& hash, unsigned int n) const
 {
-    return outputTracker_.IsSpent(hash,n);
+    return outputTracker_->IsSpent(hash,n);
 }
 
 bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash, std::string strOutputIndex)
@@ -1178,11 +1179,11 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
     uint256 hash = wtxIn.GetHash();
 
     if (fFromLoadWallet) {
-        outputTracker_.UpdateSpends(wtxIn, orderedTransactionIndex, false).first->BindWallet(this);
+        outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, false).first->BindWallet(this);
     } else {
         LOCK(cs_wallet);
         // Inserts only if not already there, returns tx inserted or tx found
-        std::pair<CWalletTx*, bool> ret = outputTracker_.UpdateSpends(wtxIn,orderedTransactionIndex,true);
+        std::pair<CWalletTx*, bool> ret = outputTracker_->UpdateSpends(wtxIn,orderedTransactionIndex,true);
         bool fInsertedNew = ret.second;
         CWalletTx& wtx = *ret.first;
         wtx.BindWallet(this);

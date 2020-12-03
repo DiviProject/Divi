@@ -1824,7 +1824,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
         const CWalletTx *pcoin = output.tx;
 
-        if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs))
+        if (output.nDepth < ( DebitsFunds(*pcoin,ISMINE_ALL) ? nConfMine : nConfTheirs))
             continue;
 
         int i = output.i;
@@ -2642,7 +2642,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
                 continue;
 
             int nDepth = pcoin->GetNumberOfBlockConfirmations();
-            if (nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? 0 : 1))
+            if (nDepth < ( DebitsFunds(*pcoin,ISMINE_ALL) ? 0 : 1))
                 continue;
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++) {
@@ -2822,7 +2822,7 @@ bool CWallet::IsTrusted(const CWalletTx& walletTransaction) const
         return true;
     if (nDepth < 0)
         return false;
-    if (!allowSpendingZeroConfirmationOutputs || !walletTransaction.IsFromMe(ISMINE_ALL)) // using wtx's cached debit
+    if (!allowSpendingZeroConfirmationOutputs || !DebitsFunds(walletTransaction, ISMINE_ALL)) // using wtx's cached debit
         return false;
 
     // Trusted if all inputs are from us and are in the mempool:

@@ -284,11 +284,16 @@ bool CWallet::IsMine(const CTransaction& tx) const
             return true;
     return false;
 }
-/** should probably be renamed to IsRelevantToMe */
+
 bool CWallet::DebitsFunds(const CTransaction& tx) const
 {
     return (ComputeDebit(tx, ISMINE_ALL) > 0);
 }
+bool CWallet::DebitsFunds(const CWalletTx& tx,const isminefilter& filter) const
+{
+    return GetDebit(tx,filter) > 0;
+}
+
 CAmount CWallet::ComputeDebit(const CTransaction& tx, const isminefilter& filter) const
 {
     CAmount nDebit = 0;

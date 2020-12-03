@@ -41,8 +41,8 @@ static void add_coin(const CAmount& nValue, int nAge = 6*24, bool fIsFromMe = fa
     tx.vout.resize(nInput+1);
     tx.vout[nInput].nValue = nValue;
     if (fIsFromMe) {
-        // IsFromMe() returns (GetDebit() > 0), and GetDebit() is 0 if vin.empty(),
-        // so stop vin being empty, and cache a non-zero Debit to fake out IsFromMe()
+        // DebitsFunds() returns (GetDebit() > 0), and GetDebit() is 0 if vin.empty(),
+        // so stop vin being empty, and cache a non-zero Debit to fake out DebitsFunds()
         tx.vin.resize(1);
     }
     CWalletTx* wtx = new CWalletTx(&wallet, tx);

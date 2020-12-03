@@ -59,8 +59,8 @@ class WalletBackupTest(BitcoinTestFramework):
             amount = Decimal(randint(1,10)) / Decimal(10)
             txid = self.nodes[from_node].sendtoaddress(to_address, amount)
             fee = Decimal(self.nodes[from_node].gettransaction(txid)["fee"])
-            assert fee < 0
-            self.fees -= Decimal(self.nodes[from_node].gettransaction(txid)["fee"])
+            assert fee > 0
+            self.fees += Decimal(self.nodes[from_node].gettransaction(txid)["fee"])
 
     def do_one_round(self):
         a0 = self.nodes[0].getnewaddress()

@@ -1835,9 +1835,9 @@ Value gettransaction(const Array& params, bool fHelp)
     CAmount nCredit = pwalletMain->GetCredit(wtx,filter);
     CAmount nDebit = pwalletMain->GetDebit(wtx,filter);
     CAmount nNet = nCredit - nDebit;
-    CAmount nFee =  nDebit > 0 ? wtx.GetValueOut() - nDebit : 0;
+    CAmount nFee =  nDebit > 0 ? nDebit - wtx.GetValueOut(): 0;
 
-    entry.push_back(Pair("amount", ValueFromAmount(nNet - nFee)));
+    entry.push_back(Pair("amount", ValueFromAmount(nNet)));
     if (nDebit > 0) entry.push_back(Pair("fee", ValueFromAmount(nFee)));
 
     WalletTxToJSON(wtx, entry);

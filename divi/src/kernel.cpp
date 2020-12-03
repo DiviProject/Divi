@@ -366,15 +366,25 @@ bool CheckCoinstakeForVaults(const CTransaction& tx, const CBlockRewards& expect
         return true;
 
     assert(tx.vout.size() >= 2);
-    const CTxOut& rewardOut = tx.vout[1];
-
+    const auto& rewardOut = tx.vout[1];
     if (rewardOut.scriptPubKey != vaultScript)
         return error("%s: output is not sent back to the vault input script", __func__);
+    CAmount actualOutput = rewardOut.nValue;
+
+    /* We optionally allow splitting of the output into two (but not more),
+       provided that both have a value >= 10k DIVI.  */
+    constexpr CAmount MIN_FOR_SPLITTING = 10000 * COIN;
+    if (tx.vout.size() >= 3) {
+        const auto& out2 = tx.vout[2];
+        if (actualOutput >= MIN_FOR_SPLITTING && out2.nValue >= MIN_FOR_SPLITTING
+              && out2.scriptPubKey == vaultScript)
+            actualOutput += out2.nValue;
+    }
 
     const CAmount expectedOutput = nValueIn + expectedRewards.nStakeReward;
-    if (rewardOut.nValue < expectedOutput)
+    if (actualOutput < expectedOutput)
         return error("%s: expected output to be at least %s, got only %s",
-                     __func__, FormatMoney(expectedOutput), FormatMoney(rewardOut.nValue));
+                     __func__, FormatMoney(expectedOutput), FormatMoney(actualOutput));
 
     return true;
 }

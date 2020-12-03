@@ -59,9 +59,9 @@ protected:
     dummyTxVault.vout.resize(2);
     dummyTxNonVault.vout.resize(dummyTxVault.vout.size());
     for (unsigned i = 0; i < dummyTxVault.vout.size(); ++i) {
-      dummyTxVault.vout[i].nValue = COIN;
+      dummyTxVault.vout[i].nValue = 15000 * COIN;
       dummyTxVault.vout[i].scriptPubKey = scriptVault;
-      dummyTxNonVault.vout[i].nValue = COIN;
+      dummyTxNonVault.vout[i].nValue = 15000 * COIN;
       dummyTxNonVault.vout[i].scriptPubKey = scriptNonVault;
     }
 
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(willFailNonCoinstakeTransactions)
   CMutableTransaction mtx;
   mtx.vin.push_back(CTxIn(nonVaultCoins[0]));
   mtx.vout.push_back(CTxOut(1, scriptNonVault));
-  mtx.vout.push_back(CTxOut(COIN + CENT, scriptNonVault));
+  mtx.vout.push_back(CTxOut(15000 * COIN + CENT, scriptNonVault));
 
   BOOST_CHECK(!CTransaction(mtx).IsCoinStake());
   BOOST_CHECK(!RunCheck(mtx));
@@ -106,8 +106,8 @@ BOOST_AUTO_TEST_CASE(willAllowSplittingOfInputPlusRewardIntoTwoOutputs)
 
   mtx.vout.push_back(CTxOut());
   mtx.vout[0].SetEmpty();
-  mtx.vout.push_back(CTxOut(COIN / 2, scriptNonVault));
-  mtx.vout.push_back(CTxOut(COIN / 2, scriptNonVault));
+  mtx.vout.push_back(CTxOut(5000 * COIN, scriptNonVault));
+  mtx.vout.push_back(CTxOut(25000 * COIN, scriptNonVault));
 
   BOOST_CHECK(CTransaction(mtx).IsCoinStake());
   BOOST_CHECK(RunCheck(mtx));
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(willAllowCorrectVaultPayment)
 
   mtx.vout.push_back(CTxOut());
   mtx.vout[0].SetEmpty();
-  mtx.vout.push_back(CTxOut(2 * COIN + CENT, scriptVault));
+  mtx.vout.push_back(CTxOut(30000 * COIN + CENT, scriptVault));
   mtx.vout.push_back(CTxOut(CENT, scriptNonVault));
   BOOST_CHECK(CTransaction(mtx).IsCoinStake());
   BOOST_CHECK(RunCheck(mtx));
@@ -137,14 +137,15 @@ BOOST_AUTO_TEST_CASE(willNotAllowPaymentToNonVault)
 
   mtx.vout.push_back(CTxOut());
   mtx.vout[0].SetEmpty();
-  mtx.vout.push_back(CTxOut(COIN + CENT, scriptNonVault));
+  mtx.vout.push_back(CTxOut(15000 * COIN + CENT, scriptNonVault));
 
   BOOST_CHECK(CTransaction(mtx).IsCoinStake());
   BOOST_CHECK(!RunCheck(mtx));
 
+  mtx.vout.clear();
   mtx.vout.push_back(CTxOut());
   mtx.vout[0].SetEmpty();
-  mtx.vout.push_back(CTxOut(COIN + CENT, scriptOtherVault));
+  mtx.vout.push_back(CTxOut(15000 * COIN + CENT, scriptOtherVault));
 
   BOOST_CHECK(CTransaction(mtx).IsCoinStake());
   BOOST_CHECK(!RunCheck(mtx));
@@ -154,27 +155,71 @@ BOOST_AUTO_TEST_CASE(willDisallowVaultToUnderpay)
 {
   CMutableTransaction mtx;
   mtx.vin.push_back(CTxIn(vaultCoins[0]));
+  mtx.vin.push_back(CTxIn(vaultCoins[1]));
 
   mtx.vout.push_back(CTxOut());
   mtx.vout[0].SetEmpty();
-  mtx.vout.push_back(CTxOut(COIN + CENT - 1, scriptVault));
+  mtx.vout.push_back(CTxOut(15000 * COIN + CENT, scriptVault));
+  mtx.vout.push_back(CTxOut(15000 * COIN, scriptOtherVault));
 
   BOOST_CHECK(CTransaction(mtx).IsCoinStake());
   BOOST_CHECK(!RunCheck(mtx));
 
-  mtx.vout[1].nValue += 1;
+  mtx.vout[1].nValue += 15000 * COIN;
+  mtx.vout.pop_back();
   BOOST_CHECK(RunCheck(mtx));
 }
 
-BOOST_AUTO_TEST_CASE(willNotAllowStakingOutputToBeSplit)
+BOOST_AUTO_TEST_CASE(willAllowStakingOutputToBeSplit)
 {
   CMutableTransaction mtx;
   mtx.vin.push_back(CTxIn(vaultCoins[0]));
+  mtx.vin.push_back(CTxIn(vaultCoins[1]));
 
   mtx.vout.push_back(CTxOut());
   mtx.vout[0].SetEmpty();
-  mtx.vout.push_back(CTxOut(COIN, scriptVault));
-  mtx.vout.push_back(CTxOut(CENT, scriptVault));
+  mtx.vout.push_back(CTxOut(10000 * COIN, scriptVault));
+  mtx.vout.push_back(CTxOut(20000 * COIN + CENT, scriptVault));
+
+  BOOST_CHECK(CTransaction(mtx).IsCoinStake());
+  BOOST_CHECK(RunCheck(mtx));
+}
+
+BOOST_AUTO_TEST_CASE(willNotAllowStakingOutputToBeSplitTooOften)
+{
+  CMutableTransaction mtx;
+  mtx.vin.push_back(CTxIn(vaultCoins[0]));
+  mtx.vin.push_back(CTxIn(vaultCoins[1]));
+
+  mtx.vout.push_back(CTxOut());
+  mtx.vout[0].SetEmpty();
+  mtx.vout.push_back(CTxOut(10000 * COIN, scriptVault));
+  mtx.vout.push_back(CTxOut(10000 * COIN, scriptVault));
+  mtx.vout.push_back(CTxOut(10000 * COIN + CENT, scriptVault));
+
+  BOOST_CHECK(CTransaction(mtx).IsCoinStake());
+  BOOST_CHECK(!RunCheck(mtx));
+}
+
+BOOST_AUTO_TEST_CASE(willNotAllowStakingOutputToBeSplitTooSmall)
+{
+  CMutableTransaction mtx;
+  mtx.vin.push_back(CTxIn(vaultCoins[0]));
+  mtx.vin.push_back(CTxIn(vaultCoins[1]));
+
+  mtx.vout.push_back(CTxOut());
+  mtx.vout[0].SetEmpty();
+  mtx.vout.push_back(CTxOut(25000 * COIN, scriptVault));
+  mtx.vout.push_back(CTxOut(5000 * COIN + CENT, scriptVault));
+
+  BOOST_CHECK(CTransaction(mtx).IsCoinStake());
+  BOOST_CHECK(!RunCheck(mtx));
+
+  mtx.vout.clear();
+  mtx.vout.push_back(CTxOut());
+  mtx.vout[0].SetEmpty();
+  mtx.vout.push_back(CTxOut(5000 * COIN, scriptVault));
+  mtx.vout.push_back(CTxOut(25000 * COIN + CENT, scriptVault));
 
   BOOST_CHECK(CTransaction(mtx).IsCoinStake());
   BOOST_CHECK(!RunCheck(mtx));

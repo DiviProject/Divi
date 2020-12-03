@@ -285,7 +285,7 @@ bool CWallet::IsMine(const CTransaction& tx) const
     return false;
 }
 /** should probably be renamed to IsRelevantToMe */
-bool CWallet::IsFromMe(const CTransaction& tx) const
+bool CWallet::DebitsFunds(const CTransaction& tx) const
 {
     return (ComputeDebit(tx, ISMINE_ALL) > 0);
 }
@@ -1241,7 +1241,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
         AssertLockHeld(cs_wallet);
         bool fExisted = GetWalletTx(tx.GetHash()) != nullptr;
         if (fExisted && !fUpdate) return false;
-        if (fExisted || IsMine(tx) || IsFromMe(tx)) {
+        if (fExisted || IsMine(tx) || DebitsFunds(tx)) {
             CWalletTx wtx(this, tx);
             // Get merkle branch if transaction was found in a block
             if (pblock)

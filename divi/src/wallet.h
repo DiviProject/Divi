@@ -398,8 +398,7 @@ public:
     bool IsChange(const CTxOut& txout) const;
     CAmount ComputeChange(const CTxOut& txout) const;
     bool IsMine(const CTransaction& tx) const;
-    /** should probably be renamed to IsRelevantToMe */
-    bool IsFromMe(const CTransaction& tx) const;
+    bool DebitsFunds(const CTransaction& tx) const;
     CAmount ComputeDebit(const CTransaction& tx, const isminefilter& filter) const;
     CAmount GetDebit(const CWalletTx& tx, const isminefilter& filter) const;
     CAmount ComputeCredit(const CTransaction& tx, const isminefilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;

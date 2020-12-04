@@ -804,7 +804,7 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
             continue;
 
         CAmount nReceived, nSent, nFee;
-        wtx.GetAccountAmounts(strAccount, nReceived, nSent, nFee, filter);
+        pwalletMain->GetAccountAmounts(wtx,strAccount, nReceived, nSent, nFee, filter);
 
         if (nReceived != 0 && wtx.GetNumberOfBlockConfirmations() >= nMinDepth)
             nBalance += nReceived;
@@ -874,7 +874,7 @@ Value getbalance(const Array& params, bool fHelp)
             string strSentAccount;
             list<COutputEntry> listReceived;
             list<COutputEntry> listSent;
-            wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount, filter);
+            pwalletMain->GetAmounts(wtx,listReceived, listSent, allFee, strSentAccount, filter);
             if (wtx.GetNumberOfBlockConfirmations() >= nMinDepth) {
                 BOOST_FOREACH (const COutputEntry& r, listReceived)
                         nBalance += r.amount;
@@ -1448,7 +1448,7 @@ void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string&
         }
         else
         {
-            wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, filter);
+            wallet.GetAmounts(wtx,listReceived, listSent, nFee, strSentAccount, filter);
 
             // Sent
             if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
@@ -1674,7 +1674,7 @@ Value listaccounts(const Array& params, bool fHelp)
         int nDepth = wtx.GetNumberOfBlockConfirmations();
         if (wtx.GetBlocksToMaturity() > 0 || nDepth < 0)
             continue;
-        wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, includeWatchonly);
+        pwalletMain->GetAmounts(wtx,listReceived, listSent, nFee, strSentAccount, includeWatchonly);
         mapAccountBalances[strSentAccount] -= nFee;
         BOOST_FOREACH (const COutputEntry& s, listSent)
                 mapAccountBalances[strSentAccount] -= s.amount;

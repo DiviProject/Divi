@@ -3182,6 +3182,97 @@ bool CWallet::MoveFundsBetweenAccounts(std::string from, std::string to, CAmount
     return true;
 }
 
+void CWallet::GetAmounts(
+    const CWalletTx& wtx,
+    std::list<COutputEntry>& listReceived,
+    std::list<COutputEntry>& listSent,
+    CAmount& nFee,
+    std::string& strSentAccount,
+    const isminefilter& filter) const
+{
+    nFee = 0;
+    listReceived.clear();
+    listSent.clear();
+    strSentAccount = wtx.strFromAccount;
+
+    // Compute fee:
+    CAmount nDebit = GetDebit(wtx,filter);
+    if (nDebit > 0) // debit>0 means we signed/sent this transaction
+    {
+        CAmount nValueOut = wtx.GetValueOut();
+        nFee = nDebit - nValueOut;
+    }
+
+    // Sent/received.
+    for (unsigned int i = 0; i < wtx.vout.size(); ++i) {
+        const CTxOut& txout = wtx.vout[i];
+        isminetype fIsMine = IsMine(txout);
+        // Only need to handle txouts if AT LEAST one of these is true:
+        //   1) they debit from us (sent)
+        //   2) the output is to us (received)
+        if (nDebit > 0) {
+            // Don't report 'change' txouts
+            if (IsChange(txout))
+                continue;
+        } else if (!(fIsMine & filter) )
+            continue;
+
+        // In either case, we need to get the destination address
+        CTxDestination address;
+        if (!ExtractDestination(txout.scriptPubKey, address)) {
+            if (!wtx.IsCoinStake() && !wtx.IsCoinBase()) {
+                LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n", wtx.GetHash().ToString());
+            }
+            address = CNoDestination();
+        }
+
+        COutputEntry output = {address, txout.nValue, (int)i};
+
+        // If we are debited by the transaction, add the output as a "sent" entry
+        if (nDebit > 0)
+            listSent.push_back(output);
+
+        // If we are receiving the output, add it as a "received" entry
+        if (fIsMine & filter)
+            listReceived.push_back(output);
+    }
+}
+
+void CWallet::GetAccountAmounts(
+    const CWalletTx& wtx,
+    const std::string& strAccount,
+    CAmount& nReceived,
+    CAmount& nSent,
+    CAmount& nFee,
+    const isminefilter& filter) const
+{
+    nReceived = nSent = nFee = 0;
+
+    CAmount allFee;
+    std::string strSentAccount;
+    std::list<COutputEntry> listReceived;
+    std::list<COutputEntry> listSent;
+    GetAmounts(wtx, listReceived, listSent, allFee, strSentAccount, filter);
+
+    if (strAccount == strSentAccount) {
+        for (const COutputEntry& s : listSent)
+            nSent += s.amount;
+        nFee = allFee;
+    }
+    {
+        LOCK(cs_wallet);
+        for (const COutputEntry& r : listReceived) {
+            if (mapAddressBook.count(r.destination)) {
+                std::map<CTxDestination, CAddressBookData>::const_iterator mi = mapAddressBook.find(r.destination);
+                if (mi != mapAddressBook.end() && (*mi).second.name == strAccount)
+                    nReceived += r.amount;
+            } else if (strAccount.empty()) {
+                nReceived += r.amount;
+            }
+        }
+    }
+}
+
 COutput::COutput(const CWalletTx* txIn, int iIn, int nDepthIn, bool fSpendableIn)
 {
     tx = txIn;

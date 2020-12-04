@@ -25,6 +25,7 @@
 #include <merkletx.h>
 #include <keypool.h>
 #include <reservekey.h>
+#include <OutputEntry.h>
 
 class CKeyMetadata;
 class CKey;
@@ -400,6 +401,21 @@ public:
     bool IsMine(const CTransaction& tx) const;
     bool DebitsFunds(const CTransaction& tx) const;
     bool DebitsFunds(const CWalletTx& tx,const isminefilter& filter) const;
+    void GetAmounts(
+        const CWalletTx& wtx,
+        std::list<COutputEntry>& listReceived,
+        std::list<COutputEntry>& listSent,
+        CAmount& nFee,
+        std::string& strSentAccount,
+        const isminefilter& filter) const;
+    void GetAccountAmounts(
+        const CWalletTx& wtx,
+        const std::string& strAccount,
+        CAmount& nReceived,
+        CAmount& nSent,
+        CAmount& nFee,
+        const isminefilter& filter) const;
+
     CAmount ComputeDebit(const CTransaction& tx, const isminefilter& filter) const;
     CAmount GetDebit(const CWalletTx& tx, const isminefilter& filter) const;
     CAmount ComputeCredit(const CTransaction& tx, const isminefilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;

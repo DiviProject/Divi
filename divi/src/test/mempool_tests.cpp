@@ -8,15 +8,28 @@
 #include <boost/test/unit_test.hpp>
 #include <list>
 
-BOOST_AUTO_TEST_SUITE(mempool_tests)
-
-BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
+class MempoolTestFixture
 {
-    // Test CTxMemPool::remove functionality
 
-    // Parent transaction with three children,
-    // and three grand-children:
-    CMutableTransaction txParent;
+protected:
+
+  /** A parent transaction.  */
+  CMutableTransaction txParent;
+
+  /** Three children of the parent.  */
+  CMutableTransaction txChild[3];
+
+  /** Three grand children.  */
+  CMutableTransaction txGrandChild[3];
+
+  /** The test mempool instance.  */
+  CTxMemPool testPool;
+
+public:
+
+  MempoolTestFixture()
+    : testPool(CFeeRate(0))
+  {
     txParent.vin.resize(1);
     txParent.vin[0].scriptSig = CScript() << OP_11;
     txParent.vout.resize(3);
@@ -25,7 +38,7 @@ BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
         txParent.vout[i].scriptPubKey = CScript() << OP_11 << OP_EQUAL;
         txParent.vout[i].nValue = 33000LL;
     }
-    CMutableTransaction txChild[3];
+
     for (int i = 0; i < 3; i++)
     {
         txChild[i].vin.resize(1);
@@ -36,7 +49,7 @@ BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
         txChild[i].vout[0].scriptPubKey = CScript() << OP_11 << OP_EQUAL;
         txChild[i].vout[0].nValue = 11000LL;
     }
-    CMutableTransaction txGrandChild[3];
+
     for (int i = 0; i < 3; i++)
     {
         txGrandChild[i].vin.resize(1);
@@ -47,9 +60,16 @@ BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
         txGrandChild[i].vout[0].scriptPubKey = CScript() << OP_11 << OP_EQUAL;
         txGrandChild[i].vout[0].nValue = 11000LL;
     }
+  }
 
+};
 
-    CTxMemPool testPool(CFeeRate(0));
+BOOST_FIXTURE_TEST_SUITE(mempool_tests, MempoolTestFixture)
+
+BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
+{
+    // Test CTxMemPool::remove functionality
+
     std::list<CTransaction> removed;
 
     // Nothing in pool, remove should do nothing:
@@ -96,6 +116,28 @@ BOOST_AUTO_TEST_CASE(MempoolRemoveTest)
     BOOST_CHECK_EQUAL(removed.size(), 6);
     BOOST_CHECK_EQUAL(testPool.size(), 0);
     removed.clear();
+}
+
+BOOST_AUTO_TEST_CASE(MempoolIndexByBareTxid)
+{
+    CTransaction tx;
+    std::list<CTransaction> removed;
+
+    testPool.addUnchecked(txParent.GetHash(), CTxMemPoolEntry(txParent, 0, 0, 0.0, 1));
+    for (int i = 0; i < 3; ++i)
+    {
+        testPool.addUnchecked(txChild[i].GetHash(), CTxMemPoolEntry(txChild[i], 0, 0, 0.0, 1));
+        testPool.addUnchecked(txGrandChild[i].GetHash(), CTxMemPoolEntry(txGrandChild[i], 0, 0, 0.0, 1));
+    }
+
+    BOOST_CHECK(testPool.lookupBareTxid(txParent.GetBareTxid(), tx));
+    BOOST_CHECK(tx.GetHash() == txParent.GetHash());
+    BOOST_CHECK(!testPool.lookupBareTxid(txParent.GetHash(), tx));
+
+    testPool.remove(txParent, removed, true);
+    BOOST_CHECK(!testPool.lookupBareTxid(txParent.GetBareTxid(), tx));
+    BOOST_CHECK(!testPool.lookupBareTxid(txChild[0].GetBareTxid(), tx));
+    BOOST_CHECK(!testPool.lookupBareTxid(txGrandChild[0].GetBareTxid(), tx));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -414,11 +414,10 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry)
     LOCK(cs);
     {
         mapTx[hash] = entry;
-        const CTransaction& tx = mapTx[hash].GetTx();
-        {
-            for (unsigned int i = 0; i < tx.vin.size(); i++)
-                mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
-        }
+        const auto* entryInMap = &mapTx[hash];
+        const CTransaction& tx = entryInMap->GetTx();
+        for (unsigned int i = 0; i < tx.vin.size(); i++)
+            mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
         nTransactionsUpdated++;
         totalTxSize += entry.GetTxSize();
     }
@@ -584,7 +583,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
             }
         }
         while (!txToRemove.empty()) {
-            uint256 hash = txToRemove.front();
+            const uint256 hash = txToRemove.front();
             txToRemove.pop_front();
             if (!mapTx.count(hash))
                 continue;
@@ -597,7 +596,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
                     txToRemove.push_back(it->second.ptx->GetHash());
                 }
             }
-            BOOST_FOREACH (const CTxIn& txin, tx.vin)
+            for (const auto& txin : tx.vin)
                 mapNextTx.erase(txin.prevout);
 
             removed.push_back(tx);
@@ -693,16 +692,15 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const
 
     LOCK(cs);
     list<const CTxMemPoolEntry*> waitingOnDependants;
-    for (std::map<uint256, CTxMemPoolEntry>::const_iterator it = mapTx.begin(); it != mapTx.end(); it++) {
+    for (const auto& entry : mapTx) {
         unsigned int i = 0;
-        checkTotal += it->second.GetTxSize();
-        const CTransaction& tx = it->second.GetTx();
+        checkTotal += entry.second.GetTxSize();
+        const CTransaction& tx = entry.second.GetTx();
         bool fDependsWait = false;
-        BOOST_FOREACH (const CTxIn& txin, tx.vin) {
+        for (const auto& txin : tx.vin) {
             // Check that every mempool transaction's inputs refer to available coins, or other mempool tx's.
-            std::map<uint256, CTxMemPoolEntry>::const_iterator it2 = mapTx.find(txin.prevout.hash);
-            if (it2 != mapTx.end()) {
-                const CTransaction& tx2 = it2->second.GetTx();
+            CTransaction tx2;
+            if (lookup(txin.prevout.hash, tx2)) {
                 assert(tx2.vout.size() > txin.prevout.n && !tx2.vout[txin.prevout.n].IsNull());
                 fDependsWait = true;
             } else {
@@ -710,14 +708,14 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const
                 assert(coins && coins->IsAvailable(txin.prevout.n));
             }
             // Check whether its inputs are marked in mapNextTx.
-            std::map<COutPoint, CInPoint>::const_iterator it3 = mapNextTx.find(txin.prevout);
-            assert(it3 != mapNextTx.end());
-            assert(it3->second.ptx == &tx);
-            assert(it3->second.n == i);
+            const auto mit = mapNextTx.find(txin.prevout);
+            assert(mit != mapNextTx.end());
+            assert(mit->second.ptx == &tx);
+            assert(mit->second.n == i);
             i++;
         }
         if (fDependsWait)
-            waitingOnDependants.push_back(&it->second);
+            waitingOnDependants.push_back(&entry.second);
         else {
             CValidationState state;
             CTxUndo undo;
@@ -741,14 +739,14 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const
             stepsSinceLastRemove = 0;
         }
     }
-    for (std::map<COutPoint, CInPoint>::const_iterator it = mapNextTx.begin(); it != mapNextTx.end(); it++) {
-        uint256 hash = it->second.ptx->GetHash();
-        map<uint256, CTxMemPoolEntry>::const_iterator it2 = mapTx.find(hash);
-        const CTransaction& tx = it2->second.GetTx();
-        assert(it2 != mapTx.end());
-        assert(&tx == it->second.ptx);
-        assert(tx.vin.size() > it->second.n);
-        assert(it->first == it->second.ptx->vin[it->second.n].prevout);
+    for (const auto& entry : mapNextTx) {
+        const uint256 hash = entry.second.ptx->GetHash();
+        const auto mit = mapTx.find(hash);
+        assert(mit != mapTx.end());
+        const CTransaction& tx = mit->second.GetTx();
+        assert(&tx == entry.second.ptx);
+        assert(tx.vin.size() > entry.second.n);
+        assert(entry.first == entry.second.ptx->vin[entry.second.n].prevout);
     }
 
     assert(totalTxSize == checkTotal);

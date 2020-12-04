@@ -1140,14 +1140,14 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
     uint256 hash = wtxIn.GetHash();
 
     if (fFromLoadWallet) {
-        outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, false).first->BindWallet(this);
+        outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, false).first->RecomputeCachedQuantities();
     } else {
         LOCK(cs_wallet);
         // Inserts only if not already there, returns tx inserted or tx found
         std::pair<CWalletTx*, bool> ret = outputTracker_->UpdateSpends(wtxIn,orderedTransactionIndex,true);
         bool fInsertedNew = ret.second;
         CWalletTx& wtx = *ret.first;
-        wtx.BindWallet(this);
+        wtx.RecomputeCachedQuantities();
         if (fInsertedNew) {
             wtx.nTimeReceived = GetAdjustedTime();
             wtx.nOrderPos = IncOrderPosNext();
@@ -2029,7 +2029,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     }
 
     wtxNew.fTimeReceivedIsTxTime = true;
-    wtxNew.BindWallet(this);
+    wtxNew.RecomputeCachedQuantities();
     CMutableTransaction txNew;
 
     {
@@ -2254,7 +2254,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
                         LogPrintf("%s: Spending inputs not recorded in wallet - %s\n", __func__, txin.prevout.hash.ToString());
                         assert(coinPtr);
                     }
-                    coinPtr->BindWallet(this);
+                    coinPtr->RecomputeCachedQuantities();
                     NotifyTransactionChanged(this, txin.prevout.hash, CT_UPDATED);
                     updated_hahes.insert(txin.prevout.hash);
                 }

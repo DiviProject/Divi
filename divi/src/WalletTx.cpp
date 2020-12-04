@@ -90,13 +90,6 @@ void CWalletTx::RecomputeCachedQuantities()
     fChangeCached = false;
 }
 
-void CWalletTx::BindWallet(CWallet* pwalletIn)
-{
-    assert(pwalletIn);
-    pwallet = pwalletIn;
-    RecomputeCachedQuantities();
-}
-
 int64_t CWalletTx::GetTxTime() const
 {
     int64_t n = nTimeSmart;

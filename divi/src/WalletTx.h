@@ -111,7 +111,6 @@ public:
 
     //! make sure balances are recalculated
     void RecomputeCachedQuantities();
-    void BindWallet(CWallet* pwalletIn);
 
     int64_t GetTxTime() const;
     int64_t GetComputedTxTime() const;

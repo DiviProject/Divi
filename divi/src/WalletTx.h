@@ -27,9 +27,6 @@ void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue);
  */
 class CWalletTx : public CMerkleTx
 {
-private:
-    const CWallet* pwallet;
-
 public:
     std::map<std::string, std::string> mapValue;
     std::vector<std::pair<std::string, std::string> > vOrderForm;
@@ -61,10 +58,9 @@ public:
     mutable CAmount nChangeCached;
 
     CWalletTx();
-    CWalletTx(const CWallet* pwalletIn);
-    CWalletTx(const CWallet* pwalletIn, const CMerkleTx& txIn);
-    CWalletTx(const CWallet* pwalletIn, const CTransaction& txIn);
-    void Init(const CWallet* pwalletIn);
+    CWalletTx(const CMerkleTx& txIn);
+    CWalletTx(const CTransaction& txIn);
+    void Init();
 
     ADD_SERIALIZE_METHODS;
 
@@ -72,7 +68,7 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
         if (ser_action.ForRead())
-            Init(NULL);
+            Init();
         char fSpent = false;
 
         if (!ser_action.ForRead()) {

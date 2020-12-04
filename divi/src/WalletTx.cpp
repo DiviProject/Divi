@@ -1,6 +1,5 @@
 #include <WalletTx.h>
 
-#include <wallet.h>
 #include <Logging.h>
 #include <swifttx.h>
 #include <script/standard.h>
@@ -25,30 +24,23 @@ void WriteOrderPos(const int64_t& nOrderPos, mapValue_t& mapValue)
     mapValue["n"] = i64tostr(nOrderPos);
 }
 
-
 CWalletTx::CWalletTx()
 {
-    Init(NULL);
+    Init();
 }
 
-CWalletTx::CWalletTx(const CWallet* pwalletIn)
+CWalletTx::CWalletTx(const CMerkleTx& txIn) : CMerkleTx(txIn)
 {
-    Init(pwalletIn);
+    Init();
 }
 
-CWalletTx::CWalletTx(const CWallet* pwalletIn, const CMerkleTx& txIn) : CMerkleTx(txIn)
+CWalletTx::CWalletTx(const CTransaction& txIn) : CMerkleTx(txIn)
 {
-    Init(pwalletIn);
+    Init();
 }
 
-CWalletTx::CWalletTx(const CWallet* pwalletIn, const CTransaction& txIn) : CMerkleTx(txIn)
+void CWalletTx::Init()
 {
-    Init(pwalletIn);
-}
-
-void CWalletTx::Init(const CWallet* pwalletIn)
-{
-    pwallet = pwalletIn;
     mapValue.clear();
     vOrderForm.clear();
     fTimeReceivedIsTxTime = false;

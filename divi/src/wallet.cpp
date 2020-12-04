@@ -1247,7 +1247,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const CBlock* pbl
         bool fExisted = GetWalletTx(tx.GetHash()) != nullptr;
         if (fExisted && !fUpdate) return false;
         if (fExisted || IsMine(tx) || DebitsFunds(tx)) {
-            CWalletTx wtx(this, tx);
+            CWalletTx wtx(tx);
             // Get merkle branch if transaction was found in a block
             if (pblock)
                 wtx.SetMerkleBranch(*pblock);

@@ -117,7 +117,7 @@ public:
     {
         CMutableTransaction tx = createDefaultTransaction(scriptToPayTo,outputIndex,amount);
         CMerkleTx merkleTx(tx,activeChain_,blockIndices_);
-        CWalletTx wtx(&currentWallet, merkleTx);
+        CWalletTx wtx(merkleTx);
         currentWallet.AddToWallet(wtx);
         const CWalletTx* txPtr = currentWallet.GetWalletTx(wtx.GetHash());
         assert(txPtr);

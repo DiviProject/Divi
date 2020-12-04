@@ -22,7 +22,6 @@ class VaultForkTest (BitcoinTestFramework):
         args = ["-debug"]
         self.nodes.append (start_node(0, self.options.tmpdir, extra_args=args))
         self.nodes.append (start_node(1, self.options.tmpdir, extra_args=args))
-        connect_nodes (self.nodes[1], 0)
         self.is_network_split = False
         self.sync_all ()
 
@@ -50,7 +49,7 @@ class VaultForkTest (BitcoinTestFramework):
         # are connected still / again in case they timed out the
         # connection between them.
         set_node_times(self.nodes, ACTIVATION_TIME - 1_000)
-        connect_nodes (self.nodes[1], 0)
+        reconnect_all(self.nodes)
         self.nodes[0].setgenerate (True, 1)
         sync_blocks (self.nodes)
         createPoSStacks(self.nodes, self.nodes)
@@ -65,6 +64,7 @@ class VaultForkTest (BitcoinTestFramework):
         addr = self.nodes[0].getnewaddress ("unvaulted")
         unsigned = self.nodes[0].createrawtransaction ([vault], {addr: 9})
         self.sign_and_send (self.nodes[0], unsigned)
+        sync_mempools(self.nodes)
         generatePoSBlocks (self.nodes, 0, 1)
         assert_equal (self.nodes[0].getbalance ("unvaulted"), 9)
 
@@ -90,9 +90,10 @@ class VaultForkTest (BitcoinTestFramework):
         blk = self.nodes[0].getblockheader (self.nodes[0].getbestblockhash ())
         assert_greater_than (ACTIVATION_TIME, blk["time"])
         set_node_times (self.nodes, ACTIVATION_TIME + 1_000)
+        reconnect_all(self.nodes)
         self.nodes[0].setgenerate (True, 1)
-        connect_nodes (self.nodes[1], 0)
-        sync_blocks (self.nodes)
+        while not sync_blocks (self.nodes,1.0):
+            reconnect_all(self.nodes)
         blk = self.nodes[0].getblockheader (self.nodes[0].getbestblockhash ())
         assert_greater_than (blk["time"], ACTIVATION_TIME)
 
@@ -112,6 +113,7 @@ class VaultForkTest (BitcoinTestFramework):
         addr = self.nodes[0].getnewaddress ("unvaulted 2")
         unsigned = self.nodes[0].createrawtransaction ([vault], {addr: 9})
         self.sign_and_send (self.nodes[0], unsigned)
+        sync_mempools(self.nodes)
         generatePoSBlocks (self.nodes, 1, 1)
         assert_equal (self.nodes[0].getbalance ("unvaulted 2"), 9)
 

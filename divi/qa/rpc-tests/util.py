@@ -33,14 +33,33 @@ def check_json_precision():
     if satoshis != 2000000000000003:
         raise RuntimeError("JSON encode/decode loses precision")
 
-def sync_blocks(rpc_connections):
+def reconnect_all(rpc_connections):
+    while True:
+        for x in range(len(rpc_connections)):
+            for y in range(len(rpc_connections)):
+                if x != y:
+                    while not any([rpc_connections[x].getpeerinfo()]):
+                        connect_nodes(rpc_connections[x],y)
+                        time.sleep(0.1)
+        if all([ conn.getpeerinfo() for conn in rpc_connections if conn ]):
+            break
+        else:
+            print("Retrying connections...")
+            time.sleep(0.1)
+
+
+def sync_blocks(rpc_connections, timeout=None):
     """
     Wait until everybody has the same block count
     """
     while True:
         counts = [ x.getblockcount() for x in rpc_connections if x ]
         if counts == [ counts[0] ]*len(counts):
-            break
+            return True
+        if timeout and timeout > 0:
+            timeout -= 0.1
+        elif timeout:
+            return False
         time.sleep(0.1)
 
 def sync_mempools(rpc_connections):

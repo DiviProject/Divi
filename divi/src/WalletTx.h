@@ -15,13 +15,7 @@
 #include <list>
 #include <tinyformat.h>
 #include <utilstrencodings.h>
-
-class CWallet;
-struct COutputEntry {
-    CTxDestination destination;
-    CAmount amount;
-    int vout;
-};
+#include <OutputEntry.h>
 
 typedef std::map<std::string, std::string> mapValue_t;
 void ReadOrderPos(int64_t& nOrderPos, mapValue_t& mapValue);

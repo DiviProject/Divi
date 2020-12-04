@@ -217,6 +217,7 @@ BITCOIN_CORE_H = \
   netbase.h \
   netfulfilledman.h \
   net.h \
+  OutputEntry.h \
   noui.h \
   pow.h \
   protocol.h \

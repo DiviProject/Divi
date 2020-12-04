@@ -416,6 +416,7 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry)
         mapTx[hash] = entry;
         const auto* entryInMap = &mapTx[hash];
         const CTransaction& tx = entryInMap->GetTx();
+        mapBareTxid.emplace(tx.GetBareTxid(), entryInMap);
         for (unsigned int i = 0; i < tx.vin.size(); i++)
             mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
         nTransactionsUpdated++;
@@ -596,6 +597,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
                     txToRemove.push_back(it->second.ptx->GetHash());
                 }
             }
+            mapBareTxid.erase(tx.GetBareTxid());
             for (const auto& txin : tx.vin)
                 mapNextTx.erase(txin.prevout);
 
@@ -675,6 +677,7 @@ void CTxMemPool::clear()
     LOCK(cs);
     mapTx.clear();
     mapNextTx.clear();
+    mapBareTxid.clear();
     totalTxSize = 0;
     ++nTransactionsUpdated;
 }
@@ -762,12 +765,21 @@ void CTxMemPool::queryHashes(std::vector<uint256>& vtxid)
         vtxid.push_back((*mi).first);
 }
 
-bool CTxMemPool::lookup(uint256 hash, CTransaction& result) const
+bool CTxMemPool::lookup(const uint256& hash, CTransaction& result) const
 {
     LOCK(cs);
     map<uint256, CTxMemPoolEntry>::const_iterator i = mapTx.find(hash);
     if (i == mapTx.end()) return false;
     result = i->second.GetTx();
+    return true;
+}
+
+bool CTxMemPool::lookupBareTxid(const uint256& btxid, CTransaction& result) const
+{
+    LOCK(cs);
+    const auto mit = mapBareTxid.find(btxid);
+    if (mit == mapBareTxid.end()) return false;
+    result = mit->second->GetTx();
     return true;
 }
 

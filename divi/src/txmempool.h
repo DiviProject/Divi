@@ -119,6 +119,11 @@ private:
 
     std::map<uint256, std::pair<double, CAmount> > mapDeltas;
 
+    /** Maps bare txid's of transactions to the corresponding mempool entries.
+     *  This is used for lookups of outputs available in the mempool instead
+     *  of mapTx in case of segwit light.  */
+    std::map<uint256, const CTxMemPoolEntry*> mapBareTxid;
+
 public:
     mutable CCriticalSection cs;
     std::map<uint256, CTxMemPoolEntry> mapTx;
@@ -172,13 +177,20 @@ public:
         return totalTxSize;
     }
 
-    bool exists(uint256 hash)
+    bool exists(const uint256& hash)
     {
         LOCK(cs);
         return (mapTx.count(hash) != 0);
     }
 
-    bool lookup(uint256 hash, CTransaction& result) const;
+    bool existsBareTxid(const uint256& hash)
+    {
+        LOCK(cs);
+        return (mapBareTxid.count(hash) != 0);
+    }
+
+    bool lookup(const uint256& hash, CTransaction& result) const;
+    bool lookupBareTxid(const uint256& btxid, CTransaction& result) const;
 
     /** Estimate fee rate needed to get into the next nBlocks */
     CFeeRate estimateFee(int nBlocks) const;

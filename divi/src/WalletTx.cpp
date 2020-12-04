@@ -192,11 +192,6 @@ void CWalletTx::GetAccountAmounts(const std::string& strAccount, CAmount& nRecei
     }
 }
 
-bool CWalletTx::IsFromMe(const isminefilter& filter) const
-{
-    return (pwallet->GetDebit(*this,filter) > 0);
-}
-
 void CWalletTx::RelayWalletTransaction(std::string strCommand)
 {
     if (!IsCoinBase()) {

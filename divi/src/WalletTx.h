@@ -113,14 +113,6 @@ public:
     void RecomputeCachedQuantities();
     void BindWallet(CWallet* pwalletIn);
 
-    //! filter decides which addresses will count towards the debit
-    void GetAmounts(std::list<COutputEntry>& listReceived,
-        std::list<COutputEntry>& listSent,
-        CAmount& nFee,
-        std::string& strSentAccount,
-        const isminefilter& filter) const;
-    void GetAccountAmounts(const std::string& strAccount, CAmount& nReceived, CAmount& nSent, CAmount& nFee, const isminefilter& filter) const;
-
     int64_t GetTxTime() const;
     int64_t GetComputedTxTime() const;
     void RelayWalletTransaction(std::string strCommand = "tx");

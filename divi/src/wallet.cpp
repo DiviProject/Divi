@@ -1757,8 +1757,9 @@ static void ApproximateBestSubset(std::vector<pair<CAmount, pair<const CWalletTx
     }
 }
 
-bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins, CAmount nTargetAmount) const
+bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const
 {
+    CAmount nTargetAmount = GetStakingBalance();
     std::vector<COutput> vCoins;
     AvailableCoins(vCoins, true, NULL, false, STAKABLE_COINS);
     CAmount nAmountSelected = 0;

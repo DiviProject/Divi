@@ -41,7 +41,6 @@ private:
     int64_t hashproofTimestampMinimumValue_;
 
     void CombineUtxos(
-        const CAmount& allowedStakingAmount,
         CMutableTransaction& txNew,
         CAmount& nCredit,
         std::vector<const CTransaction*>& walletTransactions);
@@ -50,7 +49,7 @@ private:
         const StakableCoin& stakableCoin,
         CMutableTransaction& txNew);
 
-    bool SelectCoins(CAmount allowedStakingBalance);
+    bool SelectCoins();
 
     bool FindHashproof(
         const CBlockIndex* chainTip,
@@ -71,7 +70,6 @@ private:
     void SplitOrCombineUTXOS(
         const CBlockIndex* chainTip,
         CMutableTransaction& txCoinStake,
-        CAmount allowedStakingAmount,
         const StakableCoin& stakeData,
         std::vector<const CTransaction*>& vwtxPrev);
 public:

@@ -184,7 +184,7 @@ public:
     bool MoveFundsBetweenAccounts(std::string from, std::string to, CAmount amount, std::string comment);
 
     bool MintableCoins();
-    bool SelectStakeCoins(std::set<StakableCoin>& setCoins, CAmount nTargetAmount) const;
+    bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const;
 
     bool IsSpent(const uint256& hash, unsigned int n) const;
 

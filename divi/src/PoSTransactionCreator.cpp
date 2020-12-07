@@ -78,16 +78,13 @@ PoSTransactionCreator::~PoSTransactionCreator()
     proofGenerator_.reset();
 }
 
-bool PoSTransactionCreator::SelectCoins(CAmount allowedStakingBalance)
+bool PoSTransactionCreator::SelectCoins()
 {
-    if (allowedStakingBalance <= 0)
-        return false;
-
     if (chainParameters_.NetworkID() == CBaseChainParams::REGTEST ||
         GetTime() - stakedCoins_->timestamp() > settings.GetArg("-stakeupdatetime",300))
     {
         stakedCoins_->asSet().clear();
-        if (!wallet_.SelectStakeCoins(stakedCoins_->asSet(), allowedStakingBalance)) {
+        if (!wallet_.SelectStakeCoins(stakedCoins_->asSet())) {
             return error("failed to select coins for staking");
         }
 
@@ -140,7 +137,6 @@ bool PoSTransactionCreator::SetSuportedStakingScript(
 }
 
 void PoSTransactionCreator::CombineUtxos(
-    const CAmount& allowedStakingAmount,
     CMutableTransaction& txNew,
     CAmount& nCredit,
     std::vector<const CTransaction*>& walletTransactions)
@@ -168,7 +164,6 @@ void PoSTransactionCreator::CombineUtxos(
     {
         if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS||
             nCredit > nCombineThreshold ||
-            nCredit + pcoin.tx->vout[pcoin.outputIndex].nValue > allowedStakingAmount ||
             nCredit + pcoin.tx->vout[pcoin.outputIndex].nValue > nCombineThreshold)
             break;
 
@@ -250,7 +245,6 @@ StakableCoin PoSTransactionCreator::FindProofOfStake(
 void PoSTransactionCreator::SplitOrCombineUTXOS(
     const CBlockIndex* chainTip,
     CMutableTransaction& txCoinStake,
-    CAmount allowedStakingAmount,
     const StakableCoin& stakeData,
     std::vector<const CTransaction*>& vwtxPrev)
 {
@@ -264,7 +258,7 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
     }
     else
     {
-        CombineUtxos(allowedStakingAmount,txCoinStake,nCredit,vwtxPrev);
+        CombineUtxos(txCoinStake,nCredit,vwtxPrev);
         txCoinStake.vout[1].nValue = nCredit;
     }
 }
@@ -283,10 +277,9 @@ bool PoSTransactionCreator::CreateProofOfStake(
     CMutableTransaction& txCoinStake,
     unsigned int& nTxNewTime)
 {
-    CAmount allowedStakingAmount = wallet_.GetStakingBalance();
     MarkTransactionAsCoinstake(txCoinStake);
 
-    if(!SelectCoins(allowedStakingAmount)) return false;
+    if(!SelectCoins()) return false;
 
     int64_t adjustedTime = GetAdjustedTime();
     int64_t minimumTime = chainTip->GetMedianTimePast() + 1;
@@ -303,14 +296,14 @@ bool PoSTransactionCreator::CreateProofOfStake(
         return false;
     }
     CAmount nCredit = successfullyStakableUTXO.tx->vout[successfullyStakableUTXO.outputIndex].nValue;
-    if(nCredit == 0 || nCredit > allowedStakingAmount)
+    if(nCredit == 0)
     {
         return false;
     }
 
     std::vector<const CTransaction*> vwtxPrev(1, successfullyStakableUTXO.tx);
 
-    SplitOrCombineUTXOS(chainTip,txCoinStake,allowedStakingAmount,successfullyStakableUTXO,vwtxPrev);
+    SplitOrCombineUTXOS(chainTip,txCoinStake,successfullyStakableUTXO,vwtxPrev);
     AppendBlockRewardPayoutsToTransaction(chainTip,txCoinStake);
 
     int nIn = 0;

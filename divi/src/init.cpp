@@ -1350,7 +1350,7 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
         if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled()) {
             if (settings.GetArg("-mnemonicpassphrase", "").size() > 256) {
                 InitError(translate("Mnemonic passphrase is too long, must be at most 256 characters"));
-                return NULL;
+                return false;
             }
             // generate a new master key
             pwalletMain->GenerateNewHDChain();

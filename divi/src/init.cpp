@@ -1393,6 +1393,35 @@ bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostrings
     return true;
 }
 
+void ScanBlockchainForWalletUpdates(std::string strWalletFile,const std::vector<CWalletTx>& vWtx, int64_t& nStart)
+{
+    CBlockIndex* pindexRescan = chainActive.Tip();
+    if (settings.GetBoolArg("-rescan", false))
+        pindexRescan = chainActive.Genesis();
+    else {
+        CWalletDB walletdb(strWalletFile);
+        CBlockLocator locator;
+        if (walletdb.ReadBestBlock(locator))
+            pindexRescan = FindForkInGlobalIndex(chainActive, locator);
+        else
+            pindexRescan = chainActive.Genesis();
+    }
+    if (chainActive.Tip() && chainActive.Tip() != pindexRescan) {
+        uiInterface.InitMessage(translate("Rescanning..."));
+        LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight, pindexRescan->nHeight);
+        nStart = GetTimeMillis();
+        pwalletMain->ScanForWalletTransactions(pindexRescan, true);
+        LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
+        pwalletMain->SetBestChain(chainActive.GetLocator());
+        pwalletMain->IncrementDBUpdateCount();
+
+        // Restore wallet transaction metadata after -zapwallettxes=1
+        if (settings.GetBoolArg("-zapwallettxes", false) && settings.GetArg("-zapwallettxes", "1") != "2") {
+            pwalletMain->UpdateTransactionMetadata(vWtx);
+        }
+    }
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1636,31 +1665,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
         RegisterValidationInterface(pwalletMain);
 
-        CBlockIndex* pindexRescan = chainActive.Tip();
-        if (settings.GetBoolArg("-rescan", false))
-            pindexRescan = chainActive.Genesis();
-        else {
-            CWalletDB walletdb(strWalletFile);
-            CBlockLocator locator;
-            if (walletdb.ReadBestBlock(locator))
-                pindexRescan = FindForkInGlobalIndex(chainActive, locator);
-            else
-                pindexRescan = chainActive.Genesis();
-        }
-        if (chainActive.Tip() && chainActive.Tip() != pindexRescan) {
-            uiInterface.InitMessage(translate("Rescanning..."));
-            LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight, pindexRescan->nHeight);
-            nStart = GetTimeMillis();
-            pwalletMain->ScanForWalletTransactions(pindexRescan, true);
-            LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
-            pwalletMain->SetBestChain(chainActive.GetLocator());
-            pwalletMain->IncrementDBUpdateCount();
-
-            // Restore wallet transaction metadata after -zapwallettxes=1
-            if (settings.GetBoolArg("-zapwallettxes", false) && settings.GetArg("-zapwallettxes", "1") != "2") {
-                pwalletMain->UpdateTransactionMetadata(vWtx);
-            }
-        }
+        ScanBlockchainForWalletUpdates(strWalletFile,vWtx,nStart);
         fVerifyingBlocks = false;
 
     }  // (!fDisableWallet)

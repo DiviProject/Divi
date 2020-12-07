@@ -25,9 +25,6 @@
 #include "Settings.h"
 extern Settings& settings;
 
-unsigned int nWalletDBUpdated;
-
-
 //
 // CDB
 //

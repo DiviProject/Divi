@@ -1308,6 +1308,91 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
     return true;
 }
 
+bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
+{
+    bool fFirstRun = true;
+    pwalletMain = new CWallet(strWalletFile);
+    DBErrors nLoadWalletRet = pwalletMain->LoadWallet(fFirstRun);
+    if (nLoadWalletRet != DB_LOAD_OK) {
+        if (nLoadWalletRet == DB_CORRUPT)
+            strErrors << translate("Error loading wallet.dat: Wallet corrupted") << "\n";
+        else if (nLoadWalletRet == DB_NONCRITICAL_ERROR) {
+            std::string msg(translate("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
+                            " or address book entries might be missing or incorrect."));
+            InitWarning(msg);
+        } else if (nLoadWalletRet == DB_TOO_NEW)
+            strErrors << translate("Error loading wallet.dat: Wallet requires newer version of DIVI Core") << "\n";
+        else if (nLoadWalletRet == DB_NEED_REWRITE) {
+            strErrors << translate("Wallet needed to be rewritten: restart DIVI Core to complete") << "\n";
+            LogPrintf("%s", strErrors.str());
+            return InitError(strErrors.str());
+        } else
+            strErrors << translate("Error loading wallet.dat") << "\n";
+    }
+
+    if (settings.GetBoolArg("-upgradewallet", fFirstRun)) {
+        int nMaxVersion = settings.GetArg("-upgradewallet", 0);
+        if (nMaxVersion == 0) // the -upgradewallet without argument case
+        {
+            LogPrintf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
+            nMaxVersion = CLIENT_VERSION;
+            pwalletMain->SetMinVersion(FEATURE_LATEST); // permanently upgrade the wallet immediately
+        } else
+            LogPrintf("Allowing wallet upgrade up to %i\n", nMaxVersion);
+        if (nMaxVersion < pwalletMain->GetVersion())
+            strErrors << translate("Cannot downgrade wallet") << "\n";
+        pwalletMain->SetMaxVersion(nMaxVersion);
+    }
+
+    if (fFirstRun)
+    {
+        // Create new keyUser and set as default key
+        if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled()) {
+            if (settings.GetArg("-mnemonicpassphrase", "").size() > 256) {
+                InitError(translate("Mnemonic passphrase is too long, must be at most 256 characters"));
+                return NULL;
+            }
+            // generate a new master key
+            pwalletMain->GenerateNewHDChain();
+
+            // ensure this wallet.dat can only be opened by clients supporting HD
+            pwalletMain->SetMinVersion(FEATURE_HD);
+        }
+
+        CPubKey newDefaultKey;
+        if (pwalletMain->GetKeyFromPool(newDefaultKey, false)) {
+            pwalletMain->SetDefaultKey(newDefaultKey);
+            if (!pwalletMain->SetAddressBook(pwalletMain->vchDefaultKey.GetID(), "", "receive")) {
+                InitError(translate("Cannot write default address") += "\n");
+                return false;
+            }
+        }
+
+        pwalletMain->SetBestChain(chainActive.GetLocator());
+
+    }
+    else if (settings.ParameterIsSet("-usehd")) {
+        bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
+        if (pwalletMain->IsHDEnabled() && !useHD) {
+            InitError(strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"),
+                                pwalletMain->strWalletFile));
+            return false;
+        }
+        if (!pwalletMain->IsHDEnabled() && useHD) {
+            InitError(strprintf(translate("Error loading %s: You can't enable HD on a already existing non-HD wallet"),
+                                pwalletMain->strWalletFile));
+            return false;
+        }
+    }
+
+    // Warn user every time he starts non-encrypted HD wallet
+    if (!settings.GetBoolArg("-allowunencryptedwallet", false) && settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked()) {
+        InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
+    }
+
+    return true;
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1541,84 +1626,9 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         fVerifyingBlocks = true;
 
         nStart = GetTimeMillis();
-        bool fFirstRun = true;
-        pwalletMain = new CWallet(strWalletFile);
-        DBErrors nLoadWalletRet = pwalletMain->LoadWallet(fFirstRun);
-        if (nLoadWalletRet != DB_LOAD_OK) {
-            if (nLoadWalletRet == DB_CORRUPT)
-                strErrors << translate("Error loading wallet.dat: Wallet corrupted") << "\n";
-            else if (nLoadWalletRet == DB_NONCRITICAL_ERROR) {
-                std::string msg(translate("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
-                             " or address book entries might be missing or incorrect."));
-                InitWarning(msg);
-            } else if (nLoadWalletRet == DB_TOO_NEW)
-                strErrors << translate("Error loading wallet.dat: Wallet requires newer version of DIVI Core") << "\n";
-            else if (nLoadWalletRet == DB_NEED_REWRITE) {
-                strErrors << translate("Wallet needed to be rewritten: restart DIVI Core to complete") << "\n";
-                LogPrintf("%s", strErrors.str());
-                return InitError(strErrors.str());
-            } else
-                strErrors << translate("Error loading wallet.dat") << "\n";
-        }
-
-        if (settings.GetBoolArg("-upgradewallet", fFirstRun)) {
-            int nMaxVersion = settings.GetArg("-upgradewallet", 0);
-            if (nMaxVersion == 0) // the -upgradewallet without argument case
-            {
-                LogPrintf("Performing wallet upgrade to %i\n", FEATURE_LATEST);
-                nMaxVersion = CLIENT_VERSION;
-                pwalletMain->SetMinVersion(FEATURE_LATEST); // permanently upgrade the wallet immediately
-            } else
-                LogPrintf("Allowing wallet upgrade up to %i\n", nMaxVersion);
-            if (nMaxVersion < pwalletMain->GetVersion())
-                strErrors << translate("Cannot downgrade wallet") << "\n";
-            pwalletMain->SetMaxVersion(nMaxVersion);
-        }
-
-        if (fFirstRun)
+        if(!CreateNewWalletIfOneIsNotAvailable(strWalletFile,strErrors))
         {
-            // Create new keyUser and set as default key
-            if (settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsHDEnabled()) {
-                if (settings.GetArg("-mnemonicpassphrase", "").size() > 256) {
-                    InitError(translate("Mnemonic passphrase is too long, must be at most 256 characters"));
-                    return NULL;
-                }
-                // generate a new master key
-                pwalletMain->GenerateNewHDChain();
-
-                // ensure this wallet.dat can only be opened by clients supporting HD
-                pwalletMain->SetMinVersion(FEATURE_HD);
-            }
-
-            CPubKey newDefaultKey;
-            if (pwalletMain->GetKeyFromPool(newDefaultKey, false)) {
-                pwalletMain->SetDefaultKey(newDefaultKey);
-                if (!pwalletMain->SetAddressBook(pwalletMain->vchDefaultKey.GetID(), "", "receive")) {
-                    InitError(translate("Cannot write default address") += "\n");
-                    return NULL;
-                }
-            }
-
-            pwalletMain->SetBestChain(chainActive.GetLocator());
-
-        }
-        else if (settings.ParameterIsSet("-usehd")) {
-            bool useHD = settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
-            if (pwalletMain->IsHDEnabled() && !useHD) {
-                InitError(strprintf(translate("Error loading %s: You can't disable HD on a already existing HD wallet"),
-                                    pwalletMain->strWalletFile));
-                return NULL;
-            }
-            if (!pwalletMain->IsHDEnabled() && useHD) {
-                InitError(strprintf(translate("Error loading %s: You can't enable HD on a already existing non-HD wallet"),
-                                    pwalletMain->strWalletFile));
-                return NULL;
-            }
-        }
-
-        // Warn user every time he starts non-encrypted HD wallet
-        if (!settings.GetBoolArg("-allowunencryptedwallet", false) && settings.GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET) && !pwalletMain->IsLocked()) {
-            InitWarning(translate("Make sure to encrypt your wallet and delete all non-encrypted backups after you verified that wallet works!"));
+            return false;
         }
 
         LogPrintf("%s", strErrors.str());
@@ -1644,7 +1654,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             pwalletMain->ScanForWalletTransactions(pindexRescan, true);
             LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
             pwalletMain->SetBestChain(chainActive.GetLocator());
-            nWalletDBUpdated++;
+            pwalletMain->IncrementDBUpdateCount();
 
             // Restore wallet transaction metadata after -zapwallettxes=1
             if (settings.GetBoolArg("-zapwallettxes", false) && settings.GetArg("-zapwallettxes", "1") != "2") {

@@ -245,6 +245,11 @@ void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransac
         transactionRecord_->UpdateMetadata(hash,wtxOld,true,true);
     }
 }
+void CWallet::IncrementDBUpdateCount() const
+{
+    LOCK(cs_wallet);
+    CWalletDB(strWalletFile).IncrementDBUpdateCount();
+}
 
 bool CWallet::CanSupportFeature(enum WalletFeature wf)
 {

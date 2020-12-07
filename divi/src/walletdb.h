@@ -77,10 +77,13 @@ public:
 /** Access to the wallet database (wallet.dat) */
 class CWalletDB : public CDB
 {
+private:
+    std::string dbFilename_;
+    unsigned& walletDbUpdated_;
 public:
-    CWalletDB(const std::string& strFilename, const char* pszMode = "r+") : CDB(strFilename, pszMode)
-    {
-    }
+    void IncrementDBUpdateCount() const;
+
+    CWalletDB(const std::string& strFilename, const char* pszMode = "r+");
 
     bool WriteName(const std::string& strAddress, const std::string& strName);
     bool EraseName(const std::string& strAddress);

@@ -169,6 +169,7 @@ public:
     void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);
 
     void UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions);
+    void IncrementDBUpdateCount() const;
 private:
     bool SelectCoins(
         const CAmount& nTargetValue,

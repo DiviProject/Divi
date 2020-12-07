@@ -29,8 +29,8 @@ public:
      */
     std::pair<CWalletTx*,bool> UpdateSpends(
         const CWalletTx& newlyAddedTransaction,
-        int64_t orderedTransactionIndex,
-        bool updateTransactionOrdering);
+        int64_t orderedTransactionIndex=0,
+        bool updateTransactionOrdering=false);
     bool IsSpent(const uint256& hash, unsigned int n) const;
     std::set<uint256> GetConflictingTxHashes(const CWalletTx& tx) const;
 };

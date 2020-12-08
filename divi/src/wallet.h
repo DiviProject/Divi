@@ -9,7 +9,6 @@
 #define BITCOIN_WALLET_H
 
 #include <amount.h>
-#include <primitives/transaction.h>
 #include <base58address.h>
 #include <pubkey.h>
 #include <uint256.h>
@@ -60,6 +59,8 @@ class CWalletTx;
 class CHDChain;
 class CTxMemPool;
 class CWalletDB;
+class COutPoint;
+class CTxIn;
 
 bool MoneyRange(CAmount nValueOut);
 bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
@@ -110,6 +111,11 @@ enum TransactionCreditFilters
     REQUIRE_UNLOCKED  = 1 << 2,
     REQUIRE_AVAILABLE_TYPE  = 1 << 3,
 };
+using LockedCoinsSet = std::set<COutPoint>;
+using CoinVector = std::vector<COutPoint>;
+using AddressBook = std::map<CTxDestination, CAddressBookData>;
+using Inputs = std::vector<CTxIn>;
+using Outputs = std::vector<CTxOut>;
 class CWallet : public CCryptoKeyStore, public NotificationInterface, public I_KeypoolReserver
 {
 public:
@@ -138,9 +144,9 @@ public:
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
 
-    std::map<CTxDestination, CAddressBookData> mapAddressBook;
+    AddressBook mapAddressBook;
     CPubKey vchDefaultKey;
-    std::set<COutPoint> setLockedCoins;
+    LockedCoinsSet setLockedCoins;
     int64_t nTimeFirstKey;
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
     static CFeeRate minTxFee;
@@ -227,8 +233,8 @@ public:
     void LockCoin(const COutPoint& output);
     void UnlockCoin(const COutPoint& output);
     void UnlockAllCoins();
-    void ListLockedCoins(std::vector<COutPoint>& vOutpts);
-    CAmount GetTotalValue(std::vector<CTxIn> vCoins);
+    void ListLockedCoins(CoinVector& vOutpts);
+    CAmount GetTotalValue(Inputs vCoins);
 
     //  keystore implementation
     // Generate a new key
@@ -342,7 +348,7 @@ public:
     bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl = NULL, AvailableCoinsType coin_type = ALL_SPENDABLE_COINS, bool useIX = false, CAmount nFeePay = 0);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
-    int GenerateObfuscationOutputs(int nTotalValue, std::vector<CTxOut>& vout);
+    int GenerateObfuscationOutputs(int nTotalValue, Outputs& vout);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
 
     static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool);

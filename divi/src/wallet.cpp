@@ -6,6 +6,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
+
+#include <primitives/transaction.h>
+
 #include "BlockDiskAccessor.h"
 #include "checkpoints.h"
 #include <chain.h>

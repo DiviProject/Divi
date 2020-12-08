@@ -82,16 +82,6 @@ enum AvailableCoinsType {
     OWNED_VAULT_COINS = 2
 };
 
-struct CompactTallyItem {
-    CBitcoinAddress address;
-    CAmount nAmount;
-    std::vector<CTxIn> vecTxIn;
-    CompactTallyItem()
-    {
-        nAmount = 0;
-    }
-};
-
 /** Address book data */
 class CAddressBookData
 {

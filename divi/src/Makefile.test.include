@@ -96,7 +96,8 @@ BITCOIN_TESTS =\
   test/IsMine_tests.cpp \
   test/PoSStakeModifierService_tests.cpp \
   test/LegacyPoSStakeModifierService_tests.cpp \
-  test/LotteryWinnersCalculatorTests.cpp
+  test/LotteryWinnersCalculatorTests.cpp \
+  test/VaultManager_tests.cpp
 
 if ENABLE_WALLET
 BITCOIN_TESTS += \

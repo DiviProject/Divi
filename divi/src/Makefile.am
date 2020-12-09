@@ -266,6 +266,7 @@ BITCOIN_CORE_H = \
   NotificationInterface.h \
   versionbits.h \
   version.h \
+  VaultManager.h \
   wallet.h \
   WalletTx.h \
   WalletTransactionRecord.h \
@@ -417,6 +418,7 @@ libbitcoin_wallet_a_SOURCES = \
   reservekey.cpp \
   rpcdump.cpp \
   rpcwallet.cpp \
+  VaultManager.cpp \
   wallet.cpp \
   WalletTx.cpp \
   WalletTransactionRecord.cpp \

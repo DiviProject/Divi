@@ -19,8 +19,8 @@ constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
 const std::unordered_map<Fork, int64_t> ACTIVATION_TIMES = {
   /* FIXME: Set real activation height for staking vaults once
      the schedule has been finalised.  */
-  {Fork::StakingVaults, 2000000000},
   {Fork::TestByTimestamp, 1000000000},
+  {Fork::StakingVaults, 2000000000},
   {Fork::HardenedStakeModifier, unixTimestampForDec31stMidnight},
   {Fork::UniformLotteryWinners, unixTimestampForDec31stMidnight},
 };

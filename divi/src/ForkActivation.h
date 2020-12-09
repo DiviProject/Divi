@@ -18,18 +18,15 @@ class CBlockIndex;
  */
 enum class Fork
 {
-
+  /* Test forks not actually deployed / active but used for unit tests.  */
+  TestByTimestamp,
   /**
    * Staking vaults with SCRIPT_REQUIRE_COINSTAKE and a couple of other,
    * related changes.
    */
   StakingVaults,
-
-  /* Test forks not actually deployed / active but used for unit tests.  */
-  TestByTimestamp,
   HardenedStakeModifier,
   UniformLotteryWinners,
-
 };
 
 /**

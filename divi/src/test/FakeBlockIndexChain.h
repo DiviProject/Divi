@@ -28,7 +28,7 @@ public:
         std::vector<CBlockIndex*>& currentChain
         );
     CBlockIndex* at(unsigned int) const;
-    CBlockIndex* tip() const;
+    CBlockIndex* Tip() const;
 };
 
 class BlockMap;
@@ -45,7 +45,12 @@ public:
     FakeBlockIndexWithHashes(
         unsigned numberOfBlocks,
         unsigned blockStartTime,
-        unsigned versionNumber0);
+        unsigned versionNumber);
     ~FakeBlockIndexWithHashes();
+
+    void addBlocks(
+        unsigned numberOfBlocks,
+        unsigned versionNumber,
+        unsigned blockStartTime = 0);
 };
 #endif //FAKE_BLOCK_INDEX_CHAIN_H

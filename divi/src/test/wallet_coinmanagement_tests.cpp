@@ -94,7 +94,7 @@ public:
     {
         uint256 hash;
         fakeChain_.extendBy(1,timestamp++,version);
-        CBlockIndex* newTip = const_cast<CBlockIndex*>(fakeChain_.tip());
+        CBlockIndex* newTip = const_cast<CBlockIndex*>(fakeChain_.Tip());
         hash = GetRandHash();
         activeChain_.SetTip(newTip);
         blockIndices_.insert(std::make_pair(hash, newTip));

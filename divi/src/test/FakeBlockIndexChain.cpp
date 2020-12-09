@@ -62,7 +62,7 @@ CBlockIndex* FakeBlockIndexChain::at(unsigned height) const
     return fakeChain[height];
 }
 
- CBlockIndex* FakeBlockIndexChain::tip() const
+ CBlockIndex* FakeBlockIndexChain::Tip() const
  {
      return fakeChain.empty()? NULL: fakeChain.back();
  }
@@ -78,18 +78,34 @@ FakeBlockIndexWithHashes::FakeBlockIndexWithHashes(
     , blockIndexByHash(new BlockMap())
     , activeChain(new CChain())
 {
-    for(unsigned blockHeight = 0; blockHeight < numberOfBlocks; ++blockHeight)
-    {
-        fakeBlockIndexChain_.extendBy(1,blockStartTime+60*blockHeight,versionNumber);
-        CHashWriter hasher(SER_GETHASH,0);
-        hasher << randomBlockHashSeed_ << blockHeight;
-        BlockMap::iterator it = blockIndexByHash->insert(std::make_pair(hasher.GetHash(), fakeBlockIndexChain_.tip() )).first;
-        fakeBlockIndexChain_.tip()->phashBlock = &(it->first);
-    }
-    activeChain->SetTip(fakeBlockIndexChain_.tip());
+    addBlocks(numberOfBlocks_,versionNumber,blockStartTime);
 }
 FakeBlockIndexWithHashes::~FakeBlockIndexWithHashes()
 {
     activeChain.reset();
     blockIndexByHash.reset();
+}
+
+void FakeBlockIndexWithHashes::addBlocks(
+    unsigned numberOfBlocks,
+    unsigned versionNumber,
+    unsigned blockStartTime)
+{
+    unsigned startingBlockHeight = 0u;
+    const CBlockIndex* chainTip = fakeBlockIndexChain_.Tip();
+    if(chainTip)
+    {
+        startingBlockHeight = chainTip->nHeight+1;
+        blockStartTime = fakeBlockIndexChain_.at(0)->GetBlockTime();
+    }
+
+    for(unsigned blockHeight = startingBlockHeight; blockHeight < numberOfBlocks+startingBlockHeight; ++blockHeight)
+    {
+        fakeBlockIndexChain_.extendBy(1,blockStartTime+60*blockHeight,versionNumber);
+        CHashWriter hasher(SER_GETHASH,0);
+        hasher << randomBlockHashSeed_ << blockHeight;
+        BlockMap::iterator it = blockIndexByHash->insert(std::make_pair(hasher.GetHash(), fakeBlockIndexChain_.Tip() )).first;
+        fakeBlockIndexChain_.Tip()->phashBlock = &(it->first);
+    }
+    activeChain->SetTip(fakeBlockIndexChain_.Tip());
 }

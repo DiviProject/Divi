@@ -164,15 +164,15 @@ BOOST_AUTO_TEST_CASE(willNotChangeStateIfMedianBlockTimesArentMonotoneIncreasing
     fakeChain.extendBy(bip.nPeriod, bip.nStartTime, 0); // Moves to started
     fakeChain.extendBy(bip.nPeriod, bip.nStartTime,  VERSIONBITS_TOP_BITS | ( (int32_t)1 << bip.bit) ); // Moves To LOCKED_IN
     fakeChain.extendBy(bip.nPeriod - CBlockIndex::nMedianTimeSpan, bip.nStartTime,  0); // Moves To ACTIVE
-    activationStateTracker.update(fakeChain.tip());
+    activationStateTracker.update(fakeChain.Tip());
 
     fakeChain.extendBy(1+CBlockIndex::nMedianTimeSpan, bip.nStartTime-1, 0); // Attemps to reverse BIP9 by publishing old blocks
-    activationStateTracker.update(fakeChain.tip());
+    activationStateTracker.update(fakeChain.Tip());
 
     fakeChain.extendBy(bip.nPeriod, bip.nStartTime+1, 0); // Reverts To Defined
-    activationStateTracker.update(fakeChain.tip());
+    activationStateTracker.update(fakeChain.Tip());
 
-    ThresholdState result = activationStateTracker.getLastCachedStatePriorToBlockIndex(fakeChain.tip());
+    ThresholdState result = activationStateTracker.getLastCachedStatePriorToBlockIndex(fakeChain.Tip());
     BOOST_CHECK_MESSAGE(
         result == ThresholdState::ACTIVE,
         "Actual: " << static_cast<int>(result) << " vs. Expected " << static_cast<int>(ThresholdState::ACTIVE)
@@ -189,13 +189,13 @@ BOOST_AUTO_TEST_CASE(willKeepAMinimalCacheOfState)
 
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime - 1, 0); // Stays In Defined
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime, 0); // Moves to started
-        activationStateTracker.update(fakeChain.tip());
+        activationStateTracker.update(fakeChain.Tip());
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime, 0); // Moves to started
-        activationStateTracker.update(fakeChain.tip());
+        activationStateTracker.update(fakeChain.Tip());
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime, 0); // Moves to started
-        activationStateTracker.update(fakeChain.tip());
+        activationStateTracker.update(fakeChain.Tip());
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime, 0); // Moves to started
-        activationStateTracker.update(fakeChain.tip());
+        activationStateTracker.update(fakeChain.Tip());
 
         BOOST_CHECK(cache.size()<=3);
     }
@@ -207,13 +207,13 @@ BOOST_AUTO_TEST_CASE(willKeepAMinimalCacheOfState)
 
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime+1, 0); // Moves to failed
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime+1, 0); // Moves to failed
-        activationStateTracker.update(fakeChain.tip());
+        activationStateTracker.update(fakeChain.Tip());
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime+1, 0); // Moves to failed
-        activationStateTracker.update(fakeChain.tip());
+        activationStateTracker.update(fakeChain.Tip());
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime+1, 0); // Moves to failed
-        activationStateTracker.update(fakeChain.tip());
+        activationStateTracker.update(fakeChain.Tip());
         fakeChain.extendBy(bip.nPeriod, bip.nStartTime+1, 0); // Moves to failed
-        activationStateTracker.update(fakeChain.tip());
+        activationStateTracker.update(fakeChain.Tip());
 
         BOOST_CHECK(cache.size()<=3);
     }

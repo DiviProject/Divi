@@ -4,7 +4,6 @@
 #include <WalletTx.h>
 #include <WalletTransactionRecord.h>
 #include <SpentOutputTracker.h>
-#include <primitives/block.h>
 
 VaultManager::VaultManager(
     const CChain& activeChain,

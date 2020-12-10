@@ -127,6 +127,7 @@ public:
     {
         CWalletTx* txPtr = const_cast<CWalletTx*>( currentWallet.GetWalletTx(txHash) );
         txPtr->hashBlock = extendFakeChainAndGetTipBlockHash();
+        txPtr->nIndex = 0;
         txPtr->fMerkleVerified = true;
     }
 

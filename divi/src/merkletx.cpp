@@ -31,6 +31,7 @@ CMerkleTx::CMerkleTx(
     , activeChain_(activeChain)
     , blockIndices_(blockIndices)
 {
+    Init();
 }
 
 CMerkleTx::CMerkleTx(): activeChain_(chainActive), blockIndices_(mapBlockIndex)

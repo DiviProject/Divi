@@ -53,7 +53,7 @@ UnspentOutputs VaultManager::getUTXOs() const
     {
         uint256 hash = hashAndTransaction.first;
         const CWalletTx& tx = hashAndTransaction.second;
-
+        if(tx.GetNumberOfBlockConfirmations()<1) continue;
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
             const CTxOut& output = tx.vout[outputIndex];

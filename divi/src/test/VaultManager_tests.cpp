@@ -152,4 +152,18 @@ BOOST_AUTO_TEST_CASE(willDiscountSpentUTXOs)
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
 }
 
+BOOST_AUTO_TEST_CASE(willNotCountUTXOsFromTransactionsWithoutConfirmations)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript, 3);
+
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    manager->SyncTransaction(tx,nullptr);
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

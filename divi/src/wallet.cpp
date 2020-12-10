@@ -343,12 +343,12 @@ CAmount CWallet::GetDebit(const CWalletTx& tx, const isminefilter& filter) const
     return debit;
 }
 
-CAmount CWallet::ComputeCredit(const CTransaction& tx, const isminefilter& filter, int creditFilterFlags) const
+CAmount CWallet::ComputeCredit(const CWalletTx& tx, const isminefilter& filter, int creditFilterFlags) const
 {
     CAmount nCredit = 0;
     uint256 hash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
-        if( (creditFilterFlags & REQUIRE_UNSPENT) && IsSpent(hash,i)) continue;
+        if( (creditFilterFlags & REQUIRE_UNSPENT) && IsSpent(tx,i)) continue;
         if( (creditFilterFlags & REQUIRE_UNLOCKED) && IsLockedCoin(hash,i)) continue;
         if( (creditFilterFlags & REQUIRE_LOCKED) && !IsLockedCoin(hash,i)) continue;
 
@@ -942,9 +942,9 @@ set<uint256> CWallet::GetConflicts(const uint256& txid) const
  * Outpoint is spent if any non-conflicted transaction
  * spends it:
  */
-bool CWallet::IsSpent(const uint256& hash, unsigned int n) const
+bool CWallet::IsSpent(const CWalletTx& wtx, unsigned int n) const
 {
-    return outputTracker_->IsSpent(hash,n);
+    return outputTracker_->IsSpent(wtx.GetHash(), n);
 }
 
 bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash, std::string strOutputIndex)
@@ -965,7 +965,7 @@ bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& 
 
     if(auto walletTx = GetWalletTx(txHash))
     {
-        if(IsSpent(txHash, nOutputIndex))
+        if(IsSpent(*walletTx, nOutputIndex))
         {
             LogPrintf("CWallet::GetMasternodeVinAndKeys -- Could not locate specified masternode vin, outpoint spent\n");
             return false;
@@ -1698,7 +1698,7 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
     return true;
 }
 
-bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable, AvailableCoinsType coinType) const
+bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable, AvailableCoinsType coinType) const
 {
     isminetype mine;
     VaultType vaultType;
@@ -1715,18 +1715,20 @@ bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, const uint256& wtxi
         }
     }
 
-    if (IsSpent(wtxid, i))
+    const uint256 hash = pcoin->GetHash();
+
+    if (IsSpent(*pcoin, i))
         return false;
     if (mine == ISMINE_NO)
         return false;
     if (mine == ISMINE_WATCH_ONLY)
         return false;
 
-    if (IsLockedCoin(wtxid, i))
+    if (IsLockedCoin(hash, i))
         return false;
     if (pcoin->vout[i].nValue <= 0 && !fIncludeZeroValue)
         return false;
-    if (coinControl && coinControl->HasSelected() && !coinControl->fAllowOtherInputs && !coinControl->IsSelected(wtxid, i))
+    if (coinControl && coinControl->HasSelected() && !coinControl->fAllowOtherInputs && !coinControl->IsSelected(hash, i))
         return false;
 
     fIsSpendable = (mine & ISMINE_SPENDABLE) != ISMINE_NO || (mine & ISMINE_MULTISIG) != ISMINE_NO;
@@ -1738,10 +1740,9 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
 
     {
         LOCK2(cs_main, cs_wallet);
-        for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it)
+        for (const auto& entry : transactionRecord_->mapWallet)
         {
-            const uint256& wtxid = it->first;
-            const CWalletTx* pcoin = &(*it).second;
+            const CWalletTx* pcoin = &entry.second;
 
             int nDepth = 0;
             if(!SatisfiesMinimumDepthRequirements(pcoin,nDepth,fOnlyConfirmed,fUseIX))
@@ -1755,7 +1756,7 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
                 if (!found) continue;
 
                 bool fIsSpendable = false;
-                if(!IsAvailableForSpending(pcoin,wtxid,i,coinControl,fIncludeZeroValue,fIsSpendable,nCoinType))
+                if(!IsAvailableForSpending(pcoin,i,coinControl,fIncludeZeroValue,fIsSpendable,nCoinType))
                 {
                     continue;
                 }
@@ -2722,7 +2723,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
                 if (!ExtractDestination(pcoin->vout[i].scriptPubKey, addr))
                     continue;
 
-                CAmount n = IsSpent(walletEntry.first, i) ? 0 : pcoin->vout[i].nValue;
+                CAmount n = IsSpent(walletEntry.second, i) ? 0 : pcoin->vout[i].nValue;
 
                 if (!balances.count(addr))
                     balances[addr] = 0;

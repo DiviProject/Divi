@@ -52,7 +52,6 @@ private:
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
 private:
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
-    bool VerifyUTXOIsKnownToMemPool (const CTxIn& txin, bool& fMissingInputs) const;
     void RecordOrphanTransaction (
         std::shared_ptr<COrphan>& porphan,
         const CTransaction& tx,

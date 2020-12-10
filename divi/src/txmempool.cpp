@@ -614,11 +614,11 @@ void CTxMemPool::removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned in
     // Remove transactions spending a coinbase which are now immature
     LOCK(cs);
     list<CTransaction> transactionsToRemove;
-    for (std::map<uint256, CTxMemPoolEntry>::const_iterator it = mapTx.begin(); it != mapTx.end(); it++) {
-        const CTransaction& tx = it->second.GetTx();
-        BOOST_FOREACH (const CTxIn& txin, tx.vin) {
-            std::map<uint256, CTxMemPoolEntry>::const_iterator it2 = mapTx.find(txin.prevout.hash);
-            if (it2 != mapTx.end())
+    for (const auto& entry : mapTx) {
+        const CTransaction& tx = entry.second.GetTx();
+        for (const auto& txin : tx.vin) {
+            CTransaction tx2;
+            if (lookup(txin.prevout.hash, tx2))
                 continue;
             const CCoins* coins = pcoins->AccessCoins(txin.prevout.hash);
             if (fSanityCheck) assert(coins);
@@ -628,7 +628,7 @@ void CTxMemPool::removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned in
             }
         }
     }
-    BOOST_FOREACH (const CTransaction& tx, transactionsToRemove) {
+    for (const auto& tx : transactionsToRemove) {
         list<CTransaction> removed;
         remove(tx, removed, true);
     }

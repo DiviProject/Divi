@@ -3024,26 +3024,6 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     return true;
 }
 
-bool IsBlockHashInChain(const uint256& hashBlock)
-{
-    if (hashBlock == 0 || !mapBlockIndex.count(hashBlock))
-        return false;
-
-    return chainActive.Contains(mapBlockIndex[hashBlock]);
-}
-
-bool IsTransactionInChain(uint256 txId, int& nHeightTx)
-{
-    uint256 hashBlock;
-    CTransaction tx;
-    GetTransaction(txId, tx, hashBlock, true);
-    if (!IsBlockHashInChain(hashBlock))
-        return false;
-
-    nHeightTx = mapBlockIndex.at(hashBlock)->nHeight;
-    return true;
-}
-
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIndex* const pindexPrev)
 {
     const int nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;

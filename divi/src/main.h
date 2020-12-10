@@ -231,8 +231,6 @@ void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txund
 
 /** Context-independent validity checks */
 bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationState& state);
-bool IsTransactionInChain(uint256 txId, int& nHeightTx);
-bool IsBlockHashInChain(const uint256& hashBlock);
 bool RecalculateDIVSupply(int nHeightStart);
 
 

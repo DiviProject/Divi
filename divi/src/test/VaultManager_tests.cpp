@@ -21,7 +21,7 @@ public:
     VaultManagerTestFixture(
         ): testFixtureDummyFilename("DummyFilename")
         , managedScripts()
-        , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(1,0,4))
+        , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(1,0,CBlock::CURRENT_VERSION))
         , scriptGenerator()
         , manager( new VaultManager(
             *(fakeBlockIndexWithHashesResource->activeChain),
@@ -36,6 +36,10 @@ public:
         firstBlockConfirmation.vtx.push_back(tx);
         fakeBlockIndexWithHashesResource->addSingleBlock(firstBlockConfirmation);
         return firstBlockConfirmation;
+    }
+    void mineAdditionalBlocks(unsigned additionalBlocks)
+    {
+        fakeBlockIndexWithHashesResource->addBlocks(additionalBlocks,CBlock::CURRENT_VERSION);
     }
 
 };
@@ -164,6 +168,24 @@ BOOST_AUTO_TEST_CASE(willNotCountUTXOsFromTransactionsWithoutConfirmations)
     tx.vout.push_back(CTxOut(100,managedScript));
     manager->SyncTransaction(tx,nullptr);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
+}
+
+BOOST_AUTO_TEST_CASE(willCheckThatCoinbaseTransactionsAreDeepEnoughToSpend)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript, 4);
+
+    CMutableTransaction tx;
+    tx.vin.push_back(CTxIn());
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningTx = getBlockToMineTransaction(tx);
+    manager->SyncTransaction(tx,&blockMiningTx);
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
+    mineAdditionalBlocks(20);
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

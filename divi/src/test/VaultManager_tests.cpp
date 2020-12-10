@@ -181,6 +181,8 @@ BOOST_AUTO_TEST_CASE(willCheckThatCoinbaseTransactionsAreDeepEnoughToSpend)
     tx.vout.push_back(CTxOut(100,managedScript));
     tx.vout.push_back(CTxOut(100,managedScript));
     tx.vout.push_back(CTxOut(100,managedScript));
+    assert(CTransaction(tx).IsCoinBase());
+
     CBlock blockMiningTx = getBlockToMineTransaction(tx);
     manager->SyncTransaction(tx,&blockMiningTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
@@ -188,4 +190,29 @@ BOOST_AUTO_TEST_CASE(willCheckThatCoinbaseTransactionsAreDeepEnoughToSpend)
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
 }
 
+BOOST_AUTO_TEST_CASE(willCheckThatCoinstakeTransactionsAreDeepEnoughToSpend)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript, 4);
+
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,scriptGenerator(10)));
+
+    CMutableTransaction tx;
+    tx.vin.push_back(CTxIn(dummyTransaction.GetHash(),0u));
+    CTxOut emptyFirstOutput;
+    emptyFirstOutput.SetEmpty();
+    tx.vout.push_back(emptyFirstOutput);
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    assert(CTransaction(tx).IsCoinStake());
+
+    CBlock blockMiningTx = getBlockToMineTransaction(tx);
+    manager->SyncTransaction(tx,&blockMiningTx);
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 0u);
+    mineAdditionalBlocks(20);
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
+}
 BOOST_AUTO_TEST_SUITE_END()

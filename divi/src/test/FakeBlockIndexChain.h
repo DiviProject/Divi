@@ -5,6 +5,7 @@
 #include <memory>
 #include <uint256.h>
 class CBlockIndex;
+class CBlock;
 struct FakeBlockIndexChain
 {
 private:
@@ -29,6 +30,7 @@ public:
         );
     CBlockIndex* at(unsigned int) const;
     CBlockIndex* Tip() const;
+    void attachNewBlock(const CBlock& block);
 };
 
 class BlockMap;
@@ -52,5 +54,7 @@ public:
         unsigned numberOfBlocks,
         unsigned versionNumber,
         unsigned blockStartTime = 0);
+
+    void addSingleBlock(CBlock& block);
 };
 #endif //FAKE_BLOCK_INDEX_CHAIN_H

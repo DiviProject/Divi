@@ -2,6 +2,7 @@
 #include <chain.h>
 #include <hash.h>
 #include <blockmap.h>
+#include <primitives/block.h>
 
 void FakeBlockIndexChain::resetFakeChain()
 {
@@ -57,6 +58,18 @@ void FakeBlockIndexChain::extendFakeBlockIndexChain(
     }
 }
 
+void FakeBlockIndexChain::attachNewBlock(const CBlock& block)
+{
+    assert(fakeChain.back());
+    CBlockIndex* chainTip = fakeChain.back();
+    CBlockIndex* pindex = new CBlockIndex(block);
+    pindex->nHeight = fakeChain.size();
+    pindex->pprev = chainTip;
+    pindex->BuildSkip();
+    fakeChain.push_back(pindex);
+}
+
+
 CBlockIndex* FakeBlockIndexChain::at(unsigned height) const
 {
     return fakeChain[height];
@@ -108,4 +121,22 @@ void FakeBlockIndexWithHashes::addBlocks(
         fakeBlockIndexChain_.Tip()->phashBlock = &(it->first);
     }
     activeChain->SetTip(fakeBlockIndexChain_.Tip());
+}
+
+void FakeBlockIndexWithHashes::addSingleBlock(CBlock& block)
+{
+    CBlockIndex* chainTip = activeChain->Tip();
+    assert(chainTip);
+    block.nTime = chainTip->GetBlockTime()+60;
+    block.nVersion = chainTip->nVersion;
+
+    block.hashMerkleRoot = block.BuildMerkleTree();
+    assert(chainTip->phashBlock);
+    block.hashPrevBlock = chainTip->GetBlockHash();
+    fakeBlockIndexChain_.attachNewBlock(block);
+    chainTip = fakeBlockIndexChain_.Tip();
+
+    BlockMap::iterator it = blockIndexByHash->insert(std::make_pair(block.GetHash(), chainTip )).first;
+    chainTip->phashBlock = &(it->first);
+    activeChain->SetTip(chainTip);
 }

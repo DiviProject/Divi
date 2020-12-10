@@ -147,7 +147,7 @@ Value fundmasternode(const Array& params, bool fHelp)
     {
         for(size_t i = 0; i < wtx->vout.size(); ++i)
         {
-            if(wtx->vout[i].nValue == nAmount && !pwalletMain->IsSpent(txHash, i))
+            if(wtx->vout[i].nValue == nAmount && !pwalletMain->IsSpent(*wtx, i))
             {
                 found = true;
                 outputIndex = i;

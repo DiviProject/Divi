@@ -184,7 +184,7 @@ public:
     bool MintableCoins();
     bool SelectStakeCoins(std::set<StakableCoin>& setCoins) const;
 
-    bool IsSpent(const uint256& hash, unsigned int n) const;
+    bool IsSpent(const CWalletTx& wtx, unsigned int n) const;
 
     bool IsUnlockedForStakingOnly() const;
     bool IsFullyUnlocked() const;
@@ -207,7 +207,6 @@ public:
     bool CanSupportFeature(enum WalletFeature wf);
     bool IsAvailableForSpending(
         const CWalletTx* pcoin,
-        const uint256& wtxid,
         unsigned int i,
         const CCoinControl* coinControl,
         bool fIncludeZeroValue,
@@ -411,7 +410,7 @@ public:
 
     CAmount ComputeDebit(const CTransaction& tx, const isminefilter& filter) const;
     CAmount GetDebit(const CWalletTx& tx, const isminefilter& filter) const;
-    CAmount ComputeCredit(const CTransaction& tx, const isminefilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
+    CAmount ComputeCredit(const CWalletTx& tx, const isminefilter& filter, int creditFilterFlags = REQUIRE_NOTHING) const;
     CAmount GetCredit(const CWalletTx& walletTransaction, const isminefilter& filter) const;
     CAmount ComputeChange(const CTransaction& tx) const;
     void SetBestChain(const CBlockLocator& loc);

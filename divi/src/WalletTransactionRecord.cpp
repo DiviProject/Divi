@@ -31,11 +31,22 @@ WalletTransactionRecord::WalletTransactionRecord(
 const CWalletTx* WalletTransactionRecord::GetWalletTx(const uint256& hash) const
 {
     AssertLockHeld(cs_walletTxRecord);
-    std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(hash);
-    if (it == mapWallet.end())
-        return NULL;
-    return &(it->second);
+
+    {
+        const auto mit = mapWallet.find(hash);
+        if (mit != mapWallet.end())
+            return &mit->second;
+    }
+
+    {
+        const auto mit = mapBareTxid.find(hash);
+        if (mit != mapBareTxid.end())
+            return mit->second;
+    }
+
+    return nullptr;
 }
+
 std::vector<const CWalletTx*> WalletTransactionRecord::GetWalletTransactionReferences() const
 {
     AssertLockHeld(cs_walletTxRecord);
@@ -51,7 +62,12 @@ std::vector<const CWalletTx*> WalletTransactionRecord::GetWalletTransactionRefer
 std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord::AddTransaction(const CWalletTx& newlyAddedTransaction)
 {
     AssertLockHeld(cs_walletTxRecord);
-    return  mapWallet.insert(std::make_pair(newlyAddedTransaction.GetHash(), newlyAddedTransaction));
+
+    auto res = mapWallet.emplace(newlyAddedTransaction.GetHash(), newlyAddedTransaction);
+    if (res.second)
+      mapBareTxid.emplace(newlyAddedTransaction.GetBareTxid(), &res.first->second);
+
+    return res;
 };
 
 void WalletTransactionRecord::UpdateMetadata(

@@ -24,7 +24,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
     {
         LOCK(cs_main);
         {
-            if (mempool.lookup(hash, txOut)) {
+            if (mempool.lookup(hash, txOut) || mempool.lookupBareTxid(hash, txOut)) {
                 return true;
             }
         }
@@ -49,8 +49,9 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
                 return true;
             }
 
-            // transaction not found in the index, nothing more can be done
-            return false;
+            // The index only keys by txid.  So even if we did not find the
+            // transaction here, it could be that the lookup is by bare txid
+            // and can be found through UTXO lookup.
         }
 
         if (fAllowSlow) { // use coin database to locate block that contains transaction, and scan it
@@ -70,7 +71,7 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
         CBlock block;
         if (ReadBlockFromDisk(block, pindexSlow)) {
             BOOST_FOREACH (const CTransaction& tx, block.vtx) {
-                if (tx.GetHash() == hash) {
+                if (tx.GetHash() == hash || tx.GetBareTxid() == hash) {
                     txOut = tx;
                     hashBlock = pindexSlow->GetBlockHash();
                     return true;

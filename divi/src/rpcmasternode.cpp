@@ -81,7 +81,7 @@ Value allocatefunds(const Array& params, bool fHelp)
 			"      <future>     (numeric, required) amount of divi funded will also be accepted for partially funding master nodes and other purposes.\n"
 
 			"\nResult:\n"
-			"\"vin\"			(string) funding transaction id necessary for next step.\n");
+			"\"vin\"			(string) funding transaction id or bare txid necessary for next step.\n");
 
     if (params[0].get_str() != "masternode")
     {
@@ -117,7 +117,7 @@ Value fundmasternode(const Array& params, bool fHelp)
 			"1. alias			(string, required) helpful identifier to recognize this allocation later.\n"
 			"2. amount			(diamond, platinum, gold, silver, copper) tier of masternode. \n"
 			"      <future>     (numeric, required) amount of divi funded will also be accepted for partially funding master nodes and other purposes.\n"
-			"3. TxID			(string, required) funding transaction id .\n"
+			"3. TxID			(string, required) funding transaction id or bare txid.\n"
             "4. masternode		(string, required) ip address of masternode.\n"
 			"(use an empty string for the pay wallet if the same as the funding wallet and you wish to assign a different voting wallet).\n"
 
@@ -232,7 +232,7 @@ Value setupmasternode(const Array& params, bool fHelp)
 
 			"\nArguments:\n"
 			"1. alias			    (string, required) Helpful identifier to recognize this masternode later. \n"
-			"2. txHash              (string, required) Funding transaction. \n"
+			"2. txHash              (string, required) Funding transaction hash or bare txid. \n"
             "3. outputIndex         (string, required) Output index transaction. \n"
             "4. collateralPubkey    (string, required) collateral pubkey. \n"
             "5. ip_address          (string, required) Local ip address of this node\n"

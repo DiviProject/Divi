@@ -101,17 +101,6 @@ BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
 
 }
 
-bool BlockMemoryPoolTransactionCollector::VerifyUTXOIsKnownToMemPool (const CTxIn& txin, bool& fMissingInputs)  const
-{
-    if(!mempool_.mapTx.count(txin.prevout.hash)){
-        LogPrintf("ERROR: mempool transaction missing input\n");
-        if (fDebug) assert("mempool transaction missing input" == 0);
-        fMissingInputs = true;
-        return false;
-    }
-    return true;
-}
-
 void BlockMemoryPoolTransactionCollector::RecordOrphanTransaction (
     std::shared_ptr<COrphan>& porphan,
     const CTransaction& tx,
@@ -214,17 +203,21 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
 
             // Read prev transaction
             if (!view.HaveCoins(txin.prevout.hash)) {
-                // This should never happen; all transactions in the memory
-                // pool should connect to either transactions in the chain
-                // or other transactions in the memory pool.
-                if (!VerifyUTXOIsKnownToMemPool(txin, fMissingInputs)) {
+                CTransaction prevTx;
+                if(!mempool_.lookup(txin.prevout.hash, prevTx)) {
+                    // This should never happen; all transactions in the memory
+                    // pool should connect to either transactions in the chain
+                    // or other transactions in the memory pool.
+                    LogPrintf("ERROR: mempool transaction missing input\n");
+                    if (fDebug) assert("mempool transaction missing input" == 0);
+                    fMissingInputs = true;
                     break;
                 }
 
                 // Has to wait for dependencies
                 RecordOrphanTransaction(porphan, tx, txin, dependentTransactions);
 
-                nTotalIn += mempool_.mapTx[txin.prevout.hash].GetTx().vout[txin.prevout.n].nValue;
+                nTotalIn += prevTx.vout[txin.prevout.n].nValue;
                 continue;
             }
 

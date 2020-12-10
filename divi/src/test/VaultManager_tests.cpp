@@ -11,6 +11,7 @@
 struct VaultManagerTestFixture
 {
 private:
+    std::string testFixtureDummyFilename;
     std::vector<CScript> managedScripts;
 public:
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashesResource;
@@ -18,18 +19,22 @@ public:
     std::unique_ptr<VaultManager> manager;
 
     VaultManagerTestFixture(
-        ): managedScripts()
-        , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(0,0,4))
+        ): testFixtureDummyFilename("DummyFilename")
+        , managedScripts()
+        , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(1,0,4))
         , scriptGenerator()
-        , manager( new VaultManager() )
+        , manager( new VaultManager(
+            *(fakeBlockIndexWithHashesResource->activeChain),
+            *(fakeBlockIndexWithHashesResource->blockIndexByHash),
+            testFixtureDummyFilename ))
     {
     }
 
     CBlock getBlockToMineTransaction(const CTransaction& tx)
     {
-        fakeBlockIndexWithHashesResource->addBlocks(1,4);
-        CBlock firstBlockConfirmation(fakeBlockIndexWithHashesResource->activeChain->Tip()->GetBlockHeader());
+        CBlock firstBlockConfirmation;
         firstBlockConfirmation.vtx.push_back(tx);
+        fakeBlockIndexWithHashesResource->addSingleBlock(firstBlockConfirmation);
         return firstBlockConfirmation;
     }
 
@@ -123,6 +128,28 @@ BOOST_AUTO_TEST_CASE(willAddUTXOsOfManagedScriptsUpToSetLimit)
     CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
     manager->SyncTransaction(otherTx,&blockMiningSecondTx);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 3u);
+}
+
+BOOST_AUTO_TEST_CASE(willDiscountSpentUTXOs)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript, 5);
+
+    CMutableTransaction tx;
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(300,managedScript));
+    CBlock blockMiningFirstTx = getBlockToMineTransaction(tx);
+    manager->SyncTransaction(tx,&blockMiningFirstTx);
+
+    CMutableTransaction otherTx;
+    otherTx.vin.emplace_back( COutPoint(tx.GetHash(), 1u) );
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    otherTx.vout.push_back(CTxOut(100,managedScript));
+    CBlock blockMiningSecondTx = getBlockToMineTransaction(otherTx);
+    manager->SyncTransaction(otherTx,&blockMiningSecondTx);
+
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

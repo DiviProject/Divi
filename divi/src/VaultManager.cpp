@@ -2,10 +2,21 @@
 #include <primitives/transaction.h>
 #include <script/script.h>
 #include <WalletTx.h>
+#include <WalletTransactionRecord.h>
+#include <SpentOutputTracker.h>
+#include <primitives/block.h>
 
 VaultManager::VaultManager(
-    ): managedScriptsLimits_()
-    , transactionsByHash_()
+    const CChain& activeChain,
+    const BlockMap& blockIndicesByHash,
+    const std::string& dbFilename
+    ): activeChain_(activeChain)
+    , blockIndicesByHash_(blockIndicesByHash)
+    , cs_vaultManager_()
+    , transactionOrderingIndex_(0)
+    , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_,dbFilename))
+    , outputTracker_(new SpentOutputTracker(*walletTxRecord_))
+    , managedScriptsLimits_()
 {
 }
 
@@ -20,8 +31,11 @@ void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)
         auto it = managedScriptsLimits_.find(output.scriptPubKey);
         if(it != managedScriptsLimits_.end())
         {
-            CWalletTx walletTx(tx);
-            transactionsByHash_.insert({tx.GetHash(),std::move(walletTx)});
+            CMerkleTx merkleTx(tx,activeChain_,blockIndicesByHash_);
+            CWalletTx walletTx(merkleTx);
+            if(pblock) walletTx.SetMerkleBranch(*pblock);
+            outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,true);
+            ++transactionOrderingIndex_;
             break;
         }
     }
@@ -36,15 +50,16 @@ UnspentOutputs VaultManager::getUTXOs() const
 {
     UnspentOutputs outputs;
     auto managedScriptsLimitsCopy = managedScriptsLimits_;
-    for(const auto& hashAndTransaction: transactionsByHash_)
+    for(const auto& hashAndTransaction: walletTxRecord_->mapWallet)
     {
         uint256 hash = hashAndTransaction.first;
         const CWalletTx& tx = hashAndTransaction.second;
+
         for(unsigned outputIndex = 0; outputIndex < tx.vout.size(); ++outputIndex)
         {
             const CTxOut& output = tx.vout[outputIndex];
             auto it = managedScriptsLimitsCopy.find(output.scriptPubKey);
-            if(it != managedScriptsLimitsCopy.end() && it->second > 0u)
+            if(it != managedScriptsLimitsCopy.end() && it->second > 0u && !outputTracker_->IsSpent(hash,outputIndex))
             {
                 outputs.insert(COutPoint{hash,outputIndex});
                 --(it->second);

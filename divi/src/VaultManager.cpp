@@ -32,9 +32,8 @@ void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)
         if(it != managedScriptsLimits_.end())
         {
             CMerkleTx merkleTx(tx,activeChain_,blockIndicesByHash_);
-            CWalletTx walletTx(merkleTx);
-            if(pblock) walletTx.SetMerkleBranch(*pblock);
-            outputTracker_->UpdateSpends(walletTx,transactionOrderingIndex_,true);
+            if(pblock) merkleTx.SetMerkleBranch(*pblock);
+            outputTracker_->UpdateSpends(merkleTx,transactionOrderingIndex_,true);
             ++transactionOrderingIndex_;
             break;
         }

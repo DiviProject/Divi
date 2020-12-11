@@ -8,11 +8,13 @@ struct WalletTransactionRecord
 {
 private:
     CCriticalSection& cs_walletTxRecord;
-    const std::string& walletFilename_;
+    const std::string walletFilename_;
+    const bool databaseWritesAreDisallowed_;
 public:
     std::map<uint256, CWalletTx> mapWallet;
 
     WalletTransactionRecord(CCriticalSection& requiredWalletLock,const std::string& walletFilename);
+    WalletTransactionRecord(CCriticalSection& requiredWalletLock);
     const CWalletTx* GetWalletTx(const uint256& hash) const;
     std::vector<const CWalletTx*> GetWalletTransactionReferences() const;
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> AddTransaction(uint256 hash, const CWalletTx& newlyAddedTransaction);

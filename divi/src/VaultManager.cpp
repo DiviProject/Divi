@@ -7,13 +7,12 @@
 
 VaultManager::VaultManager(
     const CChain& activeChain,
-    const BlockMap& blockIndicesByHash,
-    const std::string& dbFilename
+    const BlockMap& blockIndicesByHash
     ): activeChain_(activeChain)
     , blockIndicesByHash_(blockIndicesByHash)
     , cs_vaultManager_()
     , transactionOrderingIndex_(0)
-    , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_,dbFilename))
+    , walletTxRecord_(new WalletTransactionRecord(cs_vaultManager_))
     , outputTracker_(new SpentOutputTracker(*walletTxRecord_))
     , managedScriptsLimits_()
 {

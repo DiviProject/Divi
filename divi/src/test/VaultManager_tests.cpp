@@ -11,7 +11,6 @@
 struct VaultManagerTestFixture
 {
 private:
-    std::string testFixtureDummyFilename;
     std::vector<CScript> managedScripts;
 public:
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashesResource;
@@ -19,14 +18,12 @@ public:
     std::unique_ptr<VaultManager> manager;
 
     VaultManagerTestFixture(
-        ): testFixtureDummyFilename("DummyFilename")
-        , managedScripts()
+        ): managedScripts()
         , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(1,0,CBlock::CURRENT_VERSION))
         , scriptGenerator()
         , manager( new VaultManager(
             *(fakeBlockIndexWithHashesResource->activeChain),
-            *(fakeBlockIndexWithHashesResource->blockIndexByHash),
-            testFixtureDummyFilename ))
+            *(fakeBlockIndexWithHashesResource->blockIndexByHash) ))
     {
     }
 

@@ -32,9 +32,8 @@ private:
     ManagedScripts managedScriptsLimits_;
 public:
     VaultManager(
-    const CChain& activeChain,
-    const BlockMap& blockIndicesByHash,
-    const std::string& dbFilename);
+        const CChain& activeChain,
+        const BlockMap& blockIndicesByHash);
     ~VaultManager();
     void SyncTransaction(const CTransaction& tx, const CBlock *pblock);
     void addManagedScript(const CScript& script, unsigned limit);

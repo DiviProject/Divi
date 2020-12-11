@@ -12,8 +12,19 @@ WalletTransactionRecord::WalletTransactionRecord(
     const std::string& walletFilename
     ): cs_walletTxRecord(requiredWalletLock)
     , walletFilename_(walletFilename)
+    , databaseWritesAreDisallowed_(false)
     , mapWallet()
 {
+}
+
+WalletTransactionRecord::WalletTransactionRecord(
+    CCriticalSection& requiredWalletLock
+    ): cs_walletTxRecord(requiredWalletLock)
+    , walletFilename_("")
+    , databaseWritesAreDisallowed_(true)
+    , mapWallet()
+{
+
 }
 
 const CWalletTx* WalletTransactionRecord::GetWalletTx(const uint256& hash) const
@@ -64,7 +75,7 @@ void WalletTransactionRecord::UpdateMetadata(
         {
             wtxToUpdate->nTimeReceived = copyFrom->nTimeReceived;
             wtxToUpdate->nOrderPos = copyFrom->nOrderPos;
-            if(writeToWalletDb) WriteTxToDisk(walletFilename_,*wtxToUpdate);
+            if(writeToWalletDb && !databaseWritesAreDisallowed_) WriteTxToDisk(walletFilename_,*wtxToUpdate);
         }
     }
 }

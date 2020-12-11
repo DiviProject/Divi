@@ -47,10 +47,10 @@ std::vector<const CWalletTx*> WalletTransactionRecord::GetWalletTransactionRefer
     return transactions;
 }
 
-std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord::AddTransaction(uint256 hash, const CWalletTx& newlyAddedTransaction)
+std::pair<std::map<uint256, CWalletTx>::iterator, bool> WalletTransactionRecord::AddTransaction(const CWalletTx& newlyAddedTransaction)
 {
     AssertLockHeld(cs_walletTxRecord);
-    return  mapWallet.insert(std::make_pair(hash, newlyAddedTransaction));
+    return  mapWallet.insert(std::make_pair(newlyAddedTransaction.GetHash(), newlyAddedTransaction));
 };
 
 void WalletTransactionRecord::UpdateMetadata(

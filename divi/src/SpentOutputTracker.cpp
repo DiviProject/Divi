@@ -65,7 +65,7 @@ std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
     bool updateTransactionOrdering)
 {
     uint256 hash = newlyAddedTransaction.GetHash();
-    std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = transactionRecord_.AddTransaction(hash, newlyAddedTransaction);
+    std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = transactionRecord_.AddTransaction(newlyAddedTransaction);
     if(ret.second)
     {
         if(updateTransactionOrdering) (*ret.first).second.nOrderPos = orderedTransactionIndex;

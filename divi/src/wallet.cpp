@@ -1193,6 +1193,8 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         CWalletTx& wtx = *walletTxAndRecordStatus.first;
         wtx.RecomputeCachedQuantities();
         bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
+
+        bool fUpdated = false;
         if (transactionHashIsNewToWallet)
         {
             wtx.nTimeReceived = GetAdjustedTime();
@@ -1213,9 +1215,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
                 }
             }
         }
-
-        bool fUpdated = false;
-        if (!transactionHashIsNewToWallet)
+        else
         {
             // Merge
             if (wtxIn.hashBlock != 0 && wtxIn.hashBlock != wtx.hashBlock)

@@ -1194,7 +1194,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         wtx.RecomputeCachedQuantities();
         bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;
 
-        bool fUpdated = false;
+        bool walletTransactionHasBeenUpdated = false;
         if (transactionHashIsNewToWallet)
         {
             wtx.nTimeReceived = GetAdjustedTime();
@@ -1221,26 +1221,29 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
             if (wtxIn.hashBlock != 0 && wtxIn.hashBlock != wtx.hashBlock)
             {
                 wtx.hashBlock = wtxIn.hashBlock;
-                fUpdated = true;
+                walletTransactionHasBeenUpdated = true;
             }
             if (wtxIn.nIndex != -1 && (wtxIn.vMerkleBranch != wtx.vMerkleBranch || wtxIn.nIndex != wtx.nIndex))
             {
                 wtx.vMerkleBranch = wtxIn.vMerkleBranch;
                 wtx.nIndex = wtxIn.nIndex;
-                fUpdated = true;
+                walletTransactionHasBeenUpdated = true;
             }
             if (wtxIn.fFromMe && wtxIn.fFromMe != wtx.fFromMe)
             {
                 wtx.fFromMe = wtxIn.fFromMe;
-                fUpdated = true;
+                walletTransactionHasBeenUpdated = true;
             }
         }
 
         //// debug print
-        LogPrintf("AddToWallet %s  %s%s\n", wtxIn.GetHash().ToString(), (transactionHashIsNewToWallet ? "new" : ""), (fUpdated ? "update" : ""));
+        LogPrintf("AddToWallet %s  %s%s\n",
+            wtxIn.GetHash().ToString(),
+            (transactionHashIsNewToWallet ? "new" : ""),
+            (walletTransactionHasBeenUpdated ? "update" : ""));
 
         // Write to disk
-        if (transactionHashIsNewToWallet || fUpdated)
+        if (transactionHashIsNewToWallet || walletTransactionHasBeenUpdated)
             if (!WriteTxToDisk(this,wtx))
                 return false;
 

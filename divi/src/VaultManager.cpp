@@ -20,6 +20,8 @@ VaultManager::VaultManager(
 
 VaultManager::~VaultManager()
 {
+    outputTracker_.reset();
+    walletTxRecord_.reset();
 }
 
 void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)

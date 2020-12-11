@@ -3,6 +3,7 @@
 #include <primitives/transaction.h>
 #include <WalletTx.h>
 #include <WalletTransactionRecord.h>
+#include <timedata.h>
 
 SpentOutputTracker::SpentOutputTracker(
     WalletTransactionRecord& transactionRecord
@@ -68,7 +69,12 @@ std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = transactionRecord_.AddTransaction(newlyAddedTransaction);
     if(ret.second)
     {
-        if(!loadedFromDisk) (*ret.first).second.nOrderPos = orderedTransactionIndex;
+        if(!loadedFromDisk)
+        {
+            CWalletTx& addedTx = (*ret.first).second;
+            addedTx.nOrderPos = orderedTransactionIndex;
+            addedTx.nTimeReceived = GetAdjustedTime();
+        }
         AddToSpends(hash);
     }
     return std::make_pair(&(ret.first->second),ret.second);

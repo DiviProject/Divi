@@ -1197,7 +1197,6 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         bool walletTransactionHasBeenUpdated = false;
         if (transactionHashIsNewToWallet)
         {
-            wtx.nTimeReceived = GetAdjustedTime();
             wtx.nOrderPos = IncOrderPosNext();
 
             wtx.nTimeSmart = wtx.nTimeReceived;

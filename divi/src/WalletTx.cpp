@@ -46,7 +46,7 @@ void CWalletTx::Init()
     fTimeReceivedIsTxTime = false;
     nTimeReceived = 0;
     nTimeSmart = 0;
-    fFromMe = false;
+    createdByMe = false;
     strFromAccount.clear();
     fDebitCached = false;
     fCreditCached = false;

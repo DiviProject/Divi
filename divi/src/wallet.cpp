@@ -1229,9 +1229,9 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
                 wtx.nIndex = wtxIn.nIndex;
                 walletTransactionHasBeenUpdated = true;
             }
-            if (wtxIn.fFromMe && wtxIn.fFromMe != wtx.fFromMe)
+            if (wtxIn.createdByMe && wtxIn.createdByMe != wtx.createdByMe)
             {
-                wtx.fFromMe = wtxIn.fFromMe;
+                wtx.createdByMe = wtxIn.createdByMe;
                 walletTransactionHasBeenUpdated = true;
             }
         }
@@ -2073,7 +2073,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
             while (true) {
                 txNew.vin.clear();
                 txNew.vout.clear();
-                wtxNew.fFromMe = true;
+                wtxNew.createdByMe = true;
 
                 CAmount nTotalValue = nValue + nFeeRet;
                 double dPriority = 0;

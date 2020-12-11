@@ -33,7 +33,7 @@ public:
     unsigned int fTimeReceivedIsTxTime;
     unsigned int nTimeReceived; //! time received by this node
     unsigned int nTimeSmart;
-    char fFromMe;
+    char createdByMe;
     std::string strFromAccount;
     int64_t nOrderPos; //! position in ordered transaction list
 
@@ -87,7 +87,7 @@ public:
         READWRITE(vOrderForm);
         READWRITE(fTimeReceivedIsTxTime);
         READWRITE(nTimeReceived);
-        READWRITE(fFromMe);
+        READWRITE(createdByMe);
         READWRITE(fSpent);
 
         if (ser_action.ForRead()) {

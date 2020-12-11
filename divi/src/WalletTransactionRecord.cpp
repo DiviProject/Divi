@@ -57,7 +57,7 @@ void WalletTransactionRecord::UpdateMetadata(
         wtxToUpdate->mapValue = copyFrom->mapValue;
         wtxToUpdate->vOrderForm = copyFrom->vOrderForm;
         wtxToUpdate->nTimeSmart = copyFrom->nTimeSmart;
-        wtxToUpdate->fFromMe = copyFrom->fFromMe;
+        wtxToUpdate->createdByMe = copyFrom->createdByMe;
         wtxToUpdate->strFromAccount = copyFrom->strFromAccount;
 
         if(updateDiskAndTimestamp)

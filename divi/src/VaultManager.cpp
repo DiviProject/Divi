@@ -32,7 +32,7 @@ void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)
         {
             CMerkleTx merkleTx(tx,activeChain_,blockIndicesByHash_);
             if(pblock) merkleTx.SetMerkleBranch(*pblock);
-            outputTracker_->UpdateSpends(merkleTx,transactionOrderingIndex_,true);
+            outputTracker_->UpdateSpends(merkleTx,transactionOrderingIndex_,false);
             ++transactionOrderingIndex_;
             break;
         }

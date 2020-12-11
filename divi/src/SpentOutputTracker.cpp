@@ -62,13 +62,13 @@ bool SpentOutputTracker::IsSpent(const uint256& hash, unsigned int n) const
 std::pair<CWalletTx*,bool> SpentOutputTracker::UpdateSpends(
     const CWalletTx& newlyAddedTransaction,
     int64_t orderedTransactionIndex,
-    bool updateTransactionOrdering)
+    bool loadedFromDisk)
 {
     uint256 hash = newlyAddedTransaction.GetHash();
     std::pair<std::map<uint256, CWalletTx>::iterator, bool> ret = transactionRecord_.AddTransaction(newlyAddedTransaction);
     if(ret.second)
     {
-        if(updateTransactionOrdering) (*ret.first).second.nOrderPos = orderedTransactionIndex;
+        if(!loadedFromDisk) (*ret.first).second.nOrderPos = orderedTransactionIndex;
         AddToSpends(hash);
     }
     return std::make_pair(&(ret.first->second),ret.second);

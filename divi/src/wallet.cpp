@@ -1183,13 +1183,13 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
 
     if (fFromLoadWallet)
     {
-        outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, false).first->RecomputeCachedQuantities();
+        outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, fFromLoadWallet).first->RecomputeCachedQuantities();
     }
     else
     {
         LOCK(cs_wallet);
         // Inserts only if not already there, returns tx inserted or tx found
-        std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,orderedTransactionIndex,true);
+        std::pair<CWalletTx*, bool> walletTxAndRecordStatus = outputTracker_->UpdateSpends(wtxIn,orderedTransactionIndex,fFromLoadWallet);
         CWalletTx& wtx = *walletTxAndRecordStatus.first;
         wtx.RecomputeCachedQuantities();
         bool transactionHashIsNewToWallet = walletTxAndRecordStatus.second;

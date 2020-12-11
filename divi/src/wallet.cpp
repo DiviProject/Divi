@@ -1190,10 +1190,10 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         LOCK(cs_wallet);
         // Inserts only if not already there, returns tx inserted or tx found
         std::pair<CWalletTx*, bool> ret = outputTracker_->UpdateSpends(wtxIn,orderedTransactionIndex,true);
-        bool fInsertedNew = ret.second;
         CWalletTx& wtx = *ret.first;
         wtx.RecomputeCachedQuantities();
-        if (fInsertedNew)
+        bool transactionHashIsNewToWallet = ret.second;
+        if (transactionHashIsNewToWallet)
         {
             wtx.nTimeReceived = GetAdjustedTime();
             wtx.nOrderPos = IncOrderPosNext();
@@ -1215,7 +1215,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         }
 
         bool fUpdated = false;
-        if (!fInsertedNew)
+        if (!transactionHashIsNewToWallet)
         {
             // Merge
             if (wtxIn.hashBlock != 0 && wtxIn.hashBlock != wtx.hashBlock)
@@ -1237,10 +1237,10 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         }
 
         //// debug print
-        LogPrintf("AddToWallet %s  %s%s\n", wtxIn.GetHash().ToString(), (fInsertedNew ? "new" : ""), (fUpdated ? "update" : ""));
+        LogPrintf("AddToWallet %s  %s%s\n", wtxIn.GetHash().ToString(), (transactionHashIsNewToWallet ? "new" : ""), (fUpdated ? "update" : ""));
 
         // Write to disk
-        if (fInsertedNew || fUpdated)
+        if (transactionHashIsNewToWallet || fUpdated)
             if (!WriteTxToDisk(this,wtx))
                 return false;
 
@@ -1248,7 +1248,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         wtx.RecomputeCachedQuantities();
 
         // Notify UI of new or updated transaction
-        NotifyTransactionChanged(this, hash, fInsertedNew ? CT_NEW : CT_UPDATED);
+        NotifyTransactionChanged(this, hash, transactionHashIsNewToWallet ? CT_NEW : CT_UPDATED);
 
         // notify an external script when a wallet transaction comes in or is updated
         std::string strCmd = settings.GetArg("-walletnotify", "");

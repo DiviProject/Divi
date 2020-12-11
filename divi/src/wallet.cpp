@@ -1143,6 +1143,40 @@ void CWallet::RecomputeCachedQuantities()
     }
 }
 
+int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
+{
+    int64_t latestNow = wtx.nTimeReceived;
+    int64_t latestEntry = 0;
+    {
+        // Tolerate times up to the last timestamp in the wallet not more than 5 minutes into the future
+        int64_t latestTolerated = latestNow + 300;
+        std::list<CAccountingEntry> acentries;
+        TxItems txOrdered = OrderedTxItems(acentries);
+        for (TxItems::reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
+            CWalletTx* const pwtx = (*it).second.first;
+            if (pwtx == &wtx)
+                continue;
+            CAccountingEntry* const pacentry = (*it).second.second;
+            int64_t nSmartTime;
+            if (pwtx) {
+                nSmartTime = pwtx->nTimeSmart;
+                if (!nSmartTime)
+                    nSmartTime = pwtx->nTimeReceived;
+            } else
+                nSmartTime = pacentry->nTime;
+            if (nSmartTime <= latestTolerated) {
+                latestEntry = nSmartTime;
+                if (nSmartTime > latestNow)
+                    latestNow = nSmartTime;
+                break;
+            }
+        }
+    }
+
+    int64_t blocktime = mapBlockIndex[wtx.hashBlock]->GetBlockTime();
+    return std::max(latestEntry, std::min(blocktime, latestNow));
+}
+
 bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
 {
     uint256 hash = wtxIn.GetHash();

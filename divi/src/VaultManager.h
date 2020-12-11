@@ -25,7 +25,7 @@ class VaultManager
 private:
     const CChain& activeChain_;
     const BlockMap& blockIndicesByHash_;
-    CCriticalSection cs_vaultManager_;
+    mutable CCriticalSection cs_vaultManager_;
     int64_t transactionOrderingIndex_;
     std::unique_ptr<WalletTransactionRecord> walletTxRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;

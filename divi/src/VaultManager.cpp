@@ -25,6 +25,7 @@ VaultManager::~VaultManager()
 
 void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)
 {
+    LOCK(cs_vaultManager_);
     for(const CTxOut& output: tx.vout)
     {
         auto it = managedScriptsLimits_.find(output.scriptPubKey);
@@ -41,11 +42,13 @@ void VaultManager::SyncTransaction(const CTransaction& tx, const CBlock *pblock)
 
 void VaultManager::addManagedScript(const CScript& script, unsigned limit)
 {
+    LOCK(cs_vaultManager_);
     managedScriptsLimits_.insert({script, limit});
 }
 
 UnspentOutputs VaultManager::getUTXOs() const
 {
+    LOCK(cs_vaultManager_);
     UnspentOutputs outputs;
     auto managedScriptsLimitsCopy = managedScriptsLimits_;
     for(const auto& hashAndTransaction: walletTxRecord_->mapWallet)

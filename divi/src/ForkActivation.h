@@ -16,7 +16,7 @@ class CBlockIndex;
  * (with conditional logic in other parts of the codebase depending
  * on whether or not a fork is active).
  */
-enum class Fork
+enum Fork
 {
   /* Test forks not actually deployed / active but used for unit tests.  */
   TestByTimestamp,

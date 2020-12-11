@@ -27,10 +27,20 @@ VaultManager::VaultManager(
     ): VaultManager(activeChain,blockIndicesByHash)
 {
     vaultManagerDB.ReadManagedScripts(managedScriptsLimits_);
-    CWalletTx txToAdd(CMerkleTx{CMutableTransaction(), activeChain_,blockIndicesByHash_});
-    vaultManagerDB.ReadTx(transactionOrderingIndex_,txToAdd);
-    outputTracker_->UpdateSpends(txToAdd,transactionOrderingIndex_,true);
-    ++transactionOrderingIndex_;
+    bool continueLoadingTransactions = true;
+    while(continueLoadingTransactions)
+    {
+        CWalletTx txToAdd(CMerkleTx{CMutableTransaction(), activeChain_,blockIndicesByHash_});
+        if(vaultManagerDB.ReadTx(transactionOrderingIndex_,txToAdd))
+        {
+            outputTracker_->UpdateSpends(txToAdd,transactionOrderingIndex_,true);
+            ++transactionOrderingIndex_;
+        }
+        else
+        {
+            continueLoadingTransactions = false;
+        }
+    }
 }
 
 VaultManager::~VaultManager()
@@ -89,7 +99,16 @@ UnspentOutputs VaultManager::getUTXOs() const
 
 const CWalletTx& VaultManager::GetTransaction(const uint256& hash) const
 {
-    return *(walletTxRecord_->GetWalletTx(hash));
+    static CWalletTx dummyValue;
+    const CWalletTx* tx = walletTxRecord_->GetWalletTx(hash);
+    if(!tx)
+    {
+        return dummyValue;
+    }
+    else
+    {
+        return *tx;
+    }
 }
 
 const ManagedScripts& VaultManager::GetManagedScriptLimits() const

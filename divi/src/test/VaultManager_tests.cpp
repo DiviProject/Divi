@@ -281,7 +281,55 @@ BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
 
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
     BOOST_CHECK(expectedTx==manager->GetTransaction(tx.GetHash()));
-
 }
+
+
+BOOST_AUTO_TEST_CASE(willLoadManyTransactionsFromDatabase)
+{
+    std::vector<CMutableTransaction> dummyTransactions;
+    std::vector<CDataStream> streamOfTransactions(10u,CDataStream(SER_DISK, CLIENT_VERSION));
+    std::vector<CWalletTx> expectedTransactions;
+    expectedTransactions.reserve(10u);
+    dummyTransactions.reserve(10u);
+    for(unsigned txCount =0 ; txCount < 10u; ++txCount)
+    {
+        CAmount randomSentAmount = 100-txCount;
+        CMutableTransaction dummyTransaction;
+        dummyTransaction.vout.push_back(CTxOut(100,scriptGenerator(10)));
+        CMutableTransaction tx;
+        tx.vin.push_back(CTxIn(dummyTransaction.GetHash(),0u));
+        tx.vout.push_back(CTxOut(randomSentAmount,scriptGenerator(10)));
+
+        dummyTransactions.emplace_back(tx);
+        manager->SyncTransaction(tx,nullptr);
+
+        const CWalletTx expectedTx = manager->GetTransaction(tx.GetHash());
+        streamOfTransactions[txCount] << expectedTx;
+        expectedTransactions.emplace_back(expectedTx);
+    }
+
+
+    auto& activeChain = *(fakeBlockIndexWithHashesResource->activeChain);
+    auto& blockIndexByHash = *(fakeBlockIndexWithHashesResource->blockIndexByHash);
+
+    ON_CALL(*mockPtr, ReadTx(_,_)).WillByDefault(Invoke(
+        [&streamOfTransactions](const uint64_t txIndex,CWalletTx& returnTx)
+        {
+            if(txIndex < streamOfTransactions.size())
+            {
+                streamOfTransactions[txIndex] >> returnTx;
+                return true;
+            }
+            return false;
+        }
+    ));
+    manager.reset(new VaultManager( activeChain, blockIndexByHash, *mockPtr ));
+
+    for(unsigned txCount =0 ; txCount < 10u; ++txCount)
+    {
+         BOOST_CHECK(expectedTransactions[txCount] == manager->GetTransaction(dummyTransactions[txCount].GetHash()));
+    }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

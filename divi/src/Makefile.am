@@ -266,6 +266,7 @@ BITCOIN_CORE_H = \
   NotificationInterface.h \
   versionbits.h \
   version.h \
+  I_VaultManagerDatabase.h \
   VaultManager.h \
   wallet.h \
   WalletTx.h \

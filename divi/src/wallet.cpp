@@ -1181,43 +1181,56 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
 {
     uint256 hash = wtxIn.GetHash();
 
-    if (fFromLoadWallet) {
+    if (fFromLoadWallet)
+    {
         outputTracker_->UpdateSpends(wtxIn, orderedTransactionIndex, false).first->RecomputeCachedQuantities();
-    } else {
+    }
+    else
+    {
         LOCK(cs_wallet);
         // Inserts only if not already there, returns tx inserted or tx found
         std::pair<CWalletTx*, bool> ret = outputTracker_->UpdateSpends(wtxIn,orderedTransactionIndex,true);
         bool fInsertedNew = ret.second;
         CWalletTx& wtx = *ret.first;
         wtx.RecomputeCachedQuantities();
-        if (fInsertedNew) {
+        if (fInsertedNew)
+        {
             wtx.nTimeReceived = GetAdjustedTime();
             wtx.nOrderPos = IncOrderPosNext();
 
             wtx.nTimeSmart = wtx.nTimeReceived;
-            if (wtxIn.hashBlock != 0) {
-                if (mapBlockIndex.count(wtxIn.hashBlock)) {
+            if (wtxIn.hashBlock != 0)
+            {
+                if (mapBlockIndex.count(wtxIn.hashBlock))
+                {
                     wtx.nTimeSmart = SmartWalletTxTimestampEstimation(wtx);
-                } else
+                }
+                else
+                {
                     LogPrintf("AddToWallet() : found %s in block %s not in index\n",
                               wtxIn.GetHash().ToString(),
                               wtxIn.hashBlock.ToString());
+                }
             }
         }
 
         bool fUpdated = false;
-        if (!fInsertedNew) {
+        if (!fInsertedNew)
+        {
             // Merge
-            if (wtxIn.hashBlock != 0 && wtxIn.hashBlock != wtx.hashBlock) {
+            if (wtxIn.hashBlock != 0 && wtxIn.hashBlock != wtx.hashBlock)
+            {
                 wtx.hashBlock = wtxIn.hashBlock;
                 fUpdated = true;
             }
-            if (wtxIn.nIndex != -1 && (wtxIn.vMerkleBranch != wtx.vMerkleBranch || wtxIn.nIndex != wtx.nIndex)) {
+            if (wtxIn.nIndex != -1 && (wtxIn.vMerkleBranch != wtx.vMerkleBranch || wtxIn.nIndex != wtx.nIndex))
+            {
                 wtx.vMerkleBranch = wtxIn.vMerkleBranch;
                 wtx.nIndex = wtxIn.nIndex;
                 fUpdated = true;
             }
-            if (wtxIn.fFromMe && wtxIn.fFromMe != wtx.fFromMe) {
+            if (wtxIn.fFromMe && wtxIn.fFromMe != wtx.fFromMe)
+            {
                 wtx.fFromMe = wtxIn.fFromMe;
                 fUpdated = true;
             }
@@ -1240,7 +1253,8 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
         // notify an external script when a wallet transaction comes in or is updated
         std::string strCmd = settings.GetArg("-walletnotify", "");
 
-        if (!strCmd.empty()) {
+        if (!strCmd.empty())
+        {
             boost::replace_all(strCmd, "%s", wtxIn.GetHash().GetHex());
             boost::thread t(runCommand, strCmd); // thread runs free
         }

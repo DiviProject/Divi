@@ -7,24 +7,39 @@
 #include <FakeBlockIndexChain.h>
 #include <primitives/block.h>
 #include <chain.h>
+#include <MockVaultManagerDatabase.h>
+#include <WalletTx.h>
+#include <streams.h>
+#include <clientversion.h>
+#include <gmock/gmock.h>
 
+using ::testing::_;
+using ::testing::Invoke;
 struct VaultManagerTestFixture
 {
 private:
     std::vector<CScript> managedScripts;
 public:
+    std::unique_ptr<MockVaultManagerDatabase> mockPtr;
     std::unique_ptr<FakeBlockIndexWithHashes> fakeBlockIndexWithHashesResource;
     RandomCScriptGenerator scriptGenerator;
     std::unique_ptr<VaultManager> manager;
 
     VaultManagerTestFixture(
         ): managedScripts()
+        , mockPtr(new MockVaultManagerDatabase)
         , fakeBlockIndexWithHashesResource(new FakeBlockIndexWithHashes(1,0,CBlock::CURRENT_VERSION))
         , scriptGenerator()
         , manager( new VaultManager(
             *(fakeBlockIndexWithHashesResource->activeChain),
             *(fakeBlockIndexWithHashesResource->blockIndexByHash) ))
     {
+    }
+    ~VaultManagerTestFixture()
+    {
+        manager.reset();
+        fakeBlockIndexWithHashesResource.reset();
+        mockPtr.reset();
     }
 
     CBlock getBlockToMineTransaction(const CTransaction& tx)
@@ -212,4 +227,61 @@ BOOST_AUTO_TEST_CASE(willCheckThatCoinstakeTransactionsAreDeepEnoughToSpend)
     mineAdditionalBlocks(20);
     BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
 }
+
+BOOST_AUTO_TEST_CASE(willLoadTransactionsFromDatabase)
+{
+    CScript managedScript = scriptGenerator(10);
+    manager->addManagedScript(managedScript, 4);
+
+    CMutableTransaction dummyTransaction;
+    dummyTransaction.vout.push_back(CTxOut(100,scriptGenerator(10)));
+
+    CMutableTransaction tx;
+    tx.vin.push_back(CTxIn(dummyTransaction.GetHash(),0u));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+    tx.vout.push_back(CTxOut(100,managedScript));
+
+    CBlock blockMiningTx = getBlockToMineTransaction(tx);
+    manager->SyncTransaction(tx,&blockMiningTx);
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
+
+    const CWalletTx expectedTx = manager->GetTransaction(tx.GetHash());
+    CDataStream txStream(SER_DISK, CLIENT_VERSION);
+    txStream << manager->GetTransaction(tx.GetHash());
+
+    CDataStream serializedManagedScripts(SER_DISK, CLIENT_VERSION);
+    serializedManagedScripts << manager->GetManagedScriptLimits();
+
+
+    auto& activeChain = *(fakeBlockIndexWithHashesResource->activeChain);
+    auto& blockIndexByHash = *(fakeBlockIndexWithHashesResource->blockIndexByHash);
+
+    ON_CALL(*mockPtr, ReadManagedScripts(_)).WillByDefault(Invoke(
+        [&serializedManagedScripts](ManagedScripts& managedScripts)
+        {
+            serializedManagedScripts >> managedScripts;
+            return true;
+        }
+    ));
+
+    ON_CALL(*mockPtr, ReadTx(_,_)).WillByDefault(Invoke(
+        [&txStream](const uint64_t txIndex,CWalletTx& returnTx)
+        {
+            if(txIndex != 0u)
+            {
+                return false;
+            }
+            txStream >> returnTx;
+            return true;
+        }
+    ));
+    manager.reset(new VaultManager( activeChain, blockIndexByHash, *mockPtr ));
+
+    BOOST_CHECK_EQUAL(manager->getUTXOs().size(), 4u);
+    BOOST_CHECK(expectedTx==manager->GetTransaction(tx.GetHash()));
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()

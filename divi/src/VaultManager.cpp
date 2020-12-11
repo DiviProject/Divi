@@ -4,6 +4,7 @@
 #include <WalletTx.h>
 #include <WalletTransactionRecord.h>
 #include <SpentOutputTracker.h>
+#include <I_VaultManagerDatabase.h>
 
 VaultManager::VaultManager(
     const CChain& activeChain,
@@ -16,6 +17,20 @@ VaultManager::VaultManager(
     , outputTracker_(new SpentOutputTracker(*walletTxRecord_))
     , managedScriptsLimits_()
 {
+}
+
+
+VaultManager::VaultManager(
+    const CChain& activeChain,
+    const BlockMap& blockIndicesByHash,
+    I_VaultManagerDatabase& vaultManagerDB
+    ): VaultManager(activeChain,blockIndicesByHash)
+{
+    vaultManagerDB.ReadManagedScripts(managedScriptsLimits_);
+    CWalletTx txToAdd(CMerkleTx{CMutableTransaction(), activeChain_,blockIndicesByHash_});
+    vaultManagerDB.ReadTx(transactionOrderingIndex_,txToAdd);
+    outputTracker_->UpdateSpends(txToAdd,transactionOrderingIndex_,true);
+    ++transactionOrderingIndex_;
 }
 
 VaultManager::~VaultManager()
@@ -70,4 +85,14 @@ UnspentOutputs VaultManager::getUTXOs() const
         }
     }
     return outputs;
+}
+
+const CWalletTx& VaultManager::GetTransaction(const uint256& hash) const
+{
+    return *(walletTxRecord_->GetWalletTx(hash));
+}
+
+const ManagedScripts& VaultManager::GetManagedScriptLimits() const
+{
+    return managedScriptsLimits_;
 }

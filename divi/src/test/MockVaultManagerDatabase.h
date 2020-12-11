@@ -6,7 +6,7 @@ class MockVaultManagerDatabase: public I_VaultManagerDatabase
 {
 public:
     MOCK_METHOD1(WriteTx,bool(const CWalletTx& walletTransaction));
-    MOCK_METHOD1(ReadTx,bool(const uint64_t txIndex, CWalletTx& walletTransaction));
+    MOCK_METHOD2(ReadTx,bool(const uint64_t txIndex, CWalletTx& walletTransaction));
     MOCK_METHOD1(WriteManagedScripts,bool(const ManagedScripts& managedScripts));
     MOCK_METHOD1(ReadManagedScripts, bool(ManagedScripts& managedScripts));
 };

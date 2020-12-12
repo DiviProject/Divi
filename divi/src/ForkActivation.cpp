@@ -9,9 +9,14 @@
 
 #include <unordered_map>
 
+#include <Settings.h>
+#include <set>
+extern Settings& settings;
+
 namespace
 {
 constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
+const std::set<Fork> manualOverrides = {Fork::StakingVaults,Fork::HardenedStakeModifier,Fork::UniformLotteryWinners};
 /**
  * For forks that get activated at a certain block time, the associated
  * activation times.
@@ -37,6 +42,12 @@ ActivationState::ActivationState(const CBlockHeader& block)
 
 bool ActivationState::IsActive(const Fork f) const
 {
+  constexpr char manualForkSettingLookup[] = "-manual_fork";
+  if(settings.ParameterIsSet(manualForkSettingLookup) && manualOverrides.count(f)>0)
+  {
+    const int64_t timestampOverride = settings.GetArg(manualForkSettingLookup,0);
+    return nTime >= timestampOverride;
+  }
   const auto mit = ACTIVATION_TIMES.find(f);
   assert(mit != ACTIVATION_TIMES.end());
   return nTime >= mit->second;

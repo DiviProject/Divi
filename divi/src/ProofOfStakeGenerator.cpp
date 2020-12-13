@@ -4,6 +4,7 @@
 #include <Logging.h>
 #include <StakingData.h>
 #include <LegacyPoSStakeModifierService.h>
+#include <PoSStakeModifierService.h>
 #include <chain.h>
 #include <chainparams.h>
 #include <blockmap.h>
@@ -151,7 +152,8 @@ HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
 static ProofOfStakeGenerator& instanceOfProofOfStakeGeneration()
 {
     static unsigned _minimumCoinAgeForStaking = Params().GetMinCoinAgeForStaking();
-    static LegacyPoSStakeModifierService stakeModifierService(mapBlockIndex, chainActive);
+    static LegacyPoSStakeModifierService legacyStakeModifierService(mapBlockIndex, chainActive);
+    static PoSStakeModifierService stakeModifierService(legacyStakeModifierService, mapBlockIndex);
     static ProofOfStakeGenerator proofGenerator(stakeModifierService, _minimumCoinAgeForStaking);
     return proofGenerator;
 }

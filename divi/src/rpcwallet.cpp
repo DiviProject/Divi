@@ -442,7 +442,12 @@ Value fundvault(const Array& params, bool fHelp)
 Value addvaultscript(const Array& params, bool fHelp)
 {
      if (fHelp || params.size() != 2)
-        throw runtime_error("Add vault script - WIP");
+        throw runtime_error(
+                "addvaultscript \"vault_script_in_hex\" funding_txhash\n"
+                "\nAllows vault manager to accept to stake the indicated vault script. The amount is a real and is rounded to the nearest 0.00000001\n"
+                "\nArguments:\n"
+                "1. \"script_in_hex\"  (string, required) The vault-script to send funds to.\n"
+                "1. \"tx_hash\"  (string, required) The transaction hash to search for the initial funding.\n");
 
     Object result;
 

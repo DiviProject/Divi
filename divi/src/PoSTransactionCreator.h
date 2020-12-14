@@ -41,6 +41,7 @@ private:
     int64_t hashproofTimestampMinimumValue_;
 
     void CombineUtxos(
+        const CAmount& stakeSplit,
         CMutableTransaction& txNew,
         CAmount& nCredit,
         std::vector<const CTransaction*>& walletTransactions);
@@ -62,12 +63,14 @@ private:
         const CBlockIndex* chainTip,
         uint32_t blockBits,
         CMutableTransaction& txCoinStake,
-        unsigned int& nTxNewTime);
+        unsigned int& nTxNewTime,
+        bool& isVaultScript);
 
     void AppendBlockRewardPayoutsToTransaction(
         const CBlockIndex* chainTip,
         CMutableTransaction& txCoinStake);
     void SplitOrCombineUTXOS(
+        const CAmount stakeSplit,
         const CBlockIndex* chainTip,
         CMutableTransaction& txCoinStake,
         const StakableCoin& stakeData,

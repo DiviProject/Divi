@@ -108,7 +108,8 @@ void MarkTransactionAsCoinstake(CMutableTransaction& txNew)
 }
 
 bool IsSupportedScript(
-    const CScript& scriptPubKeyOut)
+    const CScript& scriptPubKeyOut,
+    bool& isVaultScript)
 {
     txnouttype whichType;
     std::vector<valtype> vSolutions;
@@ -117,12 +118,13 @@ bool IsSupportedScript(
         return false;
     }
     if (fDebug && settings.GetBoolArg("-printcoinstake", false)) LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
-    if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH)
+    if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH && whichType != TX_VAULT)
     {
         if (fDebug && settings.GetBoolArg("-printcoinstake", false))
             LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
         return false; // only support pay to public key and pay to address
     }
+    isVaultScript =whichType == TX_VAULT;
     return true;
 }
 
@@ -137,11 +139,12 @@ bool PoSTransactionCreator::SetSuportedStakingScript(
 }
 
 void PoSTransactionCreator::CombineUtxos(
+    const CAmount& stakeSplit,
     CMutableTransaction& txNew,
     CAmount& nCredit,
     std::vector<const CTransaction*>& walletTransactions)
 {
-    const CAmount nCombineThreshold = (settings.GetArg("-stakesplitthreshold",100000) / 2) * COIN;
+    const CAmount nCombineThreshold = stakeSplit / 2;
     std::vector<StakableCoin> vCombineCandidates;
     for(const StakableCoin& pcoin : stakedCoins_->asSet())
     {
@@ -221,11 +224,12 @@ StakableCoin PoSTransactionCreator::FindProofOfStake(
     const CBlockIndex* chainTip,
     uint32_t blockBits,
     CMutableTransaction& txCoinStake,
-    unsigned int& nTxNewTime)
+    unsigned int& nTxNewTime,
+    bool& isVaultScript)
 {
     for (const StakableCoin& pcoin: stakedCoins_->asSet())
     {
-        if(!IsSupportedScript(pcoin.tx->vout[pcoin.outputIndex].scriptPubKey))
+        if(!IsSupportedScript(pcoin.tx->vout[pcoin.outputIndex].scriptPubKey,isVaultScript))
         {
             continue;
         }
@@ -243,6 +247,7 @@ StakableCoin PoSTransactionCreator::FindProofOfStake(
 }
 
 void PoSTransactionCreator::SplitOrCombineUTXOS(
+    const CAmount stakeSplit,
     const CBlockIndex* chainTip,
     CMutableTransaction& txCoinStake,
     const StakableCoin& stakeData,
@@ -250,17 +255,24 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
 {
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
     CAmount nCredit = stakeData.tx->vout[stakeData.outputIndex].nValue + blockSubdidy.nStakeReward;
-    if (nCredit > static_cast<CAmount>(settings.GetArg("-stakesplitthreshold",100000)) * COIN)
+    constexpr char autocombineSettingLookup[] = "-autocombine";
+    bool autocombine = settings.GetArg(autocombineSettingLookup,true);
+    if (nCredit > stakeSplit )
     {
         txCoinStake.vout.push_back(txCoinStake.vout.back());
         txCoinStake.vout[1].nValue = nCredit / 2;
         txCoinStake.vout[2].nValue = nCredit - txCoinStake.vout[1].nValue;
     }
-    else
+    else if(autocombine)
     {
-        CombineUtxos(txCoinStake,nCredit,vwtxPrev);
+        CombineUtxos(stakeSplit, txCoinStake,nCredit,vwtxPrev);
         txCoinStake.vout[1].nValue = nCredit;
     }
+    else
+    {
+        txCoinStake.vout[1].nValue = nCredit;
+    }
+
 }
 
 void PoSTransactionCreator::AppendBlockRewardPayoutsToTransaction(
@@ -289,8 +301,9 @@ bool PoSTransactionCreator::CreateProofOfStake(
     if(maximumTime <= minimumTime) return false;
     nTxNewTime = std::min(std::max(adjustedTime, minimumTime), maximumTime);
 
+    bool isVaultScript = false;
     StakableCoin successfullyStakableUTXO =
-        FindProofOfStake(chainTip, blockBits,txCoinStake,nTxNewTime);
+        FindProofOfStake(chainTip, blockBits,txCoinStake,nTxNewTime,isVaultScript);
     if( successfullyStakableUTXO.tx == nullptr)
     {
         return false;
@@ -303,7 +316,14 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     std::vector<const CTransaction*> vwtxPrev(1, successfullyStakableUTXO.tx);
 
-    SplitOrCombineUTXOS(chainTip,txCoinStake,successfullyStakableUTXO,vwtxPrev);
+    constexpr char stakeSplitSettingLookup[] = "-stakesplitthreshold";
+    CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,100000)* COIN);
+    if(isVaultScript)
+    {
+        stakeSplit = std::max(stakeSplit,10000*COIN);
+    }
+
+    SplitOrCombineUTXOS(stakeSplit,chainTip,txCoinStake,successfullyStakableUTXO,vwtxPrev);
     AppendBlockRewardPayoutsToTransaction(chainTip,txCoinStake);
 
     int nIn = 0;

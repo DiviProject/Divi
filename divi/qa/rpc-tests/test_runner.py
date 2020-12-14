@@ -74,6 +74,7 @@ BASE_SCRIPTS = [
     # Longest test should go first, to favor running tests in parallel
     'BlocksOnlyHaveSingleCoinstake.py',
     'StakingVaultFunding.py',
+    'StakingVaultStaking.py',
     'forknotify.py',
     'getchaintips.py',
     'httpbasics.py',

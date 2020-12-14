@@ -241,6 +241,13 @@ def assert_greater_than(thing1, thing2):
     if thing1 <= thing2:
         raise AssertionError("%s <= %s"%(str(thing1),str(thing2)))
 
+def assert_strict_within(value, lower, upper):
+  assert_greater_than(upper,value)
+  assert_greater_than(value,lower)
+
+def assert_near(value, target, tolerance):
+  assert_strict_within(value, target-tolerance, target+tolerance)
+
 def assert_raises(exc, fun, *args, **kwds):
     try:
         fun(*args, **kwds)

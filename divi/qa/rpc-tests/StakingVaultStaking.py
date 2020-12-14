@@ -84,7 +84,7 @@ class StakingVaultStakingTest(BitcoinTestFramework):
 
         assert_equal(vaultNode.getblockcount(), targetNumberOfBlocks+20)
         balanceAfterVaultStaking = balanceBeforeVaultStaking + missing*456
-        assert_greater_than(balanceAfterVaultStaking, vaultNode.getcoinavailability()["Stakable"])
+        assert_near(balanceAfterVaultStaking, vaultNode.getcoinavailability()["Stakable"],1000)
 
 if __name__ == '__main__':
     StakingVaultStakingTest().main()

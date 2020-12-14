@@ -43,12 +43,6 @@ def createVaultPoSStacks(nodes):
       nodes[0].setgenerate(True, 1)
     sync_blocks(nodes)
 
-def assert_strict_within(value, lower, upper):
-  assert_greater_than(upper,value)
-  assert_greater_than(value,lower)
-
-def assert_near(value, target, tolerance):
-  assert_strict_within(value, target-tolerance, target+tolerance)
 class StakingVaultFunding(BitcoinTestFramework):
 
     def setup_network(self):

@@ -439,6 +439,40 @@ Value fundvault(const Array& params, bool fHelp)
     return fundingAttemptResult;
 }
 
+
+Value reclaimvaultfunds(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 2)
+        throw runtime_error(
+                "fundvault destination amount ( \"comment\" \"comment-to\" )\n"
+                "\nWithdraw an amount from your vaults into a separate address. The amount is a real and is rounded to the nearest 0.00000001\n" +
+                HelpRequiringPassphrase() +
+                "\nArguments:\n"
+                "1. \"diviaddress\"  (string, required) The divi address of your choosing to send to.\n"
+                "2. \"amount\"      (numeric, required) The amount in DIVI to move. eg 0.1\n"
+                "\nResult:\n"
+                "\"transactionid\"  (string) The transaction id.\n");
+
+    // Address
+    CBitcoinAddress address(params[0].get_str());
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
+    // Amount
+    CAmount nAmount = AmountFromValue(params[1]);
+
+    // Wallet comments
+    CWalletTx wtx;
+    if (params.size() > 2 && params[2].type() != null_type && !params[2].get_str().empty())
+        wtx.mapValue["comment"] = params[2].get_str();
+    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
+        wtx.mapValue["to"] = params[3].get_str();
+
+
+    EnsureWalletIsUnlocked();
+    SendMoney(address.Get(), nAmount, wtx,false,true);
+    return wtx.GetHash().GetHex();
+}
+
 Value addvaultscript(const Array& params, bool fHelp)
 {
      if (fHelp || params.size() != 2)

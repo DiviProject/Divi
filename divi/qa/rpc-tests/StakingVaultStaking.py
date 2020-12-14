@@ -85,6 +85,10 @@ class StakingVaultStakingTest(BitcoinTestFramework):
         assert_equal(vaultNode.getblockcount(), targetNumberOfBlocks+20)
         balanceAfterVaultStaking = balanceBeforeVaultStaking + missing*456
         assert_near(balanceAfterVaultStaking, vaultNode.getcoinavailability()["Stakable"],1000)
+        fee = 100
+        expectedUnconfirmedBalance = vaultNode.getcoinavailability()["Stakable"]-fee
+        firstOwnerNode.reclaimvaultfunds(firstOwnerNode.getnewaddress(),expectedUnconfirmedBalance)
+        assert_equal(firstOwnerNode.getwalletinfo()["unconfirmed_balance"],expectedUnconfirmedBalance)
 
 if __name__ == '__main__':
     StakingVaultStakingTest().main()

@@ -231,7 +231,6 @@ void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txund
 
 /** Context-independent validity checks */
 bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationState& state);
-bool RecalculateDIVSupply(int nHeightStart);
 
 
 /** Check for standard transaction types

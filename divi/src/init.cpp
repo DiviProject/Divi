@@ -401,7 +401,6 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-pid=<file>", strprintf(translate("Specify pid file (default: %s)"), "divid.pid"));
 #endif
     strUsage += HelpMessageOpt("-reindex", translate("Rebuild block chain index from current blk000??.dat files") + " " + translate("on startup"));
-    strUsage += HelpMessageOpt("-reindexmoneysupply", translate("Reindex the DIV and zDIV money supply statistics") + " " + translate("on startup"));
     strUsage += HelpMessageOpt("-resync", translate("Delete blockchain folders and resync from scratch") + " " + translate("on startup"));
 #if !defined(WIN32)
     strUsage += HelpMessageOpt("-sysperms", translate("Create new files with system default permissions, instead of umask 077 (only effective with disabled wallet functionality)"));
@@ -1278,11 +1277,6 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         if (fTxIndex != settings.GetBoolArg("-txindex", true)) {
             strLoadError = translate("You need to rebuild the database using -reindex to change -txindex");
             return skipLoadingDueToError;
-        }
-
-        // Recalculate money supply
-        if (settings.GetBoolArg("-reindexmoneysupply", false)) {
-            RecalculateDIVSupply(1);
         }
 
         uiInterface.InitMessage(translate("Verifying blocks..."));

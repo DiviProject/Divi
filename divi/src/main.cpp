@@ -1664,57 +1664,6 @@ void ThreadScriptCheck()
     scriptcheckqueue.Thread();
 }
 
-bool RecalculateDIVSupply(int nHeightStart)
-{
-    if (nHeightStart > chainActive.Height())
-        return false;
-
-    CBlockIndex* pindex = chainActive[nHeightStart];
-    CAmount nSupplyPrev = pindex->pprev->nMoneySupply;
-
-    while (true) {
-        if (pindex->nHeight % 1000 == 0)
-            LogPrintf("%s : block %d...\n", __func__, pindex->nHeight);
-
-        CBlock block;
-        assert(ReadBlockFromDisk(block, pindex));
-
-        CAmount nValueIn = 0;
-        CAmount nValueOut = 0;
-        for (const CTransaction tx : block.vtx) {
-            for (unsigned int i = 0; i < tx.vin.size(); i++) {
-                if (tx.IsCoinBase())
-                    break;
-
-                COutPoint prevout = tx.vin[i].prevout;
-                CTransaction txPrev;
-                uint256 hashBlock;
-                assert(GetTransaction(prevout.hash, txPrev, hashBlock, true));
-                nValueIn += txPrev.vout[prevout.n].nValue;
-            }
-
-            for (unsigned int i = 0; i < tx.vout.size(); i++) {
-                if (i == 0 && tx.IsCoinStake())
-                    continue;
-
-                nValueOut += tx.vout[i].nValue;
-            }
-        }
-
-        // Rewrite money supply
-        pindex->nMoneySupply = nSupplyPrev + nValueOut - nValueIn;
-        nSupplyPrev = pindex->nMoneySupply;
-
-        assert(pblocktree->WriteBlockIndex(CDiskBlockIndex(pindex)));
-
-        if (pindex->nHeight < chainActive.Height())
-            pindex = chainActive.Next(pindex);
-        else
-            break;
-    }
-    return true;
-}
-
 static int64_t nTimeVerify = 0;
 static int64_t nTimeConnect = 0;
 static int64_t nTimeIndex = 0;

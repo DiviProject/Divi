@@ -35,17 +35,20 @@ def createVaultPoSStacks(ownerNodes,vaultNode):
     parts = 40
     value = 400
     funding_data = []
+    vault_node_address = vaultNode.getnewaddress()
     for node in ownerNodes:
       assert node.getbalance() > parts*value
+      node_address=node.getnewaddress()
+      vault_encoding = node_address+":"+vault_node_address
       for _ in range(parts):
-        funding_data.append( node.fundvault(vaultNode.getnewaddress(),value) )
+        funding_data.append( node.fundvault(vault_encoding,value) )
     # Make sure to get all those transactions mined.
     sync_mempools(all_nodes)
     while len(ownerNodes[0].getrawmempool()) > 0:
       ownerNodes[0].setgenerate(True, 1)
     sync_blocks(all_nodes)
     for funding_datum in funding_data:
-      assert vaultNode.addvaultscript(funding_datum["script"],funding_datum["txhash"])["succeeded"]
+      assert vaultNode.addvaultscript(funding_datum["vault"],funding_datum["txhash"])["succeeded"]
 
 class StakingVaultStakingTest(BitcoinTestFramework):
 

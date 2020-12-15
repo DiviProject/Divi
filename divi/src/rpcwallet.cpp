@@ -383,30 +383,54 @@ Value fundvault(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 4)
         throw runtime_error(
-                "fundvault \"diviaddress\" amount ( \"comment\" \"comment-to\" )\n"
+                "fundvault \"[owner_address:]manager_address\" amount ( \"comment\" \"comment-to\" )\n"
                 "\nSend an amount to a given vault manager address. The amount is a real and is rounded to the nearest 0.00000001\n" +
                 HelpRequiringPassphrase() +
                 "\nArguments:\n"
-                "1. \"diviaddress\"  (string, required) The divi address owned by the vault manager.\n"
+                "1. \"owner_address\" (string, optional) The address of the key owning the vault funds. Needs ':' separator. \n"
+                "1. \"manager_address\"  (string, required) The divi address owned by the vault manager.\n"
                 "2. \"amount\"      (numeric, required) The amount in DIVI to send. eg 0.1\n"
                 "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
                 "                             This is not part of the transaction, just kept in your wallet.\n"
                 "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
                 "                             to which you're sending the transaction. This is not part of the \n"
-                "                             transaction, just kept in your wallet.\n"
-                "\nResult:\n"
-                "\"transactionid\"  (string) The transaction id.\n"
-                "\nExamples:\n" +
-                HelpExampleCli("fundvault", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.1") + HelpExampleCli("fundvault", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.1 \"donation\" \"seans outpost\"") + HelpExampleRpc("sendtoaddress", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\", 0.1, \"donation\", \"seans outpost\""));
+                "                             transaction, just kept in your wallet.\n");
 
-    CBitcoinAddress managerAddress(params[0].get_str());
+    std::string addressEncodings = params[0].get_str();
+    CBitcoinAddress ownerAddress;
+    CBitcoinAddress managerAddress;
+    size_t indexOfSeparator = addressEncodings.find(':');
+    if(indexOfSeparator != std::string::npos)
+    {
+        ownerAddress.SetString(addressEncodings.substr(0u,indexOfSeparator));
+        managerAddress.SetString(addressEncodings.substr(indexOfSeparator+1));
+    }
+    else
+    {
+        string strAccount = AccountFromValue("");
+        if (!pwalletMain->IsLocked())
+            pwalletMain->TopUpKeyPool();
+
+        // Generate a new key that is added to wallet
+        CPubKey ownerKey;
+        if (!pwalletMain->GetKeyFromPool(ownerKey, false))
+            throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
+        CKeyID ownerKeyID = ownerKey.GetID();
+        pwalletMain->SetAddressBook(ownerKeyID, strAccount, "receive");
+
+        ownerAddress.Set(ownerKeyID);
+        managerAddress.SetString(addressEncodings);
+
+        addressEncodings = ownerAddress.ToString() + ":" + managerAddress.ToString();
+    }
 
     CKeyID managerKeyID;
     if (!managerAddress.IsValid() || !managerAddress.GetKeyID(managerKeyID))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DIVI address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid manager DIVI address");
 
-    // Amount
-    CAmount nAmount = AmountFromValue(params[1]);
+    CKeyID ownerKeyID;
+    if (!ownerAddress.IsValid() || !ownerAddress.GetKeyID(ownerKeyID))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Funding failed: Invalid owner DIVI address");
 
     // Wallet comments
     CWalletTx wtx;
@@ -415,27 +439,17 @@ Value fundvault(const Array& params, bool fHelp)
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
         wtx.mapValue["to"] = params[3].get_str();
 
-    string strAccount = AccountFromValue("");
-
-    if (!pwalletMain->IsLocked())
-        pwalletMain->TopUpKeyPool();
-
-    // Generate a new key that is added to wallet
-    CPubKey ownerKey;
-    if (!pwalletMain->GetKeyFromPool(ownerKey, false))
-        throw JSONRPCError(RPC_WALLET_KEYPOOL_RAN_OUT, "Error: Keypool ran out, please call keypoolrefill first");
-    CKeyID ownerKeyID = ownerKey.GetID();
-
-    pwalletMain->SetAddressBook(ownerKeyID, strAccount, "receive");
 
     CScript vaultScript = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
 
     EnsureWalletIsUnlocked();
+    // Amount & Send
+    CAmount nAmount = AmountFromValue(params[1]);
     SendMoney(vaultScript, nAmount, wtx);
 
     Object fundingAttemptResult;
     fundingAttemptResult.push_back(Pair("txhash", wtx.GetHash().GetHex()));
-    fundingAttemptResult.push_back(Pair("script", HexStr(vaultScript)) );
+    fundingAttemptResult.push_back(Pair("vault",addressEncodings));
     return fundingAttemptResult;
 }
 
@@ -444,7 +458,7 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)
         throw runtime_error(
-                "fundvault destination amount ( \"comment\" \"comment-to\" )\n"
+                "reclaimvaultfunds destination amount ( \"comment\" \"comment-to\" )\n"
                 "\nWithdraw an amount from your vaults into a separate address. The amount is a real and is rounded to the nearest 0.00000001\n" +
                 HelpRequiringPassphrase() +
                 "\nArguments:\n"
@@ -477,16 +491,37 @@ Value addvaultscript(const Array& params, bool fHelp)
 {
      if (fHelp || params.size() != 2)
         throw runtime_error(
-                "addvaultscript \"vault_script_in_hex\" funding_txhash\n"
+                "addvaultscript \"<owner_address>:<manager_address>\" funding_txhash\n"
                 "\nAllows vault manager to accept to stake the indicated vault script. The amount is a real and is rounded to the nearest 0.00000001\n"
                 "\nArguments:\n"
-                "1. \"script_in_hex\"  (string, required) The vault-script to send funds to.\n"
+                "1. \"<owner_address>:<manager_address>\"  (string, required) Vault representation as a pair of addresses.\n"
                 "1. \"tx_hash\"  (string, required) The transaction hash to search for the initial funding.\n");
 
     Object result;
 
-    auto scriptInRawHex = ParseHex(params[0].get_str());
-    CScript script(scriptInRawHex.begin(), scriptInRawHex.end());
+    std::string addressEncodings = params[0].get_str();
+    CBitcoinAddress ownerAddress;
+    CBitcoinAddress managerAddress;
+    size_t indexOfSeparator = addressEncodings.find(':');
+    if(indexOfSeparator != std::string::npos)
+    {
+        ownerAddress.SetString(addressEncodings.substr(0u,indexOfSeparator));
+        managerAddress.SetString(addressEncodings.substr(indexOfSeparator+1));
+    }
+    else
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Could not parse vault encoding!");
+    }
+
+    CKeyID managerKeyID;
+    if (!managerAddress.IsValid() || !managerAddress.GetKeyID(managerKeyID))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Vault Registry Failed: Invalid manager DIVI address");
+
+    CKeyID ownerKeyID;
+    if (!ownerAddress.IsValid() || !ownerAddress.GetKeyID(ownerKeyID))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Vault Registry Failed: Invalid owner DIVI address");
+
+
     uint256 txhash = uint256(params[1].get_str());
     CTransaction tx;
     uint256 blockHash;
@@ -510,32 +545,24 @@ Value addvaultscript(const Array& params, bool fHelp)
         return result;
     }
 
-    std::pair<valtype,valtype> vaultPubKeyIDs;
-    if(GetStakingVaultPubkeyHashes(script,vaultPubKeyIDs))
+    if(pwalletMain->HaveKey(managerKeyID) )
     {
-        CKeyID managerKeyID(uint160(vaultPubKeyIDs.second));
-        if(pwalletMain->HaveKey(managerKeyID) )
+        CScript script = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
+        pwalletMain->AddCScript(script);
+        CBlock block;
+        ReadBlockFromDisk(block, blockSearchStart);
+        pwalletMain->SyncTransaction(tx, &block);
+        auto wtx = pwalletMain->GetWalletTx(tx.GetHash());
+        if(!wtx)
         {
-            pwalletMain->AddCScript(script);
-            CBlock block;
-            ReadBlockFromDisk(block, blockSearchStart);
-            pwalletMain->SyncTransaction(tx, &block);
-            auto wtx = pwalletMain->GetWalletTx(tx.GetHash());
-            if(!wtx)
-            {
-                throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Unable to sync TX!");
-            }
-            result.push_back(Pair("succeeded", true));
-            return result;
+            throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Unable to sync TX!");
         }
-        else
-        {
-            throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Do not have correct key!");
-        }
+        result.push_back(Pair("succeeded", true));
+        return result;
     }
     else
     {
-        throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Script is not a vault!");
+        throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Do not have correct key!");
     }
     return result;
 }

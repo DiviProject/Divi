@@ -104,9 +104,9 @@ class StakingVaultFunding(BitcoinTestFramework):
         assert_equal(0.0, vaultNode.getbalance())
 
         # Vault node has now accepted the responsibility to stake on behalf of the Miner node
-        vaultScript = vaultFundingData["script"]
+        vaultEncoding = vaultFundingData["vault"]
         txhash = vaultFundingData["txhash"]
-        vaultNode.addvaultscript(vaultScript,txhash)
+        vaultNode.addvaultscript(vaultEncoding,txhash)
         vaultNodeAllocations = vaultNode.getcoinavailability()
         managedFunds = vaultNodeAllocations["Stakable"] - vaultNodeAllocations["Spendable"]
         assert_near(vaultNodeAllocations["Spendable"], 0.0,1e-10)

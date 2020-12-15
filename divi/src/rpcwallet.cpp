@@ -315,8 +315,11 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
     if (nValue <= 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid amount");
 
-    if (nValue > pwalletMain->GetSpendableBalance())
+    if ( (!spendFromVaults && nValue > pwalletMain->GetSpendableBalance()) ||
+        (spendFromVaults && nValue > pwalletMain->GetBalanceByCoinType(OWNED_VAULT_COINS)  ) )
+    {
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
+    }
 
     string strError;
     if (pwalletMain->IsLocked()) {

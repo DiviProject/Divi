@@ -349,7 +349,7 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
 
 Value getcoinavailability(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() != 0)
+    if (fHelp || params.size() > 1)
         throw runtime_error("");
 
     Object result;
@@ -357,26 +357,96 @@ Value getcoinavailability(const Array& params, bool fHelp)
     {
         result.push_back(Pair("Error","No wallet available at this time"));
     }
-    auto outputValueAdder = [](const std::vector<COutput>& outputsToTotal)
-        {
-            CAmount totalValue = 0;
-            for(const COutput& output: outputsToTotal)
+    bool verbose = (params.size()<1)? false:params[0].get_bool();
+    if(!verbose)
+    {
+        auto outputValueAdder = [](const std::vector<COutput>& outputsToTotal)
             {
-                totalValue += output.Value();
-            }
-            return totalValue;
-        };
-    std::vector<COutput> outputs;
-    pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::OWNED_VAULT_COINS);
-    result.push_back( Pair("Vaulted", ValueFromAmount(outputValueAdder(outputs))  ) );
-    outputs.clear();
-    pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::STAKABLE_COINS);
-    result.push_back( Pair("Stakable", ValueFromAmount(outputValueAdder(outputs)) ) );
-    outputs.clear();
-    pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::ALL_SPENDABLE_COINS);
-    result.push_back( Pair("Spendable", ValueFromAmount(outputValueAdder(outputs)) ) );
+                CAmount totalValue = 0;
+                for(const COutput& output: outputsToTotal)
+                {
+                    totalValue += output.Value();
+                }
+                return totalValue;
+            };
+        std::vector<COutput> outputs;
+        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::OWNED_VAULT_COINS);
+        result.push_back( Pair("Vaulted", ValueFromAmount(outputValueAdder(outputs))  ) );
+        outputs.clear();
+        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::STAKABLE_COINS);
+        result.push_back( Pair("Stakable", ValueFromAmount(outputValueAdder(outputs)) ) );
+        outputs.clear();
+        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::ALL_SPENDABLE_COINS);
+        result.push_back( Pair("Spendable", ValueFromAmount(outputValueAdder(outputs)) ) );
 
-    return result;
+        return result;
+    }
+    else
+    {
+        auto outputParser = [](const std::vector<COutput>& outputsToTotal)
+            {
+                Object description;
+                std::map<CScript, CAmount> valueByScript;
+                std::map<CScript, std::set<std::string>> txdata;
+                CAmount totalValue = 0;
+                CAmount totalVaultOnlyValue = 0;
+                for(const COutput& output: outputsToTotal)
+                {
+                    CTxOut txout = output.tx->vout[output.i];
+                    valueByScript[txout.scriptPubKey] = txout.nValue;
+                    txdata[txout.scriptPubKey].insert(output.tx->GetHash().ToString());
+                    totalValue += output.Value();
+                }
+                Array vaults;
+                for(const std::pair<CScript,CAmount>& fundedScript: valueByScript)
+                {
+                    Object scriptResult;
+                    if(IsStakingVaultScript(fundedScript.first))
+                    {
+                        std::pair<valtype,valtype> pubkeyHashesForVault;
+                        if(!GetStakingVaultPubkeyHashes(fundedScript.first,pubkeyHashesForVault))
+                        {
+                            throw JSONRPCError(RPC_PARSE_ERROR,"Staking vault script unable to recover pubkey hashes!");
+                        }
+                        CKeyID ownerKeyID(uint160(pubkeyHashesForVault.first));
+                        CKeyID managerKeyID(uint160(pubkeyHashesForVault.second));
+                        CBitcoinAddress ownerAddress;
+                        CBitcoinAddress managerAddress;
+                        ownerAddress.Set(ownerKeyID);
+                        managerAddress.Set(managerKeyID);
+
+                        std::string vaultEncoding = ownerAddress.ToString() + ":"+ managerAddress.ToString();
+
+                        scriptResult.push_back(Pair("vault",vaultEncoding));
+                        scriptResult.push_back(Pair("value",fundedScript.second));
+
+                        Array txhashes;
+                        for(const auto& txHashString: txdata[fundedScript.first])
+                        {
+                            txhashes.push_back(txHashString);
+                        }
+                        scriptResult.push_back(Pair("txids",txhashes));
+
+                        vaults.push_back(scriptResult);
+                        totalVaultOnlyValue += fundedScript.second;
+                    }
+                }
+                description.push_back(Pair("AllVaults",vaults));
+                description.push_back(Pair("NonVaults",ValueFromAmount(totalValue - totalVaultOnlyValue)));
+                return description;
+            };
+        std::vector<COutput> outputs;
+        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::OWNED_VAULT_COINS);
+        result.push_back( Pair("Vaulted", outputParser(outputs)  ) );
+        outputs.clear();
+        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::STAKABLE_COINS);
+        result.push_back( Pair("Stakable", outputParser(outputs) ) );
+        outputs.clear();
+        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::ALL_SPENDABLE_COINS);
+        result.push_back( Pair("Spendable", outputParser(outputs) ) );
+
+        return result;
+    }
 }
 
 Value fundvault(const Array& params, bool fHelp)

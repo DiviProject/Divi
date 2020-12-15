@@ -560,11 +560,11 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
     return wtx.GetHash().GetHex();
 }
 
-Value addvaultscript(const Array& params, bool fHelp)
+Value addvault(const Array& params, bool fHelp)
 {
      if (fHelp || params.size() != 2)
         throw runtime_error(
-                "addvaultscript \"<owner_address>:<manager_address>\" funding_txhash\n"
+                "addvault \"<owner_address>:<manager_address>\" funding_txhash\n"
                 "\nAllows vault manager to accept to stake the indicated vault script. The amount is a real and is rounded to the nearest 0.00000001\n"
                 "\nArguments:\n"
                 "1. \"<owner_address>:<manager_address>\"  (string, required) Vault representation as a pair of addresses.\n"

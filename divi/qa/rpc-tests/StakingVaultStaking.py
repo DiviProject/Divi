@@ -54,7 +54,7 @@ def createVaultPoSStacks(ownerNodes,vaultNode):
       minting_node.setgenerate(True, 1)
     sync_blocks(all_nodes)
     for funding_datum in funding_data:
-      assert vaultNode.addvaultscript(funding_datum["vault"],funding_datum["txhash"])["succeeded"]
+      assert vaultNode.addvault(funding_datum["vault"],funding_datum["txhash"])["succeeded"]
 
 class StakingVaultStakingTest(BitcoinTestFramework):
 

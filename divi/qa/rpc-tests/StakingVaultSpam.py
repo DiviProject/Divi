@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #
-# Test StakingVault's ability to successfully stake
+# Test StakingVault spam resilience
 #
 
 from test_framework import BitcoinTestFramework
@@ -56,13 +56,13 @@ def createVaultPoSStacks(ownerNodes,vaultNode):
     for funding_datum in funding_data:
       assert vaultNode.addvault(funding_datum["vault"],funding_datum["txhash"])["succeeded"]
 
-class StakingVaultStakingTest(BitcoinTestFramework):
+class StakingVaultSpamTest(BitcoinTestFramework):
 
     def setup_network(self):
         self.nodes = []
         self.nodes.append(start_node(0, self.options.tmpdir,["-debug","-autocombine=0"]))
         self.nodes.append(start_node(1, self.options.tmpdir,["-debug","-autocombine=0"]))
-        self.nodes.append(start_node(2, self.options.tmpdir,["-debug","-autocombine=0"]))
+        self.nodes.append(start_node(2, self.options.tmpdir,["-debug","-autocombine=0","-vault_min=2000"]))
 
         stakingVaultForkActivationTime = 2000000000
         set_node_times(self.nodes,stakingVaultForkActivationTime)
@@ -92,14 +92,8 @@ class StakingVaultStakingTest(BitcoinTestFramework):
         print ("Vault trying to mine PoS blocks now...")
         missing = targetNumberOfBlocks - minting_node.getblockcount()
         assert missing > 0
-        generatePoSBlocks(self.nodes, -1, missing)
-
-        assert_equal(vaultNode.getblockcount(), targetNumberOfBlocks)
-        fee = 100
-        assert_equal(owner_node.getwalletinfo()["unconfirmed_balance"],0)
-        expectedMinimumUnconfirmedBalance = vaultNode.getcoinavailability()["Stakable"]-fee
-        owner_node.reclaimvaultfunds(owner_node.getnewaddress(),expectedMinimumUnconfirmedBalance)
-        assert_greater_than(owner_node.getwalletinfo()["unconfirmed_balance"],expectedMinimumUnconfirmedBalance)
+        assert_raises(JSONRPCException,generatePoSBlocks, self.nodes, -1, missing)
+        assert_equal(targetNumberOfBlocks - minting_node.getblockcount(),missing)
 
 if __name__ == '__main__':
-    StakingVaultStakingTest().main()
+    StakingVaultSpamTest().main()

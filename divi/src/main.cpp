@@ -774,7 +774,15 @@ bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
         if (!EvalScript(stack, tx.vin[i].scriptSig, false, BaseSignatureChecker()))
             return false;
 
-        if (whichType == TX_SCRIPTHASH) {
+        if(whichType==TX_VAULT)
+        {
+            if(stack.size()==0u) return false;
+            const auto& lastElement = stack.back();
+            if(lastElement.size()>1u) return false;
+            if(lastElement.size()==1u && lastElement.back() != 0x01) return false;
+        }
+        else if (whichType == TX_SCRIPTHASH)
+        {
             if (stack.empty())
                 return false;
             CScript subscript(stack.back().begin(), stack.back().end());

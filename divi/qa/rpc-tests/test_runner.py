@@ -75,6 +75,7 @@ BASE_SCRIPTS = [
     'BlocksOnlyHaveSingleCoinstake.py',
     'StakingVaultFunding.py',
     'StakingVaultStaking.py',
+    'StakingVaultDeactivation.py',
     'StakingVaultSpam.py',
     'forknotify.py',
     'getchaintips.py',

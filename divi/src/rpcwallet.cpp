@@ -562,7 +562,7 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
 
 Value removevault(const Array& params, bool fHelp)
 {
-     if (fHelp || params.size() != 2)
+     if (fHelp || params.size() != 1)
         throw runtime_error(
                 "removevault \"<owner_address>:<manager_address>\"\n"
                 "\nAllows vault manager to reject staking the indicated vault script.\n"

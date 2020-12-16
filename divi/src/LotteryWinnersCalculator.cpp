@@ -96,16 +96,6 @@ bool LotteryWinnersCalculator::IsPaymentScriptVetoed(const CScript& paymentScrip
     return false;
 }
 
-struct RankAwareScore
-{
-    uint256 score;
-    size_t rank;
-    bool isDuplicateScript;
-};
-struct RankedScoreAwareCoinstakes: public std::map<uint256,RankAwareScore>
-{
-};
-
 static void SortCoinstakesByScore(const RankedScoreAwareCoinstakes& rankedScoreAwareCoinstakes, LotteryCoinstakes& updatedCoinstakes)
 {
     if(rankedScoreAwareCoinstakes.size() > 1)
@@ -152,7 +142,7 @@ bool LotteryWinnersCalculator::TopElevenBestCoinstakesNeedUpdating(
     return shouldUpdateCoinstakeData;
 }
 
-RankedScoreAwareCoinstakes computeRankedScoreAwareCoinstakes(const uint256& lastLotteryBlockHash, const LotteryCoinstakes& updatedCoinstakes)
+RankedScoreAwareCoinstakes LotteryWinnersCalculator::computeRankedScoreAwareCoinstakes(const uint256& lastLotteryBlockHash, const LotteryCoinstakes& updatedCoinstakes)
 {
     RankedScoreAwareCoinstakes rankedScoreAwareCoinstakes;
     std::set<CScript> paymentScripts;

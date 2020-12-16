@@ -99,6 +99,7 @@ public:
     bool WriteMasterKey(unsigned int nID, const CMasterKey& kMasterKey);
 
     bool WriteCScript(const uint160& hash, const CScript& redeemScript);
+    bool EraseCScript(const uint160& hash);
 
     bool WriteWatchOnly(const CScript& script);
     bool EraseWatchOnly(const CScript& script);

@@ -721,6 +721,28 @@ bool CWallet::LoadCScript(const CScript& redeemScript)
     return CCryptoKeyStore::AddCScript(redeemScript);
 }
 
+bool CWallet::AddVault(
+    const CScript& vaultScript,
+    const CBlockIndex* blockIndexToBlockContainingTx,
+    const CTransaction& tx)
+{
+    AddCScript(vaultScript);
+    CBlock block;
+    ReadBlockFromDisk(block, blockIndexToBlockContainingTx);
+    SyncTransaction(tx, &block);
+    auto wtx = GetWalletTx(tx.GetHash());
+    return wtx != nullptr;
+}
+bool CWallet::RemoveVault(const CScript& vaultScript)
+{
+    LOCK2(cs_KeyStore,cs_wallet);
+    mapScripts.erase(vaultScript);
+    if (!fFileBacked)
+        return true;
+    return CWalletDB(strWalletFile).EraseCScript(Hash160(vaultScript));
+}
+
+
 bool CWallet::AddWatchOnly(const CScript& dest)
 {
     if (!CCryptoKeyStore::AddWatchOnly(dest))

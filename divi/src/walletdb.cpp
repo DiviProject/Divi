@@ -151,6 +151,11 @@ bool CWalletDB::WriteCScript(const uint160& hash, const CScript& redeemScript)
     walletDbUpdated_++;
     return Write(std::make_pair(std::string("cscript"), hash), redeemScript, false);
 }
+bool CWalletDB::EraseCScript(const uint160& hash)
+{
+    walletDbUpdated_++;
+    return Erase(std::make_pair(std::string("cscript"), hash));
+}
 
 bool CWalletDB::WriteWatchOnly(const CScript& dest)
 {

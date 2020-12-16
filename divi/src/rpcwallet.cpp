@@ -560,12 +560,51 @@ Value reclaimvaultfunds(const Array& params, bool fHelp)
     return wtx.GetHash().GetHex();
 }
 
+Value removevault(const Array& params, bool fHelp)
+{
+     if (fHelp || params.size() != 2)
+        throw runtime_error(
+                "removevault \"<owner_address>:<manager_address>\"\n"
+                "\nAllows vault manager to reject staking the indicated vault script.\n"
+                "\nArguments:\n"
+                "1. \"<owner_address>:<manager_address>\"  (string, required) Vault representation as a pair of addresses.\n"
+                "1. \"tx_hash\"  (string, required) The transaction hash to search for the initial funding.\n");
+
+    Object result;
+
+    std::string addressEncodings = params[0].get_str();
+    CBitcoinAddress ownerAddress;
+    CBitcoinAddress managerAddress;
+    size_t indexOfSeparator = addressEncodings.find(':');
+    if(indexOfSeparator != std::string::npos)
+    {
+        ownerAddress.SetString(addressEncodings.substr(0u,indexOfSeparator));
+        managerAddress.SetString(addressEncodings.substr(indexOfSeparator+1));
+    }
+    else
+    {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Could not parse vault encoding!");
+    }
+
+    CKeyID managerKeyID;
+    if (!managerAddress.IsValid() || !managerAddress.GetKeyID(managerKeyID))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Vault Registry Failed: Invalid manager DIVI address");
+
+    CKeyID ownerKeyID;
+    if (!ownerAddress.IsValid() || !ownerAddress.GetKeyID(ownerKeyID))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Vault Registry Failed: Invalid owner DIVI address");
+
+    CScript script = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
+    result.push_back(Pair("removal_status", pwalletMain->RemoveVault(script) ));
+    return result;
+}
+
 Value addvault(const Array& params, bool fHelp)
 {
      if (fHelp || params.size() != 2)
         throw runtime_error(
                 "addvault \"<owner_address>:<manager_address>\" funding_txhash\n"
-                "\nAllows vault manager to accept to stake the indicated vault script. The amount is a real and is rounded to the nearest 0.00000001\n"
+                "\nAllows vault manager to accept to stake the indicated vault script.\n"
                 "\nArguments:\n"
                 "1. \"<owner_address>:<manager_address>\"  (string, required) Vault representation as a pair of addresses.\n"
                 "1. \"tx_hash\"  (string, required) The transaction hash to search for the initial funding.\n");
@@ -621,12 +660,8 @@ Value addvault(const Array& params, bool fHelp)
     if(pwalletMain->HaveKey(managerKeyID) )
     {
         CScript script = CreateStakingVaultScript(ToByteVector(ownerKeyID),ToByteVector(managerKeyID));
-        pwalletMain->AddCScript(script);
-        CBlock block;
-        ReadBlockFromDisk(block, blockSearchStart);
-        pwalletMain->SyncTransaction(tx, &block);
-        auto wtx = pwalletMain->GetWalletTx(tx.GetHash());
-        if(!wtx)
+
+        if(!pwalletMain->AddVault(script,blockSearchStart,tx))
         {
             throw JSONRPCError(RPC_INVALID_REQUEST, "AddingVaultScript: Unable to sync TX!");
         }

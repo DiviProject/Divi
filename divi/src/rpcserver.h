@@ -190,6 +190,7 @@ extern json_spirit::Value sendtoaddress(const json_spirit::Array& params, bool f
 extern json_spirit::Value getcoinavailability(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value fundvault(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value reclaimvaultfunds(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value removevault(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value addvault(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value sendtoaddressix(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value signmessage(const json_spirit::Array& params, bool fHelp);

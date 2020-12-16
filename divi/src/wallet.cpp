@@ -143,9 +143,8 @@ bool CheckFinalTx(const CTransaction& tx, int flags = -1)
     return IsFinalTx(tx, nBlockHeight, nBlockTime);
 }
 
-bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine)
+bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine,VaultType& vaultType)
 {
-    VaultType vaultType;
     mine = ::IsMine(keystore, scriptPubKey, vaultType);
     if( coinType == STAKABLE_COINS && vaultType == OWNED_VAULT)
     {
@@ -163,13 +162,15 @@ bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, Ava
 }
 bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType)
 {
+    VaultType vaultType;
     isminetype recoveredOwnershipType;
-    return IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType);
+    return IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType,vaultType);
 }
 bool FilterAvailableTypeByOwnershipType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype requiredOwnershipType)
 {
+    VaultType vaultType;
     isminetype recoveredOwnershipType;
-    if(!IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType))
+    if(!IsAvailableType(keystore,scriptPubKey,coinType,recoveredOwnershipType,vaultType))
     {
         return false;
     }
@@ -1675,9 +1676,18 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
 bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, const uint256& wtxid, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable, AvailableCoinsType coinType) const
 {
     isminetype mine;
-    if(!IsAvailableType(*this,pcoin->vout[i].scriptPubKey,coinType,mine))
+    VaultType vaultType;
+    if(!IsAvailableType(*this,pcoin->vout[i].scriptPubKey,coinType,mine,vaultType))
     {
         return false;
+    }
+    if(settings.ParameterIsSet("-vault_min"))
+    {
+        if(vaultType==MANAGED_VAULT &&
+            pcoin->vout[i].nValue <  settings.GetArg("-vault_min",0)*COIN)
+        {
+            return false;
+        }
     }
 
     if (IsSpent(wtxid, i))

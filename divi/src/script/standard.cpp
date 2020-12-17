@@ -261,8 +261,7 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::
         {
             if(typeRet == TX_VAULT)
             {
-                CKeyID keyId(uint160(vSolutions[i]));
-                CTxDestination address = keyId;
+                CTxDestination address = CKeyID(uint160(vSolutions[i]));
                 addressRet.push_back(address);
             }
             else

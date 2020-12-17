@@ -355,6 +355,7 @@ libbitcoin_server_a_SOURCES = \
   pow.cpp \
   rest.cpp \
   rpcblockchain.cpp \
+  rpclottery.cpp \
   rpcmasternode.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \

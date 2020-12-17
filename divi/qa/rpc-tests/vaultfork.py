@@ -11,8 +11,7 @@ from authproxy import JSONRPCException
 from util import *
 
 from PowToPosTransition import createPoSStacks, generatePoSBlocks
-
-ACTIVATION_TIME = 2_000_000_000
+ACTIVATION_TIME = 1_609_459_199
 
 
 class VaultForkTest (BitcoinTestFramework):

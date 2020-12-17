@@ -259,12 +259,21 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::
         for (unsigned int i = solutionsStartIndex;
             i < solutionsEndIndex; i++)
         {
-            CPubKey pubKey(vSolutions[i]);
-            if (!pubKey.IsValid())
-                continue;
+            if(typeRet == TX_VAULT)
+            {
+                CKeyID keyId(uint160(vSolutions[i]));
+                CTxDestination address = keyId;
+                addressRet.push_back(address);
+            }
+            else
+            {
+                CPubKey pubKey(vSolutions[i]);
+                if (!pubKey.IsValid())
+                    continue;
 
-            CTxDestination address = pubKey.GetID();
-            addressRet.push_back(address);
+                CTxDestination address = pubKey.GetID();
+                addressRet.push_back(address);
+            }
         }
 
         if (addressRet.empty())

@@ -74,7 +74,7 @@ Value getlotteryblockwinners(const Array& params, bool fHelp)
         destinationString = destinationString.substr(0, destinationString.size()-1);
 
         coinstakeResult.push_back(Pair("Address", destinationString));
-        coinstakeResult.push_back(Pair("Rank", rankAwareEntry.rank));
+        coinstakeResult.push_back(Pair("Rank", static_cast<uint64_t>(rankAwareEntry.rank) ));
         coinstakeResult.push_back(Pair("Score", rankAwareEntry.score.ToString().substr(0,8) ));
 
         lotteryResults.push_back(coinstakeResult);

@@ -263,7 +263,7 @@ public:
     }
 
     //! mark an outpoint spent, and construct undo information
-    bool Spend(const COutPoint& out, CTxInUndo& undo);
+    bool Spend(int nPos, CTxInUndo& undo);
 
     //! mark a vout spent
     bool Spend(int nPos);

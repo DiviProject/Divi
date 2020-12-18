@@ -7,7 +7,7 @@
 #include <pubkey.h>
 
 MutableTransactionSignatureChecker::MutableTransactionSignatureChecker(
-    const CMutableTransaction* txToIn, 
+    const CMutableTransaction* txToIn,
     unsigned int nInIn
     ) : TransactionSignatureChecker(NULL, nInIn)
     , txToPtr(std::make_shared<const CTransaction>(*txToIn))
@@ -42,7 +42,7 @@ bool static IsCompressedOrUncompressedPubKey(const valtype &vchPubKey) {
  * Where R and S are not negative (their first byte has its highest bit not set), and not
  * excessively padded (do not start with a 0 byte, unless an otherwise negative number follows,
  * in which case a single 0 byte is necessary and even required).
- * 
+ *
  * See https://bitcointalk.org/index.php?topic=8392.msg127623#msg127623
  *
  * This function is consensus-critical since BIP66.
@@ -82,7 +82,7 @@ bool static IsValidSignatureEncoding(const std::vector<unsigned char> &sig) {
     // Verify that the length of the signature matches the sum of the length
     // of the elements.
     if ((size_t)(lenR + lenS + 7) != sig.size()) return false;
- 
+
     // Check whether the R element is an integer.
     if (sig[2] != 0x02) return false;
 
@@ -292,14 +292,14 @@ bool TransactionSignatureChecker::VerifySignature(const std::vector<unsigned cha
     return pubkey.Verify(sighash, vchSig);
 }
 
-bool TransactionSignatureChecker::CheckSig(const vector<unsigned char>& vchSigIn, const vector<unsigned char>& vchPubKey, const CScript& scriptCode) const
+bool TransactionSignatureChecker::CheckSig(const std::vector<unsigned char>& vchSigIn, const std::vector<unsigned char>& vchPubKey, const CScript& scriptCode) const
 {
     CPubKey pubkey(vchPubKey);
     if (!pubkey.IsValid())
         return false;
 
     // Hash type is one byte tacked on to the end of the signature
-    vector<unsigned char> vchSig(vchSigIn);
+    std::vector<unsigned char> vchSig(vchSigIn);
     if (vchSig.empty())
         return false;
     int nHashType = vchSig.back();
@@ -311,4 +311,9 @@ bool TransactionSignatureChecker::CheckSig(const vector<unsigned char>& vchSigIn
         return false;
 
     return true;
+}
+
+bool TransactionSignatureChecker::CheckCoinstake() const
+{
+    return txTo->IsCoinStake();
 }

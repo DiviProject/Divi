@@ -23,6 +23,7 @@ CWallet* pwalletMain;
 
 extern bool fPrintToConsole;
 extern void noui_connect();
+extern NotificationInterfaceRegistry registry;//TODO: rid this
 
 struct TestingSetup {
     CCoinsViewDB *pcoinsdbview;
@@ -40,7 +41,7 @@ struct TestingSetup {
 #endif
         pathTemp = GetTempPath() / strprintf("test_divi_%lu_%i", (unsigned long)GetTime(), (int)(GetRand(100000)));
         boost::filesystem::create_directories(pathTemp);
-        mapArgs["-datadir"] = pathTemp.string();
+        SetParameter("-datadir", pathTemp.string());
         pblocktree = new CBlockTreeDB(1 << 20, true);
         pcoinsdbview = new CCoinsViewDB(1 << 23, true);
         pcoinsTip = new CCoinsViewCache(pcoinsdbview);

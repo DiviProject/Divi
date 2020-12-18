@@ -6,15 +6,15 @@
 #ifndef MASTERNODE_H
 #define MASTERNODE_H
 
-#include "base58.h"
 #include "key.h"
-#include "main.h"
 #include "net.h"
 #include "sync.h"
 #include "timedata.h"
+#include <primitives/transaction.h>
 
 
 #include "masternodeconfig.h"
+#include "masternode-tier.h"
 
 #define MASTERNODE_MIN_CONFIRMATIONS 15
 #define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
@@ -24,15 +24,25 @@
 #define MASTERNODE_REMOVAL_SECONDS (130 * 60)
 #define MASTERNODE_CHECK_SECONDS 5
 
-using namespace std;
-
 class CMasternode;
 class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
-extern map<int64_t, uint256> mapCacheBlockHashes;
 
-bool GetBlockHash(uint256& hash, int nBlockHeight);
+/** Returns the block hash that is used in the masternode scoring / ranking
+ *  logic for the winner of block nBlockHeight.  (It is the hash of the
+ *  block nBlockHeight-101, but that's an implementation detail.)  */
+bool GetBlockHashForScoring(uint256& hash, int nBlockHeight);
+
+/** Returns the scoring hash corresponding to the given CBlockIndex
+ *  offset by N.  In other words, that is used to compute the winner
+ *  that should be payed in block pindex->nHeight+N.
+ *
+ *  In contrast to GetBlockHashForScoring, this works entirely independent
+ *  of chainActive, and is guaranteed to look into the correct ancestor
+ *  chain independent of potential reorgs.  */
+bool GetBlockHashForScoring(uint256& hash,
+                            const CBlockIndex* pindex, const int offset);
 
 //
 // The Masternode Ping Class : Contains a different serialize method for sending pings from masternodes throughout the network
@@ -49,7 +59,6 @@ public:
 
     CMasternodePing();
     CMasternodePing(CTxIn& newVin);
-    static CMasternodePing createDelayedMasternodePing(CTxIn& newVin);
 
     ADD_SERIALIZE_METHODS;
 
@@ -62,10 +71,13 @@ public:
         READWRITE(vchSig);
     }
 
-    bool CheckAndUpdate(int& nDos, bool fRequireEnabled = true);
+    /** Verifies if the ping is valid for the given masternode.
+     *  If it is, the method returns true and updates the last
+     *  ping stored with the masternode.  */
+    bool CheckAndUpdate(CMasternode& mn, int& nDos, bool fRequireEnabled = true) const;
     std::string getMessageToSign() const;
-    bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
-    void Relay();
+    bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
+    void Relay() const;
 
     uint256 GetHash() const
     {
@@ -114,6 +126,17 @@ private:
     mutable CCriticalSection cs;
     int64_t lastTimeChecked;
 
+protected:
+
+    /** Cached block hash of where the collateral output of this
+     *  masternode got included.  */
+    mutable uint256 collateralBlock;
+
+    /** Looks up and returns the block index when the collateral got
+     *  included in the currently active chain.  If it is not yet confirmed
+     *  then this returns nullptr.  */
+    const CBlockIndex* GetCollateralBlock() const;
+
 public:
     enum state {
         MASTERNODE_PRE_ENABLED,
@@ -127,15 +150,6 @@ public:
         MASTERNODE_POS_ERROR
     };
 
-    enum Tier {
-        MASTERNODE_TIER_COPPER,
-        MASTERNODE_TIER_SILVER,
-        MASTERNODE_TIER_GOLD,
-        MASTERNODE_TIER_PLATINUM,
-        MASTERNODE_TIER_DIAMOND,
-        MASTERNODE_TIER_INVALID
-    };
-
     CTxIn vin;
     CService addr;
     CPubKey pubKeyCollateralAddress;
@@ -143,52 +157,22 @@ public:
     std::vector<unsigned char> sig;
     int activeState;
     int64_t sigTime; //mnb message time
-    int cacheInputAge;
-    int cacheInputAgeBlock;
-    bool unitTest;
     bool allowFreeTx;
     int protocolVersion;
     int nActiveState;
     int nScanningErrorCount;
     int nLastScanningErrorBlockHeight;
-    int nTier;
+    MasternodeTier nTier;
     CMasternodePing lastPing;
 
     CMasternode();
     CMasternode(const CMasternode& other);
     CMasternode(const CMasternodeBroadcast& mnb);
 
+    void swap(CMasternode& first, CMasternode& second); // nothrow
 
-    void swap(CMasternode& first, CMasternode& second) // nothrow
-    {
-        // enable ADL (not necessary in our case, but good practice)
-        using std::swap;
+    CMasternode& operator=(CMasternode from);
 
-        // by swapping the members of two classes,
-        // the two classes are effectively swapped
-        swap(first.vin, second.vin);
-        swap(first.addr, second.addr);
-        swap(first.pubKeyCollateralAddress, second.pubKeyCollateralAddress);
-        swap(first.pubKeyMasternode, second.pubKeyMasternode);
-        swap(first.sig, second.sig);
-        swap(first.activeState, second.activeState);
-        swap(first.sigTime, second.sigTime);
-        swap(first.lastPing, second.lastPing);
-        swap(first.cacheInputAge, second.cacheInputAge);
-        swap(first.cacheInputAgeBlock, second.cacheInputAgeBlock);
-        swap(first.unitTest, second.unitTest);
-        swap(first.allowFreeTx, second.allowFreeTx);
-        swap(first.protocolVersion, second.protocolVersion);
-        swap(first.nScanningErrorCount, second.nScanningErrorCount);
-        swap(first.nLastScanningErrorBlockHeight, second.nLastScanningErrorBlockHeight);
-        swap(first.nTier, second.nTier);
-    }
-
-    CMasternode& operator=(CMasternode from)
-    {
-        swap(*this, from);
-        return *this;
-    }
     friend bool operator==(const CMasternode& a, const CMasternode& b)
     {
         return a.vin == b.vin;
@@ -198,7 +182,10 @@ public:
         return !(a.vin == b.vin);
     }
 
-    uint256 CalculateScore(int mod = 1, int64_t nBlockHeight = 0);
+    /** Calculates the score of the current masternode, based on the given
+     *  seed hash.  It should be the result of GetBlockHashForScoring of
+     *  the target block height.  */
+    uint256 CalculateScore(const uint256& seedHash) const;
 
     ADD_SERIALIZE_METHODS;
 
@@ -216,85 +203,48 @@ public:
         READWRITE(protocolVersion);
         READWRITE(activeState);
         READWRITE(lastPing);
-        READWRITE(cacheInputAge);
-        READWRITE(cacheInputAgeBlock);
-        READWRITE(unitTest);
+        READWRITE(collateralBlock);
         READWRITE(allowFreeTx);
         READWRITE(nScanningErrorCount);
         READWRITE(nLastScanningErrorBlockHeight);
-        READWRITE(nTier);
+
+        int tier;
+        if (!ser_action.ForRead ())
+            tier = static_cast<int> (nTier);
+        READWRITE(tier);
+        if (ser_action.ForRead ())
+            nTier = static_cast<MasternodeTier> (tier);
     }
 
-    int64_t SecondsSincePayment();
+    int64_t SecondsSincePayment() const;
 
     bool UpdateFromNewBroadcast(CMasternodeBroadcast &mnb);
 
-    inline uint64_t SliceHash(uint256& hash, int slice)
-    {
-        uint64_t n = 0;
-        memcpy(&n, &hash + slice * 64, 64);
-        return n;
-    }
-
     void Check(bool forceCheck = false);
 
-    bool IsBroadcastedWithin(int seconds)
-    {
-        return (GetAdjustedTime() - sigTime) < seconds;
-    }
+    bool IsBroadcastedWithin(int seconds) const;
 
-    bool IsPingedWithin(int seconds, int64_t now = -1)
-    {
-        now == -1 ? now = GetAdjustedTime() : now;
+    bool TimeSinceLastPingIsWithin(int seconds, int64_t now = -1) const;
+    bool IsTooEarlyToReceivePingUpdate(int64_t now) const;
+    bool IsTooEarlyToSendPingUpdate(int64_t now) const;
 
-        return (lastPing == CMasternodePing()) ? false : now - lastPing.sigTime < seconds;
-    }
+    void Disable();
 
-    void Disable()
-    {
-        sigTime = 0;
-        lastPing = CMasternodePing();
-    }
+    bool IsEnabled() const;
 
-    bool IsEnabled()
-    {
-        return activeState == MASTERNODE_ENABLED;
-    }
+    int GetMasternodeInputAge() const;
 
-    int GetMasternodeInputAge()
-    {
-        if (chainActive.Tip() == NULL) return 0;
+    static CAmount GetTierCollateralAmount(MasternodeTier tier);
+    static MasternodeTier GetTierByCollateralAmount(CAmount nCollateral);
+    static bool IsTierValid(MasternodeTier tier);
+    static std::string TierToString(MasternodeTier tier);
 
-        if (cacheInputAge == 0) {
-            cacheInputAge = GetInputAge(vin);
-            cacheInputAgeBlock = chainActive.Tip()->nHeight;
-        }
+    std::string GetStatus() const;
 
-        return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
-    }
+    std::string Status() const;
 
-    static CAmount GetTierCollateralAmount(Tier tier);
-    static Tier GetTierByCollateralAmount(CAmount nCollateral);
-    static bool IsTierValid(Tier tier);
-    static string TierToString(Tier tier);
-
-    std::string GetStatus();
-
-    std::string Status()
-    {
-        std::string strStatus = "ACTIVE";
-
-        if (activeState == CMasternode::MASTERNODE_ENABLED) strStatus = "ENABLED";
-        if (activeState == CMasternode::MASTERNODE_EXPIRED) strStatus = "EXPIRED";
-        if (activeState == CMasternode::MASTERNODE_VIN_SPENT) strStatus = "VIN_SPENT";
-        if (activeState == CMasternode::MASTERNODE_REMOVE) strStatus = "REMOVE";
-        if (activeState == CMasternode::MASTERNODE_POS_ERROR) strStatus = "POS_ERROR";
-
-        return strStatus;
-    }
-
-    int64_t GetLastPaid();
-    bool IsValidNetAddr();
+    int64_t GetLastPaid() const;
+    bool IsValidNetAddr() const;
 };
 
 
@@ -305,19 +255,19 @@ public:
 class CMasternodeBroadcast : public CMasternode
 {
 public:
-    CMasternodeBroadcast();
+    CMasternodeBroadcast() = default;
     CMasternodeBroadcast(
-        CService newAddr, 
-        CTxIn newVin, 
-        CPubKey pubKeyCollateralAddress, 
-        CPubKey pubKeyMasternode, 
-        Tier nMasternodeTier, 
+        CService newAddr,
+        CTxIn newVin,
+        CPubKey pubKeyCollateralAddress,
+        CPubKey pubKeyMasternode,
+        MasternodeTier nMasternodeTier,
         int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
     bool CheckAndUpdate(int& nDoS);
-    bool CheckInputsAndAdd(int& nDos);
-    bool Sign(CKey& keyCollateralAddress);
+    bool CheckInputs(int& nDos) const;
+    bool Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
     void Relay() const;
     std::string getMessageToSign() const;
 
@@ -334,7 +284,15 @@ public:
         READWRITE(sigTime);
         READWRITE(protocolVersion);
         READWRITE(lastPing);
-        READWRITE(nTier);
+
+        int tier;
+        if (!ser_action.ForRead ())
+            tier = static_cast<int> (nTier);
+        READWRITE(tier);
+        if (ser_action.ForRead ()) {
+            nTier = static_cast<MasternodeTier> (tier);
+            collateralBlock.SetNull();
+        }
     }
 
     uint256 GetHash() const
@@ -351,29 +309,29 @@ class CMasternodeBroadcastFactory
 {
 public:
     /// Create Masternode broadcast, needs to be relayed manually after that
-    static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry, 
-                       std::string& strErrorRet, 
-                       CMasternodeBroadcast& mnbRet, 
+    static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry,
+                       std::string& strErrorRet,
+                       CMasternodeBroadcast& mnbRet,
                        bool fOffline = false,
                        bool deferRelay = false);
 
     static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry,
                        CPubKey pubkeyCollateralAddress,
-                       std::string& strErrorRet, 
-                       CMasternodeBroadcast& mnbRet, 
-                       bool fOffline = false); 
-private:    
+                       std::string& strErrorRet,
+                       CMasternodeBroadcast& mnbRet,
+                       bool fOffline = false);
+private:
     static void createWithoutSignatures(
-        CTxIn txin, 
+        CTxIn txin,
         CService service,
-        CPubKey pubKeyCollateralAddressNew, 
-        CPubKey pubKeyMasternodeNew, 
-        CMasternode::Tier nMasternodeTier,
+        CPubKey pubKeyCollateralAddressNew,
+        CPubKey pubKeyMasternodeNew,
+        MasternodeTier nMasternodeTier,
         bool deferRelay,
         CMasternodeBroadcast& mnbRet);
 
     static bool signPing(
-        CKey keyMasternodeNew, 
+        CKey keyMasternodeNew,
         CPubKey pubKeyMasternodeNew,
         CMasternodePing& mnp,
         std::string& strErrorRet);
@@ -390,23 +348,23 @@ private:
         CMasternodeBroadcast& mnb,
         std::string& strErrorRet);
 
-    static bool Create(CTxIn vin, 
+    static bool Create(CTxIn vin,
                         CService service,
-                        CKey keyCollateralAddressNew, 
+                        CKey keyCollateralAddressNew,
                         CPubKey pubKeyCollateralAddressNew,
-                        CKey keyMasternodeNew, 
+                        CKey keyMasternodeNew,
                         CPubKey pubKeyMasternodeNew,
-                        CMasternode::Tier nMasternodeTier,
-                        std::string& strErrorRet, 
+                        MasternodeTier nMasternodeTier,
+                        std::string& strErrorRet,
                         CMasternodeBroadcast& mnbRet,
                         bool deferRelay);
     static bool checkBlockchainSync(std::string& strErrorRet, bool fOffline);
     static bool setMasternodeKeys(
-        const std::string& strKeyMasternode, 
-        std::pair<CKey,CPubKey>& masternodeKeyPair, 
+        const std::string& strKeyMasternode,
+        std::pair<CKey,CPubKey>& masternodeKeyPair,
         std::string& strErrorRet);
     static bool setMasternodeCollateralKeys(
-        const std::string& txHash, 
+        const std::string& txHash,
         const std::string& outputIndex,
         const std::string& service,
         bool collateralPrivKeyIsRemote,
@@ -415,23 +373,20 @@ private:
         std::string& error);
     static bool checkMasternodeCollateral(
         const CTxIn& txin,
-        const std::string& txHash, 
+        const std::string& txHash,
         const std::string& outputIndex,
         const std::string& service,
-        CMasternode::Tier& nMasternodeTier,
-        std::string& strErrorRet);
-    static bool checkNetworkPort(
-        const std::string& strService,
+        MasternodeTier& nMasternodeTier,
         std::string& strErrorRet);
     static bool createArgumentsFromConfig(
-        const CMasternodeConfig::CMasternodeEntry configEntry, 
+        const CMasternodeConfig::CMasternodeEntry configEntry,
         std::string& strErrorRet,
         bool fOffline,
         bool collateralPrivKeyIsRemote,
         CTxIn& txin,
         std::pair<CKey,CPubKey>& masternodeKeyPair,
         std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
-        CMasternode::Tier& nMasternodeTier);
+        MasternodeTier& nMasternodeTier);
 };
 
 #endif

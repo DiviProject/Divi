@@ -9,7 +9,6 @@
 #include <assert.h>
 #include <climits>
 #include <limits>
-#include "pubkey.h"
 #include <stdexcept>
 #include <stdint.h>
 #include <string.h>
@@ -17,6 +16,9 @@
 #include <vector>
 
 #include <script/opcodes.h>
+
+
+class CPubKey;
 
 typedef std::vector<unsigned char> valtype;
 
@@ -99,7 +101,7 @@ public:
     inline CScriptNum& operator+=( const CScriptNum& rhs)       { return operator+=(rhs.m_value);  }
     inline CScriptNum& operator-=( const CScriptNum& rhs)       { return operator-=(rhs.m_value);  }
 
-    inline CScriptNum operator-()                         const
+    inline CScriptNum operator-() const
     {
         assert(m_value != std::numeric_limits<int64_t>::min());
         return CScriptNum(-m_value);
@@ -294,10 +296,28 @@ public:
         return *this;
     }
 
-    CScript& operator<<(const CPubKey& key)
+    CScript& operator<<(const CPubKey& key);
+
+    /** Pushes a given data vector in the minimal possible way.  This uses
+     *  OP_1 to OP_16 as well as some others to do single-byte pushes
+     *  for some cases (unlike operator<<).  The result will comply with
+     *  SCRIPT_VERIFY_MINIMALDATA.  A notable situation where this can
+     *  not be used instead of operator<< is the genesis block scriptsig.  */
+    CScript& PushMinimal(const std::vector<unsigned char>& b)
     {
-        std::vector<unsigned char> vchKey = key.Raw();
-        return (*this) << vchKey;
+        if (b.size() == 0) {
+            return *this << OP_0;
+        }
+
+        if (b.size() == 1 && b[0] >= 1 && b[0] <= 16) {
+            return *this << static_cast<opcodetype>(OP_1 + (b[0] - 1));
+        }
+
+        if (b.size() == 1 && b[0] == 0x81) {
+            return *this << OP_1NEGATE;
+        }
+
+        return *this << b;
     }
 
 

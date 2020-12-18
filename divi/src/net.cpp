@@ -21,6 +21,12 @@
 #include <timeIntervalConstants.h>
 #include <walletBackupFeatureContainer.h>
 #include "wallet.h"
+#include "Settings.h"
+#include <main.h>
+#include <Logging.h>
+#include <DataDirectory.h>
+#include <utiltime.h>
+#include <util.h>
 
 #ifdef WIN32
 #include <string.h>
@@ -58,7 +64,7 @@
 
 using namespace boost;
 using namespace std;
-
+extern Settings& settings;
 namespace
 {
 const int MAX_OUTBOUND_CONNECTIONS = 16;
@@ -74,6 +80,7 @@ struct ListenSocket {
 //
 // Global state variables
 //
+extern CWallet* pwalletMain;
 bool fDiscover = true;
 bool fListen = true;
 uint64_t nLocalServices = NODE_NETWORK;
@@ -88,7 +95,7 @@ CAddrMan addrman;
 int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
-vector<CNode*> vNodes;
+std::vector<CNode*> vNodes;
 CCriticalSection cs_vNodes;
 map<CInv, CDataStream> mapRelay;
 deque<pair<int64_t, CInv> > vRelayExpiration;
@@ -101,7 +108,7 @@ CCriticalSection cs_vOneShots;
 set<CNetAddr> setservAddNodeAddresses;
 CCriticalSection cs_setservAddNodeAddresses;
 
-vector<std::string> vAddedNodes;
+std::vector<std::string> vAddedNodes;
 CCriticalSection cs_vAddedNodes;
 
 NodeId nLastNodeId = 0;
@@ -122,7 +129,7 @@ void AddOneShot(string strDest)
 
 unsigned short GetListenPort()
 {
-    return (unsigned short)(GetArg("-port", Params().GetDefaultPort()));
+    return (unsigned short)(settings.GetArg("-port", Params().GetDefaultPort()));
 }
 
 // find 'best' local address for a particular peer
@@ -486,7 +493,7 @@ void CNode::PushVersion()
     else
         LogPrint("net", "send version message: version %d, blocks=%d, us=%s, peer=%d\n", PROTOCOL_VERSION, nBestHeight, addrMe.ToString(), id);
     PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
-                nLocalHostNonce, FormatSubVersion(std::vector<string>()), nBestHeight, true);
+                nLocalHostNonce, FormatSubVersion(std::vector<std::string>()), nBestHeight, true);
 }
 
 void CNode::SetSporkCount(int nSporkCountIn)
@@ -543,7 +550,7 @@ bool CNode::IsBanned(CNetAddr ip)
 
 bool CNode::Ban(const CNetAddr& addr)
 {
-    int64_t banTime = GetTime() + GetArg("-bantime", 60 * 60 * 24); // Default 24-hour ban
+    int64_t banTime = GetTime() + settings.GetArg("-bantime", 60 * 60 * 24); // Default 24-hour ban
     {
         LOCK(cs_setBanned);
         if (setBanned[addr] < banTime)
@@ -750,7 +757,7 @@ void ThreadSocketHandler()
         {
             LOCK(cs_vNodes);
             // Disconnect unused nodes
-            vector<CNode*> vNodesCopy = vNodes;
+            std::vector<CNode*> vNodesCopy = vNodes;
             BOOST_FOREACH (CNode* pnode, vNodesCopy) {
                 if (pnode->fDisconnect ||
                     (pnode->GetRefCount() <= 0 && pnode->vRecvMsg.empty() && pnode->nSendSize == 0 && pnode->ssSend.empty())) {
@@ -935,7 +942,7 @@ void ThreadSocketHandler()
         //
         // Service each socket
         //
-        vector<CNode*> vNodesCopy;
+        std::vector<CNode*> vNodesCopy;
         {
             LOCK(cs_vNodes);
             vNodesCopy = vNodes;
@@ -1134,7 +1141,7 @@ void ThreadDNSAddressSeed()
 {
     // goal: only query DNS seeds if address need is acute
     if ((addrman.size() > 0) &&
-        (!GetBoolArg("-forcednsseed", false))) {
+        (!settings.GetBoolArg("-forcednsseed", false))) {
         MilliSleep(11 * 1000);
 
         LOCK(cs_vNodes);
@@ -1144,7 +1151,7 @@ void ThreadDNSAddressSeed()
         }
     }
 
-    const vector<CDNSSeedData>& vSeeds = Params().DNSSeeds();
+    const std::vector<CDNSSeedData>& vSeeds = Params().DNSSeeds();
     int found = 0;
 
     LogPrintf("Loading addresses from DNS seeds (could take a while)\n");
@@ -1153,8 +1160,8 @@ void ThreadDNSAddressSeed()
         if (HaveNameProxy()) {
             AddOneShot(seed.host);
         } else {
-            vector<CNetAddr> vIPs;
-            vector<CAddress> vAdd;
+            std::vector<CNetAddr> vIPs;
+            std::vector<CAddress> vAdd;
             if (LookupHost(seed.host.c_str(), vIPs)) {
                 BOOST_FOREACH (CNetAddr& ip, vIPs) {
                     int nOneDay = 24 * 3600;
@@ -1204,7 +1211,7 @@ void static ProcessOneShot()
 void ThreadOpenConnections()
 {
     // Connect to specific addresses
-    if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0) {
+    if (settings.ParameterIsSet("-connect") && mapMultiArgs["-connect"].size() > 0) {
         for (int64_t nLoop = 0;; nLoop++) {
             ProcessOneShot();
             BOOST_FOREACH (string strAddr, mapMultiArgs["-connect"]) {
@@ -1246,7 +1253,7 @@ void ThreadOpenConnections()
         // Only connect out to one peer per network group (/16 for IPv4).
         // Do this here so we don't have to critsect vNodes inside mapAddresses critsect.
         int nOutbound = 0;
-        set<vector<unsigned char> > setConnected;
+        std::set<std::vector<unsigned char> > setConnected;
         {
             LOCK(cs_vNodes);
             BOOST_FOREACH (CNode* pnode, vNodes) {
@@ -1327,9 +1334,9 @@ void ThreadOpenAddedConnections()
                 lAddresses.push_back(strAddNode);
         }
 
-        list<vector<CService> > lservAddressesToAdd(0);
-        BOOST_FOREACH (string& strAddNode, lAddresses) {
-            vector<CService> vservNode(0);
+        std::list<std::vector<CService> > lservAddressesToAdd(0);
+        BOOST_FOREACH (std::string& strAddNode, lAddresses) {
+            std::vector<CService> vservNode(0);
             if (Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0)) {
                 lservAddressesToAdd.push_back(vservNode);
                 {
@@ -1344,7 +1351,7 @@ void ThreadOpenAddedConnections()
         {
             LOCK(cs_vNodes);
             BOOST_FOREACH (CNode* pnode, vNodes)
-                for (list<vector<CService> >::iterator it = lservAddressesToAdd.begin(); it != lservAddressesToAdd.end(); it++)
+                for (std::list<std::vector<CService> >::iterator it = lservAddressesToAdd.begin(); it != lservAddressesToAdd.end(); it++)
                     BOOST_FOREACH (CService& addrNode, *(it))
                         if (pnode->addr == addrNode) {
                             it = lservAddressesToAdd.erase(it);
@@ -1352,7 +1359,7 @@ void ThreadOpenAddedConnections()
                             break;
                         }
         }
-        BOOST_FOREACH (vector<CService>& vserv, lservAddressesToAdd) {
+        BOOST_FOREACH (std::vector<CService>& vserv, lservAddressesToAdd) {
             CSemaphoreGrant grant(*semOutbound);
             OpenNetworkConnection(CAddress(vserv[i % vserv.size()]), &grant);
             MilliSleep(500);
@@ -1398,7 +1405,7 @@ void ThreadMessageHandler()
 
     SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
     while (true) {
-        vector<CNode*> vNodesCopy;
+        std::vector<CNode*> vNodesCopy;
         {
             LOCK(cs_vNodes);
             vNodesCopy = vNodes;
@@ -1455,28 +1462,11 @@ void ThreadMessageHandler()
     }
 }
 
-// ppcoin: stake minter thread
-void static ThreadStakeMinter()
-{
-    boost::this_thread::interruption_point();
-    LogPrintf("ThreadStakeMinter started\n");
-    CWallet* pwallet = pwalletMain;
-    try {
-        BitcoinMiner(pwallet, true);
-        boost::this_thread::interruption_point();
-    } catch (std::exception& e) {
-        LogPrintf("ThreadStakeMinter() exception \n");
-    } catch (...) {
-        LogPrintf("ThreadStakeMinter() error \n");
-    }
-    LogPrintf("ThreadStakeMinter exiting,\n");
-}
-
 void ThreadBackupWallet()
 {
-    std::string walletFileName = GetArg("-wallet", "wallet.dat");
-    static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
-    while (true) 
+    std::string walletFileName = settings.GetArg("-wallet", "wallet.dat");
+    static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(settings.GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
+    while (true)
     {
         if(!pwalletMain->fFileBacked)
         {
@@ -1484,9 +1474,9 @@ void ThreadBackupWallet()
             return;
         }
         {
-            
+
             LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
-            if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName)) 
+            if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName))
             {
                 // Flush log data to the dat file
                 walletBackupFeatureContainer.GetDatabase().Dettach(walletFileName);
@@ -1496,7 +1486,7 @@ void ThreadBackupWallet()
                     walletBackupFeatureContainer.GetMonthlyBackupCreator().BackupWallet();
                     return;
                 }
-                else 
+                else
                 {
                     LogPrintf("Error: Wallet integrity check failed.");
                     return;
@@ -1570,9 +1560,9 @@ bool BindListenPort(const CService& addrBind, string& strError, bool fWhiteliste
     if (::bind(hListenSocket, (struct sockaddr*)&sockaddr, len) == SOCKET_ERROR) {
         int nErr = WSAGetLastError();
         if (nErr == WSAEADDRINUSE)
-            strError = strprintf(_("Unable to bind to %s on this computer. DIVI Core is probably already running."), addrBind.ToString());
+            strError = strprintf(translate("Unable to bind to %s on this computer. DIVI Core is probably already running."), addrBind.ToString());
         else
-            strError = strprintf(_("Unable to bind to %s on this computer (bind returned error %s)"), addrBind.ToString(), NetworkErrorString(nErr));
+            strError = strprintf(translate("Unable to bind to %s on this computer (bind returned error %s)"), addrBind.ToString(), NetworkErrorString(nErr));
         LogPrintf("%s\n", strError);
         CloseSocket(hListenSocket);
         return false;
@@ -1581,7 +1571,7 @@ bool BindListenPort(const CService& addrBind, string& strError, bool fWhiteliste
 
     // Listen for incoming connections
     if (listen(hListenSocket, SOMAXCONN) == SOCKET_ERROR) {
-        strError = strprintf(_("Error: Listening for incoming connections failed (listen returned error %s)"), NetworkErrorString(WSAGetLastError()));
+        strError = strprintf(translate("Error: Listening for incoming connections failed (listen returned error %s)"), NetworkErrorString(WSAGetLastError()));
         LogPrintf("%s\n", strError);
         CloseSocket(hListenSocket);
         return false;
@@ -1604,7 +1594,7 @@ void static Discover(boost::thread_group& threadGroup)
     // Get local host IP
     char pszHostName[256] = "";
     if (gethostname(pszHostName, sizeof(pszHostName)) != SOCKET_ERROR) {
-        vector<CNetAddr> vaddr;
+        std::vector<CNetAddr> vaddr;
         if (LookupHost(pszHostName, vaddr)) {
             BOOST_FOREACH (const CNetAddr& addr, vaddr) {
                 if (AddLocal(addr, LOCAL_IF))
@@ -1640,7 +1630,7 @@ void static Discover(boost::thread_group& threadGroup)
 
 void StartNode(boost::thread_group& threadGroup)
 {
-    uiInterface.InitMessage(_("Loading addresses..."));
+    uiInterface.InitMessage(translate("Loading addresses..."));
     // Load addresses for peers.dat
     int64_t nStart = GetTimeMillis();
     {
@@ -1667,13 +1657,13 @@ void StartNode(boost::thread_group& threadGroup)
     // Start threads
     //
 
-    if (!GetBoolArg("-dnsseed", true))
+    if (!settings.GetBoolArg("-dnsseed", true))
         LogPrintf("DNS seeding disabled\n");
     else
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "dnsseed", &ThreadDNSAddressSeed));
 
     // Map ports with UPnP
-    MapPort(GetBoolArg("-upnp", DEFAULT_UPNP));
+    MapPort(settings.GetBoolArg("-upnp", DEFAULT_UPNP));
 
     // Send and receive from sockets, accept connections
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "net", &ThreadSocketHandler));
@@ -1690,9 +1680,9 @@ void StartNode(boost::thread_group& threadGroup)
     // Dump network addresses
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
 
-    // ppcoin:mint proof-of-stake blocks in the background
-    if (GetBoolArg("-staking", true))
-        threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "stakemint", &ThreadStakeMinter));
+    // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
+    if (settings.GetBoolArg("-staking", true) && Params().NetworkID() != CBaseChainParams::REGTEST)
+        threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "stakemint", &ThreadStakeMinter, pwalletMain));
 
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "backup", &ThreadBackupWallet, NUMBER_OF_SECONDS_IN_A_DAY * 1000));
 }
@@ -1931,7 +1921,7 @@ bool CAddrDB::Read(CAddrMan& addr)
     // Don't try to resize to a negative number if file is small
     if (dataSize < 0)
         dataSize = 0;
-    vector<unsigned char> vchData;
+    std::vector<unsigned char> vchData;
     vchData.resize(dataSize);
     uint256 hashIn;
 
@@ -1969,8 +1959,8 @@ bool CAddrDB::Read(CAddrMan& addr)
     return true;
 }
 
-unsigned int ReceiveFloodSize() { return 1000 * GetArg("-maxreceivebuffer", 5 * 1000); }
-unsigned int SendBufferSize() { return 1000 * GetArg("-maxsendbuffer", 1 * 1000); }
+unsigned int ReceiveFloodSize() { return 1000 * settings.GetArg("-maxreceivebuffer", 5 * 1000); }
+unsigned int SendBufferSize() { return 1000 * settings.GetArg("-maxsendbuffer", 1 * 1000); }
 
 CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fInboundIn) : ssSend(SER_NETWORK, INIT_PROTO_VERSION), setAddrKnown(5000)
 {
@@ -2087,13 +2077,13 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend)
     // The -*messagestest options are intentionally not documented in the help message,
     // since they are only used during development to debug the networking code and are
     // not intended for end-users.
-    if (mapArgs.count("-dropmessagestest") && GetRand(GetArg("-dropmessagestest", 2)) == 0) {
+    if (settings.ParameterIsSet("-dropmessagestest") && GetRand(settings.GetArg("-dropmessagestest", 2)) == 0) {
         LogPrint("net", "dropmessages DROPPING SEND MESSAGE\n");
         AbortMessage();
         return;
     }
-    if (mapArgs.count("-fuzzmessagestest"))
-        Fuzz(GetArg("-fuzzmessagestest", 10));
+    if (settings.ParameterIsSet("-fuzzmessagestest"))
+        Fuzz(settings.GetArg("-fuzzmessagestest", 10));
 
     if (ssSend.size() == 0)
         return;

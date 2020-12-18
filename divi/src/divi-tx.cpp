@@ -13,12 +13,12 @@
 #include "script/script.h"
 #include "script/SignatureCheckers.h"
 #include "script/sign.h"
-#include "ui_interface.h" // for _(...)
+#include "ui_interface.h" // for translate(...)
 #include "univalue/univalue.h"
 #include "util.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
-
+#include "Settings.h"
 #include <stdio.h>
 
 #include <boost/algorithm/string.hpp>
@@ -26,6 +26,7 @@
 
 using namespace boost::assign;
 using namespace std;
+extern Settings& settings;
 
 static bool fCreateBlank;
 static map<string, UniValue> registers;
@@ -36,7 +37,7 @@ static bool AppInitRawTx(int argc, char* argv[])
     //
     // Parameters
     //
-    ParseParameters(argc, argv);
+    settings.ParseParameters(argc, argv);
 
     // Check for -testnet or -regtest parameter (Params() calls are only valid after this clause)
     if (!SelectParamsFromCommandLine()) {
@@ -44,47 +45,47 @@ static bool AppInitRawTx(int argc, char* argv[])
         return false;
     }
 
-    fCreateBlank = GetBoolArg("-create", false);
+    fCreateBlank = settings.GetBoolArg("-create", false);
 
-    if (argc < 2 || mapArgs.count("-?") || mapArgs.count("-help")) {
+    if (argc < 2 ||settings.ParameterIsSet("-?") ||settings.ParameterIsSet("-help")) {
         // First part of help message is specific to this utility
-        std::string strUsage = _("Divi Core divi-tx utility version") + " " + FormatFullVersion() + "\n\n" +
-                               _("Usage:") + "\n" +
-                               "  divi-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded divi transaction") + "\n" +
-                               "  divi-tx [options] -create [commands]   " + _("Create hex-encoded divi transaction") + "\n" +
+        std::string strUsage = translate("Divi Core divi-tx utility version") + " " + FormatFullVersion() + "\n\n" +
+                               translate("Usage:") + "\n" +
+                               "  divi-tx [options] <hex-tx> [commands]  " + translate("Update hex-encoded divi transaction") + "\n" +
+                               "  divi-tx [options] -create [commands]   " + translate("Create hex-encoded divi transaction") + "\n" +
                                "\n";
 
         fprintf(stdout, "%s", strUsage.c_str());
 
-        strUsage = HelpMessageGroup(_("Options:"));
-        strUsage += HelpMessageOpt("-?", _("This help message"));
-        strUsage += HelpMessageOpt("-create", _("Create new, empty TX."));
-        strUsage += HelpMessageOpt("-json", _("Select JSON output"));
-        strUsage += HelpMessageOpt("-txid", _("Output only the hex-encoded transaction id of the resultant transaction."));
-        strUsage += HelpMessageOpt("-regtest", _("Enter regression test mode, which uses a special chain in which blocks can be solved instantly."));
-        strUsage += HelpMessageOpt("-testnet", _("Use the test network"));
+        strUsage = HelpMessageGroup(translate("Options:"));
+        strUsage += HelpMessageOpt("-?", translate("This help message"));
+        strUsage += HelpMessageOpt("-create", translate("Create new, empty TX."));
+        strUsage += HelpMessageOpt("-json", translate("Select JSON output"));
+        strUsage += HelpMessageOpt("-txid", translate("Output only the hex-encoded transaction id of the resultant transaction."));
+        strUsage += HelpMessageOpt("-regtest", translate("Enter regression test mode, which uses a special chain in which blocks can be solved instantly."));
+        strUsage += HelpMessageOpt("-testnet", translate("Use the test network"));
 
         fprintf(stdout, "%s", strUsage.c_str());
 
 
-        strUsage = HelpMessageGroup(_("Commands:"));
-        strUsage += HelpMessageOpt("delin=N", _("Delete input N from TX"));
-        strUsage += HelpMessageOpt("delout=N", _("Delete output N from TX"));
-        strUsage += HelpMessageOpt("in=TXID:VOUT", _("Add input to TX"));
-        strUsage += HelpMessageOpt("locktime=N", _("Set TX lock time to N"));
-        strUsage += HelpMessageOpt("nversion=N", _("Set TX version to N"));
-        strUsage += HelpMessageOpt("outaddr=VALUE:ADDRESS", _("Add address-based output to TX"));
-        strUsage += HelpMessageOpt("outscript=VALUE:SCRIPT", _("Add raw script output to TX"));
-        strUsage += HelpMessageOpt("sign=SIGHASH-FLAGS", _("Add zero or more signatures to transaction") + ". " +
-            _("This command requires JSON registers:") +
-            _("prevtxs=JSON object") + ", " +
-            _("privatekeys=JSON object") + ". " +
-            _("See signrawtransaction docs for format of sighash flags, JSON objects."));
+        strUsage = HelpMessageGroup(translate("Commands:"));
+        strUsage += HelpMessageOpt("delin=N", translate("Delete input N from TX"));
+        strUsage += HelpMessageOpt("delout=N", translate("Delete output N from TX"));
+        strUsage += HelpMessageOpt("in=TXID:VOUT", translate("Add input to TX"));
+        strUsage += HelpMessageOpt("locktime=N", translate("Set TX lock time to N"));
+        strUsage += HelpMessageOpt("nversion=N", translate("Set TX version to N"));
+        strUsage += HelpMessageOpt("outaddr=VALUE:ADDRESS", translate("Add address-based output to TX"));
+        strUsage += HelpMessageOpt("outscript=VALUE:SCRIPT", translate("Add raw script output to TX"));
+        strUsage += HelpMessageOpt("sign=SIGHASH-FLAGS", translate("Add zero or more signatures to transaction") + ". " +
+            translate("This command requires JSON registers:") +
+            translate("prevtxs=JSON object") + ", " +
+            translate("privatekeys=JSON object") + ". " +
+            translate("See signrawtransaction docs for format of sighash flags, JSON objects."));
         fprintf(stdout, "%s", strUsage.c_str());
 
-        strUsage = HelpMessageGroup(_("Register Commands:"));
-        strUsage += HelpMessageOpt("load=NAME:FILENAME", _("Load JSON file FILENAME into register NAME"));
-        strUsage += HelpMessageOpt("set=NAME:JSON-STRING", _("Set register NAME to given JSON-STRING"));
+        strUsage = HelpMessageGroup(translate("Register Commands:"));
+        strUsage += HelpMessageOpt("load=NAME:FILENAME", translate("Load JSON file FILENAME into register NAME"));
+        strUsage += HelpMessageOpt("set=NAME:JSON-STRING", translate("Set register NAME to given JSON-STRING"));
         fprintf(stdout, "%s", strUsage.c_str());
 
         return false;
@@ -318,10 +319,10 @@ uint256 ParseHashUO(map<string, UniValue>& o, string strKey)
     return ParseHashUV(o[strKey], strKey);
 }
 
-vector<unsigned char> ParseHexUO(map<string, UniValue>& o, string strKey)
+std::vector<unsigned char> ParseHexUO(map<string, UniValue>& o, string strKey)
 {
     if (!o.count(strKey)) {
-        vector<unsigned char> emptyVec;
+        std::vector<unsigned char> emptyVec;
         return emptyVec;
     }
     return ParseHexUV(o[strKey], strKey);
@@ -335,7 +336,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
         if (!findSighashFlags(nHashType, flagStr))
             throw runtime_error("unknown sighash flag/sign option");
 
-    vector<CTransaction> txVariants;
+    std::vector<CTransaction> txVariants;
     txVariants.push_back(tx);
 
     // mergedTx will end up with all the signatures; it
@@ -384,7 +385,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
             if (nOut < 0)
                 throw runtime_error("vout must be positive");
 
-            vector<unsigned char> pkData(ParseHexUV(prevOut["scriptPubKey"], "scriptPubKey"));
+            std::vector<unsigned char> pkData(ParseHexUV(prevOut["scriptPubKey"], "scriptPubKey"));
             CScript scriptPubKey(pkData.begin(), pkData.end());
 
             {
@@ -406,7 +407,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
             if (fGivenKeys && scriptPubKey.IsPayToScriptHash() &&
                 prevOut.exists("redeemScript")) {
                 UniValue v = prevOut["redeemScript"];
-                vector<unsigned char> rsData(ParseHexUV(v, "redeemScript"));
+                std::vector<unsigned char> rsData(ParseHexUV(v, "redeemScript"));
                 CScript redeemScript(rsData.begin(), rsData.end());
                 tempKeystore.AddCScript(redeemScript);
             }
@@ -505,9 +506,9 @@ static void OutputTxHex(const CTransaction& tx)
 
 static void OutputTx(const CTransaction& tx)
 {
-    if (GetBoolArg("-json", false))
+    if (settings.GetBoolArg("-json", false))
         OutputTxJSON(tx);
-    else if (GetBoolArg("-txid", false))
+    else if (settings.GetBoolArg("-txid", false))
         OutputTxHash(tx);
     else
         OutputTxHex(tx);

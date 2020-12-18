@@ -19,7 +19,6 @@
 #include "json/json_spirit_writer_template.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -142,7 +141,7 @@ bool ReadHTTPRequestLine(std::basic_istream<char>& stream, int& proto, string& h
     getline(stream, str);
 
     // HTTP request line is space-delimited
-    vector<string> vWords;
+    std::vector<std::string> vWords;
     boost::split(vWords, str, boost::is_any_of(" "));
     if (vWords.size() < 2)
         return false;
@@ -172,10 +171,10 @@ bool ReadHTTPRequestLine(std::basic_istream<char>& stream, int& proto, string& h
 
 int ReadHTTPStatus(std::basic_istream<char>& stream, int& proto)
 {
-    string str;
+    std::string str;
     getline(stream, str);
     //LogPrintf("ReadHTTPStatus - getline string: %s\n",str.c_str());
-    vector<string> vWords;
+    std::vector<std::string> vWords;
     boost::split(vWords, str, boost::is_any_of(" "));
     if (vWords.size() < 2)
         return HTTP_INTERNAL_SERVER_ERROR;
@@ -222,7 +221,7 @@ int ReadHTTPMessage(std::basic_istream<char>& stream, map<string, string>& mapHe
 
     // Read message
     if (nLen > 0) {
-        vector<char> vch;
+        std::vector<char> vch;
         size_t ptr = 0;
         while (ptr < (size_t)nLen) {
             size_t bytes_to_read = std::min((size_t)nLen - ptr, POST_READ_SIZE);

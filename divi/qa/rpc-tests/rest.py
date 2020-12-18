@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -34,6 +34,7 @@ class RESTTest (BitcoinTestFramework):
     FORMAT_SEPARATOR = "."
     
     def run_test(self):
+        self.nodes[0].setgenerate(True, 30)
         url = urlparse.urlparse(self.nodes[0].url)
         bb_hash = self.nodes[0].getbestblockhash()
         

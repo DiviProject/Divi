@@ -20,6 +20,10 @@
 #include "db.h"
 #include "wallet.h"
 #endif
+#include <I_CoinMinter.h>
+#include <CoinMintingModule.h>
+#include <ExtendedBlockFactory.h>
+#include <masternode-sync.h>
 
 #include <stdint.h>
 
@@ -27,9 +31,15 @@
 
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
+#include "Settings.h"
+#include <ValidationState.h>
 
+extern NotificationInterfaceRegistry registry;//TODO: rid this
 using namespace json_spirit;
 using namespace std;
+using namespace boost;
+using namespace boost::assign;
+extern Settings& settings;
 
 /**
  * Return average network hashes per second based on the last 'lookup' blocks,
@@ -107,7 +117,7 @@ Value getgenerate(const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getgenerate", "") + HelpExampleRpc("getgenerate", ""));
 
-    return GetBoolArg("-gen", false);
+    return settings.GetBoolArg("-gen", false);
 }
 
 
@@ -152,7 +162,6 @@ Value setgenerate(const Array& params, bool fHelp)
         int nHeightEnd = 0;
         int nHeight = 0;
         int nGenerate = (nGenProcLimit > 0 ? nGenProcLimit : 1);
-        CReserveKey reservekey(pwalletMain);
 
         { // Don't keep cs_main locked
             LOCK(cs_main);
@@ -160,39 +169,114 @@ Value setgenerate(const Array& params, bool fHelp)
             nHeight = nHeightStart;
             nHeightEnd = nHeightStart + nGenerate;
         }
-        unsigned int nExtraNonce = 0;
+
         Array blockHashes;
-        while (nHeight < nHeightEnd) {
-            unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwalletMain, false));
-            if (!pblocktemplate.get())
-                throw JSONRPCError(RPC_INTERNAL_ERROR, "Wallet keypool empty");
-            CBlock* pblock = &pblocktemplate->block;
-            {
-                LOCK(cs_main);
-                IncrementExtraNonce(pblock, chainActive.Tip(), nExtraNonce);
-            }
-            while (!CheckProofOfWork(pblock->GetHash(), pblock->nBits)) {
-                // Yes, there is a chance every nonce could fail to satisfy the -regtest
-                // target -- 1 in 2^(2^32). That ain't gonna happen.
-                ++pblock->nNonce;
-            }
-            CValidationState state;
-            if (!ProcessNewBlock(state, NULL, pblock))
-                throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
-            ++nHeight;
-            blockHashes.push_back(pblock->GetHash().GetHex());
+        int64_t coinstakeSearchInterval = 0;
+        CoinMintingModule mintingModule(cs_main, Params(), chainActive,masternodeSync,mempool,vNodes,*pwalletMain, coinstakeSearchInterval,mapHashedBlocks);
+        I_CoinMinter& minter = mintingModule.coinMinter();
+
+        while (nHeight < nHeightEnd)
+        {
+            const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
+
+            unsigned int nExtraNonce = 0;
+            const bool newBlockAdded = minter.createNewBlock(nExtraNonce, fProofOfStake);
+            nHeight +=  newBlockAdded;
+
+            if (!newBlockAdded)
+                throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
+
+            // Don't keep cs_main locked
+            LOCK(cs_main);
+            if(nHeight == chainActive.Height())
+                blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
         }
         return blockHashes;
     } else // Not -regtest: start generate thread, return immediately
     {
-        mapArgs["-gen"] = (fGenerate ? "1" : "0");
-        mapArgs["-genproclimit"] = itostr(nGenProcLimit);
-        GenerateBitcoins(fGenerate, pwalletMain, nGenProcLimit);
+        SetParameter("-gen", (fGenerate ? "1" : "0"));
+        SetParameter("-genproclimit", itostr(nGenProcLimit));
+        GenerateDivi(fGenerate, pwalletMain, nGenProcLimit);
     }
 
     return Value::null;
 }
 
+Value generateblock(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 1)
+        throw runtime_error(
+            "generateblock ( options )\n"
+            "\nTry to generate a single block with some extra options.\n"
+            "This is intended for regtest mode and testing.\n"
+            "\nArguments:\n"
+            "1. options          (object, optional) extra options for generating the block\n"
+            "    {\n"
+            "      \"extratx\" : [\"hex\", ...],   (array of strings, optional) transactions to include as hex\n"
+            "      \"coinstake\" : \"hex\"         (string, optional) coinstake transaction to use as hex\n"
+            "    }\n"
+            "\nResult\n"
+            "blockhash     (string) hash of the generated block\n"
+            "\nExamples:\n" +
+            HelpExampleCli("generateblock", "") + HelpExampleRpc("generateblock", ""));
+
+    RPCTypeCheck(params, list_of(obj_type), true);
+    Object options;
+    if (params.size() > 0)
+        options = params[0].get_obj();
+    RPCTypeCheck(options, map_list_of("extratx", array_type)("coinstake", str_type), true);
+
+    if (pwalletMain == NULL)
+        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
+
+    int nHeight = 0;
+
+    { // Don't keep cs_main locked
+        LOCK(cs_main);
+        nHeight = chainActive.Height();
+    }
+
+    int64_t coinstakeSearchInterval = 0;
+    CoinMintingModule mintingModule(cs_main, Params(), chainActive,masternodeSync,mempool,vNodes,*pwalletMain, coinstakeSearchInterval,mapHashedBlocks);
+    I_CoinMinter& minter = mintingModule.coinMinter();
+    ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
+    assert(blockFactory);
+
+    const Value& extraTx = find_value(options, "extratx");
+    if (extraTx.type() != null_type)
+        for (const Value& val : extraTx.get_array()) {
+            CTransaction tx;
+            if (!DecodeHexTx(tx, val.get_str()))
+                throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+            blockFactory->addExtraTransaction(tx);
+        }
+
+    const Value& coinstake = find_value(options, "coinstake");
+    if (coinstake.type() != null_type) {
+        CTransaction tx;
+        if (!DecodeHexTx(tx, coinstake.get_str()))
+            throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+        if (!tx.IsCoinStake())
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "TX is not a coinstake");
+        blockFactory->setCustomCoinstake(tx);
+    }
+
+    const bool fProofOfStake = (nHeight >= Params().LAST_POW_BLOCK());
+
+    unsigned int nExtraNonce = 0;
+    const bool newBlockAdded = minter.createNewBlock(nExtraNonce, fProofOfStake);
+
+    // Don't keep cs_main locked
+    LOCK(cs_main);
+
+    if (!newBlockAdded || chainActive.Height() != nHeight + 1)
+        throw JSONRPCError(RPC_VERIFY_ERROR, "failed to generate a valid block");
+
+    return chainActive.Tip()->GetBlockHash().GetHex();
+}
+
+double dHashesPerSec;
+int64_t nHPSTimerStart;
 Value gethashespersec(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -237,19 +321,13 @@ Value getmininginfo(const Array& params, bool fHelp)
 
     Object obj;
     obj.push_back(Pair("blocks", (int)chainActive.Height()));
-    obj.push_back(Pair("currentblocksize", (uint64_t)nLastBlockSize));
-    obj.push_back(Pair("currentblocktx", (uint64_t)nLastBlockTx));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
-    obj.push_back(Pair("genproclimit", (int)GetArg("-genproclimit", -1)));
+    obj.push_back(Pair("genproclimit", (int)settings.GetArg("-genproclimit", -1)));
     obj.push_back(Pair("networkhashps", getnetworkhashps(params, false)));
     obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
     obj.push_back(Pair("chain", Params().NetworkIDString()));
-#ifdef ENABLE_WALLET
-    obj.push_back(Pair("generate", getgenerate(params, false)));
-    obj.push_back(Pair("hashespersec", gethashespersec(params, false)));
-#endif
     return obj;
 }
 
@@ -303,288 +381,7 @@ static Value BIP22ValidationResult(const CValidationState& state)
 
 Value getblocktemplate(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() > 1)
-        throw runtime_error(
-            "getblocktemplate ( \"jsonrequestobject\" )\n"
-            "\nIf the request parameters include a 'mode' key, that is used to explicitly select between the default 'template' request or a 'proposal'.\n"
-            "It returns data needed to construct a block to work on.\n"
-            "See https://en.bitcoin.it/wiki/BIP_0022 for full specification.\n"
-
-            "\nArguments:\n"
-            "1. \"jsonrequestobject\"       (string, optional) A json object in the following spec\n"
-            "     {\n"
-            "       \"mode\":\"template\"    (string, optional) This must be set to \"template\" or omitted\n"
-            "       \"capabilities\":[       (array, optional) A list of strings\n"
-            "           \"support\"           (string) client side supported feature, 'longpoll', 'coinbasetxn', 'coinbasevalue', 'proposal', 'serverlist', 'workid'\n"
-            "           ,...\n"
-            "         ]\n"
-            "     }\n"
-            "\n"
-
-            "\nResult:\n"
-            "{\n"
-            "  \"version\" : n,                    (numeric) The block version\n"
-            "  \"previousblockhash\" : \"xxxx\",    (string) The hash of current highest block\n"
-            "  \"transactions\" : [                (array) contents of non-coinbase transactions that should be included in the next block\n"
-            "      {\n"
-            "         \"data\" : \"xxxx\",          (string) transaction data encoded in hexadecimal (byte-for-byte)\n"
-            "         \"hash\" : \"xxxx\",          (string) hash/id encoded in little-endian hexadecimal\n"
-            "         \"depends\" : [              (array) array of numbers \n"
-            "             n                        (numeric) transactions before this one (by 1-based index in 'transactions' list) that must be present in the final block if this one is\n"
-            "             ,...\n"
-            "         ],\n"
-            "         \"fee\": n,                   (numeric) difference in value between transaction inputs and outputs (in duffs); for coinbase transactions, this is a negative Number of the total collected block fees (ie, not including the block subsidy); if key is not present, fee is unknown and clients MUST NOT assume there isn't one\n"
-            "         \"sigops\" : n,               (numeric) total number of SigOps, as counted for purposes of block limits; if key is not present, sigop count is unknown and clients MUST NOT assume there aren't any\n"
-            "         \"required\" : true|false     (boolean) if provided and true, this transaction must be in the final block\n"
-            "      }\n"
-            "      ,...\n"
-            "  ],\n"
-            "  \"coinbaseaux\" : {                  (json object) data that should be included in the coinbase's scriptSig content\n"
-            "      \"flags\" : \"flags\"            (string) \n"
-            "  },\n"
-            "  \"coinbasevalue\" : n,               (numeric) maximum allowable input to coinbase transaction, including the generation award and transaction fees (in duffs)\n"
-            "  \"coinbasetxn\" : { ... },           (json object) information for coinbase transaction\n"
-            "  \"target\" : \"xxxx\",               (string) The hash target\n"
-            "  \"mintime\" : xxx,                   (numeric) The minimum timestamp appropriate for next block time in seconds since epoch (Jan 1 1970 GMT)\n"
-            "  \"mutable\" : [                      (array of string) list of ways the block template may be changed \n"
-            "     \"value\"                         (string) A way the block template may be changed, e.g. 'time', 'transactions', 'prevblock'\n"
-            "     ,...\n"
-            "  ],\n"
-            "  \"noncerange\" : \"00000000ffffffff\",   (string) A range of valid nonces\n"
-            "  \"sigoplimit\" : n,                 (numeric) limit of sigops in blocks\n"
-            "  \"sizelimit\" : n,                  (numeric) limit of block size\n"
-            "  \"curtime\" : ttt,                  (numeric) current timestamp in seconds since epoch (Jan 1 1970 GMT)\n"
-            "  \"bits\" : \"xxx\",                 (string) compressed target of next block\n"
-            "  \"height\" : n                      (numeric) The height of the next block\n"
-            "  \"payee\" : \"xxx\",                (string) required payee for the next block\n"
-            "  \"payee_amount\" : n,               (numeric) required amount to pay\n"
-            "  \"votes\" : [\n                     (array) show vote candidates\n"
-            "        { ... }                       (json object) vote candidate\n"
-            "        ,...\n"
-            "  ],\n"
-            "  \"masternode_payments\" : true|false,         (boolean) true, if masternode payments are enabled\n"
-            "  \"enforce_masternode_payments\" : true|false  (boolean) true, if masternode payments are enforced\n"
-            "}\n"
-
-            "\nExamples:\n" +
-            HelpExampleCli("getblocktemplate", "") + HelpExampleRpc("getblocktemplate", ""));
-
-    std::string strMode = "template";
-    Value lpval = Value::null;
-    if (params.size() > 0) {
-        const Object& oparam = params[0].get_obj();
-        const Value& modeval = find_value(oparam, "mode");
-        if (modeval.type() == str_type)
-            strMode = modeval.get_str();
-        else if (modeval.type() == null_type) {
-            /* Do nothing */
-        } else
-            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
-        lpval = find_value(oparam, "longpollid");
-
-        if (strMode == "proposal") {
-            const Value& dataval = find_value(oparam, "data");
-            if (dataval.type() != str_type)
-                throw JSONRPCError(RPC_TYPE_ERROR, "Missing data String key for proposal");
-
-            CBlock block;
-            if (!DecodeHexBlk(block, dataval.get_str()))
-                throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Block decode failed");
-
-            uint256 hash = block.GetHash();
-            BlockMap::iterator mi = mapBlockIndex.find(hash);
-            if (mi != mapBlockIndex.end()) {
-                CBlockIndex* pindex = mi->second;
-                if (pindex->IsValid(BLOCK_VALID_SCRIPTS))
-                    return "duplicate";
-                if (pindex->nStatus & BLOCK_FAILED_MASK)
-                    return "duplicate-invalid";
-                return "duplicate-inconclusive";
-            }
-
-            CBlockIndex* const pindexPrev = chainActive.Tip();
-            // TestBlockValidity only supports blocks built on the current Tip
-            if (block.hashPrevBlock != pindexPrev->GetBlockHash())
-                return "inconclusive-not-best-prevblk";
-            CValidationState state;
-            TestBlockValidity(state, block, pindexPrev, false, true);
-            return BIP22ValidationResult(state);
-        }
-    }
-
-    if (strMode != "template")
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
-
-    if (vNodes.empty())
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "DIVI is not connected!");
-
-    if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "DIVI is downloading blocks...");
-
-    static unsigned int nTransactionsUpdatedLast;
-
-    if (lpval.type() != null_type) {
-        // Wait to respond until either the best block changes, OR a minute has passed and there are more transactions
-        uint256 hashWatchedChain;
-        boost::system_time checktxtime;
-        unsigned int nTransactionsUpdatedLastLP;
-
-        if (lpval.type() == str_type) {
-            // Format: <hashBestChain><nTransactionsUpdatedLast>
-            std::string lpstr = lpval.get_str();
-
-            hashWatchedChain.SetHex(lpstr.substr(0, 64));
-            nTransactionsUpdatedLastLP = atoi64(lpstr.substr(64));
-        } else {
-            // NOTE: Spec does not specify behaviour for non-string longpollid, but this makes testing easier
-            hashWatchedChain = chainActive.Tip()->GetBlockHash();
-            nTransactionsUpdatedLastLP = nTransactionsUpdatedLast;
-        }
-
-// Release the wallet and main lock while waiting
-#ifdef ENABLE_WALLET
-        if (pwalletMain)
-            LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
-#endif
-        LEAVE_CRITICAL_SECTION(cs_main);
-        {
-            checktxtime = boost::get_system_time() + boost::posix_time::minutes(1);
-
-            boost::unique_lock<boost::mutex> lock(csBestBlock);
-            while (chainActive.Tip()->GetBlockHash() == hashWatchedChain && IsRPCRunning()) {
-                if (!cvBlockChange.timed_wait(lock, checktxtime)) {
-                    // Timeout: Check transactions for update
-                    if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLastLP)
-                        break;
-                    checktxtime += boost::posix_time::seconds(10);
-                }
-            }
-        }
-        ENTER_CRITICAL_SECTION(cs_main);
-#ifdef ENABLE_WALLET
-        if (pwalletMain)
-            ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet);
-#endif
-
-        if (!IsRPCRunning())
-            throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Shutting down");
-        // TODO: Maybe recheck connections/IBD and (if something wrong) send an expires-immediately template to stop miners?
-    }
-
-    // Update block
-    static CBlockIndex* pindexPrev;
-    static int64_t nStart;
-    static CBlockTemplate* pblocktemplate;
-    if (pindexPrev != chainActive.Tip() ||
-        (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 5)) {
-        // Clear pindexPrev so future calls make a new block, despite any failures from here on
-        pindexPrev = NULL;
-
-        // Store the chainActive.Tip() used before CreateNewBlock, to avoid races
-        nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
-        CBlockIndex* pindexPrevNew = chainActive.Tip();
-        nStart = GetTime();
-
-        // Create new block
-        if (pblocktemplate) {
-            delete pblocktemplate;
-            pblocktemplate = NULL;
-        }
-        CScript scriptDummy = CScript() << OP_TRUE;
-        pblocktemplate = CreateNewBlock(scriptDummy, pwalletMain, false);
-        if (!pblocktemplate)
-            throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
-
-        // Need to update only after we know CreateNewBlock succeeded
-        pindexPrev = pindexPrevNew;
-    }
-    CBlock* pblock = &pblocktemplate->block; // pointer for convenience
-
-    // Update nTime
-    UpdateTime(pblock, pindexPrev);
-    pblock->nNonce = 0;
-
-    static const Array aCaps = boost::assign::list_of("proposal");
-
-    Array transactions;
-    map<uint256, int64_t> setTxIndex;
-    int i = 0;
-    BOOST_FOREACH (CTransaction& tx, pblock->vtx) {
-        uint256 txHash = tx.GetHash();
-        setTxIndex[txHash] = i++;
-
-        if (tx.IsCoinBase())
-            continue;
-
-        Object entry;
-
-        entry.push_back(Pair("data", EncodeHexTx(tx)));
-
-        entry.push_back(Pair("hash", txHash.GetHex()));
-
-        Array deps;
-        BOOST_FOREACH (const CTxIn& in, tx.vin) {
-            if (setTxIndex.count(in.prevout.hash))
-                deps.push_back(setTxIndex[in.prevout.hash]);
-        }
-        entry.push_back(Pair("depends", deps));
-
-        int index_in_template = i - 1;
-        entry.push_back(Pair("fee", pblocktemplate->vTxFees[index_in_template]));
-        entry.push_back(Pair("sigops", pblocktemplate->vTxSigOps[index_in_template]));
-
-        transactions.push_back(entry);
-    }
-
-    Object aux;
-    aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
-
-    uint256 hashTarget = uint256().SetCompact(pblock->nBits);
-
-    static Array aMutable;
-    if (aMutable.empty()) {
-        aMutable.push_back("time");
-        aMutable.push_back("transactions");
-        aMutable.push_back("prevblock");
-    }
-
-    Array aVotes;
-
-    Object result;
-    result.push_back(Pair("capabilities", aCaps));
-    result.push_back(Pair("version", pblock->nVersion));
-    result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
-    result.push_back(Pair("transactions", transactions));
-    result.push_back(Pair("coinbaseaux", aux));
-    result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].GetValueOut()));
-    result.push_back(Pair("longpollid", chainActive.Tip()->GetBlockHash().GetHex() + i64tostr(nTransactionsUpdatedLast)));
-    result.push_back(Pair("target", hashTarget.GetHex()));
-    result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast() + 1));
-    result.push_back(Pair("mutable", aMutable));
-    result.push_back(Pair("noncerange", "00000000ffffffff"));
-//    result.push_back(Pair("sigoplimit", (int64_t)MAX_BLOCK_SIGOPS));
-//    result.push_back(Pair("sizelimit", (int64_t)MAX_BLOCK_SIZE));
-    result.push_back(Pair("curtime", pblock->GetBlockTime()));
-    result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
-    result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight + 1)));
-    result.push_back(Pair("votes", aVotes));
-
-
-    if (pblock->payee != CScript()) {
-        CTxDestination address1;
-        ExtractDestination(pblock->payee, address1);
-        CBitcoinAddress address2(address1);
-        result.push_back(Pair("payee", address2.ToString().c_str()));
-        result.push_back(Pair("payee_amount", (int64_t)pblock->vtx[0].vout[1].nValue));
-    } else {
-        result.push_back(Pair("payee", ""));
-        result.push_back(Pair("payee_amount", ""));
-    }
-
-    result.push_back(Pair("masternode_payments", pblock->nTime > Params().StartMasternodePayments()));
-    result.push_back(Pair("enforce_masternode_payments", true));
-
-    return result;
+    throw std::runtime_error("getblocktemplate has been removed, use divid for staking");
 }
 
 class submitblock_StateCatcher : public NotificationInterface

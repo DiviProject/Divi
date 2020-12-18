@@ -40,7 +40,6 @@ extern int nSwiftTXDepth;
 extern int nAnonymizeDiviAmount;
 extern int nLiquidityProvider;
 extern int64_t enforceMasternodePaymentsTime;
-extern std::string strMasterNodeAddr;
 extern int keysLoaded;
 extern bool fSucessfullyLoaded;
 
@@ -64,7 +63,6 @@ boost::filesystem::path GetMasternodeConfigFile();
 boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path& path, pid_t pid);
 #endif
-void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet, std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
 boost::filesystem::path GetTempPath();
 void ShrinkDebugFile();
 void runCommand(std::string strCommand);
@@ -77,6 +75,10 @@ inline bool IsSwitchChar(char c)
     return c == '-';
 #endif
 }
+
+void SetParameter (const std::string& key, const std::string& value);
+
+void ClearParameter ();
 
 /**
  * Return string argument or default value
@@ -123,7 +125,6 @@ bool SoftSetArg(const std::string& strArg, const std::string& strValue);
  */
 bool SoftSetBoolArg(const std::string& strArg, bool fValue);
 
-void ForceRemoveArg(const std::string& strArg);
 
 /**
  * Format a string to be used as group of options in help messages
@@ -199,6 +200,12 @@ void TraceThread(const char* name, Callable func)
         PrintExceptionContinue(NULL, name);
         throw;
     }
+}
+template <typename Callable, typename Arg>
+void TraceThread(const char* name, Callable func, Arg arg)
+{
+    auto compactFunction = [&arg,&func](){ func(arg); };
+    TraceThread(name,compactFunction);
 }
 
 #endif // BITCOIN_UTIL_H

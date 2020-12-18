@@ -96,17 +96,20 @@ void MineGenesis(CBlock genesis)
     std::fflush(stdout);
 }
 
+namespace
+{
+
 //   What makes a good checkpoint block?
 // + Is surrounded by blocks with reasonable timestamps
 //   (no blocks before with a timestamp after, none after with
 //    timestamp before)
 // + Contains no strange transactions
-static MapCheckpoints mapCheckpoints =
+const MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
         (0, uint256("0x00000e258596876664989374c7ee36445cf5f4f80889af415cc32478214394ea"))
         (100, uint256("0x000000275b2b4a8af2c93ebdfd36ef8dd8c8ec710072bcc388ecbf5d0c8d3f9d"));
 
-static const CCheckpointData data = {
+const CCheckpointData data = {
     &mapCheckpoints,
     1538069980, // * UNIX timestamp of last checkpoint block
     100,    // * total number of transactions between genesis and last checkpoint
@@ -114,21 +117,42 @@ static const CCheckpointData data = {
     2000        // * estimated number of transactions per day after checkpoint
 };
 
-static MapCheckpoints mapCheckpointsTestnet =
+const MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of(0, uint256("0x000000f351b8525f459c879f1e249b5d3d421b378ac6b760ea8b8e0df2454f33"));
-static const CCheckpointData dataTestnet = {
+const CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
     1537971708,
     0,
     250};
 
-static MapCheckpoints mapCheckpointsRegtest =
+const MapCheckpoints mapCheckpointsRegtest =
         boost::assign::map_list_of(0, uint256("0x79ba0d9d15d36edee8d07cc300379ec65ab7e12765acd883e870aa618dbcc1a8"));
-static const CCheckpointData dataRegtest = {
+const CCheckpointData dataRegtest = {
     &mapCheckpointsRegtest,
     1518723178,
     0,
     100};
+
+const CChainParams::MNCollateralMapType mnCollateralsMainnet = {
+    {MasternodeTier::COPPER,    100000 * COIN},
+    {MasternodeTier::SILVER,    300000 * COIN},
+    {MasternodeTier::GOLD,     1000000 * COIN},
+    {MasternodeTier::PLATINUM, 3000000 * COIN},
+    {MasternodeTier::DIAMOND, 10000000 * COIN},
+};
+
+/* Masternode collaterals are significantly cheaper on regtest, so
+   that it is easy to generate them in tests without having to
+   mine hundreds of blocks.  */
+const CChainParams::MNCollateralMapType mnCollateralsRegtest = {
+    {MasternodeTier::COPPER,    100 * COIN},
+    {MasternodeTier::SILVER,    300 * COIN},
+    {MasternodeTier::GOLD,     1000 * COIN},
+    {MasternodeTier::PLATINUM, 3000 * COIN},
+    {MasternodeTier::DIAMOND, 10000 * COIN},
+};
+
+} // anonymous namespace
 
 class CMainParams : public CChainParams
 {
@@ -154,9 +178,6 @@ public:
         bnProofOfWorkLimit = ~uint256(0) >> 20;			// DIVI starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 60 * 24 * 365;
         nMaxReorganizationDepth = 100;
-        nEnforceBlockUpgradeMajority = 750;
-        nRejectBlockOutdatedMajority = 950;
-        nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60;						// DIVI: 1 day
         nTargetSpacing = 1 * 60;						// DIVI: 1 minute
@@ -171,6 +192,8 @@ public:
         nLotteryBlockCycle = 60 * 24 * 7; // one week
         nTreasuryPaymentsStartBlock = 101;
         nTreasuryPaymentsCycle = 60 * 24 * 7 + 1;
+        nMinCoinAgeForStaking = 60 * 60;
+        mnCollateralMap = &mnCollateralsMainnet;
 
         /**
         * Build the genesis block. Note that the output of the genesis coinbase cannot
@@ -223,11 +246,10 @@ public:
         fMiningRequiresPeers = false;
         fAllowMinDifficultyBlocks = false;
         fDefaultConsistencyChecks = false;
-        fRequireStandard = true;
+        fDifficultyRetargeting = true;
         fMineBlocksOnDemand = false;
         fHeadersFirstSyncingActive = false;
-        fSkipProofOfWorkCheck = false;
-        
+
         nFulfilledRequestExpireTime = 30 * 60; // fulfilled requests expire in 30 minutes
         strSporkKey = "02c1ed5eadcf6793fa22840febfbd667fabbabc48ddd75c2d228662d65e292eb00";
         nStartMasternodePayments = 1533945600; //Wed, 11 Aug 2018 00:00:00 GMT
@@ -265,9 +287,6 @@ public:
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 1000;
         nMaxReorganizationDepth = 100;
-        nEnforceBlockUpgradeMajority = 750;
-        nRejectBlockOutdatedMajority = 950;
-        nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // DIVI: 1 day
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
@@ -337,9 +356,7 @@ public:
         fMiningRequiresPeers = true;
         fAllowMinDifficultyBlocks = false;
         fDefaultConsistencyChecks = false;
-        fRequireStandard = true;
         fMineBlocksOnDemand = false;
-        fSkipProofOfWorkCheck = false;
         fHeadersFirstSyncingActive = false;
 
         nFulfilledRequestExpireTime = 60 * 60; // fulfilled requests expire in 1 hour
@@ -371,15 +388,12 @@ public:
         pchMessageStart[2] = 0x8d;
         pchMessageStart[3] = 0x78;
         premineAmt = 617222416 * COIN;
-        
+
         vAlertPubKey = ParseHex("046e70d194b1b6b63b9c5431ea83c7b17d0db8930408b1e7937e41759a799e8fcd22d99ffc0c880094bb07a852a9020f810068417e65d19def8ffbdfa90727b637");
         nDefaultPort = 51474;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // DIVI starting difficulty is 1 / 2^12
         nSubsidyHalvingInterval = 1000;
         nMaxReorganizationDepth = 100;
-        nEnforceBlockUpgradeMajority = 750;
-        nRejectBlockOutdatedMajority = 950;
-        nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // DIVI: 1 day
         nTargetSpacing = 1 * 60;  // DIVI: 1 minute
@@ -400,7 +414,7 @@ public:
         genesis.nNonce = 2105601;
 
         nExtCoinType = 1;
-        
+
 
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x00000f43b54bbcae395d815b255ac4ed0693bca7987d72b873d5d4b68d73a6bd"));
@@ -422,10 +436,8 @@ public:
         fMiningRequiresPeers = true;
         fAllowMinDifficultyBlocks = true;
         fDefaultConsistencyChecks = false;
-        fRequireStandard = false;
         fMineBlocksOnDemand = false;
         fHeadersFirstSyncingActive = false;
-        fSkipProofOfWorkCheck = false;
 
         nFulfilledRequestExpireTime = 5*60; // fulfilled requests expire in 5 minutes
         strSporkKey = "034ffa41e5cffdd009f3b34a3e1482ec82b514bb218b7648948b5858cc5c035adb";
@@ -453,10 +465,20 @@ public:
         pchMessageStart[1] = 0xcf;
         pchMessageStart[2] = 0x7e;
         pchMessageStart[3] = 0xac;
+
+        /* The premine on mainnet needs no tests, as it is "tested" by
+           syncing on mainnet anyway.  On regtest, it is easiest to not
+           have a special premine, as it makes the generated coins more
+           predictable.  */
+        premineAmt = 1250 * COIN;
+
+        /* Add back a maturity period for coinbases as on mainnet, so that
+           we can test this works as expected.  Testnet uses a shorter
+           interval to ease with manual testing, but on regtest one can mine
+           blocks quickly anyway if needed.  */
+        nMaturity = 20;
+
         nSubsidyHalvingInterval = 100;
-        nEnforceBlockUpgradeMajority = 750;
-        nRejectBlockOutdatedMajority = 950;
-        nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 1;
         nTargetTimespan = 24 * 60 * 60; // Divi: 1 day
         nTargetSpacing = 1 * 60;        // Divi: 1 minutes
@@ -465,10 +487,17 @@ public:
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 984952;
 
-        nLotteryBlockStartBlock = 100;
+        nLotteryBlockStartBlock = 101;
         nLotteryBlockCycle = 10; // one week
-        nTreasuryPaymentsStartBlock = 100;
+        nTreasuryPaymentsStartBlock = 102;
         nTreasuryPaymentsCycle = 50;
+
+        /* There is no minimum coin age on regtest, so that we can easily
+           generate PoS blocks as needed (and without having to mess
+           around with mocktimes of perhaps multiple nodes in sync).  */
+        nMinCoinAgeForStaking = 0;
+
+        mnCollateralMap = &mnCollateralsRegtest;
 
         nExtCoinType = 1;
 
@@ -485,7 +514,7 @@ public:
         fMiningRequiresPeers = false;
         fAllowMinDifficultyBlocks = true;
         fDefaultConsistencyChecks = true;
-        fRequireStandard = false;
+        fDifficultyRetargeting = false;
         fMineBlocksOnDemand = true;
     }
     const CCheckpointData& Checkpoints() const
@@ -513,7 +542,9 @@ public:
         fMiningRequiresPeers = false;
         fDefaultConsistencyChecks = true;
         fAllowMinDifficultyBlocks = false;
+        fDifficultyRetargeting = true;
         fMineBlocksOnDemand = true;
+        mnCollateralMap = &mnCollateralsMainnet;
     }
 
     const CCheckpointData& Checkpoints() const
@@ -524,12 +555,8 @@ public:
 
     //! Published setters to allow changing values in unit test cases
     virtual void setSubsidyHalvingInterval(int anSubsidyHalvingInterval) { nSubsidyHalvingInterval = anSubsidyHalvingInterval; }
-    virtual void setEnforceBlockUpgradeMajority(int anEnforceBlockUpgradeMajority) { nEnforceBlockUpgradeMajority = anEnforceBlockUpgradeMajority; }
-    virtual void setRejectBlockOutdatedMajority(int anRejectBlockOutdatedMajority) { nRejectBlockOutdatedMajority = anRejectBlockOutdatedMajority; }
-    virtual void setToCheckBlockUpgradeMajority(int anToCheckBlockUpgradeMajority) { nToCheckBlockUpgradeMajority = anToCheckBlockUpgradeMajority; }
     virtual void setDefaultConsistencyChecks(bool afDefaultConsistencyChecks) { fDefaultConsistencyChecks = afDefaultConsistencyChecks; }
     virtual void setAllowMinDifficultyBlocks(bool afAllowMinDifficultyBlocks) { fAllowMinDifficultyBlocks = afAllowMinDifficultyBlocks; }
-    virtual void setSkipProofOfWorkCheck(bool afSkipProofOfWorkCheck) { fSkipProofOfWorkCheck = afSkipProofOfWorkCheck; }
 };
 static CUnitTestParams unitTestParams;
 

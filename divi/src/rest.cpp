@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "main.h"
+#include "BlockDiskAccessor.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "rpcserver.h"
@@ -52,7 +53,7 @@ static RestErr RESTERR(enum HTTPStatusCode status, string message)
     return re;
 }
 
-static enum RetFormat ParseDataFormat(vector<string>& params, const string strReq)
+static enum RetFormat ParseDataFormat(std::vector<std::string>& params, const string strReq)
 {
     boost::split(params, strReq, boost::is_any_of("."));
     if (params.size() > 1) {
@@ -95,7 +96,7 @@ static bool rest_block(AcceptedConnection* conn,
     bool fRun,
     bool showTxDetails)
 {
-    vector<string> params;
+    std::vector<std::string> params;
     enum RetFormat rf = ParseDataFormat(params, strReq);
 
     string hashStr = params[0];
@@ -164,11 +165,11 @@ static bool rest_block_notxdetails(AcceptedConnection* conn,
 }
 
 static bool rest_tx(AcceptedConnection* conn,
-    string& strReq,
-    map<string, string>& mapHeaders,
+    std::string& strReq,
+    std::map<std::string, std::string>& mapHeaders,
     bool fRun)
 {
-    vector<string> params;
+    std::vector<std::string> params;
     enum RetFormat rf = ParseDataFormat(params, strReq);
 
     string hashStr = params[0];

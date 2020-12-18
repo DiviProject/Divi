@@ -1,20 +1,16 @@
-#!/usr/bin/env python2
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 # Base class for RPC testing
 
-# Add python-bitcoinrpc to module search path:
 import os
-import sys
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "python-bitcoinrpc"))
-
 import shutil
+import sys
 import tempfile
 import traceback
 
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+from authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
 
@@ -31,7 +27,8 @@ class BitcoinTestFramework(object):
 
     def setup_chain(self):
         print("Initializing test directory "+self.options.tmpdir)
-        initialize_chain(self.options.tmpdir)
+        for i in range(4):
+            datadir=initialize_datadir(self.options.tmpdir, i)
 
     def setup_nodes(self):
         return start_nodes(4, self.options.tmpdir)
@@ -91,16 +88,28 @@ class BitcoinTestFramework(object):
                           help="Leave bitcoinds and test.* datadir on exit or error")
         parser.add_option("--srcdir", dest="srcdir", default="../../src",
                           help="Source directory containing bitcoind/bitcoin-cli (default: %default%)")
-        parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
+        parser.add_option("--tmpdir", dest="tmpdir", default="",
                           help="Root directory for datadirs")
         parser.add_option("--tracerpc", dest="trace_rpc", default=False, action="store_true",
                           help="Print out all RPC calls as they are made")
+        parser.add_option("--portseed", dest="port_seed", default=os.getpid(), type=int,
+                          help="The seed to use for assigning port numbers (default: current process id)")
         self.add_options(parser)
         (self.options, self.args) = parser.parse_args()
+
+        # We do not want to set the default value to a new temporary folder
+        # explicitly in the parser, as that will then always create the
+        # directory (even if another one is specified).  Hence we use an empty
+        # default value, and only create one if needed.
+        if not self.options.tmpdir:
+            self.options.tmpdir = tempfile.mkdtemp(prefix="test")
 
         if self.options.trace_rpc:
             import logging
             logging.basicConfig(level=logging.DEBUG)
+
+        import util
+        util.portseed = self.options.port_seed
 
         os.environ['PATH'] = self.options.srcdir+":"+os.environ['PATH']
 
@@ -122,7 +131,7 @@ class BitcoinTestFramework(object):
             print("JSONRPC error: "+e.error['message'])
             traceback.print_tb(sys.exc_info()[2])
         except AssertionError as e:
-            print("Assertion failed: "+e.message)
+            print("Assertion failed: %s"%e)
             traceback.print_tb(sys.exc_info()[2])
         except Exception as e:
             print("Unexpected exception caught during testing: "+str(e))

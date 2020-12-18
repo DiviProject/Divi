@@ -1,12 +1,17 @@
 #include <FeeAndPriorityCalculator.h>
-
 #include "primitives/transaction.h"
 #include "FeeRate.h"
+#include <version.h>
 
 CFeeRate minRelayTxFee = CFeeRate(10000);
 
 FeeAndPriorityCalculator::FeeAndPriorityCalculator()
 {
+}
+
+const CFeeRate& FeeAndPriorityCalculator::getFeeRateQuote() const
+{
+    return minRelayTxFee;
 }
 
 bool FeeAndPriorityCalculator::IsDust(const CTxOut& txout) const

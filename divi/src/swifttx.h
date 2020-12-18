@@ -6,14 +6,8 @@
 #ifndef SWIFTTX_H
 #define SWIFTTX_H
 
-#include "base58.h"
-#include "key.h"
-#include "main.h"
-#include "net.h"
-#include "spork.h"
-#include "sync.h"
-#include "util.h"
-
+#include <primitives/transaction.h>
+#include <string>
 /*
     At 15 signatures, 1/2 of the masternode network can be owned by
     one party without comprimising the security of SwiftX
@@ -26,19 +20,18 @@
 #define SWIFTTX_SIGNATURES_REQUIRED 6
 #define SWIFTTX_SIGNATURES_TOTAL 10
 
-using namespace std;
-using namespace boost;
-
+class CDataStream;
+class CNode;
 class CConsensusVote;
 class CTransaction;
 class CTransactionLock;
 
 static const int MIN_SWIFTTX_PROTO_VERSION = 70103;
 
-extern map<uint256, CTransaction> mapTxLockReq;
-extern map<uint256, CTransaction> mapTxLockReqRejected;
-extern map<uint256, CConsensusVote> mapTxLockVote;
-extern map<uint256, CTransactionLock> mapTxLocks;
+extern std::map<uint256, CTransaction> mapTxLockReq;
+extern std::map<uint256, CTransaction> mapTxLockReqRejected;
+extern std::map<uint256, CConsensusVote> mapTxLockVote;
+extern std::map<uint256, CTransactionLock> mapTxLocks;
 extern std::map<COutPoint, uint256> mapLockedInputs;
 extern int nCompleteTXLocks;
 

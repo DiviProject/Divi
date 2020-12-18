@@ -28,6 +28,7 @@ class CWallet;
 class CWalletTx;
 class uint160;
 class uint256;
+using WalletTxVector = std::vector<CWalletTx>;
 
 /** Error statuses for the wallet database */
 enum DBErrors {
@@ -76,10 +77,13 @@ public:
 /** Access to the wallet database (wallet.dat) */
 class CWalletDB : public CDB
 {
+private:
+    std::string dbFilename_;
+    unsigned& walletDbUpdated_;
 public:
-    CWalletDB(const std::string& strFilename, const char* pszMode = "r+") : CDB(strFilename, pszMode)
-    {
-    }
+    void IncrementDBUpdateCount() const;
+
+    CWalletDB(const std::string& strFilename, const char* pszMode = "r+");
 
     bool WriteName(const std::string& strAddress, const std::string& strName);
     bool EraseName(const std::string& strAddress);
@@ -95,6 +99,7 @@ public:
     bool WriteMasterKey(unsigned int nID, const CMasterKey& kMasterKey);
 
     bool WriteCScript(const uint160& hash, const CScript& redeemScript);
+    bool EraseCScript(const uint160& hash);
 
     bool WriteWatchOnly(const CScript& script);
     bool EraseWatchOnly(const CScript& script);
@@ -106,15 +111,6 @@ public:
     bool ReadBestBlock(CBlockLocator& locator);
 
     bool WriteOrderPosNext(int64_t nOrderPosNext);
-
-    // presstab
-    bool WriteStakeSplitThreshold(uint64_t nStakeSplitThreshold);
-    bool WriteMultiSend(std::vector<std::pair<std::string, int> > vMultiSend);
-    bool EraseMultiSend(std::vector<std::pair<std::string, int> > vMultiSend);
-    bool WriteMSettings(bool fMultiSendStake, bool fMultiSendMasternode, int nLastMultiSendHeight);
-    bool WriteMSDisabledAddresses(std::vector<std::string> vDisabledAddresses);
-    bool EraseMSDisabledAddresses(std::vector<std::string> vDisabledAddresses);
-    bool WriteAutoCombineSettings(bool fEnable, CAmount nCombineThreshold);
 
     bool WriteDefaultKey(const CPubKey& vchPubKey);
 
@@ -132,14 +128,14 @@ public:
     /// Erase destination data tuple from wallet database
     bool EraseDestData(const std::string& address, const std::string& key);
 
+    bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);
     bool WriteAccountingEntry(const CAccountingEntry& acentry);
     CAmount GetAccountCreditDebit(const std::string& strAccount);
     void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& acentries);
 
-    DBErrors ReorderTransactions(CWallet* pwallet);
     DBErrors LoadWallet(CWallet* pwallet);
-    DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, std::vector<CWalletTx>& vWtx);
-    DBErrors ZapWalletTx(CWallet* pwallet, std::vector<CWalletTx>& vWtx);
+    DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, WalletTxVector& vWtx);
+    DBErrors ZapWalletTx(CWallet* pwallet, WalletTxVector& vWtx);
     static bool Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys);
     static bool Recover(CDBEnv& dbenv, std::string filename);
 
@@ -153,8 +149,6 @@ public:
 private:
     CWalletDB(const CWalletDB&);
     void operator=(const CWalletDB&);
-
-    bool WriteAccountingEntry(const uint64_t nAccEntryNum, const CAccountingEntry& acentry);
 };
 
 void ThreadFlushWalletDB(const std::string& strWalletFile);

@@ -15,11 +15,10 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
-
+#include "Settings.h"
 #include "json/json_spirit_writer_template.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -28,11 +27,149 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 
+// RPC Endpoints
+extern json_spirit::Value getconnectioncount(const json_spirit::Array& params, bool fHelp); // in rpcnet.cpp
+extern json_spirit::Value getpeerinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value ping(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value addnode(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddednodeinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getnettotals(const json_spirit::Array& params, bool fHelp);
+
+extern json_spirit::Value dumpprivkey(const json_spirit::Array& params, bool fHelp); // in rpcdump.cpp
+extern json_spirit::Value importprivkey(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value importaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value dumphdinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value dumpwallet(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value importwallet(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value bip38encrypt(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value bip38decrypt(const json_spirit::Array& params, bool fHelp);
+
+extern json_spirit::Value getgenerate(const json_spirit::Array& params, bool fHelp); // in rpcmining.cpp
+extern json_spirit::Value setgenerate(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value generateblock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getnetworkhashps(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value gethashespersec(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getmininginfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value prioritisetransaction(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getblocktemplate(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value submitblock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value estimatefee(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value estimatepriority(const json_spirit::Array& params, bool fHelp);
+
+extern json_spirit::Value getnewaddress(const json_spirit::Array& params, bool fHelp); // in rpcwallet.cpp
+extern json_spirit::Value getaccountaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getrawchangeaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value setaccount(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaccount(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressesbyaccount(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendtoaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getcoinavailability(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value fundvault(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value reclaimvaultfunds(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value removevault(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value addvault(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendtoaddressix(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value signmessage(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getreceivedbyaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getreceivedbyaccount(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getbalance(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getunconfirmedbalance(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value movecmd(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendfrom(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendmany(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value addmultisigaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listreceivedbyaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listreceivedbyaccount(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listtransactions(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listaddressgroupings(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listaccounts(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listsinceblock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value gettransaction(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value backupwallet(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value keypoolrefill(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value walletpassphrase(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value walletpassphrasechange(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value walletlock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value walletverify(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value encryptwallet(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getwalletinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getblockchaininfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getnetworkinfo(const json_spirit::Array& params, bool fHelp);
+
+extern json_spirit::Value getrawtransaction(const json_spirit::Array& params, bool fHelp); // in rcprawtransaction.cpp
+extern json_spirit::Value listunspent(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value lockunspent(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listlockunspent(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value createrawtransaction(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value decoderawtransaction(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value decodescript(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value signrawtransaction(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendrawtransaction(const json_spirit::Array& params, bool fHelp);
+
+extern json_spirit::Value getblockcount(const json_spirit::Array& params, bool fHelp); // in rpcblockchain.cpp
+extern json_spirit::Value getlotteryblockwinners(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getbestblockhash(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getdifficulty(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value settxfee(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getmempoolinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getrawmempool(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getblockhash(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getblock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getblockheader(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value gettxoutsetinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value gettxout(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value verifychain(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getchaintips(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value invalidateblock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value reconsiderblock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getinvalid(const json_spirit::Array& params, bool fHelp);
+
+extern json_spirit::Value debug(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value allocatefunds(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value fundmasternode(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value obfuscation(const json_spirit::Array& params, bool fHelp); // in rpcmasternode.cpp
+extern json_spirit::Value getpoolinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value masternode(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listmasternodes(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getmasternodecount(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value masternodeconnect(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value masternodecurrent(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value masternodedebug(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value setupmasternode(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value verifymasternodesetup(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value broadcaststartmasternode(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value startmasternode(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value createmasternodekey(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getmasternodeoutputs(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listmasternodeconf(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getmasternodestatus(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getmasternodewinners(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getmasternodescores(const json_spirit::Array& params, bool fHelp);
+
+extern json_spirit::Value getinfo(const json_spirit::Array& params, bool fHelp); // in rpcmisc.cpp
+extern json_spirit::Value mnsync(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value spork(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value validateaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value createmultisig(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value verifymessage(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value setmocktime(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getstakingstatus(const json_spirit::Array& params, bool fHelp);
+
+extern json_spirit::Value getaddresstxids(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressdeltas(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressbalance(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressutxos(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getaddressmempool(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getspentinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value clearbanned(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listbanned(const json_spirit::Array& params, bool fHelp);
+
+
 using namespace boost;
 using namespace boost::asio;
 using namespace json_spirit;
 using namespace std;
-
+extern Settings& settings;
 static std::string strRPCUserColonPass;
 
 static bool fRPCRunning = false;
@@ -43,7 +180,6 @@ static CCriticalSection cs_rpcWarmup;
 //! These are created by StartRPCThreads, destroyed in StopRPCThreads
 static asio::io_service* rpc_io_service = NULL;
 static map<string, boost::shared_ptr<deadline_timer> > deadlineTimers;
-static ssl::context* rpc_ssl_context = NULL;
 static boost::thread_group* rpc_worker_group = NULL;
 static boost::asio::io_service::work* rpc_dummy_work = NULL;
 static std::vector<CSubNet> rpc_allow_subnets; //!< List of subnets to allow RPC connections from
@@ -90,12 +226,14 @@ static inline int64_t roundint64(double d)
     return (int64_t)(d > 0 ? d + 0.5 : d - 0.5);
 }
 
-CAmount AmountFromValue(const Value& value)
+CAmount AmountFromValue(const Value& value, const bool allowZero)
 {
-    double dAmount = value.get_real();
-    if (dAmount <= 0.0 || dAmount >  Params().MaxMoneyOut())
+    const double dAmount = value.get_real();
+    if (dAmount < 0.0 || dAmount >  Params().MaxMoneyOut())
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
-    CAmount nAmount = roundint64(dAmount * COIN);
+    const CAmount nAmount = roundint64(dAmount * COIN);
+    if (!allowZero && nAmount == 0)
+        throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     if (!MoneyRange(nAmount))
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     return nAmount;
@@ -121,7 +259,7 @@ uint256 ParseHashO(const Object& o, string strKey)
 {
     return ParseHashV(find_value(o, strKey), strKey);
 }
-vector<unsigned char> ParseHexV(const Value& v, string strName)
+std::vector<unsigned char> ParseHexV(const Value& v, string strName)
 {
     string strHex;
     if (v.type() == str_type)
@@ -130,7 +268,7 @@ vector<unsigned char> ParseHexV(const Value& v, string strName)
         throw JSONRPCError(RPC_INVALID_PARAMETER, strName + " must be hexadecimal string (not '" + strHex + "')");
     return ParseHex(strHex);
 }
-vector<unsigned char> ParseHexO(const Object& o, string strKey)
+std::vector<unsigned char> ParseHexO(const Object& o, string strKey)
 {
     return ParseHexV(find_value(o, strKey), strKey);
 }
@@ -158,20 +296,20 @@ bool ParseBool(const Object& o, string strKey)
  * Note: This interface may still be subject to change.
  */
 
-string CRPCTable::help(string strCommand) const
+std::string CRPCTable::help(std::string strCommand) const
 {
-    string strRet;
-    string category;
-    set<rpcfn_type> setDone;
-    vector<pair<string, const CRPCCommand*> > vCommands;
+    std::string strRet;
+    std::string category;
+    std::set<rpcfn_type> setDone;
+    std::vector<std::pair<std::string, const CRPCCommand*> > vCommands;
 
-    for (map<string, const CRPCCommand*>::const_iterator mi = mapCommands.begin(); mi != mapCommands.end(); ++mi)
-        vCommands.push_back(make_pair(mi->second->category + mi->first, mi->second));
+    for (std::map<std::string, const CRPCCommand*>::const_iterator mi = mapCommands.begin(); mi != mapCommands.end(); ++mi)
+        vCommands.push_back(std::make_pair(mi->second->category + mi->first, mi->second));
     sort(vCommands.begin(), vCommands.end());
 
-    BOOST_FOREACH (const PAIRTYPE(string, const CRPCCommand*) & command, vCommands) {
+    BOOST_FOREACH (const PAIRTYPE(std::string, const CRPCCommand*) & command, vCommands) {
         const CRPCCommand* pcmd = command.second;
-        string strMethod = pcmd->name;
+        std::string strMethod = pcmd->name;
         // We already filter duplicates, but these deprecated screw up the sort order
         if (strMethod.find("label") != string::npos)
             continue;
@@ -269,6 +407,7 @@ static const CRPCCommand vRPCCommands[] =
         {"blockchain", "getblockchaininfo", &getblockchaininfo, true, false, false},
         {"blockchain", "getbestblockhash", &getbestblockhash, true, false, false},
         {"blockchain", "getblockcount", &getblockcount, true, false, false},
+        {"blockchain", "getlotteryblockwinners", &getlotteryblockwinners, true, false, false},
         {"blockchain", "getblock", &getblock, true, false, false},
         {"blockchain", "getblockhash", &getblockhash, true, false, false},
         {"blockchain", "getblockheader", &getblockheader, false, false, false},
@@ -289,13 +428,13 @@ static const CRPCCommand vRPCCommands[] =
         {"mining", "getnetworkhashps", &getnetworkhashps, true, false, false},
         {"mining", "prioritisetransaction", &prioritisetransaction, true, false, false},
         {"mining", "submitblock", &submitblock, true, true, false},
-        {"mining", "reservebalance", &reservebalance, true, true, false},
 
 #ifdef ENABLE_WALLET
         /* Coin generation */
         {"generating", "getgenerate", &getgenerate, true, false, false},
         {"generating", "gethashespersec", &gethashespersec, true, false, false},
         {"generating", "setgenerate", &setgenerate, true, true, false},
+        {"generating", "generateblock", &generateblock, true, true, false},
 #endif
 
         /* Raw transactions */
@@ -369,7 +508,6 @@ static const CRPCCommand vRPCCommands[] =
 
         /* Wallet */
         {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true},
-        {"wallet", "autocombinerewards", &autocombinerewards, false, false, true},
         {"wallet", "backupwallet", &backupwallet, true, false, true},
         {"wallet", "dumpprivkey", &dumpprivkey, true, false, true},
         {"wallet", "dumphdinfo", &dumphdinfo, true, false, true},
@@ -386,7 +524,6 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "getreceivedbyaccount", &getreceivedbyaccount, false, false, true},
         {"wallet", "getreceivedbyaddress", &getreceivedbyaddress, false, false, true},
         {"wallet", "getstakingstatus", &getstakingstatus, false, false, true},
-        {"wallet", "getstakesplitthreshold", &getstakesplitthreshold, false, false, true},
         {"wallet", "gettransaction", &gettransaction, false, false, true},
         {"wallet", "getunconfirmedbalance", &getunconfirmedbalance, false, false, true},
         {"wallet", "getwalletinfo", &getwalletinfo, false, false, true},
@@ -404,13 +541,16 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "listunspent", &listunspent, false, false, true},
         {"wallet", "lockunspent", &lockunspent, true, false, true},
         {"wallet", "move", &movecmd, false, false, true},
-        {"wallet", "multisend", &multisend, false, false, true},
         {"wallet", "sendfrom", &sendfrom, false, false, true},
         {"wallet", "sendmany", &sendmany, false, false, true},
         {"wallet", "sendtoaddress", &sendtoaddress, false, false, true},
+        {"wallet", "fundvault", &fundvault, false, false, true},
+        {"wallet", "reclaimvaultfunds", &reclaimvaultfunds, false, false, true},
+        {"wallet", "removevault", &removevault, false, false, true},
+        {"wallet", "addvault", &addvault, false, false, true},
+        {"wallet", "getcoinavailability", &getcoinavailability, false, false, true},
         {"wallet", "sendtoaddressix", &sendtoaddressix, false, false, true},
         {"wallet", "setaccount", &setaccount, true, false, true},
-        {"wallet", "setstakesplitthreshold", &setstakesplitthreshold, false, false, true},
         {"wallet", "settxfee", &settxfee, true, false, true},
         {"wallet", "signmessage", &signmessage, true, false, true},
         {"wallet", "walletlock", &walletlock, true, false, true},
@@ -495,66 +635,51 @@ template <typename Protocol>
 class AcceptedConnectionImpl : public AcceptedConnection
 {
 public:
-    AcceptedConnectionImpl(
-        asio::io_service& io_service,
-        ssl::context& context,
-        bool fUseSSL) : sslStream(io_service, context),
-                        _d(sslStream, fUseSSL),
-                        _stream(_d)
+    AcceptedConnectionImpl()
     {
     }
 
-    virtual std::iostream& stream()
+    virtual std::iostream& stream() override
     {
-        return _stream;
+        return socketStream;
     }
 
-    virtual std::string peer_address_to_string() const
+    virtual std::string peer_address_to_string() const override
     {
         return peer.address().to_string();
     }
 
-    virtual void close()
+    virtual void close() override
     {
-        _stream.close();
+        socketStream.close();
     }
 
     typename Protocol::endpoint peer;
-    asio::ssl::stream<typename Protocol::socket> sslStream;
-
-private:
-    SSLIOStreamDevice<Protocol> _d;
-    iostreams::stream<SSLIOStreamDevice<Protocol> > _stream;
+    typename Protocol::iostream socketStream;
 };
 
 void ServiceConnection(AcceptedConnection* conn);
 
 //! Forward declaration required for RPCListen
-template <typename Protocol, typename SocketAcceptorService>
-static void RPCAcceptHandler(boost::shared_ptr<basic_socket_acceptor<Protocol, SocketAcceptorService> > acceptor,
-    ssl::context& context,
-    bool fUseSSL,
+template <typename Protocol>
+static void RPCAcceptHandler(boost::shared_ptr<basic_socket_acceptor<Protocol> > acceptor,
     boost::shared_ptr<AcceptedConnection> conn,
     const boost::system::error_code& error);
 
 /**
  * Sets up I/O resources to accept and handle a new connection.
  */
-template <typename Protocol, typename SocketAcceptorService>
-static void RPCListen(boost::shared_ptr<basic_socket_acceptor<Protocol, SocketAcceptorService> > acceptor,
-    ssl::context& context,
-    const bool fUseSSL)
+template <typename Protocol>
+static void RPCListen(boost::shared_ptr<basic_socket_acceptor<Protocol> > acceptor)
 {
     // Accept connection
-    boost::shared_ptr<AcceptedConnectionImpl<Protocol> > conn(new AcceptedConnectionImpl<Protocol>(acceptor->get_io_service(), context, fUseSSL));
+    boost::shared_ptr<AcceptedConnectionImpl<Protocol> > conn(new AcceptedConnectionImpl<Protocol>());
 
     acceptor->async_accept(
-        conn->sslStream.lowest_layer(),
+        *conn->socketStream.rdbuf(),
         conn->peer,
-        boost::bind(&RPCAcceptHandler<Protocol, SocketAcceptorService>,
+        boost::bind(&RPCAcceptHandler<Protocol>,
             acceptor,
-            boost::ref(context),
-            fUseSSL,
             conn,
             _1));
 }
@@ -563,18 +688,16 @@ static void RPCListen(boost::shared_ptr<basic_socket_acceptor<Protocol, SocketAc
 /**
  * Accept and handle incoming connection.
  */
-template <typename Protocol, typename SocketAcceptorService>
-static void RPCAcceptHandler(boost::shared_ptr<basic_socket_acceptor<Protocol, SocketAcceptorService> > acceptor,
-    ssl::context& context,
-    const bool fUseSSL,
+template <typename Protocol>
+static void RPCAcceptHandler(boost::shared_ptr<basic_socket_acceptor<Protocol> > acceptor,
     boost::shared_ptr<AcceptedConnection> conn,
     const boost::system::error_code& error)
 {
     // Immediately start accepting new connections, except when we're cancelled or our socket is closed.
     if (error != asio::error::operation_aborted && acceptor->is_open())
-        RPCListen(acceptor, context, fUseSSL);
+        RPCListen(acceptor);
 
-    AcceptedConnectionImpl<ip::tcp>* tcp_conn = dynamic_cast<AcceptedConnectionImpl<ip::tcp>*>(conn.get());
+    AcceptedConnectionImpl<Protocol>* tcp_conn = dynamic_cast<AcceptedConnectionImpl<Protocol>*>(conn.get());
 
     if (error) {
         // TODO: Actually handle errors
@@ -584,9 +707,7 @@ static void RPCAcceptHandler(boost::shared_ptr<basic_socket_acceptor<Protocol, S
     // do this before starting client thread, to filter out
     // certain DoS and misbehaving clients.
     else if (tcp_conn && !ClientAllowed(tcp_conn->peer.address())) {
-        // Only send a 403 if we're not using SSL to prevent a DoS during the SSL handshake.
-        if (!fUseSSL)
-            conn->stream() << HTTPError(HTTP_FORBIDDEN, false) << std::flush;
+        conn->stream() << HTTPError(HTTP_FORBIDDEN, false) << std::flush;
         conn->close();
     } else {
         ServiceConnection(conn.get());
@@ -607,7 +728,7 @@ void StartRPCThreads()
     rpc_allow_subnets.clear();
     rpc_allow_subnets.push_back(CSubNet("127.0.0.0/8")); // always allow IPv4 local subnet
     rpc_allow_subnets.push_back(CSubNet("::1"));         // always allow IPv6 localhost
-    if (mapMultiArgs.count("-rpcallowip")) {
+    if (settings.ParameterIsSetForMultiArgs("-rpcallowip")) {
         const vector<string>& vAllow = mapMultiArgs["-rpcallowip"];
         BOOST_FOREACH (string strAllow, vAllow) {
             CSubNet subnet(strAllow);
@@ -626,14 +747,14 @@ void StartRPCThreads()
         strAllowed += subnet.ToString() + " ";
     LogPrint("rpc", "Allowing RPC connections from: %s\n", strAllowed);
 
-    strRPCUserColonPass = mapArgs["-rpcuser"] + ":" + mapArgs["-rpcpassword"];
-    if (((mapArgs["-rpcpassword"] == "") ||
-            (mapArgs["-rpcuser"] == mapArgs["-rpcpassword"])) &&
+    strRPCUserColonPass = settings.GetParameter("-rpcuser") + ":" + settings.GetParameter("-rpcpassword");
+    if (((settings.GetParameter("-rpcpassword") == "") ||
+            (settings.GetParameter("-rpcuser") == settings.GetParameter("-rpcpassword"))) &&
         Params().RequireRPCPassword()) {
         unsigned char rand_pwd[32];
         GetRandBytes(rand_pwd, 32);
         uiInterface.ThreadSafeMessageBox(strprintf(
-                                             _("To use divid, or the -server option to divi-qt, you must set an rpcpassword in the configuration file:\n"
+                                             translate("To use divid, or the -server option to divi-qt, you must set an rpcpassword in the configuration file:\n"
                                                "%s\n"
                                                "It is recommended you use the following random password:\n"
                                                "rpcuser=divirpc\n"
@@ -652,49 +773,25 @@ void StartRPCThreads()
 
     assert(rpc_io_service == NULL);
     rpc_io_service = new asio::io_service();
-    rpc_ssl_context = new ssl::context(*rpc_io_service, ssl::context::sslv23);
-
-    const bool fUseSSL = GetBoolArg("-rpcssl", false);
-
-    if (fUseSSL) {
-        rpc_ssl_context->set_options(ssl::context::no_sslv2 | ssl::context::no_sslv3);
-
-        filesystem::path pathCertFile(GetArg("-rpcsslcertificatechainfile", "server.cert"));
-        if (!pathCertFile.is_complete()) pathCertFile = filesystem::path(GetDataDir()) / pathCertFile;
-        if (filesystem::exists(pathCertFile))
-            rpc_ssl_context->use_certificate_chain_file(pathCertFile.string());
-        else
-            LogPrintf("ThreadRPCServer ERROR: missing server certificate file %s\n", pathCertFile.string());
-
-        filesystem::path pathPKFile(GetArg("-rpcsslprivatekeyfile", "server.pem"));
-        if (!pathPKFile.is_complete()) pathPKFile = filesystem::path(GetDataDir()) / pathPKFile;
-        if (filesystem::exists(pathPKFile))
-            rpc_ssl_context->use_private_key_file(pathPKFile.string(), ssl::context::pem);
-        else
-            LogPrintf("ThreadRPCServer ERROR: missing server private key file %s\n", pathPKFile.string());
-
-        string strCiphers = GetArg("-rpcsslciphers", "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH");
-        SSL_CTX_set_cipher_list(rpc_ssl_context->impl(), strCiphers.c_str());
-    }
 
     std::vector<ip::tcp::endpoint> vEndpoints;
     bool bBindAny = false;
-    int defaultPort = GetArg("-rpcport", BaseParams().RPCPort());
-    if (!mapArgs.count("-rpcallowip")) // Default to loopback if not allowing external IPs
+    int defaultPort = settings.GetArg("-rpcport", BaseParams().RPCPort());
+    if (!settings.ParameterIsSet("-rpcallowip")) // Default to loopback if not allowing external IPs
     {
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v6::loopback(), defaultPort));
         vEndpoints.push_back(ip::tcp::endpoint(asio::ip::address_v4::loopback(), defaultPort));
-        if (mapArgs.count("-rpcbind")) {
+        if (settings.ParameterIsSet("-rpcbind")) {
             LogPrintf("WARNING: option -rpcbind was ignored because -rpcallowip was not specified, refusing to allow everyone to connect\n");
         }
-    } else if (mapArgs.count("-rpcbind")) // Specific bind address
+    } else if (settings.ParameterIsSet("-rpcbind")) // Specific bind address
     {
         BOOST_FOREACH (const std::string& addr, mapMultiArgs["-rpcbind"]) {
             try {
                 vEndpoints.push_back(ParseEndpoint(addr, defaultPort));
             } catch (const boost::system::system_error&) {
                 uiInterface.ThreadSafeMessageBox(
-                    strprintf(_("Could not parse -rpcbind value %s as network address"), addr),
+                    strprintf(translate("Could not parse -rpcbind value %s as network address"), addr),
                     "", CClientUIInterface::MSG_ERROR);
                 StartShutdown();
                 return;
@@ -717,10 +814,10 @@ void StartRPCThreads()
             straddress = bindAddress.to_string();
             LogPrintf("Binding RPC on address %s port %i (IPv4+IPv6 bind any: %i)\n", straddress, endpoint.port(), bBindAny);
             boost::system::error_code v6_only_error;
-            boost::shared_ptr<ip::tcp::acceptor> acceptor(new ip::tcp::acceptor(*rpc_io_service));
+            boost::shared_ptr<basic_socket_acceptor<ip::tcp> > acceptor(new basic_socket_acceptor<ip::tcp>(*rpc_io_service));
 
             acceptor->open(endpoint.protocol());
-            acceptor->set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+            acceptor->set_option(basic_socket_acceptor<ip::tcp>::reuse_address(true));
 
             // Try making the socket dual IPv6/IPv4 when listening on the IPv6 "any" address
             acceptor->set_option(boost::asio::ip::v6_only(
@@ -730,7 +827,7 @@ void StartRPCThreads()
             acceptor->bind(endpoint);
             acceptor->listen(socket_base::max_connections);
 
-            RPCListen(acceptor, *rpc_ssl_context, fUseSSL);
+            RPCListen(acceptor);
 
             rpc_acceptors.push_back(acceptor);
             fListening = true;
@@ -740,7 +837,7 @@ void StartRPCThreads()
                 break;
         } catch (boost::system::system_error& e) {
             LogPrintf("ERROR: Binding RPC on address %s port %i failed: %s\n", straddress, endpoint.port(), e.what());
-            strerr = strprintf(_("An error occurred while setting up the RPC address %s port %u for listening: %s"), straddress, endpoint.port(), e.what());
+            strerr = strprintf(translate("An error occurred while setting up the RPC address %s port %u for listening: %s"), straddress, endpoint.port(), e.what());
         }
     }
 
@@ -751,7 +848,7 @@ void StartRPCThreads()
     }
 
     rpc_worker_group = new boost::thread_group();
-    for (int i = 0; i < GetArg("-rpcthreads", 4); i++)
+    for (int i = 0; i < settings.GetArg("-rpcthreads", 4); i++)
         rpc_worker_group->create_thread(boost::bind(&asio::io_service::run, rpc_io_service));
     fRPCRunning = true;
 }
@@ -800,8 +897,6 @@ void StopRPCThreads()
     rpc_dummy_work = NULL;
     delete rpc_worker_group;
     rpc_worker_group = NULL;
-    delete rpc_ssl_context;
-    rpc_ssl_context = NULL;
     delete rpc_io_service;
     rpc_io_service = NULL;
 }
@@ -843,7 +938,7 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
     assert(rpc_io_service != NULL);
 
     if (deadlineTimers.count(name) == 0) {
-        deadlineTimers.insert(make_pair(name,
+        deadlineTimers.insert(std::make_pair(name,
             boost::shared_ptr<deadline_timer>(new deadline_timer(*rpc_io_service))));
     }
     deadlineTimers[name]->expires_from_now(posix_time::seconds(nSeconds));
@@ -1001,7 +1096,7 @@ void ServiceConnection(AcceptedConnection* conn)
         ReadHTTPMessage(conn->stream(), mapHeaders, strRequest, nProto, MAX_SIZE);
 
         // HTTP Keep-Alive is false; close connection immediately
-        if ((mapHeaders["connection"] == "close") || (!GetBoolArg("-rpckeepalive", true)))
+        if ((mapHeaders["connection"] == "close") || (!settings.GetBoolArg("-rpckeepalive", true)))
             fRun = false;
 
         // Process via JSON-RPC API
@@ -1010,7 +1105,7 @@ void ServiceConnection(AcceptedConnection* conn)
                 break;
 
             // Process via HTTP REST API
-        } else if (strURI.substr(0, 6) == "/rest/" && GetBoolArg("-rest", false)) {
+        } else if (strURI.substr(0, 6) == "/rest/" && settings.GetBoolArg("-rest", false)) {
             if (!HTTPReq_REST(conn, strURI, mapHeaders, fRun))
                 break;
 
@@ -1034,7 +1129,7 @@ json_spirit::Value CRPCTable::execute(const std::string& strMethod, const json_s
 
     // Observe safe mode
     string strWarning = GetWarnings("rpc");
-    if (strWarning != "" && !GetBoolArg("-disablesafemode", false) &&
+    if (strWarning != "" && !settings.GetBoolArg("-disablesafemode", false) &&
         !pcmd->okSafeMode)
         throw JSONRPCError(RPC_FORBIDDEN_BY_SAFE_MODE, string("Safe mode: ") + strWarning);
 

@@ -7,6 +7,9 @@
 #ifndef BITCOIN_UTILTIME_H
 #define BITCOIN_UTILTIME_H
 
+#include <boost/thread/condition_variable.hpp>
+#include <boost/thread/mutex.hpp>
+
 #include <stdint.h>
 #include <string>
 
@@ -18,5 +21,13 @@ void MilliSleep(int64_t n);
 
 std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime);
 std::string DurationToDHMS(int64_t nDurationTime);
+
+// Condition variable that gets notified when the mocktime is changed.
+// This can be used to build time-based logic that quickly wakes up
+// in tests when we use mocktime.
+extern boost::condition_variable cvMockTimeChanged;
+
+// Mutex to use for waiting on cvMockTimeChanged.
+extern boost::mutex csMockTime;
 
 #endif // BITCOIN_UTILTIME_H

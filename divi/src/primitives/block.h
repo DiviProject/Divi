@@ -8,7 +8,6 @@
 #define BITCOIN_PRIMITIVES_BLOCK_H
 
 #include "primitives/transaction.h"
-#include "keystore.h"
 #include "serialize.h"
 #include "uint256.h"
 
@@ -149,9 +148,6 @@ public:
     {
         return !IsProofOfStake();
     }
-
-    bool SignBlock(const CKeyStore& keystore);
-    bool CheckBlockSignature() const;
 
     std::pair<COutPoint, unsigned int> GetProofOfStake() const
     {

@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include <WalletIntegrityVerifier.h>
-#include <mockFileSystem.h>
+#include <MockFileSystem.h>
 #include <MockDatabaseWrapper.h>
 #include <WalletIntegrityVerifier.h>
 #include <gmock/gmock.h>
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(willCheckDatabaseEnvironmentIsAvailable)
 
     std::string dataDirectory = "/SomeRandomFolder";
     std::string walletFilename = "randomWalletFilename.dat";
-    
+
 
     ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(true));
     {
@@ -77,12 +77,12 @@ BOOST_AUTO_TEST_CASE(willGracefullyFailOnFilesystemError)
 
     std::string dataDirectory = "/SomeRandomFolder";
     std::string walletFilename = "randomWalletFilename.dat";
-    
+
 
     ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
     ON_CALL(fileSystem, rename(_,_))
         .WillByDefault(::testing::Throw(std::runtime_error("Failed to copy folder")));
-  
+
     BOOST_CHECK(!integrityVerifier.CheckWalletIntegrity(
         dataDirectory,walletFilename));
 }
@@ -95,12 +95,12 @@ BOOST_AUTO_TEST_CASE(willBackupToADifferentFolderEachTime)
 
     std::string dataDirectory = "/SomeRandomFolder";
     std::string walletFilename = "randomWalletFilename.dat";
-    
+
 
     std::set<std::string> usedDbBackupFolderPath;
     ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
     ON_CALL(fileSystem, rename(_,_))
-        .WillByDefault( 
+        .WillByDefault(
             Invoke( [&usedDbBackupFolderPath](const PathType& a, const PathType b)
             {
                 usedDbBackupFolderPath.insert(b);
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
 
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
-        
+
 
         ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(false));
         ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(willOnlyCheckWalletIntegrityIfDatabaseIsUnavailable)
 
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
-        
+
 
         ON_CALL(dbWrapper, Open(dataDirectory)).WillByDefault(Return(true));
         ON_CALL(fileSystem, exists(dataDirectory+"/"+walletFilename))
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE(willOnlyAttemptToVerifyWalletIfFileExists)
 
         std::string dataDirectory = "/SomeRandomFolder";
         std::string walletFilename = "randomWalletFilename.dat";
-        
+
 
         ON_CALL(dbWrapper, Open(dataDirectory))
             .WillByDefault(Return(true));
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE(willVerifyWalletDatabaseIntegrityIsOK)
 }
 
 BOOST_AUTO_TEST_CASE(willRetryCheckingDatabaseAvailabilityAfterBackup)
-{    
+{
     NiceMock<MockFileSystem> fileSystem;
     NiceMock<MockDatabaseWrapper> dbWrapper;
     WalletIntegrityVerifier integrityVerifier(fileSystem,dbWrapper);
@@ -265,12 +265,12 @@ BOOST_AUTO_TEST_CASE(willRetryCheckingDatabaseAvailabilityAfterBackup)
         .WillByDefault(Invoke(
             [&databaseAvailable](const std::string& a)->bool
             {
-                bool oldValue = databaseAvailable; 
+                bool oldValue = databaseAvailable;
                 databaseAvailable = !databaseAvailable;
                 return oldValue;
             }
         ));
-    
+
     {
         ::testing::InSequence seq;
         EXPECT_CALL(dbWrapper,Open(_))
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(willRetryCheckingDatabaseAvailabilityAfterBackup)
         EXPECT_CALL(dbWrapper,Open(_))
             .WillOnce(Return(true));
     }
-    
+
     BOOST_CHECK(
         integrityVerifier.CheckWalletIntegrity(dataDirectory,walletFilename));
 }

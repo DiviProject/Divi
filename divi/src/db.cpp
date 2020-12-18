@@ -22,10 +22,8 @@
 #include <boost/version.hpp>
 
 #include <openssl/rand.h>
-
-
-unsigned int nWalletDBUpdated;
-
+#include "Settings.h"
+extern Settings& settings;
 
 //
 // CDB
@@ -48,7 +46,7 @@ CDB::CDB(const std::string& strFilename, const char* pszMode) : pdb(NULL), activ
     {
         LOCK(CDB::bitdb.cs_db);
         if (!CDB::bitdb.Open(GetDataDir()))
-            throw runtime_error("CDB : Failed to open database environment.");
+            throw std::runtime_error("CDB : Failed to open database environment.");
 
         strFile = strFilename;
         ++CDB::bitdb.mapFileUseCount[strFile];
@@ -61,7 +59,7 @@ CDB::CDB(const std::string& strFilename, const char* pszMode) : pdb(NULL), activ
                 DbMpoolFile* mpf = pdb->get_mpf();
                 ret = mpf->set_flags(DB_MPOOL_NOFILE, 1);
                 if (ret != 0)
-                    throw runtime_error(strprintf("CDB : Failed to configure for no temp file backing for database %s", strFile));
+                    throw std::runtime_error(strprintf("CDB : Failed to configure for no temp file backing for database %s", strFile));
             }
 
             ret = pdb->open(NULL,                   // Txn pointer
@@ -76,10 +74,10 @@ CDB::CDB(const std::string& strFilename, const char* pszMode) : pdb(NULL), activ
                 pdb = NULL;
                 --CDB::bitdb.mapFileUseCount[strFile];
                 strFile = "";
-                throw runtime_error(strprintf("CDB : Error %d, can't open database %s", ret, strFile));
+                throw std::runtime_error(strprintf("CDB : Error %d, can't open database %s", ret, strFile));
             }
 
-            if (fCreate && !Exists(string("version"))) {
+            if (fCreate && !Exists(std::string("version"))) {
                 bool fTmp = fReadOnly;
                 fReadOnly = false;
                 WriteVersion(CLIENT_VERSION);
@@ -101,7 +99,7 @@ void CDB::Flush()
     if (fReadOnly)
         nMinutes = 1;
 
-    CDB::bitdb.dbenv.txn_checkpoint(nMinutes ? GetArg("-dblogsize", 100) * 1024 : 0, nMinutes, 0);
+    CDB::bitdb.dbenv.txn_checkpoint(nMinutes ? settings.GetArg("-dblogsize", 100) * 1024 : 0, nMinutes, 0);
 }
 
 void CDB::Close()
@@ -121,7 +119,7 @@ void CDB::Close()
     }
 }
 
-bool CDB::Rewrite(const string& strFile, const char* pszSkip)
+bool CDB::Rewrite(const std::string& strFile, const char* pszSkip)
 {
     while (true) {
         {
@@ -134,7 +132,7 @@ bool CDB::Rewrite(const string& strFile, const char* pszSkip)
 
                 bool fSuccess = true;
                 LogPrintf("CDB::Rewrite : Rewriting %s...\n", strFile);
-                string strFileRes = strFile + ".rewrite";
+                std::string strFileRes = strFile + ".rewrite";
                 { // surround usage of db with extra {}
                     CDB db(strFile.c_str(), "r");
                     Db* pdbCopy = new Db(&CDB::bitdb.dbenv, 0);

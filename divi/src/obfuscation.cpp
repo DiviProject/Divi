@@ -4,9 +4,11 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "obfuscation.h"
+
+#include "activemasternode.h"
+#include "BlockDiskAccessor.h"
 #include "coincontrol.h"
 #include "init.h"
-#include "main.h"
 #include "masternodeman.h"
 #include "script/sign.h"
 #include "swifttx.h"
@@ -17,12 +19,19 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/lexical_cast.hpp>
-
+#include <main.h>
 #include <algorithm>
 #include <boost/assign/list_of.hpp>
 #include <openssl/rand.h>
+#include <base58.h>
+#include <base58address.h>
 
-bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, CMasternode::Tier nMasternodeTier)
+#include <chrono>
+void RenameThread(const char* name);
+extern bool fLiteMode;
+extern const std::string strMessageMagic = "DarkNet Signed Message:\n";
+
+bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier)
 {
     CScript payee2;
     payee2 = GetScriptForDestination(pubkey.GetID());
@@ -47,7 +56,7 @@ bool CObfuScationSigner::SetKey(std::string strSecret, std::string& errorMessage
     bool fGood = vchSecret.SetString(strSecret);
 
     if (!fGood) {
-        errorMessage = _("Invalid private key.");
+        errorMessage = translate("Invalid private key.");
         return false;
     }
 
@@ -69,21 +78,21 @@ bool CObfuScationSigner::GetKeysFromSecret(std::string strSecret, CKey& keyRet, 
     return true;
 }
 
-bool CObfuScationSigner::SignMessage(std::string strMessage, std::string& errorMessage, vector<unsigned char>& vchSig, CKey key)
+bool CObfuScationSigner::SignMessage(std::string strMessage, std::string& errorMessage, std::vector<unsigned char>& vchSig, CKey key)
 {
     CHashWriter ss(SER_GETHASH, 0);
     ss << strMessageMagic;
     ss << strMessage;
 
     if (!key.SignCompact(ss.GetHash(), vchSig)) {
-        errorMessage = _("Signing failed.");
+        errorMessage = translate("Signing failed.");
         return false;
     }
 
     return true;
 }
 
-bool CObfuScationSigner::VerifyMessage(CPubKey pubkey, const vector<unsigned char>& vchSig, std::string strMessage, std::string& errorMessage)
+bool CObfuScationSigner::VerifyMessage(CPubKey pubkey, const std::vector<unsigned char>& vchSig, std::string strMessage, std::string& errorMessage)
 {
     CHashWriter ss(SER_GETHASH, 0);
     ss << strMessageMagic;
@@ -91,7 +100,7 @@ bool CObfuScationSigner::VerifyMessage(CPubKey pubkey, const vector<unsigned cha
 
     CPubKey pubkey2;
     if (!pubkey2.RecoverCompact(ss.GetHash(), vchSig)) {
-        errorMessage = _("Error recovering public key.");
+        errorMessage = translate("Error recovering public key.");
         return false;
     }
 
@@ -109,30 +118,42 @@ void ThreadCheckObfuScationPool()
     // Make this thread recognisable as the wallet flushing thread
     RenameThread("divi-obfuscation");
 
-    unsigned int c = 0;
+    int64_t nTimeManageStatus = 0;
+    int64_t nTimeConnections = 0;
 
     while (true) {
-        MilliSleep(1000);
-        //LogPrintf("ThreadCheckObfuScationPool::check timeout\n");
+        int64_t now;
+        {
+            boost::unique_lock<boost::mutex> lock(csMockTime);
+            cvMockTimeChanged.wait_for(lock, boost::chrono::seconds(1));
+            now = GetTime();
+        }
 
         // try to sync from all available nodes, one step at a time
+        //
+        // this function keeps track of its own "last call" time and
+        // ignores calls if they are too early
         masternodeSync.Process();
 
-        if (masternodeSync.IsBlockchainSynced()) {
-            c++;
+        if (!masternodeSync.IsBlockchainSynced())
+            continue;
 
-            // check if we should activate or ping every few minutes,
-            // start right after sync is considered to be done
-            if (c % MASTERNODE_PING_SECONDS == 1) activeMasternode.ManageStatus();
+        // check if we should activate or ping every few minutes,
+        // start right after sync is considered to be done
+        if (now >= nTimeManageStatus + MASTERNODE_PING_SECONDS) {
+            nTimeManageStatus = now;
+            activeMasternode.ManageStatus();
+        }
 
-            if (c % 60 == 0) {
-                mnodeman.CheckAndRemoveInnactive();
-                mnodeman.ProcessMasternodeConnections();
-                masternodePayments.CheckAndRemove();
-                CleanTransactionLocksList();
-            }
+        if (now >= nTimeConnections + 60) {
+            nTimeConnections = now;
+            mnodeman.CheckAndRemoveInnactive();
+            mnodeman.ProcessMasternodeConnections();
+            masternodePayments.CheckAndRemove();
+            CleanTransactionLocksList();
+        }
 
-            //if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
+        //if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
 
 //            obfuScationPool.CheckTimeout();
 //            obfuScationPool.CheckForCompleteQueue();
@@ -140,6 +161,5 @@ void ThreadCheckObfuScationPool()
 //            if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
 //                obfuScationPool.DoAutomaticDenominating();
 //            }
-        }
     }
 }

@@ -22,6 +22,7 @@
 #include <boost/assign/list_of.hpp>
 #include "json/json_spirit_writer_template.h"
 #include "test_only.h"
+#include <ValidationState.h>
 
 using namespace std;
 using namespace json_spirit;
@@ -87,9 +88,6 @@ BOOST_AUTO_TEST_SUITE(transaction_tests)
 
 BOOST_AUTO_TEST_CASE(tx_valid)
 {
-    
-    
-
     // Read tests from test/data/tx_valid.json
     // Format is an array of arrays
     // Inner arrays are either [ "comment" ]
@@ -168,15 +166,10 @@ BOOST_AUTO_TEST_CASE(tx_valid)
             }
         }
     }
-
-    
 }
 
 BOOST_AUTO_TEST_CASE(tx_invalid)
 {
-    
-    
-
     // Read tests from test/data/tx_invalid.json
     // Format is an array of arrays
     // Inner arrays are either [ "comment" ]
@@ -254,8 +247,6 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
             BOOST_CHECK_MESSAGE(err != SCRIPT_ERR_OK, ScriptErrorString(err));
         }
     }
-
-    
 }
 
 BOOST_AUTO_TEST_CASE(basic_transaction_tests)
@@ -314,9 +305,6 @@ SetupDummyInputs(CBasicKeyStore& keystoreRet, CCoinsViewCache& coinsRet)
 
 BOOST_AUTO_TEST_CASE(test_Get)
 {
-    
-    
-
     CBasicKeyStore keystore;
     CCoinsView coinsDummy;
     CCoinsViewCache coins(&coinsDummy);
@@ -347,15 +335,10 @@ BOOST_AUTO_TEST_CASE(test_Get)
     // ... as should not having enough:
     t1.vin[0].scriptSig = CScript();
     BOOST_CHECK(!AreInputsStandard(t1, coins));
-
-    
 }
 
 BOOST_AUTO_TEST_CASE(test_IsStandard)
 {
-    
-    
-
     LOCK(cs_main);
     CBasicKeyStore keystore;
     CCoinsView coinsDummy;

@@ -8,12 +8,16 @@
 #ifndef BITCOIN_CHAINPARAMS_H
 #define BITCOIN_CHAINPARAMS_H
 
+#include "amount.h"
 #include "chainparamsbase.h"
 #include "checkpoint_data.h"
 #include "primitives/block.h"
 #include "protocol.h"
 #include "uint256.h"
 
+#include "masternode-tier.h"
+
+#include <map>
 #include <vector>
 
 typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
@@ -33,6 +37,8 @@ struct CDNSSeedData {
 class CChainParams
 {
 public:
+    using MNCollateralMapType = std::map<MasternodeTier, CAmount>;
+
     enum Base58Type {
         PUBKEY_ADDRESS,
         SCRIPT_ADDRESS,
@@ -54,13 +60,9 @@ public:
     int GetDefaultPort() const { return nDefaultPort; }
     const uint256& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     int SubsidyHalvingInterval() const { return nSubsidyHalvingInterval; }
-    /** Used to check majorities for block version upgrade */
-    int EnforceBlockUpgradeMajority() const { return nEnforceBlockUpgradeMajority; }
-    int RejectBlockOutdatedMajority() const { return nRejectBlockOutdatedMajority; }
-    int ToCheckBlockUpgradeMajority() const { return nToCheckBlockUpgradeMajority; }
     int MaxReorganizationDepth() const { return nMaxReorganizationDepth; }
 
-    /** Used if GenerateBitcoins is called with a negative number of threads */
+    /** Used if GenerateDivi is called with a negative number of threads */
     int DefaultMinerThreads() const { return nMinerThreads; }
     const CBlock& GenesisBlock() const { return genesis; }
     bool RequireRPCPassword() const { return fRequireRPCPassword; }
@@ -72,10 +74,6 @@ public:
     bool DefaultConsistencyChecks() const { return fDefaultConsistencyChecks; }
     /** Allow mining of a min-difficulty block */
     bool AllowMinDifficultyBlocks() const { return fAllowMinDifficultyBlocks; }
-    /** Skip proof-of-work check: allow mining of any difficulty block */
-    bool SkipProofOfWorkCheck() const { return fSkipProofOfWorkCheck; }
-    /** Make standard checks */
-    bool RequireStandard() const { return fRequireStandard; }
     int64_t TargetTimespan() const { return nTargetTimespan; }
     int64_t TargetSpacing() const { return nTargetSpacing; }
     int64_t Interval() const { return nTargetTimespan / nTargetSpacing; }
@@ -83,6 +81,8 @@ public:
     CAmount MaxMoneyOut() const { return nMaxMoneyOut; }
     /** The masternode count that we will allow the see-saw reward payments to be off by */
     int MasternodeCountDrift() const { return nMasternodeCountDrift; }
+    /** Retarget difficulty? */
+    bool RetargetDifficulty() const { return fDifficultyRetargeting; }
     /** Make miner stop after a block is found. In RPC, don't return until nGenProcLimit blocks are generated */
     bool MineBlocksOnDemand() const { return fMineBlocksOnDemand; }
     /** Return the BIP70 network string (main, test or regtest) */
@@ -98,6 +98,12 @@ public:
     int GetLotteryBlockCycle() const { return nLotteryBlockCycle; }
     int GetTreasuryPaymentsStartBlock() const { return nTreasuryPaymentsStartBlock; }
     int GetTreasuryPaymentsCycle() const { return nTreasuryPaymentsCycle; }
+    unsigned GetMinCoinAgeForStaking () const { return nMinCoinAgeForStaking; }
+    const MNCollateralMapType& MasternodeCollateralMap() const
+    {
+        assert(mnCollateralMap);
+        return *mnCollateralMap;
+    }
 
     /** Height or Time Based Activations **/
     int LAST_POW_BLOCK() const { return nLastPOWBlock; }
@@ -118,12 +124,11 @@ protected:
     uint256 bnProofOfWorkLimit;
     int nMaxReorganizationDepth;
     int nSubsidyHalvingInterval;
-    int nEnforceBlockUpgradeMajority;
-    int nRejectBlockOutdatedMajority;
-    int nToCheckBlockUpgradeMajority;
     int64_t nTargetTimespan;
     int64_t nTargetSpacing;
     int nLastPOWBlock;
+    unsigned nMinCoinAgeForStaking;
+    const MNCollateralMapType* mnCollateralMap;
     int nMasternodeCountDrift;
     int nMaturity;
     CAmount nMaxMoneyOut;
@@ -138,9 +143,8 @@ protected:
     bool fMiningRequiresPeers;
     bool fAllowMinDifficultyBlocks;
     bool fDefaultConsistencyChecks;
-    bool fRequireStandard;
+    bool fDifficultyRetargeting;
     bool fMineBlocksOnDemand;
-    bool fSkipProofOfWorkCheck;
     bool fHeadersFirstSyncingActive;
     std::string strSporkKey;
     int64_t nStartMasternodePayments;
@@ -166,12 +170,8 @@ class CModifiableParams
 public:
     //! Published setters to allow changing values in unit test cases
     virtual void setSubsidyHalvingInterval(int anSubsidyHalvingInterval) = 0;
-    virtual void setEnforceBlockUpgradeMajority(int anEnforceBlockUpgradeMajority) = 0;
-    virtual void setRejectBlockOutdatedMajority(int anRejectBlockOutdatedMajority) = 0;
-    virtual void setToCheckBlockUpgradeMajority(int anToCheckBlockUpgradeMajority) = 0;
     virtual void setDefaultConsistencyChecks(bool aDefaultConsistencyChecks) = 0;
     virtual void setAllowMinDifficultyBlocks(bool aAllowMinDifficultyBlocks) = 0;
-    virtual void setSkipProofOfWorkCheck(bool aSkipProofOfWorkCheck) = 0;
 };
 
 

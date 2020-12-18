@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -7,15 +7,15 @@
 # Exercise the wallet.  Ported from wallet.sh.
 # Does the following:
 #   a) creates 3 nodes, with an empty chain (no blocks).
-#   b) node0 mines a block
-#   c) node1 mines 32 blocks, so now node 0 has 60001div, node 1 has 4250div, node2 has none.
-#   d) node0 sends 601 div to node2, in two transactions (301 div, then 300 div).
-#   e) node0 mines a block, collects the fee on the second transaction
-#   f) node1 mines 16 blocks, to mature node0's just-mined block
-#   g) check that node0 has 100-21, node2 has 21
-#   h) node0 should now have 2 unspent outputs;  send these to node2 via raw tx broadcast by node1
-#   i) have node1 mine a block
-#   j) check balances - node0 should have 0, node2 should have 100
+#   b) node0 mines two blocks
+#   c) node1 mines 32 blocks, so now node 0 and 1 have some block rewards,
+#      node2 has still no coins
+#   d) node0 sends 701 div to node2, in two transactions (351 div, then 350 div)
+#   e) check the expected balances
+#   f) node0 should now have 2 unspent outputs;  send these to node2 via raw
+#      tx broadcast by node1
+#   g) have node1 mine a block
+#   h) check balances - node0 should have 0, node2 should have the coins
 #
 
 from test_framework import BitcoinTestFramework
@@ -24,12 +24,9 @@ from util import *
 
 class WalletTest (BitcoinTestFramework):
 
-    def setup_chain(self):
-        print("Initializing test directory "+self.options.tmpdir)
-        initialize_chain_clean(self.options.tmpdir, 3)
-
     def setup_network(self, split=False):
-        self.nodes = start_nodes(3, self.options.tmpdir)
+        args = [["-spendzeroconfchange"]] * 3
+        self.nodes = start_nodes(3, self.options.tmpdir, extra_args=args)
         connect_nodes_bi(self.nodes,0,1)
         connect_nodes_bi(self.nodes,1,2)
         connect_nodes_bi(self.nodes,0,2)
@@ -37,34 +34,29 @@ class WalletTest (BitcoinTestFramework):
         self.sync_all()
 
     def run_test (self):
-        print "Mining blocks..."
+        print ("Mining blocks...")
 
-        self.nodes[0].setgenerate(True, 1)
+        self.nodes[0].setgenerate(True, 2)
 
         self.sync_all()
         self.nodes[1].setgenerate(True, 32)
         self.sync_all()
 
-        assert_equal(self.nodes[0].getbalance(), 60001)
-        assert_equal(self.nodes[1].getbalance(), 4250)
+        assert_equal(self.nodes[0].getbalance(), 2500)
+        assert_equal(self.nodes[1].getbalance(), 15000)
         assert_equal(self.nodes[2].getbalance(), 0)
 
-        # Send 601 BTC from 0 to 2 using sendtoaddress call.
+        # Send 701 BTC from 0 to 2 using sendtoaddress call.
         # Second transaction will be child of first, and will require a fee
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 351)
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 350)
+        sync_mempools(self.nodes)
+        self.nodes[1].setgenerate(True, 1)
+        sync_blocks(self.nodes)
 
-        # Have node0 mine a block, thus he will collect his own fee.
-        self.nodes[0].setgenerate(True, 1)
-        self.sync_all()
-
-        # Have node1 generate 100 blocks (so node0 can recover the fee)
-        self.nodes[1].setgenerate(True, 16)
-        self.sync_all()
-
-        # node0 should end up with 100 btc in block rewards plus fees, but
-        # minus the 21 plus fees sent to node2
-        assert_greater_than(self.nodes[0].getbalance(), 59549)
+        # Compare the expected balances.  Give 1 coin leeway
+        # for fees paid by node0 (which are burnt in Divi).
+        assert_greater_than(self.nodes[0].getbalance(), 1798)
         assert_equal(self.nodes[2].getbalance(), 701)
 
         # Node0 should have two unspent outputs.
@@ -92,8 +84,8 @@ class WalletTest (BitcoinTestFramework):
         self.sync_all()
 
         assert_equal(self.nodes[0].getbalance(), 0)
-        assert_greater_than(self.nodes[2].getbalance(), 60250)
-        assert_greater_than(self.nodes[2].getbalance("from1"), 59549)
+        assert_greater_than(self.nodes[2].getbalance(), 2499)
+        assert_greater_than(self.nodes[2].getbalance("from1"), 1798)
 
 
 if __name__ == '__main__':

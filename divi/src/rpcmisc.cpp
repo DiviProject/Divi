@@ -8,15 +8,16 @@
 #include "base58.h"
 #include "clientversion.h"
 #include "init.h"
-#include "main.h"
 #include "masternode-sync.h"
 #include "rpcserver.h"
 #include "spork.h"
 #include "timedata.h"
 #include "util.h"
+#include "miner.h"
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #include "walletdb.h"
+extern CFeeRate payTxFee;
 #endif
 
 #include <stdint.h>
@@ -24,6 +25,11 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 #include <boost/assign/list_of.hpp>
+#include <txdb.h>
+#include <addressindex.h>
+#include <spentindex.h>
+#include <net.h>
+#include <txmempool.h>
 
 using namespace boost;
 using namespace boost::assign;
@@ -43,6 +49,33 @@ using namespace std;
  *
  * Or alternatively, create a specific query method for the information.
  **/
+extern int64_t nLastCoinStakeSearchInterval;
+extern bool fAddressIndex;
+extern CBlockTreeDB* pblocktree;
+extern const std::string strMessageMagic;
+extern CChain chainActive;
+extern CCriticalSection cs_main;
+extern CTxMemPool mempool;
+extern CFeeRate minRelayTxFee;
+
+bool GetAddressIndex(bool fAddressIndex,
+                     CBlockTreeDB* pblocktree,
+                     uint160 addressHash,
+                     int type,
+                     std::vector<std::pair<CAddressIndexKey, CAmount> > &addressIndex,
+                     int start = 0,
+                     int end = 0);
+
+std::string GetWarnings(std::string strFor);
+
+bool GetSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
+
+bool GetAddressUnspent(bool fAddressIndex,
+                      CBlockTreeDB* pblocktree,
+                      uint160 addressHash,
+                      int type,
+                      std::vector<std::pair<CAddressUnspentKey,
+                      CAddressUnspentValue> > &unspentOutputs);
 
 Value getinfo(const Array& params, bool fHelp)
 {
@@ -93,7 +126,7 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("testnet", Params().NetworkID() == CBaseChainParams::TESTNET  ));
     obj.push_back(Pair("moneysupply",ValueFromAmount(chainActive.Tip()->nMoneySupply)));
-    
+
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
         obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
@@ -104,11 +137,7 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("paytxfee", ValueFromAmount(payTxFee.GetFeePerK())));
 #endif
     obj.push_back(Pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
-    bool nStaking = false;
-    if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
-        nStaking = true;
-    else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && nLastCoinStakeSearchInterval)
-        nStaking = true;
+    bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
     return obj;
@@ -306,7 +335,7 @@ Value validateaddress(const Array& params, bool fHelp)
         ret.push_back(Pair("scriptPubKey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
 
 #ifdef ENABLE_WALLET
-        isminetype mine = pwalletMain ? IsMine(*pwalletMain, dest) : ISMINE_NO;
+        isminetype mine = pwalletMain ? pwalletMain->IsMine(scriptPubKey) : ISMINE_NO;
         ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));
         if (mine != ISMINE_NO) {
             ret.push_back(Pair("iswatchonly", (mine & ISMINE_WATCH_ONLY) ? true : false));
@@ -471,7 +500,7 @@ Value verifymessage(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to key");
 
     bool fInvalid = false;
-    vector<unsigned char> vchSig = DecodeBase64(strSign.c_str(), &fInvalid);
+    std::vector<unsigned char> vchSig = DecodeBase64(strSign.c_str(), &fInvalid);
 
     if (fInvalid)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Malformed base64 encoding");
@@ -587,7 +616,7 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
     int start = 0;
     int end = 0;
-    
+
     if (params[0].type() == obj_type) {
         Value startValue = find_value(params[0].get_obj(), "start");
         Value endValue = find_value(params[0].get_obj(), "end");
@@ -601,11 +630,11 @@ Value getaddresstxids(const Array& params, bool fHelp)
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!GetAddressIndex((*it).first, (*it).second, addressIndex, start, end)) {
+            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!GetAddressIndex((*it).first, (*it).second, addressIndex)) {
+            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -702,11 +731,11 @@ Value getaddressdeltas(const Array& params, bool fHelp)
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
         if (start > 0 && end > 0) {
-            if (!GetAddressIndex((*it).first, (*it).second, addressIndex, start, end)) {
+            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex, start, end)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         } else {
-            if (!GetAddressIndex((*it).first, (*it).second, addressIndex)) {
+            if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
             }
         }
@@ -794,7 +823,7 @@ Value getaddressbalance(const Array& params, bool fHelp)
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!GetAddressIndex((*it).first, (*it).second, addressIndex)) {
+        if (!GetAddressIndex(fAddressIndex,pblocktree,(*it).first, (*it).second, addressIndex)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }
@@ -994,7 +1023,7 @@ Value getaddressutxos(const Array& params, bool fHelp)
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue>> unspentOutputs;
 
     for (std::vector<std::pair<uint160, int> >::iterator it = addresses.begin(); it != addresses.end(); it++) {
-        if (!GetAddressUnspent((*it).first, (*it).second, unspentOutputs)) {
+        if (!GetAddressUnspent(fAddressIndex,pblocktree,(*it).first, (*it).second, unspentOutputs)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "No information available for address");
         }
     }
@@ -1040,7 +1069,7 @@ Value clearbanned(const Array& params, bool fHelp)
             "\nUnbans all nodes.\n"
             );
     CNode::ClearBanned();
-    return Value();    
+    return Value();
 
 }
 Value listbanned(const Array& params, bool fHelp)
@@ -1052,7 +1081,7 @@ Value listbanned(const Array& params, bool fHelp)
             );
     Object result;
     result.push_back(Pair("banned:",CNode::ListBanned()));
-    return result;    
+    return result;
 
 }
 
@@ -1082,15 +1111,11 @@ Value getstakingstatus(const Array& params, bool fHelp)
     if (pwalletMain) {
         obj.push_back(Pair("walletunlocked", !pwalletMain->IsLocked()));
         obj.push_back(Pair("mintablecoins", pwalletMain->MintableCoins()));
-        obj.push_back(Pair("enoughcoins", nReserveBalance <= pwalletMain->GetBalance()));
+        obj.push_back(Pair("enoughcoins", pwalletMain->GetStakingBalance() > 0  ));
     }
     obj.push_back(Pair("mnsync", masternodeSync.IsSynced()));
 
-    bool nStaking = false;
-    if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
-        nStaking = true;
-    else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && nLastCoinStakeSearchInterval)
-        nStaking = true;
+    bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", nStaking));
 
     return obj;

@@ -5,43 +5,42 @@
 #ifndef BITCOIN_KERNEL_H
 #define BITCOIN_KERNEL_H
 
-#include "main.h"
-
-
-// MODIFIER_INTERVAL: time to elapse before new modifier is computed
-static const unsigned int MODIFIER_INTERVAL = 60;
-static const unsigned int MODIFIER_INTERVAL_TESTNET = 60;
-static const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
-extern unsigned int nModifierInterval;
-extern unsigned int getIntervalVersion(bool fTestNet);
-
-// MODIFIER_INTERVAL_RATIO:
-// ratio of group interval length between the last group and the first group
-static const int MODIFIER_INTERVAL_RATIO = 3;
-
-// Compute the hash modifier for proof-of-stake
-bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeModifier, bool& fGeneratedStakeModifier);
-
-// Check whether stake kernel meets hash target
-// Sets hashProofOfStake on success return
-uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutIndex, uint256 prevoutHash, unsigned int nTimeBlockFrom);
-bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, uint256 bnTargetPerCoinDay, int64_t nTimeWeight);
-bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTransaction txPrev, const COutPoint prevout, unsigned int& nTimeTx, unsigned int nHashDrift, bool fCheck, uint256& hashProofOfStake, bool fPrintProofOfStake = false);
+#include <stdint.h>
+#include <uint256.h>
+#include <amount.h>
+#include <map>
+class CBlockIndex;
+class CBlockRewards;
+class CBlock;
+class CCoinsViewCache;
+class CTransaction;
+class COutPoint;
+class BlockMap;
+class CChain;
+struct StakingData;
 
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return
-bool CheckProofOfStake(const CBlock block, uint256& hashProofOfStake);
+bool CheckProofOfStake(
+    const CBlock& block,
+    CBlockIndex* pindexPrev,
+    uint256& hashProofOfStake);
 
-// Check whether the coinstake timestamp meets protocol
-bool CheckCoinStakeTimestamp(int64_t nTimeBlock, int64_t nTimeTx);
-
-// Get stake modifier checksum
-unsigned int GetStakeModifierChecksum(const CBlockIndex* pindex);
+/** Checks if the transaction is a valid coinstake after the staking vault
+ *  fork (which adds extra rules, like paying back at least the expected
+ *  staking reward to the same script that the staking input came from).
+ *  Note that the extra conditions only apply to actual stake inputs that
+ *  are vault scripts; if the tx is a coinstake but the input is not a vault,
+ *  then the fucntion just returns true without further checks.  */
+bool CheckCoinstakeForVaults(const CTransaction& tx,
+                             const CBlockRewards& expectedRewards,
+                             const CCoinsViewCache& view);
 
 // Check stake modifier hard checkpoints
-bool CheckStakeModifierCheckpoints(int nHeight, unsigned int nStakeModifierChecksum);
+bool CheckStakeModifierCheckpoints(
+    int nHeight,
+    unsigned int nStakeModifierChecksum);
 
-// Get time weight using supplied timestamps
-int64_t GetWeight(int64_t nIntervalBeginning, int64_t nIntervalEnd);
+void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew);
 
 #endif // BITCOIN_KERNEL_H

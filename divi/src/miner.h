@@ -11,25 +11,20 @@
 class CBlock;
 class CBlockHeader;
 class CBlockIndex;
-class CReserveKey;
 class CScript;
 class CWallet;
+class I_CoinMinter;
 
 struct CBlockTemplate;
 
 /** Run the miner threads */
-void GenerateBitcoins(bool fGenerate, CWallet* pwallet, int nThreads);
-/** Generate a new block, without valid proof-of-work */
-CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake);
-CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet, bool fProofOfStake);
-/** Modify the extranonce in a block */
-void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
-/** Check mined block */
-void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
+void GenerateDivi(bool fGenerate, CWallet* pwallet, int nThreads);
+void ThreadStakeMinter(CWallet* pwallet);
 
-void BitcoinMiner(CWallet* pwallet, bool fProofOfStake);
-
-extern double dHashesPerSec;
-extern int64_t nHPSTimerStart;
-
+void MintCoins(
+    bool fProofOfStake,
+    I_CoinMinter& minter,
+    unsigned int nExtraNonce);
+void MinterThread(bool fProofOfStake, I_CoinMinter& minter);
+bool HasRecentlyAttemptedToGenerateProofOfStake();
 #endif // BITCOIN_MINER_H

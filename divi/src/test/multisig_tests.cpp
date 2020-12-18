@@ -47,8 +47,8 @@ sign_multisig(CScript scriptPubKey, vector<CKey> keys, CTransaction transaction,
 
 BOOST_AUTO_TEST_CASE(multisig_verify)
 {
-    
-    
+
+
 
     unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_STRICTENC;
 
@@ -150,13 +150,13 @@ BOOST_AUTO_TEST_CASE(multisig_verify)
         }
     }
 
-    
+
 }
 
 BOOST_AUTO_TEST_CASE(multisig_IsStandard)
 {
-    
-    
+
+
 
     CKey key[4];
     for (int i = 0; i < 4; i++)
@@ -195,15 +195,15 @@ BOOST_AUTO_TEST_CASE(multisig_IsStandard)
         BOOST_CHECK(!::IsStandard(malformed[i], whichType));
     }
 
-    
+
 }
 
 BOOST_AUTO_TEST_CASE(multisig_Solver1)
 {
-    
-    
 
-    // Tests Solver() that returns lists of keys that are
+
+
+    // Tests ExtractScriptPubKeyFormat() that returns lists of keys that are
     // required to satisfy a ScriptPubKey
     //
     // Also tests IsMine() and ExtractDestination()
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         txnouttype whichType;
         CScript s;
         s << ToByteVector(key[0].GetPubKey()) << OP_CHECKSIG;
-        BOOST_CHECK(Solver(s, whichType, solutions));
+        BOOST_CHECK(ExtractScriptPubKeyFormat(s, whichType, solutions));
         BOOST_CHECK(solutions.size() == 1);
         CTxDestination addr;
         BOOST_CHECK(ExtractDestination(s, addr));
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         txnouttype whichType;
         CScript s;
         s << OP_DUP << OP_HASH160 << ToByteVector(key[0].GetPubKey().GetID()) << OP_EQUALVERIFY << OP_CHECKSIG;
-        BOOST_CHECK(Solver(s, whichType, solutions));
+        BOOST_CHECK(ExtractScriptPubKeyFormat(s, whichType, solutions));
         BOOST_CHECK(solutions.size() == 1);
         CTxDestination addr;
         BOOST_CHECK(ExtractDestination(s, addr));
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         txnouttype whichType;
         CScript s;
         s << OP_2 << ToByteVector(key[0].GetPubKey()) << ToByteVector(key[1].GetPubKey()) << OP_2 << OP_CHECKMULTISIG;
-        BOOST_CHECK(Solver(s, whichType, solutions));
+        BOOST_CHECK(ExtractScriptPubKeyFormat(s, whichType, solutions));
         BOOST_CHECK_EQUAL(solutions.size(), 4U);
         CTxDestination addr;
         BOOST_CHECK(!ExtractDestination(s, addr));
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         txnouttype whichType;
         CScript s;
         s << OP_1 << ToByteVector(key[0].GetPubKey()) << ToByteVector(key[1].GetPubKey()) << OP_2 << OP_CHECKMULTISIG;
-        BOOST_CHECK(Solver(s, whichType, solutions));
+        BOOST_CHECK(ExtractScriptPubKeyFormat(s, whichType, solutions));
         BOOST_CHECK_EQUAL(solutions.size(), 4U);
         vector<CTxDestination> addrs;
         int nRequired;
@@ -303,19 +303,19 @@ BOOST_AUTO_TEST_CASE(multisig_Solver1)
         txnouttype whichType;
         CScript s;
         s << OP_2 << ToByteVector(key[0].GetPubKey()) << ToByteVector(key[1].GetPubKey()) << ToByteVector(key[2].GetPubKey()) << OP_3 << OP_CHECKMULTISIG;
-        BOOST_CHECK(Solver(s, whichType, solutions));
+        BOOST_CHECK(ExtractScriptPubKeyFormat(s, whichType, solutions));
         BOOST_CHECK(solutions.size() == 5);
     }
 
-    
+
 }
 
 BOOST_AUTO_TEST_CASE(multisig_Sign)
 {
-    
-    
 
-    // Test SignSignature() (and therefore the version of Solver() that signs transactions)
+
+
+    // Test SignSignature() (and therefore the version of ExtractScriptPubKeyFormat() that signs transactions)
     CBasicKeyStore keystore;
     CKey key[4];
     for (int i = 0; i < 4; i++)
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(multisig_Sign)
         BOOST_CHECK_MESSAGE(SignSignature(keystore, txFrom, txTo[i], 0), strprintf("SignSignature %d", i));
     }
 
-    
+
 }
 
 

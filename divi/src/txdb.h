@@ -8,15 +8,16 @@
 #define BITCOIN_TXDB_H
 
 #include "leveldbwrapper.h"
-#include "main.h"
-
+#include <coins.h>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
-class CCoins;
 class uint256;
+class CBlockFileInfo;
+class CDiskBlockIndex;
+
 
 struct CAddressIndexKey;
 struct CAddressIndexIteratorKey;
@@ -24,6 +25,9 @@ struct CAddressIndexIteratorHeightKey;
 struct CSpentIndexKey;
 struct CAddressUnspentKey;
 struct CAddressUnspentValue;
+struct CDiskTxPos;
+struct CCoinsStats;
+struct CSpentIndexValue;
 
 //! -dbcache default (MiB)
 static const int64_t nDefaultDbCache = 100;

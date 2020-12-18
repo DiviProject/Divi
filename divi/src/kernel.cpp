@@ -334,7 +334,7 @@ bool CheckCoinstakeForVaults(const CTransaction& tx, const CBlockRewards& expect
         if (foundVault) {
             /* CheckProofOfStake already verifies that all inputs used are
                from a single script.  */
-            assert(vaultScript == prevOut.scriptPubKey);
+            if(vaultScript != prevOut.scriptPubKey) return false;
         } else {
             foundVault = true;
             vaultScript = prevOut.scriptPubKey;

@@ -12,13 +12,12 @@
 #include "uint256.h"
 #include "Logging.h"
 #include <script/SignatureCheckers.h>
-#include <script/StakingVaultScript.h>
 
 #include <boost/foreach.hpp>
 
 using namespace std;
 
-typedef std::vector<unsigned char> valtype;
+typedef vector<unsigned char> valtype;
 
 bool Sign1(const CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet)
 {
@@ -26,7 +25,7 @@ bool Sign1(const CKeyID& address, const CKeyStore& keystore, uint256 hash, int n
     if (!keystore.GetKey(address, key))
         return false;
 
-    std::vector<unsigned char> vchSig;
+    vector<unsigned char> vchSig;
     if (!key.Sign(hash, vchSig))
         return false;
     vchSig.push_back((unsigned char)nHashType);
@@ -35,7 +34,7 @@ bool Sign1(const CKeyID& address, const CKeyStore& keystore, uint256 hash, int n
     return true;
 }
 
-bool SignN(const std::vector<valtype>& multisigdata, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet)
+bool SignN(const vector<valtype>& multisigdata, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet)
 {
     int nSigned = 0;
     int nRequired = multisigdata.front()[0];
@@ -49,83 +48,28 @@ bool SignN(const std::vector<valtype>& multisigdata, const CKeyStore& keystore, 
     return nSigned==nRequired;
 }
 
-bool SignVaultSpend(
-    const CKeyStore& keystore,
-    const CScript& vaultScriptPubKey,
-    uint256 hash,
-    int nHashType,
-    CScript& scriptSigRet,
-    bool spendAsOwner)
-{
-    std::pair<valtype,valtype> pubkeyHashes;
-    if(!GetStakingVaultPubkeyHashes(vaultScriptPubKey,pubkeyHashes))
-    {
-        return false;
-    }
-    else
-    {
-        CKeyID ownerKeyID(uint160(pubkeyHashes.first));
-        CKeyID vaultKeyID(uint160(pubkeyHashes.second));
-        if (!spendAsOwner && keystore.HaveKey(vaultKeyID))
-        {
-            if(!Sign1(vaultKeyID, keystore, hash, nHashType, scriptSigRet))
-            {
-                return false;
-            }
-
-            CPubKey vaultKey;
-            keystore.GetPubKey(vaultKeyID,vaultKey);
-            scriptSigRet << ToByteVector(vaultKey) << OP_FALSE;
-            return true;
-        }
-        if (spendAsOwner && keystore.HaveKey(ownerKeyID))
-        {
-            if(!Sign1(ownerKeyID, keystore, hash, nHashType, scriptSigRet)){
-                return false;
-            }
-
-            CPubKey ownerKey;
-            keystore.GetPubKey(ownerKeyID,ownerKey);
-            scriptSigRet << ToByteVector(ownerKey) << OP_TRUE;
-            return true;
-        }
-    }
-    return false;
-}
-bool SignVaultSpend(
-    const CKeyStore &keystore,
-    const CScript& fromPubKey,
-    CMutableTransaction& txTo,
-    unsigned int nIn,
-    bool spendAsOwner)
-{
-    if(!(nIn < txTo.vin.size())) return false;
-    CTxIn& txin = txTo.vin[nIn];
-    uint256 hash = SignatureHash(fromPubKey, txTo, nIn, SIGHASH_ALL);
-    return SignVaultSpend(keystore,fromPubKey,hash,SIGHASH_ALL,txin.scriptSig,spendAsOwner);
-}
 /**
  * Sign scriptPubKey with private keys stored in keystore, given transaction hash and hash type.
  * Signatures are returned in scriptSigRet (or returns false if scriptPubKey can't be signed),
  * unless whichTypeRet is TX_SCRIPTHASH, in which case scriptSigRet is the redemption script.
  * Returns false if scriptPubKey could not be completely satisfied.
  */
-static bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash, int nHashType,
+bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash, int nHashType,
                   CScript& scriptSigRet, txnouttype& whichTypeRet)
 {
     scriptSigRet.clear();
 
-    std::vector<valtype> vSolutions;
-    ExtractScriptPubKeyFormat(scriptPubKey, whichTypeRet, vSolutions);
+    vector<valtype> vSolutions;
+    if (!Solver(scriptPubKey, whichTypeRet, vSolutions))
+    {
+        LogPrintf("*** solver solver failed \n");
+        return false;
+    }
 
     CKeyID keyID;
     switch (whichTypeRet)
     {
     case TX_NONSTANDARD:
-    {
-        LogPrintf("*** solver solver failed \n");
-        return false;
-    }
     case TX_NULL_DATA:
     {
         LogPrintf("*** null data \n");
@@ -153,12 +97,6 @@ static bool ConstructScriptSigOrGetRedemptionScript(const CKeyStore& keystore, c
             scriptSigRet << ToByteVector(vch);
         }
         return true;
-    case TX_VAULT:
-        // If we can sign as owner, do that.  Otherwise try signing as the
-        // staker (which may or may not be valid in the end).
-        if (SignVaultSpend(keystore, scriptPubKey, hash, nHashType, scriptSigRet, true))
-            return true;
-        return SignVaultSpend(keystore, scriptPubKey, hash, nHashType, scriptSigRet, false);
     case TX_SCRIPTHASH:
         return keystore.GetCScript(uint160(vSolutions[0]), scriptSigRet);
 
@@ -180,7 +118,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutabl
     uint256 hash = SignatureHash(fromPubKey, txTo, nIn, nHashType);
 
     txnouttype whichType;
-    if (!ConstructScriptSigOrGetRedemptionScript(keystore, fromPubKey, hash, nHashType, txin.scriptSig, whichType))
+    if (!Solver(keystore, fromPubKey, hash, nHashType, txin.scriptSig, whichType))
         return false;
 
     if (whichType == TX_SCRIPTHASH)
@@ -195,17 +133,14 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutabl
 
         txnouttype subType;
         bool fSolved =
-            ConstructScriptSigOrGetRedemptionScript(keystore, subscript, hash2, nHashType, txin.scriptSig, subType) && subType != TX_SCRIPTHASH;
+            Solver(keystore, subscript, hash2, nHashType, txin.scriptSig, subType) && subType != TX_SCRIPTHASH;
         // Append serialized subscript whether or not it is completely signed:
         txin.scriptSig << static_cast<valtype>(subscript);
         if (!fSolved) return false;
-
-        whichType = subType;
     }
 
     // Test solution
-    return VerifyScript(txin.scriptSig, fromPubKey, STANDARD_SCRIPT_VERIFY_FLAGS,
-                        MutableTransactionSignatureChecker(&txTo, nIn));
+    return VerifyScript(txin.scriptSig, fromPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&txTo, nIn));
 }
 
 bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CMutableTransaction& txTo, unsigned int nIn, int nHashType)
@@ -218,17 +153,17 @@ bool SignSignature(const CKeyStore &keystore, const CTransaction& txFrom, CMutab
     return SignSignature(keystore, txout.scriptPubKey, txTo, nIn, nHashType);
 }
 
-static CScript PushAll(const std::vector<valtype>& values)
+static CScript PushAll(const vector<valtype>& values)
 {
     CScript result;
     BOOST_FOREACH(const valtype& v, values)
-        result.PushMinimal(v);
+        result << v;
     return result;
 }
 
 static CScript CombineMultisig(const CScript& scriptPubKey, const CTransaction& txTo, unsigned int nIn,
-                               const std::vector<valtype>& vSolutions,
-                               const std::vector<valtype>& sigs1, const std::vector<valtype>& sigs2)
+                               const vector<valtype>& vSolutions,
+                               const vector<valtype>& sigs1, const vector<valtype>& sigs2)
 {
     // Combine all the signatures we've got:
     set<valtype> allsigs;
@@ -282,14 +217,13 @@ static CScript CombineMultisig(const CScript& scriptPubKey, const CTransaction& 
 }
 
 static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction& txTo, unsigned int nIn,
-                                 const txnouttype txType, const std::vector<valtype>& vSolutions,
-                                 std::vector<valtype>& sigs1, std::vector<valtype>& sigs2)
+                                 const txnouttype txType, const vector<valtype>& vSolutions,
+                                 vector<valtype>& sigs1, vector<valtype>& sigs2)
 {
     switch (txType)
     {
     case TX_NONSTANDARD:
     case TX_NULL_DATA:
-    case TX_VAULT:
         // Don't know anything about this, assume bigger one is correct:
         if (sigs1.size() >= sigs2.size())
             return PushAll(sigs1);
@@ -312,8 +246,8 @@ static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction
             CScript pubKey2(spk.begin(), spk.end());
 
             txnouttype txType2;
-            std::vector<std::vector<unsigned char> > vSolutions2;
-            ExtractScriptPubKeyFormat(pubKey2, txType2, vSolutions2);
+            vector<vector<unsigned char> > vSolutions2;
+            Solver(pubKey2, txType2, vSolutions2);
             sigs1.pop_back();
             sigs2.pop_back();
             CScript result = CombineSignatures(pubKey2, txTo, nIn, txType2, vSolutions2, sigs1, sigs2);
@@ -331,12 +265,12 @@ CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction& txTo,
                           const CScript& scriptSig1, const CScript& scriptSig2)
 {
     txnouttype txType;
-    std::vector<std::vector<unsigned char> > vSolutions;
-    ExtractScriptPubKeyFormat(scriptPubKey, txType, vSolutions);
+    vector<vector<unsigned char> > vSolutions;
+    Solver(scriptPubKey, txType, vSolutions);
 
-    std::vector<valtype> stack1;
+    vector<valtype> stack1;
     EvalScript(stack1, scriptSig1, SCRIPT_VERIFY_STRICTENC, BaseSignatureChecker());
-    std::vector<valtype> stack2;
+    vector<valtype> stack2;
     EvalScript(stack2, scriptSig2, SCRIPT_VERIFY_STRICTENC, BaseSignatureChecker());
 
     return CombineSignatures(scriptPubKey, txTo, nIn, txType, vSolutions, stack1, stack2);

@@ -4,7 +4,8 @@
 
 #include "leveldbwrapper.h"
 
-#include <DataDirectory.h>
+
+
 #include <boost/filesystem.hpp>
 
 #include <leveldb/cache.h>
@@ -12,7 +13,7 @@
 #include <leveldb/filter_policy.h>
 #include <memenv.h>
 
-void HandleError(const leveldb::Status& status) noexcept(false)
+void HandleError(const leveldb::Status& status) throw(leveldb_error)
 {
     if (status.ok())
         return;
@@ -79,7 +80,7 @@ CLevelDBWrapper::~CLevelDBWrapper()
     options.env = NULL;
 }
 
-bool CLevelDBWrapper::WriteBatch(CLevelDBBatch& batch, bool fSync) noexcept(false)
+bool CLevelDBWrapper::WriteBatch(CLevelDBBatch& batch, bool fSync) throw(leveldb_error)
 {
     leveldb::Status status = pdb->Write(fSync ? syncoptions : writeoptions, &batch.batch);
     HandleError(status);

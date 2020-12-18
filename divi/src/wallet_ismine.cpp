@@ -15,9 +15,9 @@
 
 using namespace std;
 
-typedef std::vector<unsigned char> valtype;
+typedef vector<unsigned char> valtype;
 
-unsigned int HaveKeys(const std::vector<valtype>& pubkeys, const CKeyStore& keystore)
+unsigned int HaveKeys(const vector<valtype>& pubkeys, const CKeyStore& keystore)
 {
     unsigned int nResult = 0;
     BOOST_FOREACH (const valtype& pubkey, pubkeys) {
@@ -36,21 +36,14 @@ isminetype IsMine(const CKeyStore& keystore, const CTxDestination& dest)
 
 isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey)
 {
-    VaultType vaultType;
-    return IsMine(keystore,scriptPubKey,vaultType);
-}
-
-isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultType& vaultType)
-{
-    vaultType = NON_VAULT;
     if(keystore.HaveWatchOnly(scriptPubKey))
         return ISMINE_WATCH_ONLY;
     if(keystore.HaveMultiSig(scriptPubKey))
         return ISMINE_MULTISIG;
 
-    std::vector<valtype> vSolutions;
+    vector<valtype> vSolutions;
     txnouttype whichType;
-    if(!ExtractScriptPubKeyFormat(scriptPubKey, whichType, vSolutions)) {
+    if(!Solver(scriptPubKey, whichType, vSolutions)) {
         if(keystore.HaveWatchOnly(scriptPubKey))
             return ISMINE_WATCH_ONLY;
         if(keystore.HaveMultiSig(scriptPubKey))
@@ -78,25 +71,9 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultT
         CScriptID scriptID = CScriptID(uint160(vSolutions[0]));
         CScript subscript;
         if(keystore.GetCScript(scriptID, subscript)) {
-            isminetype ret = IsMine(keystore, subscript,vaultType);
+            isminetype ret = IsMine(keystore, subscript);
             if(ret != ISMINE_NO)
                 return ret;
-        }
-        break;
-    }
-    case TX_VAULT: {
-        keyID = CKeyID(uint160(vSolutions[0]));
-        if(keystore.HaveKey(keyID))
-        {
-            vaultType = OWNED_VAULT;
-            return ISMINE_SPENDABLE;
-        }
-        keyID = CKeyID(uint160(vSolutions[1]));
-        if(keystore.HaveKey(keyID))
-        {
-            vaultType = MANAGED_VAULT;
-            CScriptID scriptID = CScriptID(scriptPubKey);
-            return keystore.HaveCScript(scriptID) ? ISMINE_SPENDABLE : ISMINE_NO;
         }
         break;
     }
@@ -106,7 +83,7 @@ isminetype IsMine(const CKeyStore& keystore, const CScript& scriptPubKey, VaultT
         // partially owned (somebody else has a key that can spend
         // them) enable spend-out-from-under-you attacks, especially
         // in shared-wallet situations.
-        std::vector<valtype> keys(vSolutions.begin() + 1, vSolutions.begin() + vSolutions.size() - 1);
+        vector<valtype> keys(vSolutions.begin() + 1, vSolutions.begin() + vSolutions.size() - 1);
         if(HaveKeys(keys, keystore) == keys.size())
             return ISMINE_SPENDABLE;
         break;

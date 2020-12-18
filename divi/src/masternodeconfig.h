@@ -90,13 +90,28 @@ public:
         }
     };
 
-    CMasternodeConfig();
+    CMasternodeConfig()
+    {
+        entries = std::vector<CMasternodeEntry>();
+    }
 
     void clear();
     bool read(std::string& strErr);
     void add(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex);
-    const std::vector<CMasternodeEntry>& getEntries() const;
-    int getCount();
+
+    std::vector<CMasternodeEntry>& getEntries()
+    {
+        return entries;
+    }
+
+    int getCount()
+    {
+        int c = -1;
+        BOOST_FOREACH (CMasternodeEntry e, entries) {
+            if (e.getAlias() != "") c++;
+        }
+        return c;
+    }
 
 private:
     std::vector<CMasternodeEntry> entries;

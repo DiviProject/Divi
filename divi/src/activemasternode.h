@@ -6,10 +6,15 @@
 #ifndef ACTIVEMASTERNODE_H
 #define ACTIVEMASTERNODE_H
 
-#include <pubkey.h>
-#include <netbase.h>
-#include <primitives/transaction.h>
-#include <sync.h>
+#include "init.h"
+#include "key.h"
+#include "masternode.h"
+#include "masternodeconfig.h"
+#include "net.h"
+#include "obfuscation.h"
+#include "sync.h"
+#include "wallet.h"
+
 
 #define ACTIVE_MASTERNODE_INITIAL 0 // initial state
 #define ACTIVE_MASTERNODE_SYNC_IN_PROCESS 1
@@ -17,19 +22,22 @@
 #define ACTIVE_MASTERNODE_NOT_CAPABLE 3
 #define ACTIVE_MASTERNODE_STARTED 4
 
-class CMasternodeBroadcast;
-class CMasternodeConfig;
-
 // Responsible for activating the Masternode and pinging the network
 class CActiveMasternode
 {
 private:
     // critical section to protect the inner data structures
     mutable CCriticalSection cs;
-    bool SendMasternodePing(std::string& errorMessage);
-    const CMasternodeConfig& masternodeConfigurations_;
-    const bool& fMasterNode_;
 
+    /// Ping Masternode
+    bool SendMasternodePing(std::string& errorMessage);
+
+    /// Register any Masternode
+    static bool Register(CMasternodeBroadcast &mnb, bool deferRelay = false);
+
+    CMasternodeConfig& masternodeConfigurations_;
+
+    bool& fMasterNode_;
 public:
     // Initialized by init.cpp
     // Keys for the main Masternode
@@ -42,14 +50,25 @@ public:
     int status;
     std::string notCapableReason;
 
-    CActiveMasternode(const CMasternodeConfig& masternodeConfigurations,const bool& masterNodeEnabled);
+    CActiveMasternode(
+        CMasternodeConfig& masternodeConfigurations,
+        bool& masterNodeEnabled
+        ): masternodeConfigurations_(masternodeConfigurations)
+        , fMasterNode_(masterNodeEnabled)
+    {
+        status = ACTIVE_MASTERNODE_INITIAL;
+    }
 
     /// Manage status of main Masternode
     void ManageStatus();
     std::string GetStatus();
 
-    /// Register any Masternode
-    static bool Register(CMasternodeBroadcast &mnb, bool deferRelay = false);
+    /// Register remote Masternode
+    static bool Register(
+        const CMasternodeConfig::CMasternodeEntry& configEntry, 
+        std::string& errorMessage,
+        CMasternodeBroadcast& mnb,
+        bool deferRelay = false);
 
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);

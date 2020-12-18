@@ -16,7 +16,6 @@
 #include "json/json_spirit_reader_template.h"
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
-#include <ValidationState.h>
 
 static FastRandomContext random_source;
 auto insecure_rand = []() -> uint32_t { return random_source.rand32();};

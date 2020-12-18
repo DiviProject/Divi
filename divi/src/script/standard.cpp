@@ -9,15 +9,16 @@
 #include "script/script.h"
 #include "util.h"
 #include "utilstrencodings.h"
-#include <script/StakingVaultScript.h>
 
 #include <boost/foreach.hpp>
 
 using namespace std;
 
-typedef std::vector<unsigned char> valtype;
+typedef vector<unsigned char> valtype;
 
 unsigned nMaxDatacarrierBytes = MAX_OP_META_RELAY;
+
+CScriptID::CScriptID(const CScript& in) : uint160(Hash160(in.begin(), in.end())) {}
 
 const char* GetTxnOutputType(txnouttype t)
 {
@@ -27,7 +28,6 @@ const char* GetTxnOutputType(txnouttype t)
     case TX_PUBKEY: return "pubkey";
     case TX_PUBKEYHASH: return "pubkeyhash";
     case TX_SCRIPTHASH: return "scripthash";
-    case TX_VAULT: return "vault";
     case TX_MULTISIG: return "multisig";
     case TX_NULL_DATA: return "nulldata";
     }
@@ -37,23 +37,20 @@ const char* GetTxnOutputType(txnouttype t)
 /**
  * Return public keys or hashes from scriptPubKey, for 'standard' transaction types.
  */
-bool ExtractScriptPubKeyFormat(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::vector<unsigned char> >& vSolutionsRet)
+bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsigned char> >& vSolutionsRet)
 {
     // Templates
     static multimap<txnouttype, CScript> mTemplates;
     if (mTemplates.empty())
     {
         // Standard tx, sender provides pubkey, receiver adds signature
-        mTemplates.insert(std::make_pair(TX_PUBKEY, CScript() << OP_PUBKEY << OP_CHECKSIG));
+        mTemplates.insert(make_pair(TX_PUBKEY, CScript() << OP_PUBKEY << OP_CHECKSIG));
 
         // Bitcoin address tx, sender provides hash of pubkey, receiver provides signature and pubkey
-        mTemplates.insert(std::make_pair(TX_PUBKEYHASH, CScript() << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
+        mTemplates.insert(make_pair(TX_PUBKEYHASH, CScript() << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
 
         // Sender provides N pubkeys, receivers provides M signatures
-        mTemplates.insert(std::make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
-
-        // Sender provides 2 pubkey hashes, 1-owner & 1-manager, receivers provides exactly 1 of the two signatures
-        mTemplates.insert(std::make_pair(TX_VAULT, GetStakingVaultScriptTemplate() ));
+        mTemplates.insert(make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
     }
 
     // Shortcut for pay-to-script-hash, which are more constrained than the other types:
@@ -61,7 +58,7 @@ bool ExtractScriptPubKeyFormat(const CScript& scriptPubKey, txnouttype& typeRet,
     if (scriptPubKey.IsPayToScriptHash())
     {
         typeRet = TX_SCRIPTHASH;
-        std::vector<unsigned char> hashBytes(scriptPubKey.begin()+2, scriptPubKey.begin()+22);
+        vector<unsigned char> hashBytes(scriptPubKey.begin()+2, scriptPubKey.begin()+22);
         vSolutionsRet.push_back(hashBytes);
         return true;
     }
@@ -85,7 +82,7 @@ bool ExtractScriptPubKeyFormat(const CScript& scriptPubKey, txnouttype& typeRet,
         vSolutionsRet.clear();
 
         opcodetype opcode1, opcode2;
-        std::vector<unsigned char> vch1, vch2;
+        vector<unsigned char> vch1, vch2;
 
         // Compare
         CScript::const_iterator pc1 = script1.begin();
@@ -179,16 +176,14 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
         return vSolutions[0][0] + 1;
     case TX_SCRIPTHASH:
         return 1; // doesn't include args needed by the script
-    case TX_VAULT:
-            return 3; // signature, pubkey, bool_flag
     }
     return -1;
 }
 
 bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType)
 {
-    std::vector<valtype> vSolutions;
-    if (!ExtractScriptPubKeyFormat(scriptPubKey, whichType, vSolutions))
+    vector<valtype> vSolutions;
+    if (!Solver(scriptPubKey, whichType, vSolutions))
         return false;
 
     if (whichType == TX_MULTISIG)
@@ -209,9 +204,9 @@ bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType)
 
 bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)
 {
-    std::vector<valtype> vSolutions;
+    vector<valtype> vSolutions;
     txnouttype whichType;
-    if (!ExtractScriptPubKeyFormat(scriptPubKey, whichType, vSolutions))
+    if (!Solver(scriptPubKey, whichType, vSolutions))
         return false;
 
     if (whichType == TX_PUBKEY)
@@ -233,46 +228,33 @@ bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)
         addressRet = CScriptID(uint160(vSolutions[0]));
         return true;
     }
-
     // Multisig txns have more than one address...
     return false;
 }
 
-bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<CTxDestination>& addressRet, int& nRequiredRet)
+bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vector<CTxDestination>& addressRet, int& nRequiredRet)
 {
     addressRet.clear();
     typeRet = TX_NONSTANDARD;
-    std::vector<valtype> vSolutions;
-    if (!ExtractScriptPubKeyFormat(scriptPubKey, typeRet, vSolutions))
+    vector<valtype> vSolutions;
+    if (!Solver(scriptPubKey, typeRet, vSolutions))
         return false;
     if (typeRet == TX_NULL_DATA){
         // This is data, not addresses
         return false;
     }
 
-    if (typeRet == TX_MULTISIG ||
-        typeRet == TX_VAULT)
+    if (typeRet == TX_MULTISIG)
     {
-        nRequiredRet = (typeRet != TX_VAULT)? vSolutions.front()[0] : 1;
-        const unsigned solutionsStartIndex = (typeRet != TX_VAULT)? 1u: 0u;
-        const unsigned solutionsEndIndex = vSolutions.size() - solutionsStartIndex;
-        for (unsigned int i = solutionsStartIndex;
-            i < solutionsEndIndex; i++)
+        nRequiredRet = vSolutions.front()[0];
+        for (unsigned int i = 1; i < vSolutions.size()-1; i++)
         {
-            if(typeRet == TX_VAULT)
-            {
-                CTxDestination address = CKeyID(uint160(vSolutions[i]));
-                addressRet.push_back(address);
-            }
-            else
-            {
-                CPubKey pubKey(vSolutions[i]);
-                if (!pubKey.IsValid())
-                    continue;
+            CPubKey pubKey(vSolutions[i]);
+            if (!pubKey.IsValid())
+                continue;
 
-                CTxDestination address = pubKey.GetID();
-                addressRet.push_back(address);
-            }
+            CTxDestination address = pubKey.GetID();
+            addressRet.push_back(address);
         }
 
         if (addressRet.empty())

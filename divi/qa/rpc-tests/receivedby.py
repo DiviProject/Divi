@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -6,7 +6,7 @@
 # Exercise the listreceivedbyaddress API
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
+from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
 
@@ -58,9 +58,6 @@ class ReceivedByTest(BitcoinTestFramework):
         '''
         listreceivedbyaddress Test
         '''
-        self.nodes[0].setgenerate(True, 30)
-        self.sync_all()
-
         # Send from node 0 to 1
         addr = self.nodes[1].getnewaddress()
         txid = self.nodes[0].sendtoaddress(addr, 0.1)

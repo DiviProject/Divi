@@ -11,23 +11,22 @@
 
 class CBlockIndex;
 class CZMQAbstractNotifier;
-class Settings;
 
 class CZMQNotificationInterface : public NotificationInterface
 {
 public:
     virtual ~CZMQNotificationInterface();
 
-    static CZMQNotificationInterface* CreateWithArguments(const Settings &settings);
+    static CZMQNotificationInterface* CreateWithArguments(const std::map<std::string, std::string> &args);
 
 protected:
     bool Initialize();
     void Shutdown();
 
     // NotificationInterface
-    void SyncTransaction(const CTransaction &tx, const CBlock *pblock) override;
-    void UpdatedBlockTip(const CBlockIndex *pindex) override;
-    void NotifyTransactionLock(const CTransaction &tx) override;
+    void SyncTransaction(const CTransaction &tx, const CBlock *pblock);
+    void UpdatedBlockTip(const CBlockIndex *pindex);
+    void NotifyTransactionLock(const CTransaction &tx);
 
 private:
     CZMQNotificationInterface();

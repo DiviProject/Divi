@@ -9,8 +9,6 @@
 #include "util.h"
 #include "ui_interface.h"
 #include <base58.h>
-#include <boost/foreach.hpp>
-
 // clang-format on
 
 CMasternodeConfig masternodeConfig;
@@ -55,12 +53,22 @@ bool CMasternodeConfig::read(std::string& strErr)
             iss.str(line);
             iss.clear();
             if (!(iss >> alias >> ip >> privKey >> txHash >> outputIndex)) {
-                strErr = translate("Could not parse masternode.conf") + "\n" +
-                         strprintf(translate("Line: %d"), linenumber) + "\n\"" + line + "\"";
+                strErr = _("Could not parse masternode.conf") + "\n" +
+                         strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"";
                 streamConfig.close();
                 return false;
             }
         }
+
+        if (Params().GetDefaultPort() != CService(ip).GetPort())
+        {
+            strErr = _("Invalid port detected in masternode.conf") + "\n" +
+                        strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
+                        strprintf(_("(must be %d for %s)"), Params().GetDefaultPort(), Params().NetworkIDString());
+            streamConfig.close();
+            return false;
+        }
+
 
         add(alias, ip, privKey, txHash, outputIndex);
     }
@@ -79,23 +87,4 @@ bool CMasternodeConfig::CMasternodeEntry::castOutputIndex(int &n)
     }
 
     return true;
-}
-
-
-CMasternodeConfig::CMasternodeConfig()
-{
-    entries = std::vector<CMasternodeEntry>();
-}
-const std::vector<CMasternodeConfig::CMasternodeEntry>& CMasternodeConfig::getEntries() const
-{
-    return entries;
-}
-
-int CMasternodeConfig::getCount()
-{
-    int c = -1;
-    BOOST_FOREACH (CMasternodeEntry e, entries) {
-        if (e.getAlias() != "") c++;
-    }
-    return c;
 }

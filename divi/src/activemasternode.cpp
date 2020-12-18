@@ -3,31 +3,19 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <activemasternode.h>
-#include <addrman.h>
-#include <masternode.h>
-#include <masternodeman.h>
-#include <net.h>
-#include <obfuscation.h>
-#include <protocol.h>
-#include <spork.h>
-#include <chainparams.h>
-#include <masternodeconfig.h>
+#include "activemasternode.h"
+#include "addrman.h"
+#include "masternode.h"
+#include "masternodeconfig.h"
+#include "masternodeman.h"
+#include "protocol.h"
+#include "spork.h"
 
-
-extern std::string strMasterNodeAddr;
-extern std::string strMasterNodePrivKey;
-extern bool fMasterNode;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
-CActiveMasternode::CActiveMasternode(
-    const CMasternodeConfig& masternodeConfigurations,
-    const bool& masterNodeEnabled
-    ): masternodeConfigurations_(masternodeConfigurations)
-    , fMasterNode_(masterNodeEnabled)
-{
-    status = ACTIVE_MASTERNODE_INITIAL;
-}
+//
+// Bootup the Masternode, look for a 10000 PIVX input and register on the network
+//
 void CActiveMasternode::ManageStatus()
 {
     std::string errorMessage;
@@ -37,7 +25,7 @@ void CActiveMasternode::ManageStatus()
     if (fDebug) LogPrintf("CActiveMasternode::ManageStatus() - Begin\n");
 
     //need correct blocks to send ping
-    if (!masternodeSync.IsBlockchainSynced()) {
+    if (Params().NetworkID() != CBaseChainParams::REGTEST && !masternodeSync.IsBlockchainSynced()) {
         status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
         LogPrintf("CActiveMasternode::ManageStatus() - %s\n", GetStatus());
         return;
@@ -61,7 +49,17 @@ void CActiveMasternode::ManageStatus()
         status = ACTIVE_MASTERNODE_NOT_CAPABLE;
         notCapableReason = "";
 
-        LogPrintf("CActiveMasternode::ManageStatus() - failed to activate masternode. Check the local wallet\n");
+        if (pwalletMain->IsLocked()) {
+            notCapableReason = "Wallet is locked.";
+            LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
+            return;
+        }
+
+        if (pwalletMain->GetBalance() == 0) {
+            notCapableReason = "Hot node, waiting for remote activation.";
+            LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
+            return;
+        }
 
         if (strMasterNodeAddr.empty()) {
             if (!GetLocal(service)) {
@@ -71,6 +69,13 @@ void CActiveMasternode::ManageStatus()
             }
         } else {
             service = CService(strMasterNodeAddr);
+        }
+
+        if (service.GetPort() != Params().GetDefaultPort()) 
+        {
+            notCapableReason = strprintf("Invalid port: %u - only 51472 is supported on mainnet.", service.GetPort());
+            LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
+            return;
         }
 
         LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service.ToString());
@@ -139,13 +144,13 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
     // Update lastPing for our masternode in Masternode list
     CMasternode* pmn = mnodeman.Find(vin);
     if (pmn != NULL) {
-        if (pmn->IsTooEarlyToSendPingUpdate(mnp.sigTime)) {
+        if (pmn->IsPingedWithin(MASTERNODE_PING_SECONDS, mnp.sigTime)) {
             errorMessage = "Too early to send Masternode Ping";
             return false;
         }
 
         pmn->lastPing = mnp;
-        mnodeman.mapSeenMasternodePing.insert(std::make_pair(mnp.GetHash(), mnp));
+        mnodeman.mapSeenMasternodePing.insert(make_pair(mnp.GetHash(), mnp));
 
         //mnodeman.mapSeenMasternodeBroadcast.lastPing is probably outdated, so we'll update it
         CMasternodeBroadcast mnb(*pmn);
@@ -164,10 +169,42 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
     }
 }
 
+bool CActiveMasternode::Register(
+    const CMasternodeConfig::CMasternodeEntry& configEntry, 
+    std::string& errorMessage,
+    CMasternodeBroadcast& mnb,
+    bool deferRelay)
+{
+    if(!CMasternodeBroadcastFactory::Create(
+            configEntry,
+            errorMessage,
+            mnb,
+            false,
+            deferRelay))
+    {
+        return false;
+    }
+
+    addrman.Add(CAddress(mnb.addr), CNetAddr("127.0.0.1"), 2 * 60 * 60);
+    return Register(mnb,deferRelay);
+}
+
 bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
 {
-    if (!mnodeman.ProcessBroadcast(nullptr, mnb))
-        return false;
+    auto mnp = mnb.lastPing;
+    mnodeman.mapSeenMasternodePing.insert(make_pair(mnp.GetHash(), mnp));
+
+    LogPrintf("CActiveMasternode::Register() - Adding to Masternode list\n    service: %s\n    vin: %s\n", mnb.addr.ToString(), mnb.vin.ToString());
+    mnodeman.mapSeenMasternodeBroadcast.insert(make_pair(mnb.GetHash(), mnb));
+    masternodeSync.AddedMasternodeList(mnb.GetHash());
+
+    CMasternode* pmn = mnodeman.Find(mnb.vin);
+    if (pmn == NULL) {
+        CMasternode mn(mnb);
+        mnodeman.Add(mn);
+    } else {
+        pmn->UpdateFromNewBroadcast(mnb);
+    }
 
     //send to all peers
     if(!deferRelay)
@@ -179,6 +216,7 @@ bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
     {
         LogPrintf("CActiveMasternode::Register() - Deferring Relay vin = %s\n", mnb.vin.ToString());
     }
+    
 
     return true;
 }
@@ -186,7 +224,7 @@ bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
 // when starting a Masternode, this can enable to run as a hot wallet with no funds
 bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newService)
 {
-    if (!fMasterNode_)
+    if (!fMasterNode_) 
     {
         return false;
     }
@@ -213,7 +251,7 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
     {
         return false;
     }
-
+    
     //The values below are needed for signing mnping messages going forward
     status = ACTIVE_MASTERNODE_STARTED;
     vin = newVin;

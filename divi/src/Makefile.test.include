@@ -38,29 +38,20 @@ BITCOIN_TESTS =\
   test/base32_tests.cpp \
   test/base58_tests.cpp \
   test/base64_tests.cpp \
-  test/BIP9ActivationManager_tests.cpp \
-  test/BlockSignature_tests.cpp \
-  test/CachedBIP9ActivationStateTracker_tests.cpp \
   test/checkblock_tests.cpp \
   test/Checkpoints_tests.cpp \
   test/coins_tests.cpp \
   test/compress_tests.cpp \
   test/crypto_tests.cpp \
   test/DoS_tests.cpp \
-  test/FakeBlockIndexChain.cpp \
-  test/ForkActivation_tests.cpp \
   test/getarg_tests.cpp \
   test/hash_tests.cpp \
-  test/kernel_tests.cpp \
   test/key_tests.cpp \
   test/main_tests.cpp \
   test/mempool_tests.cpp \
-  test/MockFileSystem.cpp \
-  test/MockCoinMinter.h \
+  mockFileSystem.cpp \
   test/MockSuperblockHeightValidator.h \
   test/MockBlockSubsidyProvider.h \
-  test/MockPoSStakeModifierService.h \
-  test/MockVaultManagerDatabase.h \
   test/monthlywalletbackupcreator_tests.cpp \
   test/ActiveMasternode_tests.cpp \
   test/filteredBoostFileSystem_tests.cpp \
@@ -78,8 +69,6 @@ BITCOIN_TESTS =\
   test/sigopcount_tests.cpp \
   test/skiplist_tests.cpp \
   test/SuperblockHelper_tests.cpp \
-  test/RandomCScriptGenerator.h \
-  test/RandomCScriptGenerator.cpp \
   test/test_divi.cpp \
   test/timedata_tests.cpp \
   test/torcontrol_tests.cpp \
@@ -87,18 +76,9 @@ BITCOIN_TESTS =\
   test/uint256_tests.cpp \
   test/univalue_tests.cpp \
   test/util_tests.cpp \
-  test/versionbits_tests.cpp \
   test/googletestenabled_test.cpp \
-  test/wallet_coinmanagement_tests.cpp \
   test/walletbackupcreator_tests.cpp \
-  test/WalletIntegrityVerifier_tests.cpp \
-  test/CoinMinting_tests.cpp \
-  test/ProofOfStake_tests.cpp \
-  test/IsMine_tests.cpp \
-  test/PoSStakeModifierService_tests.cpp \
-  test/LegacyPoSStakeModifierService_tests.cpp \
-  test/LotteryWinnersCalculatorTests.cpp \
-  test/VaultManager_tests.cpp
+  test/WalletIntegrityVerifier_tests.cpp
 
 if ENABLE_WALLET
 BITCOIN_TESTS += \
@@ -109,13 +89,13 @@ endif
 
 test_test_divi_SOURCES = $(BITCOIN_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)
 test_test_divi_CPPFLAGS = $(BITCOIN_INCLUDES) -isystem $(builddir)/GMock/googlemock/include -isystem $(builddir)/GMock/googletest/include -I$(builddir)/test/ $(TESTDEFS)
-test_test_divi_LDADD = $(LIBBITCOIN_SERVER) $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_CRYPTO) $(LIBBITCOIN_UNIVALUE) $(LIBBITCOIN_ZEROCOIN)
+test_test_divi_LDADD = $(LIBBITCOIN_SERVER) $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_CRYPTO) $(LIBBITCOIN_UNIVALUE) $(LIBBITCOIN_ZEROCOIN) $(LIBLEVELDB) $(LIBMEMENV) \
+  $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) $(LIBSECP256K1) $(EVENT_LIBS) $(EVENT_PTHREADS_LIBS) $(LIBGMOCK)
 if ENABLE_WALLET
 test_test_divi_LDADD += $(LIBBITCOIN_WALLET)
 endif
-test_test_divi_LDADD += $(LIBLEVELDB) $(LIBMEMENV) \
-  $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) $(LIBSECP256K1) $(EVENT_LIBS) $(EVENT_PTHREADS_LIBS) $(LIBGMOCK) \
-  $(LIBBITCOIN_CONSENSUS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
+
+test_test_divi_LDADD += $(LIBBITCOIN_CONSENSUS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
 test_test_divi_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) -static
 
 if ENABLE_ZMQ

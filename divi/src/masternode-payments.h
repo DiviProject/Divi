@@ -6,23 +6,34 @@
 #ifndef MASTERNODE_PAYMENTS_H
 #define MASTERNODE_PAYMENTS_H
 
-#include <BlockRewards.h>
-#include <key.h>
-#include <masternode.h>
+#include "key.h"
+#include "main.h"
+#include "masternode.h"
 #include <boost/lexical_cast.hpp>
-#include <LotteryCoinstakes.h>
-#include <primitives/transaction.h>
 
-class CBlock;
+using namespace std;
+
+extern CCriticalSection cs_vecPayments;
+extern CCriticalSection cs_mapMasternodeBlocks;
+extern CCriticalSection cs_mapMasternodePayeeVotes;
+
 class CMasternodePayments;
 class CMasternodePaymentWinner;
 class CMasternodeBlockPayees;
 
 extern CMasternodePayments masternodePayments;
 
-bool IsBlockPayeeValid(const CTransaction &txNew, const CBlockIndex *pindex);
+#define MNPAYMENTS_SIGNATURES_REQUIRED 6
+#define MNPAYMENTS_SIGNATURES_TOTAL 10
 
-LotteryCoinstakeData CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
+void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+bool IsBlockPayeeValid(const CTransaction &txNew, int nBlockHeight, CBlockIndex *prevIndex);
+std::string GetRequiredPaymentsString(int nBlockHeight);
+bool IsBlockValueValid(const CBlock& block, const CBlockRewards &nExpectedValue, CAmount nMinted);
+void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, bool fProofOfStake);
+
+using WinnerCoinStake = uint256;
+std::vector<WinnerCoinStake> CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
 
 class CMasternodePayee
 {
@@ -30,8 +41,17 @@ public:
     CScript scriptPubKey;
     int nVotes;
 
-    CMasternodePayee();
-    CMasternodePayee(const CScript& payee, int nVotesIn);
+    CMasternodePayee()
+    {
+        scriptPubKey = CScript();
+        nVotes = 0;
+    }
+
+    CMasternodePayee(CScript payee, int nVotesIn)
+    {
+        scriptPubKey = payee;
+        nVotes = nVotesIn;
+    }
 
     ADD_SERIALIZE_METHODS;
 
@@ -46,32 +66,64 @@ public:
 // Keep track of votes for payees from masternodes
 class CMasternodeBlockPayees
 {
-private:
-    mutable CCriticalSection cs_vecPayments;
-
+public:
     int nBlockHeight;
     std::vector<CMasternodePayee> vecPayments;
-    std::set<COutPoint> voters;
 
-public:
-    CMasternodeBlockPayees();
-    explicit CMasternodeBlockPayees(int nBlockHeightIn);
+    CMasternodeBlockPayees()
+    {
+        nBlockHeight = 0;
+        vecPayments.clear();
+    }
+    CMasternodeBlockPayees(int nBlockHeightIn)
+    {
+        nBlockHeight = nBlockHeightIn;
+        vecPayments.clear();
+    }
 
-    CMasternodeBlockPayees(const CMasternodeBlockPayees& o)
-      : nBlockHeight(o.nBlockHeight), vecPayments(o.vecPayments), voters(o.voters)
-    {}
-    CMasternodeBlockPayees(CMasternodeBlockPayees&& o)
-      : nBlockHeight(o.nBlockHeight), vecPayments(std::move(o.vecPayments)), voters(std::move(o.voters))
-    {}
+    void AddPayee(CScript payeeIn, int nIncrement)
+    {
+        LOCK(cs_vecPayments);
 
-    void CountVote(const COutPoint& voter, const CScript& payeeIn);
+        BOOST_FOREACH (CMasternodePayee& payee, vecPayments) {
+            if (payee.scriptPubKey == payeeIn) {
+                payee.nVotes += nIncrement;
+                return;
+            }
+        }
 
-    bool CanVote(const COutPoint& voter) const;
-    bool GetPayee(CScript& payee) const;
-    bool HasPayeeWithVotes(const CScript& payee, int nVotesReq) const;
+        CMasternodePayee c(payeeIn, nIncrement);
+        vecPayments.push_back(c);
+    }
 
-    bool IsTransactionValid(const CTransaction& txNew) const;
-    std::string GetRequiredPaymentsString() const;
+    bool GetPayee(CScript& payee)
+    {
+        LOCK(cs_vecPayments);
+
+        int nVotes = -1;
+        BOOST_FOREACH (CMasternodePayee& p, vecPayments) {
+            if (p.nVotes > nVotes) {
+                payee = p.scriptPubKey;
+                nVotes = p.nVotes;
+            }
+        }
+
+        return (nVotes > -1);
+    }
+
+    bool HasPayeeWithVotes(CScript payee, int nVotesReq)
+    {
+        LOCK(cs_vecPayments);
+
+        BOOST_FOREACH (CMasternodePayee& p, vecPayments) {
+            if (p.nVotes >= nVotesReq && p.scriptPubKey == payee) return true;
+        }
+
+        return false;
+    }
+
+    bool IsTransactionValid(const CTransaction& txNew);
+    std::string GetRequiredPaymentsString();
 
     ADD_SERIALIZE_METHODS;
 
@@ -80,7 +132,6 @@ public:
     {
         READWRITE(nBlockHeight);
         READWRITE(vecPayments);
-        READWRITE(voters);
     }
 };
 
@@ -90,53 +141,44 @@ class CMasternodePaymentWinner
 public:
     CTxIn vinMasternode;
 
-private:
-    /* Masternode payment blocks are uniquely identified by the seed hash used
-       for their scoring computation.  This seed hash is based on the block
-       height, but one block height might have multiple hashes in case of a
-       reorg (so the hash is the more robust identifier).  We use the block
-       height for messages sent on the wire because that's what the protocol
-       is, but translate them to the seed hash and use the seed has instead
-       for internal storage and processing.  The block height is also used
-       to check freshness, e.g. when only accepting payment messages for
-       somewhat recent blocks.  */
-    uint256 seedHash;
     int nBlockHeight;
-
-public:
     CScript payee;
     std::vector<unsigned char> vchSig;
 
     CMasternodePaymentWinner()
-      : nBlockHeight(0)
     {
-        seedHash.SetNull();
+        nBlockHeight = 0;
+        vinMasternode = CTxIn();
+        payee = CScript();
     }
 
-    explicit CMasternodePaymentWinner(const CTxIn& vinIn, const int height, const uint256& hash)
-      : vinMasternode(vinIn), seedHash(hash), nBlockHeight(height)
-    {}
-
-    uint256 GetHash() const;
-
-    bool Sign(const CKey& keyMasternode, const CPubKey& pubKeyMasternode);
-    bool IsValid(CNode* pnode, std::string& strError) const;
-    bool SignatureValid() const;
-    void Relay() const;
-
-    void AddPayee(const CScript& payeeIn);
-
-    inline int GetHeight() const
+    CMasternodePaymentWinner(CTxIn vinIn)
     {
-        return nBlockHeight;
+        nBlockHeight = 0;
+        vinMasternode = vinIn;
+        payee = CScript();
     }
 
-    const uint256& GetScoreHash() const;
+    uint256 GetHash() const
+    {
+        CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+        ss << payee;
+        ss << nBlockHeight;
+        ss << vinMasternode.prevout;
 
-    /** Computes the score hash from our height.  This has to be called
-     *  explicitly after deserialising and before GetScoreHash() can
-     *  be used.  Returns false if the hash could not be found.  */
-    bool ComputeScoreHash();
+        return ss.GetHash();
+    }
+
+    bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
+    bool IsValid(CNode* pnode, std::string& strError);
+    bool SignatureValid();
+    void Relay();
+
+    void AddPayee(CScript payeeIn)
+    {
+        payee = payeeIn;
+    }
+
 
     ADD_SERIALIZE_METHODS;
 
@@ -147,24 +189,17 @@ public:
         READWRITE(nBlockHeight);
         READWRITE(payee);
         READWRITE(vchSig);
-
-        if (nType == SER_DISK) {
-            /* For saving in the on-disk cache files, we include the
-               seed hash as well.  */
-            READWRITE(seedHash);
-        } else if (ser_action.ForRead()) {
-            /* After parsing from network, the seedHash field is not set
-               and must not be accessed (e.g. through GetScoreHash) until
-               ComputeScoreHash() has been called explicitly in a place
-               that is convenient.  We do this (rather than computing here
-               right away) to prevent potential DoS vectors where we might
-               want to perform some more validation before doing the
-               expensive computation.  */
-            seedHash.SetNull();
-        }
     }
 
-    std::string ToString() const;
+    std::string ToString()
+    {
+        std::string ret = "";
+        ret += vinMasternode.ToString();
+        ret += ", " + boost::lexical_cast<std::string>(nBlockHeight);
+        ret += ", " + payee.ToString();
+        ret += ", " + boost::lexical_cast<std::string>((int)vchSig.size());
+        return ret;
+    }
 };
 
 //
@@ -178,65 +213,57 @@ private:
     int nSyncedFromPeer;
     int nLastBlockHeight;
 
-    /** Map from the inventory hashes of mnw's to the corresponding data.  */
-    std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
-    /** Map from score hashes of blocks to the corresponding winners.  */
-    std::map<uint256, CMasternodeBlockPayees> mapMasternodeBlocks;
-
-    mutable CCriticalSection cs_mapMasternodeBlocks;
-    mutable CCriticalSection cs_mapMasternodePayeeVotes;
-
-    bool GetBlockPayee(const uint256& seedHash, CScript& payee) const;
-
 public:
+    std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
+    std::map<int, CMasternodeBlockPayees> mapMasternodeBlocks;
+    std::map<uint256, int> mapMasternodesLastVote; //prevout.hash + prevout.n, nBlockHeight
 
-    CMasternodePayments();
+    CMasternodePayments()
+    {
+        nSyncedFromPeer = 0;
+        nLastBlockHeight = 0;
+    }
 
-    void Clear();
+    void Clear()
+    {
+        LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
+        mapMasternodeBlocks.clear();
+        mapMasternodePayeeVotes.clear();
+    }
 
     bool AddWinningMasternode(const CMasternodePaymentWinner &winner);
-    /** Processes anything that needs to be done (mostly computing
-     *  and broadcasting the mnw messages) for the given block height
-     *  when it comes within reach of the current tip.  */
-    bool ProcessBlock(const CBlockIndex* pindex, int offset);
+    bool ProcessBlock(int nBlockHeight);
 
     void Sync(CNode* node, int nCountNeeded);
     void CheckAndRemove();
+    int LastPayment(CMasternode& mn);
 
-    bool IsTransactionValid(const CTransaction& txNew, const uint256& seedHash) const;
-    bool IsScheduled(const CMasternode& mn, int nNotBlockHeight) const;
+    bool GetBlockPayee(int nBlockHeight, CScript& payee);
+    bool IsTransactionValid(const CTransaction& txNew, int nBlockHeight);
+    bool IsScheduled(CMasternode& mn, int nNotBlockHeight);
 
-    bool CanVote(const COutPoint& outMasternode, const uint256& seedHash);
+    bool CanVote(COutPoint outMasternode, int nBlockHeight)
+    {
+        LOCK(cs_mapMasternodePayeeVotes);
 
-    int GetMinMasternodePaymentsProto() const;
-    void ProcessMessageMasternodePayments(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
-    std::string GetRequiredPaymentsString(const uint256& seedHash) const;
-    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const;
+        if (mapMasternodesLastVote.count(outMasternode.hash + outMasternode.n)) {
+            if (mapMasternodesLastVote[outMasternode.hash + outMasternode.n] == nBlockHeight) {
+                return false;
+            }
+        }
+
+        //record this masternode voted
+        mapMasternodesLastVote[outMasternode.hash + outMasternode.n] = nBlockHeight;
+        return true;
+    }
+
+    int GetMinMasternodePaymentsProto();
+    void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+    std::string GetRequiredPaymentsString(int nBlockHeight);
+    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake);
     std::string ToString() const;
-
-    /** Retrieves the payment winner for the given hash.  Returns null
-     *  if there is no entry for that hash.  */
-    const CMasternodePaymentWinner* GetPaymentWinnerForHash(const uint256& hash) const {
-        return const_cast<CMasternodePayments*>(this)->GetPaymentWinnerForHash(hash);
-    }
-    CMasternodePaymentWinner* GetPaymentWinnerForHash(const uint256& hash) {
-        const auto mit = mapMasternodePayeeVotes.find(hash);
-        if (mit == mapMasternodePayeeVotes.end())
-            return nullptr;
-        return &mit->second;
-    }
-
-    /** Retrieves the payees for the given block.  Returns null if there is
-     *  no matching entry.  */
-    const CMasternodeBlockPayees* GetPayeesForScoreHash(const uint256& hash) const {
-        return const_cast<CMasternodePayments*>(this)->GetPayeesForScoreHash(hash);
-    }
-    CMasternodeBlockPayees* GetPayeesForScoreHash(const uint256& hash) {
-        const auto mit = mapMasternodeBlocks.find(hash);
-        if (mit == mapMasternodeBlocks.end())
-            return nullptr;
-        return &mit->second;
-    }
+    int GetOldestBlock();
+    int GetNewestBlock();
 
     ADD_SERIALIZE_METHODS;
 

@@ -1,13 +1,9 @@
-#ifndef STACK_MANAGER_H
-#define STACK_MANAGER_H
 #include <script/opcodes.h>
 #include <vector>
 #include <script/script.h>
 #include <script/script_error.h>
 #include <algorithm>
 #include <memory>
-#include <set>
-#include <map>
 
 
 class BaseSignatureChecker;
@@ -42,7 +38,7 @@ struct StackOperator
 protected:
     StackType& stack_;
     StackType& altstack_;
-    const unsigned& flags_;
+    unsigned& flags_;
     ConditionalScopeStackManager& conditionalManager_;
     bool fRequireMinimal_;
 public:
@@ -52,9 +48,9 @@ public:
     static const valtype vchTrue;
 
     StackOperator(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         );
 
@@ -69,13 +65,38 @@ public:
 struct StackOperationManager
 {
 private:
+    static const std::set<opcodetype> upgradableOpCodes;
+    static const std::set<opcodetype> simpleValueOpCodes;
+    static const std::set<opcodetype> conditionalOpCodes;
+    static const std::set<opcodetype> stackModificationOpCodes;
+    static const std::set<opcodetype> equalityAndVerificationOpCodes;
+    static const std::set<opcodetype> unaryNumericOpCodes;
+    static const std::set<opcodetype> binaryNumericOpCodes;
+    static const std::set<opcodetype> hashingOpCodes;
+    static const std::set<opcodetype> checkSigOpcodes;
+
     StackType& stack_;
+    const BaseSignatureChecker& checker_;
     StackType altstack_;
     unsigned flags_;
-    ConditionalScopeStackManager conditionalManager_;
-    const BaseSignatureChecker& checker_;
     unsigned opCount_;
 
+    ConditionalScopeStackManager conditionalManager_;
+    StackOperator defaultOperation_;
+    std::map<opcodetype, StackOperator*> stackOperationMapping_;
+
+    std::shared_ptr<StackOperator> disableOp_;
+    std::shared_ptr<StackOperator> pushValueOp_;
+    std::shared_ptr<StackOperator> conditionalOp_;
+    std::shared_ptr<StackOperator> stackModificationOp_;
+    std::shared_ptr<StackOperator> equalityVerificationOp_;
+    std::shared_ptr<StackOperator> metadataOp_;
+    std::shared_ptr<StackOperator> unaryNumericOp_;
+    std::shared_ptr<StackOperator> binaryNumericOp_;
+    std::shared_ptr<StackOperator> numericBoundsOp_;
+    std::shared_ptr<StackOperator> hashingOp_;
+    std::shared_ptr<StackOperator> checksigOp_;
+    void InitMapping();
 public:
     StackOperationManager(
         StackType& stack,
@@ -83,15 +104,14 @@ public:
         unsigned flags
         );
 
-    bool ApplyOp(opcodetype opcode,ScriptError* serror);
-    bool ApplyOp(opcodetype opcode,const CScript& scriptCode,ScriptError* serror);
+    StackOperator* GetOp(opcodetype opcode);
+    bool HasOp(opcodetype opcode) const;
     bool ReserveAdditionalOp();
     void PushData(const valtype& stackElement);
-
+    
     bool ConditionalNeedsClosing() const;
     bool ConditionalScopeIsBalanced() const;
     unsigned TotalStackSize() const;
 
     bool OpcodeIsDisabled(const opcodetype& opcode) const;
 };
-#endif // STACK_MANAGER_H

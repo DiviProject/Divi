@@ -7,7 +7,7 @@ SuperblockHeightValidator::SuperblockHeightValidator(
     const CChainParams& chainParameters
     ): chainParameters_(chainParameters)
     , transitionHeight_(chainParameters_.GetLotteryBlockCycle()*chainParameters_.GetTreasuryPaymentsCycle())
-    , superblockCycleLength_(chainParameters_.GetLotteryBlockCycle())
+    , superblockCycleLength_((chainParameters_.GetLotteryBlockCycle()+chainParameters_.GetTreasuryPaymentsCycle())/2)
 {
 }
 

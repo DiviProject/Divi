@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # Copyright (c) 2015 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -7,9 +7,10 @@
 # Test ZMQ interface
 #
 
-from test_framework import BitcoinTestFramework
-from util import *
+from test_framework.test_framework import BitcoinTestFramework
+from test_framework.util import *
 import zmq
+import binascii
 
 try:
     import http.client as httplib
@@ -31,7 +32,7 @@ class ZMQTest (BitcoinTestFramework):
         self.zmqSubSocket.setsockopt(zmq.SUBSCRIBE, b"hashtx")
         self.zmqSubSocket.connect("tcp://127.0.0.1:%i" % self.port)
         return start_nodes(4, self.options.tmpdir, extra_args=[
-            ['-debug=zmq', '-zmqpubhashtx=tcp://127.0.0.1:'+str(self.port), '-zmqpubhashblock=tcp://127.0.0.1:'+str(self.port)],
+            ['-zmqpubhashtx=tcp://127.0.0.1:'+str(self.port), '-zmqpubhashblock=tcp://127.0.0.1:'+str(self.port)],
             [],
             [],
             []
@@ -40,10 +41,10 @@ class ZMQTest (BitcoinTestFramework):
     def run_test(self):
         self.sync_all()
 
-        genhashes = self.nodes[0].setgenerate(True, 1)
+        genhashes = self.nodes[0].generate(1)
         self.sync_all()
 
-        print ("listen...")
+        print "listen..."
         msg = self.zmqSubSocket.recv_multipart()
         topic = msg[0]
         body = msg[1]
@@ -51,12 +52,12 @@ class ZMQTest (BitcoinTestFramework):
         msg = self.zmqSubSocket.recv_multipart()
         topic = msg[0]
         body = msg[1]
-        blkhash = body.hex()
+        blkhash = bytes_to_hex_str(body)
 
         assert_equal(genhashes[0], blkhash) #blockhash from generate must be equal to the hash received over zmq
 
-        n = 30
-        genhashes = self.nodes[1].setgenerate(True, n)
+        n = 10
+        genhashes = self.nodes[1].generate(n)
         self.sync_all()
 
         zmqHashes = []
@@ -65,7 +66,7 @@ class ZMQTest (BitcoinTestFramework):
             topic = msg[0]
             body = msg[1]
             if topic == b"hashblock":
-                zmqHashes.append(body.hex())
+                zmqHashes.append(bytes_to_hex_str(body))
 
         for x in range(0,n):
             assert_equal(genhashes[x], zmqHashes[x]) #blockhash from generate must be equal to the hash received over zmq
@@ -80,9 +81,9 @@ class ZMQTest (BitcoinTestFramework):
         body = msg[1]
         hashZMQ = ""
         if topic == b"hashtx":
-            hashZMQ = body.hex()
+            hashZMQ = bytes_to_hex_str(body)
 
-        assert_equal(hashRPC, hashZMQ) #tx hash from the RPC must be equal to the hash received over zmq
+        assert_equal(hashRPC, hashZMQ) #blockhash from generate must be equal to the hash received over zmq
 
 
 if __name__ == '__main__':

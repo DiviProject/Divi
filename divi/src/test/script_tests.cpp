@@ -12,7 +12,6 @@
 #include "script/script.h"
 #include "script/script_error.h"
 #include "script/sign.h"
-#include <script/StakingVaultScript.h>
 
 #if defined(HAVE_CONSENSUS_LIB)
 #include "script/bitcoinconsensus.h"
@@ -79,7 +78,7 @@ CMutableTransaction BuildCreditingTransaction(const CScript& scriptPubKey)
     return txCredit;
 }
 
-CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMutableTransaction& txCredit, bool coinstakeSpend = false)
+CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMutableTransaction& txCredit)
 {
     CMutableTransaction txSpend;
     txSpend.nVersion = 1;
@@ -92,19 +91,14 @@ CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, const CMu
     txSpend.vin[0].nSequence = std::numeric_limits<unsigned int>::max();
     txSpend.vout[0].scriptPubKey = CScript();
     txSpend.vout[0].nValue = 0;
-    if(coinstakeSpend)
-    {
-        txSpend.vout[0].SetEmpty();
-        txSpend.vout.insert(txSpend.vout.end(),CTxOut());
-    }
 
     return txSpend;
 }
 
-void DoTest(const CScript& scriptPubKey, const CScript& scriptSig, int flags, bool expect, const std::string& message, bool requireCoinStakeSpend = false)
+void DoTest(const CScript& scriptPubKey, const CScript& scriptSig, int flags, bool expect, const std::string& message)
 {
     ScriptError err;
-    CMutableTransaction tx = BuildSpendingTransaction(scriptSig, BuildCreditingTransaction(scriptPubKey),requireCoinStakeSpend);
+    CMutableTransaction tx = BuildSpendingTransaction(scriptSig, BuildCreditingTransaction(scriptPubKey));
     CMutableTransaction tx2 = tx;
     BOOST_CHECK_MESSAGE(VerifyScript(scriptSig, scriptPubKey, flags, MutableTransactionSignatureChecker(&tx, 0), &err) == expect, message);
     BOOST_CHECK_MESSAGE(expect == (err == SCRIPT_ERR_OK), std::string(ScriptErrorString(err)) + ": " + message);
@@ -203,7 +197,6 @@ private:
     std::vector<unsigned char> push;
     std::string comment;
     int flags;
-    bool requireCoinstakeSpend;
 
     void DoPush()
     {
@@ -221,16 +214,7 @@ private:
     }
 
 public:
-    TestBuilder(
-        const CScript& redeemScript,
-        const std::string& comment_,
-        int flags_,
-        bool P2SH = false
-        ) : scriptPubKey(redeemScript)
-        , havePush(false)
-        , comment(comment_)
-        , flags(flags_)
-        , requireCoinstakeSpend(false)
+    TestBuilder(const CScript& redeemScript, const std::string& comment_, int flags_, bool P2SH = false) : scriptPubKey(redeemScript), havePush(false), comment(comment_), flags(flags_)
     {
         if (P2SH) {
             creditTx = BuildCreditingTransaction(CScript() << OP_HASH160 << ToByteVector(CScriptID(redeemScript)) << OP_EQUAL);
@@ -310,17 +294,11 @@ public:
         return *this;
     }
 
-    TestBuilder& RequireCoinstakeSpend()
-    {
-        requireCoinstakeSpend = true;
-        spendTx = BuildSpendingTransaction(CScript(), creditTx, requireCoinstakeSpend);
-        return *this;
-    }
     TestBuilder& Test(bool expect)
     {
         TestBuilder copy = *this; // Make a copy so we can rollback the push.
         DoPush();
-        DoTest(creditTx.vout[0].scriptPubKey, spendTx.vin[0].scriptSig, flags, expect, comment,requireCoinstakeSpend);
+        DoTest(creditTx.vout[0].scriptPubKey, spendTx.vin[0].scriptSig, flags, expect, comment);
         *this = copy;
         return *this;
     }
@@ -348,257 +326,10 @@ public:
 };
 }
 
-BOOST_AUTO_TEST_CASE(willProduceCoinstakeSpend)
-{
-    auto tx = BuildSpendingTransaction(CScript(), CMutableTransaction(),true);
-    BOOST_CHECK_MESSAGE(tx.vin.size() > 0,"first fail");
-    BOOST_CHECK_MESSAGE(!tx.vin[0].prevout.IsNull(), "second fail");
-    BOOST_CHECK_MESSAGE(tx.vout.size() >= 2,"third fail");
-    BOOST_CHECK_MESSAGE(tx.vout[0].IsEmpty(),"fourth fail");
-    BOOST_CHECK_MESSAGE(
-        CTransaction(tx).IsCoinStake(),
-        "Non-coinstake!");
-}
-
-
-BOOST_AUTO_TEST_CASE(willDetectStakingVaultScripts)
-{
-    const KeyData keys;
-    {
-        auto ownerKeyHash = ToByteVector(keys.pubkey1C.GetID());
-        auto vaultKeyHash = ToByteVector(keys.pubkey2C.GetID());
-        CScript stakingVault = CreateStakingVaultScript(
-            ownerKeyHash,
-            vaultKeyHash);
-        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
-        BOOST_CHECK_MESSAGE(
-            GetStakingVaultPubkeyHashes(stakingVault,ownerAndVaultKeyHashes),
-            "Failed to detect actual vault script!");
-        BOOST_CHECK_MESSAGE(
-            ownerAndVaultKeyHashes.first == ownerKeyHash &&
-            ownerAndVaultKeyHashes.second == vaultKeyHash,
-            "Recovered incorrect pubkey hash!"
-        );
-    }
-    {
-        auto ownerKeyHash = ToByteVector(keys.pubkey1C.GetID());
-        auto vaultKeyHash = ToByteVector(keys.pubkey2C.GetID());
-        CScript stakingVault = CreateStakingVaultScript(
-            ownerKeyHash,
-            vaultKeyHash);
-        // Warped push size should fail
-        stakingVault[1] = 0x01;
-        stakingVault[24] = 0x01;
-        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
-        BOOST_CHECK_MESSAGE(
-            !GetStakingVaultPubkeyHashes(stakingVault,ownerAndVaultKeyHashes),
-            "Failed to detect flawed vault script!");
-        BOOST_CHECK_MESSAGE(
-            ownerAndVaultKeyHashes.first == valtype() &&
-            ownerAndVaultKeyHashes.second == valtype(),
-            "Recovered incorrect pubkey hash!"
-        );
-    }
-    {   // Too few bytes
-        CScript notAStakingVault = CScript() << OP_TRUE;
-        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
-        BOOST_CHECK_MESSAGE(
-            !GetStakingVaultPubkeyHashes(notAStakingVault,ownerAndVaultKeyHashes),
-            "Failed to detect non-vault script!");
-        BOOST_CHECK_MESSAGE(
-            ownerAndVaultKeyHashes.first == valtype() &&
-            ownerAndVaultKeyHashes.second == valtype(),
-            "Recovered incorrect pubkey hash!"
-        );
-    }
-    {
-        // Too many bytes
-        auto randomBytes = ToByteVector(GetRandHash().GetHex());
-        CScript notAStakingVault(randomBytes.begin(),randomBytes.end());
-        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
-        BOOST_CHECK_MESSAGE(
-            !GetStakingVaultPubkeyHashes(notAStakingVault,ownerAndVaultKeyHashes),
-            "Failed to detect non-vault script!");
-        BOOST_CHECK_MESSAGE(
-            ownerAndVaultKeyHashes.first == valtype() &&
-            ownerAndVaultKeyHashes.second == valtype(),
-            "Recovered incorrect pubkey hash!"
-        );
-    }
-    {
-        // Right number wrong value
-        auto randomBytes = ToByteVector(GetRandHash().GetHex());
-        CScript notAStakingVault(randomBytes.begin(),randomBytes.begin()+50);
-        std::pair<valtype,valtype> ownerAndVaultKeyHashes;
-        BOOST_CHECK_MESSAGE(
-            !GetStakingVaultPubkeyHashes(notAStakingVault,ownerAndVaultKeyHashes),
-            "Failed to detect non-vault script!");
-        BOOST_CHECK_MESSAGE(
-            ownerAndVaultKeyHashes.first == valtype() &&
-            ownerAndVaultKeyHashes.second == valtype(),
-            "Recovered incorrect pubkey hash!"
-        );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(willVerifyStakingVaultSignatureAccordingToSpendingConditions)
-{
-    const KeyData keys;
-    CScript baseVaultScript = CreateStakingVaultScript(
-            ToByteVector(keys.pubkey1C.GetID()),
-            ToByteVector(keys.pubkey2C.GetID()));
-
-    auto creditTx = BuildCreditingTransaction(baseVaultScript);
-
-    CBasicKeyStore keystore;
-    keystore.AddKey(keys.key1C);
-    keystore.AddKey(keys.key2C);
-
-    auto attemptSpend = [creditTx,baseVaultScript](
-            CKeyStore& keystore,
-            bool spendingTxIsCoinstake,
-            bool spenderIsVault,
-            bool expect,
-            std::string message){
-        auto spendTx = BuildSpendingTransaction(CScript(), creditTx,spendingTxIsCoinstake);
-        BOOST_CHECK_MESSAGE(spendTx.vin.size() > 0, "Missing inputs on the spending tx!");
-        BOOST_CHECK_MESSAGE(SignVaultSpend(keystore,baseVaultScript,spendTx,0,!spenderIsVault),"Failed to create scriptsig!"); // Will try to spend as vault
-
-        unsigned flags = SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE;
-        ScriptError err;
-        BOOST_CHECK_MESSAGE(
-            expect==VerifyScript(spendTx.vin[0].scriptSig, creditTx.vout[0].scriptPubKey, flags, MutableTransactionSignatureChecker(&spendTx, 0), &err),
-            message);
-        BOOST_CHECK_MESSAGE(expect==(err == SCRIPT_ERR_OK), std::string(ScriptErrorString(err)) + ": " + message);
-    };
-
-    attemptSpend(keystore,true,true,true,"Coinstake VaultSpend");
-    attemptSpend(keystore,false,true,false,"Non-Coinstake VaultSpend");
-    attemptSpend(keystore,true,false,true, "Coinstake OwnerSpend");
-    attemptSpend(keystore,false,false,true,"Non-Coinstake OwnerSpend");
-}
-
-BOOST_AUTO_TEST_CASE(canSignAndCombineVaultSignatures)
-{
-    const KeyData keys;
-    const CScript baseVaultScript = CreateStakingVaultScript(
-            ToByteVector(keys.pubkey1C.GetID()),
-            ToByteVector(keys.pubkey2C.GetID()));
-
-    const auto creditTx = BuildCreditingTransaction(baseVaultScript);
-
-    for (const bool asOwner : {true, false}) {
-        auto spendTx = BuildSpendingTransaction(CScript(), creditTx, !asOwner);
-        BOOST_CHECK_MESSAGE(spendTx.vin.size() > 0, "Missing inputs on the spending tx!");
-
-        CBasicKeyStore keystore;
-        if (asOwner)
-            keystore.AddKey(keys.key1C);
-        else
-            keystore.AddKey(keys.key2C);
-
-        BOOST_CHECK_MESSAGE(SignSignature(keystore, creditTx, spendTx, 0, SIGHASH_ALL),
-                            "Failed to create scriptsig!");
-
-        spendTx.vin[0].scriptSig = CombineSignatures(creditTx.vout[0].scriptPubKey, spendTx, 0,
-                                                     spendTx.vin[0].scriptSig, CScript());
-
-        const unsigned flags = SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_VERIFY_MINIMALDATA | SCRIPT_REQUIRE_COINSTAKE;
-        ScriptError err;
-        BOOST_CHECK_MESSAGE(
-            VerifyScript(spendTx.vin[0].scriptSig, creditTx.vout[0].scriptPubKey, flags,
-                         MutableTransactionSignatureChecker(&spendTx, 0), &err),
-            "Failed to verify the signature");
-        BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, std::string(ScriptErrorString(err)));
-    }
-}
-
-BOOST_AUTO_TEST_CASE(willExecuteStakingVaultScriptsAsExpected)
-{
-    const KeyData keys;
-
-    std::vector<TestBuilder> good;
-    std::vector<TestBuilder> bad;
-
-    CScript baseVaultScript = CreateStakingVaultScript(
-            ToByteVector(keys.pubkey1C.GetID()),
-            ToByteVector(keys.pubkey2C.GetID()));
-    good.push_back(TestBuilder(
-        baseVaultScript,
-        "Owner spend", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
-        ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1));
-    bad.push_back(TestBuilder(
-        baseVaultScript,
-        "Vault spend disabled", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS
-        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
-    // When opcode is enabled, should work
-    good.push_back(TestBuilder(
-        baseVaultScript,
-        "Vault spend if opcode as NO-OP", 0
-        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
-    bad.push_back(TestBuilder(
-        baseVaultScript,
-        "Vault spend but not coinstake", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
-        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
-    good.push_back(TestBuilder(
-        baseVaultScript,
-        "Owner spend regardless", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
-        ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1));
-    good.push_back(TestBuilder(
-        baseVaultScript,
-        "Vault spend with coinstake", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE
-        ).RequireCoinstakeSpend().PushSig(keys.key2).Push(keys.pubkey2C).Num(0));
-
-    // P2SH(staking vault)
-    good.push_back(TestBuilder(
-        baseVaultScript,
-        "P2SH Owner spend",
-        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_VERIFY_P2SH,
-        true
-        ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1).PushRedeem());
-    bad.push_back(TestBuilder(
-        baseVaultScript,
-        "P2SH Vault spend disabled",
-        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_VERIFY_P2SH,
-        true
-        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0).PushRedeem());
-    good.push_back(TestBuilder(
-        baseVaultScript,
-        "P2SH Vault spend if opcode as NO-OP", 0, true
-        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0).PushRedeem());
-    bad.push_back(TestBuilder(
-        baseVaultScript,
-        "P2SH Vault spend but not coinstake",
-        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE | SCRIPT_VERIFY_P2SH,
-        true
-        ).PushSig(keys.key2).Push(keys.pubkey2C).Num(0).PushRedeem());
-    good.push_back(TestBuilder(
-        baseVaultScript,
-        "P2SH Owner spend regardless",
-        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE | SCRIPT_VERIFY_P2SH,
-        true
-        ).PushSig(keys.key1).Push(keys.pubkey1C).Num(1).PushRedeem());
-    good.push_back(TestBuilder(
-        baseVaultScript,
-        "P2SH Vault spend with coinstake",
-        SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS | SCRIPT_REQUIRE_COINSTAKE | SCRIPT_VERIFY_P2SH,
-        true
-        ).RequireCoinstakeSpend().PushSig(keys.key2).Push(keys.pubkey2C).Num(0).PushRedeem());
-
-    BOOST_FOREACH(TestBuilder& test, good)
-    {
-        test.Test(true);
-    }
-    BOOST_FOREACH(TestBuilder& test, bad)
-    {
-        test.Test(false);
-    }
-}
-
 BOOST_AUTO_TEST_CASE(script_build)
 {
-
-
+    
+    
     const KeyData keys;
 
     std::vector<TestBuilder> good;
@@ -835,7 +566,7 @@ BOOST_AUTO_TEST_CASE(script_build)
                               ).Num(0).PushSig(keys.key1).PushSig(keys.key1));
 
 
-
+    
     std::set<std::string> tests_good;
     std::set<std::string> tests_bad;
 
@@ -878,7 +609,7 @@ BOOST_AUTO_TEST_CASE(script_build)
 #endif
         strBad += str + ",\n";
     }
-
+    
 #ifdef UPDATE_JSON_TESTS
     FILE* valid = fopen("script_valid.json.gen", "w");
     fputs(strGood.c_str(), valid);
@@ -896,8 +627,8 @@ BOOST_AUTO_TEST_CASE(script_valid)
     // Inner arrays are [ "scriptSig", "scriptPubKey", "flags" ]
     // ... where scriptSig and scriptPubKey are stringified
     // scripts.
-
-
+    
+    
     Array tests = read_json(std::string(json_tests::script_valid, json_tests::script_valid + sizeof(json_tests::script_valid)));
 
     BOOST_FOREACH(Value& tv, tests)
@@ -919,13 +650,13 @@ BOOST_AUTO_TEST_CASE(script_valid)
 
         DoTest(scriptPubKey, scriptSig, scriptflags, true, strTest);
     }
-
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_invalid)
 {
-
-
+    
+    
     // Scripts that should evaluate as invalid
     Array tests = read_json(std::string(json_tests::script_invalid, json_tests::script_invalid + sizeof(json_tests::script_invalid)));
 
@@ -948,7 +679,7 @@ BOOST_AUTO_TEST_CASE(script_invalid)
 
         DoTest(scriptPubKey, scriptSig, scriptflags, false, strTest);
     }
-
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_PushData)
@@ -1015,8 +746,8 @@ sign_multisig(CScript scriptPubKey, const CKey &key, CTransaction transaction)
 
 BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG12)
 {
-
-
+    
+    
 
     ScriptError err;
     CKey key1, key2, key3;
@@ -1045,13 +776,13 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG12)
     BOOST_CHECK(!VerifyScript(badsig1, scriptPubKey12, flags, MutableTransactionSignatureChecker(&txTo12, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_EVAL_FALSE, ScriptErrorString(err));
 
-
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG23)
 {
-
-
+    
+    
 
     ScriptError err;
     CKey key1, key2, key3, key4;
@@ -1119,14 +850,14 @@ BOOST_AUTO_TEST_CASE(script_CHECKMULTISIG23)
     BOOST_CHECK(!VerifyScript(badsig6, scriptPubKey23, flags, MutableTransactionSignatureChecker(&txTo23, 0), &err));
     BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_INVALID_STACK_OPERATION, ScriptErrorString(err));
 
-
-}
+    
+}    
 
 BOOST_AUTO_TEST_CASE(script_combineSigs)
 {
-
-
-
+    
+    
+    
     // Test the CombineSignatures function
     CBasicKeyStore keystore;
     vector<CKey> keys;
@@ -1233,7 +964,7 @@ BOOST_AUTO_TEST_CASE(script_combineSigs)
     combined = CombineSignatures(scriptPubKey, txTo, 0, partial3b, partial3a);
     BOOST_CHECK(combined == partial3c);
 
-
+    
 }
 
 BOOST_AUTO_TEST_CASE(script_standard_push)

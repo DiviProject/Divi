@@ -15,9 +15,6 @@
 
 using namespace std;
 
-boost::condition_variable cvMockTimeChanged;
-boost::mutex csMockTime;
-
 static int64_t nMockTime = 0; //! For unit testing
 
 int64_t GetTime()
@@ -29,21 +26,18 @@ int64_t GetTime()
 
 void SetMockTime(int64_t nMockTimeIn)
 {
-    boost::unique_lock<boost::mutex> lock(csMockTime);
     nMockTime = nMockTimeIn;
-    cvMockTimeChanged.notify_all();
 }
 
 int64_t GetTimeMillis()
 {
-    return GetTimeMicros() / 1000;
+    return (boost::posix_time::ptime(boost::posix_time::microsec_clock::universal_time()) -
+            boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1)))
+        .total_milliseconds();
 }
 
 int64_t GetTimeMicros()
 {
-    if (nMockTime)
-        return 1000000 * nMockTime;
-
     return (boost::posix_time::ptime(boost::posix_time::microsec_clock::universal_time()) -
             boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1)))
         .total_microseconds();

@@ -23,10 +23,6 @@ public:
     {
         return false;
     }
-    virtual bool CheckCoinstake() const
-    {
-        return false;
-    }
 
     virtual ~BaseSignatureChecker() {}
 
@@ -46,7 +42,6 @@ protected:
 public:
     TransactionSignatureChecker(const CTransaction* txToIn, unsigned int nInIn) : txTo(txToIn), nIn(nInIn) {}
     bool CheckSig(const std::vector<unsigned char>& scriptSig, const std::vector<unsigned char>& vchPubKey, const CScript& scriptCode) const;
-    bool CheckCoinstake() const;
 };
 
 class MutableTransactionSignatureChecker : public TransactionSignatureChecker

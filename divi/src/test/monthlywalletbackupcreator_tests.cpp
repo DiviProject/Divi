@@ -1,6 +1,6 @@
 #include <monthlyWalletBackupCreator.h>
 #include <boost/test/unit_test.hpp>
-#include <MockFileSystem.h>
+#include <mockFileSystem.h>
 #include <string>
 #include <ctime>
 #include <monthlyWalletBackupCreator.h>
@@ -29,9 +29,9 @@ TimeStampedFolderContents createExpectedTimestampedFolderContents (unsigned int 
     for(unsigned int i = 0; i < files; i++)
     {
         expectedTimestamps.push_back(
-            std::pair<std::time_t, std::string> {
+            std::pair<std::time_t, std::string> { 
                 std::time(0) - stretchValueBetweenMinAndMax(i, (double) minimumAge, (double)  maximumAge, 0.0, (double) files),
-                std::string("backups") + std::to_string(i)
+                std::string("backups") + std::to_string(i) 
         });
     }
 
@@ -52,9 +52,9 @@ BOOST_AUTO_TEST_CASE(monthly_backup_creator_forwards_call)
     std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
 
     MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
-
+    
     EXPECT_CALL(backupCreator, BackupWallet()).Times(1);
-
+    
     monthlyBackupCreator.BackupWallet();
 }
 
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(doesntbackUpWhenEarliestBackupIsUnderAMonthOld)
     std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
 
     MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
-
+    
     TimeStampedFolderContents expectedTime = {
         std::pair<std::time_t, std::string> {std::time(0), "backup1"}
     };
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(doesntbackUpWhenEarliestBackupIsUnderAMonthOld)
     ON_CALL(fileSystem, get_timestamped_folder_contents(backupDirectoryPath)).WillByDefault( Return(expectedTime) );
 
     EXPECT_CALL(backupCreator, BackupWallet()).Times(Exactly(0));
-
+    
     monthlyBackupCreator.BackupWallet();
 }
 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(doesbackUpWhenEarliestBackupIsOverAMonthOld)
     std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
 
     MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
-
+    
     TimeStampedFolderContents expectedTime = {
         std::pair<std::time_t, std::string> {std::time(0) - NUMBER_OF_SECONDS_IN_A_MONTH, "backup1"}
     };
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(doesbackUpWhenEarliestBackupIsOverAMonthOld)
     ON_CALL(fileSystem, get_timestamped_folder_contents(backupDirectoryPath)).WillByDefault( Return(expectedTime) );
 
     EXPECT_CALL(backupCreator, BackupWallet());
-
+    
     monthlyBackupCreator.BackupWallet();
 }
 
@@ -118,9 +118,9 @@ BOOST_AUTO_TEST_CASE(monthlyBackupCreatorForwardsGetBackupSubfolderDirectoryCall
     std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
 
     MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
-
+    
     EXPECT_CALL(backupCreator, GetBackupSubfolderDirectory());
-
+    
     monthlyBackupCreator.GetBackupSubfolderDirectory();
 }
 
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(monthlyBackupCreatorForwardedCallReturnsIdenticalOutputs)
         MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
 
         ON_CALL(backupCreator, GetBackupSubfolderDirectory()).WillByDefault( Return (backupDirectoryPath) );
-
+        
         EXPECT_EQ(monthlyBackupCreator.GetBackupSubfolderDirectory(), backupCreator.GetBackupSubfolderDirectory());
     }
 }
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(doesntbackUpWhenTheNewestOfManyFilesIsLessThanAMonthOld)
     std::string backupDirectoryPath = dataDirectory + "/monthlyBackups";
 
     MonthlyWalletBackupCreator monthlyBackupCreator(backupCreator, fileSystem);
-
+    
     TimeStampedFolderContents expectedTimestampedFolderContents = createExpectedTimestampedFolderContents (NUMBER_OF_SECONDS_IN_A_MONTH - 1, NUMBER_OF_SECONDS_IN_A_MONTH * 2);
 
     ON_CALL(backupCreator, GetBackupSubfolderDirectory()).WillByDefault( Return (backupDirectoryPath) );

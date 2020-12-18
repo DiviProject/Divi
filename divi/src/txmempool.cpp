@@ -17,7 +17,6 @@
 
 
 #include "FeeAndPriorityCalculator.h"
-#include <ValidationState.h>
 
 using namespace std;
 
@@ -414,10 +413,11 @@ bool CTxMemPool::addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry)
     LOCK(cs);
     {
         mapTx[hash] = entry;
-        const auto* entryInMap = &mapTx[hash];
-        const CTransaction& tx = entryInMap->GetTx();
-        for (unsigned int i = 0; i < tx.vin.size(); i++)
-            mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
+        const CTransaction& tx = mapTx[hash].GetTx();
+        {
+            for (unsigned int i = 0; i < tx.vin.size(); i++)
+                mapNextTx[tx.vin[i].prevout] = CInPoint(&tx, i);
+        }
         nTransactionsUpdated++;
         totalTxSize += entry.GetTxSize();
     }
@@ -435,16 +435,16 @@ void CTxMemPool::addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewC
         const CTxIn input = tx.vin[j];
         const CTxOut &prevout = view.GetOutputFor(input);
         if (prevout.scriptPubKey.IsPayToScriptHash()) {
-            std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
+            vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
             CMempoolAddressDeltaKey key(2, uint160(hashBytes), txhash, j, 1);
             CMempoolAddressDelta delta(entry.GetTime(), prevout.nValue * -1, input.prevout.hash, input.prevout.n);
-            mapAddress.insert(std::make_pair(key, delta));
+            mapAddress.insert(make_pair(key, delta));
             inserted.push_back(key);
         } else if (prevout.scriptPubKey.IsPayToPublicKeyHash()) {
-            std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23);
+            vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23);
             CMempoolAddressDeltaKey key(1, uint160(hashBytes), txhash, j, 1);
             CMempoolAddressDelta delta(entry.GetTime(), prevout.nValue * -1, input.prevout.hash, input.prevout.n);
-            mapAddress.insert(std::make_pair(key, delta));
+            mapAddress.insert(make_pair(key, delta));
             inserted.push_back(key);
         }
     }
@@ -452,20 +452,20 @@ void CTxMemPool::addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewC
     for (unsigned int k = 0; k < tx.vout.size(); k++) {
         const CTxOut &out = tx.vout[k];
         if (out.scriptPubKey.IsPayToScriptHash()) {
-            std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
+            vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
             CMempoolAddressDeltaKey key(2, uint160(hashBytes), txhash, k, 0);
-            mapAddress.insert(std::make_pair(key, CMempoolAddressDelta(entry.GetTime(), out.nValue)));
+            mapAddress.insert(make_pair(key, CMempoolAddressDelta(entry.GetTime(), out.nValue)));
             inserted.push_back(key);
         } else if (out.scriptPubKey.IsPayToPublicKeyHash()) {
-            std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
+            vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
             std::pair<addressDeltaMap::iterator,bool> ret;
             CMempoolAddressDeltaKey key(1, uint160(hashBytes), txhash, k, 0);
-            mapAddress.insert(std::make_pair(key, CMempoolAddressDelta(entry.GetTime(), out.nValue)));
+            mapAddress.insert(make_pair(key, CMempoolAddressDelta(entry.GetTime(), out.nValue)));
             inserted.push_back(key);
         }
     }
 
-    mapAddressInserted.insert(std::make_pair(txhash, inserted));
+    mapAddressInserted.insert(make_pair(txhash, inserted));
 }
 
 bool CTxMemPool::getAddressIndex(std::vector<std::pair<uint160, int> > &addresses,
@@ -526,12 +526,12 @@ void CTxMemPool::addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCac
         CSpentIndexKey key = CSpentIndexKey(input.prevout.hash, input.prevout.n);
         CSpentIndexValue value = CSpentIndexValue(txhash, j, -1, prevout.nValue, addressType, addressHash);
 
-        mapSpent.insert(std::make_pair(key, value));
+        mapSpent.insert(make_pair(key, value));
         inserted.push_back(key);
 
     }
 
-    mapSpentInserted.insert(std::make_pair(txhash, inserted));
+    mapSpentInserted.insert(make_pair(txhash, inserted));
 }
 
 bool CTxMemPool::getSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value)
@@ -583,7 +583,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
             }
         }
         while (!txToRemove.empty()) {
-            const uint256 hash = txToRemove.front();
+            uint256 hash = txToRemove.front();
             txToRemove.pop_front();
             if (!mapTx.count(hash))
                 continue;
@@ -596,7 +596,7 @@ void CTxMemPool::remove(const CTransaction& origTx, std::list<CTransaction>& rem
                     txToRemove.push_back(it->second.ptx->GetHash());
                 }
             }
-            for (const auto& txin : tx.vin)
+            BOOST_FOREACH (const CTxIn& txin, tx.vin)
                 mapNextTx.erase(txin.prevout);
 
             removed.push_back(tx);
@@ -692,15 +692,16 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const
 
     LOCK(cs);
     list<const CTxMemPoolEntry*> waitingOnDependants;
-    for (const auto& entry : mapTx) {
+    for (std::map<uint256, CTxMemPoolEntry>::const_iterator it = mapTx.begin(); it != mapTx.end(); it++) {
         unsigned int i = 0;
-        checkTotal += entry.second.GetTxSize();
-        const CTransaction& tx = entry.second.GetTx();
+        checkTotal += it->second.GetTxSize();
+        const CTransaction& tx = it->second.GetTx();
         bool fDependsWait = false;
-        for (const auto& txin : tx.vin) {
+        BOOST_FOREACH (const CTxIn& txin, tx.vin) {
             // Check that every mempool transaction's inputs refer to available coins, or other mempool tx's.
-            CTransaction tx2;
-            if (lookup(txin.prevout.hash, tx2)) {
+            std::map<uint256, CTxMemPoolEntry>::const_iterator it2 = mapTx.find(txin.prevout.hash);
+            if (it2 != mapTx.end()) {
+                const CTransaction& tx2 = it2->second.GetTx();
                 assert(tx2.vout.size() > txin.prevout.n && !tx2.vout[txin.prevout.n].IsNull());
                 fDependsWait = true;
             } else {
@@ -708,19 +709,19 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const
                 assert(coins && coins->IsAvailable(txin.prevout.n));
             }
             // Check whether its inputs are marked in mapNextTx.
-            const auto mit = mapNextTx.find(txin.prevout);
-            assert(mit != mapNextTx.end());
-            assert(mit->second.ptx == &tx);
-            assert(mit->second.n == i);
+            std::map<COutPoint, CInPoint>::const_iterator it3 = mapNextTx.find(txin.prevout);
+            assert(it3 != mapNextTx.end());
+            assert(it3->second.ptx == &tx);
+            assert(it3->second.n == i);
             i++;
         }
         if (fDependsWait)
-            waitingOnDependants.push_back(&entry.second);
+            waitingOnDependants.push_back(&it->second);
         else {
             CValidationState state;
             CTxUndo undo;
             assert(CheckInputs(tx, state, mempoolDuplicate, false, 0, false, NULL));
-            UpdateCoins(tx, mempoolDuplicate, undo, 1000000);
+            UpdateCoins(tx, state, mempoolDuplicate, undo, 1000000);
         }
     }
     unsigned int stepsSinceLastRemove = 0;
@@ -735,24 +736,24 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const
         } else {
             assert(CheckInputs(entry->GetTx(), state, mempoolDuplicate, false, 0, false, NULL));
             CTxUndo undo;
-            UpdateCoins(entry->GetTx(), mempoolDuplicate, undo, 1000000);
+            UpdateCoins(entry->GetTx(), state, mempoolDuplicate, undo, 1000000);
             stepsSinceLastRemove = 0;
         }
     }
-    for (const auto& entry : mapNextTx) {
-        const uint256 hash = entry.second.ptx->GetHash();
-        const auto mit = mapTx.find(hash);
-        assert(mit != mapTx.end());
-        const CTransaction& tx = mit->second.GetTx();
-        assert(&tx == entry.second.ptx);
-        assert(tx.vin.size() > entry.second.n);
-        assert(entry.first == entry.second.ptx->vin[entry.second.n].prevout);
+    for (std::map<COutPoint, CInPoint>::const_iterator it = mapNextTx.begin(); it != mapNextTx.end(); it++) {
+        uint256 hash = it->second.ptx->GetHash();
+        map<uint256, CTxMemPoolEntry>::const_iterator it2 = mapTx.find(hash);
+        const CTransaction& tx = it2->second.GetTx();
+        assert(it2 != mapTx.end());
+        assert(&tx == it->second.ptx);
+        assert(tx.vin.size() > it->second.n);
+        assert(it->first == it->second.ptx->vin[it->second.n].prevout);
     }
 
     assert(totalTxSize == checkTotal);
 }
 
-void CTxMemPool::queryHashes(std::vector<uint256>& vtxid)
+void CTxMemPool::queryHashes(vector<uint256>& vtxid)
 {
     vtxid.clear();
 

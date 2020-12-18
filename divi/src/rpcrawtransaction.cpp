@@ -6,8 +6,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "base58.h"
-
-#include "BlockDiskAccessor.h"
 #include "core_io.h"
 #include "init.h"
 #include "keystore.h"
@@ -20,15 +18,15 @@
 #include "script/standard.h"
 #include "uint256.h"
 #include "utilmoneystr.h"
+#ifdef ENABLE_WALLET
 #include "wallet.h"
-#include <WalletTx.h>
+#endif
 
 #include <stdint.h>
 
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 #include <boost/assign/list_of.hpp>
-#include <ValidationState.h>
 
 using namespace boost;
 using namespace boost::assign;
@@ -38,7 +36,7 @@ using namespace std;
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex)
 {
     txnouttype type;
-    std::vector<CTxDestination> addresses;
+    vector<CTxDestination> addresses;
     int nRequired;
 
     out.push_back(Pair("asm", scriptPubKey.ToString()));
@@ -356,7 +354,7 @@ Value listunspent(const Array& params, bool fHelp)
     }
 
     Array results;
-    std::vector<COutput> vecOutputs;
+    vector<COutput> vecOutputs;
     assert(pwalletMain != NULL);
     pwalletMain->AvailableCoins(vecOutputs, false);
     BOOST_FOREACH (const COutput& out, vecOutputs) {
@@ -422,15 +420,11 @@ Value createrawtransaction(const Array& params, bool fHelp)
             "       }\n"
             "       ,...\n"
             "     ]\n"
-            "2. \"outputs\"             (array, required) array or json object with outputs\n"
-            "    [\n"
-            "      {\n"
-            "        \"address\": x.xxx   (numeric, required) The key is the divi address, the value is the DIVI amount\n"
-            "      }, ...\n"
-            "      {\n"
-            "        \"hex\": x.xxx       (numeric, required) The key is a hex-serialised script, the value is the DIVI amount\n"
-            "      }, ...\n"
-            "    ]\n"
+            "2. \"addresses\"           (string, required) a json object with addresses as keys and amounts as values\n"
+            "    {\n"
+            "      \"address\": x.xxx   (numeric, required) The key is the divi address, the value is the DIVI amount\n"
+            "      ,...\n"
+            "    }\n"
 
             "\nResult:\n"
             "\"transaction\"            (string) hex string of the transaction\n"
@@ -438,25 +432,14 @@ Value createrawtransaction(const Array& params, bool fHelp)
             "\nExamples\n" +
             HelpExampleCli("createrawtransaction", "\"[{\\\"txid\\\":\\\"myid\\\",\\\"vout\\\":0}]\" \"{\\\"address\\\":0.01}\"") + HelpExampleRpc("createrawtransaction", "\"[{\\\"txid\\\":\\\"myid\\\",\\\"vout\\\":0}]\", \"{\\\"address\\\":0.01}\""));
 
-    RPCTypeCheck(params, list_of(array_type));
+    RPCTypeCheck(params, list_of(array_type)(obj_type));
 
     Array inputs = params[0].get_array();
-
-    Array sendTo;
-    if (params[1].type() == array_type)
-        sendTo = params[1].get_array();
-    else if (params[1].type() == obj_type) {
-        for (const Pair& s : params[1].get_obj()) {
-            Object cur;
-            cur.push_back(s);
-            sendTo.push_back(cur);
-        }
-    } else
-        throw JSONRPCError(RPC_TYPE_ERROR, "outputs must be array or object");
+    Object sendTo = params[1].get_obj();
 
     CMutableTransaction rawTx;
 
-    for (const Value& input : inputs) {
+    BOOST_FOREACH (const Value& input, inputs) {
         const Object& o = input.get_obj();
 
         uint256 txid = ParseHashO(o, "txid");
@@ -473,35 +456,20 @@ Value createrawtransaction(const Array& params, bool fHelp)
     }
 
     set<CBitcoinAddress> setAddress;
-    for (const Value& entry : sendTo) {
-        if (entry.type() != obj_type)
-            throw JSONRPCError(RPC_TYPE_ERROR, "output entries must be objects");
-        const Object o = entry.get_obj();
-        if (o.size() != 1)
-            throw JSONRPCError(RPC_INVALID_PARAMETER, "output entries must have a single element");
+    BOOST_FOREACH (const Pair& s, sendTo) {
+        CBitcoinAddress address(s.name_);
+        if (!address.IsValid())
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid DIVI address: ") + s.name_);
 
-        for (const Pair& s : o) {
-            const CAmount nAmount = AmountFromValue(s.value_, true);
-            CScript scriptPubKey;
+        if (setAddress.count(address))
+            throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + s.name_);
+        setAddress.insert(address);
 
-            if (IsHex(s.name_) || s.name_ == "") {
-                const auto raw = ParseHex(s.name_);
-                scriptPubKey = CScript(raw.begin(), raw.end());
-            } else {
-                CBitcoinAddress address(s.name_);
-                if (!address.IsValid())
-                    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid DIVI address: ") + s.name_);
+        CScript scriptPubKey = GetScriptForDestination(address.Get());
+        CAmount nAmount = AmountFromValue(s.value_);
 
-                if (setAddress.count(address))
-                    throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + s.name_);
-                setAddress.insert(address);
-
-                scriptPubKey = GetScriptForDestination(address.Get());
-            }
-
-            CTxOut out(nAmount, scriptPubKey);
-            rawTx.vout.push_back(out);
-        }
+        CTxOut out(nAmount, scriptPubKey);
+        rawTx.vout.push_back(out);
     }
 
     return EncodeHexTx(rawTx);
@@ -597,7 +565,7 @@ Value decodescript(const Array& params, bool fHelp)
     Object r;
     CScript script;
     if (params[0].get_str().size() > 0) {
-        std::vector<unsigned char> scriptData(ParseHexV(params[0], "argument"));
+        vector<unsigned char> scriptData(ParseHexV(params[0], "argument"));
         script = CScript(scriptData.begin(), scriptData.end());
     } else {
         // Empty scripts are valid
@@ -658,9 +626,9 @@ Value signrawtransaction(const Array& params, bool fHelp)
 
     RPCTypeCheck(params, list_of(str_type)(array_type)(array_type)(str_type), true);
 
-    std::vector<unsigned char> txData(ParseHexV(params[0], "argument 1"));
+    vector<unsigned char> txData(ParseHexV(params[0], "argument 1"));
     CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
-    std::vector<CMutableTransaction> txVariants;
+    vector<CMutableTransaction> txVariants;
     while (!ssData.empty()) {
         try {
             CMutableTransaction tx;
@@ -735,7 +703,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
             if (nOut < 0)
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "vout must be positive");
 
-            std::vector<unsigned char> pkData(ParseHexO(prevOut, "scriptPubKey"));
+            vector<unsigned char> pkData(ParseHexO(prevOut, "scriptPubKey"));
             CScript scriptPubKey(pkData.begin(), pkData.end());
 
             {
@@ -758,7 +726,7 @@ Value signrawtransaction(const Array& params, bool fHelp)
                 RPCTypeCheck(prevOut, map_list_of("txid", str_type)("vout", int_type)("scriptPubKey", str_type)("redeemScript", str_type));
                 Value v = find_value(prevOut, "redeemScript");
                 if (!(v == Value::null)) {
-                    std::vector<unsigned char> rsData(ParseHexV(v, "redeemScript"));
+                    vector<unsigned char> rsData(ParseHexV(v, "redeemScript"));
                     CScript redeemScript(rsData.begin(), rsData.end());
                     tempKeystore.AddCScript(redeemScript);
                 }

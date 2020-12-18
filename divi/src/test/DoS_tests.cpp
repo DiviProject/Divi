@@ -14,9 +14,8 @@
 #include "pow.h"
 #include "script/sign.h"
 #include "serialize.h"
-#include <Settings.h>
+
 #include <stdint.h>
-#include <utiltime.h>
 
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
 #include <boost/date_time/posix_time/posix_time_types.hpp>
@@ -26,8 +25,6 @@
 #include "test_only.h"
 
 // Tests this internal-to-main.cpp method:
-extern Settings& settings;
-
 extern bool AddOrphanTx(const CTransaction& tx, NodeId peer);
 extern void EraseOrphansFor(NodeId peer);
 extern unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans);
@@ -73,7 +70,7 @@ BOOST_AUTO_TEST_CASE(DoS_banning)
 BOOST_AUTO_TEST_CASE(DoS_banscore)
 {
     CNode::ClearBanned();
-    settings.SetParameter("-banscore", "111"); // because 11 is my favorite number
+    mapArgs["-banscore"] = "111"; // because 11 is my favorite number
     CAddress addr1(ip(0xa0b0c001));
     CNode dummyNode1(INVALID_SOCKET, addr1, "", true);
     dummyNode1.nVersion = 1;
@@ -86,7 +83,7 @@ BOOST_AUTO_TEST_CASE(DoS_banscore)
     Misbehaving(dummyNode1.GetId(), 1);
     SendMessages(&dummyNode1, false);
     BOOST_CHECK(CNode::IsBanned(addr1));
-    settings.ForceRemoveArg("-banscore");
+    mapArgs.erase("-banscore");
 }
 
 BOOST_AUTO_TEST_CASE(DoS_bantime)
@@ -121,14 +118,14 @@ CTransaction RandomOrphan()
 
 BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
 {
-
-
-
+    
+    
+    
     CKey key;
     key.MakeNewKey(true);
     CBasicKeyStore keystore;
     keystore.AddKey(key);
-
+ 
     // 50 orphan transactions:
     for (int i = 0; i < 50; i++)
     {
@@ -201,7 +198,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
     LimitOrphanTxSize(0);
     BOOST_CHECK(mapOrphanTransactions.empty());
     BOOST_CHECK(mapOrphanTransactionsByPrev.empty());
-
+    
 }
 
 BOOST_AUTO_TEST_SUITE_END()

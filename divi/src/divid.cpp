@@ -13,7 +13,6 @@
 #include "rpcserver.h"
 #include "ui_interface.h"
 #include "util.h"
-#include "Settings.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
@@ -36,7 +35,6 @@
  */
 
 static bool fDaemon;
-extern Settings& settings;
 
 void DetectShutdownThread(boost::thread_group* threadGroup)
 {
@@ -67,17 +65,17 @@ bool AppInit(int argc, char* argv[])
     // Parameters
     //
     // If Qt is used, parameters/divi.conf are parsed in qt/divi.cpp's main()
-    settings.ParseParameters(argc, argv);
+    ParseParameters(argc, argv);
 
     // Process help and version before taking care about datadir
-    if (settings.ParameterIsSet("-?") || settings.ParameterIsSet("-help") || settings.ParameterIsSet("-version")) {
-        std::string strUsage = translate("Divi Core Daemon") + " " + translate("version") + " " + FormatFullVersion() + "\n";
+    if (mapArgs.count("-?") || mapArgs.count("-help") || mapArgs.count("-version")) {
+        std::string strUsage = _("Divi Core Daemon") + " " + _("version") + " " + FormatFullVersion() + "\n";
 
-        if (settings.ParameterIsSet("-version")) {
+        if (mapArgs.count("-version")) {
             strUsage += LicenseInfo();
         } else {
-            strUsage += "\n" + translate("Usage:") + "\n" +
-                        "  divid [options]                     " + translate("Start Divi Core Daemon") + "\n";
+            strUsage += "\n" + _("Usage:") + "\n" +
+                        "  divid [options]                     " + _("Start Divi Core Daemon") + "\n";
 
             strUsage += "\n" + HelpMessage(HMM_BITCOIND);
         }
@@ -88,11 +86,11 @@ bool AppInit(int argc, char* argv[])
 
     try {
         if (!boost::filesystem::is_directory(GetDataDir(false))) {
-            fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", settings.GetParameter("-datadir").c_str());
+            fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", mapArgs["-datadir"].c_str());
             return false;
         }
         try {
-            settings.ReadConfigFile();
+            ReadConfigFile(mapArgs, mapMultiArgs);
         } catch (std::exception& e) {
             fprintf(stderr, "Error reading configuration file: %s\n", e.what());
             return false;
@@ -121,7 +119,7 @@ bool AppInit(int argc, char* argv[])
             exit(1);
         }
 #ifndef WIN32
-        fDaemon = settings.GetBoolArg("-daemon", false);
+        fDaemon = GetBoolArg("-daemon", false);
         if (fDaemon) {
             fprintf(stdout, "DIVI server starting\n");
 

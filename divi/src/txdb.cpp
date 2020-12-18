@@ -5,19 +5,14 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "txdb.h"
+
+#include "main.h"
 #include "pow.h"
 #include "uint256.h"
-#include <stdint.h>
-#include <coins.h>
-#include <boost/thread.hpp>
-#include <blockFileInfo.h>
-#include <blockmap.h>
-#include <chainparams.h>
-#include <addressindex.h>
-#include <spentindex.h>
-#include <DataDirectory.h>
 
-#include <boost/scoped_ptr.hpp>
+#include <stdint.h>
+
+#include <boost/thread.hpp>
 
 using namespace std;
 
@@ -25,17 +20,12 @@ static const char DB_ADDRESSINDEX = 'a';
 static const char DB_SPENTINDEX = 'p';
 static const char DB_ADDRESSUNSPENTINDEX = 'u';
 
-extern BlockMap mapBlockIndex;
-extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
-
-CBlockIndex* InsertBlockIndex(uint256 hash);
-
 void static BatchWriteCoins(CLevelDBBatch& batch, const uint256& hash, const CCoins& coins)
 {
     if (coins.IsPruned())
-        batch.Erase(std::make_pair('c', hash));
+        batch.Erase(make_pair('c', hash));
     else
-        batch.Write(std::make_pair('c', hash), coins);
+        batch.Write(make_pair('c', hash), coins);
 }
 
 void static BatchWriteHashBestChain(CLevelDBBatch& batch, const uint256& hash)
@@ -49,12 +39,12 @@ CCoinsViewDB::CCoinsViewDB(size_t nCacheSize, bool fMemory, bool fWipe) : db(Get
 
 bool CCoinsViewDB::GetCoins(const uint256& txid, CCoins& coins) const
 {
-    return db.Read(std::make_pair('c', txid), coins);
+    return db.Read(make_pair('c', txid), coins);
 }
 
 bool CCoinsViewDB::HaveCoins(const uint256& txid) const
 {
-    return db.Exists(std::make_pair('c', txid));
+    return db.Exists(make_pair('c', txid));
 }
 
 uint256 CCoinsViewDB::GetBestBlock() const
@@ -92,17 +82,17 @@ CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CLevel
 
 bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex)
 {
-    return Write(std::make_pair('b', blockindex.GetBlockHash()), blockindex);
+    return Write(make_pair('b', blockindex.GetBlockHash()), blockindex);
 }
 
 bool CBlockTreeDB::WriteBlockFileInfo(int nFile, const CBlockFileInfo& info)
 {
-    return Write(std::make_pair('f', nFile), info);
+    return Write(make_pair('f', nFile), info);
 }
 
 bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo& info)
 {
-    return Read(std::make_pair('f', nFile), info);
+    return Read(make_pair('f', nFile), info);
 }
 
 bool CBlockTreeDB::WriteLastBlockFile(int nFile)
@@ -185,14 +175,14 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
 
 bool CBlockTreeDB::ReadTxIndex(const uint256& txid, CDiskTxPos& pos)
 {
-    return Read(std::make_pair('t', txid), pos);
+    return Read(make_pair('t', txid), pos);
 }
 
 bool CBlockTreeDB::WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> >& vect)
 {
     CLevelDBBatch batch;
     for (std::vector<std::pair<uint256, CDiskTxPos> >::const_iterator it = vect.begin(); it != vect.end(); it++)
-        batch.Write(std::make_pair('t', it->first), it->second);
+        batch.Write(make_pair('t', it->first), it->second);
     return WriteBatch(batch);
 }
 
@@ -276,7 +266,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->vLotteryWinnersCoinstakes = diskindex.vLotteryWinnersCoinstakes;
 
                 if (pindexNew->nHeight <= Params().LAST_POW_BLOCK()) {
-                    if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params()))
+                    if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits))
                         return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());
                 }
                 // ppcoin: build setStakeSeen
@@ -391,7 +381,7 @@ bool CBlockTreeDB::ReadAddressIndex(uint160 addressHash, int type,
         ssKey.reserve(ssKey.GetSerializeSize(key));
         ssKey << key;
     }
-
+    
     leveldb::Slice slKey(&ssKey[0], ssKey.size());
     pcursor->Seek(slKey);
 
@@ -409,7 +399,7 @@ bool CBlockTreeDB::ReadAddressIndex(uint160 addressHash, int type,
                 CDataStream ssValue(slValue.data(), slValue.data() + slValue.size(), SER_DISK, CLIENT_VERSION);
                 CAmount nValue;
                 ssValue >> nValue;
-
+            
                 addressIndex.push_back(make_pair(key.second, nValue));
                 pcursor->Next();
             } catch (const std::exception&) {

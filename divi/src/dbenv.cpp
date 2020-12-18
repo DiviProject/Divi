@@ -11,9 +11,7 @@
 #include "utilstrencodings.h"
 #include "utiltime.h"
 #include "tinyformat.h"
-#include "Settings.h"
 
-extern Settings& settings;
 void CDBEnv::EnvShutdown()
 {
     if (!fDbEnvInit)
@@ -58,7 +56,7 @@ bool CDBEnv::Open(const boost::filesystem::path& pathIn)
     LogPrintf("CDBEnv::Open: LogDir=%s ErrorFile=%s\n", pathLogDir.string(), pathErrorFile.string());
 
     unsigned int nEnvFlags = 0;
-    if (settings.GetBoolArg("-privdb", true))
+    if (GetBoolArg("-privdb", true))
         nEnvFlags |= DB_PRIVATE;
 
     dbenv.set_lg_dir(pathLogDir.string().c_str());

@@ -519,24 +519,6 @@ BOOST_AUTO_TEST_CASE( multiply )
     BOOST_CHECK((R2S * 0xFFFFFFFFUL).ToString() == "1c6f6c930353e17f7d6127213bb18d2883e2cd90");
 }
 
-BOOST_AUTO_TEST_CASE( multiply_overflow )
-{
-    const uint256 fourth = HalfL / 2;
-
-    uint256 value = fourth;
-    BOOST_CHECK(value.MultiplyBy(OneL * 2));
-    BOOST_CHECK(value == HalfL);
-
-    value = fourth;
-    BOOST_CHECK(value.MultiplyBy(OneL * 3));
-
-    value = fourth;
-    BOOST_CHECK(!value.MultiplyBy(OneL * 4));
-
-    value = fourth;
-    BOOST_CHECK(!value.MultiplyBy(HalfL));
-}
-
 BOOST_AUTO_TEST_CASE( divide )
 {
     uint256 D1L("AD7133AC1977FA2B7");

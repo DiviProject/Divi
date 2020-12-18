@@ -6,9 +6,11 @@
 #ifndef OBFUSCATION_H
 #define OBFUSCATION_H
 
+#include "main.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"
+#include "obfuscation-relay.h"
 #include "sync.h"
 
 class CTxIn;
@@ -32,13 +34,14 @@ class CBitcoinAddress;
 #define MASTERNODE_REJECTED 0
 #define MASTERNODE_RESET -1
 
+extern std::string strMasterNodePrivKey;
 
 /** Helper object for signing and checking signatures
  */
 struct CObfuScationSigner
 {
     /// Is the inputs associated with this public key? (and there is 10000 PIV - checking if valid masternode)
-    static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier);
+    static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, CMasternode::Tier nMasternodeTier);
     /// Set the private/public key values, returns true if successful
     static bool GetKeysFromSecret(std::string strSecret, CKey& keyRet, CPubKey& pubkeyRet);
     /// Set the private/public key values, returns true if successful

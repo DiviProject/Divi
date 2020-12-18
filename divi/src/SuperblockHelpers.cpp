@@ -22,25 +22,22 @@ const I_BlockSubsidyProvider& SuperblockSubsidyContainer::blockSubsidiesProvider
 {
     return *blockSubsidies_;
 }
+// Non-Legacy methods
 
-bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight)
+bool IsValidLotteryBlockHeight(int nBlockHeight)
 {
-    auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    return subsidiesContainer.superblockHeightValidator().IsValidLotteryBlockHeight(nBlockHeight);
+}
 
-    // here we expect treasury block payment
-    SuperblockSubsidyContainer superblockSubsidies(Params());
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+bool IsValidTreasuryBlockHeight(int nBlockHeight)
+{
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    return subsidiesContainer.superblockHeightValidator().IsValidTreasuryBlockHeight(nBlockHeight);
+}
 
-    if(heightValidator.IsValidTreasuryBlockHeight(nHeight)) {
-        nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
-    }
-    else if(heightValidator.IsValidLotteryBlockHeight(nHeight)) {
-        nExpectedMintCombined += nExpectedValue.nLotteryReward;
-    }
-
-    if (nMinted > nExpectedMintCombined) {
-        return false;
-    }
-
-    return true;
+CBlockRewards GetBlockSubsidity(int nHeight)
+{
+    SuperblockSubsidyContainer subsidiesContainer(Params());
+    return subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
 }

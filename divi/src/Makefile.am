@@ -100,12 +100,6 @@ BITCOIN_CORE_H = \
   addressindex.h \
   amount.h \
   base58.h \
-  base58data.h \
-  base58address.h \
-  BIP9Deployment.h \
-  BIP9ActivationManager.h \
-  BIP9ActivationFeatureContainer.h \
-  CachedBIP9ActivationStateTracker.h \
   bip38.h \
   bip39.h \
   bip39_english.h \
@@ -113,7 +107,6 @@ BITCOIN_CORE_H = \
   blockmap.h\
   BlockSubsidyProvider.h \
   BlockRewards.h \
-  BlockSigning.h \
   chain.h \
   chainparams.h \
   chainparamsbase.h \
@@ -125,7 +118,6 @@ BITCOIN_CORE_H = \
   coincontrol.h \
   coins.h \
   compat.h \
-  destination.h \
   compat/endian.h \
   compat/byteswap.h \
   compat/sanity.h \
@@ -135,6 +127,7 @@ BITCOIN_CORE_H = \
   core_io.h \
   crypter.h \
   obfuscation.h \
+  obfuscation-relay.h \
   db.h \
   dbenv.h \
   DatabaseWrapper.h\
@@ -142,9 +135,7 @@ BITCOIN_CORE_H = \
   ecwrapper.h \
   FeeRate.h \
   flat-database.h \
-  FilteredBoostFileSystem.h \
-  ForkActivation.h \
-  Settings.h \
+  FilteredBoostFileSystem.h\
   hash.h \
   hdchain.h \
   init.h \
@@ -154,70 +145,29 @@ BITCOIN_CORE_H = \
   i_databaseWrapper.h \
   I_SuperblockHeightValidator.h \
   I_BlockSubsidyProvider.h \
-  I_BIP9ActivationStateTracker.h \
-  I_BIP9ActivationTrackerFactory.h \
-  I_SuperblockHeightValidator.h \
-  I_BlockSubsidyProvider.h \
-  I_PoSStakeModifierService.h \
-  I_ProofOfStakeCalculator.h \
-  ProofOfStakeCalculator.h \
   datacachemanager.h \
   kernel.h \
-  ProofOfStakeGenerator.h \
-  StakeModifierIntervalHelpers.h \
-  StakingData.h \
   swifttx.h \
   key.h \
   keystore.h \
   LegacyBlockSubsidies.h \
-  LegacyPoSStakeModifierService.h \
-  PoSStakeModifierService.h \
   leveldbwrapper.h \
   limitedmap.h \
-  defaultValues.h \
-  blockFileInfo.h \
-  scriptCheck.h \
-  verifyDb.h \
-  BlockUndo.h \
-  ValidationState.h \
   main.h \
-  WalletLoggingHelper.h \
-  walletdustcombiner.h \
-  BlockFileOpener.h \
-  BlockDiskAccessor.h \
-  BlockTemplate.h \
-  I_BlockFactory.h \
-  I_BlockTransactionCollector.h \
-  I_SuperblockSubsidyContainer.h \
-  I_PoSTransactionCreator.h \
-  ExtendedBlockFactory.h \
-  BlockFactory.h \
   masternode.h \
   masternode-payments.h \
-  LotteryCoinstakes.h \
-  LotteryWinnersCalculator.h \
-  BlockIncentivesPopulator.h \
   SuperblockHelpers.h \
   SuperblockHeightValidator.h \
-  masternode-tier.h \
   masternode-sync.h \
   masternodeman.h \
   masternodeconfig.h \
   merkleblock.h \
-  merkletx.h \
   miner.h \
-  I_CoinMinter.h \
-  BlockMemoryPoolTransactionCollector.h \
-  CoinMinter.h \
-  CoinMintingModule.h \
-  PoSTransactionCreator.h \
-  PeerNotificationOfMintService.h \
   monthlyWalletBackupCreator.h \
   mruset.h \
   netbase.h \
   netfulfilledman.h \
   net.h \
-  OutputEntry.h \
   noui.h \
   pow.h \
   protocol.h \
@@ -235,7 +185,6 @@ BITCOIN_CORE_H = \
   script/scriptandsigflags.h \
   script/sigcache.h \
   script/sign.h \
-  script/StakingVaultScript.h \
   script/standard.h \
   script/script_error.h \
   serialize.h \
@@ -245,8 +194,6 @@ BITCOIN_CORE_H = \
   spentindex.h \
   streams.h \
   sync.h \
-  SpentOutputTracker.h \
-  ThresholdConditionCache.h \
   threadsafety.h \
   timedata.h \
   timeIntervalConstants.h \
@@ -264,16 +211,8 @@ BITCOIN_CORE_H = \
   utilmoneystr.h \
   utiltime.h \
   NotificationInterface.h \
-  versionbits.h \
   version.h \
-  I_VaultManagerDatabase.h \
-  VaultManager.h \
   wallet.h \
-  WalletTx.h \
-  WalletTransactionRecord.h \
-  StakableCoin.h \
-  keypool.h \
-  reservekey.h \
   walletBackupCreator.h \
   walletBackupFeatureContainer.h \
   WalletIntegrityVerifier.h \
@@ -308,46 +247,17 @@ libbitcoin_server_a_SOURCES = \
   addrman.cpp \
   alert.cpp \
   BlockRewards.cpp \
-  BIP9Deployment.cpp \
-  BIP9ActivationManager.cpp \
-  BIP9ActivationFeatureContainer.cpp \
-  BlockRewards.cpp \
-  BlockSigning.cpp \
-  CachedBIP9ActivationStateTracker.cpp \
   bloom.cpp \
   chain.cpp \
   checkpoints.cpp \
-  FilteredBoostFileSystem.cpp \
+  FilteredBoostFileSystem.cpp\
   init.cpp \
   FeeAndPriorityCalculator.cpp \
-  ForkActivation.cpp \
   datacachemanager.cpp \
   leveldbwrapper.cpp \
-  blockFileInfo.cpp \
-  scriptCheck.cpp \
-  verifyDb.cpp \
-  BlockUndo.cpp \
-  ValidationState.cpp \
   main.cpp \
-  WalletLoggingHelper.cpp \
-  walletdustcombiner.cpp \
-  BlockFactory.cpp \
-  ExtendedBlockFactory.cpp \
-  BlockFileOpener.cpp \
-  BlockDiskAccessor.cpp \
   merkleblock.cpp \
-  merkletx.cpp \
-  CoinMinter.cpp \
-  CoinMintingModule.cpp \
-  PoSTransactionCreator.cpp \
-  kernel.cpp \
-  ProofOfStakeGenerator.cpp \
-  ProofOfStakeCalculator.cpp \
-  LegacyPoSStakeModifierService.cpp \
-  PoSStakeModifierService.cpp \
-  PeerNotificationOfMintService.cpp \
   miner.cpp \
-  BlockMemoryPoolTransactionCollector.cpp \
   monthlyWalletBackupCreator.cpp \
   net.cpp \
   netfulfilledman.cpp \
@@ -355,7 +265,6 @@ libbitcoin_server_a_SOURCES = \
   pow.cpp \
   rest.cpp \
   rpcblockchain.cpp \
-  rpclottery.cpp \
   rpcmasternode.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \
@@ -369,7 +278,6 @@ libbitcoin_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   NotificationInterface.cpp \
-  versionbits.cpp \
   walletBackupCreator.cpp \
   walletBackupFeatureContainer.cpp \
   WalletIntegrityVerifier.cpp \
@@ -397,34 +305,26 @@ libbitcoin_wallet_a_SOURCES = \
   bip38.cpp \
   BlockSubsidyProvider.cpp \
   obfuscation.cpp \
+  obfuscation-relay.cpp \
   db.cpp \
   dbenv.cpp \
   DatabaseWrapper.cpp \
   crypto/aes.cpp \
   crypter.cpp \
-  keypool.cpp \
   swifttx.cpp \
   LegacyBlockSubsidies.cpp \
   masternode.cpp \
   masternode-payments.cpp \
-  LotteryWinnersCalculator.cpp \
-  LotteryCoinstakes.cpp \
-  BlockIncentivesPopulator.cpp \
   SuperblockHelpers.cpp \
   SuperblockHeightValidator.cpp \
-  SpentOutputTracker.cpp \
   masternode-sync.cpp \
   masternodeconfig.cpp \
   masternodeman.cpp \
   netfulfilledman.cpp \
-  reservekey.cpp \
   rpcdump.cpp \
   rpcwallet.cpp \
-  VaultManager.cpp \
+  kernel.cpp \
   wallet.cpp \
-  WalletTx.cpp \
-  WalletTransactionRecord.cpp \
-  merkletx.cpp \
   wallet_ismine.cpp \
   walletdb.cpp \
   $(BITCOIN_CORE_H)
@@ -483,7 +383,7 @@ univalue_libbitcoin_univalue_a_SOURCES = \
 libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
   libzerocoin/bignum.h \
   libzerocoin/Denominations.h \
-  libzerocoin/Denominations.cpp
+  libzerocoin/Denominations.cpp 
 
 # common: shared between divid, and divi-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)
@@ -491,15 +391,12 @@ libbitcoin_common_a_SOURCES = \
   allocators.cpp \
   FeeRate.cpp \
   base58.cpp \
-  base58data.cpp \
-  base58address.cpp \
   bip38.cpp \
   bip39.cpp \
   chainparams.cpp \
   coins.cpp \
   FeeAndPriorityCalculator.cpp \
   compressor.cpp \
-  destination.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \
   core_read.cpp \
@@ -518,7 +415,6 @@ libbitcoin_common_a_SOURCES = \
   script/StackManager.cpp \
   script/opcodes.cpp \
   script/script.cpp \
-  script/StakingVaultScript.cpp \
   script/sign.cpp \
   script/standard.cpp \
   script/script_error.cpp \
@@ -538,7 +434,6 @@ libbitcoin_util_a_SOURCES = \
   compat/glibcxx_sanity.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
-  Settings.cpp \
   random.cpp \
   rpcprotocol.cpp \
   sync.cpp \
@@ -658,8 +553,8 @@ libbitcoinconsensus_la_SOURCES = \
   utilstrencodings.cpp
 
 if GLIBC_BACK_COMPAT
-libbitcoinconsensus_la_SOURCES += compat/glibc_compat.cpp
-libbitcoinconsensus_la_SOURCES += compat/glibcxx_compat.cpp
+  libbitcoinconsensus_la_SOURCES += compat/glibc_compat.cpp
+  libbitcoinconsensus_la_SOURCES += compat/glibcxx_compat.cpp
 endif
 
 libbitcoinconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)

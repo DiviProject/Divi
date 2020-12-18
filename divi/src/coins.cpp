@@ -35,14 +35,14 @@ void CCoins::CalcMaskSize(unsigned int& nBytes, unsigned int& nNonzeroBytes) con
     nBytes += nLastUsedByte;
 }
 
-bool CCoins::Spend(const int nPos, CTxInUndo& undo)
+bool CCoins::Spend(const COutPoint& out, CTxInUndo& undo)
 {
-    if (nPos >= vout.size())
+    if (out.n >= vout.size())
         return false;
-    if (vout[nPos].IsNull())
+    if (vout[out.n].IsNull())
         return false;
-    undo = CTxInUndo(vout[nPos]);
-    vout[nPos].SetNull();
+    undo = CTxInUndo(vout[out.n]);
+    vout[out.n].SetNull();
     Cleanup();
     if (vout.size() == 0) {
         undo.nHeight = nHeight;
@@ -53,10 +53,11 @@ bool CCoins::Spend(const int nPos, CTxInUndo& undo)
     return true;
 }
 
-bool CCoins::Spend(const int nPos)
+bool CCoins::Spend(int nPos)
 {
     CTxInUndo undo;
-    return Spend(nPos, undo);
+    COutPoint out(0, nPos);
+    return Spend(out, undo);
 }
 
 

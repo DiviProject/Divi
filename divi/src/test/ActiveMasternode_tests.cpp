@@ -1,5 +1,4 @@
 #include <activemasternode.h>
-#include <masternodeconfig.h>
 #include <test_only.h>
 #include <memory>
 #include <cstring>
@@ -80,7 +79,7 @@ BOOST_AUTO_TEST_CASE(willNotEnableMasternodeOnMismatchedUTXO)
 
 
     CService service;
-
+    
     AddDummyConfiguration(validTxIn, service);
     BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(wrongTxIn, service));
     BOOST_CHECK(activeMasternode_->status != ACTIVE_MASTERNODE_STARTED);

@@ -186,12 +186,6 @@ public:
     base_uint& operator*=(const base_uint& b);
     base_uint& operator/=(const base_uint& b);
 
-    /** Multiplies with a given other base_uint.  Unlike *=, it does not return
-     *  the instance itself, but true if the multiplication "fit" into the
-     *  bit size.  In other words, if the function returns false, then an
-     *  overflow occured.  */
-    bool MultiplyBy(const base_uint& b);
-
     base_uint& operator++()
     {
         // prefix operator

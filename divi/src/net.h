@@ -400,9 +400,11 @@ public:
 
     void PushInventory(const CInv& inv)
     {
-        LOCK(cs_inventory);
-        if (setInventoryKnown.count(inv) == 0)
-            vInventoryToSend.push_back(inv);
+        {
+            LOCK(cs_inventory);
+            if (!setInventoryKnown.count(inv))
+                vInventoryToSend.push_back(inv);
+        }
     }
 
     void AskFor(const CInv& inv);

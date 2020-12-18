@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -8,7 +8,7 @@
 #
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
+from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from decimal import Decimal
 from util import *
 import os
@@ -20,31 +20,17 @@ class TxnMallTest(BitcoinTestFramework):
         parser.add_option("--mineblock", dest="mine_block", default=False, action="store_true",
                           help="Test double-spend of 1-confirmed transaction")
 
-    def setup_nodes(self):
-        args = [["-spendzeroconfchange"]] * 4
-        return start_nodes(4, self.options.tmpdir, extra_args=args)
+    def setup_network(self):
+        # Start with split network:
+        return super(TxnMallTest, self).setup_network(True)
 
     def run_test(self):
-        # Mine blocks to give nodes 0-2 each 1'250 coins.
-        # We use node 3 to mine blocks, and don't need it to have
-        # a specific balance later on.
-        self.nodes[3].setgenerate(True, 5)
-        self.sync_all()
-        for i in range(3):
-            self.nodes[i].setgenerate(True, 1)
-            self.sync_all()
-        self.nodes[3].setgenerate(True, 20)
-        self.sync_all()
-
-        # Split the network for now.
-        self.split_network()
-
         # All nodes should start with 1,250 BTC:
         starting_balance = 1250
-        for i in range(3):
+        for i in range(4):
             assert_equal(self.nodes[i].getbalance(), starting_balance)
             self.nodes[i].getnewaddress("")  # bug workaround, coins generated assigned to first getnewaddress!
-
+        
         # Assign coins to foo and bar accounts:
         self.nodes[0].move("", "foo", 1220)
         self.nodes[0].move("", "bar", 30)
@@ -69,40 +55,40 @@ class TxnMallTest(BitcoinTestFramework):
         # spends all mature inputs:
         txid1 = self.nodes[0].sendfrom("foo", node1_address, 1210, 0)
         txid2 = self.nodes[0].sendfrom("bar", node1_address, 20, 0)
-
+        
         # Have node0 mine a block:
-        if self.options.mine_block:
+        if (self.options.mine_block):
             self.nodes[0].setgenerate(True, 1)
-            self.sync_all()
+            sync_blocks(self.nodes[0:2])
 
         tx1 = self.nodes[0].gettransaction(txid1)
         tx2 = self.nodes[0].gettransaction(txid2)
 
-        # Node0's balance should be starting balance minus 1210,
-        # minus 20, and minus transaction fees:
-        node0_balance_change = (tx1["amount"] + tx2["amount"])
-        fees_paid = tx1["fee"] + tx2["fee"]
-        expected = starting_balance + node0_balance_change
-        amount_sent = -node0_balance_change - fees_paid
+        # Node0's balance should be starting balance, plus 50BTC for another
+        # matured block, minus 1210, minus 20, and minus transaction fees:
+        expected = starting_balance
+        if self.options.mine_block: expected += 50
+        expected += tx1["amount"] + tx1["fee"]
+        expected += tx2["amount"] + tx2["fee"]
         assert_equal(self.nodes[0].getbalance(), expected)
 
         # foo and bar accounts should be debited:
-        assert_equal(self.nodes[0].getbalance("foo"), 1220+tx1["amount"])
-        assert_equal(self.nodes[0].getbalance("bar"), 30+tx2["amount"])
+        assert_equal(self.nodes[0].getbalance("foo"), 1220+tx1["amount"]+tx1["fee"])
+        assert_equal(self.nodes[0].getbalance("bar"), 30+tx2["amount"]+tx2["fee"])
 
         if self.options.mine_block:
             assert_equal(tx1["confirmations"], 1)
             assert_equal(tx2["confirmations"], 1)
             # Node1's "from0" balance should be both transaction amounts:
-            assert_equal(self.nodes[1].getbalance("from0"), amount_sent)
+            assert_equal(self.nodes[1].getbalance("from0"), -(tx1["amount"]+tx2["amount"]))
         else:
             assert_equal(tx1["confirmations"], 0)
             assert_equal(tx2["confirmations"], 0)
-
+        
         # Now give doublespend to miner:
         mutated_txid = self.nodes[2].sendrawtransaction(doublespend["hex"])
-        # ... mine some blocks...
-        blks = self.nodes[2].setgenerate(True, 5)
+        # ... mine a block...
+        self.nodes[2].setgenerate(True, 1)
 
         # Reconnect the split network, and sync chain:
         connect_nodes(self.nodes[1], 2)
@@ -112,14 +98,14 @@ class TxnMallTest(BitcoinTestFramework):
         # Re-fetch transaction info:
         tx1 = self.nodes[0].gettransaction(txid1)
         tx2 = self.nodes[0].gettransaction(txid2)
-
+        
         # Both transactions should be conflicted
         assert_equal(tx1["confirmations"], -1)
         assert_equal(tx2["confirmations"], -1)
 
-        # Node0's total balance should be starting balance minus
-        # 1210 for the double-spend:
-        expected = starting_balance - 1210
+        # Node0's total balance should be starting balance, plus 100BTC for 
+        # two more matured blocks, minus 1210 for the double-spend:
+        expected = starting_balance + 100 - 1210
         assert_equal(self.nodes[0].getbalance(), expected)
         assert_equal(self.nodes[0].getbalance("*"), expected)
 

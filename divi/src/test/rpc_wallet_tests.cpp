@@ -6,7 +6,8 @@
 #include "rpcclient.h"
 
 #include "base58.h"
-#include <wallet.h>
+#include "wallet.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
 #include "test_only.h"
@@ -18,7 +19,6 @@ extern Array createArgs(int nRequired, const char* address1 = NULL, const char* 
 extern Value CallRPC(string args);
 
 extern CWallet* pwalletMain;
-extern CCriticalSection cs_main;
 
 BOOST_AUTO_TEST_SUITE(rpc_wallet_tests)
 

@@ -3,8 +3,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet.h"
-#include <script/standard.h>
-#include <WalletTx.h>
 
 #include <set>
 #include <stdint.h>
@@ -13,9 +11,6 @@
 
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
-
-#include <script/StakingVaultScript.h>
-#include <random.h>
 
 // how many times to run all the tests to have a chance to catch errors that only show up with particular random shuffles
 #define RUN_TESTS 100
@@ -41,11 +36,11 @@ static void add_coin(const CAmount& nValue, int nAge = 6*24, bool fIsFromMe = fa
     tx.vout.resize(nInput+1);
     tx.vout[nInput].nValue = nValue;
     if (fIsFromMe) {
-        // DebitsFunds() returns (GetDebit() > 0), and GetDebit() is 0 if vin.empty(),
-        // so stop vin being empty, and cache a non-zero Debit to fake out DebitsFunds()
+        // IsFromMe() returns (GetDebit() > 0), and GetDebit() is 0 if vin.empty(),
+        // so stop vin being empty, and cache a non-zero Debit to fake out IsFromMe()
         tx.vin.resize(1);
     }
-    CWalletTx* wtx = new CWalletTx(tx);
+    CWalletTx* wtx = new CWalletTx(&wallet, tx);
     if (fIsFromMe)
     {
         wtx->fDebitCached = true;
@@ -316,10 +311,11 @@ BOOST_AUTO_TEST_CASE(check_if_charging_correct_amount_per_kilobyte)
     CFeeRate feeRate = CFeeRate( 1 );
 
     CAmount actualFee = feeRate.GetFee( kilobytes );
-
+    
     CAmount expectedFee = 1;
-
+    
     BOOST_CHECK_EQUAL(actualFee, expectedFee);
 }
+
 
 BOOST_AUTO_TEST_SUITE_END()

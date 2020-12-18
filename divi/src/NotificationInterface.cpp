@@ -36,7 +36,6 @@ MainNotificationSignals& NotificationInterfaceRegistry::getSignals() const
 }
 
 void NotificationInterface::RegisterWith(MainNotificationSignals& signals){
-    signals.UpdatedBlockTip.connect(boost::bind(&NotificationInterface::UpdatedBlockTip, this, _1));
     signals.SyncTransaction.connect(boost::bind(&NotificationInterface::SyncTransaction, this, _1, _2));
     signals.UpdatedTransaction.connect(boost::bind(&NotificationInterface::UpdatedTransaction, this, _1));
     signals.SetBestChain.connect(boost::bind(&NotificationInterface::SetBestChain, this, _1));
@@ -46,7 +45,6 @@ void NotificationInterface::RegisterWith(MainNotificationSignals& signals){
 }
 
 void NotificationInterface::UnregisterWith(MainNotificationSignals& signals) {
-    signals.UpdatedBlockTip.disconnect(boost::bind(&NotificationInterface::UpdatedBlockTip, this, _1));
     signals.BlockChecked.disconnect(boost::bind(&NotificationInterface::BlockChecked, this, _1, _2));
     signals.Broadcast.disconnect(boost::bind(&NotificationInterface::ResendWalletTransactions, this));
     signals.Inventory.disconnect(boost::bind(&NotificationInterface::Inventory, this, _1));

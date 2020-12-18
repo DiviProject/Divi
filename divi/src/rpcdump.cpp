@@ -5,7 +5,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "bip38.h"
-#include "base58.h"
 #include "init.h"
 #include "main.h"
 #include "rpcserver.h"
@@ -122,7 +121,7 @@ Value importprivkey(const Array& params, bool fHelp)
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
     {
-        pwalletMain->RecomputeCachedQuantities();
+        pwalletMain->MarkDirty();
         pwalletMain->SetAddressBook(vchAddress, strLabel, "receive");
 
         // Don't throw error in case a key is already there
@@ -184,10 +183,7 @@ Value importaddress(const Array& params, bool fHelp)
         fRescan = params[2].get_bool();
 
     {
-        if(!pwalletMain)
-            throw JSONRPCError(RPC_WALLET_ERROR,"Wallet is not enabled in this build");
-
-        if (pwalletMain->IsMine(script) == ISMINE_SPENDABLE)
+        if (::IsMine(*pwalletMain, script) == ISMINE_SPENDABLE)
             throw JSONRPCError(RPC_WALLET_ERROR, "The wallet already contains the private key for this address or script");
 
         // add to address book or update label
@@ -198,7 +194,7 @@ Value importaddress(const Array& params, bool fHelp)
         if (pwalletMain->HaveWatchOnly(script))
             return Value::null;
 
-        pwalletMain->RecomputeCachedQuantities();
+        pwalletMain->MarkDirty();
 
         if (!pwalletMain->AddWatchOnly(script))
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding address to wallet");
@@ -240,7 +236,7 @@ Value importwallet(const Array& params, bool fHelp)
     int64_t nFilesize = std::max((int64_t)1, (int64_t)file.tellg());
     file.seekg(0, file.beg);
 
-    pwalletMain->ShowProgress(translate("Importing..."), 0); // show progress dialog in GUI
+    pwalletMain->ShowProgress(_("Importing..."), 0); // show progress dialog in GUI
     while (file.good()) {
         pwalletMain->ShowProgress("", std::max(1, std::min(99, (int)(((double)file.tellg() / (double)nFilesize) * 100))));
         std::string line;
@@ -300,7 +296,7 @@ Value importwallet(const Array& params, bool fHelp)
 
     LogPrintf("Rescanning last %i blocks\n", chainActive.Height() - pindex->nHeight + 1);
     pwalletMain->ScanForWalletTransactions(pindex);
-    pwalletMain->RecomputeCachedQuantities();
+    pwalletMain->MarkDirty();
 
     if (!fGood)
         throw JSONRPCError(RPC_WALLET_ERROR, "Error adding some keys to wallet");
@@ -565,7 +561,7 @@ Value bip38decrypt(const Array& params, bool fHelp)
     result.push_back(Pair("Address", CBitcoinAddress(pubkey.GetID()).ToString()));
     CKeyID vchAddress = pubkey.GetID();
     {
-        pwalletMain->RecomputeCachedQuantities();
+        pwalletMain->MarkDirty();
         pwalletMain->SetAddressBook(vchAddress, "", "receive");
 
         // Don't throw error in case a key is already there

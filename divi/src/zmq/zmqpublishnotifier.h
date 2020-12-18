@@ -31,37 +31,37 @@ public:
 class CZMQPublishHashBlockNotifier : public CZMQAbstractPublishNotifier
 {
 public:
-    bool NotifyBlock(const CBlockIndex *pindex) override;
+    bool NotifyBlock(const CBlockIndex *pindex);
 };
 
 class CZMQPublishHashTransactionNotifier : public CZMQAbstractPublishNotifier
 {
 public:
-    bool NotifyTransaction(const CTransaction &transaction) override;
+    bool NotifyTransaction(const CTransaction &transaction);
 };
 
 class CZMQPublishHashTransactionLockNotifier : public CZMQAbstractPublishNotifier
 {
 public:
-    bool NotifyTransactionLock(const CTransaction &transaction) override;
+    bool NotifyTransactionLock(const CTransaction &transaction);
 };
 
 class CZMQPublishRawBlockNotifier : public CZMQAbstractPublishNotifier
 {
 public:
-    bool NotifyBlock(const CBlockIndex *pindex) override;
+    bool NotifyBlock(const CBlockIndex *pindex);
 };
 
 class CZMQPublishRawTransactionNotifier : public CZMQAbstractPublishNotifier
 {
 public:
-    bool NotifyTransaction(const CTransaction &transaction) override;
+    bool NotifyTransaction(const CTransaction &transaction);
 };
 
 class CZMQPublishRawTransactionLockNotifier : public CZMQAbstractPublishNotifier
 {
 public:
-    bool NotifyTransactionLock(const CTransaction &transaction) override;
+    bool NotifyTransactionLock(const CTransaction &transaction);
 };
 
 #endif // BITCOIN_ZMQ_ZMQPUBLISHNOTIFIER_H

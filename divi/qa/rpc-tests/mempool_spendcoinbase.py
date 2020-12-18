@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # Copyright (c) 2014 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -14,7 +14,7 @@
 #
 
 from test_framework import BitcoinTestFramework
-from authproxy import AuthServiceProxy, JSONRPCException
+from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 import os
 import shutil
@@ -38,17 +38,16 @@ class MempoolSpendCoinbaseTest(BitcoinTestFramework):
         return signresult["hex"]
 
     def run_test(self):
-        self.nodes[0].setgenerate(True, 50)
         chain_height = self.nodes[0].getblockcount()
-        assert_equal(chain_height, 50)
+        assert_equal(chain_height, 200)
         node0_address = self.nodes[0].getnewaddress()
 
-        # Coinbase at height chain_height-20+1 ok in mempool, should
-        # get mined. Coinbase at height chain_height-20+2 is
+        # Coinbase at height chain_height-100+1 ok in mempool, should
+        # get mined. Coinbase at height chain_height-100+2 is
         # is too immature to spend.
-        b = [ self.nodes[0].getblockhash(n) for n in range(31, 33) ]
+        b = [ self.nodes[0].getblockhash(n) for n in range(101, 103) ]
         coinbase_txids = [ self.nodes[0].getblock(h)['tx'][0] for h in b ]
-        spends_raw = [ self.create_tx(txid, node0_address, 1250) for txid in coinbase_txids ]
+        spends_raw = [ self.create_tx(txid, node0_address, 50) for txid in coinbase_txids ]
 
         spend_101_id = self.nodes[0].sendrawtransaction(spends_raw[0])
 

@@ -6,13 +6,13 @@
 
 #include <script/opcodes.h>
 #include <vector>
+#include <script/script.h>
+#include <script/script_error.h>
 #include <script/scriptandsigflags.h>
 #include <algorithm>
 #include <memory>
 
 #include <script/SignatureCheckers.h>
-#include <serialize.h>
-#include <hash.h>
 
 #define MAXIMUM_NUMBER_OF_OPCODES 201
 
@@ -78,9 +78,9 @@ bool ConditionalScopeStackManager::TryCLoseScope()
 
 
 StackOperator::StackOperator(
-    StackType& stack,
-    StackType& altstack,
-    const unsigned& flags,
+    StackType& stack, 
+    StackType& altstack, 
+    unsigned& flags,
     ConditionalScopeStackManager& conditionalManager
     ): stack_(stack)
     , altstack_(altstack)
@@ -117,15 +117,15 @@ const valtype StackOperator::vchTrue =valtype(1, 1);
 struct DisabledOp: public StackOperator
 {
     DisabledOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {
     }
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         if (flags_ & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
         {
@@ -138,14 +138,14 @@ struct DisabledOp: public StackOperator
 struct PushValueOp: public StackOperator
 {
     PushValueOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         CScriptNum bn((int)opcode - (int)(OP_1 - 1));
         stack_.push_back(bn.getvch());
@@ -156,14 +156,14 @@ struct PushValueOp: public StackOperator
 struct ConditionalOp: public StackOperator
 {
     ConditionalOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         switch(opcode)
         {
@@ -209,14 +209,14 @@ struct ConditionalOp: public StackOperator
 struct StackModificationOp: public StackOperator
 {
     StackModificationOp(
-    StackType& stack,
-    StackType& altstack,
-    const unsigned& flags,
+    StackType& stack, 
+    StackType& altstack, 
+    unsigned& flags,
     ConditionalScopeStackManager& conditionalManager
     ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         switch(opcode)
         {
@@ -371,7 +371,7 @@ struct StackModificationOp: public StackOperator
                 // (xn ... x2 x1 x0 n - ... x2 x1 x0 xn)
                 if (stack_.size() < 2)
                     return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-
+                
                 int n = CScriptNum(stackTop(), fRequireMinimal_).getint();
                 stack_.pop_back();
                 if (n < 0 || n >= (int)stack_.size())
@@ -433,14 +433,14 @@ struct StackModificationOp: public StackOperator
 struct EqualityVerificationOp: public StackOperator
 {
     EqualityVerificationOp(
-    StackType& stack,
-    StackType& altstack,
-    const unsigned& flags,
+    StackType& stack, 
+    StackType& altstack, 
+    unsigned& flags,
     ConditionalScopeStackManager& conditionalManager
     ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         if(opcode == OP_VERIFY)
         {
@@ -482,14 +482,14 @@ struct EqualityVerificationOp: public StackOperator
 struct MetadataOp: public StackOperator
 {
     MetadataOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         return Helpers::set_error(serror, SCRIPT_ERR_OP_META);
     }
@@ -498,18 +498,18 @@ struct MetadataOp: public StackOperator
 struct UnaryNumericOp: public StackOperator
 {
     UnaryNumericOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         if (stack_.size() < 1)
             return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-
+        
         CScriptNum bn(stackTop(), fRequireMinimal_);
         switch (opcode)
         {
@@ -530,19 +530,19 @@ struct UnaryNumericOp: public StackOperator
 struct BinaryNumericOp: public StackOperator
 {
     BinaryNumericOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         // (x1 x2 -- out)
         if (stack_.size() < 2)
             return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-
+        
         CScriptNum bn1(stackTop(1), fRequireMinimal_);
         CScriptNum bn2(stackTop(0), fRequireMinimal_);
         CScriptNum bn(0);
@@ -588,19 +588,19 @@ struct BinaryNumericOp: public StackOperator
 struct NumericBoundsOp: public StackOperator
 {
     NumericBoundsOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         // (x min max -- out)
         if (stack_.size() < 3)
             return Helpers::set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-
+        
         CScriptNum bn1(stackTop(2), fRequireMinimal_);
         CScriptNum bn2(stackTop(1), fRequireMinimal_);
         CScriptNum bn3(stackTop(0), fRequireMinimal_);
@@ -617,14 +617,14 @@ struct NumericBoundsOp: public StackOperator
 struct HashingOp: public StackOperator
 {
     HashingOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager
         ): StackOperator(stack,altstack,flags,conditionalManager)
     {}
 
-    bool operator()(opcodetype opcode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, ScriptError* serror) override
     {
         // (in -- hash)
         if (stack_.size() < 1)
@@ -655,9 +655,9 @@ private:
     const BaseSignatureChecker& checker_;
 public:
     SignatureCheckOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
+        StackType& stack, 
+        StackType& altstack, 
+        unsigned& flags,
         ConditionalScopeStackManager& conditionalManager,
         unsigned& opCount,
         const BaseSignatureChecker& checker
@@ -666,7 +666,7 @@ public:
         , checker_(checker)
     {}
 
-    bool operator()(opcodetype opcode, CScript scriptCode, ScriptError* serror) override
+    virtual bool operator()(opcodetype opcode, CScript scriptCode, ScriptError* serror) override
     {
         // Subset of script starting at the most recent codeseparator
         //CScript scriptCode(pbegincodehash, pend);
@@ -683,8 +683,8 @@ public:
 
                 // Drop the signature, since there's no way for a signature to sign itself
                 scriptCode.FindAndDelete(CScript(vchSig));
-                if (!BaseSignatureChecker::CheckSignatureEncoding(vchSig, flags_, serror) ||
-                    !BaseSignatureChecker::CheckPubKeyEncoding(vchPubKey, flags_, serror))
+                if (!BaseSignatureChecker::CheckSignatureEncoding(vchSig, flags_, serror) || 
+                    !BaseSignatureChecker::CheckPubKeyEncoding(vchPubKey, flags_, serror)) 
                 {
                     return false;
                 }
@@ -714,7 +714,7 @@ public:
                 opCount_ += static_cast<unsigned>(nKeysCount);
                 if (opCount_ > MAXIMUM_NUMBER_OF_OPCODES)
                     return Helpers::set_error(serror, SCRIPT_ERR_OP_COUNT);
-
+                
                 int ikey = ++i;
                 i += nKeysCount;
                 if ((int)stack_.size() < i)
@@ -744,7 +744,7 @@ public:
                     // Note how this makes the exact order of pubkey/signature evaluation
                     // distinguishable by CHECKMULTISIG NOT if the STRICTENC flag is set.
                     // See the script_(in)valid tests for details.
-                    if (!BaseSignatureChecker::CheckSignatureEncoding(vchSig, flags_, serror) ||
+                    if (!BaseSignatureChecker::CheckSignatureEncoding(vchSig, flags_, serror) || 
                         !BaseSignatureChecker::CheckPubKeyEncoding(vchPubKey, flags_, serror)) {
                         // serror is set
                         return false;
@@ -801,158 +801,112 @@ public:
     }
 };
 
-struct CoinstakeCheckOp: public StackOperator
-{
-private:
-    const BaseSignatureChecker& checker_;
-public:
-    CoinstakeCheckOp(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
-        ConditionalScopeStackManager& conditionalManager,
-        const BaseSignatureChecker& checker
-        ): StackOperator(stack,altstack,flags,conditionalManager)
-        , checker_(checker)
-    {}
-
-    bool operator()(opcodetype opcode, ScriptError* serror) override
-    {
-        bool success = checker_.CheckCoinstake();
-        stack_.push_back(success ? vchTrue : vchFalse);
-        if(!success)
-            return Helpers::set_error(serror,SCRIPT_ERR_VERIFY);
-        else
-            stack_.pop_back();
-        return true;
-    }
-};
-
-
-namespace
-{
-const std::set<opcodetype> upgradableOpCodes =
+const std::set<opcodetype> StackOperationManager::upgradableOpCodes = 
     {OP_NOP1,OP_NOP2,OP_NOP3,OP_NOP4,OP_NOP5,OP_NOP6,OP_NOP7,OP_NOP8,OP_NOP9,OP_NOP10};
-const std::set<opcodetype> simpleValueOpCodes =
+const std::set<opcodetype> StackOperationManager::simpleValueOpCodes = 
     {OP_1NEGATE ,OP_1 ,OP_2 ,OP_3 , OP_4 , OP_5 , OP_6 , OP_7 , OP_8,
     OP_9 ,OP_10 ,OP_11 , OP_12 , OP_13 , OP_14 , OP_15 , OP_16};
-const std::set<opcodetype> conditionalOpCodes = {OP_IF, OP_NOTIF, OP_ELSE,OP_ENDIF};
-const std::set<opcodetype> stackModificationOpCodes = {
-    OP_TOALTSTACK, OP_FROMALTSTACK, OP_2DROP, OP_2DUP, OP_3DUP, OP_2OVER, OP_2ROT,
+const std::set<opcodetype> StackOperationManager::conditionalOpCodes = {OP_IF, OP_NOTIF, OP_ELSE,OP_ENDIF};
+const std::set<opcodetype> StackOperationManager::stackModificationOpCodes = {
+    OP_TOALTSTACK, OP_FROMALTSTACK, OP_2DROP, OP_2DUP, OP_3DUP, OP_2OVER, OP_2ROT, 
     OP_2SWAP, OP_IFDUP, OP_DEPTH, OP_DROP, OP_DUP, OP_NIP, OP_OVER, OP_PICK, OP_ROLL,
     OP_ROT, OP_SWAP, OP_TUCK, OP_SIZE};
-const std::set<opcodetype> equalityAndVerificationOpCodes =
+const std::set<opcodetype> StackOperationManager::equalityAndVerificationOpCodes =
     {OP_EQUAL,OP_EQUALVERIFY,OP_VERIFY};
-const std::set<opcodetype> unaryNumericOpCodes =
+const std::set<opcodetype> StackOperationManager::unaryNumericOpCodes = 
     {OP_1ADD ,OP_1SUB ,OP_NEGATE, OP_ABS ,OP_NOT ,OP_0NOTEQUAL};
-const std::set<opcodetype> binaryNumericOpCodes =
-    {OP_ADD, OP_SUB, OP_BOOLAND, OP_BOOLOR, OP_NUMEQUAL, OP_NUMEQUALVERIFY, OP_NUMNOTEQUAL,
+const std::set<opcodetype> StackOperationManager::binaryNumericOpCodes = 
+    {OP_ADD, OP_SUB, OP_BOOLAND, OP_BOOLOR, OP_NUMEQUAL, OP_NUMEQUALVERIFY, OP_NUMNOTEQUAL, 
     OP_LESSTHAN, OP_GREATERTHAN, OP_LESSTHANOREQUAL, OP_GREATERTHANOREQUAL, OP_MIN, OP_MAX};
-const std::set<opcodetype> hashingOpCodes =
+const std::set<opcodetype> StackOperationManager::hashingOpCodes = 
     {OP_RIPEMD160, OP_SHA1, OP_SHA256, OP_HASH160, OP_HASH256};
-const std::set<opcodetype> checkSigOpcodes =
+const std::set<opcodetype> StackOperationManager::checkSigOpcodes =
     {OP_CHECKSIG, OP_CHECKSIGVERIFY, OP_CHECKMULTISIG, OP_CHECKMULTISIGVERIFY};
-
-#define ApplyOperation(opname) \
-    opname(stack,altstack,flags,conditionalManager)(opcode,serror)\
-
-    static bool ApplyOpcode(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
-        ConditionalScopeStackManager& conditionalManager,
-        const BaseSignatureChecker& checker,
-        opcodetype opcode,
-        ScriptError* serror)
-    {
-        if(flags & SCRIPT_REQUIRE_COINSTAKE && opcode == OP_REQUIRE_COINSTAKE)
-        {
-            return CoinstakeCheckOp(stack,altstack,flags,conditionalManager,checker)(opcode,serror);
-        }
-        if(opcode == OP_META)
-        {
-            return ApplyOperation(MetadataOp);
-        }
-        if(opcode == OP_WITHIN)
-        {
-            return ApplyOperation(NumericBoundsOp);
-        }
-        if(upgradableOpCodes.count(opcode) > 0)
-        {
-            return ApplyOperation(DisabledOp);
-        }
-        if(simpleValueOpCodes.count(opcode) > 0)
-        {
-            return ApplyOperation(PushValueOp);
-        }
-        if(conditionalOpCodes.count(opcode) > 0)
-        {
-            return ApplyOperation(ConditionalOp);
-        }
-        if(stackModificationOpCodes.count(opcode) > 0)
-        {
-            return ApplyOperation(StackModificationOp);
-        }
-        if(equalityAndVerificationOpCodes.count(opcode) > 0)
-        {
-            return ApplyOperation(EqualityVerificationOp);
-        }
-        if(unaryNumericOpCodes.count(opcode) > 0)
-        {
-            return ApplyOperation(UnaryNumericOp);
-        }
-        if(binaryNumericOpCodes.count(opcode) > 0)
-        {
-            return ApplyOperation(BinaryNumericOp);
-        }
-        if(hashingOpCodes.count(opcode) > 0)
-        {
-            return ApplyOperation(HashingOp);
-        }
-
-        Helpers::set_error(serror,SCRIPT_ERR_BAD_OPCODE);
-        return false;
-    }
-    static bool ApplyOpcode(
-        StackType& stack,
-        StackType& altstack,
-        const unsigned& flags,
-        ConditionalScopeStackManager& conditionalManager,
-        unsigned& opCount,
-        const BaseSignatureChecker& checker,
-        opcodetype opcode,
-        const CScript& scriptCode,
-        ScriptError* serror)
-    {
-        if(checkSigOpcodes.count(opcode) > 0)
-        {
-            return SignatureCheckOp(stack,altstack,flags,conditionalManager,opCount,checker)(opcode,scriptCode,serror);
-        }
-        Helpers::set_error(serror,SCRIPT_ERR_INVALID_STACK_OPERATION);
-        return false;
-    }
-};
 
 StackOperationManager::StackOperationManager(
     StackType& stack,
     const BaseSignatureChecker& checker,
     unsigned flags
     ): stack_(stack)
+    , checker_(checker)
     , altstack_()
     , flags_(flags)
-    , conditionalManager_()
-    , checker_(checker)
     , opCount_(0u)
+    , conditionalManager_()
+    , defaultOperation_(stack,altstack_,flags,conditionalManager_)
+    , stackOperationMapping_()
+    , disableOp_(std::make_shared<DisabledOp>(stack_,altstack_,flags_,conditionalManager_))
+    , pushValueOp_(std::make_shared<PushValueOp>(stack_,altstack_,flags_,conditionalManager_))
+    , conditionalOp_(std::make_shared<ConditionalOp>(stack_,altstack_,flags_,conditionalManager_))
+    , stackModificationOp_(std::make_shared<StackModificationOp>(stack_,altstack_,flags_,conditionalManager_))
+    , equalityVerificationOp_(std::make_shared<EqualityVerificationOp>(stack_,altstack_,flags_,conditionalManager_))
+    , metadataOp_(std::make_shared<MetadataOp>(stack_,altstack_,flags_,conditionalManager_))
+    , unaryNumericOp_(std::make_shared<UnaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
+    , binaryNumericOp_(std::make_shared<BinaryNumericOp>(stack_,altstack_,flags_,conditionalManager_))
+    , numericBoundsOp_(std::make_shared<NumericBoundsOp>(stack_,altstack_,flags_,conditionalManager_))
+    , hashingOp_(std::make_shared<HashingOp>(stack_,altstack_,flags_,conditionalManager_))
+    , checksigOp_(std::make_shared<SignatureCheckOp>(stack_,altstack_,flags_,conditionalManager_,opCount_,checker_))
 {
+    InitMapping();
 }
 
-bool StackOperationManager::ApplyOp(opcodetype opcode,ScriptError* serror)
+void StackOperationManager::InitMapping()
 {
-    return ApplyOpcode(stack_,altstack_,flags_,conditionalManager_,checker_,opcode,serror);
+    for(const opcodetype& opcode: upgradableOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, disableOp_.get() });
+    }
+    for(const opcodetype& opcode: simpleValueOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, pushValueOp_.get() });
+    }
+    for(const opcodetype& opcode: conditionalOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, conditionalOp_.get() });
+    }
+    for(const opcodetype& opcode: stackModificationOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, stackModificationOp_.get() });
+    }
+    for(const opcodetype& opcode: equalityAndVerificationOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, equalityVerificationOp_.get() });
+    }
+    for(const opcodetype& opcode: unaryNumericOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, unaryNumericOp_.get() });
+    }
+    for(const opcodetype& opcode: binaryNumericOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, binaryNumericOp_.get() });
+    }
+    for(const opcodetype& opcode: hashingOpCodes)
+    {
+        stackOperationMapping_.insert({opcode, hashingOp_.get() });
+    }
+    for(const opcodetype& opcode: checkSigOpcodes)
+    {
+        stackOperationMapping_.insert({opcode, checksigOp_.get() });
+    }
+    
+    stackOperationMapping_.insert({OP_META, metadataOp_.get()});
+    stackOperationMapping_.insert({OP_WITHIN, numericBoundsOp_.get()});
 }
-bool StackOperationManager::ApplyOp(opcodetype opcode,const CScript& scriptCode,ScriptError* serror)
+
+StackOperator* StackOperationManager::GetOp(opcodetype opcode)
 {
-    return ApplyOpcode(stack_,altstack_,flags_,conditionalManager_,opCount_,checker_,opcode,scriptCode,serror);
+    auto it = stackOperationMapping_.find(opcode);
+    if(it != stackOperationMapping_.end())
+    {
+        return it->second;
+    }
+    return &defaultOperation_;
+}
+
+bool StackOperationManager::HasOp(opcodetype opcode) const
+{
+    auto it = stackOperationMapping_.find(opcode);
+    return it != stackOperationMapping_.end();
 }
 
 bool StackOperationManager::ReserveAdditionalOp()

@@ -26,6 +26,8 @@ class COutPoint;
 
 struct CBlockLocator;
 
+extern unsigned int nWalletDBUpdated;
+
 /** RAII class that provides access to a Berkeley database */
 class CDB
 {

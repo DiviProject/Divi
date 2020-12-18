@@ -11,8 +11,8 @@
 #include "primitives/block.h"
 #include "tinyformat.h"
 #include "uint256.h"
+#include "util.h"
 #include "libzerocoin/Denominations.h"
-#include "LotteryCoinstakes.h"
 
 #include <vector>
 
@@ -105,7 +105,7 @@ enum BlockStatus {
  * candidates to be the next block. A blockindex may have multiple pprev pointing
  * to it, but at most one of them can be part of the currently active branch.
  */
-class  CBlockIndex
+class CBlockIndex
 {
 public:
     //! pointer to the hash of the block, if any. memory is owned by this CBlockIndex
@@ -177,13 +177,13 @@ public:
 
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     uint32_t nSequenceId;
-
+    
     //! zerocoin specific fields
     std::map<libzerocoin::CoinDenomination, int64_t> mapZerocoinSupply;
     std::vector<libzerocoin::CoinDenomination> vMintDenominationsInBlock;
 
-    LotteryCoinstakeData vLotteryWinnersCoinstakes;
-
+    std::vector<uint256> vLotteryWinnersCoinstakes;
+    
     void SetNull()
     {
         phashBlock = NULL;
@@ -215,7 +215,7 @@ public:
         nAccumulatorCheckpoint = 0;
         // Start supply of each denomination with 0s
         for (auto& denom : libzerocoin::zerocoinDenomList) {
-            mapZerocoinSupply.insert(std::make_pair(denom, 0));
+            mapZerocoinSupply.insert(make_pair(denom, 0));
         }
         vMintDenominationsInBlock.clear();
         vLotteryWinnersCoinstakes.clear();
@@ -258,7 +258,7 @@ public:
 
         vLotteryWinnersCoinstakes.clear();
     }
-
+    
 
     CDiskBlockPos GetBlockPos() const
     {
@@ -293,7 +293,7 @@ public:
         block.nAccumulatorCheckpoint = nAccumulatorCheckpoint;
         return block;
     }
-
+    
     uint256 GetBlockHash() const
     {
         return *phashBlock;
@@ -335,7 +335,14 @@ public:
         nFlags |= BLOCK_PROOF_OF_STAKE;
     }
 
-    unsigned int GetStakeEntropyBit() const;
+    unsigned int GetStakeEntropyBit() const
+    {
+        unsigned int nEntropyBit = ((GetBlockHash().Get64()) & 1);
+        if (fDebug || GetBoolArg("-printstakemodifier", false))
+            LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight, GetBlockHash().ToString().c_str(), nEntropyBit);
+
+        return nEntropyBit;
+    }
 
     bool SetStakeEntropyBit(unsigned int nEntropyBit)
     {
@@ -356,6 +363,13 @@ public:
         if (fGeneratedStakeModifier)
             nFlags |= BLOCK_STAKE_MODIFIER;
     }
+
+    /**
+     * Returns true if there are nRequired or more blocks of minVersion or above
+     * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart 
+     * and going backwards.
+     */
+    static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired);
 
     std::string ToString() const
     {

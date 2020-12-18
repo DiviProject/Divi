@@ -13,9 +13,10 @@
 #define MASTERNODE_SYNC_FAILED 998
 #define MASTERNODE_SYNC_FINISHED 999
 
+#define MASTERNODE_SYNC_TIMEOUT 5
+#define MASTERNODE_SYNC_THRESHOLD 2
+
 class CMasternodeSync;
-class CNode;
-class CDataStream;
 extern CMasternodeSync masternodeSync;
 
 //
@@ -24,9 +25,6 @@ extern CMasternodeSync masternodeSync;
 
 class CMasternodeSync
 {
-private:
-    int64_t nTimeLastProcess = 0;
-
 public:
     std::map<uint256, int> mapSeenSyncMNB;
     std::map<uint256, int> mapSeenSyncMNW;
@@ -52,8 +50,8 @@ public:
 
     CMasternodeSync();
 
-    void AddedMasternodeList(const uint256& hash);
-    void AddedMasternodeWinner(const uint256& hash);
+    void AddedMasternodeList(uint256 hash);
+    void AddedMasternodeWinner(uint256 hash);
     void GetNextAsset();
     std::string GetSyncStatus();
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);

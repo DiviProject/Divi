@@ -17,7 +17,6 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/test/unit_test.hpp>
-#include <ValidationState.h>
 
 
 BOOST_AUTO_TEST_SUITE(CheckBlock_tests)

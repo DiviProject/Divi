@@ -17,8 +17,6 @@
 
 #include <boost/test/unit_test.hpp>
 #include "test_only.h"
-#include <scriptCheck.h>
-
 using namespace std;
 
 // Helpers:
@@ -54,13 +52,13 @@ BOOST_AUTO_TEST_SUITE(script_P2SH_tests)
 BOOST_AUTO_TEST_CASE(sign)
 {
     LOCK(cs_main);
-
-
+    
+    
     // Pay-to-script-hash looks like this:
     // scriptSig:    <sig> <sig...> <serialized_script>
     // scriptPubKey: HASH160 <hash> EQUAL
 
-    // Test SignSignature() (and therefore the version of ExtractScriptPubKeyFormat() that signs transactions)
+    // Test SignSignature() (and therefore the version of Solver() that signs transactions)
     CBasicKeyStore keystore;
     CKey key[4];
     for (int i = 0; i < 4; i++)
@@ -128,7 +126,7 @@ BOOST_AUTO_TEST_CASE(sign)
         }
     }
 
-
+    
 }
 
 BOOST_AUTO_TEST_CASE(norecurse)
@@ -161,8 +159,8 @@ BOOST_AUTO_TEST_CASE(norecurse)
 BOOST_AUTO_TEST_CASE(set)
 {
     LOCK(cs_main);
-
-
+    
+    
     // Test the CScript::Set* methods
     CBasicKeyStore keystore;
     CKey key[4];
@@ -215,7 +213,7 @@ BOOST_AUTO_TEST_CASE(set)
         BOOST_CHECK_MESSAGE(SignSignature(keystore, txFrom, txTo[i], 0), strprintf("SignSignature %d", i));
         BOOST_CHECK_MESSAGE(IsStandardTx(txTo[i], reason), strprintf("txTo[%d].IsStandard", i));
     }
-
+    
 }
 
 BOOST_AUTO_TEST_CASE(is)
@@ -272,9 +270,9 @@ BOOST_AUTO_TEST_CASE(switchover)
 BOOST_AUTO_TEST_CASE(AreInputsStandard)
 {
     LOCK(cs_main);
-
-
-
+    
+    
+    
     CCoinsView coinsDummy;
     CCoinsViewCache coins(&coinsDummy);
     CBasicKeyStore keystore;
@@ -391,7 +389,7 @@ BOOST_AUTO_TEST_CASE(AreInputsStandard)
     BOOST_CHECK(!::AreInputsStandard(txToNonStd2, coins));
     BOOST_CHECK_EQUAL(GetP2SHSigOpCount(txToNonStd2, coins), 20U);
 
-
+    
 }
 
 BOOST_AUTO_TEST_SUITE_END()

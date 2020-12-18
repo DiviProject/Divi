@@ -4,7 +4,7 @@
 
 #include "zmqnotificationinterface.h"
 #include "zmqpublishnotifier.h"
-#include <Settings.h>
+
 #include "version.h"
 #include "main.h"
 #include "streams.h"
@@ -29,7 +29,7 @@ CZMQNotificationInterface::~CZMQNotificationInterface()
     }
 }
 
-CZMQNotificationInterface* CZMQNotificationInterface::CreateWithArguments(const Settings &settings)
+CZMQNotificationInterface* CZMQNotificationInterface::CreateWithArguments(const std::map<std::string, std::string> &args)
 {
     CZMQNotificationInterface* notificationInterface = NULL;
     std::map<std::string, CZMQNotifierFactory> factories;
@@ -44,10 +44,11 @@ CZMQNotificationInterface* CZMQNotificationInterface::CreateWithArguments(const 
 
     for (std::map<std::string, CZMQNotifierFactory>::const_iterator i=factories.begin(); i!=factories.end(); ++i)
     {
-        if (settings.ParameterIsSet("-zmq" + i->first))
+        std::map<std::string, std::string>::const_iterator j = args.find("-zmq" + i->first);
+        if (j!=args.end())
         {
             CZMQNotifierFactory factory = i->second;
-            std::string address = settings.GetParameter("-zmq" + i->first);
+            std::string address = j->second;
             CZMQAbstractNotifier *notifier = factory();
             notifier->SetType(i->first);
             notifier->SetAddress(address);

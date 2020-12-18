@@ -363,24 +363,24 @@ Value getcoinavailability(const Array& params, bool fHelp)
     bool verbose = (params.size()<1)? false:params[0].get_bool();
     if(!verbose)
     {
-        auto outputValueAdder = [](const std::vector<COutput>& outputsToTotal)
+        auto outputAmountAdder = [](const std::vector<COutput>& outputsToTotal)
             {
-                CAmount totalValue = 0;
+                CAmount totalAmount = 0;
                 for(const COutput& output: outputsToTotal)
                 {
-                    totalValue += output.Value();
+                    totalAmount += output.Value();
                 }
-                return totalValue;
+                return totalAmount;
             };
         std::vector<COutput> outputs;
         pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::OWNED_VAULT_COINS);
-        result.push_back( Pair("Vaulted", ValueFromAmount(outputValueAdder(outputs))  ) );
+        result.push_back( Pair("Vaulted", ValueFromAmount(outputAmountAdder(outputs))  ) );
         outputs.clear();
         pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::STAKABLE_COINS);
-        result.push_back( Pair("Stakable", ValueFromAmount(outputValueAdder(outputs)) ) );
+        result.push_back( Pair("Stakable", ValueFromAmount(outputAmountAdder(outputs)) ) );
         outputs.clear();
         pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::ALL_SPENDABLE_COINS);
-        result.push_back( Pair("Spendable", ValueFromAmount(outputValueAdder(outputs)) ) );
+        result.push_back( Pair("Spendable", ValueFromAmount(outputAmountAdder(outputs)) ) );
 
         return result;
     }
@@ -391,14 +391,14 @@ Value getcoinavailability(const Array& params, bool fHelp)
                 Object description;
                 std::map<CScript, CAmount> valueByScript;
                 std::map<CScript, std::set<std::string>> txdata;
-                CAmount totalValue = 0;
-                CAmount totalVaultOnlyValue = 0;
+                CAmount totalAmount = 0;
+                CAmount totalVaultOnlyAmount = 0;
                 for(const COutput& output: outputsToTotal)
                 {
                     CTxOut txout = output.tx->vout[output.i];
                     valueByScript[txout.scriptPubKey] = txout.nValue;
                     txdata[txout.scriptPubKey].insert(output.tx->GetHash().ToString());
-                    totalValue += output.Value();
+                    totalAmount += output.Value();
                 }
                 Array vaults;
                 for(const std::pair<CScript,CAmount>& fundedScript: valueByScript)
@@ -421,7 +421,7 @@ Value getcoinavailability(const Array& params, bool fHelp)
                         std::string vaultEncoding = ownerAddress.ToString() + ":"+ managerAddress.ToString();
 
                         scriptResult.push_back(Pair("vault",vaultEncoding));
-                        scriptResult.push_back(Pair("value",fundedScript.second));
+                        scriptResult.push_back(Pair("value",ValueFromAmount(fundedScript.second) ));
 
                         Array txhashes;
                         for(const auto& txHashString: txdata[fundedScript.first])
@@ -431,11 +431,11 @@ Value getcoinavailability(const Array& params, bool fHelp)
                         scriptResult.push_back(Pair("txids",txhashes));
 
                         vaults.push_back(scriptResult);
-                        totalVaultOnlyValue += fundedScript.second;
+                        totalVaultOnlyAmount += fundedScript.second;
                     }
                 }
                 description.push_back(Pair("AllVaults",vaults));
-                description.push_back(Pair("NonVaults",ValueFromAmount(totalValue - totalVaultOnlyValue)));
+                description.push_back(Pair("NonVaults",ValueFromAmount(totalAmount - totalVaultOnlyAmount)));
                 return description;
             };
         std::vector<COutput> outputs;

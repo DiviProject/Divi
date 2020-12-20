@@ -1,4 +1,4 @@
-﻿CREATING A NEW GENESIS BLOCK
+CREATING A NEW GENESIS BLOCK
 
 
 In chainparams.cpp, Edit The Checkpoints

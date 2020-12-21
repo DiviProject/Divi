@@ -17,10 +17,11 @@ class CBlock;
 class CMasternodePayments;
 class CMasternodePaymentWinner;
 class CMasternodeBlockPayees;
+class SuperblockSubsidyContainer;
 
 extern CMasternodePayments masternodePayments;
 
-bool IsBlockPayeeValid(const CTransaction &txNew, const CBlockIndex *pindex);
+bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex *pindex);
 
 LotteryCoinstakeData CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
 

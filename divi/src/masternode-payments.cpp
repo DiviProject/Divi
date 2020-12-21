@@ -123,9 +123,8 @@ bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 
 } // anonymous namespace
 
-bool IsBlockPayeeValid(const CTransaction &txNew, const CBlockIndex* pindex)
+bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
 {
-    SuperblockSubsidyContainer superblockSubsidies(Params());
     const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
     if(heightValidator.IsValidTreasuryBlockHeight(pindex->nHeight)) {
         return IsValidTreasuryPayment(txNew, pindex->nHeight);

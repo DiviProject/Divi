@@ -1903,7 +1903,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         LogPrint("masternode","IsBlockValueValid() : WARNING: Couldn't find previous block\n");
     }
 
-    if (!chainTipIsNull && !IsBlockValueValid(nExpectedMint, pindex->nMint, blockHeight)) {
+    if (!chainTipIsNull && !IsBlockValueValid(subsidiesContainer.superblockHeightValidator(),nExpectedMint, pindex->nMint, blockHeight)) {
         return state.DoS(100,
                          error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
                                FormatMoney(pindex->nMint), nExpectedMint.ToString()),

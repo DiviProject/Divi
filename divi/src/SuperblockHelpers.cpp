@@ -23,14 +23,11 @@ const I_BlockSubsidyProvider& SuperblockSubsidyContainer::blockSubsidiesProvider
     return *blockSubsidies_;
 }
 
-bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight)
+bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight)
 {
     auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;
 
     // here we expect treasury block payment
-    SuperblockSubsidyContainer superblockSubsidies(Params());
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-
     if(heightValidator.IsValidTreasuryBlockHeight(nHeight)) {
         nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
     }

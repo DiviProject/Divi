@@ -120,17 +120,38 @@ bool IsValidTreasuryPayment(const CBlockRewards& rewards,const CTransaction &tx)
 
 } // anonymous namespace
 
-bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
+bool IsSuperblockHeight(
+    const I_SuperblockHeightValidator& heightValidator,
+    unsigned nHeight)
 {
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    const CBlockRewards rewards = superblockSubsidies.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
+    return heightValidator.IsValidTreasuryBlockHeight(nHeight) || heightValidator.IsValidLotteryBlockHeight(nHeight);
+}
+
+bool AreSuperblockPayeesValid(
+    const I_SuperblockHeightValidator& heightValidator,
+    const I_BlockSubsidyProvider& blockSubsidies,
+    const CTransaction &txNew,
+    const CBlockIndex* pindex)
+{
+    const CBlockRewards rewards = blockSubsidies.GetBlockSubsidity(pindex->nHeight);
     if(heightValidator.IsValidTreasuryBlockHeight(pindex->nHeight))
     {
         return IsValidTreasuryPayment(rewards,txNew);
     }
-
-    if(heightValidator.IsValidLotteryBlockHeight(pindex->nHeight)) {
+    if(heightValidator.IsValidLotteryBlockHeight(pindex->nHeight))
+    {
         return IsValidLotteryPayment(rewards,txNew, pindex->pprev->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
+    }
+    return true;
+}
+
+bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
+{
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
+    if(IsSuperblockHeight(heightValidator,pindex->nHeight))
+    {
+        return AreSuperblockPayeesValid(heightValidator,blockSubsidies,txNew,pindex);
     }
 
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain

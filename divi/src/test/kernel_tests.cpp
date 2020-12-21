@@ -225,6 +225,38 @@ BOOST_AUTO_TEST_CASE(willNotAllowStakingOutputToBeSplitTooSmall)
   BOOST_CHECK(!RunCheck(mtx));
 }
 
+BOOST_AUTO_TEST_CASE(willRequireStakingVaultToAbsorbNonVaultFunds)
+{
+  CMutableTransaction mtx;
+  mtx.vin.push_back(CTxIn(nonVaultCoins[0]));
+  mtx.vin.push_back(CTxIn(vaultCoins[1]));
+
+  mtx.vout.push_back(CTxOut());
+  mtx.vout[0].SetEmpty();
+  mtx.vout.push_back(CTxOut(10000 * COIN, scriptNonVault));
+  mtx.vout.push_back(CTxOut(20000 * COIN + CENT, scriptVault));
+
+  BOOST_CHECK(CTransaction(mtx).IsCoinStake());
+  BOOST_CHECK(!RunCheck(mtx));
+
+  mtx.vout.clear();
+  mtx.vout.push_back(CTxOut());
+  mtx.vout[0].SetEmpty();
+  mtx.vout.push_back(CTxOut(10000 * COIN, scriptVault));
+  mtx.vout.push_back(CTxOut(20000 * COIN + CENT, scriptVault));
+
+  BOOST_CHECK(CTransaction(mtx).IsCoinStake());
+  BOOST_CHECK(RunCheck(mtx));
+
+  mtx.vout.clear();
+  mtx.vout.push_back(CTxOut());
+  mtx.vout[0].SetEmpty();
+  mtx.vout.push_back(CTxOut(30000 * COIN + CENT, scriptVault));
+
+  BOOST_CHECK(CTransaction(mtx).IsCoinStake());
+  BOOST_CHECK(RunCheck(mtx));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 } // anonymous namespace

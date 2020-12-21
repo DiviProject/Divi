@@ -92,10 +92,8 @@ bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoi
     return true;
 }
 
-bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
+bool IsValidTreasuryPayment(const CBlockRewards& rewards,const CTransaction &tx)
 {
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight);
     auto charityPart = rewards.nCharityReward;
     auto treasuryPart = rewards.nTreasuryReward;
 
@@ -126,8 +124,10 @@ bool IsValidTreasuryPayment(const CTransaction &tx, int nHeight)
 bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
 {
     const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    if(heightValidator.IsValidTreasuryBlockHeight(pindex->nHeight)) {
-        return IsValidTreasuryPayment(txNew, pindex->nHeight);
+    const CBlockRewards rewards = superblockSubsidies.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
+    if(heightValidator.IsValidTreasuryBlockHeight(pindex->nHeight))
+    {
+        return IsValidTreasuryPayment(rewards,txNew);
     }
 
     if(heightValidator.IsValidLotteryBlockHeight(pindex->nHeight)) {

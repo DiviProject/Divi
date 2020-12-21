@@ -64,7 +64,7 @@ CBitcoinAddress CharityPaymentAddress()
     return CBitcoinAddress(Params().NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
 }
 
-bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoinstakes vRequiredWinnersCoinstake)
+bool IsValidLotteryPayment(const CBlockRewards& rewards, const CTransaction &tx, const LotteryCoinstakes vRequiredWinnersCoinstake)
 {
     if(vRequiredWinnersCoinstake.empty()) {
         return true;
@@ -75,8 +75,7 @@ bool IsValidLotteryPayment(const CTransaction &tx, int nHeight, const LotteryCoi
         return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
     };
 
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    auto nLotteryReward = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nHeight).nLotteryReward;
+    auto nLotteryReward = rewards.nLotteryReward;
     auto nBigReward = nLotteryReward / 2;
     auto nSmallReward = nBigReward / 10;
 
@@ -131,7 +130,7 @@ bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, co
     }
 
     if(heightValidator.IsValidLotteryBlockHeight(pindex->nHeight)) {
-        return IsValidLotteryPayment(txNew, pindex->nHeight, pindex->pprev->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
+        return IsValidLotteryPayment(rewards,txNew, pindex->pprev->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
     }
 
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain

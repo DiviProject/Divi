@@ -1832,10 +1832,13 @@ bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const
         if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
             continue;
 
-        int64_t nTxTime = out.tx->GetTxTime();
+        if(mapBlockIndex.count(out.tx->hashBlock)<1)
+            continue;
+
+        int64_t nTxTime = mapBlockIndex[out.tx->hashBlock]->GetBlockTime();
 
         //check for min age
-        if (GetAdjustedTime() - nTxTime < Params().GetMinCoinAgeForStaking())
+        if (std::max(int64_t(0),GetAdjustedTime() - nTxTime) < Params().GetMinCoinAgeForStaking())
             continue;
 
         //check that it is matured

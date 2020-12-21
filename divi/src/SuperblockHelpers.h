@@ -10,7 +10,7 @@
 class CBlockRewards;
 class CChainParams;
 
-bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight);
+bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight);
 
 class SuperblockSubsidyContainer: public I_SuperblockSubsidyContainer
 {

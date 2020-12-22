@@ -145,13 +145,25 @@ bool AreSuperblockPayeesValid(
     return true;
 }
 
-bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
+bool HasValidSuperblockPayees(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
 {
     const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
     const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
     if(IsSuperblockHeight(heightValidator,pindex->nHeight))
     {
         return AreSuperblockPayeesValid(heightValidator,blockSubsidies,txNew,pindex);
+    }
+    else
+    {
+        return true;
+    }
+}
+
+bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
+{
+    if(!HasValidSuperblockPayees(superblockSubsidies,txNew,pindex))
+    {
+        return false;
     }
 
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain

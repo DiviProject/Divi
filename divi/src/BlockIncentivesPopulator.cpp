@@ -88,41 +88,6 @@ bool IsValidTreasuryPayment(const CChainParams& chainParameters, const CBlockRew
 
 } // anonymous namespace
 
-bool CheckSuperblockPayees(
-    const CChainParams& chainParameters,
-    const I_SuperblockHeightValidator& heightValidator,
-    const I_BlockSubsidyProvider& blockSubsidies,
-    const CTransaction &txNew,
-    const CBlockIndex* pindex)
-{
-    const CBlockRewards rewards = blockSubsidies.GetBlockSubsidity(pindex->nHeight);
-    if(heightValidator.IsValidTreasuryBlockHeight(pindex->nHeight))
-    {
-        return IsValidTreasuryPayment(chainParameters,rewards,txNew);
-    }
-    if(heightValidator.IsValidLotteryBlockHeight(pindex->nHeight))
-    {
-        return IsValidLotteryPayment(rewards,txNew, pindex->pprev->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
-    }
-    return true;
-}
-
-bool HasValidSuperblockPayees(const CChainParams& chainParameters, const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
-{
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
-    const unsigned blockHeight = pindex->nHeight;
-    if(heightValidator.IsValidTreasuryBlockHeight(blockHeight) ||
-        heightValidator.IsValidLotteryBlockHeight(blockHeight))
-    {
-        return CheckSuperblockPayees(chainParameters,heightValidator,blockSubsidies,txNew,pindex);
-    }
-    else
-    {
-        return true;
-    }
-}
-
 BlockIncentivesPopulator::BlockIncentivesPopulator(
     const CChainParams& chainParameters,
     CChain& activeChain,
@@ -200,4 +165,39 @@ bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const
     }
 
     return true;
+}
+
+bool CheckSuperblockPayees(
+    const CChainParams& chainParameters,
+    const I_SuperblockHeightValidator& heightValidator,
+    const I_BlockSubsidyProvider& blockSubsidies,
+    const CTransaction &txNew,
+    const CBlockIndex* pindex)
+{
+    const CBlockRewards rewards = blockSubsidies.GetBlockSubsidity(pindex->nHeight);
+    if(heightValidator.IsValidTreasuryBlockHeight(pindex->nHeight))
+    {
+        return IsValidTreasuryPayment(chainParameters,rewards,txNew);
+    }
+    if(heightValidator.IsValidLotteryBlockHeight(pindex->nHeight))
+    {
+        return IsValidLotteryPayment(rewards,txNew, pindex->pprev->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
+    }
+    return true;
+}
+
+bool HasValidSuperblockPayees(const CChainParams& chainParameters, const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
+{
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
+    const unsigned blockHeight = pindex->nHeight;
+    if(heightValidator.IsValidTreasuryBlockHeight(blockHeight) ||
+        heightValidator.IsValidLotteryBlockHeight(blockHeight))
+    {
+        return CheckSuperblockPayees(chainParameters,heightValidator,blockSubsidies,txNew,pindex);
+    }
+    else
+    {
+        return true;
+    }
 }

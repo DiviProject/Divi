@@ -31,6 +31,7 @@
 #include "NotificationInterface.h"
 #include "FeeAndPriorityCalculator.h"
 #include "SuperblockHelpers.h"
+#include <BlockIncentivesPopulator.h>
 #include "libzerocoin/Denominations.h"
 #include <sstream>
 #include "Settings.h"

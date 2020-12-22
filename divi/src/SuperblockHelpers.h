@@ -1,16 +1,12 @@
 #ifndef SUPERBLOCK_HELPERS_H
 #define SUPERBLOCK_HELPERS_H
 #include <stdint.h>
-#include <amount.h>
 #include <I_SuperblockHeightValidator.h>
 #include <I_BlockSubsidyProvider.h>
 #include <I_SuperblockSubsidyContainer.h>
 #include <memory>
 
-class CBlockRewards;
 class CChainParams;
-
-bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight);
 
 class SuperblockSubsidyContainer: public I_SuperblockSubsidyContainer
 {

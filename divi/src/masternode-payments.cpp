@@ -120,7 +120,7 @@ bool IsValidTreasuryPayment(const CBlockRewards& rewards,const CTransaction &tx)
 
 } // anonymous namespace
 
-bool AreSuperblockPayeesValid(
+bool CheckSuperblockPayees(
     const I_SuperblockHeightValidator& heightValidator,
     const I_BlockSubsidyProvider& blockSubsidies,
     const CTransaction &txNew,
@@ -146,7 +146,7 @@ bool HasValidSuperblockPayees(const SuperblockSubsidyContainer& superblockSubsid
     if(heightValidator.IsValidTreasuryBlockHeight(blockHeight) ||
         heightValidator.IsValidLotteryBlockHeight(blockHeight))
     {
-        return AreSuperblockPayeesValid(heightValidator,blockSubsidies,txNew,pindex);
+        return CheckSuperblockPayees(heightValidator,blockSubsidies,txNew,pindex);
     }
     else
     {

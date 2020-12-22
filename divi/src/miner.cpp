@@ -31,7 +31,6 @@ void SetThreadPriority(int nPriority);
 void RenameThread(const char* name);
 bool fGenerateDivi = false;
 
-// ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 void MintCoins(
     bool fProofOfStake,
     I_CoinMinter& minter,

@@ -226,14 +226,14 @@ bool CoinMinter::createProofOfStakeBlock(
     IncrementExtraNonce(block, pindexPrev, nExtraNonce);
 
     //Stake miner main
-    LogPrintf("CPUMiner : proof-of-stake block found %s \n", block->GetHash().ToString().c_str());
+    LogPrintf("%s: proof-of-stake block found %s \n",__func__, block->GetHash().ToString().c_str());
 
     if (!SignBlock(*pwallet_, *block)) {
-        LogPrintf("BitcoinMiner(): Signing new block failed \n");
+        LogPrintf("%s: Signing new block failed \n",__func__);
         return false;
     }
 
-    LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", block->GetHash().ToString().c_str());
+    LogPrintf("%s: proof-of-stake block was signed %s \n", __func__, block->GetHash().ToString().c_str());
     SetThreadPriority(THREAD_PRIORITY_NORMAL);
     blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey);
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
@@ -278,7 +278,7 @@ bool CoinMinter::createProofOfWorkBlock(
             {
                 // Found a solution
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                LogPrintf("BitcoinMiner:\n");
+                LogPrintf("%s:\n",__func__);
                 LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex(), hashTarget.GetHex());
                 blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);

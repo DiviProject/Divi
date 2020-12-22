@@ -86,17 +86,6 @@ bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pinde
     return true;
 }
 
-void CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight, LotteryCoinstakeData& coinstakeDataToUpdate)
-{
-    static const CChainParams& chainParameters = Params();
-    static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
-    static LotteryWinnersCalculator calculator(chainParameters.GetLotteryBlockStartBlock(),chainActive, sporkManager,subsidyCointainer.superblockHeightValidator());
-    static LotteryCoinstakeData emptyData;
-    const LotteryCoinstakeData& previousBlockLotteryCoinstakeData = prevBlockIndex? prevBlockIndex->vLotteryWinnersCoinstakes : emptyData;
-    const CTransaction& coinMintingTransaction  = (nHeight > chainParameters.LAST_POW_BLOCK() )? block.vtx[1] : block.vtx[0];
-    coinstakeDataToUpdate = calculator.CalculateUpdatedLotteryWinners(coinMintingTransaction,previousBlockLotteryCoinstakeData,nHeight);
-}
-
 CMasternodePayee::CMasternodePayee()
 {
     scriptPubKey = CScript();

@@ -192,11 +192,7 @@ bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pinde
 
 bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
 {
-    if(!HasValidSuperblockPayees(superblockSubsidies,txNew,pindex))
-    {
-        return false;
-    }
-    if(!HasValidMasternodePayee(txNew,pindex))
+    if(!HasValidSuperblockPayees(superblockSubsidies,txNew,pindex) || !HasValidMasternodePayee(txNew,pindex))
     {
         return false;
     }

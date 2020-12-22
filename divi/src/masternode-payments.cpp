@@ -154,13 +154,8 @@ bool HasValidSuperblockPayees(const SuperblockSubsidyContainer& superblockSubsid
     }
 }
 
-bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
+bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pindex)
 {
-    if(!HasValidSuperblockPayees(superblockSubsidies,txNew,pindex))
-    {
-        return false;
-    }
-
     if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
         LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
         return true;
@@ -192,6 +187,19 @@ bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, co
         return false;
     LogPrintf("%s : Masternode payment enforcement is disabled, accepting block\n", __func__);
 
+    return true;
+}
+
+bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
+{
+    if(!HasValidSuperblockPayees(superblockSubsidies,txNew,pindex))
+    {
+        return false;
+    }
+    if(!HasValidMasternodePayee(txNew,pindex))
+    {
+        return false;
+    }
     return true;
 }
 

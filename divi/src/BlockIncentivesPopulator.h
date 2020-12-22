@@ -1,7 +1,7 @@
 #ifndef BLOCK_INCENTIVES_POPULATOR_H
 #define BLOCK_INCENTIVES_POPULATOR_H
-
 #include <string>
+#include <amount.h>
 
 class CMutableTransaction;
 class CBlockRewards;
@@ -35,4 +35,7 @@ public:
         const I_BlockSubsidyProvider& blockSubsidies);
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake) const;
 };
+
+bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight);
+
 #endif // BLOCK_INCENTIVES_POPULATOR_H

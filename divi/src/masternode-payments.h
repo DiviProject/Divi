@@ -10,7 +10,6 @@
 #include <key.h>
 #include <masternode.h>
 #include <boost/lexical_cast.hpp>
-#include <LotteryCoinstakes.h>
 #include <primitives/transaction.h>
 
 class CBlock;
@@ -18,12 +17,13 @@ class CMasternodePayments;
 class CMasternodePaymentWinner;
 class CMasternodeBlockPayees;
 class SuperblockSubsidyContainer;
+class LotteryCoinstakeData;
 
 extern CMasternodePayments masternodePayments;
 
 bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pindex);
 
-LotteryCoinstakeData CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
+void CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight, LotteryCoinstakeData& coinstakeDataToUpdate);
 
 class CMasternodePayee
 {

@@ -22,6 +22,8 @@ class SuperblockSubsidyContainer;
 extern CMasternodePayments masternodePayments;
 
 bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex *pindex);
+bool HasValidSuperblockPayees(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex);
+bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pindex);
 
 LotteryCoinstakeData CalculateLotteryWinners(const CBlock& block, const CBlockIndex *prevBlockIndex, int nHeight);
 

@@ -123,14 +123,6 @@ bool HasValidSuperblockPayees(const CChainParams& chainParameters, const Superbl
     }
 }
 
-
-
-const std::string TREASURY_PAYMENT_ADDRESS("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");
-const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");
-
-const std::string TREASURY_PAYMENT_ADDRESS_TESTNET("xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd");
-const std::string CHARITY_PAYMENT_ADDRESS_TESTNET("y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5");
-
 BlockIncentivesPopulator::BlockIncentivesPopulator(
     const CChainParams& chainParameters,
     CChain& activeChain,

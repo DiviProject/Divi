@@ -2628,7 +2628,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
     if (pindexNew->nHeight)
         pindexNew->pprev->pnext = pindexNew;
 
-    pindexNew->vLotteryWinnersCoinstakes = CalculateLotteryWinners(block, pindexNew->pprev, pindexNew->nHeight);
+    CalculateLotteryWinners(block, pindexNew->pprev, pindexNew->nHeight, pindexNew->vLotteryWinnersCoinstakes);
 
     setDirtyBlockIndex.insert(pindexNew);
 

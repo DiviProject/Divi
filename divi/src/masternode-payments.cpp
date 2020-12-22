@@ -28,6 +28,7 @@
 #include <script/standard.h>
 #include <base58address.h>
 #include <chainparams.h>
+#include <LotteryCoinstakes.h>
 
 extern std::string strMasterNodePrivKey;
 extern bool fLiteMode;
@@ -85,7 +86,7 @@ bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pinde
     return true;
 }
 
-LotteryCoinstakeData CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
+void CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight, LotteryCoinstakeData& coinstakeDataToUpdate)
 {
     static const CChainParams& chainParameters = Params();
     static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
@@ -93,7 +94,7 @@ LotteryCoinstakeData CalculateLotteryWinners(const CBlock &block, const CBlockIn
     static LotteryCoinstakeData emptyData;
     const LotteryCoinstakeData& previousBlockLotteryCoinstakeData = prevBlockIndex? prevBlockIndex->vLotteryWinnersCoinstakes : emptyData;
     const CTransaction& coinMintingTransaction  = (nHeight > chainParameters.LAST_POW_BLOCK() )? block.vtx[1] : block.vtx[0];
-    return calculator.CalculateUpdatedLotteryWinners(coinMintingTransaction,previousBlockLotteryCoinstakeData,nHeight);
+    coinstakeDataToUpdate = calculator.CalculateUpdatedLotteryWinners(coinMintingTransaction,previousBlockLotteryCoinstakeData,nHeight);
 }
 
 CMasternodePayee::CMasternodePayee()

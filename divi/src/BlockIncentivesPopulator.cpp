@@ -14,6 +14,116 @@
 #include <script/standard.h>
 #include <Logging.h>
 
+namespace
+{
+constexpr const char* TREASURY_PAYMENT_ADDRESS = "DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn";
+constexpr const char* CHARITY_PAYMENT_ADDRESS = "DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq";
+
+constexpr const char* TREASURY_PAYMENT_ADDRESS_TESTNET = "xw7G6toCcLr2J7ZK8zTfVRhAPiNc8AyxCd";
+constexpr const char* CHARITY_PAYMENT_ADDRESS_TESTNET = "y8zytdJziDeXcdk48Wv7LH6FgnF4zDiXM5";
+
+CBitcoinAddress TreasuryPaymentAddress(const CChainParams& chainParameters)
+{
+    return CBitcoinAddress(chainParameters.NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET);
+}
+
+CBitcoinAddress CharityPaymentAddress(const CChainParams& chainParameters)
+{
+    return CBitcoinAddress(chainParameters.NetworkID() == CBaseChainParams::MAIN ? CHARITY_PAYMENT_ADDRESS : CHARITY_PAYMENT_ADDRESS_TESTNET);
+}
+
+bool IsValidLotteryPayment(const CBlockRewards& rewards, const CTransaction &tx, const LotteryCoinstakes vRequiredWinnersCoinstake)
+{
+    if(vRequiredWinnersCoinstake.empty()) {
+        return true;
+    }
+
+    auto verifyPayment = [&tx](CScript scriptPayment, CAmount amount) {
+        CTxOut outPayment(amount, scriptPayment);
+        return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
+    };
+
+    auto nLotteryReward = rewards.nLotteryReward;
+    auto nBigReward = nLotteryReward / 2;
+    auto nSmallReward = nBigReward / 10;
+
+    for(size_t i = 0; i < vRequiredWinnersCoinstake.size(); ++i) {
+        CScript scriptPayment = vRequiredWinnersCoinstake[i].second;
+        CAmount reward = i == 0 ? nBigReward : nSmallReward;
+        if(!verifyPayment(scriptPayment, reward)) {
+            LogPrintf("%s: No payment for winner: %s\n", __func__, vRequiredWinnersCoinstake[i].first.ToString());
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool IsValidTreasuryPayment(const CChainParams& chainParameters, const CBlockRewards& rewards,const CTransaction &tx)
+{
+    auto charityPart = rewards.nCharityReward;
+    auto treasuryPart = rewards.nTreasuryReward;
+
+    auto verifyPayment = [&tx](CBitcoinAddress address, CAmount amount) {
+
+        CScript scriptPayment = GetScriptForDestination(address.Get());
+        CTxOut outPayment(amount, scriptPayment);
+        return std::find(std::begin(tx.vout), std::end(tx.vout), outPayment) != std::end(tx.vout);
+    };
+
+    if(!verifyPayment(TreasuryPaymentAddress(chainParameters), treasuryPart))
+    {
+        LogPrint("masternode", "Expecting treasury payment, no payment address detected, rejecting\n");
+        return false;
+    }
+
+    if(!verifyPayment(CharityPaymentAddress(chainParameters), charityPart))
+    {
+        LogPrint("masternode", "Expecting charity payment, no payment address detected, rejecting\n");
+        return false;
+    }
+
+    return true;
+}
+
+} // anonymous namespace
+
+bool CheckSuperblockPayees(
+    const CChainParams& chainParameters,
+    const I_SuperblockHeightValidator& heightValidator,
+    const I_BlockSubsidyProvider& blockSubsidies,
+    const CTransaction &txNew,
+    const CBlockIndex* pindex)
+{
+    const CBlockRewards rewards = blockSubsidies.GetBlockSubsidity(pindex->nHeight);
+    if(heightValidator.IsValidTreasuryBlockHeight(pindex->nHeight))
+    {
+        return IsValidTreasuryPayment(chainParameters,rewards,txNew);
+    }
+    if(heightValidator.IsValidLotteryBlockHeight(pindex->nHeight))
+    {
+        return IsValidLotteryPayment(rewards,txNew, pindex->pprev->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
+    }
+    return true;
+}
+
+bool HasValidSuperblockPayees(const CChainParams& chainParameters, const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
+{
+    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
+    const unsigned blockHeight = pindex->nHeight;
+    if(heightValidator.IsValidTreasuryBlockHeight(blockHeight) ||
+        heightValidator.IsValidLotteryBlockHeight(blockHeight))
+    {
+        return CheckSuperblockPayees(chainParameters,heightValidator,blockSubsidies,txNew,pindex);
+    }
+    else
+    {
+        return true;
+    }
+}
+
+
 
 const std::string TREASURY_PAYMENT_ADDRESS("DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn");
 const std::string CHARITY_PAYMENT_ADDRESS("DPujt2XAdHyRcZNB5ySZBBVKjzY2uXZGYq");

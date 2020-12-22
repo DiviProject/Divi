@@ -12,11 +12,12 @@ class SuperblockSubsidyContainer: public I_SuperblockSubsidyContainer
 {
 private:
     const CChainParams& chainParameters_;
-    std::shared_ptr<I_SuperblockHeightValidator> heightValidator_;
-    std::shared_ptr<I_BlockSubsidyProvider> blockSubsidies_;
+    std::unique_ptr<I_SuperblockHeightValidator> heightValidator_;
+    std::unique_ptr<I_BlockSubsidyProvider> blockSubsidies_;
 
 public:
     SuperblockSubsidyContainer(const CChainParams& chainParameters);
+    ~SuperblockSubsidyContainer();
     virtual const I_SuperblockHeightValidator& superblockHeightValidator() const;
     virtual const I_BlockSubsidyProvider& blockSubsidiesProvider() const;
 };

@@ -1,17 +1,20 @@
 #include <SuperblockHelpers.h>
 
-#include <chainparams.h>
-#include <BlockRewards.h>
-#include <LegacyBlockSubsidies.h>
 #include <SuperblockHeightValidator.h>
 #include <BlockSubsidyProvider.h>
 
 SuperblockSubsidyContainer::SuperblockSubsidyContainer(
     const CChainParams& chainParameters
     ): chainParameters_(chainParameters)
-    , heightValidator_(std::make_shared<SuperblockHeightValidator>(chainParameters_))
-    , blockSubsidies_(std::make_shared<BlockSubsidyProvider>(chainParameters_,*heightValidator_))
+    , heightValidator_(new SuperblockHeightValidator(chainParameters_))
+    , blockSubsidies_(new BlockSubsidyProvider(chainParameters_,*heightValidator_))
 {
+}
+
+SuperblockSubsidyContainer::~SuperblockSubsidyContainer()
+{
+    blockSubsidies_.reset();
+    heightValidator_.reset();
 }
 
 const I_SuperblockHeightValidator& SuperblockSubsidyContainer::superblockHeightValidator() const

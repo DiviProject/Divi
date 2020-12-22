@@ -190,15 +190,6 @@ bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pinde
     return true;
 }
 
-bool IsBlockPayeeValid(const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
-{
-    if(!HasValidSuperblockPayees(superblockSubsidies,txNew,pindex) || !HasValidMasternodePayee(txNew,pindex))
-    {
-        return false;
-    }
-    return true;
-}
-
 LotteryCoinstakeData CalculateLotteryWinners(const CBlock &block, const CBlockIndex *prevBlockIndex, int nHeight)
 {
     static const CChainParams& chainParameters = Params();

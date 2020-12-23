@@ -18,7 +18,7 @@ void BlockSubsidyProvider::updateTreasuryReward(int nHeight, CBlockRewards& rewa
 {
     CAmount& treasuryReward = *const_cast<CAmount*>(&rewards.nTreasuryReward);
     CAmount& charityReward = *const_cast<CAmount*>(&rewards.nCharityReward);
-    if(!isTreasuryBlock) 
+    if(!isTreasuryBlock)
     {
         treasuryReward = 0;
         charityReward =0;
@@ -38,7 +38,7 @@ void BlockSubsidyProvider::updateTreasuryReward(int nHeight, CBlockRewards& rewa
 void BlockSubsidyProvider::updateLotteryReward(int nHeight, CBlockRewards& rewards,bool isLotteryBlock) const
 {
     CAmount& lotteryReward = *const_cast<CAmount*>(&rewards.nLotteryReward);
-    if(!isLotteryBlock) 
+    if(!isLotteryBlock)
     {
         lotteryReward = 0;
     }
@@ -54,12 +54,12 @@ void BlockSubsidyProvider::updateLotteryReward(int nHeight, CBlockRewards& rewar
 
 CBlockRewards BlockSubsidyProvider::GetBlockSubsidity(int nHeight) const
 {
-    CBlockRewards rewards = Legacy::GetBlockSubsidity(nHeight,chainParameters_);   
+    CBlockRewards rewards = Legacy::GetBlockSubsidity(nHeight,chainParameters_);
     updateTreasuryReward(nHeight,rewards, heightValidator_.IsValidTreasuryBlockHeight(nHeight));
     updateLotteryReward(nHeight,rewards, heightValidator_.IsValidLotteryBlockHeight(nHeight));
     return rewards;
 }
 CAmount BlockSubsidyProvider::GetFullBlockValue(int nHeight) const
 {
-    return Legacy::GetFullBlockValue(nHeight,chainParameters_);
+    return GetBlockSubsidity(nHeight).total();
 }

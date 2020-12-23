@@ -19,8 +19,8 @@ class LotteryWinnersCalculator
 {
 private:
     const int startOfLotteryBlocks_;
-    CChain& activeChain_;
-    CSporkManager& sporkManager_;
+    const CChain& activeChain_;
+    const CSporkManager& sporkManager_;
     const I_SuperblockHeightValidator& superblockHeightValidator_;
     int minimumCoinstakeForTicket(int nHeight) const;
     bool IsPaymentScriptVetoed(const CScript& paymentScript, const int blockHeight) const;
@@ -31,8 +31,8 @@ private:
 public:
     LotteryWinnersCalculator(
         int startOfLotteryBlocks,
-        CChain& activeChain,
-        CSporkManager& sporkManager,
+        const CChain& activeChain,
+        const CSporkManager& sporkManager,
         const I_SuperblockHeightValidator& superblockHeightValidator);
     static uint256 CalculateLotteryScore(const uint256 &hashCoinbaseTx, const uint256 &hashLastLotteryBlock);
     static RankedScoreAwareCoinstakes computeRankedScoreAwareCoinstakes(

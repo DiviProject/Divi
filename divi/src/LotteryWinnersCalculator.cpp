@@ -14,8 +14,8 @@
 
 LotteryWinnersCalculator::LotteryWinnersCalculator(
     int startOfLotteryBlocks,
-    CChain& activeChain,
-    CSporkManager& sporkManager,
+    const CChain& activeChain,
+    const CSporkManager& sporkManager,
     const I_SuperblockHeightValidator& superblockHeightValidator
     ): startOfLotteryBlocks_(startOfLotteryBlocks)
     , activeChain_(activeChain)

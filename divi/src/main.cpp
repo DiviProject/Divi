@@ -1753,6 +1753,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     static const BlockIncentivesPopulator incentives(
         chainParameters,
         chainActive,
+        masternodeSync,
         masternodePayments,
         subsidiesContainer.superblockHeightValidator(),
         subsidiesContainer.blockSubsidiesProvider());
@@ -1919,7 +1920,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                          REJECT_INVALID, "bad-cb-amount");
     }
 
-    if (!incentives.HasValidSuperblockPayees(coinbaseTx,pindex) || !HasValidMasternodePayee(coinbaseTx,pindex)) {
+    if (!incentives.HasValidSuperblockPayees(coinbaseTx,pindex) || !incentives.HasValidMasternodePayee(coinbaseTx,pindex)) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
                          REJECT_INVALID, "bad-cb-payee");

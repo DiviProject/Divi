@@ -148,14 +148,14 @@ void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const 
     }
 }
 
-bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight)
+bool BlockIncentivesPopulator::IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const
 {
     auto nExpectedMintCombined = nExpectedValue.nStakeReward;
     // here we expect treasury block payment
-    if(heightValidator.IsValidTreasuryBlockHeight(nHeight)) {
+    if(heightValidator_.IsValidTreasuryBlockHeight(nHeight)) {
         nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
     }
-    else if(heightValidator.IsValidLotteryBlockHeight(nHeight)) {
+    else if(heightValidator_.IsValidLotteryBlockHeight(nHeight)) {
         nExpectedMintCombined += nExpectedValue.nLotteryReward;
     }
     else
@@ -190,15 +190,13 @@ bool CheckSuperblockPayees(
     return true;
 }
 
-bool HasValidSuperblockPayees(const CChainParams& chainParameters, const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex)
+bool BlockIncentivesPopulator::HasValidSuperblockPayees(const CTransaction &txNew, const CBlockIndex* pindex) const
 {
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
-    const I_BlockSubsidyProvider& blockSubsidies = superblockSubsidies.blockSubsidiesProvider();
     const unsigned blockHeight = pindex->nHeight;
-    if(heightValidator.IsValidTreasuryBlockHeight(blockHeight) ||
-        heightValidator.IsValidLotteryBlockHeight(blockHeight))
+    if(heightValidator_.IsValidTreasuryBlockHeight(blockHeight) ||
+        heightValidator_.IsValidLotteryBlockHeight(blockHeight))
     {
-        return CheckSuperblockPayees(chainParameters,heightValidator,blockSubsidies,txNew,pindex);
+        return CheckSuperblockPayees(chainParameters_,heightValidator_,blockSubsidies_,txNew,pindex);
     }
     else
     {

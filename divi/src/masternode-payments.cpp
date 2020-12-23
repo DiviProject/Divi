@@ -47,41 +47,6 @@ constexpr int MNPAYMENTS_SIGNATURES_REQUIRED = 6;
 constexpr int MNPAYMENTS_SIGNATURES_TOTAL = 10;
 }
 
-bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pindex)
-{
-    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
-        LogPrintf("%s : Client not synced, skipping block payee checks\n", __func__);
-        return true;
-    }
-
-    /* For the first 100 blocks after genesis, there is no scoring hash (as
-       the block used for it would be before genesis).  In this case, just
-       ignore any payment checks.  On mainnet, those blocks are long enshrined
-       into blockchain history anyway.  On regtest, this allows proper
-       functioning.  */
-    if (pindex->nHeight <= 100) {
-        LogPrint("masternode", "%s : not checking payments for height %d\n",
-                 __func__, pindex->nHeight);
-        return true;
-    }
-
-    //check for masternode payee
-    uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, pindex, 0)) {
-        LogPrint("masternode", "%s : failed to get scoring hash for height %d\n",
-                 __func__, pindex->nHeight);
-        return false;
-    }
-    if (masternodePayments.IsTransactionValid(txNew, seedHash))
-        return true;
-    LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew.ToString().c_str());
-
-    if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT))
-        return false;
-    LogPrintf("%s : Masternode payment enforcement is disabled, accepting block\n", __func__);
-
-    return true;
-}
 
 CMasternodePayee::CMasternodePayee()
 {

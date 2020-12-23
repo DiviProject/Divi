@@ -150,8 +150,7 @@ void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const 
 
 bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight)
 {
-    auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;
-
+    auto nExpectedMintCombined = nExpectedValue.nStakeReward;
     // here we expect treasury block payment
     if(heightValidator.IsValidTreasuryBlockHeight(nHeight)) {
         nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
@@ -159,8 +158,13 @@ bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const
     else if(heightValidator.IsValidLotteryBlockHeight(nHeight)) {
         nExpectedMintCombined += nExpectedValue.nLotteryReward;
     }
+    else
+    {
+        nExpectedMintCombined += nExpectedValue.nMasternodeReward;
+    }
 
-    if (nMinted > nExpectedMintCombined) {
+    if (nMinted > nExpectedMintCombined)
+    {
         return false;
     }
 

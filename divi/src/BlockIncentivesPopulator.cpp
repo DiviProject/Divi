@@ -14,25 +14,6 @@
 #include <script/standard.h>
 #include <Logging.h>
 
-
-#include <spork.h>
-#include <LotteryWinnersCalculator.h>
-#include <primitives/block.h>
-extern CChain chainActive;
-
-void UpdateBlockIndexLotteryWinners(const CBlock &block, CBlockIndex *newestBlockIndex)
-{
-    const int nHeight = newestBlockIndex->nHeight;
-    const CBlockIndex *prevBlockIndex = newestBlockIndex->pprev;
-    static const CChainParams& chainParameters = Params();
-    static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
-    static LotteryWinnersCalculator calculator(chainParameters.GetLotteryBlockStartBlock(),chainActive, sporkManager,subsidyCointainer.superblockHeightValidator());
-    static LotteryCoinstakeData emptyData;
-    const LotteryCoinstakeData& previousBlockLotteryCoinstakeData = prevBlockIndex? prevBlockIndex->vLotteryWinnersCoinstakes : emptyData;
-    const CTransaction& coinMintingTransaction  = (nHeight > chainParameters.LAST_POW_BLOCK() )? block.vtx[1] : block.vtx[0];
-    newestBlockIndex->vLotteryWinnersCoinstakes = calculator.CalculateUpdatedLotteryWinners(coinMintingTransaction,previousBlockLotteryCoinstakeData,nHeight);
-}
-
 namespace
 {
 constexpr const char* TREASURY_PAYMENT_ADDRESS = "DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn";

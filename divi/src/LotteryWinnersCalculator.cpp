@@ -1,6 +1,5 @@
 #include <LotteryWinnersCalculator.h>
 
-#include <SuperblockHelpers.h>
 #include <hash.h>
 #include <uint256.h>
 #include <primitives/transaction.h>

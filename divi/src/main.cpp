@@ -30,7 +30,7 @@
 #include "utilmoneystr.h"
 #include "NotificationInterface.h"
 #include "FeeAndPriorityCalculator.h"
-#include "SuperblockHelpers.h"
+#include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
 #include <BlockIndexLotteryUpdater.h>
 #include "libzerocoin/Denominations.h"

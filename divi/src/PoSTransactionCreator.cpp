@@ -5,7 +5,7 @@
 #include <masternode-payments.h>
 #include <script/sign.h>
 #include <utilmoneystr.h>
-#include <SuperblockHelpers.h>
+#include <I_BlockSubsidyProvider.h>
 #include <Settings.h>
 #include <BlockIncentivesPopulator.h>
 #include <blockmap.h>

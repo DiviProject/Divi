@@ -181,7 +181,7 @@ public:
     bool UpdateSpork(int nSporkID, std::string strValue);
     int GetActiveSporkCount() const;
 
-    bool IsSporkActive(int nSporkID);
+    bool IsSporkActive(int nSporkID) const;
     std::vector<CSporkMessage> GetMultiValueSpork(int nSporkID) const;
 
     template <class T>

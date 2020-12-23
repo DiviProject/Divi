@@ -334,7 +334,7 @@ int CSporkManager::GetActiveSporkCount() const
 }
 
 // grab the spork, otherwise say it's off
-bool CSporkManager::IsSporkActive(int nSporkID)
+bool CSporkManager::IsSporkActive(int nSporkID) const
 {
     // Multi value sporks cannot be active, but they can store value
     bool fMultiValue = IsMultiValueSpork(nSporkID);
@@ -346,9 +346,9 @@ bool CSporkManager::IsSporkActive(int nSporkID)
     std::string r;
 
     if(mapSporksActive.count(nSporkID)){
-        r = mapSporksActive[nSporkID].front().strValue; // always one value
+        r = mapSporksActive.find(nSporkID)->second.front().strValue; // always one value
     } else if (mapSporkDefaults.count(nSporkID)) {
-        r = mapSporkDefaults[nSporkID];
+        r = mapSporkDefaults.find(nSporkID)->second;
     } else {
         LogPrint("spork", "CSporkManager::IsSporkActive -- Unknown Spork ID %d\n", nSporkID);
         r = "4070908800"; // 2099-1-1 i.e. off by default

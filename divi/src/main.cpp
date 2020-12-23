@@ -1748,8 +1748,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount nValueIn = 0;
     unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
 
-    const CChainParams& chainParameters = Params();
-    const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
+    static const CChainParams& chainParameters = Params();
+    static const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
+    static const BlockIncentivesPopulator incentives(
+        chainParameters,
+        chainActive,
+        masternodePayments,
+        subsidiesContainer.superblockHeightValidator(),
+        subsidiesContainer.blockSubsidiesProvider());
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
 
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
@@ -1906,14 +1912,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         LogPrint("masternode","IsBlockValueValid() : WARNING: Couldn't find previous block\n");
     }
 
-    if (!chainTipIsNull && !IsBlockValueValid(subsidiesContainer.superblockHeightValidator(),nExpectedMint, pindex->nMint, blockHeight)) {
+    if (!chainTipIsNull && !incentives.IsBlockValueValid(nExpectedMint, pindex->nMint, blockHeight)) {
         return state.DoS(100,
                          error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
                                FormatMoney(pindex->nMint), nExpectedMint.ToString()),
                          REJECT_INVALID, "bad-cb-amount");
     }
 
-    if (!HasValidSuperblockPayees(chainParameters,subsidiesContainer,coinbaseTx,pindex) || !HasValidMasternodePayee(coinbaseTx,pindex)) {
+    if (!incentives.HasValidSuperblockPayees(coinbaseTx,pindex) || !HasValidMasternodePayee(coinbaseTx,pindex)) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
         return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
                          REJECT_INVALID, "bad-cb-payee");

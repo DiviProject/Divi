@@ -13,12 +13,14 @@ class I_SuperblockHeightValidator;
 class I_BlockSubsidyProvider;
 class SuperblockSubsidyContainer;
 class CTransaction;
+class CMasternodeSync;
 
 class BlockIncentivesPopulator
 {
 private:
     const CChainParams& chainParameters_;
     CChain& activeChain_;
+    CMasternodeSync& masternodeSync_;
     CMasternodePayments& masternodePayments_;
     const I_SuperblockHeightValidator& heightValidator_;
     const I_BlockSubsidyProvider& blockSubsidies_;
@@ -33,12 +35,14 @@ public:
     BlockIncentivesPopulator(
         const CChainParams& chainParameters,
         CChain& activeChain,
+        CMasternodeSync& masternodeSynchronization,
         CMasternodePayments& masternodePayments,
         const I_SuperblockHeightValidator& heightValidator,
         const I_BlockSubsidyProvider& blockSubsidies);
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake) const;
     bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const;
     bool HasValidSuperblockPayees(const CTransaction &txNew, const CBlockIndex* pindex) const;
+    bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pindex) const;
 };
 
 #endif // BLOCK_INCENTIVES_POPULATOR_H

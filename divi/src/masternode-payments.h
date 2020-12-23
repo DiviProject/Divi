@@ -20,8 +20,6 @@ class SuperblockSubsidyContainer;
 
 extern CMasternodePayments masternodePayments;
 
-bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pindex);
-
 class CMasternodePayee
 {
 public:

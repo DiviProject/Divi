@@ -13,7 +13,6 @@ class I_SuperblockHeightValidator;
 class I_BlockSubsidyProvider;
 class SuperblockSubsidyContainer;
 class CTransaction;
-class CBlock;
 
 class BlockIncentivesPopulator
 {
@@ -42,6 +41,5 @@ public:
 
 bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight);
 bool HasValidSuperblockPayees(const CChainParams& chainParameters, const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex);
-void UpdateBlockIndexLotteryWinners(const CBlock& block, CBlockIndex *newestBlockIndex);
 
 #endif // BLOCK_INCENTIVES_POPULATOR_H

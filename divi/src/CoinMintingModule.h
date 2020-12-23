@@ -20,6 +20,7 @@ class I_PoSTransactionCreator;
 class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class I_PoSStakeModifierService;
+class BlockMap;
 
 class CoinMintingModule
 {
@@ -41,7 +42,8 @@ public:
         std::vector<CNode*>& peers,
         CWallet& wallet,
         int64_t& lastCoinStakeSearchInterval,
-        BlockTimestampsByHeight& hashedBlockTimestampsByHeight);
+        BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
+        BlockMap& blockIndexByHash);
     ~CoinMintingModule();
 
     I_BlockFactory& blockFactory() const;

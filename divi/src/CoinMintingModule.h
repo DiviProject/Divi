@@ -21,6 +21,7 @@ class SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class I_PoSStakeModifierService;
 class BlockMap;
+class CMasternodePayments;
 
 class CoinMintingModule
 {
@@ -38,6 +39,7 @@ public:
         const CChainParams& chainParameters,
         CChain& activeChain,
         CMasternodeSync& masternodeSynchronization,
+        CMasternodePayments& masternodePayments,
         CTxMemPool& mempool,
         std::vector<CNode*>& peers,
         CWallet& wallet,

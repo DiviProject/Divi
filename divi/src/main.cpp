@@ -32,6 +32,7 @@
 #include "FeeAndPriorityCalculator.h"
 #include "SuperblockHelpers.h"
 #include <BlockIncentivesPopulator.h>
+#include <BlockIndexLotteryUpdater.h>
 #include "libzerocoin/Denominations.h"
 #include <sstream>
 #include "Settings.h"
@@ -2573,6 +2574,7 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex)
 
 CBlockIndex* AddToBlockIndex(const CBlock& block)
 {
+    static BlockIndexLotteryUpdater lotteryUpdater(Params(),chainActive,sporkManager);
     // Check for duplicate
     uint256 hash = block.GetHash();
     BlockMap::iterator it = mapBlockIndex.find(hash);
@@ -2628,7 +2630,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
     if (pindexNew->nHeight)
         pindexNew->pprev->pnext = pindexNew;
 
-    UpdateBlockIndexLotteryWinners(block, pindexNew);
+    lotteryUpdater.UpdateBlockIndexLotteryWinners(block,pindexNew);
 
     setDirtyBlockIndex.insert(pindexNew);
 

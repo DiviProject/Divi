@@ -39,7 +39,7 @@ public:
         CMasternodePayments& masternodePayments,
         const I_SuperblockHeightValidator& heightValidator,
         const I_BlockSubsidyProvider& blockSubsidies);
-    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake) const;
+    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip, bool fProofOfStake) const;
     bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const;
     bool HasValidSuperblockPayees(const CTransaction &txNew, const CBlockIndex* pindex) const;
     bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pindex) const;

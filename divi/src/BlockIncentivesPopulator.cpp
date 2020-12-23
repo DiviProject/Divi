@@ -138,16 +138,13 @@ void BlockIncentivesPopulator::FillLotteryPayment(CMutableTransaction &tx, const
     }
 }
 
-void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake) const
+void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip, bool fProofOfStake) const
 {
-    CBlockIndex* pindexPrev = activeChain_.Tip();
-    if (!pindexPrev) return;
-
-    if (heightValidator_.IsValidTreasuryBlockHeight(pindexPrev->nHeight + 1)) {
-        FillTreasuryPayment(txNew, pindexPrev->nHeight + 1);
+    if (heightValidator_.IsValidTreasuryBlockHeight(chainTip->nHeight + 1)) {
+        FillTreasuryPayment(txNew, chainTip->nHeight + 1);
     }
-    else if(heightValidator_.IsValidLotteryBlockHeight(pindexPrev->nHeight + 1)) {
-        FillLotteryPayment(txNew, payments, pindexPrev);
+    else if(heightValidator_.IsValidLotteryBlockHeight(chainTip->nHeight + 1)) {
+        FillLotteryPayment(txNew, payments, chainTip);
     }
     else {
         masternodePayments_.FillBlockPayee(txNew, payments, fProofOfStake);

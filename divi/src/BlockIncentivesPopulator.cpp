@@ -3,7 +3,7 @@
 #include <string>
 #include <base58.h>
 #include <chainparams.h>
-#include <SuperblockHelpers.h>
+#include <SuperblockSubsidyContainer.h>
 #include <primitives/transaction.h>
 #include <chain.h>
 #include <BlockRewards.h>

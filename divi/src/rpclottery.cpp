@@ -1,7 +1,7 @@
 #include <chain.h>
 #include <spork.h>
 #include <LotteryWinnersCalculator.h>
-#include <SuperblockHelpers.h>
+#include <SuperblockSubsidyContainer.h>
 #include <script/standard.h>
 #include <json/json_spirit_value.h>
 #include <chainparams.h>

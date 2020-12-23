@@ -198,7 +198,7 @@ BITCOIN_CORE_H = \
   LotteryCoinstakes.h \
   LotteryWinnersCalculator.h \
   BlockIncentivesPopulator.h \
-  SuperblockHelpers.h \
+  SuperblockSubsidyContainer.h \
   SuperblockHeightValidator.h \
   masternode-tier.h \
   masternode-sync.h \
@@ -412,7 +412,7 @@ libbitcoin_wallet_a_SOURCES = \
   LotteryWinnersCalculator.cpp \
   LotteryCoinstakes.cpp \
   BlockIncentivesPopulator.cpp \
-  SuperblockHelpers.cpp \
+  SuperblockSubsidyContainer.cpp \
   SuperblockHeightValidator.cpp \
   SpentOutputTracker.cpp \
   masternode-sync.cpp \

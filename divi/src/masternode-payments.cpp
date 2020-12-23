@@ -22,7 +22,7 @@
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <numeric>
-#include <SuperblockHelpers.h>
+#include <SuperblockSubsidyContainer.h>
 #include <script/standard.h>
 #include <base58address.h>
 #include <chainparams.h>

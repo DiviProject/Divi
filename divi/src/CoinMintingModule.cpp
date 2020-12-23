@@ -6,7 +6,7 @@
 #include <chainparams.h>
 #include <BlockMemoryPoolTransactionCollector.h>
 #include <PoSTransactionCreator.h>
-#include <SuperblockHelpers.h>
+#include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
 #include <LegacyPoSStakeModifierService.h>
 #include <PoSStakeModifierService.h>

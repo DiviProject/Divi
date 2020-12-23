@@ -18,7 +18,7 @@
 #include "wallet.h"
 #include "walletdb.h"
 #include "masternode-payments.h"
-#include "SuperblockHelpers.h"
+#include <SuperblockSubsidyContainer.h>
 #include <script/standard.h>
 #include <script/StakingVaultScript.h>
 #include <WalletTx.h>

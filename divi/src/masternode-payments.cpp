@@ -23,12 +23,9 @@
 #include <algorithm>
 #include <numeric>
 #include <SuperblockHelpers.h>
-#include <LotteryWinnersCalculator.h>
-#include <BlockIncentivesPopulator.h>
 #include <script/standard.h>
 #include <base58address.h>
 #include <chainparams.h>
-#include <LotteryCoinstakes.h>
 
 extern std::string strMasterNodePrivKey;
 extern bool fLiteMode;

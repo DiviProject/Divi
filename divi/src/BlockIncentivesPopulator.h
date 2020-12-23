@@ -37,9 +37,8 @@ public:
         const I_SuperblockHeightValidator& heightValidator,
         const I_BlockSubsidyProvider& blockSubsidies);
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, int newBlockHeight, bool fProofOfStake) const;
+    bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const;
+    bool HasValidSuperblockPayees(const CTransaction &txNew, const CBlockIndex* pindex) const;
 };
-
-bool IsBlockValueValid(const I_SuperblockHeightValidator& heightValidator, const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight);
-bool HasValidSuperblockPayees(const CChainParams& chainParameters, const SuperblockSubsidyContainer& superblockSubsidies, const CTransaction &txNew, const CBlockIndex* pindex);
 
 #endif // BLOCK_INCENTIVES_POPULATOR_H

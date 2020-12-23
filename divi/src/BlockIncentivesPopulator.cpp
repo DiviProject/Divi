@@ -20,7 +20,7 @@
 #include <primitives/block.h>
 extern CChain chainActive;
 
-void CalculateLotteryWinners(const CBlock &block, CBlockIndex *newestBlockIndex)
+void UpdateBlockIndexLotteryWinners(const CBlock &block, CBlockIndex *newestBlockIndex)
 {
     const int nHeight = newestBlockIndex->nHeight;
     const CBlockIndex *prevBlockIndex = newestBlockIndex->pprev;

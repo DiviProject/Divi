@@ -3,7 +3,7 @@
 #include <LotteryCoinstakes.h>
 #include <chainparams.h>
 #include <chain.h>
-#include <SuperblockHelpers.h>
+#include <SuperblockSubsidyContainer.h>
 #include <LotteryWinnersCalculator.h>
 
 BlockIndexLotteryUpdater::BlockIndexLotteryUpdater(

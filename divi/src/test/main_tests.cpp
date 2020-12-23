@@ -11,7 +11,7 @@
 #include "test_only.h"
 
 #include <chainparams.h>
-#include <SuperblockHelpers.h>
+#include <SuperblockSubsidyContainer.h>
 
 BOOST_AUTO_TEST_SUITE(main_tests)
 

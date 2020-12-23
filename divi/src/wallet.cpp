@@ -19,7 +19,6 @@
 #include "script/script.h"
 #include "script/sign.h"
 #include "spork.h"
-#include "SuperblockHelpers.h"
 #include "swifttx.h"
 #include "timedata.h"
 #include "utilmoneystr.h"

@@ -1,4 +1,4 @@
-#include <SuperblockHelpers.h>
+#include <SuperblockSubsidyContainer.h>
 
 #include <SuperblockHeightValidator.h>
 #include <BlockSubsidyProvider.h>

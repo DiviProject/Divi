@@ -95,7 +95,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     LogPrintf("ThreadStakeMinter started\n");
     try {
         static CoinMintingModule mintingModule(
-            cs_main,Params(),chainActive,masternodeSync,mempool,vNodes,*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks);
+            cs_main,Params(),chainActive,masternodeSync,mempool,vNodes,*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks,mapBlockIndex);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
@@ -116,7 +116,7 @@ void static ThreadPoWMinter(void* parg)
 
     try {
         static CoinMintingModule mintingModule(
-            cs_main,Params(),chainActive,masternodeSync,mempool,vNodes,*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks);
+            cs_main,Params(),chainActive,masternodeSync,mempool,vNodes,*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks,mapBlockIndex);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);

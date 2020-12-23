@@ -228,11 +228,11 @@ void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew)
     uint64_t nStakeModifier = 0;
     bool fGeneratedStakeModifier = false;
     if (!ComputeNextStakeModifier(pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
-        LogPrintf("AddToBlockIndex() : ComputeNextStakeModifier() failed \n");
+        LogPrintf("%s : ComputeNextStakeModifier() failed \n",__func__);
     pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
     pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
     if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
-        LogPrintf("AddToBlockIndex() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, boost::lexical_cast<std::string>(nStakeModifier));
+        LogPrintf("%s : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", __func__, pindexNew->nHeight, boost::lexical_cast<std::string>(nStakeModifier));
 }
 
 // Check kernel hash target and coinstake signature

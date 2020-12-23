@@ -11,8 +11,6 @@
 #include <LegacyPoSStakeModifierService.h>
 #include <PoSStakeModifierService.h>
 
-#include <masternode-payments.h>
-
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
@@ -46,6 +44,7 @@ CoinMintingModule::CoinMintingModule(
     const CChainParams& chainParameters,
     CChain& activeChain,
     CMasternodeSync& masternodeSynchronization,
+    CMasternodePayments& masternodePayments,
     CTxMemPool& mempool,
     std::vector<CNode*>& peers,
     CWallet& wallet,

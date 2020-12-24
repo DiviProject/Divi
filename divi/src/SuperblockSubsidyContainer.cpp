@@ -5,9 +5,8 @@
 
 SuperblockSubsidyContainer::SuperblockSubsidyContainer(
     const CChainParams& chainParameters
-    ): chainParameters_(chainParameters)
-    , heightValidator_(new SuperblockHeightValidator(chainParameters_))
-    , blockSubsidies_(new BlockSubsidyProvider(chainParameters_,*heightValidator_))
+    ): heightValidator_(new SuperblockHeightValidator(chainParameters))
+    , blockSubsidies_(new BlockSubsidyProvider(chainParameters,*heightValidator_))
 {
 }
 

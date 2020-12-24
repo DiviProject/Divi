@@ -11,7 +11,6 @@ class CChainParams;
 class SuperblockSubsidyContainer: public I_SuperblockSubsidyContainer
 {
 private:
-    const CChainParams& chainParameters_;
     std::unique_ptr<I_SuperblockHeightValidator> heightValidator_;
     std::unique_ptr<I_BlockSubsidyProvider> blockSubsidies_;
 

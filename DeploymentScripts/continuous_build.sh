@@ -5,14 +5,19 @@ cd /root/DeploymentScripts/
 touch LastBuiltDevelopment
 oldHash=$(tac LastBuiltDevelopment | head -n 1)
 remoteDevelopment="https://github.com/galpHub/Divi.git"
-git clone --depth=1 $remoteDevelopment --branch Development /tmp/Divi/
+remoteMaster="https://github.com/DiviProject/Divi.git"
+
+branch_name="Development"
+remoteRepo=$remoteDevelopment
+
+git clone --depth=1 $remoteRepo --branch $branch_name /tmp/Divi/
 pushd /tmp/Divi/
 newestHash=$(git rev-parse HEAD)
 popd
 rm -r /tmp/Divi/
 zero=0
 if [[ $oldHash != $newestHash ]]; then
-	./tidy_build.sh Development $remoteDevelopment $1
+	./tidy_build.sh $branch_name $remoteRepo $1
 	if [[ $? ]]; then
 		if [[ -d "/divi_binaries/$newestHash" ]]; then
 			echo "Build complete!"

@@ -169,19 +169,25 @@ bool BlockIncentivesPopulator::IsBlockValueValid(const CBlockRewards &nExpectedV
     return true;
 }
 
+enum BlockTypePayee
+{
+    TREASURY_ONLY,
+    LOTTERY_ONLY,
+};
+
 bool CheckSuperblockPayees(
     const CChainParams& chainParameters,
-    const I_SuperblockHeightValidator& heightValidator,
+    const BlockTypePayee blockPayee,
     const I_BlockSubsidyProvider& blockSubsidies,
     const CTransaction &txNew,
     const CBlockIndex* pindex)
 {
     const CBlockRewards rewards = blockSubsidies.GetBlockSubsidity(pindex->nHeight);
-    if(heightValidator.IsValidTreasuryBlockHeight(pindex->nHeight))
+    if(blockPayee == TREASURY_ONLY)
     {
         return IsValidTreasuryPayment(chainParameters,rewards,txNew);
     }
-    if(heightValidator.IsValidLotteryBlockHeight(pindex->nHeight))
+    if(blockPayee == LOTTERY_ONLY)
     {
         return IsValidLotteryPayment(rewards,txNew, pindex->pprev->vLotteryWinnersCoinstakes.getLotteryCoinstakes());
     }
@@ -191,10 +197,13 @@ bool CheckSuperblockPayees(
 bool BlockIncentivesPopulator::HasValidPayees(const CTransaction &txNew, const CBlockIndex* pindex) const
 {
     const unsigned blockHeight = pindex->nHeight;
-    if(heightValidator_.IsValidTreasuryBlockHeight(blockHeight) ||
-        heightValidator_.IsValidLotteryBlockHeight(blockHeight))
+    if(heightValidator_.IsValidTreasuryBlockHeight(blockHeight))
     {
-        return CheckSuperblockPayees(chainParameters_,heightValidator_,blockSubsidies_,txNew,pindex);
+        return CheckSuperblockPayees(chainParameters_,BlockTypePayee::TREASURY_ONLY,blockSubsidies_,txNew,pindex);
+    }
+    else if(heightValidator_.IsValidLotteryBlockHeight(blockHeight))
+    {
+        return CheckSuperblockPayees(chainParameters_,BlockTypePayee::LOTTERY_ONLY,blockSubsidies_,txNew,pindex);
     }
     else
     {

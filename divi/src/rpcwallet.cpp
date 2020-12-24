@@ -1498,8 +1498,8 @@ static std::string GetAccountAddress(const CTxDestination &dest)
 
 void ListTransactions(const CWallet& wallet, const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter& filter)
 {
-    SuperblockSubsidyContainer superblockSubsidies(Params());
-    const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
+    static SuperblockSubsidyContainer superblockSubsidies(Params());
+    static const I_SuperblockHeightValidator& heightValidator = superblockSubsidies.superblockHeightValidator();
 
     CAmount nFee;
     string strSentAccount;

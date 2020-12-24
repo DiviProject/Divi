@@ -16,7 +16,6 @@ class CBlock;
 class CMasternodePayments;
 class CMasternodePaymentWinner;
 class CMasternodeBlockPayees;
-class SuperblockSubsidyContainer;
 
 extern CMasternodePayments masternodePayments;
 

@@ -256,7 +256,7 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
     CAmount nCredit = stakeData.tx->vout[stakeData.outputIndex].nValue + blockSubdidy.nStakeReward;
     constexpr char autocombineSettingLookup[] = "-autocombine";
-    bool autocombine = settings.GetArg(autocombineSettingLookup,true);
+    bool autocombine = settings.GetBoolArg(autocombineSettingLookup,true);
     if (nCredit > stakeSplit )
     {
         txCoinStake.vout.push_back(txCoinStake.vout.back());

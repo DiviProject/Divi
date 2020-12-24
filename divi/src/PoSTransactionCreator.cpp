@@ -320,7 +320,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
     CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,100000)* COIN);
     if(isVaultScript)
     {
-        stakeSplit = std::max(stakeSplit,10000*COIN);
+        stakeSplit = std::max(stakeSplit,20000*COIN);
     }
 
     SplitOrCombineUTXOS(stakeSplit,chainTip,txCoinStake,successfullyStakableUTXO,vwtxPrev);

@@ -11,7 +11,6 @@ class CChain;
 class CMasternodePayments;
 class I_SuperblockHeightValidator;
 class I_BlockSubsidyProvider;
-class SuperblockSubsidyContainer;
 class CTransaction;
 class CMasternodeSync;
 

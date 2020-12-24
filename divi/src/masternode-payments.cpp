@@ -407,13 +407,15 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
 bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew) const
 {
     LOCK(cs_vecPayments);
+    static SuperblockSubsidyContainer subsidiesContainer(Params());
+    static const I_BlockSubsidyProvider& subsidies = subsidiesContainer.blockSubsidiesProvider();
 
     int nMaxSignatures = 0;
 
     std::string strPayeesPossible = "";
 
-    SuperblockSubsidyContainer subsidiesContainer(Params());
-    auto rewards = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(nBlockHeight);
+
+    auto rewards = subsidies.GetBlockSubsidity(nBlockHeight);
 
     CAmount requiredMasternodePayment = rewards.nMasternodeReward;
 

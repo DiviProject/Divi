@@ -21,6 +21,7 @@ fi
 
 git clone -q $source_url /blddv/Divi/ &&
 cd /blddv/Divi/ &&
+git checkout -q $1 || git checkout -q origin/$1 -b $1 &&
 HEAD_COMMIT_HASH=$(git rev-parse HEAD) &&
 MayBuild=true
 

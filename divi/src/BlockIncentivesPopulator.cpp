@@ -152,17 +152,13 @@ void BlockIncentivesPopulator::FillBlockPayee(CMutableTransaction& txNew, const 
 
 bool BlockIncentivesPopulator::IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const
 {
-    auto nExpectedMintCombined = nExpectedValue.nStakeReward;
+    auto nExpectedMintCombined = nExpectedValue.nStakeReward + nExpectedValue.nMasternodeReward;
     // here we expect treasury block payment
     if(heightValidator_.IsValidTreasuryBlockHeight(nHeight)) {
         nExpectedMintCombined += (nExpectedValue.nTreasuryReward + nExpectedValue.nCharityReward);
     }
     else if(heightValidator_.IsValidLotteryBlockHeight(nHeight)) {
         nExpectedMintCombined += nExpectedValue.nLotteryReward;
-    }
-    else
-    {
-        nExpectedMintCombined += nExpectedValue.nMasternodeReward;
     }
 
     if (nMinted > nExpectedMintCombined)
@@ -192,7 +188,7 @@ bool CheckSuperblockPayees(
     return true;
 }
 
-bool BlockIncentivesPopulator::HasValidSuperblockPayees(const CTransaction &txNew, const CBlockIndex* pindex) const
+bool BlockIncentivesPopulator::HasValidPayees(const CTransaction &txNew, const CBlockIndex* pindex) const
 {
     const unsigned blockHeight = pindex->nHeight;
     if(heightValidator_.IsValidTreasuryBlockHeight(blockHeight) ||
@@ -202,7 +198,7 @@ bool BlockIncentivesPopulator::HasValidSuperblockPayees(const CTransaction &txNe
     }
     else
     {
-        return true;
+        return HasValidMasternodePayee(txNew,pindex);
     }
 }
 

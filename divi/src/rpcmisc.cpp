@@ -30,6 +30,8 @@ extern CFeeRate payTxFee;
 #include <spentindex.h>
 #include <net.h>
 #include <txmempool.h>
+#include <Settings.h>
+extern Settings& settings;
 
 using namespace boost;
 using namespace boost::assign;
@@ -1113,11 +1115,15 @@ Value getstakingstatus(const Array& params, bool fHelp)
         obj.push_back(Pair("mintablecoins", pwalletMain->MintableCoins()));
         obj.push_back(Pair("enoughcoins", pwalletMain->GetStakingBalance() > 0  ));
     }
+
     obj.push_back(Pair("mnsync", masternodeSync.IsSynced()));
 
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", nStaking));
 
+    constexpr char stakeSplitSettingLookup[] = "-stakesplitthreshold";
+    CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,100000)* COIN);
+    obj.push_back(Pair("stake split threshold",ValueFromAmount(stakeSplit) ));
     return obj;
 }
 #endif // ENABLE_WALLET

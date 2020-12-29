@@ -37,6 +37,35 @@ bool UIMessenger::InitMessage(const std::string& str, std::string untranslateabl
 
 
 
+DataCacheManager::DataCacheManager(
+    CMasternodeMan& mnmanager,
+    CMasternodePayments& mnPayments,
+    CNetFulfilledRequestManager& networkRequestManager,
+    const boost::filesystem::path& dataDirectory,
+    CClientUIInterface& uiInterface_in,
+    bool litemodeEnabled
+    ): masternodeManager_(mnmanager)
+    , masternodePayments_(mnPayments)
+    , networkRequestManager_(networkRequestManager)
+    , pathDB(dataDirectory)
+    , uiMessenger_(uiInterface_in)
+    , litemode_(litemodeEnabled)
+{
+}
+
+DataCacheManager::DataCacheManager(
+    const boost::filesystem::path& dataDirectory,
+    CClientUIInterface& uiInterface_in,
+    bool litemodeEnabled
+    ): masternodeManager_(mnodeman)
+    , masternodePayments_(masternodePayments)
+    , networkRequestManager_(netfulfilledman)
+    , pathDB(dataDirectory)
+    , uiMessenger_(uiInterface_in)
+    , litemode_(litemodeEnabled)
+{
+}
+
 void DataCacheManager::StoreDataCaches()
 {
     if (!litemode_) {

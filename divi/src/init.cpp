@@ -21,13 +21,9 @@
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
-#include "masternode-payments.h"
 #include "masternodeconfig.h"
-#include "masternodeman.h"
 #include "activemasternode.h"
 #include <walletBackupFeatureContainer.h>
-#include "flat-database.h"
-#include "netfulfilledman.h"
 #include "miner.h"
 #include "net.h"
 #include "rpcserver.h"
@@ -212,9 +208,6 @@ void FlushWalletAndStopMinting()
 void StoreDataCaches()
 {
     DataCacheManager(
-        mnodeman,
-        masternodePayments,
-        netfulfilledman,
         GetDataDir(),
         uiInterface,
         fLiteMode).StoreDataCaches();
@@ -223,9 +216,6 @@ void StoreDataCaches()
 bool LoadDataCaches()
 {
     return DataCacheManager(
-        mnodeman,
-        masternodePayments,
-        netfulfilledman,
         GetDataDir(),
         uiInterface,
         fLiteMode).LoadDataCaches();

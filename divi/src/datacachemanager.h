@@ -38,15 +38,11 @@ public:
         CNetFulfilledRequestManager& networkRequestManager,
         const boost::filesystem::path& dataDirectory,
         CClientUIInterface& uiInterface_in,
-        bool litemodeEnabled = false
-        ): masternodeManager_(mnmanager)
-        , masternodePayments_(mnPayments)
-        , networkRequestManager_(networkRequestManager)
-        , pathDB(dataDirectory)
-        , uiMessenger_(uiInterface_in)
-        , litemode_(litemodeEnabled)
-    {
-    }
+        bool litemodeEnabled = false);
+    DataCacheManager(
+        const boost::filesystem::path& dataDirectory,
+        CClientUIInterface& uiInterface_in,
+        bool litemodeEnabled = false);
 
     void StoreDataCaches();
     bool LoadDataCaches();

@@ -396,7 +396,7 @@ Value getcoinavailability(const Array& params, bool fHelp)
                 for(const COutput& output: outputsToTotal)
                 {
                     CTxOut txout = output.tx->vout[output.i];
-                    valueByScript[txout.scriptPubKey] = txout.nValue;
+                    valueByScript[txout.scriptPubKey] += txout.nValue;
                     txdata[txout.scriptPubKey].insert(output.tx->GetHash().ToString());
                     totalAmount += output.Value();
                 }

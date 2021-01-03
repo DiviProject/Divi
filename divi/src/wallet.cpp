@@ -238,9 +238,9 @@ void CWallet::SetNull()
 
 }
 
-void CWallet::toggleSpendingZeroConfirmationOutputs(bool turnOn)
+void CWallet::toggleSpendingZeroConfirmationOutputs()
 {
-    allowSpendingZeroConfirmationOutputs = turnOn;
+    allowSpendingZeroConfirmationOutputs = !allowSpendingZeroConfirmationOutputs;
 }
 
 void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions)

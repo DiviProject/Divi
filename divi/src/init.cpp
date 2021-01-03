@@ -78,7 +78,6 @@ int nWalletBackups = 20;
 extern CAmount nTransactionValueMultiplier;
 extern unsigned int nTransactionSizeMultiplier;
 extern unsigned int nTxConfirmTarget;
-extern bool bSpendZeroConfChange;
 extern bool bdisableSystemnotifications;
 extern bool fSendFreeTransactions;
 extern bool fPayAtLeastCustomFee;
@@ -451,7 +450,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-rescan", translate("Rescan the block chain for missing wallet transactions") + " " + translate("on startup"));
     strUsage += HelpMessageOpt("-salvagewallet", translate("Attempt to recover private keys from a corrupt wallet.dat") + " " + translate("on startup"));
     strUsage += HelpMessageOpt("-sendfreetransactions", strprintf(translate("Send transactions as zero-fee transactions if possible (default: %u)"), 0));
-    strUsage += HelpMessageOpt("-spendzeroconfchange", strprintf(translate("Spend unconfirmed change when sending transactions (default: %u)"), bSpendZeroConfChange));
+    strUsage += HelpMessageOpt("-spendzeroconfchange", strprintf(translate("Spend unconfirmed change when sending transactions (default: %u)"), false));
     strUsage += HelpMessageOpt("-usehd", translate("Use hierarchical deterministic key generation (HD) after BIP39/BIP44. Only has effect during wallet creation/first start") + " " + strprintf(translate("(default: %u)"), DEFAULT_USE_HD_WALLET));
     strUsage += HelpMessageOpt("-mnemonic", translate("User defined mnemonic for HD wallet (bip39). Only has effect during wallet creation/first start (default: randomly generated)"));
     strUsage += HelpMessageOpt("-mnemonicpassphrase", translate("User defined mnemonic passphrase for HD wallet (BIP39). Only has effect during wallet creation/first start (default: empty string)"));
@@ -895,7 +894,6 @@ bool SetTransactionRequirements()
         }
     }
     nTxConfirmTarget = settings.GetArg("-txconfirmtarget", 1);
-    bSpendZeroConfChange = settings.GetBoolArg("-spendzeroconfchange", bSpendZeroConfChange);
     bdisableSystemnotifications = settings.GetBoolArg("-disablesystemnotifications", false);
     fSendFreeTransactions = settings.GetBoolArg("-sendfreetransactions", false);
 #endif
@@ -1643,6 +1641,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         {
             return false;
         }
+        pwalletMain->toggleSpendingZeroConfirmationOutputs(
+            settings.GetBoolArg("-spendzeroconfchange", false)
+        );
+
 
         LogPrintf("%s", strErrors.str());
         LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);

@@ -157,9 +157,10 @@ private:
     std::set<int64_t> setInternalKeyPool;
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
+    bool allowSpendingZeroConfirmationOutputs;
 public:
     int64_t defaultKeyPoolTopUp;
-    bool allowSpendingZeroConfirmationOutputs;
+    void toggleSpendingZeroConfirmationOutputs(bool turnOn = true);
     DBErrors ReorderTransactionsByTimestamp();
     int64_t GetNextTransactionIndexAvailable() const;
     void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);

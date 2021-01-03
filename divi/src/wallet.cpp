@@ -56,7 +56,6 @@ CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
 unsigned int nTransactionSizeMultiplier = 300;
 unsigned int nTxConfirmTarget = 1;
-bool bSpendZeroConfChange = false;
 bool bdisableSystemnotifications = false; // Those bubbles can be annoying and slow down the UI when you get lots of trx
 bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
@@ -203,8 +202,8 @@ CWallet::CWallet(
     , setInternalKeyPool()
     , setExternalKeyPool()
     , walletStakingOnly()
+    , allowSpendingZeroConfirmationOutputs(false)
     , defaultKeyPoolTopUp(0)
-    , allowSpendingZeroConfirmationOutputs(bSpendZeroConfChange)
 {
     SetNull();
 }
@@ -237,6 +236,11 @@ void CWallet::SetNull()
     walletStakingOnly = false;
     fBackupMints = false;
 
+}
+
+void CWallet::toggleSpendingZeroConfirmationOutputs(bool turnOn)
+{
+    allowSpendingZeroConfirmationOutputs = turnOn;
 }
 
 void CWallet::UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions)

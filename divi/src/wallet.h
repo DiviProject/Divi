@@ -160,7 +160,7 @@ private:
     bool allowSpendingZeroConfirmationOutputs;
 public:
     int64_t defaultKeyPoolTopUp;
-    void toggleSpendingZeroConfirmationOutputs(bool turnOn = true);
+    void toggleSpendingZeroConfirmationOutputs();
     DBErrors ReorderTransactionsByTimestamp();
     int64_t GetNextTransactionIndexAvailable() const;
     void UpdateNextTransactionIndexAvailable(int64_t transactionIndex);

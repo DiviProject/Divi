@@ -386,21 +386,6 @@ std::string CMasternode::TierToString(MasternodeTier tier)
     return "INVALID";
 }
 
-int64_t CMasternode::SecondsSincePayment() const
-{
-    int64_t sec = (GetAdjustedTime() - GetLastPaid());
-    int64_t month = 60 * 60 * 24 * 30;
-    if (sec < month) return sec; //if it's less than 30 days, give seconds
-
-    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-    ss << vin;
-    ss << sigTime;
-    uint256 hash = ss.GetHash();
-
-    // return some deterministic value for unknown/unpaid but force it to be more than 30 days old
-    return month + hash.GetCompact(false);
-}
-
 int64_t CMasternode::GetLastPaid() const
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
@@ -417,9 +402,7 @@ int64_t CMasternode::GetLastPaid() const
     // use a deterministic offset to break a tie -- 2.5 minutes
     int64_t nOffset = hash.GetCompact(false) % 150;
 
-    if (chainActive.Tip() == NULL) return false;
-
-    const CBlockIndex* BlockReading = chainActive.Tip();
+    const CBlockIndex* BlockReading = pindexPrev;
 
     int nMnCount = mnodeman.CountEnabled() * 1.25;
     int n = 0;

@@ -5,7 +5,6 @@
 
 #include "masternode.h"
 
-#include "activemasternode.h"
 #include "addrman.h"
 #include <chain.h>
 #include "BlockDiskAccessor.h"
@@ -24,7 +23,6 @@
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
 extern CChain chainActive;
-extern bool fMasterNode;
 
 
 static CAmount getCollateralAmount(MasternodeTier tier)
@@ -906,11 +904,6 @@ const CBlockIndex* CMasternode::GetCollateralBlock() const
 
 bool CMasternodeBroadcast::CheckInputs(int& nDoS) const
 {
-    // we are a masternode with the same vin (i.e. already activated) and this mnb is ours (matches our Masternode privkey)
-    // so nothing to do here for us
-    if (fMasterNode && vin.prevout == activeMasternode.vin.prevout && pubKeyMasternode == activeMasternode.pubKeyMasternode)
-        return true;
-
     // search existing Masternode list
     // nothing to do here if we already know about this masternode and it's enabled
     const CMasternode* pmn = mnodeman.Find(vin);

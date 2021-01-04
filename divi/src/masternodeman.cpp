@@ -19,6 +19,7 @@
 #include <array>
 
 extern bool fLiteMode;
+extern bool fMasterNode;
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
@@ -615,7 +616,11 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
 
     // make sure it's still unspent
     //  - this is checked later by .check() in many places and by ThreadCheckObfuScationPool()
-    if (!mnb.CheckInputs(nDoS)) {
+    if (
+        !(fMasterNode && mnb.vin.prevout == activeMasternode.vin.prevout && mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode) &&
+        !mnb.CheckInputs(nDoS)
+        )
+    {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());
         if (nDoS > 0 && pfrom != nullptr)
             Misbehaving(pfrom->GetId(), nDoS);

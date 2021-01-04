@@ -798,52 +798,6 @@ const CBlockIndex* CMasternode::GetCollateralBlock() const
     return mi->second;
 }
 
-bool CMasternodeBroadcast::CheckInputs(CMasternodeMan& masternodeManager,int& nDoS) const
-{
-    // search existing Masternode list
-    // nothing to do here if we already know about this masternode and it's enabled
-    const CMasternode* pmn = masternodeManager.Find(vin);
-    if (pmn != nullptr && pmn->IsEnabled())
-        return true;
-
-    if (IsCoinSpent(vin.prevout, nTier))
-    {
-        LogPrint("masternode", "mnb - coin is already spent\n");
-        return false;
-    }
-
-
-    LogPrint("masternode", "mnb - Accepted Masternode entry\n");
-
-    const CBlockIndex* pindexConf;
-    {
-        LOCK(cs_main);
-        const auto* pindexCollateral = GetCollateralBlock();
-        if (pindexCollateral == nullptr)
-            pindexConf = nullptr;
-        else {
-            assert(chainActive.Contains(pindexCollateral));
-            pindexConf = chainActive[pindexCollateral->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1];
-            assert(pindexConf == nullptr || pindexConf->GetAncestor(pindexCollateral->nHeight) == pindexCollateral);
-        }
-    }
-
-    if (pindexConf == nullptr) {
-        LogPrint("masternode","mnb - Input must have at least %d confirmations\n", MASTERNODE_MIN_CONFIRMATIONS);
-        return false;
-    }
-
-    // verify that sig time is legit in past
-    // should be at least not earlier than block when 1000 PIV tx got MASTERNODE_MIN_CONFIRMATIONS
-    if (pindexConf->GetBlockTime() > sigTime) {
-        LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (%i conf block is at %d)\n",
-                 sigTime, vin.prevout.hash.ToString(), MASTERNODE_MIN_CONFIRMATIONS, pindexConf->GetBlockTime());
-        return false;
-    }
-
-    return true;
-}
-
 void CMasternodeBroadcast::Relay() const
 {
     CInv inv(MSG_MASTERNODE_ANNOUNCE, GetHash());

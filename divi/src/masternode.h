@@ -262,7 +262,6 @@ public:
         int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
-    bool CheckInputs(CMasternodeMan& masternodeManager, int& nDos) const;
     bool Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
     void Relay() const;
     std::string getMessageToSign() const;

@@ -241,7 +241,7 @@ public:
 
     std::string Status() const;
 
-    int64_t GetLastPaid() const;
+    int64_t GetLastPaid(unsigned numberOfBlocksToSearchBack) const;
     bool IsValidNetAddr() const;
 };
 

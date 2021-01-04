@@ -386,7 +386,7 @@ std::string CMasternode::TierToString(MasternodeTier tier)
     return "INVALID";
 }
 
-int64_t CMasternode::GetLastPaid() const
+int64_t CMasternode::GetLastPaid(unsigned numberOfBlocksToSearchBack) const
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (pindexPrev == NULL) return false;
@@ -404,10 +404,9 @@ int64_t CMasternode::GetLastPaid() const
 
     const CBlockIndex* BlockReading = pindexPrev;
 
-    int nMnCount = mnodeman.CountEnabled() * 1.25;
-    int n = 0;
+    unsigned n = 0;
     for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++) {
-        if (n >= nMnCount) {
+        if (n >= numberOfBlocksToSearchBack) {
             return 0;
         }
         n++;

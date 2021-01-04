@@ -355,6 +355,7 @@ Value listmasternodes(const Array& params, bool fHelp)
     }
     std::vector<CMasternode> masternodeVector = mnodeman.GetFullMasternodeVector();
     ret.reserve(masternodeVector.size());
+    unsigned numberOfBlocksToSearchBackForLastPayment = (masternodeVector.size()*5)/4;
     for(auto& masternode : masternodeVector) {
         Object obj;
         std::string strVin = masternode.vin.prevout.ToStringShort();
@@ -384,7 +385,7 @@ Value listmasternodes(const Array& params, bool fHelp)
             obj.emplace_back("version", mn->protocolVersion);
             obj.emplace_back("lastseen", (int64_t)mn->lastPing.sigTime);
             obj.emplace_back("activetime", (int64_t)(mn->lastPing.sigTime - mn->sigTime));
-            obj.emplace_back("lastpaid", (int64_t)mn->GetLastPaid());
+            obj.emplace_back("lastpaid", (int64_t)mn->GetLastPaid(numberOfBlocksToSearchBackForLastPayment));
             obj.emplace_back("tier", CMasternode::TierToString(static_cast<MasternodeTier>(mn->nTier)));
 
             ret.emplace_back(obj);

@@ -125,7 +125,6 @@ class CMasternode
 private:
     // critical section to protect the inner data structures
     mutable CCriticalSection cs;
-    int64_t lastTimeChecked;
 
 protected:
 
@@ -139,6 +138,7 @@ protected:
     const CBlockIndex* GetCollateralBlock() const;
 
 public:
+    int64_t lastTimeChecked;
     enum state {
         MASTERNODE_PRE_ENABLED,
         MASTERNODE_ENABLED,

@@ -217,7 +217,7 @@ public:
             nTier = static_cast<MasternodeTier> (tier);
     }
 
-    bool UpdateFromNewBroadcast(CMasternodeBroadcast &mnb);
+    bool UpdateFromNewBroadcast(const CMasternodeBroadcast &mnb);
 
     void Check(bool forceCheck = false);
 

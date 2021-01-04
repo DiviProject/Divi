@@ -273,6 +273,20 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
     }
 }
 
+bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const
+{
+    if (mnb.sigTime > masternode.sigTime) {
+        masternode.pubKeyMasternode = mnb.pubKeyMasternode;
+        masternode.pubKeyCollateralAddress = mnb.pubKeyCollateralAddress;
+        masternode.sigTime = mnb.sigTime;
+        masternode.sig = mnb.sig;
+        masternode.protocolVersion = mnb.protocolVersion;
+        masternode.addr = mnb.addr;
+        masternode.lastTimeChecked = 0;
+        return true;
+    }
+    return false;
+}
 bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS)
 {
     return mnb.CheckInputs(*this,nDoS);
@@ -332,7 +346,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nD
     if (pmn->pubKeyCollateralAddress == mnb.pubKeyCollateralAddress && !pmn->IsBroadcastedWithin(MASTERNODE_MIN_MNB_SECONDS)) {
         //take the newest entry
         LogPrint("masternode","mnb - Got updated entry for %s\n", mnb.vin.prevout.hash.ToString());
-        if (pmn->UpdateFromNewBroadcast(mnb)) {
+        if (UpdateWithNewBroadcast(mnb,*pmn)) {
             int unusedDoSValue = 0;
             if (mnb.lastPing != CMasternodePing() && mnb.lastPing.CheckAndUpdate(*pmn, unusedDoSValue, false)) {
                 RecordSeenPing(pmn->lastPing);

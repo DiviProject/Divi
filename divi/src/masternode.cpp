@@ -281,11 +281,6 @@ bool CMasternode::UpdateFromNewBroadcast(CMasternodeBroadcast& mnb)
         protocolVersion = mnb.protocolVersion;
         addr = mnb.addr;
         lastTimeChecked = 0;
-        int nDoS = 0;
-        if (mnb.lastPing != CMasternodePing() && mnb.lastPing.CheckAndUpdate(*this, nDoS, false)) {
-            mnodeman.RecordSeenPing(lastPing);
-            lastPing.Relay();
-        }
         return true;
     }
     return false;
@@ -787,7 +782,7 @@ bool CMasternodeBroadcastFactory::Create(
     return true;
 }
 
-bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
+bool CMasternodeBroadcast::CheckAndUpdate(CMasternodeMan& masternodeManager,int& nDos)
 {
     // make sure signature isn't in the future (past is OK)
     if (sigTime > GetAdjustedTime() + 60 * 60) {
@@ -822,7 +817,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
     }
 
     //search existing Masternode list, this is where we update existing Masternodes with new mnb broadcasts
-    CMasternode* pmn = mnodeman.Find(vin);
+    CMasternode* pmn = masternodeManager.Find(vin);
 
     // no such masternode, nothing to update
     if (pmn == NULL)
@@ -842,7 +837,12 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
     if (pmn->pubKeyCollateralAddress == pubKeyCollateralAddress && !pmn->IsBroadcastedWithin(MASTERNODE_MIN_MNB_SECONDS)) {
         //take the newest entry
         LogPrint("masternode","mnb - Got updated entry for %s\n", vin.prevout.hash.ToString());
-        if (pmn->UpdateFromNewBroadcast((*this))) {
+        if (pmn->UpdateFromNewBroadcast(*this)) {
+            int unusedDoSValue = 0;
+            if (lastPing != CMasternodePing() && lastPing.CheckAndUpdate(*pmn, unusedDoSValue, false)) {
+                masternodeManager.RecordSeenPing(pmn->lastPing);
+                pmn->lastPing.Relay();
+            }
             pmn->Check();
             if (pmn->IsEnabled()) Relay();
         }
@@ -884,11 +884,11 @@ const CBlockIndex* CMasternode::GetCollateralBlock() const
     return mi->second;
 }
 
-bool CMasternodeBroadcast::CheckInputs(int& nDoS) const
+bool CMasternodeBroadcast::CheckInputs(CMasternodeMan& masternodeManager,int& nDoS) const
 {
     // search existing Masternode list
     // nothing to do here if we already know about this masternode and it's enabled
-    const CMasternode* pmn = mnodeman.Find(vin);
+    const CMasternode* pmn = masternodeManager.Find(vin);
     if (pmn != nullptr && pmn->IsEnabled())
         return true;
 

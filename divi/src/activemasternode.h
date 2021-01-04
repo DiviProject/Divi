@@ -20,6 +20,7 @@
 
 class CMasternodeBroadcast;
 class CMasternodeConfig;
+class CMasternodePaymentWinner;
 
 // Responsible for activating the Masternode and pinging the network
 class CActiveMasternode
@@ -56,6 +57,7 @@ public:
 
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);
+    bool SignMasternodeWinner(CMasternodePaymentWinner& winner) const;
 };
 
 extern CActiveMasternode activeMasternode;

@@ -89,7 +89,6 @@ extern std::list<uint256> listAccCheckpointsNoDB;
 extern Settings& settings;
 extern NotificationInterfaceRegistry registry;
 extern std::string strMasterNodeAddr;
-extern std::string strMasterNodePrivKey;
 
 #if ENABLE_ZMQ
 static CZMQNotificationInterface* pzmqNotificationInterface = NULL;
@@ -1710,20 +1709,15 @@ bool InitializeDivi(boost::thread_group& threadGroup)
             }
         }
 
-        strMasterNodePrivKey = settings.GetArg("-masternodeprivkey", "");
-        if (!strMasterNodePrivKey.empty()) {
-            std::string errorMessage;
-
-            CKey key;
-            CPubKey pubkey;
-
-            if (!CObfuScationSigner::SetKey(strMasterNodePrivKey, errorMessage, key, pubkey)) {
+        if(settings.ParameterIsSet("-masternodeprivkey"))
+        {
+            if(!activeMasternode.SetMasternodeKey(settings.GetArg("-masternodeprivkey", "")))
+            {
                 return InitError(translate("Invalid masternodeprivkey. Please see documenation."));
             }
-
-            activeMasternode.pubKeyMasternode = pubkey;
-
-        } else {
+        }
+        else
+        {
             return InitError(translate("You must specify a masternodeprivkey in the configuration. Please see documentation for help."));
         }
     }

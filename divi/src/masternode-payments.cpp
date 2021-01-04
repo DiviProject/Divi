@@ -27,7 +27,6 @@
 #include <base58address.h>
 #include <chainparams.h>
 
-extern std::string strMasterNodePrivKey;
 extern bool fLiteMode;
 extern bool fMasterNode;
 
@@ -629,17 +628,10 @@ bool CMasternodePayments::ProcessBlock(const CBlockIndex* pindex, const int offs
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Failed to find masternode to pay\n");
     }
 
-    std::string errorMessage;
-    CPubKey pubKeyMasternode;
-    CKey keyMasternode;
-
-    if (!CObfuScationSigner::SetKey(strMasterNodePrivKey, errorMessage, keyMasternode, pubKeyMasternode)) {
-        LogPrint("masternode","CMasternodePayments::ProcessBlock() - Error upon calling SetKey: %s\n", errorMessage.c_str());
-        return false;
-    }
-
     LogPrint("masternode","CMasternodePayments::ProcessBlock() - Signing Winner\n");
-    if (newWinner.Sign(keyMasternode, pubKeyMasternode)) {
+    if(activeMasternode.SignMasternodeWinner(newWinner))
+    //if (newWinner.Sign(keyMasternode, pubKeyMasternode))
+    {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() - AddWinningMasternode\n");
 
         if (AddWinningMasternode(newWinner)) {
@@ -648,6 +640,11 @@ bool CMasternodePayments::ProcessBlock(const CBlockIndex* pindex, const int offs
             return true;
         }
     }
+    else
+    {
+        LogPrint("masternode","%s - Error signing masternode winner\n", __func__);
+    }
+
 
     return false;
 }

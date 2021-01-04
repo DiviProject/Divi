@@ -109,7 +109,6 @@ using namespace std;
 
 // Masternode
 bool fMasterNode = false;
-extern std::string strMasterNodePrivKey = "";
 extern std::string strMasterNodeAddr = "";
 bool fLiteMode = false;
 // SwiftX

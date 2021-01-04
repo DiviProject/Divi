@@ -216,8 +216,6 @@ public:
             nTier = static_cast<MasternodeTier> (tier);
     }
 
-    int64_t SecondsSincePayment() const;
-
     bool UpdateFromNewBroadcast(CMasternodeBroadcast &mnb);
 
     void Check(bool forceCheck = false);

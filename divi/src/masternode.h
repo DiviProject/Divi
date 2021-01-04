@@ -217,8 +217,6 @@ public:
             nTier = static_cast<MasternodeTier> (tier);
     }
 
-    bool UpdateFromNewBroadcast(const CMasternodeBroadcast &mnb);
-
     void Check(bool forceCheck = false);
 
     bool IsBroadcastedWithin(int seconds) const;
@@ -264,7 +262,6 @@ public:
         int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
-    bool CheckAndUpdate(CMasternodeMan& masternodeManager,int& nDoS);
     bool CheckInputs(CMasternodeMan& masternodeManager, int& nDos) const;
     bool Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
     void Relay() const;

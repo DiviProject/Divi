@@ -268,23 +268,6 @@ std::string CMasternode::Status() const
 
     return strStatus;
 }
-//
-// When a new masternode broadcast is sent, update our information
-//
-bool CMasternode::UpdateFromNewBroadcast(const CMasternodeBroadcast& mnb)
-{
-    if (mnb.sigTime > sigTime) {
-        pubKeyMasternode = mnb.pubKeyMasternode;
-        pubKeyCollateralAddress = mnb.pubKeyCollateralAddress;
-        sigTime = mnb.sigTime;
-        sig = mnb.sig;
-        protocolVersion = mnb.protocolVersion;
-        addr = mnb.addr;
-        lastTimeChecked = 0;
-        return true;
-    }
-    return false;
-}
 
 static uint256 CalculateScoreHelper(CHashWriter hashWritter, int round)
 {
@@ -777,76 +760,6 @@ bool CMasternodeBroadcastFactory::Create(
     if(!provideSignatures(keyMasternodeNew,pubKeyMasternodeNew,keyCollateralAddressNew,mnbRet,strErrorRet))
     {
         return false;
-    }
-
-    return true;
-}
-
-bool CMasternodeBroadcast::CheckAndUpdate(CMasternodeMan& masternodeManager,int& nDos)
-{
-    // make sure signature isn't in the future (past is OK)
-    if (sigTime > GetAdjustedTime() + 60 * 60) {
-        LogPrintf("%s : mnb - Signature rejected, too far into the future %s\n", __func__, vin.prevout.hash.ToString());
-        nDos = 1;
-        return false;
-    }
-
-    if(!CMasternode::IsTierValid(static_cast<MasternodeTier>(nTier))) {
-        LogPrintf("%s : mnb - Invalid tier: %d\n", __func__, static_cast<int>(nTier));
-        nDos = 20;
-        return false;
-    }
-
-    if (protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) {
-        LogPrint("masternode","mnb - ignoring outdated Masternode %s protocol version %d\n", vin.prevout.hash.ToString(), protocolVersion);
-        return false;
-    }
-
-    if (!vin.scriptSig.empty()) {
-        LogPrint("masternode","mnb - Ignore Not Empty ScriptSig %s\n", vin.prevout.hash.ToString());
-        return false;
-    }
-
-    const std::string strMessage = getMessageToSign();
-
-    std::string errorMessage = "";
-    if (!CObfuScationSigner::VerifyMessage(pubKeyCollateralAddress, sig, strMessage, errorMessage)) {
-        LogPrintf("%s : - Got bad Masternode address signature\n", __func__);
-        nDos = 100;
-        return false;
-    }
-
-    //search existing Masternode list, this is where we update existing Masternodes with new mnb broadcasts
-    CMasternode* pmn = masternodeManager.Find(vin);
-
-    // no such masternode, nothing to update
-    if (pmn == NULL)
-        return true;
-
-    // this broadcast older than we have, it's bad.
-    if (pmn->sigTime > sigTime) {
-        LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (existing broadcast is at %d)\n",
-                 sigTime, vin.prevout.hash.ToString(), pmn->sigTime);
-        return false;
-    }
-    // masternode is not enabled yet/already, nothing to update
-    if (!pmn->IsEnabled()) return true;
-
-    // mn.pubkey = pubkey, IsVinAssociatedWithPubkey is validated once below,
-    //   after that they just need to match
-    if (pmn->pubKeyCollateralAddress == pubKeyCollateralAddress && !pmn->IsBroadcastedWithin(MASTERNODE_MIN_MNB_SECONDS)) {
-        //take the newest entry
-        LogPrint("masternode","mnb - Got updated entry for %s\n", vin.prevout.hash.ToString());
-        if (pmn->UpdateFromNewBroadcast(*this)) {
-            int unusedDoSValue = 0;
-            if (lastPing != CMasternodePing() && lastPing.CheckAndUpdate(*pmn, unusedDoSValue, false)) {
-                masternodeManager.RecordSeenPing(pmn->lastPing);
-                pmn->lastPing.Relay();
-            }
-            pmn->Check();
-            if (pmn->IsEnabled()) Relay();
-        }
-        masternodeSync.AddedMasternodeList(GetHash());
     }
 
     return true;

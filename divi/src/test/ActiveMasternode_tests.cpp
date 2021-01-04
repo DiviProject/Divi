@@ -5,6 +5,8 @@
 #include <cstring>
 #include <random.h>
 #include "uint256.h"
+#include <key.h>
+#include <base58.h>
 
 class ActiveMasternodeTestFixture
 {
@@ -84,6 +86,16 @@ BOOST_AUTO_TEST_CASE(willNotEnableMasternodeOnMismatchedUTXO)
     AddDummyConfiguration(validTxIn, service);
     BOOST_CHECK(! activeMasternode_->EnableHotColdMasterNode(wrongTxIn, service));
     BOOST_CHECK(activeMasternode_->status != ACTIVE_MASTERNODE_STARTED);
+}
+
+BOOST_AUTO_TEST_CASE(willSetMatchingPubkeyForPrivateKey)
+{
+    CKey privateKey;
+    privateKey.MakeNewKey(true);
+    CPubKey expectedPubkey = privateKey.GetPubKey();
+    std::string privateKeyAsString = CBitcoinSecret(privateKey).ToString();
+    BOOST_CHECK(activeMasternode_->SetMasternodeKey(privateKeyAsString));
+    BOOST_CHECK(activeMasternode_->pubKeyMasternode == expectedPubkey);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

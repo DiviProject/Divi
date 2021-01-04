@@ -34,6 +34,17 @@ CActiveMasternode::CActiveMasternode(
     , notCapableReason("")
 {
 }
+
+bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
+{
+    std::string errorMessage;
+    if (!CObfuScationSigner::SetKey(privKeyString, errorMessage, masternodeKey_, pubKeyMasternode)) {
+        errorMessage = strprintf("Error upon calling SetKey: %s\n", errorMessage);
+        return false;
+    }
+    return true;
+}
+
 void CActiveMasternode::ManageStatus()
 {
     std::string errorMessage;

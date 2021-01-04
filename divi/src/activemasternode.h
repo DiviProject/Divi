@@ -47,6 +47,7 @@ public:
     CActiveMasternode(const CMasternodeConfig& masternodeConfigurations,const bool& masterNodeEnabled);
 
     /// Manage status of main Masternode
+    bool SetMasternodeKey(const std::string& privKeyString);
     void ManageStatus();
     std::string GetStatus();
 

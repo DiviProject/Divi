@@ -13,10 +13,10 @@
 #include <spork.h>
 #include <chainparams.h>
 #include <masternodeconfig.h>
+#include <masternode-payments.h>
 
 
 extern std::string strMasterNodeAddr;
-extern std::string strMasterNodePrivKey;
 extern bool fMasterNode;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
@@ -137,18 +137,10 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
         return false;
     }
 
-    CPubKey pubKeyMasternode;
-    CKey keyMasternode;
-
-    if (!CObfuScationSigner::SetKey(strMasterNodePrivKey, errorMessage, keyMasternode, pubKeyMasternode)) {
-        errorMessage = strprintf("Error upon calling SetKey: %s\n", errorMessage);
-        return false;
-    }
-
     LogPrintf("CActiveMasternode::SendMasternodePing() - Relay Masternode Ping vin = %s\n", vin.ToString());
 
     CMasternodePing mnp(vin);
-    if (!mnp.Sign(keyMasternode, pubKeyMasternode)) {
+    if (!mnp.Sign(masternodeKey_, pubKeyMasternode)) {
         errorMessage = "Couldn't sign Masternode Ping";
         return false;
     }
@@ -239,4 +231,8 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
     LogPrintf("CActiveMasternode::EnableHotColdMasterNode() - Enabled! You may shut down the cold daemon.\n");
 
     return true;
+}
+bool CActiveMasternode::SignMasternodeWinner(CMasternodePaymentWinner& winner) const
+{
+    return winner.Sign(masternodeKey_,pubKeyMasternode);
 }

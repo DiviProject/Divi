@@ -32,6 +32,7 @@ private:
     mutable CCriticalSection cs;
     const CMasternodeConfig& masternodeConfigurations_;
     const bool& fMasterNode_;
+    bool addressHasBeenSet_;
     CKey masternodeKey_;
 public:
     // Initialized by init.cpp
@@ -49,6 +50,7 @@ public:
 
     /// Manage status of main Masternode
     bool SetMasternodeKey(const std::string& privKeyString);
+    bool SetMasternodeAddress(const std::string& masternodeAddress);
     void ManageStatus();
     std::string GetStatus();
 

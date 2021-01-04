@@ -26,6 +26,7 @@ CActiveMasternode::CActiveMasternode(
     ): cs()
     , masternodeConfigurations_(masternodeConfigurations)
     , fMasterNode_(masterNodeEnabled)
+    , addressHasBeenSet_(false)
     , masternodeKey_()
     , pubKeyMasternode()
     , vin()
@@ -35,6 +36,16 @@ CActiveMasternode::CActiveMasternode(
 {
 }
 
+bool CActiveMasternode::SetMasternodeAddress(const std::string& masternodeAddress)
+{
+    if(!masternodeAddress.empty())
+    {
+        service = CService(masternodeAddress);
+        addressHasBeenSet_ = true;
+        return service.IsValid();
+    }
+    return true;
+}
 bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
 {
     std::string errorMessage;
@@ -80,14 +91,12 @@ void CActiveMasternode::ManageStatus()
 
         LogPrintf("CActiveMasternode::ManageStatus() - failed to activate masternode. Check the local wallet\n");
 
-        if (strMasterNodeAddr.empty()) {
-            if (!GetLocal(service)) {
-                notCapableReason = "Can't detect external address. Please use the masternodeaddr configuration option.";
-                LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
-                return;
-            }
-        } else {
-            service = CService(strMasterNodeAddr);
+
+        if (!addressHasBeenSet_ && !GetLocal(service))
+        {
+            notCapableReason = "Can't detect external address. Please use the masternodeaddr configuration option.";
+            LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
+            return;
         }
 
         LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service.ToString());

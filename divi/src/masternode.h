@@ -28,6 +28,7 @@ class CMasternode;
 class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
+class CMasternodeMan;
 
 /** Returns the block hash that is used in the masternode scoring / ranking
  *  logic for the winner of block nBlockHeight.  (It is the hash of the
@@ -263,8 +264,8 @@ public:
         int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
-    bool CheckAndUpdate(int& nDoS);
-    bool CheckInputs(int& nDos) const;
+    bool CheckAndUpdate(CMasternodeMan& masternodeManager,int& nDoS);
+    bool CheckInputs(CMasternodeMan& masternodeManager, int& nDos) const;
     bool Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
     void Relay() const;
     std::string getMessageToSign() const;

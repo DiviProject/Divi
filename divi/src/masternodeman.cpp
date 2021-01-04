@@ -599,7 +599,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     }
 
     int nDoS = 0;
-    if (!mnb.CheckAndUpdate(nDoS)) {
+    if (!mnb.CheckAndUpdate(*this,nDoS)) {
         if (nDoS > 0 && pfrom != nullptr)
             Misbehaving(pfrom->GetId(), nDoS);
         return false;
@@ -618,7 +618,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     //  - this is checked later by .check() in many places and by ThreadCheckObfuScationPool()
     if (
         !(fMasterNode && mnb.vin.prevout == activeMasternode.vin.prevout && mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode) &&
-        !mnb.CheckInputs(nDoS)
+        !mnb.CheckInputs(*this,nDoS)
         )
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());

@@ -273,6 +273,15 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
     }
 }
 
+bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS)
+{
+    return mnb.CheckInputs(*this,nDoS);
+}
+bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS)
+{
+    return mnb.CheckAndUpdate(*this,nDoS);
+}
+
 void CMasternodeMan::Clear()
 {
     LOCK(cs);
@@ -599,7 +608,8 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     }
 
     int nDoS = 0;
-    if (!mnb.CheckAndUpdate(*this,nDoS)) {
+    if (!CheckAndUpdateMasternode(mnb,nDoS))
+    {
         if (nDoS > 0 && pfrom != nullptr)
             Misbehaving(pfrom->GetId(), nDoS);
         return false;
@@ -618,7 +628,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     //  - this is checked later by .check() in many places and by ThreadCheckObfuScationPool()
     if (
         !(fMasterNode && mnb.vin.prevout == activeMasternode.vin.prevout && mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode) &&
-        !mnb.CheckInputs(*this,nDoS)
+        !CheckInputsForMasternode(mnb,nDoS)
         )
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());

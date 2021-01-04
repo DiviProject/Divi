@@ -6,6 +6,7 @@
 #ifndef ACTIVEMASTERNODE_H
 #define ACTIVEMASTERNODE_H
 
+#include <key.h>
 #include <pubkey.h>
 #include <netbase.h>
 #include <primitives/transaction.h>
@@ -24,12 +25,13 @@ class CMasternodeConfig;
 class CActiveMasternode
 {
 private:
+    bool SendMasternodePing(std::string& errorMessage);
+private:
     // critical section to protect the inner data structures
     mutable CCriticalSection cs;
-    bool SendMasternodePing(std::string& errorMessage);
     const CMasternodeConfig& masternodeConfigurations_;
     const bool& fMasterNode_;
-
+    CKey masternodeKey_;
 public:
     // Initialized by init.cpp
     // Keys for the main Masternode

@@ -23,10 +23,16 @@ CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CActiveMasternode::CActiveMasternode(
     const CMasternodeConfig& masternodeConfigurations,
     const bool& masterNodeEnabled
-    ): masternodeConfigurations_(masternodeConfigurations)
+    ): cs()
+    , masternodeConfigurations_(masternodeConfigurations)
     , fMasterNode_(masterNodeEnabled)
+    , masternodeKey_()
+    , pubKeyMasternode()
+    , vin()
+    , service()
+    , status(ACTIVE_MASTERNODE_INITIAL)
+    , notCapableReason("")
 {
-    status = ACTIVE_MASTERNODE_INITIAL;
 }
 void CActiveMasternode::ManageStatus()
 {

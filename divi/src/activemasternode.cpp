@@ -16,7 +16,6 @@
 #include <masternode-payments.h>
 
 
-extern std::string strMasterNodeAddr;
 extern bool fMasterNode;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 

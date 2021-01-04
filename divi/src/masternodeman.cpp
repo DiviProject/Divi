@@ -279,7 +279,72 @@ bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, i
 }
 bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS)
 {
-    return mnb.CheckAndUpdate(*this,nDoS);
+    // make sure signature isn't in the future (past is OK)
+    if (mnb.sigTime > GetAdjustedTime() + 60 * 60) {
+        LogPrintf("%s : mnb - Signature rejected, too far into the future %s\n", __func__, mnb.vin.prevout.hash.ToString());
+        nDoS = 1;
+        return false;
+    }
+
+    if(!CMasternode::IsTierValid(static_cast<MasternodeTier>(mnb.nTier))) {
+        LogPrintf("%s : mnb - Invalid tier: %d\n", __func__, static_cast<int>(mnb.nTier));
+        nDoS = 20;
+        return false;
+    }
+
+    if (mnb.protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) {
+        LogPrint("masternode","mnb - ignoring outdated Masternode %s protocol version %d\n", mnb.vin.prevout.hash.ToString(), mnb.protocolVersion);
+        return false;
+    }
+
+    if (!mnb.vin.scriptSig.empty()) {
+        LogPrint("masternode","mnb - Ignore Not Empty ScriptSig %s\n", mnb.vin.prevout.hash.ToString());
+        return false;
+    }
+
+    const std::string strMessage = mnb.getMessageToSign();
+
+    std::string errorMessage = "";
+    if (!CObfuScationSigner::VerifyMessage(mnb.pubKeyCollateralAddress, mnb.sig, strMessage, errorMessage)) {
+        LogPrintf("%s : - Got bad Masternode address signature\n", __func__);
+        nDoS = 100;
+        return false;
+    }
+
+    //search existing Masternode list, this is where we update existing Masternodes with new mnb broadcasts
+    CMasternode* pmn = Find(mnb.vin);
+
+    // no such masternode, nothing to update
+    if (pmn == NULL)
+        return true;
+
+    // this broadcast older than we have, it's bad.
+    if (pmn->sigTime > mnb.sigTime) {
+        LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (existing broadcast is at %d)\n",
+                 mnb.sigTime, mnb.vin.prevout.hash.ToString(), pmn->sigTime);
+        return false;
+    }
+    // masternode is not enabled yet/already, nothing to update
+    if (!pmn->IsEnabled()) return true;
+
+    // mn.pubkey = pubkey, IsVinAssociatedWithPubkey is validated once below,
+    //   after that they just need to match
+    if (pmn->pubKeyCollateralAddress == mnb.pubKeyCollateralAddress && !pmn->IsBroadcastedWithin(MASTERNODE_MIN_MNB_SECONDS)) {
+        //take the newest entry
+        LogPrint("masternode","mnb - Got updated entry for %s\n", mnb.vin.prevout.hash.ToString());
+        if (pmn->UpdateFromNewBroadcast(mnb)) {
+            int unusedDoSValue = 0;
+            if (mnb.lastPing != CMasternodePing() && mnb.lastPing.CheckAndUpdate(*pmn, unusedDoSValue, false)) {
+                RecordSeenPing(pmn->lastPing);
+                pmn->lastPing.Relay();
+            }
+            pmn->Check();
+            if (pmn->IsEnabled()) mnb.Relay();
+        }
+        masternodeSync.AddedMasternodeList(mnb.GetHash());
+    }
+
+    return true;
 }
 
 void CMasternodeMan::Clear()

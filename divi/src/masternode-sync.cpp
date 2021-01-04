@@ -5,7 +5,6 @@
 
 // clang-format off
 #include "main.h"
-#include "activemasternode.h"
 #include "masternode-sync.h"
 #include "masternode-payments.h"
 #include "masternode.h"

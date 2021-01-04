@@ -22,7 +22,6 @@
 #include "main.h"
 #include "obfuscation.h"
 #include "masternodeconfig.h"
-#include "activemasternode.h"
 #include <walletBackupFeatureContainer.h>
 #include "miner.h"
 #include "net.h"

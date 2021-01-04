@@ -1698,16 +1698,12 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     if (fMasterNode) {
         LogPrintf("IS MASTER NODE\n");
-        strMasterNodeAddr = settings.GetArg("-masternodeaddr", "");
 
-        LogPrintf(" addr %s\n", strMasterNodeAddr.c_str());
-
-        if (!strMasterNodeAddr.empty()) {
-            CService addrTest = CService(strMasterNodeAddr);
-            if (!addrTest.IsValid()) {
-                return InitError("Invalid -masternodeaddr address: " + strMasterNodeAddr);
-            }
+        if(!activeMasternode.SetMasternodeAddress(settings.GetArg("-masternodeaddr", "")))
+        {
+            return InitError("Invalid -masternodeaddr address: " + settings.GetArg("-masternodeaddr", ""));
         }
+        LogPrintf("Masternode address: %s\n", activeMasternode.service.ToString());
 
         if(settings.ParameterIsSet("-masternodeprivkey"))
         {

@@ -131,12 +131,6 @@ protected:
     /** Cached block hash of where the collateral output of this
      *  masternode got included.  */
     mutable uint256 collateralBlock;
-
-    /** Looks up and returns the block index when the collateral got
-     *  included in the currently active chain.  If it is not yet confirmed
-     *  then this returns nullptr.  */
-    const CBlockIndex* GetCollateralBlock() const;
-
 public:
     int64_t lastTimeChecked;
     enum state {
@@ -165,6 +159,12 @@ public:
     int nLastScanningErrorBlockHeight;
     MasternodeTier nTier;
     CMasternodePing lastPing;
+
+    static bool IsCoinSpent(const COutPoint &outpoint, const MasternodeTier mnTier);
+    /** Looks up and returns the block index when the collateral got
+     *  included in the currently active chain.  If it is not yet confirmed
+     *  then this returns nullptr.  */
+    const CBlockIndex* GetCollateralBlock() const;
 
     CMasternode();
     CMasternode(const CMasternode& other);

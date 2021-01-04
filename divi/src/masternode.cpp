@@ -70,8 +70,9 @@ static bool GetUTXOCoins(const uint256& txhash, CCoins& coins)
     return true;
 }
 
-static bool IsCoinSpent(const COutPoint &outpoint, const CAmount expectedCollateral)
+bool CMasternode::IsCoinSpent(const COutPoint &outpoint, const MasternodeTier mnTier)
 {
+    CAmount expectedCollateral = getCollateralAmount(mnTier);
     CCoins coins;
     if(GetUTXOCoins(outpoint.hash, coins))
     {
@@ -319,7 +320,7 @@ void CMasternode::Check(bool forceCheck)
         return;
     }
 
-    if (IsCoinSpent(vin.prevout, getCollateralAmount(nTier))) {
+    if (IsCoinSpent(vin.prevout, nTier)) {
         activeState = MASTERNODE_VIN_SPENT;
         return;
     }
@@ -805,7 +806,8 @@ bool CMasternodeBroadcast::CheckInputs(CMasternodeMan& masternodeManager,int& nD
     if (pmn != nullptr && pmn->IsEnabled())
         return true;
 
-    if (IsCoinSpent(vin.prevout, getCollateralAmount(nTier) )) {
+    if (IsCoinSpent(vin.prevout, nTier))
+    {
         LogPrint("masternode", "mnb - coin is already spent\n");
         return false;
     }

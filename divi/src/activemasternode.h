@@ -55,9 +55,6 @@ public:
     void ManageStatus(CMasternodeMan& masternodeManager);
     std::string GetStatus();
 
-    /// Register any Masternode
-    static bool Register(CMasternodeBroadcast &mnb, bool deferRelay = false);
-
     /// Enable cold wallet mode (run a Masternode with no funds)
     bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);
     bool SignMasternodeWinner(CMasternodePaymentWinner& winner) const;

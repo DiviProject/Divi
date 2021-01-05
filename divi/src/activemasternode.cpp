@@ -55,7 +55,7 @@ bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
     return true;
 }
 
-void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
+void CActiveMasternode::ManageStatus(CMasternodeSync& masternodeSynchronization, CMasternodeMan& masternodeManager)
 {
     std::string errorMessage;
 
@@ -64,7 +64,7 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
     if (fDebug) LogPrintf("CActiveMasternode::ManageStatus() - Begin\n");
 
     //need correct blocks to send ping
-    if (!masternodeSync.IsBlockchainSynced()) {
+    if (!masternodeSynchronization.IsBlockchainSynced()) {
         status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
         LogPrintf("CActiveMasternode::ManageStatus() - %s\n", GetStatus());
         return;

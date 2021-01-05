@@ -195,8 +195,6 @@ public:
     bool IsTooEarlyToReceivePingUpdate(int64_t now) const;
     bool IsTooEarlyToSendPingUpdate(int64_t now) const;
 
-    void Disable();
-
     bool IsEnabled() const;
 
     int GetMasternodeInputAge() const;

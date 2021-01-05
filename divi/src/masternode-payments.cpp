@@ -341,7 +341,7 @@ bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymen
 
         std::string errorMessage = "";
         if (!CObfuScationSigner::VerifyMessage(pmn->pubKeyMasternode, winner.vchSig, strMessage, errorMessage)) {
-            return error("CMasternodePaymentWinner::SignatureValid() - Got bad Masternode address signature %s\n", winner.vinMasternode.prevout.hash.ToString());
+            return error("%s - Got bad Masternode address signature %s\n",__func__, winner.vinMasternode.prevout.hash.ToString());
         }
 
         return true;
@@ -654,26 +654,6 @@ void CMasternodePaymentWinner::Relay() const
 {
     CInv inv(MSG_MASTERNODE_WINNER, GetHash());
     RelayInv(inv);
-}
-
-bool CMasternodePaymentWinner::SignatureValid() const
-{
-    CMasternode* pmn = mnodeman.Find(vinMasternode);
-
-    if (pmn != NULL) {
-        std::string strMessage = vinMasternode.prevout.ToStringShort() +
-                boost::lexical_cast<std::string>(nBlockHeight) +
-                payee.ToString();
-
-        std::string errorMessage = "";
-        if (!CObfuScationSigner::VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
-            return error("CMasternodePaymentWinner::SignatureValid() - Got bad Masternode address signature %s\n", vinMasternode.prevout.hash.ToString());
-        }
-
-        return true;
-    }
-
-    return false;
 }
 
 void CMasternodePayments::Sync(CNode* node, int nCountNeeded)

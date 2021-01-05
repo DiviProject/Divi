@@ -113,9 +113,8 @@ bool CObfuScationSigner::VerifyMessage(CPubKey pubkey, const std::vector<unsigne
 //TODO: Rename/move to core
 void ThreadCheckObfuScationPool()
 {
-    if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
+    if (fLiteMode) return;
 
-    // Make this thread recognisable as the wallet flushing thread
     RenameThread("divi-obfuscation");
 
     int64_t nTimeManageStatus = 0;
@@ -152,14 +151,5 @@ void ThreadCheckObfuScationPool()
             masternodePayments.CheckAndRemove();
             CleanTransactionLocksList();
         }
-
-        //if(c % MASTERNODES_DUMP_SECONDS == 0) DumpMasternodes();
-
-//            obfuScationPool.CheckTimeout();
-//            obfuScationPool.CheckForCompleteQueue();
-
-//            if (obfuScationPool.GetState() == POOL_STATUS_IDLE && c % 15 == 0) {
-//                obfuScationPool.DoAutomaticDenominating();
-//            }
     }
 }

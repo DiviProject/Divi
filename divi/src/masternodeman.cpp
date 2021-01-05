@@ -40,7 +40,25 @@ CMasternodeMan mnodeman;
 
 namespace
 {
+static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier)
+{
+    CScript payee2;
+    payee2 = GetScriptForDestination(pubkey.GetID());
 
+    CTransaction txVin;
+    uint256 hash;
+    auto nCollateral = CMasternode::GetTierCollateralAmount(nMasternodeTier);
+    if (GetTransaction(vin.prevout.hash, txVin, hash, true)) {
+        BOOST_FOREACH (CTxOut out, txVin.vout) {
+            if (out.nValue == nCollateral) {
+                if (out.scriptPubKey == payee2) return true;
+            }
+        }
+    }
+
+    return false;
+}
+}
 /**
  * An entry in the ranking cache.  We use mruset to hold the cache,
  * which means that even though it is conceptually a map, we represent
@@ -741,7 +759,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
 
     // make sure the vout that was signed is related to the transaction that spawned the Masternode
     //  - this is expensive, so it's only done once per Masternode
-    if (!CObfuScationSigner::IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<MasternodeTier>(mnb.nTier))) {
+    if (!IsVinAssociatedWithPubkey(mnb.vin, mnb.pubKeyCollateralAddress, static_cast<MasternodeTier>(mnb.nTier))) {
         LogPrintf("%s : mnb - Got mismatched pubkey and vin\n", __func__);
         if (pfrom != nullptr)
             Misbehaving(pfrom->GetId(), 33);

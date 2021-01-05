@@ -182,7 +182,7 @@ private:
     mutable CCriticalSection cs_mapMasternodePayeeVotes;
 
     bool GetBlockPayee(const uint256& seedHash, CScript& payee) const;
-
+    bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;
 public:
 
     CMasternodePayments();

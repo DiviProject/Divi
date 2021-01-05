@@ -332,6 +332,10 @@ bool CMasternodePayments::GetBlockPayee(const uint256& seedHash, CScript& payee)
 
     return false;
 }
+bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const
+{
+    return winner.SignatureValid();
+}
 
 // Is this masternode scheduled to get paid soon?
 // -- Only look ahead up to 8 blocks to allow for propagation of the latest 2 winners

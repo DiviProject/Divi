@@ -31,25 +31,6 @@ void RenameThread(const char* name);
 extern bool fLiteMode;
 extern const std::string strMessageMagic = "DarkNet Signed Message:\n";
 
-bool CObfuScationSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier)
-{
-    CScript payee2;
-    payee2 = GetScriptForDestination(pubkey.GetID());
-
-    CTransaction txVin;
-    uint256 hash;
-    auto nCollateral = CMasternode::GetTierCollateralAmount(nMasternodeTier);
-    if (GetTransaction(vin.prevout.hash, txVin, hash, true)) {
-        BOOST_FOREACH (CTxOut out, txVin.vout) {
-            if (out.nValue == nCollateral) {
-                if (out.scriptPubKey == payee2) return true;
-            }
-        }
-    }
-
-    return false;
-}
-
 bool CObfuScationSigner::SetKey(std::string strSecret, std::string& errorMessage, CKey& key, CPubKey& pubkey)
 {
     CBitcoinSecret vchSecret;

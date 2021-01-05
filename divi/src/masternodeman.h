@@ -88,6 +88,7 @@ public:
     bool UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const;
     bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS);
+    bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool fRequireEnabled = true);
 
     /// Clear Masternode vector
     void Clear();

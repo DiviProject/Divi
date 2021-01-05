@@ -16,6 +16,7 @@
 #include <Logging.h>
 #include <utiltime.h>
 #include <StakableCoin.h>
+#include <timedata.h>
 
 extern Settings& settings;
 extern const int nHashDrift;

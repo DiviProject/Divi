@@ -180,25 +180,6 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, st
     }
 }
 
-bool CActiveMasternode::Register(CMasternodeBroadcast &mnb, bool deferRelay)
-{
-    if (!mnodeman.ProcessBroadcast(nullptr, mnb))
-        return false;
-
-    //send to all peers
-    if(!deferRelay)
-    {
-        LogPrintf("CActiveMasternode::Register() - Relaying broadcast vin = %s\n", mnb.vin.ToString());
-        mnb.Relay();
-    }
-    else
-    {
-        LogPrintf("CActiveMasternode::Register() - Deferring Relay vin = %s\n", mnb.vin.ToString());
-    }
-
-    return true;
-}
-
 // when starting a Masternode, this can enable to run as a hot wallet with no funds
 bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newService)
 {

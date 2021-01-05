@@ -286,21 +286,26 @@ public:
     }
 };
 
+class CMasternodeSync;
 class CMasternodeBroadcastFactory
 {
 public:
     /// Create Masternode broadcast, needs to be relayed manually after that
-    static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry,
-                       std::string& strErrorRet,
-                       CMasternodeBroadcast& mnbRet,
-                       bool fOffline = false,
-                       bool deferRelay = false);
+    static bool Create(
+        CMasternodeSync& masternodeSynchronization,
+        const CMasternodeConfig::CMasternodeEntry configEntry,
+        std::string& strErrorRet,
+        CMasternodeBroadcast& mnbRet,
+        bool fOffline = false,
+        bool deferRelay = false);
 
-    static bool Create(const CMasternodeConfig::CMasternodeEntry configEntry,
-                       CPubKey pubkeyCollateralAddress,
-                       std::string& strErrorRet,
-                       CMasternodeBroadcast& mnbRet,
-                       bool fOffline = false);
+    static bool Create(
+        CMasternodeSync& masternodeSynchronization,
+        const CMasternodeConfig::CMasternodeEntry configEntry,
+        CPubKey pubkeyCollateralAddress,
+        std::string& strErrorRet,
+        CMasternodeBroadcast& mnbRet,
+        bool fOffline = false);
 private:
     static void createWithoutSignatures(
         CTxIn txin,
@@ -339,7 +344,9 @@ private:
                         std::string& strErrorRet,
                         CMasternodeBroadcast& mnbRet,
                         bool deferRelay);
-    static bool checkBlockchainSync(std::string& strErrorRet, bool fOffline);
+    static bool checkBlockchainSync(
+        CMasternodeSync& masternodeSynchronization,
+        std::string& strErrorRet, bool fOffline);
     static bool setMasternodeKeys(
         const std::string& strKeyMasternode,
         std::pair<CKey,CPubKey>& masternodeKeyPair,
@@ -360,6 +367,7 @@ private:
         MasternodeTier& nMasternodeTier,
         std::string& strErrorRet);
     static bool createArgumentsFromConfig(
+        CMasternodeSync& masternodeSynchronization,
         const CMasternodeConfig::CMasternodeEntry configEntry,
         std::string& strErrorRet,
         bool fOffline,

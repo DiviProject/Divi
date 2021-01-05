@@ -19,6 +19,7 @@
 #include <wallet.h>
 #include <WalletTx.h>
 #include <Logging.h>
+#include <masternode-sync.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
@@ -277,7 +278,7 @@ Value setupmasternode(const Array& params, bool fHelp)
 
     CMasternodeBroadcast mnb;
     std::string errorMsg;
-    if(!CMasternodeBroadcastFactory::Create(config,pubkeyCollateralAddress,errorMsg,mnb))
+    if(!CMasternodeBroadcastFactory::Create(masternodeSync,config,pubkeyCollateralAddress,errorMsg,mnb))
     {
         throw JSONRPCError(RPC_INVALID_PARAMS,errorMsg);
     }
@@ -543,6 +544,7 @@ Value startmasternode(const Array& params, bool fHelp)
         CMasternodeBroadcast mnb;
 
         if(!CMasternodeBroadcastFactory::Create(
+                masternodeSync,
                 configEntry,
                 strError,
                 mnb,

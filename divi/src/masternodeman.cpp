@@ -744,8 +744,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
         return false;
     }
 
-    // make sure it's still unspent
-    //  - this is checked later by .check() in many places and by ThreadCheckObfuScationPool()
+    // make sure collateral is still unspent
     if (
         !(fMasterNode && mnb.vin.prevout == activeMasternode.vin.prevout && mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode) &&
         !CheckInputsForMasternode(mnb,nDoS)

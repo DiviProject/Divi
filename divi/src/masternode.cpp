@@ -18,7 +18,7 @@
 #include <wallet.h>
 #include <utiltime.h>
 #include <WalletTx.h>
-
+#include <masternode-sync.h>
 
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
@@ -414,9 +414,9 @@ CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
 {}
 
 
-bool CMasternodeBroadcastFactory::checkBlockchainSync(std::string& strErrorRet, bool fOffline)
+bool CMasternodeBroadcastFactory::checkBlockchainSync(CMasternodeSync& masternodeSynchronization, std::string& strErrorRet, bool fOffline)
 {
-     if (!fOffline && !masternodeSync.IsBlockchainSynced()) {
+     if (!fOffline && !masternodeSynchronization.IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
@@ -493,6 +493,7 @@ bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
 }
 
 bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
+    CMasternodeSync& masternodeSynchronization,
     const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
     bool fOffline,
@@ -508,7 +509,7 @@ bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
     std::string strTxHash = configEntry.getTxHash();
     std::string strOutputIndex = configEntry.getOutputIndex();
     //need correct blocks to send ping
-    if (!checkBlockchainSync(strErrorRet,fOffline)||
+    if (!checkBlockchainSync(masternodeSynchronization,strErrorRet,fOffline)||
         !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
         !setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,collateralPrivKeyIsRemote,txin,masternodeCollateralKeyPair,strErrorRet) ||
         !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet))
@@ -518,11 +519,13 @@ bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
     return true;
 }
 
-bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEntry configEntry,
-                    CPubKey pubkeyCollateralAddress,
-                    std::string& strErrorRet,
-                    CMasternodeBroadcast& mnbRet,
-                    bool fOffline)
+bool CMasternodeBroadcastFactory::Create(
+    CMasternodeSync& masternodeSynchronization,
+    const CMasternodeConfig::CMasternodeEntry configEntry,
+    CPubKey pubkeyCollateralAddress,
+    std::string& strErrorRet,
+    CMasternodeBroadcast& mnbRet,
+    bool fOffline)
 {
     const bool collateralPrivateKeyIsRemote = true;
     const bool deferRelay = true;
@@ -532,6 +535,7 @@ bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEnt
     MasternodeTier nMasternodeTier;
 
     if(!createArgumentsFromConfig(
+        masternodeSynchronization,
         configEntry,
         strErrorRet,
         fOffline,
@@ -562,6 +566,7 @@ bool CMasternodeBroadcastFactory::Create(const CMasternodeConfig::CMasternodeEnt
 }
 
 bool CMasternodeBroadcastFactory::Create(
+    CMasternodeSync& masternodeSynchronization,
     const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
     CMasternodeBroadcast& mnbRet,
@@ -580,6 +585,7 @@ bool CMasternodeBroadcastFactory::Create(
     MasternodeTier nMasternodeTier;
 
     if(!createArgumentsFromConfig(
+        masternodeSynchronization,
         configEntry,
         strErrorRet,
         fOffline,

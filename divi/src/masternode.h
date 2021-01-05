@@ -265,6 +265,7 @@ public:
     bool Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
     void Relay() const;
     std::string getMessageToSign() const;
+    uint256 GetHash() const;
 
     ADD_SERIALIZE_METHODS;
 
@@ -289,15 +290,6 @@ public:
             collateralBlock.SetNull();
         }
     }
-
-    uint256 GetHash() const
-    {
-        CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-        ss << sigTime;
-        ss << pubKeyCollateralAddress;
-        return ss.GetHash();
-    }
-
 };
 
 class CMasternodeBroadcastFactory

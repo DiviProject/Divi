@@ -127,7 +127,7 @@ void ThreadMasternodeBackgroundSync()
 
         if (now >= nTimeConnections + 60) {
             nTimeConnections = now;
-            mnodeman.CheckAndRemoveInnactive();
+            mnodeman.CheckAndRemoveInnactive(masternodePayments,masternodeSync);
             mnodeman.ProcessMasternodeConnections();
             masternodePayments.CheckAndRemove();
             CleanTransactionLocksList();

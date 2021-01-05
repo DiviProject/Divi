@@ -1745,7 +1745,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     LogPrintf("nSwiftTXDepth %d\n", nSwiftTXDepth);
     LogPrintf("Anonymize DIVI Amount %d\n", nAnonymizeDiviAmount);
 
-    threadGroup.create_thread(boost::bind(&ThreadCheckObfuScationPool));
+    threadGroup.create_thread(boost::bind(&ThreadMasternodeBackgroundSync));
 
     // ********************************************************* Step 11: start node
 

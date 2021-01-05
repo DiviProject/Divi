@@ -11,6 +11,8 @@
 #include "obfuscation.h"
 #include "spork.h"
 #include "Logging.h"
+#include <masternode-sync.h>
+#include <masternode-payments.h>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <main.h>
@@ -196,7 +198,7 @@ void CMasternodeMan::Check()
     }
 }
 
-void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
+void CMasternodeMan::CheckAndRemoveInnactive(CMasternodePayments& masternodePayments, CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
 {
     Check();
 
@@ -217,7 +219,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
             std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
             while (it3 != mapSeenMasternodeBroadcast.end()) {
                 if ((*it3).second.vin == (*it).vin) {
-                    masternodeSync.mapSeenSyncMNB.erase((*it3).first);
+                    masternodeSynchronization.mapSeenSyncMNB.erase((*it3).first);
                     mapSeenMasternodeBroadcast.erase(it3++);
                 } else {
                     ++it3;
@@ -275,7 +277,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(bool forceExpiredRemoval)
     while (it3 != mapSeenMasternodeBroadcast.end()) {
         if ((*it3).second.lastPing.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
             mapSeenMasternodeBroadcast.erase(it3++);
-            masternodeSync.mapSeenSyncMNB.erase((*it3).second.GetHash());
+            masternodeSynchronization.mapSeenSyncMNB.erase((*it3).second.GetHash());
         } else {
             ++it3;
         }
@@ -355,7 +357,7 @@ bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, i
 
     return true;
 }
-bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS)
+bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodePayments& masternodePayments, CMasternodeSync& masternodeSynchronization, CMasternodeBroadcast& mnb, int& nDoS)
 {
     // make sure signature isn't in the future (past is OK)
     if (mnb.sigTime > GetAdjustedTime() + 60 * 60) {
@@ -419,7 +421,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nD
             pmn->Check();
             if (pmn->IsEnabled()) mnb.Relay();
         }
-        masternodeSync.AddedMasternodeList(mnb.GetHash());
+        masternodeSynchronization.AddedMasternodeList(mnb.GetHash());
     }
 
     return true;
@@ -819,15 +821,15 @@ void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
     }
 }
 
-bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
+bool CMasternodeMan::ProcessBroadcast(CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization,CNode* pfrom, CMasternodeBroadcast& mnb)
 {
     if (mapSeenMasternodeBroadcast.count(mnb.GetHash())) { //seen
-        masternodeSync.AddedMasternodeList(mnb.GetHash());
+        masternodeSynchronization.AddedMasternodeList(mnb.GetHash());
         return true;
     }
 
     int nDoS = 0;
-    if (!CheckAndUpdateMasternode(mnb,nDoS))
+    if (!CheckAndUpdateMasternode(masternodePayments,masternodeSynchronization,mnb,nDoS))
     {
         if (nDoS > 0 && pfrom != nullptr)
             Misbehaving(pfrom->GetId(), nDoS);
@@ -867,7 +869,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     if (pfrom != nullptr)
         addr = pfrom->addr;
     addrman.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
-    masternodeSync.AddedMasternodeList(mnb.GetHash());
+    masternodeSynchronization.AddedMasternodeList(mnb.GetHash());
 
     // If the masternode already is in our list and is enabled, nothing
     // remains to be done.  If it is not enabled, we remove the old masternode
@@ -926,17 +928,17 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
     return false;
 }
 
-void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
+void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
-    if (!masternodeSync.IsBlockchainSynced()) return;
+    if (!masternodeSynchronization.IsBlockchainSynced()) return;
 
     LOCK(cs_process_message);
 
     if (strCommand == "mnb") { //Masternode Broadcast
         CMasternodeBroadcast mnb;
         vRecv >> mnb;
-        if (!ProcessBroadcast(pfrom, mnb))
+        if (!ProcessBroadcast(masternodePayments,masternodeSynchronization,pfrom, mnb))
           return;
     }
 

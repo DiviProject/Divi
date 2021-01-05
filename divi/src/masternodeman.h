@@ -17,6 +17,8 @@
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 
 class CMasternodeMan;
+class CMasternodeSync;
+class CMasternodePayments;
 
 extern CMasternodeMan mnodeman;
 
@@ -82,12 +84,12 @@ public:
     void Check();
 
     /// Check all Masternodes and remove inactive
-    void CheckAndRemoveInnactive(bool forceExpiredRemoval = false);
+    void CheckAndRemoveInnactive(CMasternodePayments& masternodePayments, CMasternodeSync& masternodeSynchronization,bool forceExpiredRemoval = false);
     void CheckAndRemove() {} // dummy overload for loading/storing from db cache
 
     bool UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const;
     bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
-    bool CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nDoS);
+    bool CheckAndUpdateMasternode(CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization,CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool fRequireEnabled = true);
 
     /// Clear Masternode vector
@@ -144,7 +146,7 @@ public:
      *  command.  Otherwise, we apply any potential DoS banscore.
      *
      *  Returns true if all was valid, and false if not.  */
-    bool ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb);
+    bool ProcessBroadcast(CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization, CNode* pfrom, CMasternodeBroadcast& mnb);
 
     /** Processes a masternode ping.  It is verified first, and if valid,
      *  used to update our state and inserted into mapSeenMasternodePing.
@@ -155,7 +157,7 @@ public:
      *  Returns true if the ping message was valid.  */
     bool ProcessPing(CNode* pfrom, CMasternodePing& mnp);
 
-    void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+    void ProcessMessage(CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     /// Return the number of (unique) Masternodes
     int size() const { return vMasternodes.size(); }

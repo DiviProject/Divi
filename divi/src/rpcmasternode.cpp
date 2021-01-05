@@ -471,7 +471,7 @@ Value masternodecurrent(const Array& params, bool fHelp)
 
 bool RegisterMasternodeBroadcast(CMasternodeBroadcast &mnb, bool deferRelay)
 {
-    if (!mnodeman.ProcessBroadcast(nullptr, mnb))
+    if (!mnodeman.ProcessBroadcast(masternodePayments, masternodeSync,nullptr, mnb))
         return false;
 
     //send to all peers

@@ -20,6 +20,7 @@
 
 extern bool fLiteMode;
 extern bool fMasterNode;
+extern bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow = false);
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
@@ -58,7 +59,7 @@ static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTie
 
     return false;
 }
-}
+
 /**
  * An entry in the ranking cache.  We use mruset to hold the cache,
  * which means that even though it is conceptually a map, we represent
@@ -411,7 +412,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nD
         LogPrint("masternode","mnb - Got updated entry for %s\n", mnb.vin.prevout.hash.ToString());
         if (UpdateWithNewBroadcast(mnb,*pmn)) {
             int unusedDoSValue = 0;
-            if (mnb.lastPing != CMasternodePing() && mnb.lastPing.CheckAndUpdate(*pmn, unusedDoSValue, false)) {
+            if (mnb.lastPing != CMasternodePing() &&  CheckAndUpdatePing(*pmn,mnb.lastPing,unusedDoSValue,false)) {
                 RecordSeenPing(pmn->lastPing);
                 pmn->lastPing.Relay();
             }
@@ -423,6 +424,82 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeBroadcast& mnb, int& nD
 
     return true;
 }
+
+bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, int& nDoS,bool fRequireEnabled)
+{
+    if (mnp.sigTime > GetAdjustedTime() + 60 * 60) {
+        LogPrint("masternode", "%s - Signature rejected, too far into the future %s\n",
+                 __func__, mnp.vin.prevout.hash.ToString());
+        nDoS = 1;
+        return false;
+    }
+
+    if (mnp.sigTime <= GetAdjustedTime() - 60 * 60) {
+        LogPrint("masternode", "%s - Signature rejected, too far into the past %s - %d %d\n",
+                 __func__, mnp.vin.prevout.hash.ToString(), mnp.sigTime, GetAdjustedTime());
+        nDoS = 1;
+        return false;
+    }
+
+    LogPrint("masternode", "%s - New Ping - %s - %lli\n", __func__, mnp.blockHash.ToString(), mnp.sigTime);
+
+    // see if we have this Masternode
+    if (mn.protocolVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {
+        if (fRequireEnabled && !mn.IsEnabled()) return false;
+
+        // LogPrint("masternode","mnping - Found corresponding mn for vin: %s\n", vin.ToString());
+        // update only if there is no known ping for this masternode or
+        // last ping was more then MASTERNODE_MIN_MNP_SECONDS-60 ago comparing to this one
+        if (!mn.IsTooEarlyToReceivePingUpdate(mnp.sigTime)) {
+            const std::string strMessage = mnp.getMessageToSign();
+
+            std::string errorMessage = "";
+            if (!CObfuScationSigner::VerifyMessage(mn.pubKeyMasternode, mnp.vchSig, strMessage, errorMessage)) {
+                LogPrint("masternode", "%s - Got bad Masternode address signature %s\n",
+                         __func__, mnp.vin.prevout.hash.ToString());
+                nDoS = 33;
+                return false;
+            }
+
+            BlockMap::iterator mi = mapBlockIndex.find(mnp.blockHash);
+            if (mi != mapBlockIndex.end() && (*mi).second) {
+                if ((*mi).second->nHeight < chainActive.Height() - 24) {
+                    LogPrint("masternode", "%s - Masternode %s block hash %s is too old\n",
+                             __func__, mnp.vin.prevout.hash.ToString(), mnp.blockHash.ToString());
+                    // Do nothing here (no Masternode update, no mnping relay)
+                    // Let this node to be visible but fail to accept mnping
+
+                    return false;
+                }
+            } else {
+                LogPrint("masternode", "%s - Masternode %s block hash %s is unknown\n",
+                         __func__, mnp.vin.prevout.hash.ToString(), mnp.blockHash.ToString());
+                // maybe we stuck so we shouldn't ban this node, just fail to accept it
+                // TODO: or should we also request this block?
+
+                return false;
+            }
+
+            mn.lastPing = mnp;
+
+            mn.Check(true);
+            if (!mn.IsEnabled()) return false;
+
+            LogPrint("masternode", "%s - Masternode ping accepted, vin: %s\n",
+                     __func__, mnp.vin.prevout.hash.ToString());
+            return true;
+        }
+        LogPrint("masternode", "%s - Masternode ping arrived too early, vin: %s\n",
+                 __func__, mnp.vin.prevout.hash.ToString());
+        //nDos = 1; //disable, this is happening frequently and causing banned peers
+        return false;
+    }
+    LogPrint("masternode", "%s - Couldn't find compatible Masternode entry, vin: %s\n",
+             __func__, mnp.vin.prevout.hash.ToString());
+
+    return false;
+}
+
 
 void CMasternodeMan::Clear()
 {
@@ -778,7 +855,7 @@ bool CMasternodeMan::ProcessBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     // Also check that the attached ping is valid.
     CMasternode mn(mnb);
     mn.lastPing = CMasternodePing();
-    if (!mnb.lastPing.CheckAndUpdate(mn, nDoS)) {
+    if (!CheckAndUpdatePing(mn,mnb.lastPing, nDoS)) {
         LogPrintf("%s : mnb - attached ping is invalid\n", __func__);
         if (pfrom != nullptr)
             Misbehaving(pfrom->GetId(), nDoS);
@@ -826,7 +903,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
 
     auto* pmn = Find(mnp.vin);
     int nDoS = 0;
-    if (pmn != nullptr && mnp.CheckAndUpdate(*pmn, nDoS)) {
+    if (pmn != nullptr && CheckAndUpdatePing(*pmn,mnp,nDoS)) {
         RecordSeenPing(mnp);
         mnp.Relay();
         return true;

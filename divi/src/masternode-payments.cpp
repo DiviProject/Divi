@@ -334,7 +334,20 @@ bool CMasternodePayments::GetBlockPayee(const uint256& seedHash, CScript& payee)
 }
 bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const
 {
-    return winner.SignatureValid();
+    CMasternode* pmn = mnodeman.Find(winner.vinMasternode);
+
+    if (pmn != NULL) {
+        std::string strMessage = winner.getMessageForMasternodeToSign();
+
+        std::string errorMessage = "";
+        if (!CObfuScationSigner::VerifyMessage(pmn->pubKeyMasternode, winner.vchSig, strMessage, errorMessage)) {
+            return error("CMasternodePaymentWinner::SignatureValid() - Got bad Masternode address signature %s\n", winner.vinMasternode.prevout.hash.ToString());
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 // Is this masternode scheduled to get paid soon?

@@ -831,6 +831,13 @@ bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress, bool updateTimeBefor
 
     return true;
 }
+uint256 CMasternodeBroadcast::GetHash() const
+{
+    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+    ss << sigTime;
+    ss << pubKeyCollateralAddress;
+    return ss.GetHash();
+}
 
 CMasternodePing::CMasternodePing()
 {

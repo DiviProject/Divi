@@ -359,6 +359,16 @@ std::string CMasternode::TierToString(MasternodeTier tier)
     return "INVALID";
 }
 
+int64_t CMasternode::DeterministicTimeOffset() const
+{
+    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+    ss << vin;
+    ss << sigTime;
+    uint256 hash = ss.GetHash();
+
+    return hash.GetCompact(false) % 150;
+}
+
 int64_t CMasternode::GetLastPaid(unsigned numberOfBlocksToSearchBack) const
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
@@ -366,14 +376,6 @@ int64_t CMasternode::GetLastPaid(unsigned numberOfBlocksToSearchBack) const
 
     CScript mnpayee;
     mnpayee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
-
-    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-    ss << vin;
-    ss << sigTime;
-    uint256 hash = ss.GetHash();
-
-    // use a deterministic offset to break a tie -- 2.5 minutes
-    int64_t nOffset = hash.GetCompact(false) % 150;
 
     const CBlockIndex* BlockReading = pindexPrev;
 
@@ -395,7 +397,7 @@ int64_t CMasternode::GetLastPaid(unsigned numberOfBlocksToSearchBack) const
                 to converge on the same payees quickly, then keep the same schedule.
             */
             if (masternodePayees->HasPayeeWithVotes(mnpayee, 2)) {
-                return BlockReading->nTime + nOffset;
+                return BlockReading->nTime + DeterministicTimeOffset();
             }
         }
 

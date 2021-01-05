@@ -165,6 +165,7 @@ public:
      *  included in the currently active chain.  If it is not yet confirmed
      *  then this returns nullptr.  */
     const CBlockIndex* GetCollateralBlock() const;
+    int64_t DeterministicTimeOffset() const;
 
     CMasternode();
     CMasternode(const CMasternode& other);

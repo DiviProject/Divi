@@ -386,7 +386,7 @@ Value listmasternodes(const Array& params, bool fHelp)
             obj.emplace_back("version", mn->protocolVersion);
             obj.emplace_back("lastseen", (int64_t)mn->lastPing.sigTime);
             obj.emplace_back("activetime", (int64_t)(mn->lastPing.sigTime - mn->sigTime));
-            obj.emplace_back("lastpaid", (int64_t)mn->GetLastPaid(numberOfBlocksToSearchBackForLastPayment));
+            obj.emplace_back("lastpaid", (int64_t)masternodePayments.FindLastPayeePaymentTime(*mn,numberOfBlocksToSearchBackForLastPayment));
             obj.emplace_back("tier", CMasternode::TierToString(static_cast<MasternodeTier>(mn->nTier)));
 
             ret.emplace_back(obj);

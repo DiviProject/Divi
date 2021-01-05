@@ -369,48 +369,6 @@ int64_t CMasternode::DeterministicTimeOffset() const
     return hash.GetCompact(false) % 150;
 }
 
-int64_t CMasternode::GetLastPaid(unsigned numberOfBlocksToSearchBack) const
-{
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    if (pindexPrev == NULL) return false;
-
-    CScript mnpayee;
-    mnpayee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
-
-    const CBlockIndex* BlockReading = pindexPrev;
-
-    unsigned n = 0;
-    for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++) {
-        if (n >= numberOfBlocksToSearchBack) {
-            return 0;
-        }
-        n++;
-
-        uint256 seedHash;
-        if (!GetBlockHashForScoring(seedHash, BlockReading, 0))
-            continue;
-
-        auto* masternodePayees = masternodePayments.GetPayeesForScoreHash(seedHash);
-        if (masternodePayees != nullptr) {
-            /*
-                Search for this payee, with at least 2 votes. This will aid in consensus allowing the network
-                to converge on the same payees quickly, then keep the same schedule.
-            */
-            if (masternodePayees->HasPayeeWithVotes(mnpayee, 2)) {
-                return BlockReading->nTime + DeterministicTimeOffset();
-            }
-        }
-
-        if (BlockReading->pprev == NULL) {
-            assert(BlockReading);
-            break;
-        }
-        BlockReading = BlockReading->pprev;
-    }
-
-    return 0;
-}
-
 std::string CMasternode::GetStatus() const
 {
     switch (nActiveState) {

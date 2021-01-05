@@ -296,7 +296,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
             return;
         }
 
-        if (!winner.SignatureValid()) {
+        if (!CheckMasternodeWinnerSignature(winner)) {
             LogPrintf("%s : - invalid signature\n", __func__);
             if (masternodeSync.IsSynced()) Misbehaving(pfrom->GetId(), 20);
             // it could just be a non-synced masternode

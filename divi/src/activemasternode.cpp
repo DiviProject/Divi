@@ -55,7 +55,7 @@ bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
     return true;
 }
 
-void CActiveMasternode::ManageStatus()
+void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
 {
     std::string errorMessage;
 
@@ -75,7 +75,7 @@ void CActiveMasternode::ManageStatus()
 
     if (status == ACTIVE_MASTERNODE_INITIAL) {
         CMasternode* pmn;
-        pmn = mnodeman.Find(pubKeyMasternode);
+        pmn = masternodeManager.Find(pubKeyMasternode);
         if (pmn != NULL) {
             pmn->Check();
             if (pmn->IsEnabled() && pmn->protocolVersion == PROTOCOL_VERSION)
@@ -115,7 +115,7 @@ void CActiveMasternode::ManageStatus()
     }
 
     //send to all peers
-    if (!SendMasternodePing(errorMessage)) {
+    if (!SendMasternodePing(masternodeManager,errorMessage)) {
         LogPrintf("CActiveMasternode::ManageStatus() - Error on Ping: %s\n", errorMessage);
     }
 }
@@ -138,7 +138,7 @@ std::string CActiveMasternode::GetStatus()
     }
 }
 
-bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
+bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, std::string& errorMessage)
 {
     if (status != ACTIVE_MASTERNODE_STARTED) {
         errorMessage = "Masternode is not in a running status";
@@ -154,7 +154,7 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
     }
 
     // Update lastPing for our masternode in Masternode list
-    CMasternode* pmn = mnodeman.Find(vin);
+    CMasternode* pmn = masternodeManager.Find(vin);
     if (pmn != NULL) {
         if (pmn->IsTooEarlyToSendPingUpdate(mnp.sigTime)) {
             errorMessage = "Too early to send Masternode Ping";
@@ -162,12 +162,11 @@ bool CActiveMasternode::SendMasternodePing(std::string& errorMessage)
         }
 
         pmn->lastPing = mnp;
-        mnodeman.mapSeenMasternodePing.insert(std::make_pair(mnp.GetHash(), mnp));
+        masternodeManager.mapSeenMasternodePing.insert(std::make_pair(mnp.GetHash(), mnp));
 
-        //mnodeman.mapSeenMasternodeBroadcast.lastPing is probably outdated, so we'll update it
         CMasternodeBroadcast mnb(*pmn);
         uint256 hash = mnb.GetHash();
-        if (mnodeman.mapSeenMasternodeBroadcast.count(hash)) mnodeman.mapSeenMasternodeBroadcast[hash].lastPing = mnp;
+        if (masternodeManager.mapSeenMasternodeBroadcast.count(hash)) masternodeManager.mapSeenMasternodeBroadcast[hash].lastPing = mnp;
 
         mnp.Relay();
 

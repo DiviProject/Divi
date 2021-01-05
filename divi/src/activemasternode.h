@@ -21,12 +21,13 @@
 class CMasternodeBroadcast;
 class CMasternodeConfig;
 class CMasternodePaymentWinner;
+class CMasternodeMan;
 
 // Responsible for activating the Masternode and pinging the network
 class CActiveMasternode
 {
 private:
-    bool SendMasternodePing(std::string& errorMessage);
+    bool SendMasternodePing(CMasternodeMan& masternodeManager,std::string& errorMessage);
 private:
     // critical section to protect the inner data structures
     mutable CCriticalSection cs;
@@ -51,7 +52,7 @@ public:
     /// Manage status of main Masternode
     bool SetMasternodeKey(const std::string& privKeyString);
     bool SetMasternodeAddress(const std::string& masternodeAddress);
-    void ManageStatus();
+    void ManageStatus(CMasternodeMan& masternodeManager);
     std::string GetStatus();
 
     /// Register any Masternode

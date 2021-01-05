@@ -349,6 +349,10 @@ bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymen
 
     return false;
 }
+bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
+{
+    return winner.IsValid(pnode,strError);
+}
 
 // Is this masternode scheduled to get paid soon?
 // -- Only look ahead up to 8 blocks to allow for propagation of the latest 2 winners

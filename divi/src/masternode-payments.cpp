@@ -286,8 +286,8 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
         }
 
         std::string strError = "";
-        if (!winner.IsValid(pfrom, strError)) {
-            // if(strError != "") LogPrint("masternode","mnw - invalid message - %s\n", strError);
+        if (!CheckMasternodeWinnerValidity(winner,pfrom,strError))
+        {
             return;
         }
 
@@ -351,7 +351,57 @@ bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymen
 }
 bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
 {
-    return winner.IsValid(pnode,strError);
+    CMasternode* pmn = mnodeman.Find(winner.vinMasternode);
+
+    if (!pmn) {
+        strError = strprintf("Unknown Masternode %s", winner.vinMasternode.prevout.hash.ToString());
+        LogPrint("masternode","CMasternodePaymentWinner::IsValid - %s\n", strError);
+        mnodeman.AskForMN(pnode, winner.vinMasternode);
+        return false;
+    }
+
+    if (pmn->protocolVersion < ActiveProtocol()) {
+        strError = strprintf("Masternode protocol too old %d - req %d", pmn->protocolVersion, ActiveProtocol());
+        LogPrint("masternode","CMasternodePaymentWinner::IsValid - %s\n", strError);
+        return false;
+    }
+
+    /* Before accepting a payment as valid, explicitly check that the
+       masternode is active.  GetMasternodeRank includes this check, but
+       has a cache on results so double-checking doesn't hurt.  */
+    pmn->Check();
+    if (!pmn->IsEnabled()) {
+        strError = strprintf("Masternode %s is not active", winner.vinMasternode.prevout.hash.ToString());
+        LogPrint("masternode", "CMasternodePaymentWinner::IsValid - %s\n", strError);
+        return false;
+    }
+
+    const uint256& seedHash = winner.getSeedHash();
+    assert(!seedHash.IsNull());
+    const unsigned n = mnodeman.GetMasternodeRank(winner.vinMasternode, seedHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
+
+    if (n > MNPAYMENTS_SIGNATURES_TOTAL) {
+        //It's common to have masternodes mistakenly think they are in the top 10
+        // We don't want to print all of these messages, or punish them unless they're way off
+        if (n > MNPAYMENTS_SIGNATURES_TOTAL * 2) {
+            strError = strprintf("Masternode not in the top %d (%u)", MNPAYMENTS_SIGNATURES_TOTAL * 2, n);
+            LogPrint("masternode","CMasternodePaymentWinner::IsValid - %s\n", strError);
+            //if (masternodeSync.IsSynced()) Misbehaving(pnode->GetId(), 20);
+        }
+        return false;
+    }
+
+    if(!masternodeSync.IsSynced()){ return true;}
+
+    /* Make sure that the payee is in our own payment queue near the top.  */
+    const std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(seedHash, winner.GetHeight(), true);
+    for (int i = 0; i < std::min<int>(2 * MNPAYMENTS_SIGNATURES_TOTAL, mnQueue.size()); ++i) {
+        const auto& mn = *mnQueue[i];
+        const CScript mnPayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
+        if (mnPayee == winner.payee)
+            return true;
+    }
+    return false;
 }
 
 // Is this masternode scheduled to get paid soon?

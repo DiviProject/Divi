@@ -99,6 +99,11 @@ private:
     int nBlockHeight;
 
 public:
+    const uint256& getSeedHash() const
+    {
+        return seedHash;
+    }
+
     CScript payee;
     std::vector<unsigned char> vchSig;
 

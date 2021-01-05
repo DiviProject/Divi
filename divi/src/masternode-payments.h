@@ -8,14 +8,18 @@
 
 #include <BlockRewards.h>
 #include <key.h>
-#include <masternode.h>
 #include <boost/lexical_cast.hpp>
 #include <primitives/transaction.h>
+#include <sync.h>
 
 class CBlock;
 class CMasternodePayments;
 class CMasternodePaymentWinner;
 class CMasternodeBlockPayees;
+class CMasternode;
+class CNode;
+class CBlockIndex;
+class CDataStream;
 
 extern CMasternodePayments masternodePayments;
 
@@ -213,6 +217,8 @@ public:
     std::string GetRequiredPaymentsString(const uint256& seedHash) const;
     void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const;
     std::string ToString() const;
+
+    unsigned FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const;
 
     /** Retrieves the payment winner for the given hash.  Returns null
      *  if there is no entry for that hash.  */

@@ -10,6 +10,7 @@
 #include "BlockDiskAccessor.h"
 #include <chain.h>
 #include "chainparamsbase.h"
+#include <masternode.h>
 #include "masternode-sync.h"
 #include "masternodeman.h"
 #include "obfuscation.h"
@@ -743,4 +744,41 @@ std::string CMasternodePayments::ToString() const
     info << "Votes: " << (int)mapMasternodePayeeVotes.size() << ", Blocks: " << (int)mapMasternodeBlocks.size();
 
     return info.str();
+}
+
+unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const
+{
+    const CBlockIndex* chainTip = chainActive.Tip();
+    if (chainTip == NULL) return 0u;
+
+    CScript mnPayee = GetScriptForDestination(masternode.pubKeyCollateralAddress.GetID());
+    unsigned n = 0;
+    for (unsigned int i = 1; chainTip && chainTip->nHeight > 0; i++) {
+        if (n >= maxBlockDepth) {
+            return 0u;
+        }
+        n++;
+
+        uint256 seedHash;
+        if (!GetBlockHashForScoring(seedHash, chainTip, 0))
+            continue;
+
+        auto* masternodePayees = GetPayeesForScoreHash(seedHash);
+        if (masternodePayees != nullptr) {
+            /*
+                Search for this payee, with at least 2 votes. This will aid in consensus allowing the network
+                to converge on the same payees quickly, then keep the same schedule.
+            */
+            if (masternodePayees->HasPayeeWithVotes(mnPayee, 2)) {
+                return chainTip->nTime + masternode.DeterministicTimeOffset();
+            }
+        }
+
+        if (chainTip->pprev == NULL) {
+            assert(chainTip);
+            break;
+        }
+        chainTip = chainTip->pprev;
+    }
+    return 0u;
 }

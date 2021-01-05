@@ -114,6 +114,7 @@ public:
 
     uint256 GetHash() const;
 
+    std::string getMessageForMasternodeToSign() const;
     bool Sign(const CKey& keyMasternode, const CPubKey& pubKeyMasternode);
     bool IsValid(CNode* pnode, std::string& strError) const;
     bool SignatureValid() const;

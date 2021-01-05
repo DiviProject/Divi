@@ -230,12 +230,6 @@ bool CMasternode::IsTooEarlyToSendPingUpdate(int64_t now) const
     return TimeSinceLastPingIsWithin(MASTERNODE_PING_SECONDS, now);
 }
 
-void CMasternode::Disable()
-{
-    sigTime = 0;
-    lastPing = CMasternodePing();
-}
-
 bool CMasternode::IsEnabled() const
 {
     return activeState == MASTERNODE_ENABLED;

@@ -116,7 +116,6 @@ public:
 
     std::string getMessageForMasternodeToSign() const;
     bool IsValid(CNode* pnode, std::string& strError) const;
-    bool SignatureValid() const;
     void Relay() const;
 
     void AddPayee(const CScript& payeeIn);

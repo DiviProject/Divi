@@ -316,15 +316,18 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, const s
         }
     }
 }
-
+std::string CMasternodePaymentWinner::getMessageForMasternodeToSign() const
+{
+    return vinMasternode.prevout.ToStringShort() +
+            boost::lexical_cast<std::string>(nBlockHeight) +
+            payee.ToString();
+}
 bool CMasternodePaymentWinner::Sign(const CKey& keyMasternode, const CPubKey& pubKeyMasternode)
 {
     std::string errorMessage;
     std::string strMasterNodeSignMessage;
 
-    std::string strMessage = vinMasternode.prevout.ToStringShort() +
-            boost::lexical_cast<std::string>(nBlockHeight) +
-            payee.ToString();
+    std::string strMessage = getMessageForMasternodeToSign();
 
     if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
         LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage.c_str());

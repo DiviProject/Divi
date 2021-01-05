@@ -111,7 +111,7 @@ bool CObfuScationSigner::VerifyMessage(CPubKey pubkey, const std::vector<unsigne
 }
 
 //TODO: Rename/move to core
-void ThreadCheckObfuScationPool()
+void ThreadMasternodeBackgroundSync()
 {
     if (fLiteMode) return;
 

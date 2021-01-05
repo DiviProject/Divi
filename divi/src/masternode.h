@@ -187,6 +187,31 @@ public:
      *  seed hash.  It should be the result of GetBlockHashForScoring of
      *  the target block height.  */
     uint256 CalculateScore(const uint256& seedHash) const;
+    void Check(bool forceCheck = false);
+
+    bool IsBroadcastedWithin(int seconds) const;
+
+    bool TimeSinceLastPingIsWithin(int seconds, int64_t now = -1) const;
+    bool IsTooEarlyToReceivePingUpdate(int64_t now) const;
+    bool IsTooEarlyToSendPingUpdate(int64_t now) const;
+
+    void Disable();
+
+    bool IsEnabled() const;
+
+    int GetMasternodeInputAge() const;
+
+    static CAmount GetTierCollateralAmount(MasternodeTier tier);
+    static MasternodeTier GetTierByCollateralAmount(CAmount nCollateral);
+    static bool IsTierValid(MasternodeTier tier);
+    static std::string TierToString(MasternodeTier tier);
+
+    std::string GetStatus() const;
+
+    std::string Status() const;
+
+    int64_t GetLastPaid(unsigned numberOfBlocksToSearchBack) const;
+    bool IsValidNetAddr() const;
 
     ADD_SERIALIZE_METHODS;
 
@@ -216,32 +241,6 @@ public:
         if (ser_action.ForRead ())
             nTier = static_cast<MasternodeTier> (tier);
     }
-
-    void Check(bool forceCheck = false);
-
-    bool IsBroadcastedWithin(int seconds) const;
-
-    bool TimeSinceLastPingIsWithin(int seconds, int64_t now = -1) const;
-    bool IsTooEarlyToReceivePingUpdate(int64_t now) const;
-    bool IsTooEarlyToSendPingUpdate(int64_t now) const;
-
-    void Disable();
-
-    bool IsEnabled() const;
-
-    int GetMasternodeInputAge() const;
-
-    static CAmount GetTierCollateralAmount(MasternodeTier tier);
-    static MasternodeTier GetTierByCollateralAmount(CAmount nCollateral);
-    static bool IsTierValid(MasternodeTier tier);
-    static std::string TierToString(MasternodeTier tier);
-
-    std::string GetStatus() const;
-
-    std::string Status() const;
-
-    int64_t GetLastPaid(unsigned numberOfBlocksToSearchBack) const;
-    bool IsValidNetAddr() const;
 };
 
 

@@ -22,6 +22,7 @@ class CMasternodeBroadcast;
 class CMasternodeConfig;
 class CMasternodePaymentWinner;
 class CMasternodeMan;
+class CMasternodeSync;
 
 // Responsible for activating the Masternode and pinging the network
 class CActiveMasternode
@@ -52,7 +53,7 @@ public:
     /// Manage status of main Masternode
     bool SetMasternodeKey(const std::string& privKeyString);
     bool SetMasternodeAddress(const std::string& masternodeAddress);
-    void ManageStatus(CMasternodeMan& masternodeManager);
+    void ManageStatus(CMasternodeSync& masternodeSynchronization, CMasternodeMan& masternodeManager);
     std::string GetStatus();
 
     /// Enable cold wallet mode (run a Masternode with no funds)

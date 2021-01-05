@@ -142,7 +142,7 @@ void ThreadCheckObfuScationPool()
         // start right after sync is considered to be done
         if (now >= nTimeManageStatus + MASTERNODE_PING_SECONDS) {
             nTimeManageStatus = now;
-            activeMasternode.ManageStatus(mnodeman);
+            activeMasternode.ManageStatus(masternodeSync,mnodeman);
         }
 
         if (now >= nTimeConnections + 60) {

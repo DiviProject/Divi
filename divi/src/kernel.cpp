@@ -310,7 +310,7 @@ bool CheckCoinstakeForVaults(const CTransaction& tx, const CBlockRewards& expect
                              const CCoinsViewCache& view)
 {
     if (!tx.IsCoinStake())
-        return error("%s: transaction is not a coinstake", __func__);
+        return true;
 
     CAmount nValueIn = 0;
     bool foundVault = false;

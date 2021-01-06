@@ -25,7 +25,8 @@ extern unsigned nMaxDatacarrierBytes;
  * details.
  */
 static const unsigned int MANDATORY_SCRIPT_VERIFY_FLAGS = SCRIPT_VERIFY_P2SH |
-                                                          SCRIPT_VERIFY_DERSIG;
+                                                          SCRIPT_VERIFY_DERSIG |
+                                                          SCRIPT_REQUIRE_COINSTAKE;
 
 /**
  * Script flags that are used when verifying the coinstake signature in
@@ -35,8 +36,7 @@ static const unsigned int POS_SCRIPT_VERIFY_FLAGS = MANDATORY_SCRIPT_VERIFY_FLAG
                                                     SCRIPT_VERIFY_DERSIG |
                                                     SCRIPT_VERIFY_STRICTENC |
                                                     SCRIPT_VERIFY_MINIMALDATA |
-                                                    SCRIPT_VERIFY_NULLDUMMY |
-                                                    SCRIPT_REQUIRE_COINSTAKE;
+                                                    SCRIPT_VERIFY_NULLDUMMY;
 
 /**
  * Standard script verification flags that standard transactions will comply

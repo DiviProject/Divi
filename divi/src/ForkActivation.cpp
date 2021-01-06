@@ -16,14 +16,13 @@ extern Settings& settings;
 namespace
 {
 constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
-const std::set<Fork> manualOverrides = {Fork::StakingVaults,Fork::HardenedStakeModifier,Fork::UniformLotteryWinners};
+const std::set<Fork> manualOverrides = {Fork::HardenedStakeModifier,Fork::UniformLotteryWinners};
 /**
  * For forks that get activated at a certain block time, the associated
  * activation times.
  */
 const std::unordered_map<Fork, int64_t,std::hash<int>> ACTIVATION_TIMES = {
   {Fork::TestByTimestamp, 1000000000},
-  {Fork::StakingVaults, unixTimestampForDec31stMidnight},
   {Fork::HardenedStakeModifier, unixTimestampForDec31stMidnight},
   {Fork::UniformLotteryWinners, unixTimestampForDec31stMidnight},
 };

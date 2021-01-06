@@ -15,6 +15,7 @@
 #include "sporkdb.h"
 #include "utiltime.h"
 #include "Logging.h"
+#include <timedata.h>
 
 #include <numeric>
 #include <boost/algorithm/string/join.hpp>

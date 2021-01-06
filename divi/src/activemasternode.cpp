@@ -14,6 +14,7 @@
 #include <chainparams.h>
 #include <masternodeconfig.h>
 #include <masternode-payments.h>
+#include <masternode-sync.h>
 
 
 extern bool fMasterNode;

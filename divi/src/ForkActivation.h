@@ -20,11 +20,6 @@ enum Fork
 {
   /* Test forks not actually deployed / active but used for unit tests.  */
   TestByTimestamp,
-  /**
-   * Staking vaults with SCRIPT_REQUIRE_COINSTAKE and a couple of other,
-   * related changes.
-   */
-  StakingVaults,
   HardenedStakeModifier,
   UniformLotteryWinners,
 };

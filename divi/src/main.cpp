@@ -14,7 +14,6 @@
 #include "BlockSigning.h"
 #include "checkpoints.h"
 #include "checkqueue.h"
-#include "ForkActivation.h"
 #include "init.h"
 #include "kernel.h"
 #include "masternode-payments.h"
@@ -1722,12 +1721,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                              REJECT_INVALID, "bad-txns-BIP30");
     }
 
-    const ActivationState as(pindex);
-
-    unsigned int flags = MANDATORY_SCRIPT_VERIFY_FLAGS;
-    if (as.IsActive(Fork::StakingVaults))
-        flags |= SCRIPT_REQUIRE_COINSTAKE;
-
     CBlockUndo blockundo;
 
     CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
@@ -1826,17 +1819,16 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             nValueIn += view.GetValueIn(tx);
 
             std::vector<CScriptCheck> vChecks;
-            if (!CheckInputs(tx, state, view, fScriptChecks, flags, fJustCheck, nScriptCheckThreads ? &vChecks : NULL))
+            if (!CheckInputs(tx, state, view, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL))
                 return false;
             control.Add(vChecks);
         }
 
-        // Enforce additional rules for coinstakes after the vault fork is active.
-        if (as.IsActive(Fork::StakingVaults) && tx.IsCoinStake()) {
-            if (!CheckCoinstakeForVaults(tx, nExpectedMint, view)) {
-                return state.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),
-                                 REJECT_INVALID, "bad-coinstake-vault-spend");
-            }
+        // Enforce additional rules for coinstakes, which make sure that
+        // staking vaults are secure.
+        if (!CheckCoinstakeForVaults(tx, nExpectedMint, view)) {
+            return state.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),
+                             REJECT_INVALID, "bad-coinstake-vault-spend");
         }
 
         if (fAddressIndex) {

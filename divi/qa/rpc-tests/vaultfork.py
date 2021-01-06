@@ -11,7 +11,6 @@ from authproxy import JSONRPCException
 from util import *
 
 from PowToPosTransition import createPoSStacks, generatePoSBlocks
-ACTIVATION_TIME = 1_609_459_199
 
 
 class VaultForkTest (BitcoinTestFramework):
@@ -21,6 +20,7 @@ class VaultForkTest (BitcoinTestFramework):
         args = ["-debug"]
         self.nodes.append (start_node(0, self.options.tmpdir, extra_args=args))
         self.nodes.append (start_node(1, self.options.tmpdir, extra_args=args))
+        connect_nodes (self.nodes[0], 1)
         self.is_network_split = False
         self.sync_all ()
 
@@ -44,59 +44,12 @@ class VaultForkTest (BitcoinTestFramework):
         return node.sendrawtransaction (signed["hex"])
 
     def run_test (self):
-        # After the big bump in time, we need to make sure the nodes
-        # are connected still / again in case they timed out the
-        # connection between them.
-        set_node_times(self.nodes, ACTIVATION_TIME - 1_000)
-        reconnect_all(self.nodes)
-        self.nodes[0].setgenerate (True, 1)
-        sync_blocks (self.nodes)
-        createPoSStacks(self.nodes, self.nodes)
-
         # We need to activate PoS at least for some parts of the test.
         print ("Activating PoS...")
+        createPoSStacks(self.nodes, self.nodes)
         generatePoSBlocks (self.nodes, 0, 100)
 
-        print ("Spending vault as owner before the fork...")
-        vault = self.fund_vault (self.nodes[0], self.nodes[1], 10)
-        generatePoSBlocks (self.nodes, 0, 1)
-        addr = self.nodes[0].getnewaddress ("unvaulted")
-        unsigned = self.nodes[0].createrawtransaction ([vault], {addr: 9})
-        self.sign_and_send (self.nodes[0], unsigned)
-        sync_mempools(self.nodes)
-        generatePoSBlocks (self.nodes, 0, 1)
-        assert_equal (self.nodes[0].getbalance ("unvaulted"), 9)
-
-        print ("Spending vault as staker before the fork...")
-        vault = self.fund_vault (self.nodes[0], self.nodes[1], 10)
-        generatePoSBlocks (self.nodes, 0, 1)
-        addr = self.nodes[1].getnewaddress ("stolen")
-        unsigned = self.nodes[1].createrawtransaction ([vault], {addr: 9})
-
-        # The signature will be added, even though it is considered as invalid
-        # by the applied standard flags (which include OP_REQUIRE_COINSTAKE
-        # independent of fork activation).  Also the mempool will not accept it.
-        signed = self.nodes[1].signrawtransaction (unsigned)
-        assert_equal (signed["complete"], False)
-        assert_raises (JSONRPCException, self.nodes[1].sendrawtransaction, signed["hex"])
-
-        # If we include the transaction directly in a block, it is valid.
-        self.nodes[0].generateblock ({"extratx": [signed["hex"]]})
-        sync_blocks (self.nodes)
-        assert_equal (self.nodes[1].getbalance ("stolen"), 9)
-
-        print ("Activating fork...")
-        blk = self.nodes[0].getblockheader (self.nodes[0].getbestblockhash ())
-        assert_greater_than (ACTIVATION_TIME, blk["time"])
-        set_node_times (self.nodes, ACTIVATION_TIME + 1_000)
-        reconnect_all(self.nodes)
-        self.nodes[0].setgenerate (True, 1)
-        while not sync_blocks (self.nodes,1.0):
-            reconnect_all(self.nodes)
-        blk = self.nodes[0].getblockheader (self.nodes[0].getbestblockhash ())
-        assert_greater_than (blk["time"], ACTIVATION_TIME)
-
-        print ("Spending vault as staker with activated fork...")
+        print ("Spending vault as staker...")
         vault = self.fund_vault (self.nodes[0], self.nodes[1], 10)
         generatePoSBlocks (self.nodes, 1, 1)
         addr = self.nodes[1].getnewaddress ("stolen again")
@@ -106,7 +59,7 @@ class VaultForkTest (BitcoinTestFramework):
                        {"extratx": [signed["hex"]]})
         assert_equal (self.nodes[1].getbalance ("stolen again"), 0)
 
-        print ("Spending vault as owner after the fork...")
+        print ("Spending vault as owner...")
         vault = self.fund_vault (self.nodes[0], self.nodes[1], 10)
         generatePoSBlocks (self.nodes, 1, 1)
         addr = self.nodes[0].getnewaddress ("unvaulted 2")

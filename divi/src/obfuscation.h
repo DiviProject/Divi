@@ -6,17 +6,9 @@
 #ifndef OBFUSCATION_H
 #define OBFUSCATION_H
 
-#include "masternode-payments.h"
-#include "masternode-sync.h"
-#include "masternodeman.h"
-#include "sync.h"
-
-class CTxIn;
-class CMasterNodeVote;
-class CBitcoinAddress;
-
-/** Helper object for signing and checking signatures
- */
+#include <key.h>
+#include <pubkey.h>
+/** Helper object for signing and checking signatures **/
 struct CObfuScationSigner
 {
     /// Set the private/public key values, returns true if successful

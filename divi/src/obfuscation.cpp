@@ -5,6 +5,10 @@
 
 #include "obfuscation.h"
 
+#include <masternode-sync.h>
+#include <masternode-payments.h>
+#include <sync.h>
+
 #include "activemasternode.h"
 #include "BlockDiskAccessor.h"
 #include "coincontrol.h"

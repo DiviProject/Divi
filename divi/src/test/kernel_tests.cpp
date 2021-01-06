@@ -83,18 +83,22 @@ protected:
 
 BOOST_FIXTURE_TEST_SUITE(CheckCoinstakeForVaults_tests, CheckCoinstakeForVaultsTestFixture)
 
-BOOST_AUTO_TEST_CASE(willFailNonCoinstakeTransactions)
+BOOST_AUTO_TEST_CASE(willIgnoreNonCoinstakeTransactions)
 {
   CMutableTransaction mtx;
-  mtx.vin.push_back(CTxIn(nonVaultCoins[0]));
-  mtx.vout.push_back(CTxOut(1, scriptNonVault));
-  mtx.vout.push_back(CTxOut(15000 * COIN + CENT, scriptNonVault));
+  mtx.vin.emplace_back(vaultCoins[0]);
+  mtx.vout.emplace_back ();
+  mtx.vout[0].SetEmpty ();
+  mtx.vout.emplace_back(15000 * COIN + CENT, scriptNonVault);
 
-  BOOST_CHECK(!CTransaction(mtx).IsCoinStake());
+  /* As a coinstake, this is an invalid transaction.  */
+  BOOST_CHECK(CTransaction(mtx).IsCoinStake());
   BOOST_CHECK(!RunCheck(mtx));
 
-  mtx.vout[0].SetEmpty();
-  BOOST_CHECK(CTransaction(mtx).IsCoinStake());
+  /* But if it is not a coinstake, then the check function will always
+     accept it no matter what.  */
+  mtx.vout[0] = CTxOut (1, scriptNonVault);
+  BOOST_CHECK(!CTransaction(mtx).IsCoinStake());
   BOOST_CHECK(RunCheck(mtx));
 }
 

@@ -4,7 +4,6 @@
 
 #include "BlockSigning.h"
 
-#include "ForkActivation.h"
 #include "keystore.h"
 #include "primitives/block.h"
 #include "script/standard.h"
@@ -117,12 +116,6 @@ CheckBlockSignature (const CBlock& block)
     if (block.vchBlockSig.empty())
         return false;
 
-    /* FIXME:  Once the staking vault fork has passed, we can get rid of
-       this condition here and just always accept vault signatures in addition
-       to the other types.  But initially we need to properly activate the
-       change to avoid an uncontrolled fork.  */
-    const bool acceptVault = ActivationState(block).IsActive(Fork::StakingVaults);
-
     if (whichType == TX_PUBKEY)
     {
         const auto& vchPubKey = vSolutions[0];
@@ -144,7 +137,7 @@ CheckBlockSignature (const CBlock& block)
 
         return keyID == pubkeyFromSig.GetID();
     }
-    else if (acceptVault && whichType == TX_VAULT)
+    else if (whichType == TX_VAULT)
     {
         const auto& vchPubKey = vSolutions[1];
         const CKeyID keyID = CKeyID(uint160(vchPubKey));

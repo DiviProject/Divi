@@ -469,25 +469,6 @@ Value masternodecurrent(const Array& params, bool fHelp)
 	throw std::runtime_error("masternodecurrent is deprecated!  masternode payments always rely upon votes");
 }
 
-bool RegisterMasternodeBroadcast(CMasternodeBroadcast &mnb, bool deferRelay)
-{
-    if (!mnodeman.ProcessBroadcast(masternodePayments, masternodeSync,nullptr, mnb))
-        return false;
-
-    //send to all peers
-    if(!deferRelay)
-    {
-        LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin.ToString());
-        mnb.Relay();
-    }
-    else
-    {
-        LogPrintf("%s - Deferring Relay vin = %s\n",__func__, mnb.vin.ToString());
-    }
-
-    return true;
-}
-
 Value broadcaststartmasternode(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 2 || params.size() < 1)
@@ -508,7 +489,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
     }
 
     Object result;
-    if (RegisterMasternodeBroadcast(mnb, false))
+    if (mnodeman.ProcessBroadcast(masternodePayments, masternodeSync,nullptr, mnb))
         result.push_back(Pair("status", "success"));
     else
         result.push_back(Pair("status","failed"));
@@ -567,8 +548,9 @@ Value startmasternode(const Array& params, bool fHelp)
             return result;
         }
 
-        if(!RegisterMasternodeBroadcast(mnb, deferRelay))
+        if(!mnodeman.ProcessBroadcast(masternodePayments, masternodeSync,nullptr, mnb))
         {
+            LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin.ToString());
             result.push_back(Pair("status", "failed"));
             result.push_back(Pair("error", strError));
             return result;

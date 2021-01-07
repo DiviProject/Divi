@@ -60,6 +60,13 @@ public:
 
     CMasternodePing();
     CMasternodePing(CTxIn& newVin);
+    std::string getMessageToSign() const;
+    bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
+    void Relay() const;
+
+    uint256 GetHash() const;
+    void swap(CMasternodePing& first, CMasternodePing& second);
+    CMasternodePing& operator=(CMasternodePing from);
 
     ADD_SERIALIZE_METHODS;
 
@@ -72,36 +79,6 @@ public:
         READWRITE(vchSig);
     }
 
-    std::string getMessageToSign() const;
-    bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
-    void Relay() const;
-
-    uint256 GetHash() const
-    {
-        CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-        ss << vin;
-        ss << sigTime;
-        return ss.GetHash();
-    }
-
-    void swap(CMasternodePing& first, CMasternodePing& second) // nothrow
-    {
-        // enable ADL (not necessary in our case, but good practice)
-        using std::swap;
-
-        // by swapping the members of two classes,
-        // the two classes are effectively swapped
-        swap(first.vin, second.vin);
-        swap(first.blockHash, second.blockHash);
-        swap(first.sigTime, second.sigTime);
-        swap(first.vchSig, second.vchSig);
-    }
-
-    CMasternodePing& operator=(CMasternodePing from)
-    {
-        swap(*this, from);
-        return *this;
-    }
     friend bool operator==(const CMasternodePing& a, const CMasternodePing& b)
     {
         return a.vin == b.vin && a.blockHash == b.blockHash;

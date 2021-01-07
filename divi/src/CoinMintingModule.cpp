@@ -48,7 +48,6 @@ CoinMintingModule::CoinMintingModule(
     CTxMemPool& mempool,
     std::vector<CNode*>& peers,
     CWallet& wallet,
-    int64_t& lastCoinStakeSearchInterval,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
     BlockMap& blockIndexByHash
     ): legacyStakeModifierService_(new LegacyPoSStakeModifierService(blockIndexByHash,activeChain))
@@ -88,8 +87,7 @@ CoinMintingModule::CoinMintingModule(
         masternodeSynchronization,
         hashedBlockTimestampsByHeight,
         mempool,
-        mainCS,
-        lastCoinStakeSearchInterval))
+        mainCS))
 {
 }
 

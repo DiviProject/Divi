@@ -172,9 +172,8 @@ Value setgenerate(const Array& params, bool fHelp)
         }
 
         Array blockHashes;
-        int64_t coinstakeSearchInterval = 0;
         CoinMintingModule mintingModule(
-            cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain, coinstakeSearchInterval,mapHashedBlocks,mapBlockIndex);
+            cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex);
         I_CoinMinter& minter = mintingModule.coinMinter();
 
         while (nHeight < nHeightEnd)
@@ -238,9 +237,8 @@ Value generateblock(const Array& params, bool fHelp)
         nHeight = chainActive.Height();
     }
 
-    int64_t coinstakeSearchInterval = 0;
     CoinMintingModule mintingModule(
-        cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain, coinstakeSearchInterval,mapHashedBlocks,mapBlockIndex);
+        cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex);
     I_CoinMinter& minter = mintingModule.coinMinter();
     ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
     assert(blockFactory);

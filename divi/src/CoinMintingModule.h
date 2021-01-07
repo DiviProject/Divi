@@ -43,7 +43,6 @@ public:
         CTxMemPool& mempool,
         std::vector<CNode*>& peers,
         CWallet& wallet,
-        int64_t& lastCoinStakeSearchInterval,
         BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
         BlockMap& blockIndexByHash);
     ~CoinMintingModule();

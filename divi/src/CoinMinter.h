@@ -42,7 +42,6 @@ class CoinMinter: public I_CoinMinter
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
     CMasternodeSync& masternodeSync_;
     HashedBlockMap& mapHashedBlocks_;
-    int64_t& lastCoinStakeSearchInterval_;
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
     int64_t timeToWait_;
@@ -81,8 +80,7 @@ public:
         CMasternodeSync& masternodeSynchronization,
         HashedBlockMap& mapHashedBlocks,
         CTxMemPool& mempool,
-        AnnotatedMixin<boost::recursive_mutex>& mainCS,
-        int64_t& lastCoinStakeSearchInterval);
+        AnnotatedMixin<boost::recursive_mutex>& mainCS);
 
     virtual bool CanMintCoins();
     virtual void sleep(uint64_t milliseconds) const;

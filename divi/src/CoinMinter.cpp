@@ -34,8 +34,7 @@ CoinMinter::CoinMinter(
     CMasternodeSync& masternodeSynchronization,
     HashedBlockMap& mapHashedBlocks,
     CTxMemPool& transactionMemoryPool,
-    AnnotatedMixin<boost::recursive_mutex>& mainCS,
-    int64_t& lastCoinStakeSearchInterval
+    AnnotatedMixin<boost::recursive_mutex>& mainCS
     ): blockSubsidies_( blockSubsidies )
     , blockFactory_( blockFactory )
     , peerNotifier_( std::make_shared<PeerNotificationOfMintService>(peers))
@@ -47,7 +46,6 @@ CoinMinter::CoinMinter(
     , mainCS_(mainCS)
     , masternodeSync_(masternodeSynchronization)
     , mapHashedBlocks_(mapHashedBlocks)
-    , lastCoinStakeSearchInterval_(lastCoinStakeSearchInterval)
     , haveMintableCoins_(false)
     , lastTimeCheckedMintable_(0)
     , timeToWait_(0)
@@ -84,7 +82,6 @@ bool CoinMinter::satisfiesMintingRequirements() const
             pwallet_->GetStakingBalance() <= 0 ||
             !masternodeSync_.IsSynced()
         );
-    if(!stakingRequirementsAreMet) lastCoinStakeSearchInterval_ = 0;
     return stakingRequirementsAreMet;
 }
 bool CoinMinter::limitStakingSpeed() const

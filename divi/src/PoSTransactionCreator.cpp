@@ -236,6 +236,7 @@ StakableCoin PoSTransactionCreator::FindProofOfStake(
         }
         if(chainTip->nHeight != activeChain_.Height())
         {
+            hashproofTimestampMinimumValue_ = 0;
             return StakableCoin();
         }
         if(FindHashproof(chainTip,blockBits, nTxNewTime, pcoin,txCoinStake) )
@@ -294,6 +295,10 @@ bool PoSTransactionCreator::CreateProofOfStake(
 
     if(!SelectCoins()) return false;
 
+    if(hashedBlockTimestamps_.count(chainTip->nHeight) == 0u)
+    {
+        hashproofTimestampMinimumValue_ = 0;
+    }
     int64_t adjustedTime = GetAdjustedTime();
     int64_t minimumTime = chainTip->GetMedianTimePast() + 1;
     const int64_t maximumTime = adjustedTime + maximumFutureBlockDrift - 1;

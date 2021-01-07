@@ -77,13 +77,12 @@ void MinterThread(bool fProofOfStake, I_CoinMinter& minter)
     }
 }
 
-int64_t nLastCoinStakeSearchInterval = 0;
 bool HasRecentlyAttemptedToGenerateProofOfStake()
 {
     bool recentlyAttemptedPoS = false;
     if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
         recentlyAttemptedPoS = true;
-    else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && nLastCoinStakeSearchInterval)
+    else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1))
         recentlyAttemptedPoS = true;
 
     return recentlyAttemptedPoS;
@@ -96,7 +95,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     LogPrintf("ThreadStakeMinter started\n");
     try {
         static CoinMintingModule mintingModule(
-            cs_main,Params(),chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks,mapBlockIndex);
+            cs_main,Params(),chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
@@ -117,7 +116,7 @@ void static ThreadPoWMinter(void* parg)
 
     try {
         static CoinMintingModule mintingModule(
-            cs_main,Params(),chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwallet,nLastCoinStakeSearchInterval,mapHashedBlocks,mapBlockIndex);
+            cs_main,Params(),chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);

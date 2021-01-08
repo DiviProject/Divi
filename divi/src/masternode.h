@@ -61,7 +61,8 @@ public:
     CMasternodePing();
     CMasternodePing(CTxIn& newVin);
     std::string getMessageToSign() const;
-    bool SignAndVerify(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
+    bool SignAndVerify(const CKey& keyMasternode, const CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
+    bool VerifySignature(const CPubKey& pubKeyMasternode) const;
     void Relay() const;
 
     uint256 GetHash() const;

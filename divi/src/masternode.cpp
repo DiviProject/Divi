@@ -820,7 +820,7 @@ std::string CMasternodePing::getMessageToSign() const
     return vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
 }
 
-bool CMasternodePing::SignAndVerify(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning)
+bool CMasternodePing::SignAndVerify(const CKey& keyMasternode, const CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning)
 {
     std::string errorMessage;
 
@@ -837,6 +837,16 @@ bool CMasternodePing::SignAndVerify(CKey& keyMasternode, CPubKey& pubKeyMasterno
         return false;
     }
 
+    return true;
+}
+bool CMasternodePing::VerifySignature(const CPubKey& pubKeyMasternode) const
+{
+    std::string errorMessage;
+    const std::string strMessage = getMessageToSign();
+    if (!CObfuScationSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+        LogPrint("masternode","%s - Error: %s\n",__func__, errorMessage);
+        return false;
+    }
     return true;
 }
 

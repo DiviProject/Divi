@@ -121,7 +121,7 @@ CMasternode::CMasternode()
     addr = CService();
     pubKeyCollateralAddress = CPubKey();
     pubKeyMasternode = CPubKey();
-    sig = std::vector<unsigned char>();
+    signature = std::vector<unsigned char>();
     activeState = MASTERNODE_ENABLED;
     sigTime = GetAdjustedTime();
     lastPing = CMasternodePing();
@@ -142,7 +142,7 @@ CMasternode::CMasternode(const CMasternode& other)
     addr = other.addr;
     pubKeyCollateralAddress = other.pubKeyCollateralAddress;
     pubKeyMasternode = other.pubKeyMasternode;
-    sig = other.sig;
+    signature = other.signature;
     activeState = other.activeState;
     sigTime = other.sigTime;
     lastPing = other.lastPing;
@@ -163,7 +163,7 @@ CMasternode::CMasternode(const CMasternodeBroadcast& mnb)
     addr = mnb.addr;
     pubKeyCollateralAddress = mnb.pubKeyCollateralAddress;
     pubKeyMasternode = mnb.pubKeyMasternode;
-    sig = mnb.sig;
+    signature = mnb.signature;
     activeState = MASTERNODE_ENABLED;
     sigTime = mnb.sigTime;
     lastPing = mnb.lastPing;
@@ -188,7 +188,7 @@ void CMasternode::swap(CMasternode& first, CMasternode& second) // nothrow
     swap(first.addr, second.addr);
     swap(first.pubKeyCollateralAddress, second.pubKeyCollateralAddress);
     swap(first.pubKeyMasternode, second.pubKeyMasternode);
-    swap(first.sig, second.sig);
+    swap(first.signature, second.signature);
     swap(first.activeState, second.activeState);
     swap(first.sigTime, second.sigTime);
     swap(first.lastPing, second.lastPing);
@@ -616,10 +616,10 @@ bool CMasternodeBroadcastFactory::signPing(
     CMasternodePing& mnp,
     std::string& strErrorRet)
 {
-    if (!mnp.SignAndVerify(keyMasternodeNew, pubKeyMasternodeNew,false))
+    if(!CObfuScationSigner::SignAndVerify<CMasternodePing>(mnp,keyMasternodeNew,pubKeyMasternodeNew,strErrorRet))
     {
         strErrorRet = strprintf("Failed to sign ping, masternode=%s", mnp.vin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","%s -- %s\n",__func__, strErrorRet);
         return false;
     }
     return true;
@@ -630,10 +630,10 @@ bool CMasternodeBroadcastFactory::signBroadcast(
     CMasternodeBroadcast& mnb,
     std::string& strErrorRet)
 {
-    if (!mnb.SignAndVerify(keyCollateralAddressNew,false))
+    if (! CObfuScationSigner::SignAndVerify<CMasternodeBroadcast>(mnb,keyCollateralAddressNew,mnb.pubKeyCollateralAddress,strErrorRet))
     {
         strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", mnb.vin.prevout.hash.ToString());
-        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        LogPrint("masternode","%s -- %s\n", __func__, strErrorRet);
         mnb = CMasternodeBroadcast();
         return false;
     }
@@ -671,7 +671,7 @@ CMasternodePing createDelayedMasternodePing(const CMasternodeBroadcast& mnb)
     const auto* block = chainActive[chainActive.Height() - offset];
     ping.blockHash = block->GetBlockHash();
     ping.sigTime = std::max(block->GetBlockTime() + offsetTimeBy45BlocksInSeconds, GetAdjustedTime());
-    ping.vchSig = std::vector<unsigned char>();
+    ping.signature = std::vector<unsigned char>();
     LogPrint("masternode","mnp - relay block-time & sigtime: %d vs. %d\n", block->GetBlockTime(), ping.sigTime);
 
     return ping;
@@ -777,16 +777,9 @@ bool CMasternodeBroadcast::SignAndVerify(const CKey& keyCollateralAddress, bool 
     std::string errorMessage;
 
     if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
-    const std::string strMessage = getMessageToSign();
-
-    if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, sig, keyCollateralAddress)) {
-        LogPrint("masternode","CMasternodeBroadcast::Sign() - Error: %s\n", errorMessage);
-        return false;
-    }
-
-    if (!CObfuScationSigner::VerifyMessage(pubKeyCollateralAddress, sig, strMessage, errorMessage)) {
-        LogPrint("masternode","CMasternodeBroadcast::Sign() - Error: %s\n", errorMessage);
-        return false;
+    if(!CObfuScationSigner::SignAndVerify<CMasternodeBroadcast>(*this,keyCollateralAddress,pubKeyCollateralAddress,errorMessage))
+    {
+        LogPrintf("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
     }
 
     return true;
@@ -804,7 +797,7 @@ CMasternodePing::CMasternodePing()
     vin = CTxIn();
     blockHash = uint256(0);
     sigTime = 0;
-    vchSig = std::vector<unsigned char>();
+    signature = std::vector<unsigned char>();
 }
 
 CMasternodePing::CMasternodePing(CTxIn& newVin)
@@ -812,7 +805,7 @@ CMasternodePing::CMasternodePing(CTxIn& newVin)
     vin = newVin;
     blockHash = chainActive[chainActive.Height() - 12]->GetBlockHash();
     sigTime = GetAdjustedTime();
-    vchSig = std::vector<unsigned char>();
+    signature = std::vector<unsigned char>();
 }
 
 std::string CMasternodePing::getMessageToSign() const
@@ -825,28 +818,11 @@ bool CMasternodePing::SignAndVerify(const CKey& keyMasternode, const CPubKey& pu
     std::string errorMessage;
 
     if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
-    const std::string strMessage = getMessageToSign();
-
-    if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
-        LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage);
-        return false;
+    if(!CObfuScationSigner::SignAndVerify<CMasternodePing>(*this,keyMasternode,pubKeyMasternode,errorMessage))
+    {
+        LogPrintf("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
     }
 
-    if (!CObfuScationSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
-        LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage);
-        return false;
-    }
-
-    return true;
-}
-bool CMasternodePing::VerifySignature(const CPubKey& pubKeyMasternode) const
-{
-    std::string errorMessage;
-    const std::string strMessage = getMessageToSign();
-    if (!CObfuScationSigner::VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
-        LogPrint("masternode","%s - Error: %s\n",__func__, errorMessage);
-        return false;
-    }
     return true;
 }
 
@@ -871,7 +847,7 @@ void CMasternodePing::swap(CMasternodePing& first, CMasternodePing& second) // n
     std::swap(first.vin, second.vin);
     std::swap(first.blockHash, second.blockHash);
     std::swap(first.sigTime, second.sigTime);
-    std::swap(first.vchSig, second.vchSig);
+    std::swap(first.signature, second.signature);
 }
 CMasternodePing& CMasternodePing::operator=(CMasternodePing from)
 {

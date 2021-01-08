@@ -485,7 +485,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
     CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params[0].get_str());
     if(params.size()==2)
     {
-        mnb.sig = ParseHex(params[1].get_str());
+        mnb.signature = ParseHex(params[1].get_str());
     }
 
     Object result;

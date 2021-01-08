@@ -224,19 +224,10 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
 bool CActiveMasternode::SignMasternodeWinner(CMasternodePaymentWinner& winner) const
 {
     std::string errorMessage;
-    std::string strMasterNodeSignMessage;
 
-    std::string strMessage = winner.getMessageForMasternodeToSign();
-
-    if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, winner.vchSig, masternodeKey_)) {
-        LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage.c_str());
-        return false;
+    if(!CObfuScationSigner::SignAndVerify<CMasternodePaymentWinner>(winner,masternodeKey_,pubKeyMasternode,errorMessage))
+    {
+        LogPrintf("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
     }
-
-    if (!CObfuScationSigner::VerifyMessage(pubKeyMasternode, winner.vchSig, strMessage, errorMessage)) {
-        LogPrint("masternode","CMasternodePing::Sign() - Error: %s\n", errorMessage.c_str());
-        return false;
-    }
-
     return true;
 }

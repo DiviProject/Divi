@@ -300,7 +300,7 @@ bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMa
         masternode.pubKeyMasternode = mnb.pubKeyMasternode;
         masternode.pubKeyCollateralAddress = mnb.pubKeyCollateralAddress;
         masternode.sigTime = mnb.sigTime;
-        masternode.sig = mnb.sig;
+        masternode.signature = mnb.signature;
         masternode.protocolVersion = mnb.protocolVersion;
         masternode.addr = mnb.addr;
         masternode.lastTimeChecked = 0;
@@ -382,11 +382,10 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodePayments& masternodePay
         return false;
     }
 
-    const std::string strMessage = mnb.getMessageToSign();
-
     std::string errorMessage = "";
-    if (!CObfuScationSigner::VerifyMessage(mnb.pubKeyCollateralAddress, mnb.sig, strMessage, errorMessage)) {
-        LogPrintf("%s : - Got bad Masternode address signature\n", __func__);
+    if(!CObfuScationSigner::VerifySignature<CMasternodeBroadcast>(mnb,mnb.pubKeyCollateralAddress,errorMessage))
+    {
+        LogPrintf("%s : - Got bad Masternode address signature (%s)\n", __func__, errorMessage);
         nDoS = 100;
         return false;
     }
@@ -453,12 +452,11 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
         // update only if there is no known ping for this masternode or
         // last ping was more then MASTERNODE_MIN_MNP_SECONDS-60 ago comparing to this one
         if (!mn.IsTooEarlyToReceivePingUpdate(mnp.sigTime)) {
-            const std::string strMessage = mnp.getMessageToSign();
-
             std::string errorMessage = "";
-            if (!CObfuScationSigner::VerifyMessage(mn.pubKeyMasternode, mnp.vchSig, strMessage, errorMessage)) {
-                LogPrint("masternode", "%s - Got bad Masternode address signature %s\n",
-                         __func__, mnp.vin.prevout.hash.ToString());
+            if (!CObfuScationSigner::VerifySignature<CMasternodePing>(mnp,mn.pubKeyMasternode,errorMessage))
+            {
+                LogPrint("masternode", "%s - Got bad Masternode address signature %s (%s)\n",
+                         __func__, mnp.vin.prevout.hash.ToString(),errorMessage);
                 nDoS = 33;
                 return false;
             }

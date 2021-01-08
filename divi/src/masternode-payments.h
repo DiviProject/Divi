@@ -109,7 +109,7 @@ public:
     }
 
     CScript payee;
-    std::vector<unsigned char> vchSig;
+    std::vector<unsigned char> signature;
 
     CMasternodePaymentWinner()
       : nBlockHeight(0)
@@ -123,7 +123,7 @@ public:
 
     uint256 GetHash() const;
 
-    std::string getMessageForMasternodeToSign() const;
+    std::string getMessageToSign() const;
     bool IsValid(CNode* pnode, std::string& strError) const;
     void Relay() const;
 
@@ -149,7 +149,7 @@ public:
         READWRITE(vinMasternode);
         READWRITE(nBlockHeight);
         READWRITE(payee);
-        READWRITE(vchSig);
+        READWRITE(signature);
 
         if (nType == SER_DISK) {
             /* For saving in the on-disk cache files, we include the

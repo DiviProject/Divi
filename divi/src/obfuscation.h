@@ -19,6 +19,29 @@ struct CObfuScationSigner
     static bool SignMessage(std::string strMessage, std::string& errorMessage, std::vector<unsigned char>& vchSig, CKey key);
     /// Verify the message, returns true if succcessful
     static bool VerifyMessage(CPubKey pubkey, const std::vector<unsigned char>& vchSig, std::string strMessage, std::string& errorMessage);
+
+    template <typename T>
+    static bool VerifySignature(const T& signableMessage, const CPubKey& keyToCheckAgainst,std::string& errorMessage)
+    {
+        const std::string strMessage = signableMessage.getMessageToSign();
+        if (!CObfuScationSigner::VerifyMessage(keyToCheckAgainst, signableMessage.signature, strMessage, errorMessage)) {
+            return false;
+        }
+        return true;
+    }
+    template <typename T>
+    static bool SignAndVerify(T& signableMessage, const CKey& keyToSignWith, const CPubKey& keyToCheckAgainst,std::string& errorMessage)
+    {
+        const std::string strMessage = signableMessage.getMessageToSign();
+        if (!CObfuScationSigner::SignMessage(strMessage, errorMessage, signableMessage.signature, keyToSignWith)) {
+            return false;
+        }
+        if (!VerifySignature<T>(signableMessage, keyToCheckAgainst,errorMessage)) {
+            return false;
+        }
+
+        return true;
+    }
 };
 
 void ThreadMasternodeBackgroundSync();

@@ -55,14 +55,13 @@ public:
     CTxIn vin;
     uint256 blockHash;
     int64_t sigTime; //mnb message times
-    std::vector<unsigned char> vchSig;
+    std::vector<unsigned char> signature;
     //removed stop
 
     CMasternodePing();
     CMasternodePing(CTxIn& newVin);
     std::string getMessageToSign() const;
     bool SignAndVerify(const CKey& keyMasternode, const CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
-    bool VerifySignature(const CPubKey& pubKeyMasternode) const;
     void Relay() const;
 
     uint256 GetHash() const;
@@ -77,7 +76,7 @@ public:
         READWRITE(vin);
         READWRITE(blockHash);
         READWRITE(sigTime);
-        READWRITE(vchSig);
+        READWRITE(signature);
     }
 
     friend bool operator==(const CMasternodePing& a, const CMasternodePing& b)
@@ -123,7 +122,7 @@ public:
     CService addr;
     CPubKey pubKeyCollateralAddress;
     CPubKey pubKeyMasternode;
-    std::vector<unsigned char> sig;
+    std::vector<unsigned char> signature;
     int activeState;
     int64_t sigTime; //mnb message time
     bool allowFreeTx;
@@ -197,7 +196,7 @@ public:
         READWRITE(addr);
         READWRITE(pubKeyCollateralAddress);
         READWRITE(pubKeyMasternode);
-        READWRITE(sig);
+        READWRITE(signature);
         READWRITE(sigTime);
         READWRITE(protocolVersion);
         READWRITE(activeState);
@@ -248,7 +247,7 @@ public:
         READWRITE(addr);
         READWRITE(pubKeyCollateralAddress);
         READWRITE(pubKeyMasternode);
-        READWRITE(sig);
+        READWRITE(signature);
         READWRITE(sigTime);
         READWRITE(protocolVersion);
         READWRITE(lastPing);

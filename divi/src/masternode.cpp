@@ -616,7 +616,7 @@ bool CMasternodeBroadcastFactory::signPing(
     CMasternodePing& mnp,
     std::string& strErrorRet)
 {
-    if (!mnp.Sign(keyMasternodeNew, pubKeyMasternodeNew,false))
+    if (!mnp.SignAndVerify(keyMasternodeNew, pubKeyMasternodeNew,false))
     {
         strErrorRet = strprintf("Failed to sign ping, masternode=%s", mnp.vin.prevout.hash.ToString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
@@ -820,7 +820,7 @@ std::string CMasternodePing::getMessageToSign() const
     return vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
 }
 
-bool CMasternodePing::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning)
+bool CMasternodePing::SignAndVerify(CKey& keyMasternode, CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning)
 {
     std::string errorMessage;
 

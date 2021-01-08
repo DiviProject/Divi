@@ -234,7 +234,7 @@ public:
         int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
-    bool Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
+    bool SignAndVerify(const CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
     void Relay() const;
     std::string getMessageToSign() const;
     uint256 GetHash() const;

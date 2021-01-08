@@ -149,7 +149,7 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, st
     LogPrintf("CActiveMasternode::SendMasternodePing() - Relay Masternode Ping vin = %s\n", vin.ToString());
 
     CMasternodePing mnp(vin);
-    if (!mnp.Sign(masternodeKey_, pubKeyMasternode)) {
+    if (!mnp.SignAndVerify(masternodeKey_, pubKeyMasternode)) {
         errorMessage = "Couldn't sign Masternode Ping";
         return false;
     }

@@ -630,7 +630,7 @@ bool CMasternodeBroadcastFactory::signBroadcast(
     CMasternodeBroadcast& mnb,
     std::string& strErrorRet)
 {
-    if (!mnb.Sign(keyCollateralAddressNew,false))
+    if (!mnb.SignAndVerify(keyCollateralAddressNew,false))
     {
         strErrorRet = strprintf("Failed to sign broadcast, masternode=%s", mnb.vin.prevout.hash.ToString());
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
@@ -772,7 +772,7 @@ std::string CMasternodeBroadcast::getMessageToSign() const
     return addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
 }
 
-bool CMasternodeBroadcast::Sign(CKey& keyCollateralAddress, bool updateTimeBeforeSigning)
+bool CMasternodeBroadcast::SignAndVerify(const CKey& keyCollateralAddress, bool updateTimeBeforeSigning)
 {
     std::string errorMessage;
 

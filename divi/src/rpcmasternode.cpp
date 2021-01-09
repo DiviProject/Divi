@@ -486,6 +486,21 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
     if(params.size()==2)
     {
         mnb.signature = ParseHex(params[1].get_str());
+        if(activeMasternode.IsOurBroadcast(mnb,true))
+        {
+            if(activeMasternode.UpdatePing(mnb.lastPing))
+            {
+                LogPrint("masternode","Ping updated successfully!\n");
+            }
+            else
+            {
+                LogPrint("masternode","Ping not updated! Failure to sign!\n");
+            }
+        }
+        else
+        {
+            LogPrint("masternode","This broadcast does not belong to us!\n");
+        }
     }
 
     Object result;

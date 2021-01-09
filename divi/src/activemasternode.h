@@ -19,6 +19,7 @@
 #define ACTIVE_MASTERNODE_STARTED 4
 
 class CMasternodeBroadcast;
+class CMasternodePing;
 class CMasternodeConfig;
 class CMasternodePaymentWinner;
 class CMasternodeMan;
@@ -61,6 +62,7 @@ public:
     bool EnableHotColdMasterNode(CTxIn& vin, CService& addr);
     bool SignMasternodeWinner(CMasternodePaymentWinner& winner) const;
     bool IsOurBroadcast(const CMasternodeBroadcast& mnb, bool checkConfig = false) const;
+    bool UpdatePing(CMasternodePing& mnp) const;
 };
 
 extern CActiveMasternode activeMasternode;

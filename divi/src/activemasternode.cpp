@@ -48,7 +48,7 @@ bool CActiveMasternode::SetMasternodeAddress(const std::string& masternodeAddres
 }
 bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
 {
-    std::string errorMessage;
+    std::string errorMessage = "";
     if (!CObfuScationSigner::SetKey(privKeyString, errorMessage, masternodeKey_, pubKeyMasternode)) {
         errorMessage = strprintf("Error upon calling SetKey: %s\n", errorMessage);
         return false;
@@ -58,7 +58,7 @@ bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
 
 void CActiveMasternode::ManageStatus(CMasternodeSync& masternodeSynchronization, CMasternodeMan& masternodeManager)
 {
-    std::string errorMessage;
+    std::string errorMessage ="";
 
     if (!fMasterNode_) return;
 
@@ -223,11 +223,11 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
 }
 bool CActiveMasternode::SignMasternodeWinner(CMasternodePaymentWinner& winner) const
 {
-    std::string errorMessage;
+    std::string errorMessage = "";
 
     if(!CObfuScationSigner::SignAndVerify<CMasternodePaymentWinner>(winner,masternodeKey_,pubKeyMasternode,errorMessage))
     {
-        LogPrintf("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
+        LogPrint("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
     }
     return true;
 }

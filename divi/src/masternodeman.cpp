@@ -310,7 +310,7 @@ bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMa
 }
 bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS)
 {
-    if(fMasterNode && mnb.vin.prevout == activeMasternode.vin.prevout && mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode)
+    if(activeMasternode.IsOurBroadcast(mnb))
     {
         return true;
     }

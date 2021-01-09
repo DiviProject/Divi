@@ -774,12 +774,12 @@ std::string CMasternodeBroadcast::getMessageToSign() const
 
 bool CMasternodeBroadcast::SignAndVerify(const CKey& keyCollateralAddress, bool updateTimeBeforeSigning)
 {
-    std::string errorMessage;
+    std::string errorMessage = "";
 
     if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
     if(!CObfuScationSigner::SignAndVerify<CMasternodeBroadcast>(*this,keyCollateralAddress,pubKeyCollateralAddress,errorMessage))
     {
-        LogPrintf("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
+        LogPrint("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
     }
 
     return true;
@@ -815,12 +815,12 @@ std::string CMasternodePing::getMessageToSign() const
 
 bool CMasternodePing::SignAndVerify(const CKey& keyMasternode, const CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning)
 {
-    std::string errorMessage;
+    std::string errorMessage = "";
 
     if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
     if(!CObfuScationSigner::SignAndVerify<CMasternodePing>(*this,keyMasternode,pubKeyMasternode,errorMessage))
     {
-        LogPrintf("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
+        LogPrint("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
     }
 
     return true;

@@ -97,6 +97,7 @@ BASE_SCRIPTS = [
     'rest.py',
     'rpcbind_test.py',
     'remotestart.py',
+    'remotestart.py --outdated_ping',
     'smartfees.py',
     'sync.py',
     'txn_doublespend.py',

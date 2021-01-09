@@ -241,3 +241,13 @@ bool CActiveMasternode::IsOurBroadcast(const CMasternodeBroadcast& mnb, bool che
         (checkConfig && vin== CTxIn())? IsThisMasternodeCollateral(mnb.vin) : mnb.vin.prevout == vin.prevout &&
         mnb.pubKeyMasternode == pubKeyMasternode;
 }
+bool CActiveMasternode::UpdatePing(CMasternodePing& mnp) const
+{
+    CMasternodePing updatedPing(mnp.vin);
+    if(updatedPing.SignAndVerify(masternodeKey_,pubKeyMasternode,true))
+    {
+        CMasternodePing().swap(mnp,updatedPing);
+        return true;
+    }
+    return false;
+}

@@ -29,9 +29,29 @@ class MnRemoteStartTest (BitcoinTestFramework):
     super ().__init__ ()
     self.base_args = ["-debug"]
 
+  def add_options(self, parser):
+          parser.add_option("--outdated_ping", dest="outdated_ping", default=False, action="store_true",
+                            help="Test outdated ping recovery")
   def setup_chain (self):
     for i in range (7):
       initialize_datadir (self.options.tmpdir, i)
+
+  def connect_all_nodes(self):
+    connect_nodes (self.nodes[1], 2)
+    connect_nodes (self.nodes[2], 1)
+    connect_nodes (self.nodes[1], 4)
+    connect_nodes (self.nodes[1], 5)
+    connect_nodes (self.nodes[1], 6)
+    connect_nodes (self.nodes[2], 4)
+    connect_nodes (self.nodes[2], 5)
+    connect_nodes (self.nodes[2], 6)
+    connect_nodes (self.nodes[3], 4)
+    connect_nodes (self.nodes[3], 5)
+    connect_nodes (self.nodes[3], 6)
+    connect_nodes (self.nodes[4], 5)
+    connect_nodes (self.nodes[4], 6)
+    connect_nodes (self.nodes[5], 6)
+    connect_nodes (self.nodes[0], 3)
 
   def setup_network (self, config_line=None, extra_args=[]):
 
@@ -50,21 +70,7 @@ class MnRemoteStartTest (BitcoinTestFramework):
     assert self.time < time.time ()
     set_node_times (self.nodes, self.time)
 
-    connect_nodes (self.nodes[1], 2)
-    connect_nodes (self.nodes[2], 1)
-    connect_nodes (self.nodes[1], 4)
-    connect_nodes (self.nodes[1], 5)
-    connect_nodes (self.nodes[1], 6)
-    connect_nodes (self.nodes[2], 4)
-    connect_nodes (self.nodes[2], 5)
-    connect_nodes (self.nodes[2], 6)
-    connect_nodes (self.nodes[3], 4)
-    connect_nodes (self.nodes[3], 5)
-    connect_nodes (self.nodes[3], 6)
-    connect_nodes (self.nodes[4], 5)
-    connect_nodes (self.nodes[4], 6)
-    connect_nodes (self.nodes[5], 6)
-    connect_nodes (self.nodes[0], 3)
+    self.connect_all_nodes()
 
     self.is_network_split = False
 
@@ -195,12 +201,22 @@ class MnRemoteStartTest (BitcoinTestFramework):
 
     # Activate the masternodes.  We do not need to keep the
     # cold node online.
+    if self.options.outdated_ping:
+      # Broadcasting nodes perceive the ping as being out of date but not
+      # the broadcast itself
+      self.time += 2*60*60
+      set_node_times(self.nodes[1:3],self.time)
+      self.connect_all_nodes()
+
     for i in range(1,3):
         copyOfSig = str(self.sigs[i-1])
         copyOfData = str(self.setup[i-1].broadcast_data)
         self.stop_node(i)
         self.start_node (i,True)
-        result = self.nodes[0].broadcaststartmasternode(copyOfData, copyOfSig)
+        if self.options.outdated_ping:
+          result = self.nodes[i].broadcaststartmasternode(copyOfData, copyOfSig)
+        else:
+          result = self.nodes[0].broadcaststartmasternode(copyOfData, copyOfSig)
         assert_equal(result["status"], "success")
     self.attempt_mnsync()
     for i in [1, 2]:

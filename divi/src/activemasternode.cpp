@@ -231,3 +231,10 @@ bool CActiveMasternode::SignMasternodeWinner(CMasternodePaymentWinner& winner) c
     }
     return true;
 }
+
+bool CActiveMasternode::IsOurBroadcast(const CMasternodeBroadcast& mnb) const
+{
+    return fMasterNode_ &&
+        mnb.vin.prevout == vin.prevout &&
+        mnb.pubKeyMasternode == pubKeyMasternode;
+}

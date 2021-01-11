@@ -283,6 +283,12 @@ public:
         std::string& strErrorRet,
         CMasternodeBroadcast& mnbRet,
         bool fOffline = false);
+
+    static bool signPing(
+        const CKey& keyMasternodeNew,
+        const CPubKey& pubKeyMasternodeNew,
+        CMasternodePing& mnp,
+        std::string& strErrorRet);
 private:
     static void createWithoutSignatures(
         CTxIn txin,
@@ -292,12 +298,6 @@ private:
         MasternodeTier nMasternodeTier,
         bool deferRelay,
         CMasternodeBroadcast& mnbRet);
-
-    static bool signPing(
-        CKey keyMasternodeNew,
-        CPubKey pubKeyMasternodeNew,
-        CMasternodePing& mnp,
-        std::string& strErrorRet);
 
     static bool signBroadcast(
         CKey keyCollateralAddressNew,

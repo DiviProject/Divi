@@ -611,8 +611,8 @@ bool CMasternodeBroadcastFactory::Create(
 }
 
 bool CMasternodeBroadcastFactory::signPing(
-    CKey keyMasternodeNew,
-    CPubKey pubKeyMasternodeNew,
+    const CKey& keyMasternodeNew,
+    const CPubKey& pubKeyMasternodeNew,
     CMasternodePing& mnp,
     std::string& strErrorRet)
 {

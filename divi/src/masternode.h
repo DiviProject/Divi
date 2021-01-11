@@ -61,7 +61,6 @@ public:
     CMasternodePing();
     CMasternodePing(CTxIn& newVin);
     std::string getMessageToSign() const;
-    bool SignAndVerify(const CKey& keyMasternode, const CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning = true);
     void Relay() const;
 
     uint256 GetHash() const;
@@ -233,7 +232,6 @@ public:
         int protocolVersionIn);
     CMasternodeBroadcast(const CMasternode& mn);
 
-    bool SignAndVerify(const CKey& keyCollateralAddress, bool updateTimeBeforeSigning = true);
     void Relay() const;
     std::string getMessageToSign() const;
     uint256 GetHash() const;

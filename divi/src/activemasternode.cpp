@@ -182,6 +182,19 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, st
 }
 
 // when starting a Masternode, this can enable to run as a hot wallet with no funds
+bool CActiveMasternode::IsThisMasternodeCollateral(const CTxIn& newVin) const
+{
+    BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfigurations_.getEntries()) {
+        if(
+            std::strcmp(newVin.prevout.hash.ToString().c_str(), mne.getTxHash().c_str()) == 0 &&
+            std::strcmp(std::to_string(newVin.prevout.n).c_str(), mne.getOutputIndex().c_str()) == 0
+        )
+        {
+            return true;
+        }
+    }
+    return false;
+}
 bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newService)
 {
     if (!fMasterNode_)
@@ -195,17 +208,7 @@ bool CActiveMasternode::EnableHotColdMasterNode(CTxIn& newVin, CService& newServ
         return false;
     }
 
-    bool transactionBelongsToMasternode = false;
-    BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfigurations_.getEntries()) {
-        if(
-            std::strcmp(newVin.prevout.hash.ToString().c_str(), mne.getTxHash().c_str()) == 0 &&
-            std::strcmp(std::to_string(newVin.prevout.n).c_str(), mne.getOutputIndex().c_str()) == 0
-        )
-        {
-            transactionBelongsToMasternode = true;
-            break;
-        }
-    }
+    bool transactionBelongsToMasternode = IsThisMasternodeCollateral(newVin);
 
     if(!transactionBelongsToMasternode)
     {

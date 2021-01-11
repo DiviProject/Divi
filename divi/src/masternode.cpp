@@ -772,18 +772,6 @@ std::string CMasternodeBroadcast::getMessageToSign() const
     return addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
 }
 
-bool CMasternodeBroadcast::SignAndVerify(const CKey& keyCollateralAddress, bool updateTimeBeforeSigning)
-{
-    std::string errorMessage = "";
-
-    if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
-    if(!CObfuScationSigner::SignAndVerify<CMasternodeBroadcast>(*this,keyCollateralAddress,pubKeyCollateralAddress,errorMessage))
-    {
-        LogPrint("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
-    }
-
-    return true;
-}
 uint256 CMasternodeBroadcast::GetHash() const
 {
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
@@ -811,19 +799,6 @@ CMasternodePing::CMasternodePing(CTxIn& newVin)
 std::string CMasternodePing::getMessageToSign() const
 {
     return vin.ToString() + blockHash.ToString() + boost::lexical_cast<std::string>(sigTime);
-}
-
-bool CMasternodePing::SignAndVerify(const CKey& keyMasternode, const CPubKey& pubKeyMasternode, bool updateTimeBeforeSigning)
-{
-    std::string errorMessage = "";
-
-    if(updateTimeBeforeSigning) sigTime = GetAdjustedTime();
-    if(!CObfuScationSigner::SignAndVerify<CMasternodePing>(*this,keyMasternode,pubKeyMasternode,errorMessage))
-    {
-        LogPrint("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
-    }
-
-    return true;
 }
 
 void CMasternodePing::Relay() const

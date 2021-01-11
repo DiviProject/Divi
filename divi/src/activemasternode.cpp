@@ -149,8 +149,9 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, st
     LogPrintf("CActiveMasternode::SendMasternodePing() - Relay Masternode Ping vin = %s\n", vin.ToString());
 
     CMasternodePing mnp(vin);
-    if (!mnp.SignAndVerify(masternodeKey_, pubKeyMasternode)) {
-        errorMessage = "Couldn't sign Masternode Ping";
+    if(!CObfuScationSigner::SignAndVerify<CMasternodePing>(mnp,masternodeKey_,pubKeyMasternode,errorMessage))
+    {
+        LogPrint("masternode","%s - %s",__func__,errorMessage);
         return false;
     }
 
@@ -241,10 +242,12 @@ bool CActiveMasternode::IsOurBroadcast(const CMasternodeBroadcast& mnb, bool che
         (checkConfig && vin== CTxIn())? IsThisMasternodeCollateral(mnb.vin) : mnb.vin.prevout == vin.prevout &&
         mnb.pubKeyMasternode == pubKeyMasternode;
 }
+
 bool CActiveMasternode::UpdatePing(CMasternodePing& mnp) const
 {
     CMasternodePing updatedPing(mnp.vin);
-    if(updatedPing.SignAndVerify(masternodeKey_,pubKeyMasternode,true))
+    std::string errorMessage = "";
+    if(CObfuScationSigner::SignAndVerify<CMasternodePing>(updatedPing,masternodeKey_,pubKeyMasternode,errorMessage))
     {
         CMasternodePing().swap(mnp,updatedPing);
         return true;

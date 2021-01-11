@@ -6,8 +6,11 @@
 #include <json/json_spirit_value.h>
 #include <chainparams.h>
 #include <base58address.h>
+#include <rpcprotocol.h>
+#include <sync.h>
 
 extern CChain chainActive;
+extern CCriticalSection cs_main;
 using namespace json_spirit;
 
 Value getlotteryblockwinners(const Array& params, bool fHelp)
@@ -41,8 +44,12 @@ Value getlotteryblockwinners(const Array& params, bool fHelp)
     static SuperblockSubsidyContainer subsidyCointainer(chainParameters);
     static LotteryWinnersCalculator calculator(
         chainParameters.GetLotteryBlockStartBlock(),chainActive, sporkManager,subsidyCointainer.superblockHeightValidator());
-
-    const CBlockIndex* chainTip = chainActive.Tip();
+    const CBlockIndex* chainTip = nullptr;
+    {
+        LOCK(cs_main);
+        chainTip = chainActive.Tip();
+        if(!chainTip) throw JSONRPCError(RPC_MISC_ERROR,"Could not acquire lock on chain tip.");
+    }
     int blockHeight = (params.size()>0)? params[0].get_int(): chainTip->nHeight;
     const CBlockIndex* soughtIndex = chainTip->GetAncestor(blockHeight);
 

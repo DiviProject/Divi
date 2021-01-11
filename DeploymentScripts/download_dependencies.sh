@@ -6,8 +6,8 @@ mkdir -p /blddv/build_dependencies &&
 cd /blddv/build_dependencies &&
 curl -L https://github.com/phracker/MacOSX-SDKs/releases/download/10.13/MacOSX10.9.sdk.tar.xz | tar -xJf - || true &&
 pushd MacOSX10.9.sdk &&
-find -type f ! -iname "sha256checksums" -exec sha256sum "{}" + > sha256checksums &&
-echo "8f68957bdf5f62b25e4187c3dc3ac994b24230f7d130165754235ea9e405ceb1  sha256checksums" | sha256sum -c  &&
+find . -type f ! -iname "sha256checksums" -print0 | sort -z | xargs -r0 sha256sum > sha256checksums &&
+echo "5c4e5b294f196c7f88f755c35e8ecc688f80da5a33f00d8078ed4c6f9ff4d3d8  sha256checksums" | sha256sum -c  &&
 rm sha256checksums && popd &&
 tar -cJf MacOSX10.9.sdk.tar.xz ./ &&
 rm -r MacOSX10.9.sdk &&

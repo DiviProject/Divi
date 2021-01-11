@@ -235,9 +235,9 @@ bool CActiveMasternode::SignMasternodeWinner(CMasternodePaymentWinner& winner) c
     return true;
 }
 
-bool CActiveMasternode::IsOurBroadcast(const CMasternodeBroadcast& mnb) const
+bool CActiveMasternode::IsOurBroadcast(const CMasternodeBroadcast& mnb, bool checkConfig) const
 {
     return fMasterNode_ &&
-        mnb.vin.prevout == vin.prevout &&
+        (checkConfig && vin== CTxIn())? IsThisMasternodeCollateral(mnb.vin) : mnb.vin.prevout == vin.prevout &&
         mnb.pubKeyMasternode == pubKeyMasternode;
 }

@@ -17,7 +17,6 @@
 #include <sync.h>
 #include <string>
 #include <chain.h>
-#include <chainparams.h>
 // clang-format on
 
 #include <algorithm>
@@ -305,7 +304,7 @@ bool CMasternodeSync::SyncMasternodeWinnersList(CNode* pnode, const int64_t now)
     }
     return true;
 }
-void CMasternodeSync::Process()
+void CMasternodeSync::Process(bool networkIsRegtest)
 {
     const int64_t now = GetTime();
     LogPrint("masternode", "Masternode sync process at %lld\n", now);
@@ -317,8 +316,7 @@ void CMasternodeSync::Process()
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_INITIAL) GetNextAsset();
 
     // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
-    if (Params().NetworkID() != CBaseChainParams::REGTEST &&
-            !IsBlockchainSynced() && RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS) return;
+    if (!networkIsRegtest && !IsBlockchainSynced() && RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS) return;
 
     TRY_LOCK(cs_vNodes, lockRecv);
     if (!lockRecv) return;

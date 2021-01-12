@@ -61,6 +61,7 @@ public:
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     void Reset();
+    bool ShouldWaitForSync(const int64_t now);
     void Process();
     bool IsSynced();
     bool IsBlockchainSynced();

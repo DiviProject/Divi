@@ -18,13 +18,13 @@ struct CObfuScationSigner
     /// Sign the message, returns true if successful
     static bool SignMessage(std::string strMessage, std::string& errorMessage, std::vector<unsigned char>& vchSig, CKey key);
     /// Verify the message, returns true if succcessful
-    static bool VerifyMessage(CPubKey pubkey, const std::vector<unsigned char>& vchSig, std::string strMessage, std::string& errorMessage);
+    static bool VerifyMessage(CKeyID pubkeyID, const std::vector<unsigned char>& vchSig, std::string strMessage, std::string& errorMessage);
 
     template <typename T>
     static bool VerifySignature(const T& signableMessage, const CPubKey& keyToCheckAgainst,std::string& errorMessage)
     {
         const std::string strMessage = signableMessage.getMessageToSign();
-        if (!CObfuScationSigner::VerifyMessage(keyToCheckAgainst, signableMessage.signature, strMessage, errorMessage)) {
+        if (!CObfuScationSigner::VerifyMessage(keyToCheckAgainst.GetID(), signableMessage.signature, strMessage, errorMessage)) {
             return false;
         }
         return true;

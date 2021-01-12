@@ -5,34 +5,13 @@
 
 #include "obfuscation.h"
 
-#include <masternode-sync.h>
-#include <masternode-payments.h>
-#include <sync.h>
-
-#include "activemasternode.h"
-#include "BlockDiskAccessor.h"
-#include "coincontrol.h"
-#include "init.h"
-#include "masternodeman.h"
-#include "script/sign.h"
-#include "swifttx.h"
-#include "ui_interface.h"
-#include "utiltime.h"
-#include "Logging.h"
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/lexical_cast.hpp>
-#include <main.h>
-#include <algorithm>
-#include <boost/assign/list_of.hpp>
-#include <openssl/rand.h>
 #include <base58.h>
 #include <base58address.h>
+#include <hash.h>
+#include <string>
+#include <ui_interface.h>
+#include <Logging.h>
 
-#include <chrono>
-void RenameThread(const char* name);
-extern bool fLiteMode;
 const std::string strMessageMagic = "DarkNet Signed Message:\n";
 
 bool CObfuScationSigner::SetKey(std::string strSecret, std::string& errorMessage, CKey& key, CPubKey& pubkey)
@@ -89,52 +68,8 @@ bool CObfuScationSigner::VerifyMessage(CKeyID pubkeyID, const std::vector<unsign
         return false;
     }
 
-    if (fDebug && pubkey2.GetID() != pubkeyID)
-        LogPrintf("CObfuScationSigner::VerifyMessage -- keys don't match: %s %s\n", pubkey2.GetID().ToString(), pubkeyID.ToString());
+    if (pubkey2.GetID() != pubkeyID)
+        LogPrint("sign","CObfuScationSigner::VerifyMessage -- keys don't match: %s %s\n", pubkey2.GetID().ToString(), pubkeyID.ToString());
 
     return (pubkey2.GetID() == pubkeyID);
-}
-
-//TODO: Rename/move to core
-void ThreadMasternodeBackgroundSync()
-{
-    if (fLiteMode) return;
-
-    RenameThread("divi-obfuscation");
-
-    int64_t nTimeManageStatus = 0;
-    int64_t nTimeConnections = 0;
-
-    while (true) {
-        int64_t now;
-        {
-            boost::unique_lock<boost::mutex> lock(csMockTime);
-            cvMockTimeChanged.wait_for(lock, boost::chrono::seconds(1));
-            now = GetTime();
-        }
-
-        // try to sync from all available nodes, one step at a time
-        //
-        // this function keeps track of its own "last call" time and
-        // ignores calls if they are too early
-        masternodeSync.Process();
-
-        if (!masternodeSync.IsBlockchainSynced())
-            continue;
-
-        // check if we should activate or ping every few minutes,
-        // start right after sync is considered to be done
-        if (now >= nTimeManageStatus + MASTERNODE_PING_SECONDS) {
-            nTimeManageStatus = now;
-            activeMasternode.ManageStatus(masternodeSync,mnodeman);
-        }
-
-        if (now >= nTimeConnections + 60) {
-            nTimeConnections = now;
-            mnodeman.CheckAndRemoveInnactive(masternodePayments,masternodeSync);
-            mnodeman.ProcessMasternodeConnections();
-            masternodePayments.CheckAndRemove();
-            CleanTransactionLocksList();
-        }
-    }
 }

@@ -69,8 +69,8 @@ public:
     void Reset();
     bool ShouldWaitForSync(const int64_t now);
     SyncStatus SyncAssets(CNode* pnode, const int64_t now,const int64_t lastUpdate, std::string assetType);
-    bool SyncMasternodeList(CNode* pnode, const int64_t now);
-    bool SyncMasternodeWinnersList(CNode* pnode, const int64_t now);
+    bool MasternodeListIsSynced(CNode* pnode, const int64_t now);
+    bool MasternodeWinnersListIsSync(CNode* pnode, const int64_t now);
     void Process(bool networkIsRegtest);
     bool IsSynced();
     bool IsBlockchainSynced();

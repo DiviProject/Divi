@@ -490,7 +490,7 @@ bool CSporkMessage::Sign(const CKey& key, const CPubKey &sporkPubKey)
         return false;
     }
 
-    if(!CObfuScationSigner::VerifyMessage(sporkPubKey, vchSig, strMessage, strError)) {
+    if(!CObfuScationSigner::VerifyMessage(sporkPubKey.GetID(), vchSig, strMessage, strError)) {
         LogPrintf("CSporkMessage::Sign -- VerifyMessage() failed, error: %s\n", strError);
         return false;
     }
@@ -505,7 +505,7 @@ bool CSporkMessage::CheckSignature(const CPubKey& pubKey) const
 
     std::string strMessage = boost::lexical_cast<std::string>(nSporkID) + boost::lexical_cast<std::string>(strValue) + boost::lexical_cast<std::string>(nTimeSigned);
 
-    if (!CObfuScationSigner::VerifyMessage(pubKey, vchSig, strMessage, strError)){
+    if (!CObfuScationSigner::VerifyMessage(pubKey.GetID(), vchSig, strMessage, strError)){
         LogPrintf("CSporkMessage::CheckSignature -- VerifyHash() failed, error: %s\n", strError);
         return false;
     }

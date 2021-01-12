@@ -192,12 +192,8 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
         LogPrint("masternode", "CMasternodeSync:ProcessMessage - ssc - got inventory count %d %d\n", nItemID, nCount);
     }
 }
-
-void CMasternodeSync::Process()
+bool CMasternodeSync::ShouldWaitForSync(const int64_t now)
 {
-    const int64_t now = GetTime();
-    LogPrint("masternode", "Masternode sync process at %lld\n", now);
-
     /* If the last processing time is in the future, it may mean that this is
        due to mocktime during testing.  But in any case it means something is
        weird, so let's start over.  */
@@ -205,11 +201,11 @@ void CMasternodeSync::Process()
         LogPrint("masternode", "CMasternodeSync::Process() - WARNING: time went backwards, restarting sync...\n");
         Reset();
         nTimeLastProcess = now;
-        return;
+        return true;
     }
 
     if (now < nTimeLastProcess + MASTERNODE_SYNC_TIMEOUT) {
-        return;
+        return true;
     }
 
     // reset the sync process if the last call to this function was more than 60 minutes ago (client was in sleep mode)
@@ -217,7 +213,7 @@ void CMasternodeSync::Process()
         LogPrintf("CMasternodeSync::ProcessTick -- WARNING: no actions for too long, restarting sync...\n");
         Reset();
         nTimeLastProcess = now;
-        return;
+        return true;
     }
     nTimeLastProcess = now;
 
@@ -225,8 +221,16 @@ void CMasternodeSync::Process()
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED && lastFailure + (1 * 60) < now) {
         Reset();
     } else if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED) {
-        return;
+        return true;
     }
+    return false;
+}
+void CMasternodeSync::Process()
+{
+    const int64_t now = GetTime();
+    LogPrint("masternode", "Masternode sync process at %lld\n", now);
+
+    if(ShouldWaitForSync(now)) return;
 
     LogPrint("masternode", "CMasternodeSync::Process() - RequestedMasternodeAssets %d\n", RequestedMasternodeAssets);
 

@@ -4,7 +4,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 // clang-format off
-#include "main.h"
 #include "masternode-sync.h"
 #include "masternode-payments.h"
 #include "masternode.h"
@@ -15,12 +14,21 @@
 #include "addrman.h"
 #include "netfulfilledman.h"
 #include <ui_interface.h>
+#include <sync.h>
+#include <string>
+#include <chain.h>
+#include <chainparams.h>
 // clang-format on
 
 #include <algorithm>
 
 static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
+extern CCriticalSection cs_main;
+extern bool fImporting;
+extern bool fReindex;
+extern CChain chainActive;
+
 
 class CMasternodeSync;
 CMasternodeSync masternodeSync;

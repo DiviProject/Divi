@@ -255,7 +255,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
     if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return SyncStatus::FAIL;
     return SyncStatus::REQUEST_SYNC;
 }
-bool CMasternodeSync::SyncMasternodeList(CNode* pnode, const int64_t now)
+bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
 {
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST)
     {
@@ -287,7 +287,7 @@ bool CMasternodeSync::SyncMasternodeList(CNode* pnode, const int64_t now)
     }
     return true;
 }
-bool CMasternodeSync::SyncMasternodeWinnersList(CNode* pnode, const int64_t now)
+bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t now)
 {
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_MNW)
     {
@@ -362,12 +362,12 @@ void CMasternodeSync::Process(bool networkIsRegtest)
 
         if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto())
         {
-            if(!SyncMasternodeList(pnode,now))
+            if(!MasternodeListIsSynced(pnode,now))
             {
                 return;
             }
 
-            if (!SyncMasternodeWinnersList(pnode,now))
+            if (!MasternodeWinnersListIsSync(pnode,now))
             {
                 return;
             }

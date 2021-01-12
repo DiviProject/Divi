@@ -43,8 +43,6 @@ static CCriticalSection cs_nWalletUnlockTime;
 extern BlockMap mapBlockIndex;
 extern CChain chainActive;
 
-extern const std::string strMessageMagic;
-
 int GetIXConfirmations(uint256 nTXHash);
 
 std::string HelpRequiringPassphrase()

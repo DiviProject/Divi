@@ -64,7 +64,7 @@ public:
     bool ShouldWaitForSync(const int64_t now);
     bool SyncMasternodeList(CNode* pnode, const int64_t now);
     bool SyncMasternodeWinnersList(CNode* pnode, const int64_t now);
-    void Process();
+    void Process(bool networkIsRegtest);
     bool IsSynced();
     bool IsBlockchainSynced();
     bool IsMasternodeListSynced() { return RequestedMasternodeAssets > MASTERNODE_SYNC_LIST; }

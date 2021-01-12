@@ -44,6 +44,4 @@ struct CObfuScationSigner
     }
 };
 
-void ThreadMasternodeBackgroundSync();
-
 #endif

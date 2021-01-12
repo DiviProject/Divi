@@ -37,6 +37,7 @@
 #include "NotificationInterface.h"
 #include "FeeAndPriorityCalculator.h"
 #include <Settings.h>
+#include <MasternodeModule.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"

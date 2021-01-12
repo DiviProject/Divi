@@ -49,7 +49,6 @@ void ThreadMasternodeBackgroundSync()
             mnodeman.CheckAndRemoveInnactive(masternodePayments,masternodeSync);
             mnodeman.ProcessMasternodeConnections();
             masternodePayments.CheckAndRemove();
-            CleanTransactionLocksList();
         }
     }
 }

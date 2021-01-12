@@ -136,6 +136,7 @@ BITCOIN_CORE_H = \
   core_io.h \
   crypter.h \
   obfuscation.h \
+  MasternodeModule.h \
   db.h \
   dbenv.h \
   DatabaseWrapper.h\
@@ -399,6 +400,7 @@ libbitcoin_wallet_a_SOURCES = \
   bip38.cpp \
   BlockSubsidyProvider.cpp \
   obfuscation.cpp \
+  MasternodeModule.cpp \
   db.cpp \
   dbenv.cpp \
   DatabaseWrapper.cpp \

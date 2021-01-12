@@ -259,36 +259,30 @@ bool CMasternodeSync::SyncMasternodeList(CNode* pnode, const int64_t now)
 {
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST)
     {
-        LogPrint("masternode", "%s - lastMasternodeList %lld (GetTime() - MASTERNODE_SYNC_TIMEOUT) %lld\n",__func__, lastMasternodeList, now - MASTERNODE_SYNC_TIMEOUT);
-        if (lastMasternodeList > 0 && lastMasternodeList < now - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD)
-        { //hasn't received a new item in the last five seconds, so we'll move to the
-            GetNextAsset();
-            return false;
-        }
-
-        if (netfulfilledman.HasFulfilledRequest(pnode->addr, "mnsync")) return true;
-        netfulfilledman.AddFulfilledRequest(pnode->addr, "mnsync");
-
-        // timeout
-        if (lastMasternodeList == 0 &&
-                (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || now - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5))
+        const SyncStatus status = SyncAssets(pnode,now,lastMasternodeList,"mnsync");
+        switch(status)
         {
-            if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
-                LogPrintf("CMasternodeSync::Process - ERROR - Sync has failed, will retry later\n");
-                RequestedMasternodeAssets = MASTERNODE_SYNC_FAILED;
-                RequestedMasternodeAttempt = 0;
-                lastFailure = now;
-                nCountFailures++;
-            } else {
-                GetNextAsset();
+            case SyncStatus::FAIL:
+            {
+                return false;
             }
-            return false;
+            case SyncStatus::SUCCESS:
+            {
+                return true;
+            }
+            case SyncStatus::REQUEST_SYNC:
+            {
+                mnodeman.DsegUpdate(pnode);
+                RequestedMasternodeAttempt++;
+                return false;
+            }
+            default:
+            {
+                break;
+            }
         }
 
-        if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return false;
 
-        mnodeman.DsegUpdate(pnode);
-        RequestedMasternodeAttempt++;
         return false;
     }
     return true;
@@ -297,40 +291,32 @@ bool CMasternodeSync::SyncMasternodeWinnersList(CNode* pnode, const int64_t now)
 {
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_MNW)
     {
-        if (lastMasternodeWinner > 0 && lastMasternodeWinner < now - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD)
-        { //hasn't received a new item in the last five seconds, so we'll move to the
-            GetNextAsset();
-            return false;
-        }
-
-        if (netfulfilledman.HasFulfilledRequest(pnode->addr, "mnwsync")) return true;
-        netfulfilledman.AddFulfilledRequest(pnode->addr, "mnwsync");
-
-        // timeout
-        if (lastMasternodeWinner == 0 &&
-                (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || now - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
-            if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
-                LogPrintf("CMasternodeSync::Process - ERROR - Sync has failed, will retry later\n");
-                RequestedMasternodeAssets = MASTERNODE_SYNC_FAILED;
-                RequestedMasternodeAttempt = 0;
-                lastFailure = now;
-                nCountFailures++;
-            } else {
-                GetNextAsset();
+        const SyncStatus status = SyncAssets(pnode,now,lastMasternodeWinner,"mnwsync");
+        switch(status)
+        {
+            case SyncStatus::FAIL:
+            {
+                return false;
             }
-            return false;
+            case SyncStatus::SUCCESS:
+            {
+                return true;
+            }
+            case SyncStatus::REQUEST_SYNC:
+            {
+                CBlockIndex* pindexPrev = chainActive.Tip();
+                if (pindexPrev == NULL) return false;
+
+                int nMnCount = mnodeman.size();
+                pnode->PushMessage("mnget", nMnCount); //sync payees
+                RequestedMasternodeAttempt++;
+                return false;
+            }
+            default:
+            {
+                break;
+            }
         }
-
-        if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return false;
-
-        CBlockIndex* pindexPrev = chainActive.Tip();
-        if (pindexPrev == NULL) return false;
-
-        int nMnCount = mnodeman.size();
-        pnode->PushMessage("mnget", nMnCount); //sync payees
-        RequestedMasternodeAttempt++;
-
-        return false;
     }
     return true;
 }

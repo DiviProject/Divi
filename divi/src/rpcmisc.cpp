@@ -29,7 +29,9 @@ extern CFeeRate payTxFee;
 #include <addressindex.h>
 #include <spentindex.h>
 #include <net.h>
+#include <obfuscation.h>
 #include <txmempool.h>
+
 #include <Settings.h>
 extern Settings& settings;
 
@@ -54,7 +56,6 @@ using namespace std;
 extern int64_t nLastCoinStakeSearchInterval;
 extern bool fAddressIndex;
 extern CBlockTreeDB* pblocktree;
-extern const std::string strMessageMagic;
 extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
@@ -507,15 +508,8 @@ Value verifymessage(const Array& params, bool fHelp)
     if (fInvalid)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Malformed base64 encoding");
 
-    CHashWriter ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
-    ss << strMessage;
-
-    CPubKey pubkey;
-    if (!pubkey.RecoverCompact(ss.GetHash(), vchSig))
-        return false;
-
-    return (pubkey.GetID() == keyID);
+    std::string errorMessage ="";
+    return CObfuScationSigner::VerifyMessage(keyID,vchSig,strMessage,errorMessage);
 }
 
 Value setmocktime(const Array& params, bool fHelp)

@@ -1,9 +1,9 @@
 #ifndef PROOF_OF_STAKE_MODULE_H
 #define PROOF_OF_STAKE_MODULE_H
 #include <memory>
+#include <I_ProofOfStakeGenerator.h>
 class I_PoSStakeModifierService;
 class I_PoSStakeModifierService;
-class I_ProofOfStakeGenerator;
 class CChainParams;
 class CChain;
 class BlockMap;

@@ -20,7 +20,7 @@ class I_SuperblockSubsidyContainer;
 class BlockIncentivesPopulator;
 class CChain;
 class I_PoSStakeModifierService;
-class ProofOfStakeGenerator;
+class I_ProofOfStakeGenerator;
 class I_BlockSubsidyProvider;
 class BlockMap;
 class StakedCoins;
@@ -34,7 +34,7 @@ private:
     const BlockMap& mapBlockIndex_;
     const I_BlockSubsidyProvider& blockSubsidies_;
     const BlockIncentivesPopulator& incentives_;
-    ProofOfStakeGenerator& proofGenerator_;
+    const I_ProofOfStakeGenerator& proofGenerator_;
     std::unique_ptr<StakedCoins> stakedCoins_;
     CWallet& wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
@@ -82,7 +82,7 @@ public:
         const BlockMap& mapBlockIndex,
         const I_BlockSubsidyProvider& blockSubsidies,
         const BlockIncentivesPopulator& incentives,
-        ProofOfStakeGenerator& proofGenerator,
+        const I_ProofOfStakeGenerator& proofGenerator,
         CWallet& wallet,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     ~PoSTransactionCreator();

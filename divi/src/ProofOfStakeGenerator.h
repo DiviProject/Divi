@@ -1,34 +1,14 @@
 #ifndef PROOF_OF_STAKE_GENERATOR_H
 #define PROOF_OF_STAKE_GENERATOR_H
 #include <memory>
+#include <I_ProofOfStakeGenerator.h>
 
 class StakingData;
 class uint256;
 class I_PoSStakeModifierService;
 class I_ProofOfStakeCalculator;
 
-enum HashproofGenerationState
-{
-    FAILED_SETUP,
-    FAILED_GENERATION,
-    SUCCESS
-};
-class HashproofCreationResult
-{
-private:
-    HashproofCreationResult(unsigned timestamp, HashproofGenerationState status);
-    const unsigned hashproofTimestamp_;
-    HashproofGenerationState state_;
-public:
-    static HashproofCreationResult Success(unsigned timestamp);
-    static HashproofCreationResult FailedGeneration();
-    static HashproofCreationResult FailedSetup();
-    bool succeeded() const;
-    bool failedAtSetup() const;
-    const unsigned& timestamp() const;
-};
-
-class ProofOfStakeGenerator
+class ProofOfStakeGenerator: public I_ProofOfStakeGenerator
 {
 private:
     const I_PoSStakeModifierService& stakeModifierService_;

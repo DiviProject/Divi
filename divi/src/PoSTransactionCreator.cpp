@@ -1,7 +1,7 @@
 #include <PoSTransactionCreator.h>
 
 #include <wallet.h>
-#include <ProofOfStakeGenerator.h>
+#include <I_ProofOfStakeGenerator.h>
 #include <masternode-payments.h>
 #include <script/sign.h>
 #include <utilmoneystr.h>
@@ -57,7 +57,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     const BlockMap& mapBlockIndex,
     const I_BlockSubsidyProvider& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
-    ProofOfStakeGenerator& proofGenerator,
+    const I_ProofOfStakeGenerator& proofGenerator,
     CWallet& wallet,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): chainParameters_(chainParameters)

@@ -67,7 +67,6 @@ CoinMintingModule::CoinMintingModule(
         chainParameters,
         activeChain,
         blockIndexByHash,
-        *stakeModifierService_,
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockIncentivesPopulator_,
         *proofGenerator_,

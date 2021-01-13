@@ -51,7 +51,10 @@ struct MasternodeCountData
     MasternodeCountData();
 };
 
-bool RelayMasternodeBroadcast(std::string hexData,std::string signature = "");
+/** Relays a broadcast given in serialised form as hex string.  If the signature
+ *  is present, then it will replace the signature in the broadcast.  If
+ *  updatePing is true, then the masternode ping is re-signed freshly.  */
+bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& signature, bool updatePing);
 MasternodeStartResult StartMasternode(const CKeyStore& keyStore, std::string alias, bool deferRelay);
 ActiveMasternodeStatus GetActiveMasternodeStatus();
 std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter);

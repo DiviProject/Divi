@@ -22,6 +22,7 @@ struct StakingData;
 // Check kernel hash target and coinstake signature
 // Sets hashProofOfStake on success return
 bool CheckProofOfStake(
+    CChain& activeChain,
     const CBlock& block,
     CBlockIndex* pindexPrev,
     uint256& hashProofOfStake);

@@ -29,7 +29,7 @@
 #include <boost/foreach.hpp>
 #include <StakingData.h>
 #include <StakeModifierIntervalHelpers.h>
-#include <ProofOfStakeGenerator.h>
+#include <ProofOfStakeModule.h>
 #include <Logging.h>
 #include <utiltime.h>
 
@@ -294,12 +294,14 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
 
     return true;
 }
-bool CheckProofOfStake(const CBlock& block, CBlockIndex* pindexPrev, uint256& hashProofOfStake)
+bool CheckProofOfStake(CChain& activeChain, const CBlock& block, CBlockIndex* pindexPrev, uint256& hashProofOfStake)
 {
+    static ProofOfStakeModule posModule(Params(),activeChain,mapBlockIndex);
+    static const I_ProofOfStakeGenerator& posGenerator = posModule.proofOfStakeGenerator();
     StakingData stakingData;
     if(!CheckProofOfStakeContextAndRecoverStakingData(block,pindexPrev,stakingData))
         return false;
-    if (!ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
+    if (!posGenerator.ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",
             block.vtx[1].GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 

@@ -61,7 +61,7 @@ extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern CFeeRate minRelayTxFee;
 
-bool GetAddressIndex(bool fAddressIndex,
+bool GetAddressIndex(bool addresIndexEnabled,
                      CBlockTreeDB* pblocktree,
                      uint160 addressHash,
                      int type,
@@ -73,7 +73,7 @@ std::string GetWarnings(std::string strFor);
 
 bool GetSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
 
-bool GetAddressUnspent(bool fAddressIndex,
+bool GetAddressUnspent(bool addresIndexEnabled,
                       CBlockTreeDB* pblocktree,
                       uint160 addressHash,
                       int type,

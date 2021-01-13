@@ -80,7 +80,6 @@ public:
         const CChainParams& chainParameters,
         CChain& activeChain,
         const BlockMap& mapBlockIndex,
-        const I_PoSStakeModifierService& stakeModifierService,
         const I_BlockSubsidyProvider& blockSubsidies,
         const BlockIncentivesPopulator& incentives,
         ProofOfStakeGenerator& proofGenerator,

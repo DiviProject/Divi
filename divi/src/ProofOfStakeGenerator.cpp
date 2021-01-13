@@ -121,7 +121,7 @@ bool ProofOfStakeGenerator::CreateProofOfStakeCalculator(
 bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(
     const StakingData& stakingData,
     const unsigned int& hashproofTimestamp,
-    uint256& hashProofOfStake)
+    uint256& hashProofOfStake) const
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
     if(!CreateProofOfStakeCalculator(stakingData,hashproofTimestamp,calculator))
@@ -131,7 +131,7 @@ bool ProofOfStakeGenerator::ComputeAndVerifyProofOfStake(
 }
 HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
     const StakingData& stakingData,
-    const unsigned initialTimestamp)
+    const unsigned initialTimestamp) const
 {
     std::shared_ptr<I_ProofOfStakeCalculator> calculator;
     if(!CreateProofOfStakeCalculator(stakingData,initialTimestamp,calculator))

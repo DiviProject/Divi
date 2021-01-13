@@ -30,10 +30,10 @@ public:
     virtual ~I_ProofOfStakeGenerator(){}
     virtual HashproofCreationResult CreateHashproofTimestamp(
         const StakingData& stakingData,
-        const unsigned initialTimestamp) = 0;
+        const unsigned initialTimestamp) const = 0;
     virtual bool ComputeAndVerifyProofOfStake(
         const StakingData& stakingData,
         const unsigned int& hashproofTimestamp,
-        uint256& hashProofOfStake) = 0;
+        uint256& hashProofOfStake) const = 0;
 };
 #endif// I_PROOF_OF_STAKE_GENERATOR_H

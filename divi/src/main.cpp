@@ -1144,7 +1144,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     return true;
 }
 
-bool GetAddressIndex(bool fAddressIndex,
+bool GetAddressIndex(bool addresIndexEnabled,
                      CBlockTreeDB* pblocktree,
                      uint160 addressHash,
                      int type,
@@ -1152,7 +1152,7 @@ bool GetAddressIndex(bool fAddressIndex,
                      int start,
                      int end)
 {
-    if (!fAddressIndex)
+    if (!addresIndexEnabled)
         return error("address index not enabled");
 
     if (!pblocktree->ReadAddressIndex(addressHash, type, addressIndex, start, end))
@@ -1161,14 +1161,14 @@ bool GetAddressIndex(bool fAddressIndex,
     return true;
 }
 
-bool GetAddressUnspent(bool fAddressIndex,
+bool GetAddressUnspent(bool addresIndexEnabled,
                       CBlockTreeDB* pblocktree,
                       uint160 addressHash,
                       int type,
                       std::vector<std::pair<CAddressUnspentKey,
                       CAddressUnspentValue> > &unspentOutputs)
 {
-    if (!fAddressIndex)
+    if (!addresIndexEnabled)
         return error("address index not enabled");
 
     if (!pblocktree->ReadAddressUnspentIndex(addressHash, type, unspentOutputs))

@@ -452,8 +452,17 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
             "\nResult:\n"
             "\"status\"	(string) status of broadcast\n");
 
+    bool updatePing = false;
+    std::string signature;
+    if(params.size()==2)
+    {
+        if (params[1].get_str() != "update_ping")
+            signature = params[1].get_str();
+        updatePing = true;
+    }
+
     Object result;
-    if(RelayMasternodeBroadcast(params[0].get_str(), (params.size()==2)? params[1].get_str():"" ))
+    if(RelayMasternodeBroadcast(params[0].get_str(), signature, updatePing))
     {
         result.push_back(Pair("status", "success"));
     }

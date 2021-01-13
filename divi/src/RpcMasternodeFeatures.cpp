@@ -69,16 +69,19 @@ MasternodeCountData::MasternodeCountData(
 {
 }
 
-bool RelayMasternodeBroadcast(std::string hexData, std::string signature)
+bool RelayMasternodeBroadcast(const std::string& hexData, const std::string& signature, const bool updatePing)
 {
     auto& activeMasternode = mnModule.getActiveMasternode();
     auto& mnodeman = mnModule.getMasternodeManager();
     auto& masternodeSync = mnModule.getMasternodeSynchronization();
 
     CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(hexData);
+
     if(!signature.empty())
-    {
         mnb.signature = ParseHex(signature);
+
+    if (updatePing)
+    {
         if(activeMasternode.IsOurBroadcast(mnb,true))
         {
             if(activeMasternode.UpdatePing(mnb.lastPing))

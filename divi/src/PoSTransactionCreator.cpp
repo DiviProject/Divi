@@ -58,6 +58,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     const I_PoSStakeModifierService& stakeModifierService,
     const I_BlockSubsidyProvider& blockSubsidies,
     const BlockIncentivesPopulator& incentives,
+    ProofOfStakeGenerator& proofGenerator,
     CWallet& wallet,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
     ): chainParameters_(chainParameters)
@@ -65,7 +66,7 @@ PoSTransactionCreator::PoSTransactionCreator(
     , mapBlockIndex_(mapBlockIndex)
     , blockSubsidies_( blockSubsidies )
     , incentives_(incentives)
-    , proofGenerator_(new ProofOfStakeGenerator(stakeModifierService, chainParameters_.GetMinCoinAgeForStaking()) )
+    , proofGenerator_(proofGenerator )
     , stakedCoins_(new StakedCoins())
     , wallet_(wallet)
     , hashedBlockTimestamps_(hashedBlockTimestamps)
@@ -76,7 +77,6 @@ PoSTransactionCreator::PoSTransactionCreator(
 PoSTransactionCreator::~PoSTransactionCreator()
 {
     stakedCoins_.reset();
-    proofGenerator_.reset();
 }
 
 bool PoSTransactionCreator::SelectCoins()
@@ -198,7 +198,7 @@ bool PoSTransactionCreator::FindHashproof(
         COutPoint(stakeData.tx->GetHash(), stakeData.outputIndex),
         stakeData.tx->vout[stakeData.outputIndex].nValue,
         chainTip->GetBlockHash());
-    HashproofCreationResult hashproofResult = proofGenerator_->CreateHashproofTimestamp(stakingData,nTxNewTime);
+    HashproofCreationResult hashproofResult = proofGenerator_.CreateHashproofTimestamp(stakingData,nTxNewTime);
     if(!hashproofResult.failedAtSetup())
     {
         hashedBlockTimestamps_.clear();

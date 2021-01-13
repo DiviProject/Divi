@@ -169,6 +169,7 @@ BITCOIN_CORE_H = \
   ProofOfStakeCalculator.h \
   datacachemanager.h \
   kernel.h \
+  I_ProofOfStakeGenerator.h \
   ProofOfStakeGenerator.h \
   StakeModifierIntervalHelpers.h \
   StakingData.h \

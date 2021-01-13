@@ -22,7 +22,7 @@ ProofOfStakeModule::~ProofOfStakeModule()
     legacyStakeModifierService_.reset();
 }
 
-I_ProofOfStakeGenerator& ProofOfStakeModule::proofOfStakeGenerator()
+const I_ProofOfStakeGenerator& ProofOfStakeModule::proofOfStakeGenerator() const
 {
     return *proofGenerator_;
 }

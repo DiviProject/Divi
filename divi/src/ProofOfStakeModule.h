@@ -19,6 +19,6 @@ public:
         CChain& activeChain,
         BlockMap& blockIndexByHash);
     ~ProofOfStakeModule();
-    I_ProofOfStakeGenerator& proofOfStakeGenerator();
+    const I_ProofOfStakeGenerator& proofOfStakeGenerator() const;
 };
 #endif// PROOF_OF_STAKE_MODULE_H

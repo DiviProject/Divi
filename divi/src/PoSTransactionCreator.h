@@ -34,7 +34,7 @@ private:
     const BlockMap& mapBlockIndex_;
     const I_BlockSubsidyProvider& blockSubsidies_;
     const BlockIncentivesPopulator& incentives_;
-    std::unique_ptr<ProofOfStakeGenerator> proofGenerator_;
+    ProofOfStakeGenerator& proofGenerator_;
     std::unique_ptr<StakedCoins> stakedCoins_;
     CWallet& wallet_;
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps_;
@@ -83,6 +83,7 @@ public:
         const I_PoSStakeModifierService& stakeModifierService,
         const I_BlockSubsidyProvider& blockSubsidies,
         const BlockIncentivesPopulator& incentives,
+        ProofOfStakeGenerator& proofGenerator,
         CWallet& wallet,
         std::map<unsigned int, unsigned int>& hashedBlockTimestamps);
     ~PoSTransactionCreator();

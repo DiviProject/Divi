@@ -10,6 +10,7 @@
 #include <BlockIncentivesPopulator.h>
 #include <LegacyPoSStakeModifierService.h>
 #include <PoSStakeModifierService.h>
+#include <ProofOfStakeGenerator.h>
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
@@ -52,6 +53,7 @@ CoinMintingModule::CoinMintingModule(
     BlockMap& blockIndexByHash
     ): legacyStakeModifierService_(new LegacyPoSStakeModifierService(blockIndexByHash,activeChain))
     , stakeModifierService_(new PoSStakeModifierService(*legacyStakeModifierService_, blockIndexByHash))
+    , proofGenerator_(new ProofOfStakeGenerator(*stakeModifierService_,chainParameters.GetMinCoinAgeForStaking()))
     , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
         chainParameters,
@@ -68,6 +70,7 @@ CoinMintingModule::CoinMintingModule(
         *stakeModifierService_,
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockIncentivesPopulator_,
+        *proofGenerator_,
         wallet,
         hashedBlockTimestampsByHeight))
     , blockFactory_(
@@ -99,6 +102,7 @@ CoinMintingModule::~CoinMintingModule()
     blockTransactionCollector_.reset();
     blockIncentivesPopulator_.reset();
     blockSubsidyContainer_.reset();
+    proofGenerator_.reset();
     stakeModifierService_.reset();
     legacyStakeModifierService_.reset();
 }

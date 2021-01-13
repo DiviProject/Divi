@@ -151,8 +151,6 @@ std::string GetWarnings(std::string strFor);
 bool DisconnectBlocksAndReprocess(int blocks);
 
 // ***TODO***
-double ConvertBitsToDouble(unsigned int nBits);
-
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
 
 /** Create a new block index entry for a given block hash */

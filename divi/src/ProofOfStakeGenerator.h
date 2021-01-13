@@ -27,11 +27,11 @@ public:
         unsigned minimumCoinAgeForStaking);
     HashproofCreationResult CreateHashproofTimestamp(
         const StakingData& stakingData,
-        const unsigned initialTimestamp);
+        const unsigned initialTimestamp) const;
     bool ComputeAndVerifyProofOfStake(
         const StakingData& stakingData,
         const unsigned int& hashproofTimestamp,
-        uint256& hashProofOfStake);
+        uint256& hashProofOfStake) const;
 };
 HashproofCreationResult CreateHashproofTimestamp(
     const StakingData& stakingData,

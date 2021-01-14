@@ -39,7 +39,6 @@ extern const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 extern BlockMap mapBlockIndex;
 extern Settings& settings;
 
-extern bool fDebug;
 
 // Hard checkpoints of stake modifiers to ensure they are deterministic
 static std::map<int, unsigned int> mapStakeModifierCheckpoints =

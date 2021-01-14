@@ -4088,10 +4088,9 @@ void static ProcessGetData(CNode* pfrom)
 bool fRequestedSporksIDB = false;
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived)
 {
-    if (fDebug)
-        LogPrintf("received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
+    LogPrint("net","received: %s (%u bytes) peer=%d\n", SanitizeString(strCommand), vRecv.size(), pfrom->id);
     if (settings.ParameterIsSet("-dropmessagestest") && GetRand(atoi(settings.GetParameter("-dropmessagestest"))) == 0) {
-        LogPrintf("dropmessagestest DROPPING RECV MESSAGE\n");
+        LogPrint("net","dropmessagestest DROPPING RECV MESSAGE\n");
         return true;
     }
 
@@ -4341,10 +4340,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             return error("message getdata size() = %u", vInv.size());
         }
 
-        if (fDebug || (vInv.size() != 1))
-            LogPrint("net", "received getdata (%u invsz) peer=%d\n", vInv.size(), pfrom->id);
+        LogPrint("net", "received getdata (%u invsz) peer=%d\n", vInv.size(), pfrom->id);
 
-        if ((fDebug && vInv.size() > 0) || (vInv.size() == 1))
+        if (vInv.size() > 0)
             LogPrint("net", "received getdata for: %s peer=%d\n", vInv[0].ToString(), pfrom->id);
 
         pfrom->vRecvGetData.insert(pfrom->vRecvGetData.end(), vInv.begin(), vInv.end());
@@ -4418,8 +4416,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         // we must use CBlocks, as CBlockHeaders won't include the 0x00 nTx count at the end
         std::vector<CBlock> vHeaders;
         int nLimit = MAX_HEADERS_RESULTS;
-        if (fDebug)
-            LogPrintf("getheaders %d to %s from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString(), pfrom->id);
+        LogPrint("net","getheaders %d to %s from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString(), pfrom->id);
         for (; pindex; pindex = chainActive.Next(pindex)) {
             vHeaders.push_back(pindex->GetBlockHeader());
             if (--nLimit <= 0 || pindex->GetBlockHash() == hashStop)
@@ -4876,10 +4873,6 @@ int ActiveProtocol()
 // requires LOCK(cs_vRecvMsg)
 bool ProcessMessages(CNode* pfrom)
 {
-    //if (fDebug)
-    //    LogPrintf("ProcessMessages(%u messages)\n", pfrom->vRecvMsg.size());
-
-    //
     // Message format
     //  (4) message start
     //  (12) command
@@ -4903,11 +4896,6 @@ bool ProcessMessages(CNode* pfrom)
 
         // get next message
         CNetMessage& msg = *it;
-
-        //if (fDebug)
-        //    LogPrintf("ProcessMessages(message %u msgsz, %u bytes, complete:%s)\n",
-        //            msg.hdr.nMessageSize, msg.vRecv.size(),
-        //            msg.complete() ? "Y" : "N");
 
         // end, if an incomplete message is found
         if (!msg.complete())
@@ -5198,8 +5186,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         while (!pto->fDisconnect && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow) {
             const CInv& inv = (*pto->mapAskFor.begin()).second;
             if (!AlreadyHave(inv)) {
-                if (fDebug)
-                    LogPrint("net", "Requesting %s peer=%d\n", inv.ToString(), pto->id);
+                LogPrint("net", "Requesting %s peer=%d\n", inv.ToString(), pto->id);
                 vGetData.push_back(inv);
                 if (vGetData.size() >= 1000) {
                     pto->PushMessage("getdata", vGetData);

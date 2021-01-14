@@ -114,9 +114,6 @@ void EraseOrphansFor(NodeId peer);
 
 static void CheckBlockIndex();
 
-/** Constant stuff for coinbase transactions we create: */
-CScript COINBASE_FLAGS;
-
 // Internal stuff
 namespace
 {

@@ -53,7 +53,6 @@ class NotificationInterface;
 class CValidationState;
 struct CNodeStateStats;
 
-extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;

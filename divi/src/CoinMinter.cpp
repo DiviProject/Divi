@@ -19,7 +19,6 @@
 
 constexpr int hashingDelay = 45;
 
-extern CScript COINBASE_FLAGS;
 
 void SetThreadPriority(int nPriority);
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
@@ -157,6 +156,8 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
 
 void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const
 {
+    /** Constant stuff for coinbase transactions we create: */
+    static CScript COINBASE_FLAGS;
     // Update nExtraNonce
     static uint256 hashPrevBlock;
     if (hashPrevBlock != block->hashPrevBlock) {

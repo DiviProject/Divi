@@ -84,9 +84,5 @@ uint256 CBlockIndex::GetBlockTrust() const
 
 unsigned int CBlockIndex::GetStakeEntropyBit() const
 {
-    unsigned int nEntropyBit = ((GetBlockHash().Get64()) & 1);
-    if (fDebug || settings.GetBoolArg("-printstakemodifier", false))
-        LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight, GetBlockHash().ToString().c_str(), nEntropyBit);
-
-    return nEntropyBit;
+    return ((GetBlockHash().Get64()) & 1);
 }

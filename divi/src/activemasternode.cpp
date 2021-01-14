@@ -62,7 +62,7 @@ void CActiveMasternode::ManageStatus(CMasternodeSync& masternodeSynchronization,
 
     if (!fMasterNode_) return;
 
-    if (fDebug) LogPrintf("CActiveMasternode::ManageStatus() - Begin\n");
+    LogPrint("masternode","CActiveMasternode::ManageStatus() - Begin\n");
 
     //need correct blocks to send ping
     if (!masternodeSynchronization.IsBlockchainSynced()) {

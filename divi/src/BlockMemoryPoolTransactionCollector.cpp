@@ -15,7 +15,6 @@ extern Settings& settings;
 
 extern CFeeRate minRelayTxFee;
 extern CCoinsViewCache* pcoinsTip;
-extern bool fDebug;
 
 class CScriptCheck;
 unsigned int GetLegacySigOpCount(const CTransaction& tx);
@@ -209,7 +208,6 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
                     // pool should connect to either transactions in the chain
                     // or other transactions in the memory pool.
                     LogPrintf("ERROR: mempool transaction missing input\n");
-                    if (fDebug) assert("mempool transaction missing input" == 0);
                     fMissingInputs = true;
                     break;
                 }

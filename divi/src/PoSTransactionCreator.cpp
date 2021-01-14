@@ -22,7 +22,6 @@ extern Settings& settings;
 extern const int nHashDrift;
 extern const unsigned int MAX_KERNEL_COMBINED_INPUTS;
 extern const int maximumFutureBlockDrift = 180; // seconds
-extern bool fDebug;
 
 class StakedCoins
 {
@@ -117,11 +116,10 @@ bool IsSupportedScript(
         LogPrintf("CreateCoinStake : failed to parse kernel\n");
         return false;
     }
-    if (fDebug && settings.GetBoolArg("-printcoinstake", false)) LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
+    LogPrint("staking","%s : parsed kernel type=%d\n",__func__, whichType);
     if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH && whichType != TX_VAULT)
     {
-        if (fDebug && settings.GetBoolArg("-printcoinstake", false))
-            LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
+        LogPrint("staking","%s : no support for kernel type=%d\n",__func__, whichType);
         return false; // only support pay to public key and pay to address
     }
     isVaultScript =whichType == TX_VAULT;
@@ -186,7 +184,7 @@ bool PoSTransactionCreator::FindHashproof(
     BlockMap::const_iterator it = mapBlockIndex_.find(stakeData.blockHashOfFirstConfirmation);
     if (it == mapBlockIndex_.end())
     {
-        if (fDebug) LogPrintf("CreateCoinStake() failed to find block index \n");
+        LogPrint("staking","%s failed to find block index for %s\n",__func__,stakeData.blockHashOfFirstConfirmation.ToString());
         return false;
     }
 
@@ -207,11 +205,10 @@ bool PoSTransactionCreator::FindHashproof(
     {
         if (hashproofResult.timestamp() <= chainTip->GetMedianTimePast())
         {
-            LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
+            LogPrintf("%s : kernel found, but it is too far in the past \n",__func__);
             return false;
         }
-        if (fDebug && settings.GetBoolArg("-printcoinstake", false))
-            LogPrintf("CreateCoinStake : kernel found\n");
+        LogPrint("staking","%s : kernel found for %s\n",__func__, stakeData.tx->GetHash().ToString());
 
         SetSuportedStakingScript(stakeData,txNew);
         nTxNewTime = hashproofResult.timestamp();

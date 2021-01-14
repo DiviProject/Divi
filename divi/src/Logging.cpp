@@ -57,22 +57,16 @@ bool LogAcceptCategory(const char* category)
             const std::vector<std::string>& categories = mapMultiArgs["-debug"];
             ptrCategory.reset(new std::set<std::string>(categories.begin(), categories.end()));
             // thread_specific_ptr automatically deletes the set when the thread ends.
-            // "divi" is a composite category enabling all DIVI-related debug output
-            if (ptrCategory->count(std::string("divi"))) {
-                ptrCategory->insert(std::string("obfuscation"));
-                ptrCategory->insert(std::string("swiftx"));
-                ptrCategory->insert(std::string("masternode"));
-                ptrCategory->insert(std::string("mnpayments"));
-                ptrCategory->insert(std::string("staking"));
-//                ptrCategory->insert(string("zero"));
-                ptrCategory->insert(std::string("mnbudget"));
+            // "all" is a composite category enabling all DIVI-related debug output
+            if (ptrCategory->count(std::string("all")) || ptrCategory->count(std::string("")))
+            {
+                return true;
             }
         }
         const std::set<std::string>& setCategories = *ptrCategory.get();
 
         // if not debugging everything and not debugging specific category, LogPrint does nothing.
-        if (setCategories.count(std::string("")) == 0 &&
-            setCategories.count(std::string(category)) == 0)
+        if (setCategories.count(std::string(category)) == 0)
             return false;
     }
     return true;

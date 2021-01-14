@@ -26,7 +26,6 @@ extern bool CreateHashProofForProofOfStake(
     const StakingData& stakingData,
     unsigned int& nTimeTx);
 
-extern const int nHashDrift;
 
 class MockProofOfStakeCalculator: public I_ProofOfStakeCalculator
 {
@@ -56,8 +55,8 @@ BOOST_AUTO_TEST_CASE(onlyHashesAFixedNumberOfTimesIfCalculatorRepeatedlyFails)
             transactionTime),
         "Proof of stake should not valid\n");
 
-    BOOST_CHECK_MESSAGE( (transactionTimeStart-nHashDrift) == transactionTime,
-        "Difference in the expected timestamps: "+std::to_string(transactionTimeStart-nHashDrift) + " vs. " +
+    BOOST_CHECK_MESSAGE( (transactionTimeStart- I_ProofOfStakeGenerator::nHashDrift) == transactionTime,
+        "Difference in the expected timestamps: "+std::to_string(transactionTimeStart-I_ProofOfStakeGenerator::nHashDrift) + " vs. " +
         std::to_string(transactionTime)  );
 }
 

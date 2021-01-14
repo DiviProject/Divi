@@ -19,7 +19,6 @@
 #include <timedata.h>
 
 extern Settings& settings;
-extern const int nHashDrift;
 extern const unsigned int MAX_KERNEL_COMBINED_INPUTS;
 extern const int maximumFutureBlockDrift = 180; // seconds
 
@@ -298,7 +297,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
     int64_t adjustedTime = GetAdjustedTime();
     int64_t minimumTime = chainTip->GetMedianTimePast() + 1;
     const int64_t maximumTime = adjustedTime + maximumFutureBlockDrift - 1;
-    minimumTime += chainParameters_.RetargetDifficulty()? nHashDrift: 0;
+    minimumTime += chainParameters_.RetargetDifficulty()? I_ProofOfStakeGenerator::nHashDrift: 0;
     minimumTime = std::max(hashproofTimestampMinimumValue_,minimumTime);
     if(maximumTime <= minimumTime) return false;
     nTxNewTime = std::min(std::max(adjustedTime, minimumTime), maximumTime);

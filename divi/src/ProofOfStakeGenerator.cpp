@@ -3,16 +3,10 @@
 #include <uint256.h>
 #include <Logging.h>
 #include <StakingData.h>
-#include <LegacyPoSStakeModifierService.h>
-#include <PoSStakeModifierService.h>
-#include <chain.h>
-#include <chainparams.h>
-#include <blockmap.h>
+#include <I_PoSStakeModifierService.h>
 #include <ProofOfStakeCalculator.h>
 #include <memory>
 
-extern BlockMap mapBlockIndex;
-extern CChain chainActive;
 extern const int nHashDrift = 45;
 
 // Start of Proof-of-Stake Computations

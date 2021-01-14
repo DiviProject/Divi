@@ -148,25 +148,3 @@ HashproofCreationResult ProofOfStakeGenerator::CreateHashproofTimestamp(
 
     return HashproofCreationResult::Success(hashproofTimestamp);
 }
-
-static ProofOfStakeGenerator& instanceOfProofOfStakeGeneration()
-{
-    static unsigned _minimumCoinAgeForStaking = Params().GetMinCoinAgeForStaking();
-    static LegacyPoSStakeModifierService legacyStakeModifierService(mapBlockIndex, chainActive);
-    static PoSStakeModifierService stakeModifierService(legacyStakeModifierService, mapBlockIndex);
-    static ProofOfStakeGenerator proofGenerator(stakeModifierService, _minimumCoinAgeForStaking);
-    return proofGenerator;
-}
-bool ComputeAndVerifyProofOfStake(
-    const StakingData& stakingData,
-    const unsigned int& hashproofTimestamp,
-    uint256& hashProofOfStake)
-{
-    return instanceOfProofOfStakeGeneration().ComputeAndVerifyProofOfStake(stakingData,hashproofTimestamp,hashProofOfStake);
-}
-HashproofCreationResult CreateHashproofTimestamp(
-    const StakingData& stakingData,
-    const unsigned initialTimestamp)
-{
-    return instanceOfProofOfStakeGeneration().CreateHashproofTimestamp(stakingData,initialTimestamp);
-}

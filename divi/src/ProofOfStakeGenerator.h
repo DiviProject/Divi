@@ -33,11 +33,4 @@ public:
         const unsigned int& hashproofTimestamp,
         uint256& hashProofOfStake) const;
 };
-HashproofCreationResult CreateHashproofTimestamp(
-    const StakingData& stakingData,
-    const unsigned initialTimestamp);
-bool ComputeAndVerifyProofOfStake(
-    const StakingData& stakingData,
-    const unsigned int& hashproofTimestamp,
-    uint256& hashProofOfStake);
 #endif// PROOF_OF_STAKE_GENERATOR_H

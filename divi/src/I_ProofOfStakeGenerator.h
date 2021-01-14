@@ -27,6 +27,7 @@ public:
 class I_ProofOfStakeGenerator
 {
 public:
+    static const int nHashDrift = 45;
     virtual ~I_ProofOfStakeGenerator(){}
     virtual HashproofCreationResult CreateHashproofTimestamp(
         const StakingData& stakingData,

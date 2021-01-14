@@ -7,8 +7,6 @@
 #include <ProofOfStakeCalculator.h>
 #include <memory>
 
-extern const int nHashDrift = 45;
-
 // Start of Proof-of-Stake Computations
 HashproofCreationResult::HashproofCreationResult(
     unsigned timestamp,
@@ -50,7 +48,7 @@ bool CreateHashProofForProofOfStake(
     unsigned int& hashproofTimestamp)
 {
     uint256 hashproof = 0;
-    for (unsigned int i = 0; i < nHashDrift; i++) //iterate the hashing
+    for (unsigned int i = 0; i < I_ProofOfStakeGenerator::nHashDrift; i++) //iterate the hashing
     {
         if(!calculator.computeProofOfStakeAndCheckItMeetsTarget(hashproofTimestamp,hashproof,false))
         {

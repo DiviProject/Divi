@@ -17,7 +17,7 @@
 #include <I_BlockSubsidyProvider.h>
 #include <Logging.h>
 
-extern const int nHashDrift;
+constexpr int hashingDelay = 45;
 
 extern CScript COINBASE_FLAGS;
 
@@ -88,7 +88,7 @@ bool CoinMinter::limitStakingSpeed() const
 {
     if (mapHashedBlocks_.count(chain_.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
     {
-        if (GetTime() - mapHashedBlocks_[chain_.Tip()->nHeight] < static_cast<int64_t>(nHashDrift)/2 )
+        if (GetTime() - mapHashedBlocks_[chain_.Tip()->nHeight] < static_cast<int64_t>(hashingDelay)/2 )
         {
             return true;
         }

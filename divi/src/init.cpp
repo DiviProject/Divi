@@ -493,6 +493,8 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-fuzzmessagestest=<n>", translate("Randomly fuzz 1 of every <n> network messages"));
         strUsage += HelpMessageOpt("-flushwallet", strprintf(translate("Run a thread to flush wallet periodically (default: %u)"), 1));
         strUsage += HelpMessageOpt("-maxreorg", strprintf(translate("Use a custom max chain reorganization depth (default: %u)"), 100));
+        strUsage += HelpMessageOpt("-protocolversion", strprintf(translate("Use a custom protocol version (default: use latest version %d)"), PROTOCOL_VERSION));
+        strUsage += HelpMessageOpt("-activeversion", translate("Use a custom active version"));
         strUsage += HelpMessageOpt("-stopafterblockimport", strprintf(translate("Stop running after importing blocks from disk (default: %u)"), 0));
         strUsage += HelpMessageOpt("-sporkkey=<privkey>", translate("Enable spork administration functionality with the appropriate private key."));
     }
@@ -1523,6 +1525,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     {
         return false;
     }
+
+    if (settings.ParameterIsSet("-protocolversion")) {
+        SetProtocolVersion(settings.GetArg("-protocolversion", PROTOCOL_VERSION));
+    }
+
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
     // Sanity check
     if (!VerifyCriticalDependenciesAreAvailable())

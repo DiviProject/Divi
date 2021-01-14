@@ -1,16 +1,16 @@
 #include <CoinMinter.h>
+
 #include <wallet.h>
 #include <utiltime.h>
 #include <chain.h>
 #include <chainparams.h>
 #include <PeerNotificationOfMintService.h>
 #include <masternode-sync.h>
-#include <BlockMemoryPoolTransactionCollector.h>
 #include <utilmoneystr.h>
 #include <timedata.h>
-#include <PoSTransactionCreator.h>
 #include <boost/thread.hpp>
-#include <BlockFactory.h>
+#include <I_BlockFactory.h>
+#include <BlockTemplate.h>
 #include <BlockSigning.h>
 #include <ValidationState.h>
 #include <txmempool.h>

@@ -7,13 +7,13 @@ class CTransaction;
 class CValidationState;
 class CCoinsViewCache;
 class CTxUndo;
-void UpdateCoins_Temp(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
-bool CheckInputs_Temp(
+void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
+bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,
     const CCoinsViewCache& inputs,
     bool fScriptChecks,
     unsigned int flags,
     bool cacheStore,
-    std::vector<CScriptCheck>* pvChecks);
+    std::vector<CScriptCheck>* pvChecks = nullptr);
 #endif// UTXO_CHECKING_AND_UPDATING_H

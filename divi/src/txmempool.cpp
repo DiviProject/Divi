@@ -12,6 +12,7 @@
 #include "Logging.h"
 #include "utilmoneystr.h"
 #include "version.h"
+#include <UtxoCheckingAndUpdating.h>
 
 #include <boost/circular_buffer.hpp>
 

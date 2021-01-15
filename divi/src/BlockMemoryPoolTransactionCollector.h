@@ -2,7 +2,6 @@
 #define BLOCK_MEMORY_POOL_TRANSACTION_COLLECTOR_H
 
 #include <amount.h>
-#include <BlockTemplate.h>
 #include <FeeRate.h>
 #include <uint256.h>
 
@@ -23,6 +22,8 @@ class CBlock;
 class CCoinsViewCache;
 class CBlockIndex;
 class CTxMemPool;
+class CBlockTemplate;
+class CBlockHeader;
 
 template <typename MutexObj>
 class AnnotatedMixin;

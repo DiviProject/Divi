@@ -1,5 +1,6 @@
 #include <BlockMemoryPoolTransactionCollector.h>
 
+#include <BlockTemplate.h>
 #include "chain.h"
 #include "coins.h"
 #include "FeeAndPriorityCalculator.h"

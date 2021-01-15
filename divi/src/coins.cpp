@@ -11,6 +11,86 @@
 
 #include "FeeAndPriorityCalculator.h"
 
+CCoins::CCoins(
+    ) : fCoinBase(false)
+    , fCoinStake(false)
+    , vout(0)
+    , nHeight(0)
+    , nVersion(0)
+{
+}
+
+CCoins::CCoins(const CTransaction& tx, int nHeightIn)
+{
+    FromTx(tx, nHeightIn);
+}
+
+void CCoins::FromTx(const CTransaction& tx, int nHeightIn)
+{
+    fCoinBase = tx.IsCoinBase();
+    fCoinStake = tx.IsCoinStake();
+    vout = tx.vout;
+    nHeight = nHeightIn;
+    nVersion = tx.nVersion;
+    ClearUnspendable();
+}
+
+void CCoins::Clear()
+{
+    fCoinBase = false;
+    fCoinStake = false;
+    std::vector<CTxOut>().swap(vout);
+    nHeight = 0;
+    nVersion = 0;
+}
+void CCoins::Cleanup()
+{
+    while (vout.size() > 0 && vout.back().IsNull())
+        vout.pop_back();
+    if (vout.empty())
+        std::vector<CTxOut>().swap(vout);
+}
+void CCoins::ClearUnspendable()
+{
+    BOOST_FOREACH (CTxOut& txout, vout) {
+        if (txout.scriptPubKey.IsUnspendable())
+            txout.SetNull();
+    }
+    Cleanup();
+}
+void CCoins::swap(CCoins& to)
+{
+    std::swap(to.fCoinBase, fCoinBase);
+    std::swap(to.fCoinStake, fCoinStake);
+    to.vout.swap(vout);
+    std::swap(to.nHeight, nHeight);
+    std::swap(to.nVersion, nVersion);
+}
+bool CCoins::IsCoinBase() const
+{
+    return fCoinBase;
+}
+
+bool CCoins::IsCoinStake() const
+{
+    return fCoinStake;
+}
+//! check whether a particular output is still available
+bool CCoins::IsAvailable(unsigned int nPos) const
+{
+    return (nPos < vout.size() && !vout[nPos].IsNull());
+}
+
+//! check whether the entire CCoins is spent
+//! note that only !IsPruned() CCoins can be serialized
+bool CCoins::IsPruned() const
+{
+    BOOST_FOREACH (const CTxOut& out, vout)
+        if (!out.IsNull())
+            return false;
+    return true;
+}
+
 /**
  * calculate number of bytes for the bitmask, and its number of non-zero bytes
  * each bit in the bitmask represents the availability of one output, but the

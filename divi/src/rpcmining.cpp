@@ -25,6 +25,7 @@
 #include <ExtendedBlockFactory.h>
 #include <masternode-sync.h>
 #include <masternode-payments.h>
+#include <spork.h>
 
 #include <stdint.h>
 
@@ -173,7 +174,7 @@ Value setgenerate(const Array& params, bool fHelp)
 
         Array blockHashes;
         CoinMintingModule mintingModule(
-            cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex);
+            cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
         I_CoinMinter& minter = mintingModule.coinMinter();
 
         while (nHeight < nHeightEnd)
@@ -238,7 +239,7 @@ Value generateblock(const Array& params, bool fHelp)
     }
 
     CoinMintingModule mintingModule(
-        cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex);
+        cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
     I_CoinMinter& minter = mintingModule.coinMinter();
     ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
     assert(blockFactory);

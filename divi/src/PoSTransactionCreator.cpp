@@ -19,8 +19,6 @@
 #include <timedata.h>
 
 extern Settings& settings;
-extern const unsigned int MAX_KERNEL_COMBINED_INPUTS;
-extern const int maximumFutureBlockDrift = 180; // seconds
 
 class StakedCoins
 {
@@ -141,6 +139,7 @@ void PoSTransactionCreator::CombineUtxos(
     CAmount& nCredit,
     std::vector<const CTransaction*>& walletTransactions)
 {
+    static const unsigned maxInputs = settings.MaxNumberOfPoSCombinableInputs();
     const CAmount nCombineThreshold = stakeSplit / 2;
     std::vector<StakableCoin> vCombineCandidates;
     for(const StakableCoin& pcoin : stakedCoins_->asSet())
@@ -162,7 +161,7 @@ void PoSTransactionCreator::CombineUtxos(
 
     for(const auto& pcoin : vCombineCandidates)
     {
-        if (txNew.vin.size() >= MAX_KERNEL_COMBINED_INPUTS||
+        if (txNew.vin.size() >= maxInputs ||
             nCredit > nCombineThreshold ||
             nCredit + pcoin.tx->vout[pcoin.outputIndex].nValue > nCombineThreshold)
             break;
@@ -296,7 +295,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
     }
     int64_t adjustedTime = GetAdjustedTime();
     int64_t minimumTime = chainTip->GetMedianTimePast() + 1;
-    const int64_t maximumTime = adjustedTime + maximumFutureBlockDrift - 1;
+    const int64_t maximumTime = adjustedTime + settings.MaxFutureBlockDrift() - 1;
     minimumTime += chainParameters_.RetargetDifficulty()? I_ProofOfStakeGenerator::nHashDrift: 0;
     minimumTime = std::max(hashproofTimestampMinimumValue_,minimumTime);
     if(maximumTime <= minimumTime) return false;

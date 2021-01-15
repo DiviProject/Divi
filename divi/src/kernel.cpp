@@ -34,7 +34,6 @@
 #include <utiltime.h>
 
 #include <Settings.h>
-extern const unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
 
 extern BlockMap mapBlockIndex;
 extern Settings& settings;
@@ -238,12 +237,13 @@ void SetStakeModifiersForNewBlockIndex(CBlockIndex* pindexNew)
 bool CheckProofOfStakeContextAndRecoverStakingData(
     const CBlock& block, CBlockIndex* pindexPrev, StakingData& stakingData)
 {
+    static const unsigned maxInputs = settings.MaxNumberOfPoSCombinableInputs();
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())
         return error("CheckProofOfStake() : called on non-coinstake %s", tx.GetHash().ToString().c_str());
 
-    if(tx.vin.size() > MAX_KERNEL_COMBINED_INPUTS) {
-        return error("CheckProofOfStake() : invalid amount of stake inputs, current: %d, max: %d", tx.vin.size(), MAX_KERNEL_COMBINED_INPUTS);
+    if(tx.vin.size() > maxInputs) {
+        return error("CheckProofOfStake() : invalid amount of stake inputs, current: %d, max: %d", tx.vin.size(), maxInputs);
     }
 
     // Kernel (input 0) must match the stake hash target per coin age (nBits)

@@ -67,8 +67,6 @@ extern Settings& settings;
 
 CCriticalSection cs_main;
 
-extern const int maximumFutureBlockDrift;
-
 BlockMap mapBlockIndex;
 std::map<uint256, uint256> mapProofOfStake;
 std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
@@ -2780,7 +2778,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     // Check timestamp
     LogPrint("debug", "%s: block=%s  is proof of stake=%d\n", __func__, block.GetHash().ToString().c_str(), block.IsProofOfStake());
-    if (block.GetBlockTime() > GetAdjustedTime() + (block.IsProofOfStake() ? maximumFutureBlockDrift : 7200)) // 3 minute future drift for PoS
+    if (block.GetBlockTime() > GetAdjustedTime() + (block.IsProofOfStake() ? settings.MaxFutureBlockDrift() : 7200)) // 3 minute future drift for PoS
         return state.Invalid(error("CheckBlock() : block timestamp too far in the future"),
                              REJECT_INVALID, "time-too-new");
 

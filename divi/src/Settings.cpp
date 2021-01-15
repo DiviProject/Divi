@@ -87,7 +87,7 @@ void CopyableSettings::SetParameter (const std::string& key, const std::string& 
     mapArgs_[key] = value;
 }
 
-void CopyableSettings::ClearParameter () 
+void CopyableSettings::ClearParameter ()
 {
     mapArgs_.clear();
 }
@@ -164,4 +164,15 @@ void CopyableSettings::ReadConfigFile()
     }
     // If datadir is changed in .conf file:
     ClearDatadirCache();
+}
+
+unsigned CopyableSettings::MaxNumberOfPoSCombinableInputs() const
+{
+    constexpr unsigned int MAX_KERNEL_COMBINED_INPUTS = 20;
+    return MAX_KERNEL_COMBINED_INPUTS;
+}
+int CopyableSettings::MaxFutureBlockDrift() const
+{
+    constexpr int maximumFutureBlockDrift = 180;
+    return maximumFutureBlockDrift;
 }

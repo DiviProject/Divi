@@ -2,10 +2,10 @@
 #define SETTINGS_H
 #include <string>
 #include <map>
-#include <vector> 
+#include <vector>
 #include <boost/filesystem.hpp>
 
-class CopyableSettings 
+class CopyableSettings
 {
 protected:
     std::map<std::string, std::string>& mapArgs_;
@@ -19,7 +19,7 @@ public:
         , mapMultiArgs_(mapMultiArgs)
     {
     }
-    
+
     std::string GetArg(const std::string& strArg, const std::string& strDefault) const;
 
     int64_t GetArg(const std::string& strArg, int64_t nDefault) const;
@@ -29,7 +29,7 @@ public:
     bool SoftSetArg(const std::string& strArg, const std::string& strValue);
 
     bool SoftSetBoolArg(const std::string& strArg, bool fValue);
-    
+
     void ForceRemoveArg(const std::string &strArg);
 
     bool ParameterIsSet (const std::string& key) const;
@@ -38,7 +38,7 @@ public:
 
     void SetParameter (const std::string& key, const std::string& value);
 
-    void ClearParameter (); 
+    void ClearParameter ();
 
     bool ParameterIsSetForMultiArgs (const std::string& key) const;
 
@@ -47,6 +47,8 @@ public:
     boost::filesystem::path GetConfigFile();
 
     void ReadConfigFile();
+    unsigned MaxNumberOfPoSCombinableInputs() const;
+    int MaxFutureBlockDrift() const;
 };
 
 class Settings: public CopyableSettings
@@ -63,13 +65,13 @@ private:
 public:
 
     static Settings& instance(
-        std::map<std::string, std::string>& mapArgs, 
-        std::map<std::string, std::vector<std::string> >& mapMultiArgs) 
+        std::map<std::string, std::string>& mapArgs,
+        std::map<std::string, std::vector<std::string> >& mapMultiArgs)
     {
         static Settings settings(mapArgs, mapMultiArgs);
         return settings;
     }
-    
+
 };
 
 #endif //SETTINGS_H

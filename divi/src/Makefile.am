@@ -40,6 +40,10 @@ GTEST_INCLUDE=GMock/googletest/include
 GMOCK_ALL=GMock/googlemock/src/gmock-all.cc
 GTEST_ALL=GMock/googletest/src/gtest-all.cc
 
+if ENABLE_ZMQ
+LIBBITCOIN_ZMQ=libbitcoin_zmq.a
+endif
+
 $(GMOCK): $(wildcard ${GMOCK_INCLUDE}/*) $(wildcard ${GTEST_INCLUDE}/*) $(GMOCK_ALL)
 	$(CC) -isystem ${GMOCK_INCLUDE} -IGMock/googlemock/ -isystem ${GTEST_INCLUDE} -IGMock/googletest -pthread -c ${GMOCK_ALL} -o $@
 
@@ -55,21 +59,21 @@ $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 # Make is not made aware of per-object dependencies to avoid limiting building parallelization
 # But to build the less dependent modules first, we manually select their order here:
 EXTRA_LIBRARIES = \
-  crypto/libbitcoin_crypto.a \
-  libbitcoin_util.a \
-  libbitcoin_common.a \
-  univalue/libbitcoin_univalue.a \
-  libzerocoin/libbitcoin_zerocoin.a \
-  libbitcoin_server.a \
-  libbitcoin_cli.a
+  $(LIBBITCOIN_CRYPTO) \
+  $(LIBBITCOIN_UTIL) \
+  $(LIBBITCOIN_COMMON) \
+  $(LIBBITCOIN_UNIVALUE) \
+  $(LIBBITCOIN_ZEROCOIN) \
+  $(LIBBITCOIN_SERVER) \
+  $(LIBBITCOIN_CLI)
 
 if ENABLE_WALLET
 BITCOIN_INCLUDES += $(BDB_CPPFLAGS)
-EXTRA_LIBRARIES += libbitcoin_wallet.a
+EXTRA_LIBRARIES += $(LIBBITCOIN_WALLET)
 endif
 
 if ENABLE_ZMQ
-EXTRA_LIBRARIES += libbitcoin_zmq.a
+EXTRA_LIBRARIES += $(LIBBITCOIN_ZMQ)
 endif
 
 if BUILD_BITCOIN_LIBS
@@ -380,8 +384,6 @@ libbitcoin_server_a_SOURCES = \
   $(BITCOIN_CORE_H)
 
 if ENABLE_ZMQ
-LIBBITCOIN_ZMQ=libbitcoin_zmq.a
-
 libbitcoin_zmq_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(ZMQ_CFLAGS)
 libbitcoin_zmq_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_zmq_a_SOURCES = \
@@ -586,7 +588,7 @@ divid_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
 endif
 
 if ENABLE_WALLET
-divid_LDADD += libbitcoin_wallet.a \
+divid_LDADD += $(LIBBITCOIN_WALLET) \
   $(LIBBITCOIN_CRYPTO)
 endif
 divid_SOURCES = divid.cpp

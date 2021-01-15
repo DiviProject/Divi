@@ -62,7 +62,6 @@ class CWalletDB;
 class COutPoint;
 class CTxIn;
 
-bool MoneyRange(CAmount nValueOut);
 bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 

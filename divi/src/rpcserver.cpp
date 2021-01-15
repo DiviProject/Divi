@@ -16,6 +16,8 @@
 #include "wallet.h"
 #endif
 #include "Settings.h"
+#include <utilmoneystr.h>
+
 #include "json/json_spirit_writer_template.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>

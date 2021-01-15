@@ -18,7 +18,7 @@
 #include <boost/foreach.hpp>
 #include <boost/unordered_map.hpp>
 
-/** 
+/**
 
     ****Note - for DIVI we added fCoinStake to the 2nd bit. Keep in mind when reading the following and adjust as needed.
  * Pruned version of CTransaction: only retains metadata and unspent transaction outputs
@@ -88,60 +88,37 @@ public:
     //! as new tx version will probably only be introduced at certain heights
     int nVersion;
 
-    void FromTx(const CTransaction& tx, int nHeightIn)
-    {
-        fCoinBase = tx.IsCoinBase();
-        fCoinStake = tx.IsCoinStake();
-        vout = tx.vout;
-        nHeight = nHeightIn;
-        nVersion = tx.nVersion;
-        ClearUnspendable();
-    }
-
-    //! construct a CCoins from a CTransaction, at a given height
-    CCoins(const CTransaction& tx, int nHeightIn)
-    {
-        FromTx(tx, nHeightIn);
-    }
-
-    void Clear()
-    {
-        fCoinBase = false;
-        fCoinStake = false;
-        std::vector<CTxOut>().swap(vout);
-        nHeight = 0;
-        nVersion = 0;
-    }
+    void FromTx(const CTransaction& tx, int nHeightIn);
 
     //! empty constructor
-    CCoins() : fCoinBase(false), fCoinStake(false), vout(0), nHeight(0), nVersion(0) {}
+    CCoins();
+    //! construct a CCoins from a CTransaction, at a given height
+    CCoins(const CTransaction& tx, int nHeightIn);
+
+    void Clear();
 
     //!remove spent outputs at the end of vout
-    void Cleanup()
-    {
-        while (vout.size() > 0 && vout.back().IsNull())
-            vout.pop_back();
-        if (vout.empty())
-            std::vector<CTxOut>().swap(vout);
-    }
+    void Cleanup();
+    void ClearUnspendable();
 
-    void ClearUnspendable()
-    {
-        BOOST_FOREACH (CTxOut& txout, vout) {
-            if (txout.scriptPubKey.IsUnspendable())
-                txout.SetNull();
-        }
-        Cleanup();
-    }
+    void swap(CCoins& to);
 
-    void swap(CCoins& to)
-    {
-        std::swap(to.fCoinBase, fCoinBase);
-        std::swap(to.fCoinStake, fCoinStake);
-        to.vout.swap(vout);
-        std::swap(to.nHeight, nHeight);
-        std::swap(to.nVersion, nVersion);
-    }
+    bool IsCoinBase() const;
+    bool IsCoinStake() const;
+    void CalcMaskSize(unsigned int& nBytes, unsigned int& nNonzeroBytes) const;
+
+    //! mark an outpoint spent, and construct undo information
+    bool Spend(int nPos, CTxInUndo& undo);
+
+    //! mark a vout spent
+    bool Spend(int nPos);
+
+    //! check whether a particular output is still available
+    bool IsAvailable(unsigned int nPos) const;
+
+    //! check whether the entire CCoins is spent
+    //! note that only !IsPruned() CCoins can be serialized
+    bool IsPruned() const;
 
     //! equality test
     friend bool operator==(const CCoins& a, const CCoins& b)
@@ -158,18 +135,6 @@ public:
     friend bool operator!=(const CCoins& a, const CCoins& b)
     {
         return !(a == b);
-    }
-
-    void CalcMaskSize(unsigned int& nBytes, unsigned int& nNonzeroBytes) const;
-
-    bool IsCoinBase() const
-    {
-        return fCoinBase;
-    }
-
-    bool IsCoinStake() const
-    {
-        return fCoinStake;
     }
 
     unsigned int GetSerializeSize(int nType, int nVersion) const
@@ -262,27 +227,7 @@ public:
         Cleanup();
     }
 
-    //! mark an outpoint spent, and construct undo information
-    bool Spend(int nPos, CTxInUndo& undo);
 
-    //! mark a vout spent
-    bool Spend(int nPos);
-
-    //! check whether a particular output is still available
-    bool IsAvailable(unsigned int nPos) const
-    {
-        return (nPos < vout.size() && !vout[nPos].IsNull());
-    }
-
-    //! check whether the entire CCoins is spent
-    //! note that only !IsPruned() CCoins can be serialized
-    bool IsPruned() const
-    {
-        BOOST_FOREACH (const CTxOut& out, vout)
-            if (!out.IsNull())
-                return false;
-        return true;
-    }
 };
 
 class CCoinsKeyHasher
@@ -388,10 +333,10 @@ enum {
 static const unsigned int STANDARD_LOCKTIME_VERIFY_FLAGS = LOCKTIME_VERIFY_SEQUENCE |
                                                            LOCKTIME_MEDIAN_TIME_PAST;
 
-/** 
+/**
  * A reference to a mutable cache entry. Encapsulating it allows us to run
  *  cleanup code after the modification is finished, and keeping track of
- *  concurrent modifications. 
+ *  concurrent modifications.
  */
 class CCoinsModifier
 {
@@ -416,7 +361,7 @@ protected:
 
     /**
      * Make mutable so that we can "fill the cache" even from Get-methods
-     * declared as "const".  
+     * declared as "const".
      */
     mutable uint256 hashBlock;
     mutable CCoinsMap cacheCoins;
@@ -456,7 +401,7 @@ public:
     //! Calculate the size of the cache (in number of transactions)
     unsigned int GetCacheSize() const;
 
-    /** 
+    /**
      * Amount of divi coming in to a transaction
      * Note that lightweight clients may not know anything besides the hash of previous transactions,
      * so may not be able to calculate this.

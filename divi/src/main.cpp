@@ -1744,7 +1744,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         masternodeSync,
         masternodePayments,
         subsidiesContainer.superblockHeightValidator(),
-        subsidiesContainer.blockSubsidiesProvider());
+        subsidiesContainer.blockSubsidiesProvider(),
+        sporkManager);
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
 
     for (unsigned int i = 0; i < block.vtx.size(); i++) {

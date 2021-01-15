@@ -97,13 +97,15 @@ BlockIncentivesPopulator::BlockIncentivesPopulator(
     CMasternodeSync& masternodeSynchronization,
     CMasternodePayments& masternodePayments,
     const I_SuperblockHeightValidator& heightValidator,
-    const I_BlockSubsidyProvider& blockSubsidies
+    const I_BlockSubsidyProvider& blockSubsidies,
+    const CSporkManager& sporkManager
     ): chainParameters_(chainParameters)
     , activeChain_(activeChain)
     , masternodeSync_(masternodeSynchronization)
     , masternodePayments_(masternodePayments)
     , heightValidator_(heightValidator)
     , blockSubsidies_(blockSubsidies)
+    , sporkManager_(sporkManager)
     , treasuryPaymentAddress_(
         chainParameters_.NetworkID() == CBaseChainParams::MAIN ? TREASURY_PAYMENT_ADDRESS : TREASURY_PAYMENT_ADDRESS_TESTNET)
     , charityPaymentAddress_(
@@ -218,7 +220,7 @@ bool BlockIncentivesPopulator::HasValidMasternodePayee(const CTransaction &txNew
         return true;
     LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew.ToString().c_str());
 
-    if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT))
+    if (sporkManager_.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT))
         return false;
     LogPrintf("%s : Masternode payment enforcement is disabled, accepting block\n", __func__);
 

@@ -48,7 +48,8 @@ CoinMintingModule::CoinMintingModule(
     std::vector<CNode*>& peers,
     CWallet& wallet,
     BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
-    BlockMap& blockIndexByHash
+    BlockMap& blockIndexByHash,
+    const CSporkManager& sporkManager
     ): posModule_(new ProofOfStakeModule(chainParameters,activeChain,blockIndexByHash))
     , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
@@ -57,7 +58,8 @@ CoinMintingModule::CoinMintingModule(
         masternodeSynchronization,
         masternodePayments,
         blockSubsidyContainer_->superblockHeightValidator(),
-        blockSubsidyContainer_->blockSubsidiesProvider()))
+        blockSubsidyContainer_->blockSubsidiesProvider(),
+        sporkManager))
     , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(activeChain,mempool,mainCS))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(
         chainParameters,

@@ -820,11 +820,6 @@ int GetIXConfirmations(uint256 nTXHash)
     return 0;
 }
 
-bool MoneyRange(CAmount nValueOut)
-{
-    return nValueOut >= 0 && nValueOut <= Params().MaxMoneyOut();
-}
-
 bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationState& state)
 {
     // Basic checks that don't depend on any context

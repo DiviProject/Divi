@@ -10,6 +10,7 @@
 #include <defaultValues.h>
 #include <Logging.h>
 #include <TransactionOpCounting.h>
+#include <UtxoCheckingAndUpdating.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -17,9 +18,6 @@ extern Settings& settings;
 extern CFeeRate minRelayTxFee;
 extern CCoinsViewCache* pcoinsTip;
 
-class CScriptCheck;
-bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL );
-void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
 bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)

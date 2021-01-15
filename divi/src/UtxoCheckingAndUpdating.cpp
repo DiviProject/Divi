@@ -13,7 +13,7 @@
 
 extern BlockMap mapBlockIndex;
 
-void UpdateCoins_Temp(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight)
+void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight)
 {
     // mark inputs spent
     if (!tx.IsCoinBase() ) {
@@ -29,7 +29,7 @@ void UpdateCoins_Temp(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& 
     inputs.ModifyCoins(tx.GetHash())->FromTx(tx, nHeight);
 }
 
-bool CheckInputs_Temp(
+bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,
     const CCoinsViewCache& inputs,

@@ -22,6 +22,8 @@ class BlockIncentivesPopulator;
 class BlockMap;
 class CMasternodePayments;
 class ProofOfStakeModule;
+class CSporkManager;
+
 class CoinMintingModule
 {
     std::unique_ptr<ProofOfStakeModule> posModule_;
@@ -42,7 +44,8 @@ public:
         std::vector<CNode*>& peers,
         CWallet& wallet,
         BlockTimestampsByHeight& hashedBlockTimestampsByHeight,
-        BlockMap& blockIndexByHash);
+        BlockMap& blockIndexByHash,
+        const CSporkManager& sporkManager);
     ~CoinMintingModule();
 
     I_BlockFactory& blockFactory() const;

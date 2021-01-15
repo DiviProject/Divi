@@ -190,6 +190,7 @@ BITCOIN_CORE_H = \
   ValidationState.h \
   main.h \
   TransactionOpCounting.h \
+  UtxoCheckingAndUpdating.h\
   WalletLoggingHelper.h \
   walletdustcombiner.h \
   BlockFileOpener.h \
@@ -339,6 +340,7 @@ libbitcoin_server_a_SOURCES = \
   BlockUndo.cpp \
   ValidationState.cpp \
   TransactionOpCounting.cpp \
+  UtxoCheckingAndUpdating.cpp\
   main.cpp \
   WalletLoggingHelper.cpp \
   walletdustcombiner.cpp \

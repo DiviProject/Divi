@@ -9,6 +9,7 @@
 #include <ValidationState.h>
 #include <defaultValues.h>
 #include <Logging.h>
+#include <TransactionOpCounting.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -17,8 +18,6 @@ extern CFeeRate minRelayTxFee;
 extern CCoinsViewCache* pcoinsTip;
 
 class CScriptCheck;
-unsigned int GetLegacySigOpCount(const CTransaction& tx);
-unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& mapInputs);
 bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL );
 void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
 bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);

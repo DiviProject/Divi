@@ -18,7 +18,9 @@ RUN apt-get install libssl1.0-dev -y
 RUN apt-get install libevent-dev -y
 RUN apt-get install libdb4.8-dev libdb4.8++-dev -y
 RUN apt-get install libzmq3-dev -y
+RUN apt-get install python3.8 -y
 RUN apt-get install python3-zmq -y
+RUN apt-get install python3-pip -y
 RUN pip3 install zmq
 
 WORKDIR /app

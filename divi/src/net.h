@@ -611,6 +611,7 @@ public:
     static std::string ListBanned();
     static bool IsBanned(CNetAddr ip);
     static bool Ban(const CNetAddr& ip);
+    static bool Ban(const CNetAddr& addr, int64_t banTime);
     void copyStats(CNodeStats& stats);
 
     static bool IsWhitelistedRange(const CNetAddr& ip);

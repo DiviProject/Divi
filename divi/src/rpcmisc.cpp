@@ -80,6 +80,79 @@ bool GetAddressUnspent(bool addresIndexEnabled,
                       std::vector<std::pair<CAddressUnspentKey,
                       CAddressUnspentValue> > &unspentOutputs);
 
+Value ban(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "ban [outdated|<ip_address>]\n"
+            "Bans outdated peers (using 'outdated') or specific 'ip address'.\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"SuccessStatus\": xxxxx, (bool) wether a node was able to be removed\n"
+            "}\n");
+
+    constexpr int64_t lifetimeBan = int64_t( (~uint64_t(0)) >> 8 );
+    static_assert(lifetimeBan > 0);
+    if(params.size() > 0 && strcmp(params[0].get_str().c_str(),"outdated")==0 )
+    {
+        auto getSubVersion = [](std::string rawSubversion)
+        {
+            std::string delimiter = ": ";
+            return rawSubversion.substr(rawSubversion.find(delimiter)+2);
+        };
+        auto versionToIndexConverter = [](std::string subVersion)
+        {
+            std::replace(subVersion.begin(),subVersion.end(),'.',' ');
+            std::istringstream iss(subVersion);
+            std::vector<std::string> results(std::istream_iterator<std::string>{iss},
+                                            std::istream_iterator<std::string>());
+            int64_t versionIndex = 0;
+            for(int versionNumberIndex = 0; versionNumberIndex < 4 ; ++versionNumberIndex)
+            {
+                versionIndex = versionIndex | (std::stoi(results[versionNumberIndex]) << (21 -7*versionNumberIndex) );
+            }
+            return versionIndex;
+        };
+        int64_t referenceVersionIndex = versionToIndexConverter(
+            getSubVersion(FormatSubVersion(std::vector<std::string>()))
+            );
+
+        LOCK(cs_vNodes);
+        Object bannedNodes;
+        Array array;
+        for (CNode* pnode: vNodes)
+        {
+            std::string subVersion = getSubVersion(pnode->cleanSubVer);
+            if(versionToIndexConverter(subVersion) < referenceVersionIndex)
+            {
+                CNode::Ban(pnode->addr,lifetimeBan);
+                    array.push_back(pnode->addr.ToString() );
+            }
+        }
+        bannedNodes.push_back(Pair("Banned",array));
+        return bannedNodes;
+    }
+    else
+    {
+        CNetAddr addressToBan(params[0].get_str());
+        LOCK(cs_vNodes);
+        for (CNode* pnode: vNodes)
+        {
+            if(strcmp(addressToBan.ToString().c_str(), pnode->addr.ToString().c_str() ) == 0)
+            {
+                CNode::Ban(pnode->addr,lifetimeBan);
+                Object obj;
+                obj.push_back(Pair("Banned", addressToBan.ToString()));
+                return obj;
+            }
+        }
+        Object obj;
+        obj.push_back(Pair("Banned", "Could not find matching node to ban" ));
+        return obj;
+    }
+    return Value();
+}
+
 Value getinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)

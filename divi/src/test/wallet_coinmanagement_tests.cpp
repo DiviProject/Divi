@@ -16,68 +16,67 @@
 #include <blockmap.h>
 #include <test/FakeBlockIndexChain.h>
 
-static const CHDChain& getHDWalletSeedForTesting()
-{
-    static CCriticalSection cs_testing;
-    static bool toBeConstructed = true;
-    static CHDChain hdchain;
-    LOCK(cs_testing);
-
-    if(toBeConstructed)
-    {
-        std::string walletName = "wallet_coinmanagement_tests.dat";
-        std::unique_ptr<CWallet> walletPtr(new CWallet(walletName));
-        walletPtr->defaultKeyPoolTopUp = (int64_t)1;
-        bool firstLoad = true;
-        walletPtr->LoadWallet(firstLoad);
-        walletPtr->GenerateNewHDChain();
-        walletPtr->GetHDChain(hdchain);
-
-        toBeConstructed = false;
-    }
-    return hdchain;
-}
-
-std::unique_ptr<CWallet> populateWalletWithKeys(std::string walletName)
-{
-    std::unique_ptr<CWallet> walletPtr(new CWallet(walletName));
-    walletPtr->defaultKeyPoolTopUp = (int64_t)3;
-    bool firstLoad = true;
-    CPubKey newDefaultKey;
-    walletPtr->LoadWallet(firstLoad);
-    //walletPtr->GenerateNewHDChain();
-    walletPtr->SetHDChain(getHDWalletSeedForTesting(),false);
-    walletPtr->SetMinVersion(FEATURE_HD);
-    walletPtr->GetKeyFromPool(newDefaultKey, false);
-    walletPtr->SetDefaultKey(newDefaultKey);
-    return std::move(walletPtr);
-}
-
-CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& index, CAmount amount)
-{
-    static int nextLockTime = 0;
-    int numberOfIndices = GetRand(10)+1;
-    index = GetRand(numberOfIndices);
-    CMutableTransaction tx;
-    tx.nLockTime = nextLockTime++;        // so all transactions get different hashes
-    tx.vout.resize(numberOfIndices);
-    for(CTxOut& output: tx.vout)
-    {
-        output.nValue = 1;
-        output.scriptPubKey = CScript() << OP_TRUE;
-    }
-    tx.vout[index].nValue = amount;
-    tx.vout[index].scriptPubKey = defaultScript;
-    tx.vin.resize(1);
-    {// Avoid flagging as a coinbase tx
-        tx.vin[0].prevout = COutPoint(GetRandHash(),static_cast<uint32_t>(GetRand(100)) );
-    }
-    return tx;
-}
-
 static int walletCounter = 0;
 class WalletCoinManagementTestFixture
 {
+public:
+    static const CHDChain& getHDWalletSeedForTesting()
+    {
+        static CCriticalSection cs_testing;
+        static bool toBeConstructed = true;
+        static CHDChain hdchain;
+        LOCK(cs_testing);
+
+        if(toBeConstructed)
+        {
+            std::string walletName = "wallet_coinmanagement_tests.dat";
+            std::unique_ptr<CWallet> walletPtr(new CWallet(walletName));
+            walletPtr->defaultKeyPoolTopUp = (int64_t)1;
+            bool firstLoad = true;
+            walletPtr->LoadWallet(firstLoad);
+            walletPtr->GenerateNewHDChain();
+            walletPtr->GetHDChain(hdchain);
+
+            toBeConstructed = false;
+        }
+        return hdchain;
+    }
+
+    static CMutableTransaction createDefaultTransaction(CScript defaultScript,unsigned& index, CAmount amount)
+    {
+        static int nextLockTime = 0;
+        int numberOfIndices = GetRand(10)+1;
+        index = GetRand(numberOfIndices);
+        CMutableTransaction tx;
+        tx.nLockTime = nextLockTime++;        // so all transactions get different hashes
+        tx.vout.resize(numberOfIndices);
+        for(CTxOut& output: tx.vout)
+        {
+            output.nValue = 1;
+            output.scriptPubKey = CScript() << OP_TRUE;
+        }
+        tx.vout[index].nValue = amount;
+        tx.vout[index].scriptPubKey = defaultScript;
+        tx.vin.resize(1);
+        {// Avoid flagging as a coinbase tx
+            tx.vin[0].prevout = COutPoint(GetRandHash(),static_cast<uint32_t>(GetRand(100)) );
+        }
+        return tx;
+    }
+    std::unique_ptr<CWallet> populateWalletWithKeys(std::string walletName)
+    {
+        std::unique_ptr<CWallet> walletPtr(new CWallet(walletName));
+        walletPtr->defaultKeyPoolTopUp = (int64_t)3;
+        bool firstLoad = true;
+        CPubKey newDefaultKey;
+        walletPtr->LoadWallet(firstLoad);
+        //walletPtr->GenerateNewHDChain();
+        walletPtr->SetHDChain(getHDWalletSeedForTesting(),false);
+        walletPtr->SetMinVersion(FEATURE_HD);
+        walletPtr->GetKeyFromPool(newDefaultKey, false);
+        walletPtr->SetDefaultKey(newDefaultKey);
+        return std::move(walletPtr);
+    }
 public:
     const std::string walletName;
 private:
@@ -361,9 +360,6 @@ BOOST_AUTO_TEST_CASE(willFindThatTransactionsWillHaveDepthAccordingToLengthOfCha
         extendFakeChainAndGetTipBlockHash();
     }
 }
-
-
-#define BOOST_CHECK_EQUAL_MESSAGE(L, R, M)      { BOOST_TEST_INFO(M); BOOST_CHECK_EQUAL(L, R); }
 
 BOOST_AUTO_TEST_CASE(willReturnZeroBalancesWhenTransactionsAreUnconfirmed)
 {

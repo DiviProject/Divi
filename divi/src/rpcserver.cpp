@@ -163,6 +163,7 @@ extern json_spirit::Value getaddressbalance(const json_spirit::Array& params, bo
 extern json_spirit::Value getaddressutxos(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getaddressmempool(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getspentinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value ban(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value clearbanned(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value listbanned(const json_spirit::Array& params, bool fHelp);
 
@@ -493,6 +494,7 @@ static const CRPCCommand vRPCCommands[] =
         {"divi", "mnsync", &mnsync, true, true, false},
         {"divi", "spork", &spork, true, true, false},
         {"divi", "getpoolinfo", &getpoolinfo, true, true, false},
+        {"divi","ban",&ban,false,false,false},
         {"divi","clearbanned",&clearbanned,false,false,false},
         {"divi","listbanned",&listbanned,false,false,false},
 

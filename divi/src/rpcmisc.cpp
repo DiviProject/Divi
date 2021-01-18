@@ -92,7 +92,7 @@ Value ban(const Array& params, bool fHelp)
             "}\n");
 
     constexpr int64_t lifetimeBan = int64_t( (~uint64_t(0)) >> 8 );
-    static_assert(lifetimeBan > 0);
+    static_assert(lifetimeBan > 0,"Ban times should not be negative!");
     if(params.size() > 0 && strcmp(params[0].get_str().c_str(),"outdated")==0 )
     {
         auto getSubVersion = [](std::string rawSubversion)

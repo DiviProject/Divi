@@ -551,6 +551,11 @@ bool CNode::IsBanned(CNetAddr ip)
 bool CNode::Ban(const CNetAddr& addr)
 {
     int64_t banTime = GetTime() + settings.GetArg("-bantime", 60 * 60 * 24); // Default 24-hour ban
+    return Ban(addr,banTime);
+}
+
+bool CNode::Ban(const CNetAddr& addr, int64_t banTime)
+{
     {
         LOCK(cs_setBanned);
         if (setBanned[addr] < banTime)

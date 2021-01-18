@@ -126,7 +126,8 @@ Value ban(const Array& params, bool fHelp)
             if(versionToIndexConverter(subVersion) < referenceVersionIndex)
             {
                 CNode::Ban(pnode->addr,lifetimeBan);
-                    array.push_back(pnode->addr.ToString() );
+                array.push_back(pnode->addr.ToString() );
+                pnode->fDisconnect = true;
             }
         }
         bannedNodes.push_back(Pair("Banned",array));
@@ -141,6 +142,7 @@ Value ban(const Array& params, bool fHelp)
             if(strcmp(addressToBan.ToString().c_str(), pnode->addr.ToString().c_str() ) == 0)
             {
                 CNode::Ban(pnode->addr,lifetimeBan);
+                pnode->fDisconnect = true;
                 Object obj;
                 obj.push_back(Pair("Banned", addressToBan.ToString()));
                 return obj;

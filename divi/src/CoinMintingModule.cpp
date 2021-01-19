@@ -10,6 +10,9 @@
 #include <BlockIncentivesPopulator.h>
 #include <ProofOfStakeModule.h>
 
+#include <FeeRate.h>
+extern CFeeRate minRelayTxFee;
+
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
@@ -60,7 +63,7 @@ CoinMintingModule::CoinMintingModule(
         blockSubsidyContainer_->superblockHeightValidator(),
         blockSubsidyContainer_->blockSubsidiesProvider(),
         sporkManager))
-    , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(activeChain,mempool,mainCS))
+    , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(activeChain,mempool,mainCS,minRelayTxFee))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(
         chainParameters,
         activeChain,

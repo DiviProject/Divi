@@ -16,7 +16,6 @@
 #include <Settings.h>
 extern Settings& settings;
 
-extern CFeeRate minRelayTxFee;
 extern CCoinsViewCache* pcoinsTip;
 
 bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
@@ -90,10 +89,12 @@ public:
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     CChain& activeChain,
     CTxMemPool& mempool,
-    CCriticalSection& mainCS
+    CCriticalSection& mainCS,
+    CFeeRate& txFeeRate
     ): activeChain_(activeChain)
     , mempool_(mempool)
     , mainCS_(mainCS)
+    , txFeeRate_(txFeeRate)
 {
 
 }
@@ -168,7 +169,7 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
     return (fSortedByFee &&
         (dPriorityDelta <= 0) &&
         (nFeeDelta <= 0) &&
-        (feeRate < ::minRelayTxFee) &&
+        (feeRate < txFeeRate_) &&
         (nBlockSize + nTxSize >= nBlockMinSize));
 }
 

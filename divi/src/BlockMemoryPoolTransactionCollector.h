@@ -24,6 +24,7 @@ class CBlockIndex;
 class CTxMemPool;
 class CBlockTemplate;
 class CBlockHeader;
+class CFeeRate;
 
 template <typename MutexObj>
 class AnnotatedMixin;
@@ -51,6 +52,7 @@ private:
     CChain& activeChain_;
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
+    CFeeRate& txFeeRate_;
 private:
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     void RecordOrphanTransaction (
@@ -111,7 +113,8 @@ public:
     BlockMemoryPoolTransactionCollector(
         CChain& activeChain,
         CTxMemPool& mempool,
-        AnnotatedMixin<boost::recursive_mutex>& mainCS);
+        AnnotatedMixin<boost::recursive_mutex>& mainCS,
+        CFeeRate& txFeeRate);
     bool CollectTransactionsIntoBlock (
         CBlockTemplate& pblocktemplate) const override;
 };

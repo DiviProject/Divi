@@ -68,7 +68,8 @@ bool CoinMinter::hasMintableCoinForProofOfStake()
 }
 bool CoinMinter::nextBlockIsProofOfStake() const
 {
-    return chain_.Tip()->nHeight >= chainParameters_.LAST_POW_BLOCK();
+    CBlockIndex* chainTip = chain_.Tip();
+    return ( (chainTip? chainTip->nHeight : 0) >= chainParameters_.LAST_POW_BLOCK() );
 }
 
 bool CoinMinter::satisfiesMintingRequirements() const
@@ -77,7 +78,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
     const unsigned minimumChainTipTimestampForMinting = GetTime() - oneReorgWorthOfTimestampDrift;
 
     CBlockIndex* chainTip = chain_.Tip();
-    bool chainTipNotSyncedEnough = chainTip? chain_.Tip()->nTime < minimumChainTipTimestampForMinting: masternodeSync_.IsBlockchainSynced();
+    bool chainTipNotSyncedEnough = chainTip? chainTip->nTime < minimumChainTipTimestampForMinting: masternodeSync_.IsBlockchainSynced();
     bool stakingRequirementsAreMet =
         !(
             chainTipNotSyncedEnough ||
@@ -90,9 +91,10 @@ bool CoinMinter::satisfiesMintingRequirements() const
 }
 bool CoinMinter::limitStakingSpeed() const
 {
-    if (mapHashedBlocks_.count(chain_.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
+    CBlockIndex* chainTip = chain_.Tip();
+    if (chainTip && mapHashedBlocks_.count(chainTip->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
     {
-        if (GetTime() - mapHashedBlocks_[chain_.Tip()->nHeight] < static_cast<int64_t>(hashingDelay)/2 )
+        if (GetTime() - mapHashedBlocks_[chainTip->nHeight] < static_cast<int64_t>(hashingDelay)/2 )
         {
             return true;
         }

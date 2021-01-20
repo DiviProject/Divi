@@ -161,7 +161,7 @@ bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
     return true;
 }
 
-void CoinMinter::IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const
+void CoinMinter::IncrementExtraNonce(CBlock* block,const CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const
 {
     /** Constant stuff for coinbase transactions we create: */
     static CScript COINBASE_FLAGS;
@@ -216,14 +216,12 @@ bool CoinMinter::createProofOfStakeBlock(
 {
     constexpr const bool fProofOfStake = true;
     bool blockSuccessfullyCreated = false;
-    CBlockIndex* pindexPrev = chain_.Tip();
-    if (!pindexPrev)
-        return false;
-
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;
+
+    const CBlockIndex* pindexPrev = pblocktemplate->previousBlockIndex;
 
     CBlock* block = &pblocktemplate->block;
     SetCoinbaseRewardAndHeight(*pblocktemplate, fProofOfStake);
@@ -253,14 +251,13 @@ bool CoinMinter::createProofOfWorkBlock(
     constexpr const bool fProofOfStake = false;
     bool blockSuccessfullyCreated = false;
     unsigned int nTransactionsUpdatedLast = mempool_.GetTransactionsUpdated();
-    CBlockIndex* pindexPrev = chain_.Tip();
-    if (!pindexPrev)
-        return false;
 
     std::unique_ptr<CBlockTemplate> pblocktemplate(blockFactory_.CreateNewBlockWithKey(reserveKey, fProofOfStake));
 
     if (!pblocktemplate.get())
         return false;
+
+    const CBlockIndex* pindexPrev = pblocktemplate->previousBlockIndex;
 
     CBlock* block = &pblocktemplate->block;
     SetCoinbaseRewardAndHeight(*pblocktemplate, fProofOfStake);

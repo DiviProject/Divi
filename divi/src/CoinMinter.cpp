@@ -73,9 +73,14 @@ bool CoinMinter::nextBlockIsProofOfStake() const
 
 bool CoinMinter::satisfiesMintingRequirements() const
 {
+    const unsigned oneReorgWorthOfTimestampDrift = 60*chainParameters_.MaxReorganizationDepth();
+    const unsigned minimumChainTipTimestampForMinting = GetTime() - oneReorgWorthOfTimestampDrift;
+
+    CBlockIndex* chainTip = chain_.Tip();
+    bool chainTipNotSyncedEnough = chainTip? chain_.Tip()->nTime < minimumChainTipTimestampForMinting: masternodeSync_.IsBlockchainSynced();
     bool stakingRequirementsAreMet =
         !(
-            chain_.Tip()->nTime < 1471482000 ||
+            chainTipNotSyncedEnough ||
             !peerNotifier_->havePeersToNotify() ||
             pwallet_->IsLocked() ||
             pwallet_->GetStakingBalance() <= 0 ||

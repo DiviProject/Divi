@@ -52,7 +52,7 @@ class CoinMinter: public I_CoinMinter
     bool nextBlockIsProofOfStake() const;
 
     bool ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const;
-    void IncrementExtraNonce(CBlock* block, CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const;
+    void IncrementExtraNonce(CBlock* block, const CBlockIndex* pindexPrev, unsigned int& nExtraNonce) const;
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
 
     void SetBlockHeaders(

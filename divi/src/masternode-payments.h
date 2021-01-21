@@ -125,7 +125,6 @@ public:
     uint256 GetHash() const;
 
     std::string getMessageToSign() const;
-    bool IsValid(CNode* pnode, std::string& strError) const;
     void Relay() const;
 
     void AddPayee(const CScript& payeeIn);

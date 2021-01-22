@@ -766,13 +766,15 @@ unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, const uint256& seed
     cacheEntry = rankingCache->Find(seedHash);
     if (cacheEntry == nullptr) {
         std::vector<std::pair<int64_t, uint256>> rankedNodes;
+        {
+            LOCK(cs);
+            for (auto& mn : vMasternodes) {
+                int64_t score;
+                if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
+                    continue;
 
-        for (auto& mn : vMasternodes) {
-            int64_t score;
-            if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
-              continue;
-
-            rankedNodes.emplace_back(score, mn.vin.prevout.hash);
+                rankedNodes.emplace_back(score, mn.vin.prevout.hash);
+            }
         }
 
         std::sort(rankedNodes.begin(), rankedNodes.end(),

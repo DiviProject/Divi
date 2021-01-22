@@ -121,6 +121,23 @@ bool CMasternodeBlockPayees::HasPayeeWithVotes(const CScript& payee, int nVotesR
     return false;
 }
 
+CMasternodePaymentWinner::CMasternodePaymentWinner()
+    : vinMasternode()
+    , seedHash()
+    , nBlockHeight(0)
+    , payee()
+    , signature()
+{
+    seedHash.SetNull();
+}
+CMasternodePaymentWinner::CMasternodePaymentWinner(const CTxIn& vinIn, const int height, const uint256& hash)
+    : vinMasternode(vinIn)
+    , seedHash(hash)
+    , nBlockHeight(height)
+{
+
+}
+
 
 bool CMasternodePaymentWinner::ComputeScoreHash()
 {

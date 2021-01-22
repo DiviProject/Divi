@@ -58,12 +58,8 @@ public:
     CMasternodeBlockPayees();
     explicit CMasternodeBlockPayees(int nBlockHeightIn);
 
-    CMasternodeBlockPayees(const CMasternodeBlockPayees& o)
-      : nBlockHeight(o.nBlockHeight), vecPayments(o.vecPayments), voters(o.voters)
-    {}
-    CMasternodeBlockPayees(CMasternodeBlockPayees&& o)
-      : nBlockHeight(o.nBlockHeight), vecPayments(std::move(o.vecPayments)), voters(std::move(o.voters))
-    {}
+    CMasternodeBlockPayees(const CMasternodeBlockPayees& o);
+    CMasternodeBlockPayees(CMasternodeBlockPayees&& o);
 
     void CountVote(const COutPoint& voter, const CScript& payeeIn);
 

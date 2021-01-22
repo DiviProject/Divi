@@ -288,7 +288,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
 
         if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
             LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash().ToString().c_str(), nHeight);
-            masternodeSync.AddedMasternodeWinner(winner.GetHash());
+            masternodeSynchronization.AddedMasternodeWinner(winner.GetHash());
             return;
         }
 
@@ -316,7 +316,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
 
         if (!CheckMasternodeWinnerSignature(winner)) {
             LogPrintf("%s : - invalid signature\n", __func__);
-            if (masternodeSync.IsSynced()) Misbehaving(pfrom->GetId(), 20);
+            if (masternodeSynchronization.IsSynced()) Misbehaving(pfrom->GetId(), 20);
             // it could just be a non-synced masternode
             mnodeman.AskForMN(pfrom, winner.vinMasternode);
             return;
@@ -330,7 +330,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
 
         if (AddWinningMasternode(winner)) {
             winner.Relay();
-            masternodeSync.AddedMasternodeWinner(winner.GetHash());
+            masternodeSynchronization.AddedMasternodeWinner(winner.GetHash());
         }
     }
 }

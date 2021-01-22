@@ -216,7 +216,7 @@ bool BlockIncentivesPopulator::HasValidMasternodePayee(const CTransaction &txNew
                  __func__, pindex->nHeight);
         return false;
     }
-    if (masternodePayments_.IsTransactionValid(txNew, seedHash))
+    if (masternodePayments_.IsTransactionValid(blockSubsidies_,txNew, seedHash))
         return true;
     LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew.ToString().c_str());
 

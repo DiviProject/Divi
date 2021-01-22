@@ -474,17 +474,11 @@ bool CMasternodePayments::AddWinningMasternode(const CMasternodePaymentWinner& w
     return true;
 }
 
-bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew) const
+bool CMasternodeBlockPayees::IsTransactionValid(const I_BlockSubsidyProvider& subsidies, const CTransaction& txNew) const
 {
     LOCK(cs_vecPayments);
-    static SuperblockSubsidyContainer subsidiesContainer(Params());
-    static const I_BlockSubsidyProvider& subsidies = subsidiesContainer.blockSubsidiesProvider();
-
     int nMaxSignatures = 0;
-
     std::string strPayeesPossible = "";
-
-
     auto rewards = subsidies.GetBlockSubsidity(nBlockHeight);
 
     CAmount requiredMasternodePayment = rewards.nMasternodeReward;
@@ -559,13 +553,13 @@ std::string CMasternodePayments::GetRequiredPaymentsString(const uint256& seedHa
     return "Unknown";
 }
 
-bool CMasternodePayments::IsTransactionValid(const CTransaction& txNew, const uint256& seedHash) const
+bool CMasternodePayments::IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& seedHash) const
 {
     LOCK(cs_mapMasternodeBlocks);
 
     auto* payees = GetPayeesForScoreHash(seedHash);
     if (payees != nullptr)
-        return payees->IsTransactionValid(txNew);
+        return payees->IsTransactionValid(subsidies,txNew);
 
     return true;
 }

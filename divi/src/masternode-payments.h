@@ -112,15 +112,9 @@ public:
     CScript payee;
     std::vector<unsigned char> signature;
 
-    CMasternodePaymentWinner()
-      : nBlockHeight(0)
-    {
-        seedHash.SetNull();
-    }
+    CMasternodePaymentWinner();
 
-    explicit CMasternodePaymentWinner(const CTxIn& vinIn, const int height, const uint256& hash)
-      : vinMasternode(vinIn), seedHash(hash), nBlockHeight(height)
-    {}
+    explicit CMasternodePaymentWinner(const CTxIn& vinIn, const int height, const uint256& hash);
 
     uint256 GetHash() const;
 

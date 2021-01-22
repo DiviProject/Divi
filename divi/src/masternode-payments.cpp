@@ -304,7 +304,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
         }
 
         std::string strError = "";
-        if (!CheckMasternodeWinnerValidity(winner,pfrom,strError))
+        if (!CheckMasternodeWinnerValidity(masternodeSynchronization,winner,pfrom,strError))
         {
             return;
         }
@@ -365,7 +365,7 @@ bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymen
 
     return false;
 }
-bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
+bool CMasternodePayments::CheckMasternodeWinnerValidity(CMasternodeSync& masternodeSynchronization, const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
 {
     CMasternode* pmn = mnodeman.Find(winner.vinMasternode);
 
@@ -406,7 +406,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodePayment
         return false;
     }
 
-    if(!masternodeSync.IsSynced()){ return true;}
+    if(!masternodeSynchronization.IsSynced()){ return true;}
 
     /* Make sure that the payee is in our own payment queue near the top.  */
     const std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(seedHash, winner.GetHeight(), true);

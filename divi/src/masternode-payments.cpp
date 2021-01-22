@@ -65,6 +65,16 @@ CMasternodeBlockPayees::CMasternodeBlockPayees()
     nBlockHeight = 0;
     vecPayments.clear();
 }
+
+CMasternodeBlockPayees::CMasternodeBlockPayees(const CMasternodeBlockPayees& o)
+    : nBlockHeight(o.nBlockHeight), vecPayments(o.vecPayments), voters(o.voters)
+{
+}
+CMasternodeBlockPayees::CMasternodeBlockPayees(CMasternodeBlockPayees&& o)
+    : nBlockHeight(o.nBlockHeight), vecPayments(std::move(o.vecPayments)), voters(std::move(o.voters))
+{
+}
+
 CMasternodeBlockPayees::CMasternodeBlockPayees(int nBlockHeightIn)
 {
     nBlockHeight = nBlockHeightIn;

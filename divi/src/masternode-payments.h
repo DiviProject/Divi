@@ -21,6 +21,7 @@ class CNode;
 class CBlockIndex;
 class CDataStream;
 class CMasternodeSync;
+class I_BlockSubsidyProvider;
 
 extern CMasternodePayments masternodePayments;
 
@@ -70,7 +71,7 @@ public:
     bool GetPayee(CScript& payee) const;
     bool HasPayeeWithVotes(const CScript& payee, int nVotesReq) const;
 
-    bool IsTransactionValid(const CTransaction& txNew) const;
+    bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew) const;
     std::string GetRequiredPaymentsString() const;
 
     ADD_SERIALIZE_METHODS;
@@ -201,7 +202,7 @@ public:
     void Sync(CNode* node, int nCountNeeded);
     void CheckAndRemove();
 
-    bool IsTransactionValid(const CTransaction& txNew, const uint256& seedHash) const;
+    bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& seedHash) const;
     bool IsScheduled(const CMasternode& mn, int nNotBlockHeight) const;
 
     bool CanVote(const COutPoint& outMasternode, const uint256& seedHash);

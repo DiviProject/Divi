@@ -404,17 +404,18 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(CMasternodeSync& mastern
 
     const uint256& seedHash = winner.getSeedHash();
     assert(!seedHash.IsNull());
-    const unsigned n = mnodeman.GetMasternodeRank(winner.vinMasternode, seedHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
+    const unsigned voterRank = mnodeman.GetMasternodeRank(winner.vinMasternode, seedHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
 
-    if (n > MNPAYMENTS_SIGNATURES_TOTAL) {
+    if (voterRank > MNPAYMENTS_SIGNATURES_TOTAL) {
         //It's common to have masternodes mistakenly think they are in the top 10
         // We don't want to print all of these messages, or punish them unless they're way off
-        if (n > MNPAYMENTS_SIGNATURES_TOTAL * 2) {
-            strError = strprintf("Masternode not in the top %d (%u)", MNPAYMENTS_SIGNATURES_TOTAL * 2, n);
+        if (voterRank > MNPAYMENTS_SIGNATURES_TOTAL * 2) {
+            strError = strprintf("Masternode not in the top %d (%u)", MNPAYMENTS_SIGNATURES_TOTAL * 2, voterRank);
             LogPrint("masternode","%s - %s\n",__func__, strError);
         }
         return false;
     }
+
 
     if(!masternodeSynchronization.IsSynced()){ return true;}
 

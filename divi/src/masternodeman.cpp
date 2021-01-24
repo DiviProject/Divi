@@ -515,6 +515,7 @@ void CMasternodeMan::Clear()
 
 int CMasternodeMan::stable_size ()
 {
+    LOCK(cs);
     int nStable_size = 0;
     int nMinProtocol = ActiveProtocol();
     int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;

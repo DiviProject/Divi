@@ -651,7 +651,7 @@ bool CMasternodePayments::ProcessBlock(const CBlockIndex* pindex, const int offs
     }
 
     LogPrint("masternode","CMasternodePayments::ProcessBlock() - Signing Winner\n");
-    if(activeMasternode.SignMasternodeWinner(newWinner))
+    if(CanVote(newWinner.vinMasternode.prevout,seedHash) && activeMasternode.SignMasternodeWinner(newWinner))
     {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() - AddWinningMasternode\n");
 

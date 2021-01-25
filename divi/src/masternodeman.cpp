@@ -990,11 +990,6 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
                     nInvCount++;
 
                     if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
-
-                    if (vin == mn.vin) {
-                        LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
-                        return;
-                    }
                 }
                 else if (vin == mn.vin) {
                     CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
@@ -1004,10 +999,8 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
 
                     if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
 
-                    if (vin == mn.vin) {
-                        LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
-                        return;
-                    }
+                    LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
+                    return;
                 }
             }
         }

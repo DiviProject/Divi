@@ -983,7 +983,20 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
 
             if (mn.IsEnabled()) {
                 LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash.ToString());
-                if (vin == CTxIn() || vin == mn.vin) {
+                if (vin == CTxIn()) {
+                    CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
+                    uint256 hash = mnb.GetHash();
+                    pfrom->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
+                    nInvCount++;
+
+                    if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
+
+                    if (vin == mn.vin) {
+                        LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
+                        return;
+                    }
+                }
+                else if (vin == mn.vin) {
                     CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
                     uint256 hash = mnb.GetHash();
                     pfrom->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));

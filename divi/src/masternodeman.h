@@ -131,6 +131,7 @@ public:
 
     void ProcessMasternodeConnections();
 
+    void NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer);
     /** Records a ping in the list of our seen ping messages, and also updates the
      *  list of known broadcasts if the ping corresponds to one we know (i.e. updates
      *  the ping contained in the seen broadcast).

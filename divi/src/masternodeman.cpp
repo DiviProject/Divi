@@ -928,7 +928,13 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
 
     return false;
 }
-
+void CMasternodeMan::NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer)
+{
+    CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
+    const uint256 hash = mnb.GetHash();
+    peer->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
+    if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
+}
 void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality

@@ -985,6 +985,7 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
         int nInvCount = 0;
         if (vin == CTxIn())
         {
+            LOCK(cs);
             for (const CMasternode& mn: vMasternodes)
             {
                 if (mn.addr.IsRFC1918()) continue; //local network

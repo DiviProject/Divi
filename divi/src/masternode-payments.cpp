@@ -680,11 +680,10 @@ void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
 {
     LOCK(cs_mapMasternodePayeeVotes);
 
-    int nHeight;
+    int nHeight = 0;
     {
-        TRY_LOCK(cs_main, locked);
-        if (!locked || chainActive.Tip() == NULL) return;
-        nHeight = chainActive.Tip()->nHeight;
+        LOCK(cs_main);
+        nHeight = chainActive.Height();
     }
 
     int nCount = (mnodeman.CountEnabled() * 1.25);

@@ -978,7 +978,8 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
 
         int nInvCount = 0;
 
-        BOOST_FOREACH (CMasternode& mn, vMasternodes) {
+        for (const CMasternode& mn: vMasternodes)
+        {
             if (mn.addr.IsRFC1918()) continue; //local network
 
             if (mn.IsEnabled()) {

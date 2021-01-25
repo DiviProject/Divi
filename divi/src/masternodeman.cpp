@@ -988,42 +988,24 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
             for (const CMasternode& mn: vMasternodes)
             {
                 if (mn.addr.IsRFC1918()) continue; //local network
-
-                if (mn.IsEnabled()) {
+                if (mn.IsEnabled())
+                {
                     LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash.ToString());
-                    if (vin == CTxIn())
-                    {
-                        NotifyPeerOfMasternode(mn,pfrom);
-                        nInvCount++;
-                    }
-                    else if (vin == mn.vin)
-                    {
-                        NotifyPeerOfMasternode(mn,pfrom);
-                        LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
-                        return;
-                    }
+                    NotifyPeerOfMasternode(mn,pfrom);
+                    nInvCount++;
                 }
             }
         }
         else
         {
-            for (const CMasternode& mn: vMasternodes)
+            CMasternode* pmn = Find(vin);
+            if(pmn != nullptr)
             {
-                if (mn.addr.IsRFC1918()) continue; //local network
-
-                if (mn.IsEnabled()) {
-                    LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash.ToString());
-                    if (vin == CTxIn())
-                    {
-                        NotifyPeerOfMasternode(mn,pfrom);
-                        nInvCount++;
-                    }
-                    else if (vin == mn.vin)
-                    {
-                        NotifyPeerOfMasternode(mn,pfrom);
-                        LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
-                        return;
-                    }
+                if (!pmn->addr.IsRFC1918() && pmn->IsEnabled())
+                {
+                    NotifyPeerOfMasternode(*pmn,pfrom);
+                    LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
+                    return;
                 }
             }
         }

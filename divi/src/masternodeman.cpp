@@ -996,18 +996,11 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
         CTxIn vin;
         vRecv >> vin;
 
-        if (vin == CTxIn()) { //only should ask for this once
-            //local network
-            if(HasRequestedMasternodeSyncTooOften(pfrom))
-            {
-                return;
-            }
-            else
-            {
-                SyncMasternodeListWithPeer(pfrom);
-            }
+        bool peerIsRequestingMasternodeListSync = vin == CTxIn();
+        if (peerIsRequestingMasternodeListSync && !HasRequestedMasternodeSyncTooOften(pfrom)) { //only should ask for this once
+            SyncMasternodeListWithPeer(pfrom);
         }
-        else
+        else if(!peerIsRequestingMasternodeListSync)
         {
             CMasternode* pmn = Find(vin);
             if(pmn != nullptr && !pmn->addr.IsRFC1918() && pmn->IsEnabled() )

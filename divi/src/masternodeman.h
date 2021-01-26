@@ -131,7 +131,7 @@ public:
 
     void ProcessMasternodeConnections();
 
-    void NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer);
+    bool NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer);
     void SyncMasternodeListWithPeer(CNode* peer);
     bool HasRequestedMasternodeSyncTooOften(CNode* pfrom);
     /** Records a ping in the list of our seen ping messages, and also updates the

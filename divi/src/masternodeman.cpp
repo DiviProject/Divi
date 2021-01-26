@@ -996,6 +996,8 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
                     nInvCount++;
                 }
             }
+            pfrom->PushMessage("ssc", MASTERNODE_SYNC_LIST, nInvCount);
+            LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, pfrom->GetId());
         }
         else
         {
@@ -1009,11 +1011,6 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
                     return;
                 }
             }
-        }
-
-        if (vin == CTxIn()) {
-            pfrom->PushMessage("ssc", MASTERNODE_SYNC_LIST, nInvCount);
-            LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, pfrom->GetId());
         }
     }
 }

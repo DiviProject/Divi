@@ -984,8 +984,7 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
             int nInvCount = 0;
             for (const CMasternode& mn: vMasternodes)
             {
-                if (mn.addr.IsRFC1918()) continue; //local network
-                if (mn.IsEnabled())
+                if (!mn.addr.IsRFC1918() && mn.IsEnabled())
                 {
                     LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash.ToString());
                     NotifyPeerOfMasternode(mn,pfrom);

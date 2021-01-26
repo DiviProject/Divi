@@ -935,6 +935,41 @@ void CMasternodeMan::NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer)
     peer->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
     if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
 }
+void CMasternodeMan::SyncMasternodeListWithPeer(CNode* peer)
+{
+    LOCK(cs);
+    int nInvCount = 0;
+    for (const CMasternode& mn: vMasternodes)
+    {
+        if (!mn.addr.IsRFC1918() && mn.IsEnabled())
+        {
+            LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash.ToString());
+            NotifyPeerOfMasternode(mn,peer);
+            nInvCount++;
+        }
+    }
+    peer->PushMessage("ssc", MASTERNODE_SYNC_LIST, nInvCount);
+    LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, peer->GetId());
+}
+bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
+{
+    bool isLocal = (pfrom->addr.IsRFC1918() || pfrom->addr.IsLocal());
+    if (!isLocal)
+    {
+        std::map<CNetAddr, int64_t>::iterator i = mAskedUsForMasternodeList.find(pfrom->addr);
+        if (i != mAskedUsForMasternodeList.end()) {
+            int64_t t = (*i).second;
+            if (GetTime() < t) {
+                Misbehaving(pfrom->GetId(), 34);
+                LogPrintf("%s : dseg - peer already asked me for the list\n", __func__);
+                return true;
+            }
+        }
+        int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
+        mAskedUsForMasternodeList[pfrom->addr] = askAgain;
+    }
+    return false;
+}
 void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
@@ -963,36 +998,14 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
 
         if (vin == CTxIn()) { //only should ask for this once
             //local network
-            bool isLocal = (pfrom->addr.IsRFC1918() || pfrom->addr.IsLocal());
-
-            if (!isLocal)
+            if(HasRequestedMasternodeSyncTooOften(pfrom))
             {
-                std::map<CNetAddr, int64_t>::iterator i = mAskedUsForMasternodeList.find(pfrom->addr);
-                if (i != mAskedUsForMasternodeList.end()) {
-                    int64_t t = (*i).second;
-                    if (GetTime() < t) {
-                        Misbehaving(pfrom->GetId(), 34);
-                        LogPrintf("%s : dseg - peer already asked me for the list\n", __func__);
-                        return;
-                    }
-                }
-                int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
-                mAskedUsForMasternodeList[pfrom->addr] = askAgain;
+                return;
             }
-
-            LOCK(cs);
-            int nInvCount = 0;
-            for (const CMasternode& mn: vMasternodes)
+            else
             {
-                if (!mn.addr.IsRFC1918() && mn.IsEnabled())
-                {
-                    LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash.ToString());
-                    NotifyPeerOfMasternode(mn,pfrom);
-                    nInvCount++;
-                }
+                SyncMasternodeListWithPeer(pfrom);
             }
-            pfrom->PushMessage("ssc", MASTERNODE_SYNC_LIST, nInvCount);
-            LogPrint("masternode", "dseg - Sent %d Masternode entries to peer %i\n", nInvCount, pfrom->GetId());
         }
         else
         {

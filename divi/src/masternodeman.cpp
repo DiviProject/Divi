@@ -930,11 +930,15 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
 }
 bool CMasternodeMan::NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer)
 {
-    CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
-    const uint256 hash = mnb.GetHash();
-    peer->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
-    if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
-    return true;
+    if (!mn.addr.IsRFC1918() && mn.IsEnabled())
+    {
+        CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
+        const uint256 hash = mnb.GetHash();
+        peer->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
+        if (!mapSeenMasternodeBroadcast.count(hash)) mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
+        return true;
+    }
+    return false;
 }
 void CMasternodeMan::SyncMasternodeListWithPeer(CNode* peer)
 {

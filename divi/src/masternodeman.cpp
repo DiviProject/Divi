@@ -946,10 +946,9 @@ void CMasternodeMan::SyncMasternodeListWithPeer(CNode* peer)
     int nInvCount = 0;
     for (const CMasternode& mn: vMasternodes)
     {
-        if (!mn.addr.IsRFC1918() && mn.IsEnabled())
+        if (NotifyPeerOfMasternode(mn,peer))
         {
             LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash.ToString());
-            NotifyPeerOfMasternode(mn,peer);
             nInvCount++;
         }
     }
@@ -1008,9 +1007,8 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
         else if(!peerIsRequestingMasternodeListSync)
         {
             CMasternode* pmn = Find(vin);
-            if(pmn != nullptr && !pmn->addr.IsRFC1918() && pmn->IsEnabled() )
+            if(pmn != nullptr && NotifyPeerOfMasternode(*pmn,pfrom) )
             {
-                NotifyPeerOfMasternode(*pmn,pfrom);
                 LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
                 return;
             }

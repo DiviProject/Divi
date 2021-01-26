@@ -1010,14 +1010,11 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
         else
         {
             CMasternode* pmn = Find(vin);
-            if(pmn != nullptr)
+            if(pmn != nullptr && !pmn->addr.IsRFC1918() && pmn->IsEnabled() )
             {
-                if (!pmn->addr.IsRFC1918() && pmn->IsEnabled())
-                {
-                    NotifyPeerOfMasternode(*pmn,pfrom);
-                    LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
-                    return;
-                }
+                NotifyPeerOfMasternode(*pmn,pfrom);
+                LogPrint("masternode", "dseg - Sent 1 Masternode entry to peer %i\n", pfrom->GetId());
+                return;
             }
         }
     }

@@ -979,13 +979,9 @@ void CMasternodeMan::ProcessMessage(CMasternodePayments& masternodePayments,CMas
                 int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
                 mAskedUsForMasternodeList[pfrom->addr] = askAgain;
             }
-        } //else, asking for a specific node which is ok
 
-
-        int nInvCount = 0;
-        if (vin == CTxIn())
-        {
             LOCK(cs);
+            int nInvCount = 0;
             for (const CMasternode& mn: vMasternodes)
             {
                 if (mn.addr.IsRFC1918()) continue; //local network

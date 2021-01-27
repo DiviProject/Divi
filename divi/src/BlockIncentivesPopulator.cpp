@@ -13,10 +13,13 @@
 #include <script/standard.h>
 #include <Logging.h>
 
+#include <Settings.h>
+
 #include <spork.h>
 #include <masternode.h>
 #include <masternode-sync.h>
 
+extern Settings& settings;
 namespace
 {
 constexpr const char* TREASURY_PAYMENT_ADDRESS = "DPhJsztbZafDc1YeyrRqSjmKjkmLJpQpUn";
@@ -216,7 +219,7 @@ bool BlockIncentivesPopulator::HasValidMasternodePayee(const CTransaction &txNew
                  __func__, pindex->nHeight);
         return false;
     }
-    if (masternodePayments_.IsTransactionValid(blockSubsidies_,txNew, seedHash))
+    if (masternodePayments_.IsTransactionValid(blockSubsidies_,txNew, seedHash) || settings.GetBoolArg("-override_mnpayee",false))
         return true;
     LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew.ToString().c_str());
 

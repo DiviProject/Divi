@@ -4276,10 +4276,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 std::map<uint256, std::set<uint256> >::iterator itByPrev = mapOrphanTransactionsByPrev.find(vWorkQueue[i]);
                 if(itByPrev == mapOrphanTransactionsByPrev.end())
                     continue;
-                for(std::set<uint256>::iterator mi = itByPrev->second.begin();
-                    mi != itByPrev->second.end();
-                    ++mi) {
-                    const uint256 &orphanHash = *mi;
+
+                const std::set<uint256>& spendingTransactionIds = itByPrev->second;
+                for(const uint256 &orphanHash: spendingTransactionIds)
+                {
                     NodeId fromPeer;
                     const CTransaction &orphanTx = GetOrphanTransaction(orphanHash,fromPeer);
                     bool fMissingInputs2 = false;

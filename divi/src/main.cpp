@@ -113,6 +113,14 @@ std::map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 //
 // mapOrphanTransactions
 //
+const std::set<uint256>& GetOrphanSpendingTransactionIds(const uint256& txHash)
+{
+    static std::set<uint256> emptySet;
+    std::map<uint256, set<uint256> >::const_iterator it = mapOrphanTransactionsByPrev.find(txHash);
+    if(it == mapOrphanTransactionsByPrev.end()) return emptySet;
+
+    return it->second;
+}
 const CTransaction& GetOrphanTransaction(const uint256& txHash, NodeId& peer)
 {
     peer = mapOrphanTransactions[txHash].fromPeer;
@@ -4272,12 +4280,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
             // Recursively process any orphan transactions that depended on this one
             std::set<NodeId> setMisbehaving;
-            for(unsigned int i = 0; i < vWorkQueue.size(); i++) {
-                std::map<uint256, std::set<uint256> >::iterator itByPrev = mapOrphanTransactionsByPrev.find(vWorkQueue[i]);
-                if(itByPrev == mapOrphanTransactionsByPrev.end())
-                    continue;
-
-                const std::set<uint256>& spendingTransactionIds = itByPrev->second;
+            for(unsigned int i = 0; i < vWorkQueue.size(); i++)
+            {
+                const std::set<uint256>& spendingTransactionIds = GetOrphanSpendingTransactionIds(vWorkQueue[i]);
                 for(const uint256 &orphanHash: spendingTransactionIds)
                 {
                     NodeId fromPeer;

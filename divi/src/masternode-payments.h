@@ -171,6 +171,7 @@ class CMasternodePayments
 private:
     int nSyncedFromPeer;
     int nLastBlockHeight;
+    int chainTipHeight;
 
     /** Map from the inventory hashes of mnw's to the corresponding data.  */
     std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
@@ -184,6 +185,7 @@ private:
     bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;
     bool CheckMasternodeWinnerValidity(CMasternodeSync& masternodeSynchronization,const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const;
 public:
+    void updateChainTipHeight(const CBlockIndex* pindex);
 
     CMasternodePayments();
 

@@ -195,6 +195,7 @@ CMasternodePayments::CMasternodePayments()
 {
     nSyncedFromPeer = 0;
     nLastBlockHeight = 0;
+    chainTipHeight = 0;
 }
 
 void CMasternodePayments::Clear()
@@ -675,16 +676,13 @@ void CMasternodePaymentWinner::Relay() const
     CInv inv(MSG_MASTERNODE_WINNER, GetHash());
     RelayInv(inv);
 }
-
+void CMasternodePayments::updateChainTipHeight(const CBlockIndex* chainTip)
+{
+    chainTipHeight = chainTip->nHeight;
+}
 void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
 {
     LOCK(cs_mapMasternodePayeeVotes);
-
-    int nHeight = 0;
-    {
-        LOCK(cs_main);
-        nHeight = chainActive.Height();
-    }
 
     int nCount = (mnodeman.CountEnabled() * 1.25);
     if (nCountNeeded > nCount) nCountNeeded = nCount;
@@ -693,7 +691,7 @@ void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
     std::map<uint256, CMasternodePaymentWinner>::iterator it = mapMasternodePayeeVotes.begin();
     while (it != mapMasternodePayeeVotes.end()) {
         CMasternodePaymentWinner winner = (*it).second;
-        if (winner.GetHeight() >= nHeight - nCountNeeded && winner.GetHeight() <= nHeight + 20) {
+        if (winner.GetHeight() >= chainTipHeight - nCountNeeded && winner.GetHeight() <= chainTipHeight + 20) {
             node->PushInventory(CInv(MSG_MASTERNODE_WINNER, winner.GetHash()));
             nInvCount++;
         }

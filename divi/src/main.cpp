@@ -107,13 +107,13 @@ struct COrphanTx {
 };
 std::map<uint256, COrphanTx> mapOrphanTransactions;
 std::map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
-std::map<uint256, int64_t> mapRejectedBlocks;
 
 
 void EraseOrphansFor(NodeId peer);
 
 static void CheckBlockIndex();
 
+std::map<uint256, int64_t> mapRejectedBlocks;
 // Internal stuff
 namespace
 {

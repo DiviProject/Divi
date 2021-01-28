@@ -39,7 +39,6 @@ class FakeBlockIndexWithHashes
 {
 private:
     uint256 randomBlockHashSeed_;
-    unsigned numberOfBlocks_;
     FakeBlockIndexChain fakeBlockIndexChain_;
 public:
     std::unique_ptr<BlockMap> blockIndexByHash;

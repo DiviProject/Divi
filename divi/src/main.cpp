@@ -113,11 +113,14 @@ std::map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 //
 // mapOrphanTransactions
 //
-
+bool OrphanTransactionIsKnown(const uint256& hash)
+{
+    return mapOrphanTransactions.count(hash) > 0;
+}
 bool AddOrphanTx(const CTransaction& tx, NodeId peer)
 {
     uint256 hash = tx.GetHash();
-    if (mapOrphanTransactions.count(hash))
+    if (OrphanTransactionIsKnown(hash))
         return false;
 
     // Ignore big transactions, to avoid a
@@ -3633,7 +3636,7 @@ bool static AlreadyHave(const CInv& inv)
     case MSG_TX: {
         bool txInMap = false;
         txInMap = mempool.exists(inv.hash);
-        return txInMap || mapOrphanTransactions.count(inv.hash) ||
+        return txInMap || OrphanTransactionIsKnown(inv.hash) ||
                 pcoinsTip->HaveCoins(inv.hash);
     }
 

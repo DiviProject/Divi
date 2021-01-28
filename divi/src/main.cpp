@@ -113,6 +113,11 @@ std::map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 //
 // mapOrphanTransactions
 //
+const CTransaction& GetOrphanTransaction(const uint256& txHash, NodeId& peer)
+{
+    peer = mapOrphanTransactions[txHash].fromPeer;
+    return mapOrphanTransactions[txHash].tx;;
+}
 bool OrphanTransactionIsKnown(const uint256& hash)
 {
     return mapOrphanTransactions.count(hash) > 0;
@@ -4275,8 +4280,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                     mi != itByPrev->second.end();
                     ++mi) {
                     const uint256 &orphanHash = *mi;
-                    const CTransaction &orphanTx = mapOrphanTransactions[orphanHash].tx;
-                    NodeId fromPeer = mapOrphanTransactions[orphanHash].fromPeer;
+                    NodeId fromPeer;
+                    const CTransaction &orphanTx = GetOrphanTransaction(orphanHash,fromPeer);
                     bool fMissingInputs2 = false;
                     // Use a dummy CValidationState so someone can't setup nodes to counter-DoS based on orphan
                     // resolution (that is, feeding people an invalid transaction based on LegitTxX in order to get

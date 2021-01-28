@@ -1904,6 +1904,7 @@ void FlushStateToDisk()
 void static UpdateTip(CBlockIndex* pindexNew)
 {
     chainActive.SetTip(pindexNew);
+    masternodePayments.updateChainTipHeight(pindexNew);
 
     // New best block
     nTimeBestReceived = GetTime();
@@ -3250,6 +3251,7 @@ bool static LoadBlockIndexDB(string& strError)
     if (it == mapBlockIndex.end())
         return true;
     chainActive.SetTip(it->second);
+    masternodePayments.updateChainTipHeight(it->second);
 
     PruneBlockIndexCandidates();
 

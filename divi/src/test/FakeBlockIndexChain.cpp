@@ -86,12 +86,11 @@ FakeBlockIndexWithHashes::FakeBlockIndexWithHashes(
     unsigned blockStartTime,
     unsigned versionNumber
     ): randomBlockHashSeed_(uint256S("135bd924226929c2f4267f5e5c653d2a4ae0018187588dc1f016ceffe525fad2"))
-    , numberOfBlocks_(numberOfBlocks)
     , fakeBlockIndexChain_()
     , blockIndexByHash(new BlockMap())
     , activeChain(new CChain())
 {
-    addBlocks(numberOfBlocks_,versionNumber,blockStartTime);
+    addBlocks(numberOfBlocks, versionNumber, blockStartTime);
 }
 FakeBlockIndexWithHashes::~FakeBlockIndexWithHashes()
 {

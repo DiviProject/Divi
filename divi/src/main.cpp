@@ -113,6 +113,11 @@ std::map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 //
 // mapOrphanTransactions
 //
+void CleanupOrphanTransactionCaches()
+{
+    mapOrphanTransactions.clear();
+    mapOrphanTransactionsByPrev.clear();
+}
 const std::set<uint256>& GetOrphanSpendingTransactionIds(const uint256& txHash)
 {
     static std::set<uint256> emptySet;
@@ -5028,7 +5033,6 @@ public:
         mapBlockIndex.clear();
 
         // orphan transactions
-        mapOrphanTransactions.clear();
-        mapOrphanTransactionsByPrev.clear();
+        CleanupOrphanTransactionCaches();
     }
 } instance_of_cmaincleanup;

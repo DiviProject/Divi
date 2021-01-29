@@ -38,6 +38,7 @@
 #include "FeeAndPriorityCalculator.h"
 #include <Settings.h>
 #include <MasternodeModule.h>
+#include <functional>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -1404,16 +1405,17 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile,const std::vector<
 
 void LockUpMasternodeCollateral()
 {
-    if (settings.GetBoolArg("-mnconflock", true) && pwalletMain) {
-        LOCK(pwalletMain->cs_wallet);
+    if (pwalletMain) {
         LogPrintf("Locking Masternodes:\n");
-        uint256 mnTxHash;
-        BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
-            LogPrintf("  %s %s\n", mne.getTxHash(), mne.getOutputIndex());
-            mnTxHash.SetHex(mne.getTxHash());
-            COutPoint outpoint = COutPoint(mnTxHash, boost::lexical_cast<unsigned int>(mne.getOutputIndex()));
-            pwalletMain->LockCoin(outpoint);
-        }
+        LOCK(pwalletMain->cs_wallet);
+
+        CWallet& walletReference = *pwalletMain;
+        LockUpMasternodeCollateral(
+            settings,
+            [&walletReference](const COutPoint& outpoint)
+            {
+                walletReference.LockCoin(outpoint);
+            });
     }
 }
 

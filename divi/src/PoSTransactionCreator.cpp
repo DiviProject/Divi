@@ -5,9 +5,9 @@
 #include <masternode-payments.h>
 #include <script/sign.h>
 #include <utilmoneystr.h>
+#include <I_BlockIncentivesPopulator.h>
 #include <I_BlockSubsidyProvider.h>
 #include <Settings.h>
-#include <BlockIncentivesPopulator.h>
 #include <blockmap.h>
 #include <chain.h>
 #include <chainparams.h>
@@ -49,10 +49,10 @@ public:
 
 PoSTransactionCreator::PoSTransactionCreator(
     const CChainParams& chainParameters,
-    CChain& activeChain,
+    const CChain& activeChain,
     const BlockMap& mapBlockIndex,
     const I_BlockSubsidyProvider& blockSubsidies,
-    const BlockIncentivesPopulator& incentives,
+    const I_BlockIncentivesPopulator& incentives,
     const I_ProofOfStakeGenerator& proofGenerator,
     CWallet& wallet,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps

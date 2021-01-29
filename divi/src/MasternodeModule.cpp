@@ -13,6 +13,7 @@
 #include <ui_interface.h>
 #include <Logging.h>
 #include <Settings.h>
+#include <masternodeconfig.h>
 
 
 void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction)

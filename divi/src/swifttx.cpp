@@ -4,11 +4,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "swifttx.h"
-#include "activemasternode.h"
 #include "base58.h"
 #include "key.h"
-#include "masternodeman.h"
-#include "masternode-sync.h"
 #include "net.h"
 #include "obfuscation.h"
 #include "protocol.h"

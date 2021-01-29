@@ -11,7 +11,6 @@
 
 #include "init.h"
 
-#include "activemasternode.h"
 #include "addrman.h"
 #include "amount.h"
 #include "BlockFileOpener.h"

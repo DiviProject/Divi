@@ -6,10 +6,9 @@
 // Unit tests for denial-of-service detection/prevention code
 //
 
-
-
+#include <amount.h>
+#include <chainparams.h>
 #include "keystore.h"
-#include "main.h"
 #include "net.h"
 #include "pow.h"
 #include "script/sign.h"
@@ -17,6 +16,9 @@
 #include <Settings.h>
 #include <stdint.h>
 #include <utiltime.h>
+#include <OrphanTransactions.h>
+#include <primitives/transaction.h>
+
 
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
 #include <boost/date_time/posix_time/posix_time_types.hpp>
@@ -27,16 +29,8 @@
 
 // Tests this internal-to-main.cpp method:
 extern Settings& settings;
-
-extern bool AddOrphanTx(const CTransaction& tx, NodeId peer);
-extern void EraseOrphansFor(NodeId peer);
-extern unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans);
-struct COrphanTx {
-    CTransaction tx;
-    NodeId fromPeer;
-};
-extern std::map<uint256, COrphanTx> mapOrphanTransactions;
-extern std::map<uint256, std::set<uint256> > mapOrphanTransactionsByPrev;
+void Misbehaving(NodeId nodeid, int howmuch);
+bool SendMessages(CNode* pto, bool fSendTrickle);
 
 CService ip(uint32_t i)
 {
@@ -110,15 +104,6 @@ BOOST_AUTO_TEST_CASE(DoS_bantime)
     BOOST_CHECK(!CNode::IsBanned(addr));
 }
 
-CTransaction RandomOrphan()
-{
-    std::map<uint256, COrphanTx>::iterator it;
-    it = mapOrphanTransactions.lower_bound(GetRandHash());
-    if (it == mapOrphanTransactions.end())
-        it = mapOrphanTransactions.begin();
-    return it->second.tx;
-}
-
 BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
 {
 
@@ -147,7 +132,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
     // ... and 50 that depend on other orphans:
     for (int i = 0; i < 50; i++)
     {
-        CTransaction txPrev = RandomOrphan();
+        CTransaction txPrev = SelectRandomOrphan();
 
         CMutableTransaction tx;
         tx.vin.resize(1);
@@ -164,7 +149,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
     // This really-big orphan should be ignored:
     for (int i = 0; i < 10; i++)
     {
-        CTransaction txPrev = RandomOrphan();
+        CTransaction txPrev = SelectRandomOrphan();
 
         CMutableTransaction tx;
         tx.vout.resize(1);
@@ -188,19 +173,18 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
     // Test EraseOrphansFor:
     for (NodeId i = 0; i < 3; i++)
     {
-        size_t sizeBefore = mapOrphanTransactions.size();
+        size_t sizeBefore = OrphanTotalCount();
         EraseOrphansFor(i);
-        BOOST_CHECK(mapOrphanTransactions.size() < sizeBefore);
+        BOOST_CHECK(OrphanTotalCount() < sizeBefore);
     }
 
     // Test LimitOrphanTxSize() function:
     LimitOrphanTxSize(40);
-    BOOST_CHECK(mapOrphanTransactions.size() <= 40);
+    BOOST_CHECK(OrphanTotalCount() <= 40);
     LimitOrphanTxSize(10);
-    BOOST_CHECK(mapOrphanTransactions.size() <= 10);
+    BOOST_CHECK(OrphanTotalCount() <= 10);
     LimitOrphanTxSize(0);
-    BOOST_CHECK(mapOrphanTransactions.empty());
-    BOOST_CHECK(mapOrphanTransactionsByPrev.empty());
+    BOOST_CHECK(OrphanMapsAreEmpty());
 
 }
 

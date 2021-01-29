@@ -120,3 +120,21 @@ unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans)
     }
     return nEvicted;
 }
+
+const CTransaction& SelectRandomOrphan()
+{
+    uint256 randomhash = GetRandHash();
+    std::map<uint256, COrphanTx>::iterator it = mapOrphanTransactions.lower_bound(randomhash);
+    if (it == mapOrphanTransactions.end())
+        it = mapOrphanTransactions.begin();
+
+    return it->second.tx;
+}
+size_t OrphanTotalCount()
+{
+    return mapOrphanTransactions.size();
+}
+bool OrphanMapsAreEmpty()
+{
+    return mapOrphanTransactions.empty() && mapOrphanTransactionsByPrev.empty();
+}

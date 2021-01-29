@@ -1697,23 +1697,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     if (fMasterNode) {
         LogPrintf("IS MASTER NODE\n");
-
-        if(!activeMasternode.SetMasternodeAddress(settings.GetArg("-masternodeaddr", "")))
+        std::string errorMessage;
+        if(!SetupActiveMasternode(settings,errorMessage))
         {
-            return InitError("Invalid -masternodeaddr address: " + settings.GetArg("-masternodeaddr", ""));
-        }
-        LogPrintf("Masternode address: %s\n", activeMasternode.service.ToString());
-
-        if(settings.ParameterIsSet("-masternodeprivkey"))
-        {
-            if(!activeMasternode.SetMasternodeKey(settings.GetArg("-masternodeprivkey", "")))
-            {
-                return InitError(translate("Invalid masternodeprivkey. Please see documenation."));
-            }
-        }
-        else
-        {
-            return InitError(translate("You must specify a masternodeprivkey in the configuration. Please see documentation for help."));
+            return InitError(errorMessage);
         }
     }
 

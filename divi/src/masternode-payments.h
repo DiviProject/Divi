@@ -185,6 +185,8 @@ private:
     bool CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const;
     bool CheckMasternodeWinnerValidity(CMasternodeSync& masternodeSynchronization,const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const;
 public:
+    static const int MNPAYMENTS_SIGNATURES_REQUIRED;
+    static const int MNPAYMENTS_SIGNATURES_TOTAL;
     void updateChainTipHeight(const CBlockIndex* pindex);
 
     CMasternodePayments();

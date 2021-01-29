@@ -37,16 +37,11 @@ void Misbehaving(NodeId pnode, int howmuch);
 extern CCriticalSection cs_main;
 extern CChain chainActive;
 
+const int CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED = 6;
+const int CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL = 10;
+
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
-
-namespace
-{
-
-constexpr int MNPAYMENTS_SIGNATURES_REQUIRED = 6;
-constexpr int MNPAYMENTS_SIGNATURES_TOTAL = 10;
-}
-
 
 CMasternodePayee::CMasternodePayee()
 {
@@ -497,11 +492,11 @@ bool CMasternodeBlockPayees::IsTransactionValid(const I_BlockSubsidyProvider& su
 
     //require at least 6 signatures
     for(const auto& payee : vecPayments)
-        if (payee.nVotes >= nMaxSignatures && payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED)
+        if (payee.nVotes >= nMaxSignatures && payee.nVotes >= CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED)
             nMaxSignatures = payee.nVotes;
 
     // if we don't have at least 6 signatures on a payee, approve whichever is the longest chain
-    if (nMaxSignatures < MNPAYMENTS_SIGNATURES_REQUIRED) return true;
+    if (nMaxSignatures < CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED) return true;
 
     for (const auto& payee : vecPayments) {
         bool found = false;
@@ -514,7 +509,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const I_BlockSubsidyProvider& su
             }
         }
 
-        if (payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED) {
+        if (payee.nVotes >= CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED) {
             if (found) return true;
 
             CTxDestination address1;

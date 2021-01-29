@@ -21,7 +21,6 @@
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
-#include "masternodeconfig.h"
 #include <walletBackupFeatureContainer.h>
 #include "miner.h"
 #include "net.h"

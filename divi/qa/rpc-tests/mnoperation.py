@@ -181,6 +181,8 @@ class MnStatusTest (BitcoinTestFramework):
       lst = self.nodes[3].listmasternodes()
 
     assert_equal (len (lst), 2)
+    if lst[0]["tier"] != "COPPER":
+      lst[1],lst[0] = lst[0],lst[1]
     assert_equal (lst[0]["tier"], "COPPER")
     assert_equal (lst[1]["tier"], "SILVER")
     for i in range (2):

@@ -14,6 +14,22 @@
 #include <Logging.h>
 #include <Settings.h>
 
+
+void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction)
+{
+    if(settings.GetBoolArg("-mnconflock", true))
+    {
+        uint256 mnTxHash;
+        BOOST_FOREACH (CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries())
+        {
+            LogPrintf("  %s %s\n", mne.getTxHash(), mne.getOutputIndex());
+            mnTxHash.SetHex(mne.getTxHash());
+            COutPoint outpoint(mnTxHash, boost::lexical_cast<unsigned int>(mne.getOutputIndex()));
+            walletUtxoLockingFunction(outpoint);
+        }
+    }
+}
+
 bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
 {
     if(!activeMasternode.SetMasternodeAddress(settings.GetArg("-masternodeaddr", "")))

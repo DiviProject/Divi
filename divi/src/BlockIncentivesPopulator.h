@@ -1,5 +1,6 @@
 #ifndef BLOCK_INCENTIVES_POPULATOR_H
 #define BLOCK_INCENTIVES_POPULATOR_H
+#include "I_BlockIncentivesPopulator.h"
 #include <string>
 #include <amount.h>
 
@@ -15,7 +16,7 @@ class CTransaction;
 class CMasternodeSync;
 class CSporkManager;
 
-class BlockIncentivesPopulator
+class BlockIncentivesPopulator : public I_BlockIncentivesPopulator
 {
 private:
     const CChainParams& chainParameters_;
@@ -31,6 +32,7 @@ private:
 private:
     void FillTreasuryPayment(CMutableTransaction &tx, int nHeight) const;
     void FillLotteryPayment(CMutableTransaction &tx, const CBlockRewards &rewards, const CBlockIndex *currentBlockIndex) const;
+    bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pindex) const;
 
 public:
     BlockIncentivesPopulator(
@@ -41,10 +43,10 @@ public:
         const I_SuperblockHeightValidator& heightValidator,
         const I_BlockSubsidyProvider& blockSubsidies,
         const CSporkManager& sporkManager);
-    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip, bool fProofOfStake) const;
-    bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const;
-    bool HasValidPayees(const CTransaction &txNew, const CBlockIndex* pindex) const;
-    bool HasValidMasternodePayee(const CTransaction &txNew, const CBlockIndex* pindex) const;
+
+    void FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &payments, const CBlockIndex* chainTip, bool fProofOfStake) const override;
+    bool IsBlockValueValid(const CBlockRewards &nExpectedValue, CAmount nMinted, int nHeight) const override;
+    bool HasValidPayees(const CTransaction &txNew, const CBlockIndex* pindex) const override;
 };
 
 #endif // BLOCK_INCENTIVES_POPULATOR_H

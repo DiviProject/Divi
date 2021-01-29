@@ -181,7 +181,7 @@ public:
 
     std::string Status() const;
 
-    int64_t GetLastPaid(unsigned numberOfBlocksToSearchBack) const;
+    CScript GetPaymentScript() const;
     bool IsValidNetAddr() const;
 
     ADD_SERIALIZE_METHODS;

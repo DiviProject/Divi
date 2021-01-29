@@ -1707,7 +1707,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     fMasterNode = settings.GetBoolArg("-masternode", false);
 
-    if ((fMasterNode || masternodeConfig.getCount() > -1) && fTxIndex == false) {
+    if (fMasterNode && fTxIndex == false)
+    {
         return InitError("Enabling Masternode support requires turning on transaction indexing."
                          "Please add txindex=1 to your configuration and start with -reindex");
     }

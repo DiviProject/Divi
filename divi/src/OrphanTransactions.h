@@ -11,4 +11,7 @@ bool AddOrphanTx(const CTransaction& tx, NodeId peer);
 void EraseOrphanTx(uint256 hash);
 void EraseOrphansFor(NodeId peer);
 unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans);
+const CTransaction& SelectRandomOrphan();
+size_t OrphanTotalCount();
+bool OrphanMapsAreEmpty();
 #endif// ORPHAN_TRANSACTIONS_H

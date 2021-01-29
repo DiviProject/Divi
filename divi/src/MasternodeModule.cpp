@@ -10,6 +10,34 @@
 #include <masternodeman.h>
 #include <activemasternode.h>
 #include <chainparams.h>
+#include <ui_interface.h>
+#include <Logging.h>
+#include <Settings.h>
+
+bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
+{
+    if(!activeMasternode.SetMasternodeAddress(settings.GetArg("-masternodeaddr", "")))
+    {
+        errorMessage = "Invalid -masternodeaddr address: " + settings.GetArg("-masternodeaddr", "");
+        return false;
+    }
+    LogPrintf("Masternode address: %s\n", activeMasternode.service.ToString());
+
+    if(settings.ParameterIsSet("-masternodeprivkey"))
+    {
+        if(!activeMasternode.SetMasternodeKey(settings.GetArg("-masternodeprivkey", "")))
+        {
+            errorMessage = translate("Invalid masternodeprivkey. Please see documenation.");
+            return false;
+        }
+    }
+    else
+    {
+        errorMessage = translate("You must specify a masternodeprivkey in the configuration. Please see documentation for help.");
+        return false;
+    }
+    return true;
+}
 
 //TODO: Rename/move to core
 void ThreadMasternodeBackgroundSync()

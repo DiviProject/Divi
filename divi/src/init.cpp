@@ -1712,8 +1712,8 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         return InitError("Enabling Masternode support requires turning on transaction indexing."
                          "Please add txindex=1 to your configuration and start with -reindex");
     }
-
-    if (fMasterNode) {
+    else if (fMasterNode)
+    {
         LogPrintf("IS MASTER NODE\n");
         std::string errorMessage;
         if(!SetupActiveMasternode(settings,errorMessage))

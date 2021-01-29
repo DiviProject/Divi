@@ -264,6 +264,12 @@ std::string CMasternode::Status() const
     return strStatus;
 }
 
+CScript CMasternode::GetPaymentScript() const
+{
+    const CTxDestination dest(pubKeyCollateralAddress.GetID());
+    return GetScriptForDestination(dest);
+}
+
 static uint256 CalculateScoreHelper(CHashWriter hashWritter, int round)
 {
     hashWritter << round;

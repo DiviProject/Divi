@@ -20,6 +20,17 @@
 extern bool fMasterNode;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
+void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream& vRecv)
+{
+    //probably one the extensions
+    // obfuScationPool.ProcessMessageObfuscation(pfrom, strCommand, vRecv);
+    mnodeman.ProcessMessage(masternodePayments,masternodeSync,pfrom, strCommand, vRecv);
+    // budget.ProcessMessage(pfrom, strCommand, vRecv);
+    masternodePayments.ProcessMessageMasternodePayments(masternodeSync,pfrom, strCommand, vRecv);
+    // ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
+    masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
+}
+
 bool VoteForMasternodePayee(const CBlockIndex* pindex)
 {
     if (!fMasterNode) return false;

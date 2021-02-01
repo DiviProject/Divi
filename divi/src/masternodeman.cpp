@@ -17,6 +17,7 @@
 #include <boost/lexical_cast.hpp>
 #include <main.h>
 #include <utiltime.h>
+#include <version.h>
 
 #include <array>
 

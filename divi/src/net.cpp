@@ -27,6 +27,7 @@
 #include <DataDirectory.h>
 #include <utiltime.h>
 #include <util.h>
+#include <version.h>
 
 #ifdef WIN32
 #include <string.h>

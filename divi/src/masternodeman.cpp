@@ -24,7 +24,6 @@
 extern bool fLiteMode;
 extern bool fMasterNode;
 extern bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow = false);
-extern CActiveMasternode activeMasternode;
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
@@ -845,7 +844,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     }
 
     // make sure collateral is still unspent
-    if (!activeMasternode.IsOurBroadcast(mnb) && !CheckInputsForMasternode(mnb,nDoS))
+    if (!localMasternode.IsOurBroadcast(mnb) && !CheckInputsForMasternode(mnb,nDoS))
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());
         if (nDoS > 0 && pfrom != nullptr)
@@ -887,8 +886,8 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     RecordSeenPing(mnb.lastPing);
 
     // if it matches our Masternode privkey, then we've been remotely activated
-    if (mnb.pubKeyMasternode == activeMasternode.pubKeyMasternode && mnb.protocolVersion == PROTOCOL_VERSION) {
-        activeMasternode.EnableHotColdMasterNode(mnb.vin, mnb.addr);
+    if (mnb.pubKeyMasternode == localMasternode.pubKeyMasternode && mnb.protocolVersion == PROTOCOL_VERSION) {
+        localMasternode.EnableHotColdMasterNode(mnb.vin, mnb.addr);
     }
 
     const bool isLocal = mnb.addr.IsRFC1918() || mnb.addr.IsLocal();

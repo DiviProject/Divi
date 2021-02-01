@@ -17,16 +17,17 @@
 #include <chain.h>
 #include <version.h>
 
-bool VoteForMasternodePayee(const CBlockIndex* pindex, const int offset)
+bool VoteForMasternodePayee(const CBlockIndex* pindex)
 {
     if (!fMasterNode) return false;
+    constexpr int numberOfBlocksIntoTheFutureToVoteOn = 10;
     static int64_t lastProcessBlockHeight = 0;
-    const int64_t nBlockHeight = pindex->nHeight + offset;
+    const int64_t nBlockHeight = pindex->nHeight + numberOfBlocksIntoTheFutureToVoteOn;
 
     //reference node - hybrid mode
 
     uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, pindex, offset)) {
+    if (!GetBlockHashForScoring(seedHash, pindex, numberOfBlocksIntoTheFutureToVoteOn)) {
         LogPrint("mnpayments", "CMasternodePayments::ProcessBlock - failed to compute seed hash\n");
         return false;
     }
@@ -50,7 +51,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex, const int offset)
     LogPrint("masternode","CMasternodePayments::ProcessBlock() Start nHeight %d - vin %s. \n", nBlockHeight, activeMasternode.vin.prevout.hash.ToString());
 
     // pay to the oldest MN that still had no payment but its input is old enough and it was active long enough
-    CMasternode* pmn = mnodeman.GetNextMasternodeInQueueForPayment(pindex, offset, true);
+    CMasternode* pmn = mnodeman.GetNextMasternodeInQueueForPayment(pindex, numberOfBlocksIntoTheFutureToVoteOn, true);
 
     if (pmn != NULL) {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");

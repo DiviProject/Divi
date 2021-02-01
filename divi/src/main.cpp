@@ -49,6 +49,7 @@
 #include <WalletLoggingHelper.h>
 #include <TransactionOpCounting.h>
 #include <OrphanTransactions.h>
+#include <MasternodeModule.h>
 
 using namespace boost;
 using namespace std;
@@ -2922,7 +2923,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
     if (!fLiteMode) {
         if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
-            masternodePayments.ProcessBlock(pindex, 10);
+            VoteForMasternodePayee(pindex,10);
         }
     }
 

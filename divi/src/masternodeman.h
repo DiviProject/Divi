@@ -19,6 +19,7 @@
 class CMasternodeMan;
 class CMasternodeSync;
 class CMasternodePayments;
+class CActiveMasternode;
 
 extern CMasternodeMan mnodeman;
 
@@ -149,7 +150,7 @@ public:
      *  command.  Otherwise, we apply any potential DoS banscore.
      *
      *  Returns true if all was valid, and false if not.  */
-    bool ProcessBroadcast(CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization, CNode* pfrom, CMasternodeBroadcast& mnb);
+    bool ProcessBroadcast(CActiveMasternode& localMasternode, CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization, CNode* pfrom, CMasternodeBroadcast& mnb);
 
     /** Processes a masternode ping.  It is verified first, and if valid,
      *  used to update our state and inserted into mapSeenMasternodePing.
@@ -160,7 +161,7 @@ public:
      *  Returns true if the ping message was valid.  */
     bool ProcessPing(CNode* pfrom, CMasternodePing& mnp);
 
-    void ProcessMessage(CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+    void ProcessMessage(CActiveMasternode& localMasternode, CMasternodePayments& masternodePayments,CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     /// Return the number of (unique) Masternodes
     int size() const { return vMasternodes.size(); }

@@ -211,7 +211,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodePayments& masternodePaym
         if ((*it).activeState == CMasternode::MASTERNODE_REMOVE ||
             (*it).activeState == CMasternode::MASTERNODE_VIN_SPENT ||
             (forceExpiredRemoval && (*it).activeState == CMasternode::MASTERNODE_EXPIRED) ||
-            (*it).protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) {
+            (*it).protocolVersion < ActiveProtocol()) {
             LogPrint("masternode", "CMasternodeMan: Removing inactive Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), size() - 1);
 
             //erase all of the broadcasts we've seen from this vin
@@ -369,7 +369,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodePayments& masternodePay
         return false;
     }
 
-    if (mnb.protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) {
+    if (mnb.protocolVersion < ActiveProtocol()) {
         LogPrint("masternode","mnb - ignoring outdated Masternode %s protocol version %d\n", mnb.vin.prevout.hash.ToString(), mnb.protocolVersion);
         return false;
     }
@@ -442,7 +442,7 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
     LogPrint("masternode", "%s - New Ping - %s - %lli\n", __func__, mnp.blockHash.ToString(), mnp.sigTime);
 
     // see if we have this Masternode
-    if (mn.protocolVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {
+    if (mn.protocolVersion >= ActiveProtocol()) {
         if (fRequireEnabled && !mn.IsEnabled()) return false;
 
         // LogPrint("masternode","mnping - Found corresponding mn for vin: %s\n", vin.ToString());
@@ -541,7 +541,7 @@ int CMasternodeMan::stable_size ()
 int CMasternodeMan::CountEnabled(int protocolVersion) const
 {
     int i = 0;
-    protocolVersion = protocolVersion == -1 ? masternodePayments.GetMinMasternodePaymentsProto() : protocolVersion;
+    protocolVersion = protocolVersion == -1 ? ActiveProtocol() : protocolVersion;
 
     for (const auto& mn : vMasternodes) {
         if (mn.protocolVersion < protocolVersion || !mn.IsEnabled()) continue;
@@ -553,7 +553,7 @@ int CMasternodeMan::CountEnabled(int protocolVersion) const
 
 void CMasternodeMan::CountNetworks(int protocolVersion, int& ipv4, int& ipv6, int& onion)
 {
-    protocolVersion = protocolVersion == -1 ? masternodePayments.GetMinMasternodePaymentsProto() : protocolVersion;
+    protocolVersion = protocolVersion == -1 ? ActiveProtocol() : protocolVersion;
 
     BOOST_FOREACH (CMasternode& mn, vMasternodes) {
         mn.Check();
@@ -634,7 +634,7 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const uint25
         if (!mn.IsEnabled()) continue;
 
         // //check protocol version
-        if (mn.protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) continue;
+        if (mn.protocolVersion < ActiveProtocol()) continue;
 
         // It's in the list (up to 8 entries ahead of current block to allow propagation) -- so let's skip it
         // On regtest, we ignore this criterion, because it makes it hard to do
@@ -693,7 +693,7 @@ CMasternode* CMasternodeMan::FindRandomNotInVec(std::vector<CTxIn>& vecToExclude
 {
     LOCK(cs);
 
-    protocolVersion = protocolVersion == -1 ? masternodePayments.GetMinMasternodePaymentsProto() : protocolVersion;
+    protocolVersion = protocolVersion == -1 ? ActiveProtocol() : protocolVersion;
 
     int nCountEnabled = CountEnabled(protocolVersion);
     LogPrint("masternode", "CMasternodeMan::FindRandomNotInVec - nCountEnabled - vecToExclude.size() %d\n", nCountEnabled - vecToExclude.size());

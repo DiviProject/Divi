@@ -17,6 +17,9 @@
 #include <chain.h>
 #include <version.h>
 
+extern bool fMasterNode;
+CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
+
 bool VoteForMasternodePayee(const CBlockIndex* pindex)
 {
     if (!fMasterNode) return false;

@@ -64,7 +64,4 @@ public:
     bool IsOurBroadcast(const CMasternodeBroadcast& mnb, bool checkConfig = false) const;
     bool UpdatePing(CMasternodePing& mnp) const;
 };
-
-extern CActiveMasternode activeMasternode;
-
 #endif

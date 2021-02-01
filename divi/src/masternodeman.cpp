@@ -24,6 +24,7 @@
 extern bool fLiteMode;
 extern bool fMasterNode;
 extern bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow = false);
+extern CActiveMasternode activeMasternode;
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 

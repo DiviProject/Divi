@@ -194,10 +194,6 @@ public:
     void Clear();
 
     bool AddWinningMasternode(const CMasternodePaymentWinner &winner);
-    /** Processes anything that needs to be done (mostly computing
-     *  and broadcasting the mnw messages) for the given block height
-     *  when it comes within reach of the current tip.  */
-    bool ProcessBlock(const CBlockIndex* pindex, int offset);
 
     void Sync(CNode* node, int nCountNeeded);
     void CheckAndRemove();

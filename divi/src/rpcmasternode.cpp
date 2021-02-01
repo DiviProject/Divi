@@ -20,6 +20,7 @@
 #include <WalletTx.h>
 #include <Logging.h>
 #include <masternode-sync.h>
+#include <version.h>
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>

@@ -5,7 +5,6 @@
 
 #include "masternode-payments.h"
 
-#include "activemasternode.h"
 #include "addrman.h"
 #include "BlockDiskAccessor.h"
 #include <chain.h>

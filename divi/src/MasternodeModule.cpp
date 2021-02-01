@@ -24,7 +24,7 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
 {
     //probably one the extensions
     // obfuScationPool.ProcessMessageObfuscation(pfrom, strCommand, vRecv);
-    mnodeman.ProcessMessage(activeMasternode, masternodePayments,masternodeSync,pfrom, strCommand, vRecv);
+    mnodeman.ProcessMessage(activeMasternode,masternodeSync,pfrom, strCommand, vRecv);
     // budget.ProcessMessage(pfrom, strCommand, vRecv);
     masternodePayments.ProcessMessageMasternodePayments(masternodeSync,pfrom, strCommand, vRecv);
     // ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
@@ -173,7 +173,7 @@ void ThreadMasternodeBackgroundSync()
 
         if (now >= nTimeConnections + 60) {
             nTimeConnections = now;
-            mnodeman.CheckAndRemoveInnactive(masternodePayments,masternodeSync);
+            mnodeman.CheckAndRemoveInnactive(masternodeSync);
             mnodeman.ProcessMasternodeConnections();
             masternodePayments.CheckAndRemove();
         }

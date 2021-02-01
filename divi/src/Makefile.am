@@ -386,6 +386,7 @@ libbitcoin_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   NotificationInterface.cpp \
+  version.cpp \
   versionbits.cpp \
   walletBackupCreator.cpp \
   walletBackupFeatureContainer.cpp \

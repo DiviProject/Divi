@@ -27,12 +27,12 @@
 #include <script/standard.h>
 #include <base58address.h>
 #include <chainparams.h>
+#include <version.h>
 
 extern bool fLiteMode;
 extern bool fMasterNode;
 
 
-int ActiveProtocol();
 void Misbehaving(NodeId pnode, int howmuch);
 extern CCriticalSection cs_main;
 extern CChain chainActive;

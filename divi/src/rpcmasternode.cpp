@@ -506,7 +506,7 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
     }
 
     Object result;
-    if (mnodeman.ProcessBroadcast(masternodePayments, masternodeSync,nullptr, mnb))
+    if (mnodeman.ProcessBroadcast(activeMasternode,masternodePayments, masternodeSync,nullptr, mnb))
         result.push_back(Pair("status", "success"));
     else
         result.push_back(Pair("status","failed"));
@@ -565,7 +565,7 @@ Value startmasternode(const Array& params, bool fHelp)
             return result;
         }
 
-        if(!mnodeman.ProcessBroadcast(masternodePayments, masternodeSync,nullptr, mnb))
+        if(!mnodeman.ProcessBroadcast(activeMasternode,masternodePayments, masternodeSync,nullptr, mnb))
         {
             LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin.ToString());
             result.push_back(Pair("status", "failed"));

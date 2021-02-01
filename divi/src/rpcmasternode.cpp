@@ -28,6 +28,7 @@
 using namespace json_spirit;
 
 extern bool fMasterNode;
+extern CActiveMasternode activeMasternode;
 extern void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false, bool spendFromVaults = false);
 extern CBitcoinAddress GetAccountAddress(std::string strAccount, bool bForceNew = false);
 

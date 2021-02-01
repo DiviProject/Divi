@@ -16,10 +16,6 @@
 #include <masternode-payments.h>
 #include <masternode-sync.h>
 
-
-extern bool fMasterNode;
-CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
-
 CActiveMasternode::CActiveMasternode(
     const CMasternodeConfig& masternodeConfigurations,
     const bool& masterNodeEnabled

@@ -312,10 +312,6 @@ bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMa
 }
 bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS)
 {
-    if(activeMasternode.IsOurBroadcast(mnb))
-    {
-        return true;
-    }
     // search existing Masternode list
     // nothing to do here if we already know about this masternode and it's enabled
     const CMasternode* pmn = Find(mnb.vin);
@@ -849,7 +845,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     }
 
     // make sure collateral is still unspent
-    if (!CheckInputsForMasternode(mnb,nDoS))
+    if (!activeMasternode.IsOurBroadcast(mnb) && !CheckInputsForMasternode(mnb,nDoS))
     {
         LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());
         if (nDoS > 0 && pfrom != nullptr)

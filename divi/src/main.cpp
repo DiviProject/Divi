@@ -2923,7 +2923,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
     if (!fLiteMode) {
         if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
-            VoteForMasternodePayee(pindex,10);
+            VoteForMasternodePayee(pindex);
         }
     }
 

@@ -4559,14 +4559,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             }
         }
     } else {
-        //probably one the extensions
-        // obfuScationPool.ProcessMessageObfuscation(pfrom, strCommand, vRecv);
-        mnodeman.ProcessMessage(masternodePayments,masternodeSync,pfrom, strCommand, vRecv);
-        // budget.ProcessMessage(pfrom, strCommand, vRecv);
-        masternodePayments.ProcessMessageMasternodePayments(masternodeSync,pfrom, strCommand, vRecv);
-        // ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
         sporkManager.ProcessSpork(pfrom, strCommand, vRecv);
-        masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
+        ProcessMasternodeMessages(pfrom,strCommand,vRecv);
     }
 
 

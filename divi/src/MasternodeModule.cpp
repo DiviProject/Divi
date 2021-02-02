@@ -16,9 +16,56 @@
 #include <masternodeconfig.h>
 #include <chain.h>
 #include <version.h>
+#include <streams.h>
+#include <net.h>
 
 extern bool fMasterNode;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
+
+bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash)
+{
+    if (mnodeman.mapSeenMasternodePing.count(inventoryHash)) {
+        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+        ss.reserve(1000);
+        ss << mnodeman.mapSeenMasternodePing[inventoryHash];
+        peer->PushMessage("mnp", ss);
+        return true;
+    }
+    return false;
+}
+
+bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
+{
+    if (mnodeman.mapSeenMasternodeBroadcast.count(inventoryHash))
+    {
+        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+        ss.reserve(1000);
+        ss << mnodeman.mapSeenMasternodeBroadcast[inventoryHash];
+        peer->PushMessage("mnb", ss);
+        return true;
+    }
+    return false;
+}
+
+bool MasternodeIsKnown(const uint256& inventoryHash)
+{
+    if (mnodeman.mapSeenMasternodeBroadcast.count(inventoryHash))
+    {
+        masternodeSync.AddedMasternodeList(inventoryHash);
+        return true;
+    }
+    return false;
+}
+
+bool MasternodeWinnerIsKnown(const uint256& inventoryHash)
+{
+    if (masternodePayments.GetPaymentWinnerForHash(inventoryHash) != nullptr)
+    {
+        masternodeSync.AddedMasternodeWinner(inventoryHash);
+        return true;
+    }
+    return false;
+}
 
 void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream& vRecv)
 {

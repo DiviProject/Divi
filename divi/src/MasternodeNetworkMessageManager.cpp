@@ -3,6 +3,8 @@
 #include <Logging.h>
 #include <utiltime.h>
 
+#define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
+
 MasternodeNetworkMessageManager::MasternodeNetworkMessageManager(
     ): mAskedUsForMasternodeList()
     , mWeAskedForMasternodeList()

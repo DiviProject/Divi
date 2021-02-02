@@ -48,9 +48,6 @@ public:
     // Keep track of all pings I've seen
     std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
-    // keep track of dsq count to prevent masternodes from gaming obfuscation queue
-    int64_t nDsqCount;
-
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
@@ -59,7 +56,6 @@ public:
         LOCK(cs);
         READWRITE(vMasternodes);
         READWRITE(*networkMessageManager_);
-        READWRITE(nDsqCount);
 
         READWRITE(mapSeenMasternodeBroadcast);
         READWRITE(mapSeenMasternodePing);

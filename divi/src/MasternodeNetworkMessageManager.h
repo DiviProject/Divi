@@ -2,11 +2,11 @@
 #define MASTERNODE_NETWORK_MESSAGE_MANAGER_H
 #include <map>
 #include <uint256.h>
-#include <masternode.h>
 #include <sync.h>
 #include <primitives/transaction.h>
 #include <netbase.h>
 #include <serialize.h>
+#include <protocol.h>
 
 class MasternodeNetworkMessageManager
 {
@@ -21,11 +21,6 @@ public:
 
     // Dummy variable to keep serialization consistent;
     int64_t nDsqCount;
-
-    // Keep track of all broadcasts I've seen
-    std::map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;
-    // Keep track of all pings I've seen
-    std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
     void clearTimedOutMasternodeListRequestsFromPeers();
     void clearTimedOutMasternodeListRequestsToPeers();
@@ -44,6 +39,7 @@ public:
         READWRITE(mAskedUsForMasternodeList);
         READWRITE(mWeAskedForMasternodeList);
         READWRITE(mWeAskedForMasternodeListEntry);
+        READWRITE(nDsqCount);
     }
 };
 #endif// MASTERNODE_NETWORK_MESSAGE_MANAGER_H

@@ -159,7 +159,6 @@ CMasternodeMan::~CMasternodeMan()
 CMasternodeMan::CMasternodeMan(
     ):  networkMessageManager_(new MasternodeNetworkMessageManager)
     , rankingCache(new RankingCache)
-    , nDsqCount(0)
 {
 }
 
@@ -469,7 +468,6 @@ void CMasternodeMan::Clear()
     networkMessageManager_->clear();
     mapSeenMasternodeBroadcast.clear();
     mapSeenMasternodePing.clear();
-    nDsqCount = 0;
 }
 
 int CMasternodeMan::stable_size ()
@@ -988,9 +986,7 @@ std::string CMasternodeMan::ToString() const
     info << "Masternodes: "
         << (int)vMasternodes.size()
         << ", "
-        << networkMessageManager_->ToString()
-        << ", nDsqCount: "
-        << (int)nDsqCount;
+        << networkMessageManager_->ToString();
 
     return info.str();
 }

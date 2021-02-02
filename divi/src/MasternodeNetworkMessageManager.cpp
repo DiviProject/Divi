@@ -4,14 +4,13 @@
 #include <utiltime.h>
 
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
+#define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
 
 MasternodeNetworkMessageManager::MasternodeNetworkMessageManager(
     ): mAskedUsForMasternodeList()
     , mWeAskedForMasternodeList()
     , mWeAskedForMasternodeListEntry()
     , nDsqCount(0)
-    , mapSeenMasternodeBroadcast()
-    , mapSeenMasternodePing()
 {
 
 }
@@ -127,7 +126,9 @@ std::string MasternodeNetworkMessageManager::ToString() const
         << ", peers we asked for Masternode list: "
         << (int)mWeAskedForMasternodeList.size()
         << ", entries in Masternode list we asked for: "
-        << (int)mWeAskedForMasternodeListEntry.size();
+        << (int)mWeAskedForMasternodeListEntry.size()
+        << ", nDsqCount: "
+        << (int)nDsqCount;
 
     return info.str();
 }

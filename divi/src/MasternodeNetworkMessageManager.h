@@ -27,8 +27,8 @@ public:
     // Keep track of all pings I've seen
     std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
-    void clearExpiredMasternodeListRequestsFromPeers();
-    void clearExpiredMasternodeListRequestsToPeers();
+    void clearTimedOutMasternodeListRequestsFromPeers();
+    void clearTimedOutMasternodeListRequestsToPeers();
     void clearTimedOutMasternodeEntryRequests();
     void clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral);
     bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);

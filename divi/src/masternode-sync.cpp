@@ -141,7 +141,8 @@ void CMasternodeSync::GetNextAsset()
 
 std::string CMasternodeSync::GetSyncStatus()
 {
-    switch (masternodeSync.RequestedMasternodeAssets) {
+    switch (RequestedMasternodeAssets)
+    {
     case MASTERNODE_SYNC_INITIAL:
         return translate("Synchronization pending...");
     case MASTERNODE_SYNC_SPORKS:

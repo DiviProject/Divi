@@ -7,9 +7,7 @@
 #include <primitives/transaction.h>
 #include <netbase.h>
 #include <serialize.h>
-#define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 
-//#include
 class MasternodeNetworkMessageManager
 {
 public:

@@ -182,18 +182,10 @@ bool CMasternodeMan::Add(const CMasternode& mn)
 
 void CMasternodeMan::AskForMN(CNode* pnode, const CTxIn& vin)
 {
-    std::map<COutPoint, int64_t>::iterator i = mWeAskedForMasternodeListEntry.find(vin.prevout);
-    if (i != mWeAskedForMasternodeListEntry.end()) {
-        int64_t t = (*i).second;
-        if (GetTime() < t) return; // we've asked recently
+    if(networkMessageManager_->recordMasternodeEntryRequestAttempt(vin.prevout))
+    {
+        pnode->PushMessage("dseg", vin);
     }
-
-    // ask for the mnb info once from the node that sent mnp
-
-    LogPrint("masternode", "CMasternodeMan::AskForMN - Asking node for missing entry, vin: %s\n", vin.prevout.hash.ToString());
-    pnode->PushMessage("dseg", vin);
-    int64_t askAgain = GetTime() + MASTERNODE_MIN_MNP_SECONDS;
-    mWeAskedForMasternodeListEntry[vin.prevout] = askAgain;
 }
 
 void CMasternodeMan::Check()
@@ -234,15 +226,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
             }
 
             // allow us to ask for this masternode again if we see another ping
-            std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
-            while (it2 != mWeAskedForMasternodeListEntry.end()) {
-                if ((*it2).first == (*it).vin.prevout) {
-                    mWeAskedForMasternodeListEntry.erase(it2++);
-                } else {
-                    ++it2;
-                }
-            }
-
+            networkMessageManager_->clearExpiredMasternodeEntryRequests((*it).vin.prevout);
             it = vMasternodes.erase(it);
         } else {
             ++it;
@@ -251,16 +235,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
 
     networkMessageManager_->clearExpiredMasternodeListRequestsFromPeers();
     networkMessageManager_->clearExpiredMasternodeListRequestsToPeers();
-
-    // check which Masternodes we've asked for
-    std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
-    while (it2 != mWeAskedForMasternodeListEntry.end()) {
-        if ((*it2).second < GetTime()) {
-            mWeAskedForMasternodeListEntry.erase(it2++);
-        } else {
-            ++it2;
-        }
-    }
+    networkMessageManager_->clearTimedOutMasternodeEntryRequests();
 
     // remove expired mapSeenMasternodeBroadcast
     std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
@@ -492,7 +467,6 @@ void CMasternodeMan::Clear()
     LOCK(cs);
     vMasternodes.clear();
     networkMessageManager_->clear();
-    mWeAskedForMasternodeListEntry.clear();
     mapSeenMasternodeBroadcast.clear();
     mapSeenMasternodePing.clear();
     nDsqCount = 0;
@@ -1015,8 +989,6 @@ std::string CMasternodeMan::ToString() const
         << (int)vMasternodes.size()
         << ", "
         << networkMessageManager_->ToString()
-        << ", entries in Masternode list we asked for: "
-        << (int)mWeAskedForMasternodeListEntry.size()
         << ", nDsqCount: "
         << (int)nDsqCount;
 

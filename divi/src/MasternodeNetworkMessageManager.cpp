@@ -55,13 +55,10 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodeEntryRequests()
 void MasternodeNetworkMessageManager::clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral)
 {
     // allow us to ask for this masternode again if we see another ping
-    std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
-    while (it2 != mWeAskedForMasternodeListEntry.end()) {
-        if ((*it2).first == masternodeCollateral) {
-            mWeAskedForMasternodeListEntry.erase(it2++);
-        } else {
-            ++it2;
-        }
+    std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.find(masternodeCollateral);
+    if(it2 != mWeAskedForMasternodeListEntry.end())
+    {
+        mWeAskedForMasternodeListEntry.erase(it2);
     }
 }
 

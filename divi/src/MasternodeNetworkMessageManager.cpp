@@ -16,7 +16,7 @@ MasternodeNetworkMessageManager::MasternodeNetworkMessageManager(
 
 }
 
-void MasternodeNetworkMessageManager::clearExpiredMasternodeListRequestsFromPeers()
+void MasternodeNetworkMessageManager::clearTimedOutMasternodeListRequestsFromPeers()
 {
     // check who's asked for the Masternode list
     std::map<CNetAddr, int64_t>::iterator it = mAskedUsForMasternodeList.begin();
@@ -29,7 +29,7 @@ void MasternodeNetworkMessageManager::clearExpiredMasternodeListRequestsFromPeer
     }
 }
 
-void MasternodeNetworkMessageManager::clearExpiredMasternodeListRequestsToPeers()
+void MasternodeNetworkMessageManager::clearTimedOutMasternodeListRequestsToPeers()
 {
     // check who we asked for the Masternode list
     auto it1 = mWeAskedForMasternodeList.begin();

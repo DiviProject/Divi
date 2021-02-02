@@ -213,6 +213,7 @@ BITCOIN_CORE_H = \
   SuperblockHeightValidator.h \
   masternode-tier.h \
   masternode-sync.h \
+  MasternodeNetworkMessageManager.h \
   masternodeman.h \
   masternodeconfig.h \
   merkleblock.h \
@@ -432,6 +433,7 @@ libbitcoin_wallet_a_SOURCES = \
   SpentOutputTracker.cpp \
   masternode-sync.cpp \
   masternodeconfig.cpp \
+  MasternodeNetworkMessageManager.cpp \
   masternodeman.cpp \
   netfulfilledman.cpp \
   reservekey.cpp \

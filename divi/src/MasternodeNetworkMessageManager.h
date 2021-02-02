@@ -30,7 +30,9 @@ public:
     std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
     void clearExpiredMasternodeListRequestsFromPeers();
+    void clearExpiredMasternodeListRequestsToPeers();
     bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);
+    bool recordDsegUpdateAttempt(const CAddress& peerAddress);
     void clear();
     std::string ToString() const;
 
@@ -39,6 +41,7 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
         READWRITE(mAskedUsForMasternodeList);
+        READWRITE(mWeAskedForMasternodeList);
     }
 };
 #endif// MASTERNODE_NETWORK_MESSAGE_MANAGER_H

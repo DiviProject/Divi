@@ -250,16 +250,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
     }
 
     networkMessageManager_->clearExpiredMasternodeListRequestsFromPeers();
-
-    // check who we asked for the Masternode list
-    auto it1 = mWeAskedForMasternodeList.begin();
-    while (it1 != mWeAskedForMasternodeList.end()) {
-        if ((*it1).second < GetTime()) {
-            mWeAskedForMasternodeList.erase(it1++);
-        } else {
-            ++it1;
-        }
-    }
+    networkMessageManager_->clearExpiredMasternodeListRequestsToPeers();
 
     // check which Masternodes we've asked for
     std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
@@ -501,7 +492,6 @@ void CMasternodeMan::Clear()
     LOCK(cs);
     vMasternodes.clear();
     networkMessageManager_->clear();
-    mWeAskedForMasternodeList.clear();
     mWeAskedForMasternodeListEntry.clear();
     mapSeenMasternodeBroadcast.clear();
     mapSeenMasternodePing.clear();
@@ -578,19 +568,10 @@ void CMasternodeMan::DsegUpdate(CNode* pnode)
 {
     LOCK(cs);
 
-    if (!(pnode->addr.IsRFC1918() || pnode->addr.IsLocal())) {
-        std::map<CNetAddr, int64_t>::iterator it = mWeAskedForMasternodeList.find(pnode->addr);
-        if (it != mWeAskedForMasternodeList.end()) {
-            if (GetTime() < (*it).second) {
-                LogPrint("masternode", "dseg - we already asked peer %i for the list; skipping...\n", pnode->GetId());
-                return;
-            }
-        }
+    if(networkMessageManager_->recordDsegUpdateAttempt(pnode->addr))
+    {
+        pnode->PushMessage("dseg", CTxIn());
     }
-
-    pnode->PushMessage("dseg", CTxIn());
-    int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
-    mWeAskedForMasternodeList[pnode->addr] = askAgain;
 }
 
 CMasternode* CMasternodeMan::Find(const CTxIn& vin)
@@ -1034,8 +1015,6 @@ std::string CMasternodeMan::ToString() const
         << (int)vMasternodes.size()
         << ", "
         << networkMessageManager_->ToString()
-        << ", peers we asked for Masternode list: "
-        << (int)mWeAskedForMasternodeList.size()
         << ", entries in Masternode list we asked for: "
         << (int)mWeAskedForMasternodeListEntry.size()
         << ", nDsqCount: "

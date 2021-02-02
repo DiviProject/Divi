@@ -18,6 +18,7 @@
 #include <main.h>
 #include <utiltime.h>
 #include <version.h>
+#include <MasternodeNetworkMessageManager.h>
 
 #include <array>
 
@@ -149,10 +150,15 @@ public:
 
 };
 
-CMasternodeMan::~CMasternodeMan() = default;
+CMasternodeMan::~CMasternodeMan()
+{
+    networkMessageManager_.reset();
+    rankingCache.reset();
+}
 
 CMasternodeMan::CMasternodeMan(
-    ): rankingCache(new RankingCache)
+    ):  networkMessageManager_(new MasternodeNetworkMessageManager)
+    , rankingCache(new RankingCache)
     , nDsqCount(0)
 {
 }

@@ -26,6 +26,20 @@ void MasternodeNetworkMessageManager::clearExpiredMasternodeListRequestsFromPeer
         }
     }
 }
+
+void MasternodeNetworkMessageManager::clearExpiredMasternodeListRequestsToPeers()
+{
+    // check who we asked for the Masternode list
+    auto it1 = mWeAskedForMasternodeList.begin();
+    while (it1 != mWeAskedForMasternodeList.end()) {
+        if ((*it1).second < GetTime()) {
+            mWeAskedForMasternodeList.erase(it1++);
+        } else {
+            ++it1;
+        }
+    }
+}
+
 bool MasternodeNetworkMessageManager::peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress)
 {
     std::map<CNetAddr, int64_t>::iterator it = mAskedUsForMasternodeList.find(peerAddress);
@@ -40,9 +54,28 @@ bool MasternodeNetworkMessageManager::peerHasRequestedMasternodeListTooOften(con
     mAskedUsForMasternodeList[peerAddress] = askAgain;
     return false;
 }
+
+bool MasternodeNetworkMessageManager::recordDsegUpdateAttempt(const CAddress& peerAddress)
+{
+    if (!(peerAddress.IsRFC1918() || peerAddress.IsLocal())) {
+        std::map<CNetAddr, int64_t>::iterator it = mWeAskedForMasternodeList.find(peerAddress);
+        if (it != mWeAskedForMasternodeList.end()) {
+            if (GetTime() < (*it).second) {
+                LogPrint("masternode", "dseg - we already asked peer %s for the list; skipping...\n", peerAddress.ToString());
+                return false;
+            }
+        }
+    }
+
+    int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
+    mWeAskedForMasternodeList[peerAddress] = askAgain;
+    return true;
+}
+
 void MasternodeNetworkMessageManager::clear()
 {
     mAskedUsForMasternodeList.clear();
+    mWeAskedForMasternodeList.clear();
 }
 
 std::string MasternodeNetworkMessageManager::ToString() const
@@ -50,7 +83,9 @@ std::string MasternodeNetworkMessageManager::ToString() const
     std::ostringstream info;
 
     info << "peers who asked us for Masternode list: "
-        << (int)mAskedUsForMasternodeList.size();
+        << (int)mAskedUsForMasternodeList.size()
+        << ", peers we asked for Masternode list: "
+        << (int)mWeAskedForMasternodeList.size();
 
     return info.str();
 }

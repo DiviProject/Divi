@@ -41,6 +41,29 @@ void MasternodeNetworkMessageManager::clearExpiredMasternodeListRequestsToPeers(
         }
     }
 }
+void MasternodeNetworkMessageManager::clearTimedOutMasternodeEntryRequests()
+{
+    std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
+    while (it2 != mWeAskedForMasternodeListEntry.end()) {
+        if ((*it2).second < GetTime()) {
+            mWeAskedForMasternodeListEntry.erase(it2++);
+        } else {
+            ++it2;
+        }
+    }
+}
+void MasternodeNetworkMessageManager::clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral)
+{
+    // allow us to ask for this masternode again if we see another ping
+    std::map<COutPoint, int64_t>::iterator it2 = mWeAskedForMasternodeListEntry.begin();
+    while (it2 != mWeAskedForMasternodeListEntry.end()) {
+        if ((*it2).first == masternodeCollateral) {
+            mWeAskedForMasternodeListEntry.erase(it2++);
+        } else {
+            ++it2;
+        }
+    }
+}
 
 bool MasternodeNetworkMessageManager::peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress)
 {
@@ -74,10 +97,28 @@ bool MasternodeNetworkMessageManager::recordDsegUpdateAttempt(const CAddress& pe
     return true;
 }
 
+bool MasternodeNetworkMessageManager::recordMasternodeEntryRequestAttempt(const COutPoint& masternodeCollateral)
+{
+    std::map<COutPoint, int64_t>::iterator i = mWeAskedForMasternodeListEntry.find(masternodeCollateral);
+    if (i != mWeAskedForMasternodeListEntry.end()) {
+        int64_t t = (*i).second;
+        if (GetTime() < t) return false; // we've asked recently
+    }
+
+    // ask for the mnb info once from the node that sent mnp
+
+    LogPrint("masternode", "CMasternodeMan::AskForMN - Asking node for missing entry, vin: %s\n", masternodeCollateral.hash.ToString());
+    int64_t askAgain = GetTime() + MASTERNODE_MIN_MNP_SECONDS;
+    mWeAskedForMasternodeListEntry[masternodeCollateral] = askAgain;
+
+    return true;
+}
+
 void MasternodeNetworkMessageManager::clear()
 {
     mAskedUsForMasternodeList.clear();
     mWeAskedForMasternodeList.clear();
+    mWeAskedForMasternodeListEntry.clear();
 }
 
 std::string MasternodeNetworkMessageManager::ToString() const
@@ -87,7 +128,9 @@ std::string MasternodeNetworkMessageManager::ToString() const
     info << "peers who asked us for Masternode list: "
         << (int)mAskedUsForMasternodeList.size()
         << ", peers we asked for Masternode list: "
-        << (int)mWeAskedForMasternodeList.size();
+        << (int)mWeAskedForMasternodeList.size()
+        << ", entries in Masternode list we asked for: "
+        << (int)mWeAskedForMasternodeListEntry.size();
 
     return info.str();
 }

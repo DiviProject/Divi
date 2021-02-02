@@ -29,8 +29,11 @@ public:
 
     void clearExpiredMasternodeListRequestsFromPeers();
     void clearExpiredMasternodeListRequestsToPeers();
+    void clearTimedOutMasternodeEntryRequests();
+    void clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral);
     bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);
     bool recordDsegUpdateAttempt(const CAddress& peerAddress);
+    bool recordMasternodeEntryRequestAttempt(const COutPoint& masternodeCollateral);
     void clear();
     std::string ToString() const;
 
@@ -40,6 +43,7 @@ public:
     {
         READWRITE(mAskedUsForMasternodeList);
         READWRITE(mWeAskedForMasternodeList);
+        READWRITE(mWeAskedForMasternodeListEntry);
     }
 };
 #endif// MASTERNODE_NETWORK_MESSAGE_MANAGER_H

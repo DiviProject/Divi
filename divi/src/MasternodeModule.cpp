@@ -80,7 +80,7 @@ void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream
 
 bool VoteForMasternodePayee(const CBlockIndex* pindex)
 {
-    if (!fMasterNode) return false;
+    if (masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST || !fMasterNode) return false;
     constexpr int numberOfBlocksIntoTheFutureToVoteOn = 10;
     static int64_t lastProcessBlockHeight = 0;
     const int64_t nBlockHeight = pindex->nHeight + numberOfBlocksIntoTheFutureToVoteOn;

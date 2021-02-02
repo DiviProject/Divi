@@ -160,11 +160,7 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, st
         }
 
         pmn->lastPing = mnp;
-        masternodeManager.mapSeenMasternodePing.insert(std::make_pair(mnp.GetHash(), mnp));
-
-        CMasternodeBroadcast mnb(*pmn);
-        uint256 hash = mnb.GetHash();
-        if (masternodeManager.mapSeenMasternodeBroadcast.count(hash)) masternodeManager.mapSeenMasternodeBroadcast[hash].lastPing = mnp;
+        masternodeManager.RecordSeenPing(mnp);
 
         mnp.Relay();
 

@@ -572,6 +572,10 @@ bool CMasternodePayments::IsTransactionValid(const I_BlockSubsidyProvider& subsi
 
 void CMasternodePayments::CheckAndRemove()
 {
+}
+
+void CMasternodePayments::PruneOldMasternodeWinnerData(CMasternodeSync& masternodeSynchronization)
+{
     LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
 
     int nHeight;
@@ -590,7 +594,7 @@ void CMasternodePayments::CheckAndRemove()
 
         if (nHeight - winner.GetHeight() > nLimit) {
             LogPrint("mnpayments", "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.GetHeight());
-            masternodeSync.mapSeenSyncMNW.erase((*it).first);
+            masternodeSynchronization.mapSeenSyncMNW.erase((*it).first);
             mapMasternodePayeeVotes.erase(it++);
             mapMasternodeBlocks.erase(winner.GetScoreHash());
         } else {

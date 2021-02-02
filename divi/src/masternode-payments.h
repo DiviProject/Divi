@@ -197,6 +197,7 @@ public:
 
     void Sync(CNode* node, int nCountNeeded);
     void CheckAndRemove();
+    void PruneOldMasternodeWinnerData(CMasternodeSync& masternodeSynchronization);
 
     bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& seedHash) const;
     bool IsScheduled(const CMasternode& mn, int nNotBlockHeight) const;

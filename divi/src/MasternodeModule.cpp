@@ -222,7 +222,7 @@ void ThreadMasternodeBackgroundSync()
             nTimeConnections = now;
             mnodeman.CheckAndRemoveInnactive(masternodeSync);
             mnodeman.ProcessMasternodeConnections();
-            masternodePayments.CheckAndRemove();
+            masternodePayments.PruneOldMasternodeWinnerData(masternodeSync);
         }
     }
 }

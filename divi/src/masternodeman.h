@@ -10,6 +10,7 @@
 #include "masternode.h"
 #include "net.h"
 #include "sync.h"
+#include <MasternodeNetworkMessageManager.h>
 
 #include <memory>
 
@@ -20,6 +21,7 @@ class CMasternodeMan;
 class CMasternodeSync;
 class CMasternodePayments;
 class CActiveMasternode;
+class MasternodeNetworkMessageManager;
 
 extern CMasternodeMan mnodeman;
 
@@ -34,6 +36,8 @@ private:
 
     // map to hold all MNs
     std::vector<CMasternode> vMasternodes;
+    std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
+
     // who's asked for the Masternode list and the last time
     std::map<CNetAddr, int64_t> mAskedUsForMasternodeList;
     // who we asked for the Masternode list and the last time
@@ -62,6 +66,7 @@ public:
     {
         LOCK(cs);
         READWRITE(vMasternodes);
+        READWRITE(*networkMessageManager_);
         READWRITE(mAskedUsForMasternodeList);
         READWRITE(mWeAskedForMasternodeList);
         READWRITE(mWeAskedForMasternodeListEntry);

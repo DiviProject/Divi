@@ -7,6 +7,7 @@
 #include <primitives/transaction.h>
 #include <netbase.h>
 #include <serialize.h>
+#define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 
 //#include
 class MasternodeNetworkMessageManager
@@ -28,10 +29,16 @@ public:
     // Keep track of all pings I've seen
     std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
+    void clearExpiredMasternodeListRequestsFromPeers();
+    bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);
+    void clear();
+    std::string ToString() const;
 
+    ADD_SERIALIZE_METHODS
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
+        READWRITE(mAskedUsForMasternodeList);
     }
 };
 #endif// MASTERNODE_NETWORK_MESSAGE_MANAGER_H

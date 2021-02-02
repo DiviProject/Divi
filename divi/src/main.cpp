@@ -2922,9 +2922,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         return error("%s : ActivateBestChain failed", __func__);
 
     if (!fLiteMode) {
-        if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
-            VoteForMasternodePayee(pindex);
-        }
+        VoteForMasternodePayee(pindex);
     }
 
     if (pwalletMain) {

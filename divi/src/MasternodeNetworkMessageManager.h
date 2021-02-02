@@ -6,6 +6,7 @@
 #include <sync.h>
 #include <primitives/transaction.h>
 #include <netbase.h>
+#include <serialize.h>
 
 //#include
 class MasternodeNetworkMessageManager
@@ -19,9 +20,18 @@ public:
     // which Masternodes we've asked for
     std::map<COutPoint, int64_t> mWeAskedForMasternodeListEntry;
 
+    // Dummy variable to keep serialization consistent;
+    int64_t nDsqCount;
+
     // Keep track of all broadcasts I've seen
     std::map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;
     // Keep track of all pings I've seen
     std::map<uint256, CMasternodePing> mapSeenMasternodePing;
+
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
+    {
+    }
 };
 #endif// MASTERNODE_NETWORK_MESSAGE_MANAGER_H

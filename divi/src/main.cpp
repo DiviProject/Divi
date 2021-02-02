@@ -3560,17 +3560,9 @@ bool static AlreadyHave(const CInv& inv)
     case MSG_SPORK:
         return mapSporks.count(inv.hash);
     case MSG_MASTERNODE_WINNER:
-        if (masternodePayments.GetPaymentWinnerForHash(inv.hash) != nullptr) {
-            masternodeSync.AddedMasternodeWinner(inv.hash);
-            return true;
-        }
-        return false;
+        return MasternodeWinnerIsKnown(inv.hash);
     case MSG_MASTERNODE_ANNOUNCE:
-        if (mnodeman.mapSeenMasternodeBroadcast.count(inv.hash)) {
-            masternodeSync.AddedMasternodeList(inv.hash);
-            return true;
-        }
-        return false;
+        return MasternodeIsKnown(inv.hash);
     case MSG_MASTERNODE_PING:
         return mnodeman.mapSeenMasternodePing.count(inv.hash);
     }
@@ -3753,22 +3745,18 @@ void static ProcessGetData(CNode* pfrom)
                 //    }
                 //}
 
-                if (!pushed && inv.type == MSG_MASTERNODE_ANNOUNCE) {
-                    if (mnodeman.mapSeenMasternodeBroadcast.count(inv.hash)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << mnodeman.mapSeenMasternodeBroadcast[inv.hash];
-                        pfrom->PushMessage("mnb", ss);
+                if (!pushed && inv.type == MSG_MASTERNODE_ANNOUNCE)
+                {
+                    if(ShareMasternodeBroadcastWithPeer(pfrom,inv.hash))
+                    {
                         pushed = true;
                     }
                 }
 
-                if (!pushed && inv.type == MSG_MASTERNODE_PING) {
-                    if (mnodeman.mapSeenMasternodePing.count(inv.hash)) {
-                        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-                        ss.reserve(1000);
-                        ss << mnodeman.mapSeenMasternodePing[inv.hash];
-                        pfrom->PushMessage("mnp", ss);
+                if (!pushed && inv.type == MSG_MASTERNODE_PING)
+                {
+                    if(ShareMasternodePingWithPeer(pfrom,inv.hash))
+                    {
                         pushed = true;
                     }
                 }

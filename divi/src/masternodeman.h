@@ -15,7 +15,6 @@
 #include <memory>
 
 #define MASTERNODES_DUMP_SECONDS (15 * 60)
-#define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 
 class CMasternodeMan;
 class CMasternodeSync;
@@ -38,8 +37,6 @@ private:
     std::vector<CMasternode> vMasternodes;
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
 
-    // who's asked for the Masternode list and the last time
-    std::map<CNetAddr, int64_t> mAskedUsForMasternodeList;
     // who we asked for the Masternode list and the last time
     std::map<CNetAddr, int64_t> mWeAskedForMasternodeList;
     // which Masternodes we've asked for
@@ -67,7 +64,6 @@ public:
         LOCK(cs);
         READWRITE(vMasternodes);
         READWRITE(*networkMessageManager_);
-        READWRITE(mAskedUsForMasternodeList);
         READWRITE(mWeAskedForMasternodeList);
         READWRITE(mWeAskedForMasternodeListEntry);
         READWRITE(nDsqCount);

@@ -37,9 +37,6 @@ private:
     std::vector<CMasternode> vMasternodes;
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
 
-    // which Masternodes we've asked for
-    std::map<COutPoint, int64_t> mWeAskedForMasternodeListEntry;
-
     // Cache of the most recent masternode ranks, so we can efficiently check
     // if some masternode is in the top-20 for a recent block height.
     class RankingCache;
@@ -62,7 +59,6 @@ public:
         LOCK(cs);
         READWRITE(vMasternodes);
         READWRITE(*networkMessageManager_);
-        READWRITE(mWeAskedForMasternodeListEntry);
         READWRITE(nDsqCount);
 
         READWRITE(mapSeenMasternodeBroadcast);

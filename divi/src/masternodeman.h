@@ -37,8 +37,6 @@ private:
     std::vector<CMasternode> vMasternodes;
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
 
-    // who we asked for the Masternode list and the last time
-    std::map<CNetAddr, int64_t> mWeAskedForMasternodeList;
     // which Masternodes we've asked for
     std::map<COutPoint, int64_t> mWeAskedForMasternodeListEntry;
 
@@ -64,7 +62,6 @@ public:
         LOCK(cs);
         READWRITE(vMasternodes);
         READWRITE(*networkMessageManager_);
-        READWRITE(mWeAskedForMasternodeList);
         READWRITE(mWeAskedForMasternodeListEntry);
         READWRITE(nDsqCount);
 

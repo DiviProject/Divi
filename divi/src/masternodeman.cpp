@@ -249,18 +249,10 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
         }
     }
 
-    // check who's asked for the Masternode list
-    std::map<CNetAddr, int64_t>::iterator it1 = mAskedUsForMasternodeList.begin();
-    while (it1 != mAskedUsForMasternodeList.end()) {
-        if ((*it1).second < GetTime()) {
-            mAskedUsForMasternodeList.erase(it1++);
-        } else {
-            ++it1;
-        }
-    }
+    networkMessageManager_->clearExpiredMasternodeListRequestsFromPeers();
 
     // check who we asked for the Masternode list
-    it1 = mWeAskedForMasternodeList.begin();
+    auto it1 = mWeAskedForMasternodeList.begin();
     while (it1 != mWeAskedForMasternodeList.end()) {
         if ((*it1).second < GetTime()) {
             mWeAskedForMasternodeList.erase(it1++);
@@ -508,7 +500,7 @@ void CMasternodeMan::Clear()
 {
     LOCK(cs);
     vMasternodes.clear();
-    mAskedUsForMasternodeList.clear();
+    networkMessageManager_->clear();
     mWeAskedForMasternodeList.clear();
     mWeAskedForMasternodeListEntry.clear();
     mapSeenMasternodeBroadcast.clear();
@@ -963,17 +955,11 @@ bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
     bool isLocal = (pfrom->addr.IsRFC1918() || pfrom->addr.IsLocal());
     if (!isLocal)
     {
-        std::map<CNetAddr, int64_t>::iterator i = mAskedUsForMasternodeList.find(pfrom->addr);
-        if (i != mAskedUsForMasternodeList.end()) {
-            int64_t t = (*i).second;
-            if (GetTime() < t) {
-                Misbehaving(pfrom->GetId(), 34);
-                LogPrintf("%s : dseg - peer already asked me for the list\n", __func__);
-                return true;
-            }
+        if(networkMessageManager_->peerHasRequestedMasternodeListTooOften(pfrom->addr))
+        {
+            Misbehaving(pfrom->GetId(), 34);
+            return true;
         }
-        int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
-        mAskedUsForMasternodeList[pfrom->addr] = askAgain;
     }
     return false;
 }
@@ -1044,7 +1030,16 @@ std::string CMasternodeMan::ToString() const
 {
     std::ostringstream info;
 
-    info << "Masternodes: " << (int)vMasternodes.size() << ", peers who asked us for Masternode list: " << (int)mAskedUsForMasternodeList.size() << ", peers we asked for Masternode list: " << (int)mWeAskedForMasternodeList.size() << ", entries in Masternode list we asked for: " << (int)mWeAskedForMasternodeListEntry.size() << ", nDsqCount: " << (int)nDsqCount;
+    info << "Masternodes: "
+        << (int)vMasternodes.size()
+        << ", "
+        << networkMessageManager_->ToString()
+        << ", peers we asked for Masternode list: "
+        << (int)mWeAskedForMasternodeList.size()
+        << ", entries in Masternode list we asked for: "
+        << (int)mWeAskedForMasternodeListEntry.size()
+        << ", nDsqCount: "
+        << (int)nDsqCount;
 
     return info.str();
 }

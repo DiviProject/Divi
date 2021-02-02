@@ -233,8 +233,8 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
         }
     }
 
-    networkMessageManager_->clearExpiredMasternodeListRequestsFromPeers();
-    networkMessageManager_->clearExpiredMasternodeListRequestsToPeers();
+    networkMessageManager_->clearTimedOutMasternodeListRequestsFromPeers();
+    networkMessageManager_->clearTimedOutMasternodeListRequestsToPeers();
     networkMessageManager_->clearTimedOutMasternodeEntryRequests();
 
     // remove expired mapSeenMasternodeBroadcast

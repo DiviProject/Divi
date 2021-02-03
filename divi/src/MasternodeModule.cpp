@@ -34,7 +34,52 @@ static T readFromHex(std::string hexString)
 }
 
 
+MasternodeStartResult StartMasternode(std::string alias, bool deferRelay)
+{
+    MasternodeStartResult result;
+    for(const auto& configEntry : masternodeConfig.getEntries())
+    {
+        if(configEntry.getAlias() != alias)
+            continue;
 
+        CMasternodeBroadcast mnb;
+
+        if(!CMasternodeBroadcastFactory::Create(
+                configEntry,
+                result.errorMessage,
+                mnb,
+                false,
+                deferRelay))
+        {
+            result.status = false;
+            return result;
+        }
+
+        if (deferRelay)
+        {
+            CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
+            ss << mnb;
+
+            result.status = true;
+            result.broadcastData = HexStr(ss.str());
+            return result;
+        }
+
+        if(!mnodeman.ProcessBroadcast(activeMasternode, masternodeSync,nullptr, mnb))
+        {
+            LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin.ToString());
+            result.status = false;
+            result.errorMessage = "Error processing broadcast";
+            return result;
+        }
+
+        result.status = true;
+        return result;
+    }
+    result.status = false;
+    result.errorMessage = "Invalid alias, couldn't find MN. Check your masternode.conf file";
+    return result;
+}
 
 bool RelayMasternodeBroadcast(std::string hexData, std::string signature)
 {

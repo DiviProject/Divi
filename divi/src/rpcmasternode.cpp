@@ -505,52 +505,21 @@ Value startmasternode(const Array& params, bool fHelp)
     const bool deferRelay = (params.size() == 1)? false: params[1].get_bool();
 
     EnsureWalletIsUnlocked();
+    Object result;
+    MasternodeStartResult mnResult = StartMasternode(alias,deferRelay);
 
-    for(const auto& configEntry : masternodeConfig.getEntries())
+    result.push_back(Pair("status",mnResult.status?"success":"failed"));
+    if(!mnResult.status)
     {
-        if(configEntry.getAlias() != alias)
-            continue;
-
-        Object result;
-        std::string strError;
-        CMasternodeBroadcast mnb;
-
-        if(!CMasternodeBroadcastFactory::Create(
-                configEntry,
-                strError,
-                mnb,
-                false,
-                deferRelay))
-        {
-            result.push_back(Pair("status", "failed"));
-            result.push_back(Pair("error", strError));
-            return result;
-        }
-
-        if (deferRelay)
-        {
-            CDataStream ss(SER_NETWORK,PROTOCOL_VERSION);
-            ss << mnb;
-
-            result.push_back(Pair("status", "success"));
-            result.push_back(Pair("broadcastData", HexStr(ss.str())));
-
-            return result;
-        }
-
-        if(!mnodeman.ProcessBroadcast(activeMasternode, masternodeSync,nullptr, mnb))
-        {
-            LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin.ToString());
-            result.push_back(Pair("status", "failed"));
-            result.push_back(Pair("error", strError));
-            return result;
-        }
-
-        result.push_back(Pair("status", "success"));
+        result.push_back(Pair("error",mnResult.errorMessage));
         return result;
     }
-
-    throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid alias, couldn't find MN. Check your masternode.conf file");
+    else if(deferRelay)
+    {
+        result.push_back(Pair("broadcastData",mnResult.broadcastData));
+        return result;
+    }
+    return result;
 }
 
 Value createmasternodekey(const Array& params, bool fHelp)

@@ -20,4 +20,16 @@ bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash);
 void ForceMasternodeResync();
 const CMasternodeSync& GetMasternodeSync();
 bool RelayMasternodeBroadcast(std::string hexData,std::string signature = "");
+struct MasternodeStartResult
+{
+    bool status;
+    std::string broadcastData;
+    std::string errorMessage;
+    MasternodeStartResult(
+        ): status(false)
+        , broadcastData("")
+        , errorMessage("No Error Data")
+    {}
+};
+MasternodeStartResult StartMasternode(std::string alias, bool deferRelay);
 #endif //MASTERNODE_MODULE_H

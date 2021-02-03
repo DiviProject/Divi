@@ -22,6 +22,11 @@
 extern bool fMasterNode;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
+void ForceMasternodeResync()
+{
+    masternodeSync.Reset();
+}
+
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash)
 {
     if (mnodeman.mapSeenMasternodePing.count(inventoryHash)) {

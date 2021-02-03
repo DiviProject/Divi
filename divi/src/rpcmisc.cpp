@@ -8,7 +8,6 @@
 #include "base58.h"
 #include "clientversion.h"
 #include "init.h"
-#include "masternode-sync.h"
 #include "rpcserver.h"
 #include "spork.h"
 #include "timedata.h"
@@ -31,6 +30,7 @@ extern CFeeRate payTxFee;
 #include <net.h>
 #include <obfuscation.h>
 #include <txmempool.h>
+#include <MasternodeModule.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -280,7 +280,7 @@ Value mnsync(const Array& params, bool fHelp)
     }
 
     if (strMode == "reset") {
-        masternodeSync.Reset();
+        ForceMasternodeResync();
         return "success";
     }
     return "failure";

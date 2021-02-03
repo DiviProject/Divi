@@ -7,6 +7,7 @@ class Settings;
 class CBlockIndex;
 class CDataStream;
 class CNode;
+class CMasternodeSync;
 void ThreadMasternodeBackgroundSync();
 bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage);
 void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction);
@@ -17,4 +18,5 @@ bool MasternodeIsKnown(const uint256& inventoryHash);
 bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash);
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash);
 void ForceMasternodeResync();
+const CMasternodeSync& GetMasternodeSync();
 #endif //MASTERNODE_MODULE_H

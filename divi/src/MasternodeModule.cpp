@@ -23,6 +23,11 @@ extern bool fMasterNode;
 CMasternodeSync masternodeSync;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
+const CMasternodeSync& GetMasternodeSync()
+{
+    return masternodeSync;
+}
+
 void ForceMasternodeResync()
 {
     masternodeSync.Reset();

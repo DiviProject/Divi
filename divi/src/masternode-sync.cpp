@@ -237,7 +237,7 @@ SyncStatus CMasternodeSync::SyncAssets(CNode* pnode, const int64_t now, const in
     if (lastUpdate == 0 &&
             (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || now - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5)) {
         if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
-            LogPrintf("CMasternodeSync::Process - ERROR - Sync has failed, will retry later\n");
+            LogPrintf("%s - ERROR - Sync has failed, will retry later (%s)\n",__func__,assetType);
             RequestedMasternodeAssets = MASTERNODE_SYNC_FAILED;
             RequestedMasternodeAttempt = 0;
             lastFailure = now;

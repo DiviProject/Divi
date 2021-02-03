@@ -18,6 +18,7 @@
 #include <version.h>
 #include <streams.h>
 #include <net.h>
+#include <base58address.h>
 
 extern bool fMasterNode;
 CMasternodeSync masternodeSync;
@@ -33,6 +34,26 @@ static T readFromHex(std::string hexString)
     return object;
 }
 
+ActiveMasternodeStatus GetActiveMasternodeStatus()
+{
+    if (!fMasterNode) throw std::runtime_error("This is not a masternode");
+    ActiveMasternodeStatus result;
+
+    CMasternode* pmn = mnodeman.Find(activeMasternode.vin);
+
+    if (pmn) {
+        result.txHash = activeMasternode.vin.prevout.hash.ToString();
+        result.outputIndex = std::to_string(activeMasternode.vin.prevout.n);
+        result.netAddress = activeMasternode.service.ToString();
+        result.collateralAddress = CBitcoinAddress(pmn->pubKeyCollateralAddress.GetID()).ToString();
+        result.statusCode = std::to_string(activeMasternode.status);
+        result.statusMessage = activeMasternode.GetStatus();
+        result.activeMasternodeFound = true;
+        return result;
+    }
+    assert(!result.activeMasternodeFound);
+    return result;
+}
 
 MasternodeStartResult StartMasternode(std::string alias, bool deferRelay)
 {

@@ -52,7 +52,7 @@ bool CActiveMasternode::SetMasternodeKey(const std::string& privKeyString)
     return true;
 }
 
-void CActiveMasternode::ManageStatus(CMasternodeSync& masternodeSynchronization, CMasternodeMan& masternodeManager)
+void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
 {
     std::string errorMessage ="";
 

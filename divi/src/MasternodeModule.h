@@ -3,6 +3,8 @@
 #include <string>
 #include <primitives/transaction.h>
 #include <functional>
+#include <stdint.h>
+#include <vector>
 class Settings;
 class CBlockIndex;
 class CDataStream;
@@ -52,4 +54,32 @@ struct ActiveMasternodeStatus
     {}
 };
 ActiveMasternodeStatus GetActiveMasternodeStatus();
+struct MasternodeListEntry
+{
+    std::string network;
+    std::string txHash;
+    uint64_t outputIndex;
+    std::string status;
+    std::string collateralAddress;
+    int protocolVersion;
+    int64_t signatureTime;
+    int64_t lastSeenTime;
+    int64_t activeTime;
+    int64_t lastPaidTime;
+    std::string masternodeTier;
+    MasternodeListEntry(
+        ): network()
+        , txHash()
+        , outputIndex()
+        , status()
+        , collateralAddress()
+        , protocolVersion()
+        , signatureTime()
+        , lastSeenTime()
+        , activeTime()
+        , lastPaidTime()
+        , masternodeTier()
+    {}
+};
+std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter);
 #endif //MASTERNODE_MODULE_H

@@ -34,6 +34,50 @@ static T readFromHex(std::string hexString)
     return object;
 }
 
+std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)
+{
+    std::vector<MasternodeListEntry> masternodeList;
+    std::vector<CMasternode> masternodeVector = mnodeman.GetFullMasternodeVector();
+    masternodeList.reserve(masternodeVector.size());
+
+    unsigned numberOfBlocksToSearchBackForLastPayment = (masternodeVector.size()*5)/4;
+    for(auto& masternode : masternodeVector)
+    {
+        std::string strVin = masternode.vin.prevout.ToStringShort();
+        std::string strTxHash = masternode.vin.prevout.hash.ToString();
+        uint32_t oIdx = masternode.vin.prevout.n;
+        const std::string collateralAddress = CBitcoinAddress(masternode.pubKeyCollateralAddress.GetID()).ToString();
+        if (strFilter != "" &&
+            strTxHash.find(strFilter) == std::string::npos &&
+            masternode.Status().find(strFilter) == std::string::npos &&
+            collateralAddress.find(strFilter) == std::string::npos)
+        {
+            continue;
+        }
+        masternodeList.emplace_back();
+        MasternodeListEntry& entry = masternodeList.back();
+
+        std::string strStatus = masternode.Status();
+        std::string strHost;
+        int port;
+        SplitHostPort(masternode.addr.ToString(), port, strHost);
+        CNetAddr node = CNetAddr(strHost, false);
+        std::string strNetwork = GetNetworkName(node.GetNetwork());
+
+        entry.network = strNetwork;
+        entry.txHash = strTxHash;
+        entry.outputIndex = oIdx;
+        entry.status = strStatus;
+        entry.collateralAddress = CBitcoinAddress(masternode.pubKeyCollateralAddress.GetID()).ToString();
+        entry.protocolVersion = masternode.protocolVersion;
+        entry.lastSeenTime = (int64_t)masternode.lastPing.sigTime;
+        entry.activeTime = (int64_t)(masternode.lastPing.sigTime - masternode.sigTime);
+        entry.lastPaidTime = (int64_t)masternodePayments.FindLastPayeePaymentTime(masternode,numberOfBlocksToSearchBackForLastPayment);
+        entry.masternodeTier = CMasternode::TierToString(static_cast<MasternodeTier>(masternode.nTier));
+    }
+    return masternodeList;
+}
+
 ActiveMasternodeStatus GetActiveMasternodeStatus()
 {
     if (!fMasterNode) throw std::runtime_error("This is not a masternode");

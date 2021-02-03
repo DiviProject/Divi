@@ -16,4 +16,5 @@ bool MasternodeWinnerIsKnown(const uint256& inventoryHash);
 bool MasternodeIsKnown(const uint256& inventoryHash);
 bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash);
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash);
+void ForceMasternodeResync();
 #endif //MASTERNODE_MODULE_H

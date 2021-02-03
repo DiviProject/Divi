@@ -16,7 +16,6 @@
 class CMasternodeSync;
 class CNode;
 class CDataStream;
-extern CMasternodeSync masternodeSync;
 #include <map>
 #include <uint256.h>
 #include <stdint.h>

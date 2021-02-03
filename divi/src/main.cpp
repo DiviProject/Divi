@@ -56,6 +56,7 @@ using namespace std;
 using namespace libzerocoin;
 
 extern Settings& settings;
+extern CMasternodeSync masternodeSync;
 
 #if defined(NDEBUG)
 #error "DIVI cannot be compiled without assertions."

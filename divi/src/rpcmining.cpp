@@ -23,8 +23,8 @@
 #include <I_CoinMinter.h>
 #include <CoinMintingModule.h>
 #include <ExtendedBlockFactory.h>
-#include <masternode-sync.h>
 #include <masternode-payments.h>
+#include <MasternodeModule.h>
 #include <spork.h>
 
 #include <stdint.h>
@@ -42,7 +42,6 @@ using namespace std;
 using namespace boost;
 using namespace boost::assign;
 extern Settings& settings;
-extern CMasternodeSync masternodeSync;
 
 /**
  * Return average network hashes per second based on the last 'lookup' blocks,
@@ -175,7 +174,7 @@ Value setgenerate(const Array& params, bool fHelp)
 
         Array blockHashes;
         CoinMintingModule mintingModule(
-            cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
+            cs_main, Params(), chainActive,GetMasternodeSync(),masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
         I_CoinMinter& minter = mintingModule.coinMinter();
 
         while (nHeight < nHeightEnd)
@@ -240,7 +239,7 @@ Value generateblock(const Array& params, bool fHelp)
     }
 
     CoinMintingModule mintingModule(
-        cs_main, Params(), chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
+        cs_main, Params(), chainActive,GetMasternodeSync(),masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
     I_CoinMinter& minter = mintingModule.coinMinter();
     ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
     assert(blockFactory);

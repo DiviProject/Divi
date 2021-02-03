@@ -40,7 +40,7 @@ class CoinMinter: public I_CoinMinter
     const CChainParams& chainParameters_;
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
-    CMasternodeSync& masternodeSync_;
+    const CMasternodeSync& masternodeSync_;
     HashedBlockMap& mapHashedBlocks_;
     bool haveMintableCoins_;
     int64_t lastTimeCheckedMintable_;
@@ -77,7 +77,7 @@ public:
         CChain& chain,
         const CChainParams& chainParameters,
         std::vector<CNode*>& peers,
-        CMasternodeSync& masternodeSynchronization,
+        const CMasternodeSync& masternodeSynchronization,
         HashedBlockMap& mapHashedBlocks,
         CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS);

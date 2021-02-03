@@ -18,7 +18,6 @@
 #include "kernel.h"
 #include "masternode-payments.h"
 #include "masternodeman.h"
-#include "masternode-sync.h"
 #include "merkleblock.h"
 #include "spork.h"
 #include "sporkdb.h"
@@ -56,7 +55,6 @@ using namespace std;
 using namespace libzerocoin;
 
 extern Settings& settings;
-extern CMasternodeSync masternodeSync;
 
 #if defined(NDEBUG)
 #error "DIVI cannot be compiled without assertions."
@@ -1509,7 +1507,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     static const BlockIncentivesPopulator incentives(
         chainParameters,
         chainActive,
-        masternodeSync,
+        GetMasternodeSync(),
         masternodePayments,
         subsidiesContainer.superblockHeightValidator(),
         subsidiesContainer.blockSubsidiesProvider(),

@@ -21,7 +21,7 @@ class BlockIncentivesPopulator : public I_BlockIncentivesPopulator
 private:
     const CChainParams& chainParameters_;
     CChain& activeChain_;
-    CMasternodeSync& masternodeSync_;
+    const CMasternodeSync& masternodeSync_;
     CMasternodePayments& masternodePayments_;
     const I_SuperblockHeightValidator& heightValidator_;
     const I_BlockSubsidyProvider& blockSubsidies_;
@@ -38,7 +38,7 @@ public:
     BlockIncentivesPopulator(
         const CChainParams& chainParameters,
         CChain& activeChain,
-        CMasternodeSync& masternodeSynchronization,
+        const CMasternodeSync& masternodeSynchronization,
         CMasternodePayments& masternodePayments,
         const I_SuperblockHeightValidator& heightValidator,
         const I_BlockSubsidyProvider& blockSubsidies,

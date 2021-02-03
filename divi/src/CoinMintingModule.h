@@ -38,7 +38,7 @@ public:
         AnnotatedMixin<boost::recursive_mutex>& mainCS,
         const CChainParams& chainParameters,
         CChain& activeChain,
-        CMasternodeSync& masternodeSynchronization,
+        const CMasternodeSync& masternodeSynchronization,
         CMasternodePayments& masternodePayments,
         CTxMemPool& mempool,
         std::vector<CNode*>& peers,

@@ -97,7 +97,7 @@ bool IsValidTreasuryPayment(const CChainParams& chainParameters, const CBlockRew
 BlockIncentivesPopulator::BlockIncentivesPopulator(
     const CChainParams& chainParameters,
     CChain& activeChain,
-    CMasternodeSync& masternodeSynchronization,
+    const CMasternodeSync& masternodeSynchronization,
     CMasternodePayments& masternodePayments,
     const I_SuperblockHeightValidator& heightValidator,
     const I_BlockSubsidyProvider& blockSubsidies,

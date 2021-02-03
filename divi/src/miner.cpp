@@ -9,8 +9,8 @@
 
 #include "amount.h"
 #include "main.h"
-#include "masternode-sync.h"
 #include <masternode-payments.h>
+#include <MasternodeModule.h>
 #include <CoinMintingModule.h>
 #include <I_CoinMinter.h>
 #include <Logging.h>
@@ -29,7 +29,6 @@
 //
 // Internal miner
 //
-extern CMasternodeSync masternodeSync;
 void SetThreadPriority(int nPriority);
 void RenameThread(const char* name);
 bool fGenerateDivi = false;
@@ -97,7 +96,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     LogPrintf("ThreadStakeMinter started\n");
     try {
         static CoinMintingModule mintingModule(
-            cs_main,Params(),chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
+            cs_main,Params(),chainActive,GetMasternodeSync(),masternodePayments,mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
@@ -118,7 +117,7 @@ void static ThreadPoWMinter(void* parg)
 
     try {
         static CoinMintingModule mintingModule(
-            cs_main,Params(),chainActive,masternodeSync,masternodePayments,mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
+            cs_main,Params(),chainActive,GetMasternodeSync(),masternodePayments,mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);

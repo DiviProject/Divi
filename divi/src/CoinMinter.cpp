@@ -30,7 +30,7 @@ CoinMinter::CoinMinter(
     CChain& chain,
     const CChainParams& chainParameters,
     std::vector<CNode*>& peers,
-    CMasternodeSync& masternodeSynchronization,
+    const CMasternodeSync& masternodeSynchronization,
     HashedBlockMap& mapHashedBlocks,
     CTxMemPool& transactionMemoryPool,
     AnnotatedMixin<boost::recursive_mutex>& mainCS

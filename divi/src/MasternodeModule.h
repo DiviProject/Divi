@@ -32,4 +32,24 @@ struct MasternodeStartResult
     {}
 };
 MasternodeStartResult StartMasternode(std::string alias, bool deferRelay);
+struct ActiveMasternodeStatus
+{
+    bool activeMasternodeFound;
+    std::string txHash;
+    std::string outputIndex;
+    std::string netAddress;
+    std::string collateralAddress;
+    std::string statusCode;
+    std::string statusMessage;
+    ActiveMasternodeStatus(
+        ): activeMasternodeFound(false)
+        , txHash()
+        , outputIndex()
+        , netAddress()
+        , collateralAddress()
+        , statusCode()
+        , statusMessage()
+    {}
+};
+ActiveMasternodeStatus GetActiveMasternodeStatus();
 #endif //MASTERNODE_MODULE_H

@@ -556,22 +556,20 @@ Value getmasternodestatus (const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmasternodestatus", "") + HelpExampleRpc("getmasternodestatus", ""));
 
-    if (!fMasterNode) throw std::runtime_error("This is not a masternode");
-
-    CMasternode* pmn = mnodeman.Find(activeMasternode.vin);
-
-    if (pmn) {
-        Object mnObj;
-        mnObj.push_back(Pair("txhash", activeMasternode.vin.prevout.hash.ToString()));
-        mnObj.push_back(Pair("outputidx", (uint64_t)activeMasternode.vin.prevout.n));
-        mnObj.push_back(Pair("netaddr", activeMasternode.service.ToString()));
-        mnObj.push_back(Pair("addr", CBitcoinAddress(pmn->pubKeyCollateralAddress.GetID()).ToString()));
-        mnObj.push_back(Pair("status", activeMasternode.status));
-        mnObj.push_back(Pair("message", activeMasternode.GetStatus()));
-        return mnObj;
+    const ActiveMasternodeStatus activeMNStatus = GetActiveMasternodeStatus();
+    if(!activeMNStatus.activeMasternodeFound)
+    {
+        throw std::runtime_error("Masternode not found in the list of available masternodes. Current status: "
+                    + activeMNStatus.statusMessage);
     }
-    throw std::runtime_error("Masternode not found in the list of available masternodes. Current status: "
-                        + activeMasternode.GetStatus());
+    Object mnObj;
+    mnObj.push_back(Pair("txhash", activeMNStatus.txHash ));
+    mnObj.push_back(Pair("outputidx", (uint64_t)std::stoi(activeMNStatus.outputIndex) ));
+    mnObj.push_back(Pair("netaddr", activeMNStatus.netAddress));
+    mnObj.push_back(Pair("addr", activeMNStatus.collateralAddress));
+    mnObj.push_back(Pair("status", std::stoi(activeMNStatus.statusCode) ));
+    mnObj.push_back(Pair("message", activeMNStatus.statusMessage));
+    return mnObj;
 }
 
 Value getmasternodewinners (const Array& params, bool fHelp)

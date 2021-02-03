@@ -16,9 +16,10 @@
 #include <Settings.h>
 extern Settings& settings;
 
+extern CChain chainActive;
 extern CCoinsViewCache* pcoinsTip;
 
-bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
 {
@@ -189,7 +190,7 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
     vecPriority.reserve(mempool_.mapTx.size());
     for (auto mi = mempool_.mapTx.begin(); mi != mempool_.mapTx.end(); ++mi) {
         const CTransaction& tx = mi->second.GetTx();
-        if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)){
+        if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, chainActive, nHeight)){
             continue;
         }
 

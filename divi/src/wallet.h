@@ -50,7 +50,9 @@ static const bool DEFAULT_USE_HD_WALLET = true;
 
 static const int ZQ_6666 = 6666;
 
+class BlockMap;
 class CAccountingEntry;
+class CChain;
 class CCoinControl;
 class COutput;
 class CReserveKey;
@@ -62,7 +64,7 @@ class CWalletDB;
 class COutPoint;
 class CTxIn;
 
-bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 
 /** (client) version numbers for particular wallet features */
@@ -131,6 +133,8 @@ public:
 private:
     std::unique_ptr<WalletTransactionRecord> transactionRecord_;
     std::unique_ptr<SpentOutputTracker> outputTracker_;
+    const CChain& chainActive_;
+    const BlockMap& mapBlockIndex_;
     int64_t orderedTransactionIndex;
 public:
     int nWalletVersion;   //! the current wallet version: clients below this version are not able to load the wallet
@@ -193,8 +197,8 @@ public:
 
 
 
-    CWallet();
-    CWallet(std::string strWalletFileIn);
+    explicit CWallet(const CChain& chain, const BlockMap& blockMap);
+    explicit CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap);
     ~CWallet();
 
     void SetNull();

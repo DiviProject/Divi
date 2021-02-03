@@ -17,6 +17,8 @@
 #include <script/StakingVaultScript.h>
 #include <random.h>
 
+#include <test/FakeBlockIndexChain.h>
+
 // how many times to run all the tests to have a chance to catch errors that only show up with particular random shuffles
 #define RUN_TESTS 100
 
@@ -24,16 +26,39 @@
 // we repeat those tests this many times and only complain if all iterations of the test fail
 #define RANDOM_REPEATS 5
 
+namespace
+{
+
 using namespace std;
 
 typedef set<pair<const CWalletTx*,unsigned int> > CoinSet;
 
-BOOST_AUTO_TEST_SUITE(wallet_tests)
+bool equal_sets(CoinSet a, CoinSet b)
+{
+    pair<CoinSet::iterator, CoinSet::iterator> ret = mismatch(a.begin(), a.end(), b.begin());
+    return ret.first == a.end() && ret.second == b.end();
+}
 
-static CWallet wallet;
-static vector<COutput> vCoins;
+class WalletTestFixture
+{
 
-static void add_coin(const CAmount& nValue, int nAge = 6*24, bool fIsFromMe = false, int nInput=0)
+protected:
+
+  FakeBlockIndexWithHashes fakeChain;
+  CWallet wallet;
+  std::vector<COutput> vCoins;
+
+  WalletTestFixture()
+    : fakeChain(1, 1600000000, 1),
+      wallet(*fakeChain.activeChain, *fakeChain.blockIndexByHash)
+  {}
+
+  void add_coin(const CAmount nValue, int nAge = 6*24, bool fIsFromMe = false, int nInput = 0);
+  void empty_wallet();
+
+};
+
+void WalletTestFixture::add_coin(const CAmount nValue, int nAge, bool fIsFromMe, int nInput)
 {
     static int nextLockTime = 0;
     CMutableTransaction tx;
@@ -55,18 +80,14 @@ static void add_coin(const CAmount& nValue, int nAge = 6*24, bool fIsFromMe = fa
     vCoins.push_back(output);
 }
 
-static void empty_wallet(void)
+void WalletTestFixture::empty_wallet()
 {
     BOOST_FOREACH(COutput output, vCoins)
         delete output.tx;
     vCoins.clear();
 }
 
-static bool equal_sets(CoinSet a, CoinSet b)
-{
-    pair<CoinSet::iterator, CoinSet::iterator> ret = mismatch(a.begin(), a.end(), b.begin());
-    return ret.first == a.end() && ret.second == b.end();
-}
+BOOST_FIXTURE_TEST_SUITE(wallet_tests, WalletTestFixture)
 
 BOOST_AUTO_TEST_CASE(coin_selection_tests)
 {
@@ -312,7 +333,7 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
 
 BOOST_AUTO_TEST_CASE(check_if_charging_correct_amount_per_kilobyte)
 {
-    size_t kilobytes = 1000u;
+    constexpr size_t kilobytes = 1000u;
     CFeeRate feeRate = CFeeRate( 1 );
 
     CAmount actualFee = feeRate.GetFee( kilobytes );
@@ -323,3 +344,5 @@ BOOST_AUTO_TEST_CASE(check_if_charging_correct_amount_per_kilobyte)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+} // anonymous namespace

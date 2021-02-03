@@ -41,7 +41,6 @@
 
 #include "Settings.h"
 extern Settings& settings;
-extern CChain chainActive;
 extern bool fMasterNode;
 void runCommand(std::string strCommand);
 
@@ -78,7 +77,6 @@ int64_t nStartupTime = GetAdjustedTime();
 extern bool fImporting ;
 extern bool fReindex ;
 extern CCriticalSection cs_main;
-extern BlockMap mapBlockIndex;
 extern CTxMemPool mempool;
 extern int64_t nTimeBestReceived;
 extern CFeeRate minRelayTxFee;
@@ -86,14 +84,14 @@ extern CAmount maxTxFee;
 extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
 
-bool IsFinalTx(const CTransaction& tx, int nBlockHeight, int64_t nBlockTime)
+bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight, int64_t nBlockTime)
 {
     AssertLockHeld(cs_main);
     // Time based nLockTime implemented in 0.1.6
     if (tx.nLockTime == 0)
         return true;
     if (nBlockHeight == 0)
-        nBlockHeight = chainActive.Height();
+        nBlockHeight = activeChain.Height();
     if (nBlockTime == 0)
         nBlockTime = GetAdjustedTime();
     if ((int64_t)tx.nLockTime < ((int64_t)tx.nLockTime < LOCKTIME_THRESHOLD ? (int64_t)nBlockHeight : nBlockTime))
@@ -111,7 +109,7 @@ bool IsFinalTx(const CTransaction& tx, int nBlockHeight, int64_t nBlockTime)
  *
  * See consensus/consensus.h for flag definitions.
  */
-bool CheckFinalTx(const CTransaction& tx, int flags = -1)
+bool CheckFinalTx(const CTransaction& tx, const CChain& activeChain, int flags = -1)
 {
     AssertLockHeld(cs_main);
 
@@ -123,22 +121,22 @@ bool CheckFinalTx(const CTransaction& tx, int flags = -1)
     // scheduled, so no flags are set.
     flags = std::max(flags, 0);
 
-    // CheckFinalTx() uses chainActive.Height()+1 to evaluate
+    // CheckFinalTx() uses chainActive_.Height()+1 to evaluate
     // nLockTime because when IsFinalTx() is called within
     // CBlock::AcceptBlock(), the height of the block *being*
     // evaluated is what is used. Thus if we want to know if a
     // transaction can be part of the *next* block, we need to call
-    // IsFinalTx() with one more than chainActive.Height().
-    const int nBlockHeight = chainActive.Height() + 1;
+    // IsFinalTx() with one more than chainActive_.Height().
+    const int nBlockHeight = activeChain.Height() + 1;
 
     // BIP113 will require that time-locked transactions have nLockTime set to
     // less than the median time of the previous block they're contained in.
     // When the next block is created its previous block will be the current
     // chain tip, so we use that to calculate the median time passed to
     // IsFinalTx() if LOCKTIME_MEDIAN_TIME_PAST is set.
-    const int64_t nBlockTime = (flags & LOCKTIME_MEDIAN_TIME_PAST) ? chainActive.Tip()->GetMedianTimePast() : GetAdjustedTime();
+    const int64_t nBlockTime = (flags & LOCKTIME_MEDIAN_TIME_PAST) ? activeChain.Tip()->GetMedianTimePast() : GetAdjustedTime();
 
-    return IsFinalTx(tx, nBlockHeight, nBlockTime);
+    return IsFinalTx(tx, activeChain, nBlockHeight, nBlockTime);
 }
 
 bool IsAvailableType(const CKeyStore& keystore, const CScript& scriptPubKey, AvailableCoinsType coinType, isminetype& mine,VaultType& vaultType)
@@ -180,35 +178,28 @@ bool WriteTxToDisk(const CWallet* walletPtr, const CWalletTx& transactionToWrite
     return CWalletDB(walletPtr->strWalletFile).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
 }
 
-CWallet::CWallet(
+CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     ): cs_wallet()
-    , fFileBacked()
-    , strWalletFile()
     , transactionRecord_(new WalletTransactionRecord(cs_wallet,strWalletFile) )
     , outputTracker_( new SpentOutputTracker(*transactionRecord_) )
+    , chainActive_(chain)
+    , mapBlockIndex_(blockMap)
     , orderedTransactionIndex()
-    , nWalletVersion()
-    , fBackupMints()
-    , mapKeyMetadata()
-    , mapMasterKeys()
-    , nMasterKeyMaxID()
-    , mapAddressBook()
-    , vchDefaultKey()
-    , setLockedCoins()
-    , mapHdPubKeys()
-    , nNextResend()
-    , nLastResend()
+    , nWalletVersion(0)
+    , fBackupMints(false)
+    , nMasterKeyMaxID(0)
+    , nNextResend(0)
+    , nLastResend(0)
     , pwalletdbEncryption(NULL)
-    , setInternalKeyPool()
-    , setExternalKeyPool()
-    , walletStakingOnly()
+    , walletStakingOnly(false)
     , allowSpendingZeroConfirmationOutputs(false)
     , defaultKeyPoolTopUp(0)
 {
     SetNull();
 }
 
-CWallet::CWallet(std::string strWalletFileIn): CWallet()
+CWallet::CWallet(const std::string& strWalletFileIn, const CChain& chain, const BlockMap& blockMap)
+  : CWallet(chain, blockMap)
 {
     strWalletFile = strWalletFileIn;
     fFileBacked = true;
@@ -1199,7 +1190,7 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
         }
     }
 
-    int64_t blocktime = mapBlockIndex[wtx.hashBlock]->GetBlockTime();
+    const int64_t blocktime = mapBlockIndex_.at(wtx.hashBlock)->GetBlockTime();
     return std::max(latestEntry, std::min(blocktime, latestNow));
 }
 
@@ -1228,7 +1219,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
             wtx.nTimeSmart = wtx.nTimeReceived;
             if (wtxIn.hashBlock != 0)
             {
-                if (mapBlockIndex.count(wtxIn.hashBlock))
+                if (mapBlockIndex_.count(wtxIn.hashBlock))
                 {
                     wtx.nTimeSmart = SmartWalletTxTimestampEstimation(wtx);
                 }
@@ -1402,11 +1393,11 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
         // no need to read and scan block, if block was created before
         // our wallet birthday (as adjusted for block time variability)
         while (pindex && nTimeFirstKey && (pindex->GetBlockTime() < (nTimeFirstKey - 7200)))
-            pindex = chainActive.Next(pindex);
+            pindex = chainActive_.Next(pindex);
 
         ShowProgress(translate("Rescanning..."), 0); // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
         double dProgressStart = checkpointsVerifier.GuessVerificationProgress(pindex, false);
-        double dProgressTip = checkpointsVerifier.GuessVerificationProgress(chainActive.Tip(), false);
+        double dProgressTip = checkpointsVerifier.GuessVerificationProgress(chainActive_.Tip(), false);
         while (pindex) {
             if (pindex->nHeight % 100 == 0 && dProgressTip - dProgressStart > 0.0)
                 ShowProgress(translate("Rescanning..."), std::max(1, std::min(99, (int)((checkpointsVerifier.GuessVerificationProgress(pindex, false) - dProgressStart) / (dProgressTip - dProgressStart) * 100))));
@@ -1417,7 +1408,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
                 if (AddToWalletIfInvolvingMe(tx, &block, fUpdate))
                     ret++;
             }
-            pindex = chainActive.Next(pindex);
+            pindex = chainActive_.Next(pindex);
             if (GetTime() >= nNow + 60) {
                 nNow = GetTime();
                 LogPrintf("Still rescanning. At block %d. Progress=%f\n", pindex->nHeight, checkpointsVerifier.GuessVerificationProgress(pindex));
@@ -1609,7 +1600,7 @@ CAmount CWallet::GetUnconfirmedBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
+            if (!IsFinalTx(*pcoin, chainActive_) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
                 nTotal += GetAvailableCredit(*pcoin);
         }
     }
@@ -1651,7 +1642,7 @@ CAmount CWallet::GetUnconfirmedWatchOnlyBalance() const
         LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); ++it) {
             const CWalletTx* pcoin = &(*it).second;
-            if (!IsFinalTx(*pcoin) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
+            if (!IsFinalTx(*pcoin, chainActive_) || (!IsTrusted(*pcoin) && pcoin->GetNumberOfBlockConfirmations() == 0))
                 nTotal += GetAvailableWatchOnlyCredit(*pcoin);
         }
     }
@@ -1676,7 +1667,7 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
  */
 bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed, bool fUseIX) const
 {
-    if (!CheckFinalTx(*pcoin))
+    if (!CheckFinalTx(*pcoin, chainActive_))
         return false;
 
     if (fOnlyConfirmed && !IsTrusted(*pcoin))
@@ -1836,10 +1827,11 @@ bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const
         if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
             continue;
 
-        if(mapBlockIndex.count(out.tx->hashBlock)<1)
+        const auto mit = mapBlockIndex_.find(out.tx->hashBlock);
+        if(mit == mapBlockIndex_.end())
             continue;
 
-        int64_t nTxTime = mapBlockIndex[out.tx->hashBlock]->GetBlockTime();
+        const int64_t nTxTime = mit->second->GetBlockTime();
 
         //check for min age
         if (std::max(int64_t(0),GetAdjustedTime() - nTxTime) < Params().GetMinCoinAgeForStaking())
@@ -2706,7 +2698,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
         BOOST_FOREACH (PAIRTYPE(uint256, CWalletTx) walletEntry, transactionRecord_->mapWallet) {
             CWalletTx* pcoin = &walletEntry.second;
 
-            if (!IsFinalTx(*pcoin) || !IsTrusted(*pcoin))
+            if (!IsFinalTx(*pcoin, chainActive_) || !IsTrusted(*pcoin))
                 continue;
 
             if (pcoin->IsCoinBase() && pcoin->GetBlocksToMaturity() > 0)
@@ -2886,7 +2878,7 @@ unsigned int CWallet::GetKeyPoolSize() const
 bool CWallet::IsTrusted(const CWalletTx& walletTransaction) const
 {
     // Quick answer in most cases
-    if (!IsFinalTx(walletTransaction))
+    if (!IsFinalTx(walletTransaction, chainActive_))
         return false;
     int nDepth = walletTransaction.GetNumberOfBlockConfirmations();
     if (nDepth >= 1)
@@ -2993,7 +2985,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const
             mapKeyBirth[it->first] = it->second.nCreateTime;
 
     // map in which we'll infer heights of other keys
-    CBlockIndex* pindexMax = chainActive[std::max(0, chainActive.Height() - 144)]; // the tip can be reorganised; use a 144-block safety margin
+    CBlockIndex* pindexMax = chainActive_[std::max(0, chainActive_.Height() - 144)]; // the tip can be reorganised; use a 144-block safety margin
     std::map<CKeyID, CBlockIndex*> mapKeyFirstBlock;
     std::set<CKeyID> setKeys;
     GetKeys(setKeys);
@@ -3012,8 +3004,8 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const
     for (std::map<uint256, CWalletTx>::const_iterator it = transactionRecord_->mapWallet.begin(); it != transactionRecord_->mapWallet.end(); it++) {
         // iterate over all wallet transactions...
         const CWalletTx& wtx = (*it).second;
-        BlockMap::const_iterator blit = mapBlockIndex.find(wtx.hashBlock);
-        if (blit != mapBlockIndex.end() && chainActive.Contains(blit->second)) {
+        BlockMap::const_iterator blit = mapBlockIndex_.find(wtx.hashBlock);
+        if (blit != mapBlockIndex_.end() && chainActive_.Contains(blit->second)) {
             // ... which are already in a block
             int nHeight = blit->second->nHeight;
             BOOST_FOREACH (const CTxOut& txout, wtx.vout) {

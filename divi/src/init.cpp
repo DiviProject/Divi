@@ -1291,7 +1291,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
 bool CreateNewWalletIfOneIsNotAvailable(std::string strWalletFile, std::ostringstream& strErrors)
 {
     bool fFirstRun = true;
-    pwalletMain = new CWallet(strWalletFile);
+    pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex);
     DBErrors nLoadWalletRet = pwalletMain->LoadWallet(fFirstRun);
     if (nLoadWalletRet != DB_LOAD_OK) {
         if (nLoadWalletRet == DB_CORRUPT)
@@ -1620,7 +1620,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         if (settings.GetBoolArg("-zapwallettxes", false)) {
             uiInterface.InitMessage(translate("Zapping all transactions from wallet..."));
 
-            pwalletMain = new CWallet(strWalletFile);
+            pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex);
             DBErrors nZapWalletRet = pwalletMain->ZapWalletTx(vWtx);
             if (nZapWalletRet != DB_LOAD_OK) {
                 uiInterface.InitMessage(translate("Error loading wallet.dat: Wallet corrupted"));

@@ -20,6 +20,7 @@
 #include <net.h>
 
 extern bool fMasterNode;
+extern CMasternodeSync masternodeSync;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
 void ForceMasternodeResync()
@@ -198,6 +199,8 @@ void ThreadMasternodeBackgroundSync()
 
     int64_t nTimeManageStatus = 0;
     int64_t nTimeConnections = 0;
+    int64_t lastResyncMasternodeData = GetTime();
+    constexpr int64_t forceMasternodeResyncTimeWindow = 60*60;
 
     while (true) {
         int64_t now;
@@ -213,9 +216,13 @@ void ThreadMasternodeBackgroundSync()
         // ignores calls if they are too early
         masternodeSync.Process(regtest);
 
-        if (!CMasternodeSync::IsBlockchainSynced())
-            continue;
-
+        bool blockchainIsSynced = CMasternodeSync::IsBlockchainSynced();
+        if(now - lastResyncMasternodeData > forceMasternodeResyncTimeWindow)
+        {
+            masternodeSync.Reset();
+            lastResyncMasternodeData = now;
+        }
+        if(!blockchainIsSynced) continue;
         // check if we should activate or ping every few minutes,
         // start right after sync is considered to be done
         if (now >= nTimeManageStatus + MASTERNODE_PING_SECONDS) {

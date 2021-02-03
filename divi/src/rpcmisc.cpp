@@ -31,6 +31,7 @@ extern CFeeRate payTxFee;
 #include <obfuscation.h>
 #include <txmempool.h>
 #include <MasternodeModule.h>
+#include <masternode-sync.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -263,18 +264,18 @@ Value mnsync(const Array& params, bool fHelp)
 
     if (strMode == "status") {
         Object obj;
-
-        obj.push_back(Pair("IsBlockchainSynced", masternodeSync.IsBlockchainSynced()));
-        obj.push_back(Pair("lastMasternodeList", masternodeSync.lastMasternodeList));
-        obj.push_back(Pair("lastMasternodeWinner", masternodeSync.lastMasternodeWinner));
-        obj.push_back(Pair("lastFailure", masternodeSync.lastFailure));
-        obj.push_back(Pair("nCountFailures", masternodeSync.nCountFailures));
-        obj.push_back(Pair("sumMasternodeList", masternodeSync.sumMasternodeList));
-        obj.push_back(Pair("sumMasternodeWinner", masternodeSync.sumMasternodeWinner));
-        obj.push_back(Pair("countMasternodeList", masternodeSync.countMasternodeList));
-        obj.push_back(Pair("countMasternodeWinner", masternodeSync.countMasternodeWinner));
-        obj.push_back(Pair("RequestedMasternodeAssets", masternodeSync.RequestedMasternodeAssets));
-        obj.push_back(Pair("RequestedMasternodeAttempt", masternodeSync.RequestedMasternodeAttempt));
+        const CMasternodeSync& masternodeSynchronization = GetMasternodeSync();
+        obj.push_back(Pair("IsBlockchainSynced", CMasternodeSync::IsBlockchainSynced()));
+        obj.push_back(Pair("lastMasternodeList", masternodeSynchronization.lastMasternodeList));
+        obj.push_back(Pair("lastMasternodeWinner", masternodeSynchronization.lastMasternodeWinner));
+        obj.push_back(Pair("lastFailure", masternodeSynchronization.lastFailure));
+        obj.push_back(Pair("nCountFailures", masternodeSynchronization.nCountFailures));
+        obj.push_back(Pair("sumMasternodeList", masternodeSynchronization.sumMasternodeList));
+        obj.push_back(Pair("sumMasternodeWinner", masternodeSynchronization.sumMasternodeWinner));
+        obj.push_back(Pair("countMasternodeList", masternodeSynchronization.countMasternodeList));
+        obj.push_back(Pair("countMasternodeWinner", masternodeSynchronization.countMasternodeWinner));
+        obj.push_back(Pair("RequestedMasternodeAssets", masternodeSynchronization.RequestedMasternodeAssets));
+        obj.push_back(Pair("RequestedMasternodeAttempt", masternodeSynchronization.RequestedMasternodeAttempt));
 
         return obj;
     }
@@ -1185,7 +1186,7 @@ Value getstakingstatus(const Array& params, bool fHelp)
         obj.push_back(Pair("enoughcoins", pwalletMain->GetStakingBalance() > 0  ));
     }
 
-    obj.push_back(Pair("mnsync", masternodeSync.IsSynced()));
+    obj.push_back(Pair("mnsync", GetMasternodeSync().IsSynced()));
 
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();
     obj.push_back(Pair("staking status", nStaking));

@@ -256,7 +256,7 @@ int CMasternodePayments::GetMinMasternodePaymentsProto() const
 
 void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& masternodeSynchronization,CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
-    if (!masternodeSynchronization.IsBlockchainSynced()) return;
+    if (!CMasternodeSync::IsBlockchainSynced()) return;
 
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
 

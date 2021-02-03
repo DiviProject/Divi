@@ -20,6 +20,7 @@
 #include <WalletTx.h>
 #include <Logging.h>
 #include <masternode-sync.h>
+#include <MasternodeModule.h>
 #include <version.h>
 
 #include <boost/tokenizer.hpp>
@@ -32,16 +33,6 @@ extern CActiveMasternode activeMasternode;
 extern CMasternodeSync masternodeSync;
 extern void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false, bool spendFromVaults = false);
 extern CBitcoinAddress GetAccountAddress(std::string strAccount, bool bForceNew = false);
-
-template <typename T>
-static T readFromHex(std::string hexString)
-{
-    std::vector<unsigned char> hex = ParseHex(hexString);
-    CDataStream ss(hex,SER_NETWORK,PROTOCOL_VERSION);
-    T object;
-    ss >> object;
-    return object;
-}
 
 static MasternodeTier GetMasternodeTierFromString(std::string str)
 {
@@ -485,33 +476,15 @@ Value broadcaststartmasternode(const Array& params, bool fHelp)
             "\nResult:\n"
             "\"status\"	(string) status of broadcast\n");
 
-    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(params[0].get_str());
-    if(params.size()==2)
-    {
-        mnb.signature = ParseHex(params[1].get_str());
-        if(activeMasternode.IsOurBroadcast(mnb,true))
-        {
-            if(activeMasternode.UpdatePing(mnb.lastPing))
-            {
-                LogPrint("masternode","Ping updated successfully!\n");
-            }
-            else
-            {
-                LogPrint("masternode","Ping not updated! Failure to sign!\n");
-            }
-        }
-        else
-        {
-            LogPrint("masternode","This broadcast does not belong to us!\n");
-        }
-    }
-
     Object result;
-    if (mnodeman.ProcessBroadcast(activeMasternode, masternodeSync,nullptr, mnb))
+    if(RelayMasternodeBroadcast(params[0].get_str(), (params.size()==2)? params[1].get_str():"" ))
+    {
         result.push_back(Pair("status", "success"));
+    }
     else
+    {
         result.push_back(Pair("status","failed"));
-
+    }
     return result;
 }
 

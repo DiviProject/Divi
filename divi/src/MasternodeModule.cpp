@@ -23,6 +23,52 @@ extern bool fMasterNode;
 CMasternodeSync masternodeSync;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
+template <typename T>
+static T readFromHex(std::string hexString)
+{
+    std::vector<unsigned char> hex = ParseHex(hexString);
+    CDataStream ss(hex,SER_NETWORK,PROTOCOL_VERSION);
+    T object;
+    ss >> object;
+    return object;
+}
+
+
+
+
+bool RelayMasternodeBroadcast(std::string hexData, std::string signature)
+{
+    CMasternodeBroadcast mnb = readFromHex<CMasternodeBroadcast>(hexData);
+    if(!signature.empty())
+    {
+        mnb.signature = ParseHex(signature);
+        if(activeMasternode.IsOurBroadcast(mnb,true))
+        {
+            if(activeMasternode.UpdatePing(mnb.lastPing))
+            {
+                LogPrint("masternode","Ping updated successfully!\n");
+            }
+            else
+            {
+                LogPrint("masternode","Ping not updated! Failure to sign!\n");
+            }
+        }
+        else
+        {
+            LogPrint("masternode","This broadcast does not belong to us!\n");
+        }
+    }
+
+    if (mnodeman.ProcessBroadcast(activeMasternode, masternodeSync,nullptr, mnb))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 const CMasternodeSync& GetMasternodeSync()
 {
     return masternodeSync;

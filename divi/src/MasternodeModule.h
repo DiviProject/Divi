@@ -19,4 +19,5 @@ bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash);
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash);
 void ForceMasternodeResync();
 const CMasternodeSync& GetMasternodeSync();
+bool RelayMasternodeBroadcast(std::string hexData,std::string signature = "");
 #endif //MASTERNODE_MODULE_H

@@ -261,13 +261,11 @@ public:
     }
 };
 
-class CMasternodeSync;
 class CMasternodeBroadcastFactory
 {
 public:
     /// Create Masternode broadcast, needs to be relayed manually after that
     static bool Create(
-        CMasternodeSync& masternodeSynchronization,
         const CMasternodeConfig::CMasternodeEntry configEntry,
         std::string& strErrorRet,
         CMasternodeBroadcast& mnbRet,
@@ -275,7 +273,6 @@ public:
         bool deferRelay = false);
 
     static bool Create(
-        CMasternodeSync& masternodeSynchronization,
         const CMasternodeConfig::CMasternodeEntry configEntry,
         CPubKey pubkeyCollateralAddress,
         std::string& strErrorRet,
@@ -320,7 +317,6 @@ private:
                         CMasternodeBroadcast& mnbRet,
                         bool deferRelay);
     static bool checkBlockchainSync(
-        CMasternodeSync& masternodeSynchronization,
         std::string& strErrorRet, bool fOffline);
     static bool setMasternodeKeys(
         const std::string& strKeyMasternode,
@@ -342,7 +338,6 @@ private:
         MasternodeTier& nMasternodeTier,
         std::string& strErrorRet);
     static bool createArgumentsFromConfig(
-        CMasternodeSync& masternodeSynchronization,
         const CMasternodeConfig::CMasternodeEntry configEntry,
         std::string& strErrorRet,
         bool fOffline,

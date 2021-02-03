@@ -420,7 +420,7 @@ CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
 {}
 
 
-bool CMasternodeBroadcastFactory::checkBlockchainSync(CMasternodeSync& masternodeSynchronization, std::string& strErrorRet, bool fOffline)
+bool CMasternodeBroadcastFactory::checkBlockchainSync(std::string& strErrorRet, bool fOffline)
 {
      if (!fOffline && !CMasternodeSync::IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
@@ -499,7 +499,6 @@ bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
 }
 
 bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
-    CMasternodeSync& masternodeSynchronization,
     const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
     bool fOffline,
@@ -515,7 +514,7 @@ bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
     std::string strTxHash = configEntry.getTxHash();
     std::string strOutputIndex = configEntry.getOutputIndex();
     //need correct blocks to send ping
-    if (!checkBlockchainSync(masternodeSynchronization,strErrorRet,fOffline)||
+    if (!checkBlockchainSync(strErrorRet,fOffline)||
         !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
         !setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,collateralPrivKeyIsRemote,txin,masternodeCollateralKeyPair,strErrorRet) ||
         !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet))
@@ -526,7 +525,6 @@ bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
 }
 
 bool CMasternodeBroadcastFactory::Create(
-    CMasternodeSync& masternodeSynchronization,
     const CMasternodeConfig::CMasternodeEntry configEntry,
     CPubKey pubkeyCollateralAddress,
     std::string& strErrorRet,
@@ -541,7 +539,6 @@ bool CMasternodeBroadcastFactory::Create(
     MasternodeTier nMasternodeTier;
 
     if(!createArgumentsFromConfig(
-        masternodeSynchronization,
         configEntry,
         strErrorRet,
         fOffline,
@@ -572,7 +569,6 @@ bool CMasternodeBroadcastFactory::Create(
 }
 
 bool CMasternodeBroadcastFactory::Create(
-    CMasternodeSync& masternodeSynchronization,
     const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
     CMasternodeBroadcast& mnbRet,
@@ -591,7 +587,6 @@ bool CMasternodeBroadcastFactory::Create(
     MasternodeTier nMasternodeTier;
 
     if(!createArgumentsFromConfig(
-        masternodeSynchronization,
         configEntry,
         strErrorRet,
         fOffline,

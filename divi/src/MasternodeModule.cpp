@@ -213,7 +213,7 @@ void ThreadMasternodeBackgroundSync()
         // ignores calls if they are too early
         masternodeSync.Process(regtest);
 
-        if (!masternodeSync.IsBlockchainSynced())
+        if (!CMasternodeSync::IsBlockchainSynced())
             continue;
 
         // check if we should activate or ping every few minutes,

@@ -422,7 +422,7 @@ CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
 
 bool CMasternodeBroadcastFactory::checkBlockchainSync(CMasternodeSync& masternodeSynchronization, std::string& strErrorRet, bool fOffline)
 {
-     if (!fOffline && !masternodeSynchronization.IsBlockchainSynced()) {
+     if (!fOffline && !CMasternodeSync::IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;

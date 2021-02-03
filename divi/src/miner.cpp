@@ -29,6 +29,7 @@
 //
 // Internal miner
 //
+extern CMasternodeSync masternodeSync;
 void SetThreadPriority(int nPriority);
 void RenameThread(const char* name);
 bool fGenerateDivi = false;

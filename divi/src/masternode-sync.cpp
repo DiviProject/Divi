@@ -28,10 +28,6 @@ extern bool fImporting;
 extern bool fReindex;
 extern CChain chainActive;
 
-
-class CMasternodeSync;
-CMasternodeSync masternodeSync;
-
 CMasternodeSync::CMasternodeSync()
 {
     Reset();

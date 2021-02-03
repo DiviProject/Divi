@@ -20,7 +20,7 @@
 #include <net.h>
 
 extern bool fMasterNode;
-extern CMasternodeSync masternodeSync;
+CMasternodeSync masternodeSync;
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 
 void ForceMasternodeResync()

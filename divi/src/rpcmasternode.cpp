@@ -346,43 +346,25 @@ Value listmasternodes(const Array& params, bool fHelp)
         CBlockIndex* pindex = chainActive.Tip();
         if(!pindex) return 0;
     }
-    std::vector<CMasternode> masternodeVector = mnodeman.GetFullMasternodeVector();
-    ret.reserve(masternodeVector.size());
-    unsigned numberOfBlocksToSearchBackForLastPayment = (masternodeVector.size()*5)/4;
-    for(auto& masternode : masternodeVector) {
+
+    std::vector<MasternodeListEntry> masternodeList = GetMasternodeList(strFilter);
+    ret.reserve(masternodeList.size());
+    for(auto& masternodeEntry : masternodeList)
+    {
         Object obj;
-        std::string strVin = masternode.vin.prevout.ToStringShort();
-        std::string strTxHash = masternode.vin.prevout.hash.ToString();
-        uint32_t oIdx = masternode.vin.prevout.n;
+        obj.reserve(10);
+        obj.emplace_back("network", masternodeEntry.network);
+        obj.emplace_back("txhash", masternodeEntry.txHash);
+        obj.emplace_back("outidx", masternodeEntry.outputIndex);
+        obj.emplace_back("status", masternodeEntry.status);
+        obj.emplace_back("addr", masternodeEntry.collateralAddress);
+        obj.emplace_back("version", masternodeEntry.protocolVersion);
+        obj.emplace_back("lastseen", masternodeEntry.lastSeenTime);
+        obj.emplace_back("activetime", masternodeEntry.activeTime);
+        obj.emplace_back("lastpaid", masternodeEntry.lastPaidTime);
+        obj.emplace_back("tier",masternodeEntry.masternodeTier );
 
-        CMasternode* mn = &masternode;
-
-        if (mn != NULL) {
-            if (strFilter != "" && strTxHash.find(strFilter) == std::string::npos &&
-                mn->Status().find(strFilter) == std::string::npos &&
-                CBitcoinAddress(mn->pubKeyCollateralAddress.GetID()).ToString().find(strFilter) == std::string::npos) continue;
-
-            std::string strStatus = mn->Status();
-            std::string strHost;
-            int port;
-            SplitHostPort(mn->addr.ToString(), port, strHost);
-            CNetAddr node = CNetAddr(strHost, false);
-            std::string strNetwork = GetNetworkName(node.GetNetwork());
-
-            obj.reserve(10);
-            obj.emplace_back("network", strNetwork);
-            obj.emplace_back("txhash", strTxHash);
-            obj.emplace_back("outidx", (uint64_t)oIdx);
-            obj.emplace_back("status", strStatus);
-            obj.emplace_back("addr", CBitcoinAddress(mn->pubKeyCollateralAddress.GetID()).ToString());
-            obj.emplace_back("version", mn->protocolVersion);
-            obj.emplace_back("lastseen", (int64_t)mn->lastPing.sigTime);
-            obj.emplace_back("activetime", (int64_t)(mn->lastPing.sigTime - mn->sigTime));
-            obj.emplace_back("lastpaid", (int64_t)masternodePayments.FindLastPayeePaymentTime(*mn,numberOfBlocksToSearchBackForLastPayment));
-            obj.emplace_back("tier", CMasternode::TierToString(static_cast<MasternodeTier>(mn->nTier)));
-
-            ret.emplace_back(obj);
-        }
+        ret.emplace_back(obj);
     }
 
     return ret;

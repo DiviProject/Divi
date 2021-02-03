@@ -48,7 +48,7 @@ struct TestingSetup {
         InitBlockIndex();
 #ifdef ENABLE_WALLET
         bool fFirstRun;
-        pwalletMain = new CWallet("wallet.dat");
+        pwalletMain = new CWallet("wallet.dat", chainActive, mapBlockIndex);
         pwalletMain->LoadWallet(fFirstRun);
         RegisterValidationInterface(pwalletMain);
 #endif

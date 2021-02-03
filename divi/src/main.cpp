@@ -89,7 +89,7 @@ bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
 bool fAlerts = DEFAULT_ALERTS;
-bool IsFinalTx(const CTransaction& tx, int nBlockHeight = 0 , int64_t nBlockTime = 0);
+bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
 
@@ -673,7 +673,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
     // Timestamps on the other hand don't get any special treatment, because we
     // can't know what timestamp the next block will have, and there aren't
     // timestamp applications where it matters.
-    if (!IsFinalTx(tx, chainActive.Height() + 1)) {
+    if (!IsFinalTx(tx, chainActive, chainActive.Height() + 1)) {
         reason = "non-final";
         return false;
     }
@@ -2812,7 +2812,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
 
     // Check that all transactions are finalized
     for (const auto& tx : block.vtx)
-            if (!IsFinalTx(tx, nHeight, block.GetBlockTime())) {
+            if (!IsFinalTx(tx, chainActive, nHeight, block.GetBlockTime())) {
         return state.DoS(10, error("%s : contains a non-final transaction", __func__), REJECT_INVALID, "bad-txns-nonfinal");
     }
 

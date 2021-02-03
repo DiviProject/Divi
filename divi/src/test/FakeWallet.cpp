@@ -37,7 +37,8 @@ const CHDChain& getHDWalletSeedForTesting()
 
   if (toBeConstructed)
   {
-    CWallet wallet("test_wallet.dat");
+    FakeBlockIndexWithHashes dummyChain(1, 1600000000, 1);
+    CWallet wallet("test_wallet.dat", *dummyChain.activeChain, *dummyChain.blockIndexByHash);
     wallet.defaultKeyPoolTopUp = 1;
     bool firstLoad = true;
     wallet.LoadWallet(firstLoad);
@@ -77,7 +78,7 @@ CMutableTransaction createDefaultTransaction(const CScript& defaultScript, unsig
 } // anonymous namespace
 
 FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
-  : CWallet(GetWalletFilename()),
+  : CWallet(GetWalletFilename(), *c.activeChain, *c.blockIndexByHash),
     fakeChain(c)
 {
   defaultKeyPoolTopUp = (int64_t)3;

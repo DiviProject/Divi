@@ -24,6 +24,8 @@
 #include <WalletTx.h>
 
 extern Settings& settings;
+extern CChain chainActive;
+extern BlockMap mapBlockIndex;
 using namespace boost;
 using namespace std;
 
@@ -901,7 +903,7 @@ bool CWalletDB::Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys)
         LogPrintf("Cannot create database file %s\n", filename);
         return false;
     }
-    CWallet dummyWallet;
+    CWallet dummyWallet(chainActive, mapBlockIndex);
     CWalletScanState wss;
 
     DbTxn* ptxn = dbenv.TxnBegin();

@@ -903,7 +903,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
-        if (wtx.IsCoinBase() || !IsFinalTx(wtx))
+        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chainActive))
             continue;
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout)
@@ -949,7 +949,7 @@ Value getreceivedbyaccount(const Array& params, bool fHelp)
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
-        if (wtx.IsCoinBase() || !IsFinalTx(wtx))
+        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chainActive))
             continue;
 
         BOOST_FOREACH (const CTxOut& txout, wtx.vout) {
@@ -973,7 +973,7 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
     for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
     {
         const CWalletTx& wtx = *(*it);
-        if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetNumberOfBlockConfirmations() < 0)
+        if (!IsFinalTx(wtx, chainActive) || wtx.GetBlocksToMaturity() > 0 || wtx.GetNumberOfBlockConfirmations() < 0)
             continue;
 
         CAmount nReceived, nSent, nFee;
@@ -1040,7 +1040,7 @@ Value getbalance(const Array& params, bool fHelp)
         for (std::vector<const CWalletTx*>::iterator it = walletTransactions.begin(); it != walletTransactions.end(); ++it)
         {
             const CWalletTx& wtx = *(*it);
-            if (!IsFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetNumberOfBlockConfirmations() < 0)
+            if (!IsFinalTx(wtx, chainActive) || wtx.GetBlocksToMaturity() > 0 || wtx.GetNumberOfBlockConfirmations() < 0)
                 continue;
 
             CAmount allFee;
@@ -1325,7 +1325,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
     {
         const CWalletTx& wtx = *(*it);
 
-        if (wtx.IsCoinBase() || !IsFinalTx(wtx))
+        if (wtx.IsCoinBase() || !IsFinalTx(wtx, chainActive))
             continue;
 
         int nDepth = wtx.GetNumberOfBlockConfirmations();

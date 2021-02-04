@@ -100,7 +100,6 @@ public:
     /// Find an entry in the masternode list that is next to be paid
     std::vector<CMasternode*> GetMasternodePaymentQueue(const uint256& seedHash, int nBlockHeight, bool fFilterSigTime);
     std::vector<CMasternode*> GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset, bool fFilterSigTime);
-    CMasternode* GetNextMasternodeInQueueForPayment(const CBlockIndex* pindex, int offset, bool fFilterSigTime);
 
     /// Find a random entry
     CMasternode* FindRandomNotInVec(std::vector<CTxIn>& vecToExclude, int protocolVersion = -1);

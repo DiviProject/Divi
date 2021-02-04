@@ -297,7 +297,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
     LogPrint("masternode","CMasternodePayments::ProcessBlock() Start nHeight %d - vin %s. \n", nBlockHeight, activeMasternode.vin.prevout.hash.ToString());
 
     // pay to the oldest MN that still had no payment but its input is old enough and it was active long enough
-    CMasternode* pmn = mnodeman.GetNextMasternodeInQueueForPayment(pindex, numberOfBlocksIntoTheFutureToVoteOn, true);
+    CMasternode* pmn = masternodePayments.GetNextMasternodeInQueueForPayment(pindex, numberOfBlocksIntoTheFutureToVoteOn, true);
 
     if (pmn != NULL) {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");

@@ -227,7 +227,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBloc
     }
     if (!GetBlockPayee(seedHash, payee)) {
         // No masternode detected, fall back to our own queue.
-        const CMasternode* winningNode = mnodeman.GetNextMasternodeInQueueForPayment(pindexPrev, 1, true);
+        const CMasternode* winningNode = GetNextMasternodeInQueueForPayment(pindexPrev, 1, true);
         if (winningNode) {
             payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
         } else {
@@ -676,4 +676,11 @@ unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& master
         chainTip = chainTip->pprev;
     }
     return 0u;
+}
+
+CMasternode* CMasternodePayments::GetNextMasternodeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime) const
+{
+    std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(pindex, offset, fFilterSigTime);
+
+    return (!mnQueue.empty())? mnQueue.front() : NULL;
 }

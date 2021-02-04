@@ -622,17 +622,6 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const uint25
     return masternodeQueue;
 }
 
-std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const CBlockIndex* pindex, const int offset, bool fFilterSigTime)
-{
-    uint256 seedHash;
-    if (!GetBlockHashForScoring(seedHash, pindex, offset))
-        return {};
-
-    const int64_t nBlockHeight = pindex->nHeight + offset;
-
-    return GetMasternodePaymentQueue(seedHash, nBlockHeight, fFilterSigTime);
-}
-
 CMasternode* CMasternodeMan::FindRandomNotInVec(std::vector<CTxIn>& vecToExclude, int protocolVersion)
 {
     LOCK(cs);

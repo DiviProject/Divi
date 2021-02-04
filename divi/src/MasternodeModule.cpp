@@ -38,7 +38,7 @@ MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
 {
     MasternodeCountData data;
     if (chainTip != nullptr)
-        data.queueCount = mnodeman.GetMasternodePaymentQueue(chainTip, 0, true).size();
+        data.queueCount = masternodePayments.GetMasternodePaymentQueue(chainTip, 0, true).size();
 
     mnodeman.CountNetworks(ActiveProtocol(), data.ipv4, data.ipv6, data.onion);
     data.total = mnodeman.size();

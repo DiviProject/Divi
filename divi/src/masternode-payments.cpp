@@ -185,11 +185,17 @@ std::string CMasternodePaymentWinner::ToString() const
     return ret;
 }
 
-CMasternodePayments::CMasternodePayments()
+CMasternodePayments::CMasternodePayments(
+    CMasternodeMan& masternodeManager
+    ): nSyncedFromPeer(0)
+    , nLastBlockHeight(0)
+    , chainTipHeight(0)
+    , masternodeManager_(masternodeManager)
 {
-    nSyncedFromPeer = 0;
-    nLastBlockHeight = 0;
-    chainTipHeight = 0;
+}
+
+CMasternodePayments::CMasternodePayments(): CMasternodePayments(mnodeman)
+{
 }
 
 void CMasternodePayments::Clear()

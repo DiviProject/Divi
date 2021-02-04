@@ -211,7 +211,7 @@ public:
     std::string ToString() const;
 
     unsigned FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const;
-    CMasternode* GetNextMasternodeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime) const;
+    CScript GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime) const;
     std::vector<CMasternode*> GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset, bool fFilterSigTime) const;
 
     /** Retrieves the payment winner for the given hash.  Returns null

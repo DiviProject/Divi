@@ -227,10 +227,9 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBloc
     }
     if (!GetBlockPayee(seedHash, payee)) {
         // No masternode detected, fall back to our own queue.
-        const CMasternode* winningNode = GetNextMasternodeInQueueForPayment(pindexPrev, 1, true);
-        if (winningNode) {
-            payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
-        } else {
+        payee = GetNextMasternodePayeeInQueueForPayment(pindexPrev, 1, true);
+        if(payee.empty())
+        {
             LogPrint("masternode","CreateNewBlock: Failed to detect masternode to pay\n");
             hasPayment = false;
         }
@@ -676,11 +675,11 @@ unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& master
     return 0u;
 }
 
-CMasternode* CMasternodePayments::GetNextMasternodeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime) const
+CScript CMasternodePayments::GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime) const
 {
     std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(pindex, offset, fFilterSigTime);
-
-    return (!mnQueue.empty())? mnQueue.front() : NULL;
+    const CMasternode* mn = (!mnQueue.empty())? mnQueue.front(): NULL;
+    return mn? mn->GetPaymentScript(): CScript();
 }
 std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset, bool fFilterSigTime) const
 {

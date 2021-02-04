@@ -680,7 +680,17 @@ unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& master
 
 CMasternode* CMasternodePayments::GetNextMasternodeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime) const
 {
-    std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(pindex, offset, fFilterSigTime);
+    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(pindex, offset, fFilterSigTime);
 
     return (!mnQueue.empty())? mnQueue.front() : NULL;
+}
+std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset, bool fFilterSigTime) const
+{
+    uint256 seedHash;
+    if (!GetBlockHashForScoring(seedHash, pindex, offset))
+        return {};
+
+    const int64_t nBlockHeight = pindex->nHeight + offset;
+
+    return mnodeman.GetMasternodePaymentQueue(seedHash, nBlockHeight, fFilterSigTime);
 }

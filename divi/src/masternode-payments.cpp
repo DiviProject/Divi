@@ -414,7 +414,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(CMasternodeSync& mastern
     if(!masternodeSynchronization.IsSynced()){ return true;}
 
     /* Make sure that the payee is in our own payment queue near the top.  */
-    const std::vector<CMasternode*> mnQueue = mnodeman.GetMasternodePaymentQueue(seedHash, winner.GetHeight(), true);
+    const std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(seedHash, winner.GetHeight(), true);
     for (int i = 0; i < std::min<int>(2 * MNPAYMENTS_SIGNATURES_TOTAL, mnQueue.size()); ++i) {
         const auto& mn = *mnQueue[i];
         const CScript mnPayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
@@ -689,5 +689,56 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const C
 
     const int64_t nBlockHeight = pindex->nHeight + offset;
 
-    return mnodeman.GetMasternodePaymentQueue(seedHash, nBlockHeight, fFilterSigTime);
+    return GetMasternodePaymentQueue(seedHash, nBlockHeight, fFilterSigTime);
+}
+
+std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight, bool fFilterSigTime) const
+{
+    LockableMasternodeData mnData = mnodeman.GetLockableMasternodeData();
+    LOCK(mnData.cs);
+    std::vector< CMasternode* > masternodeQueue;
+    std::map<const CMasternode*, uint256> masternodeScores;
+
+    int nMnCount = mnodeman.CountEnabled();
+    BOOST_FOREACH (CMasternode& mn, mnData.masternodes)
+    {
+        mn.Check();
+        if (!mn.IsEnabled()) continue;
+
+        // //check protocol version
+        if (mn.protocolVersion < ActiveProtocol()) continue;
+
+        // It's in the list (up to 8 entries ahead of current block to allow propagation) -- so let's skip it
+        // On regtest, we ignore this criterion, because it makes it hard to do
+        // proper testing with a very small number of masternodes (which would
+        // be scheduled and skipped all the time).
+        if (Params().NetworkID() != CBaseChainParams::REGTEST) {
+            if (IsScheduled(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()), nBlockHeight)) continue;
+        }
+
+        //it's too new, wait for a cycle
+        if (fFilterSigTime && mn.sigTime + (nMnCount * 2.6 * 60) > GetAdjustedTime()) continue;
+
+        //make sure it has as many confirmations as there are masternodes
+        if (mn.GetMasternodeInputAge() < nMnCount) continue;
+
+        masternodeQueue.push_back(&mn);
+        masternodeScores[&mn] = mn.CalculateScore(seedHash);
+    }
+
+    //when the network is in the process of upgrading, don't penalize nodes that recently restarted
+    if (fFilterSigTime && static_cast<int>(masternodeQueue.size()) < nMnCount / 3) return GetMasternodePaymentQueue(seedHash, nBlockHeight, false);
+
+
+    std::sort(masternodeQueue.begin(), masternodeQueue.end(),
+        [&masternodeScores](const CMasternode* a, const CMasternode* b)
+        {
+            if(!b) return true;
+            if(!a) return false;
+
+            uint256 aScore = masternodeScores[a];
+            uint256 bScore = masternodeScores[b];
+            return (aScore > bScore);
+        }   );
+    return masternodeQueue;
 }

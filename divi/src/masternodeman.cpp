@@ -573,56 +573,7 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 //
 LockableMasternodeData CMasternodeMan::GetLockableMasternodeData()
 {
-    return {cs,vMasternodes}
-}
-std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight, bool fFilterSigTime)
-{
-    LOCK(cs);
-    std::vector< CMasternode* > masternodeQueue;
-    std::map<const CMasternode*, uint256> masternodeScores;
-
-    int nMnCount = CountEnabled();
-    BOOST_FOREACH (CMasternode& mn, vMasternodes)
-    {
-        mn.Check();
-        if (!mn.IsEnabled()) continue;
-
-        // //check protocol version
-        if (mn.protocolVersion < ActiveProtocol()) continue;
-
-        // It's in the list (up to 8 entries ahead of current block to allow propagation) -- so let's skip it
-        // On regtest, we ignore this criterion, because it makes it hard to do
-        // proper testing with a very small number of masternodes (which would
-        // be scheduled and skipped all the time).
-        if (Params().NetworkID() != CBaseChainParams::REGTEST) {
-            if (masternodePayments.IsScheduled(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()), nBlockHeight)) continue;
-        }
-
-        //it's too new, wait for a cycle
-        if (fFilterSigTime && mn.sigTime + (nMnCount * 2.6 * 60) > GetAdjustedTime()) continue;
-
-        //make sure it has as many confirmations as there are masternodes
-        if (mn.GetMasternodeInputAge() < nMnCount) continue;
-
-        masternodeQueue.push_back(&mn);
-        masternodeScores[&mn] = mn.CalculateScore(seedHash);
-    }
-
-    //when the network is in the process of upgrading, don't penalize nodes that recently restarted
-    if (fFilterSigTime && static_cast<int>(masternodeQueue.size()) < nMnCount / 3) return GetMasternodePaymentQueue(seedHash, nBlockHeight, false);
-
-
-    std::sort(masternodeQueue.begin(), masternodeQueue.end(),
-        [&masternodeScores](const CMasternode* a, const CMasternode* b)
-        {
-            if(!b) return true;
-            if(!a) return false;
-
-            uint256 aScore = masternodeScores[a];
-            uint256 bScore = masternodeScores[b];
-            return (aScore > bScore);
-        }   );
-    return masternodeQueue;
+    return {cs,vMasternodes};
 }
 
 namespace

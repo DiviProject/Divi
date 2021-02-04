@@ -44,7 +44,7 @@ private:
     std::unique_ptr<RankingCache> rankingCache;
 
 public:
-    LockableMasternodeData& GetLockableMasternodeData();
+    LockableMasternodeData GetLockableMasternodeData();
     // Keep track of all broadcasts I've seen
     std::map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;
     // Keep track of all pings I've seen
@@ -98,9 +98,6 @@ public:
     CMasternode* Find(const CScript& payee) = delete;
     CMasternode* Find(const CTxIn& vin);
     CMasternode* Find(const CPubKey& pubKeyMasternode);
-
-    /// Find an entry in the masternode list that is next to be paid
-    std::vector<CMasternode*> GetMasternodePaymentQueue(const uint256& seedHash, int nBlockHeight, bool fFilterSigTime);
 
     std::vector<CMasternode> GetFullMasternodeVector() const
     {

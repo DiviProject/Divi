@@ -622,38 +622,6 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const uint25
     return masternodeQueue;
 }
 
-CMasternode* CMasternodeMan::FindRandomNotInVec(std::vector<CTxIn>& vecToExclude, int protocolVersion)
-{
-    LOCK(cs);
-
-    protocolVersion = protocolVersion == -1 ? ActiveProtocol() : protocolVersion;
-
-    int nCountEnabled = CountEnabled(protocolVersion);
-    LogPrint("masternode", "CMasternodeMan::FindRandomNotInVec - nCountEnabled - vecToExclude.size() %d\n", nCountEnabled - vecToExclude.size());
-    if (nCountEnabled - vecToExclude.size() < 1) return NULL;
-
-    int rand = GetRandInt(nCountEnabled - vecToExclude.size());
-    LogPrint("masternode", "CMasternodeMan::FindRandomNotInVec - rand %d\n", rand);
-    bool found;
-
-    BOOST_FOREACH (CMasternode& mn, vMasternodes) {
-        if (mn.protocolVersion < protocolVersion || !mn.IsEnabled()) continue;
-        found = false;
-        BOOST_FOREACH (CTxIn& usedVin, vecToExclude) {
-            if (mn.vin.prevout == usedVin.prevout) {
-                found = true;
-                break;
-            }
-        }
-        if (found) continue;
-        if (--rand < 1) {
-            return &mn;
-        }
-    }
-
-    return NULL;
-}
-
 namespace
 {
 

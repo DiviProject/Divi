@@ -17,6 +17,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex);
 void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream& vRecv);
 bool MasternodeWinnerIsKnown(const uint256& inventoryHash);
 bool MasternodeIsKnown(const uint256& inventoryHash);
+bool MasternodePingIsKnown(const uint256& inventoryHash);
 bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash);
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash);
 void ForceMasternodeResync();

@@ -3561,7 +3561,7 @@ bool static AlreadyHave(const CInv& inv)
     case MSG_MASTERNODE_ANNOUNCE:
         return MasternodeIsKnown(inv.hash);
     case MSG_MASTERNODE_PING:
-        return mnodeman.mapSeenMasternodePing.count(inv.hash);
+        return MasternodePingIsKnown(inv.hash);
     }
     // Don't know what it is, just say we already got one
     return true;

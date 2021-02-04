@@ -11,6 +11,7 @@
 #include "net.h"
 #include "sync.h"
 #include <MasternodeNetworkMessageManager.h>
+#include <LockableMasternodeData.h>
 
 #include <memory>
 
@@ -43,6 +44,7 @@ private:
     std::unique_ptr<RankingCache> rankingCache;
 
 public:
+    LockableMasternodeData& GetLockableMasternodeData();
     // Keep track of all broadcasts I've seen
     std::map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;
     // Keep track of all pings I've seen

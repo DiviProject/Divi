@@ -18,7 +18,6 @@
 #include <main.h>
 #include <utiltime.h>
 #include <version.h>
-#include <MasternodeNetworkMessageManager.h>
 
 #include <array>
 
@@ -572,6 +571,10 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 //
 // Deterministically select the oldest/best masternode to pay on the network
 //
+LockableMasternodeData CMasternodeMan::GetLockableMasternodeData()
+{
+    return {cs,vMasternodes}
+}
 std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight, bool fFilterSigTime)
 {
     LOCK(cs);

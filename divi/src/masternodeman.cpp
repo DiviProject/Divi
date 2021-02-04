@@ -633,13 +633,6 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const CBlock
     return GetMasternodePaymentQueue(seedHash, nBlockHeight, fFilterSigTime);
 }
 
-CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime)
-{
-    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(pindex, offset, fFilterSigTime);
-
-    return (!mnQueue.empty())? mnQueue.front() : NULL;
-}
-
 CMasternode* CMasternodeMan::FindRandomNotInVec(std::vector<CTxIn>& vecToExclude, int protocolVersion)
 {
     LOCK(cs);

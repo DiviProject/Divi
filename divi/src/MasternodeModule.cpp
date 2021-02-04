@@ -34,6 +34,21 @@ static T readFromHex(std::string hexString)
     return object;
 }
 
+MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
+{
+    MasternodeCountData data;
+    if (chainTip != nullptr)
+        data.queueCount = mnodeman.GetMasternodePaymentQueue(chainTip, 0, true).size();
+
+    mnodeman.CountNetworks(ActiveProtocol(), data.ipv4, data.ipv6, data.onion);
+    data.total = mnodeman.size();
+    data.stable = mnodeman.stable_size();
+    data.enabledAndActive = mnodeman.CountEnabled(ActiveProtocol());
+    data.enabled = mnodeman.CountEnabled();
+
+    return data;
+}
+
 std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)
 {
     std::vector<MasternodeListEntry> masternodeList;

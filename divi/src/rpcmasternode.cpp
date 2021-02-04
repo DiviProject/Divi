@@ -415,25 +415,18 @@ Value getmasternodecount (const Array& params, bool fHelp)
             "\nExamples:\n" +
             HelpExampleCli("getmasternodecount", "") + HelpExampleRpc("getmasternodecount", ""));
 
-    Object obj;
-    int ipv4 = 0, ipv6 = 0, onion = 0;
-
-    int nCount = 0;
     const CBlockIndex* tip = chainActive.Tip();
-    if (tip != nullptr)
-        nCount = mnodeman.GetMasternodePaymentQueue(tip, 0, true).size();
+    MasternodeCountData data = GetMasternodeCounts(tip);
 
-    mnodeman.CountNetworks(ActiveProtocol(), ipv4, ipv6, onion);
-
-    obj.push_back(Pair("total", mnodeman.size()));
-    obj.push_back(Pair("stable", mnodeman.stable_size()));
-    obj.push_back(Pair("obfcompat", mnodeman.CountEnabled(ActiveProtocol())));
-    obj.push_back(Pair("enabled", mnodeman.CountEnabled()));
-    obj.push_back(Pair("inqueue", nCount));
-    obj.push_back(Pair("ipv4", ipv4));
-    obj.push_back(Pair("ipv6", ipv6));
-    obj.push_back(Pair("onion", onion));
-
+    Object obj;
+    obj.push_back(Pair("total", data.total));
+    obj.push_back(Pair("stable", data.stable));
+    obj.push_back(Pair("obfcompat", data.enabledAndActive));
+    obj.push_back(Pair("enabled", data.enabled));
+    obj.push_back(Pair("inqueue", data.queueCount));
+    obj.push_back(Pair("ipv4", data.ipv4));
+    obj.push_back(Pair("ipv6", data.ipv6));
+    obj.push_back(Pair("onion", data.onion));
     return obj;
 }
 

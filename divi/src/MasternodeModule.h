@@ -82,4 +82,17 @@ struct MasternodeListEntry
     {}
 };
 std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter);
+struct MasternodeCountData
+{
+    int total;
+    int stable;
+    int enabledAndActive;
+    int enabled;
+    int queueCount;
+    int ipv4;
+    int ipv6;
+    int onion;
+    MasternodeCountData(){}
+};
+MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip);
 #endif //MASTERNODE_MODULE_H

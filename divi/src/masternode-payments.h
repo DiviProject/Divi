@@ -22,6 +22,7 @@ class CBlockIndex;
 class CDataStream;
 class CMasternodeSync;
 class I_BlockSubsidyProvider;
+class CMasternodeMan;
 
 extern CMasternodePayments masternodePayments;
 
@@ -172,6 +173,7 @@ private:
     int nSyncedFromPeer;
     int nLastBlockHeight;
     int chainTipHeight;
+    CMasternodeMan& masternodeManager_;
 
     /** Map from the inventory hashes of mnw's to the corresponding data.  */
     std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
@@ -190,6 +192,7 @@ public:
     void updateChainTipHeight(const CBlockIndex* pindex);
 
     CMasternodePayments();
+    CMasternodePayments(CMasternodeMan& masternodeManager);
 
     void Clear();
 

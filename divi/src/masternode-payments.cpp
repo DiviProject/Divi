@@ -427,7 +427,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(CMasternodeSync& mastern
 
 // Is this masternode scheduled to get paid soon?
 // -- Only look ahead up to 8 blocks to allow for propagation of the latest 2 winners
-bool CMasternodePayments::IsScheduled(const CMasternode& mn, int nNotBlockHeight) const
+bool CMasternodePayments::IsScheduled(const CScript mnpayee, int nNotBlockHeight) const
 {
     LOCK(cs_mapMasternodeBlocks);
 
@@ -439,8 +439,6 @@ bool CMasternodePayments::IsScheduled(const CMasternode& mn, int nNotBlockHeight
     }
     if (tip == nullptr)
         return false;
-
-    const CScript mnpayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
 
     for (int64_t h = 0; h <= 8; ++h) {
         if (tip->nHeight + h == nNotBlockHeight) continue;

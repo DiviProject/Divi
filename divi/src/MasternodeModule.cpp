@@ -228,7 +228,10 @@ bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
     }
     return false;
 }
-
+bool MasternodePingIsKnown(const uint256& inventoryHash)
+{
+    return mnodeman.mapSeenMasternodePing.count(inventoryHash);
+}
 bool MasternodeIsKnown(const uint256& inventoryHash)
 {
     if (mnodeman.mapSeenMasternodeBroadcast.count(inventoryHash))

@@ -213,6 +213,7 @@ public:
     unsigned FindLastPayeePaymentTime(const CMasternode& masternode, const unsigned maxBlockDepth) const;
     CScript GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime) const;
     std::vector<CMasternode*> GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset, bool fFilterSigTime) const;
+    std::vector<CMasternode*> GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight, bool fFilterSigTime) const;
 
     /** Retrieves the payment winner for the given hash.  Returns null
      *  if there is no entry for that hash.  */

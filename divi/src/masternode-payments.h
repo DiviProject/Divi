@@ -200,7 +200,7 @@ public:
     void PruneOldMasternodeWinnerData(CMasternodeSync& masternodeSynchronization);
 
     bool IsTransactionValid(const I_BlockSubsidyProvider& subsidies,const CTransaction& txNew, const uint256& seedHash) const;
-    bool IsScheduled(const CMasternode& mn, int nNotBlockHeight) const;
+    bool IsScheduled(const CScript mnpayee, int nNotBlockHeight) const;
 
     bool CanVote(const COutPoint& outMasternode, const uint256& seedHash);
 

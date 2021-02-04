@@ -592,7 +592,7 @@ std::vector<CMasternode*> CMasternodeMan::GetMasternodePaymentQueue(const uint25
         // proper testing with a very small number of masternodes (which would
         // be scheduled and skipped all the time).
         if (Params().NetworkID() != CBaseChainParams::REGTEST) {
-            if (masternodePayments.IsScheduled(mn, nBlockHeight)) continue;
+            if (masternodePayments.IsScheduled(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()), nBlockHeight)) continue;
         }
 
         //it's too new, wait for a cycle

@@ -27,6 +27,7 @@ extern CCriticalSection cs_main;
 extern bool fImporting;
 extern bool fReindex;
 extern CChain chainActive;
+extern CMasternodeMan mnodeman;
 
 CMasternodeSync::CMasternodeSync()
 {

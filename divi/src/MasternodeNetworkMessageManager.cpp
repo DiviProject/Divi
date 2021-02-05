@@ -113,7 +113,7 @@ bool MasternodeNetworkMessageManager::recordMasternodeEntryRequestAttempt(const 
     return true;
 }
 
-void MasternodeNetworkMessageManager::clear()
+void MasternodeNetworkMessageManager::Clear()
 {
     mAskedUsForMasternodeList.clear();
     mWeAskedForMasternodeList.clear();

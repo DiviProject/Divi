@@ -12,6 +12,8 @@
 class MasternodeNetworkMessageManager
 {
 public:
+    mutable CCriticalSection cs;
+
     MasternodeNetworkMessageManager();
     std::vector<CMasternode> masternodes;
     // who's asked for the Masternode list and the last time
@@ -43,6 +45,7 @@ public:
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
+        LOCK(cs);
         READWRITE(masternodes);
         READWRITE(mAskedUsForMasternodeList);
         READWRITE(mWeAskedForMasternodeList);

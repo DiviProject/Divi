@@ -2,6 +2,7 @@
 
 #include <Logging.h>
 #include <utiltime.h>
+#include <masternode-sync.h>
 
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 #define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
@@ -54,6 +55,32 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodeEntryRequests()
         }
     }
 }
+
+void MasternodeNetworkMessageManager::clearTimedOutMasternodePings()
+{
+    std::map<uint256, CMasternodePing>::iterator it4 = mapSeenMasternodePing.begin();
+    while (it4 != mapSeenMasternodePing.end()) {
+        if ((*it4).second.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
+            mapSeenMasternodePing.erase(it4++);
+        } else {
+            ++it4;
+        }
+    }
+}
+
+void MasternodeNetworkMessageManager::clearTimedOutMasternodeBroadcasts(CMasternodeSync& masternodeSynchronization)
+{
+    std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
+    while (it3 != mapSeenMasternodeBroadcast.end()) {
+        if ((*it3).second.lastPing.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
+            mapSeenMasternodeBroadcast.erase(it3++);
+            masternodeSynchronization.mapSeenSyncMNB.erase((*it3).second.GetHash());
+        } else {
+            ++it3;
+        }
+    }
+}
+
 void MasternodeNetworkMessageManager::clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral)
 {
     // allow us to ask for this masternode again if we see another ping

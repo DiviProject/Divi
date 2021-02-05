@@ -9,6 +9,8 @@
 #include <protocol.h>
 #include <masternode.h>
 
+class CMasternodeSync;
+
 class MasternodeNetworkMessageManager
 {
 public:
@@ -34,6 +36,8 @@ public:
     void clearTimedOutMasternodeListRequestsFromPeers();
     void clearTimedOutMasternodeListRequestsToPeers();
     void clearTimedOutMasternodeEntryRequests();
+    void clearTimedOutMasternodePings();
+    void clearTimedOutMasternodeBroadcasts(CMasternodeSync& masternodeSynchronization);
     void clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral);
     bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);
     bool recordDsegUpdateAttempt(const CAddress& peerAddress);

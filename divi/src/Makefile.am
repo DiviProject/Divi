@@ -337,6 +337,7 @@ libbitcoin_server_a_SOURCES = \
   FeeAndPriorityCalculator.cpp \
   ForkActivation.cpp \
   datacachemanager.cpp \
+  uiMessenger.cpp \
   leveldbwrapper.cpp \
   blockFileInfo.cpp \
   scriptCheck.cpp \
@@ -416,6 +417,7 @@ libbitcoin_wallet_a_SOURCES = \
   BlockSubsidyProvider.cpp \
   obfuscation.cpp \
   MasternodeModule.cpp \
+  uiMessenger.cpp \
   db.cpp \
   dbenv.cpp \
   DatabaseWrapper.cpp \

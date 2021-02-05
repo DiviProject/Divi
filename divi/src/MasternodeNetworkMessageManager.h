@@ -13,6 +13,7 @@ class MasternodeNetworkMessageManager
 {
 public:
     MasternodeNetworkMessageManager();
+    std::vector<CMasternode> masternodes;
     // who's asked for the Masternode list and the last time
     std::map<CNetAddr, int64_t> mAskedUsForMasternodeList;
     // who we asked for the Masternode list and the last time
@@ -42,6 +43,7 @@ public:
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
+        READWRITE(masternodes);
         READWRITE(mAskedUsForMasternodeList);
         READWRITE(mWeAskedForMasternodeList);
         READWRITE(mWeAskedForMasternodeListEntry);

@@ -171,7 +171,7 @@ bool CMasternodeMan::Add(const CMasternode& mn)
     CMasternode* pmn = Find(mn.vin);
     if (pmn == NULL) {
         LogPrint("masternode", "CMasternodeMan: Adding new Masternode %s - %i now\n", mn.vin.prevout.hash.ToString(), size() + 1);
-        vMasternodes.push_back(mn);
+        networkMessageManager_->masternodes.push_back(mn);
         return true;
     }
 
@@ -190,7 +190,7 @@ void CMasternodeMan::Check()
 {
     LOCK(cs);
 
-    BOOST_FOREACH (CMasternode& mn, vMasternodes) {
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager_->masternodes) {
         mn.Check();
     }
 }
@@ -212,6 +212,17 @@ const CMasternodePing& CMasternodeMan::getKnownPing(const uint256& pingHash)
     return networkMessageManager_->mapSeenMasternodePing[pingHash];
 }
 
+std::vector<CMasternode> CMasternodeMan::GetFullMasternodeVector() const
+{
+    LOCK(cs);
+    return networkMessageManager_->masternodes;
+}
+
+int CMasternodeMan::size() const
+{
+    return networkMessageManager_->masternodes.size();
+}
+
 void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
 {
     Check();
@@ -219,8 +230,8 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
     LOCK(cs);
 
     //remove inactive and outdated
-    std::vector<CMasternode>::iterator it = vMasternodes.begin();
-    while (it != vMasternodes.end()) {
+    std::vector<CMasternode>::iterator it = networkMessageManager_->masternodes.begin();
+    while (it != networkMessageManager_->masternodes.end()) {
         if ((*it).activeState == CMasternode::MASTERNODE_REMOVE ||
             (*it).activeState == CMasternode::MASTERNODE_VIN_SPENT ||
             (forceExpiredRemoval && (*it).activeState == CMasternode::MASTERNODE_EXPIRED) ||
@@ -242,7 +253,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
 
             // allow us to ask for this masternode again if we see another ping
             networkMessageManager_->clearExpiredMasternodeEntryRequests((*it).vin.prevout);
-            it = vMasternodes.erase(it);
+            it = networkMessageManager_->masternodes.erase(it);
         } else {
             ++it;
         }
@@ -480,7 +491,7 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
 void CMasternodeMan::Clear()
 {
     LOCK(cs);
-    vMasternodes.clear();
+    networkMessageManager_->masternodes.clear();
     networkMessageManager_->clear();
     networkMessageManager_->mapSeenMasternodeBroadcast.clear();
     networkMessageManager_->mapSeenMasternodePing.clear();
@@ -494,7 +505,7 @@ int CMasternodeMan::stable_size ()
     int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;
     int64_t nMasternode_Age = 0;
 
-    for (auto& mn : vMasternodes) {
+    for (auto& mn : networkMessageManager_->masternodes) {
         if (mn.protocolVersion < nMinProtocol) {
             continue; // Skip obsolete versions
         }
@@ -519,7 +530,7 @@ int CMasternodeMan::CountEnabled(int protocolVersion) const
     int i = 0;
     protocolVersion = protocolVersion == -1 ? ActiveProtocol() : protocolVersion;
 
-    for (const auto& mn : vMasternodes) {
+    for (const auto& mn : networkMessageManager_->masternodes) {
         if (mn.protocolVersion < protocolVersion || !mn.IsEnabled()) continue;
         i++;
     }
@@ -531,7 +542,7 @@ void CMasternodeMan::CountNetworks(int protocolVersion, int& ipv4, int& ipv6, in
 {
     protocolVersion = protocolVersion == -1 ? ActiveProtocol() : protocolVersion;
 
-    BOOST_FOREACH (CMasternode& mn, vMasternodes) {
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager_->masternodes) {
         mn.Check();
         std::string strHost;
         int port;
@@ -566,7 +577,7 @@ CMasternode* CMasternodeMan::Find(const CTxIn& vin)
 {
     LOCK(cs);
 
-    BOOST_FOREACH (CMasternode& mn, vMasternodes) {
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager_->masternodes) {
         if (mn.vin.prevout == vin.prevout)
             return &mn;
     }
@@ -578,7 +589,7 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 {
     LOCK(cs);
 
-    BOOST_FOREACH (CMasternode& mn, vMasternodes) {
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager_->masternodes) {
         if (mn.pubKeyMasternode == pubKeyMasternode)
             return &mn;
     }
@@ -590,7 +601,7 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 //
 LockableMasternodeData CMasternodeMan::GetLockableMasternodeData()
 {
-    return {cs,vMasternodes};
+    return {cs,networkMessageManager_->masternodes};
 }
 
 namespace
@@ -638,7 +649,7 @@ unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, const uint256& seed
         std::vector<std::pair<int64_t, uint256>> rankedNodes;
         {
             LOCK(cs);
-            for (auto& mn : vMasternodes) {
+            for (auto& mn : networkMessageManager_->masternodes) {
                 int64_t score;
                 if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
                     continue;
@@ -813,7 +824,7 @@ void CMasternodeMan::SyncMasternodeListWithPeer(CNode* peer)
 {
     LOCK(cs);
     int nInvCount = 0;
-    for (const CMasternode& mn: vMasternodes)
+    for (const CMasternode& mn: networkMessageManager_->masternodes)
     {
         if (NotifyPeerOfMasternode(mn,peer))
         {
@@ -883,11 +894,11 @@ void CMasternodeMan::Remove(const CTxIn& vin)
 {
     LOCK(cs);
 
-    std::vector<CMasternode>::iterator it = vMasternodes.begin();
-    while (it != vMasternodes.end()) {
+    std::vector<CMasternode>::iterator it = networkMessageManager_->masternodes.begin();
+    while (it != networkMessageManager_->masternodes.end()) {
         if ((*it).vin == vin) {
             LogPrint("masternode", "CMasternodeMan: Removing Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), size() - 1);
-            vMasternodes.erase(it);
+            networkMessageManager_->masternodes.erase(it);
             break;
         }
         ++it;
@@ -905,7 +916,7 @@ std::string CMasternodeMan::ToString() const
     std::ostringstream info;
 
     info << "Masternodes: "
-        << (int)vMasternodes.size()
+        << (int)networkMessageManager_->masternodes.size()
         << ", "
         << networkMessageManager_->ToString();
 

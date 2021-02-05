@@ -37,6 +37,7 @@
 #include <Settings.h>
 #include <MasternodeModule.h>
 #include <functional>
+#include <uiMessenger.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -203,6 +204,7 @@ void FlushWalletAndStopMinting()
 
 void StoreDataCaches()
 {
+    DumpMasternodeDataToDisk();
     DataCacheManager(
         GetDataDir(),
         uiInterface,
@@ -211,10 +213,12 @@ void StoreDataCaches()
 
 bool LoadDataCaches()
 {
-    return DataCacheManager(
-        GetDataDir(),
-        uiInterface,
-        fLiteMode).LoadDataCaches();
+    UIMessenger uiMessenger(uiInterface);
+    return LoadMasternodeDataFromDisk(uiMessenger,GetDataDir().string()) &&
+        DataCacheManager(
+            GetDataDir(),
+            uiInterface,
+            fLiteMode).LoadDataCaches();
 }
 
 void SaveFeeEstimatesFromMempool()

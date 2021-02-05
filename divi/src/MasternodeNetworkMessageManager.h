@@ -38,7 +38,8 @@ public:
     bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);
     bool recordDsegUpdateAttempt(const CAddress& peerAddress);
     bool recordMasternodeEntryRequestAttempt(const COutPoint& masternodeCollateral);
-    void clear();
+    void Clear();
+    void CheckAndRemove(){}
     std::string ToString() const;
 
     ADD_SERIALIZE_METHODS

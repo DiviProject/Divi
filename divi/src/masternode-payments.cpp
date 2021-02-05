@@ -35,6 +35,7 @@ extern bool fMasterNode;
 void Misbehaving(NodeId pnode, int howmuch);
 extern CCriticalSection cs_main;
 extern CChain chainActive;
+extern CMasternodeMan mnodeman;
 
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED = 6;
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL = 10;

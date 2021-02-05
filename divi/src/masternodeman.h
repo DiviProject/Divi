@@ -35,7 +35,6 @@ private:
     mutable CCriticalSection cs_process_message;
 
     // map to hold all MNs
-    std::vector<CMasternode> vMasternodes;
     std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
 
     // Cache of the most recent masternode ranks, so we can efficiently check
@@ -57,7 +56,6 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
         LOCK(cs);
-        READWRITE(vMasternodes);
         READWRITE(*networkMessageManager_);
     }
 
@@ -97,11 +95,7 @@ public:
     CMasternode* Find(const CTxIn& vin);
     CMasternode* Find(const CPubKey& pubKeyMasternode);
 
-    std::vector<CMasternode> GetFullMasternodeVector() const
-    {
-        LOCK(cs);
-        return vMasternodes;
-    }
+    std::vector<CMasternode> GetFullMasternodeVector() const;
 
     /** Returns the given masternode's rank among all active and with the
      *  given minimum protocol version.  Returns (unsigned)-1 if the node is not
@@ -146,7 +140,7 @@ public:
     void ProcessMessage(CActiveMasternode& localMasternode, CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     /// Return the number of (unique) Masternodes
-    int size() const { return vMasternodes.size(); }
+    int size() const;
 
     /// Return the number of Masternodes older than (default) 8000 seconds
     int stable_size ();

@@ -7,7 +7,8 @@
 #define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
 
 MasternodeNetworkMessageManager::MasternodeNetworkMessageManager(
-    ): mAskedUsForMasternodeList()
+    ): masternodes()
+    , mAskedUsForMasternodeList()
     , mWeAskedForMasternodeList()
     , mWeAskedForMasternodeListEntry()
     , nDsqCount(0)

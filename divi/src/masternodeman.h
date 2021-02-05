@@ -46,22 +46,10 @@ private:
 public:
     LockableMasternodeData GetLockableMasternodeData();
 
-    bool broadcastIsKnown(const uint256& broadcastHash)
-    {
-        return networkMessageManager_->mapSeenMasternodeBroadcast.count(broadcastHash) >0;
-    }
-    bool pingIsKnown(const uint256& pingHash)
-    {
-        return networkMessageManager_->mapSeenMasternodePing.count(pingHash) >0;
-    }
-    const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash)
-    {
-        return networkMessageManager_->mapSeenMasternodeBroadcast[broadcastHash];
-    }
-    const CMasternodePing& getKnownPing(const uint256& pingHash)
-    {
-        return networkMessageManager_->mapSeenMasternodePing[pingHash];
-    }
+    bool broadcastIsKnown(const uint256& broadcastHash) const;
+    bool pingIsKnown(const uint256& pingHash) const;
+    const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash);
+    const CMasternodePing& getKnownPing(const uint256& pingHash);
 
     ADD_SERIALIZE_METHODS;
 

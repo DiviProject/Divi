@@ -38,6 +38,7 @@ public:
     void clearTimedOutMasternodeEntryRequests();
     void clearTimedOutMasternodePings();
     void clearTimedOutMasternodeBroadcasts(CMasternodeSync& masternodeSynchronization);
+    void clearExpiredMasternodeBroadcasts(const COutPoint& collateral, CMasternodeSync& masternodeSynchronization);
     void clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral);
     bool peerHasRequestedMasternodeListTooOften(const CAddress& peerAddress);
     bool recordDsegUpdateAttempt(const CAddress& peerAddress);

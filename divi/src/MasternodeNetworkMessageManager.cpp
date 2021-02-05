@@ -80,6 +80,18 @@ void MasternodeNetworkMessageManager::clearTimedOutMasternodeBroadcasts(CMastern
         }
     }
 }
+void MasternodeNetworkMessageManager::clearExpiredMasternodeBroadcasts(const COutPoint& collateral, CMasternodeSync& masternodeSynchronization)
+{
+    std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
+    while (it3 != mapSeenMasternodeBroadcast.end()) {
+        if ((*it3).second.vin.prevout == collateral) {
+            masternodeSynchronization.mapSeenSyncMNB.erase((*it3).first);
+            mapSeenMasternodeBroadcast.erase(it3++);
+        } else {
+            ++it3;
+        }
+    }
+}
 
 void MasternodeNetworkMessageManager::clearExpiredMasternodeEntryRequests(const COutPoint& masternodeCollateral)
 {

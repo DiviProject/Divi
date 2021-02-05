@@ -115,9 +115,13 @@ bool MasternodeNetworkMessageManager::recordMasternodeEntryRequestAttempt(const 
 
 void MasternodeNetworkMessageManager::Clear()
 {
+    LOCK(cs);
+    masternodes.clear();
     mAskedUsForMasternodeList.clear();
     mWeAskedForMasternodeList.clear();
     mWeAskedForMasternodeListEntry.clear();
+    mapSeenMasternodeBroadcast.clear();
+    mapSeenMasternodePing.clear();
 }
 
 std::string MasternodeNetworkMessageManager::ToString() const

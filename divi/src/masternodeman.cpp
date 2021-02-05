@@ -157,6 +157,8 @@ CMasternodeMan::~CMasternodeMan()
 
 CMasternodeMan::CMasternodeMan(
     ):  networkMessageManager_(new MasternodeNetworkMessageManager)
+    , cs(networkMessageManager_->cs)
+    , cs_process_message()
     , rankingCache(new RankingCache)
 {
 }

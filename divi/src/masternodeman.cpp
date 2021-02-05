@@ -262,27 +262,8 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
     networkMessageManager_.clearTimedOutMasternodeListRequestsFromPeers();
     networkMessageManager_.clearTimedOutMasternodeListRequestsToPeers();
     networkMessageManager_.clearTimedOutMasternodeEntryRequests();
-
-    // remove expired networkMessageManager_.mapSeenMasternodeBroadcast
-    std::map<uint256, CMasternodeBroadcast>::iterator it3 = networkMessageManager_.mapSeenMasternodeBroadcast.begin();
-    while (it3 != networkMessageManager_.mapSeenMasternodeBroadcast.end()) {
-        if ((*it3).second.lastPing.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
-            networkMessageManager_.mapSeenMasternodeBroadcast.erase(it3++);
-            masternodeSynchronization.mapSeenSyncMNB.erase((*it3).second.GetHash());
-        } else {
-            ++it3;
-        }
-    }
-
-    // remove expired networkMessageManager_.mapSeenMasternodePing
-    std::map<uint256, CMasternodePing>::iterator it4 = networkMessageManager_.mapSeenMasternodePing.begin();
-    while (it4 != networkMessageManager_.mapSeenMasternodePing.end()) {
-        if ((*it4).second.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
-            networkMessageManager_.mapSeenMasternodePing.erase(it4++);
-        } else {
-            ++it4;
-        }
-    }
+    networkMessageManager_.clearTimedOutMasternodeBroadcasts(masternodeSynchronization);
+    networkMessageManager_.clearTimedOutMasternodePings();
 }
 
 bool CMasternodeMan::UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const

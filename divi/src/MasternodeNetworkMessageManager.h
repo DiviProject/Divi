@@ -7,6 +7,7 @@
 #include <netbase.h>
 #include <serialize.h>
 #include <protocol.h>
+#include <masternode.h>
 
 class MasternodeNetworkMessageManager
 {
@@ -21,6 +22,11 @@ public:
 
     // Dummy variable to keep serialization consistent;
     int64_t nDsqCount;
+
+    // Keep track of all broadcasts I've seen
+    std::map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;
+    // Keep track of all pings I've seen
+    std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
     void clearTimedOutMasternodeListRequestsFromPeers();
     void clearTimedOutMasternodeListRequestsToPeers();
@@ -40,6 +46,8 @@ public:
         READWRITE(mWeAskedForMasternodeList);
         READWRITE(mWeAskedForMasternodeListEntry);
         READWRITE(nDsqCount);
+        READWRITE(mapSeenMasternodeBroadcast);
+        READWRITE(mapSeenMasternodePing);
     }
 };
 #endif// MASTERNODE_NETWORK_MESSAGE_MANAGER_H

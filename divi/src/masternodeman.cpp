@@ -231,28 +231,17 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
 
     //remove inactive and outdated
     std::vector<CMasternode>::iterator it = networkMessageManager_.masternodes.begin();
-    while (it != networkMessageManager_.masternodes.end()) {
+    while (it != networkMessageManager_.masternodes.end())
+    {
         if ((*it).activeState == CMasternode::MASTERNODE_REMOVE ||
             (*it).activeState == CMasternode::MASTERNODE_VIN_SPENT ||
             (forceExpiredRemoval && (*it).activeState == CMasternode::MASTERNODE_EXPIRED) ||
-            (*it).protocolVersion < ActiveProtocol()) {
+            (*it).protocolVersion < ActiveProtocol())
+        {
             LogPrint("masternode", "CMasternodeMan: Removing inactive Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), size() - 1);
 
-            //erase all of the broadcasts we've seen from this vin
-            // -- if we missed a few pings and the node was removed, this will allow is to get it back without them
-            //    sending a brand new mnb
-            std::map<uint256, CMasternodeBroadcast>::iterator it3 = networkMessageManager_.mapSeenMasternodeBroadcast.begin();
-            while (it3 != networkMessageManager_.mapSeenMasternodeBroadcast.end()) {
-                if ((*it3).second.vin == (*it).vin) {
-                    masternodeSynchronization.mapSeenSyncMNB.erase((*it3).first);
-                    networkMessageManager_.mapSeenMasternodeBroadcast.erase(it3++);
-                } else {
-                    ++it3;
-                }
-            }
-
-            // allow us to ask for this masternode again if we see another ping
-            networkMessageManager_.clearExpiredMasternodeEntryRequests((*it).vin.prevout);
+            networkMessageManager_.clearExpiredMasternodeBroadcasts(it->vin.prevout,masternodeSynchronization);
+            networkMessageManager_.clearExpiredMasternodeEntryRequests(it->vin.prevout);
             it = networkMessageManager_.masternodes.erase(it);
         } else {
             ++it;

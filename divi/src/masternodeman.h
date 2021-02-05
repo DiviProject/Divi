@@ -45,25 +45,22 @@ private:
 
 public:
     LockableMasternodeData GetLockableMasternodeData();
-    // Keep track of all broadcasts I've seen
-    std::map<uint256, CMasternodeBroadcast> mapSeenMasternodeBroadcast;
-    // Keep track of all pings I've seen
-    std::map<uint256, CMasternodePing> mapSeenMasternodePing;
+
     bool broadcastIsKnown(const uint256& broadcastHash)
     {
-        return mapSeenMasternodeBroadcast.count(broadcastHash) >0;
+        return networkMessageManager_->mapSeenMasternodeBroadcast.count(broadcastHash) >0;
     }
     bool pingIsKnown(const uint256& pingHash)
     {
-        return mapSeenMasternodePing.count(pingHash) >0;
+        return networkMessageManager_->mapSeenMasternodePing.count(pingHash) >0;
     }
     const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash)
     {
-        return mapSeenMasternodeBroadcast[broadcastHash];
+        return networkMessageManager_->mapSeenMasternodeBroadcast[broadcastHash];
     }
     const CMasternodePing& getKnownPing(const uint256& pingHash)
     {
-        return mapSeenMasternodePing[pingHash];
+        return networkMessageManager_->mapSeenMasternodePing[pingHash];
     }
 
     ADD_SERIALIZE_METHODS;
@@ -74,9 +71,6 @@ public:
         LOCK(cs);
         READWRITE(vMasternodes);
         READWRITE(*networkMessageManager_);
-
-        READWRITE(mapSeenMasternodeBroadcast);
-        READWRITE(mapSeenMasternodePing);
     }
 
     CMasternodeMan();

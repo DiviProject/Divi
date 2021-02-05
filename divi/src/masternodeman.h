@@ -28,14 +28,12 @@ extern CMasternodeMan mnodeman;
 class CMasternodeMan
 {
 private:
+    std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
     // critical section to protect the inner data structures
-    mutable CCriticalSection cs;
+    CCriticalSection& cs;
 
     // critical section to protect the inner data structures specifically on messaging
     mutable CCriticalSection cs_process_message;
-
-    // map to hold all MNs
-    std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
 
     // Cache of the most recent masternode ranks, so we can efficiently check
     // if some masternode is in the top-20 for a recent block height.
@@ -55,7 +53,6 @@ public:
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
-        LOCK(cs);
         READWRITE(*networkMessageManager_);
     }
 

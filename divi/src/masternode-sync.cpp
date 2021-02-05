@@ -17,6 +17,7 @@
 #include <sync.h>
 #include <string>
 #include <chain.h>
+#include <MasternodeNetworkMessageManager.h>
 // clang-format on
 
 #include <algorithm>
@@ -29,7 +30,9 @@ extern bool fReindex;
 extern CChain chainActive;
 extern CMasternodeMan mnodeman;
 
-CMasternodeSync::CMasternodeSync()
+CMasternodeSync::CMasternodeSync(
+    MasternodeNetworkMessageManager& networkMessageManager
+    ): networkMessageManager_(networkMessageManager)
 {
     Reset();
 }

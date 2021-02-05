@@ -25,9 +25,9 @@
 
 extern bool fMasterNode;
 extern bool fLiteMode;
-CMasternodeSync masternodeSync;
-CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 MasternodeNetworkMessageManager networkMessageManager;
+CMasternodeSync masternodeSync(networkMessageManager);
+CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CMasternodeMan mnodeman(networkMessageManager);
 
 template <typename T>

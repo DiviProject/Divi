@@ -11,6 +11,8 @@ MasternodeNetworkMessageManager::MasternodeNetworkMessageManager(
     , mWeAskedForMasternodeList()
     , mWeAskedForMasternodeListEntry()
     , nDsqCount(0)
+    , mapSeenMasternodeBroadcast()
+    , mapSeenMasternodePing()
 {
 
 }

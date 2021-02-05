@@ -490,11 +490,7 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
 
 void CMasternodeMan::Clear()
 {
-    LOCK(cs);
-    networkMessageManager_.masternodes.clear();
     networkMessageManager_.Clear();
-    networkMessageManager_.mapSeenMasternodeBroadcast.clear();
-    networkMessageManager_.mapSeenMasternodePing.clear();
 }
 
 int CMasternodeMan::stable_size ()

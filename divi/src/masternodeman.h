@@ -10,7 +10,6 @@
 #include "masternode.h"
 #include "net.h"
 #include "sync.h"
-#include <MasternodeNetworkMessageManager.h>
 #include <LockableMasternodeData.h>
 
 #include <memory>
@@ -23,12 +22,10 @@ class CMasternodePayments;
 class CActiveMasternode;
 class MasternodeNetworkMessageManager;
 
-extern CMasternodeMan mnodeman;
-
 class CMasternodeMan
 {
 private:
-    std::unique_ptr<MasternodeNetworkMessageManager> networkMessageManager_;
+    MasternodeNetworkMessageManager& networkMessageManager_;
     // critical section to protect the inner data structures
     CCriticalSection& cs;
 
@@ -48,15 +45,7 @@ public:
     const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash);
     const CMasternodePing& getKnownPing(const uint256& pingHash);
 
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(*networkMessageManager_);
-    }
-
-    CMasternodeMan();
+    CMasternodeMan(MasternodeNetworkMessageManager& networkMessageManager);
     CMasternodeMan(const CMasternodeMan& other) = delete;
     ~CMasternodeMan();
 

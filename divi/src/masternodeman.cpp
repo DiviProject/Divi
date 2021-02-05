@@ -13,6 +13,7 @@
 #include "Logging.h"
 #include <masternode-sync.h>
 #include <masternode-payments.h>
+#include <MasternodeNetworkMessageManager.h>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <main.h>
@@ -35,9 +36,6 @@ static constexpr unsigned MAX_RANKING_CHECK_NUM = 20;
 
 /** Number of entries (blocks) we keep in the cache of ranked masternodes.  */
 static constexpr unsigned RANKING_CACHE_SIZE = 2500;
-
-/** Masternode manager */
-CMasternodeMan mnodeman;
 
 //    pathMN = GetDataDir() / "mncache.dat";
 //    strMagicMessage = "MasternodeCache";
@@ -151,13 +149,13 @@ public:
 
 CMasternodeMan::~CMasternodeMan()
 {
-    networkMessageManager_.reset();
     rankingCache.reset();
 }
 
 CMasternodeMan::CMasternodeMan(
-    ):  networkMessageManager_(new MasternodeNetworkMessageManager)
-    , cs(networkMessageManager_->cs)
+    MasternodeNetworkMessageManager& networkMessageManager
+    ):  networkMessageManager_(networkMessageManager)
+    , cs(networkMessageManager_.cs)
     , cs_process_message()
     , rankingCache(new RankingCache)
 {
@@ -173,7 +171,7 @@ bool CMasternodeMan::Add(const CMasternode& mn)
     CMasternode* pmn = Find(mn.vin);
     if (pmn == NULL) {
         LogPrint("masternode", "CMasternodeMan: Adding new Masternode %s - %i now\n", mn.vin.prevout.hash.ToString(), size() + 1);
-        networkMessageManager_->masternodes.push_back(mn);
+        networkMessageManager_.masternodes.push_back(mn);
         return true;
     }
 
@@ -182,7 +180,7 @@ bool CMasternodeMan::Add(const CMasternode& mn)
 
 void CMasternodeMan::AskForMN(CNode* pnode, const CTxIn& vin)
 {
-    if(networkMessageManager_->recordMasternodeEntryRequestAttempt(vin.prevout))
+    if(networkMessageManager_.recordMasternodeEntryRequestAttempt(vin.prevout))
     {
         pnode->PushMessage("dseg", vin);
     }
@@ -192,37 +190,37 @@ void CMasternodeMan::Check()
 {
     LOCK(cs);
 
-    BOOST_FOREACH (CMasternode& mn, networkMessageManager_->masternodes) {
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
         mn.Check();
     }
 }
 
 bool CMasternodeMan::broadcastIsKnown(const uint256& broadcastHash) const
 {
-    return networkMessageManager_->mapSeenMasternodeBroadcast.count(broadcastHash) >0;
+    return networkMessageManager_.mapSeenMasternodeBroadcast.count(broadcastHash) >0;
 }
 bool CMasternodeMan::pingIsKnown(const uint256& pingHash) const
 {
-    return networkMessageManager_->mapSeenMasternodePing.count(pingHash) >0;
+    return networkMessageManager_.mapSeenMasternodePing.count(pingHash) >0;
 }
 const CMasternodeBroadcast& CMasternodeMan::getKnownBroadcast(const uint256& broadcastHash)
 {
-    return networkMessageManager_->mapSeenMasternodeBroadcast[broadcastHash];
+    return networkMessageManager_.mapSeenMasternodeBroadcast[broadcastHash];
 }
 const CMasternodePing& CMasternodeMan::getKnownPing(const uint256& pingHash)
 {
-    return networkMessageManager_->mapSeenMasternodePing[pingHash];
+    return networkMessageManager_.mapSeenMasternodePing[pingHash];
 }
 
 std::vector<CMasternode> CMasternodeMan::GetFullMasternodeVector() const
 {
     LOCK(cs);
-    return networkMessageManager_->masternodes;
+    return networkMessageManager_.masternodes;
 }
 
 int CMasternodeMan::size() const
 {
-    return networkMessageManager_->masternodes.size();
+    return networkMessageManager_.masternodes.size();
 }
 
 void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
@@ -232,8 +230,8 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
     LOCK(cs);
 
     //remove inactive and outdated
-    std::vector<CMasternode>::iterator it = networkMessageManager_->masternodes.begin();
-    while (it != networkMessageManager_->masternodes.end()) {
+    std::vector<CMasternode>::iterator it = networkMessageManager_.masternodes.begin();
+    while (it != networkMessageManager_.masternodes.end()) {
         if ((*it).activeState == CMasternode::MASTERNODE_REMOVE ||
             (*it).activeState == CMasternode::MASTERNODE_VIN_SPENT ||
             (forceExpiredRemoval && (*it).activeState == CMasternode::MASTERNODE_EXPIRED) ||
@@ -243,44 +241,44 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
             //erase all of the broadcasts we've seen from this vin
             // -- if we missed a few pings and the node was removed, this will allow is to get it back without them
             //    sending a brand new mnb
-            std::map<uint256, CMasternodeBroadcast>::iterator it3 = networkMessageManager_->mapSeenMasternodeBroadcast.begin();
-            while (it3 != networkMessageManager_->mapSeenMasternodeBroadcast.end()) {
+            std::map<uint256, CMasternodeBroadcast>::iterator it3 = networkMessageManager_.mapSeenMasternodeBroadcast.begin();
+            while (it3 != networkMessageManager_.mapSeenMasternodeBroadcast.end()) {
                 if ((*it3).second.vin == (*it).vin) {
                     masternodeSynchronization.mapSeenSyncMNB.erase((*it3).first);
-                    networkMessageManager_->mapSeenMasternodeBroadcast.erase(it3++);
+                    networkMessageManager_.mapSeenMasternodeBroadcast.erase(it3++);
                 } else {
                     ++it3;
                 }
             }
 
             // allow us to ask for this masternode again if we see another ping
-            networkMessageManager_->clearExpiredMasternodeEntryRequests((*it).vin.prevout);
-            it = networkMessageManager_->masternodes.erase(it);
+            networkMessageManager_.clearExpiredMasternodeEntryRequests((*it).vin.prevout);
+            it = networkMessageManager_.masternodes.erase(it);
         } else {
             ++it;
         }
     }
 
-    networkMessageManager_->clearTimedOutMasternodeListRequestsFromPeers();
-    networkMessageManager_->clearTimedOutMasternodeListRequestsToPeers();
-    networkMessageManager_->clearTimedOutMasternodeEntryRequests();
+    networkMessageManager_.clearTimedOutMasternodeListRequestsFromPeers();
+    networkMessageManager_.clearTimedOutMasternodeListRequestsToPeers();
+    networkMessageManager_.clearTimedOutMasternodeEntryRequests();
 
-    // remove expired networkMessageManager_->mapSeenMasternodeBroadcast
-    std::map<uint256, CMasternodeBroadcast>::iterator it3 = networkMessageManager_->mapSeenMasternodeBroadcast.begin();
-    while (it3 != networkMessageManager_->mapSeenMasternodeBroadcast.end()) {
+    // remove expired networkMessageManager_.mapSeenMasternodeBroadcast
+    std::map<uint256, CMasternodeBroadcast>::iterator it3 = networkMessageManager_.mapSeenMasternodeBroadcast.begin();
+    while (it3 != networkMessageManager_.mapSeenMasternodeBroadcast.end()) {
         if ((*it3).second.lastPing.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
-            networkMessageManager_->mapSeenMasternodeBroadcast.erase(it3++);
+            networkMessageManager_.mapSeenMasternodeBroadcast.erase(it3++);
             masternodeSynchronization.mapSeenSyncMNB.erase((*it3).second.GetHash());
         } else {
             ++it3;
         }
     }
 
-    // remove expired networkMessageManager_->mapSeenMasternodePing
-    std::map<uint256, CMasternodePing>::iterator it4 = networkMessageManager_->mapSeenMasternodePing.begin();
-    while (it4 != networkMessageManager_->mapSeenMasternodePing.end()) {
+    // remove expired networkMessageManager_.mapSeenMasternodePing
+    std::map<uint256, CMasternodePing>::iterator it4 = networkMessageManager_.mapSeenMasternodePing.begin();
+    while (it4 != networkMessageManager_.mapSeenMasternodePing.end()) {
         if ((*it4).second.sigTime < GetTime() - (MASTERNODE_REMOVAL_SECONDS * 2)) {
-            networkMessageManager_->mapSeenMasternodePing.erase(it4++);
+            networkMessageManager_.mapSeenMasternodePing.erase(it4++);
         } else {
             ++it4;
         }
@@ -493,10 +491,10 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
 void CMasternodeMan::Clear()
 {
     LOCK(cs);
-    networkMessageManager_->masternodes.clear();
-    networkMessageManager_->clear();
-    networkMessageManager_->mapSeenMasternodeBroadcast.clear();
-    networkMessageManager_->mapSeenMasternodePing.clear();
+    networkMessageManager_.masternodes.clear();
+    networkMessageManager_.Clear();
+    networkMessageManager_.mapSeenMasternodeBroadcast.clear();
+    networkMessageManager_.mapSeenMasternodePing.clear();
 }
 
 int CMasternodeMan::stable_size ()
@@ -507,7 +505,7 @@ int CMasternodeMan::stable_size ()
     int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;
     int64_t nMasternode_Age = 0;
 
-    for (auto& mn : networkMessageManager_->masternodes) {
+    for (auto& mn : networkMessageManager_.masternodes) {
         if (mn.protocolVersion < nMinProtocol) {
             continue; // Skip obsolete versions
         }
@@ -532,7 +530,7 @@ int CMasternodeMan::CountEnabled(int protocolVersion) const
     int i = 0;
     protocolVersion = protocolVersion == -1 ? ActiveProtocol() : protocolVersion;
 
-    for (const auto& mn : networkMessageManager_->masternodes) {
+    for (const auto& mn : networkMessageManager_.masternodes) {
         if (mn.protocolVersion < protocolVersion || !mn.IsEnabled()) continue;
         i++;
     }
@@ -544,7 +542,7 @@ void CMasternodeMan::CountNetworks(int protocolVersion, int& ipv4, int& ipv6, in
 {
     protocolVersion = protocolVersion == -1 ? ActiveProtocol() : protocolVersion;
 
-    BOOST_FOREACH (CMasternode& mn, networkMessageManager_->masternodes) {
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
         mn.Check();
         std::string strHost;
         int port;
@@ -569,7 +567,7 @@ void CMasternodeMan::DsegUpdate(CNode* pnode)
 {
     LOCK(cs);
 
-    if(networkMessageManager_->recordDsegUpdateAttempt(pnode->addr))
+    if(networkMessageManager_.recordDsegUpdateAttempt(pnode->addr))
     {
         pnode->PushMessage("dseg", CTxIn());
     }
@@ -579,7 +577,7 @@ CMasternode* CMasternodeMan::Find(const CTxIn& vin)
 {
     LOCK(cs);
 
-    BOOST_FOREACH (CMasternode& mn, networkMessageManager_->masternodes) {
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
         if (mn.vin.prevout == vin.prevout)
             return &mn;
     }
@@ -591,7 +589,7 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 {
     LOCK(cs);
 
-    BOOST_FOREACH (CMasternode& mn, networkMessageManager_->masternodes) {
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
         if (mn.pubKeyMasternode == pubKeyMasternode)
             return &mn;
     }
@@ -603,7 +601,7 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 //
 LockableMasternodeData CMasternodeMan::GetLockableMasternodeData()
 {
-    return {cs,networkMessageManager_->masternodes};
+    return {cs,networkMessageManager_.masternodes};
 }
 
 namespace
@@ -651,7 +649,7 @@ unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, const uint256& seed
         std::vector<std::pair<int64_t, uint256>> rankedNodes;
         {
             LOCK(cs);
-            for (auto& mn : networkMessageManager_->masternodes) {
+            for (auto& mn : networkMessageManager_.masternodes) {
                 int64_t score;
                 if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
                     continue;
@@ -693,20 +691,20 @@ void CMasternodeMan::ProcessMasternodeConnections()
 
 void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
 {
-    networkMessageManager_->mapSeenMasternodePing[mnp.GetHash()] = mnp;
+    networkMessageManager_.mapSeenMasternodePing[mnp.GetHash()] = mnp;
 
     const auto* pmn = Find(mnp.vin);
     if (pmn != nullptr) {
         const uint256 mnbHash = CMasternodeBroadcast(*pmn).GetHash();
-        auto mit = networkMessageManager_->mapSeenMasternodeBroadcast.find(mnbHash);
-        if (mit != networkMessageManager_->mapSeenMasternodeBroadcast.end())
+        auto mit = networkMessageManager_.mapSeenMasternodeBroadcast.find(mnbHash);
+        if (mit != networkMessageManager_.mapSeenMasternodeBroadcast.end())
           mit->second.lastPing = mnp;
     }
 }
 
 bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMasternodeSync& masternodeSynchronization,CNode* pfrom, CMasternodeBroadcast& mnb)
 {
-    if (networkMessageManager_->mapSeenMasternodeBroadcast.count(mnb.GetHash())) { //seen
+    if (networkMessageManager_.mapSeenMasternodeBroadcast.count(mnb.GetHash())) { //seen
         masternodeSynchronization.AddedMasternodeList(mnb.GetHash());
         return true;
     }
@@ -767,7 +765,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     LogPrint("masternode","mnb - Got NEW Masternode entry - %s - %lli \n", mnb.vin.prevout.hash.ToString(), mnb.sigTime);
     Add(mn);
 
-    networkMessageManager_->mapSeenMasternodeBroadcast[mnb.GetHash()] = mnb;
+    networkMessageManager_.mapSeenMasternodeBroadcast[mnb.GetHash()] = mnb;
     RecordSeenPing(mnb.lastPing);
 
     // if it matches our Masternode privkey, then we've been remotely activated
@@ -784,7 +782,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
 
 bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
 {
-    if (networkMessageManager_->mapSeenMasternodePing.count(mnp.GetHash())) return true; //seen
+    if (networkMessageManager_.mapSeenMasternodePing.count(mnp.GetHash())) return true; //seen
 
     auto* pmn = Find(mnp.vin);
     int nDoS = 0;
@@ -817,7 +815,7 @@ bool CMasternodeMan::NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer)
         CMasternodeBroadcast mnb = CMasternodeBroadcast(mn);
         const uint256 hash = mnb.GetHash();
         peer->PushInventory(CInv(MSG_MASTERNODE_ANNOUNCE, hash));
-        if (!networkMessageManager_->mapSeenMasternodeBroadcast.count(hash)) networkMessageManager_->mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
+        if (!networkMessageManager_.mapSeenMasternodeBroadcast.count(hash)) networkMessageManager_.mapSeenMasternodeBroadcast.insert(std::make_pair(hash, mnb));
         return true;
     }
     return false;
@@ -826,7 +824,7 @@ void CMasternodeMan::SyncMasternodeListWithPeer(CNode* peer)
 {
     LOCK(cs);
     int nInvCount = 0;
-    for (const CMasternode& mn: networkMessageManager_->masternodes)
+    for (const CMasternode& mn: networkMessageManager_.masternodes)
     {
         if (NotifyPeerOfMasternode(mn,peer))
         {
@@ -842,7 +840,7 @@ bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
     bool isLocal = (pfrom->addr.IsRFC1918() || pfrom->addr.IsLocal());
     if (!isLocal)
     {
-        if(networkMessageManager_->peerHasRequestedMasternodeListTooOften(pfrom->addr))
+        if(networkMessageManager_.peerHasRequestedMasternodeListTooOften(pfrom->addr))
         {
             Misbehaving(pfrom->GetId(), 34);
             return true;
@@ -896,11 +894,11 @@ void CMasternodeMan::Remove(const CTxIn& vin)
 {
     LOCK(cs);
 
-    std::vector<CMasternode>::iterator it = networkMessageManager_->masternodes.begin();
-    while (it != networkMessageManager_->masternodes.end()) {
+    std::vector<CMasternode>::iterator it = networkMessageManager_.masternodes.begin();
+    while (it != networkMessageManager_.masternodes.end()) {
         if ((*it).vin == vin) {
             LogPrint("masternode", "CMasternodeMan: Removing Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), size() - 1);
-            networkMessageManager_->masternodes.erase(it);
+            networkMessageManager_.masternodes.erase(it);
             break;
         }
         ++it;
@@ -918,9 +916,9 @@ std::string CMasternodeMan::ToString() const
     std::ostringstream info;
 
     info << "Masternodes: "
-        << (int)networkMessageManager_->masternodes.size()
+        << (int)networkMessageManager_.masternodes.size()
         << ", "
-        << networkMessageManager_->ToString();
+        << networkMessageManager_.ToString();
 
     return info.str();
 }

@@ -10,6 +10,8 @@ class CBlockIndex;
 class CDataStream;
 class CNode;
 class CMasternodeSync;
+class UIMessenger;
+
 void ThreadMasternodeBackgroundSync();
 bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage);
 void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction);
@@ -96,4 +98,6 @@ struct MasternodeCountData
     MasternodeCountData(){}
 };
 MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip);
+bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataDir);
+void DumpMasternodeDataToDisk();
 #endif //MASTERNODE_MODULE_H

@@ -16,6 +16,8 @@ public:
     MasternodePaymentData();
     ~MasternodePaymentData();
 
+    bool masternodeWinnerVoteIsKnown(const uint256& hash) const;
+
     void CheckAndRemove(){}
     void Clear(){}
     std::string ToString() const;

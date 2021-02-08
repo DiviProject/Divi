@@ -13,18 +13,24 @@
 #include "sync.h"
 #include "Logging.h"
 #include <boost/lexical_cast.hpp>
-#include <main.h>
 #include <init.h>
 #include <wallet.h>
 #include <utiltime.h>
 #include <WalletTx.h>
-#include <masternode-sync.h>
 #include <MasternodeHelpers.h>
+#include <script/standard.h>
+#include <blockmap.h>
+#include <chainparams.h>
+#include <coins.h>
 
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
 extern CChain chainActive;
-
+extern BlockMap mapBlockIndex;
+extern CCriticalSection cs_main;
+extern bool fImporting;
+extern bool fReindex;
+extern CCoinsViewCache* pcoinsTip;
 
 static CAmount getCollateralAmount(MasternodeTier tier)
 {

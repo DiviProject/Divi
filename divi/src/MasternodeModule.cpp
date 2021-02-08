@@ -53,7 +53,7 @@ bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataD
             return uiMessenger.InitError("Failed to load masternode cache from", "\n" + pathToDataDir );
         }
 
-        if(mnodeman.size()) {
+        if(networkMessageManager.masternodeCount()) {
             strDBName = "mnpayments.dat";
             uiMessenger.InitMessage("Loading masternode payment cache...");
             CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
@@ -84,7 +84,7 @@ MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
         data.queueCount = masternodePayments.GetMasternodePaymentQueue(chainTip, 0, true).size();
 
     mnodeman.CountNetworks(ActiveProtocol(), data.ipv4, data.ipv6, data.onion);
-    data.total = mnodeman.size();
+    data.total = networkMessageManager.masternodeCount();
     data.stable = mnodeman.stable_size();
     data.enabledAndActive = mnodeman.CountEnabled(ActiveProtocol());
     data.enabled = mnodeman.CountEnabled();

@@ -205,6 +205,7 @@ BITCOIN_CORE_H = \
   ExtendedBlockFactory.h \
   BlockFactory.h \
   masternode.h \
+  MasternodePayeeData.h \
   masternode-payments.h \
   LotteryCoinstakes.h \
   LotteryWinnersCalculator.h \
@@ -427,6 +428,7 @@ libbitcoin_wallet_a_SOURCES = \
   swifttx.cpp \
   LegacyBlockSubsidies.cpp \
   masternode.cpp \
+  MasternodePayeeData.cpp \
   masternode-payments.cpp \
   LotteryWinnersCalculator.cpp \
   LotteryCoinstakes.cpp \

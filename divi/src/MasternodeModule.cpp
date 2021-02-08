@@ -22,13 +22,16 @@
 #include <flat-database.h>
 #include <uiMessenger.h>
 #include <MasternodeNetworkMessageManager.h>
+#include <MasternodePaymentData.h>
 
 extern bool fMasterNode;
 extern bool fLiteMode;
 MasternodeNetworkMessageManager networkMessageManager;
+MasternodePaymentData masternodePaymentData;
 CMasternodeSync masternodeSync(networkMessageManager);
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CMasternodeMan mnodeman(networkMessageManager);
+CMasternodePayments masternodePayments(masternodePaymentData,mnodeman);
 
 template <typename T>
 static T readFromHex(std::string hexString)
@@ -56,8 +59,8 @@ bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataD
         if(networkMessageManager.masternodeCount()) {
             strDBName = "mnpayments.dat";
             uiMessenger.InitMessage("Loading masternode payment cache...");
-            CFlatDB<CMasternodePayments> flatdb2(strDBName, "magicMasternodePaymentsCache");
-            if(!flatdb2.Load(masternodePayments)) {
+            CFlatDB<MasternodePaymentData> flatdb2(strDBName, "magicMasternodePaymentsCache");
+            if(!flatdb2.Load(masternodePaymentData)) {
                 return uiMessenger.InitError("Failed to load masternode payments cache from", "\n" + pathToDataDir);
             }
         } else {
@@ -72,8 +75,8 @@ void DumpMasternodeDataToDisk()
     {
         CFlatDB<MasternodeNetworkMessageManager> flatdb1("mncache.dat", "magicMasternodeCache");
         flatdb1.Dump(networkMessageManager);
-        CFlatDB<CMasternodePayments> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
-        flatdb2.Dump(masternodePayments);
+        CFlatDB<MasternodePaymentData> flatdb2("mnpayments.dat", "magicMasternodePaymentsCache");
+        flatdb2.Dump(masternodePaymentData);
     }
 }
 

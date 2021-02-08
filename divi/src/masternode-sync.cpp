@@ -19,6 +19,7 @@
 #include <chain.h>
 #include <MasternodeNetworkMessageManager.h>
 #include <version.h>
+#include <MasternodePaymentData.h>
 // clang-format on
 
 #include <algorithm>
@@ -32,8 +33,10 @@ extern CChain chainActive;
 extern CMasternodeMan mnodeman;
 
 CMasternodeSync::CMasternodeSync(
-    MasternodeNetworkMessageManager& networkMessageManager
+    MasternodeNetworkMessageManager& networkMessageManager,
+    MasternodePaymentData& masternodePaymentData
     ): networkMessageManager_(networkMessageManager)
+    , masternodePaymentData_(masternodePaymentData)
 {
     Reset();
 }
@@ -116,7 +119,7 @@ void CMasternodeSync::AddedMasternodeList(const uint256& hash)
 
 void CMasternodeSync::AddedMasternodeWinner(const uint256& hash)
 {
-    if (masternodePayments.GetPaymentWinnerForHash(hash) != nullptr) {
+    if (masternodePaymentData_.masternodeWinnerVoteIsKnown(hash)) {
         if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
             lastMasternodeWinner = GetTime();
             mapSeenSyncMNW[hash]++;

@@ -22,6 +22,7 @@ class MasternodePaymentData;
 #include <map>
 #include <uint256.h>
 #include <stdint.h>
+#include <string>
 //
 // CMasternodeSync : Sync masternode assets in stages
 //

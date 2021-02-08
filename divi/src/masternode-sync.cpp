@@ -4,19 +4,16 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 // clang-format off
-#include "masternode-sync.h"
-#include "masternode-payments.h"
-#include "masternode.h"
-#include "masternodeman.h"
-#include "spork.h"
-#include "utiltime.h"
-#include "Logging.h"
-#include "addrman.h"
-#include "netfulfilledman.h"
+#include <masternode-sync.h>
+
+#include <masternodeman.h>
+#include <spork.h>
+#include <utiltime.h>
+#include <Logging.h>
+#include <netfulfilledman.h>
 #include <ui_interface.h>
 #include <sync.h>
-#include <string>
-#include <chain.h>
+
 #include <MasternodeNetworkMessageManager.h>
 #include <version.h>
 #include <MasternodePaymentData.h>

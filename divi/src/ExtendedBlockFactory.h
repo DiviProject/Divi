@@ -10,8 +10,6 @@ class BlockFactory;
 class CTransaction;
 class CChain;
 class CChainParams;
-template <typename MutexObj>
-class AnnotatedMixin;
 class CBlockTemplate;
 class CReserveKey;
 class I_BlockTransactionCollector;
@@ -29,8 +27,7 @@ public:
         I_BlockTransactionCollector& blockTransactionCollector,
         I_PoSTransactionCreator& coinstakeCreator,
         CChain& chain,
-        const CChainParams& chainParameters,
-        AnnotatedMixin<boost::recursive_mutex>& mainCS);
+        const CChainParams& chainParameters);
     ~ExtendedBlockFactory();
 
     CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reserveKey, bool fProofOfStake) override;

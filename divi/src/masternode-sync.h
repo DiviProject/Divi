@@ -67,6 +67,7 @@ public:
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
     void Reset();
+    void DsegUpdate(CNode* pnode);
     bool ShouldWaitForSync(const int64_t now);
     SyncStatus SyncAssets(CNode* pnode, const int64_t now,const int64_t lastUpdate, std::string assetType);
     bool MasternodeListIsSynced(CNode* pnode, const int64_t now);

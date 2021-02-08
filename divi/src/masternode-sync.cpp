@@ -90,6 +90,16 @@ void CMasternodeSync::Reset()
     mnodeman.ResetRankingCache();
 }
 
+void CMasternodeSync::DsegUpdate(CNode* pnode)
+{
+    LOCK(networkMessageManager_.cs);
+
+    if(networkMessageManager_.recordDsegUpdateAttempt(pnode->addr))
+    {
+        pnode->PushMessage("dseg", CTxIn());
+    }
+}
+
 void CMasternodeSync::AddedMasternodeList(const uint256& hash)
 {
     if (mnodeman.broadcastIsKnown(hash)) {
@@ -272,7 +282,7 @@ bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
             }
             case SyncStatus::REQUEST_SYNC:
             {
-                mnodeman.DsegUpdate(pnode);
+                DsegUpdate(pnode);
                 RequestedMasternodeAttempt++;
                 return false;
             }

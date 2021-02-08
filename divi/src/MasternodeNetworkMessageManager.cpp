@@ -19,6 +19,11 @@ MasternodeNetworkMessageManager::MasternodeNetworkMessageManager(
 
 }
 
+uint32_t MasternodeNetworkMessageManager::masternodeCount() const
+{
+    return masternodes.size();
+}
+
 void MasternodeNetworkMessageManager::clearTimedOutMasternodeListRequestsFromPeers()
 {
     // check who's asked for the Masternode list

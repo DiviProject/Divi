@@ -13,8 +13,6 @@
 
 // clang-format on
 
-CMasternodeConfig masternodeConfig;
-
 void CMasternodeConfig::add(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex)
 {
     CMasternodeEntry cme(alias, ip, privKey, txHash, outputIndex);

@@ -183,3 +183,20 @@ std::string MasternodeNetworkMessageManager::ToString() const
 
     return info.str();
 }
+
+bool MasternodeNetworkMessageManager::broadcastIsKnown(const uint256& broadcastHash) const
+{
+    return mapSeenMasternodeBroadcast.count(broadcastHash) >0;
+}
+bool MasternodeNetworkMessageManager::pingIsKnown(const uint256& pingHash) const
+{
+    return mapSeenMasternodePing.count(pingHash) >0;
+}
+const CMasternodeBroadcast& MasternodeNetworkMessageManager::getKnownBroadcast(const uint256& broadcastHash)
+{
+    return mapSeenMasternodeBroadcast[broadcastHash];
+}
+const CMasternodePing& MasternodeNetworkMessageManager::getKnownPing(const uint256& pingHash)
+{
+    return mapSeenMasternodePing[pingHash];
+}

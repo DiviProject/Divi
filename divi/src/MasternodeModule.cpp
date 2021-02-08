@@ -249,10 +249,10 @@ void ForceMasternodeResync()
 
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash)
 {
-    if (mnodeman.pingIsKnown(inventoryHash)) {
+    if (networkMessageManager.pingIsKnown(inventoryHash)) {
         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
         ss.reserve(1000);
-        ss << mnodeman.getKnownPing(inventoryHash);
+        ss << networkMessageManager.getKnownPing(inventoryHash);
         peer->PushMessage("mnp", ss);
         return true;
     }
@@ -261,11 +261,11 @@ bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash)
 
 bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
 {
-    if (mnodeman.broadcastIsKnown(inventoryHash))
+    if (networkMessageManager.broadcastIsKnown(inventoryHash))
     {
         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
         ss.reserve(1000);
-        ss << mnodeman.getKnownBroadcast(inventoryHash);
+        ss << networkMessageManager.getKnownBroadcast(inventoryHash);
         peer->PushMessage("mnb", ss);
         return true;
     }
@@ -273,11 +273,11 @@ bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
 }
 bool MasternodePingIsKnown(const uint256& inventoryHash)
 {
-    return mnodeman.pingIsKnown(inventoryHash);
+    return networkMessageManager.pingIsKnown(inventoryHash);
 }
 bool MasternodeIsKnown(const uint256& inventoryHash)
 {
-    if (mnodeman.broadcastIsKnown(inventoryHash))
+    if (networkMessageManager.broadcastIsKnown(inventoryHash))
     {
         masternodeSync.AddedMasternodeList(inventoryHash);
         return true;

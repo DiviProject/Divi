@@ -48,6 +48,11 @@ public:
     void CheckAndRemove(){}
     std::string ToString() const;
 
+    bool broadcastIsKnown(const uint256& broadcastHash) const;
+    bool pingIsKnown(const uint256& pingHash) const;
+    const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash);
+    const CMasternodePing& getKnownPing(const uint256& pingHash);
+
     ADD_SERIALIZE_METHODS
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)

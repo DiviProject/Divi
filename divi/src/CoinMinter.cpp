@@ -16,6 +16,7 @@
 #include <txmempool.h>
 #include <I_BlockSubsidyProvider.h>
 #include <Logging.h>
+#include <MasternodeHelpers.h>
 
 constexpr int hashingDelay = 45;
 
@@ -78,7 +79,7 @@ bool CoinMinter::satisfiesMintingRequirements() const
     const unsigned minimumChainTipTimestampForMinting = GetTime() - oneReorgWorthOfTimestampDrift;
 
     CBlockIndex* chainTip = chain_.Tip();
-    bool chainTipNotSyncedEnough = chainTip? chainTip->nTime < minimumChainTipTimestampForMinting: CMasternodeSync::IsBlockchainSynced();
+    bool chainTipNotSyncedEnough = chainTip? chainTip->nTime < minimumChainTipTimestampForMinting: IsBlockchainSynced();
     bool stakingRequirementsAreMet =
         !(
             chainTipNotSyncedEnough ||

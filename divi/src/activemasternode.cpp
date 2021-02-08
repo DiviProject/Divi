@@ -15,6 +15,7 @@
 #include <masternodeconfig.h>
 #include <masternode-payments.h>
 #include <masternode-sync.h>
+#include <MasternodeHelpers.h>
 
 CActiveMasternode::CActiveMasternode(
     const CMasternodeConfig& masternodeConfigurations,
@@ -61,7 +62,7 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
     LogPrint("masternode","CActiveMasternode::ManageStatus() - Begin\n");
 
     //need correct blocks to send ping
-    if (!CMasternodeSync::IsBlockchainSynced()) {
+    if (!IsBlockchainSynced()) {
         status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
         LogPrintf("CActiveMasternode::ManageStatus() - %s\n", GetStatus());
         return;

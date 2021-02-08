@@ -20,11 +20,9 @@ BlockFactory::BlockFactory(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
     CChain& chain,
-    const CChainParams& chainParameters,
-    AnnotatedMixin<boost::recursive_mutex>& mainCS
+    const CChainParams& chainParameters
     ): chain_(chain)
     , chainParameters_(chainParameters)
-    , mainCS_(mainCS)
     , blockTransactionCollector_(blockTransactionCollector)
     , coinstakeCreator_( coinstakeCreator)
 {
@@ -84,7 +82,6 @@ bool BlockFactory::AppendProofOfStakeToBlock(
 
 CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool fProofOfStake)
 {
-    LOCK(mainCS_);
     // Create new block
     std::unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
     if (!pblocktemplate.get())

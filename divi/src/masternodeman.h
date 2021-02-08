@@ -123,9 +123,6 @@ public:
 
     void ProcessMessage(CActiveMasternode& localMasternode, CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
-    /// Return the number of (unique) Masternodes
-    int size() const;
-
     /// Return the number of Masternodes older than (default) 8000 seconds
     int stable_size ();
 

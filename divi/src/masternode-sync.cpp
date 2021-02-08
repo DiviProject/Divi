@@ -297,6 +297,10 @@ bool CMasternodeSync::MasternodeListIsSynced(CNode* pnode, const int64_t now)
     }
     return true;
 }
+uint32_t CMasternodeSync::masternodeCount() const
+{
+    return networkMessageManager_.masternodeCount();
+}
 bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t now)
 {
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_MNW)
@@ -317,7 +321,7 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
                 CBlockIndex* pindexPrev = chainActive.Tip();
                 if (pindexPrev == NULL) return false;
 
-                int nMnCount = mnodeman.size();
+                int nMnCount = masternodeCount();
                 pnode->PushMessage("mnget", nMnCount); //sync payees
                 RequestedMasternodeAttempt++;
                 return false;

@@ -170,7 +170,7 @@ bool CMasternodeMan::Add(const CMasternode& mn)
 
     CMasternode* pmn = Find(mn.vin);
     if (pmn == NULL) {
-        LogPrint("masternode", "CMasternodeMan: Adding new Masternode %s - %i now\n", mn.vin.prevout.hash.ToString(), size() + 1);
+        LogPrint("masternode", "CMasternodeMan: Adding new Masternode %s - %i now\n", mn.vin.prevout.hash.ToString(), networkMessageManager_.masternodeCount() + 1);
         networkMessageManager_.masternodes.push_back(mn);
         return true;
     }
@@ -218,11 +218,6 @@ std::vector<CMasternode> CMasternodeMan::GetFullMasternodeVector() const
     return networkMessageManager_.masternodes;
 }
 
-int CMasternodeMan::size() const
-{
-    return networkMessageManager_.masternodes.size();
-}
-
 void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
 {
     Check();
@@ -238,7 +233,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
             (forceExpiredRemoval && (*it).activeState == CMasternode::MASTERNODE_EXPIRED) ||
             (*it).protocolVersion < ActiveProtocol())
         {
-            LogPrint("masternode", "CMasternodeMan: Removing inactive Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), size() - 1);
+            LogPrint("masternode", "CMasternodeMan: Removing inactive Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), networkMessageManager_.masternodeCount() - 1);
 
             networkMessageManager_.clearExpiredMasternodeBroadcasts(it->vin.prevout,masternodeSynchronization);
             networkMessageManager_.clearExpiredMasternodeEntryRequests(it->vin.prevout);
@@ -853,7 +848,7 @@ void CMasternodeMan::Remove(const CTxIn& vin)
     std::vector<CMasternode>::iterator it = networkMessageManager_.masternodes.begin();
     while (it != networkMessageManager_.masternodes.end()) {
         if ((*it).vin == vin) {
-            LogPrint("masternode", "CMasternodeMan: Removing Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), size() - 1);
+            LogPrint("masternode", "CMasternodeMan: Removing Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), networkMessageManager_.masternodeCount() - 1);
             networkMessageManager_.masternodes.erase(it);
             break;
         }
@@ -872,7 +867,7 @@ std::string CMasternodeMan::ToString() const
     std::ostringstream info;
 
     info << "Masternodes: "
-        << (int)networkMessageManager_.masternodes.size()
+        << (int)networkMessageManager_.masternodeCount()
         << ", "
         << networkMessageManager_.ToString();
 

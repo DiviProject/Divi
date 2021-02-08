@@ -23,6 +23,7 @@
 #include <uiMessenger.h>
 #include <MasternodeNetworkMessageManager.h>
 #include <MasternodePaymentData.h>
+#include <MasternodeHelpers.h>
 
 extern bool fMasterNode;
 extern bool fLiteMode;
@@ -446,7 +447,7 @@ void ThreadMasternodeBackgroundSync()
         // ignores calls if they are too early
         masternodeSync.Process(regtest);
 
-        bool blockchainIsSynced = CMasternodeSync::IsBlockchainSynced();
+        bool blockchainIsSynced = IsBlockchainSynced();
         if(now - lastResyncMasternodeData > forceMasternodeResyncTimeWindow)
         {
             masternodeSync.Reset();

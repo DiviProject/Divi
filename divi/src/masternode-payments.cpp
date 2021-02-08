@@ -28,6 +28,7 @@
 #include <chainparams.h>
 #include <version.h>
 #include <MasternodePaymentData.h>
+#include <MasternodeHelpers.h>
 
 extern bool fLiteMode;
 extern bool fMasterNode;
@@ -116,7 +117,7 @@ int CMasternodePayments::GetMinMasternodePaymentsProto() const
 
 void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& masternodeSynchronization,CNode* pfrom, const std::string& strCommand, CDataStream& vRecv)
 {
-    if (!CMasternodeSync::IsBlockchainSynced()) return;
+    if (!IsBlockchainSynced()) return;
 
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
 

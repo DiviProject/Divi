@@ -24,6 +24,7 @@ class CDataStream;
 class CMasternodeSync;
 class I_BlockSubsidyProvider;
 class CMasternodeMan;
+class MasternodePaymentData;
 
 extern CMasternodePayments masternodePayments;
 //
@@ -37,12 +38,13 @@ private:
     int nSyncedFromPeer;
     int nLastBlockHeight;
     int chainTipHeight;
+    MasternodePaymentData& paymentData_;
     CMasternodeMan& masternodeManager_;
 
     /** Map from the inventory hashes of mnw's to the corresponding data.  */
-    std::map<uint256, CMasternodePaymentWinner> mapMasternodePayeeVotes;
+    std::map<uint256, CMasternodePaymentWinner>& mapMasternodePayeeVotes;
     /** Map from score hashes of blocks to the corresponding winners.  */
-    std::map<uint256, CMasternodeBlockPayees> mapMasternodeBlocks;
+    std::map<uint256, CMasternodeBlockPayees>& mapMasternodeBlocks;
 
     mutable CCriticalSection cs_mapMasternodeBlocks;
     mutable CCriticalSection cs_mapMasternodePayeeVotes;
@@ -55,8 +57,7 @@ public:
     static const int MNPAYMENTS_SIGNATURES_TOTAL;
     void updateChainTipHeight(const CBlockIndex* pindex);
 
-    CMasternodePayments();
-    CMasternodePayments(CMasternodeMan& masternodeManager);
+    CMasternodePayments(MasternodePaymentData& paymentData, CMasternodeMan& masternodeManager);
 
     void Clear();
 

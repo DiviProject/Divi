@@ -27,6 +27,7 @@
 #include <base58address.h>
 #include <chainparams.h>
 #include <version.h>
+#include <MasternodePaymentData.h>
 
 extern bool fLiteMode;
 extern bool fMasterNode;
@@ -41,18 +42,17 @@ const int CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED = 6;
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL = 10;
 
 /** Object for who's going to get paid on which blocks */
-CMasternodePayments masternodePayments;
 
 CMasternodePayments::CMasternodePayments(
+    MasternodePaymentData& paymentData,
     CMasternodeMan& masternodeManager
     ): nSyncedFromPeer(0)
     , nLastBlockHeight(0)
     , chainTipHeight(0)
+    , paymentData_(paymentData)
     , masternodeManager_(masternodeManager)
-{
-}
-
-CMasternodePayments::CMasternodePayments(): CMasternodePayments(mnodeman)
+    , mapMasternodePayeeVotes(paymentData_.mapMasternodePayeeVotes)
+    , mapMasternodeBlocks(paymentData_.mapMasternodeBlocks)
 {
 }
 

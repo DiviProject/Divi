@@ -75,11 +75,8 @@ bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256&
 }
 
 
-void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const
+void CMasternodePayments::FillBlockPayee(const CBlockIndex* pindexPrev, CMutableTransaction& txNew, const CBlockRewards &rewards, bool fProofOfStake) const
 {
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    if (!pindexPrev) return;
-
     bool hasPayment = true;
     CScript payee;
 

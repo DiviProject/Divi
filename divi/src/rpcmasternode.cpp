@@ -8,7 +8,6 @@
 #include "init.h"
 #include "main.h"
 #include "masternode-payments.h"
-#include "masternodeconfig.h"
 #include "activemasternode.h"
 #include "masternodeman.h"
 #include "obfuscation.h"

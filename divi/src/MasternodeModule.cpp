@@ -29,6 +29,7 @@ extern bool fMasterNode;
 extern bool fLiteMode;
 MasternodeNetworkMessageManager networkMessageManager;
 MasternodePaymentData masternodePaymentData;
+CMasternodeConfig masternodeConfig;
 CMasternodeSync masternodeSync(networkMessageManager,masternodePaymentData);
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CMasternodeMan mnodeman(networkMessageManager);

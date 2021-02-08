@@ -19,6 +19,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
+extern CMasternodeConfig masternodeConfig;
+
 /* Introduction text for doxygen: */
 
 /*! \mainpage Developer documentation

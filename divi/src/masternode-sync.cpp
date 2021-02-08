@@ -18,6 +18,7 @@
 #include <string>
 #include <chain.h>
 #include <MasternodeNetworkMessageManager.h>
+#include <version.h>
 // clang-format on
 
 #include <algorithm>
@@ -374,7 +375,7 @@ void CMasternodeSync::Process(bool networkIsRegtest)
             return;
         }
 
-        if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto())
+        if (pnode->nVersion >=  ActiveProtocol())
         {
             if(!MasternodeListIsSynced(pnode,now))
             {

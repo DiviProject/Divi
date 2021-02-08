@@ -1508,7 +1508,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         chainParameters,
         chainActive,
         GetMasternodeSync(),
-        masternodePayments,
+        GetMasternodePayments(),
         subsidiesContainer.superblockHeightValidator(),
         subsidiesContainer.blockSubsidiesProvider(),
         sporkManager);
@@ -1815,7 +1815,7 @@ void FlushStateToDisk()
 void static UpdateTip(CBlockIndex* pindexNew)
 {
     chainActive.SetTip(pindexNew);
-    masternodePayments.updateChainTipHeight(pindexNew);
+    GetMasternodePayments().updateChainTipHeight(pindexNew);
 
     // New best block
     nTimeBestReceived = GetTime();
@@ -3160,7 +3160,7 @@ bool static LoadBlockIndexDB(string& strError)
     if (it == mapBlockIndex.end())
         return true;
     chainActive.SetTip(it->second);
-    masternodePayments.updateChainTipHeight(it->second);
+    GetMasternodePayments().updateChainTipHeight(it->second);
 
     PruneBlockIndexCandidates();
 
@@ -3693,7 +3693,7 @@ void static ProcessGetData(CNode* pfrom)
                     }
                 }
                 if (!pushed && inv.type == MSG_MASTERNODE_WINNER) {
-                    const auto* winner = masternodePayments.GetPaymentWinnerForHash(inv.hash);
+                    const auto* winner = GetMasternodePayments().GetPaymentWinnerForHash(inv.hash);
                     if (winner != nullptr) {
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);

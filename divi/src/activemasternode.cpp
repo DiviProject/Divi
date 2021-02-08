@@ -4,18 +4,15 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <activemasternode.h>
-#include <addrman.h>
 #include <masternode.h>
 #include <masternodeman.h>
 #include <net.h>
 #include <obfuscation.h>
 #include <protocol.h>
-#include <spork.h>
-#include <chainparams.h>
 #include <masternodeconfig.h>
-#include <masternode-payments.h>
-#include <masternode-sync.h>
+#include <MasternodePayeeData.h>
 #include <MasternodeHelpers.h>
+#include <Logging.h>
 
 CActiveMasternode::CActiveMasternode(
     const CMasternodeConfig& masternodeConfigurations,

@@ -303,7 +303,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
             return;
         }
 
-        int nFirstBlock = nHeight - (mnodeman.CountEnabled() * 1.25);
+        int nFirstBlock = nHeight - (masternodeManager_.CountEnabled() * 1.25);
         if (winner.GetHeight() < nFirstBlock || winner.GetHeight() > nHeight + 20) {
             LogPrint("mnpayments", "mnw - winner out of range - FirstBlock %d Height %d bestHeight %d\n", nFirstBlock, winner.GetHeight(), nHeight);
             return;
@@ -329,7 +329,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
             LogPrintf("%s : - invalid signature\n", __func__);
             if (masternodeSynchronization.IsSynced()) Misbehaving(pfrom->GetId(), 20);
             // it could just be a non-synced masternode
-            mnodeman.AskForMN(pfrom, winner.vinMasternode);
+            masternodeManager_.AskForMN(pfrom, winner.vinMasternode);
             return;
         }
 
@@ -363,7 +363,7 @@ bool CMasternodePayments::GetBlockPayee(const uint256& seedHash, CScript& payee)
 }
 bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymentWinner& winner) const
 {
-    CMasternode* pmn = mnodeman.Find(winner.vinMasternode);
+    CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
 
     if (pmn != NULL) {
         std::string errorMessage = "";
@@ -378,12 +378,12 @@ bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymen
 }
 bool CMasternodePayments::CheckMasternodeWinnerValidity(CMasternodeSync& masternodeSynchronization, const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
 {
-    CMasternode* pmn = mnodeman.Find(winner.vinMasternode);
+    CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
 
     if (!pmn) {
         strError = strprintf("Unknown Masternode %s", winner.vinMasternode.prevout.hash.ToString());
         LogPrint("masternode","%s - %s\n",__func__, strError);
-        mnodeman.AskForMN(pnode, winner.vinMasternode);
+        masternodeManager_.AskForMN(pnode, winner.vinMasternode);
         return false;
     }
 
@@ -405,7 +405,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(CMasternodeSync& mastern
 
     const uint256& seedHash = winner.getSeedHash();
     assert(!seedHash.IsNull());
-    const unsigned voterRank = mnodeman.GetMasternodeRank(winner.vinMasternode, seedHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
+    const unsigned voterRank = masternodeManager_.GetMasternodeRank(winner.vinMasternode, seedHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
 
     if (voterRank > MNPAYMENTS_SIGNATURES_TOTAL) {
         //It's common to have masternodes mistakenly think they are in the top 10
@@ -620,7 +620,7 @@ void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
 {
     LOCK(cs_mapMasternodePayeeVotes);
 
-    int nCount = (mnodeman.CountEnabled() * 1.25);
+    int nCount = (masternodeManager_.CountEnabled() * 1.25);
     if (nCountNeeded > nCount) nCountNeeded = nCount;
 
     int nInvCount = 0;
@@ -701,12 +701,12 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const C
 
 std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight, bool fFilterSigTime) const
 {
-    LockableMasternodeData mnData = mnodeman.GetLockableMasternodeData();
+    LockableMasternodeData mnData = masternodeManager_.GetLockableMasternodeData();
     LOCK(mnData.cs);
     std::vector< CMasternode* > masternodeQueue;
     std::map<const CMasternode*, uint256> masternodeScores;
 
-    int nMnCount = mnodeman.CountEnabled();
+    int nMnCount = masternodeManager_.CountEnabled();
     BOOST_FOREACH (CMasternode& mn, mnData.masternodes)
     {
         mn.Check();

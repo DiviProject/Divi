@@ -19,6 +19,7 @@
 #include <main.h>
 #include <utiltime.h>
 #include <version.h>
+#include <MasternodeHelpers.h>
 
 #include <array>
 
@@ -785,7 +786,7 @@ bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
 void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode,CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
-    if (!CMasternodeSync::IsBlockchainSynced()) return;
+    if (!IsBlockchainSynced()) return;
 
     LOCK(cs_process_message);
 

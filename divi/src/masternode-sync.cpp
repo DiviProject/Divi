@@ -20,16 +20,14 @@
 #include <MasternodeNetworkMessageManager.h>
 #include <version.h>
 #include <MasternodePaymentData.h>
+#include <MasternodeHelpers.h>
 // clang-format on
 
 #include <algorithm>
 
 static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
-extern CCriticalSection cs_main;
-extern bool fImporting;
-extern bool fReindex;
-extern CChain chainActive;
+
 extern CMasternodeMan mnodeman;
 
 CMasternodeSync::CMasternodeSync(
@@ -44,37 +42,6 @@ CMasternodeSync::CMasternodeSync(
 bool CMasternodeSync::IsSynced() const
 {
     return RequestedMasternodeAssets == MASTERNODE_SYNC_FINISHED;
-}
-
-bool CMasternodeSync::IsBlockchainSynced()
-{
-    static bool fBlockchainSynced = false;
-    static int64_t lastProcess = GetTime();
-
-    // if the last call to this function was more than 60 minutes ago (client was in sleep mode) reset the sync process
-    const int64_t now = GetTime();
-    if (now - lastProcess > 60 * 60) {
-        fBlockchainSynced = false;
-    }
-    lastProcess = now;
-
-    if (fBlockchainSynced) return true;
-
-    if (fImporting || fReindex) return false;
-
-    TRY_LOCK(cs_main, lockMain);
-    if (!lockMain) return false;
-
-    CBlockIndex* pindex = chainActive.Tip();
-    if (pindex == NULL) return false;
-
-
-    if (pindex->nTime + 60 * 6000 < now)
-        return false;
-
-    fBlockchainSynced = true;
-
-    return true;
 }
 
 void CMasternodeSync::Reset()

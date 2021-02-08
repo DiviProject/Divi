@@ -98,6 +98,7 @@ endif
 # divi core #
 BITCOIN_CORE_H = \
   activemasternode.h \
+  MasternodeHelpers.h \
   addrman.h \
   alert.h \
   allocators.h \
@@ -415,6 +416,7 @@ libbitcoin_wallet_a_CFLAGS = -fPIC
 libbitcoin_wallet_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_SOURCES = \
   activemasternode.cpp \
+  MasternodeHelpers.cpp \
   bip38.cpp \
   BlockSubsidyProvider.cpp \
   obfuscation.cpp \

@@ -19,6 +19,7 @@
 #include <utiltime.h>
 #include <WalletTx.h>
 #include <masternode-sync.h>
+#include <MasternodeHelpers.h>
 
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
@@ -422,7 +423,7 @@ CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
 
 bool CMasternodeBroadcastFactory::checkBlockchainSync(std::string& strErrorRet, bool fOffline)
 {
-     if (!fOffline && !CMasternodeSync::IsBlockchainSynced()) {
+     if (!fOffline && !IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;

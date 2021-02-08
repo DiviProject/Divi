@@ -32,6 +32,7 @@ extern CFeeRate payTxFee;
 #include <txmempool.h>
 #include <MasternodeModule.h>
 #include <masternode-sync.h>
+#include <MasternodeHelpers.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -265,7 +266,7 @@ Value mnsync(const Array& params, bool fHelp)
     if (strMode == "status") {
         Object obj;
         const CMasternodeSync& masternodeSynchronization = GetMasternodeSync();
-        obj.push_back(Pair("IsBlockchainSynced", CMasternodeSync::IsBlockchainSynced()));
+        obj.push_back(Pair("IsBlockchainSynced", IsBlockchainSynced()));
         obj.push_back(Pair("lastMasternodeList", masternodeSynchronization.lastMasternodeList));
         obj.push_back(Pair("lastMasternodeWinner", masternodeSynchronization.lastMasternodeWinner));
         obj.push_back(Pair("lastFailure", masternodeSynchronization.lastFailure));

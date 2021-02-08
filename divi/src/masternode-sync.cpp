@@ -322,9 +322,6 @@ bool CMasternodeSync::MasternodeWinnersListIsSync(CNode* pnode, const int64_t no
             }
             case SyncStatus::REQUEST_SYNC:
             {
-                CBlockIndex* pindexPrev = chainActive.Tip();
-                if (pindexPrev == NULL) return false;
-
                 int nMnCount = masternodeCount();
                 pnode->PushMessage("mnget", nMnCount); //sync payees
                 RequestedMasternodeAttempt++;

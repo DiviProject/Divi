@@ -40,11 +40,6 @@ private:
 public:
     LockableMasternodeData GetLockableMasternodeData();
 
-    bool broadcastIsKnown(const uint256& broadcastHash) const;
-    bool pingIsKnown(const uint256& pingHash) const;
-    const CMasternodeBroadcast& getKnownBroadcast(const uint256& broadcastHash);
-    const CMasternodePing& getKnownPing(const uint256& pingHash);
-
     CMasternodeMan(MasternodeNetworkMessageManager& networkMessageManager);
     CMasternodeMan(const CMasternodeMan& other) = delete;
     ~CMasternodeMan();

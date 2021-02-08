@@ -102,7 +102,7 @@ void CMasternodeSync::DsegUpdate(CNode* pnode)
 
 void CMasternodeSync::AddedMasternodeList(const uint256& hash)
 {
-    if (mnodeman.broadcastIsKnown(hash)) {
+    if (networkMessageManager_.broadcastIsKnown(hash)) {
         if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
             lastMasternodeList = GetTime();
             mapSeenSyncMNB[hash]++;

@@ -195,23 +195,6 @@ void CMasternodeMan::Check()
     }
 }
 
-bool CMasternodeMan::broadcastIsKnown(const uint256& broadcastHash) const
-{
-    return networkMessageManager_.mapSeenMasternodeBroadcast.count(broadcastHash) >0;
-}
-bool CMasternodeMan::pingIsKnown(const uint256& pingHash) const
-{
-    return networkMessageManager_.mapSeenMasternodePing.count(pingHash) >0;
-}
-const CMasternodeBroadcast& CMasternodeMan::getKnownBroadcast(const uint256& broadcastHash)
-{
-    return networkMessageManager_.mapSeenMasternodeBroadcast[broadcastHash];
-}
-const CMasternodePing& CMasternodeMan::getKnownPing(const uint256& pingHash)
-{
-    return networkMessageManager_.mapSeenMasternodePing[pingHash];
-}
-
 std::vector<CMasternode> CMasternodeMan::GetFullMasternodeVector() const
 {
     LOCK(cs);

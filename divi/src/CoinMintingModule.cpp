@@ -17,8 +17,7 @@ I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
     CChain& activeChain,
-    const CChainParams& chainParameters,
-    AnnotatedMixin<boost::recursive_mutex>& mainCS)
+    const CChainParams& chainParameters)
 {
     if(chainParameters.NetworkID()==CBaseChainParams::Network::REGTEST)
     {
@@ -26,8 +25,7 @@ I_BlockFactory* BlockFactorySelector(
             blockTransactionCollector,
             coinstakeCreator,
             activeChain,
-            chainParameters,
-            mainCS);
+            chainParameters);
     }
     else
     {
@@ -35,8 +33,7 @@ I_BlockFactory* BlockFactorySelector(
             blockTransactionCollector,
             coinstakeCreator,
             activeChain,
-            chainParameters,
-            mainCS);
+            chainParameters);
     }
     assert(false);
 }
@@ -78,8 +75,7 @@ CoinMintingModule::CoinMintingModule(
             *blockTransactionCollector_,
             *coinstakeTransactionCreator_,
             activeChain,
-            chainParameters,
-            mainCS))
+            chainParameters))
     , coinMinter_( new CoinMinter(
         blockSubsidyContainer_->blockSubsidiesProvider(),
         *blockFactory_,

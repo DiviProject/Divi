@@ -9,9 +9,8 @@ ExtendedBlockFactory::ExtendedBlockFactory(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
     CChain& chain,
-    const CChainParams& chainParameters,
-    AnnotatedMixin<boost::recursive_mutex>& mainCS
-    ): blockFactory_(new BlockFactory(blockTransactionCollector,coinstakeCreator, chain,chainParameters,mainCS))
+    const CChainParams& chainParameters
+    ): blockFactory_(new BlockFactory(blockTransactionCollector,coinstakeCreator, chain,chainParameters))
     , extraTransactions_()
     , customCoinstake_()
 {

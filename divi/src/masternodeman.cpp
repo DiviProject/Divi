@@ -529,16 +529,6 @@ void CMasternodeMan::CountNetworks(int protocolVersion, int& ipv4, int& ipv6, in
     }
 }
 
-void CMasternodeMan::DsegUpdate(CNode* pnode)
-{
-    LOCK(cs);
-
-    if(networkMessageManager_.recordDsegUpdateAttempt(pnode->addr))
-    {
-        pnode->PushMessage("dseg", CTxIn());
-    }
-}
-
 CMasternode* CMasternodeMan::Find(const CTxIn& vin)
 {
     LOCK(cs);

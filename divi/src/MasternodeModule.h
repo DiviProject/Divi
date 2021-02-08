@@ -11,6 +11,7 @@ class CDataStream;
 class CNode;
 class CMasternodeSync;
 class UIMessenger;
+class CMasternodePayments;
 
 void ThreadMasternodeBackgroundSync();
 bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage);
@@ -100,4 +101,5 @@ struct MasternodeCountData
 MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip);
 bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataDir);
 void DumpMasternodeDataToDisk();
+CMasternodePayments& GetMasternodePayments();
 #endif //MASTERNODE_MODULE_H

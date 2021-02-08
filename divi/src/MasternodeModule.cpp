@@ -43,6 +43,11 @@ static T readFromHex(std::string hexString)
     return object;
 }
 
+CMasternodePayments& GetMasternodePayments()
+{
+    return masternodePayments;
+}
+
 bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataDir)
 {
     if (!fLiteMode)

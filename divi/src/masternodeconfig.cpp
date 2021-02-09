@@ -6,13 +6,23 @@
 // clang-format off
 #include "net.h"
 #include "masternodeconfig.h"
-#include "util.h"
 #include "ui_interface.h"
 #include <base58.h>
 #include <boost/foreach.hpp>
+#include <Settings.h>
+#include <DataDirectory.h>
+#include <Logging.h>
+
+extern Settings& settings;
 
 // clang-format on
 
+boost::filesystem::path GetMasternodeConfigFile()
+{
+    boost::filesystem::path pathConfigFile(settings.GetArg("-mnconf", "masternode.conf"));
+    if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir() / pathConfigFile;
+    return pathConfigFile;
+}
 void CMasternodeConfig::add(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex)
 {
     CMasternodeEntry cme(alias, ip, privKey, txHash, outputIndex);

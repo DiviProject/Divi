@@ -58,7 +58,6 @@ int RaiseFileDescriptorLimit(int nMinFD);
 void AllocateFileRange(FILE* file, unsigned int offset, unsigned int length);
 bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest);
 boost::filesystem::path GetConfigFile();
-boost::filesystem::path GetMasternodeConfigFile();
 #ifndef WIN32
 boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path& path, pid_t pid);

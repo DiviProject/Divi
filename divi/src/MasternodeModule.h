@@ -14,6 +14,7 @@ class UIMessenger;
 class CMasternodePayments;
 
 void ThreadMasternodeBackgroundSync();
+bool LoadMasternodeConfigurations(std::string& errorMessage);
 bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage);
 void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction);
 bool VoteForMasternodePayee(const CBlockIndex* pindex);

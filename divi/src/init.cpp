@@ -1708,7 +1708,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
 
     fMasterNode = settings.GetBoolArg("-masternode", false);
-
+    std::string errorMessage;
+    if(!LoadMasternodeConfigurations(errorMessage))
+    {
+        return InitError(errorMessage);
+    }
     if (fMasterNode && fTxIndex == false)
     {
         return InitError("Enabling Masternode support requires turning on transaction indexing."
@@ -1717,13 +1721,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     else if (fMasterNode)
     {
         LogPrintf("IS MASTER NODE\n");
-        std::string errorMessage;
         if(!SetupActiveMasternode(settings,errorMessage))
         {
             return InitError(errorMessage);
         }
     }
-
     LockUpMasternodeCollateral();
 
 // XX42 Remove/refactor code below. Until then provide safe defaults

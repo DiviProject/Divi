@@ -8,7 +8,6 @@
 #include "clientversion.h"
 #include "init.h"
 #include "main.h"
-#include "masternodeconfig.h"
 #include "noui.h"
 #include "rpcserver.h"
 #include "ui_interface.h"
@@ -18,8 +17,6 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
-
-extern CMasternodeConfig masternodeConfig;
 
 /* Introduction text for doxygen: */
 
@@ -102,13 +99,6 @@ bool AppInit(int argc, char* argv[])
         // Check for -testnet or -regtest parameter (Params() calls are only valid after this clause)
         if (!SelectParamsFromCommandLine()) {
             fprintf(stderr, "Error: Invalid combination of -regtest and -testnet.\n");
-            return false;
-        }
-
-        // parse masternode.conf
-        std::string strErr;
-        if (!masternodeConfig.read(strErr)) {
-            fprintf(stderr, "Error reading masternode configuration file: %s\n", strErr.c_str());
             return false;
         }
 

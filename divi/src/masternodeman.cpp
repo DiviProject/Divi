@@ -4,28 +4,34 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "masternodeman.h"
-#include "activemasternode.h"
-#include "addrman.h"
-#include "masternode.h"
-#include "mruset.h"
-#include "obfuscation.h"
-#include "spork.h"
-#include "Logging.h"
+
+#include <activemasternode.h>
+#include <addrman.h>
+#include <masternode.h>
+#include <mruset.h>
+#include <obfuscation.h>
+#include <spork.h>
+#include <Logging.h>
 #include <masternode-sync.h>
-#include <masternode-payments.h>
 #include <MasternodeNetworkMessageManager.h>
-#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
-#include <main.h>
 #include <utiltime.h>
 #include <version.h>
 #include <MasternodeHelpers.h>
+#include <script/standard.h>
+#include <chainparams.h>
+#include <chain.h>
+#include <blockmap.h>
 
 #include <array>
 
 extern bool fLiteMode;
 extern bool fMasterNode;
+extern CCriticalSection cs_main;
+extern CChain chainActive;
+extern BlockMap mapBlockIndex;
 extern bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow = false);
+extern void Misbehaving(NodeId pnode, int howmuch);
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 

@@ -25,12 +25,12 @@
 static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
 
-extern CMasternodeMan mnodeman;
-
 CMasternodeSync::CMasternodeSync(
+    CMasternodeMan& masternodeManager,
     MasternodeNetworkMessageManager& networkMessageManager,
     MasternodePaymentData& masternodePaymentData
-    ): networkMessageManager_(networkMessageManager)
+    ): masternodeManager_(masternodeManager)
+    , networkMessageManager_(networkMessageManager)
     , masternodePaymentData_(masternodePaymentData)
 {
     Reset();
@@ -55,7 +55,7 @@ void CMasternodeSync::Reset()
     RequestedMasternodeAssets = MASTERNODE_SYNC_INITIAL;
     RequestedMasternodeAttempt = 0;
     nAssetSyncStarted = GetTime();
-    mnodeman.ResetRankingCache();
+    masternodeManager_.ResetRankingCache();
 }
 
 void CMasternodeSync::DsegUpdate(CNode* pnode)

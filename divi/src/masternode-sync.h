@@ -18,6 +18,7 @@ class CNode;
 class CDataStream;
 class MasternodeNetworkMessageManager;
 class MasternodePaymentData;
+class CMasternodeMan;
 
 #include <map>
 #include <uint256.h>
@@ -37,6 +38,7 @@ class CMasternodeSync
 {
 private:
     int64_t nTimeLastProcess = 0;
+    CMasternodeMan& masternodeManager_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
 public:
@@ -62,7 +64,10 @@ public:
     // Time when current masternode asset sync started
     int64_t nAssetSyncStarted;
 
-    CMasternodeSync(MasternodeNetworkMessageManager& networkMessageManager, MasternodePaymentData& masternodePaymentData);
+    CMasternodeSync(
+        CMasternodeMan& masternodeManager,
+        MasternodeNetworkMessageManager& networkMessageManager,
+        MasternodePaymentData& masternodePaymentData);
 
     void AddedMasternodeList(const uint256& hash);
     void AddedMasternodeWinner(const uint256& hash);

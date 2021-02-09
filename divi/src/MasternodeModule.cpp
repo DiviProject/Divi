@@ -381,6 +381,16 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
     return false;
 }
 
+bool LoadMasternodeConfigurations(std::string& errorMessage)
+{
+    // parse masternode.conf
+    if (!masternodeConfig.read(errorMessage)) {
+        errorMessage="Error reading masternode configuration file: "+ errorMessage + "\n";
+        return false;
+    }
+    return true;
+}
+
 void LockUpMasternodeCollateral(const Settings& settings, std::function<void(const COutPoint&)> walletUtxoLockingFunction)
 {
     if(settings.GetBoolArg("-mnconflock", true))

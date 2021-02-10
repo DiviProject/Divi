@@ -269,18 +269,7 @@ bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, i
 
     LogPrint("masternode", "mnb - Accepted Masternode entry\n");
 
-    const CBlockIndex* pindexConf;
-    {
-        LOCK(cs_main);
-        const auto* pindexCollateral = mnb.GetCollateralBlockIndex();
-        if (pindexCollateral == nullptr)
-            pindexConf = nullptr;
-        else {
-            assert(chainActive.Contains(pindexCollateral));
-            pindexConf = chainActive[pindexCollateral->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1];
-            assert(pindexConf == nullptr || pindexConf->GetAncestor(pindexCollateral->nHeight) == pindexCollateral);
-        }
-    }
+    const CBlockIndex* pindexConf = ComputeMasternodeConfirmationBlockIndex(mnb);
 
     if (pindexConf == nullptr) {
         LogPrint("masternode","mnb - Input must have at least %d confirmations\n", MASTERNODE_MIN_CONFIRMATIONS);

@@ -48,7 +48,7 @@ int ComputeMasternodeInputAge(const CMasternode& masternode)
 {
     LOCK(cs_main);
 
-    const auto* pindex = masternode.GetCollateralBlock();
+    const auto* pindex = masternode.GetCollateralBlockIndex();
     if (pindex == nullptr)
         return 0;
 
@@ -427,7 +427,7 @@ CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
   : CMasternode(mn)
 {}
 
-const CBlockIndex* CMasternode::GetCollateralBlock() const
+const CBlockIndex* CMasternode::GetCollateralBlockIndex() const
 {
     LOCK(cs_main);
 

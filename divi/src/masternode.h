@@ -137,7 +137,7 @@ public:
     /** Looks up and returns the block index when the collateral got
      *  included in the currently active chain.  If it is not yet confirmed
      *  then this returns nullptr.  */
-    const CBlockIndex* GetCollateralBlock() const;
+    const CBlockIndex* GetCollateralBlockIndex() const;
     int64_t DeterministicTimeOffset() const;
 
     CMasternode();

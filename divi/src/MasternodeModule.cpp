@@ -45,6 +45,35 @@ static T readFromHex(std::string hexString)
     return object;
 }
 
+bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionIndexEnabled, std::string& errorMessage)
+{
+    fMasterNode = settings.GetBoolArg("-masternode", false);
+    fLiteMode = settings.GetBoolArg("-litemode", false);
+    if (fMasterNode && fLiteMode) {
+        errorMessage = "You can not start a masternode in litemode";
+        return false;
+    }
+    if(!LoadMasternodeConfigurations(errorMessage))
+    {
+        return false;
+    }
+    if (fMasterNode && transactionIndexEnabled == false)
+    {
+        errorMessage = "Enabling Masternode support requires turning on transaction indexing."
+                         "Please add txindex=1 to your configuration and start with -reindex";
+        return false;
+    }
+    else if (fMasterNode)
+    {
+        LogPrintf("IS MASTER NODE\n");
+        if(!SetupActiveMasternode(settings,errorMessage))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 CMasternodePayments& GetMasternodePayments()
 {
     return masternodePayments;

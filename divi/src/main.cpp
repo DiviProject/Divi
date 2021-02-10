@@ -2920,9 +2920,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     if (!ActivateBestChain(state, pblock, checked))
         return error("%s : ActivateBestChain failed", __func__);
 
-    if (!fLiteMode) {
-        VoteForMasternodePayee(pindex);
-    }
+    VoteForMasternodePayee(pindex);
 
     if (pwalletMain) {
         // If turned on Auto Combine will scan wallet for dust to combine

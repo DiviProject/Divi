@@ -26,7 +26,21 @@ struct StakableCoin
     }
     bool operator<(const StakableCoin& other) const
     {
-        return blockHashOfFirstConfirmation < other.blockHashOfFirstConfirmation;
+        if(!tx && !other.tx)
+        {
+            return true;
+        }
+        if(!tx)
+        {
+            return true;
+        }
+        if(!other.tx)
+        {
+            return false;
+        }
+        const COutPoint left(tx->GetHash(),outputIndex);
+        const COutPoint right(other.tx->GetHash(),other.outputIndex);
+        return  left < right;
     }
 };
 #endif//STAKABLE_COIN_H

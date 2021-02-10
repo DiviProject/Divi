@@ -103,4 +103,5 @@ MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip);
 bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataDir);
 void DumpMasternodeDataToDisk();
 CMasternodePayments& GetMasternodePayments();
+bool InitializeMasternodeIfRequested(const Settings& settings, bool transactionIndexEnabled, std::string& errorMessage);
 #endif //MASTERNODE_MODULE_H

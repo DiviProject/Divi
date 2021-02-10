@@ -272,7 +272,7 @@ bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, i
     const CBlockIndex* pindexConf;
     {
         LOCK(cs_main);
-        const auto* pindexCollateral = mnb.GetCollateralBlock();
+        const auto* pindexCollateral = mnb.GetCollateralBlockIndex();
         if (pindexCollateral == nullptr)
             pindexConf = nullptr;
         else {

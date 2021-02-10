@@ -68,7 +68,6 @@
 #include <ValidationState.h>
 #include <verifyDb.h>
 
-extern bool fMasterNode;
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
 int nWalletBackups = 20;
@@ -1708,28 +1707,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 
 
-    fMasterNode = settings.GetBoolArg("-masternode", false);
-    fLiteMode = settings.GetBoolArg("-litemode", false);
     std::string errorMessage;
-    if (fMasterNode && fLiteMode) {
-        return InitError("You can not start a masternode in litemode");
-    }
-    if(!LoadMasternodeConfigurations(errorMessage))
+    if(!InitializeMasternodeIfRequested(settings,fTxIndex,errorMessage))
     {
         return InitError(errorMessage);
-    }
-    if (fMasterNode && fTxIndex == false)
-    {
-        return InitError("Enabling Masternode support requires turning on transaction indexing."
-                         "Please add txindex=1 to your configuration and start with -reindex");
-    }
-    else if (fMasterNode)
-    {
-        LogPrintf("IS MASTER NODE\n");
-        if(!SetupActiveMasternode(settings,errorMessage))
-        {
-            return InitError(errorMessage);
-        }
     }
     LockUpMasternodeCollateral();
 

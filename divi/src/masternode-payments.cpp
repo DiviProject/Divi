@@ -562,7 +562,7 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
         if (fFilterSigTime && mn.sigTime + (nMnCount * 2.6 * 60) > GetAdjustedTime()) continue;
 
         //make sure it has as many confirmations as there are masternodes
-        if (mn.GetMasternodeInputAge() < nMnCount) continue;
+        if (ComputeMasternodeInputAge(mn) < nMnCount) continue;
 
         masternodeQueue.push_back(&mn);
         masternodeScores[&mn] = mn.CalculateScore(seedHash);

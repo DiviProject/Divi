@@ -45,6 +45,7 @@ bool GetBlockHashForScoring(uint256& hash, int nBlockHeight);
 bool GetBlockHashForScoring(uint256& hash,
                             const CBlockIndex* pindex, const int offset);
 
+int ComputeMasternodeInputAge(const CMasternode& masternode);
 //
 // The Masternode Ping Class : Contains a different serialize method for sending pings from masternodes throughout the network
 //
@@ -169,8 +170,6 @@ public:
     bool IsTooEarlyToSendPingUpdate(int64_t now) const;
 
     bool IsEnabled() const;
-
-    int GetMasternodeInputAge() const;
 
     static CAmount GetTierCollateralAmount(MasternodeTier tier);
     static MasternodeTier GetTierByCollateralAmount(CAmount nCollateral);

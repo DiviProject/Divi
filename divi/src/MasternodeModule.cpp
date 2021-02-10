@@ -307,12 +307,8 @@ bool MasternodeWinnerIsKnown(const uint256& inventoryHash)
 
 void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream& vRecv)
 {
-    //probably one the extensions
-    // obfuScationPool.ProcessMessageObfuscation(pfrom, strCommand, vRecv);
     mnodeman.ProcessMessage(activeMasternode,masternodeSync,pfrom, strCommand, vRecv);
-    // budget.ProcessMessage(pfrom, strCommand, vRecv);
     masternodePayments.ProcessMessageMasternodePayments(masternodeSync,pfrom, strCommand, vRecv);
-    // ProcessMessageSwiftTX(pfrom, strCommand, vRecv);
     masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
 }
 

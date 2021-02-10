@@ -1708,7 +1708,11 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
 
     fMasterNode = settings.GetBoolArg("-masternode", false);
+    fLiteMode = settings.GetBoolArg("-litemode", false);
     std::string errorMessage;
+    if (fMasterNode && fLiteMode) {
+        return InitError("You can not start a masternode in litemode");
+    }
     if(!LoadMasternodeConfigurations(errorMessage))
     {
         return InitError(errorMessage);
@@ -1734,12 +1738,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     fEnableSwiftTX = false; //settings.GetBoolArg("-enableswifttx", fEnableSwiftTX);
     nSwiftTXDepth = settings.GetArg("-swifttxdepth", nSwiftTXDepth);
     nSwiftTXDepth = std::min(std::max(nSwiftTXDepth, 0), 60);
-
-    //lite mode disables all Masternode and Obfuscation related functionality
-    fLiteMode = settings.GetBoolArg("-litemode", false);
-    if (fMasterNode && fLiteMode) {
-        return InitError("You can not start a masternode in litemode");
-    }
 
     LogPrintf("fLiteMode %d\n", fLiteMode);
     LogPrintf("nSwiftTXDepth %d\n", nSwiftTXDepth);

@@ -20,14 +20,8 @@
 #include <script/standard.h>
 #include <blockmap.h>
 #include <chainparams.h>
-#include <coins.h>
 
-// keep track of the scanning errors I've seen
-std::map<uint256, int> mapSeenMasternodeScanningErrors;
-extern CChain chainActive;
-extern BlockMap mapBlockIndex;
-extern CCriticalSection cs_main;
-extern CCoinsViewCache* pcoinsTip;
+extern bool CollateralIsExpectedAmount(const COutPoint &outpoint, int64_t expectedAmount);
 
 static CAmount getCollateralAmount(MasternodeTier tier)
 {
@@ -65,35 +59,10 @@ static size_t GetHashRoundsForTierMasternodes(MasternodeTier tier)
     return 0;
 }
 
-static bool GetUTXOCoins(const uint256& txhash, CCoins& coins)
-{
-    LOCK(cs_main);
-    if (!pcoinsTip->GetCoins(txhash, coins))
-        return false;
-
-    return true;
-}
-
 bool CMasternode::IsCoinSpent(const COutPoint &outpoint, const MasternodeTier mnTier)
 {
     CAmount expectedCollateral = getCollateralAmount(mnTier);
-    CCoins coins;
-    if(GetUTXOCoins(outpoint.hash, coins))
-    {
-        int n = outpoint.n;
-        if (n < 0 || (unsigned int)n >= coins.vout.size() || coins.vout[n].IsNull()) {
-            return true;
-        }
-        else if (coins.vout[n].nValue != expectedCollateral)
-        {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    return true;
+    return !CollateralIsExpectedAmount(outpoint,expectedCollateral);
 }
 
 CMasternode::CMasternode()

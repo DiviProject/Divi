@@ -41,7 +41,6 @@
 
 #include "Settings.h"
 extern Settings& settings;
-extern bool fMasterNode;
 void runCommand(std::string strCommand);
 
 const FeeAndPriorityCalculator& priorityFeeCalculator = FeeAndPriorityCalculator::instance();

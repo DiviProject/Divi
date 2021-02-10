@@ -292,7 +292,7 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
     mnbRet = CMasternodeBroadcast(service, txin, pubKeyCollateralAddressNew, pubKeyMasternodeNew, nMasternodeTier, PROTOCOL_VERSION);
     const CMasternodePing mnp = (deferRelay
                                     ? createDelayedMasternodePing(mnbRet)
-                                    : CMasternodePing(txin));
+                                    : createCurrentPing(txin));
     mnbRet.lastPing = mnp;
     mnbRet.sigTime = mnp.sigTime;
 }

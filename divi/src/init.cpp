@@ -68,6 +68,7 @@
 #include <ValidationState.h>
 #include <verifyDb.h>
 
+extern bool fMasterNode;
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
 int nWalletBackups = 20;

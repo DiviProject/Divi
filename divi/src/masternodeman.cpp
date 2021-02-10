@@ -25,7 +25,6 @@
 
 #include <array>
 
-extern bool fMasterNode;
 extern CCriticalSection cs_main;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;

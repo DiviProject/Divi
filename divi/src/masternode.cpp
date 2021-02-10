@@ -130,7 +130,7 @@ int ComputeMasternodeInputAge(const CMasternode& masternode)
     return tipHeight - pindex->nHeight + 1;
 }
 
-CMasternodePing createCurrentPing(CTxIn& newVin)
+CMasternodePing createCurrentPing(const CTxIn& newVin)
 {
     CMasternodePing ping;
     ping.vin = newVin;

@@ -48,7 +48,7 @@ bool GetBlockHashForScoring(uint256& hash,
 const CBlockIndex* ComputeCollateralBlockIndex(const CMasternode& masternode);
 const CBlockIndex* ComputeMasternodeConfirmationBlockIndex(const CMasternode& masternode);
 int ComputeMasternodeInputAge(const CMasternode& masternode);
-CMasternodePing createCurrentPing(CTxIn& newVin);
+CMasternodePing createCurrentPing(const CTxIn& newVin);
 //
 // The Masternode Ping Class : Contains a different serialize method for sending pings from masternodes throughout the network
 //

@@ -42,6 +42,27 @@ static CAmount getCollateralAmount(MasternodeTier tier)
   }
 }
 
+bool GetBlockHashForScoring(uint256& hash, int nBlockHeight)
+{
+    const auto* tip = chainActive.Tip();
+    if (tip == nullptr)
+        return false;
+    return GetBlockHashForScoring(hash, tip, nBlockHeight - tip->nHeight);
+}
+
+bool GetBlockHashForScoring(uint256& hash, const CBlockIndex* pindex, const int offset)
+{
+    if (pindex == nullptr)
+        return false;
+
+    const auto* pindexAncestor = pindex->GetAncestor(pindex->nHeight + offset - 101);
+    if (pindexAncestor == nullptr)
+        return false;
+
+    hash = pindexAncestor->GetBlockHash();
+    return true;
+}
+
 const CBlockIndex* ComputeCollateralBlockIndex(const CMasternode& masternode)
 {
     static std::map<COutPoint,const CBlockIndex*> cachedCollateralBlockIndices;
@@ -173,28 +194,6 @@ bool CMasternode::IsCoinSpent(const COutPoint &outpoint, const MasternodeTier mn
         }
     }
 
-    return true;
-}
-
-
-bool GetBlockHashForScoring(uint256& hash, int nBlockHeight)
-{
-    const auto* tip = chainActive.Tip();
-    if (tip == nullptr)
-        return false;
-    return GetBlockHashForScoring(hash, tip, nBlockHeight - tip->nHeight);
-}
-
-bool GetBlockHashForScoring(uint256& hash, const CBlockIndex* pindex, const int offset)
-{
-    if (pindex == nullptr)
-        return false;
-
-    const auto* pindexAncestor = pindex->GetAncestor(pindex->nHeight + offset - 101);
-    if (pindexAncestor == nullptr)
-        return false;
-
-    hash = pindexAncestor->GetBlockHash();
     return true;
 }
 

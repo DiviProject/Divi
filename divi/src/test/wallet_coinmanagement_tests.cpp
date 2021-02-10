@@ -15,6 +15,7 @@
 #include <chain.h>
 #include <blockmap.h>
 #include <test/FakeWallet.h>
+#include <StakableCoin.h>
 
 class WalletCoinManagementTestFixture
 {
@@ -370,6 +371,27 @@ BOOST_AUTO_TEST_CASE(willEnsureLockedCoinsDoNotCountTowardStakableBalance)
 
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetBalance(), firstNormalTxValue+secondNormalTxValue,"Total balance was not the expected amount");
     BOOST_CHECK_EQUAL_MESSAGE(wallet.GetStakingBalance(), secondNormalTxValue,"Staking balance was not the expected amount");
+}
+
+
+BOOST_AUTO_TEST_CASE(willEnsureStakingBalanceAndTotalBalanceAgreeEvenIfTxsBelongToCommonBlock)
+{
+    CScript normalScript = GetScriptForDestination(wallet.vchDefaultKey.GetID());
+
+    CAmount firstNormalTxValue = (GetRand(1000)+1)*COIN;
+    CAmount secondNormalTxValue = (GetRand(1000)+1)*COIN;
+
+    unsigned firstTxOutputIndex=0;
+    const CWalletTx& firstNormalTx = wallet.AddDefaultTx(normalScript,firstTxOutputIndex,firstNormalTxValue);
+    unsigned secondTxOutputIndex=0;
+    const CWalletTx& secondNormalTx = wallet.AddDefaultTx(normalScript,secondTxOutputIndex,secondNormalTxValue);
+    wallet.FakeAddToChain(firstNormalTx);
+    wallet.FakeAddToChain(secondNormalTx);
+
+    std::set<StakableCoin> stakableCoins;
+    stakableCoins.insert(StakableCoin(&firstNormalTx,firstTxOutputIndex,firstNormalTx.hashBlock));
+    stakableCoins.insert(StakableCoin(&secondNormalTx,secondTxOutputIndex,secondNormalTx.hashBlock));
+    BOOST_CHECK_EQUAL_MESSAGE(stakableCoins.size(),2,"Missing coins in the stakable set");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -20,6 +20,7 @@
 #include <Logging.h>
 #include <masternode-sync.h>
 #include <MasternodeModule.h>
+#include <MasternodeBroadcastFactory.h>
 #include <version.h>
 
 #include <boost/tokenizer.hpp>

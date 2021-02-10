@@ -28,8 +28,6 @@ std::map<uint256, int> mapSeenMasternodeScanningErrors;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
 extern CCriticalSection cs_main;
-extern bool fImporting;
-extern bool fReindex;
 extern CCoinsViewCache* pcoinsTip;
 
 static CAmount getCollateralAmount(MasternodeTier tier)

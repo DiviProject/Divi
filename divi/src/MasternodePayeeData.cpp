@@ -5,6 +5,7 @@
 #include <Logging.h>
 #include <masternode.h>
 #include <net.h>
+#include <MasternodeHelpers.h>
 
 CMasternodePayee::CMasternodePayee()
 {

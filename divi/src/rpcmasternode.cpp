@@ -21,6 +21,7 @@
 #include <masternode-sync.h>
 #include <MasternodeModule.h>
 #include <MasternodeBroadcastFactory.h>
+#include <MasternodeHelpers.h>
 #include <version.h>
 
 #include <boost/tokenizer.hpp>

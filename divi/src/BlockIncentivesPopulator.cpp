@@ -18,6 +18,7 @@
 #include <spork.h>
 #include <masternode.h>
 #include <masternode-sync.h>
+#include <MasternodeHelpers.h>
 
 extern Settings& settings;
 namespace

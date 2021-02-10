@@ -109,6 +109,17 @@ int ComputeMasternodeInputAge(const CMasternode& masternode)
     return tipHeight - pindex->nHeight + 1;
 }
 
+CMasternodePing createCurrentPing(CTxIn& newVin)
+{
+    CMasternodePing ping;
+    ping.vin = newVin;
+    ping.blockHash = chainActive[chainActive.Height() - 12]->GetBlockHash();
+    ping.sigTime = GetAdjustedTime();
+    ping.signature = std::vector<unsigned char>();
+    return ping;
+}
+
+
 
 CAmount CMasternode::GetTierCollateralAmount(const MasternodeTier tier)
 {
@@ -503,14 +514,6 @@ CMasternodePing::CMasternodePing()
     vin = CTxIn();
     blockHash = uint256(0);
     sigTime = 0;
-    signature = std::vector<unsigned char>();
-}
-
-CMasternodePing::CMasternodePing(CTxIn& newVin)
-{
-    vin = newVin;
-    blockHash = chainActive[chainActive.Height() - 12]->GetBlockHash();
-    sigTime = GetAdjustedTime();
     signature = std::vector<unsigned char>();
 }
 

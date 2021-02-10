@@ -24,6 +24,7 @@
 #include <MasternodeNetworkMessageManager.h>
 #include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
+#include <MasternodeBroadcastFactory.h>
 
 bool fMasterNode = false;
 extern bool fLiteMode;

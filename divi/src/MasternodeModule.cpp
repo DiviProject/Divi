@@ -25,7 +25,7 @@
 #include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
 
-extern bool fMasterNode;
+bool fMasterNode = false;
 extern bool fLiteMode;
 MasternodeNetworkMessageManager networkMessageManager;
 MasternodePaymentData masternodePaymentData;

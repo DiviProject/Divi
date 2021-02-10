@@ -33,7 +33,6 @@
 #include <DataDirectory.h>
 //DIVI only features
 
-extern bool fMasterNode;
 extern bool fLiteMode;
 extern bool fEnableSwiftTX;
 extern int nSwiftTXDepth;

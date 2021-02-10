@@ -30,9 +30,6 @@
 #include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
 
-extern bool fMasterNode;
-
-
 void Misbehaving(NodeId pnode, int howmuch);
 extern CCriticalSection cs_main;
 extern CChain chainActive;

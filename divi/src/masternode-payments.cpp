@@ -30,7 +30,6 @@
 #include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
 
-extern bool fLiteMode;
 extern bool fMasterNode;
 
 
@@ -119,11 +118,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
 {
     if (!IsBlockchainSynced()) return;
 
-    if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
-
-
     if (strCommand == "mnget") { //Masternode Payments Request Sync
-        if (fLiteMode) return;   //disable all Obfuscation/Masternode related functionality
 
         int nCountNeeded;
         vRecv >> nCountNeeded;

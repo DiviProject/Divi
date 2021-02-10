@@ -25,7 +25,6 @@
 
 #include <array>
 
-extern bool fLiteMode;
 extern bool fMasterNode;
 extern CCriticalSection cs_main;
 extern CChain chainActive;
@@ -791,7 +790,6 @@ bool CMasternodeMan::HasRequestedMasternodeSyncTooOften(CNode* pfrom)
 }
 void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode,CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
     if (!IsBlockchainSynced()) return;
 
     LOCK(cs_process_message);

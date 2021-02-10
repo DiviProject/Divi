@@ -44,11 +44,62 @@ static CAmount getCollateralAmount(MasternodeTier tier)
   }
 }
 
+const CBlockIndex* ComputeCollateralBlockIndex(const CMasternode& masternode)
+{
+    static std::map<COutPoint,const CBlockIndex*> cachedCollateralBlockIndices;
+
+    const CBlockIndex* collateralBlockIndex = cachedCollateralBlockIndices[masternode.vin.prevout];
+    if (collateralBlockIndex)
+    {
+        if(chainActive.Contains(collateralBlockIndex))
+        {
+            return collateralBlockIndex;
+        }
+    }
+
+    uint256 hashBlock;
+    CTransaction tx;
+    if (!GetTransaction(masternode.vin.prevout.hash, tx, hashBlock, true)) {
+        collateralBlockIndex = nullptr;
+        return collateralBlockIndex;
+    }
+
+    const auto mi = mapBlockIndex.find(hashBlock);
+    if (mi == mapBlockIndex.end() || mi->second == nullptr) {
+        collateralBlockIndex = nullptr;
+        return collateralBlockIndex;
+    }
+
+    if (!chainActive.Contains(mi->second)) {
+        collateralBlockIndex = nullptr;
+        return collateralBlockIndex;
+    }
+    collateralBlockIndex = mi->second;
+    return collateralBlockIndex;
+}
+
+const CBlockIndex* ComputeMasternodeConfirmationBlockIndex(const CMasternode& masternode)
+{
+    const CBlockIndex* pindexConf = nullptr;
+    {
+        LOCK(cs_main);
+        const auto* pindexCollateral = ComputeCollateralBlockIndex(masternode);
+        if (pindexCollateral == nullptr)
+            pindexConf = nullptr;
+        else {
+            assert(chainActive.Contains(pindexCollateral));
+            pindexConf = chainActive[pindexCollateral->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1];
+            assert(pindexConf == nullptr || pindexConf->GetAncestor(pindexCollateral->nHeight) == pindexCollateral);
+        }
+    }
+    return pindexConf;
+}
+
 int ComputeMasternodeInputAge(const CMasternode& masternode)
 {
     LOCK(cs_main);
 
-    const auto* pindex = masternode.GetCollateralBlockIndex();
+    const auto* pindex = ComputeCollateralBlockIndex(masternode);
     if (pindex == nullptr)
         return 0;
 
@@ -426,38 +477,6 @@ CMasternodeBroadcast::CMasternodeBroadcast(CService newAddr, CTxIn newVin, CPubK
 CMasternodeBroadcast::CMasternodeBroadcast(const CMasternode& mn)
   : CMasternode(mn)
 {}
-
-const CBlockIndex* CMasternode::GetCollateralBlockIndex() const
-{
-    LOCK(cs_main);
-
-    if (!collateralBlock.IsNull()) {
-        const auto mi = mapBlockIndex.find(collateralBlock);
-        if (mi != mapBlockIndex.end() && chainActive.Contains(mi->second))
-            return mi->second;
-    }
-
-    uint256 hashBlock;
-    CTransaction tx;
-    if (!GetTransaction(vin.prevout.hash, tx, hashBlock, true)) {
-        collateralBlock.SetNull();
-        return nullptr;
-    }
-
-    const auto mi = mapBlockIndex.find(hashBlock);
-    if (mi == mapBlockIndex.end() || mi->second == nullptr) {
-        collateralBlock.SetNull();
-        return nullptr;
-    }
-
-    if (!chainActive.Contains(mi->second)) {
-        collateralBlock.SetNull();
-        return nullptr;
-    }
-
-    collateralBlock = hashBlock;
-    return mi->second;
-}
 
 void CMasternodeBroadcast::Relay() const
 {

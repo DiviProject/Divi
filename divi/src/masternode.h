@@ -45,6 +45,8 @@ bool GetBlockHashForScoring(uint256& hash, int nBlockHeight);
 bool GetBlockHashForScoring(uint256& hash,
                             const CBlockIndex* pindex, const int offset);
 
+const CBlockIndex* ComputeCollateralBlockIndex(const CMasternode& masternode);
+const CBlockIndex* ComputeMasternodeConfirmationBlockIndex(const CMasternode& masternode);
 int ComputeMasternodeInputAge(const CMasternode& masternode);
 //
 // The Masternode Ping Class : Contains a different serialize method for sending pings from masternodes throughout the network
@@ -134,10 +136,6 @@ public:
     CMasternodePing lastPing;
 
     static bool IsCoinSpent(const COutPoint &outpoint, const MasternodeTier mnTier);
-    /** Looks up and returns the block index when the collateral got
-     *  included in the currently active chain.  If it is not yet confirmed
-     *  then this returns nullptr.  */
-    const CBlockIndex* GetCollateralBlockIndex() const;
     int64_t DeterministicTimeOffset() const;
 
     CMasternode();

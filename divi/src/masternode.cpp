@@ -44,6 +44,23 @@ static CAmount getCollateralAmount(MasternodeTier tier)
   }
 }
 
+int ComputeMasternodeInputAge(const CMasternode& masternode)
+{
+    LOCK(cs_main);
+
+    const auto* pindex = masternode.GetCollateralBlock();
+    if (pindex == nullptr)
+        return 0;
+
+    assert(chainActive.Contains(pindex));
+
+    const unsigned tipHeight = chainActive.Height();
+    assert(tipHeight >= pindex->nHeight);
+
+    return tipHeight - pindex->nHeight + 1;
+}
+
+
 CAmount CMasternode::GetTierCollateralAmount(const MasternodeTier tier)
 {
     const auto& collateralMap = Params().MasternodeCollateralMap();
@@ -240,22 +257,6 @@ bool CMasternode::IsTooEarlyToSendPingUpdate(int64_t now) const
 bool CMasternode::IsEnabled() const
 {
     return activeState == MASTERNODE_ENABLED;
-}
-
-int CMasternode::GetMasternodeInputAge() const
-{
-    LOCK(cs_main);
-
-    const auto* pindex = GetCollateralBlock();
-    if (pindex == nullptr)
-        return 0;
-
-    assert(chainActive.Contains(pindex));
-
-    const unsigned tipHeight = chainActive.Height();
-    assert(tipHeight >= pindex->nHeight);
-
-    return tipHeight - pindex->nHeight + 1;
 }
 
 std::string CMasternode::Status() const
@@ -674,7 +675,7 @@ CMasternodePing createDelayedMasternodePing(const CMasternodeBroadcast& mnb)
     CMasternodePing ping;
     const int64_t offsetTimeBy45BlocksInSeconds = 60 * 45;
     ping.vin = mnb.vin;
-    const int depthOfTx = mnb.GetMasternodeInputAge();
+    const int depthOfTx = ComputeMasternodeInputAge(mnb);
     const int offset = std::min( std::max(0, depthOfTx), 12 );
     const auto* block = chainActive[chainActive.Height() - offset];
     ping.blockHash = block->GetBlockHash();

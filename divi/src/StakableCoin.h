@@ -7,11 +7,13 @@ struct StakableCoin
     const CTransaction* tx;
     unsigned outputIndex;
     uint256 blockHashOfFirstConfirmation;
+    COutPoint utxo;
 
     StakableCoin(
         ): tx(nullptr)
         , outputIndex(0u)
         , blockHashOfFirstConfirmation(0u)
+        , utxo(uint256(0),outputIndex)
     {
     }
 
@@ -22,25 +24,12 @@ struct StakableCoin
         ): tx(txIn)
         , outputIndex(outputIndexIn)
         , blockHashOfFirstConfirmation(blockHashIn)
+        , utxo( tx?tx->GetHash():uint256(0), outputIndex)
     {
     }
     bool operator<(const StakableCoin& other) const
     {
-        if(!tx && !other.tx)
-        {
-            return true;
-        }
-        if(!tx)
-        {
-            return true;
-        }
-        if(!other.tx)
-        {
-            return false;
-        }
-        const COutPoint left(tx->GetHash(),outputIndex);
-        const COutPoint right(other.tx->GetHash(),other.outputIndex);
-        return  left < right;
+        return utxo < other.utxo;
     }
 };
 #endif//STAKABLE_COIN_H

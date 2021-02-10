@@ -11,10 +11,9 @@
 #include "sync.h"
 #include "timedata.h"
 #include <primitives/transaction.h>
-
-
 #include "masternodeconfig.h"
 #include "masternode-tier.h"
+#include <MasternodePing.h>
 
 #define MASTERNODE_MIN_CONFIRMATIONS 15
 #define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
@@ -29,48 +28,6 @@ class CMasternodeBroadcast;
 class CMasternodeBroadcastFactory;
 class CMasternodePing;
 class CMasternodeMan;
-
-//
-// The Masternode Ping Class : Contains a different serialize method for sending pings from masternodes throughout the network
-//
-
-class CMasternodePing
-{
-public:
-    CTxIn vin;
-    uint256 blockHash;
-    int64_t sigTime; //mnb message times
-    std::vector<unsigned char> signature;
-    //removed stop
-
-    CMasternodePing();
-    std::string getMessageToSign() const;
-    void Relay() const;
-
-    uint256 GetHash() const;
-    void swap(CMasternodePing& first, CMasternodePing& second);
-    CMasternodePing& operator=(CMasternodePing from);
-
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        READWRITE(vin);
-        READWRITE(blockHash);
-        READWRITE(sigTime);
-        READWRITE(signature);
-    }
-
-    friend bool operator==(const CMasternodePing& a, const CMasternodePing& b)
-    {
-        return a.vin == b.vin && a.blockHash == b.blockHash;
-    }
-    friend bool operator!=(const CMasternodePing& a, const CMasternodePing& b)
-    {
-        return !(a == b);
-    }
-};
 
 //
 // The Masternode Class. For managing the Obfuscation process. It contains the input of the 10000 PIV, signature to prove

@@ -207,6 +207,7 @@ BITCOIN_CORE_H = \
   ExtendedBlockFactory.h \
   BlockFactory.h \
   masternode.h \
+  MasternodePing.h \
   MasternodePaymentData.h \
   MasternodePayeeData.h \
   masternode-payments.h \
@@ -433,6 +434,7 @@ libbitcoin_wallet_a_SOURCES = \
   swifttx.cpp \
   LegacyBlockSubsidies.cpp \
   masternode.cpp \
+  MasternodePing.cpp \
   MasternodePaymentData.cpp \
   MasternodePayeeData.cpp \
   masternode-payments.cpp \

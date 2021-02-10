@@ -307,14 +307,17 @@ bool MasternodeWinnerIsKnown(const uint256& inventoryHash)
 
 void ProcessMasternodeMessages(CNode* pfrom, std::string strCommand, CDataStream& vRecv)
 {
-    mnodeman.ProcessMessage(activeMasternode,masternodeSync,pfrom, strCommand, vRecv);
-    masternodePayments.ProcessMessageMasternodePayments(masternodeSync,pfrom, strCommand, vRecv);
+    if(!fLiteMode)
+    {
+        mnodeman.ProcessMessage(activeMasternode,masternodeSync,pfrom, strCommand, vRecv);
+        masternodePayments.ProcessMessageMasternodePayments(masternodeSync,pfrom, strCommand, vRecv);
+    }
     masternodeSync.ProcessMessage(pfrom, strCommand, vRecv);
 }
 
 bool VoteForMasternodePayee(const CBlockIndex* pindex)
 {
-    if (masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST || !fMasterNode) return false;
+    if (fLiteMode || masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST || !fMasterNode) return false;
     constexpr int numberOfBlocksIntoTheFutureToVoteOn = 10;
     static int64_t lastProcessBlockHeight = 0;
     const int64_t nBlockHeight = pindex->nHeight + numberOfBlocksIntoTheFutureToVoteOn;

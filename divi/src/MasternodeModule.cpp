@@ -26,12 +26,16 @@
 #include <MasternodeHelpers.h>
 #include <MasternodeBroadcastFactory.h>
 
+#include <blockmap.h>
+
 bool fMasterNode = false;
 extern bool fLiteMode;
+extern CChain chainActive;
+extern BlockMap mapBlockIndex;
 MasternodeNetworkMessageManager networkMessageManager;
 MasternodePaymentData masternodePaymentData;
 CMasternodeConfig masternodeConfig;
-CMasternodeMan mnodeman(networkMessageManager);
+CMasternodeMan mnodeman(networkMessageManager,chainActive,mapBlockIndex);
 CMasternodeSync masternodeSync(mnodeman, networkMessageManager,masternodePaymentData);
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CMasternodePayments masternodePayments(masternodePaymentData,mnodeman);

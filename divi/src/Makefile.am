@@ -171,6 +171,7 @@ BITCOIN_CORE_H = \
   I_ProofOfStakeCalculator.h \
   ProofOfStakeCalculator.h \
   datacachemanager.h \
+  uiMessenger.h \
   kernel.h \
   I_ProofOfStakeGenerator.h \
   ProofOfStakeGenerator.h \

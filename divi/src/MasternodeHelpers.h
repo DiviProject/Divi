@@ -8,7 +8,6 @@ class CMasternodePing;
 class CTxIn;
 class COutPoint;
 
-bool CollateralIsExpectedAmount(const COutPoint &outpoint, int64_t expectedAmount);
 bool IsBlockchainSynced();
 
 /** Returns the block hash that is used in the masternode scoring / ranking

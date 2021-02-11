@@ -26,7 +26,6 @@ class I_BlockSubsidyProvider;
 class CMasternodeMan;
 class MasternodePaymentData;
 
-extern CMasternodePayments masternodePayments;
 //
 // Masternode Payments Class
 // Keeps track of who should get paid for which blocks

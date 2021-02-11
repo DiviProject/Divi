@@ -25,8 +25,6 @@
 
 #include <array>
 
-extern CChain chainActive;
-extern BlockMap mapBlockIndex;
 extern bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow = false);
 extern void Misbehaving(NodeId pnode, int howmuch);
 
@@ -157,11 +155,15 @@ CMasternodeMan::~CMasternodeMan()
 }
 
 CMasternodeMan::CMasternodeMan(
-    MasternodeNetworkMessageManager& networkMessageManager
+    MasternodeNetworkMessageManager& networkMessageManager,
+    const CChain& activeChain,
+    const BlockMap& blockIndicesByHash
     ):  networkMessageManager_(networkMessageManager)
     , cs(networkMessageManager_.cs)
     , cs_process_message()
     , rankingCache(new RankingCache)
+    , activeChain_(activeChain)
+    , blockIndicesByHash_(blockIndicesByHash)
 {
 }
 
@@ -389,9 +391,9 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
                 return false;
             }
 
-            BlockMap::iterator mi = mapBlockIndex.find(mnp.blockHash);
-            if (mi != mapBlockIndex.end() && (*mi).second) {
-                if ((*mi).second->nHeight < chainActive.Height() - 24) {
+            BlockMap::const_iterator mi = blockIndicesByHash_.find(mnp.blockHash);
+            if (mi != blockIndicesByHash_.end() && (*mi).second) {
+                if ((*mi).second->nHeight < activeChain_.Height() - 24) {
                     LogPrint("masternode", "%s - Masternode %s block hash %s is too old\n",
                              __func__, mnp.vin.prevout.hash.ToString(), mnp.blockHash.ToString());
                     // Do nothing here (no Masternode update, no mnping relay)

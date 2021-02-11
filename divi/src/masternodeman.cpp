@@ -25,7 +25,6 @@
 
 #include <array>
 
-extern CCriticalSection cs_main;
 extern CChain chainActive;
 extern BlockMap mapBlockIndex;
 extern bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow = false);

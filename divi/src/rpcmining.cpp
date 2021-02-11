@@ -174,7 +174,7 @@ Value setgenerate(const Array& params, bool fHelp)
 
         Array blockHashes;
         CoinMintingModule mintingModule(
-            cs_main, Params(), chainActive,GetMasternodeSync(),masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
+            cs_main, Params(), chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
         I_CoinMinter& minter = mintingModule.coinMinter();
 
         while (nHeight < nHeightEnd)
@@ -239,7 +239,7 @@ Value generateblock(const Array& params, bool fHelp)
     }
 
     CoinMintingModule mintingModule(
-        cs_main, Params(), chainActive,GetMasternodeSync(),masternodePayments,mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
+        cs_main, Params(), chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
     I_CoinMinter& minter = mintingModule.coinMinter();
     ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
     assert(blockFactory);

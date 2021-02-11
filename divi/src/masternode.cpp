@@ -21,8 +21,6 @@
 #include <blockmap.h>
 #include <chainparams.h>
 
-extern bool CollateralIsExpectedAmount(const COutPoint &outpoint, int64_t expectedAmount);
-
 static CAmount getCollateralAmount(MasternodeTier tier)
 {
   if(tier >= MasternodeTier::COPPER && tier < MasternodeTier::INVALID)

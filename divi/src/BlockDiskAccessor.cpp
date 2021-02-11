@@ -136,3 +136,24 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
 
     return false;
 }
+
+bool CollateralIsExpectedAmount(const COutPoint &outpoint, int64_t expectedAmount)
+{
+    CCoins coins;
+    LOCK(cs_main);
+    if (!pcoinsTip->GetCoins(outpoint.hash, coins))
+        return false;
+
+    int n = outpoint.n;
+    if (n < 0 || (unsigned int)n >= coins.vout.size() || coins.vout[n].IsNull()) {
+        return false;
+    }
+    else if (coins.vout[n].nValue != expectedAmount)
+    {
+        return false;
+    }
+    else {
+        return true;
+    }
+    assert(false);
+}

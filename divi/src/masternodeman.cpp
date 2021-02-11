@@ -22,10 +22,10 @@
 #include <chainparams.h>
 #include <chain.h>
 #include <blockmap.h>
+#include <BlockDiskAccessor.h>
 
 #include <array>
 
-extern bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow = false);
 extern void Misbehaving(NodeId pnode, int howmuch);
 
 #define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
@@ -157,13 +157,15 @@ CMasternodeMan::~CMasternodeMan()
 CMasternodeMan::CMasternodeMan(
     MasternodeNetworkMessageManager& networkMessageManager,
     const CChain& activeChain,
-    const BlockMap& blockIndicesByHash
+    const BlockMap& blockIndicesByHash,
+    CAddrMan& addressManager
     ):  networkMessageManager_(networkMessageManager)
     , cs(networkMessageManager_.cs)
     , cs_process_message()
     , rankingCache(new RankingCache)
     , activeChain_(activeChain)
     , blockIndicesByHash_(blockIndicesByHash)
+    , addressManager_(addressManager)
 {
 }
 
@@ -678,7 +680,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     CNetAddr addr("127.0.0.1");
     if (pfrom != nullptr)
         addr = pfrom->addr;
-    addrman.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
+    addressManager_.Add(CAddress(mnb.addr), addr, 2 * 60 * 60);
     masternodeSynchronization.AddedMasternodeList(mnb.GetHash());
 
     // If the masternode already is in our list and is enabled, nothing

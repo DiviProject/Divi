@@ -26,6 +26,7 @@
 #include <MasternodeHelpers.h>
 #include <MasternodeBroadcastFactory.h>
 
+#include <addrman.h>
 #include <blockmap.h>
 
 bool fMasterNode = false;
@@ -35,7 +36,7 @@ extern BlockMap mapBlockIndex;
 MasternodeNetworkMessageManager networkMessageManager;
 MasternodePaymentData masternodePaymentData;
 CMasternodeConfig masternodeConfig;
-CMasternodeMan mnodeman(networkMessageManager,chainActive,mapBlockIndex);
+CMasternodeMan mnodeman(networkMessageManager,chainActive,mapBlockIndex,addrman);
 CMasternodeSync masternodeSync(mnodeman, networkMessageManager,masternodePaymentData);
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CMasternodePayments masternodePayments(masternodePaymentData,mnodeman);

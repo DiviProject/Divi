@@ -23,6 +23,7 @@ class CActiveMasternode;
 class MasternodeNetworkMessageManager;
 class CChain;
 class BlockMap;
+class CAddrMan;
 
 class CMasternodeMan
 {
@@ -41,13 +42,15 @@ private:
 
     const CChain& activeChain_;
     const BlockMap& blockIndicesByHash_;
+    CAddrMan& addressManager_;
 public:
     LockableMasternodeData GetLockableMasternodeData();
 
     CMasternodeMan(
         MasternodeNetworkMessageManager& networkMessageManager,
         const CChain& activeChain,
-        const BlockMap& blockIndicesByHash);
+        const BlockMap& blockIndicesByHash,
+        CAddrMan& addressManager);
     CMasternodeMan(const CMasternodeMan& other) = delete;
     ~CMasternodeMan();
 

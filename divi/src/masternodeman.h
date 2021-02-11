@@ -21,6 +21,8 @@ class CMasternodeSync;
 class CMasternodePayments;
 class CActiveMasternode;
 class MasternodeNetworkMessageManager;
+class CChain;
+class BlockMap;
 
 class CMasternodeMan
 {
@@ -37,10 +39,15 @@ private:
     class RankingCache;
     std::unique_ptr<RankingCache> rankingCache;
 
+    const CChain& activeChain_;
+    const BlockMap& blockIndicesByHash_;
 public:
     LockableMasternodeData GetLockableMasternodeData();
 
-    CMasternodeMan(MasternodeNetworkMessageManager& networkMessageManager);
+    CMasternodeMan(
+        MasternodeNetworkMessageManager& networkMessageManager,
+        const CChain& activeChain,
+        const BlockMap& blockIndicesByHash);
     CMasternodeMan(const CMasternodeMan& other) = delete;
     ~CMasternodeMan();
 

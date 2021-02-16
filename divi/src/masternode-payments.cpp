@@ -85,7 +85,7 @@ void CMasternodePayments::FillBlockPayee(const CBlockIndex* pindexPrev, CMutable
     }
     if (!GetBlockPayee(seedHash, payee)) {
         // No masternode detected, fall back to our own queue.
-        payee = GetNextMasternodePayeeInQueueForPayment(pindexPrev, 1, true);
+        payee = GetNextMasternodePayeeInQueueForPayment(pindexPrev, 1);
         if(payee.empty())
         {
             LogPrint("masternode","CreateNewBlock: Failed to detect masternode to pay\n");
@@ -261,7 +261,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodeSync& m
     if(!masternodeSynchronization.IsSynced()){ return true;}
 
     /* Make sure that the payee is in our own payment queue near the top.  */
-    const std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(seedHash, winner.GetHeight(), true);
+    const std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(seedHash, winner.GetHeight());
     for (int i = 0; i < std::min<int>(2 * MNPAYMENTS_SIGNATURES_TOTAL, mnQueue.size()); ++i) {
         const auto& mn = *mnQueue[i];
         const CScript mnPayee = GetScriptForDestination(mn.pubKeyCollateralAddress.GetID());
@@ -517,13 +517,13 @@ unsigned CMasternodePayments::FindLastPayeePaymentTime(const CMasternode& master
     return 0u;
 }
 
-CScript CMasternodePayments::GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset, bool fFilterSigTime) const
+CScript CMasternodePayments::GetNextMasternodePayeeInQueueForPayment(const CBlockIndex* pindex, const int offset) const
 {
-    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(pindex, offset, fFilterSigTime);
+    std::vector<CMasternode*> mnQueue = GetMasternodePaymentQueue(pindex, offset);
     const CMasternode* mn = (!mnQueue.empty())? mnQueue.front(): NULL;
     return mn? mn->GetPaymentScript(): CScript();
 }
-std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset, bool fFilterSigTime) const
+std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const CBlockIndex* pindex, int offset) const
 {
     uint256 seedHash;
     if (!GetBlockHashForScoring(seedHash, pindex, offset))
@@ -531,7 +531,7 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const C
 
     const int64_t nBlockHeight = pindex->nHeight + offset;
 
-    return GetMasternodePaymentQueue(seedHash, nBlockHeight, fFilterSigTime);
+    return GetMasternodePaymentQueue(seedHash, nBlockHeight);
 }
 
 void ComputeMasternodesAndScores(
@@ -575,7 +575,7 @@ void ComputeMasternodesAndScores(
     }
 }
 
-std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight, bool fFilterSigTime) const
+std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight) const
 {
     LockableMasternodeData mnData = masternodeManager_.GetLockableMasternodeData();
     LOCK(mnData.cs);

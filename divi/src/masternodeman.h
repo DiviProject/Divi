@@ -45,6 +45,10 @@ private:
     CAddrMan& addressManager_;
 
     bool Add(const CMasternode& mn);
+    bool NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer);
+    void SyncMasternodeListWithPeer(CNode* peer);
+    bool HasRequestedMasternodeSyncTooOften(CNode* pfrom);
+    void Remove(const CTxIn& vin);
 public:
     LockableMasternodeData GetLockableMasternodeData();
 
@@ -86,9 +90,6 @@ public:
     unsigned GetMasternodeRank(const CTxIn& vin, const uint256& seedHash,
                                int minProtocol, unsigned nCheckNum);
 
-    bool NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer);
-    void SyncMasternodeListWithPeer(CNode* peer);
-    bool HasRequestedMasternodeSyncTooOften(CNode* pfrom);
     /** Records a ping in the list of our seen ping messages, and also updates the
      *  list of known broadcasts if the ping corresponds to one we know (i.e. updates
      *  the ping contained in the seen broadcast).
@@ -121,8 +122,6 @@ public:
     int stable_size ();
 
     std::string ToString() const;
-
-    void Remove(const CTxIn& vin);
 
     void ResetRankingCache();
 };

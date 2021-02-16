@@ -71,7 +71,7 @@ public:
     /// Clear Masternode vector
     void Clear();
 
-    int CountEnabled(int protocolVersion = -1) const;
+    int CountEnabled(int protocolVersion) const;
 
     void CountNetworks(int protocolVersion, int& ipv4, int& ipv6, int& onion);
 

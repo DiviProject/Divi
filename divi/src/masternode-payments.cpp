@@ -534,15 +534,18 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const C
     return GetMasternodePaymentQueue(seedHash, nBlockHeight, fFilterSigTime);
 }
 
-std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight, bool fFilterSigTime) const
+void ComputeMasternodesAndScores(
+    const CMasternodePayments& masternodePayments,
+    std::vector<CMasternode>& masternodes,
+    const uint256& seedHash,
+    const int nMnCount,
+    const int nBlockHeight,
+    const bool fFilterSigTime,
+    std::vector<CMasternode*>& masternodeQueue,
+    std::map<const CMasternode*, uint256>& masternodeScores,
+    std::vector<CMasternode>& filteredMasternodes)
 {
-    LockableMasternodeData mnData = masternodeManager_.GetLockableMasternodeData();
-    LOCK(mnData.cs);
-    std::vector< CMasternode* > masternodeQueue;
-    std::map<const CMasternode*, uint256> masternodeScores;
-
-    int nMnCount = masternodeManager_.CountEnabled();
-    BOOST_FOREACH (CMasternode& mn, mnData.masternodes)
+    BOOST_FOREACH (CMasternode& mn, masternodes)
     {
         mn.Check();
         if (!mn.IsEnabled()) continue;
@@ -555,21 +558,56 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
         // proper testing with a very small number of masternodes (which would
         // be scheduled and skipped all the time).
         if (Params().NetworkID() != CBaseChainParams::REGTEST) {
-            if (IsScheduled(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()), nBlockHeight)) continue;
+            if (masternodePayments.IsScheduled(GetScriptForDestination(mn.pubKeyCollateralAddress.GetID()), nBlockHeight)) continue;
         }
 
         //it's too new, wait for a cycle
-        if (fFilterSigTime && mn.sigTime + (nMnCount * 2.6 * 60) > GetAdjustedTime()) continue;
-
+        if (fFilterSigTime && mn.sigTime + (nMnCount * 2.6 * 60) > GetAdjustedTime())
+        {
+            filteredMasternodes.push_back(mn);
+            continue;
+        }
         //make sure it has as many confirmations as there are masternodes
         if (ComputeMasternodeInputAge(mn) < nMnCount) continue;
 
         masternodeQueue.push_back(&mn);
         masternodeScores[&mn] = mn.CalculateScore(seedHash);
     }
+}
 
+std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight, bool fFilterSigTime) const
+{
+    LockableMasternodeData mnData = masternodeManager_.GetLockableMasternodeData();
+    LOCK(mnData.cs);
+    std::vector< CMasternode* > masternodeQueue;
+    std::map<const CMasternode*, uint256> masternodeScores;
+    std::vector<CMasternode> filteredMasternodes;
+
+    int nMnCount = masternodeManager_.CountEnabled();
+    ComputeMasternodesAndScores(
+        *this,
+        mnData.masternodes,
+        seedHash,
+        nMnCount,
+        nBlockHeight,
+        true,
+        masternodeQueue,
+        masternodeScores,
+        filteredMasternodes);
     //when the network is in the process of upgrading, don't penalize nodes that recently restarted
-    if (fFilterSigTime && static_cast<int>(masternodeQueue.size()) < nMnCount / 3) return GetMasternodePaymentQueue(seedHash, nBlockHeight, false);
+    if (static_cast<int>(masternodeQueue.size()) < nMnCount / 3)
+    {
+        ComputeMasternodesAndScores(
+            *this,
+            filteredMasternodes,
+            seedHash,
+            nMnCount,
+            nBlockHeight,
+            false,
+            masternodeQueue,
+            masternodeScores,
+            filteredMasternodes);
+    }
 
 
     std::sort(masternodeQueue.begin(), masternodeQueue.end(),

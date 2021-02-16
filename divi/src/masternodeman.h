@@ -71,7 +71,7 @@ public:
     /// Clear Masternode vector
     void Clear();
 
-    int CountEnabled(int protocolVersion) const;
+    int CountEnabled() const;
 
     /// Find an entry
     CMasternode* Find(const CScript& payee) = delete;

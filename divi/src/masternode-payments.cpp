@@ -216,7 +216,7 @@ bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymen
 
     return false;
 }
-bool CMasternodePayments::CheckMasternodeWinnerValidity(CMasternodeSync& masternodeSynchronization, const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
+bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodeSync& masternodeSynchronization, const CMasternodePaymentWinner& winner, CNode* pnode, std::string& strError) const
 {
     CMasternode* pmn = masternodeManager_.Find(winner.vinMasternode);
 

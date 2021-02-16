@@ -424,12 +424,6 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
     return false;
 }
 
-
-void CMasternodeMan::Clear()
-{
-    networkMessageManager_.Clear();
-}
-
 int CMasternodeMan::stable_size ()
 {
     LOCK(cs);

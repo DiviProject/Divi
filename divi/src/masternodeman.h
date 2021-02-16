@@ -68,9 +68,6 @@ public:
     bool CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchronization,CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool fRequireEnabled = true);
 
-    /// Clear Masternode vector
-    void Clear();
-
     int CountEnabled() const;
 
     /// Find an entry

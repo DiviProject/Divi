@@ -150,7 +150,7 @@ bool MasternodeNetworkMessageManager::recordMasternodeEntryRequestAttempt(const 
 
     // ask for the mnb info once from the node that sent mnp
 
-    LogPrint("masternode", "CMasternodeMan::AskForMN - Asking node for missing entry, vin: %s\n", masternodeCollateral.hash.ToString());
+    LogPrint("masternode", "%s - Asking node for missing entry, vin: %s\n", __func__, masternodeCollateral.hash.ToString());
     int64_t askAgain = GetTime() + MASTERNODE_MIN_MNP_SECONDS;
     mWeAskedForMasternodeListEntry[masternodeCollateral] = askAgain;
 

@@ -89,8 +89,6 @@ public:
     unsigned GetMasternodeRank(const CTxIn& vin, const uint256& seedHash,
                                int minProtocol, unsigned nCheckNum);
 
-    void ProcessMasternodeConnections();
-
     bool NotifyPeerOfMasternode(const CMasternode& mn, CNode* peer);
     void SyncMasternodeListWithPeer(CNode* peer);
     bool HasRequestedMasternodeSyncTooOften(CNode* pfrom);

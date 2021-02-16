@@ -86,7 +86,7 @@ public:
     void Process(bool networkIsRegtest);
     bool IsSynced() const;
     bool IsMasternodeListSynced() { return RequestedMasternodeAssets > MASTERNODE_SYNC_LIST; }
-    void AskForMN(CNode* pnode, const CTxIn& vin);
+    void AskForMN(CNode* pnode, const CTxIn& vin) const;
 };
 
 #endif

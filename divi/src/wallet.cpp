@@ -2870,7 +2870,7 @@ bool CWallet::UpdatedTransaction(const uint256& hashTx)
 
 unsigned int CWallet::GetKeyPoolSize() const
 {
-    AssertLockHeld(cs_wallet); // set{Ex,In}ternalKeyPool
+    LOCK(cs_wallet);
     return setInternalKeyPool.size() + setExternalKeyPool.size();
 }
 

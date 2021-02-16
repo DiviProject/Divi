@@ -24,6 +24,12 @@ uint32_t MasternodeNetworkMessageManager::masternodeCount() const
     return masternodes.size();
 }
 
+const std::vector<CMasternode>& MasternodeNetworkMessageManager::GetFullMasternodeVector() const
+{
+    LOCK(cs);
+    return masternodes;
+}
+
 void MasternodeNetworkMessageManager::clearTimedOutMasternodeListRequestsFromPeers()
 {
     // check who's asked for the Masternode list

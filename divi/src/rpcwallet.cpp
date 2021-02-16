@@ -2328,7 +2328,9 @@ Value lockunspent(const Array& params, bool fHelp)
     else
         RPCTypeCheck(params, list_of(bool_type)(array_type));
 
-    bool fUnlock = params[0].get_bool();
+    const bool fUnlock = params[0].get_bool();
+
+    LOCK(pwalletMain->cs_wallet);
 
     if (params.size() == 1) {
         if (fUnlock)

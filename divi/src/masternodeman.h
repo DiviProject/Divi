@@ -49,6 +49,11 @@ private:
     void SyncMasternodeListWithPeer(CNode* peer);
     bool HasRequestedMasternodeSyncTooOften(CNode* pfrom);
     void Remove(const CTxIn& vin);
+
+    bool UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const;
+    bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
+    bool CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchronization,CMasternodeBroadcast& mnb, int& nDoS);
+    bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool fRequireEnabled = true);
 public:
     LockableMasternodeData GetLockableMasternodeData();
 
@@ -65,11 +70,6 @@ public:
 
     /// Check all Masternodes and remove inactive
     void CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization,bool forceExpiredRemoval = false);
-
-    bool UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const;
-    bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);
-    bool CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchronization,CMasternodeBroadcast& mnb, int& nDoS);
-    bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool fRequireEnabled = true);
 
     int CountEnabled() const;
 

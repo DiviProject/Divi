@@ -65,7 +65,6 @@ public:
 
     /// Check all Masternodes and remove inactive
     void CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization,bool forceExpiredRemoval = false);
-    void CheckAndRemove() {} // dummy overload for loading/storing from db cache
 
     bool UpdateWithNewBroadcast(const CMasternodeBroadcast &mnb, CMasternode& masternode) const;
     bool CheckInputsForMasternode(const CMasternodeBroadcast& mnb, int& nDoS);

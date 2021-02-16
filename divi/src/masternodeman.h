@@ -43,6 +43,8 @@ private:
     const CChain& activeChain_;
     const BlockMap& blockIndicesByHash_;
     CAddrMan& addressManager_;
+
+    bool Add(const CMasternode& mn);
 public:
     LockableMasternodeData GetLockableMasternodeData();
 
@@ -53,9 +55,6 @@ public:
         CAddrMan& addressManager);
     CMasternodeMan(const CMasternodeMan& other) = delete;
     ~CMasternodeMan();
-
-    /// Add an entry
-    bool Add(const CMasternode& mn);
 
     /// Check all Masternodes
     void Check();

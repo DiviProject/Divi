@@ -34,6 +34,7 @@ public:
     std::map<uint256, CMasternodePing> mapSeenMasternodePing;
 
     uint32_t masternodeCount() const;
+    const std::vector<CMasternode>& GetFullMasternodeVector() const;
     void clearTimedOutMasternodeListRequestsFromPeers();
     void clearTimedOutMasternodeListRequestsToPeers();
     void clearTimedOutMasternodeEntryRequests();

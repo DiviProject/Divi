@@ -178,7 +178,7 @@ MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
 std::vector<MasternodeListEntry> GetMasternodeList(std::string strFilter)
 {
     std::vector<MasternodeListEntry> masternodeList;
-    std::vector<CMasternode> masternodeVector = mnodeman.GetFullMasternodeVector();
+    std::vector<CMasternode> masternodeVector = networkMessageManager.GetFullMasternodeVector();
     masternodeList.reserve(masternodeVector.size());
 
     unsigned numberOfBlocksToSearchBackForLastPayment = (masternodeVector.size()*5)/4;

@@ -150,7 +150,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
             return;
         }
 
-        int nFirstBlock = nHeight - (masternodeManager_.CountEnabled(ActiveProtocol()) * 1.25);
+        int nFirstBlock = nHeight - (masternodeManager_.CountEnabled() * 1.25);
         if (winner.GetHeight() < nFirstBlock || winner.GetHeight() > nHeight + 20) {
             LogPrint("mnpayments", "mnw - winner out of range - FirstBlock %d Height %d bestHeight %d\n", nFirstBlock, winner.GetHeight(), nHeight);
             return;
@@ -455,7 +455,7 @@ void CMasternodePayments::Sync(CNode* node, int nCountNeeded)
 {
     LOCK(cs_mapMasternodePayeeVotes);
 
-    int nCount = (masternodeManager_.CountEnabled(ActiveProtocol()) * 1.25);
+    int nCount = (masternodeManager_.CountEnabled() * 1.25);
     if (nCountNeeded > nCount) nCountNeeded = nCount;
 
     int nInvCount = 0;
@@ -583,7 +583,7 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
     std::map<const CMasternode*, uint256> masternodeScores;
     std::vector<CMasternode> filteredMasternodes;
 
-    int nMnCount = masternodeManager_.CountEnabled(ActiveProtocol());
+    int nMnCount = masternodeManager_.CountEnabled();
     ComputeMasternodesAndScores(
         *this,
         mnData.masternodes,

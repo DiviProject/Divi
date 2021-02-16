@@ -19,6 +19,7 @@ class CDataStream;
 class MasternodeNetworkMessageManager;
 class MasternodePaymentData;
 class CMasternodeMan;
+class CTxIn;
 
 #include <map>
 #include <uint256.h>
@@ -85,6 +86,7 @@ public:
     void Process(bool networkIsRegtest);
     bool IsSynced() const;
     bool IsMasternodeListSynced() { return RequestedMasternodeAssets > MASTERNODE_SYNC_LIST; }
+    void AskForMN(CNode* pnode, const CTxIn& vin);
 };
 
 #endif

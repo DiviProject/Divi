@@ -18,6 +18,7 @@
 #include <version.h>
 #include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
+#include <primitives/transaction.h>
 // clang-format on
 
 #include <algorithm>
@@ -352,5 +353,13 @@ void CMasternodeSync::Process(bool networkIsRegtest)
                 return;
             }
         }
+    }
+}
+
+void CMasternodeSync::AskForMN(CNode* pnode, const CTxIn& vin)
+{
+    if(networkMessageManager_.recordMasternodeEntryRequestAttempt(vin.prevout))
+    {
+        pnode->PushMessage("dseg", vin);
     }
 }

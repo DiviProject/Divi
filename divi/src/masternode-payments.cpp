@@ -176,7 +176,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
             LogPrintf("%s : - invalid signature\n", __func__);
             if (masternodeSynchronization.IsSynced()) Misbehaving(pfrom->GetId(), 20);
             // it could just be a non-synced masternode
-            masternodeManager_.AskForMN(pfrom, winner.vinMasternode);
+            masternodeSynchronization.AskForMN(pfrom, winner.vinMasternode);
             return;
         }
 
@@ -223,7 +223,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(CMasternodeSync& mastern
     if (!pmn) {
         strError = strprintf("Unknown Masternode %s", winner.vinMasternode.prevout.hash.ToString());
         LogPrint("masternode","%s - %s\n",__func__, strError);
-        masternodeManager_.AskForMN(pnode, winner.vinMasternode);
+        masternodeSynchronization.AskForMN(pnode, winner.vinMasternode);
         return false;
     }
 

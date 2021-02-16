@@ -122,6 +122,32 @@ void DumpMasternodeDataToDisk()
     }
 }
 
+void CountNetworks(int& ipv4, int& ipv6, int& onion)
+{
+    int protocolVersion = ActiveProtocol();
+
+    BOOST_FOREACH (CMasternode& mn, networkMessageManager.masternodes)
+    {
+        mn.Check();
+        std::string strHost;
+        int port;
+        SplitHostPort(mn.addr.ToString(), port, strHost);
+        CNetAddr node = CNetAddr(strHost, false);
+        int nNetwork = node.GetNetwork();
+        switch (nNetwork) {
+            case 1 :
+                ipv4++;
+                break;
+            case 2 :
+                ipv6++;
+                break;
+            case 3 :
+                onion++;
+                break;
+        }
+    }
+}
+
 MasternodeCountData::MasternodeCountData(
     ): total(0)
     , stable(0)
@@ -140,7 +166,7 @@ MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
     if (chainTip != nullptr)
         data.queueCount = masternodePayments.GetMasternodePaymentQueue(chainTip, 0).size();
 
-    mnodeman.CountNetworks(ActiveProtocol(), data.ipv4, data.ipv6, data.onion);
+    CountNetworks(data.ipv4, data.ipv6, data.onion);
     data.total = networkMessageManager.masternodeCount();
     data.stable = mnodeman.stable_size();
     data.enabledAndActive = mnodeman.CountEnabled(ActiveProtocol());

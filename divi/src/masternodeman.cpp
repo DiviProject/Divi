@@ -579,13 +579,6 @@ unsigned CMasternodeMan::GetMasternodeRank(const CTxIn& vin, const uint256& seed
     return static_cast<unsigned>(-1);
 }
 
-void CMasternodeMan::ProcessMasternodeConnections()
-{
-    //we don't care about this for regtest
-    if (Params().NetworkID() == CBaseChainParams::REGTEST)
-        return;
-}
-
 void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
 {
     networkMessageManager_.mapSeenMasternodePing[mnp.GetHash()] = mnp;

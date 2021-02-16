@@ -57,9 +57,6 @@ public:
     /// Add an entry
     bool Add(const CMasternode& mn);
 
-    /// Ask (source) node for mnb
-    void AskForMN(CNode* pnode, const CTxIn& vin);
-
     /// Check all Masternodes
     void Check();
 

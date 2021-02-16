@@ -186,14 +186,6 @@ bool CMasternodeMan::Add(const CMasternode& mn)
     return false;
 }
 
-void CMasternodeMan::AskForMN(CNode* pnode, const CTxIn& vin)
-{
-    if(networkMessageManager_.recordMasternodeEntryRequestAttempt(vin.prevout))
-    {
-        pnode->PushMessage("dseg", vin);
-    }
-}
-
 void CMasternodeMan::Check()
 {
     LOCK(cs);

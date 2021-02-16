@@ -90,6 +90,13 @@ FakeWallet::FakeWallet(FakeBlockIndexWithHashes& c)
   SetMinVersion(FEATURE_HD);
   GetKeyFromPool(newDefaultKey, false);
   SetDefaultKey(newDefaultKey);
+
+  ENTER_CRITICAL_SECTION(cs_wallet);
+}
+
+FakeWallet::~FakeWallet()
+{
+  LEAVE_CRITICAL_SECTION(cs_wallet);
 }
 
 void FakeWallet::AddBlock()

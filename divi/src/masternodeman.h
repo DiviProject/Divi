@@ -124,7 +124,7 @@ public:
      *  we apply potential DoS banscores.
      *
      *  Returns true if the ping message was valid.  */
-    bool ProcessPing(CNode* pfrom, CMasternodePing& mnp);
+    bool ProcessPing(CNode* pfrom, CMasternodePing& mnp, CMasternodeSync& masternodeSynchronization);
 
     void ProcessMessage(CActiveMasternode& localMasternode, CMasternodeSync& masternodeSynchronization, CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 

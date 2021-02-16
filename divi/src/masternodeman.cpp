@@ -195,12 +195,6 @@ void CMasternodeMan::Check()
     }
 }
 
-std::vector<CMasternode> CMasternodeMan::GetFullMasternodeVector() const
-{
-    LOCK(cs);
-    return networkMessageManager_.masternodes;
-}
-
 void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
 {
     Check();

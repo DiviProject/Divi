@@ -711,7 +711,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     return true;
 }
 
-bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
+bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp, CMasternodeSync& masternodeSynchronization)
 {
     if (networkMessageManager_.mapSeenMasternodePing.count(mnp.GetHash())) return true; //seen
 
@@ -735,7 +735,7 @@ bool CMasternodeMan::ProcessPing(CNode* pfrom, CMasternodePing& mnp)
     // something significant is broken or mn is unknown,
     // we might have to ask for a masternode entry once
     if (pfrom != nullptr)
-        AskForMN(pfrom, mnp.vin);
+        masternodeSynchronization.AskForMN(pfrom, mnp.vin);
 
     return false;
 }
@@ -797,7 +797,7 @@ void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode,CMasterno
         vRecv >> mnp;
 
         LogPrint("masternode", "mnp - Masternode ping, vin: %s\n", mnp.vin.prevout.hash.ToString());
-        if (!ProcessPing(pfrom, mnp))
+        if (!ProcessPing(pfrom, mnp, masternodeSynchronization))
             return;
     } else if (strCommand == "dseg") { //Get Masternode list or specific entry
 

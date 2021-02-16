@@ -144,7 +144,7 @@ MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
     data.total = networkMessageManager.masternodeCount();
     data.stable = mnodeman.stable_size();
     data.enabledAndActive = mnodeman.CountEnabled(ActiveProtocol());
-    data.enabled = mnodeman.CountEnabled();
+    data.enabled = mnodeman.CountEnabled(ActiveProtocol());
 
     return data;
 }

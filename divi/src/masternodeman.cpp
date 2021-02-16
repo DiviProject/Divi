@@ -461,8 +461,6 @@ int CMasternodeMan::stable_size ()
 int CMasternodeMan::CountEnabled(int protocolVersion) const
 {
     int i = 0;
-    protocolVersion = protocolVersion == -1 ? ActiveProtocol() : protocolVersion;
-
     for (const auto& mn : networkMessageManager_.masternodes) {
         if (mn.protocolVersion < protocolVersion || !mn.IsEnabled()) continue;
         i++;

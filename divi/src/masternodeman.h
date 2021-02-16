@@ -73,8 +73,6 @@ public:
 
     int CountEnabled(int protocolVersion) const;
 
-    void CountNetworks(int protocolVersion, int& ipv4, int& ipv6, int& onion);
-
     /// Find an entry
     CMasternode* Find(const CScript& payee) = delete;
     CMasternode* Find(const CTxIn& vin);

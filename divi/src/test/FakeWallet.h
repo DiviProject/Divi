@@ -15,7 +15,9 @@
 class CScript;
 
 /** A wallet with (mostly) real seed and keys, which can be used in tests
- *  that need to exercise wallet functions.  */
+ *  that need to exercise wallet functions.
+ *
+ *  The FakeWallet will hold cs_wallet automatically.  */
 class FakeWallet : public CWallet
 {
 
@@ -31,6 +33,7 @@ public:
 
   /** Constructs the wallet with a given external fake chain.  */
   explicit FakeWallet(FakeBlockIndexWithHashes& c);
+  ~FakeWallet ();
 
   /** Adds a new block to our fake chain.  */
   void AddBlock();

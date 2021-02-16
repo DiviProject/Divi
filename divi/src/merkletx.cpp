@@ -64,9 +64,6 @@ bool CMerkleTx::IsInMainChain() const
 
 int CMerkleTx::SetMerkleBranch(const CBlock& block)
 {
-    AssertLockHeld(cs_main);
-    CBlock blockTmp;
-
     // Update the tx's hashBlock
     hashBlock = block.GetHash();
 
@@ -85,6 +82,7 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
     vMerkleBranch = block.GetMerkleBranch(nIndex);
 
     // Is the tx in a block that's in the main chain
+    LOCK(cs_main);
     BlockMap::const_iterator mi = blockIndices_.find(hashBlock);
     if (mi == blockIndices_.end())
         return 0;
@@ -99,15 +97,20 @@ int CMerkleTx::GetNumberOfBlockConfirmationsINTERNAL(const CBlockIndex*& pindexR
 {
     if (hashBlock == 0 || nIndex == -1)
         return 0;
-    AssertLockHeld(cs_main);
 
     // Find the block it claims to be in
-    BlockMap::const_iterator mi = blockIndices_.find(hashBlock);
-    if (mi == blockIndices_.end())
-        return 0;
-    CBlockIndex* pindex = (*mi).second;
-    if (!pindex || !activeChain_.Contains(pindex))
-        return 0;
+    unsigned bestHeight;
+    CBlockIndex* pindex;
+    {
+        LOCK(cs_main);
+        BlockMap::const_iterator mi = blockIndices_.find(hashBlock);
+        if (mi == blockIndices_.end())
+            return 0;
+        pindex = (*mi).second;
+        if (!pindex || !activeChain_.Contains(pindex))
+            return 0;
+        bestHeight = activeChain_.Height();
+    }
 
     // Make sure the merkle branch connects to this block
     if (!fMerkleVerified) {
@@ -117,12 +120,11 @@ int CMerkleTx::GetNumberOfBlockConfirmationsINTERNAL(const CBlockIndex*& pindexR
     }
 
     pindexRet = pindex;
-    return activeChain_.Height() - pindex->nHeight + 1;
+    return bestHeight - pindex->nHeight + 1;
 }
 
 int CMerkleTx::GetNumberOfBlockConfirmations(const CBlockIndex*& pindexRet, bool enableIX) const
 {
-    AssertLockHeld(cs_main);
     int nResult = GetNumberOfBlockConfirmationsINTERNAL(pindexRet);
     if (nResult == 0 && !mempool.exists(GetHash()))
         return -1; // Not in chain, not in mempool

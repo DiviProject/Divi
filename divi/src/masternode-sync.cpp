@@ -356,7 +356,7 @@ void CMasternodeSync::Process(bool networkIsRegtest)
     }
 }
 
-void CMasternodeSync::AskForMN(CNode* pnode, const CTxIn& vin)
+void CMasternodeSync::AskForMN(CNode* pnode, const CTxIn& vin) const
 {
     if(networkMessageManager_.recordMasternodeEntryRequestAttempt(vin.prevout))
     {

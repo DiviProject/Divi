@@ -593,6 +593,14 @@ public:
     void CloseSocketDisconnect();
     bool DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand = "");
 
+    /** Checks whether we want to send messages to this peer.  We do not
+     *  send messages until we receive their version and get sporks.  */
+    bool CanSendMessagesToPeer() const;
+
+    /** Checks if we should send a ping message to this peer, and does it
+     *  if we should.  */
+    void MaybeSendPing();
+
     // Denial-of-service detection/prevention
     // The idea is to detect peers that are behaving
     // badly and disconnect/ban them, but do it in a

@@ -25,6 +25,7 @@
 #include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
 #include <MasternodeBroadcastFactory.h>
+#include <spork.h>
 
 #include <addrman.h>
 #include <blockmap.h>
@@ -41,6 +42,7 @@ CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CMasternodePayments masternodePayments(masternodePaymentData,mnodeman);
 CMasternodeSync masternodeSync(masternodePayments,networkMessageManager,masternodePaymentData);
 
+#define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
 
 template <typename T>
 static T readFromHex(std::string hexString)
@@ -149,6 +151,34 @@ void CountNetworks(int& ipv4, int& ipv6, int& onion)
     }
 }
 
+int StableMasternodeCount()
+{
+    LOCK(networkMessageManager.cs);
+    int nStable_size = 0;
+    int nMinProtocol = ActiveProtocol();
+    int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;
+    int64_t nMasternode_Age = 0;
+
+    for (auto& mn : networkMessageManager.masternodes) {
+        if (mn.protocolVersion < nMinProtocol) {
+            continue; // Skip obsolete versions
+        }
+        if (sporkManager.IsSporkActive (SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
+            nMasternode_Age = GetAdjustedTime() - mn.sigTime;
+            if ((nMasternode_Age) < nMasternode_Min_Age) {
+                continue; // Skip masternodes younger than (default) 8000 sec (MUST be > MASTERNODE_REMOVAL_SECONDS)
+            }
+        }
+        mn.Check ();
+        if (!mn.IsEnabled ())
+            continue; // Skip not-enabled masternodes
+
+        nStable_size++;
+    }
+
+    return nStable_size;
+}
+
 MasternodeCountData::MasternodeCountData(
     ): total(0)
     , stable(0)
@@ -169,7 +199,7 @@ MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
 
     CountNetworks(data.ipv4, data.ipv6, data.onion);
     data.total = networkMessageManager.masternodeCount();
-    data.stable = mnodeman.stable_size();
+    data.stable = StableMasternodeCount();
     data.enabledAndActive = mnodeman.CountEnabled();
     data.enabled = mnodeman.CountEnabled();
 

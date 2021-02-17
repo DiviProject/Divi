@@ -6,7 +6,7 @@
 // clang-format off
 #include <masternode-sync.h>
 
-#include <masternodeman.h>
+#include <masternode-payments.h>
 #include <spork.h>
 #include <utiltime.h>
 #include <Logging.h>
@@ -27,10 +27,10 @@ static constexpr int64_t MASTERNODE_SYNC_TIMEOUT = 5;
 static constexpr int64_t MASTERNODE_SYNC_THRESHOLD = 2;
 
 CMasternodeSync::CMasternodeSync(
-    CMasternodeMan& masternodeManager,
+    CMasternodePayments& masternodePayments,
     MasternodeNetworkMessageManager& networkMessageManager,
     MasternodePaymentData& masternodePaymentData
-    ): masternodeManager_(masternodeManager)
+    ): masternodePayments_(masternodePayments)
     , networkMessageManager_(networkMessageManager)
     , masternodePaymentData_(masternodePaymentData)
 {
@@ -56,7 +56,7 @@ void CMasternodeSync::Reset()
     RequestedMasternodeAssets = MASTERNODE_SYNC_INITIAL;
     RequestedMasternodeAttempt = 0;
     nAssetSyncStarted = GetTime();
-    masternodeManager_.ResetRankingCache();
+    masternodePayments_.ResetRankingCache();
 }
 
 void CMasternodeSync::DsegUpdate(CNode* pnode)

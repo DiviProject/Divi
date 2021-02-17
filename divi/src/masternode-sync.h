@@ -18,7 +18,7 @@ class CNode;
 class CDataStream;
 class MasternodeNetworkMessageManager;
 class MasternodePaymentData;
-class CMasternodeMan;
+class CMasternodePayments;
 class CTxIn;
 
 #include <map>
@@ -39,7 +39,7 @@ class CMasternodeSync
 {
 private:
     int64_t nTimeLastProcess = 0;
-    CMasternodeMan& masternodeManager_;
+    CMasternodePayments& masternodePayments_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
 public:
@@ -66,7 +66,7 @@ public:
     int64_t nAssetSyncStarted;
 
     CMasternodeSync(
-        CMasternodeMan& masternodeManager,
+        CMasternodePayments& masternodePayments,
         MasternodeNetworkMessageManager& networkMessageManager,
         MasternodePaymentData& masternodePaymentData);
 

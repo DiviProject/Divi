@@ -3572,8 +3572,6 @@ void static ProcessGetData(CNode* pfrom)
 
     std::vector<CInv> vNotFound;
 
-    LOCK(cs_main);
-
     while (it != pfrom->vRecvGetData.end()) {
         // Don't bother if send buffer is too full to respond anyway
         if (pfrom->nSendSize >= SendBufferSize())
@@ -3586,8 +3584,12 @@ void static ProcessGetData(CNode* pfrom)
 
             if (inv.type == MSG_BLOCK || inv.type == MSG_FILTERED_BLOCK) {
                 bool send = false;
-                BlockMap::iterator mi = mapBlockIndex.find(inv.hash);
+                const CBlockIndex* pindex;
+                {
+                LOCK(cs_main);
+                const auto mi = mapBlockIndex.find(inv.hash);
                 if (mi != mapBlockIndex.end()) {
+                    pindex = mi->second;
                     if (chainActive.Contains(mi->second)) {
                         send = true;
                     } else {
@@ -3601,11 +3603,12 @@ void static ProcessGetData(CNode* pfrom)
                         }
                     }
                 }
+                }
                 // Don't send not-validated blocks
-                if (send && (mi->second->nStatus & BLOCK_HAVE_DATA)) {
+                if (send && (pindex->nStatus & BLOCK_HAVE_DATA)) {
                     // Send block from disk
                     CBlock block;
-                    if (!ReadBlockFromDisk(block, (*mi).second))
+                    if (!ReadBlockFromDisk(block, pindex))
                         assert(!"cannot load block from disk");
                     if (inv.type == MSG_BLOCK)
                         pfrom->PushMessage("block", block);
@@ -3990,8 +3993,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             return error("message inv size() = %u", vInv.size());
         }
 
-        LOCK(cs_main);
-
         std::vector<CInv> vToFetch;
 
         for (unsigned int nInv = 0; nInv < vInv.size(); nInv++) {
@@ -4053,6 +4054,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         uint256 hashStop;
         vRecv >> locator >> hashStop;
 
+        /* We build up the inventory while holding cs_main (since we access
+           a lot of global state, especially chainActive), but then send it
+           to the peer without holding onto the lock anymore.  */
+        std::vector<CInv> vInv;
+
+        {
         LOCK(cs_main);
 
         // Find the last block the caller has in the main chain
@@ -4063,7 +4070,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             pindex = chainActive.Next(pindex);
         int nLimit = 500;
         LogPrint("net", "getblocks %d to %s limit %d from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop == uint256(0) ? "end" : hashStop.ToString(), nLimit, pfrom->id);
-        std::vector<CInv> vInv;
         for (; pindex; pindex = chainActive.Next(pindex)) {
             // Make sure the inv messages for the requested chain are sent
             // in any case, even if e.g. we have already announced those
@@ -4082,6 +4088,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 break;
             }
         }
+        }
+
         if (!vInv.empty())
             pfrom->PushMessage("inv", vInv);
     }

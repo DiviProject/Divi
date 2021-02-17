@@ -26,6 +26,7 @@ VaultManager::VaultManager(
     I_VaultManagerDatabase& vaultManagerDB
     ): VaultManager(activeChain,blockIndicesByHash)
 {
+    LOCK(cs_vaultManager_);
     vaultManagerDB.ReadManagedScripts(managedScriptsLimits_);
     bool continueLoadingTransactions = true;
     while(continueLoadingTransactions)
@@ -100,15 +101,14 @@ UnspentOutputs VaultManager::getUTXOs() const
 const CWalletTx& VaultManager::GetTransaction(const uint256& hash) const
 {
     static CWalletTx dummyValue;
+
+    LOCK(cs_vaultManager_);
     const CWalletTx* tx = walletTxRecord_->GetWalletTx(hash);
+
     if(!tx)
-    {
         return dummyValue;
-    }
-    else
-    {
-        return *tx;
-    }
+
+    return *tx;
 }
 
 const ManagedScripts& VaultManager::GetManagedScriptLimits() const

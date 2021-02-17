@@ -512,6 +512,48 @@ bool CNode::AreSporksSynced() const
     return nSporksCount >= 0 && nSporksCount <= nSporksSynced;
 }
 
+bool CNode::CanSendMessagesToPeer() const
+{
+    // Don't send anything until we get their version message
+    if (nVersion == 0)
+        return false;
+
+    // Don't send anything until we get sporks from peer
+    if(!fInbound && !AreSporksSynced())
+        return false;
+
+    return true;
+}
+
+void CNode::MaybeSendPing()
+{
+    bool pingSend = false;
+    if (fPingQueued) {
+        // RPC ping request by user
+        pingSend = true;
+    }
+    if (nPingNonceSent == 0 && nPingUsecStart + PING_INTERVAL * 1000000 < GetTimeMicros()) {
+        // Ping automatically sent as a latency probe & keepalive.
+        pingSend = true;
+    }
+    if (pingSend) {
+        uint64_t nonce = 0;
+        while (nonce == 0) {
+            GetRandBytes((unsigned char*)&nonce, sizeof(nonce));
+        }
+        fPingQueued = false;
+        nPingUsecStart = GetTimeMicros();
+        if (nVersion > BIP0031_VERSION) {
+            nPingNonceSent = nonce;
+            PushMessage("ping", nonce);
+        } else {
+            // Peer is too old to support ping command with nonce, pong will never arrive.
+            nPingNonceSent = 0;
+            PushMessage("ping");
+        }
+    }
+}
+
 std::map<CNetAddr, int64_t> CNode::setBanned;
 CCriticalSection CNode::cs_setBanned;
 
@@ -1409,6 +1451,10 @@ void ThreadMessageHandler()
     boost::mutex condition_mutex;
     boost::unique_lock<boost::mutex> lock(condition_mutex);
 
+    /* We periodically rebroadcast our address.  This is the last time
+       we did a broadcast.  */
+    int64_t nLastRebroadcast = 0;
+
     SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
     while (true) {
         std::vector<CNode*> vNodesCopy;
@@ -1419,6 +1465,8 @@ void ThreadMessageHandler()
                 pnode->AddRef();
             }
         }
+
+        bool rebroadcast = (!IsInitialBlockDownload() && (GetTime() > nLastRebroadcast + 24 * 60 * 60));
 
         // Poll the connected nodes for messages
         CNode* pnodeTrickle = NULL;
@@ -1447,7 +1495,38 @@ void ThreadMessageHandler()
             }
             boost::this_thread::interruption_point();
 
+            // Handle potential ping messages first.
+            if (pnode->CanSendMessagesToPeer())
+            {
+                TRY_LOCK(pnode->cs_vSend, lockSend);
+                if (lockSend)
+                    pnode->MaybeSendPing();
+            }
+            boost::this_thread::interruption_point();
+
+            // Rebroadcasting is done for all nodes after the ping
+            // of the first; this is to mimic previous behaviour.
+            if (rebroadcast) {
+                for (auto* pnode2 : vNodesCopy) {
+                    TRY_LOCK(pnode2->cs_vSend, lockSend);
+                    if (!lockSend)
+                        continue;
+
+                    // Periodically clear setAddrKnown to allow refresh broadcasts
+                    if (nLastRebroadcast > 0)
+                        pnode2->setAddrKnown.clear();
+
+                    // Rebroadcast our address
+                    AdvertizeLocal(pnode2);
+                    boost::this_thread::interruption_point();
+                }
+
+                nLastRebroadcast = GetTime();
+                rebroadcast = false;
+            }
+
             // Send messages
+            if (pnode->CanSendMessagesToPeer())
             {
                 TRY_LOCK(pnode->cs_vSend, lockSend);
                 if (lockSend)

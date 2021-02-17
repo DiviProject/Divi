@@ -4662,62 +4662,9 @@ bool ProcessMessages(CNode* pfrom)
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
-        // Don't send anything until we get their version message
-        if (pto->nVersion == 0)
-            return true;
-
-        // Don't send anything until we get sporks from peer
-        if(!pto->fInbound && !pto->AreSporksSynced())
-            return true;
-
-        //
-        // Message: ping
-        //
-        bool pingSend = false;
-        if (pto->fPingQueued) {
-            // RPC ping request by user
-            pingSend = true;
-        }
-        if (pto->nPingNonceSent == 0 && pto->nPingUsecStart + PING_INTERVAL * 1000000 < GetTimeMicros()) {
-            // Ping automatically sent as a latency probe & keepalive.
-            pingSend = true;
-        }
-        if (pingSend) {
-            uint64_t nonce = 0;
-            while (nonce == 0) {
-                GetRandBytes((unsigned char*)&nonce, sizeof(nonce));
-            }
-            pto->fPingQueued = false;
-            pto->nPingUsecStart = GetTimeMicros();
-            if (pto->nVersion > BIP0031_VERSION) {
-                pto->nPingNonceSent = nonce;
-                pto->PushMessage("ping", nonce);
-            } else {
-                // Peer is too old to support ping command with nonce, pong will never arrive.
-                pto->nPingNonceSent = 0;
-                pto->PushMessage("ping");
-            }
-        }
-
         TRY_LOCK(cs_main, lockMain); // Acquire cs_main for IsInitialBlockDownload() and CNodeState()
         if (!lockMain)
             return true;
-
-        // Address refresh broadcast
-        static int64_t nLastRebroadcast;
-        if (!IsInitialBlockDownload() && (GetTime() - nLastRebroadcast > 24 * 60 * 60)) {
-            LOCK(cs_vNodes);
-            BOOST_FOREACH (CNode* pnode, vNodes) {
-                // Periodically clear setAddrKnown to allow refresh broadcasts
-                if (nLastRebroadcast)
-                    pnode->setAddrKnown.clear();
-
-                // Rebroadcast our address
-                AdvertizeLocal(pnode);
-            }
-            if (!vNodes.empty())
-                nLastRebroadcast = GetTime();
-        }
 
         //
         // Message: addr

@@ -313,14 +313,15 @@ void CMasternodeSync::Process(bool networkIsRegtest)
     // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
     if (!networkIsRegtest && !IsBlockchainSynced() && RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS) return;
 
+    std::vector<CNode*> vSporkSyncedNodes;
+    {
     TRY_LOCK(cs_vNodes, lockRecv);
     if (!lockRecv) return;
-
-    std::vector<CNode*> vSporkSyncedNodes;
 
     std::copy_if(std::begin(vNodes), std::end(vNodes), std::back_inserter(vSporkSyncedNodes), [](const CNode *node) {
         return node->fInbound || node->AreSporksSynced();
     });
+    }
 
     // don't event attemp to sync if we don't have 3 synced nodes
     if(vSporkSyncedNodes.size() < 3) {

@@ -38,14 +38,13 @@ static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTie
     CTransaction txVin;
     uint256 hash;
     auto nCollateral = CMasternode::GetTierCollateralAmount(nMasternodeTier);
-    if (GetTransaction(vin.prevout.hash, txVin, hash, true)) {
-        BOOST_FOREACH (CTxOut out, txVin.vout) {
-            if (out.nValue == nCollateral) {
-                if (out.scriptPubKey == payee) return true;
-            }
-        }
-    }
+    if (GetTransaction(vin.prevout.hash, txVin, hash, true))
+    {
+        if(vin.prevout.n >= txVin.vout.size()) return false;
 
+        const CTxOut& output = txVin.vout[vin.prevout.n];
+        return output.nValue == nCollateral && output.scriptPubKey == payee;
+    }
     return false;
 }
 }

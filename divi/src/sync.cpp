@@ -79,6 +79,9 @@ static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch,
             LogPrintf(" (2)");
         LogPrintf(" %s\n", i.second.ToString());
     }
+
+    tfm::format(std::cerr, "Assertion failed: detected inconsistent lock order for %s, details in debug log.\n", s2.back().second.ToString());
+    abort();
 }
 
 static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)

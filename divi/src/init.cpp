@@ -83,7 +83,6 @@ extern bool fSendFreeTransactions;
 extern bool fPayAtLeastCustomFee;
 extern CFeeRate payTxFee;
 #endif
-extern CSporkDB* pSporkDB;
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
@@ -241,19 +240,18 @@ void DeallocateShallowDatabases()
     delete pcoinscatcher;
     delete pcoinsdbview;
     delete pblocktree;
-    delete pSporkDB;
 
     pcoinsTip = NULL;
     pcoinscatcher = NULL;
     pcoinsdbview = NULL;
     pblocktree = NULL;
-    pSporkDB = NULL;
+    sporkManager.DeallocateDatabase();
 }
 
 void CleanAndReallocateShallowDatabases(const std::pair<std::size_t,std::size_t>& blockTreeAndCoinDBCacheSizes)
 {
     DeallocateShallowDatabases();
-    pSporkDB = new CSporkDB(0, false, false);
+    sporkManager.AllocateDatabase();
     pblocktree = new CBlockTreeDB(blockTreeAndCoinDBCacheSizes.first, false, fReindex);
     pcoinsdbview = new CCoinsViewDB(blockTreeAndCoinDBCacheSizes.second, false, fReindex);
     pcoinscatcher = new CCoinsViewErrorCatcher(pcoinsdbview);

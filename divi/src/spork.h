@@ -14,6 +14,7 @@ class CNode;
 
 class CSporkMessage;
 class CSporkManager;
+class CSporkDB;
 
 /*
     Don't ever reuse these IDs for other sporks
@@ -159,6 +160,7 @@ struct TxFeeSporkValue : public SporkMultiValue {
 class CSporkManager
 {
 private:
+    std::unique_ptr<CSporkDB> pSporkDB_;
     std::vector<unsigned char> vchSig;
     // Some sporks require to have history, we will use sorted vector for this approach.
     std::map<int, std::vector<CSporkMessage>> mapSporksActive;
@@ -175,7 +177,10 @@ private:
 public:
 
     CSporkManager();
+    ~CSporkManager();
 
+    void AllocateDatabase();
+    void DeallocateDatabase();
     void LoadSporksFromDB();
     void ProcessSpork(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv);
     bool UpdateSpork(int nSporkID, std::string strValue);

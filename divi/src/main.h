@@ -248,10 +248,6 @@ extern CCoinsViewCache* pcoinsTip;
 extern CBlockTreeDB* pblocktree;
 /** Global variable that points to the active block tree (protected by cs_main) */
 
-
-/** Global variable that points to the spork database (protected by cs_main) */
-extern CSporkDB* pSporkDB;
-
 struct CAddressIndexKey;
 struct CAddressUnspentKey;
 struct CAddressUnspentValue;

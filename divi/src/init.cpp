@@ -83,6 +83,7 @@ extern bool fSendFreeTransactions;
 extern bool fPayAtLeastCustomFee;
 extern CFeeRate payTxFee;
 #endif
+extern CSporkDB* pSporkDB;
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;

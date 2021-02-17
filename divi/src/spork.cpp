@@ -43,7 +43,6 @@ extern bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bo
 
 std::map<uint256, CSporkMessage> mapSporks;
 CSporkManager sporkManager;
-CSporkDB* pSporkDB = NULL;
 
 static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_2_SWIFTTX_ENABLED,                "0"},             // ON
@@ -106,8 +105,25 @@ bool CSporkManager::IsNewerSpork(const CSporkMessage &spork) const
     return true;
 }
 
-CSporkManager::CSporkManager()
+CSporkManager::CSporkManager(
+    ): pSporkDB_()
 {
+}
+
+CSporkManager::~CSporkManager()
+{
+    pSporkDB_.reset();
+}
+
+
+void CSporkManager::AllocateDatabase()
+{
+    pSporkDB_.reset(new CSporkDB(0, false, false));
+}
+
+void CSporkManager::DeallocateDatabase()
+{
+    pSporkDB_.reset();
 }
 
 // DIVI: on startup load spork values from previous session if they exist in the sporkDB
@@ -120,7 +136,7 @@ void CSporkManager::LoadSporksFromDB()
 
         // attempt to read spork from sporkDB
         CSporkMessage spork;
-        if (!pSporkDB || !pSporkDB->ReadSpork(i, spork)) {
+        if (!pSporkDB_ || !pSporkDB_->ReadSpork(i, spork)) {
             LogPrintf("%s : no previous value for %s found in database\n", __func__, strSpork);
             continue;
         }
@@ -164,7 +180,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
             Misbehaving(pfrom->GetId(), 100);
             return;
         }
-        if(!pSporkDB)
+        if(!pSporkDB_)
         {
             LogPrintf("%s - ERROR: Spork database not available, skipping sync\n",__func__);
             return;
@@ -176,7 +192,7 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
 
         if(AddActiveSpork(spork)) {
             //does a task if needed
-            pSporkDB->WriteSpork(spork.nSporkID, spork);
+            pSporkDB_->WriteSpork(spork.nSporkID, spork);
             ExecuteSpork(spork.nSporkID);
         }
 

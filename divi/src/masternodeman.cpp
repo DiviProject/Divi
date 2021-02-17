@@ -10,11 +10,9 @@
 #include <masternode.h>
 #include <mruset.h>
 #include <obfuscation.h>
-#include <spork.h>
 #include <Logging.h>
 #include <masternode-sync.h>
 #include <MasternodeNetworkMessageManager.h>
-#include <boost/lexical_cast.hpp>
 #include <utiltime.h>
 #include <version.h>
 #include <MasternodeHelpers.h>

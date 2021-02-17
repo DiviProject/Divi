@@ -28,8 +28,6 @@
 
 extern void Misbehaving(NodeId pnode, int howmuch);
 
-#define MN_WINNER_MINIMUM_AGE 8000    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
-
 //    pathMN = GetDataDir() / "mncache.dat";
 //    strMagicMessage = "MasternodeCache";
 
@@ -320,34 +318,6 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
              __func__, mnp.vin.prevout.hash.ToString());
 
     return false;
-}
-
-int CMasternodeMan::stable_size ()
-{
-    LOCK(cs);
-    int nStable_size = 0;
-    int nMinProtocol = ActiveProtocol();
-    int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;
-    int64_t nMasternode_Age = 0;
-
-    for (auto& mn : networkMessageManager_.masternodes) {
-        if (mn.protocolVersion < nMinProtocol) {
-            continue; // Skip obsolete versions
-        }
-        if (sporkManager.IsSporkActive (SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
-            nMasternode_Age = GetAdjustedTime() - mn.sigTime;
-            if ((nMasternode_Age) < nMasternode_Min_Age) {
-                continue; // Skip masternodes younger than (default) 8000 sec (MUST be > MASTERNODE_REMOVAL_SECONDS)
-            }
-        }
-        mn.Check ();
-        if (!mn.IsEnabled ())
-            continue; // Skip not-enabled masternodes
-
-        nStable_size++;
-    }
-
-    return nStable_size;
 }
 
 int CMasternodeMan::CountEnabled() const

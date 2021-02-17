@@ -37,13 +37,112 @@ extern CMasternodeMan mnodeman;
 
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_REQUIRED = 6;
 const int CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL = 10;
+constexpr int MN_WINNER_MINIMUM_AGE = 8000;    // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid misconfigured new nodes in the list.
+
+/** Maximum nCheckNum that we allow for ranking masternodes.
+ *  In practice, we only need to check if a node is in the top 10
+ *  (or rather, top-20 to give some leeway before punishing nodes
+ *  with wrong claims).  */
+static constexpr unsigned MAX_RANKING_CHECK_NUM = 20;
+
+/** Number of entries (blocks) we keep in the cache of ranked masternodes.  */
+static constexpr unsigned RANKING_CACHE_SIZE = 2500;
+/**
+ * An entry in the ranking cache.  We use mruset to hold the cache,
+ * which means that even though it is conceptually a map, we represent
+ * it as a set, i.e. instances of this class are both the key and value
+ * in one, and compare based on the key.
+ */
+namespace
+{
+struct RankingCacheEntry
+{
+
+  using value_type = std::array<uint256, MAX_RANKING_CHECK_NUM>;
+
+  /** The scoring hash this is for, i.e. the key.  */
+  uint256 seedHash;
+
+  /** The list of best masternodes by rank (represented through
+   *  their vin prevout hashes).  */
+  value_type bestVins;
+
+  RankingCacheEntry() = default;
+  RankingCacheEntry(RankingCacheEntry&&) = default;
+  RankingCacheEntry(const RankingCacheEntry&) = default;
+
+  void operator=(const RankingCacheEntry&) = delete;
+
+};
+
+bool operator==(const RankingCacheEntry& a, const RankingCacheEntry& b)
+{
+  return a.seedHash == b.seedHash;
+}
+
+bool operator<(const RankingCacheEntry& a, const RankingCacheEntry& b)
+{
+  return a.seedHash < b.seedHash;
+}
+
+} // anonymous namespace
+
+/**
+ * Internal helper class that represents the cache of the best MAX_RANKING_NUM
+ * nodes for recent block heights.
+ */
+class CMasternodePayments::RankingCache
+{
+
+private:
+
+  /** The best nodes for the last couple of blocks.  */
+  mruset<RankingCacheEntry> entries;
+
+public:
+
+  RankingCache()
+    : entries(RANKING_CACHE_SIZE)
+  {}
+
+  RankingCache(const RankingCache&) = delete;
+  void operator=(const RankingCache&) = delete;
+
+  /** Looks up an entry by seed hash and returns it, or a null
+   *  pointer if there is no matching entry.  */
+  const RankingCacheEntry::value_type* Find(const uint256& hash) const
+  {
+    RankingCacheEntry entry;
+    entry.seedHash = hash;
+
+    auto mit = entries.find(entry);
+    if (mit == entries.end())
+      return nullptr;
+
+    return &mit->bestVins;
+  }
+
+  /** Inserts an entry into the cache.  */
+  void Insert(const uint256& hash, const RankingCacheEntry::value_type& bestVins)
+  {
+    RankingCacheEntry entry;
+    entry.seedHash = hash;
+    entry.bestVins = bestVins;
+
+    auto ins = entries.insert(std::move(entry));
+    assert(ins.second);
+  }
+
+};
+
 
 /** Object for who's going to get paid on which blocks */
 
 CMasternodePayments::CMasternodePayments(
     MasternodePaymentData& paymentData,
     CMasternodeMan& masternodeManager
-    ): nSyncedFromPeer(0)
+    ): rankingCache(new RankingCache)
+    , nSyncedFromPeer(0)
     , nLastBlockHeight(0)
     , chainTipHeight(0)
     , paymentData_(paymentData)
@@ -51,6 +150,10 @@ CMasternodePayments::CMasternodePayments(
     , mapMasternodePayeeVotes(paymentData_.mapMasternodePayeeVotes)
     , mapMasternodeBlocks(paymentData_.mapMasternodeBlocks)
 {
+}
+CMasternodePayments::~CMasternodePayments()
+{
+    rankingCache.reset();
 }
 
 void CMasternodePayments::Clear()
@@ -245,7 +348,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodeSync& m
 
     const uint256& seedHash = winner.getSeedHash();
     assert(!seedHash.IsNull());
-    const unsigned voterRank = masternodeManager_.GetMasternodeRank(winner.vinMasternode, seedHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
+    const unsigned voterRank = GetMasternodeRank(winner.vinMasternode, seedHash, ActiveProtocol(), 2 * MNPAYMENTS_SIGNATURES_TOTAL);
 
     if (voterRank > MNPAYMENTS_SIGNATURES_TOTAL) {
         //It's common to have masternodes mistakenly think they are in the top 10
@@ -621,4 +724,89 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
             return (aScore > bScore);
         }   );
     return masternodeQueue;
+}
+
+
+namespace
+{
+
+/** Checks if the given masternode is deemed "ok" based on the minimum
+ *  masternode age for winners, the minimum protocol version and being active
+ *  at all.  If so, returns true and sets its score.  */
+bool CheckAndGetScore(CMasternode& mn,
+                      const uint256& seedHash, const int minProtocol,
+                      int64_t& score)
+{
+    if (mn.protocolVersion < minProtocol) {
+        LogPrint("masternode", "Skipping Masternode with obsolete version %d\n", mn.protocolVersion);
+        return false;
+    }
+
+    const int64_t nAge = GetAdjustedTime() - mn.sigTime;
+    if (nAge < MN_WINNER_MINIMUM_AGE) {
+        LogPrint("masternode", "Skipping just activated Masternode. Age: %ld\n", nAge);
+        return false;
+    }
+
+    mn.Check ();
+    if (!mn.IsEnabled ())
+        return false;
+
+    const uint256 n = mn.CalculateScore(seedHash);
+    score = n.GetCompact(false);
+
+    return true;
+}
+
+} // anonymous namespace
+
+unsigned CMasternodePayments::GetMasternodeRank(const CTxIn& vin, const uint256& seedHash, int minProtocol, const unsigned nCheckNum) const
+{
+    assert(nCheckNum <= MAX_RANKING_CHECK_NUM);
+
+    const RankingCacheEntry::value_type* cacheEntry;
+    RankingCacheEntry::value_type newEntry;
+
+    cacheEntry = rankingCache->Find(seedHash);
+    if (cacheEntry == nullptr) {
+        std::vector<std::pair<int64_t, uint256>> rankedNodes;
+        {
+            LockableMasternodeData mnData = masternodeManager_.GetLockableMasternodeData();
+            LOCK(mnData.cs);
+            for (auto& mn : mnData.masternodes) {
+                int64_t score;
+                if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
+                    continue;
+
+                rankedNodes.emplace_back(score, mn.vin.prevout.hash);
+            }
+        }
+
+        std::sort(rankedNodes.begin(), rankedNodes.end(),
+            [] (const std::pair<int64_t, uint256>& a, const std::pair<int64_t, uint256>& b)
+            {
+                return a.first > b.first;
+            });
+
+        for (unsigned i = 0; i < newEntry.size(); ++i)
+            if (i < rankedNodes.size())
+                newEntry[i] = rankedNodes[i].second;
+            else
+                newEntry[i].SetNull();
+
+        rankingCache->Insert(seedHash, newEntry);
+        cacheEntry = &newEntry;
+    }
+
+    assert(cacheEntry != nullptr);
+    for (unsigned i = 0; i < cacheEntry->size(); ++i)
+        if ((*cacheEntry)[i] == vin.prevout.hash)
+            return i + 1;
+
+    return static_cast<unsigned>(-1);
+}
+
+void CMasternodePayments::ResetRankingCache()
+{
+    rankingCache.reset(new RankingCache);
 }

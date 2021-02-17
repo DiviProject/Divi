@@ -37,9 +37,10 @@ MasternodeNetworkMessageManager networkMessageManager;
 MasternodePaymentData masternodePaymentData;
 CMasternodeConfig masternodeConfig;
 CMasternodeMan mnodeman(networkMessageManager,chainActive,mapBlockIndex,addrman);
-CMasternodeSync masternodeSync(mnodeman, networkMessageManager,masternodePaymentData);
 CActiveMasternode activeMasternode(masternodeConfig, fMasterNode);
 CMasternodePayments masternodePayments(masternodePaymentData,mnodeman);
+CMasternodeSync masternodeSync(masternodePayments,networkMessageManager,masternodePaymentData);
+
 
 template <typename T>
 static T readFromHex(std::string hexString)
@@ -397,7 +398,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
         return false;
     }
 
-    const unsigned n = mnodeman.GetMasternodeRank(activeMasternode.vin, seedHash, ActiveProtocol(), CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL);
+    const unsigned n = masternodePayments.GetMasternodeRank(activeMasternode.vin, seedHash, ActiveProtocol(), CMasternodePayments::MNPAYMENTS_SIGNATURES_TOTAL);
 
     if (n == static_cast<unsigned>(-1)) {
         LogPrint("mnpayments", "CMasternodePayments::ProcessBlock - Unknown Masternode\n");

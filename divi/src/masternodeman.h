@@ -35,11 +35,6 @@ private:
     // critical section to protect the inner data structures specifically on messaging
     mutable CCriticalSection cs_process_message;
 
-    // Cache of the most recent masternode ranks, so we can efficiently check
-    // if some masternode is in the top-20 for a recent block height.
-    class RankingCache;
-    std::unique_ptr<RankingCache> rankingCache;
-
     const CChain& activeChain_;
     const BlockMap& blockIndicesByHash_;
     CAddrMan& addressManager_;
@@ -77,16 +72,6 @@ public:
     CMasternode* Find(const CScript& payee) = delete;
     CMasternode* Find(const CTxIn& vin);
     CMasternode* Find(const CPubKey& pubKeyMasternode);
-
-    /** Returns the given masternode's rank among all active and with the
-     *  given minimum protocol version.  Returns (unsigned)-1 if the node is not
-     *  found or not active itself.
-     *
-     *  If the given node is not in the top-"nCheckNum" masternodes by rank, then
-     *  nCheckNum + 1 is returned (instead of the exact rank).  */
-    unsigned GetMasternodeRank(const CTxIn& vin, const uint256& seedHash,
-                               int minProtocol, unsigned nCheckNum);
-
     /** Records a ping in the list of our seen ping messages, and also updates the
      *  list of known broadcasts if the ping corresponds to one we know (i.e. updates
      *  the ping contained in the seen broadcast).
@@ -119,8 +104,6 @@ public:
     int stable_size ();
 
     std::string ToString() const;
-
-    void ResetRankingCache();
 };
 
 #endif

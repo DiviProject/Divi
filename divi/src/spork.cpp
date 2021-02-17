@@ -7,7 +7,6 @@
 
 #include "base58.h"
 #include "key.h"
-#include "main.h"
 #include "net.h"
 #include "protocol.h"
 #include "obfuscation.h"
@@ -16,6 +15,9 @@
 #include "utiltime.h"
 #include "Logging.h"
 #include <timedata.h>
+#include <chain.h>
+#include <blockmap.h>
+#include <FeeRate.h>
 
 #include <numeric>
 #include <boost/algorithm/string/join.hpp>
@@ -25,10 +27,23 @@
 #include <ValidationState.h>
 
 extern bool fLiteMode;
-std::map<uint256, CSporkMessage> mapSporks;
-CSporkManager sporkManager;
 extern CAmount nTransactionValueMultiplier;
 extern unsigned int nTransactionSizeMultiplier;
+extern CCriticalSection cs_main;
+extern CChain chainActive;
+extern BlockMap mapBlockIndex;
+extern std::map<uint256, int64_t> mapRejectedBlocks;
+extern CFeeRate minRelayTxFee;
+extern CAmount maxTxFee;
+
+extern void Misbehaving(NodeId pnode, int howmuch);
+extern bool ReconsiderBlock(CValidationState& state, CBlockIndex* pindex);
+extern bool DisconnectBlocksAndReprocess(int blocks);
+extern bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
+
+std::map<uint256, CSporkMessage> mapSporks;
+CSporkManager sporkManager;
+CSporkDB* pSporkDB = NULL;
 
 static std::map<int, std::string> mapSporkDefaults = {
     {SPORK_2_SWIFTTX_ENABLED,                "0"},             // ON

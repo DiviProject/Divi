@@ -4662,10 +4662,6 @@ bool ProcessMessages(CNode* pfrom)
 bool SendMessages(CNode* pto, bool fSendTrickle)
 {
     {
-        TRY_LOCK(cs_main, lockMain); // Acquire cs_main for IsInitialBlockDownload() and CNodeState()
-        if (!lockMain)
-            return true;
-
         //
         // Message: addr
         //
@@ -4688,8 +4684,15 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 pto->PushMessage("addr", vAddr);
         }
 
-        CNodeState& state = *State(pto->GetId());
-        if (state.fShouldBan) {
+        CNodeState* state;
+        {
+            TRY_LOCK(cs_main, lockMain);
+            if (!lockMain)
+                return true;
+            state = State(pto->GetId());
+        }
+
+        if (state->fShouldBan) {
             if (pto->fWhitelisted)
                 LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr.ToString());
             else {
@@ -4700,21 +4703,21 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     CNode::Ban(pto->addr);
                 }
             }
-            state.fShouldBan = false;
+            state->fShouldBan = false;
         }
 
-        BOOST_FOREACH (const CBlockReject& reject, state.rejects)
+        BOOST_FOREACH (const CBlockReject& reject, state->rejects)
                 pto->PushMessage("reject", (string) "block", reject.chRejectCode, reject.strRejectReason, reject.hashBlock);
-        state.rejects.clear();
+        state->rejects.clear();
 
         // Start block sync
         if (pindexBestHeader == NULL)
             pindexBestHeader = chainActive.Tip();
-        bool fFetch = state.fPreferredDownload || (nPreferredDownload == 0 && !pto->fClient && !pto->fOneShot); // Download if this is a nice peer, or we have no nice peers and this one might do.
-        if (!state.fSyncStarted && !pto->fClient && fFetch /*&& !fImporting*/ && !fReindex) {
+        bool fFetch = state->fPreferredDownload || (nPreferredDownload == 0 && !pto->fClient && !pto->fOneShot); // Download if this is a nice peer, or we have no nice peers and this one might do.
+        if (!state->fSyncStarted && !pto->fClient && fFetch /*&& !fImporting*/ && !fReindex) {
             // Only actively request headers from a single peer, unless we're close to end of initial download.
             if (nSyncStarted == 0 || pindexBestHeader->GetBlockTime() > GetAdjustedTime() - 6 * 60 * 60) { // NOTE: was "close to today" and 24h in Bitcoin
-                state.fSyncStarted = true;
+                state->fSyncStarted = true;
                 nSyncStarted++;
                 //CBlockIndex *pindexStart = pindexBestHeader->pprev ? pindexBestHeader->pprev : pindexBestHeader;
                 //LogPrint("net", "initial getheaders (%d) to peer=%d (startheight:%d)\n", pindexStart->nHeight, pto->id, pto->nStartingHeight);
@@ -4776,7 +4779,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
         // Detect whether we're stalling
         int64_t nNow = GetTimeMicros();
-        if (!pto->fDisconnect && state.nStallingSince && state.nStallingSince < nNow - 1000000 * BLOCK_STALLING_TIMEOUT) {
+        if (!pto->fDisconnect && state->nStallingSince && state->nStallingSince < nNow - 1000000 * BLOCK_STALLING_TIMEOUT) {
             // Stalling only triggers when the block download window cannot move. During normal steady state,
             // the download window should be much larger than the to-be-downloaded set of blocks, so disconnection
             // should only happen during initial block download.
@@ -4788,8 +4791,8 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // timeout. We compensate for in-flight blocks to prevent killing off peers due to our own downstream link
         // being saturated. We only count validated in-flight blocks so peers can't advertize nonexisting block hashes
         // to unreasonably increase our timeout.
-        if (!pto->fDisconnect && state.vBlocksInFlight.size() > 0 && state.vBlocksInFlight.front().nTime < nNow - 500000 * Params().TargetSpacing() * (4 + state.vBlocksInFlight.front().nValidatedQueuedBefore)) {
-            LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", state.vBlocksInFlight.front().hash.ToString(), pto->id);
+        if (!pto->fDisconnect && state->vBlocksInFlight.size() > 0 && state->vBlocksInFlight.front().nTime < nNow - 500000 * Params().TargetSpacing() * (4 + state->vBlocksInFlight.front().nValidatedQueuedBefore)) {
+            LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", state->vBlocksInFlight.front().hash.ToString(), pto->id);
             pto->fDisconnect = true;
         }
 
@@ -4797,17 +4800,17 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         // Message: getdata (blocks)
         //
         std::vector<CInv> vGetData;
-        if (!pto->fDisconnect && !pto->fClient && fFetch && state.nBlocksInFlight < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
+        if (!pto->fDisconnect && !pto->fClient && fFetch && state->nBlocksInFlight < MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
             std::vector<CBlockIndex*> vToDownload;
             NodeId staller = -1;
-            FindNextBlocksToDownload(pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - state.nBlocksInFlight, vToDownload, staller);
+            FindNextBlocksToDownload(pto->GetId(), MAX_BLOCKS_IN_TRANSIT_PER_PEER - state->nBlocksInFlight, vToDownload, staller);
             BOOST_FOREACH (CBlockIndex* pindex, vToDownload) {
                 vGetData.push_back(CInv(MSG_BLOCK, pindex->GetBlockHash()));
                 MarkBlockAsInFlight(pto->GetId(), pindex->GetBlockHash(), pindex);
                 LogPrintf("Requesting block %s (%d) peer=%d\n", pindex->GetBlockHash().ToString(),
                           pindex->nHeight, pto->id);
             }
-            if (state.nBlocksInFlight == 0 && staller != -1) {
+            if (state->nBlocksInFlight == 0 && staller != -1) {
                 if (State(staller)->nStallingSince == 0) {
                     State(staller)->nStallingSince = nNow;
                     LogPrint("net", "Stall started peer=%d\n", staller);

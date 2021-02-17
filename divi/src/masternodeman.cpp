@@ -33,8 +33,7 @@ namespace
 {
 static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier)
 {
-    CScript payee2;
-    payee2 = GetScriptForDestination(pubkey.GetID());
+    CScript payee = GetScriptForDestination(pubkey.GetID());
 
     CTransaction txVin;
     uint256 hash;
@@ -42,7 +41,7 @@ static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTie
     if (GetTransaction(vin.prevout.hash, txVin, hash, true)) {
         BOOST_FOREACH (CTxOut out, txVin.vout) {
             if (out.nValue == nCollateral) {
-                if (out.scriptPubKey == payee2) return true;
+                if (out.scriptPubKey == payee) return true;
             }
         }
     }

@@ -487,6 +487,7 @@ Value verifychain(const Array& params, bool fHelp)
     if (params.size() > 0)
         nCheckDepth = params[1].get_int();
 
+    LOCK(cs_main);
     return CVerifyDB(chainActive,uiInterface,nCoinCacheSize).VerifyDB(pcoinsTip,pcoinsTip, nCheckLevel, nCheckDepth);
 }
 

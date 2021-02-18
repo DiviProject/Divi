@@ -7,7 +7,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_VERIFYDB_H
 #define BITCOIN_VERIFYDB_H
-
 class CCoinsView;
 class CChain;
 class CClientUIInterface;
@@ -16,14 +15,18 @@ class CCoinsViewCache;
 class CVerifyDB
 {
 public:
+    typedef bool (*ShutdownListener)();
+private:
     CChain& activeChain_;
     CClientUIInterface& clientInterface_;
     const unsigned& coinsCacheSize_;
+    ShutdownListener shutdownListener_;
 public:
     CVerifyDB(
         CChain& activeChain,
         CClientUIInterface& clientInterface,
-        const unsigned& coinsCacheSize);
+        const unsigned& coinsCacheSize,
+        ShutdownListener shutdownListener);
     ~CVerifyDB();
     bool VerifyDB(CCoinsView* coinsview, CCoinsViewCache* pcoinsTip, int nCheckLevel, int nCheckDepth);
 };

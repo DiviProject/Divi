@@ -23,15 +23,16 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW = true, bool fCheckMerkleRoot = true, bool fCheckSig = true);
-extern bool ShutdownRequested();
 
 CVerifyDB::CVerifyDB(
     CChain& activeChain,
     CClientUIInterface& clientInterface,
-    const unsigned& coinsCacheSize
+    const unsigned& coinsCacheSize,
+    ShutdownListener shutdownListener
     ): activeChain_(activeChain)
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)
+    , shutdownListener_(shutdownListener)
 {
     clientInterface_.ShowProgress(translate("Verifying blocks..."), 0);
 }
@@ -91,7 +92,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, CCoinsViewCache* pcoinsTip, int 
             } else
                 nGoodTransactions += block.vtx.size();
         }
-        if (ShutdownRequested())
+        if (shutdownListener_())
             return true;
     }
     if (pindexFailure)

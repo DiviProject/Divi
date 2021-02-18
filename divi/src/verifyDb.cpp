@@ -21,8 +21,6 @@
 #include <init.h>
 #include <boost/thread.hpp>
 
-extern CCriticalSection cs_main;
-
 bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool* pfClean = NULL);
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
@@ -46,7 +44,6 @@ CVerifyDB::~CVerifyDB()
 
 bool CVerifyDB::VerifyDB(CCoinsView* coinsview, CCoinsViewCache* pcoinsTip, int nCheckLevel, int nCheckDepth)
 {
-    LOCK(cs_main);
     if (activeChain_.Tip() == NULL || activeChain_.Tip()->pprev == NULL)
         return true;
 

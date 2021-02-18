@@ -27,6 +27,7 @@ extern Settings& settings;
 extern unsigned int nCoinCacheSize;
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
+extern bool ShutdownRequested();
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
@@ -488,7 +489,7 @@ Value verifychain(const Array& params, bool fHelp)
         nCheckDepth = params[1].get_int();
 
     LOCK(cs_main);
-    return CVerifyDB(chainActive,uiInterface,nCoinCacheSize).VerifyDB(pcoinsTip,pcoinsTip, nCheckLevel, nCheckDepth);
+    return CVerifyDB(chainActive,uiInterface,nCoinCacheSize,&ShutdownRequested).VerifyDB(pcoinsTip,pcoinsTip, nCheckLevel, nCheckDepth);
 }
 
 Value getblockchaininfo(const Array& params, bool fHelp)

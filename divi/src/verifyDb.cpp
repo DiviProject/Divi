@@ -7,6 +7,12 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <verifyDb.h>
+
+#include <coins.h>
+#include <Logging.h>
+#include <chain.h>
+#include <primitives/block.h>
+
 #include <BlockUndo.h>
 #include <ValidationState.h>
 #include <BlockDiskAccessor.h>

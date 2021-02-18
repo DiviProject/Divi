@@ -61,7 +61,10 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, CCoinsViewCache* pcoinsTip, int 
     CValidationState state;
     for (CBlockIndex* pindex = activeChain_.Tip(); pindex && pindex->pprev; pindex = pindex->pprev) {
         boost::this_thread::interruption_point();
-        clientInterface_.ShowProgress(translate("Verifying blocks..."), std::max(1, std::min(99, (int)(((double)(activeChain_.Height() - pindex->nHeight)) / (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100)))));
+        const double fractionOfBlocksChecked = (double)(activeChain_.Height() - pindex->nHeight) / (double)nCheckDepth;
+        const int fractionAsProgressPercentage = static_cast<int>(fractionOfBlocksChecked * (nCheckLevel >= 4 ? 50 : 100));
+        const int progressValue = std::max(1, std::min(99, fractionAsProgressPercentage));
+        clientInterface_.ShowProgress(translate("Verifying blocks..."), progressValue);
         if (pindex->nHeight < activeChain_.Height() - nCheckDepth)
             break;
         CBlock block;
@@ -103,7 +106,12 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, CCoinsViewCache* pcoinsTip, int 
         CBlockIndex* pindex = pindexState;
         while (pindex != activeChain_.Tip()) {
             boost::this_thread::interruption_point();
-            clientInterface_.ShowProgress(translate("Verifying blocks..."), std::max(1, std::min(99, 100 - (int)(((double)(activeChain_.Height() - pindex->nHeight)) / (double)nCheckDepth * 50))));
+
+            const double fractionOfBlocksPendingReconnection = (double)(activeChain_.Height() - pindex->nHeight) / (double)nCheckDepth;
+            const int fractionAsProgressPercentage = 100 - static_cast<int>(fractionOfBlocksPendingReconnection * 50 );
+            const int progressValue = std::max(1, std::min(99, fractionAsProgressPercentage));
+            clientInterface_.ShowProgress(translate("Verifying blocks..."), progressValue);
+
             pindex = activeChain_.Next(pindex);
             CBlock block;
             if (!ReadBlockFromDisk(block, pindex))

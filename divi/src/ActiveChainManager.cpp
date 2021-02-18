@@ -10,9 +10,6 @@
 #include <txdb.h>
 #include <spentindex.h>
 
-extern bool fAddressIndex;
-extern bool fSpentIndex;
-
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
     const bool& spentInputIndexingIsEnabled
@@ -62,7 +59,7 @@ bool ActiveChainManager::DisconnectBlock(
 
         uint256 hash = tx.GetHash();
 
-        if (fAddressIndex) {
+        if (addressIndexingIsEnabled_) {
 
             for (unsigned int k = tx.vout.size(); k-- > 0;) {
                 const CTxOut &out = tx.vout[k];
@@ -144,12 +141,12 @@ bool ActiveChainManager::DisconnectBlock(
 
                 const CTxIn input = tx.vin[j];
 
-                if (fSpentIndex) {
+                if (spentInputIndexingIsEnabled_) {
                     // undo and delete the spent index
                     spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue()));
                 }
 
-                if (fAddressIndex) {
+                if (addressIndexingIsEnabled_) {
                     const CTxOut &prevout = view.GetOutputFor(tx.vin[j]);
                     if (prevout.scriptPubKey.IsPayToScriptHash()) {
                         std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
@@ -185,7 +182,7 @@ bool ActiveChainManager::DisconnectBlock(
         *pfClean = fClean;
         return true;
     } else {
-        if (fAddressIndex) {
+        if (addressIndexingIsEnabled_) {
             if (!pblocktree->EraseAddressIndex(addressIndex)) {
                 return state.Abort("Failed to delete address index");
             }

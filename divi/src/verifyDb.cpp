@@ -25,11 +25,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW = true, bool fCheckMerkleRoot = true, bool fCheckSig = true);
 
 CVerifyDB::CVerifyDB(
+    CBlockTreeDB* blockTree,
     CChain& activeChain,
     CClientUIInterface& clientInterface,
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
-    ): activeChain_(activeChain)
+    ): blockTree_(blockTree)
+    , activeChain_(activeChain)
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)
     , shutdownListener_(shutdownListener)

@@ -1274,7 +1274,8 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         // Flag sent to validation code to let it know it can skip certain checks
         fVerifyingBlocks = true;
 
-        if (!CVerifyDB().VerifyDB(pcoinsdbview, 4, settings.GetArg("-checkblocks", 100))) {
+        if (!CVerifyDB(chainActive,uiInterface,nCoinCacheSize).VerifyDB(pcoinsdbview,pcoinsTip, 4, settings.GetArg("-checkblocks", 100)))
+        {
             strLoadError = translate("Corrupted block database detected");
             fVerifyingBlocks = false;
             return skipLoadingDueToError;

@@ -31,7 +31,7 @@ bool ActiveChainManager::DisconnectBlock(
     CBlockIndex* pindex,
     CCoinsViewCache& view,
     CBlockTreeDB* pblocktree,
-    bool* pfClean)
+    bool* pfClean) const
 {
     if (pindex->GetBlockHash() != view.GetBestBlock())
         LogPrintf("%s : pindex=%s view=%s\n", __func__, pindex->GetBlockHash().GetHex(), view.GetBestBlock().GetHex());

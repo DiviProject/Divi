@@ -1276,7 +1276,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
 
         {
             LOCK(cs_main);
-            if (!CVerifyDB(chainActive,uiInterface,nCoinCacheSize).VerifyDB(pcoinsdbview,pcoinsTip, 4, settings.GetArg("-checkblocks", 100)))
+            if (!CVerifyDB(chainActive,uiInterface,nCoinCacheSize, &ShutdownRequested).VerifyDB(pcoinsdbview,pcoinsTip, 4, settings.GetArg("-checkblocks", 100)))
             {
                 strLoadError = translate("Corrupted block database detected");
                 fVerifyingBlocks = false;

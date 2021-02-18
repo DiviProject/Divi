@@ -1236,7 +1236,7 @@ void static InvalidBlockFound(CBlockIndex* pindex, const CValidationState& state
 
 bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool* pfClean)
 {
-    return ActiveChainManager::DisconnectBlock(block,state,pindex,view,pfClean);
+    return ActiveChainManager::DisconnectBlock(block,state,pindex,view,pblocktree,pfClean);
 }
 
 void static FlushBlockFile(bool fFinalize = false)

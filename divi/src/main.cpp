@@ -1696,7 +1696,7 @@ bool static DisconnectTip(CValidationState& state)
     int64_t nStart = GetTimeMicros();
     {
         CCoinsViewCache view(pcoinsTip);
-        if (!ActiveChainManager::DisconnectBlock(block, state, pindexDelete, view,pblocktree))
+        if (!ActiveChainManager(fAddressIndex,fSpentIndex).DisconnectBlock(block, state, pindexDelete, view,pblocktree))
             return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
         assert(view.Flush());
     }

@@ -11,18 +11,21 @@ class CCoinsView;
 class CChain;
 class CClientUIInterface;
 class CCoinsViewCache;
+class CBlockTreeDB;
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB
 {
 public:
     typedef bool (*ShutdownListener)();
 private:
+    CBlockTreeDB* blockTree_;
     CChain& activeChain_;
     CClientUIInterface& clientInterface_;
     const unsigned& coinsCacheSize_;
     ShutdownListener shutdownListener_;
 public:
     CVerifyDB(
+        CBlockTreeDB* blockTree,
         CChain& activeChain,
         CClientUIInterface& clientInterface,
         const unsigned& coinsCacheSize,

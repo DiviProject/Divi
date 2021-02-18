@@ -19,6 +19,7 @@
 #include <ValidationState.h>
 #include <verifyDb.h>
 #include <ui_interface.h>
+#include <txdb.h>
 
 using namespace json_spirit;
 using namespace std;
@@ -28,6 +29,7 @@ extern unsigned int nCoinCacheSize;
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 extern bool ShutdownRequested();
+extern CBlockTreeDB* pblocktree;
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
@@ -489,7 +491,7 @@ Value verifychain(const Array& params, bool fHelp)
         nCheckDepth = params[1].get_int();
 
     LOCK(cs_main);
-    return CVerifyDB(chainActive,uiInterface,nCoinCacheSize,&ShutdownRequested).VerifyDB(pcoinsTip,pcoinsTip, nCheckLevel, nCheckDepth);
+    return CVerifyDB(pblocktree,chainActive,uiInterface,nCoinCacheSize,&ShutdownRequested).VerifyDB(pcoinsTip,pcoinsTip, nCheckLevel, nCheckDepth);
 }
 
 Value getblockchaininfo(const Array& params, bool fHelp)

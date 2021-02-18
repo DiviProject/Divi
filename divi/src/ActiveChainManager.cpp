@@ -12,9 +12,11 @@
 
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
-    const bool& spentInputIndexingIsEnabled
+    const bool& spentInputIndexingIsEnabled,
+    CBlockTreeDB* blocktree
     ): addressIndexingIsEnabled_(addressIndexingIsEnabled)
     , spentInputIndexingIsEnabled_(spentInputIndexingIsEnabled)
+    , blocktree_(blocktree)
 {
 }
 
@@ -27,7 +29,6 @@ bool ActiveChainManager::DisconnectBlock(
     CValidationState& state,
     CBlockIndex* pindex,
     CCoinsViewCache& view,
-    CBlockTreeDB* pblocktree,
     bool* pfClean) const
 {
     if (pindex->GetBlockHash() != view.GetBestBlock())
@@ -183,10 +184,10 @@ bool ActiveChainManager::DisconnectBlock(
         return true;
     } else {
         if (addressIndexingIsEnabled_) {
-            if (!pblocktree->EraseAddressIndex(addressIndex)) {
+            if (!blocktree_->EraseAddressIndex(addressIndex)) {
                 return state.Abort("Failed to delete address index");
             }
-            if (!pblocktree->UpdateAddressUnspentIndex(addressUnspentIndex)) {
+            if (!blocktree_->UpdateAddressUnspentIndex(addressUnspentIndex)) {
                 return state.Abort("Failed to write address unspent index");
             }
         }

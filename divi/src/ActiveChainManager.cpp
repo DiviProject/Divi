@@ -13,6 +13,14 @@
 extern bool fAddressIndex;
 extern bool fSpentIndex;
 
+ActiveChainManager::ActiveChainManager(
+    const bool& addressIndexingIsEnabled,
+    const bool& spentInputIndexingIsEnabled
+    ): addressIndexingIsEnabled_(addressIndexingIsEnabled)
+    , spentInputIndexingIsEnabled_(spentInputIndexingIsEnabled)
+{
+}
+
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case

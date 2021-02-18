@@ -16,15 +16,14 @@
 #include <BlockUndo.h>
 #include <ValidationState.h>
 #include <BlockDiskAccessor.h>
-#include <sync.h>
 #include <ui_interface.h>
-#include <init.h>
 #include <boost/thread.hpp>
 
 bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool* pfClean = NULL);
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW = true, bool fCheckMerkleRoot = true, bool fCheckSig = true);
+extern bool ShutdownRequested();
 
 CVerifyDB::CVerifyDB(
     CChain& activeChain,

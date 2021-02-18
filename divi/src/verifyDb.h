@@ -9,13 +9,23 @@
 #define BITCOIN_VERIFYDB_H
 
 class CCoinsView;
+class CChain;
+class CClientUIInterface;
+class CCoinsViewCache;
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB
 {
 public:
-    CVerifyDB();
+    CChain& activeChain_;
+    CClientUIInterface& clientInterface_;
+    const unsigned& coinsCacheSize_;
+public:
+    CVerifyDB(
+        CChain& activeChain,
+        CClientUIInterface& clientInterface,
+        const unsigned& coinsCacheSize);
     ~CVerifyDB();
-    bool VerifyDB(CCoinsView* coinsview, int nCheckLevel, int nCheckDepth);
+    bool VerifyDB(CCoinsView* coinsview, CCoinsViewCache* pcoinsTip, int nCheckLevel, int nCheckDepth);
 };
 
 #endif

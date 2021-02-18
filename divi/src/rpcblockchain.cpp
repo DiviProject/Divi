@@ -18,11 +18,13 @@
 #include "base58.h"
 #include <ValidationState.h>
 #include <verifyDb.h>
+#include <ui_interface.h>
 
 using namespace json_spirit;
 using namespace std;
 
 extern Settings& settings;
+extern unsigned int nCoinCacheSize;
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 
@@ -485,7 +487,7 @@ Value verifychain(const Array& params, bool fHelp)
     if (params.size() > 0)
         nCheckDepth = params[1].get_int();
 
-    return CVerifyDB().VerifyDB(pcoinsTip, nCheckLevel, nCheckDepth);
+    return CVerifyDB(chainActive,uiInterface,nCoinCacheSize).VerifyDB(pcoinsTip,pcoinsTip, nCheckLevel, nCheckDepth);
 }
 
 Value getblockchaininfo(const Array& params, bool fHelp)

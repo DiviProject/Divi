@@ -8,6 +8,7 @@ services:
 before_install:
   - sudo apt-get update -y
   - sudo apt install -y libsecret-1-0
+  - sudo apt-get install -y pass gpg2
   - wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.3/docker-credential-secretservice-v0.6.3-amd64.tar.gz
   - tar xvzf docker-credential-secretservice-v0.6.3-amd64.tar.gz
   - chmod +x docker-credential-secretservice

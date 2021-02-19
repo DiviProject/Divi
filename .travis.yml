@@ -21,8 +21,8 @@ script:
   - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - pushd divi
   - docker build -t divi -f Dockerfile .
-  - docker run --rm -v "`pwd`":/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "pushd src/GMock && autoreconf -fvi"
-  - docker run --rm -v "`pwd`":/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "./autogen.sh && ./configure --without-gui NO_QT=1"
-  - docker run --rm -v "`pwd`":/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "make check && pushd qa/rpc-tests/ && ./test_runner.py"
+  - docker run --rm -v `pwd`:/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "pushd src/GMock && autoreconf -fvi"
+  - docker run --rm -v `pwd`:/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "./autogen.sh && ./configure --without-gui NO_QT=1"
+  - docker run --rm -v `pwd`:/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "make check && pushd qa/rpc-tests/ && ./test_runner.py"
 after_failure:
   - docker run --rm -v "`pwd`":/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "cat src/test-suite.log"

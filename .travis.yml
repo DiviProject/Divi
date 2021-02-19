@@ -7,8 +7,6 @@ services:
 
 before_install:
   - sudo apt-get -y install pass
-
-before_script:
   - mkdir -p ~/credentials_bin/
   - cd ~/credentials_bin/
   - echo 'export PATH=$PATH:~/credentials_bin' >> ~/.bashrc
@@ -17,7 +15,8 @@ before_script:
   - chmod a+x docker-credential-pass
   - sudo cp docker-credential-pass /usr/local/bin
   - mkdir -p $HOME/.docker
-  - touch $HOME/.docker/config.json && echo $'{\n\t"credsStore": "pass"\n}' >> $HOME/.docker/config.json
+  - touch $HOME/.docker/config.json
+  - echo $'{\n\t\"credsStore\"&#58; \"pass\"\n}' >> $HOME/.docker/config.json
 
 script:
   # Compile from source

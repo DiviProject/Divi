@@ -175,6 +175,12 @@ AC_ARG_ENABLE([debug],
     [enable_debug=$enableval],
     [enable_debug=no])
 
+AC_ARG_ENABLE([debug-locks],
+  [AS_HELP_STRING([--enable-debug-locks],
+  [enable strict runtime checks for locks (default is no)])],
+  [enable_debug_locks=$enableval],
+  [enable_debug_locks=no])
+
 if test "x$enable_debug" = xyes; then
     if test "x$GCC" = xyes; then
         CFLAGS="-g3 -O0 -DDEBUG"
@@ -192,6 +198,10 @@ if test "x$CXXFLAGS_overridden" = "xno"; then
   CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter"
 fi
 CPPFLAGS="$CPPFLAGS -DBOOST_SPIRIT_THREADSAFE -DHAVE_BUILD_INFO -D__STDC_FORMAT_MACROS"
+
+if test "x$enable_debug_locks" = xyes; then
+  CPPFLAGS="$CPPFLAGS -DDEBUG_LOCKORDER"
+fi
 
 AC_ARG_WITH([utils],
   [AS_HELP_STRING([--with-utils],

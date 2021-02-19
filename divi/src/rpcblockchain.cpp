@@ -30,6 +30,8 @@ extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& en
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 extern bool ShutdownRequested();
 extern CBlockTreeDB* pblocktree;
+extern bool fAddressIndex;
+extern bool fSpentIndex;
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
@@ -491,7 +493,15 @@ Value verifychain(const Array& params, bool fHelp)
         nCheckDepth = params[1].get_int();
 
     LOCK(cs_main);
-    return CVerifyDB(pblocktree,chainActive,uiInterface,nCoinCacheSize,&ShutdownRequested).VerifyDB(pcoinsTip,pcoinsTip, nCheckLevel, nCheckDepth);
+    CVerifyDB dbVerifier(
+        fAddressIndex,
+        fSpentIndex,
+        pblocktree,
+        chainActive,
+        uiInterface,
+        nCoinCacheSize,
+        &ShutdownRequested);
+    return dbVerifier.VerifyDB(pcoinsTip,pcoinsTip, nCheckLevel, nCheckDepth);
 }
 
 Value getblockchaininfo(const Array& params, bool fHelp)

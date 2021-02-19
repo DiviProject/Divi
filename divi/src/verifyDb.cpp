@@ -23,16 +23,16 @@
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck, bool fAlreadyChecked = false);
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW = true, bool fCheckMerkleRoot = true, bool fCheckSig = true);
-extern bool fAddressIndex;
-extern bool fSpentIndex;
 
 CVerifyDB::CVerifyDB(
+    const bool& addressIndexingIsEnabled,
+    const bool& spentOutputIndexingIsEnabled,
     CBlockTreeDB* blockTree,
     CChain& activeChain,
     CClientUIInterface& clientInterface,
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
-    ): chainManager_(new ActiveChainManager(fAddressIndex,fSpentIndex,blockTree))
+    ): chainManager_(new ActiveChainManager(addressIndexingIsEnabled,spentOutputIndexingIsEnabled,blockTree))
     , activeChain_(activeChain)
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)

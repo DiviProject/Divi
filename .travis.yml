@@ -14,8 +14,7 @@ before_install:
   - chmod +x docker-credential-secretservice
   - sudo mv docker-credential-secretservice /usr/local/bin
   - mkdir -p $HOME/.docker
-  - touch $HOME/.docker/config.json
-  - echo $'${DOCKER_CONFIG}' >> $HOME/.docker/config.json
+  - mv ./docker.config.json $HOME/.docker/config.json
 
 script:
   # Compile from source

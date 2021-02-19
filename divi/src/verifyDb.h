@@ -27,6 +27,8 @@ private:
     ShutdownListener shutdownListener_;
 public:
     CVerifyDB(
+        const bool& addressIndexingIsEnabled,
+        const bool& spentOutputIndexingIsEnabled,
         CBlockTreeDB* blockTree,
         CChain& activeChain,
         CClientUIInterface& clientInterface,

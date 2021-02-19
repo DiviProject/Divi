@@ -113,6 +113,8 @@ enum BindFlags {
 std::string errorMsg;
 static const char* FEE_ESTIMATES_FILENAME = "fee_estimates.dat";
 CClientUIInterface uiInterface;
+extern bool fAddressIndex;
+extern bool fSpentIndex;
 
 bool static InitError(const std::string& str)
 {
@@ -1275,8 +1277,17 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         fVerifyingBlocks = true;
 
         {
+
             LOCK(cs_main);
-            if (!CVerifyDB(pblocktree,chainActive,uiInterface,nCoinCacheSize, &ShutdownRequested).VerifyDB(pcoinsdbview,pcoinsTip, 4, settings.GetArg("-checkblocks", 100)))
+            CVerifyDB dbVerifier(
+                fAddressIndex,
+                fSpentIndex,
+                pblocktree,
+                chainActive,
+                uiInterface,
+                nCoinCacheSize,
+                &ShutdownRequested);
+            if (!dbVerifier.VerifyDB(pcoinsdbview,pcoinsTip, 4, settings.GetArg("-checkblocks", 100)))
             {
                 strLoadError = translate("Corrupted block database detected");
                 fVerifyingBlocks = false;

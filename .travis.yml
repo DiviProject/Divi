@@ -8,6 +8,17 @@ services:
 before_install:
   - sudo apt-get -y install pass
 
+before_script:
+  - mkdir -p ~/credentials_bin/
+  - cd ~/credentials_bin/
+  - echo 'export PATH=$PATH:~/credentials_bin' >> ~/.bashrc
+  - wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.3/docker-credential-pass-v0.6.3-amd64.tar.gz
+  - tar xvzf docker-credential-pass-v0.6.3-amd64.tar.gz
+  - chmod a+x docker-credential-pass
+  - sudo cp docker-credential-pass /usr/local/bin
+  - mkdir -p $HOME/.docker
+  - touch $HOME/.docker/config.json && echo $'{\n\t"credsStore": "pass"\n}' >> $HOME/.docker/config.json
+
 script:
   # Compile from source
   - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -17,4 +28,4 @@ script:
   - docker run --rm -v "`pwd`":/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "./autogen.sh && ./configure --without-gui NO_QT=1"
   - docker run --rm -v "`pwd`":/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "make check && pushd qa/rpc-tests/ && ./test_runner.py"
 after_failure:
-  - cat ./src/test-suite.log
+  - docker run --rm -v "`pwd`":/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "cat src/test-suite.log"

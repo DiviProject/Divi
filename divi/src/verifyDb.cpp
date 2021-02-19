@@ -32,7 +32,7 @@ CVerifyDB::CVerifyDB(
     CClientUIInterface& clientInterface,
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
-    ): blockTree_(blockTree)
+    ): chainManager_(new ActiveChainManager(fAddressIndex,fSpentIndex,blockTree))
     , activeChain_(activeChain)
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)
@@ -43,6 +43,7 @@ CVerifyDB::CVerifyDB(
 
 CVerifyDB::~CVerifyDB()
 {
+    chainManager_.reset();
     clientInterface_.ShowProgress("", 100);
 }
 
@@ -90,7 +91,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, CCoinsViewCache* pcoinsTip, int 
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
         if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= coinsCacheSize_) {
             bool fClean = true;
-            if (!ActiveChainManager(fAddressIndex,fSpentIndex,blockTree_).DisconnectBlock(block, state, pindex, coins, &fClean))
+            if (!chainManager_->DisconnectBlock(block, state, pindex, coins, &fClean))
                 return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
             pindexState = pindex->pprev;
             if (!fClean) {

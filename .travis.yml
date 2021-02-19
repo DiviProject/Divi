@@ -6,14 +6,10 @@ services:
   - docker
 
 before_install:
-  - sudo apt-get -y install pass
-  - mkdir -p ~/credentials_bin/
-  - cd ~/credentials_bin/
-  - echo 'export PATH=$PATH:~/credentials_bin' >> ~/.bashrc
-  - wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.3/docker-credential-pass-v0.6.3-amd64.tar.gz
-  - tar xvzf docker-credential-pass-v0.6.3-amd64.tar.gz
-  - chmod a+x docker-credential-pass
-  - sudo cp docker-credential-pass /usr/local/bin
+  - wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.3/docker-credential-secretservice-v0.6.3-amd64.tar.gz
+  - tar xvzf docker-credential-secretservice-v0.6.3-amd64.tar.gz
+  - chmod +x docker-credential-secretservice
+  - sudo mv docker-credential-secretservice /usr/local/bin
   - mkdir -p $HOME/.docker
   - touch $HOME/.docker/config.json
   - echo $'${DOCKER_CONFIG}' >> $HOME/.docker/config.json

@@ -5,9 +5,12 @@ language: cpp
 services:
   - docker
 
+before_install:
+  - sudo apt-get -y install pass
+
 script:
   # Compile from source
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - cd divi
   - docker build -t divi -f DockerfileWithTests .
   - docker run divi

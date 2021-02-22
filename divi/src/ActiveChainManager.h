@@ -6,7 +6,7 @@ class CBlockIndex;
 class CCoinsViewCache;
 class CBlockTreeDB;
 struct IndexDatabaseUpdates;
-class CTransaction;
+class CTxIn;
 class uint256;
 class CTxInUndo;
 class ActiveChainManager
@@ -21,7 +21,7 @@ private:
         CValidationState& state) const;
     void CollectIndexUpdatesFromInputs(
         CCoinsViewCache& view,
-        const CTransaction& tx,
+        const CTxIn& input,
         const uint256& hash,
         CBlockIndex* pindex,
         const int transactionIndex,

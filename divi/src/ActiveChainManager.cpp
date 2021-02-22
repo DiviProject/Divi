@@ -49,8 +49,6 @@ static void CollectIndexUpdatesFromOutputs(
     const int transactionIndex,
     IndexDatabaseUpdates& indexDBUpdates)
 {
-    std::vector<std::pair<CAddressIndexKey, CAmount> >& addressIndex = indexDBUpdates.addressIndex;
-    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex = indexDBUpdates.addressUnspentIndex;
     for (unsigned int k = tx.vout.size(); k-- > 0;)
     {
         const CTxOut &out = tx.vout[k];
@@ -59,18 +57,18 @@ static void CollectIndexUpdatesFromOutputs(
         {
             std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
             // undo receiving activity
-            addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, k, false), out.nValue));
+            indexDBUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, k, false), out.nValue));
             // undo unspent index
-            addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), hash, k), CAddressUnspentValue()));
+            indexDBUpdates.addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), hash, k), CAddressUnspentValue()));
 
         }
         else if (out.scriptPubKey.IsPayToPublicKeyHash())
         {
             std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
             // undo receiving activity
-            addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, k, false), out.nValue));
+            indexDBUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, k, false), out.nValue));
             // undo unspent index
-            addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), hash, k), CAddressUnspentValue()));
+            indexDBUpdates.addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), hash, k), CAddressUnspentValue()));
 
         }
     }

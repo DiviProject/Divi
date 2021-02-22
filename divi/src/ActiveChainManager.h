@@ -24,9 +24,6 @@ private:
         CCoinsViewCache& view,
         const CTxIn& input,
         const TransactionLocationReference& txLocationReference,
-        const uint256& hash,
-        CBlockIndex* pindex,
-        const int transactionIndex,
         const int txOutputIndex,
         const CTxInUndo& undo,
         IndexDatabaseUpdates& indexDBUpdates) const;

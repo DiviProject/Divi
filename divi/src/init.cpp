@@ -38,6 +38,7 @@
 #include <MasternodeModule.h>
 #include <functional>
 #include <uiMessenger.h>
+#include <ActiveChainManager.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -1279,6 +1280,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         {
 
             LOCK(cs_main);
+            ActiveChainManager chainManager(fAddressIndex,fSpentIndex,pblocktree);
             CVerifyDB dbVerifier(
                 fAddressIndex,
                 fSpentIndex,

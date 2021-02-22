@@ -20,6 +20,7 @@
 #include <verifyDb.h>
 #include <ui_interface.h>
 #include <txdb.h>
+#include <ActiveChainManager.h>
 
 using namespace json_spirit;
 using namespace std;
@@ -493,6 +494,7 @@ Value verifychain(const Array& params, bool fHelp)
         nCheckDepth = params[1].get_int();
 
     LOCK(cs_main);
+    ActiveChainManager chainManager(fAddressIndex,fSpentIndex,pblocktree);
     CVerifyDB dbVerifier(
         fAddressIndex,
         fSpentIndex,

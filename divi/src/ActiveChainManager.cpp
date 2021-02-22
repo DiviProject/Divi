@@ -134,25 +134,25 @@ bool ActiveChainManager::DisconnectBlock(
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;
 
     // undo transactions in reverse order
-    for (int i = block.vtx.size() - 1; i >= 0; i--) {
-        const CTransaction& tx = block.vtx[i];
+    for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
+        const CTransaction& tx = block.vtx[transactionIndex];
 
         uint256 hash = tx.GetHash();
 
         if (addressIndexingIsEnabled_)
         {
-            CollectIndexUpdatesFromOutputs(tx,hash,pindex,i,addressIndex,addressUnspentIndex);
+            CollectIndexUpdatesFromOutputs(tx,hash,pindex,transactionIndex,addressIndex,addressUnspentIndex);
         }
         fClean = fClean && CheckTxOutputsAreAvailable(tx,hash,view,pindex);
 
         // restore inputs
         if (!tx.IsCoinBase() ) {
-            const CTxUndo& txundo = blockUndo.vtxundo[i - 1];
+            const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
             if (txundo.vprevout.size() != tx.vin.size())
                 return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());
-            for (unsigned int j = tx.vin.size(); j-- > 0;) {
-                const COutPoint& out = tx.vin[j].prevout;
-                const CTxInUndo& undo = txundo.vprevout[j];
+            for (unsigned int txOutputIndex = tx.vin.size(); txOutputIndex-- > 0;) {
+                const COutPoint& out = tx.vin[txOutputIndex].prevout;
+                const CTxInUndo& undo = txundo.vprevout[txOutputIndex];
                 CCoinsModifier coins = view.ModifyCoins(out.hash);
                 if (undo.nHeight != 0) {
                     // undo data contains height: this is the last output of the prevout tx being spent
@@ -172,7 +172,7 @@ bool ActiveChainManager::DisconnectBlock(
                     coins->vout.resize(out.n + 1);
                 coins->vout[out.n] = undo.txout;
 
-                const CTxIn input = tx.vin[j];
+                const CTxIn input = tx.vin[txOutputIndex];
 
                 if (spentInputIndexingIsEnabled_) {
                     // undo and delete the spent index
@@ -180,12 +180,12 @@ bool ActiveChainManager::DisconnectBlock(
                 }
 
                 if (addressIndexingIsEnabled_) {
-                    const CTxOut &prevout = view.GetOutputFor(tx.vin[j]);
+                    const CTxOut &prevout = view.GetOutputFor(tx.vin[txOutputIndex]);
                     if (prevout.scriptPubKey.IsPayToScriptHash()) {
                         std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
 
                         // undo spending activity
-                        addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, i, hash, j, true), prevout.nValue * -1));
+                        addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
 
                         // restore unspent index
                         addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
@@ -195,7 +195,7 @@ bool ActiveChainManager::DisconnectBlock(
                         std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23);
 
                         // undo spending activity
-                        addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, i, hash, j, true), prevout.nValue * -1));
+                        addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
 
                         // restore unspent index
                         addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));

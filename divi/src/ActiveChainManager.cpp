@@ -38,8 +38,6 @@ bool ActiveChainManager::DisconnectBlock(
     if (pfClean)
         *pfClean = false;
 
-    bool fClean = true;
-
     CBlockUndo blockUndo;
     CDiskBlockPos pos = pindex->GetUndoPos();
     if (pos.IsNull())
@@ -50,6 +48,7 @@ bool ActiveChainManager::DisconnectBlock(
     if (blockUndo.vtxundo.size() + 1 != block.vtx.size())
         return error("DisconnectBlock() : block and undo data inconsistent");
 
+    bool fClean = true;
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > addressUnspentIndex;
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;

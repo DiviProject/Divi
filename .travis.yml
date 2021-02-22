@@ -24,5 +24,4 @@ script:
   - cat $HOME/.docker/config.json
   - pushd divi
   - docker build -t divi -f Dockerfile .
-  - docker run --rm -v `pwd`:/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "./configure --without-gui NO_QT=1"
-  - docker run --rm -v `pwd`:/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "make check && pushd qa/rpc-tests/ && ./test_runner.py"
+  - docker run --rm -t divi /bin/bash -c "./configure --without-gui NO_QT=1 && make check"

@@ -71,6 +71,35 @@ static void CollectIndexUpdatesFromOutputs(
     }
 }
 
+static bool CheckTxOutputsAreAvailable(
+    const CTransaction& tx,
+    const uint256& hash,
+    CCoinsViewCache& view,
+    CBlockIndex* pindex)
+{
+    bool outputsAvailable = true;
+    // Check that all outputs are available and match the outputs in the block itself
+    // exactly. Note that transactions with only provably unspendable outputs won't
+    // have outputs available even in the block itself, so we handle that case
+    // specially with outsEmpty.
+    CCoins outsEmpty;
+    CCoinsModifier outs = view.ModifyCoins(hash);
+    outs->ClearUnspendable();
+
+    CCoins outsBlock(tx, pindex->nHeight);
+    // The CCoins serialization does not serialize negative numbers.
+    // No network rules currently depend on the version here, so an inconsistency is harmless
+    // but it must be corrected before txout nversion ever influences a network rule.
+    if (outsBlock.nVersion < 0)
+        outs->nVersion = outsBlock.nVersion;
+    if (*outs != outsBlock)
+        outputsAvailable = error("DisconnectBlock() : added transaction mismatch? database corrupted");
+
+    // remove outputs
+    outs->Clear();
+    return outputsAvailable;
+}
+
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case
@@ -114,28 +143,7 @@ bool ActiveChainManager::DisconnectBlock(
         {
             CollectIndexUpdatesFromOutputs(tx,hash,pindex,i,addressIndex,addressUnspentIndex);
         }
-
-        // Check that all outputs are available and match the outputs in the block itself
-        // exactly. Note that transactions with only provably unspendable outputs won't
-        // have outputs available even in the block itself, so we handle that case
-        // specially with outsEmpty.
-        {
-            CCoins outsEmpty;
-            CCoinsModifier outs = view.ModifyCoins(hash);
-            outs->ClearUnspendable();
-
-            CCoins outsBlock(tx, pindex->nHeight);
-            // The CCoins serialization does not serialize negative numbers.
-            // No network rules currently depend on the version here, so an inconsistency is harmless
-            // but it must be corrected before txout nversion ever influences a network rule.
-            if (outsBlock.nVersion < 0)
-                outs->nVersion = outsBlock.nVersion;
-            if (*outs != outsBlock)
-                fClean = fClean && error("DisconnectBlock() : added transaction mismatch? database corrupted");
-
-            // remove outputs
-            outs->Clear();
-        }
+        fClean = fClean && CheckTxOutputsAreAvailable(tx,hash,view,pindex);
 
         // restore inputs
         if (!tx.IsCoinBase() ) {

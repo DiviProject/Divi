@@ -71,6 +71,56 @@ static void CollectIndexUpdatesFromOutputs(
     }
 }
 
+static void CollectIndexUpdatesFromInputs(
+    const bool addressIndexingIsEnabled_,
+    const bool spentInputIndexingIsEnabled_,
+    CCoinsViewCache& view,
+    const CTransaction& tx,
+    const uint256& hash,
+    CBlockIndex* pindex,
+    const int transactionIndex,
+    const int txOutputIndex,
+    const CTxInUndo& undo,
+    std::vector<std::pair<CAddressIndexKey, CAmount> >& addressIndex,
+    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex,
+    std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> >& spentIndex)
+{
+    const CTxIn input = tx.vin[txOutputIndex];
+    if (spentInputIndexingIsEnabled_)
+    {
+        // undo and delete the spent index
+        spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue()));
+    }
+
+    if (addressIndexingIsEnabled_)
+    {
+        const CTxOut &prevout = view.GetOutputFor(tx.vin[txOutputIndex]);
+        if (prevout.scriptPubKey.IsPayToScriptHash()) {
+            std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
+
+            // undo spending activity
+            addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
+
+            // restore unspent index
+            addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
+
+
+        }
+        else if (prevout.scriptPubKey.IsPayToPublicKeyHash())
+        {
+            std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23);
+
+            // undo spending activity
+            addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
+
+            // restore unspent index
+            addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
+
+        }
+    }
+}
+
+
 static bool CheckTxOutputsAreAvailable(
     const CTransaction& tx,
     const uint256& hash,
@@ -180,44 +230,20 @@ bool ActiveChainManager::DisconnectBlock(
                     coins->vout.resize(out.n + 1);
 
                 coins->vout[out.n] = undo.txout;
-                const CTxIn input = tx.vin[txOutputIndex];
 
-                if (spentInputIndexingIsEnabled_)
-                {
-                    // undo and delete the spent index
-                    spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue()));
-                }
-
-                if (addressIndexingIsEnabled_)
-                {
-                    const CTxOut &prevout = view.GetOutputFor(tx.vin[txOutputIndex]);
-                    if (prevout.scriptPubKey.IsPayToScriptHash()) {
-                        std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
-
-                        // undo spending activity
-                        addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
-
-                        // restore unspent index
-                        addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
-
-
-                    }
-                    else if (prevout.scriptPubKey.IsPayToPublicKeyHash())
-                    {
-                        std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23);
-
-                        // undo spending activity
-                        addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
-
-                        // restore unspent index
-                        addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
-
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
+                CollectIndexUpdatesFromInputs(
+                    addressIndexingIsEnabled_,
+                    spentInputIndexingIsEnabled_,
+                    view,
+                    tx,
+                    hash,
+                    pindex,
+                    transactionIndex,
+                    txOutputIndex,
+                    undo,
+                    addressIndex,
+                    addressUnspentIndex,
+                    spentIndex);
             }
         }
     }

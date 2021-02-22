@@ -76,7 +76,7 @@ static void CollectIndexUpdatesFromOutputs(
 
 void ActiveChainManager::CollectIndexUpdatesFromInputs(
     CCoinsViewCache& view,
-    const CTransaction& tx,
+    const CTxIn& input,
     const uint256& hash,
     CBlockIndex* pindex,
     const int transactionIndex,
@@ -84,7 +84,6 @@ void ActiveChainManager::CollectIndexUpdatesFromInputs(
     const CTxInUndo& undo,
     IndexDatabaseUpdates& indexDBUpdates) const
 {
-    const CTxIn input = tx.vin[txInputIndex];
     if (spentInputIndexingIsEnabled_)
     {
         // undo and delete the spent index
@@ -93,7 +92,7 @@ void ActiveChainManager::CollectIndexUpdatesFromInputs(
 
     if (addressIndexingIsEnabled_)
     {
-        const CTxOut &prevout = view.GetOutputFor(tx.vin[txInputIndex]);
+        const CTxOut &prevout = view.GetOutputFor(input);
         if (prevout.scriptPubKey.IsPayToScriptHash()) {
             std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
             // undo spending activity
@@ -230,7 +229,7 @@ bool ActiveChainManager::DisconnectBlock(
                 UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
                 CollectIndexUpdatesFromInputs(
                     view,
-                    tx,
+                    tx.vin[txInputIndex],
                     hash,
                     pindex,
                     transactionIndex,

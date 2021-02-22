@@ -188,9 +188,8 @@ static void UpdateCoinsForRestoredInputs(
 
 static bool CheckTxOutputsAreAvailable(
     const CTransaction& tx,
-    const uint256& hash,
-    CCoinsViewCache& view,
-    CBlockIndex* pindex)
+    const TransactionLocationReference& txLocationReference,
+    CCoinsViewCache& view)
 {
     bool outputsAvailable = true;
     // Check that all outputs are available and match the outputs in the block itself
@@ -198,10 +197,10 @@ static bool CheckTxOutputsAreAvailable(
     // have outputs available even in the block itself, so we handle that case
     // specially with outsEmpty.
     CCoins outsEmpty;
-    CCoinsModifier outs = view.ModifyCoins(hash);
+    CCoinsModifier outs = view.ModifyCoins(txLocationReference.hash);
     outs->ClearUnspendable();
 
-    CCoins outsBlock(tx, pindex->nHeight);
+    CCoins outsBlock(tx, txLocationReference.blockHeight);
     // The CCoins serialization does not serialize negative numbers.
     // No network rules currently depend on the version here, so an inconsistency is harmless
     // but it must be corrected before txout nversion ever influences a network rule.
@@ -258,7 +257,7 @@ bool ActiveChainManager::DisconnectBlock(
         {
             CollectIndexUpdatesFromOutputs(tx.vout,txLocationReference,indexDBUpdates);
         }
-        fClean = fClean && CheckTxOutputsAreAvailable(tx,hash,view,pindex);
+        fClean = fClean && CheckTxOutputsAreAvailable(tx,txLocationReference,view);
 
         // restore inputs
         if (!tx.IsCoinBase() )

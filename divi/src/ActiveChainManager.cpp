@@ -27,9 +27,7 @@ ActiveChainManager::ActiveChainManager(
 {
 }
 
-static bool PruneIndexDBs(
-    CBlockTreeDB* blocktree_,
-    bool addressIndexingIsEnabled_,
+bool ActiveChainManager::UpdateIndexDBs(
     IndexDatabaseUpdates& indexDBUpdates,
     CValidationState& state)
 {
@@ -256,7 +254,7 @@ bool ActiveChainManager::DisconnectBlock(
         *pfClean = fClean;
         return true;
     } else {
-        if(!PruneIndexDBs(blocktree_,addressIndexingIsEnabled_,indexDBUpdates,state))
+        if(!UpdateIndexDBs(indexDBUpdates,state))
         {
             return false;
         }

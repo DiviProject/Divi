@@ -1282,9 +1282,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
             LOCK(cs_main);
             ActiveChainManager chainManager(fAddressIndex,fSpentIndex,pblocktree);
             CVerifyDB dbVerifier(
-                fAddressIndex,
-                fSpentIndex,
-                pblocktree,
+                chainManager,
                 chainActive,
                 uiInterface,
                 nCoinCacheSize,

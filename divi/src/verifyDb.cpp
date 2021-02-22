@@ -25,14 +25,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW = true, bool fCheckMerkleRoot = true, bool fCheckSig = true);
 
 CVerifyDB::CVerifyDB(
-    const bool& addressIndexingIsEnabled,
-    const bool& spentOutputIndexingIsEnabled,
-    CBlockTreeDB* blockTree,
+    const ActiveChainManager& chainManager,
     CChain& activeChain,
     CClientUIInterface& clientInterface,
     const unsigned& coinsCacheSize,
     ShutdownListener shutdownListener
-    ): chainManager_(new ActiveChainManager(addressIndexingIsEnabled,spentOutputIndexingIsEnabled,blockTree))
+    ): chainManager_(chainManager)
     , activeChain_(activeChain)
     , clientInterface_(clientInterface)
     , coinsCacheSize_(coinsCacheSize)
@@ -43,7 +41,6 @@ CVerifyDB::CVerifyDB(
 
 CVerifyDB::~CVerifyDB()
 {
-    chainManager_.reset();
     clientInterface_.ShowProgress("", 100);
 }
 
@@ -91,7 +88,7 @@ bool CVerifyDB::VerifyDB(CCoinsView* coinsview, CCoinsViewCache* pcoinsTip, int 
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
         if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= coinsCacheSize_) {
             bool fClean = true;
-            if (!chainManager_->DisconnectBlock(block, state, pindex, coins, &fClean))
+            if (!chainManager_.DisconnectBlock(block, state, pindex, coins, &fClean))
                 return error("VerifyDB() : *** irrecoverable inconsistency in block data at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
             pindexState = pindex->pprev;
             if (!fClean) {

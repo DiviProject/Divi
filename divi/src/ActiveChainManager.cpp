@@ -38,6 +38,39 @@ static bool PruneIndexDBs(
     return true;
 }
 
+static void CollectIndexUpdatesFromOutputs(
+    const CTransaction& tx,
+    const uint256& hash,
+    CBlockIndex* pindex,
+    const int transactionIndex,
+    std::vector<std::pair<CAddressIndexKey, CAmount> >& addressIndex,
+    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex)
+{
+    for (unsigned int k = tx.vout.size(); k-- > 0;)
+    {
+        const CTxOut &out = tx.vout[k];
+
+        if (out.scriptPubKey.IsPayToScriptHash())
+        {
+            std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
+            // undo receiving activity
+            addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, k, false), out.nValue));
+            // undo unspent index
+            addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), hash, k), CAddressUnspentValue()));
+
+        }
+        else if (out.scriptPubKey.IsPayToPublicKeyHash())
+        {
+            std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
+            // undo receiving activity
+            addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, k, false), out.nValue));
+            // undo unspent index
+            addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), hash, k), CAddressUnspentValue()));
+
+        }
+    }
+}
+
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case
@@ -77,35 +110,9 @@ bool ActiveChainManager::DisconnectBlock(
 
         uint256 hash = tx.GetHash();
 
-        if (addressIndexingIsEnabled_) {
-
-            for (unsigned int k = tx.vout.size(); k-- > 0;) {
-                const CTxOut &out = tx.vout[k];
-
-                if (out.scriptPubKey.IsPayToScriptHash()) {
-                    std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
-
-                    // undo receiving activity
-                    addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, i, hash, k, false), out.nValue));
-
-                    // undo unspent index
-                    addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), hash, k), CAddressUnspentValue()));
-
-                } else if (out.scriptPubKey.IsPayToPublicKeyHash()) {
-                    std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
-
-                    // undo receiving activity
-                    addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, i, hash, k, false), out.nValue));
-
-                    // undo unspent index
-                    addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), hash, k), CAddressUnspentValue()));
-
-                } else {
-                    continue;
-                }
-
-            }
-
+        if (addressIndexingIsEnabled_)
+        {
+            CollectIndexUpdatesFromOutputs(tx,hash,pindex,i,addressIndex,addressUnspentIndex);
         }
 
         // Check that all outputs are available and match the outputs in the block itself

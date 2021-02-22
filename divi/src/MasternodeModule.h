@@ -97,7 +97,7 @@ struct MasternodeCountData
     int ipv4;
     int ipv6;
     int onion;
-    MasternodeCountData(){}
+    MasternodeCountData();
 };
 MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip);
 bool LoadMasternodeDataFromDisk(UIMessenger& uiMessenger,std::string pathToDataDir);

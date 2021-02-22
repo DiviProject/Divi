@@ -121,6 +121,18 @@ void DumpMasternodeDataToDisk()
     }
 }
 
+MasternodeCountData::MasternodeCountData(
+    ): total(0)
+    , stable(0)
+    , enabledAndActive(0)
+    , enabled(0)
+    , queueCount(0)
+    , ipv4(0)
+    , ipv6(0)
+    , onion(0)
+{
+}
+
 MasternodeCountData GetMasternodeCounts(const CBlockIndex* chainTip)
 {
     MasternodeCountData data;

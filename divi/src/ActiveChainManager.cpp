@@ -30,15 +30,14 @@ ActiveChainManager::ActiveChainManager(
 static bool PruneIndexDBs(
     CBlockTreeDB* blocktree_,
     bool addressIndexingIsEnabled_,
-    std::vector<std::pair<CAddressIndexKey, CAmount> >& addressIndex,
-    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex,
+    IndexDatabaseUpdates& indexDBUpdates,
     CValidationState& state)
 {
     if (addressIndexingIsEnabled_) {
-        if (!blocktree_->EraseAddressIndex(addressIndex)) {
+        if (!blocktree_->EraseAddressIndex(indexDBUpdates.addressIndex)) {
             return state.Abort("Failed to delete address index");
         }
-        if (!blocktree_->UpdateAddressUnspentIndex(addressUnspentIndex)) {
+        if (!blocktree_->UpdateAddressUnspentIndex(indexDBUpdates.addressUnspentIndex)) {
             return state.Abort("Failed to write address unspent index");
         }
     }
@@ -50,9 +49,10 @@ static void CollectIndexUpdatesFromOutputs(
     const uint256& hash,
     CBlockIndex* pindex,
     const int transactionIndex,
-    std::vector<std::pair<CAddressIndexKey, CAmount> >& addressIndex,
-    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex)
+    IndexDatabaseUpdates& indexDBUpdates)
 {
+    std::vector<std::pair<CAddressIndexKey, CAmount> >& addressIndex = indexDBUpdates.addressIndex;
+    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex = indexDBUpdates.addressUnspentIndex;
     for (unsigned int k = tx.vout.size(); k-- > 0;)
     {
         const CTxOut &out = tx.vout[k];
@@ -88,15 +88,13 @@ static void CollectIndexUpdatesFromInputs(
     const int transactionIndex,
     const int txOutputIndex,
     const CTxInUndo& undo,
-    std::vector<std::pair<CAddressIndexKey, CAmount> >& addressIndex,
-    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex,
-    std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> >& spentIndex)
+    IndexDatabaseUpdates& indexDBUpdates)
 {
     const CTxIn input = tx.vin[txOutputIndex];
     if (spentInputIndexingIsEnabled_)
     {
         // undo and delete the spent index
-        spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue()));
+        indexDBUpdates.spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue()));
     }
 
     if (addressIndexingIsEnabled_)
@@ -104,25 +102,18 @@ static void CollectIndexUpdatesFromInputs(
         const CTxOut &prevout = view.GetOutputFor(tx.vin[txOutputIndex]);
         if (prevout.scriptPubKey.IsPayToScriptHash()) {
             std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
-
             // undo spending activity
-            addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
-
+            indexDBUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
             // restore unspent index
-            addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
-
-
+            indexDBUpdates.addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
         }
         else if (prevout.scriptPubKey.IsPayToPublicKeyHash())
         {
             std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23);
-
             // undo spending activity
-            addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
-
+            indexDBUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
             // restore unspent index
-            addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
-
+            indexDBUpdates.addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
         }
     }
 }
@@ -216,10 +207,7 @@ bool ActiveChainManager::DisconnectBlock(
         return error("DisconnectBlock() : block and undo data inconsistent");
 
     bool fClean = true;
-    IndexDatabaseUpdates indexUpdates;
-    std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
-    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > addressUnspentIndex;
-    std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;
+    IndexDatabaseUpdates indexDBUpdates;
 
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
@@ -229,7 +217,7 @@ bool ActiveChainManager::DisconnectBlock(
 
         if (addressIndexingIsEnabled_)
         {
-            CollectIndexUpdatesFromOutputs(tx,hash,pindex,transactionIndex,addressIndex,addressUnspentIndex);
+            CollectIndexUpdatesFromOutputs(tx,hash,pindex,transactionIndex,indexDBUpdates);
         }
         fClean = fClean && CheckTxOutputsAreAvailable(tx,hash,view,pindex);
 
@@ -256,9 +244,7 @@ bool ActiveChainManager::DisconnectBlock(
                     transactionIndex,
                     txOutputIndex,
                     undo,
-                    addressIndex,
-                    addressUnspentIndex,
-                    spentIndex);
+                    indexDBUpdates);
             }
         }
     }
@@ -270,7 +256,7 @@ bool ActiveChainManager::DisconnectBlock(
         *pfClean = fClean;
         return true;
     } else {
-        if(!PruneIndexDBs(blocktree_,addressIndexingIsEnabled_,addressIndex,addressUnspentIndex,state))
+        if(!PruneIndexDBs(blocktree_,addressIndexingIsEnabled_,indexDBUpdates,state))
         {
             return false;
         }

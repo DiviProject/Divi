@@ -20,6 +20,24 @@ ActiveChainManager::ActiveChainManager(
 {
 }
 
+static bool PruneIndexDBs(
+    CBlockTreeDB* blocktree_,
+    bool addressIndexingIsEnabled_,
+    std::vector<std::pair<CAddressIndexKey, CAmount> >& addressIndex,
+    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex,
+    CValidationState& state)
+{
+    if (addressIndexingIsEnabled_) {
+        if (!blocktree_->EraseAddressIndex(addressIndex)) {
+            return state.Abort("Failed to delete address index");
+        }
+        if (!blocktree_->UpdateAddressUnspentIndex(addressUnspentIndex)) {
+            return state.Abort("Failed to write address unspent index");
+        }
+    }
+    return true;
+}
+
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case
@@ -182,13 +200,9 @@ bool ActiveChainManager::DisconnectBlock(
         *pfClean = fClean;
         return true;
     } else {
-        if (addressIndexingIsEnabled_) {
-            if (!blocktree_->EraseAddressIndex(addressIndex)) {
-                return state.Abort("Failed to delete address index");
-            }
-            if (!blocktree_->UpdateAddressUnspentIndex(addressUnspentIndex)) {
-                return state.Abort("Failed to write address unspent index");
-            }
+        if(!PruneIndexDBs(blocktree_,addressIndexingIsEnabled_,addressIndex,addressUnspentIndex,state))
+        {
+            return false;
         }
 
         return fClean;

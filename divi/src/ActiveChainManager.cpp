@@ -120,6 +120,36 @@ static void CollectIndexUpdatesFromInputs(
     }
 }
 
+static void UpdateCoinsForRestoredInputs(
+    const COutPoint& out,
+    const CTxInUndo& undo,
+    CCoinsModifier& coins,
+    bool& fClean)
+{
+    if (undo.nHeight != 0)
+    {
+        // undo data contains height: this is the last output of the prevout tx being spent
+        if (!coins->IsPruned())
+            fClean = fClean && error("DisconnectBlock() : undo data overwriting existing transaction");
+        coins->Clear();
+        coins->fCoinBase = undo.fCoinBase;
+        coins->nHeight = undo.nHeight;
+        coins->nVersion = undo.nVersion;
+    }
+    else
+    {
+        if (coins->IsPruned())
+            fClean = fClean && error("DisconnectBlock() : undo data adding output to missing transaction");
+    }
+
+    if (coins->IsAvailable(out.n))
+        fClean = fClean && error("DisconnectBlock() : undo data overwriting existing output");
+
+    if (coins->vout.size() < out.n + 1)
+        coins->vout.resize(out.n + 1);
+
+    coins->vout[out.n] = undo.txout;
+}
 
 static bool CheckTxOutputsAreAvailable(
     const CTransaction& tx,
@@ -207,30 +237,7 @@ bool ActiveChainManager::DisconnectBlock(
                 const COutPoint& out = tx.vin[txOutputIndex].prevout;
                 const CTxInUndo& undo = txundo.vprevout[txOutputIndex];
                 CCoinsModifier coins = view.ModifyCoins(out.hash);
-                if (undo.nHeight != 0)
-                {
-                    // undo data contains height: this is the last output of the prevout tx being spent
-                    if (!coins->IsPruned())
-                        fClean = fClean && error("DisconnectBlock() : undo data overwriting existing transaction");
-                    coins->Clear();
-                    coins->fCoinBase = undo.fCoinBase;
-                    coins->nHeight = undo.nHeight;
-                    coins->nVersion = undo.nVersion;
-                }
-                else
-                {
-                    if (coins->IsPruned())
-                        fClean = fClean && error("DisconnectBlock() : undo data adding output to missing transaction");
-                }
-
-                if (coins->IsAvailable(out.n))
-                    fClean = fClean && error("DisconnectBlock() : undo data overwriting existing output");
-
-                if (coins->vout.size() < out.n + 1)
-                    coins->vout.resize(out.n + 1);
-
-                coins->vout[out.n] = undo.txout;
-
+                UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
                 CollectIndexUpdatesFromInputs(
                     addressIndexingIsEnabled_,
                     spentInputIndexingIsEnabled_,

@@ -43,15 +43,15 @@ bool ActiveChainManager::UpdateIndexDBs(
 }
 
 static void CollectIndexUpdatesFromOutputs(
-    const CTransaction& tx,
+    const std::vector<CTxOut>& txOutputs,
     const uint256& hash,
     CBlockIndex* pindex,
     const int transactionIndex,
     IndexDatabaseUpdates& indexDBUpdates)
 {
-    for (unsigned int k = tx.vout.size(); k-- > 0;)
+    for (unsigned int k = txOutputs.size(); k-- > 0;)
     {
-        const CTxOut &out = tx.vout[k];
+        const CTxOut &out = txOutputs[k];
 
         if (out.scriptPubKey.IsPayToScriptHash())
         {
@@ -211,7 +211,7 @@ bool ActiveChainManager::DisconnectBlock(
 
         if (addressIndexingIsEnabled_)
         {
-            CollectIndexUpdatesFromOutputs(tx,hash,pindex,transactionIndex,indexDBUpdates);
+            CollectIndexUpdatesFromOutputs(tx.vout,hash,pindex,transactionIndex,indexDBUpdates);
         }
         fClean = fClean && CheckTxOutputsAreAvailable(tx,hash,view,pindex);
 

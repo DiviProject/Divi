@@ -15,6 +15,13 @@ struct IndexDatabaseUpdates
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > addressUnspentIndex;
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;
+
+    IndexDatabaseUpdates(
+        ): addressIndex()
+        , addressUnspentIndex()
+        , spentIndex()
+    {
+    }
 };
 
 struct TransactionLocationReference

@@ -18,7 +18,7 @@ private:
 
     bool UpdateIndexDBs(
         IndexDatabaseUpdates& indexDBUpdates,
-        CValidationState& state);
+        CValidationState& state) const;
     void CollectIndexUpdatesFromInputs(
         CCoinsViewCache& view,
         const CTransaction& tx,

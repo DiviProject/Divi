@@ -29,7 +29,7 @@ ActiveChainManager::ActiveChainManager(
 
 bool ActiveChainManager::UpdateIndexDBs(
     IndexDatabaseUpdates& indexDBUpdates,
-    CValidationState& state)
+    CValidationState& state) const
 {
     if (addressIndexingIsEnabled_) {
         if (!blocktree_->EraseAddressIndex(indexDBUpdates.addressIndex)) {
@@ -82,11 +82,11 @@ void ActiveChainManager::CollectIndexUpdatesFromInputs(
     const uint256& hash,
     CBlockIndex* pindex,
     const int transactionIndex,
-    const int txOutputIndex,
+    const int txInputIndex,
     const CTxInUndo& undo,
     IndexDatabaseUpdates& indexDBUpdates) const
 {
-    const CTxIn input = tx.vin[txOutputIndex];
+    const CTxIn input = tx.vin[txInputIndex];
     if (spentInputIndexingIsEnabled_)
     {
         // undo and delete the spent index
@@ -95,11 +95,11 @@ void ActiveChainManager::CollectIndexUpdatesFromInputs(
 
     if (addressIndexingIsEnabled_)
     {
-        const CTxOut &prevout = view.GetOutputFor(tx.vin[txOutputIndex]);
+        const CTxOut &prevout = view.GetOutputFor(tx.vin[txInputIndex]);
         if (prevout.scriptPubKey.IsPayToScriptHash()) {
             std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
             // undo spending activity
-            indexDBUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
+            indexDBUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(2, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txInputIndex, true), prevout.nValue * -1));
             // restore unspent index
             indexDBUpdates.addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
         }
@@ -107,7 +107,7 @@ void ActiveChainManager::CollectIndexUpdatesFromInputs(
         {
             std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23);
             // undo spending activity
-            indexDBUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txOutputIndex, true), prevout.nValue * -1));
+            indexDBUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(1, uint160(hashBytes), pindex->nHeight, transactionIndex, hash, txInputIndex, true), prevout.nValue * -1));
             // restore unspent index
             indexDBUpdates.addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
         }
@@ -224,10 +224,10 @@ bool ActiveChainManager::DisconnectBlock(
             if (txundo.vprevout.size() != tx.vin.size())
                 return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());
 
-            for (unsigned int txOutputIndex = tx.vin.size(); txOutputIndex-- > 0;)
+            for (unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
             {
-                const COutPoint& out = tx.vin[txOutputIndex].prevout;
-                const CTxInUndo& undo = txundo.vprevout[txOutputIndex];
+                const COutPoint& out = tx.vin[txInputIndex].prevout;
+                const CTxInUndo& undo = txundo.vprevout[txInputIndex];
                 CCoinsModifier coins = view.ModifyCoins(out.hash);
                 UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
                 CollectIndexUpdatesFromInputs(
@@ -236,7 +236,7 @@ bool ActiveChainManager::DisconnectBlock(
                     hash,
                     pindex,
                     transactionIndex,
-                    txOutputIndex,
+                    txInputIndex,
                     undo,
                     indexDBUpdates);
             }

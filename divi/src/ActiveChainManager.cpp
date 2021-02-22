@@ -76,9 +76,7 @@ static void CollectIndexUpdatesFromOutputs(
     }
 }
 
-static void CollectIndexUpdatesFromInputs(
-    const bool addressIndexingIsEnabled_,
-    const bool spentInputIndexingIsEnabled_,
+void ActiveChainManager::CollectIndexUpdatesFromInputs(
     CCoinsViewCache& view,
     const CTransaction& tx,
     const uint256& hash,
@@ -86,7 +84,7 @@ static void CollectIndexUpdatesFromInputs(
     const int transactionIndex,
     const int txOutputIndex,
     const CTxInUndo& undo,
-    IndexDatabaseUpdates& indexDBUpdates)
+    IndexDatabaseUpdates& indexDBUpdates) const
 {
     const CTxIn input = tx.vin[txOutputIndex];
     if (spentInputIndexingIsEnabled_)
@@ -233,8 +231,6 @@ bool ActiveChainManager::DisconnectBlock(
                 CCoinsModifier coins = view.ModifyCoins(out.hash);
                 UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
                 CollectIndexUpdatesFromInputs(
-                    addressIndexingIsEnabled_,
-                    spentInputIndexingIsEnabled_,
                     view,
                     tx,
                     hash,

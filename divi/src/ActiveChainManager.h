@@ -6,6 +6,9 @@ class CBlockIndex;
 class CCoinsViewCache;
 class CBlockTreeDB;
 struct IndexDatabaseUpdates;
+class CTransaction;
+class uint256;
+class CTxInUndo;
 class ActiveChainManager
 {
 private:
@@ -16,6 +19,15 @@ private:
     bool UpdateIndexDBs(
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state);
+    void CollectIndexUpdatesFromInputs(
+        CCoinsViewCache& view,
+        const CTransaction& tx,
+        const uint256& hash,
+        CBlockIndex* pindex,
+        const int transactionIndex,
+        const int txOutputIndex,
+        const CTxInUndo& undo,
+        IndexDatabaseUpdates& indexDBUpdates) const;
 public:
     ActiveChainManager(const bool& addressIndexingIsEnabled, const bool& spentInputIndexingIsEnabled, CBlockTreeDB* blocktree);
     bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool* pfClean = nullptr) const;

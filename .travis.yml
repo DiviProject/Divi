@@ -5,23 +5,24 @@ language: cpp
 services:
   - docker
 
-before_install:
+before_script:
   - sudo apt-get update -y
   - sudo apt install -y libsecret-1-0
   - sudo apt-get install -y pass gnupg2
-  - wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.3/docker-credential-secretservice-v0.6.3-amd64.tar.gz
-  - tar xvzf docker-credential-secretservice-v0.6.3-amd64.tar.gz
-  - chmod +x docker-credential-secretservice
-  - sudo mv docker-credential-secretservice /usr/local/bin
+  - gpg2 --verbose --batch --generate-key docker.keydetails
+  - pass init dummy@github.com
+  - wget https://github.com/docker/docker-credential-helpers/releases/download/v0.6.3/docker-credential-pass-v0.6.3-amd64.tar.gz
+  - tar xvzf docker-credential-pass-v0.6.3-amd64.tar.gz
+  - chmod +x docker-credential-pass
+  - sudo mv docker-credential-pass /usr/local/bin
   - mkdir -p $HOME/.docker
-  - mv ./docker.config.json $HOME/.docker/config.json
+  - sudo mv docker.config.json $HOME/.docker/config.json
 
 script:
   # Compile from source
   - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - cat $HOME/.docker/config.json
   - pushd divi
   - docker build -t divi -f Dockerfile .
   - docker run --rm -v `pwd`:/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "./configure --without-gui NO_QT=1"
   - docker run --rm -v `pwd`:/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "make check && pushd qa/rpc-tests/ && ./test_runner.py"
-after_failure:
-  - docker run --rm -v "`pwd`":/home/ubuntu/build/ -w /home/ubuntu/build/ -t divi /bin/bash -c "cat src/test-suite.log"

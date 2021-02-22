@@ -1,0 +1,13 @@
+    %echo Generating a basic OpenPGP key
+    Key-Type: RSA
+    Key-Length: 2048
+    Subkey-Type: RSA
+    Subkey-Length: 2048
+    Name-Real: dummyUser
+    Name-Comment: ThisUserIsADummy
+    Name-Email: dummy@github.com
+    Expire-Date: 0
+    %no-ask-passphrase
+    %no-protection
+    %commit
+    %echo done

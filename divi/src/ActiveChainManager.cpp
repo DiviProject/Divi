@@ -146,15 +146,19 @@ bool ActiveChainManager::DisconnectBlock(
         fClean = fClean && CheckTxOutputsAreAvailable(tx,hash,view,pindex);
 
         // restore inputs
-        if (!tx.IsCoinBase() ) {
+        if (!tx.IsCoinBase() )
+        {
             const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
             if (txundo.vprevout.size() != tx.vin.size())
                 return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());
-            for (unsigned int txOutputIndex = tx.vin.size(); txOutputIndex-- > 0;) {
+
+            for (unsigned int txOutputIndex = tx.vin.size(); txOutputIndex-- > 0;)
+            {
                 const COutPoint& out = tx.vin[txOutputIndex].prevout;
                 const CTxInUndo& undo = txundo.vprevout[txOutputIndex];
                 CCoinsModifier coins = view.ModifyCoins(out.hash);
-                if (undo.nHeight != 0) {
+                if (undo.nHeight != 0)
+                {
                     // undo data contains height: this is the last output of the prevout tx being spent
                     if (!coins->IsPruned())
                         fClean = fClean && error("DisconnectBlock() : undo data overwriting existing transaction");
@@ -162,24 +166,30 @@ bool ActiveChainManager::DisconnectBlock(
                     coins->fCoinBase = undo.fCoinBase;
                     coins->nHeight = undo.nHeight;
                     coins->nVersion = undo.nVersion;
-                } else {
+                }
+                else
+                {
                     if (coins->IsPruned())
                         fClean = fClean && error("DisconnectBlock() : undo data adding output to missing transaction");
                 }
+
                 if (coins->IsAvailable(out.n))
                     fClean = fClean && error("DisconnectBlock() : undo data overwriting existing output");
+
                 if (coins->vout.size() < out.n + 1)
                     coins->vout.resize(out.n + 1);
-                coins->vout[out.n] = undo.txout;
 
+                coins->vout[out.n] = undo.txout;
                 const CTxIn input = tx.vin[txOutputIndex];
 
-                if (spentInputIndexingIsEnabled_) {
+                if (spentInputIndexingIsEnabled_)
+                {
                     // undo and delete the spent index
                     spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue()));
                 }
 
-                if (addressIndexingIsEnabled_) {
+                if (addressIndexingIsEnabled_)
+                {
                     const CTxOut &prevout = view.GetOutputFor(tx.vin[txOutputIndex]);
                     if (prevout.scriptPubKey.IsPayToScriptHash()) {
                         std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
@@ -191,7 +201,9 @@ bool ActiveChainManager::DisconnectBlock(
                         addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
 
 
-                    } else if (prevout.scriptPubKey.IsPayToPublicKeyHash()) {
+                    }
+                    else if (prevout.scriptPubKey.IsPayToPublicKeyHash())
+                    {
                         std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23);
 
                         // undo spending activity
@@ -200,7 +212,9 @@ bool ActiveChainManager::DisconnectBlock(
                         // restore unspent index
                         addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), input.prevout.hash, input.prevout.n), CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
 
-                    } else {
+                    }
+                    else
+                    {
                         continue;
                     }
                 }

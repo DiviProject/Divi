@@ -10,6 +10,13 @@
 #include <txdb.h>
 #include <spentindex.h>
 
+struct IndexDatabaseUpdates
+{
+    std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
+    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > addressUnspentIndex;
+    std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;
+};
+
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
     const bool& spentInputIndexingIsEnabled,
@@ -209,6 +216,7 @@ bool ActiveChainManager::DisconnectBlock(
         return error("DisconnectBlock() : block and undo data inconsistent");
 
     bool fClean = true;
+    IndexDatabaseUpdates indexUpdates;
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > addressUnspentIndex;
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;

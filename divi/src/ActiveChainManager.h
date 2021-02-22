@@ -5,6 +5,7 @@ class CValidationState;
 class CBlockIndex;
 class CCoinsViewCache;
 class CBlockTreeDB;
+struct IndexDatabaseUpdates;
 class ActiveChainManager
 {
 private:

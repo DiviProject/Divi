@@ -9,6 +9,7 @@ struct IndexDatabaseUpdates;
 class CTxIn;
 class uint256;
 class CTxInUndo;
+struct TransactionLocationReference;
 class ActiveChainManager
 {
 private:
@@ -22,6 +23,7 @@ private:
     void CollectIndexUpdatesFromInputs(
         CCoinsViewCache& view,
         const CTxIn& input,
+        const TransactionLocationReference& txLocationReference,
         const uint256& hash,
         CBlockIndex* pindex,
         const int transactionIndex,

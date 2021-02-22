@@ -17,6 +17,23 @@ struct IndexDatabaseUpdates
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;
 };
 
+struct TransactionLocationReference
+{
+    uint256 hash;
+    unsigned blockHeight;
+    int transactionIndex;
+
+    TransactionLocationReference(
+        uint256 hashValue,
+        unsigned blockheightValue,
+        int transactionIndexValue
+        ): hash(hashValue)
+        , blockHeight(blockheightValue)
+        , transactionIndex(transactionIndexValue)
+    {
+    }
+};
+
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
     const bool& spentInputIndexingIsEnabled,
@@ -44,6 +61,7 @@ bool ActiveChainManager::UpdateIndexDBs(
 
 static void CollectIndexUpdatesFromOutputs(
     const std::vector<CTxOut>& txOutputs,
+    const TransactionLocationReference& txLocationReference,
     const uint256& hash,
     CBlockIndex* pindex,
     const int transactionIndex,
@@ -77,6 +95,7 @@ static void CollectIndexUpdatesFromOutputs(
 void ActiveChainManager::CollectIndexUpdatesFromInputs(
     CCoinsViewCache& view,
     const CTxIn& input,
+    const TransactionLocationReference& txLocationReference,
     const uint256& hash,
     CBlockIndex* pindex,
     const int transactionIndex,
@@ -206,11 +225,13 @@ bool ActiveChainManager::DisconnectBlock(
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
 
-        uint256 hash = tx.GetHash();
+        const uint256 hash = tx.GetHash();
+        TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
+
 
         if (addressIndexingIsEnabled_)
         {
-            CollectIndexUpdatesFromOutputs(tx.vout,hash,pindex,transactionIndex,indexDBUpdates);
+            CollectIndexUpdatesFromOutputs(tx.vout,txLocationReference,hash,pindex,transactionIndex,indexDBUpdates);
         }
         fClean = fClean && CheckTxOutputsAreAvailable(tx,hash,view,pindex);
 
@@ -230,6 +251,7 @@ bool ActiveChainManager::DisconnectBlock(
                 CollectIndexUpdatesFromInputs(
                     view,
                     tx.vin[txInputIndex],
+                    txLocationReference,
                     hash,
                     pindex,
                     transactionIndex,

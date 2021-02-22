@@ -21,7 +21,6 @@ before_script:
 script:
   # Compile from source
   - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - cat $HOME/.docker/config.json
   - pushd divi
   - docker build -t divi -f Dockerfile .
   - docker run --rm -t divi /bin/bash -c "./configure --without-gui NO_QT=1 && make check"

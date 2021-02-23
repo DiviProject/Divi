@@ -214,6 +214,27 @@ static bool CheckTxOutputsAreAvailable(
     return outputsAvailable;
 }
 
+static bool RestoreInputs(
+    CBlockUndo& blockUndo,
+    const CTransaction& tx,
+    const int transactionIndex,
+    CCoinsViewCache& view,
+    bool& fClean)
+{
+    const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
+    if (txundo.vprevout.size() != tx.vin.size())
+        return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());
+
+    for (unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
+    {
+        const COutPoint& out = tx.vin[txInputIndex].prevout;
+        const CTxInUndo& undo = txundo.vprevout[txInputIndex];
+        CCoinsModifier coins = view.ModifyCoins(out.hash);
+        UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
+    }
+    return true;
+}
+
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case
@@ -253,20 +274,9 @@ bool ActiveChainManager::DisconnectBlock(
         TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
         fClean = fClean && CheckTxOutputsAreAvailable(tx,txLocationReference,view);
 
-        // restore inputs
-        if (!tx.IsCoinBase() )
+        if (!tx.IsCoinBase() && !RestoreInputs(blockUndo,tx,transactionIndex,view,fClean))
         {
-            const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
-            if (txundo.vprevout.size() != tx.vin.size())
-                return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());
-
-            for (unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
-            {
-                const COutPoint& out = tx.vin[txInputIndex].prevout;
-                const CTxInUndo& undo = txundo.vprevout[txInputIndex];
-                CCoinsModifier coins = view.ModifyCoins(out.hash);
-                UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
-            }
+            return false;
         }
     }
     // undo transactions in reverse order

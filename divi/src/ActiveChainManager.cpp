@@ -116,12 +116,6 @@ void ActiveChainManager::CollectIndexUpdatesFromInputs(
     const CTxInUndo& undo,
     IndexDatabaseUpdates& indexDBUpdates) const
 {
-    if (spentInputIndexingIsEnabled_)
-    {
-        // undo and delete the spent index
-        indexDBUpdates.spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue()));
-    }
-
     if (addressIndexingIsEnabled_)
     {
         const CTxOut &prevout = view.GetOutputFor(input);

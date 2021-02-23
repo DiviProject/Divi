@@ -38,6 +38,11 @@ private:
         CCoinsViewCache& view) const;
 public:
     ActiveChainManager(const bool& addressIndexingIsEnabled, CBlockTreeDB* blocktree);
-    bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool* pfClean = nullptr) const;
+    bool DisconnectBlock(
+        CBlock& block,
+        CValidationState& state,
+        CBlockIndex* pindex,
+        CCoinsViewCache& coins,
+        bool* pfClean = nullptr) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

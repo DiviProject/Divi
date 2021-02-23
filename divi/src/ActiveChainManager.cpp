@@ -264,8 +264,6 @@ bool ActiveChainManager::DisconnectBlock(
         return error("DisconnectBlock() : block and undo data inconsistent");
 
     bool fClean = true;
-    IndexDatabaseUpdates indexDBUpdates;
-
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
@@ -282,6 +280,7 @@ bool ActiveChainManager::DisconnectBlock(
     // undo transactions in reverse order
     if(!pfClean)
     {
+        IndexDatabaseUpdates indexDBUpdates;
         for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
             const CTransaction& tx = block.vtx[transactionIndex];
 

@@ -71,6 +71,7 @@ void ActiveChainManager::CollectIndexUpdatesFromOutputs(
     const TransactionLocationReference& txLocationReference,
     IndexDatabaseUpdates& indexDBUpdates) const
 {
+    if (!addressIndexingIsEnabled_) return;
     const std::vector<CTxOut>& txOutputs = tx.vout;
     for (unsigned int k = txOutputs.size(); k-- > 0;)
     {
@@ -246,12 +247,7 @@ bool ActiveChainManager::DisconnectBlock(
 
         const uint256 hash = tx.GetHash();
         TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
-
-
-        if (addressIndexingIsEnabled_)
-        {
-            CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
-        }
+        CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
         fClean = fClean && CheckTxOutputsAreAvailable(tx,txLocationReference,view);
 
         // restore inputs

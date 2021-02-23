@@ -51,7 +51,7 @@ ActiveChainManager::ActiveChainManager(
 {
 }
 
-bool ActiveChainManager::UpdateIndexDBs(
+bool ActiveChainManager::ApplyUpdateIndexDBs(
     IndexDatabaseUpdates& indexDBUpdates,
     CValidationState& state) const
 {
@@ -297,7 +297,7 @@ bool ActiveChainManager::DisconnectBlock(
         }
 
         view.SetBestBlock(pindex->pprev->GetBlockHash());
-        if(!UpdateIndexDBs(indexDBUpdates,state))
+        if(!ApplyUpdateIndexDBs(indexDBUpdates,state))
         {
             return false;
         }

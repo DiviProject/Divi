@@ -66,11 +66,12 @@ bool ActiveChainManager::UpdateIndexDBs(
     return true;
 }
 
-static void CollectIndexUpdatesFromOutputs(
-    const std::vector<CTxOut>& txOutputs,
+void ActiveChainManager::CollectIndexUpdatesFromOutputs(
+    const CTransaction& tx,
     const TransactionLocationReference& txLocationReference,
-    IndexDatabaseUpdates& indexDBUpdates)
+    IndexDatabaseUpdates& indexDBUpdates) const
 {
+    const std::vector<CTxOut>& txOutputs = tx.vout;
     for (unsigned int k = txOutputs.size(); k-- > 0;)
     {
         const CTxOut &out = txOutputs[k];
@@ -249,7 +250,7 @@ bool ActiveChainManager::DisconnectBlock(
 
         if (addressIndexingIsEnabled_)
         {
-            CollectIndexUpdatesFromOutputs(tx.vout,txLocationReference,indexDBUpdates);
+            CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
         }
         fClean = fClean && CheckTxOutputsAreAvailable(tx,txLocationReference,view);
 

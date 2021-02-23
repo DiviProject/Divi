@@ -27,6 +27,10 @@ private:
         const int txOutputIndex,
         const CTxInUndo& undo,
         IndexDatabaseUpdates& indexDBUpdates) const;
+    void CollectIndexUpdatesFromOutputs(
+        const CTransaction& tx,
+        const TransactionLocationReference& txLocationReference,
+        IndexDatabaseUpdates& indexDBUpdates) const;
 public:
     ActiveChainManager(const bool& addressIndexingIsEnabled, const bool& spentInputIndexingIsEnabled, CBlockTreeDB* blocktree);
     bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool* pfClean = nullptr) const;

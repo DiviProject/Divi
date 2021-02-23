@@ -235,6 +235,37 @@ static bool RestoreInputs(
     return true;
 }
 
+bool ActiveChainManager::UpdateDBIndices(
+    CBlock& block,
+    CBlockUndo& blockUndo,
+    CValidationState& state,
+    CBlockIndex* pindex,
+    CCoinsViewCache& view) const
+{
+    IndexDatabaseUpdates indexDBUpdates;
+    for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
+        const CTransaction& tx = block.vtx[transactionIndex];
+
+        const uint256 hash = tx.GetHash();
+        TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
+        CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
+        // restore inputs
+        if (!tx.IsCoinBase() )
+        {
+            const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
+            CollectIndexUpdatesFromInputs(view, tx, txLocationReference, txundo, indexDBUpdates);
+        }
+    }
+
+    view.SetBestBlock(pindex->pprev->GetBlockHash());
+    if(!ApplyUpdateIndexDBs(indexDBUpdates,state))
+    {
+        return false;
+    }
+    return true;
+}
+
+
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case
@@ -280,23 +311,7 @@ bool ActiveChainManager::DisconnectBlock(
     // undo transactions in reverse order
     if(!pfClean)
     {
-        IndexDatabaseUpdates indexDBUpdates;
-        for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
-            const CTransaction& tx = block.vtx[transactionIndex];
-
-            const uint256 hash = tx.GetHash();
-            TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
-            CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
-            // restore inputs
-            if (!tx.IsCoinBase() )
-            {
-                const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
-                CollectIndexUpdatesFromInputs(view, tx, txLocationReference, txundo, indexDBUpdates);
-            }
-        }
-
-        view.SetBestBlock(pindex->pprev->GetBlockHash());
-        if(!ApplyUpdateIndexDBs(indexDBUpdates,state))
+        if(!UpdateDBIndices(block,blockUndo,state,pindex,view))
         {
             return false;
         }

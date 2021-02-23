@@ -251,7 +251,6 @@ bool ActiveChainManager::DisconnectBlock(
 
         const uint256 hash = tx.GetHash();
         TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
-        CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
         fClean = fClean && CheckTxOutputsAreAvailable(tx,txLocationReference,view);
 
         // restore inputs
@@ -268,6 +267,19 @@ bool ActiveChainManager::DisconnectBlock(
                 CCoinsModifier coins = view.ModifyCoins(out.hash);
                 UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
             }
+        }
+    }
+    // undo transactions in reverse order
+    for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
+        const CTransaction& tx = block.vtx[transactionIndex];
+
+        const uint256 hash = tx.GetHash();
+        TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
+        CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
+        // restore inputs
+        if (!tx.IsCoinBase() )
+        {
+            const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
             CollectIndexUpdatesFromInputs(view, tx, txLocationReference, txundo, indexDBUpdates);
         }
     }

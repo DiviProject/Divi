@@ -294,13 +294,12 @@ bool ActiveChainManager::DisconnectBlock(
         }
     }
 
-    // move best block pointer to prevout block
-    view.SetBestBlock(pindex->pprev->GetBlockHash());
-
     if (pfClean) {
+        view.SetBestBlock(pindex->pprev->GetBlockHash());
         *pfClean = fClean;
         return true;
     } else {
+        view.SetBestBlock(pindex->pprev->GetBlockHash());
         if(!UpdateIndexDBs(indexDBUpdates,state))
         {
             return false;

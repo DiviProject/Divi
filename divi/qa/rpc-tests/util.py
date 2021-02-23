@@ -124,7 +124,11 @@ def start_node(i, dirname, extra_args=None, mn_config_lines=[], rpchost=None):
     datadir = os.path.join(dirname, "node"+str(i))
     with open(os.path.join(datadir, "regtest", "masternode.conf"), "w") as f:
       f.write("\n".join(mn_config_lines))
-    args = [ os.getenv("BITCOIND", "divid"), "-datadir="+datadir, "-keypool=1", "-discover=0", "-rest" ]
+    binary = []
+    if os.getenv("RUNNER") is not None:
+      binary.append(os.getenv("RUNNER"))
+    binary.append(os.getenv("BITCOIND", "divid"))
+    args = binary + ["-datadir="+datadir, "-keypool=1", "-discover=0", "-rest"]
     if extra_args is not None: args.extend(extra_args)
     bitcoind_processes[i] = subprocess.Popen(args)
     devnull = open("/dev/null", "w+")

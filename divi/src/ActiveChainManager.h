@@ -6,9 +6,9 @@ class CBlockIndex;
 class CCoinsViewCache;
 class CBlockTreeDB;
 struct IndexDatabaseUpdates;
-class CTxIn;
 class uint256;
-class CTxInUndo;
+class CTxUndo;
+class CTransaction;
 struct TransactionLocationReference;
 class ActiveChainManager
 {
@@ -22,10 +22,9 @@ private:
         CValidationState& state) const;
     void CollectIndexUpdatesFromInputs(
         CCoinsViewCache& view,
-        const CTxIn& input,
+        const CTransaction& tx,
         const TransactionLocationReference& txLocationReference,
-        const int txOutputIndex,
-        const CTxInUndo& undo,
+        const CTxUndo& txundo,
         IndexDatabaseUpdates& indexDBUpdates) const;
     void CollectIndexUpdatesFromOutputs(
         const CTransaction& tx,

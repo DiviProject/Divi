@@ -17,7 +17,7 @@ private:
     const bool& spentInputIndexingIsEnabled_;
     CBlockTreeDB* blocktree_;
 
-    bool UpdateIndexDBs(
+    bool ApplyUpdateIndexDBs(
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
     void CollectIndexUpdatesFromInputs(

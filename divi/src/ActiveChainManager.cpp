@@ -242,6 +242,12 @@ bool ActiveChainManager::UpdateDBIndices(
     CBlockIndex* pindex,
     CCoinsViewCache& view) const
 {
+    if(!addressIndexingIsEnabled_)
+    {
+        view.SetBestBlock(pindex->pprev->GetBlockHash());
+        return true;
+    }
+
     IndexDatabaseUpdates indexDBUpdates;
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];

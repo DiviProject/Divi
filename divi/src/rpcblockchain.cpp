@@ -32,7 +32,6 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeH
 extern bool ShutdownRequested();
 extern CBlockTreeDB* pblocktree;
 extern bool fAddressIndex;
-extern bool fSpentIndex;
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {
@@ -494,7 +493,7 @@ Value verifychain(const Array& params, bool fHelp)
         nCheckDepth = params[1].get_int();
 
     LOCK(cs_main);
-    ActiveChainManager chainManager(fAddressIndex,fSpentIndex,pblocktree);
+    ActiveChainManager chainManager(fAddressIndex,pblocktree);
     CVerifyDB dbVerifier(
         chainManager,
         chainActive,

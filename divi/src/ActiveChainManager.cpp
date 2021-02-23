@@ -43,10 +43,8 @@ struct TransactionLocationReference
 
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
-    const bool& spentInputIndexingIsEnabled,
     CBlockTreeDB* blocktree
     ): addressIndexingIsEnabled_(addressIndexingIsEnabled)
-    , spentInputIndexingIsEnabled_(spentInputIndexingIsEnabled)
     , blocktree_(blocktree)
 {
 }

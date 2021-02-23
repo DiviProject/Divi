@@ -263,6 +263,11 @@ bool ActiveChainManager::DisconnectBlock(
                 const CTxInUndo& undo = txundo.vprevout[txInputIndex];
                 CCoinsModifier coins = view.ModifyCoins(out.hash);
                 UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
+            }
+            for (unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
+            {
+                const COutPoint& out = tx.vin[txInputIndex].prevout;
+                const CTxInUndo& undo = txundo.vprevout[txInputIndex];
                 CollectIndexUpdatesFromInputs(
                     view,
                     tx.vin[txInputIndex],

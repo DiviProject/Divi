@@ -8,6 +8,7 @@ class CBlockTreeDB;
 struct IndexDatabaseUpdates;
 class uint256;
 class CTxUndo;
+class CBlockUndo;
 class CTransaction;
 struct TransactionLocationReference;
 class ActiveChainManager
@@ -30,6 +31,12 @@ private:
         const CTransaction& tx,
         const TransactionLocationReference& txLocationReference,
         IndexDatabaseUpdates& indexDBUpdates) const;
+    bool UpdateDBIndices(
+        CBlock& block,
+        CBlockUndo& blockUndo,
+        CValidationState& state,
+        CBlockIndex* pindex,
+        CCoinsViewCache& view) const;
 public:
     ActiveChainManager(const bool& addressIndexingIsEnabled, const bool& spentInputIndexingIsEnabled, CBlockTreeDB* blocktree);
     bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool* pfClean = nullptr) const;

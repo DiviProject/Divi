@@ -280,31 +280,33 @@ bool ActiveChainManager::DisconnectBlock(
         }
     }
     // undo transactions in reverse order
-    for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
-        const CTransaction& tx = block.vtx[transactionIndex];
+    if(!pfClean)
+    {
+        for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
+            const CTransaction& tx = block.vtx[transactionIndex];
 
-        const uint256 hash = tx.GetHash();
-        TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
-        CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
-        // restore inputs
-        if (!tx.IsCoinBase() )
-        {
-            const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
-            CollectIndexUpdatesFromInputs(view, tx, txLocationReference, txundo, indexDBUpdates);
+            const uint256 hash = tx.GetHash();
+            TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
+            CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
+            // restore inputs
+            if (!tx.IsCoinBase() )
+            {
+                const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
+                CollectIndexUpdatesFromInputs(view, tx, txLocationReference, txundo, indexDBUpdates);
+            }
         }
-    }
 
-    if (pfClean) {
-        view.SetBestBlock(pindex->pprev->GetBlockHash());
-        *pfClean = fClean;
-        return true;
-    } else {
         view.SetBestBlock(pindex->pprev->GetBlockHash());
         if(!UpdateIndexDBs(indexDBUpdates,state))
         {
             return false;
         }
-
         return fClean;
+    }
+    else if (pfClean)
+    {
+        view.SetBestBlock(pindex->pprev->GetBlockHash());
+        *pfClean = fClean;
+        return true;
     }
 }

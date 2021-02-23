@@ -115,7 +115,6 @@ std::string errorMsg;
 static const char* FEE_ESTIMATES_FILENAME = "fee_estimates.dat";
 CClientUIInterface uiInterface;
 extern bool fAddressIndex;
-extern bool fSpentIndex;
 
 bool static InitError(const std::string& str)
 {
@@ -1280,7 +1279,7 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         {
 
             LOCK(cs_main);
-            ActiveChainManager chainManager(fAddressIndex,fSpentIndex,pblocktree);
+            ActiveChainManager chainManager(fAddressIndex,pblocktree);
             CVerifyDB dbVerifier(
                 chainManager,
                 chainActive,

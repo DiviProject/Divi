@@ -270,6 +270,17 @@ bool ActiveChainManager::UpdateDBIndices(
 }
 
 
+bool ActiveChainManager::RecoverBlockUndoData(const CBlockIndex* pindex, CBlockUndo& blockUndo) const
+{
+    CDiskBlockPos pos = pindex->GetUndoPos();
+    if (pos.IsNull())
+        return error("DisconnectBlock() : no undo data available");
+    if (!blockUndo.ReadFromDisk(pos, pindex->pprev->GetBlockHash()))
+        return error("DisconnectBlock() : failure reading undo data");
+
+    return true;
+}
+
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case
@@ -289,14 +300,14 @@ bool ActiveChainManager::DisconnectBlock(
         *pfClean = false;
 
     CBlockUndo blockUndo;
-    CDiskBlockPos pos = pindex->GetUndoPos();
-    if (pos.IsNull())
-        return error("DisconnectBlock() : no undo data available");
-    if (!blockUndo.ReadFromDisk(pos, pindex->pprev->GetBlockHash()))
-        return error("DisconnectBlock() : failure reading undo data");
-
-    if (blockUndo.vtxundo.size() + 1 != block.vtx.size())
+    if(!RecoverBlockUndoData(pindex,blockUndo))
+    {
+        return false;
+    }
+    else if(blockUndo.vtxundo.size() + 1 != block.vtx.size())
+    {
         return error("DisconnectBlock() : block and undo data inconsistent");
+    }
 
     bool fClean = true;
     // undo transactions in reverse order

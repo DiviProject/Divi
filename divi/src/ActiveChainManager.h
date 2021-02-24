@@ -36,6 +36,9 @@ private:
         CValidationState& state,
         CBlockIndex* pindex,
         CCoinsViewCache& view) const;
+    bool RecoverBlockUndoData(
+        const CBlockIndex* pindex,
+        CBlockUndo& blockUndo) const;
 public:
     ActiveChainManager(const bool& addressIndexingIsEnabled, CBlockTreeDB* blocktree);
     bool DisconnectBlock(

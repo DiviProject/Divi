@@ -3,7 +3,6 @@
 #include <net.h>
 #include <uint256.h>
 #include <set>
-void CleanupOrphanTransactionCaches();
 const std::set<uint256>& GetOrphanSpendingTransactionIds(const uint256& txHash);
 const CTransaction& GetOrphanTransaction(const uint256& txHash, NodeId& peer);
 bool OrphanTransactionIsKnown(const uint256& hash);

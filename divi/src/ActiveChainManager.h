@@ -1,5 +1,8 @@
 #ifndef ACTIVE_CHAIN_MANAGER_H
 #define ACTIVE_CHAIN_MANAGER_H
+#include <primitives/block.h>
+#include <utility>
+
 class CBlock;
 class CValidationState;
 class CBlockIndex;
@@ -47,5 +50,9 @@ public:
         CBlockIndex* pindex,
         CCoinsViewCache& coins,
         bool* pfClean = nullptr) const;
+    std::pair<CBlock,bool> DisconnectBlock(
+            CValidationState& state,
+            CBlockIndex* pindex,
+            CCoinsViewCache& coins) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

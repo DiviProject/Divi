@@ -9,6 +9,8 @@
 #include <addressindex.h>
 #include <txdb.h>
 #include <spentindex.h>
+#include <BlockDiskAccessor.h>
+#include <utiltime.h>
 
 struct IndexDatabaseUpdates
 {
@@ -338,4 +340,22 @@ bool ActiveChainManager::DisconnectBlock(
         *pfClean = fClean;
         return true;
     }
+}
+
+std::pair<CBlock,bool> ActiveChainManager::DisconnectBlock(
+            CValidationState& state,
+            CBlockIndex* pindex,
+            CCoinsViewCache& coins) const
+{
+    std::pair<CBlock,bool> disconnectedBlockAndStatus = std::make_pair(CBlock(),true);
+    CBlock& block = disconnectedBlockAndStatus.first;
+    if (!ReadBlockFromDisk(block, pindex))
+    {
+        disconnectedBlockAndStatus.second = state.Abort("Failed to read block");
+        return disconnectedBlockAndStatus;
+    }
+    int64_t nStart = GetTimeMicros();
+    disconnectedBlockAndStatus.second = DisconnectBlock(block,state,pindex,coins);
+    LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
+    return disconnectedBlockAndStatus;
 }

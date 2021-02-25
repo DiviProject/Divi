@@ -48,6 +48,12 @@ static bool IsCoinSpent(const CMasternode& mn)
     return !CollateralIsExpectedAmount(mn.vin.prevout,expectedCollateral);
 }
 
+bool MasternodeCanBeUpdatedFromBroadcast(const CMasternode& mn)
+{
+    constexpr int seconds = MASTERNODE_MIN_MNB_SECONDS;
+    return (GetAdjustedTime() - mn.sigTime) < seconds;
+}
+
 namespace
 {
 static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier)
@@ -272,7 +278,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
 
     // mn.pubkey = pubkey, IsVinAssociatedWithPubkey is validated once below,
     //   after that they just need to match
-    if (pmn->pubKeyCollateralAddress == mnb.pubKeyCollateralAddress && !pmn->IsBroadcastedWithin(MASTERNODE_MIN_MNB_SECONDS)) {
+    if (pmn->pubKeyCollateralAddress == mnb.pubKeyCollateralAddress && !MasternodeCanBeUpdatedFromBroadcast(*pmn)) {
         //take the newest entry
         LogPrint("masternode","mnb - Got updated entry for %s\n", mnb.vin.prevout.hash.ToString());
         if (UpdateWithNewBroadcast(mnb,*pmn)) {

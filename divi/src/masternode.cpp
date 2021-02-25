@@ -137,11 +137,6 @@ CMasternode& CMasternode::operator=(CMasternode from)
     return *this;
 }
 
-bool CMasternode::IsBroadcastedWithin(int seconds) const
-{
-    return (GetAdjustedTime() - sigTime) < seconds;
-}
-
 bool CMasternode::TimeSinceLastPingIsWithin(int seconds, int64_t now) const
 {
     if (now == -1)

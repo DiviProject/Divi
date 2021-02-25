@@ -3,6 +3,7 @@
 #include <sync.h>
 #include <chain.h>
 #include <utiltime.h>
+#include <timedata.h>
 #include <masternode.h>
 #include <blockmap.h>
 #include <TransactionDiskAccessor.h>

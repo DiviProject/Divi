@@ -6,13 +6,11 @@
 #ifndef MASTERNODE_H
 #define MASTERNODE_H
 
-#include "key.h"
-#include "net.h"
-#include "sync.h"
-#include "timedata.h"
+#include <pubkey.h>
+#include <net.h>
+#include <sync.h>
 #include <primitives/transaction.h>
-#include "masternodeconfig.h"
-#include "masternode-tier.h"
+#include <masternode-tier.h>
 #include <MasternodePing.h>
 
 #define MASTERNODE_MIN_CONFIRMATIONS 15

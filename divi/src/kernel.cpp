@@ -20,6 +20,7 @@
 #include "script/SignatureCheckers.h"
 #include "script/standard.h"
 #include "script/StakingVaultScript.h"
+#include <TransactionDiskAccessor.h>
 #include <streams.h>
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"

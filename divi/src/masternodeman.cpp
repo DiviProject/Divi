@@ -20,7 +20,7 @@
 #include <chainparams.h>
 #include <chain.h>
 #include <blockmap.h>
-#include <BlockDiskAccessor.h>
+#include <TransactionDiskAccessor.h>
 
 #include <array>
 

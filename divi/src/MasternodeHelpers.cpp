@@ -5,7 +5,7 @@
 #include <utiltime.h>
 #include <masternode.h>
 #include <blockmap.h>
-#include <BlockDiskAccessor.h>
+#include <TransactionDiskAccessor.h>
 #include <MasternodePing.h>
 
 extern CCriticalSection cs_main;

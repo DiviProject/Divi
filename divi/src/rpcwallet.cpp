@@ -21,6 +21,7 @@
 #include <SuperblockSubsidyContainer.h>
 #include <script/standard.h>
 #include <script/StakingVaultScript.h>
+#include <TransactionDiskAccessor.h>
 #include <WalletTx.h>
 #include <stdint.h>
 

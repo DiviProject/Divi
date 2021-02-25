@@ -147,6 +147,11 @@ void CMasternodeMan::Check(CMasternode& mn, bool forceCheck)
     mn.activeState = CMasternode::state::MASTERNODE_ENABLED; // OK
 }
 
+bool CMasternodeMan::IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t now) const
+{
+    return mn.TimeSinceLastPingIsWithin(MASTERNODE_PING_SECONDS, now);
+}
+
 void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
 {
     Check();

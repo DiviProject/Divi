@@ -152,7 +152,8 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, st
     // Update lastPing for our masternode in Masternode list
     CMasternode* pmn = masternodeManager.Find(vin);
     if (pmn != NULL) {
-        if (pmn->IsTooEarlyToSendPingUpdate(mnp.sigTime)) {
+        if (masternodeManager.IsTooEarlyToSendPingUpdate(*pmn,mnp.sigTime))
+        {
             errorMessage = "Too early to send Masternode Ping";
             return false;
         }

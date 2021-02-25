@@ -21,18 +21,6 @@
 #include <blockmap.h>
 #include <chainparams.h>
 
-static CAmount getCollateralAmount(MasternodeTier tier)
-{
-  if(tier >= MasternodeTier::COPPER && tier < MasternodeTier::INVALID)
-  {
-    return CMasternode::GetTierCollateralAmount(tier);
-  }
-  else
-  {
-    return static_cast<CAmount>(-1.0);
-  }
-}
-
 CAmount CMasternode::GetTierCollateralAmount(const MasternodeTier tier)
 {
     const auto& collateralMap = Params().MasternodeCollateralMap();
@@ -55,12 +43,6 @@ static size_t GetHashRoundsForTierMasternodes(MasternodeTier tier)
     }
 
     return 0;
-}
-
-bool CMasternode::IsCoinSpent(const COutPoint &outpoint, const MasternodeTier mnTier)
-{
-    CAmount expectedCollateral = getCollateralAmount(mnTier);
-    return !CollateralIsExpectedAmount(outpoint,expectedCollateral);
 }
 
 CMasternode::CMasternode()
@@ -229,35 +211,6 @@ uint256 CMasternode::CalculateScore(const uint256& seedHash) const
     }
 
     return r;
-}
-
-void CMasternode::Check(bool forceCheck)
-{
-    if (ShutdownRequested()) return;
-
-    if (!forceCheck && (GetTime() - lastTimeChecked < MASTERNODE_CHECK_SECONDS)) return;
-    lastTimeChecked = GetTime();
-
-
-    //once spent, stop doing the checks
-    if (activeState == MASTERNODE_VIN_SPENT) return;
-
-
-    if (!TimeSinceLastPingIsWithin(MASTERNODE_REMOVAL_SECONDS)) {
-        activeState = MASTERNODE_REMOVE;
-        return;
-    }
-
-    if (!TimeSinceLastPingIsWithin(MASTERNODE_EXPIRATION_SECONDS)) {
-        activeState = MASTERNODE_EXPIRED;
-        return;
-    }
-
-    if (IsCoinSpent(vin.prevout, nTier)) {
-        activeState = MASTERNODE_VIN_SPENT;
-        return;
-    }
-    activeState = MASTERNODE_ENABLED; // OK
 }
 
 MasternodeTier CMasternode::GetTierByCollateralAmount(const CAmount nCollateral)

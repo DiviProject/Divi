@@ -339,7 +339,7 @@ bool CMasternodePayments::CheckMasternodeWinnerValidity(const CMasternodeSync& m
     /* Before accepting a payment as valid, explicitly check that the
        masternode is active.  GetMasternodeRank includes this check, but
        has a cache on results so double-checking doesn't hurt.  */
-    pmn->Check();
+    masternodeManager_.Check(*pmn);
     if (!pmn->IsEnabled()) {
         strError = strprintf("Masternode %s is not active", winner.vinMasternode.prevout.hash.ToString());
         LogPrint("masternode", "%s - %s\n",__func__, strError);
@@ -650,7 +650,6 @@ void ComputeMasternodesAndScores(
 {
     BOOST_FOREACH (CMasternode& mn, masternodes)
     {
-        mn.Check();
         if (!mn.IsEnabled()) continue;
 
         // //check protocol version
@@ -687,6 +686,7 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
     std::vector<CMasternode> filteredMasternodes;
 
     int nMnCount = masternodeManager_.CountEnabled();
+    masternodeManager_.Check();
     ComputeMasternodesAndScores(
         *this,
         mnData.masternodes,
@@ -748,7 +748,6 @@ bool CheckAndGetScore(CMasternode& mn,
         return false;
     }
 
-    mn.Check ();
     if (!mn.IsEnabled ())
         return false;
 
@@ -773,6 +772,7 @@ unsigned CMasternodePayments::GetMasternodeRank(const CTxIn& vin, const uint256&
         {
             LockableMasternodeData mnData = masternodeManager_.GetLockableMasternodeData();
             LOCK(mnData.cs);
+            masternodeManager_.Check();
             for (auto& mn : mnData.masternodes) {
                 int64_t score;
                 if (!CheckAndGetScore(mn, seedHash, minProtocol, score))

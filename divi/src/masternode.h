@@ -73,7 +73,6 @@ public:
     MasternodeTier nTier;
     CMasternodePing lastPing;
 
-    static bool IsCoinSpent(const COutPoint &outpoint, const MasternodeTier mnTier);
     int64_t DeterministicTimeOffset() const;
 
     CMasternode();
@@ -97,7 +96,6 @@ public:
      *  seed hash.  It should be the result of GetBlockHashForScoring of
      *  the target block height.  */
     uint256 CalculateScore(const uint256& seedHash) const;
-    void Check(bool forceCheck = false);
 
     bool IsBroadcastedWithin(int seconds) const;
 

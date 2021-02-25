@@ -62,7 +62,7 @@ public:
 
     /// Check all Masternodes
     void Check();
-    void Check(CMasternode& mn, bool forceCheck);
+    void Check(CMasternode& mn, bool forceCheck = false);
 
     /// Check all Masternodes and remove inactive
     void CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization,bool forceExpiredRemoval = false);

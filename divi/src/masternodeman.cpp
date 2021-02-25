@@ -30,6 +30,24 @@ extern bool ShutdownRequested();
 //    pathMN = GetDataDir() / "mncache.dat";
 //    strMagicMessage = "MasternodeCache";
 
+static CAmount getCollateralAmount(MasternodeTier tier)
+{
+  if(tier >= MasternodeTier::COPPER && tier < MasternodeTier::INVALID)
+  {
+    return CMasternode::GetTierCollateralAmount(tier);
+  }
+  else
+  {
+    return static_cast<CAmount>(-1.0);
+  }
+}
+
+static bool IsCoinSpent(const CMasternode& mn)
+{
+    CAmount expectedCollateral = getCollateralAmount(mn.nTier);
+    return !CollateralIsExpectedAmount(mn.vin.prevout,expectedCollateral);
+}
+
 namespace
 {
 static bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey, MasternodeTier nMasternodeTier)
@@ -90,7 +108,7 @@ void CMasternodeMan::Check()
     LOCK(cs);
 
     BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
-        mn.Check();
+        Check(mn);
     }
 }
 
@@ -116,7 +134,7 @@ void CMasternodeMan::Check(CMasternode& mn, bool forceCheck)
         return;
     }
 
-    if (mn.IsCoinSpent(mn.vin.prevout, mn.nTier)) {
+    if (IsCoinSpent(mn)) {
         mn.activeState = CMasternode::state::MASTERNODE_VIN_SPENT;
         return;
     }
@@ -177,7 +195,7 @@ bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, i
     if (pmn != nullptr && pmn->IsEnabled())
         return true;
 
-    if (CMasternode::IsCoinSpent(mnb.vin.prevout, mnb.nTier))
+    if (IsCoinSpent(mnb))
     {
         LogPrint("masternode", "mnb - coin is already spent\n");
         return false;
@@ -263,7 +281,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
                 RecordSeenPing(pmn->lastPing);
                 pmn->lastPing.Relay();
             }
-            pmn->Check();
+            Check(*pmn);
             if (pmn->IsEnabled()) mnb.Relay();
         }
         masternodeSynchronization.AddedMasternodeList(mnb.GetHash());
@@ -328,7 +346,7 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
 
             mn.lastPing = mnp;
 
-            mn.Check(true);
+            Check(mn,true);
             if (!mn.IsEnabled()) return false;
 
             LogPrint("masternode", "%s - Masternode ping accepted, vin: %s\n",

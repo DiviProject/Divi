@@ -97,8 +97,6 @@ public:
      *  the target block height.  */
     uint256 CalculateScore(const uint256& seedHash) const;
 
-    bool TimeSinceLastPingIsWithin(int seconds, int64_t now = -1) const;
-
     bool IsEnabled() const;
 
     static CAmount GetTierCollateralAmount(MasternodeTier tier);

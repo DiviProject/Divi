@@ -20,7 +20,7 @@ before_script:
 
 script:
   # Compile from source
-  - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - (( ${#DOCKER_TOKEN} > 0 )) && echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - pushd divi
   - docker build -t divi -f DockerfileForTests .
   - docker run --rm -t divi /bin/bash -c "make check"

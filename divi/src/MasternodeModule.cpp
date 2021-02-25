@@ -306,10 +306,7 @@ void ForceMasternodeResync()
 bool ShareMasternodePingWithPeer(CNode* peer,const uint256& inventoryHash)
 {
     if (networkMessageManager.pingIsKnown(inventoryHash)) {
-        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-        ss.reserve(1000);
-        ss << networkMessageManager.getKnownPing(inventoryHash);
-        peer->PushMessage("mnp", ss);
+        peer->PushMessage("mnp", networkMessageManager.getKnownPing(inventoryHash));
         return true;
     }
     return false;
@@ -319,10 +316,7 @@ bool ShareMasternodeBroadcastWithPeer(CNode* peer,const uint256& inventoryHash)
 {
     if (networkMessageManager.broadcastIsKnown(inventoryHash))
     {
-        CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-        ss.reserve(1000);
-        ss << networkMessageManager.getKnownBroadcast(inventoryHash);
-        peer->PushMessage("mnb", ss);
+        peer->PushMessage("mnb", networkMessageManager.getKnownBroadcast(inventoryHash));
         return true;
     }
     return false;

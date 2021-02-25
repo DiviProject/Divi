@@ -151,6 +151,10 @@ bool CMasternodeMan::IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t n
 {
     return mn.TimeSinceLastPingIsWithin(MASTERNODE_PING_SECONDS, now);
 }
+bool CMasternodeMan::IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now) const
+{
+    return mn.TimeSinceLastPingIsWithin(MASTERNODE_MIN_MNP_SECONDS - 60, now);
+}
 
 void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)
 {
@@ -326,7 +330,7 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
         // LogPrint("masternode","mnping - Found corresponding mn for vin: %s\n", vin.ToString());
         // update only if there is no known ping for this masternode or
         // last ping was more then MASTERNODE_MIN_MNP_SECONDS-60 ago comparing to this one
-        if (!mn.IsTooEarlyToReceivePingUpdate(mnp.sigTime)) {
+        if (!IsTooEarlyToReceivePingUpdate(mn,mnp.sigTime)) {
             std::string errorMessage = "";
             if (!CObfuScationSigner::VerifySignature<CMasternodePing>(mnp,mn.pubKeyMasternode,errorMessage))
             {

@@ -147,10 +147,6 @@ bool CMasternode::TimeSinceLastPingIsWithin(int seconds, int64_t now) const
 
     return now - lastPing.sigTime < seconds;
 }
-bool CMasternode::IsTooEarlyToReceivePingUpdate(int64_t now) const
-{
-    return TimeSinceLastPingIsWithin(MASTERNODE_MIN_MNP_SECONDS - 60, now);
-}
 
 bool CMasternode::IsEnabled() const
 {

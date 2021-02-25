@@ -98,7 +98,6 @@ public:
     uint256 CalculateScore(const uint256& seedHash) const;
 
     bool TimeSinceLastPingIsWithin(int seconds, int64_t now = -1) const;
-    bool IsTooEarlyToReceivePingUpdate(int64_t now) const;
 
     bool IsEnabled() const;
 

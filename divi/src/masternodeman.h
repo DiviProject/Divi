@@ -64,6 +64,7 @@ public:
     void Check();
     void Check(CMasternode& mn, bool forceCheck = false);
     bool IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t now) const;
+    bool IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now) const;
 
     /// Check all Masternodes and remove inactive
     void CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization,bool forceExpiredRemoval = false);

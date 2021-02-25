@@ -317,7 +317,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
     std::vector<const CTransaction*> vwtxPrev(1, successfullyStakableUTXO.tx);
 
     constexpr char stakeSplitSettingLookup[] = "-stakesplitthreshold";
-    CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,100000)* COIN);
+    CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,20000)* COIN);
     if(isVaultScript)
     {
         stakeSplit = std::max(stakeSplit,20000*COIN);

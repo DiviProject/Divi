@@ -151,10 +151,6 @@ bool CMasternode::IsTooEarlyToReceivePingUpdate(int64_t now) const
 {
     return TimeSinceLastPingIsWithin(MASTERNODE_MIN_MNP_SECONDS - 60, now);
 }
-bool CMasternode::IsTooEarlyToSendPingUpdate(int64_t now) const
-{
-    return TimeSinceLastPingIsWithin(MASTERNODE_PING_SECONDS, now);
-}
 
 bool CMasternode::IsEnabled() const
 {

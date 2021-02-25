@@ -25,6 +25,7 @@
 #include <array>
 
 extern void Misbehaving(NodeId pnode, int howmuch);
+extern bool ShutdownRequested();
 
 //    pathMN = GetDataDir() / "mncache.dat";
 //    strMagicMessage = "MasternodeCache";
@@ -91,6 +92,35 @@ void CMasternodeMan::Check()
     BOOST_FOREACH (CMasternode& mn, networkMessageManager_.masternodes) {
         mn.Check();
     }
+}
+
+void CMasternodeMan::Check(CMasternode& mn, bool forceCheck)
+{
+    if (ShutdownRequested()) return;
+
+    if (!forceCheck && (GetTime() - mn.lastTimeChecked < MASTERNODE_CHECK_SECONDS)) return;
+    mn.lastTimeChecked = GetTime();
+
+
+    //once spent, stop doing the checks
+    if (mn.activeState == CMasternode::state::MASTERNODE_VIN_SPENT) return;
+
+
+    if (!mn.TimeSinceLastPingIsWithin(MASTERNODE_REMOVAL_SECONDS)) {
+        mn.activeState = CMasternode::state::MASTERNODE_REMOVE;
+        return;
+    }
+
+    if (!mn.TimeSinceLastPingIsWithin(MASTERNODE_EXPIRATION_SECONDS)) {
+        mn.activeState = CMasternode::state::MASTERNODE_EXPIRED;
+        return;
+    }
+
+    if (mn.IsCoinSpent(mn.vin.prevout, mn.nTier)) {
+        mn.activeState = CMasternode::state::MASTERNODE_VIN_SPENT;
+        return;
+    }
+    mn.activeState = CMasternode::state::MASTERNODE_ENABLED; // OK
 }
 
 void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)

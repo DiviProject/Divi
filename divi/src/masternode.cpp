@@ -8,7 +8,7 @@
 #include <sync.h>
 #include <Logging.h>
 #include <boost/lexical_cast.hpp>
-#include <utiltime.h>
+#include <timedata.h>
 #include <script/standard.h>
 #include <chainparams.h>
 

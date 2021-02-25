@@ -201,6 +201,7 @@ BITCOIN_CORE_H = \
   walletdustcombiner.h \
   BlockFileOpener.h \
   BlockDiskAccessor.h \
+  TransactionDiskAccessor.h \
   BlockTemplate.h \
   I_BlockFactory.h \
   I_BlockTransactionCollector.h \
@@ -362,6 +363,7 @@ libbitcoin_server_a_SOURCES = \
   ExtendedBlockFactory.cpp \
   BlockFileOpener.cpp \
   BlockDiskAccessor.cpp \
+  TransactionDiskAccessor.cpp \
   merkleblock.cpp \
   merkletx.cpp \
   CoinMinter.cpp \

@@ -97,8 +97,6 @@ public:
      *  the target block height.  */
     uint256 CalculateScore(const uint256& seedHash) const;
 
-    bool IsBroadcastedWithin(int seconds) const;
-
     bool TimeSinceLastPingIsWithin(int seconds, int64_t now = -1) const;
     bool IsTooEarlyToReceivePingUpdate(int64_t now) const;
     bool IsTooEarlyToSendPingUpdate(int64_t now) const;

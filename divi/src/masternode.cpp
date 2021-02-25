@@ -7,7 +7,7 @@
 
 #include "addrman.h"
 #include <chain.h>
-#include "BlockDiskAccessor.h"
+#include <TransactionDiskAccessor.h>
 #include "masternodeman.h"
 #include "obfuscation.h"
 #include "sync.h"

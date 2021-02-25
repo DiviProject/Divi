@@ -130,12 +130,12 @@ void CMasternodeMan::Check(CMasternode& mn, bool forceCheck)
     if (mn.activeState == CMasternode::state::MASTERNODE_VIN_SPENT) return;
 
 
-    if (!mn.TimeSinceLastPingIsWithin(MASTERNODE_REMOVAL_SECONDS)) {
+    if (!TimeSinceLastPingIsWithin(mn,MASTERNODE_REMOVAL_SECONDS)) {
         mn.activeState = CMasternode::state::MASTERNODE_REMOVE;
         return;
     }
 
-    if (!mn.TimeSinceLastPingIsWithin(MASTERNODE_EXPIRATION_SECONDS)) {
+    if (!TimeSinceLastPingIsWithin(mn,MASTERNODE_EXPIRATION_SECONDS)) {
         mn.activeState = CMasternode::state::MASTERNODE_EXPIRED;
         return;
     }
@@ -147,13 +147,24 @@ void CMasternodeMan::Check(CMasternode& mn, bool forceCheck)
     mn.activeState = CMasternode::state::MASTERNODE_ENABLED; // OK
 }
 
+bool CMasternodeMan::TimeSinceLastPingIsWithin(const CMasternode& mn, const int timeWindow, int64_t now) const
+{
+    if (now == -1)
+        now = GetAdjustedTime();
+
+    if (mn.lastPing == CMasternodePing())
+        return false;
+
+    return now - mn.lastPing.sigTime < timeWindow;
+}
+
 bool CMasternodeMan::IsTooEarlyToSendPingUpdate(const CMasternode& mn, int64_t now) const
 {
-    return mn.TimeSinceLastPingIsWithin(MASTERNODE_PING_SECONDS, now);
+    return TimeSinceLastPingIsWithin(mn,MASTERNODE_PING_SECONDS, now);
 }
 bool CMasternodeMan::IsTooEarlyToReceivePingUpdate(const CMasternode& mn, int64_t now) const
 {
-    return mn.TimeSinceLastPingIsWithin(MASTERNODE_MIN_MNP_SECONDS - 60, now);
+    return TimeSinceLastPingIsWithin(mn, MASTERNODE_MIN_MNP_SECONDS - 60, now);
 }
 
 void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchronization, bool forceExpiredRemoval)

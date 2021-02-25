@@ -9,6 +9,7 @@
 #include <chain.h>
 #include <base58address.h>
 #include <TransactionDiskAccessor.h>
+#include <timedata.h>
 #include <WalletTx.h>
 
 extern CWallet* pwalletMain;

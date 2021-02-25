@@ -6,9 +6,9 @@
 #include <MasternodeHelpers.h>
 #include <obfuscation.h>
 #include <wallet.h>
-#include <BlockDiskAccessor.h>
 #include <chain.h>
 #include <base58address.h>
+#include <TransactionDiskAccessor.h>
 #include <WalletTx.h>
 
 extern CWallet* pwalletMain;

@@ -10,6 +10,7 @@
 #include "rpcserver.h"
 #include "streams.h"
 #include "sync.h"
+#include <TransactionDiskAccessor.h>
 #include "utilstrencodings.h"
 #include "version.h"
 

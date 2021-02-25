@@ -7,7 +7,6 @@
 
 #include "base58.h"
 
-#include "BlockDiskAccessor.h"
 #include "core_io.h"
 #include "init.h"
 #include "keystore.h"
@@ -18,6 +17,7 @@
 #include "script/script.h"
 #include "script/sign.h"
 #include "script/standard.h"
+#include <TransactionDiskAccessor.h>
 #include "uint256.h"
 #include "utilmoneystr.h"
 #include "wallet.h"

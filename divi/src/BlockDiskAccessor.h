@@ -1,7 +1,6 @@
 #ifndef BLOCK_DISK_ACCESSOR_H
 #define BLOCK_DISK_ACCESSOR_H
 #include <stdint.h>
-#include <TransactionDiskAccessor.h>
 class CBlock;
 class CDiskBlockPos;
 class CBlockIndex;

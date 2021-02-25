@@ -1689,23 +1689,22 @@ bool static DisconnectTip(CValidationState& state)
     assert(pindexDelete);
     mempool.check(pcoinsTip);
     // Read block from disk.
-    CBlock block;
-    if (!ReadBlockFromDisk(block, pindexDelete))
-        return state.Abort("Failed to read block");
-    // Apply the block atomically to the chain state.
-    int64_t nStart = GetTimeMicros();
+    static ActiveChainManager chainManager(fAddressIndex,pblocktree);
+    std::pair<CBlock,bool> disconnectedBlock;
     {
-        CCoinsViewCache view(pcoinsTip);
-        if (!ActiveChainManager(fAddressIndex,pblocktree).DisconnectBlock(block, state, pindexDelete, view))
+         CCoinsViewCache view(pcoinsTip);
+         disconnectedBlock = chainManager.DisconnectBlock(state, pindexDelete, view);
+         if(!disconnectedBlock.second)
             return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
-        assert(view.Flush());
+         assert(view.Flush());
     }
-    LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
+    std::vector<CTransaction>& blockTransactions = disconnectedBlock.first.vtx;
+
     // Write the chain state to disk, if necessary.
     if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS))
         return false;
     // Resurrect mempool transactions from the disconnected block.
-    BOOST_FOREACH (const CTransaction& tx, block.vtx) {
+    BOOST_FOREACH (const CTransaction& tx, blockTransactions) {
         // ignore validation errors in resurrected transactions
         std::list<CTransaction> removed;
         CValidationState stateDummy;
@@ -1718,7 +1717,7 @@ bool static DisconnectTip(CValidationState& state)
     UpdateTip(pindexDelete->pprev);
     // Let wallets know transactions went from 1-confirmed to
     // 0-confirmed or conflicted:
-    BOOST_FOREACH (const CTransaction& tx, block.vtx) {
+    BOOST_FOREACH (const CTransaction& tx, blockTransactions) {
         SyncWithWallets(tx, NULL);
     }
     return true;

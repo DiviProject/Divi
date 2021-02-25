@@ -5,20 +5,11 @@
 
 #include "masternode.h"
 
-#include "addrman.h"
-#include <chain.h>
-#include <TransactionDiskAccessor.h>
-#include "masternodeman.h"
-#include "obfuscation.h"
-#include "sync.h"
-#include "Logging.h"
+#include <sync.h>
+#include <Logging.h>
 #include <boost/lexical_cast.hpp>
-#include <init.h>
-#include <wallet.h>
 #include <utiltime.h>
-#include <WalletTx.h>
 #include <script/standard.h>
-#include <blockmap.h>
 #include <chainparams.h>
 
 CAmount CMasternode::GetTierCollateralAmount(const MasternodeTier tier)

@@ -129,9 +129,9 @@ void CountNetworks(int& ipv4, int& ipv6, int& onion)
 {
     int protocolVersion = ActiveProtocol();
 
+    mnodeman.Check();
     BOOST_FOREACH (CMasternode& mn, networkMessageManager.masternodes)
     {
-        mn.Check();
         std::string strHost;
         int port;
         SplitHostPort(mn.addr.ToString(), port, strHost);
@@ -159,6 +159,7 @@ int StableMasternodeCount()
     int64_t nMasternode_Min_Age = MN_WINNER_MINIMUM_AGE;
     int64_t nMasternode_Age = 0;
 
+    mnodeman.Check();
     for (auto& mn : networkMessageManager.masternodes) {
         if (mn.protocolVersion < nMinProtocol) {
             continue; // Skip obsolete versions
@@ -169,7 +170,6 @@ int StableMasternodeCount()
                 continue; // Skip masternodes younger than (default) 8000 sec (MUST be > MASTERNODE_REMOVAL_SECONDS)
             }
         }
-        mn.Check ();
         if (!mn.IsEnabled ())
             continue; // Skip not-enabled masternodes
 

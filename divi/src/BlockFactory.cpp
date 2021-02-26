@@ -11,6 +11,7 @@
 #include <reservekey.h>
 #include <sync.h>
 #include <Logging.h>
+#include <script/standard.h>
 
 #include <Settings.h>
 extern Settings& settings;
@@ -126,6 +127,6 @@ CBlockTemplate* BlockFactory::CreateNewBlockWithKey(CReserveKey& reservekey, boo
     if (!reservekey.GetReservedKey(pubkey, false))
         return NULL;
 
-    CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
+    CScript scriptPubKey = (fProofOfStake)? CScript() : GetScriptForDestination(pubkey.GetID());
     return CreateNewBlock(scriptPubKey, fProofOfStake);
 }

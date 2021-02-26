@@ -334,7 +334,7 @@ bool ActiveChainManager::DisconnectBlock(
         }
         return fClean;
     }
-    else if (pfClean)
+    else
     {
         view.SetBestBlock(pindex->pprev->GetBlockHash());
         *pfClean = fClean;

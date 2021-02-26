@@ -14,7 +14,7 @@ from PowToPosTransition import createPoSStacks, generatePoSBlocks
 
 import codecs
 from decimal import Decimal
-
+import random
 
 class AddressAndSpentIndicesAreOperational (BitcoinTestFramework):
 
@@ -45,19 +45,30 @@ class AddressAndSpentIndicesAreOperational (BitcoinTestFramework):
         auditor_node = self.nodes[1]
         utxos = staker_node.listunspent()
         assert_greater_than(len(utxos), 0)
+        assert_equal(staker_node.getbestblockhash(), auditor_node.getbestblockhash())
+        staker_addresses = set()
+        utxo_count_by_address = {}
         for utxo in utxos:
-            staker_address = utxo["address"]
-            txraw = auditor_node.getrawtransaction(utxo["txid"])
-            tx = auditor_node.decoderawtransaction(txraw)
-            for input in tx["vin"]:
-                if "coinbase" in input:
-                    continue
-                spent_input_json={"txid":input["txid"], "index":input["vout"]}
-                auditor_node.getspentinfo(spent_input_json)
-            assert_equal(staker_node.getbestblockhash(), auditor_node.getbestblockhash())
-            request = staker_address
-            query_results = auditor_node.getaddressutxos(request)
+            addr = utxo["address"]
+            staker_addresses.add(addr)
+            utxo_count_by_address[addr] = utxo_count_by_address.get(addr,0) + 1
+
+        random_addresses = random.sample([x for x in staker_addresses],5)
+        recovered_utxo_count = 0
+        expected_utxo_count = sum( [ utxo_count_by_address[addr] for addr in random_addresses ] )
+        for addr in random_addresses:
+            query_results = auditor_node.getaddressutxos(addr)
             assert_greater_than(len(query_results),0)
+            recovered_utxo_count += len(query_results)
+            for utxo in query_results:
+                txraw = auditor_node.getrawtransaction(utxo["txid"])
+                tx = auditor_node.decoderawtransaction(txraw)
+                for input in tx["vin"]:
+                    if "coinbase" in input:
+                        continue
+                    spent_input_json={"txid":input["txid"], "index":input["vout"]}
+                    auditor_node.getspentinfo(spent_input_json)
+        assert_equal(recovered_utxo_count, expected_utxo_count)
         self.restart_single_node_to_verify_index_database()
 
 if __name__ == '__main__':

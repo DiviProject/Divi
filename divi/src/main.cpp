@@ -1693,7 +1693,7 @@ bool static DisconnectTip(CValidationState& state)
     std::pair<CBlock,bool> disconnectedBlock;
     {
          CCoinsViewCache view(pcoinsTip);
-         disconnectedBlock = chainManager.DisconnectBlock(state, pindexDelete, view);
+         chainManager.DisconnectBlock(disconnectedBlock,state, pindexDelete, view);
          if(!disconnectedBlock.second)
             return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
          assert(view.Flush());

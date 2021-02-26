@@ -342,20 +342,20 @@ bool ActiveChainManager::DisconnectBlock(
     }
 }
 
-std::pair<CBlock,bool> ActiveChainManager::DisconnectBlock(
-            CValidationState& state,
-            CBlockIndex* pindex,
-            CCoinsViewCache& coins) const
+void ActiveChainManager::DisconnectBlock(
+    std::pair<CBlock,bool>& disconnectedBlockAndStatus,
+    CValidationState& state,
+    CBlockIndex* pindex,
+    CCoinsViewCache& coins) const
 {
-    std::pair<CBlock,bool> disconnectedBlockAndStatus = std::make_pair(CBlock(),true);
     CBlock& block = disconnectedBlockAndStatus.first;
+    bool& status = disconnectedBlockAndStatus.second;
     if (!ReadBlockFromDisk(block, pindex))
     {
-        disconnectedBlockAndStatus.second = state.Abort("Failed to read block");
-        return disconnectedBlockAndStatus;
+        status = state.Abort("Failed to read block");
+        return;
     }
     int64_t nStart = GetTimeMicros();
-    disconnectedBlockAndStatus.second = DisconnectBlock(block,state,pindex,coins);
+    status = DisconnectBlock(block,state,pindex,coins);
     LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
-    return disconnectedBlockAndStatus;
 }

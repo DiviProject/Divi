@@ -50,9 +50,10 @@ public:
         CBlockIndex* pindex,
         CCoinsViewCache& coins,
         bool* pfClean = nullptr) const;
-    std::pair<CBlock,bool> DisconnectBlock(
-            CValidationState& state,
-            CBlockIndex* pindex,
-            CCoinsViewCache& coins) const;
+    void DisconnectBlock(
+        std::pair<CBlock,bool>& disconnectedBlockAndStatus,
+        CValidationState& state,
+        CBlockIndex* pindex,
+        CCoinsViewCache& coins) const;
 };
 #endif// ACTIVE_CHAIN_MANAGER_H

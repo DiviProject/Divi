@@ -1268,10 +1268,6 @@ void ThreadScriptCheck()
     scriptcheckqueue.Thread();
 }
 
-static int64_t nTimeVerify = 0;
-static int64_t nTimeConnect = 0;
-static int64_t nTimeIndex = 0;
-static int64_t nTimeCallbacks = 0;
 static int64_t nTimeTotal = 0;
 
 void VerifyBestBlockIsAtChainTip(const CBlockIndex* pindex, CCoinsViewCache& view)
@@ -1414,9 +1410,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     const bool fScriptChecks = pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate();
     CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
 
-    int64_t nTimeStart = GetTimeMicros();
     CAmount nFees = 0;
-    int nInputs = 0;
     unsigned int nSigOps = 0;
     CDiskTxPos pos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()));
     std::vector<std::pair<uint256, CDiskTxPos> > vPos;
@@ -1444,7 +1438,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         const uint256 txhash = tx.GetHash();
         TransactionLocationReference txLocationRef(txhash,pindex->nHeight,i);
 
-        nInputs += tx.vin.size();
         nSigOps += GetLegacySigOpCount(tx);
         if (nSigOps > nMaxBlockSigOps)
             return state.DoS(100, error("ConnectBlock() : too many sigops"),
@@ -1502,10 +1495,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
     pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
 
-    int64_t nTime1 = GetTimeMicros();
-    nTimeConnect += nTime1 - nTimeStart;
-    LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
-
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
     if (block.IsProofOfWork())
         nExpectedMint.nStakeReward += nFees;
@@ -1550,9 +1539,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     if (!control.Wait())
         return state.DoS(100, false);
-    int64_t nTime2 = GetTimeMicros();
-    nTimeVerify += nTime2 - nTimeStart;
-    LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime2 - nTimeStart), nInputs <= 1 ? 0 : 0.001 * (nTime2 - nTimeStart) / (nInputs - 1), nTimeVerify * 0.000001);
 
     if (fJustCheck)
         return true;
@@ -1596,18 +1582,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // add this block to the view's block chain
     view.SetBestBlock(pindex->GetBlockHash());
 
-    int64_t nTime3 = GetTimeMicros();
-    nTimeIndex += nTime3 - nTime2;
-    LogPrint("bench", "    - Index writing: %.2fms [%.2fs]\n", 0.001 * (nTime3 - nTime2), nTimeIndex * 0.000001);
-
     // Watch for changes to the previous coinbase transaction.
     static uint256 hashPrevBestCoinBase;
     g_signals.UpdatedTransaction(hashPrevBestCoinBase);
     hashPrevBestCoinBase = block.vtx[0].GetHash();
-
-    int64_t nTime4 = GetTimeMicros();
-    nTimeCallbacks += nTime4 - nTime3;
-    LogPrint("bench", "    - Callbacks: %.2fms [%.2fs]\n", 0.001 * (nTime4 - nTime3), nTimeCallbacks * 0.000001);
 
     return true;
 }

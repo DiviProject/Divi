@@ -14,11 +14,14 @@ class CTxUndo;
 class CBlockUndo;
 class CTransaction;
 struct TransactionLocationReference;
+class I_BlockDataReader;
+
 class ActiveChainManager
 {
 private:
     const bool& addressIndexingIsEnabled_;
     CBlockTreeDB* blocktree_;
+    const I_BlockDataReader& blockDataReader_;
 
     bool ApplyUpdateIndexDBs(
         IndexDatabaseUpdates& indexDBUpdates,
@@ -43,7 +46,10 @@ private:
         const CBlockIndex* pindex,
         CBlockUndo& blockUndo) const;
 public:
-    ActiveChainManager(const bool& addressIndexingIsEnabled, CBlockTreeDB* blocktree);
+    ActiveChainManager(
+        const bool& addressIndexingIsEnabled,
+        CBlockTreeDB* blocktree,
+        const I_BlockDataReader& blockDataReader);
     bool DisconnectBlock(
         CBlock& block,
         CValidationState& state,

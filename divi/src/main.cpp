@@ -1689,7 +1689,8 @@ bool static DisconnectTip(CValidationState& state)
     assert(pindexDelete);
     mempool.check(pcoinsTip);
     // Read block from disk.
-    static ActiveChainManager chainManager(fAddressIndex,pblocktree);
+    static const BlockDiskDataReader blockDiskReader;
+    static ActiveChainManager chainManager(fAddressIndex,pblocktree,blockDiskReader);
     std::pair<CBlock,bool> disconnectedBlock;
     {
          CCoinsViewCache view(pcoinsTip);

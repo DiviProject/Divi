@@ -39,6 +39,7 @@
 #include <functional>
 #include <uiMessenger.h>
 #include <ActiveChainManager.h>
+#include <BlockDiskAccessor.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -1279,7 +1280,8 @@ bool TryToLoadBlocks(bool& fLoaded, std::string& strLoadError)
         {
 
             LOCK(cs_main);
-            ActiveChainManager chainManager(fAddressIndex,pblocktree);
+            const BlockDiskDataReader blockDiskReader;
+            ActiveChainManager chainManager(fAddressIndex,pblocktree,blockDiskReader);
             CVerifyDB dbVerifier(
                 chainManager,
                 chainActive,

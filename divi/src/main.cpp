@@ -1281,6 +1281,27 @@ void VerifyBestBlockIsAtChainTip(const CBlockIndex* pindex, CCoinsViewCache& vie
     assert(hashPrevBlock == view.GetBestBlock());
 }
 
+bool CheckEnforcedPoSBlocksAndBIP30(const CBlock& block, CValidationState& state, const CBlockIndex* pindex, const CCoinsViewCache& view)
+{
+    if (pindex->nHeight <= Params().LAST_POW_BLOCK() && block.IsProofOfStake())
+        return state.DoS(100, error("ConnectBlock() : PoS period not active"),
+                         REJECT_INVALID, "PoS-early");
+
+    if (pindex->nHeight > Params().LAST_POW_BLOCK() && block.IsProofOfWork())
+        return state.DoS(100, error("ConnectBlock() : PoW period ended"),
+                         REJECT_INVALID, "PoW-ended");
+
+    // Enforce BIP30.
+    for (const auto& tx : block.vtx) {
+        const CCoins* coins = view.AccessCoins(tx.GetHash());
+        if (coins && !coins->IsPruned())
+            return state.DoS(100, error("ConnectBlock() : tried to overwrite transaction"),
+                             REJECT_INVALID, "bad-txns-BIP30");
+    }
+
+    return true;
+}
+
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
@@ -1302,20 +1323,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return true;
     }
 
-    if (pindex->nHeight <= Params().LAST_POW_BLOCK() && block.IsProofOfStake())
-        return state.DoS(100, error("ConnectBlock() : PoS period not active"),
-                         REJECT_INVALID, "PoS-early");
-
-    if (pindex->nHeight > Params().LAST_POW_BLOCK() && block.IsProofOfWork())
-        return state.DoS(100, error("ConnectBlock() : PoW period ended"),
-                         REJECT_INVALID, "PoW-ended");
-
-    // Enforce BIP30.
-    for (const auto& tx : block.vtx) {
-        const CCoins* coins = view.AccessCoins(tx.GetHash());
-        if (coins && !coins->IsPruned())
-            return state.DoS(100, error("ConnectBlock() : tried to overwrite transaction"),
-                             REJECT_INVALID, "bad-txns-BIP30");
+    if(!CheckEnforcedPoSBlocksAndBIP30(block,state,pindex,view))
+    {
+        return false;
     }
 
     CBlockUndo blockundo;

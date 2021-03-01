@@ -156,6 +156,7 @@ BITCOIN_CORE_H = \
   hash.h \
   hdchain.h \
   init.h \
+  IndexDatabaseUpdates.h \
   FeeAndPriorityCalculator.h \
   i_filesystem.h \
   i_walletBackupCreator.h \
@@ -343,6 +344,7 @@ libbitcoin_server_a_SOURCES = \
   checkpoints.cpp \
   FilteredBoostFileSystem.cpp \
   init.cpp \
+  IndexDatabaseUpdates.cpp \
   FeeAndPriorityCalculator.cpp \
   ForkActivation.cpp \
   datacachemanager.cpp \

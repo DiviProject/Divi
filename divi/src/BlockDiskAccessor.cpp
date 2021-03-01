@@ -6,6 +6,7 @@
 #include <clientversion.h>
 #include <chainparams.h>
 #include <Logging.h>
+#include <BlockUndo.h>
 
 bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos)
 {
@@ -61,5 +62,20 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
         LogPrintf("%s : block=%s index=%s\n", __func__, block.GetHash().ToString().c_str(), pindex->GetBlockHash().ToString().c_str());
         return error("ReadBlockFromDisk(CBlock&, CBlockIndex*) : GetHash() doesn't match index");
     }
+    return true;
+}
+
+bool BlockDiskDataReader::ReadBlock(const CBlockIndex* blockIndex, CBlock& block) const
+{
+    return ReadBlockFromDisk(block,blockIndex);
+}
+bool BlockDiskDataReader::ReadBlockUndo(const CBlockIndex* blockIndex, CBlockUndo& blockUndo) const
+{
+    CDiskBlockPos pos = blockIndex->GetUndoPos();
+    if (pos.IsNull())
+        return error("%s : no undo data available",__func__);
+    if (!blockUndo.ReadFromDisk(pos, blockIndex->pprev->GetBlockHash()))
+        return error("%s : failure reading undo data", __func__);
+
     return true;
 }

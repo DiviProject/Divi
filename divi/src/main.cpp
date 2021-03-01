@@ -1305,12 +1305,11 @@ bool CheckEnforcedPoSBlocksAndBIP30(const CBlock& block, CValidationState& state
 
 void UpdateSpendingActivityInIndexDatabaseUpdates(
     const CTransaction& tx,
-    const int blockHeight,
-    const int transactionIndex,
+    const TransactionLocationReference& txLocationRef,
     const CCoinsViewCache& view,
     IndexDatabaseUpdates& indexDatabaseUpdates)
 {
-    const uint256 txhash = tx.GetHash();
+    const uint256 txhash = txLocationRef.hash;
     if (fAddressIndex || fSpentIndex)
     {
         for (size_t j = 0; j < tx.vin.size(); j++) {
@@ -1332,14 +1331,14 @@ void UpdateSpendingActivityInIndexDatabaseUpdates(
             }
             if (fAddressIndex && addressType > 0) {
                 // record spending activity
-                indexDatabaseUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(addressType, hashBytes, blockHeight, transactionIndex, txhash, j, true), prevout.nValue * -1));
+                indexDatabaseUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(addressType, hashBytes, txLocationRef.blockHeight, txLocationRef.transactionIndex, txLocationRef.hash, j, true), prevout.nValue * -1));
                 // remove address from unspent index
                 indexDatabaseUpdates.addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(addressType, hashBytes, input.prevout.hash, input.prevout.n), CAddressUnspentValue()));
             }
             if (fSpentIndex) {
                 // add the spent index to determine the txid and input that spent an output
                 // and to find the amount and address from an input
-                indexDatabaseUpdates.spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue(txhash, j, blockHeight, prevout.nValue, addressType, hashBytes)));
+                indexDatabaseUpdates.spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue(txLocationRef.hash, j, txLocationRef.blockHeight, prevout.nValue, addressType, hashBytes)));
             }
         }
 
@@ -1410,6 +1409,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
         const uint256 txhash = tx.GetHash();
+        TransactionLocationReference txLocationRef(txhash,pindex->nHeight,i);
 
         nInputs += tx.vin.size();
         nSigOps += GetLegacySigOpCount(tx);
@@ -1424,7 +1424,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                  REJECT_INVALID, "bad-txns-inputs-missingorspent");
 
 
-            UpdateSpendingActivityInIndexDatabaseUpdates(tx,pindex->nHeight,i,view, indexDatabaseUpdates);
+            UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view, indexDatabaseUpdates);
             // Add in sigops done by pay-to-script-hash inputs;
             // this is to prevent a "rogue miner" from creating
             // an incredibly-expensive-to-validate block.

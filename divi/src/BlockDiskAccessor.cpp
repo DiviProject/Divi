@@ -5,15 +5,7 @@
 #include <streams.h>
 #include <clientversion.h>
 #include <chainparams.h>
-#include <txmempool.h>
-#include <txdb.h>
-
-extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
-extern CBlockTreeDB* pblocktree;
-extern bool fTxIndex;
-extern CCoinsViewCache* pcoinsTip;
-extern CChain chainActive;
+#include <Logging.h>
 
 bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos)
 {

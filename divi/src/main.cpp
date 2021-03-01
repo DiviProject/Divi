@@ -1346,7 +1346,6 @@ void UpdateSpendingActivityInIndexDatabaseUpdates(
 void UpdateNewOutputsInIndexDatabaseUpdates(
     const CTransaction& tx,
     const TransactionLocationReference& txLocationRef,
-    const CCoinsViewCache& view,
     IndexDatabaseUpdates& indexDatabaseUpdates)
 {
     if (fAddressIndex) {
@@ -1484,7 +1483,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                              REJECT_INVALID, "bad-coinstake-vault-spend");
         }
 
-        UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,view,indexDatabaseUpdates);
+        UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,indexDatabaseUpdates);
 
         nValueOut += tx.GetValueOut();
 

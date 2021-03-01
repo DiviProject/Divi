@@ -255,8 +255,7 @@ bool ActiveChainManager::UpdateDBIndices(
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
 
-        const uint256 hash = tx.GetHash();
-        TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
+        TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
         CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
         // restore inputs
         if (!tx.IsCoinBase() )
@@ -307,8 +306,7 @@ bool ActiveChainManager::DisconnectBlock(
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
 
-        const uint256 hash = tx.GetHash();
-        TransactionLocationReference txLocationReference(hash,pindex->nHeight,transactionIndex);
+        TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
         fClean = fClean && CheckTxOutputsAreAvailable(tx,txLocationReference,view);
 
         if (!tx.IsCoinBase() && !RestoreInputs(blockUndo,tx,transactionIndex,view,fClean))

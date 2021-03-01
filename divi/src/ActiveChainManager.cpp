@@ -274,18 +274,6 @@ bool ActiveChainManager::UpdateDBIndices(
     return true;
 }
 
-
-bool ActiveChainManager::RecoverBlockUndoData(const CBlockIndex* pindex, CBlockUndo& blockUndo) const
-{
-    CDiskBlockPos pos = pindex->GetUndoPos();
-    if (pos.IsNull())
-        return error("DisconnectBlock() : no undo data available");
-    if (!blockUndo.ReadFromDisk(pos, pindex->pprev->GetBlockHash()))
-        return error("DisconnectBlock() : failure reading undo data");
-
-    return true;
-}
-
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case

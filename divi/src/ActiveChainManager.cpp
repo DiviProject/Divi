@@ -14,23 +14,6 @@
 #include <I_BlockDataReader.h>
 #include <IndexDatabaseUpdates.h>
 
-struct TransactionLocationReference
-{
-    uint256 hash;
-    unsigned blockHeight;
-    int transactionIndex;
-
-    TransactionLocationReference(
-        uint256 hashValue,
-        unsigned blockheightValue,
-        int transactionIndexValue
-        ): hash(hashValue)
-        , blockHeight(blockheightValue)
-        , transactionIndex(transactionIndexValue)
-    {
-    }
-};
-
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
     CBlockTreeDB* blocktree,

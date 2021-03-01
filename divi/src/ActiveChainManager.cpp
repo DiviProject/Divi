@@ -305,7 +305,7 @@ bool ActiveChainManager::DisconnectBlock(
         *pfClean = false;
 
     CBlockUndo blockUndo;
-    if(!RecoverBlockUndoData(pindex,blockUndo))
+    if(!blockDataReader_.ReadBlockUndo(pindex,blockUndo))
     {
         return false;
     }
@@ -353,7 +353,7 @@ void ActiveChainManager::DisconnectBlock(
 {
     CBlock& block = disconnectedBlockAndStatus.first;
     bool& status = disconnectedBlockAndStatus.second;
-    if (!ReadBlockFromDisk(block, pindex))
+    if (!blockDataReader_.ReadBlock(pindex,block))
     {
         status = state.Abort("Failed to read block");
         return;

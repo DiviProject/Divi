@@ -1309,7 +1309,6 @@ void UpdateSpendingActivityInIndexDatabaseUpdates(
     const CCoinsViewCache& view,
     IndexDatabaseUpdates& indexDatabaseUpdates)
 {
-    const uint256 txhash = txLocationRef.hash;
     if (fAddressIndex || fSpentIndex)
     {
         for (size_t j = 0; j < tx.vin.size(); j++) {

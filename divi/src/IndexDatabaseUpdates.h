@@ -3,6 +3,8 @@
 #include <vector>
 #include <addressindex.h>
 #include <spentindex.h>
+#include <uint256.h>
+
 struct IndexDatabaseUpdates
 {
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
@@ -10,5 +12,17 @@ struct IndexDatabaseUpdates
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;
 
     IndexDatabaseUpdates();
+};
+
+struct TransactionLocationReference
+{
+    uint256 hash;
+    unsigned blockHeight;
+    int transactionIndex;
+
+    TransactionLocationReference(
+        uint256 hashValue,
+        unsigned blockheightValue,
+        int transactionIndexValue);
 };
 #endif// INDEX_DATABASE_UPDATES_H

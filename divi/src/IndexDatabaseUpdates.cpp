@@ -6,3 +6,13 @@ IndexDatabaseUpdates::IndexDatabaseUpdates(
     , spentIndex()
 {
 }
+
+TransactionLocationReference::TransactionLocationReference(
+    uint256 hashValue,
+    unsigned blockheightValue,
+    int transactionIndexValue
+    ): hash(hashValue)
+    , blockHeight(blockheightValue)
+    , transactionIndex(transactionIndexValue)
+{
+}

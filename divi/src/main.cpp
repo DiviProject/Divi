@@ -1270,7 +1270,7 @@ void ThreadScriptCheck()
 
 static int64_t nTimeTotal = 0;
 
-void VerifyBestBlockIsAtChainTip(const CBlockIndex* pindex, CCoinsViewCache& view)
+void VerifyBestBlockIsAtPreviousBlock(const CBlockIndex* pindex, CCoinsViewCache& view)
 {
     const uint256 hashPrevBlock = pindex->pprev == NULL ? uint256(0) : pindex->pprev->GetBlockHash();
     if (hashPrevBlock != view.GetBestBlock())
@@ -1390,7 +1390,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogWalletBalance(pwalletMain);
 
     // verify that the view's current state corresponds to the previous block
-    VerifyBestBlockIsAtChainTip(pindex,view);
+    VerifyBestBlockIsAtPreviousBlock(pindex,view);
 
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)

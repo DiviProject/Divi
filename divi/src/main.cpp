@@ -1390,10 +1390,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex = indexDatabaseUpdates.addressUnspentIndex;
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> >& spentIndex = indexDatabaseUpdates.spentIndex;
 
-    CAmount nValueOut = 0;
-    CAmount nValueIn = 0;
-    unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
-
     static const CChainParams& chainParameters = Params();
     static const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
     static const BlockIncentivesPopulator incentives(
@@ -1404,8 +1400,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         subsidiesContainer.superblockHeightValidator(),
         subsidiesContainer.blockSubsidiesProvider(),
         sporkManager);
-    CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
 
+    CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
+    CAmount nValueOut = 0;
+    CAmount nValueIn = 0;
+    unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
         const uint256 txhash = tx.GetHash();

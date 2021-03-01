@@ -1425,10 +1425,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     blockundo.vtxundo.reserve(block.vtx.size() - 1);
 
     IndexDatabaseUpdates indexDatabaseUpdates;
-    std::vector<std::pair<CAddressIndexKey, CAmount> >& addressIndex = indexDatabaseUpdates.addressIndex;
-    std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> >& addressUnspentIndex = indexDatabaseUpdates.addressUnspentIndex;
-    std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> >& spentIndex = indexDatabaseUpdates.spentIndex;
-
     static const CChainParams& chainParameters = Params();
     static const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
     static const BlockIncentivesPopulator incentives(
@@ -1585,17 +1581,17 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.Abort("Failed to write transaction index");
 
     if (fAddressIndex) {
-        if (!pblocktree->WriteAddressIndex(addressIndex)) {
+        if (!pblocktree->WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
             return state.Abort("Failed to write address index");
         }
 
-        if (!pblocktree->UpdateAddressUnspentIndex(addressUnspentIndex)) {
+        if (!pblocktree->UpdateAddressUnspentIndex(indexDatabaseUpdates.addressUnspentIndex)) {
             return state.Abort("Failed to write address unspent index");
         }
     }
 
     if (fSpentIndex)
-        if (!pblocktree->UpdateSpentIndex(spentIndex))
+        if (!pblocktree->UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
             return state.Abort("Failed to write transaction index");
 
     // add this block to the view's block chain

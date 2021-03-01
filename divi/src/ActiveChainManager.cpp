@@ -11,6 +11,7 @@
 #include <spentindex.h>
 #include <BlockDiskAccessor.h>
 #include <utiltime.h>
+#include <I_BlockDataReader.h>
 
 struct IndexDatabaseUpdates
 {
@@ -45,9 +46,11 @@ struct TransactionLocationReference
 
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
-    CBlockTreeDB* blocktree
+    CBlockTreeDB* blocktree,
+    const I_BlockDataReader& blockDataReader
     ): addressIndexingIsEnabled_(addressIndexingIsEnabled)
     , blocktree_(blocktree)
+    , blockDataReader_(blockDataReader)
 {
 }
 

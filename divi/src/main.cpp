@@ -1379,6 +1379,46 @@ void UpdateNewOutputsInIndexDatabaseUpdates(
     }
 }
 
+struct TransactionInputChecker
+{
+    const bool fScriptChecks;
+    CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker;
+
+    TransactionInputChecker(
+        const CBlockIndex* pindex,
+        CCheckQueue<CScriptCheck>& scriptCheckingQueue
+        ): fScriptChecks(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate())
+        , multiThreadedScriptChecker(fScriptChecks && nScriptCheckThreads ? &scriptCheckingQueue : NULL )
+    {
+    }
+
+    bool CheckInputsAndScheduleScriptChecks(
+        const CTransaction& tx,
+        const CCoinsViewCache& view,
+        const bool fJustCheck,
+        CValidationState& state,
+        CAmount& totalFees,
+        CAmount& totalInputsMoved)
+    {
+        std::vector<CScriptCheck> vChecks;
+        CAmount txFees =0;
+        CAmount txInputAmount=0;
+        if (!CheckInputs(tx, state, view, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
+        {
+            return false;
+        }
+
+        totalFees += txFees;
+        totalInputsMoved += txInputAmount;
+        multiThreadedScriptChecker.Add(vChecks);
+        return true;
+    }
+
+    bool WaitForScriptsToBeChecked()
+    {
+        return multiThreadedScriptChecker.Wait();
+    }
+};
 
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
 {
@@ -1404,8 +1444,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     CBlockUndo blockundo;
 
-    const bool fScriptChecks = pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate();
-    CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
+    TransactionInputChecker txInputChecker(pindex,scriptcheckqueue);
 
     CDiskTxPos pos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()));
     std::vector<std::pair<uint256, CDiskTxPos> > vPos;
@@ -1450,17 +1489,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 return state.DoS(100, error("ConnectBlock() : too many sigops"),
                                  REJECT_INVALID, "bad-blk-sigops");
 
-            std::vector<CScriptCheck> vChecks;
-            CAmount txFees =0;
-            CAmount txInputAmount=0;
-            if (!CheckInputs(tx, state, view, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
+            if(!txInputChecker.CheckInputsAndScheduleScriptChecks(tx,view,fJustCheck,state,nFees,nValueIn))
             {
                 return false;
             }
-
-            nFees += txFees;
-            nValueIn += txInputAmount;
-            multiThreadedScriptChecker.Add(vChecks);
         }
 
         // Enforce additional rules for coinstakes, which make sure that
@@ -1532,7 +1564,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock() : new accumulator checkpoint generated on a block that is not multiple of 10"));
     }
 
-    if (!multiThreadedScriptChecker.Wait())
+    if (!txInputChecker.WaitForScriptsToBeChecked())
         return state.DoS(100, false);
 
     if (fJustCheck)

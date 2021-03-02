@@ -1408,7 +1408,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CBlockUndo blockundo;
 
     const bool fScriptChecks = pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate();
-    CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
+    CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
 
     CDiskTxPos pos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()));
     std::vector<std::pair<uint256, CDiskTxPos> > vPos;
@@ -1468,7 +1468,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
             nFees += txFees;
             nValueIn += txInputAmount;
-            control.Add(vChecks);
+            multiThreadedScriptChecker.Add(vChecks);
         }
 
         // Enforce additional rules for coinstakes, which make sure that
@@ -1539,7 +1539,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock() : new accumulator checkpoint generated on a block that is not multiple of 10"));
     }
 
-    if (!control.Wait())
+    if (!multiThreadedScriptChecker.Wait())
         return state.DoS(100, false);
 
     if (fJustCheck)

@@ -1389,17 +1389,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrintStr("; time = " + to_string(pindex->nTime));
     LogWalletBalance(pwalletMain);
 
-    // verify that the view's current state corresponds to the previous block
     VerifyBestBlockIsAtPreviousBlock(pindex,view);
-
-    // Special case for the genesis block, skipping connection of its transactions
-    // (its coinbase is unspendable)
-    if (block.GetHash() == Params().HashGenesisBlock()) {
+    if (block.GetHash() == Params().HashGenesisBlock())
+    {
         if(!fJustCheck)
             view.SetBestBlock(pindex->GetBlockHash());
         return true;
     }
-
     if(!CheckEnforcedPoSBlocksAndBIP30(block,state,pindex,view))
     {
         return false;

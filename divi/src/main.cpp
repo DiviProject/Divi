@@ -1493,7 +1493,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     TransactionLocationRecorder txLocationRecorder(pindex,block);
 
     CBlockUndo blockundo;
-    blockundo.vtxundo.reserve(block.vtx.size() - 1);
+    blockundo.vtxundo.resize(block.vtx.size() - 1);
 
     IndexDatabaseUpdates indexDatabaseUpdates;
     static const CChainParams& chainParameters = Params();
@@ -1531,14 +1531,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
         UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view, indexDatabaseUpdates);
         UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,indexDatabaseUpdates);
-
         nValueOut += tx.GetValueOut();
-
-        CTxUndo undoDummy;
-        if (i > 0) {
-            blockundo.vtxundo.push_back(CTxUndo());
-        }
-        UpdateCoins(tx, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
+        UpdateCoins(tx, view, blockundo.vtxundo[i>0u? i-1: 0u], pindex->nHeight);
         txLocationRecorder.RecordTxLocationData(tx);
     }
 

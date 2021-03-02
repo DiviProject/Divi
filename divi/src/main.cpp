@@ -1528,10 +1528,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),
                              REJECT_INVALID, "bad-coinstake-vault-spend");
         }
+        nValueOut += tx.GetValueOut();
 
         UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view, indexDatabaseUpdates);
         UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,indexDatabaseUpdates);
-        nValueOut += tx.GetValueOut();
         UpdateCoins(tx, view, blockundo.vtxundo[i>0u? i-1: 0u], pindex->nHeight);
         txLocationRecorder.RecordTxLocationData(tx);
     }

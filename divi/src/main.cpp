@@ -1499,9 +1499,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         {
             return false;
         }
-
-        // Enforce additional rules for coinstakes, which make sure that
-        // staking vaults are secure.
         if (!CheckCoinstakeForVaults(tx, nExpectedMint, view)) {
             return state.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),
                              REJECT_INVALID, "bad-coinstake-vault-spend");

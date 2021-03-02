@@ -110,6 +110,21 @@ BOOST_AUTO_TEST_CASE (doesNotCommitToInputSignature)
   BOOST_CHECK (GetMtxBareTxid () == tx.GetBareTxid ());
 }
 
+BOOST_AUTO_TEST_CASE (equalsTxidForCoinbase)
+{
+  mtx.vin.resize (1);
+  mtx.vin[0].prevout.SetNull ();
+
+  const CTransaction tx1(mtx);
+  BOOST_CHECK (tx1.IsCoinBase ());
+
+  mtx.vin[0].scriptSig.clear ();
+  const CTransaction tx2(mtx);
+
+  BOOST_CHECK (tx1.GetBareTxid () == tx1.GetHash ());
+  BOOST_CHECK (tx1.GetBareTxid () != tx2.GetBareTxid ());
+}
+
 BOOST_AUTO_TEST_SUITE_END ()
 
 } // anonymous namespace

@@ -1305,6 +1305,7 @@ void UpdateSpendingActivityInIndexDatabaseUpdates(
     const CCoinsViewCache& view,
     IndexDatabaseUpdates& indexDatabaseUpdates)
 {
+    if (tx.IsCoinBase()) return;
     if (fAddressIndex || fSpentIndex)
     {
         for (size_t j = 0; j < tx.vin.size(); j++) {
@@ -1445,8 +1446,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 return state.DoS(100, error("ConnectBlock() : inputs missing/spent"),
                                  REJECT_INVALID, "bad-txns-inputs-missingorspent");
 
-
-            UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view, indexDatabaseUpdates);
             // Add in sigops done by pay-to-script-hash inputs;
             // this is to prevent a "rogue miner" from creating
             // an incredibly-expensive-to-validate block.
@@ -1473,6 +1472,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                              REJECT_INVALID, "bad-coinstake-vault-spend");
         }
 
+        UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view, indexDatabaseUpdates);
         UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,indexDatabaseUpdates);
 
         nValueOut += tx.GetValueOut();

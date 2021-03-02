@@ -1489,13 +1489,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return false;
     }
 
-    TransactionInputChecker txInputChecker(pindex,scriptcheckqueue);
-    TransactionLocationRecorder txLocationRecorder(pindex,block);
-
-    CBlockUndo blockundo;
-    blockundo.vtxundo.resize(block.vtx.size() - 1);
-
-    IndexDatabaseUpdates indexDatabaseUpdates;
     static const CChainParams& chainParameters = Params();
     static const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
     static const BlockIncentivesPopulator incentives(
@@ -1507,6 +1500,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         subsidiesContainer.blockSubsidiesProvider(),
         sporkManager);
 
+    TransactionInputChecker txInputChecker(pindex,scriptcheckqueue);
+    TransactionLocationRecorder txLocationRecorder(pindex,block);
+
+    CBlockUndo blockundo;
+    blockundo.vtxundo.resize(block.vtx.size() - 1);
+
+    IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
     CAmount nValueOut = 0;
     CAmount nValueIn = 0;

@@ -1515,7 +1515,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
         UpdateCoins(tx, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
 
-        transactionOnDiskLocations.push_back(std::make_pair(tx.GetHash(), nextBlockTxOnDiskLocation));
+        transactionOnDiskLocations.emplace_back(tx.GetHash(), nextBlockTxOnDiskLocation);
         nextBlockTxOnDiskLocation.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
 

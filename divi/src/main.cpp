@@ -1440,6 +1440,33 @@ struct TransactionInputChecker
     }
 };
 
+class TransactionLocationRecorder
+{
+private:
+    CDiskTxPos nextBlockTxOnDiskLocation_;
+    std::vector<std::pair<uint256, CDiskTxPos> > txLocationData_;
+public:
+
+    TransactionLocationRecorder(
+        const CBlockIndex* pindex,
+        const CBlock& block
+        ): nextBlockTxOnDiskLocation_(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()))
+        , txLocationData_()
+    {
+        txLocationData_.reserve(block.vtx.size());
+    }
+
+    void RecordTxLocationData(const CTransaction& tx)
+    {
+        txLocationData_.emplace_back(tx.GetHash(), nextBlockTxOnDiskLocation_);
+        nextBlockTxOnDiskLocation_.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
+    }
+    const std::vector<std::pair<uint256, CDiskTxPos> >& locationData() const
+    {
+        return txLocationData_;
+    }
+};
+
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
@@ -1463,10 +1490,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
 
     TransactionInputChecker txInputChecker(pindex,scriptcheckqueue);
+    TransactionLocationRecorder txLocationRecorder(pindex,block);
 
-    CDiskTxPos nextBlockTxOnDiskLocation(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()));
-    std::vector<std::pair<uint256, CDiskTxPos> > transactionOnDiskLocations;
-    transactionOnDiskLocations.reserve(block.vtx.size());
     CBlockUndo blockundo;
     blockundo.vtxundo.reserve(block.vtx.size() - 1);
 
@@ -1514,9 +1539,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             blockundo.vtxundo.push_back(CTxUndo());
         }
         UpdateCoins(tx, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
-
-        transactionOnDiskLocations.emplace_back(tx.GetHash(), nextBlockTxOnDiskLocation);
-        nextBlockTxOnDiskLocation.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
+        txLocationRecorder.RecordTxLocationData(tx);
     }
 
     // track money supply and mint amount info
@@ -1591,7 +1614,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
 
     if (fTxIndex)
-        if (!pblocktree->WriteTxIndex(transactionOnDiskLocations))
+        if (!pblocktree->WriteTxIndex(txLocationRecorder.locationData()))
             return state.Abort("Failed to write transaction index");
 
     if (fAddressIndex) {

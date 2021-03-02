@@ -1384,28 +1384,32 @@ struct TransactionInputChecker
     int nSigOps;
     const bool fScriptChecks;
     CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker;
+    const CCoinsViewCache& view_;
+    CValidationState& state_;
 
     TransactionInputChecker(
         const CBlockIndex* pindex,
-        CCheckQueue<CScriptCheck>& scriptCheckingQueue
+        CCheckQueue<CScriptCheck>& scriptCheckingQueue,
+        const CCoinsViewCache& view,
+        CValidationState& state
         ): nSigOps(0)
         , fScriptChecks(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate())
         , multiThreadedScriptChecker(fScriptChecks && nScriptCheckThreads ? &scriptCheckingQueue : NULL )
+        , view_(view)
+        , state_(state)
     {
     }
 
     bool CheckInputsAndScheduleScriptChecks(
         const CTransaction& tx,
-        const CCoinsViewCache& view,
         const bool fJustCheck,
-        CValidationState& state,
         CAmount& totalFees,
         CAmount& totalInputsMoved)
     {
         std::vector<CScriptCheck> vChecks;
         CAmount txFees =0;
         CAmount txInputAmount=0;
-        if (!CheckInputs(tx, state, view, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
+        if (!CheckInputs(tx, state_, view_, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
         {
             return false;
         }
@@ -1416,20 +1420,20 @@ struct TransactionInputChecker
         return true;
     }
 
-    bool TotalSigOpsAreBelowMaximum(const CTransaction& tx, const CCoinsViewCache& view, CValidationState& state)
+    bool TotalSigOpsAreBelowMaximum(const CTransaction& tx)
     {
         nSigOps += GetLegacySigOpCount(tx);
         if (nSigOps > MAX_BLOCK_SIGOPS_CURRENT)
-            return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
+            return state_.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
         if (!tx.IsCoinBase())
         {
             // Add in sigops done by pay-to-script-hash inputs;
             // this is to prevent a "rogue miner" from creating
             // an incredibly-expensive-to-validate block.
-            nSigOps += GetP2SHSigOpCount(tx, view);
+            nSigOps += GetP2SHSigOpCount(tx, view_);
             if (nSigOps > MAX_BLOCK_SIGOPS_CURRENT)
-                return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
+                return state_.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
         }
         return true;
     }
@@ -1500,7 +1504,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         subsidiesContainer.blockSubsidiesProvider(),
         sporkManager);
 
-    TransactionInputChecker txInputChecker(pindex,scriptcheckqueue);
+    TransactionInputChecker txInputChecker(pindex,scriptcheckqueue,view,state);
     TransactionLocationRecorder txLocationRecorder(pindex,block);
 
     CBlockUndo blockundo;
@@ -1508,6 +1512,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
+
     CAmount nValueOut = 0;
     CAmount nValueIn = 0;
     CAmount nFees = 0;
@@ -1515,12 +1520,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         const CTransaction& tx = block.vtx[i];
         const TransactionLocationReference txLocationRef(tx.GetHash(),pindex->nHeight,i);
 
-        if(!txInputChecker.TotalSigOpsAreBelowMaximum(tx,view,state))
+        if(!txInputChecker.TotalSigOpsAreBelowMaximum(tx))
         {
             return false;
         }
         if (!tx.IsCoinBase() &&
-            !txInputChecker.CheckInputsAndScheduleScriptChecks(tx,view,fJustCheck,state,nFees,nValueIn))
+            !txInputChecker.CheckInputsAndScheduleScriptChecks(tx,fJustCheck,nFees,nValueIn))
         {
             return false;
         }

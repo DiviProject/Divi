@@ -30,14 +30,18 @@ public:
   MempoolTestFixture()
     : testPool(CFeeRate(0))
   {
-    txParent.vin.resize(1);
+    txParent.vin.resize(2);
     txParent.vin[0].scriptSig = CScript() << OP_11;
+    /* Add a second input to make sure the transaction does not qualify as
+       coinbase and thus has a bare txid unequal to its normal hash.  */
+    txParent.vin[1].scriptSig = CScript() << OP_12;
     txParent.vout.resize(3);
     for (int i = 0; i < 3; i++)
     {
         txParent.vout[i].scriptPubKey = CScript() << OP_11 << OP_EQUAL;
         txParent.vout[i].nValue = 33000LL;
     }
+    assert(txParent.GetHash() != txParent.GetBareTxid());
 
     for (int i = 0; i < 3; i++)
     {

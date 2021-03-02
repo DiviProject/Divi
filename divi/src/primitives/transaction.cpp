@@ -106,9 +106,23 @@ void CTransaction::UpdateHash() const
 
 uint256 CTransaction::GetBareTxid () const
 {
+    if (IsCoinBase())
+    {
+        /* For coinbase transactions, the bare txid equals the normal one.
+           They don't contain a real signature anyway, but the scriptSig
+           is needed to distinguish them and make sure we won't have two
+           transactions with the same bare txid.
+
+           In practice on mainnet, this has no influence, since no more
+           coinbases are created after the fork activation (since the network
+           is on PoS for a long time).  We still need this here to make sure
+           all works fine in tests and is just correct in general.  */
+        return GetHash();
+    }
+
     CMutableTransaction withoutSigs(*this);
     for (auto& in : withoutSigs.vin)
-      in.scriptSig.clear();
+        in.scriptSig.clear();
     return withoutSigs.GetHash();
 }
 

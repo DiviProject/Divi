@@ -38,6 +38,23 @@ bool CheckInputs(
     bool cacheStore,
     std::vector<CScriptCheck>* pvChecks)
 {
+    CAmount nFees = 0;
+    CAmount nValueIn = 0;
+    return CheckInputs(tx,state,inputs,nFees,nValueIn,fScriptChecks,flags,cacheStore,pvChecks);
+}
+
+
+bool CheckInputs(
+    const CTransaction& tx,
+    CValidationState& state,
+    const CCoinsViewCache& inputs,
+    CAmount& nFees,
+    CAmount& nValueIn,
+    bool fScriptChecks,
+    unsigned int flags,
+    bool cacheStore,
+    std::vector<CScriptCheck>* pvChecks)
+{
     if (!tx.IsCoinBase() )
     {
         if (pvChecks)
@@ -52,8 +69,6 @@ bool CheckInputs(
         // This is also true for mempool checks.
         CBlockIndex* pindexPrev = mapBlockIndex.find(inputs.GetBestBlock())->second;
         int nSpendHeight = pindexPrev->nHeight + 1;
-        CAmount nValueIn = 0;
-        CAmount nFees = 0;
         for (unsigned int i = 0; i < tx.vin.size(); i++)
         {
             const COutPoint& prevout = tx.vin[i].prevout;

@@ -1444,7 +1444,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                              REJECT_INVALID, "bad-blk-sigops");
 
 
-        if (!tx.IsCoinBase()) {
+        if (!tx.IsCoinBase())
+        {
             if (!view.HaveInputs(tx))
                 return state.DoS(100, error("ConnectBlock() : inputs missing/spent"),
                                  REJECT_INVALID, "bad-txns-inputs-missingorspent");
@@ -1459,13 +1460,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 return state.DoS(100, error("ConnectBlock() : too many sigops"),
                                  REJECT_INVALID, "bad-blk-sigops");
 
-            if (!tx.IsCoinStake())
-                nFees += view.GetValueIn(tx) - tx.GetValueOut();
-            nValueIn += view.GetValueIn(tx);
-
             std::vector<CScriptCheck> vChecks;
-            if (!CheckInputs(tx, state, view, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL))
+            CAmount txFees =0;
+            CAmount txInputAmount=0;
+            if (!CheckInputs(tx, state, view, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL))
                 return false;
+
+            nFees += txFees;
+            nValueIn += txInputAmount;
             control.Add(vChecks);
         }
 

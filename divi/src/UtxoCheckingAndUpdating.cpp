@@ -53,7 +53,8 @@ bool CheckInputs(
     bool fScriptChecks,
     unsigned int flags,
     bool cacheStore,
-    std::vector<CScriptCheck>* pvChecks)
+    std::vector<CScriptCheck>* pvChecks,
+    bool connectBlockDoS)
 {
     if (!tx.IsCoinBase() )
     {
@@ -63,7 +64,16 @@ bool CheckInputs(
         // This doesn't trigger the DoS code on purpose; if it did, it would make it easier
         // for an attacker to attempt to split the network.
         if (!inputs.HaveInputs(tx))
-            return state.Invalid(error("CheckInputs() : %s inputs unavailable", tx.GetHash().ToString()));
+        {
+            if(connectBlockDoS)
+            {
+                return state.DoS(100, error("ConnectBlock() : inputs missing/spent"),
+                                 REJECT_INVALID, "bad-txns-inputs-missingorspent");
+            }
+            return state.Invalid(
+                error("CheckInputs() : %s inputs unavailable", tx.GetHash().ToString()) );
+        }
+
 
         // While checking, GetBestBlock() refers to the parent block.
         // This is also true for mempool checks.

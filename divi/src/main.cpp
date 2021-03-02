@@ -1457,8 +1457,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             std::vector<CScriptCheck> vChecks;
             CAmount txFees =0;
             CAmount txInputAmount=0;
-            if (!CheckInputs(tx, state, view, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL))
+            if (!CheckInputs(tx, state, view, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
+            {
                 return false;
+            }
 
             nFees += txFees;
             nValueIn += txInputAmount;

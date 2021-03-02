@@ -26,5 +26,6 @@ bool CheckInputs(
     bool fScriptChecks,
     unsigned int flags,
     bool cacheStore,
-    std::vector<CScriptCheck>* pvChecks = nullptr);
+    std::vector<CScriptCheck>* pvChecks = nullptr,
+    bool connectBlockDoS = false);
 #endif// UTXO_CHECKING_AND_UPDATING_H

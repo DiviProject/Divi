@@ -2,6 +2,7 @@
 #define UTXO_CHECKING_AND_UPDATING_H
 #include <vector>
 #include <scriptCheck.h>
+#include <amount.h>
 
 class CTransaction;
 class CValidationState;
@@ -12,6 +13,16 @@ bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,
     const CCoinsViewCache& inputs,
+    bool fScriptChecks,
+    unsigned int flags,
+    bool cacheStore,
+    std::vector<CScriptCheck>* pvChecks = nullptr);
+bool CheckInputs(
+    const CTransaction& tx,
+    CValidationState& state,
+    const CCoinsViewCache& inputs,
+    CAmount& nFees,
+    CAmount& nValueIn,
     bool fScriptChecks,
     unsigned int flags,
     bool cacheStore,

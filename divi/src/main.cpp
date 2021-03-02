@@ -1442,13 +1442,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return false;
     }
 
-    CBlockUndo blockundo;
-
     TransactionInputChecker txInputChecker(pindex,scriptcheckqueue);
 
     CDiskTxPos pos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()));
     std::vector<std::pair<uint256, CDiskTxPos> > vPos;
     vPos.reserve(block.vtx.size());
+    CBlockUndo blockundo;
     blockundo.vtxundo.reserve(block.vtx.size() - 1);
 
     IndexDatabaseUpdates indexDatabaseUpdates;

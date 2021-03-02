@@ -1381,13 +1381,15 @@ void UpdateNewOutputsInIndexDatabaseUpdates(
 
 struct TransactionInputChecker
 {
+    int nSigOps;
     const bool fScriptChecks;
     CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker;
 
     TransactionInputChecker(
         const CBlockIndex* pindex,
         CCheckQueue<CScriptCheck>& scriptCheckingQueue
-        ): fScriptChecks(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate())
+        ): nSigOps(0)
+        , fScriptChecks(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate())
         , multiThreadedScriptChecker(fScriptChecks && nScriptCheckThreads ? &scriptCheckingQueue : NULL )
     {
     }
@@ -1411,6 +1413,24 @@ struct TransactionInputChecker
         totalFees += txFees;
         totalInputsMoved += txInputAmount;
         multiThreadedScriptChecker.Add(vChecks);
+        return true;
+    }
+
+    bool TotalSigOpsAreBelowMaximum(const CTransaction& tx, const CCoinsViewCache& view, CValidationState& state)
+    {
+        nSigOps += GetLegacySigOpCount(tx);
+        if (nSigOps > MAX_BLOCK_SIGOPS_CURRENT)
+            return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
+
+        if (!tx.IsCoinBase())
+        {
+            // Add in sigops done by pay-to-script-hash inputs;
+            // this is to prevent a "rogue miner" from creating
+            // an incredibly-expensive-to-validate block.
+            nSigOps += GetP2SHSigOpCount(tx, view);
+            if (nSigOps > MAX_BLOCK_SIGOPS_CURRENT)
+                return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
+        }
         return true;
     }
 
@@ -1466,32 +1486,18 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount nValueOut = 0;
     CAmount nValueIn = 0;
     CAmount nFees = 0;
-    unsigned int nSigOps = 0;
-    unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
         const TransactionLocationReference txLocationRef(tx.GetHash(),pindex->nHeight,i);
 
-        nSigOps += GetLegacySigOpCount(tx);
-        if (nSigOps > nMaxBlockSigOps)
-            return state.DoS(100, error("ConnectBlock() : too many sigops"),
-                             REJECT_INVALID, "bad-blk-sigops");
-
-
-        if (!tx.IsCoinBase())
+        if(!txInputChecker.TotalSigOpsAreBelowMaximum(tx,view,state))
         {
-            // Add in sigops done by pay-to-script-hash inputs;
-            // this is to prevent a "rogue miner" from creating
-            // an incredibly-expensive-to-validate block.
-            nSigOps += GetP2SHSigOpCount(tx, view);
-            if (nSigOps > nMaxBlockSigOps)
-                return state.DoS(100, error("ConnectBlock() : too many sigops"),
-                                 REJECT_INVALID, "bad-blk-sigops");
-
-            if(!txInputChecker.CheckInputsAndScheduleScriptChecks(tx,view,fJustCheck,state,nFees,nValueIn))
-            {
-                return false;
-            }
+            return false;
+        }
+        if (!tx.IsCoinBase() &&
+            !txInputChecker.CheckInputsAndScheduleScriptChecks(tx,view,fJustCheck,state,nFees,nValueIn))
+        {
+            return false;
         }
 
         // Enforce additional rules for coinstakes, which make sure that

@@ -1435,8 +1435,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
-        const uint256 txhash = tx.GetHash();
-        TransactionLocationReference txLocationRef(txhash,pindex->nHeight,i);
+        const TransactionLocationReference txLocationRef(tx.GetHash(),pindex->nHeight,i);
 
         nSigOps += GetLegacySigOpCount(tx);
         if (nSigOps > nMaxBlockSigOps)

@@ -1383,6 +1383,7 @@ struct TransactionInputChecker
 {
     int nSigOps;
     const bool fScriptChecks;
+    std::vector<CScriptCheck> vChecks;
     CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker;
     const CCoinsViewCache& view_;
     CValidationState& state_;
@@ -1394,6 +1395,7 @@ struct TransactionInputChecker
         CValidationState& state
         ): nSigOps(0)
         , fScriptChecks(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate())
+        , vChecks()
         , multiThreadedScriptChecker(fScriptChecks && nScriptCheckThreads ? &scriptCheckingQueue : NULL )
         , view_(view)
         , state_(state)
@@ -1405,7 +1407,7 @@ struct TransactionInputChecker
         const bool fJustCheck,
         CBlockIndex* pindex)
     {
-        std::vector<CScriptCheck> vChecks;
+        vChecks.clear();
         CAmount txFees =0;
         CAmount txInputAmount=0;
         if (!CheckInputs(tx, state_, view_, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))

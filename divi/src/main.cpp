@@ -1566,6 +1566,26 @@ void CalculateFees(bool isProofOfWork, const CBlockIndex* pindex, CBlockRewards&
         nExpectedMint.nStakeReward += nFees;
 }
 
+bool WriteUndoDataToDisk(CBlockIndex* pindex, CValidationState& state, CBlockUndo& blockundo)
+{
+    if (pindex->GetUndoPos().IsNull() || !pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
+        if (pindex->GetUndoPos().IsNull()) {
+            CDiskBlockPos pos;
+            if (!FindUndoPos(state, pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
+                return error("ConnectBlock() : FindUndoPos failed");
+            if (!blockundo.WriteToDisk(pos, pindex->pprev->GetBlockHash()))
+                return state.Abort("Failed to write undo data");
+
+            // update nUndoPos in block index
+            pindex->nUndoPos = pos.nPos;
+            pindex->nStatus |= BLOCK_HAVE_UNDO;
+        }
+
+        pindex->RaiseValidity(BLOCK_VALID_SCRIPTS);
+        setDirtyBlockIndex.insert(pindex);
+    }
+    return true;
+}
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
@@ -1654,22 +1674,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return true;
 
     // Write undo information to disk
-    if (pindex->GetUndoPos().IsNull() || !pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
-        if (pindex->GetUndoPos().IsNull()) {
-            CDiskBlockPos pos;
-            CBlockUndo& blockundo = blockTxChecker.getBlockUndoData();
-            if (!FindUndoPos(state, pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
-                return error("ConnectBlock() : FindUndoPos failed");
-            if (!blockundo.WriteToDisk(pos, pindex->pprev->GetBlockHash()))
-                return state.Abort("Failed to write undo data");
-
-            // update nUndoPos in block index
-            pindex->nUndoPos = pos.nPos;
-            pindex->nStatus |= BLOCK_HAVE_UNDO;
-        }
-
-        pindex->RaiseValidity(BLOCK_VALID_SCRIPTS);
-        setDirtyBlockIndex.insert(pindex);
+    if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()))
+    {
+        return false;
     }
 
     if (fTxIndex)

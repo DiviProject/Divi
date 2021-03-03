@@ -1668,39 +1668,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return false;
     }
     CalculateFees(block.IsProofOfWork(),pindex,nExpectedMint);
-
-    const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
-
-    CBlockIndex* chainTip = chainActive.Tip();
-    bool chainTipIsNull = chainTip == NULL;
-    int blockHeight = 0;
-    if (!chainTipIsNull)
-    {
-        if (chainTip->GetBlockHash() == block.hashPrevBlock) {
-            blockHeight = chainTip->nHeight + 1;
-        } else { //out of order
-            BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-            if (mi != mapBlockIndex.end() && (*mi).second)
-                blockHeight = (*mi).second->nHeight + 1;
-        }
-    }
-
-    if (blockHeight == 0) {
-        LogPrint("masternode","IsBlockValueValid() : WARNING: Couldn't find previous block\n");
-    }
-
-    if (!chainTipIsNull && !incentives.IsBlockValueValid(nExpectedMint, pindex->nMint, blockHeight)) {
-        return state.DoS(100,
-                         error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
-                               FormatMoney(pindex->nMint), nExpectedMint.ToString()),
-                         REJECT_INVALID, "bad-cb-amount");
-    }
-
-    if (!incentives.HasValidPayees(coinbaseTx,pindex)) {
-        mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
-        return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
-                         REJECT_INVALID, "bad-cb-payee");
-    }
+    CheckMintTotalsAndBlockPayees(block,pindex,incentives,nExpectedMint,state);
 
     if (!fVerifyingBlocks) {
         if (block.nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint)

@@ -1707,13 +1707,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     if (fJustCheck)
         return true;
 
-    // Write undo information to disk
-    if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()))
-    {
-        return false;
-    }
-
-    if(!UpdateDBIndices(indexDatabaseUpdates,blockTxChecker.txLocationData(),state))
+    if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
+       !UpdateDBIndices(indexDatabaseUpdates,blockTxChecker.txLocationData(),state))
     {
         return false;
     }

@@ -1478,6 +1478,85 @@ public:
     }
 };
 
+class BlockTransactionChecker
+{
+private:
+    CBlockUndo blockundo_;
+    const CBlock& block_;
+    CValidationState& state_;
+    CBlockIndex* pindex_;
+    CCoinsViewCache& view_;
+    const bool fJustCheck_;
+    TransactionInputChecker txInputChecker_;
+    TransactionLocationRecorder txLocationRecorder_;
+public:
+    BlockTransactionChecker(
+        const CBlock& block,
+        CValidationState& state,
+        CBlockIndex* pindex,
+        CCoinsViewCache& view,
+        bool fJustCheck
+        ): blockundo_()
+        , block_(block)
+        , state_(state)
+        , pindex_(pindex)
+        , view_(view)
+        , fJustCheck_(fJustCheck)
+        , txInputChecker_(pindex_,scriptcheckqueue,view_,state_)
+        , txLocationRecorder_(pindex_,block_)
+    {
+    }
+
+    bool Check(const CBlockRewards& nExpectedMint, IndexDatabaseUpdates& indexDatabaseUpdates)
+    {
+        CAmount nMoneySupplyPrev = pindex_->pprev ? pindex_->pprev->nMoneySupply : 0;
+        pindex_->nMoneySupply = nMoneySupplyPrev;
+        pindex_->nMint = 0;
+        for (unsigned int i = 0; i < block_.vtx.size(); i++) {
+            const CTransaction& tx = block_.vtx[i];
+            const TransactionLocationReference txLocationRef(tx.GetHash(),pindex_->nHeight,i);
+
+            if(!txInputChecker_.TotalSigOpsAreBelowMaximum(tx))
+            {
+                return false;
+            }
+            if (!tx.IsCoinBase())
+            {
+                if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx,fJustCheck_,pindex_))
+                {
+                    return false;
+                }
+                txInputChecker_.ScheduleBackgroundThreadScriptChecking();
+            }
+            if (!CheckCoinstakeForVaults(tx, nExpectedMint, view_)) {
+                return state_.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),
+                                REJECT_INVALID, "bad-coinstake-vault-spend");
+            }
+
+            UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view_, indexDatabaseUpdates);
+            UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,indexDatabaseUpdates);
+            UpdateCoins(tx, view_, blockundo_.vtxundo[i>0u? i-1: 0u], pindex_->nHeight);
+            txLocationRecorder_.RecordTxLocationData(tx);
+        }
+        return true;
+    }
+
+    bool WaitForScriptsToBeChecked()
+    {
+        return txInputChecker_.WaitForScriptsToBeChecked();
+    }
+
+    const std::vector<std::pair<uint256, CDiskTxPos> >& txLocationData() const
+    {
+        return txLocationRecorder_.locationData();
+    }
+
+    CBlockUndo& getBlockUndoData()
+    {
+        return blockundo_;
+    }
+};
+
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);

@@ -1407,7 +1407,7 @@ struct TransactionInputChecker
         multiThreadedScriptChecker.Add(vChecks);
         vChecks.clear();
     }
-    bool CheckInputsAndScheduleScriptChecks(
+    bool CheckInputsAndUpdateCoinSupplyRecords(
         const CTransaction& tx,
         const bool fJustCheck,
         CBlockIndex* pindex)
@@ -1424,7 +1424,6 @@ struct TransactionInputChecker
         const CAmount mintingMinusBurn = tx.GetValueOut() - txInputAmount;
         pindex->nMoneySupply += mintingMinusBurn;
         pindex->nMint += mintingMinusBurn + txFees;
-        ScheduleBackgroundThreadScriptChecking();
         return true;
     }
 
@@ -1533,10 +1532,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         {
             return false;
         }
-        if (!tx.IsCoinBase() &&
-            !txInputChecker.CheckInputsAndScheduleScriptChecks(tx,fJustCheck,pindex))
+        if (!tx.IsCoinBase())
         {
-            return false;
+            if(!txInputChecker.CheckInputsAndUpdateCoinSupplyRecords(tx,fJustCheck,pindex))
+            {
+                return false;
+            }
+            txInputChecker.ScheduleBackgroundThreadScriptChecking();
         }
         if (!CheckCoinstakeForVaults(tx, nExpectedMint, view)) {
             return state.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),

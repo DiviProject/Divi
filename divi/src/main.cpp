@@ -1402,23 +1402,29 @@ struct TransactionInputChecker
     {
     }
 
+    void ScheduleBackgroundThreadScriptChecking()
+    {
+        multiThreadedScriptChecker.Add(vChecks);
+        vChecks.clear();
+    }
     bool CheckInputsAndScheduleScriptChecks(
         const CTransaction& tx,
         const bool fJustCheck,
         CBlockIndex* pindex)
     {
-        vChecks.clear();
+        assert(vChecks.empty());
         CAmount txFees =0;
         CAmount txInputAmount=0;
         if (!CheckInputs(tx, state_, view_, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
         {
+            vChecks.clear();
             return false;
         }
 
         const CAmount mintingMinusBurn = tx.GetValueOut() - txInputAmount;
         pindex->nMoneySupply += mintingMinusBurn;
         pindex->nMint += mintingMinusBurn + txFees;
-        multiThreadedScriptChecker.Add(vChecks);
+        ScheduleBackgroundThreadScriptChecking();
         return true;
     }
 

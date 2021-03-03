@@ -1419,6 +1419,25 @@ struct TransactionInputChecker
         multiThreadedScriptChecker.Add(vChecks);
         return true;
     }
+    bool CheckInputsAndScheduleScriptChecks(
+        const CTransaction& tx,
+        const bool fJustCheck,
+        CBlockIndex* pindex)
+    {
+        std::vector<CScriptCheck> vChecks;
+        CAmount txFees =0;
+        CAmount txInputAmount=0;
+        if (!CheckInputs(tx, state_, view_, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
+        {
+            return false;
+        }
+
+        const CAmount mintingMinusBurn = tx.GetValueOut() - txInputAmount;
+        pindex->nMoneySupply += mintingMinusBurn;
+        pindex->nMint += mintingMinusBurn + txFees;
+        multiThreadedScriptChecker.Add(vChecks);
+        return true;
+    }
 
     bool TotalSigOpsAreBelowMaximum(const CTransaction& tx)
     {
@@ -1513,9 +1532,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
 
-    CAmount nValueOut = 0;
-    CAmount nValueIn = 0;
-    CAmount nFees = 0;
+
+    CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
+    pindex->nMoneySupply = nMoneySupplyPrev;
+    pindex->nMint = 0;
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
         const TransactionLocationReference txLocationRef(tx.GetHash(),pindex->nHeight,i);
@@ -1525,7 +1545,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return false;
         }
         if (!tx.IsCoinBase() &&
-            !txInputChecker.CheckInputsAndScheduleScriptChecks(tx,fJustCheck,nFees,nValueIn))
+            !txInputChecker.CheckInputsAndScheduleScriptChecks(tx,fJustCheck,pindex))
         {
             return false;
         }
@@ -1533,19 +1553,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),
                              REJECT_INVALID, "bad-coinstake-vault-spend");
         }
-        nValueOut += tx.GetValueOut();
 
         UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view, indexDatabaseUpdates);
         UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,indexDatabaseUpdates);
         UpdateCoins(tx, view, blockundo.vtxundo[i>0u? i-1: 0u], pindex->nHeight);
         txLocationRecorder.RecordTxLocationData(tx);
     }
-
-    // track money supply and mint amount info
-    CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
-    pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
-    pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
-
+    CAmount nFees = pindex->nMint - (pindex->nMoneySupply - nMoneySupplyPrev);
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
     if (block.IsProofOfWork())
         nExpectedMint.nStakeReward += nFees;

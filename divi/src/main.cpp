@@ -1486,7 +1486,6 @@ private:
     CValidationState& state_;
     CBlockIndex* pindex_;
     CCoinsViewCache& view_;
-    const bool fJustCheck_;
     TransactionInputChecker txInputChecker_;
     TransactionLocationRecorder txLocationRecorder_;
 public:
@@ -1494,20 +1493,18 @@ public:
         const CBlock& block,
         CValidationState& state,
         CBlockIndex* pindex,
-        CCoinsViewCache& view,
-        bool fJustCheck
+        CCoinsViewCache& view
         ): blockundo_(block.vtx.size() - 1)
         , block_(block)
         , state_(state)
         , pindex_(pindex)
         , view_(view)
-        , fJustCheck_(fJustCheck)
         , txInputChecker_(pindex_,scriptcheckqueue,view_,state_)
         , txLocationRecorder_(pindex_,block_)
     {
     }
 
-    bool Check(const CBlockRewards& nExpectedMint, IndexDatabaseUpdates& indexDatabaseUpdates)
+    bool Check(const CBlockRewards& nExpectedMint,bool fJustCheck, IndexDatabaseUpdates& indexDatabaseUpdates)
     {
         const CAmount nMoneySupplyPrev = pindex_->pprev ? pindex_->pprev->nMoneySupply : 0;
         pindex_->nMoneySupply = nMoneySupplyPrev;
@@ -1522,7 +1519,7 @@ public:
             }
             if (!tx.IsCoinBase())
             {
-                if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx,fJustCheck_,pindex_))
+                if(!txInputChecker_.CheckInputsAndUpdateCoinSupplyRecords(tx,fJustCheck,pindex_))
                 {
                     return false;
                 }
@@ -1621,9 +1618,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
-    BlockTransactionChecker blockTxChecker(block,state,pindex,view,fJustCheck);
+    BlockTransactionChecker blockTxChecker(block,state,pindex,view);
 
-    if(!blockTxChecker.Check(nExpectedMint,indexDatabaseUpdates))
+    if(!blockTxChecker.Check(nExpectedMint,fJustCheck,indexDatabaseUpdates))
     {
         return false;
     }

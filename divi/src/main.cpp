@@ -1403,25 +1403,6 @@ struct TransactionInputChecker
     bool CheckInputsAndScheduleScriptChecks(
         const CTransaction& tx,
         const bool fJustCheck,
-        CAmount& totalFees,
-        CAmount& totalInputsMoved)
-    {
-        std::vector<CScriptCheck> vChecks;
-        CAmount txFees =0;
-        CAmount txInputAmount=0;
-        if (!CheckInputs(tx, state_, view_, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
-        {
-            return false;
-        }
-
-        totalFees += txFees;
-        totalInputsMoved += txInputAmount;
-        multiThreadedScriptChecker.Add(vChecks);
-        return true;
-    }
-    bool CheckInputsAndScheduleScriptChecks(
-        const CTransaction& tx,
-        const bool fJustCheck,
         CBlockIndex* pindex)
     {
         std::vector<CScriptCheck> vChecks;

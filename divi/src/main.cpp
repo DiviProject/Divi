@@ -1626,6 +1626,32 @@ bool CheckMintTotalsAndBlockPayees(
     return true;
 }
 
+bool UpdateDBIndices(
+    const IndexDatabaseUpdates& indexDatabaseUpdates,
+    const std::vector<std::pair<uint256, CDiskTxPos> >& txLocationData,
+    CValidationState& state)
+{
+    if (fTxIndex)
+        if (!pblocktree->WriteTxIndex(txLocationData))
+            return state.Abort("Failed to write transaction index");
+
+    if (fAddressIndex) {
+        if (!pblocktree->WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
+            return state.Abort("Failed to write address index");
+        }
+
+        if (!pblocktree->UpdateAddressUnspentIndex(indexDatabaseUpdates.addressUnspentIndex)) {
+            return state.Abort("Failed to write address unspent index");
+        }
+    }
+
+    if (fSpentIndex)
+        if (!pblocktree->UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
+            return state.Abort("Failed to write transaction index");
+
+    return true;
+}
+
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
@@ -1687,23 +1713,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return false;
     }
 
-    if (fTxIndex)
-        if (!pblocktree->WriteTxIndex(blockTxChecker.txLocationData()))
-            return state.Abort("Failed to write transaction index");
-
-    if (fAddressIndex) {
-        if (!pblocktree->WriteAddressIndex(indexDatabaseUpdates.addressIndex)) {
-            return state.Abort("Failed to write address index");
-        }
-
-        if (!pblocktree->UpdateAddressUnspentIndex(indexDatabaseUpdates.addressUnspentIndex)) {
-            return state.Abort("Failed to write address unspent index");
-        }
+    if(!UpdateDBIndices(indexDatabaseUpdates,blockTxChecker.txLocationData(),state))
+    {
+        return false;
     }
-
-    if (fSpentIndex)
-        if (!pblocktree->UpdateSpentIndex(indexDatabaseUpdates.spentIndex))
-            return state.Abort("Failed to write transaction index");
 
     // add this block to the view's block chain
     view.SetBestBlock(pindex->GetBlockHash());

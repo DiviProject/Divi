@@ -1557,6 +1557,15 @@ public:
     }
 };
 
+void CalculateFees(bool isProofOfWork, const CBlockIndex* pindex, CBlockRewards& nExpectedMint)
+{
+    const CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
+    CAmount nFees = pindex->nMint - (pindex->nMoneySupply - nMoneySupplyPrev);
+    //PoW phase redistributed fees to miner. PoS stage destroys fees.
+    if (isProofOfWork)
+        nExpectedMint.nStakeReward += nFees;
+}
+
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
@@ -1598,11 +1607,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     {
         return false;
     }
-    const CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
-    CAmount nFees = pindex->nMint - (pindex->nMoneySupply - nMoneySupplyPrev);
-    //PoW phase redistributed fees to miner. PoS stage destroys fees.
-    if (block.IsProofOfWork())
-        nExpectedMint.nStakeReward += nFees;
+    CalculateFees(block.IsProofOfWork(),pindex,nExpectedMint);
 
     const auto& coinbaseTx = (pindex->nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 

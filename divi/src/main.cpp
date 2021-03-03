@@ -1505,11 +1505,12 @@ public:
         , txInputChecker_(pindex_,scriptcheckqueue,view_,state_)
         , txLocationRecorder_(pindex_,block_)
     {
+        blockundo_.vtxundo.resize(block.vtx.size() - 1);
     }
 
     bool Check(const CBlockRewards& nExpectedMint, IndexDatabaseUpdates& indexDatabaseUpdates)
     {
-        CAmount nMoneySupplyPrev = pindex_->pprev ? pindex_->pprev->nMoneySupply : 0;
+        const CAmount nMoneySupplyPrev = pindex_->pprev ? pindex_->pprev->nMoneySupply : 0;
         pindex_->nMoneySupply = nMoneySupplyPrev;
         pindex_->nMint = 0;
         for (unsigned int i = 0; i < block_.vtx.size(); i++) {

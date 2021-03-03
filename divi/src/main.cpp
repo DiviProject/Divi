@@ -1591,45 +1591,15 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         subsidiesContainer.blockSubsidiesProvider(),
         sporkManager);
 
-    TransactionInputChecker txInputChecker(pindex,scriptcheckqueue,view,state);
-    TransactionLocationRecorder txLocationRecorder(pindex,block);
-
-    CBlockUndo blockundo;
-    blockundo.vtxundo.resize(block.vtx.size() - 1);
-
     IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
+    BlockTransactionChecker blockTxChecker(block,state,pindex,view,fJustCheck);
 
-
-    CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
-    pindex->nMoneySupply = nMoneySupplyPrev;
-    pindex->nMint = 0;
-    for (unsigned int i = 0; i < block.vtx.size(); i++) {
-        const CTransaction& tx = block.vtx[i];
-        const TransactionLocationReference txLocationRef(tx.GetHash(),pindex->nHeight,i);
-
-        if(!txInputChecker.TotalSigOpsAreBelowMaximum(tx))
-        {
-            return false;
-        }
-        if (!tx.IsCoinBase())
-        {
-            if(!txInputChecker.CheckInputsAndUpdateCoinSupplyRecords(tx,fJustCheck,pindex))
-            {
-                return false;
-            }
-            txInputChecker.ScheduleBackgroundThreadScriptChecking();
-        }
-        if (!CheckCoinstakeForVaults(tx, nExpectedMint, view)) {
-            return state.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),
-                             REJECT_INVALID, "bad-coinstake-vault-spend");
-        }
-
-        UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view, indexDatabaseUpdates);
-        UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,indexDatabaseUpdates);
-        UpdateCoins(tx, view, blockundo.vtxundo[i>0u? i-1: 0u], pindex->nHeight);
-        txLocationRecorder.RecordTxLocationData(tx);
+    if(!blockTxChecker.Check(nExpectedMint,indexDatabaseUpdates))
+    {
+        return false;
     }
+    const CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
     CAmount nFees = pindex->nMint - (pindex->nMoneySupply - nMoneySupplyPrev);
     //PoW phase redistributed fees to miner. PoS stage destroys fees.
     if (block.IsProofOfWork())
@@ -1673,7 +1643,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock() : new accumulator checkpoint generated on a block that is not multiple of 10"));
     }
 
-    if (!txInputChecker.WaitForScriptsToBeChecked())
+    if (!blockTxChecker.WaitForScriptsToBeChecked())
         return state.DoS(100, false);
 
     if (fJustCheck)
@@ -1683,6 +1653,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     if (pindex->GetUndoPos().IsNull() || !pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
         if (pindex->GetUndoPos().IsNull()) {
             CDiskBlockPos pos;
+            CBlockUndo& blockundo = blockTxChecker.getBlockUndoData();
             if (!FindUndoPos(state, pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
                 return error("ConnectBlock() : FindUndoPos failed");
             if (!blockundo.WriteToDisk(pos, pindex->pprev->GetBlockHash()))
@@ -1698,7 +1669,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
 
     if (fTxIndex)
-        if (!pblocktree->WriteTxIndex(txLocationRecorder.locationData()))
+        if (!pblocktree->WriteTxIndex(blockTxChecker.txLocationData()))
             return state.Abort("Failed to write transaction index");
 
     if (fAddressIndex) {

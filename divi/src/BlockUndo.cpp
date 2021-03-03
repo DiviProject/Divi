@@ -14,6 +14,13 @@
 #include <hash.h>
 #include <Logging.h>
 
+CBlockUndo::CBlockUndo(
+    size_t preAllocatedSize
+    ): vtxundo(preAllocatedSize)
+{
+
+}
+
 bool CBlockUndo::WriteToDisk(CDiskBlockPos& pos, const uint256& hashBlock)
 {
     // Open history file to append

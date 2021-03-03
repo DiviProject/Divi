@@ -1496,7 +1496,7 @@ public:
         CBlockIndex* pindex,
         CCoinsViewCache& view,
         bool fJustCheck
-        ): blockundo_()
+        ): blockundo_(block.vtx.size() - 1)
         , block_(block)
         , state_(state)
         , pindex_(pindex)
@@ -1505,7 +1505,6 @@ public:
         , txInputChecker_(pindex_,scriptcheckqueue,view_,state_)
         , txLocationRecorder_(pindex_,block_)
     {
-        blockundo_.vtxundo.resize(block.vtx.size() - 1);
     }
 
     bool Check(const CBlockRewards& nExpectedMint, IndexDatabaseUpdates& indexDatabaseUpdates)

@@ -1381,7 +1381,7 @@ void UpdateNewOutputsInIndexDatabaseUpdates(
 
 struct TransactionInputChecker
 {
-    int nSigOps;
+    unsigned nSigOps;
     const bool fScriptChecks;
     std::vector<CScriptCheck> vChecks;
     CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker;
@@ -1393,7 +1393,7 @@ struct TransactionInputChecker
         CCheckQueue<CScriptCheck>& scriptCheckingQueue,
         const CCoinsViewCache& view,
         CValidationState& state
-        ): nSigOps(0)
+        ): nSigOps(0u)
         , fScriptChecks(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate())
         , vChecks()
         , multiThreadedScriptChecker(fScriptChecks && nScriptCheckThreads ? &scriptCheckingQueue : NULL )

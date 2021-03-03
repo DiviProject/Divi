@@ -18,6 +18,8 @@ class CBlockUndo
 {
 public:
     std::vector<CTxUndo> vtxundo; // for all but the coinbase
+    CBlockUndo() = default;
+    CBlockUndo(size_t preAllocatedSize);
 
     ADD_SERIALIZE_METHODS;
 

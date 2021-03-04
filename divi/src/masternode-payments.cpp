@@ -156,13 +156,6 @@ CMasternodePayments::~CMasternodePayments()
     rankingCache.reset();
 }
 
-void CMasternodePayments::Clear()
-{
-    LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
-    mapMasternodeBlocks.clear();
-    mapMasternodePayeeVotes.clear();
-}
-
 bool CMasternodePayments::CanVote(const COutPoint& outMasternode, const uint256& seedHash)
 {
     LOCK(cs_mapMasternodePayeeVotes);

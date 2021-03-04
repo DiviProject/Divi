@@ -64,8 +64,6 @@ public:
     CMasternodePayments(MasternodePaymentData& paymentData, CMasternodeMan& masternodeManager);
     ~CMasternodePayments();
 
-    void Clear();
-
     bool AddWinningMasternode(const CMasternodePaymentWinner &winner);
 
     void Sync(CNode* node, int nCountNeeded);

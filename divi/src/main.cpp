@@ -2177,6 +2177,12 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
     return true;
 }
 
+bool CheckBlockHeader(const CBlock& block, CValidationState& state)
+{
+    // Check proof of work matches claimed amount
+    return CheckBlockHeader(block,state,block.IsProofOfWork());
+}
+
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig)
 {
     // These are checks that are independent of context.

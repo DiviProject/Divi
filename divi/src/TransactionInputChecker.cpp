@@ -21,7 +21,6 @@ void TransactionInputChecker::ThreadScriptCheck()
 
 TransactionInputChecker::TransactionInputChecker(
     bool checkScripts,
-    CCheckQueue<CScriptCheck>& scriptCheckingQueue,
     const CCoinsViewCache& view,
     CValidationState& state
     ): nSigOps(0u)

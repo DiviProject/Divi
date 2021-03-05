@@ -22,7 +22,6 @@ public:
     static void ThreadScriptCheck();
     TransactionInputChecker(
         bool checkScripts,
-        CCheckQueue<CScriptCheck>& scriptCheckingQueue,
         const CCoinsViewCache& view,
         CValidationState& state);
 

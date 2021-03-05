@@ -1399,6 +1399,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrintStr("block " + to_string(pindex->nHeight));
     LogPrintStr("; time = " + to_string(pindex->nTime));
     LogWalletBalance(pwalletMain);
+    static const CChainParams& chainParameters = Params();
 
     VerifyBestBlockIsAtPreviousBlock(pindex,view);
     if (block.GetHash() == Params().HashGenesisBlock())
@@ -1412,7 +1413,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return false;
     }
 
-    static const CChainParams& chainParameters = Params();
     static const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
     static const BlockIncentivesPopulator incentives(
         chainParameters,

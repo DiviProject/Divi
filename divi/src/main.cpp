@@ -1261,11 +1261,6 @@ void static FlushBlockFile(bool fFinalize = false)
 
 bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, unsigned int nAddSize);
 
-void ThreadScriptCheck()
-{
-    TransactionInputChecker::ThreadScriptCheck();
-}
-
 static int64_t nTimeTotal = 0;
 
 void VerifyBestBlockIsAtPreviousBlock(const CBlockIndex* pindex, CCoinsViewCache& view)

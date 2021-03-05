@@ -13,6 +13,7 @@
 #include "db.h"
 #include "wallet.h"
 #endif
+#include <TransactionInputChecker.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
@@ -54,7 +55,7 @@ struct TestingSetup {
 #endif
         nScriptCheckThreads = 3;
         for (int i=0; i < nScriptCheckThreads-1; i++)
-            threadGroup.create_thread(&ThreadScriptCheck);
+            threadGroup.create_thread(&TransactionInputChecker::ThreadScriptCheck);
         RegisterNodeSignals(GetNodeSignals());
     }
     ~TestingSetup()

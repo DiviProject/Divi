@@ -1271,13 +1271,13 @@ void VerifyBestBlockIsAtPreviousBlock(const CBlockIndex* pindex, CCoinsViewCache
     assert(hashPrevBlock == view.GetBestBlock());
 }
 
-bool CheckEnforcedPoSBlocksAndBIP30(const CBlock& block, CValidationState& state, const CBlockIndex* pindex, const CCoinsViewCache& view)
+bool CheckEnforcedPoSBlocksAndBIP30(const CChainParams& chainParameters, const CBlock& block, CValidationState& state, const CBlockIndex* pindex, const CCoinsViewCache& view)
 {
-    if (pindex->nHeight <= Params().LAST_POW_BLOCK() && block.IsProofOfStake())
+    if (pindex->nHeight <= chainParameters.LAST_POW_BLOCK() && block.IsProofOfStake())
         return state.DoS(100, error("ConnectBlock() : PoS period not active"),
                          REJECT_INVALID, "PoS-early");
 
-    if (pindex->nHeight > Params().LAST_POW_BLOCK() && block.IsProofOfWork())
+    if (pindex->nHeight > chainParameters.LAST_POW_BLOCK() && block.IsProofOfWork())
         return state.DoS(100, error("ConnectBlock() : PoW period ended"),
                          REJECT_INVALID, "PoW-ended");
 
@@ -1408,7 +1408,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             view.SetBestBlock(pindex->GetBlockHash());
         return true;
     }
-    if(!CheckEnforcedPoSBlocksAndBIP30(block,state,pindex,view))
+    if(!CheckEnforcedPoSBlocksAndBIP30(chainParameters,block,state,pindex,view))
     {
         return false;
     }

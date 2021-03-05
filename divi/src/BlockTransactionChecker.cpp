@@ -156,7 +156,7 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
             txInputChecker_.ScheduleBackgroundThreadScriptChecking();
         }
         if (!CheckCoinstakeForVaults(tx, nExpectedMint, view_)) {
-            return state_.DoS(100, error("ConnectBlock() : coinstake is invalid for vault"),
+            return state_.DoS(100, error("%s : coinstake is invalid for vault",__func__),
                             REJECT_INVALID, "bad-coinstake-vault-spend");
         }
 

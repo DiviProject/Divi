@@ -1274,18 +1274,18 @@ void VerifyBestBlockIsAtPreviousBlock(const CBlockIndex* pindex, CCoinsViewCache
 bool CheckEnforcedPoSBlocksAndBIP30(const CChainParams& chainParameters, const CBlock& block, CValidationState& state, const CBlockIndex* pindex, const CCoinsViewCache& view)
 {
     if (pindex->nHeight <= chainParameters.LAST_POW_BLOCK() && block.IsProofOfStake())
-        return state.DoS(100, error("ConnectBlock() : PoS period not active"),
+        return state.DoS(100, error("%s : PoS period not active",__func__),
                          REJECT_INVALID, "PoS-early");
 
     if (pindex->nHeight > chainParameters.LAST_POW_BLOCK() && block.IsProofOfWork())
-        return state.DoS(100, error("ConnectBlock() : PoW period ended"),
+        return state.DoS(100, error("%s : PoW period ended",__func__),
                          REJECT_INVALID, "PoW-ended");
 
     // Enforce BIP30.
     for (const auto& tx : block.vtx) {
         const CCoins* coins = view.AccessCoins(tx.GetHash());
         if (coins && !coins->IsPruned())
-            return state.DoS(100, error("ConnectBlock() : tried to overwrite transaction"),
+            return state.DoS(100, error("%s : tried to overwrite transaction",__func__),
                              REJECT_INVALID, "bad-txns-BIP30");
     }
 
@@ -1307,7 +1307,7 @@ bool WriteUndoDataToDisk(CBlockIndex* pindex, CValidationState& state, CBlockUnd
         if (pindex->GetUndoPos().IsNull()) {
             CDiskBlockPos pos;
             if (!FindUndoPos(state, pindex->nFile, pos, ::GetSerializeSize(blockundo, SER_DISK, CLIENT_VERSION) + 40))
-                return error("ConnectBlock() : FindUndoPos failed");
+                return error("%s : FindUndoPos failed",__func__);
             if (!blockundo.WriteToDisk(pos, pindex->pprev->GetBlockHash()))
                 return state.Abort("Failed to write undo data");
 
@@ -1351,14 +1351,15 @@ bool CheckMintTotalsAndBlockPayees(
 
     if (!chainTipIsNull && !incentives.IsBlockValueValid(nExpectedMint, pindex->nMint, blockHeight)) {
         return state.DoS(100,
-                         error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
-                               FormatMoney(pindex->nMint), nExpectedMint.ToString()),
+                         error("%s : reward pays too much (actual=%s vs limit=%s)",
+                            __func__,
+                            FormatMoney(pindex->nMint), nExpectedMint.ToString()),
                          REJECT_INVALID, "bad-cb-amount");
     }
 
     if (!incentives.HasValidPayees(coinbaseTx,pindex)) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
-        return state.DoS(0, error("ConnectBlock(): couldn't find masternode or superblock payments"),
+        return state.DoS(0, error("%s: couldn't find masternode or superblock payments",__func__),
                          REJECT_INVALID, "bad-cb-payee");
     }
     return true;
@@ -1437,7 +1438,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     if (!fVerifyingBlocks) {
         if (block.nAccumulatorCheckpoint != pindex->pprev->nAccumulatorCheckpoint)
-            return state.DoS(100, error("ConnectBlock() : new accumulator checkpoint generated on a block that is not multiple of 10"));
+            return state.DoS(100, error("%s : new accumulator checkpoint generated on a block that is not multiple of 10",__func__));
     }
 
     if (!blockTxChecker.WaitForScriptsToBeChecked())
@@ -1644,7 +1645,7 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
         if (!rv) {
             if (state.IsInvalid())
                 InvalidBlockFound(pindexNew, state);
-            return error("ConnectTip() : ConnectBlock %s failed", pindexNew->GetBlockHash().ToString());
+            return error("%s : ConnectBlock %s failed",__func__, pindexNew->GetBlockHash().ToString());
         }
         mapBlockSource.erase(inv.hash);
         nTime3 = GetTimeMicros();

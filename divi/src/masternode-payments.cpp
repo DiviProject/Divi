@@ -29,6 +29,7 @@
 #include <version.h>
 #include <MasternodePaymentData.h>
 #include <MasternodeHelpers.h>
+#include <MasternodeNetworkMessageManager.h>
 
 void Misbehaving(NodeId pnode, int howmuch);
 extern CCriticalSection cs_main;
@@ -140,12 +141,14 @@ public:
 
 CMasternodePayments::CMasternodePayments(
     MasternodePaymentData& paymentData,
+    MasternodeNetworkMessageManager& networkMessageManager,
     CMasternodeMan& masternodeManager
     ): rankingCache(new RankingCache)
     , nSyncedFromPeer(0)
     , nLastBlockHeight(0)
     , chainTipHeight(0)
     , paymentData_(paymentData)
+    , networkMessageManager_(networkMessageManager)
     , masternodeManager_(masternodeManager)
     , mapMasternodePayeeVotes(paymentData_.mapMasternodePayeeVotes)
     , mapMasternodeBlocks(paymentData_.mapMasternodeBlocks)
@@ -672,8 +675,7 @@ void ComputeMasternodesAndScores(
 
 std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const uint256& seedHash, const int nBlockHeight) const
 {
-    LockableMasternodeData mnData = masternodeManager_.GetLockableMasternodeData();
-    LOCK(mnData.cs);
+    LOCK(networkMessageManager_.cs);
     std::vector< CMasternode* > masternodeQueue;
     std::map<const CMasternode*, uint256> masternodeScores;
     std::vector<CMasternode> filteredMasternodes;
@@ -682,7 +684,7 @@ std::vector<CMasternode*> CMasternodePayments::GetMasternodePaymentQueue(const u
     masternodeManager_.Check();
     ComputeMasternodesAndScores(
         *this,
-        mnData.masternodes,
+        networkMessageManager_.masternodes,
         seedHash,
         nMnCount,
         nBlockHeight,
@@ -763,10 +765,9 @@ unsigned CMasternodePayments::GetMasternodeRank(const CTxIn& vin, const uint256&
     if (cacheEntry == nullptr) {
         std::vector<std::pair<int64_t, uint256>> rankedNodes;
         {
-            LockableMasternodeData mnData = masternodeManager_.GetLockableMasternodeData();
-            LOCK(mnData.cs);
+            LOCK(networkMessageManager_.cs);
             masternodeManager_.Check();
-            for (auto& mn : mnData.masternodes) {
+            for (auto& mn : networkMessageManager_.masternodes) {
                 int64_t score;
                 if (!CheckAndGetScore(mn, seedHash, minProtocol, score))
                     continue;

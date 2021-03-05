@@ -25,7 +25,7 @@ class CMasternodeSync;
 class I_BlockSubsidyProvider;
 class CMasternodeMan;
 class MasternodePaymentData;
-
+class MasternodeNetworkMessageManager;
 //
 // Masternode Payments Class
 // Keeps track of who should get paid for which blocks
@@ -43,6 +43,7 @@ private:
     int nLastBlockHeight;
     int chainTipHeight;
     MasternodePaymentData& paymentData_;
+    MasternodeNetworkMessageManager& networkMessageManager_;
     CMasternodeMan& masternodeManager_;
 
     /** Map from the inventory hashes of mnw's to the corresponding data.  */
@@ -61,7 +62,10 @@ public:
     static const int MNPAYMENTS_SIGNATURES_TOTAL;
     void updateChainTipHeight(const CBlockIndex* pindex);
 
-    CMasternodePayments(MasternodePaymentData& paymentData, CMasternodeMan& masternodeManager);
+    CMasternodePayments(
+        MasternodePaymentData& paymentData,
+        MasternodeNetworkMessageManager& networkMessageManager,
+        CMasternodeMan& masternodeManager);
     ~CMasternodePayments();
 
     bool AddWinningMasternode(const CMasternodePaymentWinner &winner);

@@ -218,7 +218,6 @@ BITCOIN_CORE_H = \
   masternode-payments.h \
   LotteryCoinstakes.h \
   LotteryWinnersCalculator.h \
-  LockableMasternodeData.h \
   BlockIncentivesPopulator.h \
   SuperblockSubsidyContainer.h \
   SuperblockHeightValidator.h \

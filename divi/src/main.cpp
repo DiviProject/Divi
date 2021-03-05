@@ -1261,8 +1261,6 @@ void static FlushBlockFile(bool fFinalize = false)
 
 bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, unsigned int nAddSize);
 
-static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
-
 void ThreadScriptCheck()
 {
     TransactionInputChecker::ThreadScriptCheck();
@@ -1427,7 +1425,7 @@ public:
         , state_(state)
         , pindex_(pindex)
         , view_(view)
-        , txInputChecker_(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate(), scriptcheckqueue,view_,state_)
+        , txInputChecker_(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate(),view_,state_)
         , txLocationRecorder_(pindex_,block_)
     {
     }

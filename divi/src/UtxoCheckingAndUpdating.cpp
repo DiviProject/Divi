@@ -67,7 +67,7 @@ bool CheckInputs(
         {
             if(connectBlockDoS)
             {
-                return state.DoS(100, error("ConnectBlock() : inputs missing/spent"),
+                return state.DoS(100, error("%s : inputs missing/spent",__func__),
                                  REJECT_INVALID, "bad-txns-inputs-missingorspent");
             }
             return state.Invalid(

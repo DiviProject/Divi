@@ -60,7 +60,7 @@ bool TransactionInputChecker::TotalSigOpsAreBelowMaximum(const CTransaction& tx)
 {
     nSigOps += GetLegacySigOpCount(tx);
     if (nSigOps > MAX_BLOCK_SIGOPS_CURRENT)
-        return state_.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
+        return state_.DoS(100, error("%s : too many sigops",__func__), REJECT_INVALID, "bad-blk-sigops");
 
     if (!tx.IsCoinBase())
     {
@@ -69,7 +69,7 @@ bool TransactionInputChecker::TotalSigOpsAreBelowMaximum(const CTransaction& tx)
         // an incredibly-expensive-to-validate block.
         nSigOps += GetP2SHSigOpCount(tx, view_);
         if (nSigOps > MAX_BLOCK_SIGOPS_CURRENT)
-            return state_.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
+            return state_.DoS(100, error("%s : too many sigops",__func__), REJECT_INVALID, "bad-blk-sigops");
     }
     return true;
 }

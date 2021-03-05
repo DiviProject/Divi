@@ -40,6 +40,7 @@
 #include <uiMessenger.h>
 #include <ActiveChainManager.h>
 #include <BlockDiskAccessor.h>
+#include <TransactionInputChecker.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -956,7 +957,7 @@ void StartScriptVerificationThreads(boost::thread_group& threadGroup)
 {
     if (nScriptCheckThreads) {
         for (int i = 0; i < nScriptCheckThreads - 1; i++)
-            threadGroup.create_thread(&ThreadScriptCheck);
+            threadGroup.create_thread(&TransactionInputChecker::ThreadScriptCheck);
     }
 }
 

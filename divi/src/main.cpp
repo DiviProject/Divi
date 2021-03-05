@@ -2402,11 +2402,6 @@ bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex
         return true;
     }
 
-    if (!CheckBlockHeader(block, state, false)) {
-        LogPrintf("AcceptBlockHeader(): CheckBlockHeader failed \n");
-        return false;
-    }
-
     // Get prev block index
     CBlockIndex* pindexPrev = NULL;
     if (hash != Params().HashGenesisBlock()) {

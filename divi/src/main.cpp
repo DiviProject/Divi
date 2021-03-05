@@ -51,6 +51,7 @@
 #include <OrphanTransactions.h>
 #include <MasternodeModule.h>
 #include <IndexDatabaseUpdates.h>
+#include <TransactionInputChecker.h>
 
 using namespace boost;
 using namespace std;
@@ -1264,8 +1265,7 @@ static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck()
 {
-    RenameThread("divi-scriptch");
-    scriptcheckqueue.Thread();
+    TransactionInputChecker::ThreadScriptCheck();
 }
 
 static int64_t nTimeTotal = 0;
@@ -1379,78 +1379,6 @@ void UpdateNewOutputsInIndexDatabaseUpdates(
     }
 }
 
-struct TransactionInputChecker
-{
-    unsigned nSigOps;
-    const bool fScriptChecks;
-    std::vector<CScriptCheck> vChecks;
-    CCheckQueueControl<CScriptCheck> multiThreadedScriptChecker;
-    const CCoinsViewCache& view_;
-    CValidationState& state_;
-
-    TransactionInputChecker(
-        const CBlockIndex* pindex,
-        CCheckQueue<CScriptCheck>& scriptCheckingQueue,
-        const CCoinsViewCache& view,
-        CValidationState& state
-        ): nSigOps(0u)
-        , fScriptChecks(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate())
-        , vChecks()
-        , multiThreadedScriptChecker(fScriptChecks && nScriptCheckThreads ? &scriptCheckingQueue : NULL )
-        , view_(view)
-        , state_(state)
-    {
-    }
-
-    void ScheduleBackgroundThreadScriptChecking()
-    {
-        multiThreadedScriptChecker.Add(vChecks);
-        vChecks.clear();
-    }
-    bool CheckInputsAndUpdateCoinSupplyRecords(
-        const CTransaction& tx,
-        const bool fJustCheck,
-        CBlockIndex* pindex)
-    {
-        assert(vChecks.empty());
-        CAmount txFees =0;
-        CAmount txInputAmount=0;
-        if (!CheckInputs(tx, state_, view_, txFees, txInputAmount, fScriptChecks, MANDATORY_SCRIPT_VERIFY_FLAGS, fJustCheck, nScriptCheckThreads ? &vChecks : NULL, true))
-        {
-            vChecks.clear();
-            return false;
-        }
-
-        const CAmount mintingMinusBurn = tx.GetValueOut() - txInputAmount;
-        pindex->nMoneySupply += mintingMinusBurn;
-        pindex->nMint += mintingMinusBurn + txFees;
-        return true;
-    }
-
-    bool TotalSigOpsAreBelowMaximum(const CTransaction& tx)
-    {
-        nSigOps += GetLegacySigOpCount(tx);
-        if (nSigOps > MAX_BLOCK_SIGOPS_CURRENT)
-            return state_.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
-
-        if (!tx.IsCoinBase())
-        {
-            // Add in sigops done by pay-to-script-hash inputs;
-            // this is to prevent a "rogue miner" from creating
-            // an incredibly-expensive-to-validate block.
-            nSigOps += GetP2SHSigOpCount(tx, view_);
-            if (nSigOps > MAX_BLOCK_SIGOPS_CURRENT)
-                return state_.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
-        }
-        return true;
-    }
-
-    bool WaitForScriptsToBeChecked()
-    {
-        return multiThreadedScriptChecker.Wait();
-    }
-};
-
 class TransactionLocationRecorder
 {
 private:
@@ -1499,7 +1427,7 @@ public:
         , state_(state)
         , pindex_(pindex)
         , view_(view)
-        , txInputChecker_(pindex_,scriptcheckqueue,view_,state_)
+        , txInputChecker_(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate(), scriptcheckqueue,view_,state_)
         , txLocationRecorder_(pindex_,block_)
     {
     }

@@ -1393,7 +1393,7 @@ public:
         txLocationData_.emplace_back(tx.GetHash(), nextBlockTxOnDiskLocation_);
         nextBlockTxOnDiskLocation_.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
-    const std::vector<std::pair<uint256, CDiskTxPos> >& locationData() const
+    const std::vector<std::pair<uint256, CDiskTxPos> >& getTxLocationData() const
     {
         return txLocationData_;
     }
@@ -1464,9 +1464,9 @@ public:
         return txInputChecker_.WaitForScriptsToBeChecked();
     }
 
-    const std::vector<std::pair<uint256, CDiskTxPos> >& txLocationData() const
+    const std::vector<std::pair<uint256, CDiskTxPos> >& getTxLocationData() const
     {
-        return txLocationRecorder_.locationData();
+        return txLocationRecorder_.getTxLocationData();
     }
 
     CBlockUndo& getBlockUndoData()
@@ -1629,7 +1629,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return true;
 
     if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
-       !UpdateDBIndices(indexDatabaseUpdates,blockTxChecker.txLocationData(),state))
+       !UpdateDBIndices(indexDatabaseUpdates,blockTxChecker.getTxLocationData(),state))
     {
         return false;
     }

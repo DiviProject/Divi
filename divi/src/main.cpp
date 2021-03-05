@@ -2167,16 +2167,6 @@ bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, unsigne
     return true;
 }
 
-bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
-{
-    // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, Params()))
-        return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
-                         REJECT_INVALID, "high-hash");
-
-    return true;
-}
-
 bool CheckBlockHeader(const CBlock& block, CValidationState& state)
 {
     // Check proof of work matches claimed amount

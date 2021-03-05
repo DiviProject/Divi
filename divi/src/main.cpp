@@ -1414,13 +1414,14 @@ public:
         const CBlock& block,
         CValidationState& state,
         CBlockIndex* pindex,
-        CCoinsViewCache& view
+        CCoinsViewCache& view,
+        const int blocksToSkipChecksFor
         ): blockundo_(block.vtx.size() - 1)
         , block_(block)
         , state_(state)
         , pindex_(pindex)
         , view_(view)
-        , txInputChecker_(pindex->nHeight >= checkpointsVerifier.GetTotalBlocksEstimate(),view_,state_)
+        , txInputChecker_(pindex->nHeight >= blocksToSkipChecksFor,view_,state_)
         , txLocationRecorder_(pindex_,block_)
     {
     }
@@ -1606,9 +1607,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         subsidiesContainer.blockSubsidiesProvider(),
         sporkManager);
 
+    const int blocksToSkipChecksFor = checkpointsVerifier.GetTotalBlocksEstimate();
     IndexDatabaseUpdates indexDatabaseUpdates;
     CBlockRewards nExpectedMint = subsidiesContainer.blockSubsidiesProvider().GetBlockSubsidity(pindex->nHeight);
-    BlockTransactionChecker blockTxChecker(block,state,pindex,view);
+    BlockTransactionChecker blockTxChecker(block,state,pindex,view,blocksToSkipChecksFor);
 
     if(!blockTxChecker.Check(nExpectedMint,fJustCheck,indexDatabaseUpdates))
     {

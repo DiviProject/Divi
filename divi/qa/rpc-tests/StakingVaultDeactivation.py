@@ -66,8 +66,6 @@ class StakingVaultDeactivationTest(BitcoinTestFramework):
         self.nodes.append(start_node(1, self.options.tmpdir,["-debug","-autocombine=0"]))
         self.nodes.append(start_node(2, self.options.tmpdir,["-debug","-autocombine=0"]))
 
-        stakingVaultForkActivationTime = 2000000000
-        set_node_times(self.nodes,stakingVaultForkActivationTime)
         connect_nodes_bi(self.nodes, 0, 1)
         connect_nodes_bi(self.nodes, 0, 2)
         connect_nodes_bi(self.nodes, 2, 1)

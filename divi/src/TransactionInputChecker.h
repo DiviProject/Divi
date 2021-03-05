@@ -7,6 +7,7 @@
 class CValidationState;
 class CCoinsViewCache;
 class CBlockIndex;
+class CTransaction;
 
 class TransactionInputChecker
 {

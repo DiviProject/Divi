@@ -428,10 +428,6 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
 //
 // Deterministically select the oldest/best masternode to pay on the network
 //
-LockableMasternodeData CMasternodeMan::GetLockableMasternodeData()
-{
-    return {cs,networkMessageManager_.masternodes};
-}
 
 void CMasternodeMan::RecordSeenPing(const CMasternodePing& mnp)
 {

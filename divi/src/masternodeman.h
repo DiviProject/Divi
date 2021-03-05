@@ -10,7 +10,6 @@
 #include "masternode.h"
 #include "net.h"
 #include "sync.h"
-#include <LockableMasternodeData.h>
 
 #include <memory>
 
@@ -50,7 +49,6 @@ private:
     bool CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchronization,CMasternodeBroadcast& mnb, int& nDoS);
     bool CheckAndUpdatePing(CMasternode& mn,CMasternodePing& mnp, int& nDoS, bool fRequireEnabled = true);
 public:
-    LockableMasternodeData GetLockableMasternodeData();
 
     CMasternodeMan(
         MasternodeNetworkMessageManager& networkMessageManager,

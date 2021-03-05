@@ -2180,7 +2180,11 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
 bool CheckBlockHeader(const CBlock& block, CValidationState& state)
 {
     // Check proof of work matches claimed amount
-    return CheckBlockHeader(block,state,block.IsProofOfWork());
+    if (block.IsProofOfWork() && !CheckProofOfWork(block.GetHash(), block.nBits, Params()))
+        return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
+                         REJECT_INVALID, "high-hash");
+
+    return true;
 }
 
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig)

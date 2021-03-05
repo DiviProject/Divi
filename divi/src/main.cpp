@@ -2175,10 +2175,8 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     // redundant with the call in AcceptBlockHeader.
     if (block.IsProofOfWork() && !CheckProofOfWork(block.GetHash(), block.nBits, Params()))
     {
-        state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
-                         REJECT_INVALID, "high-hash");
-        return state.DoS(100, error("CheckBlock() : CheckBlockHeader failed"),
-                         REJECT_INVALID, "bad-header", true);
+        return state.DoS(150, error("%s : proof of work failed",__func__),
+                         REJECT_INVALID, "bad-header: high-hash", true);
     }
 
     // Check timestamp

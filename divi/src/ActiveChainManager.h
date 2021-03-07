@@ -30,7 +30,6 @@ private:
         CCoinsViewCache& view,
         const CTransaction& tx,
         const TransactionLocationReference& txLocationReference,
-        const CTxUndo& txundo,
         IndexDatabaseUpdates& indexDBUpdates) const;
     void CollectIndexUpdatesFromOutputs(
         const CTransaction& tx,

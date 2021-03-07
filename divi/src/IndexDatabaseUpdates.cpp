@@ -4,6 +4,7 @@ IndexDatabaseUpdates::IndexDatabaseUpdates(
     ): addressIndex()
     , addressUnspentIndex()
     , spentIndex()
+    , txLocationData()
 {
 }
 

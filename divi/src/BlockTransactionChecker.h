@@ -18,14 +18,16 @@ class TransactionLocationRecorder
 {
 private:
     CDiskTxPos nextBlockTxOnDiskLocation_;
-    std::vector<std::pair<uint256, CDiskTxPos> > txLocationData_;
+    size_t numberOfTransactions_;
+    bool txLocationDataSizeHasBeenPreallocated_;
 public:
 
     TransactionLocationRecorder(
         const CBlockIndex* pindex,
         const CBlock& block);
-    void RecordTxLocationData(const CTransaction& tx);
-    const std::vector<std::pair<uint256, CDiskTxPos> >& getTxLocationData() const;
+    void RecordTxLocationData(
+        const CTransaction& tx,
+        std::vector<std::pair<uint256, CDiskTxPos> >& txLocationData);
 };
 
 class BlockTransactionChecker
@@ -51,7 +53,6 @@ public:
         bool fJustCheck,
         IndexDatabaseUpdates& indexDatabaseUpdates);
     bool WaitForScriptsToBeChecked();
-    const std::vector<std::pair<uint256, CDiskTxPos> >& getTxLocationData() const;
     CBlockUndo& getBlockUndoData();
 };
 

@@ -12,92 +12,7 @@
 #include <BlockRewards.h>
 #include <UtxoCheckingAndUpdating.h>
 #include <kernel.h>
-
-extern bool fAddressIndex;
-extern bool fSpentIndex;
-
-void UpdateSpendingActivityInIndexDatabaseUpdates(
-    const CTransaction& tx,
-    const TransactionLocationReference& txLocationRef,
-    const CCoinsViewCache& view,
-    IndexDatabaseUpdates& indexDatabaseUpdates)
-{
-    if (tx.IsCoinBase()) return;
-    if (fAddressIndex || fSpentIndex)
-    {
-        for (size_t j = 0; j < tx.vin.size(); j++) {
-
-            const CTxIn input = tx.vin[j];
-            const CTxOut &prevout = view.GetOutputFor(tx.vin[j]);
-            uint160 hashBytes;
-            int addressType;
-
-            if (prevout.scriptPubKey.IsPayToScriptHash()) {
-                hashBytes = uint160(std::vector<unsigned char>(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22));
-                addressType = 2;
-            } else if (prevout.scriptPubKey.IsPayToPublicKeyHash()) {
-                hashBytes = uint160(std::vector<unsigned char>(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23));
-                addressType = 1;
-            } else {
-                hashBytes.SetNull();
-                addressType = 0;
-            }
-            if (fAddressIndex && addressType > 0) {
-                // record spending activity
-                indexDatabaseUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(addressType, hashBytes, txLocationRef.blockHeight, txLocationRef.transactionIndex, txLocationRef.hash, j, true), prevout.nValue * -1));
-                // remove address from unspent index
-                indexDatabaseUpdates.addressUnspentIndex.push_back(std::make_pair(CAddressUnspentKey(addressType, hashBytes, input.prevout.hash, input.prevout.n), CAddressUnspentValue()));
-            }
-            if (fSpentIndex) {
-                // add the spent index to determine the txid and input that spent an output
-                // and to find the amount and address from an input
-                indexDatabaseUpdates.spentIndex.push_back(std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue(txLocationRef.hash, j, txLocationRef.blockHeight, prevout.nValue, addressType, hashBytes)));
-            }
-        }
-    }
-}
-
-void UpdateNewOutputsInIndexDatabaseUpdates(
-    const CTransaction& tx,
-    const TransactionLocationReference& txLocationRef,
-    IndexDatabaseUpdates& indexDatabaseUpdates)
-{
-    if (fAddressIndex) {
-        for (unsigned int k = 0; k < tx.vout.size(); k++) {
-            const CTxOut &out = tx.vout[k];
-
-            if (out.scriptPubKey.IsPayToScriptHash()) {
-                std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
-
-                // record receiving activity
-                indexDatabaseUpdates.addressIndex.push_back(
-                    std::make_pair(CAddressIndexKey(2, uint160(hashBytes), txLocationRef.blockHeight, txLocationRef.transactionIndex, txLocationRef.hash, k, false), out.nValue));
-
-                // record unspent output
-                indexDatabaseUpdates.addressUnspentIndex.push_back(
-                    std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), txLocationRef.hash, k), CAddressUnspentValue(out.nValue, out.scriptPubKey, txLocationRef.blockHeight)));
-
-            } else if (out.scriptPubKey.IsPayToPublicKeyHash()) {
-                std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
-
-                // record receiving activity
-                indexDatabaseUpdates.addressIndex.push_back(
-                    std::make_pair(CAddressIndexKey(1, uint160(hashBytes), txLocationRef.blockHeight, txLocationRef.transactionIndex, txLocationRef.hash, k, false), out.nValue));
-
-                // record unspent output
-                indexDatabaseUpdates.addressUnspentIndex.push_back(
-                    std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), txLocationRef.hash, k), CAddressUnspentValue(out.nValue, out.scriptPubKey, txLocationRef.blockHeight)));
-
-            } else {
-                continue;
-            }
-
-        }
-    }
-}
-
-
-
+#include <IndexDatabaseUpdateCollector.h>
 
 TransactionLocationRecorder::TransactionLocationRecorder(
     const CBlockIndex* pindex,
@@ -160,8 +75,7 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
                             REJECT_INVALID, "bad-coinstake-vault-spend");
         }
 
-        UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view_, indexDatabaseUpdates);
-        UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,indexDatabaseUpdates);
+        IndexDatabaseUpdateCollector::RecordTransaction(tx,txLocationRef,view_, indexDatabaseUpdates);
         UpdateCoins(tx, view_, blockundo_.vtxundo[i>0u? i-1: 0u], pindex_->nHeight);
         txLocationRecorder_.RecordTxLocationData(tx);
     }

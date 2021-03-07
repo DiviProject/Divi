@@ -13,6 +13,7 @@
 #include <utiltime.h>
 #include <I_BlockDataReader.h>
 #include <IndexDatabaseUpdates.h>
+#include <IndexDatabaseUpdateCollector.h>
 
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
@@ -222,14 +223,8 @@ bool ActiveChainManager::UpdateDBIndicesFromDisconnection(
     IndexDatabaseUpdates indexDBUpdates;
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
-
         TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
-        CollectIndexUpdatesFromOutputs(tx,txLocationReference,indexDBUpdates);
-        // restore inputs
-        if (!tx.IsCoinBase() )
-        {
-            CollectIndexUpdatesFromInputs(view, tx, txLocationReference, indexDBUpdates);
-        }
+        IndexDatabaseUpdateCollector::ReverseTransaction(tx,txLocationReference,view,indexDBUpdates);
     }
 
     view.SetBestBlock(pindex->pprev->GetBlockHash());

@@ -196,6 +196,7 @@ BITCOIN_CORE_H = \
   BlockUndo.h \
   ValidationState.h \
   ActiveChainManager.h \
+  IndexDatabaseUpdateCollector.h \
   main.h \
   OrphanTransactions.h \
   TransactionOpCounting.h \
@@ -361,6 +362,7 @@ libbitcoin_server_a_SOURCES = \
   TransactionInputChecker.cpp \
   UtxoCheckingAndUpdating.cpp\
   ActiveChainManager.cpp \
+  IndexDatabaseUpdateCollector.cpp \
   main.cpp \
   OrphanTransactions.cpp \
   WalletLoggingHelper.cpp \

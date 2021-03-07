@@ -1365,7 +1365,7 @@ bool CheckMintTotalsAndBlockPayees(
     return true;
 }
 
-bool UpdateDBIndices(
+bool UpdateDBIndicesForNewBlock(
     const IndexDatabaseUpdates& indexDatabaseUpdates,
     CValidationState& state)
 {
@@ -1447,7 +1447,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return true;
 
     if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
-       !UpdateDBIndices(indexDatabaseUpdates,state))
+       !UpdateDBIndicesForNewBlock(indexDatabaseUpdates,state))
     {
         return false;
     }

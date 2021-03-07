@@ -12,7 +12,7 @@ extern bool fSpentIndex;
 
 namespace Spending
 {
-void UpdateSpendingActivityInIndexDatabaseUpdates(
+void CollectUpdatesFromInputs(
     const CTransaction& tx,
     const TransactionLocationReference& txLocationRef,
     const CCoinsViewCache& view,
@@ -53,7 +53,7 @@ void UpdateSpendingActivityInIndexDatabaseUpdates(
     }
 }
 
-void UpdateNewOutputsInIndexDatabaseUpdates(
+void CollectUpdatesFromOutputs(
     const CTransaction& tx,
     const TransactionLocationReference& txLocationRef,
     IndexDatabaseUpdates& indexDatabaseUpdates)
@@ -99,6 +99,6 @@ void IndexDatabaseUpdateCollector::RecordTransaction(
         const CCoinsViewCache& view,
         IndexDatabaseUpdates& indexDatabaseUpdates)
 {
-    Spending::UpdateSpendingActivityInIndexDatabaseUpdates(tx,txLocationRef,view, indexDatabaseUpdates);
-    Spending::UpdateNewOutputsInIndexDatabaseUpdates(tx,txLocationRef,indexDatabaseUpdates);
+    Spending::CollectUpdatesFromInputs(tx,txLocationRef,view, indexDatabaseUpdates);
+    Spending::CollectUpdatesFromOutputs(tx,txLocationRef,indexDatabaseUpdates);
 }

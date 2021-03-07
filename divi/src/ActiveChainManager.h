@@ -23,7 +23,7 @@ private:
     CBlockTreeDB* blocktree_;
     const I_BlockDataReader& blockDataReader_;
 
-    bool ApplyUpdateIndexDBs(
+    bool ApplyDisconnectionUpdateIndexToDBs(
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
     void CollectIndexUpdatesFromInputs(

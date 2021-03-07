@@ -208,7 +208,7 @@ static bool RestoreInputs(
     return true;
 }
 
-bool ActiveChainManager::UpdateDBIndices(
+bool ActiveChainManager::UpdateDBIndicesFromDisconnection(
     CBlock& block,
     CBlockUndo& blockUndo,
     CValidationState& state,
@@ -287,7 +287,7 @@ bool ActiveChainManager::DisconnectBlock(
     // undo transactions in reverse order
     if(!pfClean)
     {
-        if(!UpdateDBIndices(block,blockUndo,state,pindex,view))
+        if(!UpdateDBIndicesFromDisconnection(block,blockUndo,state,pindex,view))
         {
             return false;
         }

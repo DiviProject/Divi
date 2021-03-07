@@ -36,7 +36,7 @@ private:
         const CTransaction& tx,
         const TransactionLocationReference& txLocationReference,
         IndexDatabaseUpdates& indexDBUpdates) const;
-    bool UpdateDBIndices(
+    bool UpdateDBIndicesFromDisconnection(
         CBlock& block,
         CBlockUndo& blockUndo,
         CValidationState& state,

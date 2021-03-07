@@ -136,6 +136,11 @@ static void CollectUpdatesFromInputs(
                         CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, txLocationReference.blockHeight)));
             }
         }
+        if(fSpentIndex)
+        {
+            indexDBUpdates.spentIndex.push_back(
+                std::make_pair(CSpentIndexKey(input.prevout.hash, input.prevout.n), CSpentIndexValue()));
+        }
     }
 }
 

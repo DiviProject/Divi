@@ -18,19 +18,22 @@ TransactionLocationRecorder::TransactionLocationRecorder(
     const CBlockIndex* pindex,
     const CBlock& block
     ): nextBlockTxOnDiskLocation_(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()))
-    , txLocationData_()
+    , numberOfTransactions_(block.vtx.size())
+    , txLocationDataSizeHasBeenPreallocated_(false)
 {
-    txLocationData_.reserve(block.vtx.size());
 }
 
-void TransactionLocationRecorder::RecordTxLocationData(const CTransaction& tx)
+void TransactionLocationRecorder::RecordTxLocationData(
+    const CTransaction& tx,
+    std::vector<std::pair<uint256, CDiskTxPos> >& txLocationData)
 {
-    txLocationData_.emplace_back(tx.GetHash(), nextBlockTxOnDiskLocation_);
+    if(!txLocationDataSizeHasBeenPreallocated_)
+    {
+        txLocationData.reserve(numberOfTransactions_);
+        txLocationDataSizeHasBeenPreallocated_ = true;
+    }
+    txLocationData.emplace_back(tx.GetHash(), nextBlockTxOnDiskLocation_);
     nextBlockTxOnDiskLocation_.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
-}
-const std::vector<std::pair<uint256, CDiskTxPos> >& TransactionLocationRecorder::getTxLocationData() const
-{
-    return txLocationData_;
 }
 
 BlockTransactionChecker::BlockTransactionChecker(
@@ -77,20 +80,14 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
 
         IndexDatabaseUpdateCollector::RecordTransaction(tx,txLocationRef,view_, indexDatabaseUpdates);
         UpdateCoins(tx, view_, blockundo_.vtxundo[i>0u? i-1: 0u], pindex_->nHeight);
-        txLocationRecorder_.RecordTxLocationData(tx);
+        txLocationRecorder_.RecordTxLocationData(tx,indexDatabaseUpdates.txLocationData);
     }
-    indexDatabaseUpdates.txLocationData = txLocationRecorder_.getTxLocationData();
     return true;
 }
 
 bool BlockTransactionChecker::WaitForScriptsToBeChecked()
 {
     return txInputChecker_.WaitForScriptsToBeChecked();
-}
-
-const std::vector<std::pair<uint256, CDiskTxPos> >& BlockTransactionChecker::getTxLocationData() const
-{
-    return txLocationRecorder_.getTxLocationData();
 }
 
 CBlockUndo& BlockTransactionChecker::getBlockUndoData()

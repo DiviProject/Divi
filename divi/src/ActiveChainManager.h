@@ -26,15 +26,6 @@ private:
     bool ApplyDisconnectionUpdateIndexToDBs(
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
-    void CollectIndexUpdatesFromInputs(
-        CCoinsViewCache& view,
-        const CTransaction& tx,
-        const TransactionLocationReference& txLocationReference,
-        IndexDatabaseUpdates& indexDBUpdates) const;
-    void CollectIndexUpdatesFromOutputs(
-        const CTransaction& tx,
-        const TransactionLocationReference& txLocationReference,
-        IndexDatabaseUpdates& indexDBUpdates) const;
     bool UpdateDBIndicesFromDisconnection(
         CBlock& block,
         CBlockUndo& blockUndo,

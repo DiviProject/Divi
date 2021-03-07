@@ -1367,11 +1367,10 @@ bool CheckMintTotalsAndBlockPayees(
 
 bool UpdateDBIndices(
     const IndexDatabaseUpdates& indexDatabaseUpdates,
-    const std::vector<std::pair<uint256, CDiskTxPos> >& txLocationData,
     CValidationState& state)
 {
     if (fTxIndex)
-        if (!pblocktree->WriteTxIndex(txLocationData))
+        if (!pblocktree->WriteTxIndex(indexDatabaseUpdates.txLocationData))
             return state.Abort("Failed to write transaction index");
 
     if (fAddressIndex) {
@@ -1448,7 +1447,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return true;
 
     if(!WriteUndoDataToDisk(pindex,state,blockTxChecker.getBlockUndoData()) ||
-       !UpdateDBIndices(indexDatabaseUpdates,blockTxChecker.getTxLocationData(),state))
+       !UpdateDBIndices(indexDatabaseUpdates,state))
     {
         return false;
     }

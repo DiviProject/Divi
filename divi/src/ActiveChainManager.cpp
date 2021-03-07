@@ -87,12 +87,10 @@ void ActiveChainManager::CollectIndexUpdatesFromInputs(
     CCoinsViewCache& view,
     const CTransaction& tx,
     const TransactionLocationReference& txLocationReference,
-    const CTxUndo& txundo,
     IndexDatabaseUpdates& indexDBUpdates) const
 {
     for( unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
     {
-        const CTxInUndo& undo = txundo.vprevout[txInputIndex];
         const CTxIn& input = tx.vin[txInputIndex];
         if (addressIndexingIsEnabled_)
         {
@@ -108,7 +106,7 @@ void ActiveChainManager::CollectIndexUpdatesFromInputs(
                 indexDBUpdates.addressUnspentIndex.push_back(
                     std::make_pair(
                         CAddressUnspentKey(2, uint160(hashBytes), input.prevout.hash, input.prevout.n),
-                        CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
+                        CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, txLocationReference.blockHeight)));
             }
             else if (prevout.scriptPubKey.IsPayToPublicKeyHash())
             {
@@ -122,7 +120,7 @@ void ActiveChainManager::CollectIndexUpdatesFromInputs(
                 indexDBUpdates.addressUnspentIndex.push_back(
                     std::make_pair(
                         CAddressUnspentKey(1, uint160(hashBytes), input.prevout.hash, input.prevout.n),
-                        CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, undo.nHeight)));
+                        CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, txLocationReference.blockHeight)));
             }
         }
     }
@@ -230,8 +228,7 @@ bool ActiveChainManager::UpdateDBIndicesFromDisconnection(
         // restore inputs
         if (!tx.IsCoinBase() )
         {
-            const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
-            CollectIndexUpdatesFromInputs(view, tx, txLocationReference, txundo, indexDBUpdates);
+            CollectIndexUpdatesFromInputs(view, tx, txLocationReference, indexDBUpdates);
         }
     }
 

@@ -26,12 +26,6 @@ private:
     bool ApplyDisconnectionUpdateIndexToDBs(
         IndexDatabaseUpdates& indexDBUpdates,
         CValidationState& state) const;
-    bool UpdateDBIndicesFromDisconnection(
-        CBlock& block,
-        CBlockUndo& blockUndo,
-        CValidationState& state,
-        CBlockIndex* pindex,
-        CCoinsViewCache& view) const;
 public:
     ActiveChainManager(
         const bool& addressIndexingIsEnabled,

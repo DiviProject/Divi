@@ -120,34 +120,6 @@ static bool RestoreInputs(
     return true;
 }
 
-bool ActiveChainManager::UpdateDBIndicesFromDisconnection(
-    CBlock& block,
-    CBlockUndo& blockUndo,
-    CValidationState& state,
-    CBlockIndex* pindex,
-    CCoinsViewCache& view) const
-{
-    if(!addressIndexingIsEnabled_)
-    {
-        view.SetBestBlock(pindex->pprev->GetBlockHash());
-        return true;
-    }
-
-    IndexDatabaseUpdates indexDBUpdates;
-    for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
-        const CTransaction& tx = block.vtx[transactionIndex];
-        TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
-        IndexDatabaseUpdateCollector::ReverseTransaction(tx,txLocationReference,view,indexDBUpdates);
-    }
-
-    view.SetBestBlock(pindex->pprev->GetBlockHash());
-    if(!ApplyDisconnectionUpdateIndexToDBs(indexDBUpdates,state))
-    {
-        return false;
-    }
-    return true;
-}
-
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case
@@ -177,22 +149,24 @@ bool ActiveChainManager::DisconnectBlock(
     }
 
     bool fClean = true;
+    IndexDatabaseUpdates indexDBUpdates;
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
 
         TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
         fClean = fClean && CheckTxOutputsAreAvailable(tx,txLocationReference,view);
-
         if (!tx.IsCoinBase() && !RestoreInputs(blockUndo,tx,transactionIndex,view,fClean))
         {
             return false;
         }
+        IndexDatabaseUpdateCollector::ReverseTransaction(tx,txLocationReference,view,indexDBUpdates);
     }
     // undo transactions in reverse order
+    view.SetBestBlock(pindex->pprev->GetBlockHash());
     if(!pfClean)
     {
-        if(!UpdateDBIndicesFromDisconnection(block,blockUndo,state,pindex,view))
+        if(!ApplyDisconnectionUpdateIndexToDBs(indexDBUpdates,state))
         {
             return false;
         }
@@ -200,7 +174,6 @@ bool ActiveChainManager::DisconnectBlock(
     }
     else
     {
-        view.SetBestBlock(pindex->pprev->GetBlockHash());
         *pfClean = fClean;
         return true;
     }

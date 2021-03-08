@@ -30,7 +30,6 @@ using namespace boost;
 using namespace std;
 
 static uint64_t nAccountingEntryNumber = 0;
-bool CheckTransaction(const CTransaction& tx, CValidationState& state);
 //
 // CWalletDB
 //
@@ -344,7 +343,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             ssValue >> wtx;
             CValidationState state;
             // false because there is no reason to go through the zerocoin checks for our own wallet
-            if (!(CheckTransaction(wtx, state) && (wtx.GetHash() == hash) && state.IsValid()))
+            if (wtx.GetHash() != hash)
                 return false;
 
             // Undo serialize changes in 31600

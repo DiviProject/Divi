@@ -106,6 +106,7 @@ static bool RestoreInputs(
     CCoinsViewCache& view,
     bool& fClean)
 {
+    if(tx.IsCoinBase()) return true;
     const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
     if (txundo.vprevout.size() != tx.vin.size())
         return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());

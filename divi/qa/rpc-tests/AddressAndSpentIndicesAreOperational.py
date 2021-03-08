@@ -32,17 +32,7 @@ class AddressAndSpentIndicesAreOperational (BitcoinTestFramework):
         reconnect_all(self.nodes)
         sync_blocks(self.nodes)
 
-    def run_test (self):
-        createPoSStacks ([self.node], self.nodes)
-        generatePoSBlocks (self.nodes, 0, 125)
-        sync_blocks(self.nodes)
-
-        self.nodes.append(start_node(1, self.options.tmpdir, extra_args=self.config_args))
-        connect_nodes_bi(self.nodes,0,1)
-        sync_blocks(self.nodes)
-
-        staker_node = self.nodes[0]
-        auditor_node = self.nodes[1]
+    def check_utxos(self, staker_node,auditor_node):
         utxos = staker_node.listunspent()
         assert_greater_than(len(utxos), 0)
         assert_equal(staker_node.getbestblockhash(), auditor_node.getbestblockhash())
@@ -70,6 +60,25 @@ class AddressAndSpentIndicesAreOperational (BitcoinTestFramework):
                     auditor_node.getspentinfo(spent_input_json)
         assert_equal(recovered_utxo_count, expected_utxo_count)
         self.restart_single_node_to_verify_index_database()
+
+    def run_test (self):
+        createPoSStacks ([self.node], self.nodes)
+        generatePoSBlocks (self.nodes, 0, 125)
+        sync_blocks(self.nodes)
+
+        self.nodes.append(start_node(1, self.options.tmpdir, extra_args=self.config_args))
+        connect_nodes_bi(self.nodes,0,1)
+        sync_blocks(self.nodes)
+
+        staker_node = self.nodes[0]
+        auditor_node = self.nodes[1]
+        print("Verifying chain...")
+        auditor_node.verifychain()
+        print("Chain verified")
+        print("Verifying utxos...")
+        self.check_utxos(staker_node,auditor_node)
+        print("Finished checking utxos")
+
 
 if __name__ == '__main__':
     AddressAndSpentIndicesAreOperational ().main ()

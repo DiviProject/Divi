@@ -93,10 +93,18 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
             return;
         }
 
-        LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service.ToString());
+        const CAddress masternodeIPAddress = (CAddress)service;
+        if(IsLocal(masternodeIPAddress))
+        {
+            notCapableReason = "Hot node, waiting for remote activation.";
+            LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
+            return;
+        }
 
-        CNode* pnode = ConnectNode((CAddress)service, NULL, false);
-        if (!pnode) {
+        LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service.ToString());
+        CNode* pnode = ConnectNode(masternodeIPAddress, NULL, false);
+        if (!pnode)
+        {
             notCapableReason = "Could not connect to " + service.ToString();
             LogPrintf("CActiveMasternode::ManageStatus() - not capable: %s\n", notCapableReason);
             return;

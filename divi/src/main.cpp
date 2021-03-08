@@ -738,33 +738,33 @@ bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationSt
 {
     // Basic checks that don't depend on any context
     if (tx.vin.empty())
-        return state.DoS(10, error("CheckTransaction() : vin empty"),
+        return state.DoS(10, error("%s : vin empty",__func__),
                          REJECT_INVALID, "bad-txns-vin-empty");
     if (tx.vout.empty())
-        return state.DoS(10, error("CheckTransaction() : vout empty"),
+        return state.DoS(10, error("%s : vout empty",__func__),
                          REJECT_INVALID, "bad-txns-vout-empty");
 
     // Size limits
     unsigned int nMaxSize = MAX_STANDARD_TX_SIZE;
 
     if (::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION) > nMaxSize)
-        return state.DoS(100, error("CheckTransaction() : size limits failed"),
+        return state.DoS(100, error("%s : size limits failed",__func__),
                          REJECT_INVALID, "bad-txns-oversize");
 
     // Check for negative or overflow output values
     CAmount nValueOut = 0;
     BOOST_FOREACH (const CTxOut& txout, tx.vout) {
         if (txout.IsEmpty() && !tx.IsCoinBase() && !tx.IsCoinStake())
-            return state.DoS(100, error("CheckTransaction(): txout empty for user transaction"));
+            return state.DoS(100, error("%s: txout empty for user transaction",__func__));
         if (txout.nValue < 0)
-            return state.DoS(100, error("CheckTransaction() : txout.nValue negative"),
+            return state.DoS(100, error("%s : txout.nValue negative",__func__),
                              REJECT_INVALID, "bad-txns-vout-negative");
         if (txout.nValue > Params().MaxMoneyOut())
-            return state.DoS(100, error("CheckTransaction() : txout.nValue too high"),
+            return state.DoS(100, error("%s : txout.nValue too high",__func__),
                              REJECT_INVALID, "bad-txns-vout-toolarge");
         nValueOut += txout.nValue;
         if (!MoneyRange(nValueOut))
-            return state.DoS(100, error("CheckTransaction() : txout total out of range"),
+            return state.DoS(100, error("%s : txout total out of range",__func__),
                              REJECT_INVALID, "bad-txns-txouttotal-toolarge");
     }
 
@@ -772,7 +772,7 @@ bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationSt
     std::set<COutPoint> vInOutPoints;
     for (const CTxIn& txin : tx.vin) {
         if (vInOutPoints.count(txin.prevout))
-            return state.DoS(100, error("CheckTransaction() : duplicate inputs"),
+            return state.DoS(100, error("%s : duplicate inputs",__func__),
                              REJECT_INVALID, "bad-txns-inputs-duplicate");
 
         vInOutPoints.insert(txin.prevout);
@@ -780,7 +780,7 @@ bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationSt
 
     if (tx.IsCoinBase()) {
         if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 150)
-            return state.DoS(100, error("CheckTransaction() : coinbase script size=%d", tx.vin[0].scriptSig.size()),
+            return state.DoS(100, error("%s : coinbase script size=%d",__func__, tx.vin[0].scriptSig.size()),
                     REJECT_INVALID, "bad-cb-length");
     }
 

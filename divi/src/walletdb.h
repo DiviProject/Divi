@@ -28,6 +28,8 @@ class CWallet;
 class CWalletTx;
 class uint160;
 class uint256;
+class BlockMap;
+class CChain;
 using WalletTxVector = std::vector<CWalletTx>;
 
 /** Error statuses for the wallet database */
@@ -136,8 +138,17 @@ public:
     DBErrors LoadWallet(CWallet* pwallet);
     DBErrors FindWalletTx(CWallet* pwallet, std::vector<uint256>& vTxHash, WalletTxVector& vWtx);
     DBErrors ZapWalletTx(CWallet* pwallet, WalletTxVector& vWtx);
-    static bool Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys);
-    static bool Recover(CDBEnv& dbenv, std::string filename);
+    static bool Recover(
+        const CChain& activeChain,
+        const BlockMap& blockIndicesByHash,
+        CDBEnv& dbenv,
+        std::string filename,
+        bool fOnlyKeys);
+    static bool Recover(
+        const CChain& activeChain,
+        const BlockMap& blockIndicesByHash,
+        CDBEnv& dbenv,
+        std::string filename);
 
     //! write the hdchain model (external chain child index counter)
     bool WriteHDChain(const CHDChain& chain);

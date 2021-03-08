@@ -734,7 +734,7 @@ int GetIXConfirmations(uint256 nTXHash)
     return 0;
 }
 
-bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationState& state)
+bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 {
     // Basic checks that don't depend on any context
     if (tx.vin.empty())
@@ -825,7 +825,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
     const bool requireStandard = !settings.GetBoolArg("-acceptnonstandard", false);
 
-    if (!CheckTransaction(tx, true, state))
+    if (!CheckTransaction(tx, state))
         return state.DoS(100, error("AcceptToMemoryPool: : CheckTransaction failed"), REJECT_INVALID, "bad-tx");
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -2257,7 +2257,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleR
 
     // Check transactions
     for (const CTransaction& tx : block.vtx) {
-        if (!CheckTransaction(tx, false, state))
+        if (!CheckTransaction(tx, state))
             return error("%s : CheckTransaction failed",__func__);
 
     }

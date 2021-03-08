@@ -96,7 +96,7 @@ namespace ReverseSpending
 static void CollectUpdatesFromInputs(
     const CTransaction& tx,
     const TransactionLocationReference& txLocationReference,
-    CCoinsViewCache& view,
+    const CCoinsViewCache& view,
     IndexDatabaseUpdates& indexDBUpdates)
 {
     if (tx.IsCoinBase()) return;
@@ -177,7 +177,7 @@ void IndexDatabaseUpdateCollector::RecordTransaction(
 void IndexDatabaseUpdateCollector::ReverseTransaction(
         const CTransaction& tx,
         const TransactionLocationReference& txLocationRef,
-        CCoinsViewCache& view,
+        const CCoinsViewCache& view,
         IndexDatabaseUpdates& indexDatabaseUpdates)
 {
     ReverseSpending::CollectUpdatesFromOutputs(tx,txLocationRef,indexDatabaseUpdates);

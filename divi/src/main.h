@@ -193,7 +193,7 @@ CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowF
 bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs);
 
 /** Context-independent validity checks */
-bool CheckTransaction(const CTransaction& tx, bool fRejectBadUTXO, CValidationState& state);
+bool CheckTransaction(const CTransaction& tx, CValidationState& state);
 
 
 /** Check for standard transaction types

@@ -157,7 +157,7 @@ bool ActiveChainManager::DisconnectBlock(
 
         TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
         fClean = fClean && CheckTxOutputsAreAvailable(tx,txLocationReference,view);
-        if (!tx.IsCoinBase() && !RestoreInputs(blockUndo,tx,transactionIndex,view,fClean))
+        if (!RestoreInputs(blockUndo,tx,transactionIndex,view,fClean))
         {
             return false;
         }

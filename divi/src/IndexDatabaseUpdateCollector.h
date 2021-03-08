@@ -18,7 +18,7 @@ public:
     static void ReverseTransaction(
         const CTransaction& tx,
         const TransactionLocationReference& txLocationReference,
-        CCoinsViewCache& view,
+        const CCoinsViewCache& view,
         IndexDatabaseUpdates& indexDBUpdates);
 };
 #endif// INDEX_DATABASE_UPDATE_COLLECTOR_H

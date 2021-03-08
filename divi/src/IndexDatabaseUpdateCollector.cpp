@@ -6,9 +6,29 @@
 #include <primitives/transaction.h>
 #include <vector>
 #include <coins.h>
+#include <utility>
 
 extern bool fAddressIndex;
 extern bool fSpentIndex;
+
+typedef std::pair<uint160,int> HashBytesAndAddressType;
+HashBytesAndAddressType ComputeHashbytesAndAddressTypeForScript(const CScript& script)
+{
+    uint160 hashBytes;
+    int addressType;
+
+    if (script.IsPayToScriptHash()) {
+        hashBytes = uint160(std::vector<unsigned char>(script.begin()+2, script.begin()+22));
+        addressType = 2;
+    } else if (script.IsPayToPublicKeyHash()) {
+        hashBytes = uint160(std::vector<unsigned char>(script.begin()+3, script.begin()+23));
+        addressType = 1;
+    } else {
+        hashBytes.SetNull();
+        addressType = 0;
+    }
+    return {hashBytes,addressType};
+}
 
 namespace Spending
 {
@@ -25,19 +45,9 @@ void CollectUpdatesFromInputs(
 
             const CTxIn input = tx.vin[j];
             const CTxOut &prevout = view.GetOutputFor(tx.vin[j]);
-            uint160 hashBytes;
-            int addressType;
-
-            if (prevout.scriptPubKey.IsPayToScriptHash()) {
-                hashBytes = uint160(std::vector<unsigned char>(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22));
-                addressType = 2;
-            } else if (prevout.scriptPubKey.IsPayToPublicKeyHash()) {
-                hashBytes = uint160(std::vector<unsigned char>(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23));
-                addressType = 1;
-            } else {
-                hashBytes.SetNull();
-                addressType = 0;
-            }
+            HashBytesAndAddressType hashbytesAndAddressType = ComputeHashbytesAndAddressTypeForScript(prevout.scriptPubKey);
+            const uint160& hashBytes = hashbytesAndAddressType.first;
+            const int& addressType = hashbytesAndAddressType.second;
             if (fAddressIndex && addressType > 0) {
                 // record spending activity
                 indexDatabaseUpdates.addressIndex.push_back(std::make_pair(CAddressIndexKey(addressType, hashBytes, txLocationRef.blockHeight, txLocationRef.transactionIndex, txLocationRef.hash, j, true), prevout.nValue * -1));
@@ -61,29 +71,17 @@ void CollectUpdatesFromOutputs(
     if (fAddressIndex) {
         for (unsigned int k = 0; k < tx.vout.size(); k++) {
             const CTxOut &out = tx.vout[k];
+            HashBytesAndAddressType hashbytesAndAddressType = ComputeHashbytesAndAddressTypeForScript(out.scriptPubKey);
+            const uint160& hashBytes = hashbytesAndAddressType.first;
+            const int& addressType = hashbytesAndAddressType.second;
 
-            if (out.scriptPubKey.IsPayToScriptHash()) {
-                std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
-
+            if (addressType > 0) {
                 // record receiving activity
                 indexDatabaseUpdates.addressIndex.push_back(
-                    std::make_pair(CAddressIndexKey(2, uint160(hashBytes), txLocationRef.blockHeight, txLocationRef.transactionIndex, txLocationRef.hash, k, false), out.nValue));
-
+                    std::make_pair(CAddressIndexKey(addressType, uint160(hashBytes), txLocationRef.blockHeight, txLocationRef.transactionIndex, txLocationRef.hash, k, false), out.nValue));
                 // record unspent output
                 indexDatabaseUpdates.addressUnspentIndex.push_back(
-                    std::make_pair(CAddressUnspentKey(2, uint160(hashBytes), txLocationRef.hash, k), CAddressUnspentValue(out.nValue, out.scriptPubKey, txLocationRef.blockHeight)));
-
-            } else if (out.scriptPubKey.IsPayToPublicKeyHash()) {
-                std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
-
-                // record receiving activity
-                indexDatabaseUpdates.addressIndex.push_back(
-                    std::make_pair(CAddressIndexKey(1, uint160(hashBytes), txLocationRef.blockHeight, txLocationRef.transactionIndex, txLocationRef.hash, k, false), out.nValue));
-
-                // record unspent output
-                indexDatabaseUpdates.addressUnspentIndex.push_back(
-                    std::make_pair(CAddressUnspentKey(1, uint160(hashBytes), txLocationRef.hash, k), CAddressUnspentValue(out.nValue, out.scriptPubKey, txLocationRef.blockHeight)));
-
+                    std::make_pair(CAddressUnspentKey(addressType, uint160(hashBytes), txLocationRef.hash, k), CAddressUnspentValue(out.nValue, out.scriptPubKey, txLocationRef.blockHeight)));
             } else {
                 continue;
             }
@@ -108,31 +106,21 @@ static void CollectUpdatesFromInputs(
         if (fAddressIndex)
         {
             const CTxOut &prevout = view.GetOutputFor(input);
-            if (prevout.scriptPubKey.IsPayToScriptHash()) {
-                std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+2, prevout.scriptPubKey.begin()+22);
+
+            HashBytesAndAddressType hashbytesAndAddressType = ComputeHashbytesAndAddressTypeForScript(prevout.scriptPubKey);
+            const uint160& hashBytes = hashbytesAndAddressType.first;
+            const int& addressType = hashbytesAndAddressType.second;
+
+            if (addressType>0) {
                 // undo spending activity
                 indexDBUpdates.addressIndex.push_back(
                     std::make_pair(
-                        CAddressIndexKey(2, uint160(hashBytes), txLocationReference.blockHeight, txLocationReference.transactionIndex, txLocationReference.hash, txInputIndex, true),
+                        CAddressIndexKey(addressType, uint160(hashBytes), txLocationReference.blockHeight, txLocationReference.transactionIndex, txLocationReference.hash, txInputIndex, true),
                         prevout.nValue * -1));
                 // restore unspent index
                 indexDBUpdates.addressUnspentIndex.push_back(
                     std::make_pair(
-                        CAddressUnspentKey(2, uint160(hashBytes), input.prevout.hash, input.prevout.n),
-                        CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, txLocationReference.blockHeight)));
-            }
-            else if (prevout.scriptPubKey.IsPayToPublicKeyHash())
-            {
-                std::vector<unsigned char> hashBytes(prevout.scriptPubKey.begin()+3, prevout.scriptPubKey.begin()+23);
-                // undo spending activity
-                indexDBUpdates.addressIndex.push_back(
-                    std::make_pair(
-                        CAddressIndexKey(1, uint160(hashBytes), txLocationReference.blockHeight, txLocationReference.transactionIndex, txLocationReference.hash, txInputIndex, true),
-                        prevout.nValue * -1));
-                // restore unspent index
-                indexDBUpdates.addressUnspentIndex.push_back(
-                    std::make_pair(
-                        CAddressUnspentKey(1, uint160(hashBytes), input.prevout.hash, input.prevout.n),
+                        CAddressUnspentKey(addressType, uint160(hashBytes), input.prevout.hash, input.prevout.n),
                         CAddressUnspentValue(prevout.nValue, prevout.scriptPubKey, txLocationReference.blockHeight)));
             }
         }
@@ -154,34 +142,21 @@ static void CollectUpdatesFromOutputs(
     for (unsigned int k = txOutputs.size(); k-- > 0;)
     {
         const CTxOut &out = txOutputs[k];
+        HashBytesAndAddressType hashbytesAndAddressType = ComputeHashbytesAndAddressTypeForScript(out.scriptPubKey);
+        const uint160& hashBytes = hashbytesAndAddressType.first;
+        const int& addressType = hashbytesAndAddressType.second;
 
-        if (out.scriptPubKey.IsPayToScriptHash())
+        if (addressType>0)
         {
-            std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+2, out.scriptPubKey.begin()+22);
             // undo receiving activity
             indexDBUpdates.addressIndex.push_back(
                 std::make_pair(
-                    CAddressIndexKey(2, uint160(hashBytes), txLocationReference.blockHeight, txLocationReference.transactionIndex, txLocationReference.hash, k, false),
+                    CAddressIndexKey(addressType, uint160(hashBytes), txLocationReference.blockHeight, txLocationReference.transactionIndex, txLocationReference.hash, k, false),
                     out.nValue));
             // undo unspent index
             indexDBUpdates.addressUnspentIndex.push_back(
                 std::make_pair(
-                    CAddressUnspentKey(2, uint160(hashBytes), txLocationReference.hash, k),
-                    CAddressUnspentValue()));
-
-        }
-        else if (out.scriptPubKey.IsPayToPublicKeyHash())
-        {
-            std::vector<unsigned char> hashBytes(out.scriptPubKey.begin()+3, out.scriptPubKey.begin()+23);
-            // undo receiving activity
-            indexDBUpdates.addressIndex.push_back(
-                std::make_pair(
-                    CAddressIndexKey(1, uint160(hashBytes), txLocationReference.blockHeight, txLocationReference.transactionIndex, txLocationReference.hash, k, false),
-                    out.nValue));
-            // undo unspent index
-            indexDBUpdates.addressUnspentIndex.push_back(
-                std::make_pair(
-                    CAddressUnspentKey(1, uint160(hashBytes), txLocationReference.hash, k),
+                    CAddressUnspentKey(addressType, uint160(hashBytes), txLocationReference.hash, k),
                     CAddressUnspentValue()));
 
         }

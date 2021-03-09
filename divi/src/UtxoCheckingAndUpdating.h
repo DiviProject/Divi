@@ -8,7 +8,15 @@ class CTransaction;
 class CValidationState;
 class CCoinsViewCache;
 class CTxUndo;
+enum class TxReversalStatus
+{
+    ABORT_NO_OTHER_ERRORS,
+    ABORT_WITH_OTHER_ERRORS,
+    CONTINUE_WITH_ERRORS,
+    OK,
+};
 void UpdateCoinsWithTransaction(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
+TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, CCoinsViewCache& inputs, const CTxUndo& txundo, int nHeight);
 bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,

@@ -14,6 +14,7 @@
 #include <I_BlockDataReader.h>
 #include <IndexDatabaseUpdates.h>
 #include <IndexDatabaseUpdateCollector.h>
+#include <UtxoCheckingAndUpdating.h>
 
 ActiveChainManager::ActiveChainManager(
     const bool& addressIndexingIsEnabled,
@@ -36,87 +37,6 @@ bool ActiveChainManager::ApplyDisconnectionUpdateIndexToDBs(
         if (!blocktree_->UpdateAddressUnspentIndex(indexDBUpdates.addressUnspentIndex)) {
             return state.Abort("Failed to write address unspent index");
         }
-    }
-    return true;
-}
-
-static void UpdateCoinsForRestoredInputs(
-    const COutPoint& out,
-    const CTxInUndo& undo,
-    CCoinsModifier& coins,
-    bool& fClean)
-{
-    if (undo.nHeight != 0)
-    {
-        // undo data contains height: this is the last output of the prevout tx being spent
-        if (!coins->IsPruned())
-            fClean = fClean && error("DisconnectBlock() : undo data overwriting existing transaction");
-        coins->Clear();
-        coins->fCoinBase = undo.fCoinBase;
-        coins->nHeight = undo.nHeight;
-        coins->nVersion = undo.nVersion;
-    }
-    else
-    {
-        if (coins->IsPruned())
-            fClean = fClean && error("DisconnectBlock() : undo data adding output to missing transaction");
-    }
-
-    if (coins->IsAvailable(out.n))
-        fClean = fClean && error("DisconnectBlock() : undo data overwriting existing output");
-
-    if (coins->vout.size() < out.n + 1)
-        coins->vout.resize(out.n + 1);
-
-    coins->vout[out.n] = undo.txout;
-}
-
-static bool CheckTxOutputsAreAvailable(
-    const CTransaction& tx,
-    const TransactionLocationReference& txLocationReference,
-    CCoinsViewCache& view)
-{
-    bool outputsAvailable = true;
-    // Check that all outputs are available and match the outputs in the block itself
-    // exactly. Note that transactions with only provably unspendable outputs won't
-    // have outputs available even in the block itself, so we handle that case
-    // specially with outsEmpty.
-    CCoins outsEmpty;
-    CCoinsModifier outs = view.ModifyCoins(txLocationReference.hash);
-    outs->ClearUnspendable();
-
-    CCoins outsBlock(tx, txLocationReference.blockHeight);
-    // The CCoins serialization does not serialize negative numbers.
-    // No network rules currently depend on the version here, so an inconsistency is harmless
-    // but it must be corrected before txout nversion ever influences a network rule.
-    if (outsBlock.nVersion < 0)
-        outs->nVersion = outsBlock.nVersion;
-    if (*outs != outsBlock)
-        outputsAvailable = error("DisconnectBlock() : added transaction mismatch? database corrupted");
-
-    // remove outputs
-    outs->Clear();
-    return outputsAvailable;
-}
-
-static bool RestoreInputs(
-    CBlockUndo& blockUndo,
-    const CTransaction& tx,
-    const int transactionIndex,
-    CCoinsViewCache& view,
-    bool& fClean)
-{
-    if(tx.IsCoinBase()) return true;
-    const CTxUndo& txundo = blockUndo.vtxundo[transactionIndex - 1];
-    if (txundo.vprevout.size() != tx.vin.size())
-        return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());
-
-    for (unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
-    {
-        const COutPoint& out = tx.vin[txInputIndex].prevout;
-        const CTxInUndo& undo = txundo.vprevout[txInputIndex];
-        CCoinsModifier coins = view.ModifyCoins(out.hash);
-        UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
     }
     return true;
 }
@@ -154,13 +74,21 @@ bool ActiveChainManager::DisconnectBlock(
     // undo transactions in reverse order
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
-
-        TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
-        fClean = fClean && CheckTxOutputsAreAvailable(tx,txLocationReference,view);
-        if (!RestoreInputs(blockUndo,tx,transactionIndex,view,fClean))
+        const TxReversalStatus status = UpdateCoinsReversingTransaction(tx,view,blockUndo.vtxundo[transactionIndex-1],pindex->nHeight);
+        if(status == TxReversalStatus::ABORT_NO_OTHER_ERRORS)
         {
             return false;
         }
+        else if (status == TxReversalStatus::ABORT_WITH_OTHER_ERRORS)
+        {
+            fClean = false;
+            return false;
+        }
+        else if (status == TxReversalStatus::CONTINUE_WITH_ERRORS)
+        {
+            fClean = false;
+        }
+        TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
         IndexDatabaseUpdateCollector::ReverseTransaction(tx,txLocationReference,view,indexDBUpdates);
     }
     // undo transactions in reverse order

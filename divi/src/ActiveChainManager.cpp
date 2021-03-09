@@ -97,8 +97,11 @@ bool ActiveChainManager::DisconnectBlock(
         {
             return false;
         }
-        TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
-        IndexDatabaseUpdateCollector::ReverseTransaction(tx,txLocationReference,view,indexDBUpdates);
+        if(!pfClean)
+        {
+            TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
+            IndexDatabaseUpdateCollector::ReverseTransaction(tx,txLocationReference,view,indexDBUpdates);
+        }
     }
     // undo transactions in reverse order
     view.SetBestBlock(pindex->pprev->GetBlockHash());

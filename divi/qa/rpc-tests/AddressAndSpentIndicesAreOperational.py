@@ -78,6 +78,15 @@ class AddressAndSpentIndicesAreOperational (BitcoinTestFramework):
         print("Verifying utxos...")
         self.check_utxos(staker_node,auditor_node)
         print("Finished checking utxos")
+        print("Disconnecting chain...")
+        hash = auditor_node.getblockhash(110)
+        auditor_node.invalidateblock(hash)
+        auditor_node.verifychain()
+        print("Chain verified")
+        print("Reconnecting chain...")
+        auditor_node.reconsiderblock(hash)
+        auditor_node.verifychain()
+        print("Chain verified")
 
 
 if __name__ == '__main__':

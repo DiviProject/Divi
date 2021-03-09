@@ -724,7 +724,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const
             CValidationState state;
             CTxUndo undo;
             assert(CheckInputs(tx, state, mempoolDuplicate, false, 0, false, NULL));
-            UpdateCoins(tx, mempoolDuplicate, undo, 1000000);
+            UpdateCoinsWithTransaction(tx, mempoolDuplicate, undo, 1000000);
         }
     }
     unsigned int stepsSinceLastRemove = 0;
@@ -739,7 +739,7 @@ void CTxMemPool::check(const CCoinsViewCache* pcoins) const
         } else {
             assert(CheckInputs(entry->GetTx(), state, mempoolDuplicate, false, 0, false, NULL));
             CTxUndo undo;
-            UpdateCoins(entry->GetTx(), mempoolDuplicate, undo, 1000000);
+            UpdateCoinsWithTransaction(entry->GetTx(), mempoolDuplicate, undo, 1000000);
             stepsSinceLastRemove = 0;
         }
     }

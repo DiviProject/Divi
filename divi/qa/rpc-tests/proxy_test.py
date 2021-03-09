@@ -62,13 +62,20 @@ class ProxyTest(BitcoinTestFramework):
         self.serv3.start()
 
     def setup_nodes(self):
+        # By default, Divi checks if Tor is running on the system and if it is,
+        # then the real Tor instance will be used as proxy for .onion
+        # connections even if -proxy is set otherwise.  To avoid this behaviour
+        # (which we don't want here in the test), we turn off Tor control
+        # with -nolistenonion.
+        base_args = ['-listen', '-nolistenonion', '-debug']
+
         # Note: proxies are not used to connect to local nodes
         # this is because the proxy to use is based on CService.GetNetwork(), which return NET_UNROUTABLE for localhost
         return start_nodes(4, self.options.tmpdir, extra_args=[
-            ['-listen', '-debug=net', '-debug=proxy', '-proxy=%s:%i' % (self.conf1.addr),'-proxyrandomize=1'],
-            ['-listen', '-debug=net', '-debug=proxy', '-proxy=%s:%i' % (self.conf1.addr),'-onion=%s:%i' % (self.conf2.addr),'-proxyrandomize=0'],
-            ['-listen', '-debug=net', '-debug=proxy', '-proxy=%s:%i' % (self.conf2.addr),'-proxyrandomize=1'],
-            ['-listen', '-debug=net', '-debug=proxy', '-proxy=[%s]:%i' % (self.conf3.addr),'-proxyrandomize=0']
+            base_args + ['-proxy=%s:%i' % (self.conf1.addr),'-proxyrandomize=1'],
+            base_args + ['-proxy=%s:%i' % (self.conf1.addr),'-onion=%s:%i' % (self.conf2.addr),'-proxyrandomize=0'],
+            base_args + ['-proxy=%s:%i' % (self.conf2.addr),'-proxyrandomize=1'],
+            base_args + ['-proxy=[%s]:%i' % (self.conf3.addr),'-proxyrandomize=0'],
             ])
 
     def node_test(self, node, proxies, auth):

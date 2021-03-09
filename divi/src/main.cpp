@@ -2743,7 +2743,7 @@ bool static LoadBlockIndexDB(string& strError)
                     CTxUndo undoDummy;
                     if (i > 0)
                         vtxundo.push_back(CTxUndo());
-                    UpdateCoins(block.vtx[i], view, i == 0 ? undoDummy : vtxundo.back(), pindex->nHeight);
+                    UpdateCoinsWithTransaction(block.vtx[i], view, i == 0 ? undoDummy : vtxundo.back(), pindex->nHeight);
                     view.SetBestBlock(hashBlock);
                 }
 

@@ -338,7 +338,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         nBlockSigOps += nTxSigOps;
 
         CTxUndo txundo;
-        UpdateCoins(tx, view, txundo, nHeight);
+        UpdateCoinsWithTransaction(tx, view, txundo, nHeight);
 
         if (fPrintPriority) {
             LogPrintf("priority %.1f fee %s txid %s\n",

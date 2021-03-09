@@ -29,6 +29,86 @@ void UpdateCoinsWithTransaction(const CTransaction& tx, CCoinsViewCache& inputs,
     inputs.ModifyCoins(tx.GetHash())->FromTx(tx, nHeight);
 }
 
+static bool RemoveTxOutputsFromCache(
+    const CTransaction& tx,
+    const int blockHeight,
+    CCoinsViewCache& view)
+{
+    bool outputsAvailable = true;
+    // Check that all outputs are available and match the outputs in the block itself
+    // exactly. Note that transactions with only provably unspendable outputs won't
+    // have outputs available even in the block itself, so we handle that case
+    // specially with outsEmpty.
+    CCoins outsEmpty;
+    CCoinsModifier outs = view.ModifyCoins(tx.GetHash());
+    outs->ClearUnspendable();
+
+    CCoins outsBlock(tx, blockHeight);
+    // The CCoins serialization does not serialize negative numbers.
+    // No network rules currently depend on the version here, so an inconsistency is harmless
+    // but it must be corrected before txout nversion ever influences a network rule.
+    if (outsBlock.nVersion < 0)
+        outs->nVersion = outsBlock.nVersion;
+    if (*outs != outsBlock)
+        outputsAvailable = error("DisconnectBlock() : added transaction mismatch? database corrupted");
+
+    // remove outputs
+    outs->Clear();
+    return outputsAvailable;
+}
+
+static void UpdateCoinsForRestoredInputs(
+    const COutPoint& out,
+    const CTxInUndo& undo,
+    CCoinsModifier& coins,
+    bool& fClean)
+{
+    if (undo.nHeight != 0)
+    {
+        // undo data contains height: this is the last output of the prevout tx being spent
+        if (!coins->IsPruned())
+            fClean = fClean && error("DisconnectBlock() : undo data overwriting existing transaction");
+        coins->Clear();
+        coins->fCoinBase = undo.fCoinBase;
+        coins->nHeight = undo.nHeight;
+        coins->nVersion = undo.nVersion;
+    }
+    else
+    {
+        if (coins->IsPruned())
+            fClean = fClean && error("DisconnectBlock() : undo data adding output to missing transaction");
+    }
+
+    if (coins->IsAvailable(out.n))
+        fClean = fClean && error("DisconnectBlock() : undo data overwriting existing output");
+
+    if (coins->vout.size() < out.n + 1)
+        coins->vout.resize(out.n + 1);
+
+    coins->vout[out.n] = undo.txout;
+}
+
+TxReversalStatus UpdateCoinsReversingTransaction(const CTransaction& tx, CCoinsViewCache& inputs, const CTxUndo& txundo, int nHeight)
+{
+    bool fClean = true;
+    fClean = fClean && RemoveTxOutputsFromCache(tx,nHeight,inputs);
+    if(tx.IsCoinBase()) return fClean? TxReversalStatus::OK : TxReversalStatus::CONTINUE_WITH_ERRORS;
+    if (txundo.vprevout.size() != tx.vin.size())
+    {
+        error("%s : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d",__func__, txundo.vprevout.size(), tx.vin.size());
+        return fClean?TxReversalStatus::ABORT_NO_OTHER_ERRORS:TxReversalStatus::ABORT_WITH_OTHER_ERRORS;
+    }
+
+    for (unsigned int txInputIndex = tx.vin.size(); txInputIndex-- > 0;)
+    {
+        const COutPoint& out = tx.vin[txInputIndex].prevout;
+        const CTxInUndo& undo = txundo.vprevout[txInputIndex];
+        CCoinsModifier coins = inputs.ModifyCoins(out.hash);
+        UpdateCoinsForRestoredInputs(out,undo,coins,fClean);
+    }
+    return fClean? TxReversalStatus::OK : TxReversalStatus::CONTINUE_WITH_ERRORS;
+}
+
 bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,

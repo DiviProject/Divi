@@ -41,6 +41,24 @@ bool ActiveChainManager::ApplyDisconnectionUpdateIndexToDBs(
     return true;
 }
 
+
+static bool CheckTxReversalStatus(const TxReversalStatus status, bool& fClean)
+{
+    if(status == TxReversalStatus::ABORT_NO_OTHER_ERRORS)
+    {
+        return false;
+    }
+    else if (status == TxReversalStatus::ABORT_WITH_OTHER_ERRORS)
+    {
+        fClean = false;
+        return false;
+    }
+    else if (status == TxReversalStatus::CONTINUE_WITH_ERRORS)
+    {
+        fClean = false;
+    }
+    return true;
+}
 /** Undo the effects of this block (with given index) on the UTXO set represented by coins.
  *  In case pfClean is provided, operation will try to be tolerant about errors, and *pfClean
  *  will be true if no problems were found. Otherwise, the return value will be false in case
@@ -75,18 +93,9 @@ bool ActiveChainManager::DisconnectBlock(
     for (int transactionIndex = block.vtx.size() - 1; transactionIndex >= 0; transactionIndex--) {
         const CTransaction& tx = block.vtx[transactionIndex];
         const TxReversalStatus status = UpdateCoinsReversingTransaction(tx,view,blockUndo.vtxundo[transactionIndex-1],pindex->nHeight);
-        if(status == TxReversalStatus::ABORT_NO_OTHER_ERRORS)
+        if(!CheckTxReversalStatus(status,fClean))
         {
             return false;
-        }
-        else if (status == TxReversalStatus::ABORT_WITH_OTHER_ERRORS)
-        {
-            fClean = false;
-            return false;
-        }
-        else if (status == TxReversalStatus::CONTINUE_WITH_ERRORS)
-        {
-            fClean = false;
         }
         TransactionLocationReference txLocationReference(tx.GetHash(),pindex->nHeight,transactionIndex);
         IndexDatabaseUpdateCollector::ReverseTransaction(tx,txLocationReference,view,indexDBUpdates);

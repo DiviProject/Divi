@@ -8,7 +8,7 @@ class CTransaction;
 class CValidationState;
 class CCoinsViewCache;
 class CTxUndo;
-void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
+void UpdateCoinsWithTransaction(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
 bool CheckInputs(
     const CTransaction& tx,
     CValidationState& state,

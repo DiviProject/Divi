@@ -79,7 +79,7 @@ bool BlockTransactionChecker::Check(const CBlockRewards& nExpectedMint,bool fJus
         }
 
         IndexDatabaseUpdateCollector::RecordTransaction(tx,txLocationRef,view_, indexDatabaseUpdates);
-        UpdateCoins(tx, view_, blockundo_.vtxundo[i>0u? i-1: 0u], pindex_->nHeight);
+        UpdateCoinsWithTransaction(tx, view_, blockundo_.vtxundo[i>0u? i-1: 0u], pindex_->nHeight);
         txLocationRecorder_.RecordTxLocationData(tx,indexDatabaseUpdates.txLocationData);
     }
     return true;

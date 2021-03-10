@@ -4,6 +4,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread.hpp>
 #include <utiltime.h>
+#include <mutex>
 #include <set>
 
 #include <DataDirectory.h>
@@ -15,32 +16,63 @@ bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
 bool fLogTimestamps = false;
 
-// depends on multiArgs - rather the debug flags passed I should say
+namespace
+{
 
-static boost::once_flag debugPrintInitFlag = BOOST_ONCE_INIT;
-/**
- * We use boost::call_once() to make sure these are initialized
- * in a thread-safe manner the first time called:
- */
-static FILE* fileout = NULL;
-static boost::mutex* mutexDebugLog = NULL;
+FILE* fileout = nullptr;
 
 boost::filesystem::path getDebugLogPath()
 {
     return GetDataDir() / "debug.log";
 }
 
-static void DebugPrintInit()
+/** Ensures that the logging system has been initialised once.  Returns
+ *  true if either it is initialised now or was already before.  In case
+ *  there is a recursive call (i.e. logging performed from inside the
+ *  initialisation logic), it returns false to avoid a deadlock.  */
+bool EnsureDebugPrintInitialized()
 {
+    /* Once all is initialised, we can avoid even the mutex lock below
+       to avoid potential mutex contention.  For this, we use a flag
+       to bypass the rest of the logic.
+
+       This is not synchronised here, but it only flips from false to true
+       once and then stays true.  And even if a thread "misses" the flip,
+       the worst that happens is that it then runs into the mutex lock
+       and there gets a memory barrier synchronisation.  */
+    static bool initialised = false;
+    if (initialised)
+        return true;
+
+    static std::recursive_mutex mut;
+    static bool inProgress = false;
+
+    std::lock_guard<std::recursive_mutex> lock(mut);
+
+    /* It may have happened that initialisation was still going on when the
+       call started, then waited on the mutex, and now that we got the lock,
+       is already done.  */
+    if (initialised)
+        return true;
+
+    if (inProgress)
+        return false;
+
+    inProgress = true;
+
     assert(fileout == NULL);
-    assert(mutexDebugLog == NULL);
 
     boost::filesystem::path pathDebug = getDebugLogPath();
     fileout = fopen(pathDebug.string().c_str(), "a");
     if (fileout) setbuf(fileout, NULL); // unbuffered
 
-    mutexDebugLog = new boost::mutex();
+    inProgress = false;
+    initialised = true;
+
+    return true;
 }
+
+} // anonymous namespace
 
 bool LogAcceptCategory(const char* category)
 {
@@ -74,23 +106,24 @@ bool LogAcceptCategory(const char* category)
 
 int LogPrintStr(const std::string& str)
 {
-	int ret = 0; // Returns total number of characters written
-	//ret = fwrite(str.data(), 1, str.size(), stdout);
-	//fflush(stdout);
+    int ret = 0; // Returns total number of characters written
+    //ret = fwrite(str.data(), 1, str.size(), stdout);
+    //fflush(stdout);
 
+    const bool initFailed = !fPrintToConsole && !EnsureDebugPrintInitialized();
 
-    if (fPrintToConsole) {
+    if (fPrintToConsole || initFailed) {
         // print to console
         ret = fwrite(str.data(), 1, str.size(), stdout);
         fflush(stdout);
     } else if (fPrintToDebugLog && AreBaseParamsConfigured()) {
         static bool fStartedNewLine = true;
-        boost::call_once(&DebugPrintInit, debugPrintInitFlag);
+        static std::mutex mutexDebugLog;
 
         if (fileout == NULL)
             return ret;
 
-        boost::mutex::scoped_lock scoped_lock(*mutexDebugLog);
+        std::lock_guard<std::mutex> scoped_lock(mutexDebugLog);
 
         // reopen the log file, if requested
         if (fReopenDebugLog) {

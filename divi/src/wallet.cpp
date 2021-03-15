@@ -2165,17 +2165,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                 double dPriority = 0;
 
                 // vouts to the payees
-                if (coinControl && !coinControl->fSplitBlock)
-                {
-                    if(!CreateWalletOutputsIfNoneAreDust(vecSend,txNew,strFailReason))
-                    {
-                        return false;
-                    }
-                }
-                else //UTXO Splitter Transaction
-                {
-                    SplitIntoEqualSizedOutputsPerDestination(vecSend,coinControl,txNew);
-                }
+                SplitIntoEqualSizedOutputsPerDestination(vecSend,coinControl,txNew);
                 if(!EnsureNoOutputsAreDust(txNew))
                 {
                     strFailReason = translate("Transaction amount too small");

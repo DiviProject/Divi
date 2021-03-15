@@ -2089,19 +2089,19 @@ void SplitIntoEqualSizedOutputsPerDestination(
     const CCoinControl* coinControl,
     CMutableTransaction& txNew)
 {
-    int nSplitBlock = (!coinControl)? 1:coinControl->nSplitBlock;
+    const int numberOfEqualSizedOutputs = (!coinControl)? 1:coinControl->nSplitBlock;
     for(const std::pair<CScript, CAmount>& s: vecSend)
     {
-        for (int i = 0; i < nSplitBlock; i++)
+        for (int i = 0; i < numberOfEqualSizedOutputs; i++)
         {
-            if (i == nSplitBlock - 1)
+            if (i == numberOfEqualSizedOutputs - 1)
             {
-                uint64_t nRemainder = s.second % nSplitBlock;
-                txNew.vout.push_back(CTxOut((s.second / nSplitBlock) + nRemainder, s.first));
+                uint64_t nRemainder = s.second % numberOfEqualSizedOutputs;
+                txNew.vout.push_back(CTxOut((s.second / numberOfEqualSizedOutputs) + nRemainder, s.first));
             }
             else
             {
-                txNew.vout.push_back(CTxOut(s.second / nSplitBlock, s.first));
+                txNew.vout.push_back(CTxOut(s.second / numberOfEqualSizedOutputs, s.first));
             }
         }
     }

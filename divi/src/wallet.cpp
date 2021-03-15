@@ -2067,7 +2067,7 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*
             (allowSpendingZeroConfirmationOutputs && SelectCoinsMinConf(nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet)));
 }
 
-bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
+bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
                                 CWalletTx& wtxNew,
                                 CReserveKey& reservekey,
                                 CAmount& nFeeRet,
@@ -2081,7 +2081,8 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
 
     CAmount nValue = 0;
 
-    BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
+    for(const std::pair<CScript, CAmount>& s: vecSend)
+    {
         if (nValue < 0) {
             strFailReason = translate("Transaction amounts must be positive");
             return false;
@@ -2112,7 +2113,8 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
 
                 // vouts to the payees
                 if (coinControl && !coinControl->fSplitBlock) {
-                    BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
+                    for(const std::pair<CScript, CAmount>& s: vecSend)
+                    {
                         CTxOut txout(s.second, s.first);
                         if (priorityFeeCalculator.IsDust(txout)) {
                             strFailReason = translate("Transaction amount too small");
@@ -2129,7 +2131,8 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     else
                         nSplitBlock = 1;
 
-                    BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
+                    for(const std::pair<CScript, CAmount>& s: vecSend)
+                    {
                         for (int i = 0; i < nSplitBlock; i++) {
                             if (i == nSplitBlock - 1) {
                                 uint64_t nRemainder = s.second % nSplitBlock;
@@ -2160,7 +2163,8 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 }
 
 
-                BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins) {
+                for (std::pair<const CWalletTx*, unsigned int> pcoin: setCoins)
+                {
                     CAmount nCredit = pcoin.first->vout[pcoin.second].nValue;
                     //The coin age after the next block (depth+1) is used instead of the current,
                     //reflecting an assumption the user would accept a bit more delay for
@@ -2222,16 +2226,20 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 }
 
                 // Fill vin
-                BOOST_FOREACH (const PAIRTYPE(const CWalletTx*, unsigned int) & coin, setCoins)
-                        txNew.vin.push_back(CTxIn(coin.first->GetHash(), coin.second));
+                for(const std::pair<const CWalletTx*, unsigned int>& coin: setCoins)
+                    txNew.vin.push_back(CTxIn(coin.first->GetHash(), coin.second));
 
                 // Sign
                 int nIn = 0;
-                BOOST_FOREACH (const PAIRTYPE(const CWalletTx*, unsigned int) & coin, setCoins)
-                        if (!SignSignature(*this, *coin.first, txNew, nIn++)) {
-                    strFailReason = translate("Signing transaction failed");
-                    return false;
+                for(const std::pair<const CWalletTx*, unsigned int>& coin: setCoins)
+                {
+                    if (!SignSignature(*this, *coin.first, txNew, nIn++))
+                    {
+                        strFailReason = translate("Signing transaction failed");
+                        return false;
+                    }
                 }
+
 
                 // Embed the constructed transaction data in wtxNew.
                 *static_cast<CTransaction*>(&wtxNew) = CTransaction(txNew);

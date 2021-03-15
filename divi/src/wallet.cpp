@@ -2084,6 +2084,29 @@ bool CreateWalletOutputsIfNoneAreDust(
     return true;
 }
 
+void SplitIntoEqualSizedOutputsPerDestination(
+    const std::vector<std::pair<CScript, CAmount> >& vecSend,
+    const CCoinControl* coinControl,
+    CMutableTransaction& txNew)
+{
+    int nSplitBlock = (!coinControl)? 1:coinControl->nSplitBlock;
+    for(const std::pair<CScript, CAmount>& s: vecSend)
+    {
+        for (int i = 0; i < nSplitBlock; i++)
+        {
+            if (i == nSplitBlock - 1)
+            {
+                uint64_t nRemainder = s.second % nSplitBlock;
+                txNew.vout.push_back(CTxOut((s.second / nSplitBlock) + nRemainder, s.first));
+            }
+            else
+            {
+                txNew.vout.push_back(CTxOut(s.second / nSplitBlock, s.first));
+            }
+        }
+    }
+}
+
 bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
                                 CWalletTx& wtxNew,
                                 CReserveKey& reservekey,
@@ -2138,22 +2161,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                 }
                 else //UTXO Splitter Transaction
                 {
-                    int nSplitBlock = (!coinControl)? 1:coinControl->nSplitBlock;
-                    for(const std::pair<CScript, CAmount>& s: vecSend)
-                    {
-                        for (int i = 0; i < nSplitBlock; i++)
-                        {
-                            if (i == nSplitBlock - 1)
-                            {
-                                uint64_t nRemainder = s.second % nSplitBlock;
-                                txNew.vout.push_back(CTxOut((s.second / nSplitBlock) + nRemainder, s.first));
-                            }
-                            else
-                            {
-                                txNew.vout.push_back(CTxOut(s.second / nSplitBlock, s.first));
-                            }
-                        }
-                    }
+                    SplitIntoEqualSizedOutputsPerDestination(vecSend,coinControl,txNew);
                 }
 
                 // Choose coins to use

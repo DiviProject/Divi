@@ -2067,23 +2067,6 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*
             (allowSpendingZeroConfirmationOutputs && SelectCoinsMinConf(nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet)));
 }
 
-bool CreateWalletOutputsIfNoneAreDust(
-    const std::vector<std::pair<CScript, CAmount> >& vecSend,
-    CMutableTransaction& txNew,
-    std::string& strFailReason)
-{
-    for(const std::pair<CScript, CAmount>& s: vecSend)
-    {
-        CTxOut txout(s.second, s.first);
-        if (priorityFeeCalculator.IsDust(txout)) {
-            strFailReason = translate("Transaction amount too small");
-            return false;
-        }
-        txNew.vout.push_back(txout);
-    }
-    return true;
-}
-
 void SplitIntoEqualSizedOutputsPerDestination(
     const std::vector<std::pair<CScript, CAmount> >& intendedDestinations,
     const CCoinControl* coinControl,

@@ -2092,16 +2092,17 @@ void SplitIntoEqualSizedOutputsPerDestination(
     const int numberOfEqualSizedOutputs = (!coinControl)? 1:coinControl->nSplitBlock;
     for(const std::pair<CScript, CAmount>& s: intendedDestinations)
     {
+        const CAmount amountChunks = s.second / numberOfEqualSizedOutputs;
         for (int i = 0; i < numberOfEqualSizedOutputs; i++)
         {
             if (i == numberOfEqualSizedOutputs - 1)
             {
                 uint64_t nRemainder = s.second % numberOfEqualSizedOutputs;
-                txNew.vout.push_back(CTxOut((s.second / numberOfEqualSizedOutputs) + nRemainder, s.first));
+                txNew.vout.push_back(CTxOut(amountChunks + nRemainder, s.first));
             }
             else
             {
-                txNew.vout.push_back(CTxOut(s.second / numberOfEqualSizedOutputs, s.first));
+                txNew.vout.push_back(CTxOut(amountChunks, s.first));
             }
         }
     }

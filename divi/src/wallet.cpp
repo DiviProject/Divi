@@ -2135,7 +2135,8 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                     {
                         return false;
                     }
-                } else //UTXO Splitter Transaction
+                }
+                else //UTXO Splitter Transaction
                 {
                     int nSplitBlock = 1;
 
@@ -2144,12 +2145,17 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
 
                     for(const std::pair<CScript, CAmount>& s: vecSend)
                     {
-                        for (int i = 0; i < nSplitBlock; i++) {
-                            if (i == nSplitBlock - 1) {
+                        for (int i = 0; i < nSplitBlock; i++)
+                        {
+                            if (i == nSplitBlock - 1)
+                            {
                                 uint64_t nRemainder = s.second % nSplitBlock;
                                 txNew.vout.push_back(CTxOut((s.second / nSplitBlock) + nRemainder, s.first));
-                            } else
+                            }
+                            else
+                            {
                                 txNew.vout.push_back(CTxOut(s.second / nSplitBlock, s.first));
+                            }
                         }
                     }
                 }

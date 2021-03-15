@@ -2137,12 +2137,10 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                     }
                 } else //UTXO Splitter Transaction
                 {
-                    int nSplitBlock;
+                    int nSplitBlock = 1;
 
                     if (coinControl)
                         nSplitBlock = coinControl->nSplitBlock;
-                    else
-                        nSplitBlock = 1;
 
                     for(const std::pair<CScript, CAmount>& s: vecSend)
                     {

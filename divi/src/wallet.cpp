@@ -2108,6 +2108,18 @@ void SplitIntoEqualSizedOutputsPerDestination(
     }
 }
 
+bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
+{
+    for(const CTxOut& txout: txNew.vout)
+    {
+        if (priorityFeeCalculator.IsDust(txout))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
                                 CWalletTx& wtxNew,
                                 CReserveKey& reservekey,
@@ -2163,6 +2175,11 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                 else //UTXO Splitter Transaction
                 {
                     SplitIntoEqualSizedOutputsPerDestination(vecSend,coinControl,txNew);
+                }
+                if(!EnsureNoOutputsAreDust(txNew))
+                {
+                    strFailReason = translate("Transaction amount too small");
+                    return false;
                 }
 
                 // Choose coins to use

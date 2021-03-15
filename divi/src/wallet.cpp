@@ -2085,12 +2085,12 @@ bool CreateWalletOutputsIfNoneAreDust(
 }
 
 void SplitIntoEqualSizedOutputsPerDestination(
-    const std::vector<std::pair<CScript, CAmount> >& vecSend,
+    const std::vector<std::pair<CScript, CAmount> >& intendedDestinations,
     const CCoinControl* coinControl,
     CMutableTransaction& txNew)
 {
     const int numberOfEqualSizedOutputs = (!coinControl)? 1:coinControl->nSplitBlock;
-    for(const std::pair<CScript, CAmount>& s: vecSend)
+    for(const std::pair<CScript, CAmount>& s: intendedDestinations)
     {
         for (int i = 0; i < numberOfEqualSizedOutputs; i++)
         {

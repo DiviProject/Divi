@@ -2160,14 +2160,12 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                 CAmount nValueIn = 0;
 
                 if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type, useIX)) {
-                    if (coin_type == ALL_SPENDABLE_COINS || coin_type == OWNED_VAULT_COINS) {
+                    if (coin_type == ALL_SPENDABLE_COINS || coin_type == OWNED_VAULT_COINS)
+                    {
                         strFailReason = translate("Insufficient funds.");
-                    } else {
-                        strFailReason = translate("Unable to locate enough Obfuscation denominated funds for this transaction.");
-                        strFailReason += " " + translate("Obfuscation uses exact denominated amounts to send funds, you might simply need to anonymize some more coins.");
                     }
-
-                    if (useIX) {
+                    if (useIX)
+                    {
                         strFailReason += " " + translate("SwiftX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.");
                     }
 

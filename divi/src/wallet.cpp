@@ -1781,7 +1781,7 @@ map<CBitcoinAddress, std::vector<COutput> > CWallet::AvailableCoinsByAddress(boo
 }
 
 typedef std::pair<CAmount, std::pair<const CWalletTx*,unsigned int>> ValuedCoin;
-static void ApproximateBestSubset(
+static void ApproximateSmallestCoinSubsetForPayment(
     std::vector<ValuedCoin> valuedCoins,
     const CAmount& initialEstimateOfBestSubsetTotalValue,
     const CAmount& nTargetValue,
@@ -1949,10 +1949,10 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     std::vector<bool> selectedCoinStatusByIndex;
     CAmount totalValueOfSelectedSubset;
 
-    ApproximateBestSubset(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
+    ApproximateSmallestCoinSubsetForPayment(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
     if (totalValueOfSelectedSubset != nTargetValue && totalAmountLowerThanTargetValue >= nTargetValue + CENT)
     {
-        ApproximateBestSubset(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue + CENT, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
+        ApproximateSmallestCoinSubsetForPayment(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue + CENT, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
     }
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,

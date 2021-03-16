@@ -1782,14 +1782,14 @@ map<CBitcoinAddress, std::vector<COutput> > CWallet::AvailableCoinsByAddress(boo
 
 static void ApproximateBestSubset(std::vector<pair<CAmount, pair<const CWalletTx*, unsigned int> > > vValue, const CAmount& nTotalLower, const CAmount& nTargetValue, std::vector<bool>& vfBest, CAmount& nBest, int iterations = 1000)
 {
-    std::vector<bool> vfIncluded;
+    std::vector<bool> inclusionStatusByIndex;
 
     vfBest.assign(vValue.size(), true);
     nBest = nTotalLower;
 
     for (int nRep = 0; nRep < iterations && nBest != nTargetValue; nRep++)
     {
-        vfIncluded.assign(vValue.size(), false);
+        inclusionStatusByIndex.assign(vValue.size(), false);
         CAmount nTotal = 0;
         bool fReachedTarget = false;
         for (int nPass = 0; nPass < 2 && !fReachedTarget; nPass++)
@@ -1802,20 +1802,20 @@ static void ApproximateBestSubset(std::vector<pair<CAmount, pair<const CWalletTx
                 //that the rng is fast. We do not use a constant random sequence,
                 //because there may be some privacy improvement by making
                 //the selection random.
-                if (nPass == 0 ? FastRandomContext().rand32() & 1 : !vfIncluded[i])
+                if (nPass == 0 ? FastRandomContext().rand32() & 1 : !inclusionStatusByIndex[i])
                 {
                     nTotal += vValue[i].first;
-                    vfIncluded[i] = true;
+                    inclusionStatusByIndex[i] = true;
                     if (nTotal >= nTargetValue)
                     {
                         fReachedTarget = true;
                         if (nTotal < nBest)
                         {
                             nBest = nTotal;
-                            vfBest = vfIncluded;
+                            vfBest = inclusionStatusByIndex;
                         }
                         nTotal -= vValue[i].first;
-                        vfIncluded[i] = false;
+                        inclusionStatusByIndex[i] = false;
                     }
                 }
             }

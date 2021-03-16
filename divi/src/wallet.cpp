@@ -1797,7 +1797,7 @@ static void ApproximateBestSubset(
     for (int nRep = 0; nRep < iterations && nBest != nTargetValue; nRep++)
     {
         inclusionStatusByIndex.assign(valuedCoins.size(), false);
-        CAmount nTotal = 0;
+        CAmount totalValueOfSelectedSubset = 0;
         bool fReachedTarget = false;
         for (int nPass = 0; nPass < 2 && !fReachedTarget; nPass++)
         {
@@ -1811,17 +1811,17 @@ static void ApproximateBestSubset(
                 //the selection random.
                 if (nPass == 0 ? FastRandomContext().rand32() & 1 : !inclusionStatusByIndex[i])
                 {
-                    nTotal += valuedCoins[i].first;
+                    totalValueOfSelectedSubset += valuedCoins[i].first;
                     inclusionStatusByIndex[i] = true;
-                    if (nTotal >= nTargetValue)
+                    if (totalValueOfSelectedSubset >= nTargetValue)
                     {
                         fReachedTarget = true;
-                        if (nTotal < nBest)
+                        if (totalValueOfSelectedSubset < nBest)
                         {
-                            nBest = nTotal;
+                            nBest = totalValueOfSelectedSubset;
                             vfBest = inclusionStatusByIndex;
                         }
-                        nTotal -= valuedCoins[i].first;
+                        totalValueOfSelectedSubset -= valuedCoins[i].first;
                         inclusionStatusByIndex[i] = false;
                     }
                 }

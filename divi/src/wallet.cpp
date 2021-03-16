@@ -1902,7 +1902,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
             nValueRet += coin.first;
             return true;
         }
-        else if (outputAmount < nTargetValue + CENT)
+        if (outputAmount < nTargetValue + CENT)
         {
             ValuedCoins.push_back(coin);
             nTotalLower += outputAmount;

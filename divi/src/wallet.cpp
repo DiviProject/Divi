@@ -1780,8 +1780,9 @@ map<CBitcoinAddress, std::vector<COutput> > CWallet::AvailableCoinsByAddress(boo
     return mapCoins;
 }
 
+typedef std::pair<CAmount, std::pair<const CWalletTx*,unsigned int>> ValuedCoin;
 static void ApproximateBestSubset(
-    std::vector<pair<CAmount, pair<const CWalletTx*, unsigned int> > > vValue,
+    std::vector<ValuedCoin> valuedCoins,
     const CAmount& nTotalLower,
     const CAmount& nTargetValue,
     std::vector<bool>& vfBest,
@@ -1790,17 +1791,17 @@ static void ApproximateBestSubset(
 {
     std::vector<bool> inclusionStatusByIndex;
 
-    vfBest.assign(vValue.size(), true);
+    vfBest.assign(valuedCoins.size(), true);
     nBest = nTotalLower;
 
     for (int nRep = 0; nRep < iterations && nBest != nTargetValue; nRep++)
     {
-        inclusionStatusByIndex.assign(vValue.size(), false);
+        inclusionStatusByIndex.assign(valuedCoins.size(), false);
         CAmount nTotal = 0;
         bool fReachedTarget = false;
         for (int nPass = 0; nPass < 2 && !fReachedTarget; nPass++)
         {
-            for (unsigned int i = 0; i < vValue.size(); i++)
+            for (unsigned int i = 0; i < valuedCoins.size(); i++)
             {
                 //The solver here uses a randomized algorithm,
                 //the randomness serves no real security purpose but is just
@@ -1810,7 +1811,7 @@ static void ApproximateBestSubset(
                 //the selection random.
                 if (nPass == 0 ? FastRandomContext().rand32() & 1 : !inclusionStatusByIndex[i])
                 {
-                    nTotal += vValue[i].first;
+                    nTotal += valuedCoins[i].first;
                     inclusionStatusByIndex[i] = true;
                     if (nTotal >= nTargetValue)
                     {
@@ -1820,7 +1821,7 @@ static void ApproximateBestSubset(
                             nBest = nTotal;
                             vfBest = inclusionStatusByIndex;
                         }
-                        nTotal -= vValue[i].first;
+                        nTotal -= valuedCoins[i].first;
                         inclusionStatusByIndex[i] = false;
                     }
                 }
@@ -1886,7 +1887,6 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     nValueRet = 0;
 
     // List of values less than target
-    typedef std::pair<CAmount, std::pair<const CWalletTx*,unsigned int>> ValuedCoin;
     ValuedCoin smallestValueCoinCoveringTargetAmount;
     smallestValueCoinCoveringTargetAmount.first = std::numeric_limits<CAmount>::max();
     smallestValueCoinCoveringTargetAmount.second.first = NULL;

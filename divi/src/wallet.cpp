@@ -2072,7 +2072,7 @@ void SplitIntoEqualSizedOutputsPerDestination(
     const CCoinControl* coinControl,
     CMutableTransaction& txNew)
 {
-    const int numberOfEqualSizedOutputs = (!coinControl)? 1:coinControl->nSplitBlock;
+    const int numberOfEqualSizedOutputs = (!coinControl || !coinControl->fSplitBlock)? 1:coinControl->nSplitBlock;
     for(const std::pair<CScript, CAmount>& s: intendedDestinations)
     {
         const CAmount amountChunks = s.second / numberOfEqualSizedOutputs;

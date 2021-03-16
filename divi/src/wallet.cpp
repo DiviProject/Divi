@@ -1875,9 +1875,9 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
     // List of values less than target
     typedef std::pair<CAmount, std::pair<const CWalletTx*,unsigned int>> ValuedCoin;
-    ValuedCoin largestValueCoin;
-    largestValueCoin.first = std::numeric_limits<CAmount>::max();
-    largestValueCoin.second.first = NULL;
+    ValuedCoin smallestValueCoinCoveringTargetAmount;
+    smallestValueCoinCoveringTargetAmount.first = std::numeric_limits<CAmount>::max();
+    smallestValueCoinCoveringTargetAmount.second.first = NULL;
     std::vector<ValuedCoin> ValuedCoins;
     CAmount nTotalLower = 0;
 
@@ -1907,9 +1907,9 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
             ValuedCoins.push_back(coin);
             nTotalLower += outputAmount;
         }
-        else if (outputAmount < largestValueCoin.first)
+        else if (outputAmount < smallestValueCoinCoveringTargetAmount.first)
         {
-            largestValueCoin = coin;
+            smallestValueCoinCoveringTargetAmount = coin;
         }
     }
 
@@ -1925,10 +1925,10 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
     if (nTotalLower < nTargetValue)
     {
-        if (largestValueCoin.second.first == NULL)
+        if (smallestValueCoinCoveringTargetAmount.second.first == NULL)
             return false;
-        setCoinsRet.insert(largestValueCoin.second);
-        nValueRet += largestValueCoin.first;
+        setCoinsRet.insert(smallestValueCoinCoveringTargetAmount.second);
+        nValueRet += smallestValueCoinCoveringTargetAmount.first;
         return true;
     }
 
@@ -1943,11 +1943,11 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,
     //                                   or the next bigger coin is closer), return the bigger coin
-    if (largestValueCoin.second.first &&
-            ((nBest != nTargetValue && nBest < nTargetValue + CENT) || largestValueCoin.first <= nBest))
+    if (smallestValueCoinCoveringTargetAmount.second.first &&
+            ((nBest != nTargetValue && nBest < nTargetValue + CENT) || smallestValueCoinCoveringTargetAmount.first <= nBest))
     {
-        setCoinsRet.insert(largestValueCoin.second);
-        nValueRet += largestValueCoin.first;
+        setCoinsRet.insert(smallestValueCoinCoveringTargetAmount.second);
+        nValueRet += smallestValueCoinCoveringTargetAmount.first;
     }
     else {
         for (unsigned int i = 0; i < ValuedCoins.size(); i++)

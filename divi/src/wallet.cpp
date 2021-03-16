@@ -1879,7 +1879,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     smallestValueCoinCoveringTargetAmount.first = std::numeric_limits<CAmount>::max();
     smallestValueCoinCoveringTargetAmount.second.first = NULL;
     std::vector<ValuedCoin> ValuedCoins;
-    CAmount nTotalLower = 0;
+    CAmount totalAmountLowerThanTargetValue = 0;
 
     random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
 
@@ -1905,7 +1905,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
         if (outputAmount < nTargetValue + CENT)
         {
             ValuedCoins.push_back(coin);
-            nTotalLower += outputAmount;
+            totalAmountLowerThanTargetValue += outputAmount;
         }
         else if (outputAmount < smallestValueCoinCoveringTargetAmount.first)
         {
@@ -1913,7 +1913,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
         }
     }
 
-    if (nTotalLower == nTargetValue)
+    if (totalAmountLowerThanTargetValue == nTargetValue)
     {
         for (unsigned int i = 0; i < ValuedCoins.size(); ++i)
         {
@@ -1923,7 +1923,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
         return true;
     }
 
-    if (nTotalLower < nTargetValue)
+    if (totalAmountLowerThanTargetValue < nTargetValue)
     {
         if (smallestValueCoinCoveringTargetAmount.second.first == NULL)
             return false;
@@ -1937,9 +1937,9 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     std::vector<char> vfBest;
     CAmount nBest;
 
-    ApproximateBestSubset(ValuedCoins, nTotalLower, nTargetValue, vfBest, nBest, 1000);
-    if (nBest != nTargetValue && nTotalLower >= nTargetValue + CENT)
-        ApproximateBestSubset(ValuedCoins, nTotalLower, nTargetValue + CENT, vfBest, nBest, 1000);
+    ApproximateBestSubset(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue, vfBest, nBest, 1000);
+    if (nBest != nTargetValue && totalAmountLowerThanTargetValue >= nTargetValue + CENT)
+        ApproximateBestSubset(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue + CENT, vfBest, nBest, 1000);
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,
     //                                   or the next bigger coin is closer), return the bigger coin

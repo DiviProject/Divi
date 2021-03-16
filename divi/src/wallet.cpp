@@ -1874,9 +1874,9 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     nValueRet = 0;
 
     // List of values less than target
-    std::pair<CAmount, std::pair<const CWalletTx*,unsigned int> > coinLowestLarger;
-    coinLowestLarger.first = std::numeric_limits<CAmount>::max();
-    coinLowestLarger.second.first = NULL;
+    std::pair<CAmount, std::pair<const CWalletTx*,unsigned int> > largestValueCoin;
+    largestValueCoin.first = std::numeric_limits<CAmount>::max();
+    largestValueCoin.second.first = NULL;
     std::vector<std::pair<CAmount, std::pair<const CWalletTx*,unsigned int> > > vValue;
     CAmount nTotalLower = 0;
 
@@ -1908,9 +1908,9 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
             vValue.push_back(coin);
             nTotalLower += n;
         }
-        else if (n < coinLowestLarger.first)
+        else if (n < largestValueCoin.first)
         {
-            coinLowestLarger = coin;
+            largestValueCoin = coin;
         }
     }
 
@@ -1926,10 +1926,10 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
     if (nTotalLower < nTargetValue)
     {
-        if (coinLowestLarger.second.first == NULL)
+        if (largestValueCoin.second.first == NULL)
             return false;
-        setCoinsRet.insert(coinLowestLarger.second);
-        nValueRet += coinLowestLarger.first;
+        setCoinsRet.insert(largestValueCoin.second);
+        nValueRet += largestValueCoin.first;
         return true;
     }
 
@@ -1944,11 +1944,11 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,
     //                                   or the next bigger coin is closer), return the bigger coin
-    if (coinLowestLarger.second.first &&
-            ((nBest != nTargetValue && nBest < nTargetValue + CENT) || coinLowestLarger.first <= nBest))
+    if (largestValueCoin.second.first &&
+            ((nBest != nTargetValue && nBest < nTargetValue + CENT) || largestValueCoin.first <= nBest))
     {
-        setCoinsRet.insert(coinLowestLarger.second);
-        nValueRet += coinLowestLarger.first;
+        setCoinsRet.insert(largestValueCoin.second);
+        nValueRet += largestValueCoin.first;
     }
     else {
         for (unsigned int i = 0; i < vValue.size(); i++)
@@ -2102,6 +2102,8 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
     }
     return true;
 }
+
+typedef  std::set<std::pair<const CWalletTx*, unsigned int> > SpendableWalletOutputs;
 
 bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
                                 CWalletTx& wtxNew,

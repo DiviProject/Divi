@@ -1780,7 +1780,13 @@ map<CBitcoinAddress, std::vector<COutput> > CWallet::AvailableCoinsByAddress(boo
     return mapCoins;
 }
 
-static void ApproximateBestSubset(std::vector<pair<CAmount, pair<const CWalletTx*, unsigned int> > > vValue, const CAmount& nTotalLower, const CAmount& nTargetValue, std::vector<bool>& vfBest, CAmount& nBest, int iterations = 1000)
+static void ApproximateBestSubset(
+    std::vector<pair<CAmount, pair<const CWalletTx*, unsigned int> > > vValue,
+    const CAmount& nTotalLower,
+    const CAmount& nTargetValue,
+    std::vector<bool>& vfBest,
+    CAmount& nBest,
+    int iterations = 1000)
 {
     std::vector<bool> inclusionStatusByIndex;
 

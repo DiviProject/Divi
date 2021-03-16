@@ -1780,9 +1780,9 @@ map<CBitcoinAddress, std::vector<COutput> > CWallet::AvailableCoinsByAddress(boo
     return mapCoins;
 }
 
-static void ApproximateBestSubset(std::vector<pair<CAmount, pair<const CWalletTx*, unsigned int> > > vValue, const CAmount& nTotalLower, const CAmount& nTargetValue, std::vector<char>& vfBest, CAmount& nBest, int iterations = 1000)
+static void ApproximateBestSubset(std::vector<pair<CAmount, pair<const CWalletTx*, unsigned int> > > vValue, const CAmount& nTotalLower, const CAmount& nTargetValue, std::vector<bool>& vfBest, CAmount& nBest, int iterations = 1000)
 {
-    std::vector<char> vfIncluded;
+    std::vector<bool> vfIncluded;
 
     vfBest.assign(vValue.size(), true);
     nBest = nTotalLower;
@@ -1934,7 +1934,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
     // Solve subset sum by stochastic approximation
     sort(ValuedCoins.rbegin(), ValuedCoins.rend(), CompareValueOnly());
-    std::vector<char> vfBest;
+    std::vector<bool> vfBest;
     CAmount nBest;
 
     ApproximateBestSubset(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue, vfBest, nBest, 1000);

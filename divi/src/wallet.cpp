@@ -1785,13 +1785,13 @@ static void ApproximateBestSubset(
     std::vector<ValuedCoin> valuedCoins,
     const CAmount& initialEstimateOfBestSubsetTotalValue,
     const CAmount& nTargetValue,
-    std::vector<bool>& vfBest,
+    std::vector<bool>& selectedCoinStatusByIndex,
     CAmount& nBest,
     int iterations = 1000)
 {
     std::vector<bool> inclusionStatusByIndex;
 
-    vfBest.assign(valuedCoins.size(), true);
+    selectedCoinStatusByIndex.assign(valuedCoins.size(), true);
     nBest = initialEstimateOfBestSubsetTotalValue;
 
     for (int nRep = 0; nRep < iterations && nBest != nTargetValue; nRep++)
@@ -1819,7 +1819,7 @@ static void ApproximateBestSubset(
                         if (totalValueOfSelectedSubset < nBest)
                         {
                             nBest = totalValueOfSelectedSubset;
-                            vfBest = inclusionStatusByIndex;
+                            selectedCoinStatusByIndex = inclusionStatusByIndex;
                         }
                         totalValueOfSelectedSubset -= valuedCoins[i].first;
                         inclusionStatusByIndex[i] = false;
@@ -1946,13 +1946,13 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
 
     // Solve subset sum by stochastic approximation
     sort(ValuedCoins.rbegin(), ValuedCoins.rend(), CompareValueOnly());
-    std::vector<bool> vfBest;
+    std::vector<bool> selectedCoinStatusByIndex;
     CAmount nBest;
 
-    ApproximateBestSubset(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue, vfBest, nBest, 1000);
+    ApproximateBestSubset(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue, selectedCoinStatusByIndex, nBest, 1000);
     if (nBest != nTargetValue && totalAmountLowerThanTargetValue >= nTargetValue + CENT)
     {
-        ApproximateBestSubset(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue + CENT, vfBest, nBest, 1000);
+        ApproximateBestSubset(ValuedCoins, totalAmountLowerThanTargetValue, nTargetValue + CENT, selectedCoinStatusByIndex, nBest, 1000);
     }
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,
@@ -1967,7 +1967,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     {
         for (unsigned int i = 0; i < ValuedCoins.size(); i++)
         {
-            if (vfBest[i])
+            if (selectedCoinStatusByIndex[i])
             {
                 setCoinsRet.insert(ValuedCoins[i].second);
                 nValueRet += ValuedCoins[i].first;
@@ -1977,7 +1977,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
         LogPrint("selectcoins", "SelectCoins() best subset: ");
         for (unsigned int i = 0; i < ValuedCoins.size(); i++)
         {
-            if (vfBest[i]) LogPrint("selectcoins", "%s ", FormatMoney(ValuedCoins[i].first));
+            if (selectedCoinStatusByIndex[i]) LogPrint("selectcoins", "%s ", FormatMoney(ValuedCoins[i].first));
         }
         LogPrint("selectcoins", "total %s\n", FormatMoney(nBest));
     }

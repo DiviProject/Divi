@@ -1893,10 +1893,10 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
         if (output.nDepth < ( DebitsFunds(*pcoin,ISMINE_ALL) ? nConfMine : nConfTheirs))
             continue;
 
-        int i = output.i;
-        CAmount n = pcoin->vout[i].nValue;
+        const int outputIndex = output.i;
+        CAmount n = pcoin->vout[outputIndex].nValue;
 
-        ValuedCoin coin = std::make_pair(n,std::make_pair(pcoin, i));
+        ValuedCoin coin = std::make_pair(n,std::make_pair(pcoin, outputIndex));
 
         if (n == nTargetValue)
         {

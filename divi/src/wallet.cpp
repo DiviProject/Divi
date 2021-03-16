@@ -1874,10 +1874,11 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     nValueRet = 0;
 
     // List of values less than target
-    std::pair<CAmount, std::pair<const CWalletTx*,unsigned int> > largestValueCoin;
+    typedef std::pair<CAmount, std::pair<const CWalletTx*,unsigned int>> ValuedCoin;
+    ValuedCoin largestValueCoin;
     largestValueCoin.first = std::numeric_limits<CAmount>::max();
     largestValueCoin.second.first = NULL;
-    std::vector<std::pair<CAmount, std::pair<const CWalletTx*,unsigned int> > > ValuedCoins;
+    std::vector<ValuedCoin> ValuedCoins;
     CAmount nTotalLower = 0;
 
     random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);

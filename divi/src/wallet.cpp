@@ -1896,7 +1896,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
         int i = output.i;
         CAmount n = pcoin->vout[i].nValue;
 
-        pair<CAmount,pair<const CWalletTx*,unsigned int> > coin = std::make_pair(n,std::make_pair(pcoin, i));
+        ValuedCoin coin = std::make_pair(n,std::make_pair(pcoin, i));
 
         if (n == nTargetValue)
         {

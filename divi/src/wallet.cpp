@@ -1787,24 +1787,30 @@ static void ApproximateBestSubset(std::vector<pair<CAmount, pair<const CWalletTx
     vfBest.assign(vValue.size(), true);
     nBest = nTotalLower;
 
-    for (int nRep = 0; nRep < iterations && nBest != nTargetValue; nRep++) {
+    for (int nRep = 0; nRep < iterations && nBest != nTargetValue; nRep++)
+    {
         vfIncluded.assign(vValue.size(), false);
         CAmount nTotal = 0;
         bool fReachedTarget = false;
-        for (int nPass = 0; nPass < 2 && !fReachedTarget; nPass++) {
-            for (unsigned int i = 0; i < vValue.size(); i++) {
+        for (int nPass = 0; nPass < 2 && !fReachedTarget; nPass++)
+        {
+            for (unsigned int i = 0; i < vValue.size(); i++)
+            {
                 //The solver here uses a randomized algorithm,
                 //the randomness serves no real security purpose but is just
                 //needed to prevent degenerate behavior and it is important
                 //that the rng is fast. We do not use a constant random sequence,
                 //because there may be some privacy improvement by making
                 //the selection random.
-                if (nPass == 0 ? FastRandomContext().rand32() & 1 : !vfIncluded[i]) {
+                if (nPass == 0 ? FastRandomContext().rand32() & 1 : !vfIncluded[i])
+                {
                     nTotal += vValue[i].first;
                     vfIncluded[i] = true;
-                    if (nTotal >= nTargetValue) {
+                    if (nTotal >= nTargetValue)
+                    {
                         fReachedTarget = true;
-                        if (nTotal < nBest) {
+                        if (nTotal < nBest)
+                        {
                             nBest = nTotal;
                             vfBest = vfIncluded;
                         }

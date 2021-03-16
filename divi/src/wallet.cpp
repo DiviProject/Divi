@@ -1894,22 +1894,22 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
             continue;
 
         const int outputIndex = output.i;
-        CAmount n = pcoin->vout[outputIndex].nValue;
+        const CAmount outputAmount = pcoin->vout[outputIndex].nValue;
 
-        ValuedCoin coin = std::make_pair(n,std::make_pair(pcoin, outputIndex));
+        ValuedCoin coin = std::make_pair(outputAmount,std::make_pair(pcoin, outputIndex));
 
-        if (n == nTargetValue)
+        if (outputAmount == nTargetValue)
         {
             setCoinsRet.insert(coin.second);
             nValueRet += coin.first;
             return true;
         }
-        else if (n < nTargetValue + CENT)
+        else if (outputAmount < nTargetValue + CENT)
         {
             ValuedCoins.push_back(coin);
-            nTotalLower += n;
+            nTotalLower += outputAmount;
         }
-        else if (n < largestValueCoin.first)
+        else if (outputAmount < largestValueCoin.first)
         {
             largestValueCoin = coin;
         }

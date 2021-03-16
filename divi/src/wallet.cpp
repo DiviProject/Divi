@@ -1887,12 +1887,10 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
     {
         if (!output.fSpendable)
             continue;
-
-        const CWalletTx *pcoin = output.tx;
-
-        if (output.nDepth < ( DebitsFunds(*pcoin,ISMINE_ALL) ? nConfMine : nConfTheirs))
+        if (output.nDepth < ( DebitsFunds(*output.tx,ISMINE_ALL) ? nConfMine : nConfTheirs))
             continue;
 
+        const CWalletTx *pcoin = output.tx;
         const int outputIndex = output.i;
         const CAmount outputAmount = pcoin->vout[outputIndex].nValue;
 

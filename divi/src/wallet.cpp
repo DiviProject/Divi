@@ -1952,7 +1952,7 @@ bool CWallet::SelectCoinsMinConf(
     }
 
     // Solve subset sum by stochastic approximation
-    sort(valuedCoins.rbegin(), valuedCoins.rend(), CompareValueOnly());
+    std::sort(valuedCoins.rbegin(), valuedCoins.rend(), CompareValueOnly());
     std::vector<bool> selectedCoinStatusByIndex;
     CAmount totalValueOfSelectedSubset;
 

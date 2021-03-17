@@ -1964,8 +1964,8 @@ bool CWallet::SelectCoinsMinConf(
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,
     //                                   or the next bigger coin is closer), return the bigger coin
-    if (fallBackCoinWasFound &&
-        ((totalValueOfSelectedSubset != nTargetValue && totalValueOfSelectedSubset < nTargetValue + CENT) || coinToSpendAsFallBack.first <= totalValueOfSelectedSubset))
+    const bool haveBadCoinSubset = totalValueOfSelectedSubset != nTargetValue && totalValueOfSelectedSubset < nTargetValue + CENT;
+    if (fallBackCoinWasFound && (haveBadCoinSubset || coinToSpendAsFallBack.first <= totalValueOfSelectedSubset))
     {
         setCoinsRet.insert(coinToSpendAsFallBack.second);
         nValueRet += coinToSpendAsFallBack.first;

@@ -1980,13 +1980,6 @@ bool CWallet::SelectCoinsMinConf(
                 nValueRet += valuedCoins[i].first;
             }
         }
-
-        LogPrint("selectcoins", "SelectCoins() best subset: ");
-        for (unsigned int i = 0; i < valuedCoins.size(); i++)
-        {
-            if (selectedCoinStatusByIndex[i]) LogPrint("selectcoins", "%s ", FormatMoney(valuedCoins[i].first));
-        }
-        LogPrint("selectcoins", "total %s\n", FormatMoney(totalValueOfSelectedSubset));
     }
 
     return true;

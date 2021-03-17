@@ -1881,7 +1881,13 @@ bool CWallet::MintableCoins()
     return false;
 }
 
-bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins, set<pair<const CWalletTx*, unsigned int> >& setCoinsRet, CAmount& nValueRet) const
+bool CWallet::SelectCoinsMinConf(
+    const CAmount& nTargetValue,
+    int nConfMine,
+    int nConfTheirs,
+    std::vector<COutput> vCoins,
+    set<pair<const CWalletTx*, unsigned int> >& setCoinsRet,
+    CAmount& nValueRet) const
 {
     setCoinsRet.clear();
     nValueRet = 0;

@@ -1893,9 +1893,9 @@ bool CWallet::SelectCoinsMinConf(
     nValueRet = 0;
 
     // List of values less than target
-    ValuedCoin smallestValueCoinCoveringTargetAmount;
-    smallestValueCoinCoveringTargetAmount.first = std::numeric_limits<CAmount>::max();
-    smallestValueCoinCoveringTargetAmount.second.first = NULL;
+    ValuedCoin coinToSpendAsFallBack;
+    coinToSpendAsFallBack.first = std::numeric_limits<CAmount>::max();
+    coinToSpendAsFallBack.second.first = NULL;
     std::vector<ValuedCoin> valuedCoins;
     CAmount totalAmountLowerThanTargetValue = 0;
 
@@ -1925,9 +1925,9 @@ bool CWallet::SelectCoinsMinConf(
             valuedCoins.push_back(coin);
             totalAmountLowerThanTargetValue += outputAmount;
         }
-        else if (outputAmount < smallestValueCoinCoveringTargetAmount.first)
+        else if (outputAmount < coinToSpendAsFallBack.first)
         {
-            smallestValueCoinCoveringTargetAmount = coin;
+            coinToSpendAsFallBack = coin;
         }
     }
 
@@ -1943,10 +1943,10 @@ bool CWallet::SelectCoinsMinConf(
 
     if (totalAmountLowerThanTargetValue < nTargetValue)
     {
-        if (smallestValueCoinCoveringTargetAmount.second.first == NULL)
+        if (coinToSpendAsFallBack.second.first == NULL)
             return false;
-        setCoinsRet.insert(smallestValueCoinCoveringTargetAmount.second);
-        nValueRet += smallestValueCoinCoveringTargetAmount.first;
+        setCoinsRet.insert(coinToSpendAsFallBack.second);
+        nValueRet += coinToSpendAsFallBack.first;
         return true;
     }
 
@@ -1963,11 +1963,11 @@ bool CWallet::SelectCoinsMinConf(
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,
     //                                   or the next bigger coin is closer), return the bigger coin
-    if (smallestValueCoinCoveringTargetAmount.second.first &&
-        ((totalValueOfSelectedSubset != nTargetValue && totalValueOfSelectedSubset < nTargetValue + CENT) || smallestValueCoinCoveringTargetAmount.first <= totalValueOfSelectedSubset))
+    if (coinToSpendAsFallBack.second.first &&
+        ((totalValueOfSelectedSubset != nTargetValue && totalValueOfSelectedSubset < nTargetValue + CENT) || coinToSpendAsFallBack.first <= totalValueOfSelectedSubset))
     {
-        setCoinsRet.insert(smallestValueCoinCoveringTargetAmount.second);
-        nValueRet += smallestValueCoinCoveringTargetAmount.first;
+        setCoinsRet.insert(coinToSpendAsFallBack.second);
+        nValueRet += coinToSpendAsFallBack.first;
     }
     else
     {

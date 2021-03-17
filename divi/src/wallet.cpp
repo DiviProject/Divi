@@ -1896,6 +1896,7 @@ bool CWallet::SelectCoinsMinConf(
     ValuedCoin coinToSpendAsFallBack;
     coinToSpendAsFallBack.first = std::numeric_limits<CAmount>::max();
     coinToSpendAsFallBack.second.first = NULL;
+    bool fallBackCoinWasFound = !(coinToSpendAsFallBack.second.first == NULL);
     std::vector<ValuedCoin> valuedCoins;
     CAmount totalAmountLowerThanTargetValue = 0;
 
@@ -1928,6 +1929,7 @@ bool CWallet::SelectCoinsMinConf(
         else if (outputAmount < coinToSpendAsFallBack.first)
         {
             coinToSpendAsFallBack = coin;
+            fallBackCoinWasFound = !(coinToSpendAsFallBack.second.first == NULL);
         }
     }
 
@@ -1943,8 +1945,7 @@ bool CWallet::SelectCoinsMinConf(
 
     if (totalAmountLowerThanTargetValue < nTargetValue)
     {
-        if (coinToSpendAsFallBack.second.first == NULL)
-            return false;
+        if (!fallBackCoinWasFound) return false;
         setCoinsRet.insert(coinToSpendAsFallBack.second);
         nValueRet += coinToSpendAsFallBack.first;
         return true;
@@ -1963,7 +1964,7 @@ bool CWallet::SelectCoinsMinConf(
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,
     //                                   or the next bigger coin is closer), return the bigger coin
-    if (coinToSpendAsFallBack.second.first &&
+    if (fallBackCoinWasFound &&
         ((totalValueOfSelectedSubset != nTargetValue && totalValueOfSelectedSubset < nTargetValue + CENT) || coinToSpendAsFallBack.first <= totalValueOfSelectedSubset))
     {
         setCoinsRet.insert(coinToSpendAsFallBack.second);

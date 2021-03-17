@@ -2074,8 +2074,10 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*
     AvailableCoins(vCoins, true, coinControl, false, coin_type, useIX);
 
     // coin control -> return all selected outputs (we want all selected to go into the transaction for sure)
-    if (coinControl && coinControl->HasSelected()) {
-        BOOST_FOREACH (const COutput& out, vCoins) {
+    if (coinControl && coinControl->HasSelected())
+    {
+        for(const COutput& out: vCoins)
+        {
             if (!out.fSpendable)
                 continue;
 

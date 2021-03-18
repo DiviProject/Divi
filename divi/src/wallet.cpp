@@ -1896,7 +1896,7 @@ bool CWallet::SelectCoinsMinConf(
     COutput coinToSpendAsFallBack;
     bool fallBackCoinWasFound = coinToSpendAsFallBack.IsValid();
     std::vector<COutput> smallValuedCoins;
-    CAmount totalAmountLowerThanTargetValue = 0;
+    CAmount totalOfSmallValuedCoins = 0;
 
     random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
 
@@ -1911,7 +1911,7 @@ bool CWallet::SelectCoinsMinConf(
         if (outputAmount < nTargetValue + CENT)
         {
             smallValuedCoins.push_back(output);
-            totalAmountLowerThanTargetValue += outputAmount;
+            totalOfSmallValuedCoins += outputAmount;
         }
         else if (!coinToSpendAsFallBack.IsValid() || outputAmount < coinToSpendAsFallBack.Value())
         {
@@ -1920,7 +1920,7 @@ bool CWallet::SelectCoinsMinConf(
         }
     }
 
-    if (totalAmountLowerThanTargetValue == nTargetValue)
+    if (totalOfSmallValuedCoins == nTargetValue)
     {
         for (unsigned int i = 0; i < smallValuedCoins.size(); ++i)
         {
@@ -1930,7 +1930,7 @@ bool CWallet::SelectCoinsMinConf(
         return true;
     }
 
-    if (totalAmountLowerThanTargetValue < nTargetValue)
+    if (totalOfSmallValuedCoins < nTargetValue)
     {
         if (!fallBackCoinWasFound) return false;
         setCoinsRet.insert(coinToSpendAsFallBack);
@@ -1943,10 +1943,10 @@ bool CWallet::SelectCoinsMinConf(
     std::vector<bool> selectedCoinStatusByIndex;
     CAmount totalValueOfSelectedSubset;
 
-    ApproximateSmallestCoinSubsetForPayment(smallValuedCoins, totalAmountLowerThanTargetValue, nTargetValue, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
-    if (totalValueOfSelectedSubset != nTargetValue && totalAmountLowerThanTargetValue >= nTargetValue + CENT)
+    ApproximateSmallestCoinSubsetForPayment(smallValuedCoins, totalOfSmallValuedCoins, nTargetValue, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
+    if (totalValueOfSelectedSubset != nTargetValue && totalOfSmallValuedCoins >= nTargetValue + CENT)
     {
-        ApproximateSmallestCoinSubsetForPayment(smallValuedCoins, totalAmountLowerThanTargetValue, nTargetValue + CENT, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
+        ApproximateSmallestCoinSubsetForPayment(smallValuedCoins, totalOfSmallValuedCoins, nTargetValue + CENT, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
     }
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,

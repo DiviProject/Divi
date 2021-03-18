@@ -1881,6 +1881,19 @@ bool CWallet::MintableCoins()
     return false;
 }
 
+static void FilterToKeepConfirmedAndSpendableOutputs(
+    const CWallet& wallet,
+    int nConfMine,
+    int nConfTheirs,
+    std::vector<COutput>& vCoins)
+{
+    auto outputSuitabilityCheck = [&wallet,nConfMine,nConfTheirs](const COutput& output)
+    {
+        return !output.fSpendable || output.nDepth < (wallet.DebitsFunds(*output.tx,ISMINE_ALL)? nConfMine : nConfTheirs);
+    };
+    vCoins.erase(std::remove_if(vCoins.begin(),vCoins.end(),outputSuitabilityCheck),vCoins.end());
+}
+
 bool CWallet::SelectCoinsMinConf(
     const CAmount& nTargetValue,
     int nConfMine,
@@ -1899,14 +1912,9 @@ bool CWallet::SelectCoinsMinConf(
     CAmount totalOfSmallValuedCoins = 0;
 
     random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
-
+    FilterToKeepConfirmedAndSpendableOutputs(*this,nConfMine,nConfTheirs,vCoins);
     for(const COutput &output: vCoins)
     {
-        if (!output.fSpendable)
-            continue;
-        if (output.nDepth < ( DebitsFunds(*output.tx,ISMINE_ALL) ? nConfMine : nConfTheirs))
-            continue;
-
         const CAmount outputAmount = output.Value();
         if (outputAmount < nTargetValue + CENT)
         {

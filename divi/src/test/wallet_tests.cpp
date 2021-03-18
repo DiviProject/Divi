@@ -31,7 +31,7 @@ namespace
 
 using namespace std;
 
-typedef set<pair<const CWalletTx*,unsigned int> > CoinSet;
+typedef set<COutput> CoinSet;
 
 bool equal_sets(CoinSet a, CoinSet b)
 {

@@ -410,10 +410,10 @@ int CWallet::GetVersion()
 }
 
 struct CompareValueOnly {
-    bool operator()(const pair<CAmount, pair<const CWalletTx*, unsigned int> >& t1,
-                    const pair<CAmount, pair<const CWalletTx*, unsigned int> >& t2) const
+    bool operator()(const COutput& t1,
+                    const COutput& t2) const
     {
-        return t1.first < t2.first;
+        return t1.Value() < t2.Value();
     }
 };
 
@@ -1780,9 +1780,8 @@ map<CBitcoinAddress, std::vector<COutput> > CWallet::AvailableCoinsByAddress(boo
     return mapCoins;
 }
 
-typedef std::pair<CAmount, std::pair<const CWalletTx*,unsigned int>> ValuedCoin;
 static void ApproximateSmallestCoinSubsetForPayment(
-    std::vector<ValuedCoin> valuedCoins,
+    std::vector<COutput> valuedCoins,
     const CAmount& initialEstimateOfBestSubsetTotalValue,
     const CAmount& nTargetValue,
     std::vector<bool>& selectedCoinStatusByIndex,
@@ -1811,7 +1810,8 @@ static void ApproximateSmallestCoinSubsetForPayment(
                 //the selection random.
                 if (nPass == 0 ? FastRandomContext().rand32() & 1 : !inclusionStatusByIndex[i])
                 {
-                    totalValueOfSelectedSubset += valuedCoins[i].first;
+                    const CAmount outputValue = valuedCoins[i].Value();
+                    totalValueOfSelectedSubset += outputValue;
                     inclusionStatusByIndex[i] = true;
                     if (totalValueOfSelectedSubset >= nTargetValue)
                     {
@@ -1821,7 +1821,7 @@ static void ApproximateSmallestCoinSubsetForPayment(
                             smallestTotalValueForSelectedSubset = totalValueOfSelectedSubset;
                             selectedCoinStatusByIndex = inclusionStatusByIndex;
                         }
-                        totalValueOfSelectedSubset -= valuedCoins[i].first;
+                        totalValueOfSelectedSubset -= outputValue;
                         inclusionStatusByIndex[i] = false;
                     }
                 }
@@ -1886,18 +1886,16 @@ bool CWallet::SelectCoinsMinConf(
     int nConfMine,
     int nConfTheirs,
     std::vector<COutput> vCoins,
-    set<pair<const CWalletTx*, unsigned int> >& setCoinsRet,
+    std::set<COutput>& setCoinsRet,
     CAmount& nValueRet) const
 {
     setCoinsRet.clear();
     nValueRet = 0;
 
     // List of values less than target
-    ValuedCoin coinToSpendAsFallBack;
-    coinToSpendAsFallBack.first = std::numeric_limits<CAmount>::max();
-    coinToSpendAsFallBack.second.first = NULL;
-    bool fallBackCoinWasFound = !(coinToSpendAsFallBack.second.first == NULL);
-    std::vector<ValuedCoin> valuedCoins;
+    COutput coinToSpendAsFallBack;
+    bool fallBackCoinWasFound = coinToSpendAsFallBack.IsValid();
+    std::vector<COutput> smallValuedCoins;
     CAmount totalAmountLowerThanTargetValue = 0;
 
     random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
@@ -1909,36 +1907,31 @@ bool CWallet::SelectCoinsMinConf(
         if (output.nDepth < ( DebitsFunds(*output.tx,ISMINE_ALL) ? nConfMine : nConfTheirs))
             continue;
 
-        const CWalletTx *pcoin = output.tx;
-        const int outputIndex = output.i;
-        const CAmount outputAmount = pcoin->vout[outputIndex].nValue;
-
-        ValuedCoin coin = std::make_pair(outputAmount,std::make_pair(pcoin, outputIndex));
-
+        const CAmount outputAmount = output.Value();
         if (outputAmount == nTargetValue)
         {
-            setCoinsRet.insert(coin.second);
-            nValueRet += coin.first;
+            setCoinsRet.insert(output);
+            nValueRet += outputAmount;
             return true;
         }
         if (outputAmount < nTargetValue + CENT)
         {
-            valuedCoins.push_back(coin);
+            smallValuedCoins.push_back(output);
             totalAmountLowerThanTargetValue += outputAmount;
         }
-        else if (outputAmount < coinToSpendAsFallBack.first)
+        else if (!coinToSpendAsFallBack.IsValid() || outputAmount < coinToSpendAsFallBack.Value())
         {
-            coinToSpendAsFallBack = coin;
-            fallBackCoinWasFound = !(coinToSpendAsFallBack.second.first == NULL);
+            coinToSpendAsFallBack = output;
+            fallBackCoinWasFound = coinToSpendAsFallBack.IsValid();
         }
     }
 
     if (totalAmountLowerThanTargetValue == nTargetValue)
     {
-        for (unsigned int i = 0; i < valuedCoins.size(); ++i)
+        for (unsigned int i = 0; i < smallValuedCoins.size(); ++i)
         {
-            setCoinsRet.insert(valuedCoins[i].second);
-            nValueRet += valuedCoins[i].first;
+            setCoinsRet.insert(smallValuedCoins[i]);
+            nValueRet += smallValuedCoins[i].Value();
         }
         return true;
     }
@@ -1946,38 +1939,38 @@ bool CWallet::SelectCoinsMinConf(
     if (totalAmountLowerThanTargetValue < nTargetValue)
     {
         if (!fallBackCoinWasFound) return false;
-        setCoinsRet.insert(coinToSpendAsFallBack.second);
-        nValueRet += coinToSpendAsFallBack.first;
+        setCoinsRet.insert(coinToSpendAsFallBack);
+        nValueRet += coinToSpendAsFallBack.Value();
         return true;
     }
 
     // Solve subset sum by stochastic approximation
-    std::sort(valuedCoins.rbegin(), valuedCoins.rend(), CompareValueOnly());
+    std::sort(smallValuedCoins.rbegin(), smallValuedCoins.rend(), CompareValueOnly());
     std::vector<bool> selectedCoinStatusByIndex;
     CAmount totalValueOfSelectedSubset;
 
-    ApproximateSmallestCoinSubsetForPayment(valuedCoins, totalAmountLowerThanTargetValue, nTargetValue, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
+    ApproximateSmallestCoinSubsetForPayment(smallValuedCoins, totalAmountLowerThanTargetValue, nTargetValue, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
     if (totalValueOfSelectedSubset != nTargetValue && totalAmountLowerThanTargetValue >= nTargetValue + CENT)
     {
-        ApproximateSmallestCoinSubsetForPayment(valuedCoins, totalAmountLowerThanTargetValue, nTargetValue + CENT, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
+        ApproximateSmallestCoinSubsetForPayment(smallValuedCoins, totalAmountLowerThanTargetValue, nTargetValue + CENT, selectedCoinStatusByIndex, totalValueOfSelectedSubset, 1000);
     }
 
     // If we have a bigger coin and (either the stochastic approximation didn't find a good solution,
     //                                   or the next bigger coin is closer), return the bigger coin
     const bool haveBadCoinSubset = totalValueOfSelectedSubset != nTargetValue && totalValueOfSelectedSubset < nTargetValue + CENT;
-    if (fallBackCoinWasFound && (haveBadCoinSubset || coinToSpendAsFallBack.first <= totalValueOfSelectedSubset))
+    if (fallBackCoinWasFound && (haveBadCoinSubset || coinToSpendAsFallBack.Value() <= totalValueOfSelectedSubset))
     {
-        setCoinsRet.insert(coinToSpendAsFallBack.second);
-        nValueRet += coinToSpendAsFallBack.first;
+        setCoinsRet.insert(coinToSpendAsFallBack);
+        nValueRet += coinToSpendAsFallBack.Value();
     }
     else
     {
-        for (unsigned int i = 0; i < valuedCoins.size(); i++)
+        for (unsigned int i = 0; i < smallValuedCoins.size(); i++)
         {
             if (selectedCoinStatusByIndex[i])
             {
-                setCoinsRet.insert(valuedCoins[i].second);
-                nValueRet += valuedCoins[i].first;
+                setCoinsRet.insert(smallValuedCoins[i]);
+                nValueRet += smallValuedCoins[i].Value();
             }
         }
     }
@@ -2060,7 +2053,7 @@ void CWallet::UpdateNextTransactionIndexAvailable(int64_t transactionIndex)
     orderedTransactionIndex = transactionIndex;
 }
 
-bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*, unsigned int> >& setCoinsRet, CAmount& nValueRet, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX) const
+bool CWallet::SelectCoins(const CAmount& nTargetValue, set<COutput>& setCoinsRet, CAmount& nValueRet, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX) const
 {
     // Note: this function should never be used for "always free" tx types like dstx
 
@@ -2075,8 +2068,8 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*
             if (!out.fSpendable)
                 continue;
 
-            nValueRet += out.tx->vout[out.i].nValue;
-            setCoinsRet.insert(std::make_pair(out.tx, out.i));
+            nValueRet += out.Value();
+            setCoinsRet.insert(out);
         }
         return (nValueRet >= nTargetValue);
     }
@@ -2177,7 +2170,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                 }
 
                 // Choose coins to use
-                std::set<std::pair<const CWalletTx*, unsigned int> > setCoins;
+                std::set<COutput> setCoins;
                 CAmount nValueIn = 0;
 
                 if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type, useIX)) {
@@ -2194,14 +2187,14 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                 }
 
 
-                for (std::pair<const CWalletTx*, unsigned int> pcoin: setCoins)
+                for (const COutput& output: setCoins)
                 {
-                    CAmount nCredit = pcoin.first->vout[pcoin.second].nValue;
+                    CAmount nCredit = output.Value();
                     //The coin age after the next block (depth+1) is used instead of the current,
                     //reflecting an assumption the user would accept a bit more delay for
                     //a chance at a free transaction.
                     //But mempool inputs might still be in the mempool, so their age stays 0
-                    int age = pcoin.first->GetNumberOfBlockConfirmations();
+                    int age = output.tx->GetNumberOfBlockConfirmations();
                     if (age != 0)
                         age += 1;
                     dPriority += (double)nCredit * age;
@@ -2257,14 +2250,14 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                 }
 
                 // Fill vin
-                for(const std::pair<const CWalletTx*, unsigned int>& coin: setCoins)
-                    txNew.vin.push_back(CTxIn(coin.first->GetHash(), coin.second));
+                for(const COutput& coin: setCoins)
+                    txNew.vin.push_back(CTxIn(coin.tx->GetHash(), coin.i));
 
                 // Sign
                 int nIn = 0;
-                for(const std::pair<const CWalletTx*, unsigned int>& coin: setCoins)
+                for(const COutput& coin: setCoins)
                 {
-                    if (!SignSignature(*this, *coin.first, txNew, nIn++))
+                    if (!SignSignature(*this, *coin.tx, txNew, nIn++))
                     {
                         strFailReason = translate("Signing transaction failed");
                         return false;

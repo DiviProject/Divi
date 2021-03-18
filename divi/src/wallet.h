@@ -173,7 +173,7 @@ public:
 private:
     bool SelectCoins(
         const CAmount& nTargetValue,
-        std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet,
+        std::set<COutput>& setCoinsRet,
         CAmount& nValueRet,
         const CCoinControl* coinControl = NULL,
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
@@ -229,7 +229,7 @@ public:
         int nConfMine,
         int nConfTheirs,
         std::vector<COutput> vCoins,
-        std::set<std::pair<const CWalletTx*, unsigned int> >& setCoinsRet,
+        std::set<COutput>& setCoinsRet,
         CAmount& nValueRet) const;
 
     /// Get output and keys which can be used for the Masternode

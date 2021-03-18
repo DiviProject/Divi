@@ -3377,12 +3377,25 @@ void CWallet::GetAccountAmounts(
     }
 }
 
+COutput::COutput(
+    ): tx(nullptr)
+    , i(-1)
+    ,nDepth(-1)
+    ,fSpendable(false)
+{
+}
+
 COutput::COutput(const CWalletTx* txIn, int iIn, int nDepthIn, bool fSpendableIn)
 {
     tx = txIn;
     i = iIn;
     nDepth = nDepthIn;
     fSpendable = fSpendableIn;
+}
+
+bool COutput::IsValid() const
+{
+    return !(tx == nullptr || i < 0);
 }
 
 CAmount COutput::Value() const

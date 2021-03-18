@@ -2116,8 +2116,6 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
     return true;
 }
 
-typedef  std::set<std::pair<const CWalletTx*, unsigned int> > SpendableWalletOutputs;
-
 bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
                                 CWalletTx& wtxNew,
                                 CReserveKey& reservekey,

@@ -476,10 +476,22 @@ public:
     int nDepth;
     bool fSpendable;
 
+    COutput();
     COutput(const CWalletTx* txIn, int iIn, int nDepthIn, bool fSpendableIn);
 
+    bool IsValid() const;
     CAmount Value() const;
     std::string ToString() const;
+
+    bool operator<(const COutput& other) const
+    {
+        return tx < other.tx ||
+            (tx == other.tx && i < other.i);
+    }
+    bool operator==(const COutput& other) const
+    {
+        return tx == other.tx && i == other.i;
+    }
 };
 
 

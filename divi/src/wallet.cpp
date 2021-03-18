@@ -1908,12 +1908,6 @@ bool CWallet::SelectCoinsMinConf(
             continue;
 
         const CAmount outputAmount = output.Value();
-        if (outputAmount == nTargetValue)
-        {
-            setCoinsRet.insert(output);
-            nValueRet += outputAmount;
-            return true;
-        }
         if (outputAmount < nTargetValue + CENT)
         {
             smallValuedCoins.push_back(output);
@@ -1974,7 +1968,6 @@ bool CWallet::SelectCoinsMinConf(
             }
         }
     }
-
     return true;
 }
 

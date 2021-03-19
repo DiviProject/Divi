@@ -2211,10 +2211,6 @@ bool CWallet::CreateTransaction(
                 for (const COutput& output: setCoins)
                 {
                     CAmount nCredit = output.Value();
-                    //The coin age after the next block (depth+1) is used instead of the current,
-                    //reflecting an assumption the user would accept a bit more delay for
-                    //a chance at a free transaction.
-                    //But mempool inputs might still be in the mempool, so their age stays 0
                     int age = output.tx->GetNumberOfBlockConfirmations();
                     if (age != 0)
                         age += 1;
@@ -2223,39 +2219,23 @@ bool CWallet::CreateTransaction(
 
                 CAmount nChange = nValueIn - totalValueToSend - nFeeRet;
                 changeUsed = false;
+                newTxOut.nValue = nChange;
                 if (nChange > 0)
                 {
-                    // Fill a vout to ourself
-                    // TODO: pass in scriptChange instead of reservekey so
-                    // change transaction isn't always pay-to-divi-address
                     CScript scriptChange;
-
-                    // coin control: send change to custom address
                     if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange))
                     {
-                        scriptChange = GetScriptForDestination(coinControl->destChange);
+                        newTxOut.scriptPubKey = GetScriptForDestination(coinControl->destChange);
                     }
-                    else {// no coin control: send change to newly generated address
-                        // Note: We use a new key here to keep it from being obvious which side is the change.
-                        //  The drawback is that by not reusing a previous key, the change may be lost if a
-                        //  backup is restored, if the backup doesn't have the new private key for the change.
-                        //  If we reused the old key, it would be possible to add code to look for and
-                        //  rediscover unknown transactions that were written with keys of ours to recover
-                        //  post-backup change.
-
-                        // Reserve a new key pair from key pool
+                    else
+                    {
                         CPubKey vchPubKey;
                         bool ret;
                         ret = reservekey.GetReservedKey(vchPubKey, true);
                         assert(ret); // should never fail, as we just unlocked
-
-                        scriptChange = GetScriptForDestination(vchPubKey.GetID());
+                        newTxOut.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
                     }
 
-                    newTxOut = CTxOut(nChange, scriptChange);
-
-                    // Never create dust outputs; if we would, just
-                    // add the dust to the fee.
                     if (priorityFeeCalculator.IsDust(newTxOut))
                     {
                         nFeeRet += nChange;

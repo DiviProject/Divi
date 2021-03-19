@@ -294,6 +294,7 @@ BITCOIN_CORE_H = \
   version.h \
   I_VaultManagerDatabase.h \
   VaultManager.h \
+  Output.h \
   wallet.h \
   WalletTx.h \
   WalletTransactionRecord.h \
@@ -469,6 +470,7 @@ libbitcoin_wallet_a_SOURCES = \
   rpcwallet.cpp \
   VaultManager.cpp \
   wallet.cpp \
+  Output.cpp \
   WalletTx.cpp \
   WalletTransactionRecord.cpp \
   merkletx.cpp \

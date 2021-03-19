@@ -25,6 +25,7 @@
 #include <keypool.h>
 #include <reservekey.h>
 #include <OutputEntry.h>
+#include <Output.h>
 
 class CKeyMetadata;
 class CKey;
@@ -477,33 +478,6 @@ public:
     /** MultiSig address added */
     boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
 };
-
-class COutput
-{
-public:
-    const CWalletTx* tx;
-    int i;
-    int nDepth;
-    bool fSpendable;
-
-    COutput();
-    COutput(const CWalletTx* txIn, int iIn, int nDepthIn, bool fSpendableIn);
-
-    bool IsValid() const;
-    CAmount Value() const;
-    std::string ToString() const;
-
-    bool operator<(const COutput& other) const
-    {
-        return tx < other.tx ||
-            (tx == other.tx && i < other.i);
-    }
-    bool operator==(const COutput& other) const
-    {
-        return tx == other.tx && i == other.i;
-    }
-};
-
 
 /** Private key that includes an expiration date in case it never gets used. */
 class CWalletKey

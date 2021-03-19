@@ -2070,11 +2070,13 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<COutput>& setCoinsRet
         }
         return (nValueRet >= nTargetValue);
     }
-
-    return CWallet::SelectCoinsMinConf(*this,nTargetValue, 1, 6, vCoins, setCoinsRet, nValueRet) ||
-            CWallet::SelectCoinsMinConf(*this,nTargetValue, 1, 1, vCoins, setCoinsRet, nValueRet) ||
-            (allowSpendingZeroConfirmationOutputs &&
-            CWallet::SelectCoinsMinConf(*this,nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet));
+    else
+    {
+        return CWallet::SelectCoinsMinConf(*this,nTargetValue, 1, 6, vCoins, setCoinsRet, nValueRet) ||
+                CWallet::SelectCoinsMinConf(*this,nTargetValue, 1, 1, vCoins, setCoinsRet, nValueRet) ||
+                (allowSpendingZeroConfirmationOutputs &&
+                CWallet::SelectCoinsMinConf(*this,nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet));
+    }
 }
 
 void SplitIntoEqualSizedOutputsPerDestination(

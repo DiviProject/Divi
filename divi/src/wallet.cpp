@@ -417,11 +417,6 @@ struct CompareValueOnly {
     }
 };
 
-std::string COutput::ToString() const
-{
-    return strprintf("COutput(%s, %d, %d) [%s]", tx->GetHash().ToString(), i, nDepth, FormatMoney(tx->vout[i].nValue));
-}
-
 const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const
 {
     LOCK(cs_wallet);
@@ -3369,31 +3364,6 @@ void CWallet::GetAccountAmounts(
     }
 }
 
-COutput::COutput(
-    ): tx(nullptr)
-    , i(-1)
-    ,nDepth(-1)
-    ,fSpendable(false)
-{
-}
-
-COutput::COutput(const CWalletTx* txIn, int iIn, int nDepthIn, bool fSpendableIn)
-{
-    tx = txIn;
-    i = iIn;
-    nDepth = nDepthIn;
-    fSpendable = fSpendableIn;
-}
-
-bool COutput::IsValid() const
-{
-    return !(tx == nullptr || i < 0);
-}
-
-CAmount COutput::Value() const
-{
-    return tx->vout[i].nValue;
-}
 
 void CAccountingEntry::ReadOrderPos(int64_t& orderPosition, std::map<std::string,std::string>& mapping)
 {

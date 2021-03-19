@@ -2207,14 +2207,6 @@ bool CWallet::CreateTransaction(
                     return false;
                 }
 
-
-                for (const COutput& output: setCoins)
-                {
-                    CAmount nCredit = output.Value();
-                    const int age = output.nDepth;
-                    dPriority += age==0? 0.0:(double)nCredit * (age+1);
-                }
-
                 CAmount nChange = nValueIn - totalValueToSend - nFeeRet;
                 changeUsed = false;
                 newTxOut.nValue = nChange;
@@ -2263,6 +2255,13 @@ bool CWallet::CreateTransaction(
                 if (nBytes >= MAX_STANDARD_TX_SIZE) {
                     strFailReason = translate("Transaction too large");
                     return false;
+                }
+
+                for (const COutput& output: setCoins)
+                {
+                    CAmount nCredit = output.Value();
+                    const int age = output.nDepth;
+                    dPriority += age==0? 0.0:(double)nCredit * (age+1);
                 }
                 dPriority = priorityFeeCalculator.ComputePriority(wtxNew,dPriority, nBytes);
 

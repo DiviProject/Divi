@@ -2166,10 +2166,7 @@ bool CWallet::CreateTransaction(
 
                 if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type))
                 {
-                    if (coin_type == ALL_SPENDABLE_COINS || coin_type == OWNED_VAULT_COINS)
-                    {
-                        strFailReason = translate("Insufficient funds.");
-                    }
+                    strFailReason = translate("Insufficient funds.");
                     return false;
                 }
 

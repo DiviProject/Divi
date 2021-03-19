@@ -1890,12 +1890,13 @@ static void FilterToKeepConfirmedAndSpendableOutputs(
 }
 
 bool CWallet::SelectCoinsMinConf(
+    const CWallet& wallet,
     const CAmount& nTargetValue,
     int nConfMine,
     int nConfTheirs,
     std::vector<COutput> vCoins,
     std::set<COutput>& setCoinsRet,
-    CAmount& nValueRet) const
+    CAmount& nValueRet)
 {
     setCoinsRet.clear();
     nValueRet = 0;
@@ -1907,7 +1908,7 @@ bool CWallet::SelectCoinsMinConf(
     CAmount totalOfSmallValuedCoins = 0;
 
     random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
-    FilterToKeepConfirmedAndSpendableOutputs(*this,nConfMine,nConfTheirs,vCoins);
+    FilterToKeepConfirmedAndSpendableOutputs(wallet,nConfMine,nConfTheirs,vCoins);
     for(const COutput &output: vCoins)
     {
         const CAmount outputAmount = output.Value();
@@ -2070,9 +2071,10 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<COutput>& setCoinsRet
         return (nValueRet >= nTargetValue);
     }
 
-    return (SelectCoinsMinConf(nTargetValue, 1, 6, vCoins, setCoinsRet, nValueRet) ||
-            SelectCoinsMinConf(nTargetValue, 1, 1, vCoins, setCoinsRet, nValueRet) ||
-            (allowSpendingZeroConfirmationOutputs && SelectCoinsMinConf(nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet)));
+    return CWallet::SelectCoinsMinConf(*this,nTargetValue, 1, 6, vCoins, setCoinsRet, nValueRet) ||
+            CWallet::SelectCoinsMinConf(*this,nTargetValue, 1, 1, vCoins, setCoinsRet, nValueRet) ||
+            (allowSpendingZeroConfirmationOutputs &&
+            CWallet::SelectCoinsMinConf(*this,nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet));
 }
 
 void SplitIntoEqualSizedOutputsPerDestination(
@@ -2123,17 +2125,17 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
 {
     if (useIX && nFeePay < CENT) nFeePay = CENT;
 
-    CAmount nValue = 0;
+    CAmount totalValueToSend = 0;
 
     for(const std::pair<CScript, CAmount>& s: vecSend)
     {
-        if (nValue < 0 || s.second < 0) {
+        if (totalValueToSend < 0 || s.second < 0) {
             strFailReason = translate("Transaction amounts must be positive");
             return false;
         }
-        nValue += s.second;
+        totalValueToSend += s.second;
     }
-    if (vecSend.empty() || nValue < 0) {
+    if (vecSend.empty() || totalValueToSend < 0) {
         strFailReason = translate("Transaction amounts must be positive");
         return false;
     }
@@ -2152,7 +2154,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                 txNew.vout.clear();
                 wtxNew.createdByMe = true;
 
-                CAmount nTotalValue = nValue + nFeeRet;
+                CAmount nTotalValue = totalValueToSend + nFeeRet;
                 double dPriority = 0;
 
                 // vouts to the payees
@@ -2194,7 +2196,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                     dPriority += (double)nCredit * age;
                 }
 
-                CAmount nChange = nValueIn - nValue - nFeeRet;
+                CAmount nChange = nValueIn - totalValueToSend - nFeeRet;
 
                 if (nChange > 0) {
                     // Fill a vout to ourself
@@ -2283,7 +2285,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                         break;
                 }
 
-                CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(nValue, nBytes, nTxConfirmTarget, mempool));
+                CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(totalValueToSend, nBytes, nTxConfirmTarget, mempool));
 
                 // If we made it here and we aren't even able to meet the relay fee on the next pass, give up
                 // because we must be at the maximum allowed fee.

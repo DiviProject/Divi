@@ -2144,21 +2144,27 @@ bool CWallet::CreateTransaction(
         LOCK2(cs_main, cs_wallet);
         {
             nFeeRet = 0;
-            while (true) {
-                txNew.vin.clear();
-                txNew.vout.clear();
-                wtxNew.createdByMe = true;
+            txNew.vout.clear();
+            wtxNew.createdByMe = true;
+            // vouts to the payees
+            SplitIntoEqualSizedOutputsPerDestination(vecSend,coinControl,txNew);
+            if(!EnsureNoOutputsAreDust(txNew))
+            {
+                strFailReason = translate("Transaction amount too small");
+                return false;
+            }
 
+            txNew.vout.reserve(txNew.vout.size()+1);
+            bool changeUsed = false;
+            const int changeIndex = GetRandInt(txNew.vout.size() + 1);
+            std::vector<CTxOut>::iterator changeOutputPosition;
+
+
+            while (true)
+            {
+                txNew.vin.clear();
                 CAmount nTotalValue = totalValueToSend + nFeeRet;
                 double dPriority = 0;
-
-                // vouts to the payees
-                SplitIntoEqualSizedOutputsPerDestination(vecSend,coinControl,txNew);
-                if(!EnsureNoOutputsAreDust(txNew))
-                {
-                    strFailReason = translate("Transaction amount too small");
-                    return false;
-                }
 
                 // Choose coins to use
                 std::set<COutput> setCoins;
@@ -2186,7 +2192,8 @@ bool CWallet::CreateTransaction(
 
                 CAmount nChange = nValueIn - totalValueToSend - nFeeRet;
 
-                if (nChange > 0) {
+                if (nChange > 0)
+                {
                     // Fill a vout to ourself
                     // TODO: pass in scriptChange instead of reservekey so
                     // change transaction isn't always pay-to-divi-address
@@ -2218,18 +2225,36 @@ bool CWallet::CreateTransaction(
 
                     // Never create dust outputs; if we would, just
                     // add the dust to the fee.
-                    if (priorityFeeCalculator.IsDust(newTxOut)) {
+                    if (priorityFeeCalculator.IsDust(newTxOut))
+                    {
                         nFeeRet += nChange;
                         nChange = 0;
                         reservekey.ReturnKey();
+                        if(changeUsed)
+                        {
+                            txNew.vout.erase(changeOutputPosition);
+                            changeUsed = false;
+                        }
                     } else {
                         // Insert change txn at random position:
-                        std::vector<CTxOut>::iterator position = txNew.vout.begin() + GetRandInt(txNew.vout.size() + 1);
-                        txNew.vout.insert(position, newTxOut);
+                        if(changeUsed)
+                        {
+                            txNew.vout[changeIndex] = newTxOut;
+                        }
+                        else
+                        {
+                            changeOutputPosition = txNew.vout.insert(txNew.vout.begin() + changeIndex, newTxOut);
+                            changeUsed = true;
+                        }
                     }
                 }
                 else
                 {
+                    if(changeUsed)
+                    {
+                        txNew.vout.erase(changeOutputPosition);
+                        changeUsed = false;
+                    }
                     reservekey.ReturnKey();
                 }
 

@@ -1662,7 +1662,7 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
 /**
  * populate vCoins with vector of available COutputs.
  */
-bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed, bool fUseIX) const
+bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const
 {
     if (!CheckFinalTx(*pcoin, chainActive_))
         return false;
@@ -1674,9 +1674,6 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
         return false;
 
     nDepth = pcoin->GetNumberOfBlockConfirmations(false);
-    // do not use IX for inputs that have less then 6 blockchain confirmations
-    if (fUseIX && nDepth < 6)
-        return false;
 
     // We should not consider coins which aren't at least in our mempool
     // It's possible for these to be conflicted via ancestors which we may never be able to detect
@@ -1722,7 +1719,7 @@ bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, unsigned int i, con
     fIsSpendable = (mine & ISMINE_SPENDABLE) != ISMINE_NO || (mine & ISMINE_MULTISIG) != ISMINE_NO;
     return true;
 }
-void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, bool fUseIX, CAmount nExactValue) const
+void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, CAmount nExactValue) const
 {
     vCoins.clear();
 
@@ -1733,7 +1730,7 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
             const CWalletTx* pcoin = &entry.second;
 
             int nDepth = 0;
-            if(!SatisfiesMinimumDepthRequirements(pcoin,nDepth,fOnlyConfirmed,fUseIX))
+            if(!SatisfiesMinimumDepthRequirements(pcoin,nDepth,fOnlyConfirmed))
             {
                 continue;
             }
@@ -2050,12 +2047,12 @@ void CWallet::UpdateNextTransactionIndexAvailable(int64_t transactionIndex)
     orderedTransactionIndex = transactionIndex;
 }
 
-bool CWallet::SelectCoins(const CAmount& nTargetValue, set<COutput>& setCoinsRet, CAmount& nValueRet, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX) const
+bool CWallet::SelectCoins(const CAmount& nTargetValue, set<COutput>& setCoinsRet, CAmount& nValueRet, const CCoinControl* coinControl, AvailableCoinsType coin_type) const
 {
     // Note: this function should never be used for "always free" tx types like dstx
 
     std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true, coinControl, false, coin_type, useIX);
+    AvailableCoins(vCoins, true, coinControl, false, coin_type);
 
     // coin control -> return all selected outputs (we want all selected to go into the transaction for sure)
     if (coinControl && coinControl->HasSelected())

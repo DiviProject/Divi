@@ -347,8 +347,8 @@ public:
     CAmount GetWatchOnlyBalance() const;
     CAmount GetUnconfirmedWatchOnlyBalance() const;
     CAmount GetImmatureWatchOnlyBalance() const;
-    bool CreateTransaction(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl);
-    bool CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
+    bool CreateTransaction(
+        const std::vector<std::pair<CScript, CAmount> >& vecSend,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
         CAmount& nFeeRet,
@@ -357,7 +357,17 @@ public:
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
         bool useIX = false,
         CAmount nFeePay = 0);
-    bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl = NULL, AvailableCoinsType coin_type = ALL_SPENDABLE_COINS, bool useIX = false, CAmount nFeePay = 0);
+    bool CreateTransaction(
+        CScript scriptPubKey,
+        const CAmount& nValue,
+        CWalletTx& wtxNew,
+        CReserveKey& reservekey,
+        CAmount& nFeeRet,
+        std::string& strFailReason,
+        const CCoinControl* coinControl = NULL,
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
+        bool useIX = false,
+        CAmount nFeePay = 0);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
     int GenerateObfuscationOutputs(int nTotalValue, Outputs& vout);

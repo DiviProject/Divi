@@ -225,13 +225,14 @@ public:
                         bool fUseIX = false,
                         CAmount nExactValue = CAmount(0)) const;
     std::map<CBitcoinAddress, std::vector<COutput> > AvailableCoinsByAddress(bool fConfirmed = true, CAmount maxCoinValue = 0);
-    bool SelectCoinsMinConf(
+    static bool SelectCoinsMinConf(
+        const CWallet& wallet,
         const CAmount& nTargetValue,
         int nConfMine,
         int nConfTheirs,
         std::vector<COutput> vCoins,
         std::set<COutput>& setCoinsRet,
-        CAmount& nValueRet) const;
+        CAmount& nValueRet);
 
     /// Get output and keys which can be used for the Masternode
     bool GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash = "", std::string strOutputIndex = "");

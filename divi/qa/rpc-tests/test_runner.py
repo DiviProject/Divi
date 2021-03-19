@@ -107,6 +107,7 @@ BASE_SCRIPTS = [
     'vaultfork.py',
     'wallet.py',
     'walletbackup.py',
+    'wallet_sends.py',
     'zapwallettxes.py',
     'zmq_test.py',
 ]

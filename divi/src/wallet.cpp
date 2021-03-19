@@ -2112,6 +2112,40 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
     return true;
 }
 
+CTransaction AttachInputsAndSign(
+    const CWallet& wallet,
+    const std::set<COutput>& setCoins,
+    CMutableTransaction txWithoutChange)
+{
+    // Fill vin
+    for(const COutput& coin: setCoins)
+        txWithoutChange.vin.push_back(CTxIn(coin.tx->GetHash(), coin.i));
+
+    // Sign
+    int nIn = 0;
+    for(const COutput& coin: setCoins)
+    {
+        if (!SignSignature(wallet, *coin.tx, txWithoutChange, nIn++))
+        {
+            return CTransaction();
+        }
+    }
+    return CTransaction(txWithoutChange);
+}
+
+CTransaction AttachInputsAndChangeOutputAndSign(
+    const CWallet& wallet,
+    const std::set<COutput>& setCoins,
+    CMutableTransaction txWithoutChange,
+    const CTxOut& changeOutput)
+{
+    // Attach Change Output
+    const int changeIndex = GetRandInt(txWithoutChange.vout.size() + 1);
+    txWithoutChange.vout.insert(txWithoutChange.vout.begin() + changeIndex, changeOutput);
+
+    return AttachInputsAndSign(wallet,setCoins,txWithoutChange);
+}
+
 bool CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,
@@ -2154,11 +2188,8 @@ bool CWallet::CreateTransaction(
                 return false;
             }
 
-            txNew.vout.reserve(txNew.vout.size()+1);
             bool changeUsed = false;
-            const int changeIndex = GetRandInt(txNew.vout.size() + 1);
-            std::vector<CTxOut>::iterator changeOutputPosition;
-
+            CTxOut newTxOut;
 
             while (true)
             {
@@ -2191,7 +2222,7 @@ bool CWallet::CreateTransaction(
                 }
 
                 CAmount nChange = nValueIn - totalValueToSend - nFeeRet;
-
+                changeUsed = false;
                 if (nChange > 0)
                 {
                     // Fill a vout to ourself
@@ -2221,7 +2252,7 @@ bool CWallet::CreateTransaction(
                         scriptChange = GetScriptForDestination(vchPubKey.GetID());
                     }
 
-                    CTxOut newTxOut(nChange, scriptChange);
+                    newTxOut = CTxOut(nChange, scriptChange);
 
                     // Never create dust outputs; if we would, just
                     // add the dust to the fee.
@@ -2230,52 +2261,24 @@ bool CWallet::CreateTransaction(
                         nFeeRet += nChange;
                         nChange = 0;
                         reservekey.ReturnKey();
-                        if(changeUsed)
-                        {
-                            txNew.vout.erase(changeOutputPosition);
-                            changeUsed = false;
-                        }
+                        changeUsed = false;
                     } else {
-                        // Insert change txn at random position:
-                        if(changeUsed)
-                        {
-                            txNew.vout[changeIndex] = newTxOut;
-                        }
-                        else
-                        {
-                            changeOutputPosition = txNew.vout.insert(txNew.vout.begin() + changeIndex, newTxOut);
-                            changeUsed = true;
-                        }
+                        changeUsed = true;
                     }
                 }
                 else
                 {
-                    if(changeUsed)
-                    {
-                        txNew.vout.erase(changeOutputPosition);
-                        changeUsed = false;
-                    }
                     reservekey.ReturnKey();
                 }
 
-                // Fill vin
-                for(const COutput& coin: setCoins)
-                    txNew.vin.push_back(CTxIn(coin.tx->GetHash(), coin.i));
-
-                // Sign
-                int nIn = 0;
-                for(const COutput& coin: setCoins)
-                {
-                    if (!SignSignature(*this, *coin.tx, txNew, nIn++))
-                    {
-                        strFailReason = translate("Signing transaction failed");
-                        return false;
-                    }
-                }
-
-
                 // Embed the constructed transaction data in wtxNew.
-                *static_cast<CTransaction*>(&wtxNew) = CTransaction(txNew);
+                *static_cast<CTransaction*>(&wtxNew) =
+                    changeUsed? AttachInputsAndChangeOutputAndSign(*this,setCoins,txNew,newTxOut): AttachInputsAndSign(*this,setCoins,txNew);
+                if(wtxNew.IsNull())
+                {
+                    strFailReason = translate("Signing transaction failed");
+                    return false;
+                }
 
                 // Limit size
                 unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);

@@ -46,21 +46,16 @@ class ZMQTest (BitcoinTestFramework):
         print ("listen...")
         #blockhash from generate must be equal to the hash received over zmq
         blockhash_received = False
-        msg = self.zmqSubSocket.recv_multipart()
-        topic = msg[0]
-        body = msg[1]
-        if(topic == b"hashblock"):
-            blkhash = body.hex()
-            assert_equal(genhashes[0], blkhash)
-            blockhash_received = True
-
-        msg = self.zmqSubSocket.recv_multipart()
-        topic = msg[0]
-        body = msg[1]
-        if(topic == b"hashblock"):
-            blkhash = body.hex()
-            assert_equal(genhashes[0], blkhash)
-            blockhash_received = True
+        while not blockhash_received:
+            msg = self.zmqSubSocket.recv_multipart()
+            topic = msg[0]
+            body = msg[1]
+            if(topic == b"hashblock"):
+                blkhash = body.hex()
+                assert_equal(genhashes[0], blkhash)
+                blockhash_received = True
+            else:
+                time.sleep(0.25)
 
         assert_equal(blockhash_received,True)
 

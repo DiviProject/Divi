@@ -2113,18 +2113,15 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
     return true;
 }
 
-bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
-                                CWalletTx& wtxNew,
-                                CReserveKey& reservekey,
-                                CAmount& nFeeRet,
-                                std::string& strFailReason,
-                                const CCoinControl* coinControl,
-                                AvailableCoinsType coin_type,
-                                bool useIX,
-                                CAmount nFeePay)
+bool CWallet::CreateTransaction(
+    const std::vector<std::pair<CScript, CAmount> >& vecSend,
+    CWalletTx& wtxNew,
+    CReserveKey& reservekey,
+    CAmount& nFeeRet,
+    std::string& strFailReason,
+    const CCoinControl* coinControl,
+    AvailableCoinsType coin_type)
 {
-    if (useIX && nFeePay < CENT) nFeePay = CENT;
-
     CAmount totalValueToSend = 0;
 
     for(const std::pair<CScript, CAmount>& s: vecSend)
@@ -2148,7 +2145,6 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
         LOCK2(cs_main, cs_wallet);
         {
             nFeeRet = 0;
-            if (nFeePay > 0) nFeeRet = nFeePay;
             while (true) {
                 txNew.vin.clear();
                 txNew.vout.clear();
@@ -2169,16 +2165,12 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                 std::set<COutput> setCoins;
                 CAmount nValueIn = 0;
 
-                if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type, useIX)) {
+                if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type))
+                {
                     if (coin_type == ALL_SPENDABLE_COINS || coin_type == OWNED_VAULT_COINS)
                     {
                         strFailReason = translate("Insufficient funds.");
                     }
-                    if (useIX)
-                    {
-                        strFailReason += " " + translate("SwiftX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.");
-                    }
-
                     return false;
                 }
 
@@ -2285,7 +2277,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
                         break;
                 }
 
-                CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(totalValueToSend, nBytes, nTxConfirmTarget, mempool));
+                CAmount nFeeNeeded = std::max(CAmount(0), GetMinimumFee(totalValueToSend, nBytes, nTxConfirmTarget, mempool));
 
                 // If we made it here and we aren't even able to meet the relay fee on the next pass, give up
                 // because we must be at the maximum allowed fee.
@@ -2306,11 +2298,18 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, CAmount> >&
     return true;
 }
 
-bool CWallet::CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay)
+bool CWallet::CreateTransaction(
+    std::pair<CScript, CAmount> scriptPubKeyAndAmount,
+    CWalletTx& wtxNew,
+    CReserveKey& reservekey,
+    CAmount& nFeeRet,
+    std::string& strFailReason,
+    const CCoinControl* coinControl,
+    AvailableCoinsType coin_type)
 {
     std::vector<pair<CScript, CAmount> > vecSend;
-    vecSend.push_back(std::make_pair(scriptPubKey, nValue));
-    return CreateTransaction(vecSend, wtxNew, reservekey, nFeeRet, strFailReason, coinControl, coin_type, useIX, nFeePay);
+    vecSend.push_back(scriptPubKeyAndAmount);
+    return CreateTransaction(vecSend, wtxNew, reservekey, nFeeRet, strFailReason, coinControl, coin_type);
 }
 
 /**

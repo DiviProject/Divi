@@ -332,7 +332,7 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
     CReserveKey reservekey(*pwalletMain);
     CAmount nFeeRequired;
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
-    if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError, NULL, coinTypeFilter, fUseIX, (CAmount)0))
+    if (!pwalletMain->CreateTransaction(std::make_pair(scriptPubKey, nValue), wtxNew, reservekey, nFeeRequired, strError, NULL, coinTypeFilter))
     {
         if (nValue + nFeeRequired > pwalletMain->GetSpendableBalance())
             strError = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!", FormatMoney(nFeeRequired));

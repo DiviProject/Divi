@@ -63,10 +63,10 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
 
         //get the fee amount
         CWalletTx wtxdummy;
-        wallet_.CreateTransaction(vecSend, wtxdummy, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS, false, CAmount(0));
+        wallet_.CreateTransaction(vecSend, wtxdummy, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS);
         vecSend[0].second = nTotalRewardsValue - nFeeRet - 500;
 
-        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS, false, CAmount(0))) {
+        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS)) {
             LogPrintf("CombineDust createtransaction failed, reason: %s\n", strErr);
             continue;
         }

@@ -178,7 +178,7 @@ private:
         CAmount& nValueRet,
         const CCoinControl* coinControl = NULL,
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
-        bool useIX = true) const;
+        bool useIX = false) const;
     //it was public bool SelectCoins(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_SPENDABLE_COINS, bool useIX = true) const;
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
@@ -356,20 +356,15 @@ public:
         CAmount& nFeeRet,
         std::string& strFailReason,
         const CCoinControl* coinControl = NULL,
-        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
-        bool useIX = false,
-        CAmount nFeePay = 0);
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
     bool CreateTransaction(
-        CScript scriptPubKey,
-        const CAmount& nValue,
+        std::pair<CScript, CAmount> scriptPubKeyAndAmount,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
         CAmount& nFeeRet,
         std::string& strFailReason,
         const CCoinControl* coinControl = NULL,
-        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
-        bool useIX = false,
-        CAmount nFeePay = 0);
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
     int GenerateObfuscationOutputs(int nTotalValue, Outputs& vout);

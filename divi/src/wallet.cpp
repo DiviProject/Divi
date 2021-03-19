@@ -2211,10 +2211,8 @@ bool CWallet::CreateTransaction(
                 for (const COutput& output: setCoins)
                 {
                     CAmount nCredit = output.Value();
-                    int age = output.tx->GetNumberOfBlockConfirmations();
-                    if (age != 0)
-                        age += 1;
-                    dPriority += (double)nCredit * age;
+                    const int age = output.nDepth;
+                    dPriority += age==0? 0.0:(double)nCredit * (age+1);
                 }
 
                 CAmount nChange = nValueIn - totalValueToSend - nFeeRet;

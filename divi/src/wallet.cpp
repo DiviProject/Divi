@@ -2189,7 +2189,7 @@ bool CWallet::CreateTransaction(
             }
 
             bool changeUsed = false;
-            CTxOut newTxOut;
+            CTxOut changeOutput;
 
             while (true)
             {
@@ -2209,22 +2209,22 @@ bool CWallet::CreateTransaction(
 
                 CAmount nChange = nValueIn - totalValueToSend - nFeeRet;
                 changeUsed = false;
-                newTxOut.nValue = nChange;
+                changeOutput.nValue = nChange;
                 if (nChange > 0)
                 {
                     CScript scriptChange;
                     if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange))
                     {
-                        newTxOut.scriptPubKey = GetScriptForDestination(coinControl->destChange);
+                        changeOutput.scriptPubKey = GetScriptForDestination(coinControl->destChange);
                     }
                     else
                     {
                         CPubKey vchPubKey;
                         assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
-                        newTxOut.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
+                        changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
                     }
 
-                    if (priorityFeeCalculator.IsDust(newTxOut))
+                    if (priorityFeeCalculator.IsDust(changeOutput))
                     {
                         nFeeRet += nChange;
                         nChange = 0;
@@ -2241,7 +2241,7 @@ bool CWallet::CreateTransaction(
 
                 // Embed the constructed transaction data in wtxNew.
                 *static_cast<CTransaction*>(&wtxNew) =
-                    changeUsed? AttachInputsAndChangeOutputAndSign(*this,setCoins,txNew,newTxOut): AttachInputsAndSign(*this,setCoins,txNew);
+                    changeUsed? AttachInputsAndChangeOutputAndSign(*this,setCoins,txNew,changeOutput): AttachInputsAndSign(*this,setCoins,txNew);
                 if(wtxNew.IsNull())
                 {
                     strFailReason = translate("Signing transaction failed");

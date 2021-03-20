@@ -2220,9 +2220,7 @@ bool CWallet::CreateTransaction(
                     else
                     {
                         CPubKey vchPubKey;
-                        bool ret;
-                        ret = reservekey.GetReservedKey(vchPubKey, true);
-                        assert(ret); // should never fail, as we just unlocked
+                        assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
                         newTxOut.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
                     }
 

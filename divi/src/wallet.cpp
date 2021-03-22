@@ -2188,8 +2188,21 @@ bool CWallet::CreateTransaction(
                 return false;
             }
 
+            bool useReserveKey = false;
             bool changeUsed = false;
             CTxOut changeOutput;
+            if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange))
+            {
+                changeOutput.scriptPubKey = GetScriptForDestination(coinControl->destChange);
+            }
+            else
+            {
+                useReserveKey = true;
+                CPubKey vchPubKey;
+                assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
+                changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
+                reservekey.ReturnKey();
+            }
 
             while (true)
             {
@@ -2212,31 +2225,14 @@ bool CWallet::CreateTransaction(
                 changeOutput.nValue = nChange;
                 if (nChange > 0)
                 {
-                    CScript scriptChange;
-                    if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange))
-                    {
-                        changeOutput.scriptPubKey = GetScriptForDestination(coinControl->destChange);
-                    }
-                    else
-                    {
-                        CPubKey vchPubKey;
-                        assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
-                        changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
-                    }
-
                     if (priorityFeeCalculator.IsDust(changeOutput))
                     {
                         nFeeRet += nChange;
                         nChange = 0;
-                        reservekey.ReturnKey();
                         changeUsed = false;
                     } else {
                         changeUsed = true;
                     }
-                }
-                else
-                {
-                    reservekey.ReturnKey();
                 }
 
                 // Embed the constructed transaction data in wtxNew.
@@ -2290,6 +2286,12 @@ bool CWallet::CreateTransaction(
 
                 // Include more fee and try again.
                 nFeeRet = nFeeNeeded;
+
+                if(useReserveKey && changeUsed)
+                {
+                    CPubKey vchPubKey;
+                    assert(reservekey.GetReservedKey(vchPubKey, true));
+                }
                 continue;
             }
         }

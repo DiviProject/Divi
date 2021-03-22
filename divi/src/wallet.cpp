@@ -2047,13 +2047,13 @@ void CWallet::UpdateNextTransactionIndexAvailable(int64_t transactionIndex)
     orderedTransactionIndex = transactionIndex;
 }
 
-bool CWallet::SelectCoins(const CAmount& nTargetValue, set<COutput>& setCoinsRet, CAmount& nValueRet, const CCoinControl* coinControl, AvailableCoinsType coin_type) const
+bool CWallet::SelectCoins(
+    const CAmount& nTargetValue,
+    const std::vector<COutput>& vCoins,
+    set<COutput>& setCoinsRet,
+    CAmount& nValueRet,
+    const CCoinControl* coinControl) const
 {
-    // Note: this function should never be used for "always free" tx types like dstx
-
-    std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true, coinControl, false, coin_type);
-
     // coin control -> return all selected outputs (we want all selected to go into the transaction for sure)
     if (coinControl && coinControl->HasSelected())
     {
@@ -2214,6 +2214,9 @@ bool CWallet::CreateTransaction(
             bool changeUsed = false;
             CTxOut changeOutput = CreateChangeOutput(coinControl,reservekey,useReserveKey);
 
+            std::vector<COutput> vCoins;
+            AvailableCoins(vCoins, true, coinControl, false, coin_type);
+
             while (true)
             {
                 txNew.vin.clear();
@@ -2224,7 +2227,7 @@ bool CWallet::CreateTransaction(
                 std::set<COutput> setCoins;
                 CAmount nValueIn = 0;
 
-                if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type))
+                if (!SelectCoins(nTotalValue,vCoins, setCoins, nValueIn, coinControl))
                 {
                     strFailReason = translate("Insufficient funds.");
                     return false;

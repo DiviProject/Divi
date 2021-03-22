@@ -30,7 +30,10 @@ int LogPrintStr(const std::string& str);
     static inline int LogPrint(const char* category, const char* format, TINYFORMAT_VARARGS(n)) \
     {                                                                                           \
         if (!LogAcceptCategory(category)) return 0;                                             \
-        return LogPrintStr(tfm::format(format, TINYFORMAT_PASSARGS(n)));                        \
+        const std::string base = tfm::format(format, TINYFORMAT_PASSARGS(n));                   \
+        if (category == nullptr)                                                                \
+            return LogPrintStr(base);                                                           \
+        return LogPrintStr(tfm::format("[%s] %s", category, base.c_str()));                     \
     }                                                                                           \
     /**   Log error and return false */                                                         \
     template <TINYFORMAT_ARGTYPES(n)>                                                           \

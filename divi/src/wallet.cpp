@@ -2146,6 +2146,28 @@ CTransaction AttachInputsAndChangeOutputAndSign(
     return AttachInputsAndSign(wallet,setCoins,txWithoutChange);
 }
 
+CTxOut CreateChangeOutput(
+    const CCoinControl* coinControl,
+    CReserveKey& reservekey,
+    bool& useReserveKey
+)
+{
+    CTxOut changeOutput;
+    if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange))
+    {
+        changeOutput.scriptPubKey = GetScriptForDestination(coinControl->destChange);
+    }
+    else
+    {
+        useReserveKey = true;
+        CPubKey vchPubKey;
+        assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
+        changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
+        reservekey.ReturnKey();
+    }
+    return changeOutput;
+}
+
 bool CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,
@@ -2190,19 +2212,7 @@ bool CWallet::CreateTransaction(
 
             bool useReserveKey = false;
             bool changeUsed = false;
-            CTxOut changeOutput;
-            if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange))
-            {
-                changeOutput.scriptPubKey = GetScriptForDestination(coinControl->destChange);
-            }
-            else
-            {
-                useReserveKey = true;
-                CPubKey vchPubKey;
-                assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
-                changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
-                reservekey.ReturnKey();
-            }
+            CTxOut changeOutput = CreateChangeOutput(coinControl,reservekey,useReserveKey);
 
             while (true)
             {

@@ -42,6 +42,11 @@ private:
     CMasternodePayments& masternodePayments_;
     MasternodeNetworkMessageManager& networkMessageManager_;
     MasternodePaymentData& masternodePaymentData_;
+
+    /** Set to true when we delay masternode syncing while the blockchain
+     *  is still catching up.  */
+    bool waitingForBlockchainSync;
+
 public:
     std::map<uint256, int> mapSeenSyncMNB;
     std::map<uint256, int> mapSeenSyncMNW;

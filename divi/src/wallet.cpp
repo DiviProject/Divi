@@ -2220,15 +2220,14 @@ bool CWallet::CreateTransaction(
                     return false;
                 }
 
-                CAmount nChange = nValueIn - totalValueToSend - nFeeRet;
                 changeUsed = false;
-                changeOutput.nValue = nChange;
-                if (nChange > 0)
+                changeOutput.nValue = nValueIn - totalValueToSend - nFeeRet;
+                if (changeOutput.nValue > 0)
                 {
                     if (priorityFeeCalculator.IsDust(changeOutput))
                     {
-                        nFeeRet += nChange;
-                        nChange = 0;
+                        nFeeRet += changeOutput.nValue;
+                        changeOutput.nValue = 0;
                         changeUsed = false;
                     } else {
                         changeUsed = true;

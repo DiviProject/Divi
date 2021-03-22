@@ -44,6 +44,7 @@ bool CMasternodeSync::IsSynced() const
 
 void CMasternodeSync::Reset()
 {
+    waitingForBlockchainSync = false;
     lastMasternodeList = 0;
     lastMasternodeWinner = 0;
     mapSeenSyncMNB.clear();
@@ -313,7 +314,36 @@ void CMasternodeSync::Process(bool networkIsRegtest)
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_INITIAL) GetNextAsset();
 
     // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
-    if (!networkIsRegtest && !IsBlockchainSynced() && RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS) return;
+    if (!networkIsRegtest && !IsBlockchainSynced() && RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS)
+    {
+        waitingForBlockchainSync = true;
+        return;
+    }
+
+    /* If we were waiting for the blockchain to catch up and that just finished,
+       reset the time for when we started syncing the current asset (which will
+       be masternode list).  Otherwise it may have timed out while we were
+       waiting for the blockchain sync.  */
+    if (waitingForBlockchainSync)
+    {
+        if (RequestedMasternodeAssets != MASTERNODE_SYNC_LIST)
+        {
+            /* This should not normally happen, since we set
+               waitingForBlockchainSync to true when we reach the item
+               after sporks (which is the masternode list).
+
+               It could happen in edge cases, though, for instance if
+               IsBlockchainSynced was true but was reset to false due to
+               a laptop sleeping, or similar situations.  */
+            LogPrint("masternode", "%s - unexpected masternode sync status, resetting");
+            Reset ();
+            return;
+        }
+
+        nAssetSyncStarted = GetTime();
+        waitingForBlockchainSync = false;
+        LogPrint("masternode", "%s - blockchain sync is finished, restarting mn list sync\n", __func__);
+    }
 
     std::vector<CNode*> vSporkSyncedNodes;
     {

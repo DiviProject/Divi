@@ -80,6 +80,7 @@ BITCOIN_TESTS =\
   test/sighash_tests.cpp \
   test/sigopcount_tests.cpp \
   test/skiplist_tests.cpp \
+  test/SignatureSizeEstimation_tests.cpp \
   test/SuperblockHelper_tests.cpp \
   test/RandomCScriptGenerator.h \
   test/RandomCScriptGenerator.cpp \

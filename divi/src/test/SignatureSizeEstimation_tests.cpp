@@ -7,6 +7,7 @@
 #include <SignatureSizeEstimator.h>
 #include <destination.h>
 #include <script/standard.h>
+#include <script/sign.h>
 
 class SignatureSizeTestFixture
 {
@@ -73,6 +74,24 @@ BOOST_AUTO_TEST_CASE(willDefaultToALargestByteSizePossibleWhenKeyIsUnknown)
     CScript alternateScript = GetScriptForDestination(unknownKey.GetPubKey().GetID());
     BOOST_CHECK_EQUAL(
         SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),alternateScript), 139u);
+}
+BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeWhenKeyIsKnown)
+{
+    createKeys(1);
+    addKeyToStoreByIndex(0);
+    CKey& knownKey = getKeyByIndex(0);
+    CPubKey knownPubKey = knownKey.GetPubKey();
+    CScript knownScript = GetScriptForDestination(knownPubKey.GetID());
+    CMutableTransaction sampleTransaction;
+    sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+
+    const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownScript);
+    const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+    BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+    const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+
+    BOOST_CHECK_MESSAGE(postSignatureTxSize-initialTxSize <= maximumBytesEstimate,"scriptSig size is above expected!");
+    BOOST_CHECK_MESSAGE(postSignatureTxSize-initialTxSize >= maximumBytesEstimate -1,"scriptSig size is below expected!");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(willDefaultToALargestByteSizePossibleWhenKeyIsUnknown)
     CKey& unknownKey = getKeyByIndex(1);
     CScript alternateScript = GetScriptForDestination(unknownKey.GetPubKey().GetID());
     BOOST_CHECK_EQUAL(
-        SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),alternateScript), 139u);
+        SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),alternateScript), 140u);
 }
 BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKHScriptsWhenKeyIsKnown)
 {
@@ -111,8 +111,13 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKHScriptsWhenKeyIsKnow
         BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
-        BOOST_CHECK_MESSAGE(postSignatureTxSize-initialTxSize <= maximumBytesEstimate,"scriptSig size is above expected!");
-        BOOST_CHECK_MESSAGE(postSignatureTxSize-initialTxSize >= maximumBytesEstimate -1,"scriptSig size is below expected!");
+        const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
+        BOOST_CHECK_MESSAGE(changeInByteCount <= maximumBytesEstimate,
+            "scriptSig size is above expected! "+std::to_string(changeInByteCount)+
+            " vs "+std::to_string(maximumBytesEstimate));
+        BOOST_CHECK_MESSAGE(changeInByteCount >= maximumBytesEstimate -2,
+            "scriptSig size is below expected!"+std::to_string(changeInByteCount)+
+            " vs "+std::to_string(maximumBytesEstimate-2u));
     }
 }
 
@@ -136,8 +141,12 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKScriptsWhenKeyIsKnown
         const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
 
         const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
-        BOOST_CHECK_MESSAGE(changeInByteCount <= maximumBytesEstimate,"scriptSig size is above expected! "+std::to_string(changeInByteCount));
-        BOOST_CHECK_MESSAGE(changeInByteCount >= maximumBytesEstimate -1,"scriptSig size is below expected!"+std::to_string(changeInByteCount));
+        BOOST_CHECK_MESSAGE(changeInByteCount <= maximumBytesEstimate,
+            "scriptSig size is above expected! "+std::to_string(changeInByteCount)+
+            " vs "+std::to_string(maximumBytesEstimate));
+        BOOST_CHECK_MESSAGE(changeInByteCount >= maximumBytesEstimate -2,
+            "scriptSig size is below expected!"+std::to_string(changeInByteCount)+
+            " vs "+std::to_string(maximumBytesEstimate-2u));
     }
 }
 
@@ -162,7 +171,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForMultiSigScriptsWhenKeysAr
             changeInByteCount <= maximumBytesEstimate,
             "scriptSig size is above expected! "+std::to_string(changeInByteCount)+" while expecting "+std::to_string(requiredKeys)+" keys");
         BOOST_CHECK_MESSAGE(
-            changeInByteCount >= maximumBytesEstimate - requiredKeys,
+            changeInByteCount >= maximumBytesEstimate - 2*requiredKeys,
             "scriptSig size is below expected!"+std::to_string(changeInByteCount)+" while expecting "+std::to_string(requiredKeys)+" keys");
     }
 }

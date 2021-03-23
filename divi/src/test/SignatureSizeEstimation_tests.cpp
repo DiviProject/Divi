@@ -19,12 +19,12 @@ public:
         , keyStore_()
     {
     }
-    void createKeys(unsigned numberOfKeys)
+    void createKeys(unsigned numberOfKeys, bool compressedKey = true)
     {
         keys_.resize(numberOfKeys);
         for(CKey& key: keys_)
         {
-            key.MakeNewKey(true);
+            key.MakeNewKey(compressedKey);
         }
     }
     bool addKeyToStoreByIndex(unsigned keyIndex)

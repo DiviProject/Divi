@@ -27,5 +27,15 @@ unsigned SignatureSizeEstimator::MaxBytesNeededForSigning(const CKeyStore& keyst
         }
         return 72u+2u+pubkey.size();
     }
+    else if(whichType == TX_MULTISIG)
+    {
+        unsigned numberOfKnownKeys = 0u;
+        for(const auto& pubkeyData: vSolutions)
+        {
+            CKeyID keyID = CPubKey(pubkeyData).GetID();
+            numberOfKnownKeys += keystore.HaveKey(keyID)? 1u:0u;
+        }
+        return 1u + numberOfKnownKeys*MaximumScriptSigBytesForP2PK;
+    }
     return std::numeric_limits<unsigned>::max();
 }

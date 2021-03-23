@@ -7,6 +7,6 @@ class SignatureSizeEstimator
 public:
     static const unsigned MaximumScriptSigBytesForP2PK;
     static const unsigned MaximumScriptSigBytesForP2PKH;
-    static unsigned MaxBytesNeededForSigning(const CKeyStore& keystore,const CScript& scriptPubKey);
+    static unsigned MaxBytesNeededForSigning(const CKeyStore& keystore,const CScript& scriptPubKey,bool isSubscript = false);
 };
 #endif// SIGNATURE_SIZE_ESTIMATOR_H

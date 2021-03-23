@@ -8,6 +8,7 @@
 #include <destination.h>
 #include <script/standard.h>
 #include <script/sign.h>
+#include <map>
 
 class SignatureSizeTestFixture
 {
@@ -65,6 +66,11 @@ public:
             pubkeys.push_back(key.GetPubKey());
         }
         return GetScriptForMultisig(requiredSigs,pubkeys);
+    }
+
+    void addScriptToKeyStore(const CScript& script)
+    {
+        keyStore_.AddCScript(script);
     }
 };
 
@@ -175,5 +181,40 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForMultiSigScriptsWhenKeysAr
             "scriptSig size is below expected!"+std::to_string(changeInByteCount)+" while expecting "+std::to_string(requiredKeys)+" keys");
     }
 }
+
+BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2SHScriptsWhenScriptsAreKnown)
+{
+    const unsigned maxNumberOfKeysUsed = 5;
+    createKeys(maxNumberOfKeysUsed);
+    addKeysToStore();
+    CScript p2pk = CScript() << ToByteVector(getKeyByIndex(0u).GetPubKey()) << OP_CHECKSIG;
+    CScript p2pkh = GetScriptForDestination(getKeyByIndex(1u).GetPubKey().GetID());
+    CScript multiSig = getMultisigScriptFromKeys(5);
+
+    std::map<CScript,CScript> p2shScripts ={
+        {p2pk,CScript() << OP_HASH160 << ToByteVector(CScriptID(p2pk)) << OP_EQUAL},
+        {p2pkh,CScript() << OP_HASH160 << ToByteVector(CScriptID(p2pkh)) << OP_EQUAL},
+        {multiSig,CScript() << OP_HASH160 << ToByteVector(CScriptID(multiSig)) << OP_EQUAL}};
+
+    for(const auto& scriptAndP2SHScript: p2shScripts)
+    {
+        addScriptToKeyStore(scriptAndP2SHScript.first);
+        const CScript& knownP2SHScript = scriptAndP2SHScript.second;
+        CMutableTransaction sampleTransaction;
+        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+        const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownP2SHScript);
+        const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+        BOOST_CHECK(SignSignature(getKeyStore(), knownP2SHScript, sampleTransaction, 0, SIGHASH_ALL));
+        const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+        const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
+        BOOST_CHECK_MESSAGE(
+            changeInByteCount <= maximumBytesEstimate,
+            "scriptSig size is above expected! "+std::to_string(changeInByteCount)+" while expecting around "+std::to_string(maximumBytesEstimate)+" bytes");
+        BOOST_CHECK_MESSAGE(
+            changeInByteCount >= maximumBytesEstimate - 3*maxNumberOfKeysUsed,
+            "scriptSig size is below expected!"+std::to_string(changeInByteCount)+" while expecting around "+std::to_string(maximumBytesEstimate)+" bytes");
+    }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

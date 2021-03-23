@@ -9,6 +9,7 @@
 #include <script/standard.h>
 #include <script/sign.h>
 #include <map>
+#include <script/StakingVaultScript.h>
 
 class SignatureSizeTestFixture
 {
@@ -71,6 +72,12 @@ public:
     void addScriptToKeyStore(const CScript& script)
     {
         keyStore_.AddCScript(script);
+    }
+    CScript getVaultScriptFromKeys()
+    {
+        return CreateStakingVaultScript(
+            ToByteVector(keys_[0].GetPubKey().GetID()),
+            ToByteVector(keys_[1].GetPubKey().GetID()));
     }
 };
 
@@ -180,6 +187,33 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForMultiSigScriptsWhenKeysAr
             changeInByteCount >= maximumBytesEstimate - 3*requiredKeys,
             "scriptSig size is below expected!"+std::to_string(changeInByteCount)+" while expecting "+std::to_string(requiredKeys)+" keys");
     }
+}
+
+BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForVaultScriptsWhenKeysAreKnown)
+{
+    createKeys(2);
+    CScript knownScript = getVaultScriptFromKeys();
+
+    for(unsigned keyIndex = 1u ; keyIndex-- > 0u; )
+    {
+        addKeyToStoreByIndex(keyIndex);
+        CMutableTransaction sampleTransaction;
+        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+
+        const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownScript);
+        const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+        BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+
+        const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
+        BOOST_CHECK_MESSAGE(
+            changeInByteCount <= maximumBytesEstimate,
+            "scriptSig size is above expected! "+std::to_string(changeInByteCount));
+        BOOST_CHECK_MESSAGE(
+            changeInByteCount >= maximumBytesEstimate - 3,
+            "scriptSig size is below expected!"+std::to_string(changeInByteCount));
+    }
+
 }
 
 BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2SHScriptsWhenScriptsAreKnown)

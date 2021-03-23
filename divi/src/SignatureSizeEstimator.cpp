@@ -15,10 +15,12 @@ unsigned SignatureSizeEstimator::MaxBytesNeededForSigning(const CKeyStore& keyst
     if(whichType == TX_PUBKEYHASH)
     {
         CKeyID keyID = CKeyID(uint160(vSolutions[0]));
-        if(!keystore.HaveKey(keyID))
+        CPubKey pubkey;
+        if(!keystore.GetPubKey(keyID,pubkey))
         {
             return MaximumScriptSigBytesForP2PKH;
         }
+        return 72u+2u+pubkey.size();
     }
     return std::numeric_limits<unsigned>::max();
 }

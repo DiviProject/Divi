@@ -6,8 +6,8 @@
 #include <destination.h>
 #include <pubkey.h>
 
-const unsigned SignatureSizeEstimator::MaximumScriptSigBytesForP2PK = 73u;//72u for sig, +1u for push
-const unsigned SignatureSizeEstimator::MaximumScriptSigBytesForP2PKH = 139u;
+const unsigned SignatureSizeEstimator::MaximumScriptSigBytesForP2PK = 74u;//71-73u for sig, +1u for push
+const unsigned SignatureSizeEstimator::MaximumScriptSigBytesForP2PKH = 140u;
 unsigned SignatureSizeEstimator::MaxBytesNeededForSigning(const CKeyStore& keystore,const CScript& scriptPubKey)
 {
     txnouttype whichType;
@@ -25,7 +25,7 @@ unsigned SignatureSizeEstimator::MaxBytesNeededForSigning(const CKeyStore& keyst
         {
             return MaximumScriptSigBytesForP2PKH;
         }
-        return 72u+2u+pubkey.size();
+        return MaximumScriptSigBytesForP2PK+1u+pubkey.size();
     }
     else if(whichType == TX_MULTISIG)
     {

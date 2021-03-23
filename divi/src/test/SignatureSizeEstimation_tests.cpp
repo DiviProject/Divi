@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(willDefaultToALargestByteSizePossibleWhenKeyIsUnknown)
     BOOST_CHECK_EQUAL(
         SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),alternateScript), 139u);
 }
-BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeWhenKeyIsKnown)
+BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKHScriptsWhenKeyIsKnown)
 {
     addSingleKey(false);
     addSingleKey(true);

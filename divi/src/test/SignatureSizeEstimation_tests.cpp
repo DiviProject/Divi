@@ -104,4 +104,29 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKHScriptsWhenKeyIsKnow
     }
 }
 
+BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKScriptsWhenKeyIsKnown)
+{
+    addSingleKey(false);
+    addSingleKey(true);
+
+    for(unsigned keyIndex =0 ; keyIndex < 2; keyIndex++)
+    {
+        addKeyToStoreByIndex(keyIndex);
+        CKey& knownKey = getKeyByIndex(keyIndex);
+        CPubKey knownPubKey = knownKey.GetPubKey();
+        CScript knownScript = CScript() << ToByteVector(knownPubKey) << OP_CHECKSIG;
+        CMutableTransaction sampleTransaction;
+        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+
+        const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownScript);
+        const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+        BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+
+        const unsigned changeInByteCount = postSignatureTxSize-initialTxSize;
+        BOOST_CHECK_MESSAGE(changeInByteCount <= maximumBytesEstimate,"scriptSig size is above expected! "+std::to_string(changeInByteCount));
+        BOOST_CHECK_MESSAGE(changeInByteCount >= maximumBytesEstimate -1,"scriptSig size is below expected!"+std::to_string(changeInByteCount));
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

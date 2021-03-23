@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKHScriptsWhenKeyIsKnow
         BOOST_CHECK_MESSAGE(changeInByteCount <= maximumBytesEstimate,
             "scriptSig size is above expected! "+std::to_string(changeInByteCount)+
             " vs "+std::to_string(maximumBytesEstimate));
-        BOOST_CHECK_MESSAGE(changeInByteCount >= maximumBytesEstimate -2,
+        BOOST_CHECK_MESSAGE(changeInByteCount >= maximumBytesEstimate -3,
             "scriptSig size is below expected!"+std::to_string(changeInByteCount)+
             " vs "+std::to_string(maximumBytesEstimate-2u));
     }
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKScriptsWhenKeyIsKnown
     addSingleKey(false);
     addSingleKey(true);
 
-    for(unsigned keyIndex =0 ; keyIndex < 2; keyIndex++)
+    for(unsigned keyIndex = 0u ; keyIndex < 2u; keyIndex++)
     {
         addKeyToStoreByIndex(keyIndex);
         CKey& knownKey = getKeyByIndex(keyIndex);
@@ -144,9 +144,9 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKScriptsWhenKeyIsKnown
         BOOST_CHECK_MESSAGE(changeInByteCount <= maximumBytesEstimate,
             "scriptSig size is above expected! "+std::to_string(changeInByteCount)+
             " vs "+std::to_string(maximumBytesEstimate));
-        BOOST_CHECK_MESSAGE(changeInByteCount >= maximumBytesEstimate -2,
+        BOOST_CHECK_MESSAGE(changeInByteCount >= maximumBytesEstimate -3,
             "scriptSig size is below expected!"+std::to_string(changeInByteCount)+
-            " vs "+std::to_string(maximumBytesEstimate-2u));
+            " vs "+std::to_string(maximumBytesEstimate-3u));
     }
 }
 
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForMultiSigScriptsWhenKeysAr
             changeInByteCount <= maximumBytesEstimate,
             "scriptSig size is above expected! "+std::to_string(changeInByteCount)+" while expecting "+std::to_string(requiredKeys)+" keys");
         BOOST_CHECK_MESSAGE(
-            changeInByteCount >= maximumBytesEstimate - 2*requiredKeys,
+            changeInByteCount >= maximumBytesEstimate - 3*requiredKeys,
             "scriptSig size is below expected!"+std::to_string(changeInByteCount)+" while expecting "+std::to_string(requiredKeys)+" keys");
     }
 }

@@ -28,6 +28,11 @@ public:
             key.MakeNewKey(compressedKey);
         }
     }
+    void addSingleKey(bool compressedKey = true)
+    {
+        keys_.emplace_back();
+        keys_.back().MakeNewKey(compressedKey);
+    }
     bool addKeyToStoreByIndex(unsigned keyIndex)
     {
         if(!(keyIndex< keys_.size()) ) return false;
@@ -77,21 +82,26 @@ BOOST_AUTO_TEST_CASE(willDefaultToALargestByteSizePossibleWhenKeyIsUnknown)
 }
 BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeWhenKeyIsKnown)
 {
-    createKeys(1);
-    addKeyToStoreByIndex(0);
-    CKey& knownKey = getKeyByIndex(0);
-    CPubKey knownPubKey = knownKey.GetPubKey();
-    CScript knownScript = GetScriptForDestination(knownPubKey.GetID());
-    CMutableTransaction sampleTransaction;
-    sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+    addSingleKey(false);
+    addSingleKey(true);
 
-    const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownScript);
-    const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
-    BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
-    const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+    for(unsigned keyIndex =0 ; keyIndex < 2; keyIndex++)
+    {
+        addKeyToStoreByIndex(keyIndex);
+        CKey& knownKey = getKeyByIndex(keyIndex);
+        CPubKey knownPubKey = knownKey.GetPubKey();
+        CScript knownScript = GetScriptForDestination(knownPubKey.GetID());
+        CMutableTransaction sampleTransaction;
+        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
 
-    BOOST_CHECK_MESSAGE(postSignatureTxSize-initialTxSize <= maximumBytesEstimate,"scriptSig size is above expected!");
-    BOOST_CHECK_MESSAGE(postSignatureTxSize-initialTxSize >= maximumBytesEstimate -1,"scriptSig size is below expected!");
+        const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownScript);
+        const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+        BOOST_CHECK(SignSignature(getKeyStore(), knownScript, sampleTransaction, 0, SIGHASH_ALL));
+        const unsigned postSignatureTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
+
+        BOOST_CHECK_MESSAGE(postSignatureTxSize-initialTxSize <= maximumBytesEstimate,"scriptSig size is above expected!");
+        BOOST_CHECK_MESSAGE(postSignatureTxSize-initialTxSize >= maximumBytesEstimate -1,"scriptSig size is below expected!");
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

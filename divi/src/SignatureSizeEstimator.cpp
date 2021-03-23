@@ -8,7 +8,7 @@
 
 const unsigned SignatureSizeEstimator::MaximumScriptSigBytesForP2PK = 74u;//71-73u for sig, +1u for push
 const unsigned SignatureSizeEstimator::MaximumScriptSigBytesForP2PKH = 140u;
-unsigned SignatureSizeEstimator::MaxBytesNeededForSigning(const CKeyStore& keystore,const CScript& scriptPubKey)
+unsigned SignatureSizeEstimator::MaxBytesNeededForSigning(const CKeyStore& keystore,const CScript& scriptPubKey,bool isSubscript)
 {
     txnouttype whichType;
     std::vector<valtype> vSolutions;
@@ -36,6 +36,16 @@ unsigned SignatureSizeEstimator::MaxBytesNeededForSigning(const CKeyStore& keyst
             numberOfKnownKeys += keystore.HaveKey(keyID)? 1u:0u;
         }
         return 1u + numberOfKnownKeys*MaximumScriptSigBytesForP2PK;
+    }
+    else if(!isSubscript && whichType == TX_SCRIPTHASH)
+    {
+        CScript subscript;
+        if(!keystore.GetCScript(CScriptID(uint160(vSolutions[0])), subscript))
+        {
+            return std::numeric_limits<unsigned>::max();
+        }
+        CScript serializedScript = CScript() << ToByteVector(subscript);
+        return MaxBytesNeededForSigning(keystore,subscript,true)+serializedScript.size();
     }
     return std::numeric_limits<unsigned>::max();
 }

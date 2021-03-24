@@ -2313,27 +2313,14 @@ bool CWallet::CreateTransaction(
                     return false;
                 }
 
-                for (const COutput& output: setCoins)
+                if(CanBeSentAsFreeTransaction(wtxNew,nBytes,setCoins))
                 {
-                    CAmount nCredit = output.Value();
-                    const int age = output.nDepth;
-                    dPriority += age==0? 0.0:(double)nCredit * (age+1);
-                }
-                dPriority = priorityFeeCalculator.ComputePriority(wtxNew,dPriority, nBytes);
-
-                // Can we complete this as a free transaction?
-                if (fSendFreeTransactions && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE) {
-                    // Not enough fee: enough priority?
-                    double dPriorityNeeded = mempool.estimatePriority(nTxConfirmTarget);
-                    if ( (dPriorityNeeded <= 0 && AllowFree(dPriority)) || (dPriorityNeeded > 0 && dPriority >= dPriorityNeeded) )
+                    if(useReserveKey && changeUsed)
                     {
-                        if(useReserveKey && changeUsed)
-                        {
-                            CPubKey vchPubKey;
-                            assert(reservekey.GetReservedKey(vchPubKey, true));
-                        }
-                        break;
+                        CPubKey vchPubKey;
+                        assert(reservekey.GetReservedKey(vchPubKey, true));
                     }
+                    break;
                 }
 
                 CAmount nFeeNeeded = std::max(CAmount(0), GetMinimumFee(totalValueToSend, nBytes, nTxConfirmTarget, mempool));

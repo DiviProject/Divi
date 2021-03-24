@@ -2234,7 +2234,7 @@ bool CWallet::CreateTransaction(
                 }
 
                 changeUsed = false;
-                changeOutput.nValue = nValueIn - totalValueToSend - nFeeRet;
+                changeOutput.nValue = nValueIn - nTotalValue;
                 if (changeOutput.nValue > 0)
                 {
                     if (priorityFeeCalculator.IsDust(changeOutput))

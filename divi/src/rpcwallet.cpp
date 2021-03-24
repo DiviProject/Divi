@@ -330,12 +330,9 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
 
     // Create and send the transaction
     CReserveKey reservekey(*pwalletMain);
-    CAmount nFeeRequired;
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
-    if (!pwalletMain->CreateTransaction(std::make_pair(scriptPubKey, nValue), wtxNew, reservekey, nFeeRequired, strError, NULL, coinTypeFilter))
+    if (!pwalletMain->CreateTransaction(std::make_pair(scriptPubKey, nValue), wtxNew, reservekey, strError, NULL, coinTypeFilter))
     {
-        if (nValue + nFeeRequired > pwalletMain->GetSpendableBalance())
-            strError = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!", FormatMoney(nFeeRequired));
         LogPrintf("SendMoney() : %s\n", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
@@ -1232,9 +1229,8 @@ Value sendmany(const Array& params, bool fHelp)
 
     // Send
     CReserveKey keyChange(*pwalletMain);
-    CAmount nFeeRequired = 0;
     string strFailReason;
-    bool fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange, nFeeRequired, strFailReason);
+    bool fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange, strFailReason);
     if (!fCreated)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strFailReason);
     if (!pwalletMain->CommitTransaction(wtx, keyChange))

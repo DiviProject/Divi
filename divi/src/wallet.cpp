@@ -1683,7 +1683,12 @@ bool CWallet::SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDe
     return true;
 }
 
-bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, unsigned int i, const CCoinControl* coinControl, bool fIncludeZeroValue, bool& fIsSpendable, AvailableCoinsType coinType) const
+bool CWallet::IsAvailableForSpending(
+    const CWalletTx* pcoin,
+    unsigned int i,
+    bool fIncludeZeroValue,
+    bool& fIsSpendable,
+    AvailableCoinsType coinType) const
 {
     isminetype mine;
     VaultType vaultType;
@@ -1713,13 +1718,16 @@ bool CWallet::IsAvailableForSpending(const CWalletTx* pcoin, unsigned int i, con
         return false;
     if (pcoin->vout[i].nValue <= 0 && !fIncludeZeroValue)
         return false;
-    if (coinControl && coinControl->HasSelected() && !coinControl->fAllowOtherInputs && !coinControl->IsSelected(hash, i))
-        return false;
 
     fIsSpendable = (mine & ISMINE_SPENDABLE) != ISMINE_NO || (mine & ISMINE_MULTISIG) != ISMINE_NO;
     return true;
 }
-void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, const CCoinControl* coinControl, bool fIncludeZeroValue, AvailableCoinsType nCoinType, CAmount nExactValue) const
+void CWallet::AvailableCoins(
+    std::vector<COutput>& vCoins,
+    bool fOnlyConfirmed,
+    bool fIncludeZeroValue,
+    AvailableCoinsType nCoinType,
+    CAmount nExactValue) const
 {
     vCoins.clear();
 
@@ -1741,7 +1749,7 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
                 if (!found) continue;
 
                 bool fIsSpendable = false;
-                if(!IsAvailableForSpending(pcoin,i,coinControl,fIncludeZeroValue,fIsSpendable,nCoinType))
+                if(!IsAvailableForSpending(pcoin,i,fIncludeZeroValue,fIsSpendable,nCoinType))
                 {
                     continue;
                 }
@@ -1826,7 +1834,7 @@ bool CWallet::SelectStakeCoins(std::set<StakableCoin>& setCoins) const
 {
     CAmount nTargetAmount = GetStakingBalance();
     std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true, NULL, false, STAKABLE_COINS);
+    AvailableCoins(vCoins, true, false, STAKABLE_COINS);
     CAmount nAmountSelected = 0;
 
     for (const COutput& out : vCoins) {
@@ -1861,7 +1869,7 @@ bool CWallet::MintableCoins()
         return false;
 
     std::vector<COutput> vCoins;
-    AvailableCoins(vCoins, true, NULL, false, STAKABLE_COINS);
+    AvailableCoins(vCoins, true, false, STAKABLE_COINS);
 
     for (const COutput& out : vCoins) {
         int64_t nTxTime = out.tx->GetTxTime();
@@ -2309,7 +2317,7 @@ bool CWallet::CreateTransaction(
             CTxOut changeOutput = CreateChangeOutput(coinControl,reservekey,useReserveKey);
 
             std::vector<COutput> vCoins;
-            AvailableCoins(vCoins, true, coinControl, false, coin_type);
+            AvailableCoins(vCoins, true, false, coin_type);
 
             while (true)
             {

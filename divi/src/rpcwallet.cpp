@@ -370,13 +370,13 @@ Value getcoinavailability(const Array& params, bool fHelp)
                 return totalAmount;
             };
         std::vector<COutput> outputs;
-        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::OWNED_VAULT_COINS);
+        pwalletMain->AvailableCoins(outputs, true, false, AvailableCoinsType::OWNED_VAULT_COINS);
         result.push_back( Pair("Vaulted", ValueFromAmount(outputAmountAdder(outputs))  ) );
         outputs.clear();
-        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::STAKABLE_COINS);
+        pwalletMain->AvailableCoins(outputs, true, false, AvailableCoinsType::STAKABLE_COINS);
         result.push_back( Pair("Stakable", ValueFromAmount(outputAmountAdder(outputs)) ) );
         outputs.clear();
-        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::ALL_SPENDABLE_COINS);
+        pwalletMain->AvailableCoins(outputs, true, false, AvailableCoinsType::ALL_SPENDABLE_COINS);
         result.push_back( Pair("Spendable", ValueFromAmount(outputAmountAdder(outputs)) ) );
 
         return result;
@@ -436,13 +436,13 @@ Value getcoinavailability(const Array& params, bool fHelp)
                 return description;
             };
         std::vector<COutput> outputs;
-        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::OWNED_VAULT_COINS);
+        pwalletMain->AvailableCoins(outputs, true, false, AvailableCoinsType::OWNED_VAULT_COINS);
         result.push_back( Pair("Vaulted", outputParser(outputs)  ) );
         outputs.clear();
-        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::STAKABLE_COINS);
+        pwalletMain->AvailableCoins(outputs, true, false, AvailableCoinsType::STAKABLE_COINS);
         result.push_back( Pair("Stakable", outputParser(outputs) ) );
         outputs.clear();
-        pwalletMain->AvailableCoins(outputs, true, NULL, false, AvailableCoinsType::ALL_SPENDABLE_COINS);
+        pwalletMain->AvailableCoins(outputs, true, false, AvailableCoinsType::ALL_SPENDABLE_COINS);
         result.push_back( Pair("Spendable", outputParser(outputs) ) );
 
         return result;

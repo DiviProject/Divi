@@ -211,14 +211,12 @@ public:
     bool IsAvailableForSpending(
         const CWalletTx* pcoin,
         unsigned int i,
-        const CCoinControl* coinControl,
         bool fIncludeZeroValue,
         bool& fIsSpendable,
         AvailableCoinsType coinType = AvailableCoinsType::ALL_SPENDABLE_COINS) const;
     bool SatisfiesMinimumDepthRequirements(const CWalletTx* pcoin, int& nDepth, bool fOnlyConfirmed) const;
     void AvailableCoins(std::vector<COutput>& vCoins,
                         bool fOnlyConfirmed = true,
-                        const CCoinControl* coinControl = NULL,
                         bool fIncludeZeroValue = false,
                         AvailableCoinsType nCoinType = ALL_SPENDABLE_COINS,
                         CAmount nExactValue = CAmount(0)) const;

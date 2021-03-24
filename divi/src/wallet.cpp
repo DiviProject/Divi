@@ -2186,10 +2186,8 @@ static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxB
     if (nFeeNeeded == 0)
         nFeeNeeded = CWallet::minTxFee.GetFee(nTxBytes);
     // prevent user from paying a non-sense fee (like 1 satoshi): 0 < fee < minRelayFee
-    if (nFeeNeeded < ::minRelayTxFee.GetFee(nTxBytes))
-        nFeeNeeded = ::minRelayTxFee.GetFee(nTxBytes);
     // But always obey the maximum
-    return std::min(nFeeNeeded,maxTxFee);
+    return std::min(std::max(nFeeNeeded,::minRelayTxFee.GetFee(nTxBytes)),maxTxFee);
 }
 
 static bool CanBeSentAsFreeTransaction(

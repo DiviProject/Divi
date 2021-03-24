@@ -2233,18 +2233,13 @@ bool CWallet::CreateTransaction(
                     return false;
                 }
 
-                changeUsed = false;
                 changeOutput.nValue = nValueIn - nTotalValue;
-                if (changeOutput.nValue > 0)
+                changeUsed = changeOutput.nValue > 0;
+                if (changeUsed && priorityFeeCalculator.IsDust(changeOutput))
                 {
-                    if (priorityFeeCalculator.IsDust(changeOutput))
-                    {
-                        nFeeRet += changeOutput.nValue;
-                        changeOutput.nValue = 0;
-                        changeUsed = false;
-                    } else {
-                        changeUsed = true;
-                    }
+                    nFeeRet += changeOutput.nValue;
+                    changeOutput.nValue = 0;
+                    changeUsed = false;
                 }
 
                 // Embed the constructed transaction data in wtxNew.

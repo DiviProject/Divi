@@ -2315,7 +2315,6 @@ bool CWallet::CreateTransaction(
             {
                 txNew.vin.clear();
                 CAmount nTotalValue = totalValueToSend + nFeeRet;
-                double dPriority = 0;
 
                 // Choose coins to use
                 std::set<COutput> setCoins;

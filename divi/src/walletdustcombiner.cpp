@@ -59,14 +59,8 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
         CWalletTx wtx;
         CReserveKey keyChange(wallet_); // this change address does not end up being used, because change is returned with coin control switch
         std::string strErr;
-        CAmount nFeeRet = 0;
 
-        //get the fee amount
-        CWalletTx wtxdummy;
-        wallet_.CreateTransaction(vecSend, wtxdummy, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS);
-        vecSend[0].second = nTotalRewardsValue - nFeeRet - 500;
-
-        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, nFeeRet, strErr, coinControl, ALL_SPENDABLE_COINS)) {
+        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, strErr, coinControl, ALL_SPENDABLE_COINS)) {
             LogPrintf("CombineDust createtransaction failed, reason: %s\n", strErr);
             continue;
         }

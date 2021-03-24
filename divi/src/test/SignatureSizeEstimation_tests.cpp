@@ -22,6 +22,13 @@ public:
         , keyStore_()
     {
     }
+
+    CMutableTransaction getSampleTransaction()
+    {
+        CMutableTransaction sampleTransaction;
+        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+        return sampleTransaction;
+    }
     void createKeys(unsigned numberOfKeys, bool compressedKey = true)
     {
         keys_.resize(numberOfKeys);
@@ -116,8 +123,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKHScriptsWhenKeyIsKnow
         CKey& knownKey = getKeyByIndex(keyIndex);
         CPubKey knownPubKey = knownKey.GetPubKey();
         CScript knownScript = GetScriptForDestination(knownPubKey.GetID());
-        CMutableTransaction sampleTransaction;
-        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+        CMutableTransaction sampleTransaction = getSampleTransaction();
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
@@ -145,8 +151,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2PKScriptsWhenKeyIsKnown
         CKey& knownKey = getKeyByIndex(keyIndex);
         CPubKey knownPubKey = knownKey.GetPubKey();
         CScript knownScript = CScript() << ToByteVector(knownPubKey) << OP_CHECKSIG;
-        CMutableTransaction sampleTransaction;
-        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+        CMutableTransaction sampleTransaction = getSampleTransaction();
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
@@ -171,8 +176,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForMultiSigScriptsWhenKeysAr
     {
         addKeyToStoreByIndex(addedKeyIndex++);
         CScript knownScript = getMultisigScriptFromKeys(requiredKeys);
-        CMutableTransaction sampleTransaction;
-        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+        CMutableTransaction sampleTransaction = getSampleTransaction();
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
@@ -197,8 +201,7 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForVaultScriptsWhenKeysAreKn
     for(unsigned keyIndex = 1u ; keyIndex-- > 0u; )
     {
         addKeyToStoreByIndex(keyIndex);
-        CMutableTransaction sampleTransaction;
-        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+        CMutableTransaction sampleTransaction = getSampleTransaction();
 
         const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
@@ -234,8 +237,8 @@ BOOST_AUTO_TEST_CASE(willRecoverCorrectSignatureSizeForP2SHScriptsWhenScriptsAre
     {
         addScriptToKeyStore(scriptAndP2SHScript.first);
         const CScript& knownP2SHScript = scriptAndP2SHScript.second;
-        CMutableTransaction sampleTransaction;
-        sampleTransaction.vin.emplace_back(uint256S("0x8b4bdd6fd8220ca956938d214cbd4635bfaacc663f53ad8bda5e434b9dc647fe"),1);
+        CMutableTransaction sampleTransaction = getSampleTransaction();
+
         const unsigned maximumBytesEstimate = SignatureSizeEstimator::MaxBytesNeededForSigning(getKeyStore(),knownP2SHScript);
         const unsigned initialTxSize = ::GetSerializeSize(CTransaction(sampleTransaction),SER_NETWORK, PROTOCOL_VERSION);
         BOOST_CHECK(SignSignature(getKeyStore(), knownP2SHScript, sampleTransaction, 0, SIGHASH_ALL));

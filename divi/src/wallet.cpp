@@ -2309,18 +2309,9 @@ bool CWallet::CreateTransaction(
                     return false;
                 }
 
-                if(fSendFreeTransactions && CanBeSentAsFreeTransaction(wtxNew,nBytes,setCoins))
-                {
-                    if(useReserveKey && changeUsed)
-                    {
-                        CPubKey vchPubKey;
-                        assert(reservekey.GetReservedKey(vchPubKey, true));
-                    }
-                    break;
-                }
-
                 CAmount nFeeNeeded = std::max(CAmount(0), GetMinimumFee(totalValueToSend, nBytes, nTxConfirmTarget, mempool));
-                if (nFeeRet >= nFeeNeeded) // Done, enough fee included
+                if( (fSendFreeTransactions && CanBeSentAsFreeTransaction(wtxNew,nBytes,setCoins)) ||
+                    nFeeRet >= nFeeNeeded)
                 {
                     if(useReserveKey && changeUsed)
                     {

@@ -2329,16 +2329,13 @@ bool CWallet::CreateTransaction(
                     return false;
                 }
 
-                // Limit size
-                unsigned int nBytes = ::GetSerializeSize(*(CTransaction*)&wtxNew, SER_NETWORK, PROTOCOL_VERSION);
-                if (nBytes >= MAX_STANDARD_TX_SIZE) {
+                const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,totalValueToSend,nFeeRet);
+                if(status == FeeSufficiencyStatus::TX_TOO_LARGE)
+                {
                     strFailReason = translate("Transaction too large");
                     return false;
                 }
-
-                CAmount nFeeNeeded = std::max(CAmount(0), GetMinimumFee(totalValueToSend, nBytes, nTxConfirmTarget, mempool));
-                if( (fSendFreeTransactions && CanBeSentAsFreeTransaction(wtxNew,nBytes,setCoins)) ||
-                    nFeeRet >= nFeeNeeded)
+                else if(status==FeeSufficiencyStatus::HAS_ENOUGH_FEES)
                 {
                     if(useReserveKey && changeUsed)
                     {
@@ -2348,8 +2345,6 @@ bool CWallet::CreateTransaction(
                     break;
                 }
 
-                // Include more fee and try again.
-                nFeeRet = nFeeNeeded;
                 continue;
             }
         }

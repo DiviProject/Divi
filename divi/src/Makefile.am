@@ -296,6 +296,7 @@ BITCOIN_CORE_H = \
   VaultManager.h \
   Output.h \
   SignatureSizeEstimator.h \
+  I_CoinSelectionAlgorithm.h \
   wallet.h \
   WalletTx.h \
   WalletTransactionRecord.h \

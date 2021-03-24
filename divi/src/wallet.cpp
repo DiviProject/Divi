@@ -2327,6 +2327,11 @@ bool CWallet::CreateTransaction(
                     double dPriorityNeeded = mempool.estimatePriority(nTxConfirmTarget);
                     if ( (dPriorityNeeded <= 0 && AllowFree(dPriority)) || (dPriorityNeeded > 0 && dPriority >= dPriorityNeeded) )
                     {
+                        if(useReserveKey && changeUsed)
+                        {
+                            CPubKey vchPubKey;
+                            assert(reservekey.GetReservedKey(vchPubKey, true));
+                        }
                         break;
                     }
                 }
@@ -2341,16 +2346,17 @@ bool CWallet::CreateTransaction(
                 }
 
                 if (nFeeRet >= nFeeNeeded) // Done, enough fee included
+                {
+                    if(useReserveKey && changeUsed)
+                    {
+                        CPubKey vchPubKey;
+                        assert(reservekey.GetReservedKey(vchPubKey, true));
+                    }
                     break;
+                }
 
                 // Include more fee and try again.
                 nFeeRet = nFeeNeeded;
-
-                if(useReserveKey && changeUsed)
-                {
-                    CPubKey vchPubKey;
-                    assert(reservekey.GetReservedKey(vchPubKey, true));
-                }
                 continue;
             }
         }

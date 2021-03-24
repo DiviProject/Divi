@@ -2189,9 +2189,7 @@ static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxB
     if (nFeeNeeded < ::minRelayTxFee.GetFee(nTxBytes))
         nFeeNeeded = ::minRelayTxFee.GetFee(nTxBytes);
     // But always obey the maximum
-    if (nFeeNeeded > maxTxFee)
-        nFeeNeeded = maxTxFee;
-    return nFeeNeeded;
+    return std::min(nFeeNeeded,maxTxFee);
 }
 
 static bool CanBeSentAsFreeTransaction(

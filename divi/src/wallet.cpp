@@ -2250,7 +2250,6 @@ bool CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
-    CAmount& nFeeRet,
     std::string& strFailReason,
     const CCoinControl* coinControl,
     AvailableCoinsType coin_type)
@@ -2277,7 +2276,7 @@ bool CWallet::CreateTransaction(
     {
         LOCK2(cs_main, cs_wallet);
         {
-            nFeeRet = 0;
+            CAmount nFeeRet = 0;
             txNew.vout.clear();
             wtxNew.createdByMe = true;
             // vouts to the payees
@@ -2356,14 +2355,13 @@ bool CWallet::CreateTransaction(
     std::pair<CScript, CAmount> scriptPubKeyAndAmount,
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
-    CAmount& nFeeRet,
     std::string& strFailReason,
     const CCoinControl* coinControl,
     AvailableCoinsType coin_type)
 {
     std::vector<pair<CScript, CAmount> > vecSend;
     vecSend.push_back(scriptPubKeyAndAmount);
-    return CreateTransaction(vecSend, wtxNew, reservekey, nFeeRet, strFailReason, coinControl, coin_type);
+    return CreateTransaction(vecSend, wtxNew, reservekey, strFailReason, coinControl, coin_type);
 }
 
 /**

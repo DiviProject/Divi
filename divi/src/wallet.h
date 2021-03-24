@@ -351,7 +351,6 @@ public:
         const std::vector<std::pair<CScript, CAmount> >& vecSend,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
-        CAmount& nFeeRet,
         std::string& strFailReason,
         const CCoinControl* coinControl = NULL,
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
@@ -359,7 +358,6 @@ public:
         std::pair<CScript, CAmount> scriptPubKeyAndAmount,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
-        CAmount& nFeeRet,
         std::string& strFailReason,
         const CCoinControl* coinControl = NULL,
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);

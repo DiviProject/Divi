@@ -2246,6 +2246,23 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
     return FeeSufficiencyStatus::HAS_ENOUGH_FEES;
 }
 
+static bool MergeChangeOutputIntoFees(
+    CAmount totalInputs,
+    CAmount totalOutputsPlusFees,
+    CAmount& nFeeRet,
+    CTxOut& changeOutput)
+{
+    changeOutput.nValue = totalInputs - totalOutputsPlusFees;
+    bool changeUsed = changeOutput.nValue > 0;
+    if (changeUsed && priorityFeeCalculator.IsDust(changeOutput))
+    {
+        nFeeRet += changeOutput.nValue;
+        changeOutput.nValue = 0;
+        changeUsed = false;
+    }
+    return !changeUsed;
+}
+
 bool CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,
@@ -2309,15 +2326,7 @@ bool CWallet::CreateTransaction(
                     strFailReason = translate("Insufficient funds.");
                     return false;
                 }
-
-                changeOutput.nValue = nValueIn - nTotalValue;
-                changeUsed = changeOutput.nValue > 0;
-                if (changeUsed && priorityFeeCalculator.IsDust(changeOutput))
-                {
-                    nFeeRet += changeOutput.nValue;
-                    changeOutput.nValue = 0;
-                    changeUsed = false;
-                }
+                changeUsed = !MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput);
 
                 // Embed the constructed transaction data in wtxNew.
                 *static_cast<CTransaction*>(&wtxNew) =

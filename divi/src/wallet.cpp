@@ -2320,14 +2320,6 @@ bool CWallet::CreateTransaction(
                 }
 
                 CAmount nFeeNeeded = std::max(CAmount(0), GetMinimumFee(totalValueToSend, nBytes, nTxConfirmTarget, mempool));
-
-                // If we made it here and we aren't even able to meet the relay fee on the next pass, give up
-                // because we must be at the maximum allowed fee.
-                if (nFeeNeeded < ::minRelayTxFee.GetFee(nBytes)) {
-                    strFailReason = translate("Transaction too large for fee policy");
-                    return false;
-                }
-
                 if (nFeeRet >= nFeeNeeded) // Done, enough fee included
                 {
                     if(useReserveKey && changeUsed)

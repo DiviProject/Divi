@@ -2219,6 +2219,33 @@ static bool CanBeSentAsFreeTransaction(
     return false;
 }
 
+enum class FeeSufficiencyStatus
+{
+    TX_TOO_LARGE,
+    NEEDS_MORE_FEES,
+    HAS_ENOUGH_FEES,
+};
+static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
+    const CTransaction& wtxNew,
+    const std::set<COutput> outputsBeingSpent,
+    const CAmount totalValueToSend,
+    CAmount& nFeeRet)
+{
+    unsigned int nBytes = ::GetSerializeSize(wtxNew, SER_NETWORK, PROTOCOL_VERSION);
+    if (nBytes >= MAX_STANDARD_TX_SIZE) {
+        return FeeSufficiencyStatus::TX_TOO_LARGE;
+    }
+
+    const CAmount nFeeNeeded = std::max(CAmount(0), GetMinimumFee(totalValueToSend, nBytes, nTxConfirmTarget, mempool));
+    const bool feeIsSufficient = (fSendFreeTransactions && CanBeSentAsFreeTransaction(wtxNew,nBytes,outputsBeingSpent)) || nFeeRet >= nFeeNeeded;
+    if (!feeIsSufficient)
+    {
+        nFeeRet = nFeeNeeded;
+        return FeeSufficiencyStatus::NEEDS_MORE_FEES;
+    }
+    return FeeSufficiencyStatus::HAS_ENOUGH_FEES;
+}
+
 bool CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,

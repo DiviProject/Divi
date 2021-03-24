@@ -2309,7 +2309,7 @@ bool CWallet::CreateTransaction(
                     return false;
                 }
 
-                if(CanBeSentAsFreeTransaction(wtxNew,nBytes,setCoins))
+                if(fSendFreeTransactions && CanBeSentAsFreeTransaction(wtxNew,nBytes,setCoins))
                 {
                     if(useReserveKey && changeUsed)
                     {

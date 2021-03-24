@@ -368,8 +368,6 @@ public:
     int GenerateObfuscationOutputs(int nTotalValue, Outputs& vout);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
 
-    static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool);
-
     bool NewKeyPool();
     bool TopUpKeyPool(unsigned int kpSize = 0);
     bool GetKeyFromPool(CPubKey& key, bool fInternal);

@@ -2168,6 +2168,61 @@ CTxOut CreateChangeOutput(
     return changeOutput;
 }
 
+static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool)
+{
+//    // payTxFee is user-set "I want to pay this much"
+//    CAmount nFeeNeeded = payTxFee.GetFee(nTxBytes);
+//    // user selected total at least (default=true)
+//    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
+//        nFeeNeeded = payTxFee.GetFeePerK();
+
+    CAmount nFeeNeeded = (nTransactionValue / nTransactionValueMultiplier) * std::max(nTxBytes / nTransactionSizeMultiplier, 1u);
+
+    // User didn't set: use -txconfirmtarget to estimate...
+    if (nFeeNeeded == 0)
+        nFeeNeeded = pool.estimateFee(nConfirmTarget).GetFee(nTxBytes);
+    // ... unless we don't have enough mempool data, in which case fall
+    // back to a hard-coded fee
+    if (nFeeNeeded == 0)
+        nFeeNeeded = CWallet::minTxFee.GetFee(nTxBytes);
+    // prevent user from paying a non-sense fee (like 1 satoshi): 0 < fee < minRelayFee
+    if (nFeeNeeded < ::minRelayTxFee.GetFee(nTxBytes))
+        nFeeNeeded = ::minRelayTxFee.GetFee(nTxBytes);
+    // But always obey the maximum
+    if (nFeeNeeded > maxTxFee)
+        nFeeNeeded = maxTxFee;
+    return nFeeNeeded;
+}
+
+static bool CanBeSentAsFreeTransaction(
+    const CTransaction& wtxNew,
+    const unsigned nBytes,
+    const std::set<COutput>& setCoins)
+{
+    double dPriority = 0;
+
+    for (const COutput& output: setCoins)
+    {
+        CAmount nCredit = output.Value();
+        const int age = output.nDepth;
+        dPriority += age==0? 0.0:(double)nCredit * (age+1);
+    }
+    dPriority = priorityFeeCalculator.ComputePriority(wtxNew,dPriority, nBytes);
+    // Can we complete this as a free transaction?
+    if (fSendFreeTransactions && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE) {
+        // Not enough fee: enough priority?
+        double dPriorityNeeded = mempool.estimatePriority(nTxConfirmTarget);
+        // Not enough mempool history to estimate: use hard-coded AllowFree.
+        if (dPriorityNeeded <= 0 && AllowFree(dPriority))
+            return true;
+
+        // Small enough, and priority high enough, to send for free
+        if (dPriorityNeeded > 0 && dPriority >= dPriorityNeeded)
+            return true;
+    }
+    return false;
+}
+
 bool CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,
@@ -2373,32 +2428,6 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
         wtxNew.RelayWalletTransaction(strCommand);
     }
     return true;
-}
-
-CAmount CWallet::GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool)
-{
-//    // payTxFee is user-set "I want to pay this much"
-//    CAmount nFeeNeeded = payTxFee.GetFee(nTxBytes);
-//    // user selected total at least (default=true)
-//    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
-//        nFeeNeeded = payTxFee.GetFeePerK();
-
-    CAmount nFeeNeeded = (nTransactionValue / nTransactionValueMultiplier) * std::max(nTxBytes / nTransactionSizeMultiplier, 1u);
-
-    // User didn't set: use -txconfirmtarget to estimate...
-    if (nFeeNeeded == 0)
-        nFeeNeeded = pool.estimateFee(nConfirmTarget).GetFee(nTxBytes);
-    // ... unless we don't have enough mempool data, in which case fall
-    // back to a hard-coded fee
-    if (nFeeNeeded == 0)
-        nFeeNeeded = minTxFee.GetFee(nTxBytes);
-    // prevent user from paying a non-sense fee (like 1 satoshi): 0 < fee < minRelayFee
-    if (nFeeNeeded < ::minRelayTxFee.GetFee(nTxBytes))
-        nFeeNeeded = ::minRelayTxFee.GetFee(nTxBytes);
-    // But always obey the maximum
-    if (nFeeNeeded > maxTxFee)
-        nFeeNeeded = maxTxFee;
-    return nFeeNeeded;
 }
 
 CAmount CWallet::GetTotalValue(std::vector<CTxIn> vCoins)

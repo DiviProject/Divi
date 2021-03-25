@@ -2250,11 +2250,10 @@ static bool MergeChangeOutputIntoFees(
     return !changeUsed;
 }
 
-bool CWallet::CreateTransaction(
+std::pair<std::string,bool> CWallet::CreateTransaction(
     const std::vector<std::pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
-    std::string& strFailReason,
     AvailableCoinsType coin_type,
     const I_CoinSelectionAlgorithm* coinSelector)
 {
@@ -2263,14 +2262,12 @@ bool CWallet::CreateTransaction(
     for(const std::pair<CScript, CAmount>& s: vecSend)
     {
         if (totalValueToSend < 0 || s.second < 0) {
-            strFailReason = translate("Transaction amounts must be positive");
-            return false;
+            return {translate("Transaction amounts must be positive"),false};
         }
         totalValueToSend += s.second;
     }
     if (vecSend.empty() || totalValueToSend < 0) {
-        strFailReason = translate("Transaction amounts must be positive");
-        return false;
+        return {translate("Transaction amounts must be positive"),false};
     }
 
     wtxNew.fTimeReceivedIsTxTime = true;
@@ -2294,8 +2291,7 @@ bool CWallet::CreateTransaction(
             AppendOutputs(vecSend,txNew);
             if(!EnsureNoOutputsAreDust(txNew))
             {
-                strFailReason = translate("Transaction amount too small");
-                return false;
+                return {translate("Transaction amount too small"),false};
             }
 
             bool useReserveKey = false;
@@ -2323,8 +2319,7 @@ bool CWallet::CreateTransaction(
                 }
                 if (setCoins.empty() || nValueIn < nTotalValue)
                 {
-                    strFailReason = translate("Insufficient funds.");
-                    return false;
+                    return {translate("Insufficient funds."),false};
                 }
 
 
@@ -2336,15 +2331,13 @@ bool CWallet::CreateTransaction(
                     changeUsed? AttachInputsAndChangeOutputAndSign(*this,setCoins,txNew,changeOutput): AttachInputsAndSign(*this,setCoins,txNew);
                 if(wtxNew.IsNull())
                 {
-                    strFailReason = translate("Signing transaction failed");
-                    return false;
+                    return {translate("Signing transaction failed"),false};
                 }
 
                 const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,totalValueToSend,nFeeRet);
                 if(status == FeeSufficiencyStatus::TX_TOO_LARGE)
                 {
-                    strFailReason = translate("Transaction too large");
-                    return false;
+                    return {translate("Transaction too large"),false};
                 }
                 else if(status==FeeSufficiencyStatus::HAS_ENOUGH_FEES)
                 {
@@ -2360,20 +2353,19 @@ bool CWallet::CreateTransaction(
             }
         }
     }
-    return true;
+    return {std::string(""),true};
 }
 
-bool CWallet::CreateTransaction(
+std::pair<std::string,bool> CWallet::CreateTransaction(
     std::pair<CScript, CAmount> scriptPubKeyAndAmount,
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
-    std::string& strFailReason,
     AvailableCoinsType coin_type,
     const I_CoinSelectionAlgorithm* coinSelector)
 {
     std::vector<pair<CScript, CAmount> > vecSend;
     vecSend.push_back(scriptPubKeyAndAmount);
-    return CreateTransaction(vecSend, wtxNew, reservekey, strFailReason, coin_type,coinSelector);
+    return CreateTransaction(vecSend, wtxNew, reservekey, coin_type,coinSelector);
 }
 
 /**

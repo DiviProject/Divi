@@ -8,11 +8,11 @@ class StochasticSubsetSelectionAlgorithm: public I_CoinSelectionAlgorithm
 {
 private:
     TxConfirmationChecker txConfirmationChecker_;
-    bool allowSpendingZeroConfirmationOutputs_;
+    const bool& allowSpendingZeroConfirmationOutputs_;
 public:
     StochasticSubsetSelectionAlgorithm(
         TxConfirmationChecker txConfirmationChecker,
-        bool allowSpendingZeroConfirmationOutputs);
+        const bool& allowSpendingZeroConfirmationOutputs);
     virtual std::set<COutput> SelectCoins(
             const CAmount& nTargetValue,
             const std::vector<COutput>& vCoins) const;

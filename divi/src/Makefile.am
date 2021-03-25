@@ -297,6 +297,8 @@ BITCOIN_CORE_H = \
   Output.h \
   SignatureSizeEstimator.h \
   I_CoinSelectionAlgorithm.h \
+  CoinControlSelectionAlgorithm.h \
+  StochasticSubsetSelectionAlgorithm.h \
   wallet.h \
   WalletTx.h \
   WalletTransactionRecord.h \
@@ -472,6 +474,8 @@ libbitcoin_wallet_a_SOURCES = \
   rpcwallet.cpp \
   VaultManager.cpp \
   SignatureSizeEstimator.cpp \
+  CoinControlSelectionAlgorithm.cpp \
+  StochasticSubsetSelectionAlgorithm.cpp \
   wallet.cpp \
   Output.cpp \
   WalletTx.cpp \

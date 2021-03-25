@@ -346,18 +346,16 @@ public:
     CAmount GetWatchOnlyBalance() const;
     CAmount GetUnconfirmedWatchOnlyBalance() const;
     CAmount GetImmatureWatchOnlyBalance() const;
-    bool CreateTransaction(
+    std::pair<std::string,bool> CreateTransaction(
         const std::vector<std::pair<CScript, CAmount> >& vecSend,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
-        std::string& strFailReason,
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
         const I_CoinSelectionAlgorithm* coinSelector = nullptr);
-    bool CreateTransaction(
+    std::pair<std::string,bool> CreateTransaction(
         std::pair<CScript, CAmount> scriptPubKeyAndAmount,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
-        std::string& strFailReason,
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
         const I_CoinSelectionAlgorithm* coinSelector = nullptr);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");

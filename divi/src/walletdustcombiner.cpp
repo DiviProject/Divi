@@ -4,6 +4,7 @@
 #include <coincontrol.h>
 #include <chainparams.h>
 #include <WalletTx.h>
+#include <CoinControlSelectionAlgorithm.h>
 
 bool IsInitialBlockDownload();
 
@@ -60,7 +61,8 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
         CReserveKey keyChange(wallet_); // this change address does not end up being used, because change is returned with coin control switch
         std::string strErr;
 
-        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, strErr, coinControl, ALL_SPENDABLE_COINS)) {
+        CoinControlSelectionAlgorithm coinSelectionAlgorithm(coinControl);
+        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, strErr, ALL_SPENDABLE_COINS,&coinSelectionAlgorithm)) {
             LogPrintf("CombineDust createtransaction failed, reason: %s\n", strErr);
             continue;
         }

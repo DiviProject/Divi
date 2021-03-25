@@ -790,27 +790,17 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 
 CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes)
 {
+    double dPriorityDelta = 0;
+    CAmount nFeeDelta = 0;
     {
         LOCK(mempool.cs);
         uint256 hash = tx.GetHash();
-        double dPriorityDelta = 0;
-        CAmount nFeeDelta = 0;
         mempool.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
-        if (dPriorityDelta > 0 || nFeeDelta > 0)
-            return 0;
     }
+    if (dPriorityDelta > 0 || nFeeDelta > 0 || nBytes < (DEFAULT_BLOCK_PRIORITY_SIZE - 1000))
+        return 0;
 
     CAmount nMinFee = ::minRelayTxFee.GetFee(nBytes);
-
-    if (true) {
-        // There is a free transaction area in blocks created by most miners,
-        // * If we are relaying we allow transactions up to DEFAULT_BLOCK_PRIORITY_SIZE - 1000
-        //   to be considered to fall into this category. We don't want to encourage sending
-        //   multiple transactions instead of one big transaction to avoid fees.
-        if (nBytes < (DEFAULT_BLOCK_PRIORITY_SIZE - 1000))
-            nMinFee = 0;
-    }
-
     if (!MoneyRange(nMinFee))
         nMinFee = Params().MaxMoneyOut();
     return nMinFee;

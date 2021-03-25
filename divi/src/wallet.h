@@ -163,6 +163,7 @@ private:
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
     bool allowSpendingZeroConfirmationOutputs;
+    std::unique_ptr<I_CoinSelectionAlgorithm> defaultCoinSelectionAlgorithm_;
 public:
     int64_t defaultKeyPoolTopUp;
     void toggleSpendingZeroConfirmationOutputs();

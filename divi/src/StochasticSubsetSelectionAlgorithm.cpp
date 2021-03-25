@@ -165,7 +165,7 @@ static bool SelectCoinsMinConf(
 
 StochasticSubsetSelectionAlgorithm::StochasticSubsetSelectionAlgorithm(
     TxConfirmationChecker txConfirmationChecker,
-    bool allowSpendingZeroConfirmationOutputs
+    const bool& allowSpendingZeroConfirmationOutputs
     ): txConfirmationChecker_(txConfirmationChecker)
     , allowSpendingZeroConfirmationOutputs_(allowSpendingZeroConfirmationOutputs)
 {

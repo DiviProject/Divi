@@ -331,8 +331,10 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
     // Create and send the transaction
     CReserveKey reservekey(*pwalletMain);
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
-    if (!pwalletMain->CreateTransaction(std::make_pair(scriptPubKey, nValue), wtxNew, reservekey, strError, coinTypeFilter))
+    std::pair<std::string,bool> txCreation = pwalletMain->CreateTransaction(std::make_pair(scriptPubKey, nValue), wtxNew, reservekey, coinTypeFilter);
+    if (!txCreation.second)
     {
+        strError = txCreation.first;
         LogPrintf("SendMoney() : %s\n", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
@@ -1229,10 +1231,9 @@ Value sendmany(const Array& params, bool fHelp)
 
     // Send
     CReserveKey keyChange(*pwalletMain);
-    string strFailReason;
-    bool fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange, strFailReason);
-    if (!fCreated)
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strFailReason);
+    std::pair<std::string,bool> fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange);
+    if (!fCreated.second)
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, fCreated.first);
     if (!pwalletMain->CommitTransaction(wtx, keyChange))
         throw JSONRPCError(RPC_WALLET_ERROR, "Transaction commit failed");
 

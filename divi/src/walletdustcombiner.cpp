@@ -59,11 +59,11 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
         // Create the transaction and commit it to the network
         CWalletTx wtx;
         CReserveKey keyChange(wallet_); // this change address does not end up being used, because change is returned with coin control switch
-        std::string strErr;
 
         CoinControlSelectionAlgorithm coinSelectionAlgorithm(coinControl);
-        if (!wallet_.CreateTransaction(vecSend, wtx, keyChange, strErr, ALL_SPENDABLE_COINS,&coinSelectionAlgorithm)) {
-            LogPrintf("CombineDust createtransaction failed, reason: %s\n", strErr);
+        std::pair<std::string,bool> txCreation = wallet_.CreateTransaction(vecSend, wtx, keyChange, ALL_SPENDABLE_COINS,&coinSelectionAlgorithm);
+        if (!txCreation.second) {
+            LogPrintf("CombineDust createtransaction failed, reason: %s\n", txCreation.first);
             continue;
         }
 

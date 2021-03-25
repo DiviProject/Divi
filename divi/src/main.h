@@ -171,8 +171,6 @@ struct CNodeStateStats {
     std::vector<int> vHeightInFlight;
 };
 
-CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowFree);
-
 /**
  * Check transaction inputs, and make sure any
  * pay-to-script-hash transactions are evaluating IsStandard scripts

@@ -27,6 +27,7 @@
 #include <OutputEntry.h>
 #include <Output.h>
 
+class I_CoinSelectionAlgorithm;
 class CKeyMetadata;
 class CKey;
 class CBlock;
@@ -350,15 +351,15 @@ public:
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
         std::string& strFailReason,
-        const CCoinControl* coinControl = NULL,
-        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
+        const I_CoinSelectionAlgorithm* coinSelector = nullptr);
     bool CreateTransaction(
         std::pair<CScript, CAmount> scriptPubKeyAndAmount,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
         std::string& strFailReason,
-        const CCoinControl* coinControl = NULL,
-        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS);
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
+        const I_CoinSelectionAlgorithm* coinSelector = nullptr);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
     int GenerateObfuscationOutputs(int nTotalValue, Outputs& vout);

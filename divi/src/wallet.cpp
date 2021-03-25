@@ -38,6 +38,8 @@
 #include <SpentOutputTracker.h>
 #include <WalletTx.h>
 #include <WalletTransactionRecord.h>
+#include <StochasticSubsetSelectionAlgorithm.h>
+#include <CoinControlSelectionAlgorithm.h>
 
 #include "Settings.h"
 extern Settings& settings;
@@ -2086,10 +2088,9 @@ bool CWallet::SelectCoins(
 
 void SplitIntoEqualSizedOutputsPerDestination(
     const std::vector<std::pair<CScript, CAmount> >& intendedDestinations,
-    const CCoinControl* coinControl,
     CMutableTransaction& txNew)
 {
-    const int numberOfEqualSizedOutputs = (!coinControl || !coinControl->fSplitBlock)? 1:coinControl->nSplitBlock;
+    const int numberOfEqualSizedOutputs = 1;
     for(const std::pair<CScript, CAmount>& s: intendedDestinations)
     {
         const CAmount amountChunks = s.second / numberOfEqualSizedOutputs;
@@ -2155,24 +2156,15 @@ CTransaction AttachInputsAndChangeOutputAndSign(
 }
 
 CTxOut CreateChangeOutput(
-    const CCoinControl* coinControl,
     CReserveKey& reservekey,
-    bool& useReserveKey
-)
+    bool& useReserveKey)
 {
     CTxOut changeOutput;
-    if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange))
-    {
-        changeOutput.scriptPubKey = GetScriptForDestination(coinControl->destChange);
-    }
-    else
-    {
-        useReserveKey = true;
-        CPubKey vchPubKey;
-        assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
-        changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
-        reservekey.ReturnKey();
-    }
+    useReserveKey = true;
+    CPubKey vchPubKey;
+    assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
+    changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
+    reservekey.ReturnKey();
     return changeOutput;
 }
 
@@ -2276,8 +2268,8 @@ bool CWallet::CreateTransaction(
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
     std::string& strFailReason,
-    const CCoinControl* coinControl,
-    AvailableCoinsType coin_type)
+    AvailableCoinsType coin_type,
+    const I_CoinSelectionAlgorithm* coinSelector)
 {
     CAmount totalValueToSend = 0;
 
@@ -2298,6 +2290,13 @@ bool CWallet::CreateTransaction(
     wtxNew.RecomputeCachedQuantities();
     CMutableTransaction txNew;
 
+    const CWallet* walletRef = this;
+    auto transactionDepthChecker = [walletRef] (const CWalletTx& tx, int confMine, int confTheirs)
+    {
+        return walletRef->DebitsFunds(tx,ISMINE_ALL)? confMine : confTheirs;
+    };
+    StochasticSubsetSelectionAlgorithm defaultAlgorithm(transactionDepthChecker,allowSpendingZeroConfirmationOutputs);
+
     {
         LOCK2(cs_main, cs_wallet);
         {
@@ -2305,7 +2304,7 @@ bool CWallet::CreateTransaction(
             txNew.vout.clear();
             wtxNew.createdByMe = true;
             // vouts to the payees
-            SplitIntoEqualSizedOutputsPerDestination(vecSend,coinControl,txNew);
+            SplitIntoEqualSizedOutputsPerDestination(vecSend,txNew);
             if(!EnsureNoOutputsAreDust(txNew))
             {
                 strFailReason = translate("Transaction amount too small");
@@ -2314,10 +2313,14 @@ bool CWallet::CreateTransaction(
 
             bool useReserveKey = false;
             bool changeUsed = false;
-            CTxOut changeOutput = CreateChangeOutput(coinControl,reservekey,useReserveKey);
+            CTxOut changeOutput = CreateChangeOutput(reservekey,useReserveKey);
 
             std::vector<COutput> vCoins;
             AvailableCoins(vCoins, true, false, coin_type);
+            if(coinSelector == nullptr)
+            {
+                coinSelector = &defaultAlgorithm;
+            }
 
             while (true)
             {
@@ -2325,14 +2328,20 @@ bool CWallet::CreateTransaction(
                 CAmount nTotalValue = totalValueToSend + nFeeRet;
 
                 // Choose coins to use
-                std::set<COutput> setCoins;
                 CAmount nValueIn = 0;
-
-                if (!SelectCoins(nTotalValue,vCoins, setCoins, nValueIn, coinControl))
+                std::set<COutput> setCoins = coinSelector->SelectCoins(nTotalValue,vCoins);
+                for(const COutput& out: setCoins)
+                {
+                    nValueIn += out.tx->vout[out.i].nValue;
+                }
+                if (setCoins.empty() || nValueIn < nTotalValue)
                 {
                     strFailReason = translate("Insufficient funds.");
                     return false;
                 }
+
+
+
                 changeUsed = !MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput);
 
                 // Embed the constructed transaction data in wtxNew.
@@ -2372,12 +2381,12 @@ bool CWallet::CreateTransaction(
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
     std::string& strFailReason,
-    const CCoinControl* coinControl,
-    AvailableCoinsType coin_type)
+    AvailableCoinsType coin_type,
+    const I_CoinSelectionAlgorithm* coinSelector)
 {
     std::vector<pair<CScript, CAmount> > vecSend;
     vecSend.push_back(scriptPubKeyAndAmount);
-    return CreateTransaction(vecSend, wtxNew, reservekey, strFailReason, coinControl, coin_type);
+    return CreateTransaction(vecSend, wtxNew, reservekey, strFailReason, coin_type,coinSelector);
 }
 
 /**

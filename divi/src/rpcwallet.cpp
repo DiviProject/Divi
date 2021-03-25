@@ -331,7 +331,7 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
     // Create and send the transaction
     CReserveKey reservekey(*pwalletMain);
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
-    if (!pwalletMain->CreateTransaction(std::make_pair(scriptPubKey, nValue), wtxNew, reservekey, strError, NULL, coinTypeFilter))
+    if (!pwalletMain->CreateTransaction(std::make_pair(scriptPubKey, nValue), wtxNew, reservekey, strError, coinTypeFilter))
     {
         LogPrintf("SendMoney() : %s\n", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);

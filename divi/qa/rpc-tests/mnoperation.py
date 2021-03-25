@@ -242,6 +242,7 @@ class MnStatusTest (BitcoinTestFramework):
     self.mine_blocks (100)
     for _ in range (100):
       self.advance_time (100)
+      time.sleep(0.01)
 
     cnt = self.nodes[3].getmasternodecount ()
     assert_equal (cnt["total"], 2)
@@ -284,6 +285,7 @@ class MnStatusTest (BitcoinTestFramework):
     self.stop_node (2)
     for _ in range (100):
       self.advance_time (120)
+      time.sleep(0.01)
 
     lst = self.nodes[3].listmasternodes ()
     assert_equal (len (lst), 1)

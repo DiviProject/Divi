@@ -194,8 +194,14 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , pwalletdbEncryption(NULL)
     , walletStakingOnly(false)
     , allowSpendingZeroConfirmationOutputs(false)
+    , defaultCoinSelectionAlgorithm_()
     , defaultKeyPoolTopUp(0)
 {
+    auto transactionDepthChecker = [this] (const CWalletTx& tx, int confMine, int confTheirs)
+    {
+        return this->DebitsFunds(tx,ISMINE_ALL)? confMine : confTheirs;
+    };
+    defaultCoinSelectionAlgorithm_.reset(new StochasticSubsetSelectionAlgorithm(transactionDepthChecker,allowSpendingZeroConfirmationOutputs));
     SetNull();
 }
 
@@ -208,6 +214,7 @@ CWallet::CWallet(const std::string& strWalletFileIn, const CChain& chain, const 
 
 CWallet::~CWallet()
 {
+    defaultCoinSelectionAlgorithm_.reset();
     delete pwalletdbEncryption;
     pwalletdbEncryption = NULL;
     outputTracker_.reset();
@@ -2274,13 +2281,6 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     wtxNew.RecomputeCachedQuantities();
     CMutableTransaction txNew;
 
-    const CWallet* walletRef = this;
-    auto transactionDepthChecker = [walletRef] (const CWalletTx& tx, int confMine, int confTheirs)
-    {
-        return walletRef->DebitsFunds(tx,ISMINE_ALL)? confMine : confTheirs;
-    };
-    StochasticSubsetSelectionAlgorithm defaultAlgorithm(transactionDepthChecker,allowSpendingZeroConfirmationOutputs);
-
     {
         LOCK2(cs_main, cs_wallet);
         {
@@ -2302,7 +2302,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
             AvailableCoins(vCoins, true, false, coin_type);
             if(coinSelector == nullptr)
             {
-                coinSelector = &defaultAlgorithm;
+                coinSelector = defaultCoinSelectionAlgorithm_.get();
             }
 
             while (true)

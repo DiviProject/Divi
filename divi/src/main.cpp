@@ -788,7 +788,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
     return true;
 }
 
-CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowFree)
+CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes)
 {
     {
         LOCK(mempool.cs);
@@ -802,7 +802,7 @@ CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowF
 
     CAmount nMinFee = ::minRelayTxFee.GetFee(nBytes);
 
-    if (fAllowFree) {
+    if (true) {
         // There is a free transaction area in blocks created by most miners,
         // * If we are relaying we allow transactions up to DEFAULT_BLOCK_PRIORITY_SIZE - 1000
         //   to be considered to fall into this category. We don't want to encourage sending
@@ -946,7 +946,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         // Don't accept it if it can't get into a block
         // but prioritise dstx and don't check fees for it
         if (!ignoreFees) {
-            CAmount txMinFee = GetMinRelayFee(tx, nSize, true);
+            CAmount txMinFee = GetMinRelayFee(tx, nSize);
             if (fLimitFree && nFees < txMinFee)
                 return state.DoS(0, error("AcceptToMemoryPool : not enough fees %s, %d < %d",
                                           hash, nFees, txMinFee),

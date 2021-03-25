@@ -2356,18 +2356,6 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     return {std::string(""),true};
 }
 
-std::pair<std::string,bool> CWallet::CreateTransaction(
-    std::pair<CScript, CAmount> scriptPubKeyAndAmount,
-    CWalletTx& wtxNew,
-    CReserveKey& reservekey,
-    AvailableCoinsType coin_type,
-    const I_CoinSelectionAlgorithm* coinSelector)
-{
-    std::vector<pair<CScript, CAmount> > vecSend;
-    vecSend.push_back(scriptPubKeyAndAmount);
-    return CreateTransaction(vecSend, wtxNew, reservekey, coin_type,coinSelector);
-}
-
 /**
  * Call after CreateTransaction unless you want to abort
  */

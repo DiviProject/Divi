@@ -2086,26 +2086,13 @@ bool CWallet::SelectCoins(
     }
 }
 
-void SplitIntoEqualSizedOutputsPerDestination(
+void AppendOutputs(
     const std::vector<std::pair<CScript, CAmount> >& intendedDestinations,
     CMutableTransaction& txNew)
 {
-    const int numberOfEqualSizedOutputs = 1;
     for(const std::pair<CScript, CAmount>& s: intendedDestinations)
     {
-        const CAmount amountChunks = s.second / numberOfEqualSizedOutputs;
-        for (int i = 0; i < numberOfEqualSizedOutputs; i++)
-        {
-            if (i == numberOfEqualSizedOutputs - 1)
-            {
-                uint64_t nRemainder = s.second % numberOfEqualSizedOutputs;
-                txNew.vout.push_back(CTxOut(amountChunks + nRemainder, s.first));
-            }
-            else
-            {
-                txNew.vout.push_back(CTxOut(amountChunks, s.first));
-            }
-        }
+        txNew.vout.emplace_back(s.second,s.first);
     }
 }
 
@@ -2304,7 +2291,7 @@ bool CWallet::CreateTransaction(
             txNew.vout.clear();
             wtxNew.createdByMe = true;
             // vouts to the payees
-            SplitIntoEqualSizedOutputsPerDestination(vecSend,txNew);
+            AppendOutputs(vecSend,txNew);
             if(!EnsureNoOutputsAreDust(txNew))
             {
                 strFailReason = translate("Transaction amount too small");

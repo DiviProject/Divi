@@ -53,7 +53,7 @@ bool IsBlockchainSynced()
     if (pindex == NULL) return false;
 
 
-    if (pindex->nTime + 60 * 6000 < now)
+    if (pindex->nTime + 60 * 10 < now)
         return false;
 
     fBlockchainSynced = true;

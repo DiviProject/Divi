@@ -2064,35 +2064,6 @@ void CWallet::UpdateNextTransactionIndexAvailable(int64_t transactionIndex)
     orderedTransactionIndex = transactionIndex;
 }
 
-bool CWallet::SelectCoins(
-    const CAmount& nTargetValue,
-    const std::vector<COutput>& vCoins,
-    set<COutput>& setCoinsRet,
-    CAmount& nValueRet,
-    const CCoinControl* coinControl) const
-{
-    // coin control -> return all selected outputs (we want all selected to go into the transaction for sure)
-    if (coinControl && coinControl->HasSelected())
-    {
-        for(const COutput& out: vCoins)
-        {
-            if (!out.fSpendable)
-                continue;
-
-            nValueRet += out.Value();
-            setCoinsRet.insert(out);
-        }
-        return (nValueRet >= nTargetValue);
-    }
-    else
-    {
-        return CWallet::SelectCoinsMinConf(*this,nTargetValue, 1, 6, vCoins, setCoinsRet, nValueRet) ||
-                CWallet::SelectCoinsMinConf(*this,nTargetValue, 1, 1, vCoins, setCoinsRet, nValueRet) ||
-                (allowSpendingZeroConfirmationOutputs &&
-                CWallet::SelectCoinsMinConf(*this,nTargetValue, 0, 1, vCoins, setCoinsRet, nValueRet));
-    }
-}
-
 void AppendOutputs(
     const std::vector<std::pair<CScript, CAmount> >& intendedDestinations,
     CMutableTransaction& txNew)

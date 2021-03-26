@@ -788,22 +788,20 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
     return true;
 }
 
-CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes)
+CAmount GetMinRelayFee(const uint256& txHash, unsigned int nBytes,CAmount minimumRelayFee)
 {
     double dPriorityDelta = 0;
     CAmount nFeeDelta = 0;
     {
         LOCK(mempool.cs);
-        uint256 hash = tx.GetHash();
-        mempool.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
+        mempool.ApplyDeltas(txHash, dPriorityDelta, nFeeDelta);
     }
     if (dPriorityDelta > 0 || nFeeDelta > 0 || nBytes < (DEFAULT_BLOCK_PRIORITY_SIZE - 1000))
         return 0;
 
-    CAmount nMinFee = ::minRelayTxFee.GetFee(nBytes);
-    if (!MoneyRange(nMinFee))
-        nMinFee = Params().MaxMoneyOut();
-    return nMinFee;
+    if (!MoneyRange(minimumRelayFee))
+        minimumRelayFee = Params().MaxMoneyOut();
+    return minimumRelayFee;
 }
 
 
@@ -936,14 +934,18 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         // Don't accept it if it can't get into a block
         // but prioritise dstx and don't check fees for it
         if (!ignoreFees) {
-            CAmount txMinFee = GetMinRelayFee(tx, nSize);
+            CAmount minimumRelayFee = ::minRelayTxFee.GetFee(nSize);
+            CAmount txMinFee = GetMinRelayFee(tx.GetHash(), nSize,minimumRelayFee);
             if (fLimitFree && nFees < txMinFee)
                 return state.DoS(0, error("AcceptToMemoryPool : not enough fees %s, %d < %d",
                                           hash, nFees, txMinFee),
                                  REJECT_INSUFFICIENTFEE, "insufficient fee");
 
             // Require that free transactions have sufficient priority to be mined in the next block.
-            if (settings.GetBoolArg("-relaypriority", true) && nFees < ::minRelayTxFee.GetFee(nSize) && !AllowFree(view.GetPriority(tx, chainActive.Height() + 1))) {
+            if (settings.GetBoolArg("-relaypriority", true) &&
+                nFees < ::minRelayTxFee.GetFee(nSize) &&
+                !AllowFree(view.GetPriority(tx, chainActive.Height() + 1)))
+            {
                 return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
             }
 

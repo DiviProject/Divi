@@ -2120,12 +2120,9 @@ CTransaction AttachInputsAndChangeOutputAndSign(
     return AttachInputsAndSign(wallet,setCoins,txWithoutChange);
 }
 
-CTxOut CreateChangeOutput(
-    CReserveKey& reservekey,
-    bool& useReserveKey)
+CTxOut CreateChangeOutput(CReserveKey& reservekey)
 {
     CTxOut changeOutput;
-    useReserveKey = true;
     CPubKey vchPubKey;
     assert(reservekey.GetReservedKey(vchPubKey, true)); // should never fail, as we just unlocked
     changeOutput.scriptPubKey = GetScriptForDestination(vchPubKey.GetID());
@@ -2248,9 +2245,8 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
                 return {translate("Transaction amount too small"),false};
             }
 
-            bool useReserveKey = false;
             bool changeUsed = false;
-            CTxOut changeOutput = CreateChangeOutput(reservekey,useReserveKey);
+            CTxOut changeOutput = CreateChangeOutput(reservekey);
 
             std::vector<COutput> vCoins;
             AvailableCoins(vCoins, true, false, coin_type);
@@ -2291,7 +2287,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
                 }
                 else if(status==FeeSufficiencyStatus::HAS_ENOUGH_FEES)
                 {
-                    if(useReserveKey && changeUsed)
+                    if(changeUsed)
                     {
                         CPubKey vchPubKey;
                         assert(reservekey.GetReservedKey(vchPubKey, true));

@@ -329,17 +329,14 @@ void SendMoney(const CScript& scriptPubKey, CAmount nValue, CWalletTx& wtxNew, b
     }
 
     // Create and send the transaction
-    CReserveKey reservekey(*pwalletMain);
     AvailableCoinsType coinTypeFilter = (!spendFromVaults)? ALL_SPENDABLE_COINS: OWNED_VAULT_COINS;
-    std::pair<std::string,bool> txCreation = pwalletMain->CreateTransaction({std::make_pair(scriptPubKey, nValue)}, wtxNew, reservekey, coinTypeFilter);
+    std::pair<std::string,bool> txCreation = pwalletMain->SendMoney({std::make_pair(scriptPubKey, nValue)}, wtxNew, coinTypeFilter);
     if (!txCreation.second)
     {
         strError = txCreation.first;
         LogPrintf("SendMoney() : %s\n", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
-    if (!pwalletMain->CommitTransaction(wtxNew, reservekey))
-        throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
 }
 
 void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool spendFromVaults = false)
@@ -1191,11 +1188,9 @@ Value sendmany(const Array& params, bool fHelp)
 
     // Send
     CReserveKey keyChange(*pwalletMain);
-    std::pair<std::string,bool> fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange);
+    std::pair<std::string,bool> fCreated = pwalletMain->SendMoney(vecSend, wtx);
     if (!fCreated.second)
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, fCreated.first);
-    if (!pwalletMain->CommitTransaction(wtx, keyChange))
-        throw JSONRPCError(RPC_WALLET_ERROR, "Transaction commit failed");
+        throw JSONRPCError(RPC_WALLET_ERROR, fCreated.first);
 
     return wtx.GetHash().GetHex();
 }

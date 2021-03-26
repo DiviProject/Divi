@@ -788,7 +788,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
     return true;
 }
 
-CAmount GetMinRelayFee(const uint256& txHash, unsigned int nBytes,CAmount minimumRelayFee)
+bool ShouldTxBeFree(const uint256& txHash, unsigned int nBytes,CAmount minimumRelayFee)
 {
     double dPriorityDelta = 0;
     CAmount nFeeDelta = 0;
@@ -797,11 +797,9 @@ CAmount GetMinRelayFee(const uint256& txHash, unsigned int nBytes,CAmount minimu
         mempool.ApplyDeltas(txHash, dPriorityDelta, nFeeDelta);
     }
     if (dPriorityDelta > 0 || nFeeDelta > 0 || nBytes < (DEFAULT_BLOCK_PRIORITY_SIZE - 1000))
-        return 0;
+        return true;
 
-    if (!MoneyRange(minimumRelayFee))
-        minimumRelayFee = Params().MaxMoneyOut();
-    return minimumRelayFee;
+    return false;
 }
 
 
@@ -933,17 +931,18 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
         // Don't accept it if it can't get into a block
         // but prioritise dstx and don't check fees for it
-        if (!ignoreFees) {
+        if (!ignoreFees)
+        {
             CAmount minimumRelayFee = ::minRelayTxFee.GetFee(nSize);
-            CAmount txMinFee = GetMinRelayFee(tx.GetHash(), nSize,minimumRelayFee);
-            if (fLimitFree && nFees < txMinFee)
+            bool txShouldBeFree = ShouldTxBeFree(tx.GetHash(), nSize,minimumRelayFee);
+            if (fLimitFree && !txShouldBeFree && nFees < minimumRelayFee)
                 return state.DoS(0, error("AcceptToMemoryPool : not enough fees %s, %d < %d",
-                                          hash, nFees, txMinFee),
+                                          hash, nFees, minimumRelayFee),
                                  REJECT_INSUFFICIENTFEE, "insufficient fee");
 
             // Require that free transactions have sufficient priority to be mined in the next block.
             if (settings.GetBoolArg("-relaypriority", true) &&
-                nFees < ::minRelayTxFee.GetFee(nSize) &&
+                nFees < minimumRelayFee &&
                 !AllowFree(view.GetPriority(tx, chainActive.Height() + 1)))
             {
                 return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
@@ -952,7 +951,8 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             // Continuously rate-limit free (really, very-low-fee) transactions
             // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
             // be annoying or make others' transactions take longer to confirm.
-            if (fLimitFree && nFees < ::minRelayTxFee.GetFee(nSize)) {
+            if (fLimitFree && nFees < minimumRelayFee)
+            {
                 static CCriticalSection csFreeLimiter;
                 static double dFreeCount;
                 static int64_t nLastTime;

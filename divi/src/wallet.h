@@ -332,11 +332,6 @@ public:
     CAmount GetImmatureCredit(const CWalletTx& walletTransaction, bool fUseCache = true) const;
     CAmount GetUnconfirmedBalance() const;
     CAmount GetImmatureBalance() const;
-    CAmount GetAnonymizableBalance() const;
-    CAmount GetAnonymizedBalance() const;
-    double GetAverageAnonymizedRounds() const;
-    CAmount GetNormalizedAnonymizedBalance() const;
-    CAmount GetDenominatedBalance(bool unconfirmed = false) const;
     CAmount GetWatchOnlyBalance() const;
     CAmount GetUnconfirmedWatchOnlyBalance() const;
     CAmount GetImmatureWatchOnlyBalance() const;
@@ -353,8 +348,6 @@ public:
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
         const I_CoinSelectionAlgorithm* coinSelector = nullptr);
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
-    int GenerateObfuscationOutputs(int nTotalValue, Outputs& vout);
-    bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
 
     bool NewKeyPool();
     bool TopUpKeyPool(unsigned int kpSize = 0);
@@ -419,7 +412,6 @@ public:
     DBErrors ZapWalletTx(std::vector<CWalletTx>& vWtx);
 
     bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
-    bool DelAddressBook(const CTxDestination& address);
     bool UpdatedTransaction(const uint256& hashTx);
     void Inventory(const uint256& hash);
     unsigned int GetKeyPoolSize() const;

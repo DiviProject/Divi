@@ -2477,29 +2477,6 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const string& strNam
     return CWalletDB(strWalletFile).WriteName(CBitcoinAddress(address).ToString(), strName);
 }
 
-bool CWallet::DelAddressBook(const CTxDestination& address)
-{
-    {
-        LOCK(cs_wallet); // mapAddressBook
-
-        if (fFileBacked) {
-            // Delete destdata tuples associated with address
-            std::string strAddress = CBitcoinAddress(address).ToString();
-            BOOST_FOREACH (const PAIRTYPE(string, string) & item, mapAddressBook[address].destdata) {
-                CWalletDB(strWalletFile).EraseDestData(strAddress, item.first);
-            }
-        }
-        mapAddressBook.erase(address);
-    }
-
-    NotifyAddressBookChanged(this, address, "", ::IsMine(*this, address) != ISMINE_NO, "", CT_DELETED);
-
-    if (!fFileBacked)
-        return false;
-    CWalletDB(strWalletFile).ErasePurpose(CBitcoinAddress(address).ToString());
-    return CWalletDB(strWalletFile).EraseName(CBitcoinAddress(address).ToString());
-}
-
 bool CWallet::SetDefaultKey(const CPubKey& vchPubKey)
 {
     if (fFileBacked) {

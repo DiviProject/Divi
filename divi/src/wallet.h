@@ -174,13 +174,6 @@ public:
     void UpdateTransactionMetadata(const std::vector<CWalletTx>& oldTransactions);
     void IncrementDBUpdateCount() const;
 private:
-    bool SelectCoins(
-        const CAmount& nTargetValue,
-        const std::vector<COutput>& vCoins,
-        std::set<COutput>& setCoinsRet,
-        CAmount& nValueRet,
-        const CCoinControl* coinControl = NULL) const;
-    //it was public bool SelectCoins(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_SPENDABLE_COINS, bool useIX = true) const;
     void DeriveNewChildKey(const CKeyMetadata& metadata, CKey& secretRet, uint32_t nAccountIndex, bool fInternal /*= false*/);
 
 public:

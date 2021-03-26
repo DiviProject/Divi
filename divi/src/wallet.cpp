@@ -2305,11 +2305,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
                     return {translate("Insufficient funds."),false};
                 }
 
-
-
                 changeUsed = !MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput);
-
-                // Embed the constructed transaction data in wtxNew.
                 *static_cast<CTransaction*>(&wtxNew) =
                     changeUsed? AttachInputsAndChangeOutputAndSign(*this,setCoins,txNew,changeOutput): AttachInputsAndSign(*this,setCoins,txNew);
                 if(wtxNew.IsNull())

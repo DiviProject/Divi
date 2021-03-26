@@ -12,7 +12,6 @@ std::set<COutput> CoinControlSelectionAlgorithm::SelectCoins(
     const CAmount& nTargetValue,
     const std::vector<COutput>& vCoins) const
 {
-    CAmount nValueRet = 0;
     std::set<COutput> setCoinsRet;
     if(coinControl_ && coinControl_->HasSelected())
     {
@@ -24,7 +23,6 @@ std::set<COutput> CoinControlSelectionAlgorithm::SelectCoins(
                 continue;
             }
 
-            nValueRet += out.Value();
             setCoinsRet.insert(out);
         }
     }

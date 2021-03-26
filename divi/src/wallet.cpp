@@ -2236,7 +2236,6 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     {
         LOCK2(cs_main, cs_wallet);
         {
-            CAmount nFeeRet = 0;
             wtxNew.createdByMe = true;
             // vouts to the payees
             AppendOutputs(vecSend,txNew);
@@ -2255,6 +2254,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
                 coinSelector = defaultCoinSelectionAlgorithm_.get();
             }
 
+            CAmount nFeeRet = 0;
             while (true)
             {
                 txNew.vin.clear();

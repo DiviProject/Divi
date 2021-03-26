@@ -2317,7 +2317,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
 /**
  * Call after CreateTransaction unless you want to abort
  */
-bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand)
+bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
 {
     {
         LOCK2(cs_main, cs_wallet);
@@ -2364,7 +2364,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
             LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
             return false;
         }
-        wtxNew.RelayWalletTransaction(strCommand);
+        wtxNew.RelayWalletTransaction("tx");
     }
     return true;
 }

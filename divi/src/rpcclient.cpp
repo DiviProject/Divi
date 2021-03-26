@@ -37,7 +37,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"getcoinavailability", 0},
         {"reclaimvaultfunds", 1},
         {"fundvault", 1},
-        {"sendtoaddressix", 1},
         {"settxfee", 0},
         {"getreceivedbyaddress", 1},
         {"getreceivedbyaccount", 1},

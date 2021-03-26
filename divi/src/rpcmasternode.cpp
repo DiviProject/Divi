@@ -29,7 +29,7 @@
 #include <fstream>
 using namespace json_spirit;
 
-extern void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false, bool spendFromVaults = false);
+extern void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool spendFromVaults = false);
 extern CBitcoinAddress GetAccountAddress(std::string strAccount, bool bForceNew = false);
 
 static MasternodeTier GetMasternodeTierFromString(std::string str)

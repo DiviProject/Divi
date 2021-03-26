@@ -346,7 +346,7 @@ public:
         CReserveKey& reservekey,
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
         const I_CoinSelectionAlgorithm* coinSelector = nullptr);
-    bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
+    bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
     int GenerateObfuscationOutputs(int nTotalValue, Outputs& vout);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);

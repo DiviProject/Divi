@@ -70,7 +70,6 @@ extern json_spirit::Value fundvault(const json_spirit::Array& params, bool fHelp
 extern json_spirit::Value reclaimvaultfunds(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value removevault(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value addvault(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value sendtoaddressix(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value signmessage(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getreceivedbyaddress(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getreceivedbyaccount(const json_spirit::Array& params, bool fHelp);
@@ -553,7 +552,6 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "removevault", &removevault, false, false, true},
         {"wallet", "addvault", &addvault, false, false, true},
         {"wallet", "getcoinavailability", &getcoinavailability, false, false, true},
-        {"wallet", "sendtoaddressix", &sendtoaddressix, false, false, true},
         {"wallet", "setaccount", &setaccount, true, false, true},
         {"wallet", "settxfee", &settxfee, true, false, true},
         {"wallet", "signmessage", &signmessage, true, false, true},

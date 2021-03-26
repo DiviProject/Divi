@@ -2068,6 +2068,7 @@ void AppendOutputs(
     const std::vector<std::pair<CScript, CAmount> >& intendedDestinations,
     CMutableTransaction& txNew)
 {
+    txNew.vout.clear();
     for(const std::pair<CScript, CAmount>& s: intendedDestinations)
     {
         txNew.vout.emplace_back(s.second,s.first);
@@ -2236,7 +2237,6 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
         LOCK2(cs_main, cs_wallet);
         {
             CAmount nFeeRet = 0;
-            txNew.vout.clear();
             wtxNew.createdByMe = true;
             // vouts to the payees
             AppendOutputs(vecSend,txNew);

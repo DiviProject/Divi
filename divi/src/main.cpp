@@ -788,7 +788,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
     return true;
 }
 
-bool ShouldTxBeFree(const uint256& txHash, unsigned int nBytes,CAmount minimumRelayFee)
+bool TxShouldBePrioritized(const uint256& txHash, unsigned int nBytes)
 {
     double dPriorityDelta = 0;
     CAmount nFeeDelta = 0;
@@ -958,8 +958,8 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         if (!ignoreFees)
         {
             CAmount minimumRelayFee = ::minRelayTxFee.GetFee(nSize);
-            bool txShouldBeFree = ShouldTxBeFree(tx.GetHash(), nSize,minimumRelayFee);
-            if (fLimitFree && !txShouldBeFree && nFees < minimumRelayFee)
+            bool txShouldHavePriority = TxShouldBePrioritized(tx.GetHash(), nSize);
+            if (fLimitFree && !txShouldHavePriority && nFees < minimumRelayFee)
                 return state.DoS(0, error("AcceptToMemoryPool : not enough fees %s, %d < %d",
                                           hash, nFees, minimumRelayFee),
                                  REJECT_INSUFFICIENTFEE, "insufficient fee");

@@ -2242,7 +2242,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
             AppendOutputs(vecSend,txNew);
             if(!EnsureNoOutputsAreDust(txNew))
             {
-                return {translate("Transaction amount too small"),false};
+                return {translate("Transaction output(s) amount too small"),false};
             }
 
             bool changeUsed = false;

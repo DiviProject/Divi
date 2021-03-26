@@ -110,6 +110,6 @@ public:
 
     int64_t GetTxTime() const;
     int64_t GetComputedTxTime() const;
-    void RelayWalletTransaction(std::string strCommand = "tx");
+    void RelayWalletTransaction();
 };
 #endif// WALLET_TX_H

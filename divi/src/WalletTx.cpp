@@ -94,20 +94,14 @@ int64_t CWalletTx::GetComputedTxTime() const
     return nTime;
 }
 
-void CWalletTx::RelayWalletTransaction(std::string strCommand)
+void CWalletTx::RelayWalletTransaction()
 {
     if (!IsCoinBase()) {
-        if (GetNumberOfBlockConfirmations() == 0) {
+        if (GetNumberOfBlockConfirmations() == 0)
+        {
             uint256 hash = GetHash();
             LogPrintf("Relaying wtx %s\n", hash);
-
-            if (strCommand == "ix") {
-                mapTxLockReq.insert(std::make_pair(hash, (CTransaction) * this));
-                CreateNewLock(((CTransaction) * this));
-                RelayTransactionLockReq((CTransaction) * this, true);
-            } else {
-                RelayTransaction((CTransaction) * this);
-            }
+            RelayTransaction((CTransaction) * this);
         }
     }
 }

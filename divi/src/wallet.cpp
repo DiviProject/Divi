@@ -2162,26 +2162,9 @@ CTxOut CreateChangeOutput(
     return changeOutput;
 }
 
-static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool)
+static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxBytes)
 {
-//    // payTxFee is user-set "I want to pay this much"
-//    CAmount nFeeNeeded = payTxFee.GetFee(nTxBytes);
-//    // user selected total at least (default=true)
-//    if (fPayAtLeastCustomFee && nFeeNeeded > 0 && nFeeNeeded < payTxFee.GetFeePerK())
-//        nFeeNeeded = payTxFee.GetFeePerK();
-
-    CAmount nFeeNeeded = (nTransactionValue / nTransactionValueMultiplier) * std::max(nTxBytes / nTransactionSizeMultiplier, 1u);
-
-    // User didn't set: use -txconfirmtarget to estimate...
-    if (nFeeNeeded == 0)
-        nFeeNeeded = pool.estimateFee(nConfirmTarget).GetFee(nTxBytes);
-    // ... unless we don't have enough mempool data, in which case fall
-    // back to a hard-coded fee
-    if (nFeeNeeded == 0)
-        nFeeNeeded = CWallet::minTxFee.GetFee(nTxBytes);
-    // prevent user from paying a non-sense fee (like 1 satoshi): 0 < fee < minRelayFee
-    // But always obey the maximum
-    return std::min(std::max(nFeeNeeded,::minRelayTxFee.GetFee(nTxBytes)),maxTxFee);
+    return std::min(::minRelayTxFee.GetFee(nTxBytes),maxTxFee);
 }
 
 static bool CanBeSentAsFreeTransaction(
@@ -2230,7 +2213,7 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
         return FeeSufficiencyStatus::TX_TOO_LARGE;
     }
 
-    const CAmount nFeeNeeded = std::max(CAmount(0), GetMinimumFee(totalValueToSend, nBytes, nTxConfirmTarget, mempool));
+    const CAmount nFeeNeeded = GetMinimumFee(totalValueToSend, nBytes);
     const bool feeIsSufficient = (fSendFreeTransactions && CanBeSentAsFreeTransaction(wtxNew,nBytes,outputsBeingSpent)) || nFeeRet >= nFeeNeeded;
     if (!feeIsSufficient)
     {

@@ -2369,6 +2369,24 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey)
     return true;
 }
 
+std::pair<std::string,bool> CWallet::SendMoney(
+    const std::vector<std::pair<CScript, CAmount> >& vecSend,
+    CWalletTx& wtxNew,
+    AvailableCoinsType coin_type,
+    const I_CoinSelectionAlgorithm* coinSelector)
+{
+    CReserveKey reservekey(*this);
+    auto createTxResult = CreateTransaction(vecSend,wtxNew,reservekey,coin_type,coinSelector);
+    if(!createTxResult.second) return createTxResult;
+    bool commitTxResult = CommitTransaction(wtxNew,reservekey);
+    if(!commitTxResult)
+    {
+        return {translate("The transaction was rejected!"),false};
+    }
+    return {std::string(""),true};
+}
+
+
 CAmount CWallet::GetTotalValue(std::vector<CTxIn> vCoins)
 {
     CAmount nTotalValue = 0;

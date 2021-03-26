@@ -347,6 +347,11 @@ public:
         AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
         const I_CoinSelectionAlgorithm* coinSelector = nullptr);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
+    std::pair<std::string,bool> SendMoney(
+        const std::vector<std::pair<CScript, CAmount> >& vecSend,
+        CWalletTx& wtxNew,
+        AvailableCoinsType coin_type = ALL_SPENDABLE_COINS,
+        const I_CoinSelectionAlgorithm* coinSelector = nullptr);
     std::string PrepareObfuscationDenominate(int minRounds, int maxRounds);
     int GenerateObfuscationOutputs(int nTotalValue, Outputs& vout);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);

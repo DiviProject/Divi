@@ -802,6 +802,30 @@ bool ShouldTxBeFree(const uint256& txHash, unsigned int nBytes,CAmount minimumRe
     return false;
 }
 
+bool RateLimiterAllowsFreeTransaction(CValidationState& state, const unsigned nSize)
+{
+    // Continuously rate-limit free (really, very-low-fee) transactions
+    // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
+    // be annoying or make others' transactions take longer to confirm.
+    static CCriticalSection csFreeLimiter;
+    static double dFreeCount;
+    static int64_t nLastTime;
+    int64_t nNow = GetTime();
+
+    LOCK(csFreeLimiter);
+
+    // Use an exponentially decaying ~10-minute window:
+    dFreeCount *= pow(1.0 - 1.0 / 600.0, (double)(nNow - nLastTime));
+    nLastTime = nNow;
+    // -limitfreerelay unit is thousand-bytes-per-minute
+    // At default rate it would take over a month to fill 1GB
+    if (dFreeCount >= settings.GetArg("-limitfreerelay", 30) * 10 * 1000)
+        return state.DoS(0, error("AcceptToMemoryPool : free transaction rejected by rate limiter"),
+                            REJECT_INSUFFICIENTFEE, "rate limited free transaction");
+    LogPrint("mempool", "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
+    dFreeCount += nSize;
+    return true;
+}
 
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees)
 {
@@ -939,7 +963,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                 return state.DoS(0, error("AcceptToMemoryPool : not enough fees %s, %d < %d",
                                           hash, nFees, minimumRelayFee),
                                  REJECT_INSUFFICIENTFEE, "insufficient fee");
-
             // Require that free transactions have sufficient priority to be mined in the next block.
             if (settings.GetBoolArg("-relaypriority", true) &&
                 nFees < minimumRelayFee &&
@@ -947,29 +970,9 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             {
                 return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
             }
-
-            // Continuously rate-limit free (really, very-low-fee) transactions
-            // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
-            // be annoying or make others' transactions take longer to confirm.
-            if (fLimitFree && nFees < minimumRelayFee)
+            if (fLimitFree && nFees < minimumRelayFee && !RateLimiterAllowsFreeTransaction(state,nSize))
             {
-                static CCriticalSection csFreeLimiter;
-                static double dFreeCount;
-                static int64_t nLastTime;
-                int64_t nNow = GetTime();
-
-                LOCK(csFreeLimiter);
-
-                // Use an exponentially decaying ~10-minute window:
-                dFreeCount *= pow(1.0 - 1.0 / 600.0, (double)(nNow - nLastTime));
-                nLastTime = nNow;
-                // -limitfreerelay unit is thousand-bytes-per-minute
-                // At default rate it would take over a month to fill 1GB
-                if (dFreeCount >= settings.GetArg("-limitfreerelay", 30) * 10 * 1000)
-                    return state.DoS(0, error("AcceptToMemoryPool : free transaction rejected by rate limiter"),
-                                     REJECT_INSUFFICIENTFEE, "rate limited free transaction");
-                LogPrint("mempool", "Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount + nSize);
-                dFreeCount += nSize;
+                return false;
             }
         }
 

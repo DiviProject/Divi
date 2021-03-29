@@ -2211,7 +2211,7 @@ static void AttachInputs(
 {
     // Fill vin
     for(const COutput& coin: setCoins)
-        txWithoutChange.vin.push_back(CTxIn(coin.tx->GetHash(), coin.i));
+        txWithoutChange.vin.emplace_back(coin.tx->GetHash(), coin.i);
 }
 
 static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(

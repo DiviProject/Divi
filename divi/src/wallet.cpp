@@ -2376,7 +2376,7 @@ std::pair<std::string,bool> CWallet::SendMoney(
     const I_CoinSelectionAlgorithm* coinSelector)
 {
     CReserveKey reservekey(*this);
-    auto createTxResult = CreateTransaction(vecSend,wtxNew,reservekey,coin_type,coinSelector);
+    std::pair<std::string,bool> createTxResult = CreateTransaction(vecSend,wtxNew,reservekey,coin_type,coinSelector);
     if(!createTxResult.second) return createTxResult;
     bool commitTxResult = CommitTransaction(wtxNew,reservekey);
     if(!commitTxResult)

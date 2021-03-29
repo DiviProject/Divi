@@ -172,6 +172,7 @@ StochasticSubsetSelectionAlgorithm::StochasticSubsetSelectionAlgorithm(
 }
 
 std::set<COutput> StochasticSubsetSelectionAlgorithm::SelectCoins(
+    const CMutableTransaction& transactionToSelectCoinsFor,
     const CAmount& nTargetValue,
     const std::vector<COutput>& vCoins) const
 {

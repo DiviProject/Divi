@@ -5,11 +5,13 @@
 #include <amount.h>
 #include <Output.h>
 
+struct CMutableTransaction;
 class I_CoinSelectionAlgorithm
 {
 public:
     virtual ~I_CoinSelectionAlgorithm(){}
     virtual std::set<COutput> SelectCoins(
+        const CMutableTransaction& transactionToSelectCoinsFor,
         const CAmount& nTargetValue,
         const std::vector<COutput>& vCoins) const = 0;
 };

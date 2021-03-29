@@ -14,8 +14,9 @@ public:
         TxConfirmationChecker txConfirmationChecker,
         const bool& allowSpendingZeroConfirmationOutputs);
     virtual std::set<COutput> SelectCoins(
-            const CAmount& nTargetValue,
-            const std::vector<COutput>& vCoins) const;
+        const CMutableTransaction& transactionToSelectCoinsFor,
+        const CAmount& nTargetValue,
+        const std::vector<COutput>& vCoins) const;
 };
 
 #endif// STOCHASTIC_SUBSET_COIN_SELECTOR_H

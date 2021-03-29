@@ -2228,7 +2228,7 @@ static std::pair<string,bool> AssembleInputsSignaturesAndFees(
 
         // Choose coins to use
         CAmount nValueIn = 0;
-        std::set<COutput> setCoins = coinSelector->SelectCoins(nTotalValue,vCoins);
+        std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,nTotalValue,vCoins);
         for(const COutput& out: setCoins)
         {
             nValueIn += out.tx->vout[out.i].nValue;

@@ -10,7 +10,8 @@ public:
     CoinControlSelectionAlgorithm(
         const CCoinControl* coinControl);
     virtual std::set<COutput> SelectCoins(
-            const CAmount& nTargetValue,
-            const std::vector<COutput>& vCoins) const;
+        const CMutableTransaction& transactionToSelectCoinsFor,
+        const CAmount& nTargetValue,
+        const std::vector<COutput>& vCoins) const;
 };
 #endif// COIN_CONTROL_COIN_SELECTOR_H

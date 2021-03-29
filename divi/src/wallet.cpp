@@ -2088,7 +2088,7 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
 }
 
 CTransaction SignInputs(
-    const CWallet& wallet,
+    const CKeyStore& keyStore,
     const std::set<COutput>& setCoins,
     CMutableTransaction txWithoutChange)
 {
@@ -2096,7 +2096,7 @@ CTransaction SignInputs(
     int nIn = 0;
     for(const COutput& coin: setCoins)
     {
-        if (!SignSignature(wallet, *coin.tx, txWithoutChange, nIn++))
+        if (!SignSignature(keyStore, *coin.tx, txWithoutChange, nIn++))
         {
             return CTransaction();
         }
@@ -2105,7 +2105,7 @@ CTransaction SignInputs(
 }
 
 CTransaction AttachChangeOutputAndSignInputs(
-    const CWallet& wallet,
+    const CKeyStore& keyStore,
     const std::set<COutput>& setCoins,
     CMutableTransaction txWithoutChange,
     const CTxOut& changeOutput)
@@ -2114,7 +2114,7 @@ CTransaction AttachChangeOutputAndSignInputs(
     const int changeIndex = GetRandInt(txWithoutChange.vout.size() + 1);
     txWithoutChange.vout.insert(txWithoutChange.vout.begin() + changeIndex, changeOutput);
 
-    return SignInputs(wallet,setCoins,txWithoutChange);
+    return SignInputs(keyStore,setCoins,txWithoutChange);
 }
 
 CTxOut CreateChangeOutput(CReserveKey& reservekey)

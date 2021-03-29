@@ -21,8 +21,8 @@ public:
     uint256 hash;
     uint32_t n;
 
-    COutPoint() { SetNull(); }
-    COutPoint(uint256 hashIn, uint32_t nIn) { hash = hashIn; n = nIn; }
+    COutPoint();
+    COutPoint(uint256 hashIn, uint32_t nIn);
 
     ADD_SERIALIZE_METHODS;
 
@@ -31,24 +31,11 @@ public:
         READWRITE(FLATDATA(*this));
     }
 
-    void SetNull() { hash.SetNull(); n = (uint32_t) -1; }
-    bool IsNull() const { return (hash.IsNull() && n == (uint32_t) -1); }
-
-    friend bool operator<(const COutPoint& a, const COutPoint& b)
-    {
-        return (a.hash < b.hash || (a.hash == b.hash && a.n < b.n));
-    }
-
-    friend bool operator==(const COutPoint& a, const COutPoint& b)
-    {
-        return (a.hash == b.hash && a.n == b.n);
-    }
-
-    friend bool operator!=(const COutPoint& a, const COutPoint& b)
-    {
-        return !(a == b);
-    }
-
+    void SetNull();
+    bool IsNull() const;
+    friend bool operator<(const COutPoint& a, const COutPoint& b);
+    friend bool operator==(const COutPoint& a, const COutPoint& b);
+    friend bool operator!=(const COutPoint& a, const COutPoint& b);
     std::string ToString() const;
     std::string ToStringShort() const;
 
@@ -67,11 +54,7 @@ public:
     CScript scriptSig;
     uint32_t nSequence;
 
-    CTxIn()
-    {
-        nSequence = std::numeric_limits<uint32_t>::max();
-    }
-
+    CTxIn();
     explicit CTxIn(COutPoint prevoutIn, CScript scriptSigIn=CScript(), uint32_t nSequenceIn=std::numeric_limits<uint32_t>::max());
     CTxIn(uint256 hashPrevTx, uint32_t nOut, CScript scriptSigIn=CScript(), uint32_t nSequenceIn=std::numeric_limits<uint32_t>::max());
 
@@ -84,23 +67,9 @@ public:
         READWRITE(nSequence);
     }
 
-    bool IsFinal() const
-    {
-        return (nSequence == std::numeric_limits<uint32_t>::max());
-    }
-
-    friend bool operator==(const CTxIn& a, const CTxIn& b)
-    {
-        return (a.prevout   == b.prevout &&
-                a.scriptSig == b.scriptSig &&
-                a.nSequence == b.nSequence);
-    }
-
-    friend bool operator!=(const CTxIn& a, const CTxIn& b)
-    {
-        return !(a == b);
-    }
-
+    bool IsFinal() const;
+    friend bool operator==(const CTxIn& a, const CTxIn& b);
+    friend bool operator!=(const CTxIn& a, const CTxIn& b);
     std::string ToString() const;
 };
 
@@ -113,11 +82,7 @@ public:
     CAmount nValue;
     CScript scriptPubKey;
 
-    CTxOut()
-    {
-        SetNull();
-    }
-
+    CTxOut();
     CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn);
 
     ADD_SERIALIZE_METHODS;
@@ -128,41 +93,13 @@ public:
         READWRITE(scriptPubKey);
     }
 
-    void SetNull()
-    {
-        nValue = -1;
-        scriptPubKey.clear();
-    }
-
-    bool IsNull() const
-    {
-        return (nValue == -1);
-    }
-
-    void SetEmpty()
-    {
-        nValue = 0;
-        scriptPubKey.clear();
-    }
-
-    bool IsEmpty() const
-    {
-        return (nValue == 0 && scriptPubKey.empty());
-    }
-
+    void SetNull();
+    bool IsNull() const;
+    void SetEmpty();
+    bool IsEmpty() const;
     uint256 GetHash() const;
-
-    friend bool operator==(const CTxOut& a, const CTxOut& b)
-    {
-        return (a.nValue       == b.nValue &&
-                a.scriptPubKey == b.scriptPubKey);
-    }
-
-    friend bool operator!=(const CTxOut& a, const CTxOut& b)
-    {
-        return !(a == b);
-    }
-
+    friend bool operator==(const CTxOut& a, const CTxOut& b);
+    friend bool operator!=(const CTxOut& a, const CTxOut& b);
     std::string ToString() const;
 };
 
@@ -213,50 +150,15 @@ public:
             UpdateHash();
     }
 
-    bool IsNull() const {
-        return vin.empty() && vout.empty();
-    }
-
-    const uint256& GetHash() const {
-        return hash;
-    }
-
-    /** Returns the "bare transaction ID".  This is a hash of the transaction
-     *  as per GetHash, but it does not include any of the signature data
-     *  (i.e. all scriptSig's are set empty).
-     *
-     *  This means that it commits to the data relevant for the transaction,
-     *  without being affected by malleability.  This transaction ID is used
-     *  to refer to outputs from follow-up transactions after activating
-     *  "segwit light".  */
+    bool IsNull() const;
+    const uint256& GetHash() const;
     uint256 GetBareTxid () const;
-
-    // Return sum of txouts.
     CAmount GetValueOut() const;
-    // GetValueIn() is a method on CCoinsViewCache, because
-    // inputs must be known to compute value in.
-    
-    bool IsCoinBase() const
-    {
-        return (vin.size() == 1 && vin[0].prevout.IsNull());
-    }
+    bool IsCoinBase() const;
 
-    bool IsCoinStake() const
-    {
-        // ppcoin: the coin stake transaction is marked with the first output empty
-        return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout.size() >= 2 && vout[0].IsEmpty());
-    }
-
-    friend bool operator==(const CTransaction& a, const CTransaction& b)
-    {
-        return a.hash == b.hash;
-    }
-
-    friend bool operator!=(const CTransaction& a, const CTransaction& b)
-    {
-        return a.hash != b.hash;
-    }
-
+    bool IsCoinStake() const;
+    friend bool operator==(const CTransaction& a, const CTransaction& b);
+    friend bool operator!=(const CTransaction& a, const CTransaction& b);
     std::string ToString() const;
 };
 
@@ -282,28 +184,11 @@ struct CMutableTransaction
         READWRITE(nLockTime);
     }
 
-    /** Compute the hash of this CMutableTransaction. This is computed on the
-     * fly, as opposed to GetHash() in CTransaction, which uses a cached result.
-     */
     uint256 GetHash() const;
-
-    uint256 GetBareTxid() const
-    {
-        return CTransaction(*this).GetBareTxid();
-    }
-
+    uint256 GetBareTxid() const;
     std::string ToString() const;
-
-    friend bool operator==(const CMutableTransaction& a, const CMutableTransaction& b)
-    {
-        return a.GetHash() == b.GetHash();
-    }
-
-    friend bool operator!=(const CMutableTransaction& a, const CMutableTransaction& b)
-    {
-        return !(a == b);
-    }
-
+    friend bool operator==(const CMutableTransaction& a, const CMutableTransaction& b);
+    friend bool operator!=(const CMutableTransaction& a, const CMutableTransaction& b);
 };
 
 #endif // BITCOIN_PRIMITIVES_TRANSACTION_H

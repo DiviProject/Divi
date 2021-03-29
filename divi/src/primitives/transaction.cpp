@@ -16,6 +16,26 @@
 #include <boost/foreach.hpp>
 
 
+
+COutPoint::COutPoint() { SetNull(); }
+COutPoint::COutPoint(uint256 hashIn, uint32_t nIn) { hash = hashIn; n = nIn; }
+void COutPoint::SetNull() { hash.SetNull(); n = (uint32_t) -1; }
+bool COutPoint::IsNull() const { return (hash.IsNull() && n == (uint32_t) -1); }
+bool operator<(const COutPoint& a, const COutPoint& b)
+{
+    return (a.hash < b.hash || (a.hash == b.hash && a.n < b.n));
+}
+
+bool operator==(const COutPoint& a, const COutPoint& b)
+{
+    return (a.hash == b.hash && a.n == b.n);
+}
+
+bool operator!=(const COutPoint& a, const COutPoint& b)
+{
+    return !(a == b);
+}
+
 std::string COutPoint::ToString() const
 {
     return strprintf("COutPoint(%s, %u)", hash.ToString()/*.substr(0,10)*/, n);
@@ -29,6 +49,28 @@ std::string COutPoint::ToStringShort() const
 uint256 COutPoint::GetHash() const
 {
     return Hash(BEGIN(hash), END(hash), BEGIN(n), END(n));
+}
+
+CTxIn::CTxIn()
+{
+    nSequence = std::numeric_limits<uint32_t>::max();
+}
+
+bool CTxIn::IsFinal() const
+{
+    return (nSequence == std::numeric_limits<uint32_t>::max());
+}
+
+bool operator==(const CTxIn& a, const CTxIn& b)
+{
+    return (a.prevout   == b.prevout &&
+            a.scriptSig == b.scriptSig &&
+            a.nSequence == b.nSequence);
+}
+
+bool operator!=(const CTxIn& a, const CTxIn& b)
+{
+    return !(a == b);
 }
 
 CTxIn::CTxIn(COutPoint prevoutIn, CScript scriptSigIn, uint32_t nSequenceIn)
@@ -60,6 +102,44 @@ std::string CTxIn::ToString() const
     return str;
 }
 
+CTxOut::CTxOut()
+{
+    SetNull();
+}
+
+void CTxOut::SetNull()
+{
+    nValue = -1;
+    scriptPubKey.clear();
+}
+
+bool CTxOut::IsNull() const
+{
+    return (nValue == -1);
+}
+
+void CTxOut::SetEmpty()
+{
+    nValue = 0;
+    scriptPubKey.clear();
+}
+
+bool CTxOut::IsEmpty() const
+{
+    return (nValue == 0 && scriptPubKey.empty());
+}
+
+bool operator==(const CTxOut& a, const CTxOut& b)
+{
+    return (a.nValue       == b.nValue &&
+            a.scriptPubKey == b.scriptPubKey);
+}
+
+bool operator!=(const CTxOut& a, const CTxOut& b)
+{
+    return !(a == b);
+}
+
 CTxOut::CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn)
 {
     nValue = nValueIn;
@@ -74,6 +154,50 @@ uint256 CTxOut::GetHash() const
 std::string CTxOut::ToString() const
 {
     return strprintf("CTxOut(nValue=%d.%08d, scriptPubKey=%s)", nValue / COIN, nValue % COIN, scriptPubKey.ToString().substr(0,30));
+}
+
+bool CTransaction::IsNull() const {
+    return vin.empty() && vout.empty();
+}
+
+const uint256& CTransaction::GetHash() const {
+    return hash;
+}
+
+bool CTransaction::IsCoinBase() const
+{
+    return (vin.size() == 1 && vin[0].prevout.IsNull());
+}
+
+bool CTransaction::IsCoinStake() const
+{
+    // ppcoin: the coin stake transaction is marked with the first output empty
+    return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout.size() >= 2 && vout[0].IsEmpty());
+}
+
+bool operator==(const CTransaction& a, const CTransaction& b)
+{
+    return a.hash == b.hash;
+}
+
+bool operator!=(const CTransaction& a, const CTransaction& b)
+{
+    return a.hash != b.hash;
+}
+
+uint256 CMutableTransaction::GetBareTxid() const
+{
+    return CTransaction(*this).GetBareTxid();
+}
+
+bool operator==(const CMutableTransaction& a, const CMutableTransaction& b)
+{
+    return a.GetHash() == b.GetHash();
+}
+
+bool operator!=(const CMutableTransaction& a, const CMutableTransaction& b)
+{
+    return !(a == b);
 }
 
 CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0) {}

@@ -2209,7 +2209,7 @@ static bool MergeChangeOutputIntoFees(
     return !changeUsed;
 }
 
-static std::pair<string,bool> AssembleInputsSignaturesAndFees(
+static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
     const CWallet& wallet,
     const I_CoinSelectionAlgorithm* coinSelector,
     const CAmount totalValueToSend,
@@ -2308,7 +2308,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
                 coinSelector = defaultCoinSelectionAlgorithm_.get();
             }
 
-            return AssembleInputsSignaturesAndFees(*this, coinSelector,totalValueToSend,vCoins,txNew,reservekey,wtxNew);
+            return SelectInputsProvideSignaturesAndFees(*this, coinSelector,totalValueToSend,vCoins,txNew,reservekey,wtxNew);
         }
     }
     return {std::string(""),true};

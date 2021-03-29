@@ -2219,7 +2219,7 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
     const I_CoinSelectionAlgorithm* coinSelector,
     const CAmount totalValueToSend,
     const std::vector<COutput>& vCoins,
-    CMutableTransaction txNew,
+    CMutableTransaction& txNew,
     CReserveKey& reservekey,
     CWalletTx& wtxNew)
 {

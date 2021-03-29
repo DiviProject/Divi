@@ -2241,7 +2241,7 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
         }
         if (setCoins.empty() || nValueIn < nTotalValue)
         {
-            return {translate("Insufficient funds."),false};
+            return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};
         }
 
         if(!MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput))

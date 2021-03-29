@@ -2217,7 +2217,6 @@ static void AttachInputs(
 static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
     const CWallet& wallet,
     const I_CoinSelectionAlgorithm* coinSelector,
-    const CAmount totalValueToSend,
     const std::vector<COutput>& vCoins,
     CMutableTransaction& txNew,
     CReserveKey& reservekey,
@@ -2225,6 +2224,7 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
 {
     bool changeUsed = false;
     CTxOut changeOutput = CreateChangeOutput(reservekey);
+    const CAmount totalValueToSend = CTransaction(txNew).GetValueOut();
     CAmount nFeeRet = 0;
     while (true)
     {
@@ -2321,7 +2321,7 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
                 coinSelector = defaultCoinSelectionAlgorithm_.get();
             }
 
-            return SelectInputsProvideSignaturesAndFees(*this, coinSelector,totalValueToSend,vCoins,txNew,reservekey,wtxNew);
+            return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,txNew,reservekey,wtxNew);
         }
     }
     return {std::string(""),true};

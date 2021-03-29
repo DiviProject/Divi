@@ -2087,15 +2087,11 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
     return true;
 }
 
-CTransaction AttachInputsAndSign(
+CTransaction SignInputs(
     const CWallet& wallet,
     const std::set<COutput>& setCoins,
     CMutableTransaction txWithoutChange)
 {
-    // Fill vin
-    for(const COutput& coin: setCoins)
-        txWithoutChange.vin.push_back(CTxIn(coin.tx->GetHash(), coin.i));
-
     // Sign
     int nIn = 0;
     for(const COutput& coin: setCoins)
@@ -2108,7 +2104,7 @@ CTransaction AttachInputsAndSign(
     return CTransaction(txWithoutChange);
 }
 
-CTransaction AttachInputsAndChangeOutputAndSign(
+CTransaction AttachChangeOutputAndSignInputs(
     const CWallet& wallet,
     const std::set<COutput>& setCoins,
     CMutableTransaction txWithoutChange,
@@ -2118,7 +2114,7 @@ CTransaction AttachInputsAndChangeOutputAndSign(
     const int changeIndex = GetRandInt(txWithoutChange.vout.size() + 1);
     txWithoutChange.vout.insert(txWithoutChange.vout.begin() + changeIndex, changeOutput);
 
-    return AttachInputsAndSign(wallet,setCoins,txWithoutChange);
+    return SignInputs(wallet,setCoins,txWithoutChange);
 }
 
 CTxOut CreateChangeOutput(CReserveKey& reservekey)
@@ -2209,6 +2205,15 @@ static bool MergeChangeOutputIntoFees(
     return !changeUsed;
 }
 
+static void AttachInputs(
+    const std::set<COutput>& setCoins,
+    CMutableTransaction& txWithoutChange)
+{
+    // Fill vin
+    for(const COutput& coin: setCoins)
+        txWithoutChange.vin.push_back(CTxIn(coin.tx->GetHash(), coin.i));
+}
+
 static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
     const CWallet& wallet,
     const I_CoinSelectionAlgorithm* coinSelector,
@@ -2229,6 +2234,7 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
         // Choose coins to use
         CAmount nValueIn = 0;
         std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,nTotalValue,vCoins);
+        AttachInputs(setCoins,txNew);
         for(const COutput& out: setCoins)
         {
             nValueIn += out.tx->vout[out.i].nValue;
@@ -2238,9 +2244,16 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
             return {translate("Insufficient funds."),false};
         }
 
-        changeUsed = !MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput);
-        *static_cast<CTransaction*>(&wtxNew) =
-            changeUsed? AttachInputsAndChangeOutputAndSign(wallet,setCoins,txNew,changeOutput): AttachInputsAndSign(wallet,setCoins,txNew);
+        if(!MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput))
+        {
+            changeUsed = true;
+            *static_cast<CTransaction*>(&wtxNew) = AttachChangeOutputAndSignInputs(wallet,setCoins,txNew,changeOutput);
+        }
+        else
+        {
+            changeUsed = false;
+            *static_cast<CTransaction*>(&wtxNew) = SignInputs(wallet,setCoins,txNew);
+        }
         if(wtxNew.IsNull())
         {
             return {translate("Signing transaction failed"),false};

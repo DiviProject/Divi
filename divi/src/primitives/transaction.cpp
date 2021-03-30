@@ -223,6 +223,23 @@ std::string CMutableTransaction::ToString() const
     return str;
 }
 
+CAmount CMutableTransaction::GetValueOut() const
+{
+    CAmount nValueOut = 0;
+    for (std::vector<CTxOut>::const_iterator it(vout.begin()); it != vout.end(); ++it)
+    {
+        // DIVI: previously MoneyRange() was called here. This has been replaced with negative check and boundary wrap check.
+        if (it->nValue < 0)
+            return -1;
+
+        if ((nValueOut + it->nValue) < nValueOut)
+            return -1;
+
+        nValueOut += it->nValue;
+    }
+    return nValueOut;
+}
+
 void CTransaction::UpdateHash() const
 {
     *const_cast<uint256*>(&hash) = SerializeHash(*this);

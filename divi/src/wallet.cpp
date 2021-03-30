@@ -2224,9 +2224,9 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
 {
     bool changeUsed = false;
     CTxOut changeOutput = CreateChangeOutput(reservekey);
-    const CAmount totalValueToSend = CTransaction(txNew).GetValueOut();
+    const CAmount totalValueToSend = txNew.GetValueOut();
     CAmount nFeeRet = 0;
-    while (true)
+    while (totalValueToSend > 0)
     {
         txNew.vin.clear();
         CAmount nTotalValue = totalValueToSend + nFeeRet;

@@ -239,6 +239,7 @@ BITCOIN_CORE_H = \
   PoSTransactionCreator.h \
   PeerNotificationOfMintService.h \
   monthlyWalletBackupCreator.h \
+  MinimumFeeCoinSelectionAlgorithm.h \
   mruset.h \
   netbase.h \
   netfulfilledman.h \
@@ -476,6 +477,7 @@ libbitcoin_wallet_a_SOURCES = \
   SignatureSizeEstimator.cpp \
   CoinControlSelectionAlgorithm.cpp \
   StochasticSubsetSelectionAlgorithm.cpp \
+  MinimumFeeCoinSelectionAlgorithm.cpp \
   wallet.cpp \
   Output.cpp \
   WalletTx.cpp \

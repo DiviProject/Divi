@@ -12,7 +12,7 @@ public:
     virtual ~I_CoinSelectionAlgorithm(){}
     virtual std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
-        const CAmount& nTargetValue,
-        const std::vector<COutput>& vCoins) const = 0;
+        const std::vector<COutput>& vCoins,
+        CAmount& fees) const = 0;
 };
 #endif// I_COIN_SELECTION_ALGORITHM_H

@@ -10,7 +10,7 @@ public:
     MinimumFeeCoinSelectionAlgorithm(const CKeyStore& keyStore);
     virtual std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
-        const CAmount& nTargetValue,
-        const std::vector<COutput>& vCoins) const;
+        const std::vector<COutput>& vCoins,
+        CAmount& fees) const;
 };
 #endif// MINIMUM_FEE_COIN_SELECTION_ALGORITHM_H

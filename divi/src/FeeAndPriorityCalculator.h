@@ -18,6 +18,8 @@ public:
         return uniqueInstance;
     }
     const CFeeRate& getFeeRateQuote() const;
+    CAmount MinimumValueForNonDust() const;
+    CAmount MinimumValueForNonDust(const CTxOut& txout) const;
     bool IsDust(const CTxOut& txout) const;
     double ComputePriority(const CTransaction& tx, double dPriorityInputs, unsigned int nTxSize = 0) const;
     unsigned int CalculateModifiedSize(const CTransaction& tx, unsigned int nTxSize = 0) const;

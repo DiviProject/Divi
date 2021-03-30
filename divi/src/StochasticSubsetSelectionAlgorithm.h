@@ -15,8 +15,8 @@ public:
         const bool& allowSpendingZeroConfirmationOutputs);
     virtual std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
-        const CAmount& nTargetValue,
-        const std::vector<COutput>& vCoins) const;
+        const std::vector<COutput>& vCoins,
+        CAmount& fees) const;
 };
 
 #endif// STOCHASTIC_SUBSET_COIN_SELECTOR_H

@@ -37,11 +37,12 @@ struct InputToSpendAndSigSize
 
 std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     const CMutableTransaction& transactionToSelectCoinsFor,
-    const CAmount& nTargetValue,
-    const std::vector<COutput>& vCoins) const
+    const std::vector<COutput>& vCoins,
+    CAmount& fees) const
 {
     CTransaction initialTransaction = CTransaction(transactionToSelectCoinsFor);
     const unsigned initialByteSize = ::GetSerializeSize(initialTransaction, SER_NETWORK, PROTOCOL_VERSION);
+    const CAmount nTargetValue = transactionToSelectCoinsFor.GetValueOut();
     constexpr unsigned nominalChangeOutputSize = 34u; // P2PKH change address
 
     CAmount maximumAmountAvailable = 0;
@@ -87,6 +88,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
             if(amountCovered >= totalAmountNeeded)
             {
                 success = true;
+                fees = minimumRelayFee;
                 return inputsSelected;
             }
         }

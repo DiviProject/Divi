@@ -11,7 +11,7 @@ public:
         const CCoinControl* coinControl);
     virtual std::set<COutput> SelectCoins(
         const CMutableTransaction& transactionToSelectCoinsFor,
-        const CAmount& nTargetValue,
-        const std::vector<COutput>& vCoins) const;
+        const std::vector<COutput>& vCoins,
+        CAmount& fees) const;
 };
 #endif// COIN_CONTROL_COIN_SELECTOR_H

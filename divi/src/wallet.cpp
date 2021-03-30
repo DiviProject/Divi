@@ -2233,7 +2233,7 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
 
         // Choose coins to use
         CAmount nValueIn = 0;
-        std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,nTotalValue,vCoins);
+        std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
         AttachInputs(setCoins,txNew);
         for(const COutput& out: setCoins)
         {

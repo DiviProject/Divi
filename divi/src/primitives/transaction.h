@@ -189,6 +189,7 @@ struct CMutableTransaction
     std::string ToString() const;
     friend bool operator==(const CMutableTransaction& a, const CMutableTransaction& b);
     friend bool operator!=(const CMutableTransaction& a, const CMutableTransaction& b);
+    CAmount GetValueOut() const;
 };
 
 #endif // BITCOIN_PRIMITIVES_TRANSACTION_H

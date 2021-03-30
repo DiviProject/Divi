@@ -16,14 +16,22 @@
 #include <addressindex.h>
 #include <spentindex.h>
 #include <DataDirectory.h>
+#include <IndexDatabaseUpdates.h>
 
 #include <boost/scoped_ptr.hpp>
 
 using namespace std;
 
-static const char DB_ADDRESSINDEX = 'a';
-static const char DB_SPENTINDEX = 'p';
-static const char DB_ADDRESSUNSPENTINDEX = 'u';
+namespace
+{
+
+constexpr char DB_ADDRESSINDEX = 'a';
+constexpr char DB_SPENTINDEX = 'p';
+constexpr char DB_ADDRESSUNSPENTINDEX = 'u';
+constexpr char DB_TXINDEX = 't';
+constexpr char DB_BARETXIDINDEX = 'T';
+
+} // anonymous namespace
 
 extern BlockMap mapBlockIndex;
 extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
@@ -185,14 +193,28 @@ bool CCoinsViewDB::GetStats(CCoinsStats& stats) const
 
 bool CBlockTreeDB::ReadTxIndex(const uint256& txid, CDiskTxPos& pos)
 {
-    return Read(std::make_pair('t', txid), pos);
+    /* This method looks up by txid or bare txid.  Both are tried, and if
+       one succeeds, that must be the one.  Note that it is not possible for
+       the same value to be both a bare txid and a txid (except where both
+       are the same for a single transaction), as that would otherwise be
+       a hash collision.  */
+
+    if (Read(std::make_pair(DB_TXINDEX, txid), pos))
+        return true;
+    if (Read(std::make_pair(DB_BARETXIDINDEX, txid), pos))
+        return true;
+
+    return false;
 }
 
-bool CBlockTreeDB::WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> >& vect)
+bool CBlockTreeDB::WriteTxIndex(const std::vector<TxIndexEntry>& vect)
 {
     CLevelDBBatch batch;
-    for (std::vector<std::pair<uint256, CDiskTxPos> >::const_iterator it = vect.begin(); it != vect.end(); it++)
-        batch.Write(std::make_pair('t', it->first), it->second);
+    for (const auto& entry : vect)
+    {
+        batch.Write(std::make_pair(DB_TXINDEX, entry.txid), entry.diskPos);
+        batch.Write(std::make_pair(DB_BARETXIDINDEX, entry.bareTxid), entry.diskPos);
+    }
     return WriteBatch(batch);
 }
 

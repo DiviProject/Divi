@@ -25,14 +25,14 @@ TransactionLocationRecorder::TransactionLocationRecorder(
 
 void TransactionLocationRecorder::RecordTxLocationData(
     const CTransaction& tx,
-    std::vector<std::pair<uint256, CDiskTxPos> >& txLocationData)
+    std::vector<TxIndexEntry>& txLocationData)
 {
     if(!txLocationDataSizeHasBeenPreallocated_)
     {
         txLocationData.reserve(numberOfTransactions_);
         txLocationDataSizeHasBeenPreallocated_ = true;
     }
-    txLocationData.emplace_back(tx.GetHash(), nextBlockTxOnDiskLocation_);
+    txLocationData.emplace_back(tx.GetHash(), tx.GetBareTxid(), nextBlockTxOnDiskLocation_);
     nextBlockTxOnDiskLocation_.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
 }
 

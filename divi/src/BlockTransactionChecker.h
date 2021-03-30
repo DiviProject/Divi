@@ -27,7 +27,7 @@ public:
         const CBlock& block);
     void RecordTxLocationData(
         const CTransaction& tx,
-        std::vector<std::pair<uint256, CDiskTxPos> >& txLocationData);
+        std::vector<TxIndexEntry>& txLocationData);
 };
 
 class BlockTransactionChecker

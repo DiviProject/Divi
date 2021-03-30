@@ -10,8 +10,8 @@ CoinControlSelectionAlgorithm::CoinControlSelectionAlgorithm(
 
 std::set<COutput> CoinControlSelectionAlgorithm::SelectCoins(
     const CMutableTransaction& transactionToSelectCoinsFor,
-    const CAmount& nTargetValue,
-    const std::vector<COutput>& vCoins) const
+    const std::vector<COutput>& vCoins,
+    CAmount& fees) const
 {
     std::set<COutput> setCoinsRet;
     if(coinControl_ && coinControl_->HasSelected())

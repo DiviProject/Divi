@@ -173,9 +173,10 @@ StochasticSubsetSelectionAlgorithm::StochasticSubsetSelectionAlgorithm(
 
 std::set<COutput> StochasticSubsetSelectionAlgorithm::SelectCoins(
     const CMutableTransaction& transactionToSelectCoinsFor,
-    const CAmount& nTargetValue,
-    const std::vector<COutput>& vCoins) const
+    const std::vector<COutput>& vCoins,
+    CAmount& fees) const
 {
+    CAmount nTargetValue = fees + transactionToSelectCoinsFor.GetValueOut();
     CAmount nValueRet = 0;
     std::set<COutput> setCoinsRet;
     bool enoughCoins = SelectCoinsMinConf(txConfirmationChecker_,nTargetValue, 1, 6, vCoins, setCoinsRet, nValueRet) ||

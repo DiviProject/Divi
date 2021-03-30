@@ -44,14 +44,14 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
                     return error("%s : Deserialize or I/O error - %s", __func__, e.what());
                 }
                 hashBlock = header.GetHash();
-                if (txOut.GetHash() != hash)
+                if (txOut.GetHash() != hash && txOut.GetBareTxid() != hash)
                     return error("%s : txid mismatch", __func__);
                 return true;
             }
 
-            // The index only keys by txid.  So even if we did not find the
-            // transaction here, it could be that the lookup is by bare txid
-            // and can be found through UTXO lookup.
+            // Transaction not found in the index (which works both with
+            // txid and bare txid), nothing more can be done.
+            return false;
         }
 
         if (fAllowSlow) { // use coin database to locate block that contains transaction, and scan it

@@ -14,7 +14,12 @@ const CFeeRate& FeeAndPriorityCalculator::getFeeRateQuote() const
     return minRelayTxFee;
 }
 
-bool FeeAndPriorityCalculator::IsDust(const CTxOut& txout) const
+CAmount FeeAndPriorityCalculator::MinimumValueForNonDust() const
+{
+    return 3*minRelayTxFee.GetFee(182u);
+}
+
+CAmount FeeAndPriorityCalculator::MinimumValueForNonDust(const CTxOut& txout) const
 {
     // "Dust" is defined in terms of CTransaction::minRelayTxFee, which has units duffs-per-kilobyte.
     // If you'd pay more than 1/3 in fees to spend something, then we consider it dust.
@@ -23,8 +28,12 @@ bool FeeAndPriorityCalculator::IsDust(const CTxOut& txout) const
     // and that means that fee per txout is 182 * 10000 / 1000 = 1820 duffs.
     // So dust is a txout less than 1820 *3 = 5460 duffs
     // with default -minrelaytxfee = minRelayTxFee = 10000 duffs per kB.
-    size_t nSize = txout.GetSerializeSize(SER_DISK,0)+148u;
-    return (txout.nValue < 3*minRelayTxFee.GetFee(nSize));
+    const size_t nSize = txout.GetSerializeSize(SER_DISK,0)+148u;
+    return 3*minRelayTxFee.GetFee(nSize);
+}
+bool FeeAndPriorityCalculator::IsDust(const CTxOut& txout) const
+{
+    return txout.nValue < MinimumValueForNonDust(txout);
 }
 
 double FeeAndPriorityCalculator::ComputePriority(const CTransaction& tx, double dPriorityInputs, unsigned int nTxSize) const

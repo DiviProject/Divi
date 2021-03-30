@@ -10,6 +10,7 @@ class CFeeRate
 private:
     CAmount nSatoshisPerK; // unit is satoshis-per-1,000-bytes
 public:
+    static const unsigned FEE_INCREMENT_STEPSIZE;
     CFeeRate() : nSatoshisPerK(0) {}
     explicit CFeeRate(const CAmount& _nSatoshisPerK) : nSatoshisPerK(_nSatoshisPerK) {}
     CFeeRate(const CAmount& nFeePaid, size_t nSize);

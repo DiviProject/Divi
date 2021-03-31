@@ -827,6 +827,35 @@ bool RateLimiterAllowsFreeTransaction(CValidationState& state, const unsigned nS
     return true;
 }
 
+bool CheckFeesPaidAreAcceptable(
+    const CTransaction& tx,
+    const unsigned nSize,
+    const CAmount nFees,
+    bool fLimitFree,
+    const CCoinsViewCache& view,
+    CValidationState& state)
+{
+    const uint256 hash = tx.GetHash();
+    CAmount minimumRelayFee = ::minRelayTxFee.GetFee(nSize);
+    bool txShouldHavePriority = TxShouldBePrioritized(hash, nSize);
+    if (fLimitFree && !txShouldHavePriority && nFees < minimumRelayFee)
+        return state.DoS(0, error("AcceptToMemoryPool : not enough fees %s, %d < %d",
+                                    hash.ToString(), nFees, minimumRelayFee),
+                            REJECT_INSUFFICIENTFEE, "insufficient fee");
+    // Require that free transactions have sufficient priority to be mined in the next block.
+    if (settings.GetBoolArg("-relaypriority", true) &&
+        nFees < minimumRelayFee &&
+        !AllowFree(view.GetPriority(tx, chainActive.Height() + 1)))
+    {
+        return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
+    }
+    if (fLimitFree && nFees < minimumRelayFee && !RateLimiterAllowsFreeTransaction(state,nSize))
+    {
+        return false;
+    }
+    return true;
+}
+
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees)
 {
     AssertLockHeld(cs_main);

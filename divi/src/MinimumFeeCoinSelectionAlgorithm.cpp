@@ -29,7 +29,7 @@ struct InputToSpendAndSigSize
         , sigSize(
             SignatureSizeEstimator::MaxBytesNeededForSigning(
                 keyStore,
-                outputRef->tx->vout[outputRef->i].scriptPubKey)+40u)
+                outputRef->scriptPubKey())+40u)
     {
     }
 };

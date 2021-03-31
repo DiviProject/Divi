@@ -57,7 +57,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
 
     bool success = false;
     std::set<COutput> inputsSelected;
-    unsigned limitNumberOfFeeIncrements = std::max((initialByteSize+nominalChangeOutputSize+CFeeRate::FEE_INCREMENT_STEPSIZE-1)/CFeeRate::FEE_INCREMENT_STEPSIZE,2u);
+    unsigned limitNumberOfFeeIncrements = std::max((initialByteSize+nominalChangeOutputSize+CFeeRate::FEE_INCREMENT_STEPSIZE-1)/CFeeRate::FEE_INCREMENT_STEPSIZE,1u);
     while(!success)
     {
         inputsSelected.clear();

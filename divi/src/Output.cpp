@@ -1,6 +1,7 @@
 #include <Output.h>
 #include <WalletTx.h>
 #include <utilmoneystr.h>
+#include <script/script.h>
 
 COutput::COutput(
     ): tx(nullptr)
@@ -26,6 +27,10 @@ bool COutput::IsValid() const
 CAmount COutput::Value() const
 {
     return tx->vout[i].nValue;
+}
+const CScript& COutput::scriptPubKey() const
+{
+    return tx->vout[i].scriptPubKey;
 }
 
 std::string COutput::ToString() const

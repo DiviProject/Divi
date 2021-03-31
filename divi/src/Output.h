@@ -3,6 +3,7 @@
 #include <amount.h>
 #include <string>
 class CWalletTx;
+class CScript;
 class COutput
 {
 public:
@@ -16,6 +17,7 @@ public:
 
     bool IsValid() const;
     CAmount Value() const;
+    const CScript& scriptPubKey() const;
     std::string ToString() const;
 
     bool operator<(const COutput& other) const

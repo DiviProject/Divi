@@ -57,11 +57,12 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
 
     bool success = false;
     std::set<COutput> inputsSelected;
-    unsigned limitNumberOfFeeIncrements = std::max((initialByteSize+nominalChangeOutputSize+CFeeRate::FEE_INCREMENT_STEPSIZE-1)/CFeeRate::FEE_INCREMENT_STEPSIZE,1u);
+    const unsigned feeStepSize = 100u;//CFeeRate::FEE_INCREMENT_STEPSIZE
+    unsigned limitNumberOfFeeIncrements = std::max((initialByteSize+nominalChangeOutputSize+feeStepSize-1)/feeStepSize,1u);
     while(!success)
     {
         inputsSelected.clear();
-        unsigned maximumTxSize = CFeeRate::FEE_INCREMENT_STEPSIZE*limitNumberOfFeeIncrements -1;
+        unsigned maximumTxSize = feeStepSize*limitNumberOfFeeIncrements -1;
         const unsigned availableTxSize = static_cast<double>(maximumTxSize - initialByteSize - nominalChangeOutputSize);
         const CAmount minimumNoDustChange = FeeAndPriorityCalculator::instance().MinimumValueForNonDust();
         const CAmount minimumRelayFee = minRelayTxFee.GetFee(maximumTxSize);

@@ -840,7 +840,7 @@ bool CheckFeesPaidAreAcceptable(
     bool txShouldHavePriority = TxShouldBePrioritized(hash, nSize);
     if (fLimitFree && !txShouldHavePriority && nFees < minimumRelayFee)
         return state.DoS(0, error("AcceptToMemoryPool : not enough fees %s, %d < %d",
-                                    hash.ToString(), nFees, minimumRelayFee),
+                                    hash, nFees, minimumRelayFee),
                             REJECT_INSUFFICIENTFEE, "insufficient fee");
     // Require that free transactions have sufficient priority to be mined in the next block.
     if (settings.GetBoolArg("-relaypriority", true) &&
@@ -985,20 +985,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         // but prioritise dstx and don't check fees for it
         if (!ignoreFees)
         {
-            CAmount minimumRelayFee = ::minRelayTxFee.GetFee(nSize);
-            bool txShouldHavePriority = TxShouldBePrioritized(tx.GetHash(), nSize);
-            if (fLimitFree && !txShouldHavePriority && nFees < minimumRelayFee)
-                return state.DoS(0, error("AcceptToMemoryPool : not enough fees %s, %d < %d",
-                                          hash, nFees, minimumRelayFee),
-                                 REJECT_INSUFFICIENTFEE, "insufficient fee");
-            // Require that free transactions have sufficient priority to be mined in the next block.
-            if (settings.GetBoolArg("-relaypriority", true) &&
-                nFees < minimumRelayFee &&
-                !AllowFree(view.GetPriority(tx, chainActive.Height() + 1)))
-            {
-                return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
-            }
-            if (fLimitFree && nFees < minimumRelayFee && !RateLimiterAllowsFreeTransaction(state,nSize))
+            if(!CheckFeesPaidAreAcceptable(tx,nSize,nFees,fLimitFree,view,state))
             {
                 return false;
             }

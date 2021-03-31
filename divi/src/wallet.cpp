@@ -2227,7 +2227,11 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
     CTxOut changeOutput = CreateChangeOutput(reservekey);
     const CAmount totalValueToSend = txNew.GetValueOut();
     CAmount nFeeRet = 0;
-    while (totalValueToSend > 0)
+    if(!(totalValueToSend > 0))
+    {
+        return {translate("Transaction amounts must be positive. Total output may not exceed limits."),false};
+    }
+    while (true)
     {
         txNew.vin.clear();
         // Choose coins to use
@@ -2281,17 +2285,9 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     AvailableCoinsType coin_type,
     const I_CoinSelectionAlgorithm* coinSelector)
 {
-    CAmount totalValueToSend = 0;
-
-    for(const std::pair<CScript, CAmount>& s: vecSend)
+    if (vecSend.empty())
     {
-        if (totalValueToSend < 0 || s.second < 0) {
-            return {translate("Transaction amounts must be positive"),false};
-        }
-        totalValueToSend += s.second;
-    }
-    if (vecSend.empty() || totalValueToSend < 0) {
-        return {translate("Transaction amounts must be positive"),false};
+        return {translate("Must provide at least one destination for funds."),false};
     }
 
     wtxNew.fTimeReceivedIsTxTime = true;

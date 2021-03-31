@@ -2201,13 +2201,18 @@ static bool MergeChangeOutputIntoFees(
     return !changeUsed;
 }
 
-static void AttachInputs(
+static CAmount AttachInputs(
     const std::set<COutput>& setCoins,
     CMutableTransaction& txWithoutChange)
 {
     // Fill vin
+    CAmount nValueIn = 0;
     for(const COutput& coin: setCoins)
+    {
         txWithoutChange.vin.emplace_back(coin.tx->GetHash(), coin.i);
+        nValueIn += coin.Value();
+    }
+    return nValueIn;
 }
 
 static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
@@ -2226,14 +2231,9 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
     {
         txNew.vin.clear();
         // Choose coins to use
-        CAmount nValueIn = 0;
         std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
-        AttachInputs(setCoins,txNew);
+        CAmount nValueIn = AttachInputs(setCoins,txNew);
         CAmount nTotalValue = totalValueToSend + nFeeRet;
-        for(const COutput& out: setCoins)
-        {
-            nValueIn += out.tx->vout[out.i].nValue;
-        }
         if (setCoins.empty() || nValueIn < nTotalValue)
         {
             return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};

@@ -35,6 +35,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"getnetworkhashps", 1},
         {"sendtoaddress", 1},
         {"getcoinavailability", 0},
+        {"getlotteryblockwinners",0},
         {"reclaimvaultfunds", 1},
         {"fundvault", 1},
         {"settxfee", 0},

@@ -73,8 +73,8 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
             inputsToSpendAndSignatureSizeEstimates.end(),
             [totalAmountNeeded,availableTxSize](const InputToSpendAndSigSize& inputA, const InputToSpendAndSigSize& inputB)
             {
-                const double gapA = availableTxSize*inputA.outputRef->Value() - inputA.sigSize*totalAmountNeeded;
-                const double gapB = availableTxSize*inputB.outputRef->Value() - inputB.sigSize*totalAmountNeeded;
+                const CAmount gapA = availableTxSize*inputA.outputRef->Value() - inputA.sigSize*totalAmountNeeded;
+                const CAmount gapB = availableTxSize*inputB.outputRef->Value() - inputB.sigSize*totalAmountNeeded;
                 return gapA > gapB || (gapA == gapB && inputA.outputRef->Value() > inputB.outputRef->Value() );
             });
         CAmount amountCovered =0;

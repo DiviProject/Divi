@@ -101,6 +101,7 @@ BASE_SCRIPTS = [
     'remotestart.py --outdated_ping',
     'smartfees.py',
     'sync.py',
+    'txindex.py',
     'txn_doublespend.py',
     'txn_doublespend.py --mineblock',
     'vaultfork.py',

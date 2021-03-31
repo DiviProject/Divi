@@ -44,14 +44,14 @@ unsigned SignatureSizeEstimator::MaxBytesNeededForSigning(const CKeyStore& keyst
         CPubKey pubkey;
         if(keystore.GetPubKey(keyID,pubkey))
         {
-            return MaximumScriptSigBytesForP2PK+1u+pubkey.size();
+            return MaximumScriptSigBytesForP2PK+1u+pubkey.size()+1u;
         }
         keyID = CKeyID(uint160(vSolutions[1]));
         if(keystore.GetPubKey(keyID,pubkey))
         {
-            return MaximumScriptSigBytesForP2PK+1u+pubkey.size();
+            return MaximumScriptSigBytesForP2PK+1u+pubkey.size()+1u;
         }
-        return MaximumScriptSigBytesForP2PKH;
+        return MaximumScriptSigBytesForP2PKH+1u;
     }
     else if(!isSubscript && whichType == TX_SCRIPTHASH)
     {

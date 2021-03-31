@@ -56,18 +56,19 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
 
 
     bool success = false;
+    constexpr unsigned MAX_TRANSACTION_SIZE = 100000u;
     std::set<COutput> inputsSelected;
-    const unsigned feeStepSize = 100u;//CFeeRate::FEE_INCREMENT_STEPSIZE
-    unsigned limitNumberOfFeeIncrements = std::max((initialByteSize+nominalChangeOutputSize+feeStepSize-1)/feeStepSize,1u);
+    const unsigned txSizeBoundIncrement = 1000u;
+    unsigned sizeIncrementsCounter = std::max((initialByteSize+nominalChangeOutputSize+txSizeBoundIncrement-1)/txSizeBoundIncrement,1u);
     while(!success)
     {
         inputsSelected.clear();
-        unsigned maximumTxSize = feeStepSize*limitNumberOfFeeIncrements -1;
+        const unsigned maximumTxSize = txSizeBoundIncrement*sizeIncrementsCounter;
         const unsigned availableTxSize = static_cast<double>(maximumTxSize - initialByteSize - nominalChangeOutputSize);
         const CAmount minimumNoDustChange = FeeAndPriorityCalculator::instance().MinimumValueForNonDust();
         const CAmount minimumRelayFee = minRelayTxFee.GetFee(maximumTxSize);
         const CAmount totalAmountNeeded = nTargetValue + minimumNoDustChange + minimumRelayFee;
-        if(totalAmountNeeded > maximumAmountAvailable) return {};
+        if(totalAmountNeeded > maximumAmountAvailable || maximumTxSize >= MAX_TRANSACTION_SIZE) return {};
 
         std::sort(
             inputsToSpendAndSignatureSizeEstimates.begin(),
@@ -89,11 +90,11 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
             if(amountCovered >= totalAmountNeeded)
             {
                 success = true;
-                fees = minimumRelayFee;
+                fees = minRelayTxFee.GetFee(cummulativeByteSize);
                 return inputsSelected;
             }
         }
-        ++limitNumberOfFeeIncrements;
+        ++sizeIncrementsCounter;
     }
     return {};
 }

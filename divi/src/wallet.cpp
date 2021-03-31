@@ -40,6 +40,7 @@
 #include <WalletTransactionRecord.h>
 #include <StochasticSubsetSelectionAlgorithm.h>
 #include <CoinControlSelectionAlgorithm.h>
+#include <MinimumFeeCoinSelectionAlgorithm.h>
 
 #include "Settings.h"
 extern Settings& settings;
@@ -194,14 +195,9 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , pwalletdbEncryption(NULL)
     , walletStakingOnly(false)
     , allowSpendingZeroConfirmationOutputs(false)
-    , defaultCoinSelectionAlgorithm_()
+    , defaultCoinSelectionAlgorithm_(new MinimumFeeCoinSelectionAlgorithm(*this))
     , defaultKeyPoolTopUp(0)
 {
-    auto transactionDepthChecker = [this] (const CWalletTx& tx, int confMine, int confTheirs)
-    {
-        return this->DebitsFunds(tx,ISMINE_ALL)? confMine : confTheirs;
-    };
-    defaultCoinSelectionAlgorithm_.reset(new StochasticSubsetSelectionAlgorithm(transactionDepthChecker,allowSpendingZeroConfirmationOutputs));
     SetNull();
 }
 
@@ -2229,12 +2225,11 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
     while (totalValueToSend > 0)
     {
         txNew.vin.clear();
-        CAmount nTotalValue = totalValueToSend + nFeeRet;
-
         // Choose coins to use
         CAmount nValueIn = 0;
         std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
         AttachInputs(setCoins,txNew);
+        CAmount nTotalValue = totalValueToSend + nFeeRet;
         for(const COutput& out: setCoins)
         {
             nValueIn += out.tx->vout[out.i].nValue;

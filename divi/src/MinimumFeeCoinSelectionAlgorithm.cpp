@@ -58,43 +58,38 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     bool success = false;
     constexpr unsigned MAX_TRANSACTION_SIZE = 100000u;
     std::set<COutput> inputsSelected;
-    const unsigned txSizeBoundIncrement = 1000u;
-    unsigned sizeIncrementsCounter = std::max((initialByteSize+nominalChangeOutputSize+txSizeBoundIncrement-1)/txSizeBoundIncrement,1u);
-    while(!success)
-    {
-        inputsSelected.clear();
-        const unsigned maximumTxSize = txSizeBoundIncrement*sizeIncrementsCounter;
-        const unsigned availableTxSize = static_cast<double>(maximumTxSize - initialByteSize - nominalChangeOutputSize);
-        const CAmount minimumNoDustChange = FeeAndPriorityCalculator::instance().MinimumValueForNonDust();
-        const CAmount minimumRelayFee = minRelayTxFee.GetFee(maximumTxSize);
-        const CAmount totalAmountNeeded = nTargetValue + minimumNoDustChange + minimumRelayFee;
-        if(totalAmountNeeded > maximumAmountAvailable || maximumTxSize >= MAX_TRANSACTION_SIZE) return {};
+    inputsSelected.clear();
+    const CAmount minimumNoDustChange = FeeAndPriorityCalculator::instance().MinimumValueForNonDust();
+    const CAmount totalAmountNeeded = nTargetValue + minimumNoDustChange;
+    if(totalAmountNeeded > maximumAmountAvailable) return {};
 
-        std::sort(
-            inputsToSpendAndSignatureSizeEstimates.begin(),
-            inputsToSpendAndSignatureSizeEstimates.end(),
-            [totalAmountNeeded,availableTxSize](const InputToSpendAndSigSize& inputA, const InputToSpendAndSigSize& inputB)
-            {
-                const CAmount gapA = availableTxSize*inputA.outputRef->Value() - inputA.sigSize*totalAmountNeeded;
-                const CAmount gapB = availableTxSize*inputB.outputRef->Value() - inputB.sigSize*totalAmountNeeded;
-                return gapA > gapB || (gapA == gapB && inputA.outputRef->Value() > inputB.outputRef->Value() );
-            });
-        CAmount amountCovered =0;
-        unsigned cummulativeByteSize = initialByteSize + nominalChangeOutputSize;
-        for(const InputToSpendAndSigSize& inputAndSigSize: inputsToSpendAndSignatureSizeEstimates)
+    std::sort(
+        inputsToSpendAndSignatureSizeEstimates.begin(),
+        inputsToSpendAndSignatureSizeEstimates.end(),
+        [totalAmountNeeded](const InputToSpendAndSigSize& inputA, const InputToSpendAndSigSize& inputB)
         {
-            inputsSelected.insert(*inputAndSigSize.outputRef);
-            amountCovered += inputAndSigSize.outputRef->Value();
-            cummulativeByteSize += inputAndSigSize.sigSize;
-            if(cummulativeByteSize > maximumTxSize) break;
-            if(amountCovered >= totalAmountNeeded)
+            const CAmount gapA = inputA.outputRef->Value() - minRelayTxFee.GetFee(inputA.sigSize);
+            const CAmount gapB = inputB.outputRef->Value() - minRelayTxFee.GetFee(inputB.sigSize);
+            if(gapA >= totalAmountNeeded && gapB >= totalAmountNeeded)
             {
-                success = true;
-                fees = minRelayTxFee.GetFee(cummulativeByteSize);
-                return inputsSelected;
+                return inputA.outputRef->Value() < inputB.outputRef->Value();
             }
+            return gapA > gapB || (gapA == gapB && inputA.outputRef->Value() > inputB.outputRef->Value() );
+        });
+    CAmount amountCovered =0;
+    unsigned cummulativeByteSize = initialByteSize + nominalChangeOutputSize;
+    for(const InputToSpendAndSigSize& inputAndSigSize: inputsToSpendAndSignatureSizeEstimates)
+    {
+        inputsSelected.insert(*inputAndSigSize.outputRef);
+        amountCovered += inputAndSigSize.outputRef->Value();
+        cummulativeByteSize += inputAndSigSize.sigSize;
+        if(cummulativeByteSize >= MAX_TRANSACTION_SIZE) return {};
+        if(amountCovered >= totalAmountNeeded)
+        {
+            success = true;
+            fees = minRelayTxFee.GetFee(cummulativeByteSize);
+            return inputsSelected;
         }
-        ++sizeIncrementsCounter;
     }
     return {};
 }

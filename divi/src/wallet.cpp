@@ -41,6 +41,7 @@
 #include <StochasticSubsetSelectionAlgorithm.h>
 #include <CoinControlSelectionAlgorithm.h>
 #include <MinimumFeeCoinSelectionAlgorithm.h>
+#include <SignatureSizeEstimator.h>
 
 #include "Settings.h"
 extern Settings& settings;
@@ -195,7 +196,8 @@ CWallet::CWallet(const CChain& chain, const BlockMap& blockMap
     , pwalletdbEncryption(NULL)
     , walletStakingOnly(false)
     , allowSpendingZeroConfirmationOutputs(false)
-    , defaultCoinSelectionAlgorithm_(new MinimumFeeCoinSelectionAlgorithm(*this))
+    , signatureSizeEstimator_(new SignatureSizeEstimator())
+    , defaultCoinSelectionAlgorithm_(new MinimumFeeCoinSelectionAlgorithm(*this,*signatureSizeEstimator_))
     , defaultKeyPoolTopUp(0)
 {
     SetNull();
@@ -211,6 +213,7 @@ CWallet::CWallet(const std::string& strWalletFileIn, const CChain& chain, const 
 CWallet::~CWallet()
 {
     defaultCoinSelectionAlgorithm_.reset();
+    signatureSizeEstimator_.reset();
     delete pwalletdbEncryption;
     pwalletdbEncryption = NULL;
     outputTracker_.reset();

@@ -7,12 +7,15 @@
 #include <FeeAndPriorityCalculator.h>
 #include <FeeRate.h>
 #include <version.h>
+#include <I_SignatureSizeEstimator.h>
 
 extern CFeeRate minRelayTxFee;
 
 MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(
-    const CKeyStore& keyStore
+    const CKeyStore& keyStore,
+    const I_SignatureSizeEstimator& estimator
     ): keyStore_(keyStore)
+    , estimator_(estimator)
 {
 }
 struct InputToSpendAndSigSize
@@ -23,11 +26,12 @@ struct InputToSpendAndSigSize
 
     InputToSpendAndSigSize(
         const COutput& output,
-        const CKeyStore& keyStore
+        const CKeyStore& keyStore,
+        const I_SignatureSizeEstimator& estimator
         ): outputRef(&output)
         , value(outputRef->Value())
         , sigSize(
-            SignatureSizeEstimator().MaxBytesNeededForSigning(
+            estimator.MaxBytesNeededForSigning(
                 keyStore,
                 outputRef->scriptPubKey())+40u)
     {
@@ -50,7 +54,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     inputsToSpendAndSignatureSizeEstimates.reserve(vCoins.size());
     for(const COutput& input: vCoins)
     {
-        inputsToSpendAndSignatureSizeEstimates.emplace_back(input,keyStore_);
+        inputsToSpendAndSignatureSizeEstimates.emplace_back(input,keyStore_,estimator_);
         maximumAmountAvailable+= input.Value();
     }
 
@@ -72,9 +76,9 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
             const CAmount gapB = inputB.outputRef->Value() - minRelayTxFee.GetFee(inputB.sigSize);
             if(gapA >= totalAmountNeeded && gapB >= totalAmountNeeded)
             {
-                return inputA.outputRef->Value() < inputB.outputRef->Value();
+                return inputA.sigSize < inputB.sigSize;
             }
-            return gapA > gapB || (gapA == gapB && inputA.outputRef->Value() > inputB.outputRef->Value() );
+            return gapA > gapB || (gapA == gapB && inputA.sigSize < inputB.sigSize);
         });
     CAmount amountCovered =0;
     unsigned cummulativeByteSize = initialByteSize + nominalChangeOutputSize;

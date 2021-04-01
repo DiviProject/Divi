@@ -104,6 +104,7 @@ BITCOIN_TESTS =\
   test/LotteryWinnersCalculatorTests.cpp \
   test/VaultManager_tests.cpp \
   test/multi_wallet_tests.cpp \
+  test/MockSignatureSizeEstimator.h \
   test/MinimumFeeCoinSelectionAlgorithm_tests.cpp
 
 if ENABLE_WALLET

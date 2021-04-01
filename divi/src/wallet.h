@@ -27,6 +27,7 @@
 #include <OutputEntry.h>
 #include <Output.h>
 
+class I_SignatureSizeEstimator;
 class I_CoinSelectionAlgorithm;
 class CKeyMetadata;
 class CKey;
@@ -163,6 +164,7 @@ private:
     std::set<int64_t> setExternalKeyPool;
     bool walletStakingOnly;
     bool allowSpendingZeroConfirmationOutputs;
+    std::unique_ptr<I_SignatureSizeEstimator> signatureSizeEstimator_;
     std::unique_ptr<I_CoinSelectionAlgorithm> defaultCoinSelectionAlgorithm_;
 public:
     int64_t defaultKeyPoolTopUp;

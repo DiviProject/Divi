@@ -2234,51 +2234,46 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
     {
         return {translate("Transaction amounts must be positive. Total output may not exceed limits."),false};
     }
-    while (true)
+    txNew.vin.clear();
+    // Choose coins to use
+    std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
+    CAmount nValueIn = AttachInputs(setCoins,txNew);
+    CAmount nTotalValue = totalValueToSend + nFeeRet;
+    if (setCoins.empty() || nValueIn < nTotalValue)
     {
-        txNew.vin.clear();
-        // Choose coins to use
-        std::set<COutput> setCoins = coinSelector->SelectCoins(txNew,vCoins,nFeeRet);
-        CAmount nValueIn = AttachInputs(setCoins,txNew);
-        CAmount nTotalValue = totalValueToSend + nFeeRet;
-        if (setCoins.empty() || nValueIn < nTotalValue)
-        {
-            return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};
-        }
-
-        if(!MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput))
-        {
-            changeUsed = true;
-            *static_cast<CTransaction*>(&wtxNew) = AttachChangeOutputAndSignInputs(walletKeyStore,setCoins,txNew,changeOutput);
-        }
-        else
-        {
-            changeUsed = false;
-            *static_cast<CTransaction*>(&wtxNew) = SignInputs(walletKeyStore,setCoins,txNew);
-        }
-        if(wtxNew.IsNull())
-        {
-            return {translate("Signing transaction failed"),false};
-        }
-
-        const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,totalValueToSend,nFeeRet);
-        if(status == FeeSufficiencyStatus::TX_TOO_LARGE)
-        {
-            return {translate("Transaction too large"),false};
-        }
-        else if(status==FeeSufficiencyStatus::HAS_ENOUGH_FEES)
-        {
-            if(changeUsed)
-            {
-                CPubKey vchPubKey;
-                assert(reservekey.GetReservedKey(vchPubKey, true));
-            }
-            return {std::string(""),true};
-        }
-
-        continue;
+        return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};
     }
-    return {translate("Unknown error"),false};
+
+    if(!MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput))
+    {
+        changeUsed = true;
+        *static_cast<CTransaction*>(&wtxNew) = AttachChangeOutputAndSignInputs(walletKeyStore,setCoins,txNew,changeOutput);
+    }
+    else
+    {
+        changeUsed = false;
+        *static_cast<CTransaction*>(&wtxNew) = SignInputs(walletKeyStore,setCoins,txNew);
+    }
+    if(wtxNew.IsNull())
+    {
+        return {translate("Signing transaction failed"),false};
+    }
+
+    const FeeSufficiencyStatus status = CheckFeesAreSufficientAndUpdateFeeAsNeeded(wtxNew,setCoins,totalValueToSend,nFeeRet);
+    if(status == FeeSufficiencyStatus::TX_TOO_LARGE)
+    {
+        return {translate("Transaction too large"),false};
+    }
+    else if(status==FeeSufficiencyStatus::HAS_ENOUGH_FEES)
+    {
+        if(changeUsed)
+        {
+            CPubKey vchPubKey;
+            assert(reservekey.GetReservedKey(vchPubKey, true));
+        }
+        return {std::string(""),true};
+    }
+    return {translate("Selected too few inputs to meet fees"),false};
 }
 
 std::pair<std::string,bool> CWallet::CreateTransaction(

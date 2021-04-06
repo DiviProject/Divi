@@ -2089,7 +2089,7 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
 CTransaction SignInputs(
     const CKeyStore& keyStore,
     const std::set<COutput>& setCoins,
-    CMutableTransaction txWithoutChange)
+    CMutableTransaction& txWithoutChange)
 {
     // Sign
     int nIn = 0;
@@ -2193,9 +2193,10 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
     return FeeSufficiencyStatus::HAS_ENOUGH_FEES;
 }
 
-static bool MergeChangeOutputIntoFees(
+static bool SetChangeOutput(
     CAmount totalInputs,
     CAmount totalOutputsPlusFees,
+    CMutableTransaction& txNew,
     CAmount& nFeeRet,
     CTxOut& changeOutput)
 {
@@ -2207,7 +2208,11 @@ static bool MergeChangeOutputIntoFees(
         changeOutput.nValue = 0;
         changeUsed = false;
     }
-    return !changeUsed;
+    if(changeUsed)
+    {
+        AttachChangeOutput(changeOutput,txNew);
+    }
+    return changeUsed;
 }
 
 static CAmount AttachInputs(
@@ -2232,7 +2237,6 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
     CReserveKey& reservekey,
     CWalletTx& wtxNew)
 {
-    bool changeUsed = false;
     CTxOut changeOutput = CreateChangeOutput(reservekey);
     const CAmount totalValueToSend = txNew.GetValueOut();
     CAmount nFeeRet = 0;
@@ -2250,16 +2254,8 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
         return {translate("Insufficient funds to meet coin selection algorithm requirements."),false};
     }
 
-    if(!MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput))
-    {
-        changeUsed = true;
-        *static_cast<CTransaction*>(&wtxNew) = AttachChangeOutputAndSignInputs(walletKeyStore,setCoins,txNew,changeOutput);
-    }
-    else
-    {
-        changeUsed = false;
-        *static_cast<CTransaction*>(&wtxNew) = SignInputs(walletKeyStore,setCoins,txNew);
-    }
+    bool changeUsed = SetChangeOutput(nValueIn,nTotalValue,txNew,nFeeRet,changeOutput);
+    *static_cast<CTransaction*>(&wtxNew) = SignInputs(walletKeyStore,setCoins,txNew);
     if(wtxNew.IsNull())
     {
         return {translate("Signing transaction failed"),false};

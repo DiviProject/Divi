@@ -2086,42 +2086,6 @@ bool EnsureNoOutputsAreDust(const CMutableTransaction& txNew)
     return true;
 }
 
-CTransaction SignInputs(
-    const CKeyStore& keyStore,
-    const std::set<COutput>& setCoins,
-    CMutableTransaction& txWithoutChange)
-{
-    // Sign
-    int nIn = 0;
-    for(const COutput& coin: setCoins)
-    {
-        if (!SignSignature(keyStore, *coin.tx, txWithoutChange, nIn++))
-        {
-            return CTransaction();
-        }
-    }
-    return CTransaction(txWithoutChange);
-}
-
-void AttachChangeOutput(
-    const CTxOut& changeOutput,
-    CMutableTransaction& txWithoutChange)
-{
-    const int changeIndex = GetRandInt(txWithoutChange.vout.size() + 1);
-    txWithoutChange.vout.insert(txWithoutChange.vout.begin() + changeIndex, changeOutput);
-}
-
-CTransaction AttachChangeOutputAndSignInputs(
-    const CKeyStore& keyStore,
-    const std::set<COutput>& setCoins,
-    CMutableTransaction txWithoutChange,
-    const CTxOut& changeOutput)
-{
-    // Attach Change Output
-    AttachChangeOutput(changeOutput,txWithoutChange);
-    return SignInputs(keyStore,setCoins,txWithoutChange);
-}
-
 CTxOut CreateChangeOutput(CReserveKey& reservekey)
 {
     CTxOut changeOutput;
@@ -2191,6 +2155,31 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
         return FeeSufficiencyStatus::NEEDS_MORE_FEES;
     }
     return FeeSufficiencyStatus::HAS_ENOUGH_FEES;
+}
+
+static CTransaction SignInputs(
+    const CKeyStore& keyStore,
+    const std::set<COutput>& setCoins,
+    CMutableTransaction& txWithoutChange)
+{
+    // Sign
+    int nIn = 0;
+    for(const COutput& coin: setCoins)
+    {
+        if (!SignSignature(keyStore, *coin.tx, txWithoutChange, nIn++))
+        {
+            return CTransaction();
+        }
+    }
+    return CTransaction(txWithoutChange);
+}
+
+static void AttachChangeOutput(
+    const CTxOut& changeOutput,
+    CMutableTransaction& txWithoutChange)
+{
+    const int changeIndex = GetRandInt(txWithoutChange.vout.size() + 1);
+    txWithoutChange.vout.insert(txWithoutChange.vout.begin() + changeIndex, changeOutput);
 }
 
 static bool SetChangeOutput(

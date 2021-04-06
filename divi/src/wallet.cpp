@@ -2219,7 +2219,7 @@ static CAmount AttachInputs(
 }
 
 static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
-    const CWallet& wallet,
+    const CKeyStore& walletKeyStore,
     const I_CoinSelectionAlgorithm* coinSelector,
     const std::vector<COutput>& vCoins,
     CMutableTransaction& txNew,
@@ -2249,12 +2249,12 @@ static std::pair<string,bool> SelectInputsProvideSignaturesAndFees(
         if(!MergeChangeOutputIntoFees(nValueIn,nTotalValue,nFeeRet,changeOutput))
         {
             changeUsed = true;
-            *static_cast<CTransaction*>(&wtxNew) = AttachChangeOutputAndSignInputs(wallet,setCoins,txNew,changeOutput);
+            *static_cast<CTransaction*>(&wtxNew) = AttachChangeOutputAndSignInputs(walletKeyStore,setCoins,txNew,changeOutput);
         }
         else
         {
             changeUsed = false;
-            *static_cast<CTransaction*>(&wtxNew) = SignInputs(wallet,setCoins,txNew);
+            *static_cast<CTransaction*>(&wtxNew) = SignInputs(walletKeyStore,setCoins,txNew);
         }
         if(wtxNew.IsNull())
         {

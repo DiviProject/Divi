@@ -2280,30 +2280,25 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     }
 
     wtxNew.fTimeReceivedIsTxTime = true;
+    wtxNew.createdByMe = true;
     wtxNew.RecomputeCachedQuantities();
     CMutableTransaction txNew;
 
+    LOCK2(cs_main, cs_wallet);
+    std::vector<COutput> vCoins;
+    AvailableCoins(vCoins, true, false, coin_type);
+    if(coinSelector == nullptr)
     {
-        LOCK2(cs_main, cs_wallet);
-        {
-            std::vector<COutput> vCoins;
-            AvailableCoins(vCoins, true, false, coin_type);
-            if(coinSelector == nullptr)
-            {
-                coinSelector = defaultCoinSelectionAlgorithm_.get();
-            }
-
-            wtxNew.createdByMe = true;
-            // vouts to the payees
-            AppendOutputs(vecSend,txNew);
-            if(!EnsureNoOutputsAreDust(txNew))
-            {
-                return {translate("Transaction output(s) amount too small"),false};
-            }
-            return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,txNew,reservekey,wtxNew);
-        }
+        coinSelector = defaultCoinSelectionAlgorithm_.get();
     }
-    return {std::string(""),true};
+
+    // vouts to the payees
+    AppendOutputs(vecSend,txNew);
+    if(!EnsureNoOutputsAreDust(txNew))
+    {
+        return {translate("Transaction output(s) amount too small"),false};
+    }
+    return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,txNew,reservekey,wtxNew);
 }
 
 /**

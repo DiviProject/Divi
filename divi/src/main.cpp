@@ -856,7 +856,7 @@ bool CheckFeesPaidAreAcceptable(
     return true;
 }
 
-bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees)
+bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool ignoreFees)
 {
     AssertLockHeld(cs_main);
     if (pfMissingInputs)
@@ -990,10 +990,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                 return false;
             }
         }
-
-        if (fRejectInsaneFee && nFees > maxTxFee)
-            return error("AcceptToMemoryPool: : insane fees %s, %d > %d",
-                         hash, nFees, maxTxFee);
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
@@ -3798,7 +3794,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         mapAlreadyAskedFor.erase(inv);
 
-        if ( AcceptToMemoryPool(mempool, state, tx, true, &fMissingInputs, false, ignoreFees)) {
+        if ( AcceptToMemoryPool(mempool, state, tx, true, &fMissingInputs, ignoreFees)) {
             mempool.check(pcoinsTip);
             RelayTransaction(tx);
             vWorkQueue.push_back(inv.hash);

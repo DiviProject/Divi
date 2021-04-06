@@ -819,6 +819,26 @@ Value signrawtransaction(const Array& params, bool fHelp)
     return result;
 }
 
+static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransaction& tx)
+{
+    LOCK(mempool.cs);
+    CCoinsView dummy;
+    CCoinsViewCache view(&dummy);
+    CCoinsViewMemPool viewMemPool(pcoinsTip, mempool);
+    view.SetBackend(viewMemPool);
+
+    CAmount totalInputs= 0;
+    for(const CTxIn& in: tx.vin)
+    {
+        if((!view.HaveCoins(in.prevout.hash)))
+        {
+            return std::make_pair(-1,false);
+        }
+        totalInputs += view.GetOutputFor(in).nValue;
+    }
+    return std::make_pair(totalInputs - tx.GetValueOut(),true) ;
+}
+
 Value sendrawtransaction(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
@@ -856,8 +876,18 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     bool fHaveChain = existingCoins && existingCoins->nHeight < 1000000000;
     if (!fHaveMempool && !fHaveChain) {
         // push to local node and sync with wallets
+        std::pair<CAmount,bool> feeTotalsAndStatus = ComputeFeeTotalsAndIfInputsAreKnown(tx);
+        if(!feeTotalsAndStatus.second)
+        {
+            throw JSONRPCError(RPC_TRANSACTION_REJECTED, "Unknown inputs being spent");
+        }
+        if(!fOverrideFees && feeTotalsAndStatus.first > maxTxFee)
+        {
+            throw JSONRPCError(RPC_TRANSACTION_REJECTED, "Fees being paid are in excess of maximum fee, but fee override is not provided");
+        }
         CValidationState state;
-        if (!AcceptToMemoryPool(mempool, state, tx, false, NULL, !fOverrideFees)) {
+        if (!AcceptToMemoryPool(mempool, state, tx, false, NULL))
+        {
             if (state.IsInvalid())
                 throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
             else

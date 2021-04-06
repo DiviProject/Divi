@@ -54,7 +54,7 @@ public:
     int GetNumberOfBlockConfirmations(bool enableIX = true) const;
     bool IsInMainChain() const;
     int GetBlocksToMaturity() const;
-    bool AcceptToMemoryPool(bool fLimitFree = true, bool fRejectInsaneFee = true, bool ignoreFees = false);
+    bool AcceptToMemoryPool(bool fLimitFree = true, bool ignoreFees = false);
     int GetTransactionLockSignatures() const;
     bool IsTransactionLockTimedOut() const;
 };

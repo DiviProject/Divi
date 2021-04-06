@@ -60,7 +60,6 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
     }
 
 
-    bool success = false;
     constexpr unsigned MAX_TRANSACTION_SIZE = 100000u;
     std::set<COutput> inputsSelected;
     inputsSelected.clear();
@@ -91,7 +90,6 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         if(cummulativeByteSize >= MAX_TRANSACTION_SIZE) return {};
         if(amountCovered >= totalAmountNeeded)
         {
-            success = true;
             fees += std::min(minRelayTxFee.GetFee(cummulativeByteSize),maxTxFee);
             return inputsSelected;
         }

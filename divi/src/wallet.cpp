@@ -2300,14 +2300,6 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
     {
         LOCK2(cs_main, cs_wallet);
         {
-            wtxNew.createdByMe = true;
-            // vouts to the payees
-            AppendOutputs(vecSend,txNew);
-            if(!EnsureNoOutputsAreDust(txNew))
-            {
-                return {translate("Transaction output(s) amount too small"),false};
-            }
-
             std::vector<COutput> vCoins;
             AvailableCoins(vCoins, true, false, coin_type);
             if(coinSelector == nullptr)
@@ -2315,6 +2307,13 @@ std::pair<std::string,bool> CWallet::CreateTransaction(
                 coinSelector = defaultCoinSelectionAlgorithm_.get();
             }
 
+            wtxNew.createdByMe = true;
+            // vouts to the payees
+            AppendOutputs(vecSend,txNew);
+            if(!EnsureNoOutputsAreDust(txNew))
+            {
+                return {translate("Transaction output(s) amount too small"),false};
+            }
             return SelectInputsProvideSignaturesAndFees(*this, coinSelector,vCoins,txNew,reservekey,wtxNew);
         }
     }

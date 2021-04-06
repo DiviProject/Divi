@@ -160,7 +160,7 @@ void Misbehaving(NodeId nodeid, int howmuch);
 void FlushStateToDisk();
 
 /** (try to) add transaction to memory pool **/
-bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool ignoreFees = false);
+bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs = nullptr, bool ignoreFees = false);
 
 int GetIXConfirmations(uint256 nTXHash);
 

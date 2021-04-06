@@ -10,6 +10,7 @@
 #include <I_SignatureSizeEstimator.h>
 
 extern CFeeRate minRelayTxFee;
+extern CAmount maxTxFee;
 
 MinimumFeeCoinSelectionAlgorithm::MinimumFeeCoinSelectionAlgorithm(
     const CKeyStore& keyStore,
@@ -91,7 +92,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         if(amountCovered >= totalAmountNeeded)
         {
             success = true;
-            fees = minRelayTxFee.GetFee(cummulativeByteSize);
+            fees = std::min(minRelayTxFee.GetFee(cummulativeByteSize),maxTxFee);
             return inputsSelected;
         }
     }

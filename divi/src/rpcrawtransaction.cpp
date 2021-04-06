@@ -827,16 +827,14 @@ static std::pair<CAmount,bool> ComputeFeeTotalsAndIfInputsAreKnown(const CTransa
     CCoinsViewMemPool viewMemPool(pcoinsTip, mempool);
     view.SetBackend(viewMemPool);
 
-    CAmount totalInputs= 0;
-    for(const CTxIn& in: tx.vin)
+    if(!view.HaveInputs(tx))
     {
-        if((!view.HaveCoins(in.prevout.hash)))
-        {
-            return std::make_pair(-1,false);
-        }
-        totalInputs += view.GetOutputFor(in).nValue;
+        return std::make_pair(-1,false);
     }
-    return std::make_pair(totalInputs - tx.GetValueOut(),true) ;
+    else
+    {
+        return std::make_pair(view.GetValueIn(tx) - tx.GetValueOut(),true) ;
+    }
 }
 
 Value sendrawtransaction(const Array& params, bool fHelp)

@@ -8,6 +8,7 @@
 #include <FeeRate.h>
 #include <version.h>
 #include <I_SignatureSizeEstimator.h>
+#include <defaultValues.h>
 
 extern CFeeRate minRelayTxFee;
 extern CAmount maxTxFee;
@@ -59,8 +60,6 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         maximumAmountAvailable+= input.Value();
     }
 
-
-    constexpr unsigned MAX_TRANSACTION_SIZE = 100000u;
     std::set<COutput> inputsSelected;
     inputsSelected.clear();
     const CAmount minimumNoDustChange = FeeAndPriorityCalculator::instance().MinimumValueForNonDust();
@@ -87,7 +86,7 @@ std::set<COutput> MinimumFeeCoinSelectionAlgorithm::SelectCoins(
         inputsSelected.insert(*inputAndSigSize.outputRef);
         amountCovered += inputAndSigSize.outputRef->Value();
         cummulativeByteSize += inputAndSigSize.sigSize;
-        if(cummulativeByteSize >= MAX_TRANSACTION_SIZE) return {};
+        if(cummulativeByteSize >= MAX_STANDARD_TX_SIZE) return {};
         if(amountCovered >= totalAmountNeeded)
         {
             fees += std::min(minRelayTxFee.GetFee(cummulativeByteSize),maxTxFee);

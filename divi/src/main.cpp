@@ -985,12 +985,9 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
         // Don't accept it if it can't get into a block
         // but prioritise dstx and don't check fees for it
-        if (!ignoreFees)
+        if (!ignoreFees && !CheckFeesPaidAreAcceptable(tx,nSize,nFees,chainActive.Height(),fLimitFree,view,state))
         {
-            if(!CheckFeesPaidAreAcceptable(tx,nSize,nFees,chainActive.Height(),fLimitFree,view,state))
-            {
-                return false;
-            }
+            return false;
         }
 
         // Check against previous transactions

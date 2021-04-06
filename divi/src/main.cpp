@@ -1627,7 +1627,7 @@ bool static DisconnectTip(CValidationState& state)
         // ignore validation errors in resurrected transactions
         std::list<CTransaction> removed;
         CValidationState stateDummy;
-        if (tx.IsCoinBase() || tx.IsCoinStake() || !AcceptToMemoryPool(mempool, stateDummy, tx, false, NULL))
+        if (tx.IsCoinBase() || tx.IsCoinStake() || !AcceptToMemoryPool(mempool, stateDummy, tx, false))
             mempool.remove(tx, removed, true);
     }
     mempool.removeCoinbaseSpends(pcoinsTip, pindexDelete->nHeight);

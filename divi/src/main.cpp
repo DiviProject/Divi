@@ -976,10 +976,8 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                                  REJECT_NONSTANDARD, "bad-txns-too-many-sigops");
         }
 
-        CAmount nValueOut = tx.GetValueOut();
-        CAmount nFees = nValueIn - nValueOut;
+        const CAmount nFees = nValueIn - tx.GetValueOut();
         double dPriority = view.GetPriority(tx, chainActive.Height());
-
         CTxMemPoolEntry entry(tx, nFees, GetTime(), dPriority, chainActive.Height());
         unsigned int nSize = entry.GetTxSize();
 

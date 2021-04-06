@@ -20,7 +20,7 @@ extern CChain chainActive;
 extern bool fEnableSwiftTX;
 extern int nSwiftTXDepth;
 
-bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool ignoreFees);
+bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool ignoreFees = false);
 
 
 CMerkleTx::CMerkleTx(
@@ -149,10 +149,10 @@ int CMerkleTx::GetBlocksToMaturity() const
 }
 
 
-bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree, bool ignoreFees)
+bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree)
 {
     CValidationState state;
-    bool fAccepted = ::AcceptToMemoryPool(mempool, state, *this, fLimitFree, NULL, ignoreFees);
+    bool fAccepted = ::AcceptToMemoryPool(mempool, state, *this, fLimitFree, NULL);
     if (!fAccepted)
         LogPrintf("%s : %s\n", __func__, state.GetRejectReason());
     return fAccepted;

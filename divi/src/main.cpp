@@ -3776,7 +3776,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CTransaction tx;
 
         //masternode signed transaction
-        bool ignoreFees = false;
         CTxIn vin;
         std::vector<unsigned char> vchSig;
 
@@ -3794,7 +3793,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         mapAlreadyAskedFor.erase(inv);
 
-        if ( AcceptToMemoryPool(mempool, state, tx, true, &fMissingInputs, ignoreFees)) {
+        if ( AcceptToMemoryPool(mempool, state, tx, true, &fMissingInputs))
+        {
             mempool.check(pcoinsTip);
             RelayTransaction(tx);
             vWorkQueue.push_back(inv.hash);

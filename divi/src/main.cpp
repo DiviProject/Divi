@@ -831,6 +831,7 @@ bool CheckFeesPaidAreAcceptable(
     const CTransaction& tx,
     const unsigned nSize,
     const CAmount nFees,
+    const int currentChainHeight,
     bool fLimitFree,
     const CCoinsViewCache& view,
     CValidationState& state)
@@ -845,7 +846,7 @@ bool CheckFeesPaidAreAcceptable(
     // Require that free transactions have sufficient priority to be mined in the next block.
     if (settings.GetBoolArg("-relaypriority", true) &&
         nFees < minimumRelayFee &&
-        !AllowFree(view.GetPriority(tx, chainActive.Height() + 1)))
+        !AllowFree(view.GetPriority(tx, currentChainHeight + 1)))
     {
         return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "insufficient priority");
     }
@@ -986,7 +987,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         // but prioritise dstx and don't check fees for it
         if (!ignoreFees)
         {
-            if(!CheckFeesPaidAreAcceptable(tx,nSize,nFees,fLimitFree,view,state))
+            if(!CheckFeesPaidAreAcceptable(tx,nSize,nFees,chainActive.Height(),fLimitFree,view,state))
             {
                 return false;
             }

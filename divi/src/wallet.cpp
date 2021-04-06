@@ -2103,6 +2103,14 @@ CTransaction SignInputs(
     return CTransaction(txWithoutChange);
 }
 
+void AttachChangeOutput(
+    const CTxOut& changeOutput,
+    CMutableTransaction& txWithoutChange)
+{
+    const int changeIndex = GetRandInt(txWithoutChange.vout.size() + 1);
+    txWithoutChange.vout.insert(txWithoutChange.vout.begin() + changeIndex, changeOutput);
+}
+
 CTransaction AttachChangeOutputAndSignInputs(
     const CKeyStore& keyStore,
     const std::set<COutput>& setCoins,
@@ -2110,9 +2118,7 @@ CTransaction AttachChangeOutputAndSignInputs(
     const CTxOut& changeOutput)
 {
     // Attach Change Output
-    const int changeIndex = GetRandInt(txWithoutChange.vout.size() + 1);
-    txWithoutChange.vout.insert(txWithoutChange.vout.begin() + changeIndex, changeOutput);
-
+    AttachChangeOutput(changeOutput,txWithoutChange);
     return SignInputs(keyStore,setCoins,txWithoutChange);
 }
 

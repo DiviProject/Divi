@@ -209,5 +209,23 @@ BOOST_AUTO_TEST_CASE(willPreferSelectingSmallerScripSigRequirementUTXOsWhenAmoun
     }
 }
 
+BOOST_AUTO_TEST_CASE(willIncreaseSpendingToCoverInitialFeeEstimateProvided)
+{
+    std::vector<CScript> scripts = { scriptGenerator(25),scriptGenerator(25),scriptGenerator(25)};
+    ON_CALL(mockSignatureSizeEstimator,MaxBytesNeededForSigning(_,scripts[0])).WillByDefault(Return(100u));
+    ON_CALL(mockSignatureSizeEstimator,MaxBytesNeededForSigning(_,scripts[1])).WillByDefault(Return(150u));
+    ON_CALL(mockSignatureSizeEstimator,MaxBytesNeededForSigning(_,scripts[2])).WillByDefault(Return(100u));
+    addSingleUtxo(4*COIN,scripts[0]);
+    addSingleUtxo(2*COIN+1500,scripts[1]);
+    addSingleUtxo(2*COIN+1000,scripts[2]);
+
+    std::vector<COutput> utxos = getSpendableOutputs();
+    CAmount toSpend = 5*COIN;
+    CMutableTransaction novelTx;
+    novelTx.vout.emplace_back(toSpend,RandomCScriptGenerator()(25u));
+    CAmount feesPaidEstimate = 1*COIN;
+    std::set<COutput> selectedUTXOs = algorithm.SelectCoins(novelTx,utxos,feesPaidEstimate);
+    BOOST_CHECK_MESSAGE(feesPaidEstimate > 1*COIN,"Initial fee estimate not covered");
+}
 
 BOOST_AUTO_TEST_SUITE_END()

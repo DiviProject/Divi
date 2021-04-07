@@ -57,34 +57,6 @@ static bool ParseInputReference(std::string strTxHash, std::string strOutputInde
     return true;
 }
 
-static bool GetMasternodeVinAndKeys(const CWallet& wallet, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash, std::string strOutputIndex)
-{
-    // wait for reindex and/or import to finish
-    if (fImporting || fReindex) return false;
-
-    if(!ParseInputReference(strTxHash,strOutputIndex,txinRet))
-    {
-        return false;
-    }
-    if(auto walletTx = wallet.GetWalletTx(txHash))
-    {
-        if(wallet.IsSpent(*walletTx, nOutputIndex))
-        {
-            LogPrintf("%s -- Could not locate specified masternode vin, outpoint spent\n",__func__);
-            return false;
-        }
-
-        return GetVinAndKeysFromOutput(wallet, walletTx.vout[txinRet.prevout.n].scriptPubKey, pubKeyRet, keyRet);
-    }
-    else
-    {
-        LogPrintf("%s -- Could not locate any valid masternode vin\n",__func__);
-        return false;
-    }
-
-    return false;
-}
-
 namespace
 {
 
@@ -110,24 +82,23 @@ bool setMasternodeKeys(
     return true;
 }
 bool setMasternodeCollateralKeys(
-    const std::string& txHash,
-    const std::string& outputIndex,
-    const std::string& service,
     bool collateralPrivKeyIsRemote,
-    CTxIn& txin,
+    const CKeyStore& keyStore,
+    const CScript& scriptPubKey,
+    const CTxIn& txin,
     std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
     std::string& strError)
 {
     if(collateralPrivKeyIsRemote)
     {
-        uint256 txid(txHash);
-        uint32_t outputIdx = static_cast<uint32_t>(std::stoi(outputIndex));
-        txin = CTxIn(txid,outputIdx);
         masternodeCollateralKeyPair = std::pair<CKey,CPubKey>();
         return true;
     }
-    if (!GetMasternodeVinAndKeys(*pwalletMain,txin, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first, txHash, outputIndex)) {
-        strError = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
+    if (fImporting || fReindex) return false;
+    if (!GetVinAndKeysFromOutput(keyStore,scriptPubKey, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first))
+    {
+        const COutPoint& outpoint = txin.prevout;
+        strError = strprintf("Could not allocate txin %s:%s for masternode", outpoint.hash.ToString(), std::to_string(outpoint.n));
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strError);
         return false;
     }
@@ -139,26 +110,16 @@ bool checkMasternodeCollateral(
     const std::string& txHash,
     const std::string& outputIndex,
     const std::string& service,
-    CTransaction& fundingTx,
+    const CTransaction& fundingTx,
     MasternodeTier& nMasternodeTier,
     std::string& strErrorRet)
 {
     nMasternodeTier = MasternodeTier::INVALID;
-    uint256 blockHash;
-    if(GetTransaction(txin.prevout.hash,fundingTx,blockHash,true))
+    const CAmount collateralAmount = fundingTx.vout[txin.prevout.n].nValue;
+    nMasternodeTier = CMasternode::GetTierByCollateralAmount(collateralAmount);
+    if(!CMasternode::IsTierValid(nMasternodeTier))
     {
-        const CAmount collateralAmount = fundingTx.vout[txin.prevout.n].nValue;
-        nMasternodeTier = CMasternode::GetTierByCollateralAmount(collateralAmount);
-        if(!CMasternode::IsTierValid(nMasternodeTier))
-        {
-            strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", service, collateralAmount);
-            LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
-            return false;
-        }
-    }
-    else
-    {
-        strErrorRet = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
+        strErrorRet = strprintf("Invalid tier selected for masternode %s, collateral value is: %d", service, collateralAmount);
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
@@ -173,18 +134,38 @@ bool createArgumentsFromConfig(
     CTxIn& txin,
     std::pair<CKey,CPubKey>& masternodeKeyPair,
     std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
-    MasternodeTier& nMasternodeTier
-    )
+    MasternodeTier& nMasternodeTier)
 {
     std::string strService = configEntry.getIp();
     std::string strKeyMasternode = configEntry.getPrivKey();
     std::string strTxHash = configEntry.getTxHash();
     std::string strOutputIndex = configEntry.getOutputIndex();
     CTransaction fundingTx;
+    uint256 blockHash;
+    const CKeyStore& walletKeyStore = *pwalletMain;
+
+    if (fImporting || fReindex) return false;
+
+    if(!ParseInputReference(strTxHash,strOutputIndex,txin))
+    {
+        return false;
+    }
+    if(!GetTransaction(txin.prevout.hash,fundingTx,blockHash,true))
+    {
+        strErrorRet = strprintf("Could not find txin %s:%s for masternode", strTxHash, strOutputIndex);
+        LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
+        return false;
+    }
     //need correct blocks to send ping
     if (!checkBlockchainSync(strErrorRet,fOffline)||
         !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
-        !setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,collateralPrivKeyIsRemote,txin,masternodeCollateralKeyPair,strErrorRet) ||
+        !setMasternodeCollateralKeys(
+            collateralPrivKeyIsRemote,
+            walletKeyStore,
+            fundingTx.vout[txin.prevout.n].scriptPubKey,
+            txin,
+            masternodeCollateralKeyPair,
+            strErrorRet) ||
         !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService, fundingTx,nMasternodeTier,strErrorRet))
     {
         return false;

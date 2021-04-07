@@ -239,7 +239,6 @@ public:
     void UnlockCoin(const COutPoint& output);
     void UnlockAllCoins();
     void ListLockedCoins(CoinVector& vOutpts);
-    CAmount GetTotalValue(Inputs vCoins);
 
     //  keystore implementation
     // Generate a new key

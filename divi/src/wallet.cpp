@@ -2373,23 +2373,6 @@ std::pair<std::string,bool> CWallet::SendMoney(
     return {std::string(""),true};
 }
 
-
-CAmount CWallet::GetTotalValue(std::vector<CTxIn> vCoins)
-{
-    CAmount nTotalValue = 0;
-    BOOST_FOREACH (CTxIn i, vCoins) {
-        const CWalletTx* wtx = GetWalletTx(i.prevout.hash);
-        if (wtx != nullptr) {
-            if (i.prevout.n < wtx->vout.size()) {
-                nTotalValue += wtx->vout[i.prevout.n].nValue;
-            }
-        } else {
-            LogPrintf("GetTotalValue -- Couldn't find transaction\n");
-        }
-    }
-    return nTotalValue;
-}
-
 DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
 {
     if (!fFileBacked)

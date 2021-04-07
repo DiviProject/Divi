@@ -37,10 +37,10 @@ public:
         std::string& strErrorRet);
 private:
     static void createWithoutSignatures(
-        CTxIn txin,
-        CService service,
-        CPubKey pubKeyCollateralAddressNew,
-        CPubKey pubKeyMasternodeNew,
+        const CTxIn& txin,
+        const CService& service,
+        const CPubKey& pubKeyCollateralAddressNew,
+        const CPubKey& pubKeyMasternodeNew,
         MasternodeTier nMasternodeTier,
         bool deferRelay,
         CMasternodeBroadcast& mnbRet);
@@ -57,45 +57,15 @@ private:
         CMasternodeBroadcast& mnb,
         std::string& strErrorRet);
 
-    static bool Create(CTxIn vin,
-                        CService service,
-                        CKey keyCollateralAddressNew,
-                        CPubKey pubKeyCollateralAddressNew,
-                        CKey keyMasternodeNew,
-                        CPubKey pubKeyMasternodeNew,
-                        MasternodeTier nMasternodeTier,
-                        std::string& strErrorRet,
-                        CMasternodeBroadcast& mnbRet,
-                        bool deferRelay);
-    static bool checkBlockchainSync(
-        std::string& strErrorRet, bool fOffline);
-    static bool setMasternodeKeys(
-        const std::string& strKeyMasternode,
-        std::pair<CKey,CPubKey>& masternodeKeyPair,
-        std::string& strErrorRet);
-    static bool setMasternodeCollateralKeys(
-        const std::string& txHash,
-        const std::string& outputIndex,
-        const std::string& service,
-        bool collateralPrivKeyIsRemote,
-        CTxIn& txin,
-        std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
-        std::string& error);
-    static bool checkMasternodeCollateral(
-        const CTxIn& txin,
-        const std::string& txHash,
-        const std::string& outputIndex,
-        const std::string& service,
-        MasternodeTier& nMasternodeTier,
-        std::string& strErrorRet);
-    static bool createArgumentsFromConfig(
-        const CMasternodeConfig::CMasternodeEntry configEntry,
-        std::string& strErrorRet,
-        bool fOffline,
-        bool collateralPrivKeyIsRemote,
-        CTxIn& txin,
-        std::pair<CKey,CPubKey>& masternodeKeyPair,
-        std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
-        MasternodeTier& nMasternodeTier);
+    static bool Create(const CTxIn& vin,
+                       const CService& service,
+                       const CKey& keyCollateralAddressNew,
+                       const CPubKey& pubKeyCollateralAddressNew,
+                       const CKey& keyMasternodeNew,
+                       const CPubKey& pubKeyMasternodeNew,
+                       MasternodeTier nMasternodeTier,
+                       std::string& strErrorRet,
+                       CMasternodeBroadcast& mnbRet,
+                       bool deferRelay);
 };
 #endif //MASTERNODE_BROADCAST_FACTORY_H

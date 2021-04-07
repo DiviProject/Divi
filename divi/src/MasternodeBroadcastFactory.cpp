@@ -17,7 +17,10 @@ extern CChain chainActive;
 extern bool fReindex;
 extern bool fImporting;
 
-bool CMasternodeBroadcastFactory::checkBlockchainSync(std::string& strErrorRet, bool fOffline)
+namespace
+{
+
+bool checkBlockchainSync(std::string& strErrorRet, bool fOffline)
 {
      if (!fOffline && !IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
@@ -26,7 +29,7 @@ bool CMasternodeBroadcastFactory::checkBlockchainSync(std::string& strErrorRet, 
     }
     return true;
 }
-bool CMasternodeBroadcastFactory::setMasternodeKeys(
+bool setMasternodeKeys(
     const std::string& strKeyMasternode,
     std::pair<CKey,CPubKey>& masternodeKeyPair,
     std::string& strErrorRet)
@@ -38,7 +41,7 @@ bool CMasternodeBroadcastFactory::setMasternodeKeys(
     }
     return true;
 }
-bool CMasternodeBroadcastFactory::setMasternodeCollateralKeys(
+bool setMasternodeCollateralKeys(
     const std::string& txHash,
     const std::string& outputIndex,
     const std::string& service,
@@ -63,7 +66,7 @@ bool CMasternodeBroadcastFactory::setMasternodeCollateralKeys(
     return true;
 }
 
-bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
+bool checkMasternodeCollateral(
     const CTxIn& txin,
     const std::string& txHash,
     const std::string& outputIndex,
@@ -95,7 +98,7 @@ bool CMasternodeBroadcastFactory::checkMasternodeCollateral(
     return true;
 }
 
-bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
+bool createArgumentsFromConfig(
     const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
     bool fOffline,
@@ -120,6 +123,8 @@ bool CMasternodeBroadcastFactory::createArgumentsFromConfig(
     }
     return true;
 }
+
+} // anonymous namespace
 
 bool CMasternodeBroadcastFactory::Create(
     const CMasternodeConfig::CMasternodeEntry configEntry,
@@ -278,10 +283,10 @@ CMasternodePing createDelayedMasternodePing(const CMasternodeBroadcast& mnb)
 } // anonymous namespace
 
 void CMasternodeBroadcastFactory::createWithoutSignatures(
-    CTxIn txin,
-    CService service,
-    CPubKey pubKeyCollateralAddressNew,
-    CPubKey pubKeyMasternodeNew,
+    const CTxIn& txin,
+    const CService& service,
+    const CPubKey& pubKeyCollateralAddressNew,
+    const CPubKey& pubKeyMasternodeNew,
     const MasternodeTier nMasternodeTier,
     bool deferRelay,
     CMasternodeBroadcast& mnbRet)
@@ -299,12 +304,12 @@ void CMasternodeBroadcastFactory::createWithoutSignatures(
 }
 
 bool CMasternodeBroadcastFactory::Create(
-    CTxIn txin,
-    CService service,
-    CKey keyCollateralAddressNew,
-    CPubKey pubKeyCollateralAddressNew,
-    CKey keyMasternodeNew,
-    CPubKey pubKeyMasternodeNew,
+    const CTxIn& txin,
+    const CService& service,
+    const CKey& keyCollateralAddressNew,
+    const CPubKey& pubKeyCollateralAddressNew,
+    const CKey& keyMasternodeNew,
+    const CPubKey& pubKeyMasternodeNew,
     const MasternodeTier nMasternodeTier,
     std::string& strErrorRet,
     CMasternodeBroadcast& mnbRet,

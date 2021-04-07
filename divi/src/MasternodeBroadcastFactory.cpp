@@ -13,7 +13,6 @@
 #include <WalletTx.h>
 #include <script/standard.h>
 
-extern CWallet* pwalletMain;
 extern CChain chainActive;
 extern bool fReindex;
 extern bool fImporting;

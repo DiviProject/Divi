@@ -26,6 +26,7 @@
 #include <MasternodeHelpers.h>
 #include <MasternodeBroadcastFactory.h>
 #include <spork.h>
+#include <keystore.h>
 
 #include <addrman.h>
 #include <blockmap.h>
@@ -271,7 +272,7 @@ ActiveMasternodeStatus GetActiveMasternodeStatus()
     return result;
 }
 
-MasternodeStartResult StartMasternode(std::string alias, bool deferRelay)
+MasternodeStartResult StartMasternode(const CKeyStore& keyStore,std::string alias, bool deferRelay)
 {
     MasternodeStartResult result;
     for(const auto& configEntry : masternodeConfig.getEntries())
@@ -282,6 +283,7 @@ MasternodeStartResult StartMasternode(std::string alias, bool deferRelay)
         CMasternodeBroadcast mnb;
 
         if(!CMasternodeBroadcastFactory::Create(
+                keyStore,
                 configEntry,
                 result.errorMessage,
                 mnb,

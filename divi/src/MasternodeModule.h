@@ -12,6 +12,7 @@ class CNode;
 class CMasternodeSync;
 class UIMessenger;
 class CMasternodePayments;
+class CKeyStore;
 
 void ThreadMasternodeBackgroundSync();
 bool LoadMasternodeConfigurations(std::string& errorMessage);
@@ -38,7 +39,7 @@ struct MasternodeStartResult
         , errorMessage("No Error Data")
     {}
 };
-MasternodeStartResult StartMasternode(std::string alias, bool deferRelay);
+MasternodeStartResult StartMasternode(const CKeyStore& keyStore, std::string alias, bool deferRelay);
 struct ActiveMasternodeStatus
 {
     bool activeMasternodeFound;

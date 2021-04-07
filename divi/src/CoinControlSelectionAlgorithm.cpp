@@ -13,6 +13,7 @@ std::set<COutput> CoinControlSelectionAlgorithm::SelectCoins(
     const std::vector<COutput>& vCoins,
     CAmount& fees) const
 {
+    CAmount totalInputs = 0;
     std::set<COutput> setCoinsRet;
     if(coinControl_ && coinControl_->HasSelected())
     {
@@ -24,8 +25,10 @@ std::set<COutput> CoinControlSelectionAlgorithm::SelectCoins(
                 continue;
             }
 
+            totalInputs += out.Value();
             setCoinsRet.insert(out);
         }
     }
+    fees = totalInputs - transactionToSelectCoinsFor.GetValueOut();
     return setCoinsRet;
 }

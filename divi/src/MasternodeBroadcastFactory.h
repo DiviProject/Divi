@@ -11,12 +11,14 @@
 
 class CMasternodeBroadcast;
 class CMasternodePing;
+class CKeyStore;
 
 class CMasternodeBroadcastFactory
 {
 public:
     /// Create Masternode broadcast, needs to be relayed manually after that
     static bool Create(
+        const CKeyStore& walletKeyStore,
         const CMasternodeConfig::CMasternodeEntry configEntry,
         std::string& strErrorRet,
         CMasternodeBroadcast& mnbRet,

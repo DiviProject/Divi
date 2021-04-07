@@ -121,6 +121,7 @@ bool checkMasternodeCollateral(
 }
 
 bool createArgumentsFromConfig(
+    const CKeyStore& walletKeyStore,
     const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
     bool fOffline,
@@ -136,7 +137,6 @@ bool createArgumentsFromConfig(
     std::string strOutputIndex = configEntry.getOutputIndex();
     CTransaction fundingTx;
     uint256 blockHash;
-    const CKeyStore& walletKeyStore = *pwalletMain;
 
     if (fImporting || fReindex) return false;
 
@@ -178,6 +178,7 @@ bool CMasternodeBroadcastFactory::Create(
     CMasternodeBroadcast& mnbRet,
     bool fOffline)
 {
+    static CBasicKeyStore dummyKeyStore;
     const bool collateralPrivateKeyIsRemote = true;
     const bool deferRelay = true;
     CTxIn txin;
@@ -186,6 +187,7 @@ bool CMasternodeBroadcastFactory::Create(
     MasternodeTier nMasternodeTier;
 
     if(!createArgumentsFromConfig(
+        dummyKeyStore,
         configEntry,
         strErrorRet,
         fOffline,
@@ -216,6 +218,7 @@ bool CMasternodeBroadcastFactory::Create(
 }
 
 bool CMasternodeBroadcastFactory::Create(
+    const CKeyStore& walletKeyStore,
     const CMasternodeConfig::CMasternodeEntry configEntry,
     std::string& strErrorRet,
     CMasternodeBroadcast& mnbRet,
@@ -234,6 +237,7 @@ bool CMasternodeBroadcastFactory::Create(
     MasternodeTier nMasternodeTier;
 
     if(!createArgumentsFromConfig(
+        walletKeyStore,
         configEntry,
         strErrorRet,
         fOffline,

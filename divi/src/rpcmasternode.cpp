@@ -479,7 +479,7 @@ Value startmasternode(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
     Object result;
-    MasternodeStartResult mnResult = StartMasternode(alias,deferRelay);
+    MasternodeStartResult mnResult = StartMasternode(*pwalletMain,alias,deferRelay);
 
     result.push_back(Pair("status",mnResult.status?"success":"failed"));
     if(!mnResult.status)

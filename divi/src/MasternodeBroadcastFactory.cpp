@@ -18,7 +18,7 @@ extern CChain chainActive;
 extern bool fReindex;
 extern bool fImporting;
 
-static bool GetVinAndKeysFromOutput(const CWallet& wallet, COutput out, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet)
+static bool GetVinAndKeysFromOutput(const CKeyStore& walletKeyStore, COutput out, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet)
 {
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;
@@ -38,7 +38,7 @@ static bool GetVinAndKeysFromOutput(const CWallet& wallet, COutput out, CTxIn& t
         return false;
     }
 
-    if (!wallet.GetKey(keyID, keyRet)) {
+    if (!walletKeyStore.GetKey(keyID, keyRet)) {
         LogPrintf("CWallet::GetVinAndKeysFromOutput -- Private key for address is not known\n");
         return false;
     }

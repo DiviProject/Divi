@@ -146,15 +146,19 @@ public:
 
 class CMasternodeBroadcast : public CMasternode
 {
-public:
-    CMasternodeBroadcast() = default;
+private:
     CMasternodeBroadcast(
-        CService newAddr,
-        CTxIn newVin,
-        CPubKey pubKeyCollateralAddress,
-        CPubKey pubKeyMasternode,
+        const CService& newAddr,
+        const CTxIn& newVin,
+        const CPubKey& pubKeyCollateralAddress,
+        const CPubKey& pubKeyMasternode,
         MasternodeTier nMasternodeTier,
         int protocolVersionIn);
+
+    friend class CMasternodeBroadcastFactory;
+
+public:
+    CMasternodeBroadcast() = default;
     CMasternodeBroadcast(const CMasternode& mn);
 
     void Relay() const;

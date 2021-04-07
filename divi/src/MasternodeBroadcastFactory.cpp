@@ -18,15 +18,10 @@ extern CChain chainActive;
 extern bool fReindex;
 extern bool fImporting;
 
-static bool GetVinAndKeysFromOutput(const CKeyStore& walletKeyStore, COutput out, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet)
+static bool GetVinAndKeysFromOutput(const CKeyStore& walletKeyStore, CScript pubScript, CPubKey& pubKeyRet, CKey& keyRet)
 {
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;
-
-    CScript pubScript;
-
-    txinRet = CTxIn(out.tx->GetHash(), out.i);
-    pubScript = out.tx->vout[out.i].scriptPubKey; // the inputs PubKey
 
     CTxDestination address1;
     ExtractDestination(pubScript, address1);
@@ -67,17 +62,10 @@ static bool GetMasternodeVinAndKeys(const CWallet& wallet, CTxIn& txinRet, CPubK
     // wait for reindex and/or import to finish
     if (fImporting || fReindex) return false;
 
-    // Find specific vin
-    uint256 txHash = uint256S(strTxHash);
-
-    int nOutputIndex;
-    try {
-        nOutputIndex = std::stoi(strOutputIndex.c_str());
-    } catch (const std::exception& e) {
-        LogPrintf("%s: %s on strOutputIndex\n", __func__, e.what());
+    if(!ParseInputReference(strTxHash,strOutputIndex,txinRet))
+    {
         return false;
     }
-
     if(auto walletTx = wallet.GetWalletTx(txHash))
     {
         if(wallet.IsSpent(*walletTx, nOutputIndex))
@@ -86,7 +74,7 @@ static bool GetMasternodeVinAndKeys(const CWallet& wallet, CTxIn& txinRet, CPubK
             return false;
         }
 
-        return GetVinAndKeysFromOutput(wallet, COutput(walletTx, nOutputIndex, walletTx->GetNumberOfBlockConfirmations(), true), txinRet, pubKeyRet, keyRet);
+        return GetVinAndKeysFromOutput(wallet, walletTx.vout[txinRet.prevout.n].scriptPubKey, pubKeyRet, keyRet);
     }
     else
     {

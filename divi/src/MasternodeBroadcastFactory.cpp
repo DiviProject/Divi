@@ -11,11 +11,76 @@
 #include <TransactionDiskAccessor.h>
 #include <timedata.h>
 #include <WalletTx.h>
+#include <script/standard.h>
 
 extern CWallet* pwalletMain;
 extern CChain chainActive;
 extern bool fReindex;
 extern bool fImporting;
+
+static bool GetVinAndKeysFromOutput(const CWallet& wallet, COutput out, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet)
+{
+    // wait for reindex and/or import to finish
+    if (fImporting || fReindex) return false;
+
+    CScript pubScript;
+
+    txinRet = CTxIn(out.tx->GetHash(), out.i);
+    pubScript = out.tx->vout[out.i].scriptPubKey; // the inputs PubKey
+
+    CTxDestination address1;
+    ExtractDestination(pubScript, address1);
+    CBitcoinAddress address2(address1);
+
+    CKeyID keyID;
+    if (!address2.GetKeyID(keyID)) {
+        LogPrintf("CWallet::GetVinAndKeysFromOutput -- Address does not refer to a key\n");
+        return false;
+    }
+
+    if (!wallet.GetKey(keyID, keyRet)) {
+        LogPrintf("CWallet::GetVinAndKeysFromOutput -- Private key for address is not known\n");
+        return false;
+    }
+
+    pubKeyRet = keyRet.GetPubKey();
+    return true;
+}
+
+static bool GetMasternodeVinAndKeys(const CWallet& wallet, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash, std::string strOutputIndex)
+{
+    // wait for reindex and/or import to finish
+    if (fImporting || fReindex) return false;
+
+    // Find specific vin
+    uint256 txHash = uint256S(strTxHash);
+
+    int nOutputIndex;
+    try {
+        nOutputIndex = std::stoi(strOutputIndex.c_str());
+    } catch (const std::exception& e) {
+        LogPrintf("%s: %s on strOutputIndex\n", __func__, e.what());
+        return false;
+    }
+
+    if(auto walletTx = wallet.GetWalletTx(txHash))
+    {
+        if(wallet.IsSpent(*walletTx, nOutputIndex))
+        {
+            LogPrintf("%s -- Could not locate specified masternode vin, outpoint spent\n",__func__);
+            return false;
+        }
+
+        return GetVinAndKeysFromOutput(wallet, COutput(walletTx, nOutputIndex, walletTx->GetNumberOfBlockConfirmations(), true), txinRet, pubKeyRet, keyRet);
+    }
+    else
+    {
+        LogPrintf("%s -- Could not locate any valid masternode vin\n",__func__);
+        return false;
+    }
+
+    return false;
+}
 
 namespace
 {
@@ -58,7 +123,7 @@ bool setMasternodeCollateralKeys(
         masternodeCollateralKeyPair = std::pair<CKey,CPubKey>();
         return true;
     }
-    if (!pwalletMain->GetMasternodeVinAndKeys(txin, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first, txHash, outputIndex)) {
+    if (!GetMasternodeVinAndKeys(*pwalletMain,txin, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first, txHash, outputIndex)) {
         strError = strprintf("Could not allocate txin %s:%s for masternode %s", txHash, outputIndex, service);
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strError);
         return false;

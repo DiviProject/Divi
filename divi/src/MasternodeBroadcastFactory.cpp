@@ -85,7 +85,7 @@ bool setMasternodeCollateralKeys(
     bool collateralPrivKeyIsRemote,
     const CKeyStore& keyStore,
     const CScript& scriptPubKey,
-    const CTxIn& txin,
+    const COutPoint& outpoint,
     std::pair<CKey,CPubKey>& masternodeCollateralKeyPair,
     std::string& strError)
 {
@@ -97,7 +97,6 @@ bool setMasternodeCollateralKeys(
     if (fImporting || fReindex) return false;
     if (!GetVinAndKeysFromOutput(keyStore,scriptPubKey, masternodeCollateralKeyPair.second, masternodeCollateralKeyPair.first))
     {
-        const COutPoint& outpoint = txin.prevout;
         strError = strprintf("Could not allocate txin %s:%s for masternode", outpoint.hash.ToString(), std::to_string(outpoint.n));
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strError);
         return false;
@@ -106,16 +105,11 @@ bool setMasternodeCollateralKeys(
 }
 
 bool checkMasternodeCollateral(
-    const CTxIn& txin,
-    const std::string& txHash,
-    const std::string& outputIndex,
     const std::string& service,
-    const CTransaction& fundingTx,
+    const CAmount& collateralAmount,
     MasternodeTier& nMasternodeTier,
     std::string& strErrorRet)
 {
-    nMasternodeTier = MasternodeTier::INVALID;
-    const CAmount collateralAmount = fundingTx.vout[txin.prevout.n].nValue;
     nMasternodeTier = CMasternode::GetTierByCollateralAmount(collateralAmount);
     if(!CMasternode::IsTierValid(nMasternodeTier))
     {
@@ -156,17 +150,19 @@ bool createArgumentsFromConfig(
         LogPrint("masternode","CMasternodeBroadcastFactory::Create -- %s\n", strErrorRet);
         return false;
     }
+    const CScript& collateralScript = fundingTx.vout[txin.prevout.n].scriptPubKey;
+    const CAmount& collateralAmount = fundingTx.vout[txin.prevout.n].nValue;
     //need correct blocks to send ping
     if (!checkBlockchainSync(strErrorRet,fOffline)||
         !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
         !setMasternodeCollateralKeys(
             collateralPrivKeyIsRemote,
             walletKeyStore,
-            fundingTx.vout[txin.prevout.n].scriptPubKey,
-            txin,
+            collateralScript,
+            txin.prevout,
             masternodeCollateralKeyPair,
             strErrorRet) ||
-        !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService, fundingTx,nMasternodeTier,strErrorRet))
+        !checkMasternodeCollateral(strService, collateralAmount, nMasternodeTier, strErrorRet))
     {
         return false;
     }

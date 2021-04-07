@@ -47,6 +47,21 @@ static bool GetVinAndKeysFromOutput(const CKeyStore& walletKeyStore, COutput out
     return true;
 }
 
+static bool ParseInputReference(std::string strTxHash, std::string strOutputIndex, CTxIn& txinRet)
+{
+    uint256 txHash = uint256S(strTxHash);
+
+    int nOutputIndex;
+    try {
+        nOutputIndex = std::stoi(strOutputIndex.c_str());
+    } catch (const std::exception& e) {
+        LogPrintf("%s: %s on strOutputIndex\n", __func__, e.what());
+        return false;
+    }
+    txinRet = CTxIn(txHash,nOutputIndex);
+    return true;
+}
+
 static bool GetMasternodeVinAndKeys(const CWallet& wallet, CTxIn& txinRet, CPubKey& pubKeyRet, CKey& keyRet, std::string strTxHash, std::string strOutputIndex)
 {
     // wait for reindex and/or import to finish

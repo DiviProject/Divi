@@ -136,12 +136,12 @@ bool checkMasternodeCollateral(
     const std::string& txHash,
     const std::string& outputIndex,
     const std::string& service,
+    CTransaction& fundingTx,
     MasternodeTier& nMasternodeTier,
     std::string& strErrorRet)
 {
     nMasternodeTier = MasternodeTier::INVALID;
     uint256 blockHash;
-    CTransaction fundingTx;
     if(GetTransaction(txin.prevout.hash,fundingTx,blockHash,true))
     {
         const CAmount collateralAmount = fundingTx.vout[txin.prevout.n].nValue;
@@ -177,11 +177,12 @@ bool createArgumentsFromConfig(
     std::string strKeyMasternode = configEntry.getPrivKey();
     std::string strTxHash = configEntry.getTxHash();
     std::string strOutputIndex = configEntry.getOutputIndex();
+    CTransaction fundingTx;
     //need correct blocks to send ping
     if (!checkBlockchainSync(strErrorRet,fOffline)||
         !setMasternodeKeys(strKeyMasternode,masternodeKeyPair,strErrorRet) ||
         !setMasternodeCollateralKeys(strTxHash,strOutputIndex,strService,collateralPrivKeyIsRemote,txin,masternodeCollateralKeyPair,strErrorRet) ||
-        !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService,nMasternodeTier,strErrorRet))
+        !checkMasternodeCollateral(txin,strTxHash,strOutputIndex,strService, fundingTx,nMasternodeTier,strErrorRet))
     {
         return false;
     }

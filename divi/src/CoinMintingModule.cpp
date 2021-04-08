@@ -9,10 +9,8 @@
 #include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
 #include <ProofOfStakeModule.h>
-#include <coins.h>
 #include <FeeRate.h>
 extern CFeeRate minRelayTxFee;
-extern CCoinsViewCache* pcoinsTip;
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
@@ -48,6 +46,7 @@ CoinMintingModule::CoinMintingModule(
     const CChainParams& chainParameters,
     const CChain& activeChain,
     const CMasternodeSync& masternodeSynchronization,
+    CCoinsViewCache* baseCoinsViewCache,
     CMasternodePayments& masternodePayments,
     CTxMemPool& mempool,
     std::vector<CNode*>& peers,
@@ -66,7 +65,7 @@ CoinMintingModule::CoinMintingModule(
         sporkManager))
     , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(
         settings,
-        pcoinsTip,
+        baseCoinsViewCache,
         activeChain,
         mempool,
         mainCS,

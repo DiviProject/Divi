@@ -17,6 +17,7 @@
 class CAlert;
 class CNode;
 class uint256;
+class Settings;
 
 extern std::map<uint256, CAlert> mapAlerts;
 extern CCriticalSection cs_mapAlerts;
@@ -103,8 +104,8 @@ public:
     bool AppliesToMe() const;
     bool RelayTo(CNode* pnode) const;
     bool CheckSignature() const;
-    bool ProcessAlert(bool fThread = true); // fThread means run -alertnotify in a free-running thread
-    static void Notify(const std::string& strMessage, bool fThread);
+    bool ProcessAlert(const Settings& settings,bool fThread = true); // fThread means run -alertnotify in a free-running thread
+    static void Notify(const Settings& settings,const std::string& strMessage, bool fThread);
 
     /*
      * Get copy of (active) alert object by hash. Returns a null alert if it is not found.

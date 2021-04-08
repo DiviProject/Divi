@@ -1135,7 +1135,7 @@ void CheckForkWarningConditions()
             if (pindexBestForkBase->phashBlock) {
                 std::string warning = std::string("'Warning: Large-work fork detected, forking after block ") +
                         pindexBestForkBase->phashBlock->ToString() + std::string("'");
-                CAlert::Notify(warning, true);
+                CAlert::Notify(settings,warning, true);
             }
         }
         if (pindexBestForkTip && pindexBestForkBase) {
@@ -1592,7 +1592,7 @@ void static UpdateTip(CBlockIndex* pindexNew)
         if (nUpgraded > 100 / 2) {
             // strMiscWarning is read by GetWarnings(), called by Qt and the JSON-RPC code to warn the user:
             strMiscWarning = translate("Warning: This version is obsolete, upgrade required!");
-            CAlert::Notify(strMiscWarning, true);
+            CAlert::Notify(settings,strMiscWarning, true);
             fWarned = true;
         }
     }
@@ -4093,7 +4093,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         uint256 alertHash = alert.GetHash();
         if (pfrom->setKnown.count(alertHash) == 0) {
-            if (alert.ProcessAlert()) {
+            if (alert.ProcessAlert(settings)) {
                 // Relay
                 pfrom->setKnown.insert(alertHash);
                 {

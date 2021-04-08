@@ -8,9 +8,9 @@
 #include <primitives/transaction.h>
 #include <Logging.h>
 #include <defaultValues.h>
+#include <ThreadManagementHelpers.h>
 
 extern int nScriptCheckThreads;
-extern void RenameThread(const char* name);//in util.h
 static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void TransactionInputChecker::ThreadScriptCheck()

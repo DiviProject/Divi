@@ -7,7 +7,6 @@
 #include "utilstrencodings.h"
 #include "netbase.h"
 #include "net.h"
-#include "util.h"
 #include "crypto/hmac_sha256.h"
 
 #include <vector>
@@ -29,6 +28,9 @@
 #include <event2/util.h>
 #include <event2/event.h>
 #include <event2/thread.h>
+
+#include <DataDirectory.h>
+#include <ThreadManagementHelpers.h>
 #include "Settings.h"
 extern Settings& settings;
 

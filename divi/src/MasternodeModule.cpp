@@ -3,7 +3,6 @@
 #include <utiltime.h>
 
 #include <chrono>
-#include <util.h>
 
 #include <masternode-sync.h>
 #include <masternode-payments.h>
@@ -30,6 +29,7 @@
 
 #include <addrman.h>
 #include <blockmap.h>
+#include <ThreadManagementHelpers.h>
 
 bool fMasterNode = false;
 extern bool fLiteMode;

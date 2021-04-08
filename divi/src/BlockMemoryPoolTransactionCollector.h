@@ -53,6 +53,9 @@ private:
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
     const CFeeRate& txFeeRate_;
+    const unsigned nBlockMaxSize;
+    const unsigned nBlockPrioritySize;
+    const unsigned nBlockMinSize;
 private:
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     void RecordOrphanTransaction (
@@ -80,7 +83,6 @@ private:
         const CFeeRate& feeRate,
         const uint64_t& nBlockSize,
         const unsigned int& nTxSize,
-        const unsigned int& nBlockMinSize,
         const CTransaction& tx) const;
 
     void AddTransactionToBlock (
@@ -98,7 +100,6 @@ private:
         TxPriorityCompare& comparer,
         const uint64_t& nBlockSize,
         const unsigned int& nTxSize,
-        const unsigned int& nBlockPrioritySize,
         double& dPriority) const;
     std::vector<PrioritizedTransactionData> PrioritizeTransactions(
         std::vector<TxPriority>& vecPriority,

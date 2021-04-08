@@ -31,6 +31,7 @@ extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& en
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 extern bool ShutdownRequested();
 extern CBlockTreeDB* pblocktree;
+extern CCoinsViewCache* pcoinsTip;
 extern bool fAddressIndex;
 
 double GetDifficulty(const CBlockIndex* blockindex)

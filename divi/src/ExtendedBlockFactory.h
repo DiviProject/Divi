@@ -14,6 +14,7 @@ class CBlockTemplate;
 class CReserveKey;
 class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
+class Settings;
 
 class ExtendedBlockFactory : public I_BlockFactory
 {
@@ -26,7 +27,8 @@ public:
     ExtendedBlockFactory(
         I_BlockTransactionCollector& blockTransactionCollector,
         I_PoSTransactionCreator& coinstakeCreator,
-        CChain& chain,
+        const Settings& settings,
+        const CChain& chain,
         const CChainParams& chainParameters);
     ~ExtendedBlockFactory();
 

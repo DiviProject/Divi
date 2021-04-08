@@ -1451,7 +1451,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     static const SuperblockSubsidyContainer subsidiesContainer(chainParameters);
     static const BlockIncentivesPopulator incentives(
         chainParameters,
-        chainActive,
         GetMasternodeSync(),
         GetMasternodePayments(),
         subsidiesContainer.superblockHeightValidator(),

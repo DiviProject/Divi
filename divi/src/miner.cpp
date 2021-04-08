@@ -18,6 +18,7 @@
 #include <Settings.h>
 #include <coins.h>
 #include <FeeRate.h>
+#include <ThreadManagementHelpers.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -36,8 +37,6 @@ extern CFeeRate minRelayTxFee;
 // Internal miner
 //
 extern CWallet* pwalletMain;
-void SetThreadPriority(int nPriority);
-void RenameThread(const char* name);
 bool fGenerateDivi = false;
 
 void MintCoins(

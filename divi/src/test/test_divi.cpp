@@ -21,11 +21,11 @@
 
 CClientUIInterface uiInterface;
 CWallet* pwalletMain;
-
 extern bool fPrintToConsole;
 extern void noui_connect();
 extern NotificationInterfaceRegistry registry;//TODO: rid this
-
+extern CBlockTreeDB* pblocktree;
+extern CCoinsViewCache* pcoinsTip;
 struct TestingSetup {
     CCoinsViewDB *pcoinsdbview;
     boost::filesystem::path pathTemp;

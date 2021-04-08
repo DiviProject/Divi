@@ -24,6 +24,7 @@ class CMasternodePayments;
 class ProofOfStakeModule;
 class CSporkManager;
 class Settings;
+class CCoinsViewCache;
 
 class CoinMintingModule
 {
@@ -41,6 +42,7 @@ public:
         const CChainParams& chainParameters,
         const CChain& activeChain,
         const CMasternodeSync& masternodeSynchronization,
+        CCoinsViewCache* baseCoinsViewCache,
         CMasternodePayments& masternodePayments,
         CTxMemPool& mempool,
         std::vector<CNode*>& peers,

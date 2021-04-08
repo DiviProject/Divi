@@ -35,6 +35,7 @@
 #include "json/json_spirit_value.h"
 #include "Settings.h"
 #include <ValidationState.h>
+#include <coins.h>
 
 extern NotificationInterfaceRegistry registry;//TODO: rid this
 using namespace json_spirit;
@@ -43,6 +44,7 @@ using namespace boost;
 using namespace boost::assign;
 extern Settings& settings;
 extern CWallet* pwalletMain;
+extern CCoinsViewCache* pcoinsTip;
 
 /**
  * Return average network hashes per second based on the last 'lookup' blocks,
@@ -176,7 +178,7 @@ Value setgenerate(const Array& params, bool fHelp)
         Array blockHashes;
         CoinMintingModule mintingModule(
             settings,
-            cs_main, Params(), chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
+            cs_main, Params(), chainActive,GetMasternodeSync(),pcoinsTip,GetMasternodePayments(),mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
         I_CoinMinter& minter = mintingModule.coinMinter();
 
         while (nHeight < nHeightEnd)
@@ -242,7 +244,7 @@ Value generateblock(const Array& params, bool fHelp)
 
     CoinMintingModule mintingModule(
         settings,
-        cs_main, Params(), chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
+        cs_main, Params(), chainActive,GetMasternodeSync(),pcoinsTip,GetMasternodePayments(),mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
     I_CoinMinter& minter = mintingModule.coinMinter();
     ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());
     assert(blockFactory);

@@ -15,8 +15,6 @@
 
 #include <Settings.h>
 
-extern CCoinsViewCache* pcoinsTip;
-
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
 static unsigned int GetMaxBlockSize(const Settings& settings,unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
@@ -87,11 +85,13 @@ public:
 
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     const Settings& settings,
+    CCoinsViewCache* baseCoinsViewCache,
     const CChain& activeChain,
     CTxMemPool& mempool,
     CCriticalSection& mainCS,
     const CFeeRate& txFeeRate
-    ): activeChain_(activeChain)
+    ): baseCoinsViewCache_(baseCoinsViewCache)
+    , activeChain_(activeChain)
     , mempool_(mempool)
     , mainCS_(mainCS)
     , txFeeRate_(txFeeRate)
@@ -378,7 +378,7 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
 
     pblocktemplate.previousBlockIndex = activeChain_.Tip();
     const int nHeight = pblocktemplate.previousBlockIndex->nHeight + 1;
-    CCoinsViewCache view(pcoinsTip);
+    CCoinsViewCache view(baseCoinsViewCache_);
 
     AddTransactionsToBlockIfPossible(
         nHeight,

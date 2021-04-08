@@ -285,6 +285,7 @@ BITCOIN_CORE_H = \
   uint256.h \
   undo.h \
   util.h \
+  ThreadManagementHelpers.h \
   Logging.h \
   DataDirectory.h \
   utilstrencodings.h \
@@ -604,6 +605,7 @@ libbitcoin_util_a_SOURCES = \
   sync.cpp \
   uint256.cpp \
   util.cpp \
+  ThreadManagementHelpers.cpp \
   Logging.cpp \
   DataDirectory.cpp \
   utilstrencodings.cpp \

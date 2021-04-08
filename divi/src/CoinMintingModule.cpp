@@ -70,6 +70,7 @@ CoinMintingModule::CoinMintingModule(
         mainCS,
         relayTxFeeCalculator))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(
+        settings,
         chainParameters,
         activeChain,
         blockIndexByHash,

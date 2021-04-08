@@ -18,8 +18,6 @@
 #include <StakableCoin.h>
 #include <timedata.h>
 
-extern Settings& settings;
-
 class StakedCoins
 {
 private:
@@ -48,6 +46,7 @@ public:
 };
 
 PoSTransactionCreator::PoSTransactionCreator(
+    const Settings& settings,
     const CChainParams& chainParameters,
     const CChain& activeChain,
     const BlockMap& mapBlockIndex,
@@ -56,7 +55,8 @@ PoSTransactionCreator::PoSTransactionCreator(
     const I_ProofOfStakeGenerator& proofGenerator,
     CWallet& wallet,
     std::map<unsigned int, unsigned int>& hashedBlockTimestamps
-    ): chainParameters_(chainParameters)
+    ): settings_(settings)
+    , chainParameters_(chainParameters)
     , activeChain_(activeChain)
     , mapBlockIndex_(mapBlockIndex)
     , blockSubsidies_( blockSubsidies )
@@ -77,7 +77,7 @@ PoSTransactionCreator::~PoSTransactionCreator()
 bool PoSTransactionCreator::SelectCoins()
 {
     if (chainParameters_.NetworkID() == CBaseChainParams::REGTEST ||
-        GetTime() - stakedCoins_->timestamp() > settings.GetArg("-stakeupdatetime",300))
+        GetTime() - stakedCoins_->timestamp() > settings_.GetArg("-stakeupdatetime",300))
     {
         stakedCoins_->asSet().clear();
         if (!wallet_.SelectStakeCoins(stakedCoins_->asSet())) {
@@ -139,7 +139,7 @@ void PoSTransactionCreator::CombineUtxos(
     CAmount& nCredit,
     std::vector<const CTransaction*>& walletTransactions)
 {
-    static const unsigned maxInputs = settings.MaxNumberOfPoSCombinableInputs();
+    static const unsigned maxInputs = settings_.MaxNumberOfPoSCombinableInputs();
     const CAmount nCombineThreshold = stakeSplit / 2;
     std::vector<StakableCoin> vCombineCandidates;
     for(const StakableCoin& pcoin : stakedCoins_->asSet())
@@ -252,7 +252,7 @@ void PoSTransactionCreator::SplitOrCombineUTXOS(
     CBlockRewards blockSubdidy = blockSubsidies_.GetBlockSubsidity(chainTip->nHeight + 1);
     CAmount nCredit = stakeData.tx->vout[stakeData.outputIndex].nValue + blockSubdidy.nStakeReward;
     constexpr char autocombineSettingLookup[] = "-autocombine";
-    bool autocombine = settings.GetBoolArg(autocombineSettingLookup,true);
+    bool autocombine = settings_.GetBoolArg(autocombineSettingLookup,true);
     if (nCredit > stakeSplit )
     {
         txCoinStake.vout.push_back(txCoinStake.vout.back());
@@ -295,7 +295,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
     }
     int64_t adjustedTime = GetAdjustedTime();
     int64_t minimumTime = chainTip->GetMedianTimePast() + 1;
-    const int64_t maximumTime = adjustedTime + settings.MaxFutureBlockDrift() - 1;
+    const int64_t maximumTime = adjustedTime + settings_.MaxFutureBlockDrift() - 1;
     minimumTime += chainParameters_.RetargetDifficulty()? I_ProofOfStakeGenerator::nHashDrift: 0;
     minimumTime = std::max(hashproofTimestampMinimumValue_,minimumTime);
     if(maximumTime <= minimumTime) return false;
@@ -317,7 +317,7 @@ bool PoSTransactionCreator::CreateProofOfStake(
     std::vector<const CTransaction*> vwtxPrev(1, successfullyStakableUTXO.tx);
 
     constexpr char stakeSplitSettingLookup[] = "-stakesplitthreshold";
-    CAmount stakeSplit = static_cast<CAmount>(settings.GetArg(stakeSplitSettingLookup,20000)* COIN);
+    CAmount stakeSplit = static_cast<CAmount>(settings_.GetArg(stakeSplitSettingLookup,20000)* COIN);
     if(isVaultScript)
     {
         stakeSplit = std::max(stakeSplit,20000*COIN);

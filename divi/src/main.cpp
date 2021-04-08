@@ -73,6 +73,7 @@ extern Settings& settings;
 
 CCriticalSection cs_main;
 
+extern CWallet* pwalletMain;
 BlockMap mapBlockIndex;
 std::map<uint256, uint256> mapProofOfStake;
 std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;

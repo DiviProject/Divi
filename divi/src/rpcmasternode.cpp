@@ -29,6 +29,7 @@
 #include <fstream>
 using namespace json_spirit;
 
+extern CWallet* pwalletMain;
 extern void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool spendFromVaults = false);
 extern CBitcoinAddress GetAccountAddress(std::string strAccount, bool bForceNew = false);
 

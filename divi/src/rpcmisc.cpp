@@ -62,6 +62,7 @@ extern CChain chainActive;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern CFeeRate minRelayTxFee;
+extern CWallet* pwalletMain;
 
 bool GetAddressIndex(bool addresIndexEnabled,
                      CBlockTreeDB* pblocktree,

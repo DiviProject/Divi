@@ -42,6 +42,7 @@ using namespace std;
 using namespace boost;
 using namespace boost::assign;
 extern Settings& settings;
+extern CWallet* pwalletMain;
 
 /**
  * Return average network hashes per second based on the last 'lookup' blocks,

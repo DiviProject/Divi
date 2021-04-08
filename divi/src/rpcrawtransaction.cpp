@@ -37,6 +37,7 @@ using namespace std;
 
 extern CAmount maxTxFee;
 extern CCoinsViewCache* pcoinsTip;
+extern CWallet* pwalletMain;
 
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex)
 {

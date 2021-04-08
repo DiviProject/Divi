@@ -173,6 +173,7 @@ using namespace json_spirit;
 using namespace std;
 extern Settings& settings;
 static std::string strRPCUserColonPass;
+extern CWallet* pwalletMain;
 
 static bool fRPCRunning = false;
 static bool fRPCInWarmup = true;

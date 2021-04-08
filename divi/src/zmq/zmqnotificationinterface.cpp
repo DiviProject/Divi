@@ -6,8 +6,6 @@
 
 #include <zmq/zmqpublishnotifier.h>
 #include <Settings.h>
-#include <version.h>
-#include <streams.h>
 #include <Logging.h>
 
 void zmqError(const char *str)

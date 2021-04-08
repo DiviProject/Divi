@@ -16,11 +16,13 @@
 #include <Logging.h>
 #include <spork.h>
 #include <Settings.h>
+#include <coins.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 
 extern Settings& settings;
+extern CCoinsViewCache* pcoinsTip;
 //////////////////////////////////////////////////////////////////////////////
 //
 // DIVIMiner
@@ -100,7 +102,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     try {
         static CoinMintingModule mintingModule(
             settings,
-            cs_main,Params(),chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
+            cs_main,Params(),chainActive,GetMasternodeSync(),pcoinsTip,GetMasternodePayments(),mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = true;
         minter.setMintingRequestStatus(isProofOfStake);
@@ -122,7 +124,7 @@ void static ThreadPoWMinter(void* parg)
     try {
         static CoinMintingModule mintingModule(
             settings,
-            cs_main,Params(),chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
+            cs_main,Params(),chainActive,GetMasternodeSync(),pcoinsTip,GetMasternodePayments(),mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = false;
         minter.setMintingRequestStatus(fGenerateDivi);

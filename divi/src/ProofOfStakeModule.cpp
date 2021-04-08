@@ -7,8 +7,8 @@
 
 ProofOfStakeModule::ProofOfStakeModule(
     const CChainParams& chainParameters,
-    CChain& activeChain,
-    BlockMap& blockIndexByHash
+    const CChain& activeChain,
+    const BlockMap& blockIndexByHash
     ): legacyStakeModifierService_(new LegacyPoSStakeModifierService(blockIndexByHash,activeChain))
     , stakeModifierService_(new PoSStakeModifierService(*legacyStakeModifierService_, blockIndexByHash))
     , proofGenerator_(new ProofOfStakeGenerator(*stakeModifierService_,chainParameters.GetMinCoinAgeForStaking()))

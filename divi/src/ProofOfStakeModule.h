@@ -16,8 +16,8 @@ class ProofOfStakeModule
 public:
     ProofOfStakeModule(
         const CChainParams& chainParameters,
-        CChain& activeChain,
-        BlockMap& blockIndexByHash);
+        const CChain& activeChain,
+        const BlockMap& blockIndexByHash);
     ~ProofOfStakeModule();
     const I_ProofOfStakeGenerator& proofOfStakeGenerator() const;
 };

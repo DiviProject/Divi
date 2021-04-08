@@ -66,8 +66,6 @@ extern bool fTxIndex;
 extern bool fIsBareMultisigStd;
 extern bool fCheckBlockIndex;
 extern unsigned int nCoinCacheSize;
-extern CFeeRate minRelayTxFee;
-extern CAmount maxTxFee;
 //! -maxtxfee default
 static const CAmount DEFAULT_TRANSACTION_MAXFEE = 100 * COIN;
 extern bool fAlerts;

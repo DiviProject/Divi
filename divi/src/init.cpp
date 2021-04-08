@@ -85,6 +85,8 @@ extern bool bdisableSystemnotifications;
 extern bool fSendFreeTransactions;
 extern bool fPayAtLeastCustomFee;
 extern CFeeRate payTxFee;
+extern CAmount maxTxFee;
+extern CFeeRate minRelayTxFee;
 #endif
 volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown

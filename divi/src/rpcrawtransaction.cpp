@@ -35,6 +35,8 @@ using namespace boost::assign;
 using namespace json_spirit;
 using namespace std;
 
+extern CAmount maxTxFee;
+
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex)
 {
     txnouttype type;

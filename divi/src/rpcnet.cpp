@@ -22,6 +22,7 @@
 
 using namespace json_spirit;
 using namespace std;
+extern CFeeRate minRelayTxFee;
 
 Value getconnectioncount(const Array& params, bool fHelp)
 {

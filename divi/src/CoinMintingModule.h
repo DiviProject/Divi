@@ -25,6 +25,7 @@ class ProofOfStakeModule;
 class CSporkManager;
 class Settings;
 class CCoinsViewCache;
+class CFeeRate;
 
 class CoinMintingModule
 {
@@ -42,6 +43,7 @@ public:
         const CChainParams& chainParameters,
         const CChain& activeChain,
         const CMasternodeSync& masternodeSynchronization,
+        const CFeeRate& relayTxFeeCalculator,
         CCoinsViewCache* baseCoinsViewCache,
         CMasternodePayments& masternodePayments,
         CTxMemPool& mempool,

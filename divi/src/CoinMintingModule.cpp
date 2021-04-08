@@ -9,8 +9,6 @@
 #include <SuperblockSubsidyContainer.h>
 #include <BlockIncentivesPopulator.h>
 #include <ProofOfStakeModule.h>
-#include <FeeRate.h>
-extern CFeeRate minRelayTxFee;
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
@@ -46,6 +44,7 @@ CoinMintingModule::CoinMintingModule(
     const CChainParams& chainParameters,
     const CChain& activeChain,
     const CMasternodeSync& masternodeSynchronization,
+    const CFeeRate& relayTxFeeCalculator,
     CCoinsViewCache* baseCoinsViewCache,
     CMasternodePayments& masternodePayments,
     CTxMemPool& mempool,
@@ -69,7 +68,7 @@ CoinMintingModule::CoinMintingModule(
         activeChain,
         mempool,
         mainCS,
-        minRelayTxFee))
+        relayTxFeeCalculator))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(
         chainParameters,
         activeChain,

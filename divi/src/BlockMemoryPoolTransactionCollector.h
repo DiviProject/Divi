@@ -54,9 +54,9 @@ private:
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
     const CFeeRate& txFeeRate_;
-    const unsigned nBlockMaxSize;
-    const unsigned nBlockPrioritySize;
-    const unsigned nBlockMinSize;
+    const unsigned blockMaxSize_;
+    const unsigned blockPrioritySize_;
+    const unsigned blockMinSize_;
 private:
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     void RecordOrphanTransaction (

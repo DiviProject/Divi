@@ -25,10 +25,12 @@ class I_BlockSubsidyProvider;
 class BlockMap;
 class StakedCoins;
 struct StakableCoin;
+class Settings;
 
 class PoSTransactionCreator: public I_PoSTransactionCreator
 {
 private:
+    const Settings& settings_;
     const CChainParams& chainParameters_;
     const CChain& activeChain_;
     const BlockMap& mapBlockIndex_;
@@ -77,6 +79,7 @@ private:
         std::vector<const CTransaction*>& vwtxPrev);
 public:
     PoSTransactionCreator(
+        const Settings& settings,
         const CChainParams& chainParameters,
         const CChain& activeChain,
         const BlockMap& mapBlockIndex,

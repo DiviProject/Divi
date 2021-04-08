@@ -1,9 +1,11 @@
 #ifndef LOGGING_H
 #define LOGGING_H
-#include <string>
+
 #include "tinyformat.h"
-#include <vector>
+
 #include <map>
+#include <string>
+#include <vector>
 
 /* Variables used by logging*/
 extern bool fPrintToConsole;
@@ -18,45 +20,50 @@ bool LogAcceptCategory(const char* category);
 /** Send a string to the log output */
 int LogPrintStr(const std::string& str);
 
-#define LogPrintf(...) LogPrint(NULL, __VA_ARGS__)
-
-/**
- * When we switch to C++11, this can be switched to variadic templates instead
- * of this macro-based construction (see tinyformat.h).
- */
-#define MAKE_ERROR_AND_LOG_FUNC(n)                                                              \
-    /**   Print to debug.log if -debug=category switch is given OR category is NULL. */         \
-    template <TINYFORMAT_ARGTYPES(n)>                                                           \
-    static inline int LogPrint(const char* category, const char* format, TINYFORMAT_VARARGS(n)) \
-    {                                                                                           \
-        if (!LogAcceptCategory(category)) return 0;                                             \
-        const std::string base = tfm::format(format, TINYFORMAT_PASSARGS(n));                   \
-        if (category == nullptr)                                                                \
-            return LogPrintStr(base);                                                           \
-        return LogPrintStr(tfm::format("[%s] %s", category, base.c_str()));                     \
-    }                                                                                           \
-    /**   Log error and return false */                                                         \
-    template <TINYFORMAT_ARGTYPES(n)>                                                           \
-    static inline bool error(const char* format, TINYFORMAT_VARARGS(n))                         \
-    {                                                                                           \
-        LogPrintStr(std::string("ERROR: ") + tfm::format(format, TINYFORMAT_PASSARGS(n)) + "\n");            \
-        return false;                                                                           \
-    }
-
-TINYFORMAT_FOREACH_ARGNUM(MAKE_ERROR_AND_LOG_FUNC)
-
-/**
- * Zero-arg versions of logging and error, these are not covered by
- * TINYFORMAT_FOREACH_ARGNUM
- */
-static inline int LogPrint(const char* category, const char* format)
+/** Formats a string (consisting of a format template and zero or more
+ *  arguments) for logging.  This mostly invokes tinyformat, but has some
+ *  extra tweaks like supporting zero arguments.  */
+template <typename... Args>
+  std::string LogFormat(const char* format, const Args&... args)
 {
-    if (!LogAcceptCategory(category)) return 0;
-    return LogPrintStr(format);
+    return tfm::format(format, args...);
 }
-static inline bool error(const char* format)
+/* This is an explicit specialisation, so we have to declare it "inline"
+   to prevent ODR violations.  */
+template <>
+  inline std::string LogFormat(const char* format)
 {
-    LogPrintStr(std::string("ERROR: ") + format + "\n");
+    return format;
+}
+
+/** Logs a message if the -debug=category switch is given OR the category
+ *  is NULL (general logs).  */
+template <typename... Args>
+  int LogPrint(const char* category, const char* format, const Args&... args)
+{
+    if (!LogAcceptCategory(category))
+        return 0;
+
+    const std::string base = LogFormat(format, args...);
+
+    if (category == nullptr)
+        return LogPrintStr(base);
+
+    return LogPrintStr(tfm::format("[%s] %s", category, base));
+}
+
+/** Prints a log message without category.  */
+template <typename... Args>
+  int LogPrintf(const char* format, const Args&... args)
+{
+    return LogPrint(nullptr, format, args...);
+}
+
+/** Logs an error and returns false.  */
+template <typename... Args>
+  bool error(const char* format, const Args&... args)
+{
+    LogPrintStr(tfm::format("ERROR: %s", LogFormat(format, args...)));
     return false;
 }
 

@@ -11,7 +11,6 @@
 
 #include <boost/assign/list_of.hpp>
 #include "Settings.h"
-extern Settings& settings;
 using namespace boost::assign;
 
 /**
@@ -117,7 +116,7 @@ void SelectBaseParams(CBaseChainParams::Network network)
     }
 }
 
-CBaseChainParams::Network NetworkIdFromCommandLine()
+CBaseChainParams::Network NetworkIdFromCommandLine(const Settings& settings)
 {
     bool fRegTest = settings.GetBoolArg("-regtest", false);
     bool fTestNet = settings.GetBoolArg("-testnet", false);
@@ -133,9 +132,9 @@ CBaseChainParams::Network NetworkIdFromCommandLine()
     return CBaseChainParams::MAIN;
 }
 
-bool SelectBaseParamsFromCommandLine()
+bool SelectBaseParamsFromCommandLine(const Settings& settings)
 {
-	CBaseChainParams::Network network = NetworkIdFromCommandLine();
+	CBaseChainParams::Network network = NetworkIdFromCommandLine(settings);
     if (network == CBaseChainParams::MAX_NETWORK_TYPES)
         return false;
 

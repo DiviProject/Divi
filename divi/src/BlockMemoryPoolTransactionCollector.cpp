@@ -88,10 +88,10 @@ public:
 };
 
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
-    CChain& activeChain,
+    const CChain& activeChain,
     CTxMemPool& mempool,
     CCriticalSection& mainCS,
-    CFeeRate& txFeeRate
+    const CFeeRate& txFeeRate
     ): activeChain_(activeChain)
     , mempool_(mempool)
     , mainCS_(mainCS)

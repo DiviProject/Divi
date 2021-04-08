@@ -21,7 +21,7 @@ extern CCoinsViewCache* pcoinsTip;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
-unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
+static unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
 {
     // Largest block you're willing to create:
     unsigned int blockMaxSize = settings.GetArg("-blockmaxsize", defaultMaxBlockSize);
@@ -31,14 +31,14 @@ unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxB
     return blockMaxSize;
 }
 
-unsigned int GetBlockPrioritySize(unsigned int defaultBlockPrioritySize, unsigned int blockMaxSize)
+static unsigned int GetBlockPrioritySize(unsigned int defaultBlockPrioritySize, unsigned int blockMaxSize)
 {
     unsigned int blockPrioritySize = settings.GetArg("-blockprioritysize", defaultBlockPrioritySize);
     blockPrioritySize = std::min(blockMaxSize, blockPrioritySize);
     return blockPrioritySize;
 }
 
-unsigned int GetBlockMinSize(unsigned int defaultBlockMinSize, unsigned int blockMaxSize)
+static unsigned int GetBlockMinSize(unsigned int defaultBlockMinSize, unsigned int blockMaxSize)
 {
     unsigned int blockMinSize = settings.GetArg("-blockminsize", defaultBlockMinSize);
     blockMinSize = std::min(blockMaxSize, blockMinSize);
@@ -96,6 +96,9 @@ BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     , mempool_(mempool)
     , mainCS_(mainCS)
     , txFeeRate_(txFeeRate)
+    , nBlockMaxSize(GetMaxBlockSize(DEFAULT_BLOCK_MAX_SIZE, MAX_BLOCK_SIZE_CURRENT))
+    , nBlockPrioritySize(GetBlockPrioritySize(DEFAULT_BLOCK_PRIORITY_SIZE, nBlockMaxSize))
+    , nBlockMinSize(GetBlockMinSize(DEFAULT_BLOCK_MIN_SIZE, nBlockMaxSize))
 {
 
 }
@@ -160,7 +163,6 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
     const CFeeRate& feeRate,
     const uint64_t& nBlockSize,
     const unsigned int& nTxSize,
-    const unsigned int& nBlockMinSize,
     const CTransaction& tx) const
 {
     double dPriorityDelta = 0;
@@ -237,13 +239,13 @@ std::vector<TxPriority> BlockMemoryPoolTransactionCollector::PrioritizeMempoolTr
     return vecPriority;
 }
 
-void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize (
+void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize
+(
     std::vector<TxPriority>& vecPriority,
     bool& fSortedByFee,
     TxPriorityCompare& comparer,
     const uint64_t& nBlockSize,
     const unsigned int& nTxSize,
-    const unsigned int& nBlockPrioritySize,
     double& dPriority) const
 {
     if (!fSortedByFee &&
@@ -276,13 +278,10 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     std::vector<PrioritizedTransactionData> prioritizedTransactions;
 
     // Largest block you're willing to create:
-    unsigned int nBlockMaxSize = GetMaxBlockSize(DEFAULT_BLOCK_MAX_SIZE, MAX_BLOCK_SIZE_CURRENT);
     // How much of the block should be dedicated to high-priority transactions,
     // included regardless of the fees they pay
-    unsigned int nBlockPrioritySize = GetBlockPrioritySize(DEFAULT_BLOCK_PRIORITY_SIZE, nBlockMaxSize);
     // Minimum block size you want to create; block will be filled with free transactions
     // until there are no more or the block reaches this size:
-    unsigned int nBlockMinSize = GetBlockMinSize(DEFAULT_BLOCK_MIN_SIZE, nBlockMaxSize);
 
     uint64_t nBlockSize = 1000;
     int nBlockSigOps = 100;
@@ -310,13 +309,13 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         const uint256& hash = tx.GetHash();
         if (nBlockSize + nTxSize >= nBlockMaxSize ||
             nBlockSigOps + nTxSigOps >= nMaxBlockSigOps||
-            IsFreeTransaction(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, nBlockMinSize, tx))
+            IsFreeTransaction(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, tx))
         {
             continue;
         }
         // Prioritise by fee once past the priority size or we run out of high-priority
         // transactions:
-        PrioritizeFeePastPrioritySize(vecPriority, fSortedByFee, comparer, nBlockSize, nTxSize, nBlockPrioritySize, dPriority);
+        PrioritizeFeePastPrioritySize(vecPriority, fSortedByFee, comparer, nBlockSize, nTxSize, dPriority);
         if (!view.HaveInputs(tx)) {
             continue;
         }

@@ -102,7 +102,7 @@ CCheckpointServices checkpointsVerifier(GetCurrentChainCheckpoints);
  * so it's still 10 times lower comparing to bitcoin.
  */
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
-
+extern CFeeRate minRelayTxFee;
 CTxMemPool mempool(::minRelayTxFee);
 
 static void CheckBlockIndex();

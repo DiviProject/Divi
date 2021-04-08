@@ -15,10 +15,12 @@
 #include <I_CoinMinter.h>
 #include <Logging.h>
 #include <spork.h>
+#include <Settings.h>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 
+extern Settings& settings;
 //////////////////////////////////////////////////////////////////////////////
 //
 // DIVIMiner
@@ -97,6 +99,7 @@ void ThreadStakeMinter(CWallet* pwallet)
     LogPrintf("ThreadStakeMinter started\n");
     try {
         static CoinMintingModule mintingModule(
+            settings,
             cs_main,Params(),chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = true;
@@ -118,6 +121,7 @@ void static ThreadPoWMinter(void* parg)
 
     try {
         static CoinMintingModule mintingModule(
+            settings,
             cs_main,Params(),chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwallet,mapHashedBlocks,mapBlockIndex,sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = false;

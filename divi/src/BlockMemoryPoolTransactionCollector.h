@@ -49,10 +49,10 @@ class CChain;
 class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 {
 private:
-    CChain& activeChain_;
+    const CChain& activeChain_;
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
-    CFeeRate& txFeeRate_;
+    const CFeeRate& txFeeRate_;
 private:
     void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) const;
     void RecordOrphanTransaction (
@@ -111,10 +111,10 @@ private:
         CBlockTemplate& blocktemplate) const;
 public:
     BlockMemoryPoolTransactionCollector(
-        CChain& activeChain,
+        const CChain& activeChain,
         CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS,
-        CFeeRate& txFeeRate);
+        const CFeeRate& txFeeRate);
     bool CollectTransactionsIntoBlock (
         CBlockTemplate& pblocktemplate) const override;
 };

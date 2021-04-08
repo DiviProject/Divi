@@ -96,9 +96,9 @@ BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     , mempool_(mempool)
     , mainCS_(mainCS)
     , txFeeRate_(txFeeRate)
-    , nBlockMaxSize(GetMaxBlockSize(settings,DEFAULT_BLOCK_MAX_SIZE, MAX_BLOCK_SIZE_CURRENT))
-    , nBlockPrioritySize(GetBlockPrioritySize(settings,DEFAULT_BLOCK_PRIORITY_SIZE, nBlockMaxSize))
-    , nBlockMinSize(GetBlockMinSize(settings,DEFAULT_BLOCK_MIN_SIZE, nBlockMaxSize))
+    , blockMaxSize_(GetMaxBlockSize(settings,DEFAULT_BLOCK_MAX_SIZE, MAX_BLOCK_SIZE_CURRENT))
+    , blockPrioritySize_(GetBlockPrioritySize(settings,DEFAULT_BLOCK_PRIORITY_SIZE, blockMaxSize_))
+    , blockMinSize_(GetBlockMinSize(settings,DEFAULT_BLOCK_MIN_SIZE, blockMaxSize_))
 {
 
 }
@@ -173,7 +173,7 @@ bool BlockMemoryPoolTransactionCollector::IsFreeTransaction (
         (dPriorityDelta <= 0) &&
         (nFeeDelta <= 0) &&
         (feeRate < txFeeRate_) &&
-        (nBlockSize + nTxSize >= nBlockMinSize));
+        (nBlockSize + nTxSize >= blockMinSize_));
 }
 
 void BlockMemoryPoolTransactionCollector::AddTransactionToBlock (
@@ -249,7 +249,7 @@ void BlockMemoryPoolTransactionCollector::PrioritizeFeePastPrioritySize
     double& dPriority) const
 {
     if (!fSortedByFee &&
-            ((nBlockSize + nTxSize >= nBlockPrioritySize) || !AllowFree(dPriority))) {
+            ((nBlockSize + nTxSize >= blockPrioritySize_) || !AllowFree(dPriority))) {
         fSortedByFee = true;
         comparer = TxPriorityCompare(fSortedByFee);
         std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
@@ -286,7 +286,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     uint64_t nBlockSize = 1000;
     int nBlockSigOps = 100;
     const unsigned int constexpr nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
-    bool fSortedByFee = (nBlockPrioritySize <= 0);
+    bool fSortedByFee = (blockPrioritySize_ <= 0);
 
     TxPriorityCompare comparer(fSortedByFee);
     std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
@@ -306,7 +306,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
         unsigned int nTxSigOps = GetLegacySigOpCount(tx);
         // Skip free transactions if we're past the minimum block size:
         const uint256& hash = tx.GetHash();
-        if (nBlockSize + nTxSize >= nBlockMaxSize ||
+        if (nBlockSize + nTxSize >= blockMaxSize_ ||
             nBlockSigOps + nTxSigOps >= nMaxBlockSigOps||
             IsFreeTransaction(hash, fSortedByFee, feeRate, nBlockSize, nTxSize, tx))
         {

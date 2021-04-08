@@ -22,10 +22,8 @@
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
-using namespace std;
-
-map<uint256, CAlert> mapAlerts;
-CCriticalSection cs_mapAlerts;
+static std::map<uint256, CAlert> mapAlerts;
+static CCriticalSection cs_mapAlerts;
 
 void CUnsignedAlert::SetNull()
 {
@@ -160,7 +158,7 @@ CAlert CAlert::getAlertByHash(const uint256& hash)
     CAlert retval;
     {
         LOCK(cs_mapAlerts);
-        map<uint256, CAlert>::iterator mi = mapAlerts.find(hash);
+        std::map<uint256, CAlert>::iterator mi = mapAlerts.find(hash);
         if (mi != mapAlerts.end())
             retval = mi->second;
     }
@@ -197,7 +195,7 @@ bool CAlert::ProcessAlert(const Settings& settings, bool fThread)
     {
         LOCK(cs_mapAlerts);
         // Cancel previous alerts
-        for (map<uint256, CAlert>::iterator mi = mapAlerts.begin(); mi != mapAlerts.end();) {
+        for (std::map<uint256, CAlert>::iterator mi = mapAlerts.begin(); mi != mapAlerts.end();) {
             const CAlert& alert = (*mi).second;
             if (Cancels(alert)) {
                 LogPrint("alert", "cancelling alert %d\n", alert.nID);
@@ -212,7 +210,8 @@ bool CAlert::ProcessAlert(const Settings& settings, bool fThread)
         }
 
         // Check if this alert has been cancelled
-        BOOST_FOREACH (PAIRTYPE(const uint256, CAlert) & item, mapAlerts) {
+        for (const std::pair<const uint256, CAlert>& item: mapAlerts)
+        {
             const CAlert& alert = item.second;
             if (alert.Cancels(*this)) {
                 LogPrint("alert", "alert already cancelled by %d\n", alert.nID);
@@ -250,4 +249,27 @@ void CAlert::Notify(const Settings& settings, const std::string& strMessage, boo
         boost::thread t(runCommand, strCmd); // thread runs free
     else
         runCommand(strCmd);
+}
+
+void CAlert::GetHighestPriorityWarning(int& nPriority, std::string& strStatusBar)
+ {
+    LOCK(cs_mapAlerts);
+    for(const std::pair<const uint256, CAlert>& item: mapAlerts)
+    {
+        const CAlert& alert = item.second;
+        if (alert.AppliesToMe() && alert.nPriority > nPriority) {
+            nPriority = alert.nPriority;
+            strStatusBar = alert.strStatusBar;
+        }
+    }
+}
+
+// Relay alerts
+void CAlert::RelayAlerts(CNode* peer)
+{
+    LOCK(cs_mapAlerts);
+    for (const std::pair<const uint256, CAlert>& item: mapAlerts)
+    {
+        item.second.RelayTo(peer);
+    }
 }

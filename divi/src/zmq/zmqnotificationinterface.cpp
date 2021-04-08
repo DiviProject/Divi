@@ -2,13 +2,13 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "zmqnotificationinterface.h"
-#include "zmqpublishnotifier.h"
+#include <zmq/zmqnotificationinterface.h>
+
+#include <zmq/zmqpublishnotifier.h>
 #include <Settings.h>
-#include "version.h"
-#include "main.h"
-#include "streams.h"
-#include "Logging.h"
+#include <version.h>
+#include <streams.h>
+#include <Logging.h>
 
 void zmqError(const char *str)
 {

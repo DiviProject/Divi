@@ -23,6 +23,7 @@ class BlockMap;
 class CMasternodePayments;
 class ProofOfStakeModule;
 class CSporkManager;
+class Settings;
 
 class CoinMintingModule
 {
@@ -35,6 +36,7 @@ class CoinMintingModule
     std::unique_ptr<I_CoinMinter> coinMinter_;
 public:
     CoinMintingModule(
+        const Settings& settings,
         AnnotatedMixin<boost::recursive_mutex>& mainCS,
         const CChainParams& chainParameters,
         CChain& activeChain,

@@ -175,6 +175,7 @@ Value setgenerate(const Array& params, bool fHelp)
 
         Array blockHashes;
         CoinMintingModule mintingModule(
+            settings,
             cs_main, Params(), chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
         I_CoinMinter& minter = mintingModule.coinMinter();
 
@@ -240,6 +241,7 @@ Value generateblock(const Array& params, bool fHelp)
     }
 
     CoinMintingModule mintingModule(
+        settings,
         cs_main, Params(), chainActive,GetMasternodeSync(),GetMasternodePayments(),mempool,vNodes,*pwalletMain,mapHashedBlocks,mapBlockIndex,sporkManager);
     I_CoinMinter& minter = mintingModule.coinMinter();
     ExtendedBlockFactory* blockFactory = dynamic_cast<ExtendedBlockFactory*>(&mintingModule.blockFactory());

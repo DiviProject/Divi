@@ -10,10 +10,8 @@
 #include <BlockIncentivesPopulator.h>
 #include <ProofOfStakeModule.h>
 
-#include <Settings.h>
 #include <FeeRate.h>
 extern CFeeRate minRelayTxFee;
-extern Settings& settings;
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
@@ -44,6 +42,7 @@ I_BlockFactory* BlockFactorySelector(
 }
 
 CoinMintingModule::CoinMintingModule(
+    const Settings& settings,
     AnnotatedMixin<boost::recursive_mutex>& mainCS,
     const CChainParams& chainParameters,
     CChain& activeChain,

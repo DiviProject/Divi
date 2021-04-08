@@ -606,9 +606,9 @@ void SelectParams(CBaseChainParams::Network network)
     pCurrentParams = &Params(network);
 }
 
-bool SelectParamsFromCommandLine()
+bool SelectParamsFromCommandLine(const Settings& settings)
 {
-    CBaseChainParams::Network network = NetworkIdFromCommandLine();
+    CBaseChainParams::Network network = NetworkIdFromCommandLine(settings);
     if (network == CBaseChainParams::MAX_NETWORK_TYPES)
         return false;
 

@@ -64,7 +64,12 @@ CoinMintingModule::CoinMintingModule(
         blockSubsidyContainer_->superblockHeightValidator(),
         blockSubsidyContainer_->blockSubsidiesProvider(),
         sporkManager))
-    , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(activeChain,mempool,mainCS,minRelayTxFee))
+    , blockTransactionCollector_( new BlockMemoryPoolTransactionCollector(
+        settings,
+        activeChain,
+        mempool,
+        mainCS,
+        minRelayTxFee))
     , coinstakeTransactionCreator_( new PoSTransactionCreator(
         chainParameters,
         activeChain,

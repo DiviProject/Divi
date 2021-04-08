@@ -6,9 +6,6 @@
 #include "chain.h"
 
 #include "util.h"
-#include "Settings.h"
-
-extern Settings& settings;
 using namespace std;
 
 /**

@@ -28,7 +28,7 @@ CoinMinter::CoinMinter(
     const I_BlockSubsidyProvider& blockSubsidies,
     I_BlockFactory& blockFactory,
     CWallet* pwallet,
-    CChain& chain,
+    const CChain& chain,
     const CChainParams& chainParameters,
     std::vector<CNode*>& peers,
     const CMasternodeSync& masternodeSynchronization,

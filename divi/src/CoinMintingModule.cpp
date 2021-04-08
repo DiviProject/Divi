@@ -59,7 +59,6 @@ CoinMintingModule::CoinMintingModule(
     , blockSubsidyContainer_(new SuperblockSubsidyContainer(chainParameters))
     , blockIncentivesPopulator_(new BlockIncentivesPopulator(
         chainParameters,
-        activeChain,
         masternodeSynchronization,
         masternodePayments,
         blockSubsidyContainer_->superblockHeightValidator(),

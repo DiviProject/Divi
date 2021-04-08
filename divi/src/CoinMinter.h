@@ -36,7 +36,7 @@ class CoinMinter: public I_CoinMinter
 
     bool mintingIsRequested_;
     CWallet* pwallet_;
-    CChain& chain_;
+    const CChain& chain_;
     const CChainParams& chainParameters_;
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
@@ -74,7 +74,7 @@ public:
         const I_BlockSubsidyProvider& blockSubsidies,
         I_BlockFactory& blockFactory,
         CWallet* pwallet,
-        CChain& chain,
+        const CChain& chain,
         const CChainParams& chainParameters,
         std::vector<CNode*>& peers,
         const CMasternodeSync& masternodeSynchronization,

@@ -17,11 +17,9 @@
 #include <I_BlockSubsidyProvider.h>
 #include <Logging.h>
 #include <MasternodeHelpers.h>
+#include <ThreadManagementHelpers.h>
 
 constexpr int hashingDelay = 45;
-
-
-void SetThreadPriority(int nPriority);
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp = NULL);
 
 CoinMinter::CoinMinter(

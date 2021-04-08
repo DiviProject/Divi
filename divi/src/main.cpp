@@ -3145,16 +3145,7 @@ string GetWarnings(string strFor)
     }
 
     // Alerts
-    {
-        LOCK(cs_mapAlerts);
-        BOOST_FOREACH (PAIRTYPE(const uint256, CAlert) & item, mapAlerts) {
-            const CAlert& alert = item.second;
-            if (alert.AppliesToMe() && alert.nPriority > nPriority) {
-                nPriority = alert.nPriority;
-                strStatusBar = alert.strStatusBar;
-            }
-        }
-    }
+    CAlert::GetHighestPriorityWarning(nPriority,strStatusBar);
 
     if (strFor == "statusbar")
         return strStatusBar;
@@ -3520,11 +3511,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
 
         // Relay alerts
-        {
-            LOCK(cs_mapAlerts);
-            BOOST_FOREACH (PAIRTYPE(const uint256, CAlert) & item, mapAlerts)
-                    item.second.RelayTo(pfrom);
-        }
+        CAlert::RelayAlerts(pfrom);
 
         pfrom->fSuccessfullyConnected = true;
 

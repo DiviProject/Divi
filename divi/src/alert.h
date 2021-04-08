@@ -19,9 +19,6 @@ class CNode;
 class uint256;
 class Settings;
 
-extern std::map<uint256, CAlert> mapAlerts;
-extern CCriticalSection cs_mapAlerts;
-
 /** Alerts are for notifying old versions if they become too obsolete and
  * need to upgrade.  The message is displayed in the status bar.
  * Alert messages are broadcast as a vector of signed data.  Unserializing may
@@ -106,6 +103,8 @@ public:
     bool CheckSignature() const;
     bool ProcessAlert(const Settings& settings,bool fThread = true); // fThread means run -alertnotify in a free-running thread
     static void Notify(const Settings& settings,const std::string& strMessage, bool fThread);
+    static void GetHighestPriorityWarning(int& nPriority, std::string& strStatusBar);
+    static void RelayAlerts(CNode* peer);
 
     /*
      * Get copy of (active) alert object by hash. Returns a null alert if it is not found.

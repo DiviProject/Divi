@@ -5,13 +5,13 @@
 #include <tinyformat.h>
 #include <MasternodeHelpers.h>
 #include <obfuscation.h>
-#include <wallet.h>
 #include <chain.h>
 #include <base58address.h>
 #include <TransactionDiskAccessor.h>
 #include <timedata.h>
 #include <WalletTx.h>
 #include <script/standard.h>
+#include <keystore.h>
 
 extern CChain chainActive;
 extern bool fReindex;

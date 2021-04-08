@@ -8,9 +8,10 @@
 ExtendedBlockFactory::ExtendedBlockFactory(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
-    CChain& chain,
+    const Settings& settings,
+    const CChain& chain,
     const CChainParams& chainParameters
-    ): blockFactory_(new BlockFactory(blockTransactionCollector,coinstakeCreator, chain,chainParameters))
+    ): blockFactory_(new BlockFactory(blockTransactionCollector,coinstakeCreator, settings, chain,chainParameters))
     , extraTransactions_()
     , customCoinstake_()
 {

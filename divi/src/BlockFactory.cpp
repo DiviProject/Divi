@@ -12,17 +12,17 @@
 #include <sync.h>
 #include <Logging.h>
 #include <script/standard.h>
-
 #include <Settings.h>
-extern Settings& settings;
 
 // Actual mining functions
 BlockFactory::BlockFactory(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
-    CChain& chain,
+    const Settings& settings,
+    const CChain& chain,
     const CChainParams& chainParameters
-    ): chain_(chain)
+    ): settings_(settings)
+    , chain_(chain)
     , chainParameters_(chainParameters)
     , blockTransactionCollector_(blockTransactionCollector)
     , coinstakeCreator_( coinstakeCreator)
@@ -89,9 +89,10 @@ CBlockTemplate* BlockFactory::CreateNewBlock(const CScript& scriptPubKeyIn, bool
         return NULL;
 
     // Maybe override the block version, for fork tests.
-    if (chainParameters_.MineBlocksOnDemand()) {
+    if (chainParameters_.MineBlocksOnDemand())
+    {
         auto& block = pblocktemplate->block;
-        block.nVersion = settings.GetArg("-blockversion", block.nVersion);
+        block.nVersion = settings_.GetArg("-blockversion", block.nVersion);
     }
 
     pblocktemplate->previousBlockIndex = chain_.Tip();

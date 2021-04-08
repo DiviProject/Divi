@@ -10,13 +10,16 @@
 #include <BlockIncentivesPopulator.h>
 #include <ProofOfStakeModule.h>
 
+#include <Settings.h>
 #include <FeeRate.h>
 extern CFeeRate minRelayTxFee;
+extern Settings& settings;
 
 I_BlockFactory* BlockFactorySelector(
     I_BlockTransactionCollector& blockTransactionCollector,
     I_PoSTransactionCreator& coinstakeCreator,
-    CChain& activeChain,
+    const Settings& settings,
+    const CChain& activeChain,
     const CChainParams& chainParameters)
 {
     if(chainParameters.NetworkID()==CBaseChainParams::Network::REGTEST)
@@ -24,6 +27,7 @@ I_BlockFactory* BlockFactorySelector(
         return new ExtendedBlockFactory(
             blockTransactionCollector,
             coinstakeCreator,
+            settings,
             activeChain,
             chainParameters);
     }
@@ -32,6 +36,7 @@ I_BlockFactory* BlockFactorySelector(
         return new BlockFactory(
             blockTransactionCollector,
             coinstakeCreator,
+            settings,
             activeChain,
             chainParameters);
     }
@@ -74,6 +79,7 @@ CoinMintingModule::CoinMintingModule(
         BlockFactorySelector(
             *blockTransactionCollector_,
             *coinstakeTransactionCreator_,
+            settings,
             activeChain,
             chainParameters))
     , coinMinter_( new CoinMinter(

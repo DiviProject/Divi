@@ -13,11 +13,13 @@ class I_BlockTransactionCollector;
 class I_PoSTransactionCreator;
 class CChain;
 class CChainParams;
+class Settings;
 
 class BlockFactory: public I_BlockFactory
 {
 private:
-    CChain& chain_;
+    const Settings& settings_;
+    const CChain& chain_;
     const CChainParams& chainParameters_;
 
     I_BlockTransactionCollector& blockTransactionCollector_;
@@ -37,7 +39,8 @@ public:
     BlockFactory(
         I_BlockTransactionCollector& blockTransactionCollector,
         I_PoSTransactionCreator& coinstakeCreator,
-        CChain& chain,
+        const Settings& settings,
+        const CChain& chain,
         const CChainParams& chainParameters);
 
     CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, bool fProofOfStake) override;

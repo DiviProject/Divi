@@ -25,6 +25,7 @@ class CTxMemPool;
 class CBlockTemplate;
 class CBlockHeader;
 class CFeeRate;
+class Settings;
 
 template <typename MutexObj>
 class AnnotatedMixin;
@@ -112,6 +113,7 @@ private:
         CBlockTemplate& blocktemplate) const;
 public:
     BlockMemoryPoolTransactionCollector(
+        const Settings& settings,
         const CChain& activeChain,
         CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS,

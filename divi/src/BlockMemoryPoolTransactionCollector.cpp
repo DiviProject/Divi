@@ -14,14 +14,13 @@
 #include <UtxoCheckingAndUpdating.h>
 
 #include <Settings.h>
-extern Settings& settings;
 
 extern CChain chainActive;
 extern CCoinsViewCache* pcoinsTip;
 
 bool IsFinalTx(const CTransaction& tx, const CChain& activeChain, int nBlockHeight = 0 , int64_t nBlockTime = 0);
 
-static unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
+static unsigned int GetMaxBlockSize(const Settings& settings,unsigned int defaultMaxBlockSize, unsigned int maxBlockSizeCurrent)
 {
     // Largest block you're willing to create:
     unsigned int blockMaxSize = settings.GetArg("-blockmaxsize", defaultMaxBlockSize);
@@ -31,14 +30,14 @@ static unsigned int GetMaxBlockSize(unsigned int defaultMaxBlockSize, unsigned i
     return blockMaxSize;
 }
 
-static unsigned int GetBlockPrioritySize(unsigned int defaultBlockPrioritySize, unsigned int blockMaxSize)
+static unsigned int GetBlockPrioritySize(const Settings& settings, unsigned int defaultBlockPrioritySize, unsigned int blockMaxSize)
 {
     unsigned int blockPrioritySize = settings.GetArg("-blockprioritysize", defaultBlockPrioritySize);
     blockPrioritySize = std::min(blockMaxSize, blockPrioritySize);
     return blockPrioritySize;
 }
 
-static unsigned int GetBlockMinSize(unsigned int defaultBlockMinSize, unsigned int blockMaxSize)
+static unsigned int GetBlockMinSize(const Settings& settings, unsigned int defaultBlockMinSize, unsigned int blockMaxSize)
 {
     unsigned int blockMinSize = settings.GetArg("-blockminsize", defaultBlockMinSize);
     blockMinSize = std::min(blockMaxSize, blockMinSize);
@@ -88,6 +87,7 @@ public:
 };
 
 BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
+    const Settings& settings,
     const CChain& activeChain,
     CTxMemPool& mempool,
     CCriticalSection& mainCS,
@@ -96,9 +96,9 @@ BlockMemoryPoolTransactionCollector::BlockMemoryPoolTransactionCollector(
     , mempool_(mempool)
     , mainCS_(mainCS)
     , txFeeRate_(txFeeRate)
-    , nBlockMaxSize(GetMaxBlockSize(DEFAULT_BLOCK_MAX_SIZE, MAX_BLOCK_SIZE_CURRENT))
-    , nBlockPrioritySize(GetBlockPrioritySize(DEFAULT_BLOCK_PRIORITY_SIZE, nBlockMaxSize))
-    , nBlockMinSize(GetBlockMinSize(DEFAULT_BLOCK_MIN_SIZE, nBlockMaxSize))
+    , nBlockMaxSize(GetMaxBlockSize(settings,DEFAULT_BLOCK_MAX_SIZE, MAX_BLOCK_SIZE_CURRENT))
+    , nBlockPrioritySize(GetBlockPrioritySize(settings,DEFAULT_BLOCK_PRIORITY_SIZE, nBlockMaxSize))
+    , nBlockMinSize(GetBlockMinSize(settings,DEFAULT_BLOCK_MIN_SIZE, nBlockMaxSize))
 {
 
 }
@@ -291,7 +291,6 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
     TxPriorityCompare comparer(fSortedByFee);
     std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
 
-    bool fPrintPriority = settings.GetBoolArg("-printpriority", false);
     while (!vecPriority.empty()) {
         // Take highest priority transaction off the priority queue:
         double dPriority = vecPriority.front().get<0>();
@@ -338,11 +337,6 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
 
         CTxUndo txundo;
         UpdateCoinsWithTransaction(tx, view, txundo, nHeight);
-
-        if (fPrintPriority) {
-            LogPrintf("priority %.1f fee %s txid %s\n",
-                    dPriority, feeRate, tx.GetHash());
-        }
 
         // Add transactions that depend on this one to the priority queue
         AddDependingTransactionsToPriorityQueue(dependentTransactions, hash, vecPriority, comparer);

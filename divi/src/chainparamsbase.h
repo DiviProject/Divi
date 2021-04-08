@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+class Settings;
 /**
  * CBaseChainParams defines the base parameters (shared between divi-cli and divid)
  * of a given instance of the Divi system.
@@ -48,13 +49,13 @@ void SelectBaseParams(CBaseChainParams::Network network);
  * Looks for -regtest or -testnet and returns the appropriate Network ID.
  * Returns MAX_NETWORK_TYPES if an invalid combination is given.
  */
-CBaseChainParams::Network NetworkIdFromCommandLine();
+CBaseChainParams::Network NetworkIdFromCommandLine(const Settings& settings);
 
 /**
  * Calls NetworkIdFromCommandLine() and then calls SelectParams as appropriate.
  * Returns false if an invalid combination is given.
  */
-bool SelectBaseParamsFromCommandLine();
+bool SelectBaseParamsFromCommandLine(const Settings& settings);
 
 /**
  * Return true if SelectBaseParamsFromCommandLine() has been called to select

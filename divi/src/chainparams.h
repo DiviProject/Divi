@@ -19,6 +19,7 @@
 
 #include <map>
 #include <vector>
+class Settings;
 
 typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
 
@@ -51,8 +52,8 @@ public:
     };
 
     const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
-    
-    const MessageStartChars& MessageStart() const { 
+
+    const MessageStartChars& MessageStart() const {
         return pchMessageStart;
     }
 
@@ -195,6 +196,6 @@ void SelectParams(CBaseChainParams::Network network);
  * Looks for -regtest or -testnet and then calls SelectParams as appropriate.
  * Returns false if an invalid combination is given.
  */
-bool SelectParamsFromCommandLine();
+bool SelectParamsFromCommandLine(const Settings& settings);
 
 #endif // BITCOIN_CHAINPARAMS_H

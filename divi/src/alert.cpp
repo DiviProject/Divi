@@ -22,7 +22,6 @@
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
-extern Settings& settings;
 using namespace std;
 
 map<uint256, CAlert> mapAlerts;
@@ -168,7 +167,7 @@ CAlert CAlert::getAlertByHash(const uint256& hash)
     return retval;
 }
 
-bool CAlert::ProcessAlert(bool fThread)
+bool CAlert::ProcessAlert(const Settings& settings, bool fThread)
 {
     if (!CheckSignature())
         return false;
@@ -226,7 +225,7 @@ bool CAlert::ProcessAlert(bool fThread)
         // Notify UI and -alertnotify if it applies to me
         if (AppliesToMe()) {
             uiInterface.NotifyAlertChanged(GetHash(), CT_NEW);
-            Notify(strStatusBar, fThread);
+            Notify(settings,strStatusBar, fThread);
         }
     }
 
@@ -234,7 +233,7 @@ bool CAlert::ProcessAlert(bool fThread)
     return true;
 }
 
-void CAlert::Notify(const std::string& strMessage, bool fThread)
+void CAlert::Notify(const Settings& settings, const std::string& strMessage, bool fThread)
 {
     std::string strCmd = settings.GetArg("-alertnotify", "");
     if (strCmd.empty()) return;

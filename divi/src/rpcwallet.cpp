@@ -43,6 +43,7 @@ int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
 extern BlockMap mapBlockIndex;
 extern CChain chainActive;
+extern CWallet* pwalletMain;
 
 int GetIXConfirmations(uint256 nTXHash);
 

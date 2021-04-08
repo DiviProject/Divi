@@ -562,8 +562,7 @@ libbitcoin_common_a_SOURCES = \
   destination.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \
-  core_read.cpp \
-  core_write.cpp \
+  core_io.cpp \
   eccryptoverify.cpp \
   ecwrapper.cpp \
   hash.cpp \

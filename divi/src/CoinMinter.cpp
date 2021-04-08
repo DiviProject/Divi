@@ -281,11 +281,10 @@ bool CoinMinter::createProofOfWorkBlock(
             {
                 // Found a solution
                 SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                LogPrintf("%s:\n",__func__);
-                LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash, hashTarget);
                 blockSuccessfullyCreated = ProcessBlockFound(block, reserveKey);
                 SetThreadPriority(THREAD_PRIORITY_LOWEST);
-
+                LogPrintf("%s:\n",__func__);
+                LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash, hashTarget);
                 // In regression test mode, stop mining after a block is found. This
                 // allows developers to controllably generate a block on demand.
                 if (chainParameters_.MineBlocksOnDemand())

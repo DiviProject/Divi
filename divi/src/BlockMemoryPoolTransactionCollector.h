@@ -50,6 +50,7 @@ class CChain;
 class BlockMemoryPoolTransactionCollector: public I_BlockTransactionCollector
 {
 private:
+    CCoinsViewCache* baseCoinsViewCache_;
     const CChain& activeChain_;
     CTxMemPool& mempool_;
     AnnotatedMixin<boost::recursive_mutex>& mainCS_;
@@ -114,6 +115,7 @@ private:
 public:
     BlockMemoryPoolTransactionCollector(
         const Settings& settings,
+        CCoinsViewCache* baseCoinsViewCache,
         const CChain& activeChain,
         CTxMemPool& mempool,
         AnnotatedMixin<boost::recursive_mutex>& mainCS,

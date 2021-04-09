@@ -25,6 +25,7 @@
 
 #include <utilstrencodings.h>
 #include <random.h>
+#include <script/SignatureCheckers.h>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>

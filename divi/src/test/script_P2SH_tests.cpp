@@ -9,6 +9,7 @@
 #include "script/script_error.h"
 #include "script/sign.h"
 #include <TransactionOpCounting.h>
+#include <script/SignatureCheckers.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet_ismine.h"

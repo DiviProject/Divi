@@ -183,7 +183,7 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
     return -1;
 }
 
-bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType,unsigned nMaxDatacarrierBytes)
+bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType,unsigned maximumMetadataBytes)
 {
     std::vector<valtype> vSolutions;
     if (!ExtractScriptPubKeyFormat(scriptPubKey, whichType, vSolutions))
@@ -199,7 +199,7 @@ bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType,unsigned nMax
         if (m < 1 || m > n)
             return false;
     } else if (whichType == TX_NULL_DATA &&
-                (!GetBoolArg("-datacarrier", true) || scriptPubKey.size() > nMaxDatacarrierBytes))
+                (!GetBoolArg("-datacarrier", true) || scriptPubKey.size() > maximumMetadataBytes))
         return false;
 
     return whichType != TX_NONSTANDARD;

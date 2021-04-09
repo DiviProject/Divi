@@ -39,7 +39,6 @@ using namespace boost;
 using namespace boost::assign;
 using namespace json_spirit;
 
-extern CFeeRate payTxFee;
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
 extern BlockMap mapBlockIndex;
@@ -2358,28 +2357,6 @@ Value listlockunspent(const Array& params, bool fHelp)
     }
 
     return ret;
-}
-
-Value settxfee(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() < 1 || params.size() > 1)
-        throw runtime_error(
-                "settxfee amount\n"
-                "\nSet the transaction fee per kB.\n"
-                "\nArguments:\n"
-                "1. amount         (numeric, required) The transaction fee in DIVI/kB rounded to the nearest 0.00000001\n"
-                "\nResult\n"
-                "true|false        (boolean) Returns true if successful\n"
-                "\nExamples:\n" +
-                HelpExampleCli("settxfee", "0.00001") + HelpExampleRpc("settxfee", "0.00001"));
-
-    // Amount
-    CAmount nAmount = 0;
-    if (params[0].get_real() != 0.0)
-        nAmount = AmountFromValue(params[0]); // rejects 0.0 amounts
-
-    payTxFee = CFeeRate(nAmount, 1000);
-    return true;
 }
 
 static std::string DescribeEncryptionStatus(CWallet *wallet)

@@ -70,7 +70,7 @@ static bool SelectBlockFromCandidates(
     for (const std::pair<int64_t, uint256>& item: vSortedByTimestamp)
     {
         if (!mapBlockIndex.count(item.second))
-            return error("SelectBlockFromCandidates: failed to find block index for candidate block %s", item.second.ToString().c_str());
+            return error("SelectBlockFromCandidates: failed to find block index for candidate block %s", item.second);
 
         const CBlockIndex* pindex = mapBlockIndex[item.second];
         if (fSelected && pindex->GetBlockTime() > nSelectionIntervalStop)
@@ -102,7 +102,7 @@ static bool SelectBlockFromCandidates(
         }
     }
     if (settings.GetBoolArg("-printstakemodifier", false))
-        LogPrintf("SelectBlockFromCandidates: selection hash=%s\n", hashBest.ToString().c_str());
+        LogPrintf("SelectBlockFromCandidates: selection hash=%s\n", hashBest);
     return fSelected;
 }
 
@@ -160,7 +160,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
     // if it's not old enough, return the same stake modifier
     const CBlockIndex* indexWhereLastStakeModifierWasSet = GetLastBlockIndexWithGeneratedStakeModifier(pindexPrev);
     if (!indexWhereLastStakeModifierWasSet || !indexWhereLastStakeModifierWasSet->GeneratedStakeModifier())
-        return error("ComputeNextStakeModifier: unable to get last modifier prior to blockhash %s\n",pindexPrev->GetBlockHash().ToString());
+        return error("ComputeNextStakeModifier: unable to get last modifier prior to blockhash %s\n",pindexPrev->GetBlockHash());
 
     int64_t nModifierTime = indexWhereLastStakeModifierWasSet->GetBlockTime();
     nStakeModifier = indexWhereLastStakeModifierWasSet->nStakeModifier;
@@ -241,7 +241,7 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
     static const unsigned maxInputs = settings.MaxNumberOfPoSCombinableInputs();
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())
-        return error("CheckProofOfStake() : called on non-coinstake %s", tx.GetHash().ToString().c_str());
+        return error("CheckProofOfStake() : called on non-coinstake %s", tx.GetHash());
 
     if(tx.vin.size() > maxInputs) {
         return error("CheckProofOfStake() : invalid amount of stake inputs, current: %d, max: %d", tx.vin.size(), maxInputs);
@@ -270,7 +270,7 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
 
     //verify signature and script
     if (!VerifyScript(txin.scriptSig, txPrev.vout[txin.prevout.n].scriptPubKey, POS_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&tx, 0)))
-        return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.GetHash().ToString().c_str());
+        return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.GetHash());
 
     CBlockIndex* pindex = NULL;
     BlockMap::iterator it = mapBlockIndex.find(hashBlock);
@@ -303,7 +303,7 @@ bool CheckProofOfStake(CChain& activeChain, const CBlock& block, CBlockIndex* pi
         return false;
     if (!posGenerator.ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",
-            block.vtx[1].GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
+            block.vtx[1].GetHash(), hashProofOfStake); // may occur during initial download or if behind on block chain sync
 
     return true;
 }

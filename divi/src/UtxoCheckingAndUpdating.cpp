@@ -151,7 +151,7 @@ bool CheckInputs(
                                  REJECT_INVALID, "bad-txns-inputs-missingorspent");
             }
             return state.Invalid(
-                error("CheckInputs() : %s inputs unavailable", tx.GetHash().ToString()) );
+                error("CheckInputs() : %s inputs unavailable", tx.GetHash()) );
         }
 
 
@@ -184,13 +184,13 @@ bool CheckInputs(
         if (!tx.IsCoinStake()) {
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)",
-                                            tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
+                                            tx.GetHash(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
                                  REJECT_INVALID, "bad-txns-in-belowout");
 
             // Tally transaction fees
             CAmount nTxFee = nValueIn - tx.GetValueOut();
             if (nTxFee < 0)
-                return state.DoS(100, error("CheckInputs() : %s nTxFee < 0", tx.GetHash().ToString()),
+                return state.DoS(100, error("CheckInputs() : %s nTxFee < 0", tx.GetHash()),
                                  REJECT_INVALID, "bad-txns-fee-negative");
             nFees += nTxFee;
             if (!MoneyRange(nFees))

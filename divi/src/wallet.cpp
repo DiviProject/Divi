@@ -1225,8 +1225,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
                 else
                 {
                     LogPrintf("AddToWallet() : found %s in block %s not in index\n",
-                              wtxIn.GetHash().ToString(),
-                              wtxIn.hashBlock.ToString());
+                              wtxIn.GetHash(), wtxIn.hashBlock);
                 }
             }
         }
@@ -1253,7 +1252,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
 
         //// debug print
         LogPrintf("AddToWallet %s  %s%s\n",
-            wtxIn.GetHash().ToString(),
+            wtxIn.GetHash(),
             (transactionHashIsNewToWallet ? "new" : ""),
             (walletTransactionHasBeenUpdated ? "update" : ""));
 
@@ -2317,7 +2316,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
                     CWalletTx* coinPtr = const_cast<CWalletTx*>(GetWalletTx(txin.prevout.hash));
                     if(!coinPtr)
                     {
-                        LogPrintf("%s: Spending inputs not recorded in wallet - %s\n", __func__, txin.prevout.hash.ToString());
+                        LogPrintf("%s: Spending inputs not recorded in wallet - %s\n", __func__, txin.prevout.hash);
                         assert(coinPtr);
                     }
                     coinPtr->RecomputeCachedQuantities();
@@ -3287,7 +3286,7 @@ void CWallet::GetAmounts(
         CTxDestination address;
         if (!ExtractDestination(txout.scriptPubKey, address)) {
             if (!wtx.IsCoinStake() && !wtx.IsCoinBase()) {
-                LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n", wtx.GetHash().ToString());
+                LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n", wtx.GetHash());
             }
             address = CNoDestination();
         }

@@ -101,7 +101,7 @@ bool CMasternodeMan::Add(const CMasternode& mn)
 
     CMasternode* pmn = Find(mn.vin);
     if (pmn == NULL) {
-        LogPrint("masternode", "CMasternodeMan: Adding new Masternode %s - %i now\n", mn.vin.prevout.hash.ToString(), networkMessageManager_.masternodeCount() + 1);
+        LogPrint("masternode", "CMasternodeMan: Adding new Masternode %s - %i now\n", mn.vin.prevout.hash, networkMessageManager_.masternodeCount() + 1);
         networkMessageManager_.masternodes.push_back(mn);
         return true;
     }
@@ -182,7 +182,7 @@ void CMasternodeMan::CheckAndRemoveInnactive(CMasternodeSync& masternodeSynchron
             (forceExpiredRemoval && (*it).activeState == CMasternode::MASTERNODE_EXPIRED) ||
             (*it).protocolVersion < ActiveProtocol())
         {
-            LogPrint("masternode", "CMasternodeMan: Removing inactive Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), networkMessageManager_.masternodeCount() - 1);
+            LogPrint("masternode", "CMasternodeMan: Removing inactive Masternode %s - %i now\n", (*it).vin.prevout.hash, networkMessageManager_.masternodeCount() - 1);
 
             networkMessageManager_.clearExpiredMasternodeBroadcasts(it->vin.prevout,masternodeSynchronization);
             networkMessageManager_.clearExpiredMasternodeEntryRequests(it->vin.prevout);
@@ -241,7 +241,7 @@ bool CMasternodeMan::CheckInputsForMasternode(const CMasternodeBroadcast& mnb, i
     // should be at least not earlier than block when 1000 PIV tx got MASTERNODE_MIN_CONFIRMATIONS
     if (pindexConf->GetBlockTime() > mnb.sigTime) {
         LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (%i conf block is at %d)\n",
-                 mnb.sigTime, mnb.vin.prevout.hash.ToString(), MASTERNODE_MIN_CONFIRMATIONS, pindexConf->GetBlockTime());
+                 mnb.sigTime, mnb.vin.prevout.hash, MASTERNODE_MIN_CONFIRMATIONS, pindexConf->GetBlockTime());
         return false;
     }
 
@@ -251,7 +251,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
 {
     // make sure signature isn't in the future (past is OK)
     if (mnb.sigTime > GetAdjustedTime() + 60 * 60) {
-        LogPrintf("%s : mnb - Signature rejected, too far into the future %s\n", __func__, mnb.vin.prevout.hash.ToString());
+        LogPrintf("%s : mnb - Signature rejected, too far into the future %s\n", __func__, mnb.vin.prevout.hash);
         nDoS = 1;
         return false;
     }
@@ -263,12 +263,12 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
     }
 
     if (mnb.protocolVersion < ActiveProtocol()) {
-        LogPrint("masternode","mnb - ignoring outdated Masternode %s protocol version %d\n", mnb.vin.prevout.hash.ToString(), mnb.protocolVersion);
+        LogPrint("masternode","mnb - ignoring outdated Masternode %s protocol version %d\n", mnb.vin.prevout.hash, mnb.protocolVersion);
         return false;
     }
 
     if (!mnb.vin.scriptSig.empty()) {
-        LogPrint("masternode","mnb - Ignore Not Empty ScriptSig %s\n", mnb.vin.prevout.hash.ToString());
+        LogPrint("masternode","mnb - Ignore Not Empty ScriptSig %s\n", mnb.vin.prevout.hash);
         return false;
     }
 
@@ -290,7 +290,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
     // this broadcast older than we have, it's bad.
     if (pmn->sigTime > mnb.sigTime) {
         LogPrint("masternode","mnb - Bad sigTime %d for Masternode %s (existing broadcast is at %d)\n",
-                 mnb.sigTime, mnb.vin.prevout.hash.ToString(), pmn->sigTime);
+                 mnb.sigTime, mnb.vin.prevout.hash, pmn->sigTime);
         return false;
     }
     // masternode is not enabled yet/already, nothing to update
@@ -300,7 +300,7 @@ bool CMasternodeMan::CheckAndUpdateMasternode(CMasternodeSync& masternodeSynchro
     //   after that they just need to match
     if (pmn->pubKeyCollateralAddress == mnb.pubKeyCollateralAddress && !MasternodeCanBeUpdatedFromBroadcast(*pmn)) {
         //take the newest entry
-        LogPrint("masternode","mnb - Got updated entry for %s\n", mnb.vin.prevout.hash.ToString());
+        LogPrint("masternode","mnb - Got updated entry for %s\n", mnb.vin.prevout.hash);
         if (UpdateWithNewBroadcast(mnb,*pmn)) {
             int unusedDoSValue = 0;
             if (mnb.lastPing != CMasternodePing() &&  CheckAndUpdatePing(*pmn,mnb.lastPing,unusedDoSValue,false)) {
@@ -320,19 +320,19 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
 {
     if (mnp.sigTime > GetAdjustedTime() + 60 * 60) {
         LogPrint("masternode", "%s - Signature rejected, too far into the future %s\n",
-                 __func__, mnp.vin.prevout.hash.ToString());
+                 __func__, mnp.vin.prevout.hash);
         nDoS = 1;
         return false;
     }
 
     if (mnp.sigTime <= GetAdjustedTime() - 60 * 60) {
         LogPrint("masternode", "%s - Signature rejected, too far into the past %s - %d %d\n",
-                 __func__, mnp.vin.prevout.hash.ToString(), mnp.sigTime, GetAdjustedTime());
+                 __func__, mnp.vin.prevout.hash, mnp.sigTime, GetAdjustedTime());
         nDoS = 1;
         return false;
     }
 
-    LogPrint("masternode", "%s - New Ping - %s - %lli\n", __func__, mnp.blockHash.ToString(), mnp.sigTime);
+    LogPrint("masternode", "%s - New Ping - %s - %lli\n", __func__, mnp.blockHash, mnp.sigTime);
 
     // see if we have this Masternode
     if (mn.protocolVersion >= ActiveProtocol()) {
@@ -346,7 +346,7 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
             if (!CObfuScationSigner::VerifySignature<CMasternodePing>(mnp,mn.pubKeyMasternode,errorMessage))
             {
                 LogPrint("masternode", "%s - Got bad Masternode address signature %s (%s)\n",
-                         __func__, mnp.vin.prevout.hash.ToString(),errorMessage);
+                         __func__, mnp.vin.prevout.hash, errorMessage);
                 nDoS = 33;
                 return false;
             }
@@ -355,7 +355,7 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
             if (mi != blockIndicesByHash_.end() && (*mi).second) {
                 if ((*mi).second->nHeight < activeChain_.Height() - 24) {
                     LogPrint("masternode", "%s - Masternode %s block hash %s is too old\n",
-                             __func__, mnp.vin.prevout.hash.ToString(), mnp.blockHash.ToString());
+                             __func__, mnp.vin.prevout.hash, mnp.blockHash);
                     // Do nothing here (no Masternode update, no mnping relay)
                     // Let this node to be visible but fail to accept mnping
 
@@ -363,7 +363,7 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
                 }
             } else {
                 LogPrint("masternode", "%s - Masternode %s block hash %s is unknown\n",
-                         __func__, mnp.vin.prevout.hash.ToString(), mnp.blockHash.ToString());
+                         __func__, mnp.vin.prevout.hash, mnp.blockHash);
                 // maybe we stuck so we shouldn't ban this node, just fail to accept it
                 // TODO: or should we also request this block?
 
@@ -376,16 +376,16 @@ bool CMasternodeMan::CheckAndUpdatePing(CMasternode& mn, CMasternodePing& mnp, i
             if (!mn.IsEnabled()) return false;
 
             LogPrint("masternode", "%s - Masternode ping accepted, vin: %s\n",
-                     __func__, mnp.vin.prevout.hash.ToString());
+                     __func__, mnp.vin.prevout.hash);
             return true;
         }
         LogPrint("masternode", "%s - Masternode ping arrived too early, vin: %s\n",
-                 __func__, mnp.vin.prevout.hash.ToString());
+                 __func__, mnp.vin.prevout.hash);
         //nDos = 1; //disable, this is happening frequently and causing banned peers
         return false;
     }
     LogPrint("masternode", "%s - Couldn't find compatible Masternode entry, vin: %s\n",
-             __func__, mnp.vin.prevout.hash.ToString());
+             __func__, mnp.vin.prevout.hash);
 
     return false;
 }
@@ -469,7 +469,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
     // make sure collateral is still unspent
     if (!localMasternode.IsOurBroadcast(mnb) && !CheckInputsForMasternode(mnb,nDoS))
     {
-        LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash.ToString());
+        LogPrintf("%s : - Rejected Masternode entry %s\n", __func__, mnb.vin.prevout.hash);
         if (nDoS > 0 && pfrom != nullptr)
             Misbehaving(pfrom->GetId(), nDoS);
         return false;
@@ -502,7 +502,7 @@ bool CMasternodeMan::ProcessBroadcast(CActiveMasternode& localMasternode, CMaste
         Remove(mnb.vin);
     }
 
-    LogPrint("masternode","mnb - Got NEW Masternode entry - %s - %lli \n", mnb.vin.prevout.hash.ToString(), mnb.sigTime);
+    LogPrint("masternode","mnb - Got NEW Masternode entry - %s - %lli \n", mnb.vin.prevout.hash, mnb.sigTime);
     Add(mn);
 
     networkMessageManager_.mapSeenMasternodeBroadcast[mnb.GetHash()] = mnb;
@@ -568,7 +568,7 @@ void CMasternodeMan::SyncMasternodeListWithPeer(CNode* peer)
     {
         if (NotifyPeerOfMasternode(mn,peer))
         {
-            LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash.ToString());
+            LogPrint("masternode", "dseg - Sending Masternode entry - %s \n", mn.vin.prevout.hash);
             nInvCount++;
         }
     }
@@ -605,7 +605,7 @@ void CMasternodeMan::ProcessMessage(CActiveMasternode& localMasternode,CMasterno
         CMasternodePing mnp;
         vRecv >> mnp;
 
-        LogPrint("masternode", "mnp - Masternode ping, vin: %s\n", mnp.vin.prevout.hash.ToString());
+        LogPrint("masternode", "mnp - Masternode ping, vin: %s\n", mnp.vin.prevout.hash);
         if (!ProcessPing(pfrom, mnp, masternodeSynchronization))
             return;
     } else if (strCommand == "dseg") { //Get Masternode list or specific entry
@@ -636,7 +636,7 @@ void CMasternodeMan::Remove(const CTxIn& vin)
     std::vector<CMasternode>::iterator it = networkMessageManager_.masternodes.begin();
     while (it != networkMessageManager_.masternodes.end()) {
         if ((*it).vin == vin) {
-            LogPrint("masternode", "CMasternodeMan: Removing Masternode %s - %i now\n", (*it).vin.prevout.hash.ToString(), networkMessageManager_.masternodeCount() - 1);
+            LogPrint("masternode", "CMasternodeMan: Removing Masternode %s - %i now\n", (*it).vin.prevout.hash, networkMessageManager_.masternodeCount() - 1);
             networkMessageManager_.masternodes.erase(it);
             break;
         }

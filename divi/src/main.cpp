@@ -564,7 +564,8 @@ CBlockTreeDB* pblocktree = NULL;
 bool IsStandardTx(const CTransaction& tx, string& reason)
 {
     static const bool fIsBareMultisigStd = settings.GetBoolArg("-permitbaremultisig", true);
-    static const unsigned nMaxDatacarrierBytes = settings.GetArg("-datacarriersize", MAX_OP_META_RELAY);
+    static const unsigned nMaxDatacarrierBytes =
+        settings.GetBoolArg("-datacarrier", true)? settings.GetArg("-datacarriersize", MAX_OP_META_RELAY): 0u;
 
     AssertLockHeld(cs_main);
     if (tx.nVersion > CTransaction::CURRENT_VERSION || tx.nVersion < 1) {

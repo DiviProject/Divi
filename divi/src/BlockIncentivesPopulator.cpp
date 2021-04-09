@@ -222,7 +222,7 @@ bool BlockIncentivesPopulator::HasValidMasternodePayee(const CTransaction &txNew
     }
     if (masternodePayments_.IsTransactionValid(blockSubsidies_,txNew, seedHash) || settings.GetBoolArg("-override_mnpayee",false))
         return true;
-    LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew.ToString().c_str());
+    LogPrintf("%s : Invalid mn payment detected %s\n", __func__, txNew);
 
     if (sporkManager_.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT))
         return false;

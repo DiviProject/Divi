@@ -382,6 +382,7 @@ libbitcoin_server_a_SOURCES = \
   ProofOfStakeModule.cpp \
   ProofOfStakeCalculator.cpp \
   LegacyPoSStakeModifierService.cpp \
+  Logging-server.cpp \
   PoSStakeModifierService.cpp \
   PeerNotificationOfMintService.cpp \
   miner.cpp \
@@ -446,6 +447,7 @@ libbitcoin_wallet_a_SOURCES = \
   keypool.cpp \
   swifttx.cpp \
   LegacyBlockSubsidies.cpp \
+  Logging-wallet.cpp \
   masternode.cpp \
   MasternodePing.cpp \
   MasternodePaymentData.cpp \
@@ -555,6 +557,7 @@ libbitcoin_common_a_SOURCES = \
   hdchain.cpp \
   key.cpp \
   keystore.cpp \
+  Logging-common.cpp \
   netbase.cpp \
   protocol.cpp \
   pubkey.cpp \

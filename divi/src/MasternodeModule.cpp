@@ -304,7 +304,7 @@ MasternodeStartResult StartMasternode(std::string alias, bool deferRelay)
 
         if(!mnodeman.ProcessBroadcast(activeMasternode, masternodeSync,nullptr, mnb))
         {
-            LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin.ToString());
+            LogPrintf("%s - Relaying broadcast vin = %s\n",__func__, mnb.vin);
             result.status = false;
             result.errorMessage = "Error processing broadcast";
             return result;
@@ -453,7 +453,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Found by FindOldestNotInVec \n");
 
         newWinner.AddPayee(payee);
-        LogPrint("masternode","CMasternodePayments::ProcessBlock() WinnerPayee %s nHeight %d. \n", payee.ToString(), newWinner.GetHeight());
+        LogPrint("masternode","CMasternodePayments::ProcessBlock() WinnerPayee %s nHeight %d. \n", payee, newWinner.GetHeight());
     } else {
         LogPrint("masternode","CMasternodePayments::ProcessBlock() Failed to find masternode to pay\n");
     }
@@ -510,7 +510,7 @@ bool SetupActiveMasternode(const Settings& settings, std::string& errorMessage)
         errorMessage = "Invalid -masternodeaddr address: " + settings.GetArg("-masternodeaddr", "");
         return false;
     }
-    LogPrintf("Masternode address: %s\n", activeMasternode.service.ToString());
+    LogPrintf("Masternode address: %s\n", activeMasternode.service);
 
     if(settings.ParameterIsSet("-masternodeprivkey"))
     {

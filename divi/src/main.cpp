@@ -1382,7 +1382,7 @@ bool CheckMintTotalsAndBlockPayees(
         return state.DoS(100,
                          error("%s : reward pays too much (actual=%s vs limit=%s)",
                             __func__,
-                            FormatMoney(pindex->nMint), nExpectedMint.ToString()),
+                            FormatMoney(pindex->nMint), nExpectedMint),
                          REJECT_INVALID, "bad-cb-amount");
     }
 
@@ -2132,7 +2132,7 @@ bool FindBlockPos(CValidationState& state, CDiskBlockPos& pos, unsigned int nAdd
 
     if (!fKnown) {
         while (vinfoBlockFile[nFile].nSize + nAddSize >= MAX_BLOCKFILE_SIZE) {
-            LogPrintf("Leaving block file %i: %s\n", nFile, vinfoBlockFile[nFile].ToString());
+            LogPrintf("Leaving block file %i: %s\n", nFile, vinfoBlockFile[nFile]);
             FlushBlockFile(true);
             nFile++;
             if (vinfoBlockFile.size() <= nFile) {
@@ -2669,7 +2669,7 @@ bool static LoadBlockIndexDB(string& strError)
     for (int nFile = 0; nFile <= nLastBlockFile; nFile++) {
         pblocktree->ReadBlockFileInfo(nFile, vinfoBlockFile[nFile]);
     }
-    LogPrintf("%s: last block file info: %s\n", __func__, vinfoBlockFile[nLastBlockFile].ToString());
+    LogPrintf("%s: last block file info: %s\n", __func__, vinfoBlockFile[nLastBlockFile]);
     for (int nFile = nLastBlockFile + 1; true; nFile++) {
         CBlockFileInfo info;
         if (pblocktree->ReadBlockFileInfo(nFile, info)) {
@@ -3460,7 +3460,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         // Disconnect if we connected to ourself
         if (nNonce == nLocalHostNonce && nNonce > 1) {
-            LogPrintf("connected to self at %s, disconnecting\n", pfrom->addr.ToString());
+            LogPrintf("connected to self at %s, disconnecting\n", pfrom->addr);
             pfrom->fDisconnect = true;
             return true;
         }
@@ -3493,11 +3493,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             if (fListen && !IsInitialBlockDownload()) {
                 CAddress addr = GetLocalAddress(&pfrom->addr);
                 if (addr.IsRoutable()) {
-                    LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
+                    LogPrintf("ProcessMessages: advertizing address %s\n", addr);
                     pfrom->PushAddress(addr);
                 } else if (IsPeerAddrLocalGood(pfrom)) {
                     addr.SetIP(pfrom->addrLocal);
-                    LogPrintf("ProcessMessages: advertizing address %s\n", addr.ToString());
+                    LogPrintf("ProcessMessages: advertizing address %s\n", addr);
                     pfrom->PushAddress(addr);
                 }
             }
@@ -3530,7 +3530,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         LogPrintf("receive version message: %s: version %d, blocks=%d, us=%s, peer=%d%s\n",
                   pfrom->cleanSubVer, pfrom->nVersion,
-                  pfrom->nStartingHeight, addrMe.ToString(), pfrom->id,
+                  pfrom->nStartingHeight, addrMe, pfrom->id,
                   remoteAddr);
 
         AddTimeData(pfrom->addr, nTime);
@@ -3634,7 +3634,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             pfrom->AddInventoryKnown(inv);
 
             bool fAlreadyHave = AlreadyHave(inv);
-            LogPrint("net", "got inv: %s  %s peer=%d\n", inv.ToString(), fAlreadyHave ? "have" : "new", pfrom->id);
+            LogPrint("net", "got inv: %s  %s peer=%d\n", inv, fAlreadyHave ? "have" : "new", pfrom->id);
 
             if (!fAlreadyHave && !fImporting && !fReindex && inv.type != MSG_BLOCK)
                 pfrom->AskFor(inv);
@@ -3674,7 +3674,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         LogPrint("net", "received getdata (%u invsz) peer=%d\n", vInv.size(), pfrom->id);
 
         if (vInv.size() > 0)
-            LogPrint("net", "received getdata for: %s peer=%d\n", vInv[0].ToString(), pfrom->id);
+            LogPrint("net", "received getdata for: %s peer=%d\n", vInv[0], pfrom->id);
 
         pfrom->vRecvGetData.insert(pfrom->vRecvGetData.end(), vInv.begin(), vInv.end());
         ProcessGetData(pfrom);
@@ -4326,11 +4326,11 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
         if (state->fShouldBan) {
             if (pto->fWhitelisted)
-                LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr.ToString());
+                LogPrintf("Warning: not punishing whitelisted peer %s!\n", pto->addr);
             else {
                 pto->fDisconnect = true;
                 if (pto->addr.IsLocal())
-                    LogPrintf("Warning: not banning local peer %s!\n", pto->addr.ToString());
+                    LogPrintf("Warning: not banning local peer %s!\n", pto->addr);
                 else {
                     CNode::Ban(pto->addr);
                 }
@@ -4456,7 +4456,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         while (!pto->fDisconnect && !pto->mapAskFor.empty() && (*pto->mapAskFor.begin()).first <= nNow) {
             const CInv& inv = (*pto->mapAskFor.begin()).second;
             if (!AlreadyHave(inv)) {
-                LogPrint("net", "Requesting %s peer=%d\n", inv.ToString(), pto->id);
+                LogPrint("net", "Requesting %s peer=%d\n", inv, pto->id);
                 vGetData.push_back(inv);
                 if (vGetData.size() >= 1000) {
                     pto->PushMessage("getdata", vGetData);

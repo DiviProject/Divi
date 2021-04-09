@@ -200,7 +200,7 @@ void CMasternodePayments::FillBlockPayee(const CBlockIndex* pindexPrev, CMutable
         ExtractDestination(payee, address1);
         CBitcoinAddress address2(address1);
 
-        LogPrint("masternode","Masternode payment of %s to %s\n", FormatMoney(masternodePayment).c_str(), address2.ToString().c_str());
+        LogPrint("masternode","Masternode payment of %s to %s\n", FormatMoney(masternodePayment).c_str(), address2);
     }
 }
 
@@ -283,7 +283,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
         ExtractDestination(winner.payee, address1);
         CBitcoinAddress address2(address1);
 
-        //   LogPrint("mnpayments", "mnw - winning vote - Addr %s Height %d bestHeight %d - %s\n", address2.ToString().c_str(), winner.nBlockHeight, nHeight, winner.vinMasternode.prevout.ToStringShort());
+        //   LogPrint("mnpayments", "mnw - winning vote - Addr %s Height %d bestHeight %d - %s\n", address2, winner.nBlockHeight, nHeight, winner.vinMasternode.prevout.ToStringShort());
 
         if (AddWinningMasternode(winner)) {
             winner.Relay();

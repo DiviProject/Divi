@@ -260,7 +260,7 @@ Value importwallet(const Array& params, bool fHelp)
         assert(key.VerifyPubKey(pubkey));
         CKeyID keyid = pubkey.GetID();
         if (pwalletMain->HaveKey(keyid)) {
-            LogPrintf("Skipping import of %s (key already present)\n", CBitcoinAddress(keyid).ToString());
+            LogPrintf("Skipping import of %s (key already present)\n", CBitcoinAddress(keyid));
             continue;
         }
         int64_t nTime = DecodeDumpTime(vstr[1]);
@@ -278,7 +278,7 @@ Value importwallet(const Array& params, bool fHelp)
                 fLabel = true;
             }
         }
-        LogPrintf("Importing %s...\n", CBitcoinAddress(keyid).ToString());
+        LogPrintf("Importing %s...\n", CBitcoinAddress(keyid));
         if (!pwalletMain->AddKeyPubKey(key, pubkey)) {
             fGood = false;
             continue;

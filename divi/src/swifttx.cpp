@@ -59,7 +59,7 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
     //        // IX supports normal scripts and unspendable scripts (used in DS collateral and Budget collateral).
     //        // TODO: Look into other script types that are normal and can be included
     //        if (!o.scriptPubKey.IsNormalPaymentScript() && !o.scriptPubKey.IsUnspendable()) {
-    //            LogPrintf("ProcessMessageSwiftTX::ix - Invalid Script %s\n", tx.ToString().c_str());
+    //            LogPrintf("ProcessMessageSwiftTX::ix - Invalid Script %s\n", tx);
     //            return;
     //        }
     //    }
@@ -82,7 +82,7 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
     //        mapTxLockReq.insert(make_pair(tx.GetHash(), tx));
 
     //        LogPrintf("ProcessMessageSwiftTX::ix - Transaction Lock Request: %s %s : accepted %s\n",
-    //            pfrom->addr.ToString().c_str(), pfrom->cleanSubVer.c_str(),
+    //            pfrom->addr, pfrom->cleanSubVer,
     //            tx.GetHash());
 
     //        return;
@@ -93,7 +93,7 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
     //        // can we get the conflicting transaction as proof?
 
     //        LogPrintf("ProcessMessageSwiftTX::ix - Transaction Lock Request: %s %s : rejected %s\n",
-    //            pfrom->addr.ToString().c_str(), pfrom->cleanSubVer.c_str(),
+    //            pfrom->addr, pfrom->cleanSubVer,
     //            tx.GetHash());
 
     //        BOOST_FOREACH (const CTxIn& in, tx.vin) {
@@ -148,7 +148,7 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
     //            if (mapUnknownVotes[ctx.vinMasternode.prevout.hash] > GetTime() &&
     //                mapUnknownVotes[ctx.vinMasternode.prevout.hash] - GetAverageVoteTime() > 60 * 10) {
     //                LogPrintf("ProcessMessageSwiftTX::ix - masternode is spamming transaction votes: %s %s\n",
-    //                    ctx.vinMasternode.ToString().c_str(),
+    //                    ctx.vinMasternode,
     //                    ctx.txHash);
     //                return;
     //            } else {
@@ -187,12 +187,12 @@ bool IsIXTXValid(const CTransaction& txCollateral)
     //}
 
     //if (nValueOut > GetSporkValue(SPORK_5_MAX_VALUE) * COIN) {
-    //    LogPrint("swiftx", "IsIXTXValid - Transaction value too high - %s\n", txCollateral.ToString().c_str());
+    //    LogPrint("swiftx", "IsIXTXValid - Transaction value too high - %s\n", txCollateral);
     //    return false;
     //}
 
     //if (missingTx) {
-    //    LogPrint("swiftx", "IsIXTXValid - Unknown inputs in IX transaction - %s\n", txCollateral.ToString().c_str());
+    //    LogPrint("swiftx", "IsIXTXValid - Unknown inputs in IX transaction - %s\n", txCollateral);
     //    /*
     //        This happens sometimes for an unknown reason, so we'll return that it's a valid transaction.
     //        If someone submits an invalid transaction it will be rejected by the network anyway and this isn't
@@ -202,7 +202,7 @@ bool IsIXTXValid(const CTransaction& txCollateral)
     //}
 
     //if (nValueIn - nValueOut < COIN * 0.01) {
-    //    LogPrint("swiftx", "IsIXTXValid - did not include enough fees in transaction %d\n%s\n", nValueOut - nValueIn, txCollateral.ToString().c_str());
+    //    LogPrint("swiftx", "IsIXTXValid - did not include enough fees in transaction %d\n%s\n", nValueOut - nValueIn, txCollateral);
     //    return false;
     //}
 
@@ -295,7 +295,7 @@ bool ProcessConsensusVote(CNode* pnode, CConsensusVote& ctx)
 //
 //    CMasternode* pmn = mnodeman.Find(ctx.vinMasternode);
 //    if (pmn != NULL)
-//        LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Masternode ADDR %s %d\n", pmn->addr.ToString().c_str(), n);
+//        LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Masternode ADDR %s %d\n", pmn->addr, n);
 //
 //    if (n == -1) {
 //        //can be caused by past versions trying to vote with an invalid protocol
@@ -482,11 +482,11 @@ bool CConsensusVote::Sign()
     //CKey key2;
     //CPubKey pubkey2;
     //std::string strMessage = txHash.ToString().c_str() + boost::lexical_cast<std::string>(nBlockHeight);
-    ////LogPrintf("signing strMessage %s \n", strMessage.c_str());
-    ////LogPrintf("signing privkey %s \n", strMasterNodePrivKey.c_str());
+    ////LogPrintf("signing strMessage %s \n", strMessage);
+    ////LogPrintf("signing privkey %s \n", strMasterNodePrivKey);
 
     //if (!obfuScationSigner.SetKey(strMasterNodePrivKey, errorMessage, key2, pubkey2)) {
-    //    LogPrintf("CConsensusVote::Sign() - ERROR: Invalid masternodeprivkey: '%s'\n", errorMessage.c_str());
+    //    LogPrintf("CConsensusVote::Sign() - ERROR: Invalid masternodeprivkey: '%s'\n", errorMessage);
     //    return false;
     //}
 

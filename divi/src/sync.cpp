@@ -53,6 +53,8 @@ private:
     int sourceLine;
 };
 
+LOG_FORMAT_WITH_TOSTRING(CLockLocation)
+
 typedef std::vector<std::pair<void*, CLockLocation> > LockStack;
 
 static boost::mutex dd_mutex;
@@ -69,7 +71,7 @@ static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch,
             LogPrintf(" (1)");
         if (i.first == mismatch.second)
             LogPrintf(" (2)");
-        LogPrintf(" %s\n", i.second.ToString());
+        LogPrintf(" %s\n", i.second);
     }
     LogPrintf("Current lock order is:\n");
     BOOST_FOREACH (const PAIRTYPE(void*, CLockLocation) & i, s1) {
@@ -77,7 +79,7 @@ static void potential_deadlock_detected(const std::pair<void*, void*>& mismatch,
             LogPrintf(" (1)");
         if (i.first == mismatch.second)
             LogPrintf(" (2)");
-        LogPrintf(" %s\n", i.second.ToString());
+        LogPrintf(" %s\n", i.second);
     }
 
     tfm::format(std::cerr, "Assertion failed: detected inconsistent lock order for %s, details in debug log.\n", s2.back().second.ToString());
@@ -89,7 +91,7 @@ static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)
     if (lockstack.get() == NULL)
         lockstack.reset(new LockStack);
 
-    LogPrint("lock", "Locking: %s\n", locklocation.ToString());
+    LogPrint("lock", "Locking: %s\n", locklocation);
     dd_mutex.lock();
 
     (*lockstack).push_back(std::make_pair(c, locklocation));
@@ -118,7 +120,7 @@ static void pop_lock()
 {
     if (fDebug) {
         const CLockLocation& locklocation = (*lockstack).rbegin()->second;
-        LogPrint("lock", "Unlocked: %s\n", locklocation.ToString());
+        LogPrint("lock", "Unlocked: %s\n", locklocation);
     }
     dd_mutex.lock();
     (*lockstack).pop_back();

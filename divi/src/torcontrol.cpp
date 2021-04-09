@@ -506,7 +506,7 @@ void TorController::add_onion_cb(TorControlConnection& _conn, const TorControlRe
             return;
         }
         LookupNumeric(std::string(service_id+".onion").c_str(), service, GetListenPort());
-        LogPrintf("tor: Got service ID %s, advertising service %s\n", service_id, service.ToString());
+        LogPrintf("tor: Got service ID %s, advertising service %s\n", service_id, service);
         if (WriteBinaryFile(GetPrivateKeyFile(), private_key)) {
             LogPrint("tor", "tor: Cached service private key to %s\n", GetPrivateKeyFile());
         } else {

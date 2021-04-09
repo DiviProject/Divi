@@ -139,7 +139,7 @@ void CoinMinter::UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev) 
 
 bool CoinMinter::ProcessBlockFound(CBlock* block, CReserveKey& reservekey) const
 {
-    LogPrintf("%s\n", block->ToString());
+    LogPrintf("%s\n", *block);
     LogPrintf("generated %s\n", FormatMoney(block->vtx[0].vout[0].nValue));
 
     // Found a solution

@@ -135,7 +135,7 @@ bool MasternodeNetworkMessageManager::recordDsegUpdateAttempt(const CAddress& pe
         std::map<CNetAddr, int64_t>::iterator it = mWeAskedForMasternodeList.find(peerAddress);
         if (it != mWeAskedForMasternodeList.end()) {
             if (GetTime() < (*it).second) {
-                LogPrint("masternode", "dseg - we already asked peer %s for the list; skipping...\n", peerAddress.ToString());
+                LogPrint("masternode", "dseg - we already asked peer %s for the list; skipping...\n", peerAddress);
                 return false;
             }
         }

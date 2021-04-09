@@ -342,7 +342,7 @@ std::vector<PrioritizedTransactionData> BlockMemoryPoolTransactionCollector::Pri
 
         if (fPrintPriority) {
             LogPrintf("priority %.1f fee %s txid %s\n",
-                    dPriority, feeRate.ToString(), tx.GetHash());
+                    dPriority, feeRate, tx.GetHash());
         }
 
         // Add transactions that depend on this one to the priority queue
@@ -393,6 +393,6 @@ bool BlockMemoryPoolTransactionCollector::CollectTransactionsIntoBlock (
         view,
         pblocktemplate);
 
-    LogPrintf("CreateNewBlock(): block tostring %s\n", block.ToString());
+    LogPrintf("CreateNewBlock(): block tostring %s\n", block);
     return true;
 }

@@ -9,12 +9,15 @@
 
 #include <DataDirectory.h>
 #include <chainparamsbase.h>
+#include <uint256.h>
 
 bool fDebug = false;
 bool fPrintToConsole = false;
 bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
 bool fLogTimestamps = false;
+
+LOG_FORMAT_WITH_TOSTRING(uint256)
 
 namespace
 {

@@ -20,6 +20,7 @@
 #include <boost/test/unit_test.hpp>
 #include "test_only.h"
 #include <scriptCheck.h>
+#include <coins.h>
 
 using namespace std;
 extern CCriticalSection cs_main;

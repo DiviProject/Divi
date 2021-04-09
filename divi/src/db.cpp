@@ -94,12 +94,9 @@ void CDB::Flush()
     if (activeTxn)
         return;
 
-    // Flush database activity from memory pool to disk log
-    unsigned int nMinutes = 0;
-    if (fReadOnly)
-        nMinutes = 1;
-
-    CDB::bitdb.dbenv.txn_checkpoint(nMinutes ? settings.GetArg("-dblogsize", 100) * 1024 : 0, nMinutes, 0);
+    const unsigned int nMinutes = fReadOnly? 1:0;
+    const unsigned int dbLogSize = fReadOnly? settings.GetArg("-dblogsize", 100) * 1024 : 0;
+    CDB::bitdb.dbenv.txn_checkpoint(dbLogSize, nMinutes, 0);
 }
 
 void CDB::Close()

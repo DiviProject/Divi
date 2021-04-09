@@ -226,7 +226,7 @@ void ReprocessBlocks(int nBlocks)
                 LOCK(cs_main);
 
                 CBlockIndex* pindex = (*mi).second;
-                LogPrintf("ReprocessBlocks - %s\n", (*it).first.ToString());
+                LogPrintf("ReprocessBlocks - %s\n", (*it).first);
 
                 CValidationState state;
                 ReconsiderBlock(state, pindex);

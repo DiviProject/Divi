@@ -83,7 +83,7 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
 
     //        LogPrintf("ProcessMessageSwiftTX::ix - Transaction Lock Request: %s %s : accepted %s\n",
     //            pfrom->addr.ToString().c_str(), pfrom->cleanSubVer.c_str(),
-    //            tx.GetHash().ToString().c_str());
+    //            tx.GetHash());
 
     //        return;
 
@@ -94,7 +94,7 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
 
     //        LogPrintf("ProcessMessageSwiftTX::ix - Transaction Lock Request: %s %s : rejected %s\n",
     //            pfrom->addr.ToString().c_str(), pfrom->cleanSubVer.c_str(),
-    //            tx.GetHash().ToString().c_str());
+    //            tx.GetHash());
 
     //        BOOST_FOREACH (const CTxIn& in, tx.vin) {
     //            if (!mapLockedInputs.count(in.prevout)) {
@@ -149,7 +149,7 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
     //                mapUnknownVotes[ctx.vinMasternode.prevout.hash] - GetAverageVoteTime() > 60 * 10) {
     //                LogPrintf("ProcessMessageSwiftTX::ix - masternode is spamming transaction votes: %s %s\n",
     //                    ctx.vinMasternode.ToString().c_str(),
-    //                    ctx.txHash.ToString().c_str());
+    //                    ctx.txHash);
     //                return;
     //            } else {
     //                mapUnknownVotes[ctx.vinMasternode.prevout.hash] = GetTime() + (60 * 10);
@@ -216,7 +216,7 @@ int64_t CreateNewLock(CTransaction tx)
     //    nTxAge = GetInputAge(i);
     //    if (nTxAge < 5) //1 less than the "send IX" gui requires, incase of a block propagating the network at the time
     //    {
-    //        LogPrintf("CreateNewLock - Transaction not found / too new: %d / %s\n", nTxAge, tx.GetHash().ToString().c_str());
+    //        LogPrintf("CreateNewLock - Transaction not found / too new: %d / %s\n", nTxAge, tx.GetHash());
     //        return 0;
     //    }
     //}
@@ -229,7 +229,7 @@ int64_t CreateNewLock(CTransaction tx)
     //int nBlockHeight = (chainActive.Tip()->nHeight - nTxAge) + 4;
 
     //if (!mapTxLocks.count(tx.GetHash())) {
-    //    LogPrintf("CreateNewLock - New Transaction Lock %s !\n", tx.GetHash().ToString().c_str());
+    //    LogPrintf("CreateNewLock - New Transaction Lock %s !\n", tx.GetHash());
 
     //    CTransactionLock newLock;
     //    newLock.nBlockHeight = nBlockHeight;
@@ -239,7 +239,7 @@ int64_t CreateNewLock(CTransaction tx)
     //    mapTxLocks.insert(make_pair(tx.GetHash(), newLock));
     //} else {
     //    mapTxLocks[tx.GetHash()].nBlockHeight = nBlockHeight;
-    //    LogPrint("swiftx", "CreateNewLock - Transaction Lock Exists %s !\n", tx.GetHash().ToString().c_str());
+    //    LogPrint("swiftx", "CreateNewLock - Transaction Lock Exists %s !\n", tx.GetHash());
     //}
 
 
@@ -305,7 +305,7 @@ bool ProcessConsensusVote(CNode* pnode, CConsensusVote& ctx)
 //    }
 //
 //    if (n > SWIFTTX_SIGNATURES_TOTAL) {
-//        LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Masternode not in the top %d (%d) - %s\n", SWIFTTX_SIGNATURES_TOTAL, n, ctx.GetHash().ToString().c_str());
+//        LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Masternode not in the top %d (%d) - %s\n", SWIFTTX_SIGNATURES_TOTAL, n, ctx.GetHash());
 //        return false;
 //    }
 //
@@ -317,7 +317,7 @@ bool ProcessConsensusVote(CNode* pnode, CConsensusVote& ctx)
 //    }
 //
 //    if (!mapTxLocks.count(ctx.txHash)) {
-//        LogPrintf("SwiftX::ProcessConsensusVote - New Transaction Lock %s !\n", ctx.txHash.ToString().c_str());
+//        LogPrintf("SwiftX::ProcessConsensusVote - New Transaction Lock %s !\n", ctx.txHash);
 //
 //        CTransactionLock newLock;
 //        newLock.nBlockHeight = 0;
@@ -326,7 +326,7 @@ bool ProcessConsensusVote(CNode* pnode, CConsensusVote& ctx)
 //        newLock.txHash = ctx.txHash;
 //        mapTxLocks.insert(make_pair(ctx.txHash, newLock));
 //    } else
-//        LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Transaction Lock Exists %s !\n", ctx.txHash.ToString().c_str());
+//        LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Transaction Lock Exists %s !\n", ctx.txHash);
 //
 //    //compile consessus vote
 //    std::map<uint256, CTransactionLock>::iterator i = mapTxLocks.find(ctx.txHash);
@@ -341,10 +341,10 @@ bool ProcessConsensusVote(CNode* pnode, CConsensusVote& ctx)
 //        }
 //#endif
 //
-//        LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Transaction Lock Votes %d - %s !\n", (*i).second.CountSignatures(), ctx.GetHash().ToString().c_str());
+//        LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Transaction Lock Votes %d - %s !\n", (*i).second.CountSignatures(), ctx.GetHash());
 //
 //        if ((*i).second.CountSignatures() >= SWIFTTX_SIGNATURES_REQUIRED) {
-//            LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Transaction Lock Is Complete %s !\n", (*i).second.GetHash().ToString().c_str());
+//            LogPrint("swiftx", "SwiftX::ProcessConsensusVote - Transaction Lock Is Complete %s !\n", (*i).second.GetHash());
 //
 //            CTransaction& tx = mapTxLockReq[ctx.txHash];
 //            if (!CheckForConflictingLocks(tx)) {
@@ -392,7 +392,7 @@ bool CheckForConflictingLocks(CTransaction& tx)
     //BOOST_FOREACH (const CTxIn& in, tx.vin) {
     //    if (mapLockedInputs.count(in.prevout)) {
     //        if (mapLockedInputs[in.prevout] != tx.GetHash()) {
-    //            LogPrintf("SwiftX::CheckForConflictingLocks - found two complete conflicting locks - removing both. %s %s", tx.GetHash().ToString().c_str(), mapLockedInputs[in.prevout].ToString().c_str());
+    //            LogPrintf("SwiftX::CheckForConflictingLocks - found two complete conflicting locks - removing both. %s %s", tx.GetHash(), mapLockedInputs[in.prevout]);
     //            if (mapTxLocks.count(tx.GetHash())) mapTxLocks[tx.GetHash()].nExpiration = GetTime();
     //            if (mapTxLocks.count(mapLockedInputs[in.prevout])) mapTxLocks[mapLockedInputs[in.prevout]].nExpiration = GetTime();
     //            return true;
@@ -426,7 +426,7 @@ void CleanTransactionLocksList()
 
     //while (it != mapTxLocks.end()) {
     //    if (GetTime() > it->second.nExpiration) { //keep them for an hour
-    //        LogPrintf("Removing old transaction lock %s\n", it->second.txHash.ToString().c_str());
+    //        LogPrintf("Removing old transaction lock %s\n", it->second.txHash);
 
     //        if (mapTxLockReq.count(it->second.txHash)) {
     //            CTransaction& tx = mapTxLockReq[it->second.txHash];

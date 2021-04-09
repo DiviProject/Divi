@@ -244,7 +244,7 @@ void CMasternodePayments::ProcessMessageMasternodePayments(CMasternodeSync& mast
         }
 
         if (GetPaymentWinnerForHash(winner.GetHash()) != nullptr) {
-            LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash().ToString().c_str(), nHeight);
+            LogPrint("mnpayments", "mnw - Already seen - %s bestHeight %d\n", winner.GetHash(), nHeight);
             masternodeSynchronization.AddedMasternodeWinner(winner.GetHash());
             return;
         }
@@ -308,7 +308,7 @@ bool CMasternodePayments::CheckMasternodeWinnerSignature(const CMasternodePaymen
         std::string errorMessage = "";
         if(!CObfuScationSigner::VerifySignature<CMasternodePaymentWinner>(winner,pmn->pubKeyMasternode,errorMessage))
         {
-            return error("%s - Got bad Masternode address signature %s (%s)\n",__func__, winner.vinMasternode.prevout.hash.ToString(),errorMessage);
+            return error("%s - Got bad Masternode address signature %s (%s)\n",__func__, winner.vinMasternode.prevout.hash, errorMessage);
         }
         return true;
     }

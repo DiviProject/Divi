@@ -182,7 +182,7 @@ bool PoSTransactionCreator::FindHashproof(
     BlockMap::const_iterator it = mapBlockIndex_.find(stakeData.blockHashOfFirstConfirmation);
     if (it == mapBlockIndex_.end())
     {
-        LogPrint("staking","%s failed to find block index for %s\n",__func__,stakeData.blockHashOfFirstConfirmation.ToString());
+        LogPrint("staking","%s failed to find block index for %s\n",__func__,stakeData.blockHashOfFirstConfirmation);
         return false;
     }
 
@@ -206,7 +206,7 @@ bool PoSTransactionCreator::FindHashproof(
             LogPrintf("%s : kernel found, but it is too far in the past \n",__func__);
             return false;
         }
-        LogPrint("staking","%s : kernel found for %s\n",__func__, stakeData.tx->GetHash().ToString());
+        LogPrint("staking","%s : kernel found for %s\n",__func__, stakeData.tx->GetHash());
 
         SetSuportedStakingScript(stakeData,txNew);
         nTxNewTime = hashproofResult.timestamp();

@@ -192,7 +192,7 @@ private:
             // don't know why they got confirmed.
         }
         LogPrint("estimatefee", "Seen TX confirm: %s : %s fee/%g priority, took %d blocks\n",
-            assignedTo, feeRate.ToString(), dPriority, nBlocksAgo);
+            assignedTo, feeRate, dPriority, nBlocksAgo);
     }
 
 public:
@@ -255,7 +255,7 @@ public:
                 LogPrint("estimatefee", "estimates: for confirming within %d blocks based on %d/%d samples, fee=%s, prio=%g\n",
                     i,
                     history[i].FeeSamples(), history[i].PrioritySamples(),
-                    estimateFee(i + 1).ToString(), estimatePriority(i + 1));
+                    estimateFee(i + 1), estimatePriority(i + 1));
         }
     }
 

@@ -219,6 +219,15 @@ bool LoadDataCaches()
             fLiteMode).LoadDataCaches();
 }
 
+void LoadFeeEstimatesForMempool()
+{
+    boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
+    CAutoFile est_filein(fopen(est_path.string().c_str(), "rb"), SER_DISK, CLIENT_VERSION);
+    // Allowed to fail as this file IS missing on first startup.
+    if (!est_filein.IsNull())
+        mempool.ReadFeeEstimates(est_filein);
+}
+
 void SaveFeeEstimatesFromMempool()
 {
     if (settings.GetArg("-savemempoolfees",false))
@@ -1621,11 +1630,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
     LogPrintf(" block index %15dms\n", GetTimeMillis() - nStart);
 
-    boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
-    CAutoFile est_filein(fopen(est_path.string().c_str(), "rb"), SER_DISK, CLIENT_VERSION);
-    // Allowed to fail as this file IS missing on first startup.
-    if (!est_filein.IsNull())
-        mempool.ReadFeeEstimates(est_filein);
+    LoadFeeEstimatesForMempool();
 
 // ********************************************************* Step 8: load wallet
     std::ostringstream strErrors;

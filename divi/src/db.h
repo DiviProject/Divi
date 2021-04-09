@@ -23,7 +23,7 @@
 
 class CDiskBlockIndex;
 class COutPoint;
-
+class Settings;
 struct CBlockLocator;
 
 /** RAII class that provides access to a Berkeley database */
@@ -32,12 +32,13 @@ class CDB
 public:
     static CDBEnv bitdb;
 protected:
+    const Settings& settings_;
     Db* pdb;
     std::string strFile;
     DbTxn* activeTxn;
     bool fReadOnly;
 
-    explicit CDB(const std::string& strFilename, const char* pszMode = "r+");
+    explicit CDB(const Settings& settings, const std::string& strFilename, const char* pszMode = "r+");
     ~CDB() { Close(); }
 
 public:
@@ -243,7 +244,7 @@ public:
         return Write(std::string("version"), nVersion);
     }
 
-    bool static Rewrite(const std::string& strFile, const char* pszSkip = NULL);
+    bool static Rewrite(const Settings& settings, const std::string& strFile, const char* pszSkip = NULL);
 };
 
 #endif // BITCOIN_DB_H

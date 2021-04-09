@@ -1428,6 +1428,25 @@ void LockUpMasternodeCollateral()
     }
 }
 
+bool ZapWalletTransactionsIfRequested(const std::string& strWalletFile, std::vector<CWalletTx>& vWtx)
+{
+    if (settings.GetBoolArg("-zapwallettxes", false))
+    {
+        uiInterface.InitMessage(translate("Zapping all transactions from wallet..."));
+
+        pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex);
+        DBErrors nZapWalletRet = pwalletMain->ZapWalletTx(vWtx);
+        if (nZapWalletRet != DB_LOAD_OK) {
+            uiInterface.InitMessage(translate("Error loading wallet.dat: Wallet corrupted"));
+            return false;
+        }
+
+        delete pwalletMain;
+        pwalletMain = NULL;
+    }
+    return true;
+}
+
 bool InitializeDivi(boost::thread_group& threadGroup)
 {
 // ********************************************************* Step 1: setup
@@ -1635,26 +1654,16 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 // ********************************************************* Step 8: load wallet
     std::ostringstream strErrors;
 #ifdef ENABLE_WALLET
-    std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
+    const std::string strWalletFile = settings.GetArg("-wallet", "wallet.dat");
     if (fDisableWallet) {
         pwalletMain = NULL;
         LogPrintf("Wallet disabled!\n");
     } else {
         // needed to restore wallet transaction meta data after -zapwallettxes
         std::vector<CWalletTx> vWtx;
-
-        if (settings.GetBoolArg("-zapwallettxes", false)) {
-            uiInterface.InitMessage(translate("Zapping all transactions from wallet..."));
-
-            pwalletMain = new CWallet(strWalletFile, chainActive, mapBlockIndex);
-            DBErrors nZapWalletRet = pwalletMain->ZapWalletTx(vWtx);
-            if (nZapWalletRet != DB_LOAD_OK) {
-                uiInterface.InitMessage(translate("Error loading wallet.dat: Wallet corrupted"));
-                return false;
-            }
-
-            delete pwalletMain;
-            pwalletMain = NULL;
+        if(!ZapWalletTransactionsIfRequested(strWalletFile,vWtx))
+        {
+            return false;
         }
 
         uiInterface.InitMessage(translate("Loading wallet..."));

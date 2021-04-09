@@ -23,6 +23,8 @@
 #include "masternode-payments.h"
 #include "masternodeman.h"
 #include "merkleblock.h"
+#include "net.h"
+#include "pow.h"
 #include "spork.h"
 #include "sporkdb.h"
 #include "swifttx.h"
@@ -284,7 +286,7 @@ struct CNodeState {
 std::map<NodeId, CNodeState> mapNodeState;
 
 // Requires cs_main.
-CNodeState* State(NodeId pnode)
+CNodeState* State(int pnode)
 {
     std::map<NodeId, CNodeState>::iterator it = mapNodeState.find(pnode);
     if (it == mapNodeState.end())
@@ -1193,7 +1195,7 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
 }
 
 // Requires cs_main.
-void Misbehaving(NodeId pnode, int howmuch)
+void Misbehaving(int pnode, int howmuch)
 {
     if (howmuch == 0)
         return;

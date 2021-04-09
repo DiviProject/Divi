@@ -23,6 +23,9 @@
 #include "json/json_spirit_writer_template.h"
 #include "test_only.h"
 #include <ValidationState.h>
+#include <streams.h>
+#include <primitives/transaction.h>
+#include <utilstrencodings.h>
 
 using namespace std;
 using namespace json_spirit;

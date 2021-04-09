@@ -27,6 +27,9 @@
 #include <primitives/transaction.h>
 #include <utilstrencodings.h>
 #include <script/SignatureCheckers.h>
+#include <coins.h>
+#include <script/interpreter.h>
+#include <script/standard.h>
 
 using namespace std;
 using namespace json_spirit;

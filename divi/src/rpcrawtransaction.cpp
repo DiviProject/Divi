@@ -22,6 +22,8 @@
 #include "utilmoneystr.h"
 #include "wallet.h"
 #include <WalletTx.h>
+#include <txmempool.h>
+#include <sync.h>
 
 #include <stdint.h>
 

@@ -16,6 +16,7 @@
 #include "utiltime.h"
 #include "version.h"
 #include "chainparams.h"
+#include <FeeRate.h>
 
 #include <boost/foreach.hpp>
 

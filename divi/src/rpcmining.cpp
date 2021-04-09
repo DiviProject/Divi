@@ -26,8 +26,9 @@
 #include <masternode-payments.h>
 #include <MasternodeModule.h>
 #include <spork.h>
-
 #include <stdint.h>
+#include <txmempool.h>
+#include <sync.h>
 
 #include <boost/assign/list_of.hpp>
 

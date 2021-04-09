@@ -42,6 +42,7 @@
 #include <ActiveChainManager.h>
 #include <BlockDiskAccessor.h>
 #include <TransactionInputChecker.h>
+#include <txmempool.h>
 
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -82,6 +83,17 @@ constexpr int nWalletBackups = 20;
 extern CAmount maxTxFee;
 extern CFeeRate minRelayTxFee;
 #endif
+extern CCriticalSection cs_main;
+extern bool fReindex;
+extern bool fImporting;
+extern bool fAlerts;
+extern bool fCheckBlockIndex;
+extern int nScriptCheckThreads;
+extern int nCoinCacheSize;
+extern bool fTxIndex;
+extern bool fVerifyingBlocks;
+extern BlockMap mapBlockIndex;
+extern CTxMemPool mempool;
 extern Settings& settings;
 extern NotificationInterfaceRegistry registry;
 extern CBlockTreeDB* pblocktree;

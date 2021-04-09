@@ -38,7 +38,7 @@ class CValidationState;
 struct CNodeStateStats;
 class CNode;
 struct CNodeSignals;
-
+/*
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;
@@ -64,11 +64,12 @@ extern std::map<uint256, int64_t> mapRejectedBlocks;
 extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 
-/** Best header we've seen so far (used for getheaders queries' starting points). */
+/** Best header we've seen so far (used for getheaders queries' starting points).
 extern CBlockIndex* pindexBestHeader;
 
-/** Minimum disk space required - used in CheckDiskSpace() */
+/** Minimum disk space required - used in CheckDiskSpace()
 static const uint64_t nMinDiskSpace = 52428800;
+*/
 
 /** Register a wallet to receive updates from core */
 void RegisterValidationInterface(NotificationInterface* pwalletIn);

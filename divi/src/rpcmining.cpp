@@ -47,6 +47,10 @@ extern Settings& settings;
 extern CWallet* pwalletMain;
 extern CCoinsViewCache* pcoinsTip;
 extern CFeeRate minRelayTxFee;
+extern BlockMap mapBlockIndex;
+extern std::map<unsigned int, unsigned int> mapHashedBlocks;
+extern CCriticalSection cs_main;
+extern CTxMemPool mempool;
 
 /**
  * Return average network hashes per second based on the last 'lookup' blocks,

@@ -16,7 +16,6 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #include "walletdb.h"
-extern CFeeRate payTxFee;
 #endif
 
 #include <stdint.h>
@@ -215,7 +214,6 @@ Value getinfo(const Array& params, bool fHelp)
     }
     if (pwalletMain && pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
-    obj.push_back(Pair("paytxfee", ValueFromAmount(payTxFee.GetFeePerK())));
 #endif
     obj.push_back(Pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
     bool nStaking = HasRecentlyAttemptedToGenerateProofOfStake();

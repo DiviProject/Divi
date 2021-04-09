@@ -78,13 +78,8 @@ int nWalletBackups = 20;
 /**
  * Wallet Settings
  */
-extern CAmount nTransactionValueMultiplier;
-extern unsigned int nTransactionSizeMultiplier;
 extern unsigned int nTxConfirmTarget;
-extern bool bdisableSystemnotifications;
 extern bool fSendFreeTransactions;
-extern bool fPayAtLeastCustomFee;
-extern CFeeRate payTxFee;
 extern CAmount maxTxFee;
 extern CFeeRate minRelayTxFee;
 #endif
@@ -453,7 +448,6 @@ std::string HelpMessage(HelpMessageMode mode)
     if (settings.GetBoolArg("-help-debug", false))
         strUsage += HelpMessageOpt("-mintxfee=<amt>", strprintf(translate("Fees (in DIV/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"),
             FormatMoney(CWallet::minTxFee.GetFeePerK())));
-    strUsage += HelpMessageOpt("-paytxfee=<amt>", strprintf(translate("Fee (in DIV/kB) to add to transactions you send (default: %s)"), FormatMoney(payTxFee.GetFeePerK())));
     strUsage += HelpMessageOpt("-rescan", translate("Rescan the block chain for missing wallet transactions") + " " + translate("on startup"));
     strUsage += HelpMessageOpt("-salvagewallet", translate("Attempt to recover private keys from a corrupt wallet.dat") + " " + translate("on startup"));
     strUsage += HelpMessageOpt("-sendfreetransactions", strprintf(translate("Send transactions as zero-fee transactions if possible (default: %u)"), 0));
@@ -878,18 +872,6 @@ bool SetTransactionRequirements()
         else
             return InitError(strprintf(translate("Invalid amount for -mintxfee=<amount>: '%s'"), settings.GetParameter("-mintxfee")));
     }
-    if (settings.ParameterIsSet("-paytxfee")) {
-        CAmount nFeePerK = 0;
-        if (!ParseMoney(settings.GetParameter("-paytxfee"), nFeePerK))
-            return InitError(strprintf(translate("Invalid amount for -paytxfee=<amount>: '%s'"), settings.GetParameter("-paytxfee")));
-        if (nFeePerK > nHighTransactionFeeWarning)
-            InitWarning(translate("Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction."));
-        payTxFee = CFeeRate(nFeePerK, 1000);
-        if (payTxFee < ::minRelayTxFee) {
-            return InitError(strprintf(translate("Invalid amount for -paytxfee=<amount>: '%s' (must be at least %s)"),
-                settings.GetParameter("-paytxfee"), ::minRelayTxFee.ToString()));
-        }
-    }
     if (settings.ParameterIsSet("-maxtxfee")) {
         CAmount nMaxFee = 0;
         if (!ParseMoney(settings.GetParameter("-maxtxfee"), nMaxFee))
@@ -903,7 +885,6 @@ bool SetTransactionRequirements()
         }
     }
     nTxConfirmTarget = settings.GetArg("-txconfirmtarget", 1);
-    bdisableSystemnotifications = settings.GetBoolArg("-disablesystemnotifications", false);
     fSendFreeTransactions = settings.GetBoolArg("-sendfreetransactions", false);
 #endif
     fIsBareMultisigStd = settings.GetBoolArg("-permitbaremultisig", true) != 0;

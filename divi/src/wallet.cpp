@@ -54,13 +54,10 @@ using namespace std;
 /**
  * Settings
  */
-CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
 unsigned int nTransactionSizeMultiplier = 300;
 unsigned int nTxConfirmTarget = 1;
-bool bdisableSystemnotifications = false; // Those bubbles can be annoying and slow down the UI when you get lots of trx
 bool fSendFreeTransactions = false;
-bool fPayAtLeastCustomFee = true;
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
 
 /**

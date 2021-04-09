@@ -73,7 +73,7 @@
 
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
-int nWalletBackups = 20;
+constexpr int nWalletBackups = 20;
 
 /**
  * Wallet Settings

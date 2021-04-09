@@ -17,6 +17,7 @@
 #endif
 #include "Settings.h"
 #include <utilmoneystr.h>
+#include <random.h>
 
 #include "json/json_spirit_writer_template.h"
 #include <boost/algorithm/string.hpp>

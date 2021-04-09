@@ -15,8 +15,6 @@
 #include "amount.h"
 #include "blockmap.h"
 #include "chain.h"
-#include "net.h"
-#include "pow.h"
 #include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/sigcache.h"
@@ -47,6 +45,8 @@ class CScriptCheck;
 class NotificationInterface;
 class CValidationState;
 struct CNodeStateStats;
+class CNode;
+struct CNodeSignals;
 
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
@@ -145,9 +145,9 @@ CBlockIndex* InsertBlockIndex(uint256 hash);
 /** Abort with a message */
 bool AbortNode(const std::string& msg, const std::string& userMessage);
 /** Get statistics from node state */
-bool GetNodeStateStats(NodeId nodeid, CNodeStateStats& stats);
+bool GetNodeStateStats(int nodeid, CNodeStateStats& stats);
 /** Increase a node's misbehavior score. */
-void Misbehaving(NodeId nodeid, int howmuch);
+void Misbehaving(int nodeid, int howmuch);
 /** Flush all state, indexes and buffers to disk. */
 void FlushStateToDisk();
 

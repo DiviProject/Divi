@@ -4,11 +4,15 @@
 
 #include "chainparams.h"
 #include "zmqpublishnotifier.h"
-#include "main.h"
 #include "Logging.h"
 #include "crypto/common.h"
 #include "BlockDiskAccessor.h"
+#include <chain.h>
+#include <streams.h>
+#include <version.h>
+#include <sync.h>
 
+extern CCriticalSection cs_main;
 static std::multimap<std::string, CZMQAbstractPublishNotifier*> mapPublishNotifiers;
 
 static const char *MSG_HASHBLOCK  = "hashblock";

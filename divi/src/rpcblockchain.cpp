@@ -21,6 +21,8 @@
 #include <ui_interface.h>
 #include <txdb.h>
 #include <ActiveChainManager.h>
+#include <boost/foreach.hpp>
+#include <utilstrencodings.h>
 
 using namespace json_spirit;
 using namespace std;

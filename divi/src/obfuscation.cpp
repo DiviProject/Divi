@@ -69,7 +69,7 @@ bool CObfuScationSigner::VerifyMessage(CKeyID pubkeyID, const std::vector<unsign
     }
 
     if (pubkey2.GetID() != pubkeyID)
-        LogPrint("sign","CObfuScationSigner::VerifyMessage -- keys don't match: %s %s\n", pubkey2.GetID().ToString(), pubkeyID.ToString());
+        LogPrint("sign","CObfuScationSigner::VerifyMessage -- keys don't match: %s %s\n", pubkey2.GetID(), pubkeyID);
 
     return (pubkey2.GetID() == pubkeyID);
 }

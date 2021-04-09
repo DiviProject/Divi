@@ -277,7 +277,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
 
                 if (pindexNew->nHeight <= Params().LAST_POW_BLOCK()) {
                     if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, Params()))
-                        return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());
+                        return error("LoadBlockIndex() : CheckProofOfWork failed: %s", *pindexNew);
                 }
                 // ppcoin: build setStakeSeen
                 if (pindexNew->IsProofOfStake())

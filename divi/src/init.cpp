@@ -78,8 +78,6 @@ constexpr int nWalletBackups = 20;
 /**
  * Wallet Settings
  */
-extern unsigned int nTxConfirmTarget;
-extern bool fSendFreeTransactions;
 extern CAmount maxTxFee;
 extern CFeeRate minRelayTxFee;
 #endif
@@ -889,8 +887,6 @@ bool SetTransactionRequirements()
                 settings.GetParameter("-maxtxfee"), ::minRelayTxFee.ToString()));
         }
     }
-    nTxConfirmTarget = settings.GetArg("-txconfirmtarget", 1);
-    fSendFreeTransactions = settings.GetBoolArg("-sendfreetransactions", false);
 #endif
     fIsBareMultisigStd = settings.GetBoolArg("-permitbaremultisig", true) != 0;
     nMaxDatacarrierBytes = settings.GetArg("-datacarriersize", nMaxDatacarrierBytes);

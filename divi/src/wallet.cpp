@@ -56,8 +56,6 @@ using namespace std;
  */
 CAmount nTransactionValueMultiplier = 10000; // 1 / 0.0001 = 10000;
 unsigned int nTransactionSizeMultiplier = 300;
-unsigned int nTxConfirmTarget = 1;
-bool fSendFreeTransactions = false;
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 1000;
 
 /**
@@ -2035,10 +2033,12 @@ static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxB
 }
 
 static bool CanBeSentAsFreeTransaction(
+    const bool fSendFreeTransactions,
     const CTransaction& wtxNew,
     const unsigned nBytes,
     const std::set<COutput>& setCoins)
 {
+    static const unsigned nTxConfirmTarget = settings.GetArg("-txconfirmtarget", 1);
     double dPriority = 0;
 
     for (const COutput& output: setCoins)
@@ -2075,13 +2075,14 @@ static FeeSufficiencyStatus CheckFeesAreSufficientAndUpdateFeeAsNeeded(
     const CAmount totalValueToSend,
     CAmount& nFeeRet)
 {
+    static const bool fSendFreeTransactions = settings.GetBoolArg("-sendfreetransactions", false);
     unsigned int nBytes = ::GetSerializeSize(wtxNew, SER_NETWORK, PROTOCOL_VERSION);
     if (nBytes >= MAX_STANDARD_TX_SIZE) {
         return FeeSufficiencyStatus::TX_TOO_LARGE;
     }
 
     const CAmount nFeeNeeded = GetMinimumFee(totalValueToSend, nBytes);
-    const bool feeIsSufficient = (fSendFreeTransactions && CanBeSentAsFreeTransaction(wtxNew,nBytes,outputsBeingSpent)) || nFeeRet >= nFeeNeeded;
+    const bool feeIsSufficient = (fSendFreeTransactions && CanBeSentAsFreeTransaction(fSendFreeTransactions,wtxNew,nBytes,outputsBeingSpent)) || nFeeRet >= nFeeNeeded;
     if (!feeIsSufficient)
     {
         nFeeRet = nFeeNeeded;

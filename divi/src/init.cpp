@@ -83,7 +83,6 @@ extern bool fSendFreeTransactions;
 extern CAmount maxTxFee;
 extern CFeeRate minRelayTxFee;
 #endif
-volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
 extern Settings& settings;
 extern NotificationInterfaceRegistry registry;
@@ -158,7 +157,7 @@ bool static InitWarning(const std::string& str)
 //
 
 volatile bool fRequestShutdown = false;
-
+volatile bool fRestartRequested = false; // if true then restart, else shutdown
 void StartShutdown()
 {
     fRequestShutdown = true;

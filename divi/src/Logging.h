@@ -49,7 +49,30 @@ template <typename T>
             return LogFormatConvert(v); \
         } \
     };
+LOG_WITH_CONVERSION(CLockLocation)
 LOG_WITH_CONVERSION(uint256)
+
+/* Defined in Logging-common.cpp.  */
+LOG_WITH_CONVERSION(CAddress)
+LOG_WITH_CONVERSION(CBitcoinAddress)
+LOG_WITH_CONVERSION(CBlock)
+LOG_WITH_CONVERSION(CNetAddr)
+LOG_WITH_CONVERSION(CFeeRate)
+LOG_WITH_CONVERSION(CInv)
+LOG_WITH_CONVERSION(CKeyID)
+LOG_WITH_CONVERSION(CScript)
+LOG_WITH_CONVERSION(CService)
+LOG_WITH_CONVERSION(CTxIn)
+LOG_WITH_CONVERSION(CTxOut)
+LOG_WITH_CONVERSION(CTransaction)
+
+/* Defined in Logging-server.cpp.  */
+LOG_WITH_CONVERSION(CBlockFileInfo)
+LOG_WITH_CONVERSION(CBlockIndex)
+LOG_WITH_CONVERSION(CBlockRewards)
+
+/* Defined in Logging-wallet.cpp.  */
+LOG_WITH_CONVERSION(CWalletTx)
 
 /** This macro defines a custom implementation of LogFormatConvert for
  *  a type that then just calls through to the instance's ToString

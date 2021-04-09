@@ -101,7 +101,7 @@ void CActiveMasternode::ManageStatus(CMasternodeMan& masternodeManager)
             return;
         }
 
-        LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service.ToString());
+        LogPrintf("CActiveMasternode::ManageStatus() - Checking inbound connection to '%s'\n", service);
         CNode* pnode = ConnectNode(masternodeIPAddress, NULL, false);
         if (!pnode)
         {
@@ -148,7 +148,7 @@ bool CActiveMasternode::SendMasternodePing(CMasternodeMan& masternodeManager, st
         return false;
     }
 
-    LogPrintf("CActiveMasternode::SendMasternodePing() - Relay Masternode Ping vin = %s\n", vin.ToString());
+    LogPrintf("CActiveMasternode::SendMasternodePing() - Relay Masternode Ping vin = %s\n", vin);
 
     CMasternodePing mnp = createCurrentPing(vin);
     if(!CObfuScationSigner::SignAndVerify<CMasternodePing>(mnp,masternodeKey_,pubKeyMasternode,errorMessage))

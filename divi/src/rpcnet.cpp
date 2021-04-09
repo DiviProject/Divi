@@ -15,6 +15,7 @@
 #include "timedata.h"
 #include "utiltime.h"
 #include "version.h"
+#include "chainparams.h"
 
 #include <boost/foreach.hpp>
 

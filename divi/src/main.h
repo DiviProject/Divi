@@ -8,18 +8,13 @@
 #ifndef BITCOIN_MAIN_H
 #define BITCOIN_MAIN_H
 
-#include "NotificationInterface.h"
-
 #if defined(HAVE_CONFIG_H)
 #include "config/divi-config.h"
 #endif
 
 #include "amount.h"
 #include "blockmap.h"
-#include "BlockRewards.h"
 #include "chain.h"
-#include "chainparams.h"
-#include "coins.h"
 #include "net.h"
 #include "pow.h"
 #include "primitives/transaction.h"

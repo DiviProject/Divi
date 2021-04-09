@@ -83,7 +83,6 @@ extern bool fSendFreeTransactions;
 extern CAmount maxTxFee;
 extern CFeeRate minRelayTxFee;
 #endif
-extern std::list<uint256> listAccCheckpointsNoDB;
 extern Settings& settings;
 extern NotificationInterfaceRegistry registry;
 extern CBlockTreeDB* pblocktree;

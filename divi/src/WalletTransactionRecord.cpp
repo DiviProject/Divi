@@ -1,10 +1,11 @@
 #include <WalletTransactionRecord.h>
 
 #include <walletdb.h>
-
+#include <Settings.h>
+extern Settings& settings;
 static bool WriteTxToDisk(const std::string& walletFilename, const CWalletTx& transactionToWrite)
 {
-    return CWalletDB(walletFilename).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
+    return CWalletDB(settings,walletFilename).WriteTx(transactionToWrite.GetHash(),transactionToWrite);
 }
 
 WalletTransactionRecord::WalletTransactionRecord(

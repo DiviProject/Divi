@@ -85,7 +85,7 @@ private:
 public:
     void IncrementDBUpdateCount() const;
 
-    CWalletDB(const std::string& strFilename, const char* pszMode = "r+");
+    CWalletDB(const Settings& settings,const std::string& strFilename, const char* pszMode = "r+");
 
     bool WriteName(const std::string& strAddress, const std::string& strName);
     bool EraseName(const std::string& strAddress);

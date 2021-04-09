@@ -1403,7 +1403,7 @@ void ScanBlockchainForWalletUpdates(std::string strWalletFile,const std::vector<
     if (settings.GetBoolArg("-rescan", false))
         pindexRescan = chainActive.Genesis();
     else {
-        CWalletDB walletdb(strWalletFile);
+        CWalletDB walletdb(settings,strWalletFile);
         CBlockLocator locator;
         if (walletdb.ReadBestBlock(locator))
             pindexRescan = FindForkInGlobalIndex(chainActive, locator);
@@ -1791,7 +1791,10 @@ bool InitializeDivi(boost::thread_group& threadGroup)
         pwalletMain->ReacceptWalletTransactions();
 
         // Run a thread to flush wallet periodically
-        threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
+        if (settings.GetBoolArg("-flushwallet", true))
+        {
+            threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
+        }
     }
 #endif
 

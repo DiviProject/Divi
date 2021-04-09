@@ -19,11 +19,9 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread.hpp>
 #include <fstream>
-#include <Settings.h>
 #include <ValidationState.h>
 #include <WalletTx.h>
 
-extern Settings& settings;
 using namespace boost;
 using namespace std;
 
@@ -51,9 +49,10 @@ struct LockManagedWalletDBUpdatedMapping
 static LockManagedWalletDBUpdatedMapping lockedDBUpdateMapping;
 
 CWalletDB::CWalletDB(
+    const Settings& settings,
     const std::string& strFilename,
     const char* pszMode
-    ) : CDB(strFilename, pszMode)
+    ) : CDB(settings,strFilename, pszMode)
     , dbFilename_(strFilename)
     , walletDbUpdated_(lockedDBUpdateMapping(dbFilename_))
 {
@@ -769,8 +768,6 @@ void ThreadFlushWalletDB(const string& strFile)
     if (fOneThread)
         return;
     fOneThread = true;
-    if (!settings.GetBoolArg("-flushwallet", true))
-        return;
 
     unsigned& walletDbUpdated = lockedDBUpdateMapping(strFile);
     unsigned int nLastSeen =  walletDbUpdated;

@@ -11,7 +11,9 @@
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <Settings.h>
 extern CWallet* pwalletMain;
+extern Settings& settings;
 
 BOOST_AUTO_TEST_SUITE(accounting_tests)
 
@@ -77,7 +79,7 @@ CWalletTx* writeWalletEntry(CWallet* wallet,CWalletTx& wtx, int64_t timestamp, i
 
 BOOST_AUTO_TEST_CASE(acc_orderupgrade)
 {
-    CWalletDB walletdb(pwalletMain->strWalletFile);
+    CWalletDB walletdb(settings, pwalletMain->strWalletFile);
     std::vector<CWalletTx*> vpwtx;
     CWalletTx wtx;
     CAccountingEntry ae;

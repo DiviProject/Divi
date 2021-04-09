@@ -32,6 +32,7 @@
 #include <blockmap.h>
 #include <BlockDiskAccessor.h>
 #include <obfuscation.h>
+#include <Settings.h>
 
 using namespace std;
 using namespace boost;
@@ -44,6 +45,7 @@ static CCriticalSection cs_nWalletUnlockTime;
 extern BlockMap mapBlockIndex;
 extern CChain chainActive;
 extern CWallet* pwalletMain;
+extern Settings& settings;
 
 int GetIXConfirmations(uint256 nTXHash);
 
@@ -132,7 +134,7 @@ Value getnewaddress(const Array& params, bool fHelp)
 
 CBitcoinAddress GetAccountAddress(string strAccount, bool bForceNew = false)
 {
-    CWalletDB walletdb(pwalletMain->strWalletFile);
+    CWalletDB walletdb(settings,pwalletMain->strWalletFile);
 
     CAccount account;
     walletdb.ReadAccount(strAccount, account);
@@ -950,7 +952,7 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
 
 CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const isminefilter& filter)
 {
-    CWalletDB walletdb(pwalletMain->strWalletFile);
+    CWalletDB walletdb(settings,pwalletMain->strWalletFile);
     return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
 }
 
@@ -1816,7 +1818,7 @@ Value listaccounts(const Array& params, bool fHelp)
     }
 
     list<CAccountingEntry> acentries;
-    CWalletDB(pwalletMain->strWalletFile).ListAccountCreditDebit("*", acentries);
+    CWalletDB(settings,pwalletMain->strWalletFile).ListAccountCreditDebit("*", acentries);
     BOOST_FOREACH (const CAccountingEntry& entry, acentries)
             mapAccountBalances[entry.strAccount] += entry.nCreditDebit;
 

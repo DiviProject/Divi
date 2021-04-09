@@ -15,8 +15,6 @@
 #include "amount.h"
 #include "blockmap.h"
 #include "chain.h"
-#include "sync.h"
-#include "txmempool.h"
 #include "uint256.h"
 #include "spentindex.h"
 #include <string>
@@ -38,38 +36,8 @@ class CValidationState;
 struct CNodeStateStats;
 class CNode;
 struct CNodeSignals;
-/*
-extern CCriticalSection cs_main;
-extern CTxMemPool mempool;
-extern BlockMap mapBlockIndex;
-extern int64_t nTimeBestReceived;
-extern CWaitableCriticalSection csBestBlock;
-extern CConditionVariable cvBlockChange;
-extern bool fImporting;
-extern bool fReindex;
-extern int nScriptCheckThreads;
-extern bool fTxIndex;
-extern bool fCheckBlockIndex;
-extern unsigned int nCoinCacheSize;
-//! -maxtxfee default
-static const CAmount DEFAULT_TRANSACTION_MAXFEE = 100 * COIN;
-extern bool fAlerts;
-extern bool fVerifyingBlocks;
-
-extern bool fLargeWorkForkFound;
-extern bool fLargeWorkInvalidChainFound;
-
-
-extern std::map<uint256, int64_t> mapRejectedBlocks;
-extern std::map<unsigned int, unsigned int> mapHashedBlocks;
-extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
-
-/** Best header we've seen so far (used for getheaders queries' starting points).
-extern CBlockIndex* pindexBestHeader;
-
-/** Minimum disk space required - used in CheckDiskSpace()
-static const uint64_t nMinDiskSpace = 52428800;
-*/
+class CTxMemPool;
+class CCoinsViewCache;
 
 /** Register a wallet to receive updates from core */
 void RegisterValidationInterface(NotificationInterface* pwalletIn);

@@ -18,9 +18,11 @@
 #include "checkpoints.h"
 #include "checkqueue.h"
 #include "coins.h"
+#include <defaultValues.h>
 #include "FeeRate.h"
 #include "init.h"
 #include "kernel.h"
+#include "libzerocoin/bignum.h"
 #include "masternode-payments.h"
 #include "masternodeman.h"
 #include "merkleblock.h"
@@ -33,8 +35,10 @@
 #include "spork.h"
 #include "sporkdb.h"
 #include "swifttx.h"
+#include "tinyformat.h"
 #include "txdb.h"
 #include "ui_interface.h"
+#include "undo.h"
 #include "util.h"
 #include "utilmoneystr.h"
 #include <UtxoCheckingAndUpdating.h>

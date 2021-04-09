@@ -16,14 +16,10 @@
 #include "blockmap.h"
 #include "chain.h"
 #include "sync.h"
-#include "tinyformat.h"
 #include "txmempool.h"
 #include "uint256.h"
-#include "undo.h"
 #include "spentindex.h"
-#include "libzerocoin/bignum.h"
 #include <string>
-#include <defaultValues.h>
 
 enum FlushStateMode {
     FLUSH_STATE_IF_NEEDED,

@@ -28,6 +28,10 @@ extern void noui_connect();
 extern NotificationInterfaceRegistry registry;//TODO: rid this
 extern CBlockTreeDB* pblocktree;
 extern CCoinsViewCache* pcoinsTip;
+extern bool fCheckBlockIndex;
+extern BlockMap mapBlockIndex;
+extern int nScriptCheckThreads;
+
 struct TestingSetup {
     CCoinsViewDB *pcoinsdbview;
     boost::filesystem::path pathTemp;

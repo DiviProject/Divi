@@ -30,6 +30,9 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
 
+extern CCriticalSection cs_main;
+extern CConditionVariable cvBlockChange;
+
 // RPC Endpoints
 extern json_spirit::Value getconnectioncount(const json_spirit::Array& params, bool fHelp); // in rpcnet.cpp
 extern json_spirit::Value getpeerinfo(const json_spirit::Array& params, bool fHelp);

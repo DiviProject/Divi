@@ -23,6 +23,7 @@
 #include <ActiveChainManager.h>
 #include <boost/foreach.hpp>
 #include <utilstrencodings.h>
+#include <txmempool.h>
 
 using namespace json_spirit;
 using namespace std;
@@ -35,6 +36,10 @@ extern bool ShutdownRequested();
 extern CBlockTreeDB* pblocktree;
 extern CCoinsViewCache* pcoinsTip;
 extern bool fAddressIndex;
+extern BlockMap mapBlockIndex;
+extern CCriticalSection cs_main;
+extern CTxMemPool mempool;
+extern CBlockIndex* pindexBestHeader;
 
 double GetDifficulty(const CBlockIndex* blockindex)
 {

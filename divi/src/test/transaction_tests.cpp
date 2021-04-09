@@ -31,7 +31,7 @@
 using namespace std;
 using namespace json_spirit;
 using namespace boost::algorithm;
-
+extern CCriticalSection cs_main;
 // In script_tests.cpp
 extern Array read_json(const std::string& jsondata);
 

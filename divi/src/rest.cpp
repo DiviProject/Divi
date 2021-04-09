@@ -13,11 +13,16 @@
 #include <TransactionDiskAccessor.h>
 #include "utilstrencodings.h"
 #include "version.h"
+#include <blockmap.h>
+#include <sync.h>
 
 #include <boost/algorithm/string.hpp>
 
 using namespace std;
 using namespace json_spirit;
+
+extern BlockMap mapBlockIndex;
+extern CCriticalSection cs_main;
 
 enum RetFormat {
     RF_UNDEF,

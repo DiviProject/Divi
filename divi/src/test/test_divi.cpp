@@ -14,6 +14,7 @@
 #include "wallet.h"
 #endif
 #include <TransactionInputChecker.h>
+#include <chainparams.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>

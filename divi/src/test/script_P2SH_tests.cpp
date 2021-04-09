@@ -22,6 +22,7 @@
 #include <scriptCheck.h>
 
 using namespace std;
+extern CCriticalSection cs_main;
 
 // Helpers:
 static std::vector<unsigned char>

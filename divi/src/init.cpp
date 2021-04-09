@@ -83,7 +83,6 @@ extern bool fSendFreeTransactions;
 extern CAmount maxTxFee;
 extern CFeeRate minRelayTxFee;
 #endif
-volatile bool fFeeEstimatesInitialized = false;
 volatile bool fRestartRequested = false; // true: restart false: shutdown
 extern std::list<uint256> listAccCheckpointsNoDB;
 extern Settings& settings;
@@ -225,14 +224,14 @@ bool LoadDataCaches()
 
 void SaveFeeEstimatesFromMempool()
 {
-    if (fFeeEstimatesInitialized) {
+    if (settings.GetArg("-savemempoolfees",false))
+    {
         boost::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
         CAutoFile est_fileout(fopen(est_path.string().c_str(), "wb"), SER_DISK, CLIENT_VERSION);
         if (!est_fileout.IsNull())
             mempool.WriteFeeEstimates(est_fileout);
         else
             LogPrintf("%s: Failed to write fee estimates to %s\n", __func__, est_path.string());
-        fFeeEstimatesInitialized = false;
     }
 }
 
@@ -1630,7 +1629,6 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // Allowed to fail as this file IS missing on first startup.
     if (!est_filein.IsNull())
         mempool.ReadFeeEstimates(est_filein);
-    fFeeEstimatesInitialized = true;
 
 // ********************************************************* Step 8: load wallet
     std::ostringstream strErrors;

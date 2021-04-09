@@ -89,7 +89,6 @@ bool fReindex = false;
 bool fTxIndex = true;
 bool fAddressIndex = false;
 bool fSpentIndex = false;
-bool fIsBareMultisigStd = true;
 bool fCheckBlockIndex = false;
 bool fVerifyingBlocks = false;
 unsigned int nCoinCacheSize = 5000;
@@ -564,6 +563,9 @@ CBlockTreeDB* pblocktree = NULL;
 
 bool IsStandardTx(const CTransaction& tx, string& reason)
 {
+    static const bool fIsBareMultisigStd = settings.GetBoolArg("-permitbaremultisig", true);
+    static const unsigned nMaxDatacarrierBytes = settings.GetArg("-datacarriersize", MAX_OP_META_RELAY);
+
     AssertLockHeld(cs_main);
     if (tx.nVersion > CTransaction::CURRENT_VERSION || tx.nVersion < 1) {
         reason = "version";
@@ -624,7 +626,7 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
     unsigned int nDataOut = 0;
     txnouttype whichType;
     BOOST_FOREACH (const CTxOut& txout, tx.vout) {
-        if (!::IsStandard(txout.scriptPubKey, whichType)) {
+        if (!::IsStandard(txout.scriptPubKey, whichType,nMaxDatacarrierBytes)) {
             reason = "scriptpubkey";
             return false;
         }

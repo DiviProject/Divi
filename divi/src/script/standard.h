@@ -15,7 +15,6 @@
 #include <destination.h>
 
 static const unsigned int MAX_OP_META_RELAY = 603;      //!< bytes (+1 for OP_META, +2 for the pushdata opcodes)
-extern unsigned nMaxDatacarrierBytes;
 
 /**
  * Mandatory script verification flags that all blocks must comply with for
@@ -66,7 +65,7 @@ const char* GetTxnOutputType(txnouttype t);
 
 bool ExtractScriptPubKeyFormat(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::vector<unsigned char> >& vSolutionsRet);
 int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned char> >& vSolutions);
-bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType);
+bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType,unsigned nMaxDatacarrierBytes = MAX_OP_META_RELAY);
 bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet);
 bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<CTxDestination>& addressRet, int& nRequiredRet);
 

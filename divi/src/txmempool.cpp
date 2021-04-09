@@ -13,6 +13,7 @@
 #include "utilmoneystr.h"
 #include "version.h"
 #include <UtxoCheckingAndUpdating.h>
+#include <chainparams.h>
 
 #include <boost/circular_buffer.hpp>
 

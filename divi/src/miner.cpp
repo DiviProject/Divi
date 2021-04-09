@@ -8,7 +8,7 @@
 #include "miner.h"
 
 #include "amount.h"
-#include "main.h"
+#include "chainparams.h"
 #include <masternode-payments.h>
 #include <MasternodeModule.h>
 #include <CoinMintingModule.h>
@@ -19,6 +19,9 @@
 #include <coins.h>
 #include <FeeRate.h>
 #include <ThreadManagementHelpers.h>
+#include <net.h>
+#include <chain.h>
+#include <map>
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -26,6 +29,11 @@
 extern Settings& settings;
 extern CCoinsViewCache* pcoinsTip;
 extern CFeeRate minRelayTxFee;
+extern CChain chainActive;
+extern std::map<unsigned int, unsigned int> mapHashedBlocks;
+extern CCriticalSection cs_main;
+extern CTxMemPool mempool;
+extern BlockMap mapBlockIndex;
 //////////////////////////////////////////////////////////////////////////////
 //
 // DIVIMiner

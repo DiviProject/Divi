@@ -8,6 +8,7 @@
 #include "clientversion.h"
 #include "init.h"
 #include "main.h"
+#include <chainparams.h>
 #include "noui.h"
 #include "rpcserver.h"
 #include "ui_interface.h"

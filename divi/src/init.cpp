@@ -14,6 +14,7 @@
 #include "addrman.h"
 #include "amount.h"
 #include "BlockFileOpener.h"
+#include <chainparams.h>
 #include "checkpoints.h"
 #include "compat/sanity.h"
 #include "datacachemanager.h"

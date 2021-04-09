@@ -63,7 +63,6 @@ extern bool fImporting;
 extern bool fReindex;
 extern int nScriptCheckThreads;
 extern bool fTxIndex;
-extern bool fIsBareMultisigStd;
 extern bool fCheckBlockIndex;
 extern unsigned int nCoinCacheSize;
 //! -maxtxfee default

@@ -888,8 +888,6 @@ bool SetTransactionRequirements()
         }
     }
 #endif
-    fIsBareMultisigStd = settings.GetBoolArg("-permitbaremultisig", true) != 0;
-    nMaxDatacarrierBytes = settings.GetArg("-datacarriersize", nMaxDatacarrierBytes);
     return true;
 }
 

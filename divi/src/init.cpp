@@ -108,8 +108,7 @@ enum BindFlags {
     BF_WHITELIST = (1U << 2),
 };
 
-std::string errorMsg;
-static const char* FEE_ESTIMATES_FILENAME = "fee_estimates.dat";
+constexpr char FEE_ESTIMATES_FILENAME[] = "fee_estimates.dat";
 CClientUIInterface uiInterface;
 extern bool fAddressIndex;
 

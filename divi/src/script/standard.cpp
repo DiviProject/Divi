@@ -17,8 +17,6 @@ using namespace std;
 
 typedef std::vector<unsigned char> valtype;
 
-unsigned nMaxDatacarrierBytes = MAX_OP_META_RELAY;
-
 const char* GetTxnOutputType(txnouttype t)
 {
     switch (t)
@@ -185,7 +183,7 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
     return -1;
 }
 
-bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType)
+bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType,unsigned nMaxDatacarrierBytes)
 {
     std::vector<valtype> vSolutions;
     if (!ExtractScriptPubKeyFormat(scriptPubKey, whichType, vSolutions))

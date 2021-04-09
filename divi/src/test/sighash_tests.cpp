@@ -19,6 +19,7 @@
 #include <ValidationState.h>
 #include <streams.h>
 #include <utilstrencodings.h>
+#include <script/SignatureCheckers.h>
 
 static FastRandomContext random_source;
 auto insecure_rand = []() -> uint32_t { return random_source.rand32();};

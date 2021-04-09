@@ -10,6 +10,7 @@
 #include "script/interpreter.h"
 #include "script/sign.h"
 #include "uint256.h"
+#include <script/SignatureCheckers.h>
 
 #ifdef ENABLE_WALLET
 #include "wallet_ismine.h"

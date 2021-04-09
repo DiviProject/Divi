@@ -29,6 +29,7 @@
 #include "json/json_spirit_value.h"
 #include <boost/assign/list_of.hpp>
 #include <ValidationState.h>
+#include <script/SignatureCheckers.h>
 
 using namespace boost;
 using namespace boost::assign;

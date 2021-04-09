@@ -26,6 +26,7 @@
 #include <streams.h>
 #include <primitives/transaction.h>
 #include <utilstrencodings.h>
+#include <script/SignatureCheckers.h>
 
 using namespace std;
 using namespace json_spirit;

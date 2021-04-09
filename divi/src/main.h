@@ -15,17 +15,12 @@
 #include "amount.h"
 #include "blockmap.h"
 #include "chain.h"
-#include "primitives/transaction.h"
-#include "script/script.h"
-#include "script/sigcache.h"
-#include "script/standard.h"
 #include "sync.h"
 #include "tinyformat.h"
 #include "txmempool.h"
 #include "uint256.h"
 #include "undo.h"
 #include "spentindex.h"
-#include "FeeRate.h"
 #include "libzerocoin/bignum.h"
 #include <string>
 #include <defaultValues.h>

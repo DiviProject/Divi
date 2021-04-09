@@ -71,7 +71,7 @@ bool ActiveChainManager::DisconnectBlock(
     bool* pfClean) const
 {
     if (pindex->GetBlockHash() != view.GetBestBlock())
-        LogPrintf("%s : pindex=%s view=%s\n", __func__, pindex->GetBlockHash().GetHex(), view.GetBestBlock().GetHex());
+        LogPrintf("%s : pindex=%s view=%s\n", __func__, pindex->GetBlockHash(), view.GetBestBlock());
     assert(pindex->GetBlockHash() == view.GetBestBlock());
 
     if (pfClean)

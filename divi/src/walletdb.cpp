@@ -660,7 +660,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         const CWalletTx* txPtr = pwallet->GetWalletTx(hash);
         if(!txPtr)
         {
-            LogPrintf("Trying to write unknown transaction to database!\nHash: %s",hash.ToString());
+            LogPrintf("Trying to write unknown transaction to database!\nHash: %s", hash);
         }
         else
         {

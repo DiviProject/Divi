@@ -444,7 +444,7 @@ bool VoteForMasternodePayee(const CBlockIndex* pindex)
 
     CMasternodePaymentWinner newWinner(activeMasternode.vin, nBlockHeight, seedHash);
 
-    LogPrint("masternode","CMasternodePayments::ProcessBlock() Start nHeight %d - vin %s. \n", nBlockHeight, activeMasternode.vin.prevout.hash.ToString());
+    LogPrint("masternode","CMasternodePayments::ProcessBlock() Start nHeight %d - vin %s. \n", nBlockHeight, activeMasternode.vin.prevout.hash);
 
     // pay to the oldest MN that still had no payment but its input is old enough and it was active long enough
     CScript payee = masternodePayments.GetNextMasternodePayeeInQueueForPayment(pindex, numberOfBlocksIntoTheFutureToVoteOn);

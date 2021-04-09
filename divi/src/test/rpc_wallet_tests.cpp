@@ -11,6 +11,7 @@
 #include <boost/test/unit_test.hpp>
 #include "test_only.h"
 
+#include <Settings.h>
 using namespace std;
 using namespace json_spirit;
 
@@ -19,6 +20,7 @@ extern Value CallRPC(string args);
 
 extern CWallet* pwalletMain;
 extern CCriticalSection cs_main;
+extern Settings& settings;
 
 BOOST_AUTO_TEST_SUITE(rpc_wallet_tests)
 
@@ -74,7 +76,7 @@ BOOST_AUTO_TEST_CASE(rpc_wallet)
     string strAccount = "walletDemoAccount";
     string strPurpose = "receive";
     BOOST_CHECK_NO_THROW({ /*Initialize Wallet with an account */
-        CWalletDB walletdb(pwalletMain->strWalletFile);
+        CWalletDB walletdb(settings,pwalletMain->strWalletFile);
         CAccount account;
         account.vchPubKey = demoPubkey;
         pwalletMain->SetAddressBook(account.vchPubKey.GetID(), strAccount, strPurpose);

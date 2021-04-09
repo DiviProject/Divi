@@ -23,7 +23,6 @@
 
 #include <openssl/rand.h>
 #include "Settings.h"
-extern Settings& settings;
 
 //
 // CDB
@@ -31,7 +30,7 @@ extern Settings& settings;
 
 CDBEnv CDB::bitdb;
 
-CDB::CDB(const std::string& strFilename, const char* pszMode) : pdb(NULL), activeTxn(NULL)
+CDB::CDB(const Settings& settings, const std::string& strFilename, const char* pszMode) : settings_(settings), pdb(NULL), activeTxn(NULL)
 {
     int ret;
     fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
@@ -95,7 +94,7 @@ void CDB::Flush()
         return;
 
     const unsigned int nMinutes = fReadOnly? 1:0;
-    const unsigned int dbLogSize = fReadOnly? settings.GetArg("-dblogsize", 100) * 1024 : 0;
+    const unsigned int dbLogSize = fReadOnly? settings_.GetArg("-dblogsize", 100) * 1024 : 0;
     CDB::bitdb.dbenv.txn_checkpoint(dbLogSize, nMinutes, 0);
 }
 
@@ -116,7 +115,7 @@ void CDB::Close()
     }
 }
 
-bool CDB::Rewrite(const std::string& strFile, const char* pszSkip)
+bool CDB::Rewrite(const Settings& settings,const std::string& strFile, const char* pszSkip)
 {
     while (true) {
         {
@@ -131,7 +130,7 @@ bool CDB::Rewrite(const std::string& strFile, const char* pszSkip)
                 LogPrintf("CDB::Rewrite : Rewriting %s...\n", strFile);
                 std::string strFileRes = strFile + ".rewrite";
                 { // surround usage of db with extra {}
-                    CDB db(strFile.c_str(), "r");
+                    CDB db(settings, strFile.c_str(), "r");
                     Db* pdbCopy = new Db(&CDB::bitdb.dbenv, 0);
 
                     int ret = pdbCopy->open(NULL, // Txn pointer

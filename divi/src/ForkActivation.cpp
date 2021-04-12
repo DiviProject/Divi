@@ -16,7 +16,7 @@ extern Settings& settings;
 namespace
 {
 constexpr int64_t unixTimestampForDec31stMidnight = 1609459199;
-const std::set<Fork> manualOverrides = {Fork::HardenedStakeModifier,Fork::UniformLotteryWinners};
+const std::set<Fork> manualOverrides = {};
 /**
  * For forks that get activated at a certain block time, the associated
  * activation times.

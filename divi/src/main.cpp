@@ -1457,7 +1457,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return false;
     LogPrintStr("block " + to_string(pindex->nHeight));
     LogPrintStr("; time = " + to_string(pindex->nTime));
-    LogWalletBalance(pwalletMain);
+    LogWalletBalance();
     static const CChainParams& chainParameters = Params();
 
     VerifyBestBlockIsAtPreviousBlock(pindex,view);

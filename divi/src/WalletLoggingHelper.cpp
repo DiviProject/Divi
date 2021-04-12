@@ -3,6 +3,8 @@
 #include <Logging.h>
 #include <string>
 
+extern CWallet* pwalletMain;
+
 std::string ValueFromCAmount(const CAmount& amount)
 {
     bool sign = amount < 0;
@@ -22,4 +24,8 @@ void LogWalletBalance(CWallet* pwallet)
     {
         LogPrintStr("no wallet\n");
     }
+}
+void LogWalletBalance()
+{
+    LogWalletBalance(pwalletMain);
 }

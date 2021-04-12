@@ -458,7 +458,7 @@ bool CConsensusVote::SignatureValid()
 {
     //std::string errorMessage;
     //std::string strMessage = txHash.ToString().c_str() + boost::lexical_cast<std::string>(nBlockHeight);
-    ////LogPrintf("verify strMessage %s \n", strMessage.c_str());
+    ////LogPrintf("verify strMessage %s \n", strMessage);
 
     //CMasternode* pmn = mnodeman.Find(vinMasternode);
 

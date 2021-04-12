@@ -977,17 +977,17 @@ void ClearFoldersForResync()
     try {
         if (boost::filesystem::exists(blocksDir)){
             boost::filesystem::remove_all(blocksDir);
-            LogPrintf("-resync: folder deleted: %s\n", blocksDir.string().c_str());
+            LogPrintf("-resync: folder deleted: %s\n", blocksDir.string());
         }
 
         if (boost::filesystem::exists(chainstateDir)){
             boost::filesystem::remove_all(chainstateDir);
-            LogPrintf("-resync: folder deleted: %s\n", chainstateDir.string().c_str());
+            LogPrintf("-resync: folder deleted: %s\n", chainstateDir.string());
         }
 
         if (boost::filesystem::exists(sporksDir)){
             boost::filesystem::remove_all(sporksDir);
-            LogPrintf("-resync: folder deleted: %s\n", sporksDir.string().c_str());
+            LogPrintf("-resync: folder deleted: %s\n", sporksDir.string());
         }
 
     } catch (boost::filesystem::filesystem_error& error) {

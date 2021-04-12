@@ -6,10 +6,12 @@
 #include <WalletTx.h>
 #include <CoinControlSelectionAlgorithm.h>
 #include <SignatureSizeEstimator.h>
+#include <Settings.h>
 #include <primitives/transaction.h>
 #include <version.h>
 
 extern CFeeRate minRelayTxFee;
+extern CWallet* pwalletMain;
 bool IsInitialBlockDownload();
 
 static CAmount FeeEstimates(
@@ -95,5 +97,18 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
             continue;
         }
         LogPrintf("CombineDust sent transaction\n");
+    }
+}
+
+void combineWalletDust(const Settings& settings)
+{
+    if (pwalletMain) {
+        // If turned on Auto Combine will scan wallet for dust to combine
+        if (settings.ParameterIsSet("-combinethreshold"))
+        {
+            static WalletDustCombiner dustCombiner(*pwalletMain);
+            dustCombiner.CombineDust(
+                settings.GetArg("-combinethreshold",std::numeric_limits<int64_t>::max() ) );
+        }
     }
 }

@@ -2,6 +2,7 @@
 #define WALLET_DUST_COMBINER_H
 #include <amount.h>
 class CWallet;
+class Settings;
 class WalletDustCombiner
 {
 private:
@@ -10,5 +11,5 @@ public:
     WalletDustCombiner(CWallet& wallet);
     void CombineDust(CAmount combineThreshold);
 };
-
+void combineWalletDust(const Settings& settings);
 #endif // WALLET_DUST_COMBINER_H

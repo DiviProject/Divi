@@ -173,7 +173,7 @@ int ReadHTTPStatus(std::basic_istream<char>& stream, int& proto)
 {
     std::string str;
     getline(stream, str);
-    //LogPrintf("ReadHTTPStatus - getline string: %s\n",str.c_str());
+    //LogPrintf("ReadHTTPStatus - getline string: %s\n", str);
     std::vector<std::string> vWords;
     boost::split(vWords, str, boost::is_any_of(" "));
     if (vWords.size() < 2)

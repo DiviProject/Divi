@@ -44,7 +44,7 @@ bool WalletBackupCreator::BackupFile(PathType& sourceFile, PathType& backupFile)
 {
     try {
         fileSystem_.copy_file(sourceFile, backupFile);
-        LogPrintf("Creating backup of %s -> %s\n", sourceFile.c_str(), backupFile.c_str());
+        LogPrintf("Creating backup of %s -> %s\n", sourceFile, backupFile);
         return true;
     } catch (...) {
         LogPrintf("Failed to create backup\n");
@@ -92,7 +92,7 @@ void WalletBackupCreator::PruneOldBackups(std::string strWalletFile, PathType ba
             // More than nWalletBackups backups: delete oldest one(s)
             try {
                 fileSystem_.remove(file.second);
-                LogPrintf("Old backup deleted: %s\n", file.second.c_str());
+                LogPrintf("Old backup deleted: %s\n", file.second);
             } catch (...) {
                 LogPrintf("Failed to delete backup\n");
             }

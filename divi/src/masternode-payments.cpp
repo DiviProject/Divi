@@ -200,7 +200,7 @@ void CMasternodePayments::FillBlockPayee(const CBlockIndex* pindexPrev, CMutable
         ExtractDestination(payee, address1);
         CBitcoinAddress address2(address1);
 
-        LogPrint("masternode","Masternode payment of %s to %s\n", FormatMoney(masternodePayment).c_str(), address2);
+        LogPrint("masternode","Masternode payment of %s to %s\n", FormatMoney(masternodePayment), address2);
     }
 }
 
@@ -447,7 +447,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const I_BlockSubsidyProvider& su
                 if(out.nValue >= requiredMasternodePayment)
                     found = true;
                 else
-                    LogPrint("masternode","Masternode payment is out of drift range. Paid=%s Min=%s\n", FormatMoney(out.nValue).c_str(), FormatMoney(requiredMasternodePayment).c_str());
+                    LogPrint("masternode","Masternode payment is out of drift range. Paid=%s Min=%s\n", FormatMoney(out.nValue), FormatMoney(requiredMasternodePayment));
             }
         }
 
@@ -466,7 +466,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const I_BlockSubsidyProvider& su
         }
     }
 
-    LogPrint("masternode","CMasternodePayments::IsTransactionValid - Missing required payment of %s to %s\n", FormatMoney(requiredMasternodePayment).c_str(), strPayeesPossible.c_str());
+    LogPrint("masternode","CMasternodePayments::IsTransactionValid - Missing required payment of %s to %s\n", FormatMoney(requiredMasternodePayment), strPayeesPossible);
     return false;
 }
 

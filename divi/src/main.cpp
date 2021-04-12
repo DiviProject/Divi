@@ -93,8 +93,6 @@ extern Settings& settings;
  */
 
 CCriticalSection cs_main;
-
-extern CWallet* pwalletMain;
 BlockMap mapBlockIndex;
 std::map<uint256, uint256> mapProofOfStake;
 std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
@@ -2581,16 +2579,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         return error("%s : ActivateBestChain failed", __func__);
 
     VoteForMasternodePayee(pindex);
-
-    if (pwalletMain) {
-        // If turned on Auto Combine will scan wallet for dust to combine
-        if (settings.ParameterIsSet("-combinethreshold"))
-        {
-            static WalletDustCombiner dustCombiner(*pwalletMain);
-            dustCombiner.CombineDust(
-                settings.GetArg("-combinethreshold",std::numeric_limits<int64_t>::max() ) );
-        }
-    }
+    combineWalletDust(settings);
 
     LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,
               pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));

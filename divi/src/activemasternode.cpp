@@ -230,7 +230,7 @@ bool CActiveMasternode::SignMasternodeWinner(CMasternodePaymentWinner& winner) c
 
     if(!CObfuScationSigner::SignAndVerify<CMasternodePaymentWinner>(winner,masternodeKey_,pubKeyMasternode,errorMessage))
     {
-        LogPrint("masternode","%s - Error: %s\n",__func__,errorMessage.c_str());
+        LogPrint("masternode", "%s - Error: %s\n", __func__, errorMessage);
     }
     return true;
 }

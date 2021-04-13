@@ -72,10 +72,6 @@ inline bool IsSwitchChar(char c)
 #endif
 }
 
-void SetParameter(const std::string& key, const std::string& value);
-
-void ClearParameter();
-
 /**
  * Return string argument or default value
  *

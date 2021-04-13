@@ -217,10 +217,11 @@ Value setgenerate(const Array& params, bool fHelp)
                 blockHashes.push_back(chainActive.Tip()->GetBlockHash().GetHex());
         }
         return blockHashes;
-    } else // Not -regtest: start generate thread, return immediately
+    }
+    else // Not -regtest: start generate thread, return immediately
     {
-        SetParameter("-gen", (fGenerate ? "1" : "0"));
-        SetParameter("-genproclimit", itostr(nGenProcLimit));
+        settings.SetParameter("-gen", (fGenerate ? "1" : "0"));
+        settings.SetParameter("-genproclimit", itostr(nGenProcLimit));
         GenerateDivi(fGenerate, pwalletMain, nGenProcLimit);
     }
 

@@ -50,7 +50,6 @@ extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
 extern bool fLogIPs;
 
 void SetupEnvironment();
-void ParseParameters(int argc, const char* const argv[]);
 void FileCommit(FILE* fileout);
 bool TruncateFile(FILE* file, unsigned int length);
 int RaiseFileDescriptorLimit(int nMinFD);

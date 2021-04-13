@@ -84,6 +84,7 @@ extern CAmount maxTxFee;
 extern CFeeRate minRelayTxFee;
 #endif
 extern CCriticalSection cs_main;
+extern Settings& settings;
 extern bool fReindex;
 extern bool fImporting;
 extern bool fAlerts;
@@ -733,7 +734,7 @@ void SetNetworkingParameters()
             LogPrintf("InitializeDivi : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
     }
 
-    if (settings.ParameterIsSet("-connect") && mapMultiArgs["-connect"].size() > 0) {
+    if (settings.ParameterIsSet("-connect") && settings.GetMultiParameter("-connect").size() > 0) {
         // when only connecting to trusted nodes, do not seed via DNS, or listen by default
         if (settings.SoftSetBoolArg("-dnsseed", false))
             LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -dnsseed=0\n");
@@ -931,9 +932,9 @@ void SetLoggingAndDebugSettings()
     fLogTimestamps = settings.GetBoolArg("-logtimestamps", true);
     fLogIPs = settings.GetBoolArg("-logips", false);
 
-    fDebug = !mapMultiArgs["-debug"].empty();
+    const std::vector<std::string>& categories = settings.GetMultiParameter("-debug");
+    fDebug = !categories.empty();
     // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-    const std::vector<std::string>& categories = mapMultiArgs["-debug"];
     if (settings.GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
         fDebug = false;
 
@@ -1039,10 +1040,9 @@ bool BackupWallet(std::string strDataDir, bool fDisableWallet)
 bool InitializeP2PNetwork()
 {
     RegisterNodeSignals(GetNodeSignals());
-
     if (settings.ParameterIsSet("-onlynet")) {
         std::set<enum Network> nets;
-        BOOST_FOREACH (std::string snet, mapMultiArgs["-onlynet"]) {
+        BOOST_FOREACH (std::string snet, settings.GetMultiParameter("-onlynet")) {
             enum Network net = ParseNetwork(snet);
             if (net == NET_UNROUTABLE)
                 return InitError(strprintf(translate("Unknown network specified in -onlynet: '%s'"), snet));
@@ -1056,7 +1056,7 @@ bool InitializeP2PNetwork()
     }
 
     if (settings.ParameterIsSet("-whitelist")) {
-        BOOST_FOREACH (const std::string& net, mapMultiArgs["-whitelist"]) {
+        BOOST_FOREACH (const std::string& net, settings.GetMultiParameter("-whitelist")) {
             CSubNet subnet(net);
             if (!subnet.IsValid())
                 return InitError(strprintf(translate("Invalid netmask specified in -whitelist: '%s'"), net));
@@ -1115,13 +1115,13 @@ bool InitializeP2PNetwork()
     bool fBound = false;
     if (fListen) {
         if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
-            BOOST_FOREACH (std::string strBind, mapMultiArgs["-bind"]) {
+            BOOST_FOREACH (std::string strBind, settings.GetMultiParameter("-bind")) {
                 CService addrBind;
                 if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
                     return InitError(strprintf(translate("Cannot resolve -bind address: '%s'"), strBind));
                 fBound |= Bind(addrBind, (BF_EXPLICIT | BF_REPORT_ERROR));
             }
-            BOOST_FOREACH (std::string strBind, mapMultiArgs["-whitebind"]) {
+            BOOST_FOREACH (std::string strBind, settings.GetMultiParameter("-whitebind")) {
                 CService addrBind;
                 if (!Lookup(strBind.c_str(), addrBind, 0, false))
                     return InitError(strprintf(translate("Cannot resolve -whitebind address: '%s'"), strBind));
@@ -1140,7 +1140,7 @@ bool InitializeP2PNetwork()
     }
 
     if (settings.ParameterIsSet("-externalip")) {
-        BOOST_FOREACH (std::string strAddr, mapMultiArgs["-externalip"]) {
+        BOOST_FOREACH (std::string strAddr, settings.GetMultiParameter("-externalip")) {
             CService addrLocal(strAddr, GetListenPort(), fNameLookup);
             if (!addrLocal.IsValid())
                 return InitError(strprintf(translate("Cannot resolve -externalip address: '%s'"), strAddr));
@@ -1148,7 +1148,7 @@ bool InitializeP2PNetwork()
         }
     }
 
-    BOOST_FOREACH (std::string strDest, mapMultiArgs["-seednode"])
+    BOOST_FOREACH (std::string strDest, settings.GetMultiParameter("-seednode"))
         AddOneShot(strDest);
 
     return true;
@@ -1733,7 +1733,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
 
     std::vector<boost::filesystem::path> vImportFiles;
     if (settings.ParameterIsSet("-loadblock")) {
-        BOOST_FOREACH (std::string strFile, mapMultiArgs["-loadblock"])
+        BOOST_FOREACH (std::string strFile, settings.GetMultiParameter("-loadblock"))
             vImportFiles.push_back(strFile);
     }
     threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));

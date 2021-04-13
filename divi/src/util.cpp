@@ -126,27 +126,6 @@ bool fLogIPs = false;
 
 Settings& settings = Settings::instance(mapArgs, mapMultiArgs);
 
-void ParseParameters(int argc, const char* const argv[])
-{
-    settings.ParseParameters(argc, argv);
-}
-
-bool GetBoolArg(const std::string& strArg, bool fDefault)
-{
-    return settings.GetBoolArg(strArg, fDefault);
-}
-
-bool SoftSetArg(const std::string& strArg, const std::string& strValue)
-{
-    return settings.SoftSetArg(strArg, strValue);
-}
-
-bool SoftSetBoolArg(const std::string& strArg, bool fValue)
-{
-    return settings.SoftSetBoolArg(strArg, fValue);
-}
-
-
 static const int screenWidth = 79;
 static const int optIndent = 2;
 static const int msgIndent = 7;
@@ -162,13 +141,8 @@ std::string HelpMessageOpt(const std::string &option, const std::string &message
            std::string("\n\n");
 }
 
-boost::filesystem::path GetConfigFile()
-{
-    return settings.GetConfigFile();
-}
-
 #ifndef WIN32
-boost::filesystem::path GetPidFile()
+boost::filesystem::path GetPidFile(const Settings& settings)
 {
     boost::filesystem::path pathPidFile(settings.GetArg("-pid", "divid.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;

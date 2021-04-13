@@ -763,7 +763,7 @@ void StartRPCThreads()
                                                "If the file does not exist, create it with owner-readable-only file permissions.\n"
                                                "It is also recommended to set alertnotify so you are notified of problems;\n"
                                                "for example: alertnotify=echo %%s | mail -s \"DIVI Alert\" admin@foo.com\n"),
-                                             GetConfigFile().string(),
+                                             settings.GetConfigFile().string(),
                                              EncodeBase58(&rand_pwd[0], &rand_pwd[0] + 32)),
             "", CClientUIInterface::MSG_ERROR | CClientUIInterface::SECURE);
         StartShutdown();

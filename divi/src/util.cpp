@@ -119,12 +119,10 @@ int nLiquidityProvider = 0;
 int64_t enforceMasternodePaymentsTime = 4085657524;
 bool fSucessfullyLoaded = false;
 
-map<string, string> mapArgs;
-map<string, vector<string> > mapMultiArgs;
+Settings& settings = Settings::instance();
+
 bool fDaemon = false;
 bool fLogIPs = false;
-
-Settings& settings = Settings::instance(mapArgs, mapMultiArgs);
 
 static const int screenWidth = 79;
 static const int optIndent = 2;

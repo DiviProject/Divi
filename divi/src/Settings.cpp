@@ -11,14 +11,14 @@
 std::string CopyableSettings::GetArg(const std::string& strArg, const std::string& strDefault) const
 {
     if (mapArgs_.count(strArg))
-        return mapArgs_[strArg];
+        return mapArgs_.find(strArg)->second;
     return strDefault;
 }
 
 int64_t CopyableSettings::GetArg(const std::string& strArg, int64_t nDefault) const
 {
     if (mapArgs_.count(strArg))
-        return atoi64(mapArgs_[strArg]);
+        return atoi64(mapArgs_.find(strArg)->second);
     return nDefault;
 }
 
@@ -40,7 +40,7 @@ static void InterpretNegativeSetting(std::string& strKey, std::string& strValue)
 bool CopyableSettings::GetBoolArg(const std::string& strArg, bool fDefault) const
 {
     if (mapArgs_.count(strArg))
-        return InterpretBool(mapArgs_[strArg]);
+        return InterpretBool(mapArgs_.find(strArg)->second);
     return fDefault;
 }
 
@@ -74,11 +74,24 @@ std::string CopyableSettings::GetParameter(const std::string& key) const
 {
     if(ParameterIsSet(key))
     {
-        return mapArgs_[key];
+        return mapArgs_.find(key)->second;
     }
     else
     {
         return "";
+    }
+}
+
+const std::vector<std::string>& CopyableSettings::GetMultiParameter(const std::string& key) const
+{
+    static std::vector<std::string> empty;
+    if(ParameterIsSetForMultiArgs(key))
+    {
+        return mapMultiArgs_.find(key)->second;
+    }
+    else
+    {
+        return empty;
     }
 }
 
@@ -130,7 +143,7 @@ void CopyableSettings::ParseParameters(int argc, const char* const argv[])
     }
 }
 
-boost::filesystem::path CopyableSettings::GetConfigFile()
+boost::filesystem::path CopyableSettings::GetConfigFile() const
 {
     boost::filesystem::path pathConfigFile(GetArg("-conf", "divi.conf"));
     if (!pathConfigFile.is_complete())
@@ -175,4 +188,13 @@ int CopyableSettings::MaxFutureBlockDrift() const
 {
     constexpr int maximumFutureBlockDrift = 180;
     return maximumFutureBlockDrift;
+}
+
+unsigned CopyableSettings::NumerOfParameters() const
+{
+    return mapArgs_.size();
+}
+unsigned CopyableSettings::NumerOfMultiParameters() const
+{
+    return mapMultiArgs_.size();
 }

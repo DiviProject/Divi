@@ -10,12 +10,14 @@
 #include <DataDirectory.h>
 #include <chainparamsbase.h>
 #include <uint256.h>
+#include <Settings.h>
 
 bool fDebug = false;
 bool fPrintToConsole = false;
 bool fPrintToDebugLog = true;
 volatile bool fReopenDebugLog = false;
 bool fLogTimestamps = false;
+extern Settings& settings;
 
 LOG_FORMAT_WITH_TOSTRING(uint256)
 
@@ -89,7 +91,7 @@ bool LogAcceptCategory(const char* category)
         // global destructor calls LogPrint()
         static boost::thread_specific_ptr< std::set<std::string> > ptrCategory;
         if (ptrCategory.get() == NULL) {
-            const std::vector<std::string>& categories = mapMultiArgs["-debug"];
+            const std::vector<std::string> categories = settings.GetMultiParameter("-debug");
             ptrCategory.reset(new std::set<std::string>(categories.begin(), categories.end()));
             // thread_specific_ptr automatically deletes the set when the thread ends.
             // "all" is a composite category enabling all DIVI-related debug output

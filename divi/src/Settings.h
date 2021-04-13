@@ -8,15 +8,13 @@
 class CopyableSettings
 {
 protected:
-    std::map<std::string, std::string>& mapArgs_;
-    std::map<std::string, std::vector<std::string> >& mapMultiArgs_;
+    std::map<std::string, std::string> mapArgs_;
+    std::map<std::string, std::vector<std::string> > mapMultiArgs_;
 
 public:
     CopyableSettings(
-        std::map<std::string, std::string>& mapArgs,
-        std::map<std::string, std::vector<std::string> >& mapMultiArgs
-        ): mapArgs_(mapArgs)
-        , mapMultiArgs_(mapMultiArgs)
+        ): mapArgs_()
+        , mapMultiArgs_()
     {
     }
 
@@ -35,6 +33,7 @@ public:
     bool ParameterIsSet (const std::string& key) const;
 
     std::string GetParameter(const std::string& key) const;
+    const std::vector<std::string>& GetMultiParameter(const std::string& key) const;
 
     void SetParameter(const std::string& key, const std::string& value);
 
@@ -44,8 +43,10 @@ public:
 
     void ParseParameters(int argc, const char* const argv[]);
 
-    boost::filesystem::path GetConfigFile();
+    boost::filesystem::path GetConfigFile() const;
 
+    unsigned NumerOfParameters() const;
+    unsigned NumerOfMultiParameters() const;
     void ReadConfigFile();
     unsigned MaxNumberOfPoSCombinableInputs() const;
     int MaxFutureBlockDrift() const;
@@ -55,20 +56,15 @@ class Settings: public CopyableSettings
 {
 private:
 
-    Settings(
-        std::map<std::string, std::string>& mapArgs,
-        std::map<std::string, std::vector<std::string> >& mapMultiArgs
-        ): CopyableSettings(mapArgs, mapMultiArgs)
+    Settings(): CopyableSettings()
     {
     }
 
 public:
 
-    static Settings& instance(
-        std::map<std::string, std::string>& mapArgs,
-        std::map<std::string, std::vector<std::string> >& mapMultiArgs)
+    static Settings& instance()
     {
-        static Settings settings(mapArgs, mapMultiArgs);
+        static Settings settings;
         return settings;
     }
 

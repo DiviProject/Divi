@@ -325,7 +325,7 @@ void PrepareShutdown()
     }
 #endif
 #ifndef WIN32
-    boost::filesystem::remove(GetPidFile());
+    boost::filesystem::remove(GetPidFile(settings));
 #endif
 
     UnregisterAllValidationInterfaces();
@@ -472,7 +472,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-mnemonic", translate("User defined mnemonic for HD wallet (bip39). Only has effect during wallet creation/first start (default: randomly generated)"));
     strUsage += HelpMessageOpt("-mnemonicpassphrase", translate("User defined mnemonic passphrase for HD wallet (BIP39). Only has effect during wallet creation/first start (default: empty string)"));
     strUsage += HelpMessageOpt("-hdseed", translate("User defined seed for HD wallet (should be in hex). Only has effect during wallet creation/first start (default: randomly generated)"));
-    if (GetBoolArg("-help-debug", false))
+    if (settings.GetBoolArg("-help-debug", false))
         strUsage += HelpMessageOpt("-allowunencryptedwallet", translate("Do not warn about an unencrypted HD wallet"));
     strUsage += HelpMessageOpt("-disablesystemnotifications", strprintf(translate("Disable OS notifications for incoming transactions (default: %u)"), 0));
     strUsage += HelpMessageOpt("-txconfirmtarget=<n>", strprintf(translate("If paytxfee is not set, include enough fee so transactions begin confirmation on average within n blocks (default: %u)"), 1));
@@ -729,44 +729,44 @@ void SetNetworkingParameters()
     if (settings.ParameterIsSet("-bind") || settings.ParameterIsSet("-whitebind")) {
         // when specifying an explicit binding address, you want to listen on it
         // even when -connect or -proxy is specified
-        if (SoftSetBoolArg("-listen", true))
+        if (settings.SoftSetBoolArg("-listen", true))
             LogPrintf("InitializeDivi : parameter interaction: -bind or -whitebind set -> setting -listen=1\n");
     }
 
     if (settings.ParameterIsSet("-connect") && mapMultiArgs["-connect"].size() > 0) {
         // when only connecting to trusted nodes, do not seed via DNS, or listen by default
-        if (SoftSetBoolArg("-dnsseed", false))
+        if (settings.SoftSetBoolArg("-dnsseed", false))
             LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -dnsseed=0\n");
-        if (SoftSetBoolArg("-listen", false))
+        if (settings.SoftSetBoolArg("-listen", false))
             LogPrintf("InitializeDivi : parameter interaction: -connect set -> setting -listen=0\n");
     }
 
     if (settings.ParameterIsSet("-proxy")) {
         // to protect privacy, do not listen by default if a default proxy server is specified
-        if (SoftSetBoolArg("-listen", false))
+        if (settings.SoftSetBoolArg("-listen", false))
             LogPrintf("%s: parameter interaction: -proxy set -> setting -listen=0\n", __func__);
         // to protect privacy, do not use UPNP when a proxy is set. The user may still specify -listen=1
         // to listen locally, so don't rely on this happening through -listen below.
-        if (SoftSetBoolArg("-upnp", false))
+        if (settings.SoftSetBoolArg("-upnp", false))
             LogPrintf("%s: parameter interaction: -proxy set -> setting -upnp=0\n", __func__);
         // to protect privacy, do not discover addresses by default
-        if (SoftSetBoolArg("-discover", false))
+        if (settings.SoftSetBoolArg("-discover", false))
             LogPrintf("InitializeDivi : parameter interaction: -proxy set -> setting -discover=0\n");
     }
 
     if (!settings.GetBoolArg("-listen", true)) {
         // do not map ports or try to retrieve public IP when not listening (pointless)
-        if (SoftSetBoolArg("-upnp", false))
+        if (settings.SoftSetBoolArg("-upnp", false))
             LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -upnp=0\n");
-        if (SoftSetBoolArg("-discover", false))
+        if (settings.SoftSetBoolArg("-discover", false))
             LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -discover=0\n");
-        if (SoftSetBoolArg("-listenonion", false))
+        if (settings.SoftSetBoolArg("-listenonion", false))
             LogPrintf("InitializeDivi : parameter interaction: -listen=0 -> setting -listenonion=0\n");
     }
 
     if (settings.ParameterIsSet("-externalip")) {
         // if an explicit public IP is specified, do not try to find others
-        if (SoftSetBoolArg("-discover", false))
+        if (settings.SoftSetBoolArg("-discover", false))
             LogPrintf("InitializeDivi : parameter interaction: -externalip set -> setting -discover=0\n");
     }
 
@@ -783,18 +783,18 @@ bool EnableWalletFeatures()
 {
     if (settings.GetBoolArg("-salvagewallet", false)) {
         // Rewrite just private keys: rescan to find transactions
-        if (SoftSetBoolArg("-rescan", true))
+        if (settings.SoftSetBoolArg("-rescan", true))
             LogPrintf("InitializeDivi : parameter interaction: -salvagewallet=1 -> setting -rescan=1\n");
     }
 
     // -zapwallettx implies a rescan
     if (settings.GetBoolArg("-zapwallettxes", false)) {
-        if (SoftSetBoolArg("-rescan", true))
+        if (settings.SoftSetBoolArg("-rescan", true))
             LogPrintf("InitializeDivi : parameter interaction: -zapwallettxes=<mode> -> setting -rescan=1\n");
     }
 
     if (!settings.GetBoolArg("-enableswifttx", fEnableSwiftTX)) {
-        if (SoftSetArg("-swifttxdepth", 0))
+        if (settings.SoftSetArg("-swifttxdepth", 0))
             LogPrintf("InitializeDivi : parameter interaction: -enableswifttx=false -> setting -nSwiftTXDepth=0\n");
     }
 
@@ -1151,7 +1151,7 @@ void PrintInitialLogHeader(bool fDisableWallet, int numberOfFileDescriptors, con
     if (!fLogTimestamps) LogPrintf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()));
     LogPrintf("Default data directory %s\n", GetDefaultDataDir().string());
     LogPrintf("Using data directory %s\n", dataDirectoryInUse);
-    LogPrintf("Using config file %s\n", GetConfigFile().string());
+    LogPrintf("Using config file %s\n", settings.GetConfigFile().string());
     LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, numberOfFileDescriptors);
     LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
 }
@@ -1549,7 +1549,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     // Staking needs a CWallet instance, so make sure wallet is enabled
     bool fDisableWallet = WalletIsDisabled();
     if (fDisableWallet) {
-        if (SoftSetBoolArg("-staking", false))
+        if (settings.SoftSetBoolArg("-staking", false))
             LogPrintf("InitializeDivi : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
     }
     if(!SetTransactionRequirements())
@@ -1577,7 +1577,7 @@ bool InitializeDivi(boost::thread_group& threadGroup)
     }
 
 #ifndef WIN32
-    CreatePidFile(GetPidFile(), getpid());
+    CreatePidFile(GetPidFile(settings), getpid());
 #endif
     PrintInitialLogHeader(fDisableWallet,numberOfFileDescriptors,strDataDir);
     StartScriptVerificationThreads(threadGroup);

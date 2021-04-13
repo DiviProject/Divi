@@ -80,12 +80,13 @@ public:
 class CWalletDB : public CDB
 {
 private:
+    Settings& settings_;
     std::string dbFilename_;
     unsigned& walletDbUpdated_;
 public:
     void IncrementDBUpdateCount() const;
 
-    CWalletDB(const Settings& settings,const std::string& strFilename, const char* pszMode = "r+");
+    CWalletDB(Settings& settings,const std::string& strFilename, const char* pszMode = "r+");
 
     bool WriteName(const std::string& strAddress, const std::string& strName);
     bool EraseName(const std::string& strAddress);

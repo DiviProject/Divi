@@ -19,7 +19,7 @@ struct SettingsTestContainer
     std::map<std::string, std::string> mapArgs;
     std::map<std::string, std::vector<std::string> > mapMultiArgs;
     CopyableSettings settings;
-    
+
 
     SettingsTestContainer(
         ): mapArgs()
@@ -204,7 +204,6 @@ BOOST_AUTO_TEST_CASE(util_ParseParameters)
 
 BOOST_AUTO_TEST_CASE(util_GetArg)
 {
-    settings.ClearParameter();
     settings.SetParameter("strtest1", "string...");
     // strtest2 undefined on purpose
     settings.SetParameter("inttest1", "12345");

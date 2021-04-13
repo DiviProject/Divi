@@ -130,15 +130,6 @@ void ParseParameters(int argc, const char* const argv[])
 {
     settings.ParseParameters(argc, argv);
 }
-void SetParameter (const std::string& key, const std::string& value)
-{
-    settings.SetParameter(key, value);
-}
-
-void ClearParameter ()
-{
-    settings.ClearParameter();
-}
 
 bool GetBoolArg(const std::string& strArg, bool fDefault)
 {

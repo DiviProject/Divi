@@ -22,7 +22,7 @@ if cmd == "backupwallet":
         print access.backupwallet(path)
     except:
         print "\n---An error occurred---\n"
-        
+
 elif cmd == "encryptwallet":
     try:
         pwd = getpass.getpass(prompt="Enter passphrase: ")
@@ -95,18 +95,6 @@ elif cmd == "getconnectioncount":
 elif cmd == "getdifficulty":
     try:
         print access.getdifficulty()
-    except:
-        print "\n---An error occurred---\n"
-
-elif cmd == "getgenerate":
-    try:
-        print access.getgenerate()
-    except:
-        print "\n---An error occurred---\n"
-
-elif cmd == "gethashespersec":
-    try:
-        print access.gethashespersec()
     except:
         print "\n---An error occurred---\n"
 

@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(AlertNotify)
     boost::filesystem::path temp = GetTempPath() / "alertnotify.txt";
     boost::filesystem::remove(temp);
 
-    SetParameter("-alertnotify", std::string("echo %s >> ") + temp.string());
+    settings.SetParameter("-alertnotify", std::string("echo %s >> ") + temp.string());
 
     BOOST_FOREACH(CAlert alert, alerts)
         alert.ProcessAlert(settings,false);

@@ -103,7 +103,7 @@ Object CallRPC(const string& strMethod, const Array& params)
         throw runtime_error(strprintf(
             translate("You must set rpcpassword=<password> in the configuration file:\n%s\n"
               "If the file does not exist, create it with owner-readable-only file permissions."),
-            GetConfigFile().string().c_str()));
+            settings.GetConfigFile().string().c_str()));
 
     // Connect to localhost
     basic_socket_iostream<ip::tcp> stream;

@@ -21,6 +21,7 @@
 #include <fstream>
 #include <ValidationState.h>
 #include <WalletTx.h>
+#include <Settings.h>
 
 using namespace boost;
 using namespace std;
@@ -49,10 +50,11 @@ struct LockManagedWalletDBUpdatedMapping
 static LockManagedWalletDBUpdatedMapping lockedDBUpdateMapping;
 
 CWalletDB::CWalletDB(
-    const Settings& settings,
+    Settings& settings,
     const std::string& strFilename,
     const char* pszMode
     ) : CDB(settings,strFilename, pszMode)
+    , settings_(settings)
     , dbFilename_(strFilename)
     , walletDbUpdated_(lockedDBUpdateMapping(dbFilename_))
 {
@@ -624,7 +626,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
                     fNoncriticalErrors = true; // ... but do warn the user there is something wrong.
                     if (strType == "tx")
                         // Rescan if there is a bad transaction record:
-                        SoftSetBoolArg("-rescan", true);
+                        settings_.SoftSetBoolArg("-rescan", true);
                 }
             }
             if (!strErr.empty())

@@ -31,8 +31,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"setgenerate", 0},
         {"setgenerate", 1},
         {"generateblock", 0},
-        {"getnetworkhashps", 0},
-        {"getnetworkhashps", 1},
         {"sendtoaddress", 1},
         {"getcoinavailability", 0},
         {"getlotteryblockwinners",0},

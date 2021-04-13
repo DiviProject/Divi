@@ -728,7 +728,7 @@ void StartRPCThreads()
     rpc_allow_subnets.push_back(CSubNet("127.0.0.0/8")); // always allow IPv4 local subnet
     rpc_allow_subnets.push_back(CSubNet("::1"));         // always allow IPv6 localhost
     if (settings.ParameterIsSetForMultiArgs("-rpcallowip")) {
-        const vector<string>& vAllow = mapMultiArgs["-rpcallowip"];
+        const vector<string>& vAllow = settings.GetMultiParameter("-rpcallowip");
         BOOST_FOREACH (string strAllow, vAllow) {
             CSubNet subnet(strAllow);
             if (!subnet.IsValid()) {
@@ -785,7 +785,7 @@ void StartRPCThreads()
         }
     } else if (settings.ParameterIsSet("-rpcbind")) // Specific bind address
     {
-        BOOST_FOREACH (const std::string& addr, mapMultiArgs["-rpcbind"]) {
+        BOOST_FOREACH (const std::string& addr, settings.GetMultiParameter("-rpcbind")) {
             try {
                 vEndpoints.push_back(ParseEndpoint(addr, defaultPort));
             } catch (const boost::system::system_error&) {

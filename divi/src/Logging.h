@@ -13,7 +13,6 @@ extern bool fPrintToDebugLog;
 extern bool fDebug;
 extern volatile bool fReopenDebugLog;
 extern bool fLogTimestamps;
-extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
 
 /** Return true if log accepts specified category */
 bool LogAcceptCategory(const char* category);

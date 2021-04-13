@@ -1260,17 +1260,22 @@ void static ProcessOneShot()
 void ThreadOpenConnections()
 {
     // Connect to specific addresses
-    if (settings.ParameterIsSet("-connect") && mapMultiArgs["-connect"].size() > 0) {
-        for (int64_t nLoop = 0;; nLoop++) {
-            ProcessOneShot();
-            BOOST_FOREACH (string strAddr, mapMultiArgs["-connect"]) {
-                CAddress addr;
-                OpenNetworkConnection(addr, NULL, strAddr.c_str());
-                for (int i = 0; i < 10 && i < nLoop; i++) {
-                    MilliSleep(500);
+    if (settings.ParameterIsSet("-connect")) {
+        const auto& connections = settings.GetMultiParameter("-connect");
+        if(connections.size() > 0)
+        {
+            for (int64_t nLoop = 0;; nLoop++)
+            {
+                ProcessOneShot();
+                BOOST_FOREACH (string strAddr, connections) {
+                    CAddress addr;
+                    OpenNetworkConnection(addr, NULL, strAddr.c_str());
+                    for (int i = 0; i < 10 && i < nLoop; i++) {
+                        MilliSleep(500);
+                    }
                 }
+                MilliSleep(500);
             }
-            MilliSleep(500);
         }
     }
 
@@ -1354,7 +1359,7 @@ void ThreadOpenAddedConnections()
 {
     {
         LOCK(cs_vAddedNodes);
-        vAddedNodes = mapMultiArgs["-addnode"];
+        vAddedNodes = settings.GetMultiParameter("-addnode");
     }
 
     if (HaveNameProxy()) {

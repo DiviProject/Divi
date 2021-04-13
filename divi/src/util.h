@@ -61,7 +61,6 @@ boost::filesystem::path GetPidFile(const Settings& settings);
 void CreatePidFile(const boost::filesystem::path& path, pid_t pid);
 #endif
 boost::filesystem::path GetTempPath();
-void ShrinkDebugFile();
 void runCommand(std::string strCommand);
 
 inline bool IsSwitchChar(char c)

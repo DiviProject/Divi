@@ -116,23 +116,6 @@ Value getnetworkhashps(const Array& params, bool fHelp)
 }
 
 #ifdef ENABLE_WALLET
-Value getgenerate(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() != 0)
-        throw runtime_error(
-            "getgenerate\n"
-            "\nReturn if the server is set to generate coins or not. The default is false.\n"
-            "It is set with the command line argument -gen (or divi.conf setting gen)\n"
-            "It can also be set with the setgenerate call.\n"
-            "\nResult\n"
-            "true|false      (boolean) If the server is set to generate coins or not\n"
-            "\nExamples:\n" +
-            HelpExampleCli("getgenerate", "") + HelpExampleRpc("getgenerate", ""));
-
-    return settings.GetBoolArg("-gen", false);
-}
-
-
 Value setgenerate(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
@@ -140,7 +123,6 @@ Value setgenerate(const Array& params, bool fHelp)
             "setgenerate generate ( genproclimit )\n"
             "\nSet 'generate' true or false to turn generation on or off.\n"
             "Generation is limited to 'genproclimit' processors, -1 is unlimited.\n"
-            "See the getgenerate call for the current setting.\n"
             "\nArguments:\n"
             "1. generate         (boolean, required) Set to true to turn on generation, false to turn off.\n"
             "2. genproclimit     (numeric, optional) Set the processor limit for when generation is on. Can be -1 for unlimited.\n"
@@ -150,7 +132,7 @@ Value setgenerate(const Array& params, bool fHelp)
             "\nExamples:\n"
             "\nSet the generation on with a limit of one processor\n" +
             HelpExampleCli("setgenerate", "true 1") +
-            "\nCheck the setting\n" + HelpExampleCli("getgenerate", "") +
+            "\nCheck the setting\n" + HelpExampleCli("getmininginfo", "") +
             "\nTurn off generation\n" + HelpExampleCli("setgenerate", "false") +
             "\nUsing json rpc\n" + HelpExampleRpc("setgenerate", "true, 1"));
 
@@ -313,25 +295,6 @@ Value generateblock(const Array& params, bool fHelp)
 
     return chainActive.Tip()->GetBlockHash().GetHex();
 }
-
-double dHashesPerSec;
-int64_t nHPSTimerStart;
-Value gethashespersec(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() != 0)
-        throw runtime_error(
-            "gethashespersec\n"
-            "\nReturns a recent hashes per second performance measurement while generating.\n"
-            "See the getgenerate and setgenerate calls to turn generation on and off.\n"
-            "\nResult:\n"
-            "n            (numeric) The recent hashes per second when generation is on (will return 0 if generation is off)\n"
-            "\nExamples:\n" +
-            HelpExampleCli("gethashespersec", "") + HelpExampleRpc("gethashespersec", ""));
-
-    if (GetTimeMillis() - nHPSTimerStart > 8000)
-        return (int64_t)0;
-    return (int64_t)dHashesPerSec;
-}
 #endif
 
 
@@ -348,8 +311,8 @@ Value getmininginfo(const Array& params, bool fHelp)
             "  \"currentblocktx\": nnn,     (numeric) The last block transaction\n"
             "  \"difficulty\": xxx.xxxxx    (numeric) The current difficulty\n"
             "  \"errors\": \"...\"          (string) Current errors\n"
-            "  \"generate\": true|false     (boolean) If the generation is on or off (see getgenerate or setgenerate calls)\n"
-            "  \"genproclimit\": n          (numeric) The processor limit for generation. -1 if no generation. (see getgenerate or setgenerate calls)\n"
+            "  \"generate\": true|false     (boolean) If the generation is on or off (see setgenerate calls)\n"
+            "  \"genproclimit\": n          (numeric) The processor limit for generation. -1 if no generation. (see setgenerate calls)\n"
             "  \"hashespersec\": n          (numeric) The hashes per second of the generation, or 0 if no generation.\n"
             "  \"pooledtx\": n              (numeric) The size of the mem pool\n"
             "  \"testnet\": true|false      (boolean) If using testnet or not\n"
@@ -362,6 +325,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("blocks", (int)chainActive.Height()));
     obj.push_back(Pair("difficulty", (double)GetDifficulty()));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
+    obj.push_back(Pair("generate", (int)settings.GetArg("-gen", false) ));
     obj.push_back(Pair("genproclimit", (int)settings.GetArg("-genproclimit", -1)));
     obj.push_back(Pair("networkhashps", getnetworkhashps(params, false)));
     obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));

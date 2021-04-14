@@ -12,7 +12,6 @@
 
 extern CFeeRate minRelayTxFee;
 extern CWallet* pwalletMain;
-bool IsInitialBlockDownload();
 
 static CAmount FeeEstimates(
     const CKeyStore& keyStore,
@@ -44,7 +43,7 @@ WalletDustCombiner::WalletDustCombiner(
 
 void WalletDustCombiner::CombineDust(CAmount combineThreshold)
 {
-    if (IsInitialBlockDownload() || wallet_.IsLocked()) {
+    if (wallet_.IsLocked()) {
         return;
     }
 

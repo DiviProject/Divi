@@ -80,6 +80,7 @@ class MnRemoteStartTest (BitcoinTestFramework):
     # of the node quickly.
     for _ in range (ticks):
       self.advance_time ()
+      time.sleep(0.01)
 
     result = []
     for n in [1, 2, 3]:

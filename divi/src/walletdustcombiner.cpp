@@ -53,7 +53,7 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
     //coins are sectioned by address. This combination code only wants to combine inputs that belong to the same address
     for (std::map<CBitcoinAddress, std::vector<COutput> >::iterator it = mapCoinsByAddress.begin(); it != mapCoinsByAddress.end(); it++)
     {
-        std::vector<COutput> vRewardCoins;
+        std::vector<COutput> coinsToCombine;
         //find masternode rewards that need to be combined
         CCoinControl* coinControl = new CCoinControl();
         CAmount nTotalRewardsValue = 0;
@@ -68,7 +68,7 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
 
             COutPoint outpt(out.tx->GetHash(), out.i);
             coinControl->Select(outpt);
-            vRewardCoins.push_back(out);
+            coinsToCombine.push_back(out);
             nTotalRewardsValue += out.Value();
         }
 
@@ -77,12 +77,12 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
             continue;
 
         //we cannot combine one coin with itself
-        if (vRewardCoins.size() <= 1)
+        if (coinsToCombine.size() <= 1)
             continue;
 
         std::vector<std::pair<CScript, CAmount> > vecSend;
         CScript scriptPubKey = GetScriptForDestination(it->first.Get());
-        CAmount expectedFee = FeeEstimates(wallet_,vecSend,vRewardCoins);
+        CAmount expectedFee = FeeEstimates(wallet_,vecSend,coinsToCombine);
         vecSend.push_back(std::make_pair(scriptPubKey, nTotalRewardsValue-expectedFee));
 
         // Create the transaction and commit it to the network

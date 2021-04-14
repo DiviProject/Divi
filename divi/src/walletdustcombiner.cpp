@@ -19,6 +19,7 @@ static CAmount FeeEstimates(
     const std::vector<std::pair<CScript, CAmount> >& intendedDestinations,
     const std::vector<COutput>& outputsToCombine)
 {
+    constexpr unsigned costOfMaybeIncludingChangeAddress = 34u;
     CMutableTransaction txNew;
     txNew.vout.clear();
     for(const std::pair<CScript, CAmount>& s: intendedDestinations)
@@ -32,7 +33,7 @@ static CAmount FeeEstimates(
     {
         scriptSigSize += estimator.MaxBytesNeededForSigning(keyStore,output.scriptPubKey())+40u;
     }
-    return ::minRelayTxFee.GetFee(initialTxSize + scriptSigSize + 34u);
+    return ::minRelayTxFee.GetFee(initialTxSize + scriptSigSize + costOfMaybeIncludingChangeAddress);
 }
 
 WalletDustCombiner::WalletDustCombiner(

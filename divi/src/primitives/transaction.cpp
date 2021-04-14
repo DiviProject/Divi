@@ -300,8 +300,8 @@ CAmount CTransaction::GetValueOut() const
 std::string CTransaction::ToString() const
 {
     std::string str;
-    str += strprintf("CTransaction(hash=%s, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n",
-        GetHash().ToString().substr(0,10),
+    str += strprintf("CTransaction(%s, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n",
+        ToStringShort(),
         nVersion,
         vin.size(),
         vout.size(),
@@ -311,4 +311,9 @@ std::string CTransaction::ToString() const
     for (unsigned int i = 0; i < vout.size(); i++)
         str += "    " + vout[i].ToString() + "\n";
     return str;
+}
+
+std::string CTransaction::ToStringShort() const
+{
+    return GetHash().ToString().substr(0, 10);
 }

@@ -241,7 +241,7 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
     static const unsigned maxInputs = settings.MaxNumberOfPoSCombinableInputs();
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())
-        return error("CheckProofOfStake() : called on non-coinstake %s", tx.GetHash());
+        return error("CheckProofOfStake() : called on non-coinstake %s", tx.ToStringShort());
 
     if(tx.vin.size() > maxInputs) {
         return error("CheckProofOfStake() : invalid amount of stake inputs, current: %d, max: %d", tx.vin.size(), maxInputs);
@@ -270,7 +270,7 @@ bool CheckProofOfStakeContextAndRecoverStakingData(
 
     //verify signature and script
     if (!VerifyScript(txin.scriptSig, txPrev.vout[txin.prevout.n].scriptPubKey, POS_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&tx, 0)))
-        return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.GetHash());
+        return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.ToStringShort());
 
     CBlockIndex* pindex = NULL;
     BlockMap::iterator it = mapBlockIndex.find(hashBlock);
@@ -303,7 +303,7 @@ bool CheckProofOfStake(CChain& activeChain, const CBlock& block, CBlockIndex* pi
         return false;
     if (!posGenerator.ComputeAndVerifyProofOfStake(stakingData, block.nTime, hashProofOfStake))
         return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n",
-            block.vtx[1].GetHash(), hashProofOfStake); // may occur during initial download or if behind on block chain sync
+            block.vtx[1].ToStringShort(), hashProofOfStake); // may occur during initial download or if behind on block chain sync
 
     return true;
 }

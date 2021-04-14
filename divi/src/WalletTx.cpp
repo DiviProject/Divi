@@ -99,8 +99,7 @@ void CWalletTx::RelayWalletTransaction()
     if (!IsCoinBase()) {
         if (GetNumberOfBlockConfirmations() == 0)
         {
-            uint256 hash = GetHash();
-            LogPrintf("Relaying wtx %s\n", hash);
+            LogPrintf("Relaying wtx %s\n", ToStringShort());
             RelayTransaction((CTransaction) * this);
         }
     }

@@ -2579,7 +2579,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         return error("%s : ActivateBestChain failed", __func__);
 
     VoteForMasternodePayee(pindex);
-    combineWalletDust(settings);
+    if(!IsInitialBlockDownload()) combineWalletDust(settings);
 
     LogPrintf("%s : ACCEPTED in %ld milliseconds with size=%d\n", __func__, GetTimeMillis() - nStartTime,
               pblock->GetSerializeSize(SER_DISK, CLIENT_VERSION));

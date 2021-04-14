@@ -33,9 +33,9 @@ struct InputToSpendAndSigSize
         ): outputRef(&output)
         , value(outputRef->Value())
         , sigSize(
-            estimator.MaxBytesNeededForSigning(
+            estimator.MaxBytesNeededForScriptSig(
                 keyStore,
-                outputRef->scriptPubKey())+40u)
+                outputRef->scriptPubKey()))
     {
     }
 };

@@ -30,7 +30,7 @@ static CAmount FeeEstimates(
     unsigned scriptSigSize = 0u;
     for(const auto& output: outputsToCombine)
     {
-        scriptSigSize += estimator.MaxBytesNeededForSigning(keyStore,output.scriptPubKey())+40u;
+        scriptSigSize += estimator.MaxBytesNeededForScriptSig(keyStore,output.scriptPubKey());
     }
     return ::minRelayTxFee.GetFee(initialTxSize + scriptSigSize + costOfMaybeIncludingChangeAddress);
 }

@@ -160,6 +160,11 @@ public:
     friend bool operator==(const CTransaction& a, const CTransaction& b);
     friend bool operator!=(const CTransaction& a, const CTransaction& b);
     std::string ToString() const;
+
+    /** Converts the transcation to a short representation for use in
+     *  logs that just want to refer to it (rather than show the details),
+     *  which is just the transaction ID for now.  */
+    std::string ToStringShort() const;
 };
 
 /** A mutable version of CTransaction. */

@@ -206,7 +206,7 @@ bool PoSTransactionCreator::FindHashproof(
             LogPrintf("%s : kernel found, but it is too far in the past \n",__func__);
             return false;
         }
-        LogPrint("staking","%s : kernel found for %s\n",__func__, stakeData.tx->GetHash());
+        LogPrint("staking","%s : kernel found for %s\n",__func__, stakeData.tx->ToStringShort());
 
         SetSuportedStakingScript(stakeData,txNew);
         nTxNewTime = hashproofResult.timestamp();

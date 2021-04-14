@@ -35,5 +35,5 @@ const CScript& COutput::scriptPubKey() const
 
 std::string COutput::ToString() const
 {
-    return strprintf("COutput(%s, %d, %d) [%s]", tx->GetHash().ToString(), i, nDepth, FormatMoney(tx->vout[i].nValue));
+    return strprintf("COutput(%s, %d, %d) [%s]", tx->ToStringShort(), i, nDepth, FormatMoney(tx->vout[i].nValue));
 }

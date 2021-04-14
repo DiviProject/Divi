@@ -1160,7 +1160,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
                 else
                 {
                     LogPrintf("AddToWallet() : found %s in block %s not in index\n",
-                              wtxIn.GetHash(), wtxIn.hashBlock);
+                              wtxIn.ToStringShort(), wtxIn.hashBlock);
                 }
             }
         }
@@ -1187,7 +1187,7 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
 
         //// debug print
         LogPrintf("AddToWallet %s  %s%s\n",
-            wtxIn.GetHash(),
+            wtxIn.ToStringShort(),
             (transactionHashIsNewToWallet ? "new" : ""),
             (walletTransactionHasBeenUpdated ? "update" : ""));
 
@@ -3193,7 +3193,7 @@ void CWallet::GetAmounts(
         CTxDestination address;
         if (!ExtractDestination(txout.scriptPubKey, address)) {
             if (!wtx.IsCoinStake() && !wtx.IsCoinBase()) {
-                LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n", wtx.GetHash());
+                LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n", wtx.ToStringShort());
             }
             address = CNoDestination();
         }

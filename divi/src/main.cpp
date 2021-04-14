@@ -855,7 +855,7 @@ bool CheckFeesPaidAreAcceptable(
     bool txShouldHavePriority = TxShouldBePrioritized(hash, nSize);
     if (fLimitFree && !txShouldHavePriority && nFees < minimumRelayFee)
         return state.DoS(0, error("%s : not enough fees %s, %d < %d",__func__,
-                                    hash, nFees, minimumRelayFee),
+                                    tx.ToStringShort(), nFees, minimumRelayFee),
                             REJECT_INSUFFICIENTFEE, "insufficient fee");
     // Require that free transactions have sufficient priority to be mined in the next block.
     if (settings.GetBoolArg("-relaypriority", true) &&
@@ -2261,7 +2261,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckMerkleR
                     if (mapLockedInputs.count(in.prevout)) {
                         if (mapLockedInputs[in.prevout] != tx.GetHash()) {
                             mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
-                            LogPrintf("%s : found conflicting transaction with transaction lock %s %s\n",__func__, mapLockedInputs[in.prevout], tx.GetHash());
+                            LogPrintf("%s : found conflicting transaction with transaction lock %s %s\n",__func__, mapLockedInputs[in.prevout], tx.ToStringShort());
                             return state.DoS(0, error("%s : found conflicting transaction with transaction lock",__func__),
                                              REJECT_INVALID, "conflicting-tx-ix");
                         }
@@ -3790,7 +3790,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             LogPrint("mempool", "%s: peer=%d %s : accepted %s (poolsz %u)\n",
                     __func__,
                      pfrom->id, pfrom->cleanSubVer,
-                     tx.GetHash(),
+                     tx.ToStringShort(),
                      mempool.mapTx.size());
 
             // Recursively process any orphan transactions that depended on this one
@@ -3852,7 +3852,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         int nDoS = 0;
         if (state.IsInvalid(nDoS)) {
-            LogPrint("mempool", "%s from peer=%d %s was not accepted into the memory pool: %s\n", tx.GetHash(),
+            LogPrint("mempool", "%s from peer=%d %s was not accepted into the memory pool: %s\n", tx.ToStringShort(),
                      pfrom->id, pfrom->cleanSubVer,
                      state.GetRejectReason());
             pfrom->PushMessage("reject", strCommand, state.GetRejectCode(),

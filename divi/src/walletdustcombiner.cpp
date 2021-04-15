@@ -9,11 +9,13 @@
 #include <Settings.h>
 #include <primitives/transaction.h>
 #include <version.h>
+#include <FeeRate.h>
 
 extern CFeeRate minRelayTxFee;
 extern CWallet* pwalletMain;
 
 static CAmount FeeEstimates(
+    const CFeeRate& feeRate,
     const CKeyStore& keyStore,
     const std::vector<std::pair<CScript, CAmount> >& intendedDestinations,
     const std::vector<COutput>& outputsToCombine)
@@ -32,12 +34,14 @@ static CAmount FeeEstimates(
     {
         scriptSigSize += estimator.MaxBytesNeededForScriptSig(keyStore,output.scriptPubKey());
     }
-    return ::minRelayTxFee.GetFee(initialTxSize + scriptSigSize + costOfMaybeIncludingChangeAddress);
+    return feeRate.GetFee(initialTxSize + scriptSigSize + costOfMaybeIncludingChangeAddress);
 }
 
 WalletDustCombiner::WalletDustCombiner(
-    CWallet& wallet
+    CWallet& wallet,
+    const CFeeRate& relayFeeRate
     ): wallet_(wallet)
+    , relayFeeRate_(relayFeeRate)
 {
 }
 
@@ -81,7 +85,7 @@ void WalletDustCombiner::CombineDust(CAmount combineThreshold)
 
         std::vector<std::pair<CScript, CAmount> > vecSend;
         CScript scriptPubKey = GetScriptForDestination(it->first.Get());
-        CAmount expectedFee = FeeEstimates(wallet_,vecSend,coinsToCombine);
+        CAmount expectedFee = FeeEstimates(relayFeeRate_,wallet_,vecSend,coinsToCombine);
         vecSend.push_back(std::make_pair(scriptPubKey, nTotalRewardsValue-expectedFee));
 
         // Create the transaction and commit it to the network
@@ -106,7 +110,7 @@ void combineWalletDust(const Settings& settings)
         // If turned on Auto Combine will scan wallet for dust to combine
         if (settings.ParameterIsSet("-combinethreshold"))
         {
-            static WalletDustCombiner dustCombiner(*pwalletMain);
+            static WalletDustCombiner dustCombiner(*pwalletMain,minRelayTxFee);
             dustCombiner.CombineDust(
                 settings.GetArg("-combinethreshold",std::numeric_limits<int64_t>::max() ) );
         }

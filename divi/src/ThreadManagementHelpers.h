@@ -50,6 +50,12 @@ void LoopForever(const char* name, Callable func, int64_t msecs)
         throw;
     }
 }
+template <typename Callable, typename Arg>
+void LoopForever(const char* name, Callable func, Arg arg, int64_t msecs)
+{
+    auto compactFunction = [&arg,&func](){ func(arg); };
+    LoopForever(name,compactFunction,msecs);
+}
 
 /**
  * .. and a wrapper that just calls func once

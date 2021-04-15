@@ -44,9 +44,6 @@ extern BlockMap mapBlockIndex;
 //
 // Internal miner
 //
-extern CWallet* pwalletMain;
-bool fGenerateDivi = false;
-
 void MintCoins(
     bool fProofOfStake,
     I_CoinMinter& minter,
@@ -136,11 +133,9 @@ void ThreadStakeMinter(CWallet* pwallet)
     LogPrintf("ThreadStakeMinter exiting,\n");
 }
 
-void static ThreadPoWMinter(void* parg)
+void static ThreadPoWMinter(CWallet* pwallet,bool fGenerate)
 {
     boost::this_thread::interruption_point();
-    CWallet* pwallet = (CWallet*)parg;
-
     try {
         static CoinMintingModule mintingModule(
             settings,
@@ -159,7 +154,7 @@ void static ThreadPoWMinter(void* parg)
             sporkManager);
         static I_CoinMinter& minter = mintingModule.coinMinter();
         bool isProofOfStake = false;
-        minter.setMintingRequestStatus(fGenerateDivi);
+        minter.setMintingRequestStatus(fGenerate);
         MinterThread(isProofOfStake, minter);
         boost::this_thread::interruption_point();
     } catch (std::exception& e) {
@@ -174,7 +169,6 @@ void static ThreadPoWMinter(void* parg)
 void GenerateDivi(bool fGenerate, CWallet* pwallet, int nThreads)
 {
     static boost::thread_group* minerThreads = NULL;
-    fGenerateDivi = fGenerate;
 
     if (nThreads < 0) {
         // In regtest threads defaults to 1
@@ -195,7 +189,7 @@ void GenerateDivi(bool fGenerate, CWallet* pwallet, int nThreads)
 
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
-        minerThreads->create_thread(boost::bind(&ThreadPoWMinter, pwallet));
+        minerThreads->create_thread(boost::bind(&ThreadPoWMinter, pwallet,fGenerate));
 }
 
 #endif // ENABLE_WALLET

@@ -1553,19 +1553,15 @@ void ThreadMessageHandler()
     }
 }
 
-void ThreadBackupWallet()
+void ThreadBackupWallet(const CWallet* wallet)
 {
-    std::string walletFileName = settings.GetArg("-wallet", "wallet.dat");
+    const std::string& walletFileName = wallet->strWalletFile;
     static WalletBackupFeatureContainer walletBackupFeatureContainer(static_cast<int>(settings.GetArg("-monthlybackups", 12)), walletFileName, GetDataDir().string());
     while (true)
     {
-        if(!pwalletMain->fFileBacked)
-        {
-            LogPrintf("Error: Wallet isn't backed up\n");
-            return;
-        }
-        {
+        if(!wallet->fFileBacked) return;
 
+        {
             LOCK(walletBackupFeatureContainer.GetDatabase().GetDatabaseLock());
             if (!walletBackupFeatureContainer.GetDatabase().FilenameIsInUse(walletFileName))
             {
@@ -1772,10 +1768,14 @@ void StartNode(boost::thread_group& threadGroup)
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
 
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
-    if (settings.GetBoolArg("-staking", true) && Params().NetworkID() != CBaseChainParams::REGTEST)
+    if (pwalletMain && settings.GetBoolArg("-staking", true) && Params().NetworkID() != CBaseChainParams::REGTEST)
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "stakemint", &ThreadStakeMinter, pwalletMain));
 
-    threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "backup", &ThreadBackupWallet, NUMBER_OF_SECONDS_IN_A_DAY * 1000));
+    if(pwalletMain && pwalletMain->fFileBacked)
+        threadGroup.create_thread(
+            boost::bind(&LoopForever<void (*)(const CWallet*), const CWallet*>, "backup", &ThreadBackupWallet, pwalletMain, NUMBER_OF_SECONDS_IN_A_DAY * 1000));
+    else
+        LogPrintf("Error: Wallet monthly backups not enabled. Wallet isn't backed by file\n");
 }
 
 bool StopNode()

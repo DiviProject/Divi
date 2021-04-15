@@ -3,12 +3,14 @@
 #include <amount.h>
 class CWallet;
 class Settings;
+class CFeeRate;
 class WalletDustCombiner
 {
 private:
     CWallet& wallet_;
+    const CFeeRate& relayFeeRate_;
 public:
-    WalletDustCombiner(CWallet& wallet);
+    WalletDustCombiner(CWallet& wallet,const CFeeRate& relayFeeRate);
     void CombineDust(CAmount combineThreshold);
 };
 void combineWalletDust(const Settings& settings);

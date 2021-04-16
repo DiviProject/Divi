@@ -1,6 +1,6 @@
 #ifndef DATABASE_WRAPPER_H
 #define DATABASE_WRAPPER_H
-#include <i_databaseWrapper.h>
+#include <I_DatabaseWrapper.h>
 
 class DatabaseWrapper: public I_DatabaseWrapper
 {

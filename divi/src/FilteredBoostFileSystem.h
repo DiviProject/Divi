@@ -1,10 +1,9 @@
 #ifndef FILTERED_BOOST_FILE_SYSTEM_H
 #define FILTERED_BOOST_FILE_SYSTEM_H
-
-#include <i_filesystem.h>
+#include <I_Filesystem.h>
 #include <string>
 
-class FilteredBoostFileSystem : public I_FileSystem 
+class FilteredBoostFileSystem : public I_FileSystem
 {
 private:
     std::string filenameFilter_;
@@ -12,7 +11,7 @@ private:
 public:
     FilteredBoostFileSystem (
         std::string filenameFilter
-        ): filenameFilter_(filenameFilter) 
+        ): filenameFilter_(filenameFilter)
     {
 
     }

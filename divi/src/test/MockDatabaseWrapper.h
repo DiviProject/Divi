@@ -1,7 +1,7 @@
 #ifndef MOCK_DATABASE_WRAPPER_H
 #define MOCK_DATABASE_WRAPPER_H
 #include <gmock/gmock.h>
-#include <i_databaseWrapper.h>
+#include <I_DatabaseWrapper.h>
 class MockDatabaseWrapper: public I_DatabaseWrapper
 {
 public:

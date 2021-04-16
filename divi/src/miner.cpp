@@ -34,7 +34,11 @@ extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;
 
-std::map<unsigned int, unsigned int> mapHashedBlocks;
+LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight()
+{
+    static std::map<unsigned int, unsigned int> mapHashedBlocks;
+    return mapHashedBlocks;
+}
 //////////////////////////////////////////////////////////////////////////////
 //
 // DIVIMiner
@@ -92,6 +96,7 @@ void MinterThread(bool fProofOfStake, I_CoinMinter& minter)
 
 bool HasRecentlyAttemptedToGenerateProofOfStake()
 {
+    static const LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
     bool recentlyAttemptedPoS = false;
     if (mapHashedBlocks.count(chainActive.Tip()->nHeight))
         recentlyAttemptedPoS = true;
@@ -104,6 +109,7 @@ bool HasRecentlyAttemptedToGenerateProofOfStake()
 // ppcoin: stake minter thread
 void ThreadStakeMinter(CWallet* pwallet)
 {
+    static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
     boost::this_thread::interruption_point();
     LogPrintf("ThreadStakeMinter started\n");
     try {
@@ -136,6 +142,7 @@ void ThreadStakeMinter(CWallet* pwallet)
 
 void static ThreadPoWMinter(CWallet* pwallet,bool fGenerate)
 {
+    static LastExtensionTimestampByBlockHeight& mapHashedBlocks = getLastExtensionTimestampByBlockHeight();
     boost::this_thread::interruption_point();
     try {
         static CoinMintingModule mintingModule(

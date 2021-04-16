@@ -1768,12 +1768,19 @@ void StartNode(boost::thread_group& threadGroup)
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
 
     // ppcoin:mint proof-of-stake blocks in the background - except on regtest where we want granular control
-    if (pwalletMain && settings.GetBoolArg("-staking", true) && Params().NetworkID() != CBaseChainParams::REGTEST)
+    const bool underRegressionTesting = Params().NetworkID() == CBaseChainParams::REGTEST;
+    if (!underRegressionTesting && pwalletMain && settings.GetBoolArg("-staking", true))
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "stakemint", &ThreadStakeMinter, pwalletMain));
 
     if(pwalletMain && pwalletMain->fFileBacked)
+    {
+        int64_t millisecondDelay = NUMBER_OF_SECONDS_IN_A_DAY * 1000;
         threadGroup.create_thread(
-            boost::bind(&LoopForever<void (*)(const CWallet*), const CWallet*>, "backup", &ThreadBackupWallet, pwalletMain, NUMBER_OF_SECONDS_IN_A_DAY * 1000));
+            (!underRegressionTesting)?
+            boost::bind(&LoopForever<void (*)(const CWallet*), const CWallet*>, "monthly_backup", &ThreadBackupWallet, pwalletMain, millisecondDelay):
+            boost::bind(&MockLoopForever<void (*)(const CWallet*), const CWallet*>, "monthly_backup", &ThreadBackupWallet, pwalletMain, millisecondDelay)
+            );
+    }
     else
         LogPrintf("Error: Wallet monthly backups not enabled. Wallet isn't backed by file\n");
 }

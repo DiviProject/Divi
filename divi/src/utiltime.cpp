@@ -49,6 +49,14 @@ int64_t GetTimeMicros()
         .total_microseconds();
 }
 
+void MockMilliSleep(int64_t n)
+{
+    int64_t startWait = GetTimeMillis();
+    boost::unique_lock<boost::mutex> lock(csMockTime);
+    auto loopFunction = [startWait,n](){ return GetTimeMillis() - startWait > n;};
+    cvMockTimeChanged.wait(lock,loopFunction);
+}
+
 void MilliSleep(int64_t n)
 {
 /**

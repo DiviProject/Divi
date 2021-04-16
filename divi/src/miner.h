@@ -7,6 +7,7 @@
 #define BITCOIN_MINER_H
 
 #include <stdint.h>
+#include <map>
 
 class CBlock;
 class CBlockHeader;
@@ -27,4 +28,8 @@ void MintCoins(
     unsigned int nExtraNonce);
 void MinterThread(bool fProofOfStake, I_CoinMinter& minter);
 bool HasRecentlyAttemptedToGenerateProofOfStake();
+
+typedef std::map<unsigned int, unsigned int> LastExtensionTimestampByBlockHeight;
+LastExtensionTimestampByBlockHeight& getLastExtensionTimestampByBlockHeight();
+
 #endif // BITCOIN_MINER_H

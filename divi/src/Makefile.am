@@ -159,9 +159,9 @@ BITCOIN_CORE_H = \
   IndexDatabaseUpdates.h \
   BlockTransactionChecker.h \
   FeeAndPriorityCalculator.h \
-  i_filesystem.h \
-  i_walletBackupCreator.h \
-  i_databaseWrapper.h \
+  I_Filesystem.h \
+  I_WalletBackupCreator.h \
+  I_DatabaseWrapper.h \
   I_SuperblockHeightValidator.h \
   I_BlockIncentivesPopulator.h \
   I_BlockSubsidyProvider.h \

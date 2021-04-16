@@ -1,7 +1,7 @@
 #include <WalletIntegrityVerifier.h>
 
-#include <i_filesystem.h>
-#include <i_databaseWrapper.h>
+#include <I_Filesystem.h>
+#include <I_DatabaseWrapper.h>
 #include "utiltime.h"
 
 WalletIntegrityVerifier::WalletIntegrityVerifier(

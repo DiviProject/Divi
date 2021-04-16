@@ -21,13 +21,13 @@ WalletBackupCreator::WalletBackupCreator (
     nWalletBackups = std::max(0, nWalletBackups);
 }
 
-bool Error (std::string msg) 
+bool Error (std::string msg)
 {
     LogPrintf("%s", msg);
     return false;
 }
 
-bool Warning (std::string msg) 
+bool Warning (std::string msg)
 {
     LogPrintf("%s", msg);
     return true;
@@ -79,12 +79,12 @@ void WalletBackupCreator::PruneOldBackups(std::string strWalletFile, PathType ba
         return;
     }
     typedef TimeStampedFolderContents::value_type TimeStampedPath;
-    std::sort(folderContents.begin(), folderContents.end(), 
-        [](const TimeStampedPath& a, const TimeStampedPath& b) 
+    std::sort(folderContents.begin(), folderContents.end(),
+        [](const TimeStampedPath& a, const TimeStampedPath& b)
         {
             return a.first < b.first;
         });
-    
+
     int counter = 0;
     BOOST_REVERSE_FOREACH (TimeStampedFolderContents::value_type file, folderContents) {
         counter++;

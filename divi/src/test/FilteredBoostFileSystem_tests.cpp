@@ -5,7 +5,7 @@
 #include <string>
 #include <algorithm>
 
-class DirectoryCreatorHelper 
+class DirectoryCreatorHelper
 {
 private:
     boost::filesystem::path dummyTestingDirectory;
@@ -39,7 +39,7 @@ public:
 
     TimeStampedFolderContents CreateVariousFilesWithSamePrefix(std::string prefix, unsigned int amountOfFiles)
     {
-        
+
         TimeStampedFolderContents generatedContents;
         for(unsigned fileIndex = 0; fileIndex < amountOfFiles; fileIndex++)
         {
@@ -47,9 +47,9 @@ public:
             boost::filesystem::path fullFilePath = dummyTestingDirectory / fileName.c_str();
 
             CreateFile(fileName);
-            
+
             SetLastWriteTime(fullFilePath, std::time_t(fileIndex));
-            
+
             generatedContents.push_back( std::pair<std::time_t, std::string>{std::time_t(fileIndex), fullFilePath.string()} );
         }
         return generatedContents;

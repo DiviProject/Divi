@@ -10,6 +10,7 @@
 #include "util.h"
 #include "utilstrencodings.h"
 #include <script/StakingVaultScript.h>
+#include <defaultValues.h>
 
 #include <boost/foreach.hpp>
 
@@ -202,6 +203,10 @@ bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType,unsigned maxi
         return false;
 
     return whichType != TX_NONSTANDARD;
+}
+bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType)
+{
+    return IsStandard(scriptPubKey,whichType,MAX_OP_META_RELAY);
 }
 
 bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)

@@ -16,11 +16,8 @@ private:
 public:
     MonthlyWalletBackupCreator(
         I_WalletBackupCreator& backupWalletCreator,
-        I_FileSystem& fileSystem
-        ): backupWalletCreator_(backupWalletCreator)
-        , fileSystem_(fileSystem) {
+        I_FileSystem& fileSystem);
 
-        }
     virtual ~MonthlyWalletBackupCreator(){}
     virtual bool BackupWallet();
     virtual std::string GetBackupSubfolderDirectory() const;

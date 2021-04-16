@@ -3,6 +3,14 @@
 #include <timeIntervalConstants.h>
 #include <utiltime.h>
 
+MonthlyWalletBackupCreator::MonthlyWalletBackupCreator(
+    I_WalletBackupCreator& backupWalletCreator,
+    I_FileSystem& fileSystem
+    ): backupWalletCreator_(backupWalletCreator)
+    , fileSystem_(fileSystem)
+{
+}
+
 bool MonthlyWalletBackupCreator::BackupWallet()
 {
     TimeStampedFolderContents folderContents = fileSystem_.get_timestamped_folder_contents(backupWalletCreator_.GetBackupSubfolderDirectory());

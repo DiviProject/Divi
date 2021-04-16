@@ -35,7 +35,7 @@ void LoopForever(const char* name, Callable func, int64_t msecs)
     RenameThread(s.c_str());
     LogPrintf("%s thread start\n", name);
     try {
-        while (1) {
+        while (true) {
             MilliSleep(msecs);
             func();
         }
@@ -55,6 +55,35 @@ void LoopForever(const char* name, Callable func, Arg arg, int64_t msecs)
 {
     auto compactFunction = [&arg,&func](){ func(arg); };
     LoopForever(name,compactFunction,msecs);
+}
+
+template <typename Callable>
+void MockLoopForever(const char* name, Callable func, int64_t msecs)
+{
+    std::string s = strprintf("divi-%s", name);
+    RenameThread(s.c_str());
+    LogPrintf("%s thread start\n", name);
+    try {
+        while (true) {
+            MockMilliSleep(msecs);
+            func();
+        }
+    } catch (boost::thread_interrupted) {
+        LogPrintf("%s thread stop\n", name);
+        throw;
+    } catch (std::exception& e) {
+        PrintExceptionContinue(&e, name);
+        throw;
+    } catch (...) {
+        PrintExceptionContinue(NULL, name);
+        throw;
+    }
+}
+template <typename Callable, typename Arg>
+void MockLoopForever(const char* name, Callable func, Arg arg, int64_t msecs)
+{
+    auto compactFunction = [&arg,&func](){ func(arg); };
+    MockLoopForever(name,compactFunction,msecs);
 }
 
 /**

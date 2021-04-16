@@ -47,6 +47,8 @@ class WalletBackupTest(BitcoinTestFramework):
         # nodes 0-2 are spenders, let's give them a keypool=100
         extra_args = [["-keypool=100", "-spendzeroconfchange"]] * 3 + [[]]
         self.nodes = start_nodes(4, self.options.tmpdir, extra_args)
+        self.time = int(time.time())
+        set_node_times(self.nodes,self.time)
         connect_nodes(self.nodes[0], 3)
         connect_nodes(self.nodes[1], 3)
         connect_nodes(self.nodes[2], 3)
@@ -81,7 +83,6 @@ class WalletBackupTest(BitcoinTestFramework):
         assert_equal(self.nodes[3].getrawmempool(), [])
         sync_blocks(self.nodes)
 
-    # As above, this mirrors the original bash test.
     def start_three(self):
         self.nodes[0] = start_node(0, self.options.tmpdir)
         self.nodes[1] = start_node(1, self.options.tmpdir)
@@ -101,6 +102,32 @@ class WalletBackupTest(BitcoinTestFramework):
         os.remove(self.options.tmpdir + "/node1/regtest/wallet.dat")
         os.remove(self.options.tmpdir + "/node2/regtest/wallet.dat")
 
+    def advance_time (self, dt=1):
+        """Advances mocktime by the given number of seconds."""
+
+        self.time += dt
+        set_node_times (self.nodes, self.time)
+
+    def check_monthly(self):
+        #Check For Monthly Backups
+        tmpdir = self.options.tmpdir
+        logging.info("Checking monthly backups are being created")
+        path_to_backups = tmpdir+"/node0/regtest/monthlyBackups"
+        folder =os.listdir(path_to_backups)
+        all_files = [ f for f in folder if os.path.isfile(os.path.join(path_to_backups,f)) ]
+        assert_equal(len(all_files),1)
+        self.advance_time(3600*24*32)
+        for _ in range(3):
+            folder =os.listdir(path_to_backups)
+            all_files = [ f for f in folder if os.path.isfile(os.path.join(path_to_backups,f)) ]
+            if len(all_files) > 1:
+                print("Successful monthly backup!")
+                self.advance_time(1)
+                break
+            time.sleep(1.0)
+            self.advance_time(1)
+        assert_equal(len(all_files),2)
+
     def run_test(self):
         logging.info("Generating initial blockchain")
         self.nodes[0].setgenerate(True, 1)
@@ -116,16 +143,17 @@ class WalletBackupTest(BitcoinTestFramework):
         assert_equal(self.nodes[1].getbalance(), 1250)
         assert_equal(self.nodes[2].getbalance(), 1250)
         assert_equal(self.nodes[3].getbalance(), 0)
+        tmpdir = self.options.tmpdir
 
-        self.fees = Decimal("0.000000")
-
-        logging.info("Creating transactions")
         # Five rounds of sending each other transactions.
+        logging.info("Creating transactions")
+        self.fees = Decimal("0.000000")
         for i in range(5):
             self.do_one_round()
 
+
         logging.info("Backing up")
-        tmpdir = self.options.tmpdir
+
         self.nodes[0].backupwallet(tmpdir + "/node0/wallet.bak")
         self.nodes[0].dumpwallet(tmpdir + "/node0/wallet.dump")
         self.nodes[1].backupwallet(tmpdir + "/node1/wallet.bak")
@@ -191,6 +219,8 @@ class WalletBackupTest(BitcoinTestFramework):
         assert_equal(self.nodes[1].getbalance(), balance1)
         assert_equal(self.nodes[2].getbalance(), balance2)
 
+        #Check For Monthly Backups
+        self.check_monthly()
 
 if __name__ == '__main__':
     WalletBackupTest().main()

@@ -30,10 +30,11 @@ extern Settings& settings;
 extern CCoinsViewCache* pcoinsTip;
 extern CFeeRate minRelayTxFee;
 extern CChain chainActive;
-extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 extern BlockMap mapBlockIndex;
+
+std::map<unsigned int, unsigned int> mapHashedBlocks;
 //////////////////////////////////////////////////////////////////////////////
 //
 // DIVIMiner

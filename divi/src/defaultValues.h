@@ -5,6 +5,8 @@
 #ifndef _DEFAULTVALUES_H
 #define _DEFAULTVALUES_H
 
+constexpr unsigned int DEFAULT_TX_RELAY_FEE_PER_KILOBYTE = 10000;
+
 constexpr unsigned int MAX_OP_META_RELAY = 603;      //!< bytes (+1 for OP_META, +2 for the pushdata opcodes)
 
 /** The maximum allowed size for a serialized block, in bytes (network rule) */

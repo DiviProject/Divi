@@ -2,8 +2,9 @@
 #include "primitives/transaction.h"
 #include "FeeRate.h"
 #include <version.h>
+#include <defaultValues.h>
 
-CFeeRate minRelayTxFee = CFeeRate(10000);
+CFeeRate minRelayTxFee = CFeeRate(DEFAULT_TX_RELAY_FEE_PER_KILOBYTE);
 
 FeeAndPriorityCalculator::FeeAndPriorityCalculator()
 {

@@ -5,6 +5,13 @@
 #ifndef _DEFAULTVALUES_H
 #define _DEFAULTVALUES_H
 
+#include <amount.h>
+
+//! -maxtxfee default
+constexpr CAmount DEFAULT_TRANSACTION_MAXFEE = 100 * COIN;
+
+constexpr bool DEFAULT_USE_HD_WALLET = true;
+
 constexpr unsigned int DEFAULT_TX_RELAY_FEE_PER_KILOBYTE = 10000;
 
 constexpr unsigned int MAX_OP_META_RELAY = 603;      //!< bytes (+1 for OP_META, +2 for the pushdata opcodes)

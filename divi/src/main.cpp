@@ -69,8 +69,6 @@
 #include <IndexDatabaseUpdates.h>
 #include <BlockTransactionChecker.h>
 
-//! -maxtxfee default
-static const CAmount DEFAULT_TRANSACTION_MAXFEE = 100 * COIN;
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;
 

@@ -155,7 +155,6 @@ public:
     LockedCoinsSet setLockedCoins;
     int64_t nTimeFirstKey;
     std::map<CKeyID, CHDPubKey> mapHdPubKeys; //<! memory map of HD extended pubkeys
-    static CFeeRate minTxFee;
 private:
     int64_t nNextResend;
     int64_t nLastResend;

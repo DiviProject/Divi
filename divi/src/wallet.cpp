@@ -2024,6 +2024,9 @@ static CAmount GetMinimumFee(const CAmount &nTransactionValue, unsigned int nTxB
     return std::min(::minRelayTxFee.GetFee(nTxBytes),maxTxFee);
 }
 
+//! Largest (in bytes) free transaction we're willing to create
+static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
+
 static bool CanBeSentAsFreeTransaction(
     const bool fSendFreeTransactions,
     const CTransaction& wtxNew,

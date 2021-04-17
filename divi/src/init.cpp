@@ -18,6 +18,7 @@
 #include "checkpoints.h"
 #include "compat/sanity.h"
 #include "datacachemanager.h"
+#include <defaultValues.h>
 #include "key.h"
 #include "main.h"
 #include "obfuscation.h"
@@ -119,6 +120,11 @@ enum BindFlags {
     BF_REPORT_ERROR = (1U << 1),
     BF_WHITELIST = (1U << 2),
 };
+
+//! -paytxfee will warn if called with a higher fee than this amount (in satoshis) per KB
+static const CAmount nHighTransactionFeeWarning = 0.1 * COIN;
+//! -maxtxfee will warn if called with a higher fee than this amount (in satoshis)
+static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
 
 constexpr char FEE_ESTIMATES_FILENAME[] = "fee_estimates.dat";
 CClientUIInterface uiInterface;

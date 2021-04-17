@@ -14,7 +14,8 @@
 #include <boost/chrono/chrono.hpp>
 #include <boost/thread.hpp>
 
-extern const std::string DEFAULT_TOR_CONTROL;
+/** Default control port */
+static const std::string DEFAULT_TOR_CONTROL = "127.0.0.1:9051";
 static const bool DEFAULT_LISTEN_ONION = true;
 
 void StartTorControl(boost::thread_group& threadGroup);

@@ -773,6 +773,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 
     // Check for negative or overflow output values
     CAmount nValueOut = 0;
+    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     for(const CTxOut& txout: tx.vout)
     {
         if (txout.IsEmpty() && !tx.IsCoinBase() && !tx.IsCoinStake())
@@ -780,11 +781,11 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
         if (txout.nValue < 0)
             return state.DoS(100, error("%s : txout.nValue negative",__func__),
                              REJECT_INVALID, "bad-txns-vout-negative");
-        if (txout.nValue > Params().MaxMoneyOut())
+        if (txout.nValue > maxMoneyAllowedInOutput)
             return state.DoS(100, error("%s : txout.nValue too high",__func__),
                              REJECT_INVALID, "bad-txns-vout-toolarge");
         nValueOut += txout.nValue;
-        if (!MoneyRange(nValueOut))
+        if (!MoneyRange(nValueOut,maxMoneyAllowedInOutput))
             return state.DoS(100, error("%s : txout total out of range",__func__),
                              REJECT_INVALID, "bad-txns-txouttotal-toolarge");
     }

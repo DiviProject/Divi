@@ -264,13 +264,15 @@ isminetype CWallet::IsMine(const CTxOut& txout) const
 
 CAmount CWallet::ComputeCredit(const CTxOut& txout, const isminefilter& filter) const
 {
-    if (!MoneyRange(txout.nValue))
+    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
+    if (!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
         throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
     return ((IsMine(txout) & filter) ? txout.nValue : 0);
 }
 CAmount CWallet::ComputeChange(const CTxOut& txout) const
 {
-    if (!MoneyRange(txout.nValue))
+    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
+    if (!MoneyRange(txout.nValue,maxMoneyAllowedInOutput))
         throw std::runtime_error("CWallet::ComputeChange() : value out of range");
     return (IsChange(txout) ? txout.nValue : 0);
 }
@@ -293,10 +295,11 @@ bool CWallet::DebitsFunds(const CWalletTx& tx,const isminefilter& filter) const
 
 CAmount CWallet::ComputeDebit(const CTransaction& tx, const isminefilter& filter) const
 {
+    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     CAmount nDebit = 0;
     BOOST_FOREACH (const CTxIn& txin, tx.vin) {
         nDebit += GetDebit(txin, filter);
-        if (!MoneyRange(nDebit))
+        if (!MoneyRange(nDebit,maxMoneyAllowedInOutput))
             throw std::runtime_error("CWallet::ComputeDebit() : value out of range");
     }
     return nDebit;
@@ -330,6 +333,7 @@ CAmount CWallet::GetDebit(const CWalletTx& tx, const isminefilter& filter) const
 
 CAmount CWallet::ComputeCredit(const CWalletTx& tx, const isminefilter& filter, int creditFilterFlags) const
 {
+    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     CAmount nCredit = 0;
     uint256 hash = tx.GetHash();
     for (unsigned int i = 0; i < tx.vout.size(); i++) {
@@ -348,7 +352,7 @@ CAmount CWallet::ComputeCredit(const CWalletTx& tx, const isminefilter& filter, 
         }
 
         nCredit += ComputeCredit(out, filter);
-        if (!MoneyRange(nCredit))
+        if (!MoneyRange(nCredit,maxMoneyAllowedInOutput))
             throw std::runtime_error("CWallet::ComputeCredit() : value out of range");
     }
     return nCredit;
@@ -385,10 +389,11 @@ CAmount CWallet::GetCredit(const CWalletTx& walletTransaction, const isminefilte
 
 CAmount CWallet::ComputeChange(const CTransaction& tx) const
 {
+    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
     CAmount nChange = 0;
     BOOST_FOREACH (const CTxOut& txout, tx.vout) {
         nChange += ComputeChange(txout);
-        if (!MoneyRange(nChange))
+        if (!MoneyRange(nChange,maxMoneyAllowedInOutput))
             throw std::runtime_error("CWallet::ComputeChange() : value out of range");
     }
     return nChange;

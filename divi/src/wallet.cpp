@@ -1123,6 +1123,11 @@ int64_t CWallet::SmartWalletTxTimestampEstimation(const CWalletTx& wtx)
     return std::max(latestEntry, std::min(blocktime, latestNow));
 }
 
+CWalletTx CWallet::initializeEmptyWalletTransaction() const
+{
+    return CMerkleTx(CTransaction(),chainActive_,mapBlockIndex_);
+}
+
 bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFromLoadWallet)
 {
     uint256 hash = wtxIn.GetHash();

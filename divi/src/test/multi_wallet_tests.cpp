@@ -42,6 +42,13 @@ public:
         walletCache_[walletID].reset();
         return walletName;
     }
+    void deallocateAndReloadWallet(const unsigned walletID)
+    {
+        if(walletCache_.empty() || walletID >= walletCache_.size() || !walletCache_[walletID].get()) return;
+        const std::string walletName = walletCache_[walletID]->strWalletFile;
+        walletCache_[walletID].reset();
+        walletCache_[walletID].reset(new FakeWallet(fakeChain_,walletName));
+    }
 
     const CWalletTx& AddDefaultTxToWallet(FakeWallet& currentWallet, const CAmount amount)
     {
@@ -80,6 +87,38 @@ BOOST_AUTO_TEST_CASE(multipleWalletsCanCoexist)
             getWallet(walletID).GetBalance(),
             CAmount(totalTxsPerWallet*100*COIN),
             "Balance is different from expected!");
+    }
+}
+
+BOOST_AUTO_TEST_CASE(multipleWalletsCanCoexistAndBeIndependentlyReloaded)
+{
+    const unsigned totalWalletCount = 13;
+    const unsigned totalTxsPerWallet = 23;
+    createWallets(totalWalletCount);
+    for(unsigned walletID =0 ; walletID < totalWalletCount; ++walletID)
+    {
+        for(unsigned txCount = 0; txCount < totalTxsPerWallet; ++txCount)
+        {
+            auto& wallet = getWallet(walletID);
+            const CWalletTx& tx = AddDefaultTxToWallet(wallet, 100 * COIN);
+            wallet.FakeAddToChain(tx);
+        }
+        BOOST_CHECK_EQUAL_MESSAGE(
+            getWallet(walletID).GetBalance(),
+            CAmount(totalTxsPerWallet*100*COIN),
+            "Balance is different from expected!");
+
+        if(walletID > 5)
+        {
+            const unsigned walletToDeallocate = walletID - 4;
+            deallocateAndReloadWallet(walletToDeallocate);
+            auto& wallet = getWallet(walletToDeallocate);
+            wallet.SetConfirmedTxsToVerified();
+            BOOST_CHECK_EQUAL_MESSAGE(
+                wallet.GetBalance(),
+                CAmount(totalTxsPerWallet*100*COIN),
+                "Balance is different from expected!");
+        }
     }
 }
 

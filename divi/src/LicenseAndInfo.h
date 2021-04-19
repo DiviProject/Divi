@@ -2,6 +2,7 @@
 #define LICENSE_AND_INFO_H
 #include <string>
 class CChainParams;
+class Settings;
 
 /** The help message mode determines what help message to show */
 enum HelpMessageMode {
@@ -10,7 +11,7 @@ enum HelpMessageMode {
 };
 
 /** Help for options shared between UI and daemon (for -help) */
-std::string HelpMessage(HelpMessageMode mode, const CChainParams& defaultParameters);
+std::string HelpMessage(HelpMessageMode mode, const Settings& settings, const CChainParams& defaultParameters);
 /** Returns licensing information (for -version) */
 std::string LicenseInfo();
 

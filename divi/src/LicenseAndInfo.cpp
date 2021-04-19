@@ -6,10 +6,8 @@
 
 #include <chainparams.h>
 #include <defaultValues.h>
-#include <net.h>
 #include <Settings.h>
 #include <tinyformat.h>
-#include <util.h>
 #include <utilmoneystr.h>
 #include <utilstrencodings.h>
 #include <version.h>

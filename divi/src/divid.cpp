@@ -80,7 +80,7 @@ bool AppInit(int argc, char* argv[])
             strUsage += "\n" + translate("Usage:") + "\n" +
                         "  divid [options]                     " + translate("Start Divi Core Daemon") + "\n";
 
-            strUsage += "\n" + HelpMessage(HMM_BITCOIND,Params(CBaseChainParams::MAIN));
+            strUsage += "\n" + HelpMessage(HMM_BITCOIND,settings,Params(CBaseChainParams::MAIN));
         }
 
         fprintf(stdout, "%s", strUsage.c_str());

@@ -10,7 +10,6 @@
 #include <Settings.h>
 #include <tinyformat.h>
 #include <torcontrol.h>
-#include <txdb.h>
 #include <util.h>
 #include <utilmoneystr.h>
 #include <utilstrencodings.h>
@@ -72,7 +71,7 @@ std::string HelpMessage(HelpMessageMode mode,const Settings& settings, const CCh
 #endif
     }
     strUsage += HelpMessageOpt("-datadir=<dir>", translate("Specify data directory"));
-    strUsage += HelpMessageOpt("-dbcache=<n>", strprintf(translate("Set database cache size in megabytes (%d to %d, default: %d)"), nMinDbCache, nMaxDbCache, nDefaultDbCache));
+    strUsage += HelpMessageOpt("-dbcache=<n>", strprintf(translate("Set database cache size in megabytes (%d to %d, default: %d)"), MIN_DB_CACHE_SIZE, MAX_DB_CACHE_SIZE, DEFAULT_DB_CACHE_SIZE));
     strUsage += HelpMessageOpt("-loadblock=<file>", translate("Imports blocks from external blk000??.dat file") + " " + translate("on startup"));
     strUsage += HelpMessageOpt("-maxreorg=<n>", strprintf(translate("Set the Maximum reorg depth (default: %u)"),  defaultParameters.MaxReorganizationDepth()   ));
     strUsage += HelpMessageOpt("-maxorphantx=<n>", strprintf(translate("Keep at most <n> unconnectable transactions in memory (default: %u)"), DEFAULT_MAX_ORPHAN_TRANSACTIONS));

@@ -8,11 +8,11 @@
 #include <amount.h>
 
 //! -dbcache default (MiB)
-static const int64_t DEFAULT_DB_CACHE_SIZE = 100;
+constexpr int64_t DEFAULT_DB_CACHE_SIZE = 100;
 //! max. -dbcache in (MiB)
-static const int64_t MAX_DB_CACHE_SIZE = sizeof(void*) > 4 ? 4096 : 1024;
+constexpr int64_t MAX_DB_CACHE_SIZE = sizeof(void*) > 4 ? 4096 : 1024;
 //! min. -dbcache in (MiB)
-static const int64_t MIN_DB_CACHE_SIZE = 4;
+constexpr int64_t MIN_DB_CACHE_SIZE = 4;
 
 //! -maxtxfee default
 constexpr CAmount DEFAULT_TRANSACTION_MAXFEE = 100 * COIN;

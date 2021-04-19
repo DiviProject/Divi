@@ -232,12 +232,13 @@ static inline int64_t roundint64(double d)
 CAmount AmountFromValue(const Value& value, const bool allowZero)
 {
     const double dAmount = value.get_real();
-    if (dAmount < 0.0 || dAmount >  Params().MaxMoneyOut())
+    const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
+    if (dAmount < 0.0 || dAmount >  maxMoneyAllowedInOutput)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     const CAmount nAmount = roundint64(dAmount * COIN);
     if (!allowZero && nAmount == 0)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
-    if (!MoneyRange(nAmount))
+    if (!MoneyRange(nAmount,maxMoneyAllowedInOutput))
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount");
     return nAmount;
 }

@@ -157,6 +157,7 @@ bool CheckInputs(
 
         // While checking, GetBestBlock() refers to the parent block.
         // This is also true for mempool checks.
+        const CAmount maxMoneyAllowedInOutput = Params().MaxMoneyOut();
         CBlockIndex* pindexPrev = mapBlockIndex.find(inputs.GetBestBlock())->second;
         int nSpendHeight = pindexPrev->nHeight + 1;
         for (unsigned int i = 0; i < tx.vin.size(); i++)
@@ -176,7 +177,7 @@ bool CheckInputs(
 
             // Check for negative or overflow input values
             nValueIn += coins->vout[prevout.n].nValue;
-            if (!MoneyRange(coins->vout[prevout.n].nValue) || !MoneyRange(nValueIn))
+            if (!MoneyRange(coins->vout[prevout.n].nValue,maxMoneyAllowedInOutput) || !MoneyRange(nValueIn,maxMoneyAllowedInOutput))
                 return state.DoS(100, error("CheckInputs() : txin values out of range"),
                                  REJECT_INVALID, "bad-txns-inputvalues-outofrange");
         }
@@ -193,7 +194,7 @@ bool CheckInputs(
                 return state.DoS(100, error("CheckInputs() : %s nTxFee < 0", tx.GetHash()),
                                  REJECT_INVALID, "bad-txns-fee-negative");
             nFees += nTxFee;
-            if (!MoneyRange(nFees))
+            if (!MoneyRange(nFees,maxMoneyAllowedInOutput))
                 return state.DoS(100, error("CheckInputs() : nFees out of range"),
                                  REJECT_INVALID, "bad-txns-fee-outofrange");
         }

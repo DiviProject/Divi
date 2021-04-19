@@ -8,7 +8,6 @@
 #include "primitives/transaction.h"
 #include "tinyformat.h"
 #include "utilstrencodings.h"
-#include <chainparams.h>
 
 using namespace std;
 
@@ -77,7 +76,7 @@ bool ParseMoney(const char* pszIn, CAmount& nRet)
     nRet = nValue;
     return true;
 }
-bool MoneyRange(CAmount nValueOut)
+bool MoneyRange(CAmount nValueOut, const CAmount maxMoneyInOutput)
 {
-    return nValueOut >= 0 && nValueOut <= Params().MaxMoneyOut();
+    return nValueOut >= 0 && nValueOut <= maxMoneyInOutput;
 }

@@ -156,6 +156,7 @@ BITCOIN_CORE_H = \
   hash.h \
   hdchain.h \
   init.h \
+  LicenseAndInfo.h \
   IndexDatabaseUpdates.h \
   BlockTransactionChecker.h \
   FeeAndPriorityCalculator.h \
@@ -611,6 +612,7 @@ libbitcoin_util_a_SOURCES = \
   utilmoneystr.cpp \
   utiltime.cpp \
   version-util.cpp \
+  LicenseAndInfo.cpp \
   $(BITCOIN_CORE_H)
 
 if GLIBC_BACK_COMPAT

@@ -7,6 +7,7 @@
 
 #include "chainparamsbase.h"
 #include "clientversion.h"
+#include <LicenseAndInfo.h>
 #include "rpcclient.h"
 #include "rpcprotocol.h"
 #include "util.h"
@@ -22,25 +23,6 @@ using namespace boost;
 using namespace boost::asio;
 using namespace json_spirit;
 extern Settings& settings;
-
-std::string HelpMessageCli()
-{
-    string strUsage;
-    strUsage += HelpMessageGroup(translate("Options:"));
-    strUsage += HelpMessageOpt("-?", translate("This help message"));
-    strUsage += HelpMessageOpt("-conf=<file>", strprintf(translate("Specify configuration file (default: %s)"), "divi.conf"));
-    strUsage += HelpMessageOpt("-datadir=<dir>", translate("Specify data directory"));
-    strUsage += HelpMessageOpt("-testnet", translate("Use the test network"));
-    strUsage += HelpMessageOpt("-regtest", translate("Enter regression test mode, which uses a special chain in which blocks can be "
-                                             "solved instantly. This is intended for regression testing tools and app development."));
-    strUsage += HelpMessageOpt("-rpcconnect=<ip>", strprintf(translate("Send commands to node running on <ip> (default: %s)"), "127.0.0.1"));
-    strUsage += HelpMessageOpt("-rpcport=<port>", strprintf(translate("Connect to JSON-RPC on <port> (default: %u or testnet: %u)"), 51473, 51475));
-    strUsage += HelpMessageOpt("-rpcwait", translate("Wait for RPC server to start"));
-    strUsage += HelpMessageOpt("-rpcuser=<user>", translate("Username for JSON-RPC connections"));
-    strUsage += HelpMessageOpt("-rpcpassword=<pw>", translate("Password for JSON-RPC connections"));
-
-    return strUsage;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 //

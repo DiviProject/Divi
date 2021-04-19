@@ -38,6 +38,7 @@
 #include <ValidationState.h>
 #include <coins.h>
 #include <FeeRate.h>
+#include <FeeAndPriorityCalculator.h>
 
 extern NotificationInterfaceRegistry registry;//TODO: rid this
 using namespace json_spirit;
@@ -47,7 +48,6 @@ using namespace boost::assign;
 extern Settings& settings;
 extern CWallet* pwalletMain;
 extern CCoinsViewCache* pcoinsTip;
-extern CFeeRate minRelayTxFee;
 extern BlockMap mapBlockIndex;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
@@ -109,7 +109,7 @@ Value setgenerate(const Array& params, bool fHelp)
             Params(),
             chainActive,
             GetMasternodeSync(),
-            minRelayTxFee,
+            FeeAndPriorityCalculator::instance().getFeeRateQuote(),
             pcoinsTip,
             GetMasternodePayments(),
             mempool,
@@ -188,7 +188,7 @@ Value generateblock(const Array& params, bool fHelp)
         Params(),
         chainActive,
         GetMasternodeSync(),
-        minRelayTxFee,
+        FeeAndPriorityCalculator::instance().getFeeRateQuote(),
         pcoinsTip,
         GetMasternodePayments(),
         mempool,

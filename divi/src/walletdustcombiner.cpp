@@ -10,8 +10,8 @@
 #include <primitives/transaction.h>
 #include <version.h>
 #include <FeeRate.h>
+#include <FeeAndPriorityCalculator.h>
 
-extern CFeeRate minRelayTxFee;
 extern CWallet* pwalletMain;
 
 static CAmount FeeEstimates(
@@ -110,7 +110,7 @@ void combineWalletDust(const Settings& settings)
         // If turned on Auto Combine will scan wallet for dust to combine
         if (settings.ParameterIsSet("-combinethreshold"))
         {
-            static WalletDustCombiner dustCombiner(*pwalletMain,minRelayTxFee);
+            static WalletDustCombiner dustCombiner(*pwalletMain,FeeAndPriorityCalculator::instance().getFeeRateQuote());
             dustCombiner.CombineDust(
                 settings.GetArg("-combinethreshold",std::numeric_limits<int64_t>::max() ) );
         }

@@ -82,7 +82,6 @@ constexpr int nWalletBackups = 20;
  * Wallet Settings
  */
 extern CAmount maxTxFee;
-extern CFeeRate minRelayTxFee;
 #endif
 extern CCriticalSection cs_main;
 extern Settings& settings;
@@ -648,10 +647,11 @@ bool SetTransactionRequirements()
     // a transaction spammer can cheaply fill blocks using
     // 1-satoshi-fee transactions. It should be set above the real
     // cost to you of processing a transaction.
+    FeeAndPriorityCalculator& feeAndPriorityCalculator = FeeAndPriorityCalculator::instance();
     if (settings.ParameterIsSet("-minrelaytxfee")) {
         CAmount n = 0;
         if (ParseMoney(settings.GetParameter("-minrelaytxfee"), n) && n > 0)
-            ::minRelayTxFee = CFeeRate(n);
+            feeAndPriorityCalculator.setFeeRate(n);
         else
             return InitError(strprintf(translate("Invalid amount for -minrelaytxfee=<amount>: '%s'"), settings.GetParameter("-minrelaytxfee")));
     }
@@ -663,9 +663,10 @@ bool SetTransactionRequirements()
         if (nMaxFee > nHighTransactionMaxFeeWarning)
             InitWarning(translate("Warning: -maxtxfee is set very high! Fees this large could be paid on a single transaction."));
         maxTxFee = nMaxFee;
-        if (CFeeRate(maxTxFee, 1000) < ::minRelayTxFee) {
+        const CFeeRate& currentFeeRate = feeAndPriorityCalculator.getFeeRateQuote();
+        if (CFeeRate(maxTxFee, 1000) < currentFeeRate) {
             return InitError(strprintf(translate("Invalid amount for -maxtxfee=<amount>: '%s' (must be at least the minrelay fee of %s to prevent stuck transactions)"),
-                settings.GetParameter("-maxtxfee"), ::minRelayTxFee.ToString()));
+                settings.GetParameter("-maxtxfee"), currentFeeRate.ToString()));
         }
     }
 #endif

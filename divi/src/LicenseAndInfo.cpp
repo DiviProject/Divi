@@ -9,7 +9,6 @@
 #include <net.h>
 #include <Settings.h>
 #include <tinyformat.h>
-#include <torcontrol.h>
 #include <util.h>
 #include <utilmoneystr.h>
 #include <utilstrencodings.h>
@@ -113,7 +112,7 @@ std::string HelpMessage(HelpMessageMode mode,const Settings& settings, const CCh
     strUsage += HelpMessageOpt("-proxyrandomize", strprintf(translate("Randomize credentials for every proxy connection. This enables Tor stream isolation (default: %u)"), 1));
     strUsage += HelpMessageOpt("-seednode=<ip>", translate("Connect to a node to retrieve peer addresses, and disconnect"));
     strUsage += HelpMessageOpt("-timeout=<n>", strprintf(translate("Specify connection timeout in milliseconds (minimum: 1, default: %d)"), DEFAULT_CONNECT_TIMEOUT));
-    strUsage += HelpMessageOpt("-torcontrol=<ip>:<port>", strprintf(translate("Tor control port to use if onion listening enabled (default: %s)"), DEFAULT_TOR_CONTROL));
+    strUsage += HelpMessageOpt("-torcontrol=<ip>:<port>", strprintf(translate("Tor control port to use if onion listening enabled (default: %s)"), std::string(DEFAULT_TOR_CONTROL) ));
     strUsage += HelpMessageOpt("-torpassword=<pass>", translate("Tor control port password (default: empty)"));
 #ifdef USE_UPNP
 #if USE_UPNP

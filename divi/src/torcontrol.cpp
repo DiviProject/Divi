@@ -30,8 +30,9 @@
 #include <event2/thread.h>
 
 #include <DataDirectory.h>
+#include <defaultValues.h>
 #include <ThreadManagementHelpers.h>
-#include "Settings.h"
+#include <Settings.h>
 extern Settings& settings;
 
 /** Tor cookie size (from control-spec.txt) */
@@ -739,7 +740,7 @@ static boost::thread torControlThread;
 
 static void TorControlThread()
 {
-    TorController ctrl(gBase, settings.GetArg("-torcontrol", DEFAULT_TOR_CONTROL));
+    TorController ctrl(gBase, settings.GetArg("-torcontrol", std::string(DEFAULT_TOR_CONTROL) ));
 
     event_base_dispatch(gBase);
 }

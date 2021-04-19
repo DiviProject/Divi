@@ -7,6 +7,10 @@
 
 #include <amount.h>
 
+/** Default control port */
+constexpr char DEFAULT_TOR_CONTROL[] = "127.0.0.1:9051";
+constexpr bool DEFAULT_LISTEN_ONION = true;
+
 //! -dbcache default (MiB)
 constexpr int64_t DEFAULT_DB_CACHE_SIZE = 100;
 //! max. -dbcache in (MiB)
